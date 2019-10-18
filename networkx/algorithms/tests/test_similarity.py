@@ -9,8 +9,10 @@ from networkx.generators.classic import *
 def nmatch(n1, n2):
     return n1 == n2
 
+
 def ematch(e1, e2):
     return e1 == e2
+
 
 def getCanonical():
     G = nx.Graph()
@@ -106,9 +108,9 @@ class TestSimilarity:
                 return 100
 
         assert graph_edit_distance(G1, G2,
-                                         node_subst_cost=node_subst_cost,
-                                         node_del_cost=node_del_cost,
-                                         node_ins_cost=node_ins_cost) == 6
+                                   node_subst_cost=node_subst_cost,
+                                   node_del_cost=node_del_cost,
+                                   node_ins_cost=node_ins_cost) == 6
 
     def test_graph_edit_distance_edge_cost(self):
         G1 = path_graph(6)
@@ -137,9 +139,9 @@ class TestSimilarity:
                 return 1.0
 
         assert graph_edit_distance(G1, G2,
-                                         edge_subst_cost=edge_subst_cost,
-                                         edge_del_cost=edge_del_cost,
-                                         edge_ins_cost=edge_ins_cost) == 0.23
+                                   edge_subst_cost=edge_subst_cost,
+                                   edge_del_cost=edge_del_cost,
+                                   edge_ins_cost=edge_ins_cost) == 0.23
 
     def test_graph_edit_distance_upper_bound(self):
         G1 = circular_ladder_graph(2)
@@ -165,7 +167,7 @@ class TestSimilarity:
                           ([(0, 2), (1, 0), (2, 1)], [((0, 1), (0, 2)), ((1, 2), (0, 1)), (None, (1, 2))]),
                           ([(0, 2), (1, 1), (2, 0)], [((0, 1), (1, 2)), ((1, 2), (0, 1)), (None, (0, 2))])]
         assert (set(canonical(*p) for p in paths) ==
-                     set(canonical(*p) for p in expected_paths))
+                set(canonical(*p) for p in expected_paths))
 
     def test_optimize_graph_edit_distance(self):
         G1 = circular_ladder_graph(2)

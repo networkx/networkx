@@ -96,11 +96,11 @@ class TestPylab(object):
                                    edge_color=[(0.4, 1.0, 0.0)])
             # with rgba tuple and 4 edges - is interpretted with cmap
             nx.draw_networkx_edges(G, pos, edgelist=[(9, 10), (10, 11),
-                                   (10, 12), (10, 13)],
+                                                     (10, 12), (10, 13)],
                                    edge_color=(0.0, 1.0, 1.0, 0.5))
             # with rgba tuple in list
             nx.draw_networkx_edges(G, pos, edgelist=[(9, 10), (10, 11),
-                                   (10, 12), (10, 13)],
+                                                     (10, 12), (10, 13)],
                                    edge_color=[(0.0, 1.0, 1.0, 0.5)])
             # with color string and global alpha
             nx.draw_networkx_edges(G, pos, edgelist=[(11, 12), (11, 13)],

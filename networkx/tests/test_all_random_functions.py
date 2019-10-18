@@ -19,7 +19,7 @@ py_rv = random.random()
 
 
 def t(f, *args, **kwds):
-    """call one function and check if global RNG changed""" 
+    """call one function and check if global RNG changed"""
     global progress
     progress += 1
     print(progress, ",", end="")

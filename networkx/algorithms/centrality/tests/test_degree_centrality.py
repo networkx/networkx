@@ -6,6 +6,7 @@
 import networkx as nx
 from networkx.testing import almost_equal
 
+
 class TestDegreeCentrality:
     def setup_method(self):
 

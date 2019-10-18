@@ -17,22 +17,22 @@ class TestDFS:
 
     def test_preorder_nodes(self):
         assert (list(nx.dfs_preorder_nodes(self.G, source=0)) ==
-                     [0, 1, 2, 4, 3])
+                [0, 1, 2, 4, 3])
         assert list(nx.dfs_preorder_nodes(self.D)) == [0, 1, 2, 3]
 
     def test_postorder_nodes(self):
         assert (list(nx.dfs_postorder_nodes(self.G, source=0)) ==
-                     [3, 4, 2, 1, 0])
+                [3, 4, 2, 1, 0])
         assert list(nx.dfs_postorder_nodes(self.D)) == [1, 0, 3, 2]
 
     def test_successor(self):
         assert (nx.dfs_successors(self.G, source=0) ==
-                     {0: [1], 1: [2], 2: [4], 4: [3]})
+                {0: [1], 1: [2], 2: [4], 4: [3]})
         assert nx.dfs_successors(self.D) == {0: [1], 2: [3]}
 
     def test_predecessor(self):
         assert (nx.dfs_predecessors(self.G, source=0) ==
-                     {1: 0, 2: 1, 3: 4, 4: 2})
+                {1: 0, 2: 1, 3: 4, 4: 2})
         assert nx.dfs_predecessors(self.D) == {1: 0, 3: 2}
 
     def test_dfs_tree(self):
@@ -96,29 +96,29 @@ class TestDepthLimitedSearch:
 
     def dls_test_preorder_nodes(self):
         assert list(nx.dfs_preorder_nodes(self.G, source=0,
-                                                depth_limit=2)) == [0, 1, 2]
+                                          depth_limit=2)) == [0, 1, 2]
         assert list(nx.dfs_preorder_nodes(self.D, source=1,
-                                                depth_limit=2)) == ([1, 0])
+                                          depth_limit=2)) == ([1, 0])
 
     def dls_test_postorder_nodes(self):
         assert list(nx.dfs_postorder_nodes(self.G,
-                                                 source=3, depth_limit=3)) == [1, 7, 2, 5, 4, 3]
+                                           source=3, depth_limit=3)) == [1, 7, 2, 5, 4, 3]
         assert list(nx.dfs_postorder_nodes(self.D,
-                                                 source=2, depth_limit=2)) == ([3, 7, 2])
+                                           source=2, depth_limit=2)) == ([3, 7, 2])
 
     def dls_test_successor(self):
         result = nx.dfs_successors(self.G, source=4, depth_limit=3)
         assert ({n: set(v) for n, v in result.items()} ==
-                     {2: {1, 7}, 3: {2}, 4: {3, 5}, 5: {6}})
+                {2: {1, 7}, 3: {2}, 4: {3, 5}, 5: {6}})
         result = nx.dfs_successors(self.D, source=7, depth_limit=2)
         assert ({n: set(v) for n, v in result.items()} ==
-                     {8: {9}, 2: {3}, 7: {8, 2}})
+                {8: {9}, 2: {3}, 7: {8, 2}})
 
     def dls_test_predecessor(self):
         assert (nx.dfs_predecessors(self.G, source=0, depth_limit=3) ==
-                     {1: 0, 2: 1, 3: 2, 7: 2})
+                {1: 0, 2: 1, 3: 2, 7: 2})
         assert (nx.dfs_predecessors(self.D, source=2, depth_limit=3) ==
-                     {8: 7, 9: 8, 3: 2, 7: 2})
+                {8: 7, 9: 8, 3: 2, 7: 2})
 
     def test_dls_tree(self):
         T = nx.dfs_tree(self.G, source=3, depth_limit=1)
@@ -127,7 +127,7 @@ class TestDepthLimitedSearch:
     def test_dls_edges(self):
         edges = nx.dfs_edges(self.G, source=9, depth_limit=4)
         assert list(edges) == [(9, 8), (8, 7),
-                                   (7, 2), (2, 1), (2, 3), (9, 10)]
+                               (7, 2), (2, 1), (2, 3), (9, 10)]
 
     def test_dls_labeled_edges(self):
         edges = list(nx.dfs_labeled_edges(self.G, source=5, depth_limit=1))

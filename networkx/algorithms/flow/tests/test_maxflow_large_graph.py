@@ -74,7 +74,7 @@ def validate_flows(G, s, t, soln_value, R, flow_func):
         if u == s:
             assert exc == -soln_value, msg.format(flow_func.__name__)
         elif u == t:
-            assert exc ==soln_value, msg.format(flow_func.__name__)
+            assert exc == soln_value, msg.format(flow_func.__name__)
         else:
             assert exc == 0, msg.format(flow_func.__name__)
 

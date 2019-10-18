@@ -124,8 +124,8 @@ def to_pandas_adjacency(G, nodelist=None, dtype=None, order=None,
     """
     import pandas as pd
     M = to_numpy_array(G, nodelist=nodelist, dtype=dtype, order=order,
-                        multigraph_weight=multigraph_weight, weight=weight,
-                        nonedge=nonedge)
+                       multigraph_weight=multigraph_weight, weight=weight,
+                       nonedge=nonedge)
     if nodelist is None:
         nodelist = list(G)
     return pd.DataFrame(data=M, index=nodelist, columns=nodelist)

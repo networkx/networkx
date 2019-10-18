@@ -27,9 +27,9 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
     def test_adjacency(self):
         G = self.K3
         assert (dict(G.adjacency()) ==
-                     {0: {1: {0: {}}, 2: {0: {}}},
-                      1: {0: {0: {}}, 2: {0: {}}},
-                      2: {0: {0: {}}, 1: {0: {}}}})
+                {0: {1: {0: {}}, 2: {0: {}}},
+                 1: {0: {0: {}}, 2: {0: {}}},
+                 2: {0: {0: {}}, 1: {0: {}}}})
 
     def deepcopy_edge_attr(self, H, G):
         assert G[1][2][0]['foo'] == H[1][2][0]['foo']
@@ -204,12 +204,12 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
         G = self.Graph()
         G.add_edges_from([(0, 1), (0, 1, {'weight': 3})])
         assert G.adj == {0: {1: {0: {}, 1: {'weight': 3}}},
-                             1: {0: {0: {}, 1: {'weight': 3}}}}
+                         1: {0: {0: {}, 1: {'weight': 3}}}}
         G.add_edges_from([(0, 1), (0, 1, {'weight': 3})], weight=2)
         assert G.adj == {0: {1: {0: {}, 1: {'weight': 3},
-                                     2: {'weight': 2}, 3: {'weight': 3}}},
-                             1: {0: {0: {}, 1: {'weight': 3},
-                                     2: {'weight': 2}, 3: {'weight': 3}}}}
+                                 2: {'weight': 2}, 3: {'weight': 3}}},
+                         1: {0: {0: {}, 1: {'weight': 3},
+                                 2: {'weight': 2}, 3: {'weight': 3}}}}
         G = self.Graph()
         edges = [(0, 1, {'weight': 3}), (0, 1, (('weight', 2),)),
                  (0, 1, 5), (0, 1, 's')]
@@ -231,9 +231,9 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
         G = self.K3
         G.remove_edge(0, 1)
         assert G.adj == {0: {2: {0: {}}},
-                             1: {2: {0: {}}},
-                             2: {0: {0: {}},
-                                 1: {0: {}}}}
+                         1: {2: {0: {}}},
+                         2: {0: {0: {}},
+                             1: {0: {}}}}
 
         with pytest.raises(nx.NetworkXError):
             G.remove_edge(-1, 0)
@@ -265,8 +265,8 @@ class TestMultiGraph(BaseMultiGraphTester, TestGraph):
         G.add_edge(0, 1, key='parallel edge')
         G.remove_edge(0, 1, key='parallel edge')
         assert G.adj == {0: {1: {0: {}}, 2: {0: {}}},
-                             1: {0: {0: {}}, 2: {0: {}}},
-                             2: {0: {0: {}}, 1: {0: {}}}}
+                         1: {0: {0: {}}, 2: {0: {}}},
+                         2: {0: {0: {}}, 1: {0: {}}}}
         G.remove_edge(0, 1)
         kd = {0: {}}
         assert G.adj == {0: {2: kd}, 1: {2: kd}, 2: {0: kd, 1: kd}}
@@ -302,7 +302,7 @@ class TestEdgeSubgraph(object):
     def test_correct_edges(self):
         """Tests that the subgraph has the correct edges."""
         assert ([(0, 1, 0, 'edge010'), (3, 4, 1, 'edge341')] ==
-                     sorted(self.H.edges(keys=True, data='name')))
+                sorted(self.H.edges(keys=True, data='name')))
 
     def test_add_node(self):
         """Tests that adding a node to the original graph does not
@@ -343,10 +343,10 @@ class TestEdgeSubgraph(object):
         # Making a change to G should make a change in H and vice versa.
         self.G._adj[0][1][0]['name'] = 'foo'
         assert (self.G._adj[0][1][0]['name'] ==
-                     self.H._adj[0][1][0]['name'])
+                self.H._adj[0][1][0]['name'])
         self.H._adj[3][4][1]['name'] = 'bar'
         assert (self.G._adj[3][4][1]['name'] ==
-                     self.H._adj[3][4][1]['name'])
+                self.H._adj[3][4][1]['name'])
 
     def test_graph_attr_dict(self):
         """Tests that the graph attribute dictionary of the two graphs

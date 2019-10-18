@@ -134,7 +134,7 @@ class TestGeneratorInverseLine():
         # there are two alternative inverse line graphs for this case
         # so long as we get one of them the test should pass
         assert (nx.is_isomorphic(H, G) or
-                    nx.is_isomorphic(H, alternative_solution))
+                nx.is_isomorphic(H, alternative_solution))
 
     def test_cycle(self):
         G = nx.cycle_graph(5)
@@ -180,7 +180,7 @@ class TestGeneratorInverseLine():
 
         # K_5 minus an edge
         K5me = nx.complete_graph(5)
-        K5me.remove_edge(0,1)
+        K5me.remove_edge(0, 1)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, K5me)
 
     def test_wrong_graph_type(self):

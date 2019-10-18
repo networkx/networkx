@@ -36,6 +36,7 @@ import networkx as nx
 # unix mailbox recipe
 # see https://docs.python.org/3/library/mailbox.html
 
+
 def mbox_graph():
     mbox = mailbox.mbox("unix_email.mbox")  # parse unix mailbox
 

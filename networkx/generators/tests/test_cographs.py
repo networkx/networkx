@@ -20,7 +20,7 @@ def test_random_cograph():
 
     assert len(G) == 2 ** n
 
-    #Every connected subgraph of G has diameter <= 2
+    # Every connected subgraph of G has diameter <= 2
     if nx.is_connected(G):
         assert nx.diameter(G) <= 2
     else:

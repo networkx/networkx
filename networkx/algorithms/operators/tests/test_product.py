@@ -107,11 +107,11 @@ def test_cartesian_product_multigraph():
     GH = nx.cartesian_product(G, H)
     assert set(GH) == {(1, 3), (2, 3), (2, 4), (1, 4)}
     assert ({(frozenset([u, v]), k) for u, v, k in GH.edges(keys=True)} ==
-                 {(frozenset([u, v]), k) for u, v, k in
-                  [((1, 3), (2, 3), 0), ((1, 3), (2, 3), 1),
-                   ((1, 3), (1, 4), 0), ((1, 3), (1, 4), 1),
-                   ((2, 3), (2, 4), 0), ((2, 3), (2, 4), 1),
-                   ((2, 4), (1, 4), 0), ((2, 4), (1, 4), 1)]})
+            {(frozenset([u, v]), k) for u, v, k in
+             [((1, 3), (2, 3), 0), ((1, 3), (2, 3), 1),
+              ((1, 3), (1, 4), 0), ((1, 3), (1, 4), 1),
+              ((2, 3), (2, 4), 0), ((2, 3), (2, 4), 1),
+              ((2, 4), (1, 4), 0), ((2, 4), (1, 4), 1)]})
 
 
 def test_cartesian_product_raises():
@@ -160,13 +160,13 @@ def test_cartesian_product_size():
     G = nx.cartesian_product(P5, K3)
     assert nx.number_of_nodes(G) == 5 * 3
     assert (nx.number_of_edges(G) ==
-                 nx.number_of_edges(P5) * nx.number_of_nodes(K3) +
-                 nx.number_of_edges(K3) * nx.number_of_nodes(P5))
+            nx.number_of_edges(P5) * nx.number_of_nodes(K3) +
+            nx.number_of_edges(K3) * nx.number_of_nodes(P5))
     G = nx.cartesian_product(K3, K5)
     assert nx.number_of_nodes(G) == 3 * 5
     assert (nx.number_of_edges(G) ==
-                 nx.number_of_edges(K5) * nx.number_of_nodes(K3) +
-                 nx.number_of_edges(K3) * nx.number_of_nodes(K5))
+            nx.number_of_edges(K5) * nx.number_of_nodes(K3) +
+            nx.number_of_edges(K3) * nx.number_of_nodes(K5))
 
 
 def test_cartesian_product_classic():

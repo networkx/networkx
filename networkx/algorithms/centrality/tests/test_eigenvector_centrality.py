@@ -8,6 +8,7 @@ scipy = pytest.importorskip('scipy')
 import networkx as nx
 from networkx.testing import almost_equal
 
+
 class TestEigenvectorCentrality(object):
 
     def test_K5(self):
@@ -65,7 +66,7 @@ class TestEigenvectorCentralityDirected(object):
         G.add_edges_from(edges, weight=2.0)
         cls.G = G.reverse()
         cls.G.evc = [0.25368793,  0.19576478,  0.32817092,  0.40430835,
-                      0.48199885, 0.15724483,  0.51346196,  0.32475403]
+                     0.48199885, 0.15724483,  0.51346196,  0.32475403]
 
         H = nx.DiGraph()
 
@@ -76,7 +77,7 @@ class TestEigenvectorCentralityDirected(object):
         G.add_edges_from(edges)
         cls.H = G.reverse()
         cls.H.evc = [0.25368793,  0.19576478,  0.32817092,  0.40430835,
-                      0.48199885, 0.15724483,  0.51346196,  0.32475403]
+                     0.48199885, 0.15724483,  0.51346196,  0.32475403]
 
     def test_eigenvector_centrality_weighted(self):
         G = self.G

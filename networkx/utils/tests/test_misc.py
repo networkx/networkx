@@ -202,6 +202,6 @@ def test_PythonRandomInterface():
     assert rng.expovariate(1.5) == rs42.exponential(1/1.5)
     assert np.all(rng.shuffle([1, 2, 3]) == rs42.shuffle([1, 2, 3]))
     assert np.all(rng.sample([1, 2, 3], 2) ==
-                       rs42.choice([1, 2, 3], (2,), replace=False))
+                  rs42.choice([1, 2, 3], (2,), replace=False))
     assert rng.randint(3, 5) == rs42.randint(3, 6)
     assert rng.random() == rs42.random_sample()

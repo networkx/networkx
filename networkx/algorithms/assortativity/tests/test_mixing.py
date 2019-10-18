@@ -43,7 +43,6 @@ class TestDegreeMixingDict(BaseTestDegreeMixing):
 
 class TestDegreeMixingMatrix(BaseTestDegreeMixing):
 
-
     def test_degree_mixing_matrix_undirected(self):
         a_result = np.array([[0, 0, 0],
                              [0, 0, 2],

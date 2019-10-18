@@ -2,6 +2,7 @@
 import networkx as nx
 from networkx.testing import almost_equal
 
+
 class TestLoadCentrality:
 
     @classmethod
@@ -29,7 +30,7 @@ class TestLoadCentrality:
         cls.T = nx.balanced_tree(r=2, h=2)
         cls.Gb = nx.Graph()
         cls.Gb.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3),
-                                (2, 4), (4, 5), (3, 5)])
+                               (2, 4), (4, 5), (3, 5)])
         cls.F = nx.florentine_families_graph()
         cls.LM = nx.les_miserables_graph()
         cls.D = nx.cycle_graph(3, create_using=nx.DiGraph())

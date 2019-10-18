@@ -26,9 +26,9 @@ class TestHITS:
         G.add_edges_from(edges, weight=1)
         cls.G = G
         cls.G.a = dict(zip(sorted(G), [0.000000, 0.000000, 0.366025,
-                                        0.133975, 0.500000, 0.000000]))
+                                       0.133975, 0.500000, 0.000000]))
         cls.G.h = dict(zip(sorted(G), [0.366025, 0.000000, 0.211325,
-                                        0.000000, 0.211325, 0.211325]))
+                                       0.000000, 0.211325, 0.211325]))
 
     def test_hits(self):
         G = self.G

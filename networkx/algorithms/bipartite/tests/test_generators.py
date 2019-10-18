@@ -84,13 +84,13 @@ class TestGeneratorsBipartite():
         bseq = [2, 2, 2, 2, 2, 2]
         G = configuration_model(aseq, bseq)
         assert (sorted(d for n, d in G.degree()) ==
-                     [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq = [2, 2, 2, 2, 2, 2]
         bseq = [3, 3, 3, 3]
         G = configuration_model(aseq, bseq)
         assert (sorted(d for n, d in G.degree()) ==
-                     [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq = [2, 2, 2, 1, 1, 1]
         bseq = [3, 3, 3]
@@ -98,7 +98,7 @@ class TestGeneratorsBipartite():
         assert G.is_multigraph()
         assert not G.is_directed()
         assert (sorted(d for n, d in G.degree()) ==
-                     [1, 1, 1, 2, 2, 2, 3, 3, 3])
+                [1, 1, 1, 2, 2, 2, 3, 3, 3])
 
         GU = nx.project(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
@@ -140,7 +140,7 @@ class TestGeneratorsBipartite():
         bseq = [2, 2, 2, 2, 2, 2]
         G = havel_hakimi_graph(aseq, bseq)
         assert (sorted(d for n, d in G.degree()) ==
-                     [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq = [2, 2, 2, 2, 2, 2]
         bseq = [3, 3, 3, 3]
@@ -148,7 +148,7 @@ class TestGeneratorsBipartite():
         assert G.is_multigraph()
         assert not G.is_directed()
         assert (sorted(d for n, d in G.degree()) ==
-                     [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         GU = nx.project(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
@@ -190,13 +190,13 @@ class TestGeneratorsBipartite():
         bseq = [2, 2, 2, 2, 2, 2]
         G = reverse_havel_hakimi_graph(aseq, bseq)
         assert (sorted(d for n, d in G.degree()) ==
-                     [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq = [2, 2, 2, 2, 2, 2]
         bseq = [3, 3, 3, 3]
         G = reverse_havel_hakimi_graph(aseq, bseq)
         assert (sorted(d for n, d in G.degree()) ==
-                     [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq = [2, 2, 2, 1, 1, 1]
         bseq = [3, 3, 3]
@@ -204,7 +204,7 @@ class TestGeneratorsBipartite():
         assert G.is_multigraph()
         assert not G.is_directed()
         assert (sorted(d for n, d in G.degree()) ==
-                     [1, 1, 1, 2, 2, 2, 3, 3, 3])
+                [1, 1, 1, 2, 2, 2, 3, 3, 3])
 
         GU = nx.project(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
@@ -246,13 +246,13 @@ class TestGeneratorsBipartite():
         bseq = [2, 2, 2, 2, 2, 2]
         G = alternating_havel_hakimi_graph(aseq, bseq)
         assert (sorted(d for n, d in G.degree()) ==
-                     [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq = [2, 2, 2, 2, 2, 2]
         bseq = [3, 3, 3, 3]
         G = alternating_havel_hakimi_graph(aseq, bseq)
         assert (sorted(d for n, d in G.degree()) ==
-                     [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
         aseq = [2, 2, 2, 1, 1, 1]
         bseq = [3, 3, 3]
@@ -260,7 +260,7 @@ class TestGeneratorsBipartite():
         assert G.is_multigraph()
         assert not G.is_directed()
         assert (sorted(d for n, d in G.degree()) ==
-                     [1, 1, 1, 2, 2, 2, 3, 3, 3])
+                [1, 1, 1, 2, 2, 2, 3, 3, 3])
 
         GU = nx.project(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
@@ -332,7 +332,7 @@ class TestGeneratorsBipartite():
         assert len(G) == n + m
         assert nx.is_bipartite(G)
         X, Y = nx.algorithms.bipartite.sets(G)
-        #print(X)
+        # print(X)
         assert set(range(n)) == X
         assert set(range(n, n + m)) == Y
         assert edges == len(list(G.edges()))
@@ -345,7 +345,7 @@ class TestGeneratorsBipartite():
         assert len(G) == n + m
         assert nx.is_bipartite(G)
         X, Y = nx.algorithms.bipartite.sets(G)
-        #print(X)
+        # print(X)
         assert set(range(n)) == X
         assert set(range(n, n + m)) == Y
         assert edges == len(list(G.edges()))

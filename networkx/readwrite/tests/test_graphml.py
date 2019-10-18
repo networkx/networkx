@@ -7,6 +7,7 @@ import tempfile
 import os
 from networkx.testing import almost_equal
 
+
 class BaseGraphML(object):
     @classmethod
     def setup_class(cls):
@@ -45,15 +46,15 @@ class BaseGraphML(object):
         cls.simple_directed_graph.add_node('n10')
         cls.simple_directed_graph.add_edge('n0', 'n2', id='foo')
         cls.simple_directed_graph.add_edges_from([('n1', 'n2'),
-                                                   ('n2', 'n3'),
-                                                   ('n3', 'n5'),
-                                                   ('n3', 'n4'),
-                                                   ('n4', 'n6'),
-                                                   ('n6', 'n5'),
-                                                   ('n5', 'n7'),
-                                                   ('n6', 'n8'),
-                                                   ('n8', 'n7'),
-                                                   ('n8', 'n9'),
+                                                  ('n2', 'n3'),
+                                                  ('n3', 'n5'),
+                                                  ('n3', 'n4'),
+                                                  ('n4', 'n6'),
+                                                  ('n6', 'n5'),
+                                                  ('n5', 'n7'),
+                                                  ('n6', 'n8'),
+                                                  ('n8', 'n7'),
+                                                  ('n8', 'n9'),
                                                    ])
         cls.simple_directed_fh = \
             io.BytesIO(cls.simple_directed_data.encode('UTF-8'))
@@ -170,7 +171,7 @@ class BaseGraphML(object):
         cls.simple_undirected_graph.add_node('n10')
         cls.simple_undirected_graph.add_edge('n0', 'n2', id='foo')
         cls.simple_undirected_graph.add_edges_from([('n1', 'n2'),
-                                                     ('n2', 'n3'),
+                                                    ('n2', 'n3'),
                                                      ])
         fh = io.BytesIO(cls.simple_undirected_data.encode('UTF-8'))
         cls.simple_undirected_fh = fh
@@ -183,14 +184,14 @@ class TestReadGraphML(BaseGraphML):
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert sorted(G.edges()) == sorted(H.edges())
         assert (sorted(G.edges(data=True)) ==
-                     sorted(H.edges(data=True)))
+                sorted(H.edges(data=True)))
         self.simple_directed_fh.seek(0)
 
         I = nx.parse_graphml(self.simple_directed_data)
         assert sorted(G.nodes()) == sorted(I.nodes())
         assert sorted(G.edges()) == sorted(I.edges())
         assert (sorted(G.edges(data=True)) ==
-                     sorted(I.edges(data=True)))
+                sorted(I.edges(data=True)))
 
     def test_read_simple_undirected_graphml(self):
         G = self.simple_undirected_graph
@@ -931,8 +932,8 @@ class TestWriteGraphML(BaseGraphML):
         H = nx.read_graphml(fh)
         assert H.nodes['n0']['special'] is False
         assert H.nodes['n1']['special'] is 0
-        assert H.edges['n0','n1',0]['special'] is False
-        assert H.edges['n0','n1',1]['special'] is 0
+        assert H.edges['n0', 'n1', 0]['special'] is False
+        assert H.edges['n0', 'n1', 1]['special'] is 0
 
     def test_multigraph_to_graph(self):
         # test converting multigraph to graph if no parallel edges found

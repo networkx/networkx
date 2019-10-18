@@ -92,21 +92,21 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         cls.attribute_graph = nx.DiGraph()
         cls.attribute_graph.graph['node_default'] = {'frog': True}
         cls.attribute_graph.add_node('0',
-                                      label='Gephi',
-                                      url='https://gephi.org',
-                                      indegree=1, frog=False)
+                                     label='Gephi',
+                                     url='https://gephi.org',
+                                     indegree=1, frog=False)
         cls.attribute_graph.add_node('1',
-                                      label='Webatlas',
-                                      url='http://webatlas.fr',
-                                      indegree=2, frog=False)
+                                     label='Webatlas',
+                                     url='http://webatlas.fr',
+                                     indegree=2, frog=False)
         cls.attribute_graph.add_node('2',
-                                      label='RTGI',
-                                      url='http://rtgi.fr',
-                                      indegree=1, frog=True)
+                                     label='RTGI',
+                                     url='http://rtgi.fr',
+                                     indegree=1, frog=True)
         cls.attribute_graph.add_node('3',
-                                      label='BarabasiLab',
-                                      url='http://barabasilab.com',
-                                      indegree=1, frog=True)
+                                     label='BarabasiLab',
+                                     url='http://barabasilab.com',
+                                     indegree=1, frog=True)
         cls.attribute_graph.add_edge('0', '1', id='0')
         cls.attribute_graph.add_edge('0', '2', id='1')
         cls.attribute_graph.add_edge('1', '0', id='2')
@@ -141,7 +141,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert sorted(G.edges()) == sorted(H.edges())
         assert (sorted(G.edges(data=True)) ==
-                     sorted(H.edges(data=True)))
+                sorted(H.edges(data=True)))
         self.simple_directed_fh.seek(0)
 
     def test_write_read_simple_directed_graphml(self):
@@ -153,7 +153,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert sorted(G.edges()) == sorted(H.edges())
         assert (sorted(G.edges(data=True)) ==
-                     sorted(H.edges(data=True)))
+                sorted(H.edges(data=True)))
         self.simple_directed_fh.seek(0)
 
     def test_read_simple_undirected_graphml(self):

@@ -119,10 +119,10 @@ def test_complete_graphs():
             G = nx.complete_graph(n)
             assert n - 1 == nx.node_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
             assert n - 1 == nx.node_connectivity(G.to_directed(),
-                                                     flow_func=flow_func), msg.format(flow_func.__name__)
+                                                 flow_func=flow_func), msg.format(flow_func.__name__)
             assert n - 1 == nx.edge_connectivity(G, flow_func=flow_func), msg.format(flow_func.__name__)
             assert n - 1 == nx.edge_connectivity(G.to_directed(),
-                                                     flow_func=flow_func), msg.format(flow_func.__name__)
+                                                 flow_func=flow_func), msg.format(flow_func.__name__)
 
 
 def test_empty_graphs():
@@ -281,8 +281,8 @@ class TestAllPairsNodeConnectivity:
         cls.K10 = nx.complete_graph(10)
         cls.K5 = nx.complete_graph(5)
         cls.G_list = [cls.path, cls.directed_path, cls.cycle,
-                       cls.directed_cycle, cls.gnp, cls.directed_gnp,
-                       cls.K10, cls.K5, cls.K20]
+                      cls.directed_cycle, cls.gnp, cls.directed_gnp,
+                      cls.K10, cls.K5, cls.K20]
 
     def test_cycles(self):
         K_undir = nx.all_pairs_node_connectivity(self.cycle)
@@ -334,7 +334,7 @@ class TestAllPairsNodeConnectivity:
             A[u][v] = A[v][u] = nx.node_connectivity(G, u, v)
         C = nx.all_pairs_node_connectivity(G)
         assert (sorted((k, sorted(v)) for k, v in A.items()) ==
-                     sorted((k, sorted(v)) for k, v in C.items()))
+                sorted((k, sorted(v)) for k, v in C.items()))
 
     def test_all_pairs_connectivity_directed(self):
         G = nx.DiGraph()
@@ -345,7 +345,7 @@ class TestAllPairsNodeConnectivity:
             A[u][v] = nx.node_connectivity(G, u, v)
         C = nx.all_pairs_node_connectivity(G)
         assert (sorted((k, sorted(v)) for k, v in A.items()) ==
-                     sorted((k, sorted(v)) for k, v in C.items()))
+                sorted((k, sorted(v)) for k, v in C.items()))
 
     def test_all_pairs_connectivity_nbunch_combinations(self):
         G = nx.complete_graph(5)
@@ -355,7 +355,7 @@ class TestAllPairsNodeConnectivity:
             A[u][v] = A[v][u] = nx.node_connectivity(G, u, v)
         C = nx.all_pairs_node_connectivity(G, nbunch=nbunch)
         assert (sorted((k, sorted(v)) for k, v in A.items()) ==
-                     sorted((k, sorted(v)) for k, v in C.items()))
+                sorted((k, sorted(v)) for k, v in C.items()))
 
     def test_all_pairs_connectivity_nbunch_iter(self):
         G = nx.complete_graph(5)
@@ -365,4 +365,4 @@ class TestAllPairsNodeConnectivity:
             A[u][v] = A[v][u] = nx.node_connectivity(G, u, v)
         C = nx.all_pairs_node_connectivity(G, nbunch=iter(nbunch))
         assert (sorted((k, sorted(v)) for k, v in A.items()) ==
-                     sorted((k, sorted(v)) for k, v in C.items()))
+                sorted((k, sorted(v)) for k, v in C.items()))

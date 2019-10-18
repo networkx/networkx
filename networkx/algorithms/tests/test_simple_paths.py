@@ -245,7 +245,7 @@ def test_shortest_simple_paths():
     assert next(paths) == [1, 2, 3, 4, 8, 12]
     assert next(paths) == [1, 5, 6, 7, 8, 12]
     assert ([len(path) for path in nx.shortest_simple_paths(G, 1, 12)] ==
-                 sorted([len(path) for path in nx.all_simple_paths(G, 1, 12)]))
+            sorted([len(path) for path in nx.all_simple_paths(G, 1, 12)]))
 
 
 def test_shortest_simple_paths_directed():
@@ -304,14 +304,14 @@ def test_weighted_shortest_simple_path_issue2427():
     G.add_edge('IN', 'B', weight=2)
     G.add_edge('B', 'OUT', weight=2)
     assert (list(nx.shortest_simple_paths(G, 'IN', 'OUT', weight="weight")) ==
-                 [['IN', 'OUT'], ['IN', 'B', 'OUT']])
+            [['IN', 'OUT'], ['IN', 'B', 'OUT']])
     G = nx.Graph()
     G.add_edge('IN', 'OUT', weight=10)
     G.add_edge('IN', 'A', weight=1)
     G.add_edge('IN', 'B', weight=1)
     G.add_edge('B', 'OUT', weight=1)
     assert (list(nx.shortest_simple_paths(G, 'IN', 'OUT', weight="weight")) ==
-                 [['IN', 'B', 'OUT'], ['IN', 'OUT']])
+            [['IN', 'B', 'OUT'], ['IN', 'OUT']])
 
 
 def test_directed_weighted_shortest_simple_path_issue2427():
@@ -321,14 +321,14 @@ def test_directed_weighted_shortest_simple_path_issue2427():
     G.add_edge('IN', 'B', weight=2)
     G.add_edge('B', 'OUT', weight=2)
     assert (list(nx.shortest_simple_paths(G, 'IN', 'OUT', weight="weight")) ==
-                 [['IN', 'OUT'], ['IN', 'B', 'OUT']])
+            [['IN', 'OUT'], ['IN', 'B', 'OUT']])
     G = nx.DiGraph()
     G.add_edge('IN', 'OUT', weight=10)
     G.add_edge('IN', 'A', weight=1)
     G.add_edge('IN', 'B', weight=1)
     G.add_edge('B', 'OUT', weight=1)
     assert (list(nx.shortest_simple_paths(G, 'IN', 'OUT', weight="weight")) ==
-                 [['IN', 'B', 'OUT'], ['IN', 'OUT']])
+            [['IN', 'B', 'OUT'], ['IN', 'OUT']])
 
 
 def test_weight_name():
@@ -450,7 +450,7 @@ def validate_path(G, s, t, soln_len, path):
     assert path[0] == s
     assert path[-1] == t
     assert soln_len == sum(G[u][v].get('weight', 1)
-                               for u, v in zip(path[:-1], path[1:]))
+                           for u, v in zip(path[:-1], path[1:]))
 
 
 def validate_length_path(G, s, t, soln_len, length, path):

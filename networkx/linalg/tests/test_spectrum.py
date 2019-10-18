@@ -15,7 +15,7 @@ class TestSpectrum(object):
         cls.G = havel_hakimi_graph(deg)
         cls.P = nx.path_graph(3)
         cls.WG = nx.Graph((u, v, {'weight': 0.5, 'other': 0.3})
-                           for (u, v) in cls.G.edges())
+                          for (u, v) in cls.G.edges())
         cls.WG.add_node(4)
         cls.DG = nx.DiGraph()
         nx.add_path(cls.DG, [0, 1, 2])
@@ -43,7 +43,6 @@ class TestSpectrum(object):
         npt.assert_almost_equal(e, evals)
         e = sorted(nx.normalized_laplacian_spectrum(self.WG, weight='other'))
         npt.assert_almost_equal(e, evals)
-
 
     def test_adjacency_spectrum(self):
         "Adjacency eigenvalues"

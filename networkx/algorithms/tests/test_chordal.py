@@ -55,7 +55,7 @@ class TestMCS:
         cliqueset = nx.chordal_graph_cliques(G)
         for (u, v) in G.edges():
             assert (frozenset([u, v]) in cliqueset
-                        or frozenset([v, u]) in cliqueset)
+                    or frozenset([v, u]) in cliqueset)
 
     def test_chordal_find_cliquesCC(self):
         cliques = set([frozenset([1, 2, 3]), frozenset([2, 3, 4]),

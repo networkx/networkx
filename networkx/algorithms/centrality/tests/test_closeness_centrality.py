@@ -5,6 +5,7 @@ import pytest
 import networkx as nx
 from networkx.testing import almost_equal
 
+
 class TestClosenessCentrality:
     @classmethod
     def setup_class(cls):
@@ -17,7 +18,7 @@ class TestClosenessCentrality:
         cls.T = nx.balanced_tree(r=2, h=2)
         cls.Gb = nx.Graph()
         cls.Gb.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3),
-                                (2, 4), (4, 5), (3, 5)])
+                               (2, 4), (4, 5), (3, 5)])
 
         F = nx.florentine_families_graph()
         cls.F = F
@@ -199,7 +200,6 @@ class TestClosenessCentrality:
              'v': 0.200}
         for n in sorted(XG):
             assert almost_equal(c[n], d[n], places=3)
-
 
     #
     # Tests for incremental closeness centrality.

@@ -104,12 +104,12 @@ def test_union_all_and_compose_all():
     pytest.raises(nx.NetworkXError, nx.union, K3, P3)
     H1 = nx.union_all([H, G1], rename=('H', 'G1'))
     assert (sorted(H1.nodes()) ==
-                 ['G1A', 'G1B', 'G1C', 'G1D',
-                  'H1', 'H2', 'H3', 'H4', 'HA', 'HB', 'HC', 'HD'])
+            ['G1A', 'G1B', 'G1C', 'G1D',
+             'H1', 'H2', 'H3', 'H4', 'HA', 'HB', 'HC', 'HD'])
 
     H2 = nx.union_all([H, G2], rename=("H", ""))
     assert (sorted(H2.nodes()) ==
-                 ['1', '2', '3', '4',
+            ['1', '2', '3', '4',
                   'H1', 'H2', 'H3', 'H4', 'HA', 'HB', 'HC', 'HD'])
 
     assert not H1.has_edge('NB', 'NA')
@@ -119,7 +119,7 @@ def test_union_all_and_compose_all():
 
     G2 = nx.union_all([G2, G2], rename=('', 'copy'))
     assert (sorted(G2.nodes()) ==
-                 ['1', '2', '3', '4', 'copy1', 'copy2', 'copy3', 'copy4'])
+            ['1', '2', '3', '4', 'copy1', 'copy2', 'copy3', 'copy4'])
 
     assert sorted(G2.neighbors('copy4')) == []
     assert sorted(G2.neighbors('copy1')) == ['copy2', 'copy3', 'copy4']
@@ -141,8 +141,8 @@ def test_union_all_and_compose_all():
     G3.add_edge(11, 22)
     G4 = nx.union_all([G1, G2, G3], rename=("G1", "G2", "G3"))
     assert (sorted(G4.nodes()) ==
-                 ['G1A', 'G1B', 'G21', 'G22',
-                  'G311', 'G322'])
+            ['G1A', 'G1B', 'G21', 'G22',
+             'G311', 'G322'])
 
 
 def test_union_all_multigraph():
@@ -155,7 +155,7 @@ def test_union_all_multigraph():
     GH = nx.union_all([G, H])
     assert set(GH) == set(G) | set(H)
     assert (set(GH.edges(keys=True)) ==
-                 set(G.edges(keys=True)) | set(H.edges(keys=True)))
+            set(G.edges(keys=True)) | set(H.edges(keys=True)))
 
 
 def test_input_output():

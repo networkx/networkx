@@ -109,13 +109,13 @@ class TestEdgeBoundary(object):
         assert list(nx.edge_boundary(P10, [], [])) == []
         assert list(nx.edge_boundary(P10, [1, 2, 3])) == [(3, 4)]
         assert (sorted(nx.edge_boundary(P10, [4, 5, 6])) ==
-                     [(4, 3), (6, 7)])
+                [(4, 3), (6, 7)])
         assert (sorted(nx.edge_boundary(P10, [3, 4, 5, 6, 7])) ==
-                     [(3, 2), (7, 8)])
+                [(3, 2), (7, 8)])
         assert list(nx.edge_boundary(P10, [8, 9, 10])) == [(8, 7)]
         assert sorted(nx.edge_boundary(P10, [4, 5, 6], [9, 10])) == []
         assert (list(nx.edge_boundary(P10, [1, 2, 3], [3, 4, 5])) ==
-                     [(2, 3), (3, 4)])
+                [(2, 3), (3, 4)])
 
     def test_complete_graph(self):
         K10 = cnlti(nx.complete_graph(10), first_label=1)

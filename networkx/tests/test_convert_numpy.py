@@ -6,6 +6,7 @@ from networkx.testing.utils import assert_graphs_equal
 
 #numpy = pytest.importorskip("numpy")
 
+
 class TestConvertNumpy(object):
     @classmethod
     def setup_class(cls):

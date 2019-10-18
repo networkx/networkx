@@ -8,6 +8,7 @@ import networkx as nx
 from networkx.algorithms.centrality.subgraph_alg import *
 from networkx.testing import almost_equal
 
+
 class TestSubgraph:
 
     def test_subgraph_centrality(self):

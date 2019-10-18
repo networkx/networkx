@@ -118,7 +118,7 @@ class TestGeneratorsSmall():
         assert G.number_of_nodes() == 12
         assert G.number_of_edges() == 30
         assert (list(d for n, d in G.degree()) ==
-                     [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5])
+                [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5])
         assert nx.diameter(G) == 3
         assert nx.radius(G) == 3
 
@@ -126,7 +126,7 @@ class TestGeneratorsSmall():
         assert G.number_of_nodes() == 10
         assert G.number_of_edges() == 18
         assert (sorted(d for n, d in G.degree()) ==
-                     [1, 2, 3, 3, 3, 4, 4, 5, 5, 6])
+                [1, 2, 3, 3, 3, 4, 4, 5, 5, 6])
 
         G = nx.moebius_kantor_graph()
         assert G.number_of_nodes() == 16
