@@ -6,13 +6,13 @@ from random import choice
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['lukes_clustering']
+__all__ = ['lukes_partitioning']
 
 D_EDGE_W = 'weight'
 D_NODE_W = 'weight'
 
 
-def lukes_clustering(G, max_size: int, node_weight=None, edge_weight=None):
+def lukes_partitioning(G, max_size: int, node_weight=None, edge_weight=None):
     """Partition a tree into size-limited, weighted node blocks with optimal (minimum) edge cut,
     using the Lukes[1] algorithm.
 

@@ -1,5 +1,5 @@
 import networkx as nx
-from networkx.algorithms.community import lukes_clustering
+from networkx.algorithms.community import lukes_partitioning
 
 EWL = 'e_weight'
 NWL = 'n_weight'
@@ -21,7 +21,7 @@ def test_paper_1():
 
     nx.set_node_attributes(example_1, 1, NWL)
 
-    clusters_1 = {frozenset(x) for x in lukes_clustering(example_1, limit, node_weight=NWL, edge_weight=EWL)}
+    clusters_1 = {frozenset(x) for x in lukes_partitioning(example_1, limit, node_weight=NWL, edge_weight=EWL)}
 
     assert clusters_1 == ground_truth
 
@@ -60,7 +60,7 @@ def test_paper_2():
     example_2.nodes['no1'][NWL] = 1
     example_2.nodes['no2'][NWL] = 1
 
-    clusters_2 = {frozenset(x) for x in lukes_clustering(example_2, byte_block_size, node_weight=NWL, edge_weight=EWL)}
+    clusters_2 = {frozenset(x) for x in lukes_partitioning(example_2, byte_block_size, node_weight=NWL, edge_weight=EWL)}
 
     assert clusters_2 == ground_truth
 
