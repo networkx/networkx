@@ -102,13 +102,10 @@ def read_yaml(path):
 
 # fixture for pytest
 def setup_module(module):
-    try:
-        import yaml
-    except:
-        from pytest import skip
-        skip("PyYAML not available", allow_module_level=True)
+    import pytest
+    yaml = pytest.importorskip('yaml')
 
-# fixture for pytest
+
 def teardown_module(module):
     import os
     os.unlink('test.yaml')
