@@ -49,18 +49,10 @@ def test_make_str_with_bytes():
 
 
 def test_make_str_with_unicode():
-    import sys
-    PY2 = sys.version_info[0] == 2
-    if PY2:
-        x = unicode("qualité", encoding='utf-8')
-        y = make_str(x)
-        assert isinstance(y, unicode)
-        assert len(y) == 7
-    else:
-        x = "qualité"
-        y = make_str(x)
-        assert isinstance(y, str)
-        assert len(y) == 7
+    x = "qualité"
+    y = make_str(x)
+    assert isinstance(y, str)
+    assert len(y) == 7
 
 
 class TestNumpyArray(object):

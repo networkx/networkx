@@ -22,7 +22,6 @@ See Also
 :mod:`connectivity` : algorithms for determening edge connectivity.
 """
 import math
-import sys
 import itertools as it
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
@@ -1145,32 +1144,9 @@ def complement_edges(G):
                 yield (u, v)
 
 
-if sys.version_info[0] == 2:
-    def _compat_shuffle(rng, input):
-        """
-        python2 workaround so shuffle works the same as python3
-
-        References
-        ----------
-        https://stackoverflow.com/questions/38943038/diff-shuffle-py2-py3
-        """
-        def _randbelow(n):
-            "Return a random int in the range [0,n). Raises ValueError if n==0."
-            getrandbits = rng.getrandbits
-            k = n.bit_length()  # don't use (n-1) here because n can be 1
-            r = getrandbits(k)  # 0 <= r < 2**k
-            while r >= n:
-                r = getrandbits(k)
-            return r
-
-        for i in range(len(input) - 1, 0, -1):
-            # pick an element in input[:i+1] with which to exchange input[i]
-            j = _randbelow(i + 1)
-            input[i], input[j] = input[j], input[i]
-else:
-    def _compat_shuffle(rng, input):
-        """wrapper around rng.shuffle for python 2 compatibility reasons"""
-        rng.shuffle(input)
+def _compat_shuffle(rng, input):
+    """wrapper around rng.shuffle for python 2 compatibility reasons"""
+    rng.shuffle(input)
 
 
 @py_random_state(4)
