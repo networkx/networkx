@@ -549,11 +549,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
                            'c': complex,
                            'S': str,
                            'V': 'void'}
-    try:  # Python 3.x
-        blurb = chr(1245)  # just to trigger the exception
-        kind_to_python_type['U'] = str
-    except ValueError:  # Python 2.7
-        kind_to_python_type['U'] = unicode
+    kind_to_python_type['U'] = str
     G = nx.empty_graph(0, create_using)
     n, m = A.shape
     if n != m:

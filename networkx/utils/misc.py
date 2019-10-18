@@ -26,35 +26,8 @@ import uuid
 from itertools import tee, chain
 import networkx as nx
 
-# itertools.accumulate is only available on Python 3.2 or later.
-#
-# Once support for Python versions less than 3.2 is dropped, this code should
-# be removed.
-try:
-    from itertools import accumulate
-except ImportError:
-    import operator
+from itertools import accumulate
 
-    # The code for this function is from the Python 3.5 documentation,
-    # distributed under the PSF license:
-    # <https://docs.python.org/3.5/library/itertools.html#itertools.accumulate>
-    def accumulate(iterable, func=operator.add):
-        it = iter(iterable)
-        try:
-            total = next(it)
-        except StopIteration:
-            return
-        yield total
-        for element in it:
-            total = func(total, element)
-            yield total
-
-# 2.x/3.x compatibility
-try:
-    basestring
-except NameError:
-    basestring = str
-    unicode = str
 
 # some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
@@ -63,7 +36,7 @@ except NameError:
 
 def is_string_like(obj):  # from John Hunter, types-free version
     """Check if obj is string."""
-    return isinstance(obj, basestring)
+    return isinstance(obj, str)
 
 
 def iterable(obj):
@@ -136,26 +109,10 @@ def is_list_of_ints(intlist):
     return True
 
 
-PY2 = sys.version_info[0] == 2
-if PY2:
-    def make_str(x):
-        """Returns the string representation of t."""
-        if isinstance(x, unicode):
-            return x
-        else:
-            # Note, this will not work unless x is ascii-encoded.
-            # That is good, since we should be working with unicode anyway.
-            # Essentially, unless we are reading a file, we demand that users
-            # convert any encoded strings to unicode before using the library.
-            #
-            # Also, the str() is necessary to convert integers, etc.
-            # unicode(3) works, but unicode(3, 'unicode-escape') wants a buffer
-            #
-            return unicode(str(x), 'unicode-escape')
-else:
-    def make_str(x):
-        """Returns the string representation of t."""
-        return str(x)
+#TODO Remove this?
+def make_str(x):
+    """Returns the string representation of t."""
+    return str(x)
 
 
 def generate_unique_node():

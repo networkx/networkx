@@ -42,18 +42,10 @@ def test_random_number_distribution():
 
 
 def test_make_str_with_bytes():
-    import sys
-    PY2 = sys.version_info[0] == 2
-
     x = "qualité"
     y = make_str(x)
-    if PY2:
-        assert isinstance(y, unicode)
-        # Since file encoding is utf-8, the é will be two bytes.
-        assert len(y) == 8
-    else:
-        assert isinstance(y, str)
-        assert len(y) == 7
+    assert isinstance(y, str)
+    assert len(y) == 7
 
 
 def test_make_str_with_unicode():

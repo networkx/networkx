@@ -118,10 +118,7 @@ def from_graph6_bytes(string):
     if string.startswith(b'>>graph6<<'):
         string = string[10:]
 
-    if sys.version_info < (3, ):
-        data = [ord(c) - 63 for c in string]
-    else:
-        data = [c - 63 for c in string]
+    data = [c - 63 for c in string]
     if any(c > 63 for c in data):
         raise ValueError('each input character must be in range(63, 127)')
 

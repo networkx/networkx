@@ -999,14 +999,9 @@ class TestWriteGraphML(BaseGraphML):
 
     def test_unicode_attributes(self):
         G = nx.Graph()
-        try:  # Python 3.x
-            name1 = chr(2344) + chr(123) + chr(6543)
-            name2 = chr(5543) + chr(1543) + chr(324)
-            node_type = str
-        except ValueError:  # Python 2.6+
-            name1 = unichr(2344) + unichr(123) + unichr(6543)
-            name2 = unichr(5543) + unichr(1543) + unichr(324)
-            node_type = unicode
+        name1 = chr(2344) + chr(123) + chr(6543)
+        name2 = chr(5543) + chr(1543) + chr(324)
+        node_type = str
         G.add_edge(name1, 'Radiohead', foo=name2)
         fd, fname = tempfile.mkstemp()
         self.writer(G, fname)
@@ -1019,11 +1014,7 @@ class TestWriteGraphML(BaseGraphML):
         # test for handling json escaped stings in python 2 Issue #1880
         import json
         a = dict(a='{"a": "123"}')  # an object with many chars to escape
-        try:  # Python 3.x
-            chr(2344)
-            sa = json.dumps(a)
-        except ValueError:  # Python 2.6+
-            sa = unicode(json.dumps(a))
+        sa = json.dumps(a)
         G = nx.Graph()
         G.graph['test'] = sa
         fh = io.BytesIO()

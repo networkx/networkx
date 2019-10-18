@@ -136,23 +136,9 @@ class TestAStar:
         For more information, see issue #554.
 
         """
-        # TODO In Python 3, instances of the `object` class are
-        # unorderable by default, so we wouldn't need to define our own
-        # class here, we could just instantiate an instance of the
-        # `object` class. However, we still support Python 2; when
-        # support for Python 2 is dropped, this test can be simplified
-        # by replacing `Unorderable()` by `object()`.
-        class Unorderable(object):
-
-            def __le__(self):
-                raise NotImplemented
-
-            def __ge__(self):
-                raise NotImplemented
-
         # Create the cycle graph on four nodes, with nodes represented
         # as (unorderable) Python objects.
-        nodes = [Unorderable() for n in range(4)]
+        nodes = [object() for n in range(4)]
         G = nx.Graph()
         G.add_edges_from(pairwise(nodes, cyclic=True))
         path = nx.astar_path(G, nodes[0], nodes[2])
