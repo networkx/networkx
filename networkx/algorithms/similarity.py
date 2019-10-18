@@ -791,9 +791,8 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
                 continue
             other.append(((i, j), Cv_ij, xy, Ce_xy, Cv.C[i, j] + localCe.ls))
 
-        # yield from
-        for t in sorted(other, key=lambda t: t[4] + t[1].ls + t[3].ls):
-            yield t
+        yield from sorted(other, key=lambda t: t[4] + t[1].ls + t[3].ls)
+
 
     def get_edit_paths(matched_uv, pending_u, pending_v, Cv,
                        matched_gh, pending_g, pending_h, Ce, matched_cost):
@@ -873,13 +872,11 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
                 H = list((pending_h.pop(y) if y < len(pending_h) else None)
                          for y in reversed(sortedy))
 
-                # yield from
-                for t in get_edit_paths(matched_uv, pending_u, pending_v,
-                                        Cv_ij,
-                                        matched_gh, pending_g, pending_h,
-                                        Ce_xy,
-                                        matched_cost + edit_cost):
-                    yield t
+                yield from get_edit_paths(matched_uv, pending_u, pending_v,
+                                          Cv_ij,
+                                          matched_gh, pending_g, pending_h,
+                                          Ce_xy,
+                                          matched_cost + edit_cost)
 
                 # backtrack
                 if u is not None:

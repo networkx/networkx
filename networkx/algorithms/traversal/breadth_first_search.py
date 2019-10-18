@@ -161,9 +161,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
         successors = G.predecessors
     else:
         successors = G.neighbors
-    # TODO In Python 3.3+, this should be `yield from ...`
-    for e in generic_bfs_edges(G, source, successors, depth_limit):
-        yield e
+    yield from generic_bfs_edges(G, source, successors, depth_limit)
 
 
 def bfs_tree(G, source, reverse=False, depth_limit=None):
