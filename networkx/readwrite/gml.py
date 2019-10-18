@@ -278,6 +278,9 @@ class Token(NamedTuple):
     position: int
 
 
+LIST_START_VALUE = "_networkx_list_start"
+
+
 def parse_gml_lines(lines, label, destringizer):
     """Parse GML `lines` into a graph.
     """
@@ -372,8 +375,16 @@ def parse_gml_lines(lines, label, destringizer):
                     unexpected(curr_token, "an int, float, string or '['")
             dct[key].append(value)
 
-        dct = {k: v[0] if isinstance(v, list) and len(v) == 1 else v
-               for k, v in dct.items()}
+        def clean_dict_value(value):
+            if not isinstance(value, list):
+                return value
+            if len(value) == 1:
+                return value[0]
+            if value[0] == LIST_START_VALUE:
+                return value[1:]
+            return value
+
+        dct = {key: clean_dict_value(value) for key, value in dct.items()}
         return curr_token, dct
 
     def parse_dict(curr_token):
@@ -388,10 +399,10 @@ def parse_gml_lines(lines, label, destringizer):
     def parse_graph():
         curr_token, dct = parse_kv(next(tokens))
         if curr_token.category is not None:  # EOF
-            unexpected(curr_token, 'EOF')
-        if 'graph' not in dct:
-            raise NetworkXError('input contains no graph')
-        graph = dct['graph']
+            unexpected(curr_token, "EOF")
+        if "graph" not in dct:
+            raise NetworkXError("input contains no graph")
+        graph = dct["graph"]
         if isinstance(graph, list):
             raise NetworkXError("input contains more than one graph")
         return graph
@@ -405,7 +416,7 @@ def parse_gml_lines(lines, label, destringizer):
         G = nx.DiGraph() if directed else nx.Graph()
     else:
         G = nx.MultiDiGraph() if directed else nx.MultiGraph()
-    graph_attr = {k: v for k, v in graph.items() if k not in ("node, "edge")}
+    graph_attr = {k: v for k, v in graph.items() if k not in ("node", "edge")}
     G.graph.update(graph_attr)
 
     def pop_attr(dct, category, attr, i):
@@ -559,7 +570,7 @@ def literal_stringizer(value):
                 stringize(item)
             buf.write("}")
         else:
-            msg = "{value} cannot be converted into a Python literal"
+            msg = "{value!r} cannot be converted into a Python literal"
             raise ValueError(msg)
 
     buf = StringIO()
@@ -687,16 +698,13 @@ def generate_gml(G, stringizer=None):
                 for key, value in value.items():
                     for line in stringize(key, value, (), next_indent):
                         yield line
-                yield indent + "]"
-            elif (
-                isinstance(value, (list, tuple))
-                and key != "label"
-                and value
-                and not in_list
-            ):
-                next_indent = indent + "  "
+                yield indent + ']'
+            elif isinstance(value, (list, tuple)) and key != 'label' \
+                    and value and not in_list:
+                if len(value) == 1:
+                    yield indent + key + ' ' + '"{}"'.format(LIST_START_VALUE)
                 for val in value:
-                    for line in stringize(key, val, (), next_indent, True):
+                    for line in stringize(key, val, (), indent, True):
                         yield line
             else:
                 if stringizer:
