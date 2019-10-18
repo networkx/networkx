@@ -22,17 +22,7 @@ from networkx.algorithms.flow import build_residual_network
 from .utils import build_auxiliary_node_connectivity
 from .utils import build_auxiliary_edge_connectivity
 
-try:
-    from itertools import filterfalse as _filterfalse
-except ImportError:  # Python 2
-    def _filterfalse(predicate, iterable):
-        # https://docs.python.org/3/library/itertools.html
-        # filterfalse(lambda x: x%2, range(10)) --> 0 2 4 6 8
-        if predicate is None:
-            predicate = bool
-        for x in iterable:
-            if not predicate(x):
-                yield x
+from itertools import filterfalse as _filterfalse
 
 __all__ = [
     'edge_disjoint_paths',

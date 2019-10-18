@@ -18,11 +18,7 @@
 import heapq
 from itertools import chain
 from itertools import combinations
-# In Python 3, the function is `zip_longest`, in Python 2 `izip_longest`.
-try:
-    from itertools import zip_longest
-except ImportError:
-    from itertools import izip_longest as zip_longest
+from itertools import zip_longest
 import math
 from operator import itemgetter
 

@@ -29,13 +29,6 @@ import networkx as nx
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
 
-# 2.x/3.x compatibility
-try:
-    basestring
-except NameError:
-    basestring = str
-    unicode = str
-
 
 @open_file(1, mode='w')
 def write_dot(G, path):
@@ -140,13 +133,13 @@ def from_pydot(P):
         s = []
         d = []
 
-        if isinstance(u, basestring):
+        if isinstance(u, str):
             s.append(u.strip('"'))
         else:
             for unodes in u['nodes']:
                 s.append(unodes.strip('"'))
 
-        if isinstance(v, basestring):
+        if isinstance(v, str):
             d.append(v.strip('"'))
         else:
             for vnodes in v['nodes']:
@@ -316,7 +309,7 @@ def pydot_layout(G, prog='neato', root=None):
     D_bytes = P.create_dot(prog=prog)
 
     # Unique string decoded from these bytes with the preferred locale encoding
-    D = unicode(D_bytes, encoding=getpreferredencoding())
+    D = str(D_bytes, encoding=getpreferredencoding())
 
     if D == "":  # no data returned
         print("Graphviz layout with %s failed" % (prog))
@@ -351,4 +344,4 @@ def pydot_layout(G, prog='neato', root=None):
 # fixture for pytest
 def setup_module(module):
     import pytest
-    pytdot = pytest.importorskip('pytdot')
+    pydot = pytest.importorskip('pydot')

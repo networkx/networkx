@@ -146,10 +146,7 @@ def from_sparse6_bytes(string):
     if not string.startswith(b':'):
         raise NetworkXError('Expected leading colon in sparse6')
 
-    if sys.version_info < (3, ):
-        chars = [ord(c) - 63 for c in string[1:]]
-    else:
-        chars = [c - 63 for c in string[1:]]
+    chars = [c - 63 for c in string[1:]]
     n, data = data_to_n(chars)
     k = 1
     while 1 << k < n:

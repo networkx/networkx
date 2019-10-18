@@ -94,12 +94,8 @@ class TestPajek(object):
     def test_unicode(self):
         import io
         G = nx.Graph()
-        try:  # Python 3.x
-            name1 = chr(2344) + chr(123) + chr(6543)
-            name2 = chr(5543) + chr(1543) + chr(324)
-        except ValueError:  # Python 2.6+
-            name1 = unichr(2344) + unichr(123) + unichr(6543)
-            name2 = unichr(5543) + unichr(1543) + unichr(324)
+        name1 = chr(2344) + chr(123) + chr(6543)
+        name2 = chr(5543) + chr(1543) + chr(324)
         G.add_edge(name1, 'Radiohead', foo=name2)
         fh = io.BytesIO()
         nx.write_pajek(G, fh)

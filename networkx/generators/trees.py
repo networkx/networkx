@@ -124,8 +124,7 @@ def prefix_tree(paths):
             if not path:
                 B.add_edge(root, NIL)
                 continue
-            # TODO In Python 3, this should be `child, *rest = path`.
-            child, rest = path[0], path[1:]
+            child, *rest = path
             # `child` may exist as the head of more than one path in `paths`.
             children[child].append(rest)
         # Add a node for each child found above and add edges from the
