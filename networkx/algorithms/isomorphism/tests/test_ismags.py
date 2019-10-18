@@ -57,7 +57,7 @@ class TestSelfIsomorphism(object):
             assert ismags.is_isomorphic()
             assert ismags.subgraph_is_isomorphic()
             assert (list(ismags.subgraph_isomorphisms_iter(symmetry=True)) ==
-                         [{n: n for n in graph.nodes}])
+                    [{n: n for n in graph.nodes}])
 
     def test_edgecase_self_isomorphism(self):
         """
@@ -93,7 +93,7 @@ class TestSelfIsomorphism(object):
             assert ismags.is_isomorphic()
             assert ismags.subgraph_is_isomorphic()
             assert (list(ismags.subgraph_isomorphisms_iter(symmetry=True)) ==
-                         [{n: n for n in graph.nodes}])
+                    [{n: n for n in graph.nodes}])
 
 
 class TestSubgraphIsomorphism(object):
@@ -106,7 +106,7 @@ class TestSubgraphIsomorphism(object):
         g2.add_edges_from([(n, m) for n, m in zip(g2, range(4, 8))])
         ismags = iso.ISMAGS(g2, g1)
         assert (list(ismags.subgraph_isomorphisms_iter(symmetry=True)) ==
-                     [{n: n for n in g1.nodes}])
+                [{n: n for n in g1.nodes}])
 
     def test_isomorphism2(self):
         g1 = nx.Graph()
@@ -121,14 +121,14 @@ class TestSubgraphIsomorphism(object):
                               {0: 0, 1: 1, 3: 2},
                               {2: 0, 1: 1, 3: 2}]
         assert (_matches_to_sets(matches) ==
-                     _matches_to_sets(expected_symmetric))
+                _matches_to_sets(expected_symmetric))
 
         matches = ismags.subgraph_isomorphisms_iter(symmetry=False)
         expected_asymmetric = [{0: 2, 1: 1, 2: 0},
                                {0: 2, 1: 1, 3: 0},
                                {2: 2, 1: 1, 3: 0}]
         assert (_matches_to_sets(matches) ==
-                     _matches_to_sets(expected_symmetric + expected_asymmetric))
+                _matches_to_sets(expected_symmetric + expected_asymmetric))
 
     def test_labeled_nodes(self):
         g1 = nx.Graph()
@@ -141,12 +141,12 @@ class TestSubgraphIsomorphism(object):
         matches = ismags.subgraph_isomorphisms_iter(symmetry=True)
         expected_symmetric = [{0: 0, 1: 1, 2: 2}]
         assert (_matches_to_sets(matches) ==
-                     _matches_to_sets(expected_symmetric))
+                _matches_to_sets(expected_symmetric))
 
         matches = ismags.subgraph_isomorphisms_iter(symmetry=False)
         expected_asymmetric = [{0: 2, 1: 1, 2: 0}]
         assert (_matches_to_sets(matches) ==
-                     _matches_to_sets(expected_symmetric + expected_asymmetric))
+                _matches_to_sets(expected_symmetric + expected_asymmetric))
 
     def test_labeled_edges(self):
         g1 = nx.Graph()
@@ -159,12 +159,12 @@ class TestSubgraphIsomorphism(object):
         matches = ismags.subgraph_isomorphisms_iter(symmetry=True)
         expected_symmetric = [{0: 0, 1: 1, 2: 2}]
         assert (_matches_to_sets(matches) ==
-                     _matches_to_sets(expected_symmetric))
+                _matches_to_sets(expected_symmetric))
 
         matches = ismags.subgraph_isomorphisms_iter(symmetry=False)
         expected_asymmetric = [{1: 2, 0: 0, 2: 1}]
         assert (_matches_to_sets(matches) ==
-                     _matches_to_sets(expected_symmetric + expected_asymmetric))  
+                _matches_to_sets(expected_symmetric + expected_asymmetric))
 
 
 class TestWikipediaExample(object):

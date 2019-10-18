@@ -449,11 +449,11 @@ def _check_augmentations(G, avail=None, max_k=None, weight=None,
                 if orig_k == 0:
                     # the approximation ratio is 3 if G is not connected
                     assert (info2['total_weight'] <=
-                                      info1['total_weight'] * 3)
+                            info1['total_weight'] * 3)
                 else:
                     # the approximation ratio is 2 if G is was connected
                     assert (info2['total_weight'] <=
-                                      info1['total_weight'] * 2)
+                            info1['total_weight'] * 2)
                 _check_unconstrained_bridge_property(G, info1)
 
 

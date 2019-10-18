@@ -19,6 +19,7 @@ from networkx.algorithms.community import performance
 from networkx.algorithms.community.quality import inter_community_edges
 from networkx.testing import almost_equal
 
+
 class TestPerformance(object):
     """Unit tests for the :func:`performance` function."""
 

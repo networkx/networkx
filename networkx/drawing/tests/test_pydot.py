@@ -14,6 +14,7 @@ from networkx.testing import assert_graphs_equal
 import pytest
 pydot = pytest.importorskip('pydot')
 
+
 class TestPydot(object):
     def pydot_checks(self, G, prog):
         '''

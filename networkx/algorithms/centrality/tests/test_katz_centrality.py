@@ -5,6 +5,7 @@ import networkx as nx
 from networkx.testing import almost_equal
 import pytest
 
+
 class TestKatzCentrality(object):
 
     def test_K5(self):

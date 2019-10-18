@@ -25,16 +25,16 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
     def test_edges_multi(self):
         G = self.K3
         assert (sorted(G.edges()) ==
-                     [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
+                [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
         assert sorted(G.edges(0)) == [(0, 1), (0, 2)]
         G.add_edge(0, 1)
         assert (sorted(G.edges()) ==
-                     [(0, 1), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
+                [(0, 1), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
 
     def test_out_edges(self):
         G = self.K3
         assert (sorted(G.out_edges()) ==
-                     [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
+                [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
         assert sorted(G.out_edges(0)) == [(0, 1), (0, 2)]
         pytest.raises((KeyError, nx.NetworkXError), G.out_edges, -1)
         assert sorted(G.out_edges(0, keys=True)) == [(0, 1, 0), (0, 2, 0)]
@@ -42,11 +42,11 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
     def test_out_edges_multi(self):
         G = self.K3
         assert (sorted(G.out_edges()) ==
-                     [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
+                [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
         assert sorted(G.out_edges(0)) == [(0, 1), (0, 2)]
         G.add_edge(0, 1, 2)
         assert (sorted(G.out_edges()) ==
-                     [(0, 1), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
+                [(0, 1), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
 
     def test_out_edges_data(self):
         G = self.K3
@@ -54,48 +54,48 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         G.remove_edge(0, 1)
         G.add_edge(0, 1, data=1)
         assert (sorted(G.edges(0, data=True)) ==
-                     [(0, 1, {'data': 1}), (0, 2, {})])
+                [(0, 1, {'data': 1}), (0, 2, {})])
         assert (sorted(G.edges(0, data='data')) ==
-                     [(0, 1, 1), (0, 2, None)])
+                [(0, 1, 1), (0, 2, None)])
         assert (sorted(G.edges(0, data='data', default=-1)) ==
-                     [(0, 1, 1), (0, 2, -1)])
+                [(0, 1, 1), (0, 2, -1)])
 
     def test_in_edges(self):
         G = self.K3
         assert (sorted(G.in_edges()) ==
-                     [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
+                [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
         assert sorted(G.in_edges(0)) == [(1, 0), (2, 0)]
         pytest.raises((KeyError, nx.NetworkXError), G.in_edges, -1)
         G.add_edge(0, 1, 2)
         assert (sorted(G.in_edges()) ==
-                     [(0, 1), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
+                [(0, 1), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
         assert sorted(G.in_edges(0, keys=True)) == [(1, 0, 0), (2, 0, 0)]
 
     def test_in_edges_no_keys(self):
         G = self.K3
         assert (sorted(G.in_edges()) ==
-                     [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
+                [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
         assert sorted(G.in_edges(0)) == [(1, 0), (2, 0)]
         G.add_edge(0, 1, 2)
         assert (sorted(G.in_edges()) ==
-                     [(0, 1), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
+                [(0, 1), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)])
 
         assert (sorted(G.in_edges(data=True, keys=False)) ==
-                     [(0, 1, {}), (0, 1, {}), (0, 2, {}), (1, 0, {}),
-                      (1, 2, {}), (2, 0, {}), (2, 1, {})])
+                [(0, 1, {}), (0, 1, {}), (0, 2, {}), (1, 0, {}),
+                 (1, 2, {}), (2, 0, {}), (2, 1, {})])
 
     def test_in_edges_data(self):
         G = self.K3
         assert (sorted(G.in_edges(0, data=True)) ==
-                     [(1, 0, {}), (2, 0, {})])
+                [(1, 0, {}), (2, 0, {})])
         G.remove_edge(1, 0)
         G.add_edge(1, 0, data=1)
         assert (sorted(G.in_edges(0, data=True)) ==
-                     [(1, 0, {'data': 1}), (2, 0, {})])
+                [(1, 0, {'data': 1}), (2, 0, {})])
         assert (sorted(G.in_edges(0, data='data')) ==
-                     [(1, 0, 1), (2, 0, None)])
+                [(1, 0, 1), (2, 0, None)])
         assert (sorted(G.in_edges(0, data='data', default=-1)) ==
-                     [(1, 0, 1), (2, 0, -1)])
+                [(1, 0, 1), (2, 0, -1)])
 
     def is_shallow(self, H, G):
         # graph
@@ -169,9 +169,9 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         assert list(G.degree(iter([0]))) == [(0, 4)]
         G.add_edge(0, 1, weight=0.3, other=1.2)
         assert (sorted(G.degree(weight='weight')) ==
-                     [(0, 4.3), (1, 4.3), (2, 4)])
+                [(0, 4.3), (1, 4.3), (2, 4)])
         assert (sorted(G.degree(weight='other')) ==
-                     [(0, 5.2), (1, 5.2), (2, 4)])
+                [(0, 5.2), (1, 5.2), (2, 4)])
 
     def test_in_degree(self):
         G = self.K3
@@ -263,13 +263,13 @@ class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
 
         G.add_edges_from([(0, 1), (0, 1, {'weight': 3})], weight=2)
         assert G._succ == {0: {1: {0: {},
-                                       1: {'weight': 3},
-                                       2: {'weight': 2},
-                                       3: {'weight': 3}}},
-                               1: {}}
+                                   1: {'weight': 3},
+                                   2: {'weight': 2},
+                                   3: {'weight': 3}}},
+                           1: {}}
         assert G._pred == {0: {}, 1: {0: {0: {}, 1: {'weight': 3},
-                                              2: {'weight': 2},
-                                              3: {'weight': 3}}}}
+                                          2: {'weight': 2},
+                                          3: {'weight': 3}}}}
 
         G = self.Graph()
         edges = [(0, 1, {'weight': 3}), (0, 1, (('weight', 2),)),
@@ -290,11 +290,11 @@ class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
         G = self.K3
         G.remove_edge(0, 1)
         assert G._succ == {0: {2: {0: {}}},
-                               1: {0: {0: {}}, 2: {0: {}}},
-                               2: {0: {0: {}}, 1: {0: {}}}}
+                           1: {0: {0: {}}, 2: {0: {}}},
+                           2: {0: {0: {}}, 1: {0: {}}}}
         assert G._pred == {0: {1: {0: {}}, 2: {0: {}}},
-                               1: {2: {0: {}}},
-                               2: {0: {0: {}}, 1: {0: {}}}}
+                           1: {2: {0: {}}},
+                           2: {0: {0: {}}, 1: {0: {}}}}
         pytest.raises((KeyError, nx.NetworkXError), G.remove_edge, -1, 0)
         pytest.raises((KeyError, nx.NetworkXError), G.remove_edge, 0, 2,
                       key=1)
@@ -304,34 +304,34 @@ class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
         G.add_edge(0, 1, key='parallel edge')
         G.remove_edge(0, 1, key='parallel edge')
         assert G._adj == {0: {1: {0: {}}, 2: {0: {}}},
-                              1: {0: {0: {}}, 2: {0: {}}},
-                              2: {0: {0: {}}, 1: {0: {}}}}
+                          1: {0: {0: {}}, 2: {0: {}}},
+                          2: {0: {0: {}}, 1: {0: {}}}}
 
         assert G._succ == {0: {1: {0: {}}, 2: {0: {}}},
-                               1: {0: {0: {}}, 2: {0: {}}},
-                               2: {0: {0: {}}, 1: {0: {}}}}
+                           1: {0: {0: {}}, 2: {0: {}}},
+                           2: {0: {0: {}}, 1: {0: {}}}}
 
         assert G._pred == {0: {1: {0: {}}, 2: {0: {}}},
-                               1: {0: {0: {}}, 2: {0: {}}},
-                               2: {0: {0: {}}, 1: {0: {}}}}
+                           1: {0: {0: {}}, 2: {0: {}}},
+                           2: {0: {0: {}}, 1: {0: {}}}}
         G.remove_edge(0, 1)
         assert G._succ == {0: {2: {0: {}}},
-                               1: {0: {0: {}}, 2: {0: {}}},
-                               2: {0: {0: {}}, 1: {0: {}}}}
+                           1: {0: {0: {}}, 2: {0: {}}},
+                           2: {0: {0: {}}, 1: {0: {}}}}
         assert G._pred == {0: {1: {0: {}}, 2: {0: {}}},
-                               1: {2: {0: {}}},
-                               2: {0: {0: {}}, 1: {0: {}}}}
+                           1: {2: {0: {}}},
+                           2: {0: {0: {}}, 1: {0: {}}}}
         pytest.raises((KeyError, nx.NetworkXError), G.remove_edge, -1, 0)
 
     def test_remove_edges_from(self):
         G = self.K3
         G.remove_edges_from([(0, 1)])
         assert G._succ == {0: {2: {0: {}}},
-                               1: {0: {0: {}}, 2: {0: {}}},
-                               2: {0: {0: {}}, 1: {0: {}}}}
+                           1: {0: {0: {}}, 2: {0: {}}},
+                           2: {0: {0: {}}, 1: {0: {}}}}
         assert G._pred == {0: {1: {0: {}}, 2: {0: {}}},
-                               1: {2: {0: {}}},
-                               2: {0: {0: {}}, 1: {0: {}}}}
+                           1: {2: {0: {}}},
+                           2: {0: {0: {}}, 1: {0: {}}}}
         G.remove_edges_from([(0, 0)])  # silent fail
 
 

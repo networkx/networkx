@@ -28,14 +28,14 @@ class TestPageRank(object):
         G.add_edges_from(edges)
         cls.G = G
         cls.G.pagerank = dict(zip(sorted(G),
-                                   [0.03721197, 0.05395735, 0.04150565,
-                                    0.37508082, 0.20599833, 0.28624589]))
+                                  [0.03721197, 0.05395735, 0.04150565,
+                                   0.37508082, 0.20599833, 0.28624589]))
         cls.dangling_node_index = 1
         cls.dangling_edges = {1: 2, 2: 3,
-                               3: 0, 4: 0, 5: 0, 6: 0}
+                              3: 0, 4: 0, 5: 0, 6: 0}
         cls.G.dangling_pagerank = dict(zip(sorted(G),
-                                            [0.10844518, 0.18618601, 0.0710892,
-                                             0.2683668, 0.15919783, 0.20671497]))
+                                           [0.10844518, 0.18618601, 0.0710892,
+                                            0.2683668, 0.15919783, 0.20671497]))
 
     def test_pagerank(self):
         G = self.G

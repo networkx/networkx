@@ -18,17 +18,17 @@ class TestBetheHessian(object):
     def test_bethe_hessian(self):
         "Bethe Hessian matrix"
         H = numpy.array([[ 4, -2,  0],
-                          [-2,  5, -2],
-                          [ 0, -2,  4]])
+                         [-2,  5, -2],
+                         [ 0, -2,  4]])
         permutation = [2, 0, 1]
         # Bethe Hessian gives expected form
         npt.assert_equal(nx.bethe_hessian_matrix(self.P, r=2).todense(), H)
         # nodelist is correctly implemented
         npt.assert_equal(nx.bethe_hessian_matrix(self.P, r=2, nodelist=permutation).todense(),
-                     H[numpy.ix_(permutation, permutation)])
+                         H[numpy.ix_(permutation, permutation)])
         # Equal to Laplacian matrix when r=1
         npt.assert_equal(nx.bethe_hessian_matrix(self.G, r=1).todense(),
-                     nx.laplacian_matrix(self.G).todense())
+                         nx.laplacian_matrix(self.G).todense())
         # Correct default for the regularizer r
         npt.assert_equal(nx.bethe_hessian_matrix(self.G).todense(),
-                     nx.bethe_hessian_matrix(self.G, r=1.25).todense())
+                         nx.bethe_hessian_matrix(self.G, r=1.25).todense())

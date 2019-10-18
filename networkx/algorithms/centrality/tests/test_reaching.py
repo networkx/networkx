@@ -10,6 +10,7 @@ import pytest
 from networkx import nx
 from networkx.testing import almost_equal
 
+
 class TestGlobalReachingCentrality:
     """Unit tests for the global reaching centrality function."""
 

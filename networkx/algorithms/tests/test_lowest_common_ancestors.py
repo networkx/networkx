@@ -167,41 +167,41 @@ class TestDAGLCA:
         cls.root_distance = nx.shortest_path_length(cls.DG, source=0)
 
         cls.gold = {(1, 1): 1,
-                     (1, 2): 1,
-                     (1, 3): 1,
-                     (1, 4): 0,
-                     (1, 5): 0,
-                     (1, 6): 0,
-                     (1, 7): 0,
-                     (1, 8): 0,
-                     (2, 2): 2,
-                     (2, 3): 2,
-                     (2, 4): 0,
-                     (2, 5): 5,
-                     (2, 6): 6,
-                     (2, 7): 7,
-                     (2, 8): 7,
-                     (3, 3): 8,
-                     (3, 4): 4,
-                     (3, 5): 5,
-                     (3, 6): 6,
-                     (3, 7): 7,
-                     (3, 8): 8,
-                     (4, 4): 4,
-                     (4, 5): 0,
-                     (4, 6): 0,
-                     (4, 7): 0,
-                     (4, 8): 0,
-                     (5, 5): 5,
-                     (5, 6): 5,
-                     (5, 7): 5,
-                     (5, 8): 5,
-                     (6, 6): 6,
-                     (6, 7): 5,
-                     (6, 8): 6,
-                     (7, 7): 7,
-                     (7, 8): 7,
-                     (8, 8): 8}
+                    (1, 2): 1,
+                    (1, 3): 1,
+                    (1, 4): 0,
+                    (1, 5): 0,
+                    (1, 6): 0,
+                    (1, 7): 0,
+                    (1, 8): 0,
+                    (2, 2): 2,
+                    (2, 3): 2,
+                    (2, 4): 0,
+                    (2, 5): 5,
+                    (2, 6): 6,
+                    (2, 7): 7,
+                    (2, 8): 7,
+                    (3, 3): 8,
+                    (3, 4): 4,
+                    (3, 5): 5,
+                    (3, 6): 6,
+                    (3, 7): 7,
+                    (3, 8): 8,
+                    (4, 4): 4,
+                    (4, 5): 0,
+                    (4, 6): 0,
+                    (4, 7): 0,
+                    (4, 8): 0,
+                    (5, 5): 5,
+                    (5, 6): 5,
+                    (5, 7): 5,
+                    (5, 8): 5,
+                    (6, 6): 6,
+                    (6, 7): 5,
+                    (6, 8): 6,
+                    (7, 7): 7,
+                    (7, 8): 7,
+                    (8, 8): 8}
         cls.gold.update(((0, n), 0) for n in cls.DG)
 
     def assert_lca_dicts_same(self, d1, d2, G=None):
@@ -218,7 +218,7 @@ class TestDAGLCA:
 
         for a, b in ((min(pair), max(pair)) for pair in chain(d1, d2)):
             assert (root_distance[get_pair(d1, a, b)] ==
-                         root_distance[get_pair(d2, a, b)])
+                    root_distance[get_pair(d2, a, b)])
 
     def test_all_pairs_lowest_common_ancestor1(self):
         """Produces the correct results."""
@@ -297,7 +297,7 @@ class TestDAGLCA:
         G = nx.DiGraph([(0, 1), (2, 1)])
         sentinel = object()
         assert (nx.lowest_common_ancestor(G, 0, 2, default=sentinel) is
-                  sentinel)
+                sentinel)
 
     def test_lowest_common_ancestor2(self):
         """Test that the one-pair function works on identity."""

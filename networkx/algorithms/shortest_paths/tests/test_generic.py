@@ -4,6 +4,7 @@ import pytest
 import networkx as nx
 from networkx.testing import almost_equal
 
+
 def validate_grid_path(r, c, s, t, p):
     assert isinstance(p, list)
     assert p[0] == s
@@ -25,7 +26,7 @@ class TestGenericPath:
     def setup_class(cls):
         from networkx import convert_node_labels_to_integers as cnlti
         cls.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1,
-                          ordering="sorted")
+                         ordering="sorted")
         cls.cycle = nx.cycle_graph(7)
         cls.directed_cycle = nx.cycle_graph(7, create_using=nx.DiGraph())
         cls.neg_weights = nx.DiGraph()
@@ -41,26 +42,26 @@ class TestGenericPath:
         assert nx.shortest_path(self.directed_cycle, 0, 3) == [0, 1, 2, 3]
         # now with weights
         assert (nx.shortest_path(self.cycle, 0, 3, weight='weight') ==
-                     [0, 1, 2, 3])
+                [0, 1, 2, 3])
         assert (nx.shortest_path(self.cycle, 0, 4, weight='weight') ==
-                     [0, 6, 5, 4])
+                [0, 6, 5, 4])
         validate_grid_path(4, 4, 1, 12, nx.shortest_path(self.grid, 1, 12,
                                                          weight='weight'))
         assert (nx.shortest_path(self.directed_cycle, 0, 3,
-                                      weight='weight') ==
-                     [0, 1, 2, 3])
+                                 weight='weight') ==
+                [0, 1, 2, 3])
         # weights and method specified
         assert (nx.shortest_path(self.directed_cycle, 0, 3,
-                                      weight='weight', method='dijkstra') ==
-                     [0, 1, 2, 3])
+                                 weight='weight', method='dijkstra') ==
+                [0, 1, 2, 3])
         assert (nx.shortest_path(self.directed_cycle, 0, 3,
-                                      weight='weight', method='bellman-ford') ==
-                     [0, 1, 2, 3])
+                                 weight='weight', method='bellman-ford') ==
+                [0, 1, 2, 3])
         # when Dijkstra's will probably (depending on precise implementation)
         # incorrectly return [0, 1, 3] instead
         assert (nx.shortest_path(self.neg_weights, 0, 3, weight='weight',
-                                      method='bellman-ford') ==
-                     [0, 2, 3])
+                                 method='bellman-ford') ==
+                [0, 2, 3])
         # confirm bad method rejection
         pytest.raises(ValueError, nx.shortest_path, self.cycle, method='SPAM')
         # confirm absent source rejection
@@ -87,21 +88,21 @@ class TestGenericPath:
         assert nx.shortest_path_length(self.directed_cycle, 0, 4) == 4
         # now with weights
         assert (nx.shortest_path_length(self.cycle, 0, 3,
-                                             weight='weight') ==
-                     3)
+                                        weight='weight') ==
+                3)
         assert (nx.shortest_path_length(self.grid, 1, 12,
-                                             weight='weight') ==
-                     5)
+                                        weight='weight') ==
+                5)
         assert (nx.shortest_path_length(self.directed_cycle, 0, 4,
-                                             weight='weight') ==
-                     4)
+                                        weight='weight') ==
+                4)
         # weights and method specified
         assert (nx.shortest_path_length(self.cycle, 0, 3, weight='weight',
-                                             method='dijkstra') ==
-                     3)
+                                        method='dijkstra') ==
+                3)
         assert (nx.shortest_path_length(self.cycle, 0, 3, weight='weight',
-                                             method='bellman-ford') ==
-                     3)
+                                        method='bellman-ford') ==
+                3)
         # confirm bad method rejection
         pytest.raises(ValueError,
                       nx.shortest_path_length,
@@ -151,8 +152,8 @@ class TestGenericPath:
         ans = dict(nx.shortest_path_length(self.cycle, 0))
         assert ans == {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1}
         assert (ans ==
-                     dict(nx.single_source_shortest_path_length(self.cycle,
-                                                                0)))
+                dict(nx.single_source_shortest_path_length(self.cycle,
+                                                           0)))
         ans = dict(nx.shortest_path_length(self.grid, 1))
         assert ans[16] == 6
         # now with weights
@@ -216,7 +217,7 @@ class TestGenericPath:
                                            method='bellman-ford'))
         assert ans[0] == {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1}
         assert (ans ==
-                     dict(nx.all_pairs_bellman_ford_path_length(self.cycle)))
+                dict(nx.all_pairs_bellman_ford_path_length(self.cycle)))
 
     def test_has_path(self):
         G = nx.Graph()
@@ -230,26 +231,26 @@ class TestGenericPath:
         nx.add_path(G, [0, 1, 2, 3])
         nx.add_path(G, [0, 10, 20, 3])
         assert ([[0, 1, 2, 3], [0, 10, 20, 3]] ==
-                     sorted(nx.all_shortest_paths(G, 0, 3)))
+                sorted(nx.all_shortest_paths(G, 0, 3)))
         # with weights
         G = nx.Graph()
         nx.add_path(G, [0, 1, 2, 3])
         nx.add_path(G, [0, 10, 20, 3])
         assert ([[0, 1, 2, 3], [0, 10, 20, 3]] ==
-                     sorted(nx.all_shortest_paths(G, 0, 3, weight='weight')))
+                sorted(nx.all_shortest_paths(G, 0, 3, weight='weight')))
         # weights and method specified
         G = nx.Graph()
         nx.add_path(G, [0, 1, 2, 3])
         nx.add_path(G, [0, 10, 20, 3])
         assert ([[0, 1, 2, 3], [0, 10, 20, 3]] ==
-                     sorted(nx.all_shortest_paths(G, 0, 3, weight='weight',
-                                                  method='dijkstra')))
+                sorted(nx.all_shortest_paths(G, 0, 3, weight='weight',
+                                             method='dijkstra')))
         G = nx.Graph()
         nx.add_path(G, [0, 1, 2, 3])
         nx.add_path(G, [0, 10, 20, 3])
         assert ([[0, 1, 2, 3], [0, 10, 20, 3]] ==
-                     sorted(nx.all_shortest_paths(G, 0, 3, weight='weight',
-                                                  method='bellman-ford')))
+                sorted(nx.all_shortest_paths(G, 0, 3, weight='weight',
+                                             method='bellman-ford')))
 
     def test_all_shortest_paths_raise(self):
         with pytest.raises(nx.NetworkXNoPath):
@@ -352,7 +353,6 @@ class TestAverageShortestPathLengthNumpy(object):
         import pytest
         numpy = pytest.importorskip('numpy')
         npt = pytest.importorskip('numpy.testing')
-
 
     def test_specified_methods_numpy(self):
         G = nx.Graph()

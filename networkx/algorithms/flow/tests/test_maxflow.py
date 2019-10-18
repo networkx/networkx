@@ -395,7 +395,7 @@ class TestMaxFlowMinCutInterface:
                 if interface_func in max_min_funcs:
                     result = result[0]
                 assert fv == result, msgi.format(flow_func.__name__,
-                                                         interface_func.__name__)
+                                                 interface_func.__name__)
 
     def test_minimum_cut_no_cutoff(self):
         G = self.G
@@ -418,7 +418,7 @@ class TestMaxFlowMinCutInterface:
                 if interface_func in max_min_funcs:
                     result = result[0]
                 assert fv == result, msgi.format(flow_func.__name__,
-                                                         interface_func.__name__)
+                                                 interface_func.__name__)
 
     def test_kwargs_default_flow_func(self):
         G = self.H
@@ -439,7 +439,7 @@ class TestMaxFlowMinCutInterface:
                     if interface_func in max_min_funcs:
                         result = result[0]
                     assert fv == result, msgi.format(flow_func.__name__,
-                                                 interface_func.__name__)
+                                                     interface_func.__name__)
 
 
 # Tests specific to one algorithm

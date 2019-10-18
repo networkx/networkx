@@ -82,7 +82,7 @@ class TestGridGraph:
             g = nx.grid_graph(dim)
             assert len(g) == n * m
             assert nx.degree_histogram(g) == [0, 0, 4, 2 * (n + m) - 8,
-                                                  (n - 2) * (m - 2)]
+                                              (n - 2) * (m - 2)]
 
         for n, m in [(1, 5), (5, 1)]:
             dim = [n, m]

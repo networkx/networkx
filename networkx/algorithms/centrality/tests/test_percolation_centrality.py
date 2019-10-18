@@ -2,6 +2,7 @@
 import networkx as nx
 from networkx.testing import almost_equal
 
+
 def example1a_G():
     G = nx.Graph()
     G.add_node(1, percolation=0.1)

@@ -98,7 +98,7 @@ def test_connected_communities():
 
 
 def test_termination():
-    # ensure termination of asyn_lpa_communities in two cases  
+    # ensure termination of asyn_lpa_communities in two cases
     # that led to an endless loop in a previous version
     test1 = nx.karate_club_graph()
     test2 = nx.caveman_graph(2, 10)

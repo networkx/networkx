@@ -36,9 +36,9 @@ def test_complement_2():
     G1.add_edge('A', 'D')
     G1C = nx.complement(G1)
     assert (sorted(G1C.edges()) ==
-                 [('B', 'A'), ('B', 'C'),
-                  ('B', 'D'), ('C', 'A'), ('C', 'B'),
-                  ('C', 'D'), ('D', 'A'), ('D', 'B'), ('D', 'C')])
+            [('B', 'A'), ('B', 'C'),
+             ('B', 'D'), ('C', 'A'), ('C', 'B'),
+             ('C', 'D'), ('D', 'A'), ('D', 'B'), ('D', 'C')])
 
 
 def test_reverse1():

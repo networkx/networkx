@@ -275,7 +275,6 @@ def write_shp(G, outdir):
         newfield = ogr.FieldDefn(key, fields[key])
         layer.CreateField(newfield)
 
-
     drv = ogr.GetDriverByName("ESRI Shapefile")
     shpdir = drv.CreateDataSource(outdir)
     # delete pre-existing output first otherwise ogr chokes

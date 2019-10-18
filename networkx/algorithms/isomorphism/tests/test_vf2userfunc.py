@@ -124,7 +124,7 @@ class TestNodeMatch_Graph(object):
         # make the weights disagree
         self.g1.add_edge('A', 'B', weight=2)
         assert not nx.is_isomorphic(self.g1, self.g2,
-                                      node_match=self.nm, edge_match=self.em)
+                                    node_match=self.nm, edge_match=self.em)
 
 
 class TestEdgeMatch_MultiGraph(object):

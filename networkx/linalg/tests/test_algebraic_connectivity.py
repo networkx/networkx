@@ -7,7 +7,6 @@ scipy = pytest.importorskip('scipy')
 scipy.sparse = pytest.importorskip('scipy.sparse')
 
 
-
 import networkx as nx
 from networkx.testing import almost_equal
 

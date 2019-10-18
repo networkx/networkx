@@ -129,25 +129,25 @@ def assert_equal_branchings(G1, G2, attr='weight', default=1):
 def test_optimal_branching1():
     G = build_branching(optimal_arborescence_1)
     assert recognition.is_arborescence(G), True
-    assert branchings.branching_weight(G) ==  131
+    assert branchings.branching_weight(G) == 131
 
 
 def test_optimal_branching2a():
     G = build_branching(optimal_branching_2a)
     assert recognition.is_arborescence(G), True
-    assert branchings.branching_weight(G) ==  53
+    assert branchings.branching_weight(G) == 53
 
 
 def test_optimal_branching2b():
     G = build_branching(optimal_branching_2b)
     assert recognition.is_arborescence(G), True
-    assert branchings.branching_weight(G) ==  53
+    assert branchings.branching_weight(G) == 53
 
 
 def test_optimal_arborescence2():
     G = build_branching(optimal_arborescence_2)
     assert recognition.is_arborescence(G), True
-    assert branchings.branching_weight(G) ==  51
+    assert branchings.branching_weight(G) == 51
 
 
 def test_greedy_suboptimal_branching1a():

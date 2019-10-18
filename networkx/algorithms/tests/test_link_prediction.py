@@ -36,11 +36,11 @@ class TestResourceAllocationIndex():
 
     def test_notimplemented(self):
         assert pytest.raises(nx.NetworkXNotImplemented, self.func,
-                      nx.DiGraph([(0, 1), (1, 2)]), [(0, 2)])
+                             nx.DiGraph([(0, 1), (1, 2)]), [(0, 2)])
         assert pytest.raises(nx.NetworkXNotImplemented, self.func,
-                      nx.MultiGraph([(0, 1), (1, 2)]), [(0, 2)])
+                             nx.MultiGraph([(0, 1), (1, 2)]), [(0, 2)])
         assert pytest.raises(nx.NetworkXNotImplemented, self.func,
-                      nx.MultiDiGraph([(0, 1), (1, 2)]), [(0, 2)])
+                             nx.MultiDiGraph([(0, 1), (1, 2)]), [(0, 2)])
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -73,11 +73,11 @@ class TestJaccardCoefficient():
 
     def test_notimplemented(self):
         assert pytest.raises(nx.NetworkXNotImplemented, self.func,
-                      nx.DiGraph([(0, 1), (1, 2)]), [(0, 2)])
+                             nx.DiGraph([(0, 1), (1, 2)]), [(0, 2)])
         assert pytest.raises(nx.NetworkXNotImplemented, self.func,
-                      nx.MultiGraph([(0, 1), (1, 2)]), [(0, 2)])
+                             nx.MultiGraph([(0, 1), (1, 2)]), [(0, 2)])
         assert pytest.raises(nx.NetworkXNotImplemented, self.func,
-                      nx.MultiDiGraph([(0, 1), (1, 2)]), [(0, 2)])
+                             nx.MultiDiGraph([(0, 1), (1, 2)]), [(0, 2)])
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -115,11 +115,11 @@ class TestAdamicAdarIndex():
 
     def test_notimplemented(self):
         assert pytest.raises(nx.NetworkXNotImplemented, self.func,
-                      nx.DiGraph([(0, 1), (1, 2)]), [(0, 2)])
+                             nx.DiGraph([(0, 1), (1, 2)]), [(0, 2)])
         assert pytest.raises(nx.NetworkXNotImplemented, self.func,
-                      nx.MultiGraph([(0, 1), (1, 2)]), [(0, 2)])
+                             nx.MultiGraph([(0, 1), (1, 2)]), [(0, 2)])
         assert pytest.raises(nx.NetworkXNotImplemented, self.func,
-                      nx.MultiDiGraph([(0, 1), (1, 2)]), [(0, 2)])
+                             nx.MultiDiGraph([(0, 1), (1, 2)]), [(0, 2)])
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -157,11 +157,11 @@ class TestPreferentialAttachment():
 
     def test_notimplemented(self):
         assert pytest.raises(nx.NetworkXNotImplemented, self.func,
-                      nx.DiGraph([(0, 1), (1, 2)]), [(0, 2)])
+                             nx.DiGraph([(0, 1), (1, 2)]), [(0, 2)])
         assert pytest.raises(nx.NetworkXNotImplemented, self.func,
-                      nx.MultiGraph([(0, 1), (1, 2)]), [(0, 2)])
+                             nx.MultiGraph([(0, 1), (1, 2)]), [(0, 2)])
         assert pytest.raises(nx.NetworkXNotImplemented, self.func,
-                      nx.MultiDiGraph([(0, 1), (1, 2)]), [(0, 2)])
+                             nx.MultiDiGraph([(0, 1), (1, 2)]), [(0, 2)])
 
     def test_zero_degrees(self):
         G = nx.Graph()
@@ -179,7 +179,7 @@ class TestCNSoundarajanHopcroft():
     def setup_class(cls):
         cls.func = staticmethod(nx.cn_soundarajan_hopcroft)
         cls.test = partial(_test_func, predict_func=cls.func,
-                            community='community')
+                           community='community')
 
     def test_K5(self):
         G = nx.complete_graph(5)
@@ -392,7 +392,7 @@ class TestWithinInterCluster():
         cls.delta = 0.001
         cls.func = staticmethod(nx.within_inter_cluster)
         cls.test = partial(_test_func, predict_func=cls.func,
-                            delta=cls.delta, community='community')
+                           delta=cls.delta, community='community')
 
     def test_K5(self):
         G = nx.complete_graph(5)

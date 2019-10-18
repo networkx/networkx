@@ -62,7 +62,7 @@ class TestColoring:
             if not hasattr(colors, '__len__'):
                 colors = [colors]
             assert any(verify_length(coloring, n_colors)
-                            for n_colors in colors)
+                       for n_colors in colors)
             assert verify_coloring(graph, coloring)
 
         for strategy, arglist in SPECIAL_TEST_CASES.items():

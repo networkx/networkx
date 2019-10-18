@@ -14,7 +14,7 @@ class TestLaplacian(object):
         deg = [3, 2, 2, 1, 0]
         cls.G = havel_hakimi_graph(deg)
         cls.WG = nx.Graph((u, v, {'weight': 0.5, 'other': 0.3})
-                           for (u, v) in cls.G.edges())
+                          for (u, v) in cls.G.edges())
         cls.WG.add_node(4)
         cls.MG = nx.MultiGraph(cls.G)
 
@@ -35,7 +35,7 @@ class TestLaplacian(object):
         npt.assert_equal(nx.laplacian_matrix(self.G).todense(), NL)
         npt.assert_equal(nx.laplacian_matrix(self.MG).todense(), NL)
         npt.assert_equal(nx.laplacian_matrix(self.G, nodelist=[0, 1]).todense(),
-                     numpy.array([[1, -1], [-1, 1]]))
+                         numpy.array([[1, -1], [-1, 1]]))
         npt.assert_equal(nx.laplacian_matrix(self.WG).todense(), WL)
         npt.assert_equal(nx.laplacian_matrix(self.WG, weight=None).todense(), NL)
         npt.assert_equal(nx.laplacian_matrix(self.WG, weight='other').todense(), OL)
@@ -54,15 +54,15 @@ class TestLaplacian(object):
                            [0.,  0.,  0.,  0.,  0.]])
 
         npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.G).todense(),
-                            GL, decimal=3)
+                                GL, decimal=3)
         npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.MG).todense(),
-                            GL, decimal=3)
+                                GL, decimal=3)
         npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.WG).todense(),
-                            GL, decimal=3)
+                                GL, decimal=3)
         npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.WG, weight='other').todense(),
-                            GL, decimal=3)
+                                GL, decimal=3)
         npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.Gsl).todense(),
-                            Lsl, decimal=3)
+                                Lsl, decimal=3)
 
     def test_directed_laplacian(self):
         "Directed Laplacian"

@@ -31,10 +31,10 @@ class TestConfigurationModel(object):
         deg_seq = [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
         G = nx.configuration_model(deg_seq, seed=12345678)
         assert (sorted((d for n, d in G.degree()), reverse=True) ==
-                     [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1])
+                [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1])
         assert (sorted((d for n, d in G.degree(range(len(deg_seq)))),
-                            reverse=True) ==
-                     [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1])
+                       reverse=True) ==
+                [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1])
 
     def test_random_seed(self):
         """Tests that each call with the same random seed generates the

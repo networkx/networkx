@@ -40,6 +40,7 @@ import sys
 import matplotlib.pyplot as plt
 from networkx import nx
 
+
 def roget_graph():
     """ Return the thesaurus graph from the roget.dat example in
     the Stanford Graph Base.

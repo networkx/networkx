@@ -291,7 +291,7 @@ class TestEdgeSubGraph(object):
     def test_correct_edges(self):
         """Tests that the subgraph has the correct edges."""
         assert ([(0, 1, 'edge01'), (3, 4, 'edge34')] ==
-                     sorted(self.H.edges(data='name')))
+                sorted(self.H.edges(data='name')))
 
     def test_add_node(self):
         """Tests that adding a node to the original graph does not
@@ -334,10 +334,10 @@ class TestEdgeSubGraph(object):
         # Making a change to G should make a change in H and vice versa.
         self.G.edges[0, 1]['name'] = 'foo'
         assert (self.G.edges[0, 1]['name'] ==
-                     self.H.edges[0, 1]['name'])
+                self.H.edges[0, 1]['name'])
         self.H.edges[3, 4]['name'] = 'bar'
         assert (self.G.edges[3, 4]['name'] ==
-                     self.H.edges[3, 4]['name'])
+                self.H.edges[3, 4]['name'])
 
     def test_graph_attr_dict(self):
         """Tests that the graph attribute dictionary of the two graphs

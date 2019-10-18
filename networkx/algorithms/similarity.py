@@ -793,7 +793,6 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
 
         yield from sorted(other, key=lambda t: t[4] + t[1].ls + t[3].ls)
 
-
     def get_edit_paths(matched_uv, pending_u, pending_v, Cv,
                        matched_gh, pending_g, pending_h, Ce, matched_cost):
         """
@@ -826,15 +825,15 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
         #debug_print('matched-cost:', matched_cost)
         #debug_print('pending-u:', pending_u)
         #debug_print('pending-v:', pending_v)
-        #debug_print(Cv.C)
+        # debug_print(Cv.C)
         #assert list(sorted(G1.nodes)) == list(sorted(list(u for u, v in matched_uv if u is not None) + pending_u))
         #assert list(sorted(G2.nodes)) == list(sorted(list(v for u, v in matched_uv if v is not None) + pending_v))
         #debug_print('pending-g:', pending_g)
         #debug_print('pending-h:', pending_h)
-        #debug_print(Ce.C)
+        # debug_print(Ce.C)
         #assert list(sorted(G1.edges)) == list(sorted(list(g for g, h in matched_gh if g is not None) + pending_g))
         #assert list(sorted(G2.edges)) == list(sorted(list(h for g, h in matched_gh if h is not None) + pending_h))
-        #debug_print()
+        # debug_print()
 
         if prune(matched_cost + Cv.ls + Ce.ls):
             return
@@ -933,7 +932,7 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
                                ).reshape(n, n)
     Cv = make_CostMatrix(C, m, n)
     #debug_print('Cv: {} x {}'.format(m, n))
-    #debug_print(Cv.C)
+    # debug_print(Cv.C)
 
     pending_g = list(G1.edges)
     pending_h = list(G2.edges)
@@ -973,8 +972,8 @@ def optimize_edit_paths(G1, G2, node_match=None, edge_match=None,
                                ).reshape(n, n)
     Ce = make_CostMatrix(C, m, n)
     #debug_print('Ce: {} x {}'.format(m, n))
-    #debug_print(Ce.C)
-    #debug_print()
+    # debug_print(Ce.C)
+    # debug_print()
 
     class MaxCost:
         def __init__(self):

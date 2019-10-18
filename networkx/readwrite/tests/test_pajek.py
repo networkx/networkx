@@ -15,8 +15,8 @@ class TestPajek(object):
         cls.G = nx.MultiDiGraph()
         cls.G.add_nodes_from(['A1', 'Bb', 'C', 'D2'])
         cls.G.add_edges_from([('A1', 'A1'), ('A1', 'Bb'), ('A1', 'C'),
-                               ('Bb', 'A1'), ('C', 'C'), ('C', 'D2'),
-                               ('D2', 'Bb')])
+                              ('Bb', 'A1'), ('C', 'C'), ('C', 'D2'),
+                              ('D2', 'Bb')])
 
         cls.G.graph['name'] = 'Tralala'
         (fd, cls.fname) = tempfile.mkstemp()
@@ -61,7 +61,7 @@ class TestPajek(object):
         import io
         G = nx.parse_pajek(self.data)
         fh = io.BytesIO()
-        nx.write_pajek(G,fh)
+        nx.write_pajek(G, fh)
         fh.seek(0)
         H = nx.read_pajek(fh)
         assert_nodes_equal(list(G), list(H))
@@ -80,7 +80,7 @@ class TestPajek(object):
 
         import warnings
         with warnings.catch_warnings(record=True) as w:
-            nx.write_pajek(G,fh)
+            nx.write_pajek(G, fh)
             assert len(w) == 4
 
     def test_noname(self):

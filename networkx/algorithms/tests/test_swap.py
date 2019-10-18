@@ -3,7 +3,7 @@ import pytest
 import networkx as nx
 
 #import random
-#random.seed(0)
+# random.seed(0)
 
 
 def test_double_edge_swap():

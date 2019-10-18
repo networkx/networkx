@@ -248,16 +248,16 @@ class TestGeneratorsRandom(object):
         assert sum(1 for _ in G.edges()) == 0
 
     def test_watts_strogatz_big_k(self):
-        #Test to make sure than n <= k
+        # Test to make sure than n <= k
         pytest.raises(NetworkXError, watts_strogatz_graph, 10, 11, 0.25)
         pytest.raises(NetworkXError, newman_watts_strogatz_graph, 10, 11, 0.25)
-        
+
         # could create an infinite loop, now doesn't
         # infinite loop used to occur when a node has degree n-1 and needs to rewire
         watts_strogatz_graph(10, 9, 0.25, seed=0)
         newman_watts_strogatz_graph(10, 9, 0.5, seed=0)
 
-        #Test k==n scenario
+        # Test k==n scenario
         watts_strogatz_graph(10, 10, 0.25, seed=0)
         newman_watts_strogatz_graph(10, 10, 0.25, seed=0)
 

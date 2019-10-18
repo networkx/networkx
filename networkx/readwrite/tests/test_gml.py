@@ -145,20 +145,20 @@ graph   [
     def test_parse_gml(self):
         G = nx.parse_gml(self.simple_data, label='label')
         assert (sorted(G.nodes()) ==
-                      ['Node 1', 'Node 2', 'Node 3'])
+                ['Node 1', 'Node 2', 'Node 3'])
         assert ([e for e in sorted(G.edges())] ==
-                      [('Node 1', 'Node 2'),
-                       ('Node 2', 'Node 3'),
-                       ('Node 3', 'Node 1')])
+                [('Node 1', 'Node 2'),
+                 ('Node 2', 'Node 3'),
+                 ('Node 3', 'Node 1')])
 
         assert ([e for e in sorted(G.edges(data=True))] ==
-                      [('Node 1', 'Node 2',
-                        {'color': {'line': 'blue', 'thickness': 3},
-                         'label': 'Edge from node 1 to node 2'}),
-                       ('Node 2', 'Node 3',
-                        {'label': 'Edge from node 2 to node 3'}),
-                       ('Node 3', 'Node 1',
-                        {'label': 'Edge from node 3 to node 1'})])
+                [('Node 1', 'Node 2',
+                  {'color': {'line': 'blue', 'thickness': 3},
+                   'label': 'Edge from node 1 to node 2'}),
+                 ('Node 2', 'Node 3',
+                  {'label': 'Edge from node 2 to node 3'}),
+                 ('Node 3', 'Node 1',
+                  {'label': 'Edge from node 3 to node 1'})])
 
     def test_read_gml(self):
         (fd, fname) = tempfile.mkstemp()
@@ -343,9 +343,9 @@ graph
         assert data == G.name
         assert {'name': data, str('data'): data} == G.graph
         assert (list(G.nodes(data=True)) ==
-                     [(0, dict(int=-1, data=dict(data=data)))])
+                [(0, dict(int=-1, data=dict(data=data)))])
         assert (list(G.edges(data=True)) ==
-                     [(0, 0, dict(float=-2.5, data=data))])
+                [(0, 0, dict(float=-2.5, data=data))])
         G = nx.Graph()
         G.graph['data'] = 'frozenset([1, 2, 3])'
         G = nx.parse_gml(nx.generate_gml(G), destringizer=literal_eval)
