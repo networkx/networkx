@@ -1,8 +1,5 @@
-try:
-    import numpy as np
-except ImportError:
-    from pytest import skip
-    skip('Numpy not available', allow_module_level=True)
+import pytest
+np = pytest.importorskip('numpy')
 import random
 
 import networkx as nx
