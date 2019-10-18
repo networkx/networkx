@@ -9,7 +9,6 @@
 # Authors: Julien Klaus <julien.klaus@uni-jena.de>
 r"""Function for computing the moral graph of a directed graph."""
 
-import networkx as nx
 from networkx.utils import not_implemented_for
 import itertools
 
