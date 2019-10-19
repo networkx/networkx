@@ -13,10 +13,6 @@
 
 from collections import Counter
 from itertools import chain
-try:
-    from itertools import zip_longest
-except ImportError:
-    from itertools import izip_longest as zip_longest
 
 import networkx as nx
 from networkx.utils import pairwise, not_implemented_for

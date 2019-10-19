@@ -18,7 +18,6 @@ from networkx.algorithms.flow import preflow_push
 from networkx.algorithms.flow import shortest_augmenting_path
 default_flow_func = edmonds_karp
 # Functions to build auxiliary data structures.
-from networkx.algorithms.flow import build_residual_network
 from .utils import build_auxiliary_node_connectivity
 from .utils import build_auxiliary_edge_connectivity
 

@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 import pytest
 numpy = pytest.importorskip('numpy')
 scipy = pytest.importorskip('scipy')

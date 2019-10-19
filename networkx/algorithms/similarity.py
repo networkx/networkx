@@ -22,9 +22,7 @@ At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
 from itertools import product
-import math
 import networkx as nx
-import sys
 
 __author__ = 'Andrey Paramonov <paramon@acdlabs.ru>'
 

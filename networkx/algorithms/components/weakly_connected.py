@@ -9,7 +9,6 @@
 # Authors: Aric Hagberg (hagberg@lanl.gov)
 #          Christopher Ellison
 """Weakly connected components."""
-import warnings as _warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 

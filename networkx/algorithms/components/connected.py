@@ -10,7 +10,6 @@
 #          Aric Hagberg (hagberg@lanl.gov)
 #          Christopher Ellison
 """Connected components."""
-import warnings as _warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 from ...utils import arbitrary_element

@@ -8,7 +8,6 @@ Generators for random intersection graphs.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-import random
 import networkx as nx
 from networkx.algorithms import bipartite
 from networkx.utils import py_random_state

@@ -19,7 +19,7 @@ In general, these functions do not check for acyclic-ness, so it is up
 to the user to check for that.
 """
 
-from collections import defaultdict, deque
+from collections import deque
 from math import gcd
 from functools import partial
 from itertools import chain

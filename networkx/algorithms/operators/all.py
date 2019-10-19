@@ -6,10 +6,7 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-try:
-    from itertools import izip_longest as zip_longest
-except ImportError:  # Python3 has zip_longest
-    from itertools import zip_longest
+from itertools import zip_longest
 import networkx as nx
 
 __author__ = """\n""".join(['Robert King <kingrobertking@gmail.com>',

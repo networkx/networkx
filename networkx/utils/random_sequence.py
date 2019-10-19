@@ -14,7 +14,6 @@ random selections.
 """
 
 import random
-import sys
 import networkx as nx
 from networkx.utils import py_random_state
 

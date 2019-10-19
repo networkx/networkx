@@ -6,7 +6,6 @@
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-from networkx.utils import not_implemented_for
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Pieter Swart (swart@lanl.gov)',
                             'Dan Schult(dschult@colgate.edu)'])
