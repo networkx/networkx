@@ -64,6 +64,8 @@ matrix:
       language: generic
       env: TRAVIS_PYTHON_VERSION=3.8
     - python: 3.6
+      env:
+      - DOCTEST=1
     - python: 3.8
     - python: pypy3.6-7.1.1
 
