@@ -24,7 +24,7 @@ import itertools
 import networkx as nx
 from networkx.classes import Graph
 from networkx.exception import NetworkXError
-from networkx.utils import accumulate
+from itertools import accumulate
 from networkx.utils import nodes_or_number
 from networkx.utils import pairwise
 
