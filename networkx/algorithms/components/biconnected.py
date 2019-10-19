@@ -10,7 +10,6 @@
 #          Dan Schult (dschult@colgate.edu)
 #          Aric Hagberg (aric.hagberg@gmail.com)
 """Biconnected components and articulation points."""
-import warnings as _warnings
 from itertools import chain
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for

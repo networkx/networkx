@@ -21,10 +21,6 @@ For more information, see the `sparse6`_ homepage.
 .. _sparse6: http://users.cecs.anu.edu.au/~bdm/data/formats.html
 
 """
-from itertools import chain
-import math
-import sys
-
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file, not_implemented_for

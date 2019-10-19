@@ -8,8 +8,6 @@
 # information.
 """Provides functions for computing the efficiency of nodes and graphs."""
 
-from itertools import permutations
-
 import networkx as nx
 from networkx.exception import NetworkXNoPath
 from ..utils import not_implemented_for

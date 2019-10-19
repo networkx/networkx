@@ -7,8 +7,6 @@
 #
 # Author: Aric Hagberg (hagberg@lanl.gov)
 """Current-flow betweenness centrality measures for subsets of nodes."""
-import itertools
-
 import networkx as nx
 from networkx.algorithms.centrality.flow_matrix import flow_matrix_row
 from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering

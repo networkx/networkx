@@ -38,7 +38,7 @@ itself. Indeed, self-loops are allowed. Node index starts from 0.
 #    All rights reserved.
 #    BSD license.
 import networkx
-from networkx.utils import is_string_like, open_file
+from networkx.utils import open_file
 __author__ = '\n'.join(['Willem Ligtenberg (w.p.a.ligtenberg@tue.nl)',
                         'Aric Hagberg (aric.hagberg@gmail.com)'])
 

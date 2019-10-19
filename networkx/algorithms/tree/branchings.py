@@ -30,7 +30,6 @@ This implementation is based on:
 
 
 import string
-import random
 from operator import itemgetter
 
 import networkx as nx

@@ -1,6 +1,3 @@
-import sys
-from warnings import warn
-
 from collections import defaultdict
 from os.path import splitext
 from contextlib import contextmanager
