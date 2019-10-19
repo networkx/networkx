@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import pytest
 import networkx as nx
-from networkx.algorithms.operators import *
 from networkx.generators.classic import empty_graph
 from networkx.testing import assert_nodes_equal, assert_edges_equal
 
@@ -52,7 +51,7 @@ class TestRelabel():
         assert H.degree(3) == 1
 
         H = nx.convert_node_labels_to_integers(G, ordering="increasing degree",
-                                            label_attribute='label')
+                                               label_attribute='label')
         degH = (d for n, d in H.degree())
         degG = (d for n, d in G.degree())
         assert sorted(degH) == sorted(degG)
@@ -76,7 +75,7 @@ class TestRelabel():
         assert sorted(degH) == sorted(degG)
 
         H = nx.convert_node_labels_to_integers(G, ordering="sorted",
-                                            label_attribute='label')
+                                               label_attribute='label')
         assert H.nodes[0]['label'] == 'A'
         assert H.nodes[1]['label'] == 'B'
         assert H.nodes[2]['label'] == 'C'

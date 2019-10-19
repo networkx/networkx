@@ -152,7 +152,7 @@ def _directed_triangles_and_degree_iter(G, nodes=None):
 
 
 @not_implemented_for('multigraph')
-def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight = 'weight'):
+def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight='weight'):
     """ Return an iterator of
     (node, total_degree, reciprocal_degree, directed_weighted_triangles).
 

@@ -14,7 +14,7 @@ For example:
   EdgeView([(0, 1), (1, 2), (2, 3)])
   >>> G.nodes[0]['label'] = 'A'
   >>> G.nodes[3]['label'] = 'B'
-  >>> node_classification.harmonic_function(G)  # doctest: +SKIP
+  >>> node_classification.harmonic_function(G)
   ['A', 'A', 'B', 'B']
 
 """

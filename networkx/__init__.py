@@ -63,8 +63,8 @@ Released under the 3-Clause BSD license::
 #
 
 import sys
-if sys.version_info[:2] < (3, 5):
-    m = "Python 3.5 or later is required for NetworkX (%d.%d detected)."
+if sys.version_info[:2] < (3, 6):
+    m = "Python 3.6 or later is required for NetworkX (%d.%d detected)."
     raise ImportError(m % sys.version_info[:2])
 del sys
 

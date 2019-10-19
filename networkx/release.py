@@ -158,7 +158,7 @@ def get_info(dynamic=True):
             vcs_info = (None, (None, None))
         else:
             revision = vcs_info[1][0]
-        #del sys.path[0]
+        # del sys.path[0]
 
     if import_failed or (dynamic and not dynamic_failed):
         # We are here if:
@@ -175,7 +175,7 @@ def get_info(dynamic=True):
 # Version information
 name = 'networkx'
 major = "2"
-minor = "4rc3"
+minor = "5rc1"
 
 
 # Declare current release as a development release.
@@ -206,7 +206,6 @@ classifiers = [
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',

@@ -40,7 +40,7 @@ class TestGomoryHuTree:
         for u, v in combinations(G, 2):
             cut_value, edge = self.minimum_edge_weight(T, u, v)
             assert (nx.minimum_cut_value(G, u, v) ==
-                         cut_value)
+                    cut_value)
 
     def test_karate_club_graph(self):
         G = nx.karate_club_graph()
@@ -51,7 +51,7 @@ class TestGomoryHuTree:
             for u, v in combinations(G, 2):
                 cut_value, edge = self.minimum_edge_weight(T, u, v)
                 assert (nx.minimum_cut_value(G, u, v) ==
-                             cut_value)
+                        cut_value)
 
     def test_davis_southern_women_graph(self):
         G = nx.davis_southern_women_graph()
@@ -62,7 +62,7 @@ class TestGomoryHuTree:
             for u, v in combinations(G, 2):
                 cut_value, edge = self.minimum_edge_weight(T, u, v)
                 assert (nx.minimum_cut_value(G, u, v) ==
-                             cut_value)
+                        cut_value)
 
     def test_florentine_families_graph(self):
         G = nx.florentine_families_graph()
@@ -73,7 +73,7 @@ class TestGomoryHuTree:
             for u, v in combinations(G, 2):
                 cut_value, edge = self.minimum_edge_weight(T, u, v)
                 assert (nx.minimum_cut_value(G, u, v) ==
-                             cut_value)
+                        cut_value)
 
     def test_les_miserables_graph_cutset(self):
         G = nx.les_miserables_graph()
@@ -84,7 +84,7 @@ class TestGomoryHuTree:
             for u, v in combinations(G, 2):
                 cut_value, edge = self.minimum_edge_weight(T, u, v)
                 assert (nx.minimum_cut_value(G, u, v) ==
-                             cut_value)
+                        cut_value)
 
     def test_karate_club_graph_cutset(self):
         G = nx.karate_club_graph()
@@ -110,7 +110,7 @@ class TestGomoryHuTree:
             for u, v in combinations(G, 2):
                 cut_value, edge = self.minimum_edge_weight(T, u, v)
                 assert (nx.minimum_cut_value(G, u, v, capacity='weight') ==
-                             cut_value)
+                        cut_value)
 
     def test_directed_raises(self):
         with pytest.raises(nx.NetworkXNotImplemented):

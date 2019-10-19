@@ -330,7 +330,7 @@ class TestMinCostFlow:
         G.nodes[4]['demand'] = -13
         G.nodes[3]['demand'] = 13
 
-        G.add_edges_from([(0,2), (0, 3), (2, 1)], capacity=20, weight=0.1)
+        G.add_edges_from([(0, 2), (0, 3), (2, 1)], capacity=20, weight=0.1)
         pytest.raises(nx.NetworkXUnfeasible, nx.min_cost_flow, G)
 
     def test_infinite_capacity_neg_digon(self):
@@ -449,15 +449,15 @@ class TestMinCostFlow:
         G[0][1]['weight'] = 0
         G.add_edge(0, 0, weight=float('inf'))
         pytest.raises(nx.NetworkXError, nx.network_simplex, G)
-        #pytest.raises(nx.NetworkXError, nx.capacity_scaling, G)
+        # pytest.raises(nx.NetworkXError, nx.capacity_scaling, G)
         G[0][0]['weight'] = 0
         G[0][1]['capacity'] = -1
         pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
-        #pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+        # pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
         G[0][1]['capacity'] = 0
         G[0][0]['capacity'] = -1
         pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
-        #pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+        # pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
 
     def test_large(self):
         fname = os.path.join(os.path.dirname(__file__), 'netgen-2.gpickle.bz2')

@@ -494,13 +494,13 @@ def minimum_weight_full_matching(G, top_nodes=None, weight='weight'):
     real weights :math:`w : E \to \mathbb{R}`. This function then produces
     a maximum matching :math:`M \subseteq E` which, since the graph is
     assumed to be complete, has cardinality
-   
+
     .. math::
        \lvert M \rvert = \min(\lvert U \rvert, \lvert V \rvert),
 
     and which minimizes the sum of the weights of the edges included in the
     matching, :math:`\sum_{e \in M} w(e)`.
-    
+
     When :math:`\lvert U \rvert = \lvert V \rvert`, this is commonly
     referred to as a perfect matching; here, since we allow
     :math:`\lvert U \rvert` and :math:`\lvert V \rvert` to differ, we

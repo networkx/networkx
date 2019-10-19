@@ -17,7 +17,7 @@ class TestGraph6Utils(object):
             assert g6.data_to_n(g6.n_to_data(i))[0] == i
             assert g6.data_to_n(g6.n_to_data(i))[1] == []
             assert (g6.data_to_n(g6.n_to_data(i) + [42, 43])[1] ==
-                         [42, 43])
+                    [42, 43])
 
 
 class TestFromGraph6Bytes(TestCase):
@@ -97,7 +97,7 @@ class TestWriteGraph6(TestCase):
             # Strip the trailing newline.
             gstr = gstr.getvalue().rstrip()
             assert (len(gstr) ==
-                         ((i - 1) * i // 2 + 5) // 6 + (1 if i < 63 else 4))
+                    ((i - 1) * i // 2 + 5) // 6 + (1 if i < 63 else 4))
 
     def test_roundtrip(self):
         for i in list(range(13)) + [31, 47, 62, 63, 64, 72]:

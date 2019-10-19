@@ -13,8 +13,6 @@ from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
 
 from networkx.algorithms.approximation import local_node_connectivity
-from networkx.algorithms.connectivity import \
-    local_node_connectivity as exact_local_node_connectivity
 
 
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>'])
@@ -181,7 +179,7 @@ def _cliques_heuristic(G, H, k, min_density):
         sh_cnumber = nx.core_number(SH)
         SG = nx.k_core(G.subgraph(SH), k)
         while not (_same(sh_cnumber) and nx.density(SH) >= min_density):
-            #!! This subgraph must be writable => .copy()
+            # This subgraph must be writable => .copy()
             SH = H.subgraph(SG).copy()
             if len(SH) <= k:
                 break

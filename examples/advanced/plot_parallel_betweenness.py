@@ -10,11 +10,6 @@ The function betweenness centrality accepts a bunch of nodes and computes
 the contribution of those nodes to the betweenness centrality of the whole
 network. Here we divide the network in chunks of nodes and we compute their
 contribution to the betweenness centrality of the whole network.
-
-This doesn't work in python2.7.13. It does work in 3.6, 3.5, 3.4, and 3.3.
-
-It may be related to this:
-https://stackoverflow.com/questions/1816958/cant-pickle-type-instancemethod-when-using-multiprocessing-pool-map
 """
 
 from multiprocessing import Pool

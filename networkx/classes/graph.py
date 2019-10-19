@@ -17,16 +17,13 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 
 For directed graphs see DiGraph and MultiDiGraph.
 """
-import warnings
 from copy import deepcopy
-from collections.abc import Mapping
 
 import networkx as nx
 from networkx.classes.coreviews import AtlasView, AdjacencyView
 from networkx.classes.reportviews import NodeView, EdgeView, DegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
-from networkx.utils import pairwise
 
 
 class Graph(object):
@@ -438,7 +435,7 @@ class Graph(object):
         See Also
         --------
         number_of_nodes, order  which are identical
-        
+
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc

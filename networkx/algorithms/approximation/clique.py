@@ -10,8 +10,6 @@
 #             Jeffery Finkelstein <jeffrey.finkelstein@gmail.com>
 #             Dan Schult <dschult@colgate.edu>
 """Functions for computing large cliques."""
-from operator import itemgetter
-
 import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.algorithms.approximation import ramsey

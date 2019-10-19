@@ -43,21 +43,9 @@ class TestDagLongestPath(object):
         For more information, see issue #1989.
 
         """
-        # TODO In Python 3, instances of the `object` class are
-        # unorderable by default, so we wouldn't need to define our own
-        # class here, we could just instantiate an instance of the
-        # `object` class. However, we still support Python 2; when
-        # support for Python 2 is dropped, this test can be simplified
-        # by replacing `Unorderable()` by `object()`.
-        class Unorderable(object):
-            def __lt__(self, other):
-                error_msg = "< not supported between instances of {} and {}"
-                types = (type(self).__name__, type(other).__name__)
-                raise TypeError(error_msg.format(types))
-
         # Create the directed path graph on four nodes in a diamond shape,
         # with nodes represented as (unorderable) Python objects.
-        nodes = [Unorderable() for n in range(4)]
+        nodes = [object() for n in range(4)]
         G = nx.DiGraph()
         G.add_edge(nodes[0], nodes[1])
         G.add_edge(nodes[0], nodes[2])
@@ -215,11 +203,11 @@ class TestDAG:
     def test_all_topological_sorts_2(self):
         DG = nx.DiGraph([(1, 3), (2, 1), (2, 4), (4, 3), (4, 5)])
         assert (sorted(nx.all_topological_sorts(DG)) ==
-                     [[2, 1, 4, 3, 5],
-                      [2, 1, 4, 5, 3],
-                      [2, 4, 1, 3, 5],
-                      [2, 4, 1, 5, 3],
-                      [2, 4, 5, 1, 3]])
+                [[2, 1, 4, 3, 5],
+                 [2, 1, 4, 5, 3],
+                 [2, 4, 1, 3, 5],
+                 [2, 4, 1, 5, 3],
+                 [2, 4, 5, 1, 3]])
 
     def test_all_topological_sorts_3(self):
         def unfeasible():
@@ -244,14 +232,14 @@ class TestDAG:
         for i in range(7):
             DG.add_node(i)
         assert (sorted(map(list, permutations(DG.nodes))) ==
-                     sorted(nx.all_topological_sorts(DG)))
+                sorted(nx.all_topological_sorts(DG)))
 
     def test_all_topological_sorts_multigraph_1(self):
         DG = nx.MultiDiGraph([(1, 2), (1, 2), (2, 3),
                               (3, 4), (3, 5), (3, 5), (3, 5)])
         assert (sorted(nx.all_topological_sorts(DG)) ==
-                     sorted([[1, 2, 3, 4, 5],
-                             [1, 2, 3, 5, 4]]))
+                sorted([[1, 2, 3, 4, 5],
+                        [1, 2, 3, 5, 4]]))
 
     def test_all_topological_sorts_multigraph_2(self):
         N = 9
@@ -260,7 +248,7 @@ class TestDAG:
             edges.extend([(i, i+1)] * i)
         DG = nx.MultiDiGraph(edges)
         assert (list(nx.all_topological_sorts(DG)) ==
-                     [list(range(1, N+1))])
+                [list(range(1, N+1))])
 
     def test_ancestors(self):
         G = nx.DiGraph()
@@ -405,7 +393,7 @@ class TestDAG:
     def test_lexicographical_topological_sort(self):
         G = nx.DiGraph([(1, 2), (2, 3), (1, 4), (1, 5), (2, 6)])
         assert (list(nx.lexicographical_topological_sort(G)) ==
-                     [1, 2, 3, 4, 5, 6])
+                [1, 2, 3, 4, 5, 6])
         assert (list(nx.lexicographical_topological_sort(
             G, key=lambda x: x)) ==
             [1, 2, 3, 4, 5, 6])
@@ -436,11 +424,7 @@ class TestDAG:
         G.add_edges_from((test_nodes[a], test_nodes[b]) for a, b in edges)
 
         sorting = list(nx.lexicographical_topological_sort(G, key=sorting_key))
-        # order reported does depend on order of list(G) in python 3.5
-        # and that is not deterministic due to dicts not being ordered until v3.6
-        # after dropping NX support for 3.5 this can become:
-        # assert_equal(sorting, test_nodes)
-        assert set(sorting) == set(test_nodes)
+        assert sorting == test_nodes
 
 
 def test_is_aperiodic_cycle():

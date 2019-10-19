@@ -1,8 +1,5 @@
-try:
-    import numpy as np
-except ImportError:
-    from pytest import skip
-    skip('Numpy not available', allow_module_level=True)
+import pytest
+np = pytest.importorskip('numpy')
 import random
 
 import networkx as nx
@@ -19,7 +16,7 @@ py_rv = random.random()
 
 
 def t(f, *args, **kwds):
-    """call one function and check if global RNG changed""" 
+    """call one function and check if global RNG changed"""
     global progress
     progress += 1
     print(progress, ",", end="")

@@ -5,6 +5,7 @@ import networkx as nx
 from networkx.algorithms.centrality import harmonic_centrality
 from networkx.testing import almost_equal
 
+
 class TestClosenessCentrality:
     @classmethod
     def setup_class(cls):
@@ -19,7 +20,7 @@ class TestClosenessCentrality:
 
         cls.Gb = nx.DiGraph()
         cls.Gb.add_edges_from([(0, 1), (0, 2), (0, 4), (2, 1),
-                                (2, 3), (4, 3)])
+                               (2, 3), (4, 3)])
 
     def test_p3_harmonic(self):
         c = harmonic_centrality(self.P3)

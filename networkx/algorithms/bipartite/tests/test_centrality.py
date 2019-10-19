@@ -2,6 +2,7 @@ import networkx as nx
 from networkx.algorithms import bipartite
 from networkx.testing import almost_equal
 
+
 class TestBipartiteCentrality(object):
 
     @classmethod
@@ -11,7 +12,7 @@ class TestBipartiteCentrality(object):
         cls.C4 = nx.cycle_graph(4)
         cls.davis = nx.davis_southern_women_graph()
         cls.top_nodes = [n for n, d in cls.davis.nodes(data=True)
-                          if d['bipartite'] == 0]
+                         if d['bipartite'] == 0]
 
     def test_degree_centrality(self):
         d = bipartite.degree_centrality(self.P4, [1, 3])

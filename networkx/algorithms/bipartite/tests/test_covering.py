@@ -19,7 +19,7 @@ class TestMinEdgeCover:
         G = nx.Graph()
         G.add_edge(0, 1)
         assert (bipartite.min_edge_cover(G) ==
-                     {(0, 1), (1, 0)})
+                {(0, 1), (1, 0)})
 
     def test_bipartite_default(self):
         G = nx.Graph()

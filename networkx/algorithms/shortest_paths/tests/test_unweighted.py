@@ -28,12 +28,12 @@ class TestUnweightedPath:
 
     def test_bidirectional_shortest_path(self):
         assert (nx.bidirectional_shortest_path(self.cycle, 0, 3) ==
-                     [0, 1, 2, 3])
+                [0, 1, 2, 3])
         assert (nx.bidirectional_shortest_path(self.cycle, 0, 4) ==
-                     [0, 6, 5, 4])
+                [0, 6, 5, 4])
         validate_grid_path(4, 4, 1, 12, nx.bidirectional_shortest_path(self.grid, 1, 12))
         assert (nx.bidirectional_shortest_path(self.directed_cycle, 0, 3) ==
-                     [0, 1, 2, 3])
+                [0, 1, 2, 3])
 
     def test_shortest_path_length(self):
         assert nx.shortest_path_length(self.cycle, 0, 3) == 3
@@ -102,7 +102,7 @@ class TestUnweightedPath:
     def test_predecessor_cutoff(self):
         G = nx.path_graph(4)
         p = nx.predecessor(G, 0, 3)
-        assert not 4 in p
+        assert 4 not in p
 
     def test_predecessor_target(self):
         G = nx.path_graph(4)

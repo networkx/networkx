@@ -2,7 +2,6 @@
 import os
 import tempfile
 import pytest
-import pytest
 pygraphviz = pytest.importorskip('pygraphviz')
 
 
@@ -92,7 +91,7 @@ class TestAGraph(object):
         G = nx.Graph()
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
-        #assert_graphs_equal(G, H)
+        # assert_graphs_equal(G, H)
         AA = nx.nx_agraph.to_agraph(H)
         HH = nx.nx_agraph.from_agraph(AA)
         assert_graphs_equal(H, HH)

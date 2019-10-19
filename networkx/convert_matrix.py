@@ -124,8 +124,8 @@ def to_pandas_adjacency(G, nodelist=None, dtype=None, order=None,
     """
     import pandas as pd
     M = to_numpy_array(G, nodelist=nodelist, dtype=dtype, order=order,
-                        multigraph_weight=multigraph_weight, weight=weight,
-                        nonedge=nonedge)
+                       multigraph_weight=multigraph_weight, weight=weight,
+                       nonedge=nonedge)
     if nodelist is None:
         nodelist = list(G)
     return pd.DataFrame(data=M, index=nodelist, columns=nodelist)
@@ -549,11 +549,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
                            'c': complex,
                            'S': str,
                            'V': 'void'}
-    try:  # Python 3.x
-        blurb = chr(1245)  # just to trigger the exception
-        kind_to_python_type['U'] = str
-    except ValueError:  # Python 2.7
-        kind_to_python_type['U'] = unicode
+    kind_to_python_type['U'] = str
     G = nx.empty_graph(0, create_using)
     n, m = A.shape
     if n != m:

@@ -76,7 +76,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
 
     Examples
     --------
-    >>> G=nx.read_shp('test.shp') # doctest: +SKIP
+    >>> G = nx.read_shp('test.shp') # doctest: +SKIP
 
     References
     ----------
@@ -274,7 +274,6 @@ def write_shp(G, outdir):
         # Create the new field
         newfield = ogr.FieldDefn(key, fields[key])
         layer.CreateField(newfield)
-
 
     drv = ogr.GetDriverByName("ESRI Shapefile")
     shpdir = drv.CreateDataSource(outdir)

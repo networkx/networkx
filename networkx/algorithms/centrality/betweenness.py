@@ -11,7 +11,6 @@
 from heapq import heappush, heappop
 from itertools import count
 
-import networkx as nx
 from networkx.utils import py_random_state
 from networkx.utils.decorators import not_implemented_for
 

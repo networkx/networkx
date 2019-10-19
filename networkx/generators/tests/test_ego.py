@@ -5,7 +5,7 @@ ego graph
 """
 
 import networkx as nx
-from networkx.testing.utils import *
+from networkx.testing.utils import assert_edges_equal, assert_nodes_equal
 
 
 class TestGeneratorEgo():

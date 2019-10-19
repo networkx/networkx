@@ -11,15 +11,15 @@ class TestTriangles:
     def test_path(self):
         G = nx.path_graph(10)
         assert (list(nx.triangles(G).values()) ==
-                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         assert (nx.triangles(G) ==
-                     {0: 0, 1: 0, 2: 0, 3: 0, 4: 0,
-                      5: 0, 6: 0, 7: 0, 8: 0, 9: 0})
+                {0: 0, 1: 0, 2: 0, 3: 0, 4: 0,
+                 5: 0, 6: 0, 7: 0, 8: 0, 9: 0})
 
     def test_cubical(self):
         G = nx.cubical_graph()
         assert (list(nx.triangles(G).values()) ==
-                     [0, 0, 0, 0, 0, 0, 0, 0])
+                [0, 0, 0, 0, 0, 0, 0, 0])
         assert nx.triangles(G, 1) == 0
         assert list(nx.triangles(G, [1, 2]).values()) == [0, 0]
         assert nx.triangles(G, 1) == 0
@@ -45,10 +45,10 @@ class TestDirectedClustering:
     def test_path(self):
         G = nx.path_graph(10, create_using=nx.DiGraph())
         assert (list(nx.clustering(G).values()) ==
-                     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         assert (nx.clustering(G) ==
-                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
-                      5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
+                {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
+                 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
 
     def test_k5(self):
         G = nx.complete_graph(5, create_using=nx.DiGraph())
@@ -56,11 +56,11 @@ class TestDirectedClustering:
         assert nx.average_clustering(G) == 1
         G.remove_edge(1, 2)
         assert (list(nx.clustering(G).values()) ==
-                     [11. / 12., 1.0, 1.0, 11. / 12., 11. / 12.])
-        assert nx.clustering(G, [1, 4]) == {1: 1.0, 4: 11. /12.}
+                [11. / 12., 1.0, 1.0, 11. / 12., 11. / 12.])
+        assert nx.clustering(G, [1, 4]) == {1: 1.0, 4: 11. / 12.}
         G.remove_edge(2, 1)
         assert (list(nx.clustering(G).values()) ==
-                     [5. / 6., 1.0, 1.0, 5. / 6., 5. / 6.])
+                [5. / 6., 1.0, 1.0, 5. / 6., 5. / 6.])
         assert nx.clustering(G, [1, 4]) == {1: 1.0, 4: 0.83333333333333337}
 
     def test_triangle_and_edge(self):
@@ -79,10 +79,10 @@ class TestDirectedWeightedClustering:
     def test_path(self):
         G = nx.path_graph(10, create_using=nx.DiGraph())
         assert (list(nx.clustering(G, weight='weight').values()) ==
-                     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         assert (nx.clustering(G, weight='weight') ==
-                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
-                      5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
+                {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
+                 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
 
     def test_k5(self):
         G = nx.complete_graph(5, create_using=nx.DiGraph())
@@ -90,11 +90,11 @@ class TestDirectedWeightedClustering:
         assert nx.average_clustering(G, weight='weight') == 1
         G.remove_edge(1, 2)
         assert (list(nx.clustering(G, weight='weight').values()) ==
-                     [11. / 12., 1.0, 1.0, 11. / 12., 11. / 12.])
-        assert nx.clustering(G, [1, 4], weight='weight') == {1: 1.0, 4: 11. /12.}
+                [11. / 12., 1.0, 1.0, 11. / 12., 11. / 12.])
+        assert nx.clustering(G, [1, 4], weight='weight') == {1: 1.0, 4: 11. / 12.}
         G.remove_edge(2, 1)
         assert (list(nx.clustering(G, weight='weight').values()) ==
-                     [5. / 6., 1.0, 1.0, 5. / 6., 5. / 6.])
+                [5. / 6., 1.0, 1.0, 5. / 6., 5. / 6.])
         assert nx.clustering(G, [1, 4], weight='weight') == {1: 1.0, 4: 0.83333333333333337}
 
     def test_triangle_and_edge(self):
@@ -114,15 +114,15 @@ class TestWeightedClustering:
     def test_path(self):
         G = nx.path_graph(10)
         assert (list(nx.clustering(G, weight='weight').values()) ==
-                     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         assert (nx.clustering(G, weight='weight') ==
-                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
-                      5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
+                {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
+                 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
 
     def test_cubical(self):
         G = nx.cubical_graph()
         assert (list(nx.clustering(G, weight='weight').values()) ==
-                     [0, 0, 0, 0, 0, 0, 0, 0])
+                [0, 0, 0, 0, 0, 0, 0, 0])
         assert nx.clustering(G, 1) == 0
         assert list(nx.clustering(G, [1, 2], weight='weight').values()) == [0, 0]
         assert nx.clustering(G, 1, weight='weight') == 0
@@ -134,7 +134,7 @@ class TestWeightedClustering:
         assert nx.average_clustering(G, weight='weight') == 1
         G.remove_edge(1, 2)
         assert (list(nx.clustering(G, weight='weight').values()) ==
-                     [5. / 6., 1.0, 1.0, 5. / 6., 5. / 6.])
+                [5. / 6., 1.0, 1.0, 5. / 6., 5. / 6.])
         assert nx.clustering(G, [1, 4], weight='weight') == {1: 1.0, 4: 0.83333333333333337}
 
     def test_triangle_and_edge(self):
@@ -154,15 +154,15 @@ class TestClustering:
     def test_path(self):
         G = nx.path_graph(10)
         assert (list(nx.clustering(G).values()) ==
-                     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         assert (nx.clustering(G) ==
-                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
-                      5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
+                {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
+                 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
 
     def test_cubical(self):
         G = nx.cubical_graph()
         assert (list(nx.clustering(G).values()) ==
-                     [0, 0, 0, 0, 0, 0, 0, 0])
+                [0, 0, 0, 0, 0, 0, 0, 0])
         assert nx.clustering(G, 1) == 0
         assert list(nx.clustering(G, [1, 2]).values()) == [0, 0]
         assert nx.clustering(G, 1) == 0
@@ -174,7 +174,7 @@ class TestClustering:
         assert nx.average_clustering(G) == 1
         G.remove_edge(1, 2)
         assert (list(nx.clustering(G).values()) ==
-                     [5. / 6., 1.0, 1.0, 5. / 6., 5. / 6.])
+                [5. / 6., 1.0, 1.0, 5. / 6., 5. / 6.])
         assert nx.clustering(G, [1, 4]) == {1: 1.0, 4: 0.83333333333333337}
 
 
@@ -209,15 +209,15 @@ class TestSquareClustering:
     def test_path(self):
         G = nx.path_graph(10)
         assert (list(nx.square_clustering(G).values()) ==
-                     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         assert (nx.square_clustering(G) ==
-                     {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
-                      5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
+                {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0,
+                 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
 
     def test_cubical(self):
         G = nx.cubical_graph()
         assert (list(nx.square_clustering(G).values()) ==
-                     [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+                [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
         assert list(nx.square_clustering(G, [1, 2]).values()) == [0.5, 0.5]
         assert nx.square_clustering(G, [1])[1] == 0.5
         assert nx.square_clustering(G, [1, 2]) == {1: 0.5, 2: 0.5}
@@ -229,7 +229,7 @@ class TestSquareClustering:
     def test_bipartite_k5(self):
         G = nx.complete_bipartite_graph(5, 5)
         assert (list(nx.square_clustering(G).values()) ==
-                     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
     def test_lind_square_clustering(self):
         """Test C4 for figure 1 Lind et al (2005)"""

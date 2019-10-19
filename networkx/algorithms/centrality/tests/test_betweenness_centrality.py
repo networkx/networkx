@@ -2,6 +2,7 @@
 import networkx as nx
 from networkx.testing import almost_equal
 
+
 def weighted_G():
     G = nx.Graph()
     G.add_edge(0, 1, weight=3)
@@ -68,7 +69,7 @@ class TestBetweennessCentrality(object):
             assert almost_equal(b[n], b_answer[n])
 
     def test_sample_from_P3(self):
-        G= nx.path_graph(3)
+        G = nx.path_graph(3)
         b_answer = {0: 0.0, 1: 1.0, 2: 0.0}
         b = nx.betweenness_centrality(G,
                                       k=3,

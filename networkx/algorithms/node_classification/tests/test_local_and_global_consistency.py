@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import pytest
-import pytest
 numpy = pytest.importorskip('numpy')
 scipy = pytest.importorskip('scipy')
 

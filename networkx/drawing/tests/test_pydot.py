@@ -6,23 +6,15 @@ try:
         from StringIO import StringIO
 except ImportError:
     from io import StringIO
-import sys
 import tempfile
 import networkx as nx
 from networkx.testing import assert_graphs_equal
 
+import pytest
+pydot = pytest.importorskip('pydot')
+
 
 class TestPydot(object):
-    @classmethod
-    def setup_class(cls):
-        '''
-        Fixture defining the `pydot` global to be the `pydot` module if both
-        importable and of sufficient version _or_ skipping this test.
-        '''
-        global pydot
-        pydot = nx.nx_pydot.setup_module(sys.modules[__name__])
-        assert pydot is not None
-
     def pydot_checks(self, G, prog):
         '''
         Validate :mod:`pydot`-based usage of the passed NetworkX graph with the

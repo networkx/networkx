@@ -8,6 +8,7 @@ import pytest
 import networkx as nx
 from networkx.testing import almost_equal
 
+
 class TestLayout(object):
 
     @classmethod

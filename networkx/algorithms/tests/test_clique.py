@@ -34,7 +34,7 @@ class TestCliques:
     def test_find_cliques2(self):
         hcl = list(nx.find_cliques(self.H))
         assert (sorted(map(sorted, hcl)) ==
-                     [[1, 2], [1, 4, 5, 6], [2, 3], [3, 4, 6]])
+                [[1, 2], [1, 4, 5, 6], [2, 3], [3, 4, 6]])
 
     def test_clique_number(self):
         G = self.G
@@ -60,19 +60,19 @@ class TestCliques:
         assert nx.number_of_cliques(G, [1, 2]) == {1: 1, 2: 2}
         assert nx.number_of_cliques(G, 2) == 2
         assert (nx.number_of_cliques(G) ==
-                     {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
-                      6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
+                {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
+                 6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
         assert (nx.number_of_cliques(G, nodes=list(G)) ==
-                     {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
-                      6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
+                {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
+                 6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
         assert (nx.number_of_cliques(G, nodes=[2, 3, 4]) ==
-                     {2: 2, 3: 1, 4: 2})
+                {2: 2, 3: 1, 4: 2})
         assert (nx.number_of_cliques(G, cliques=self.cl) ==
-                     {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
-                      6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
+                {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
+                 6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
         assert (nx.number_of_cliques(G, list(G), cliques=self.cl) ==
-                     {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
-                      6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
+                {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
+                 6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
 
     def test_node_clique_number(self):
         G = self.G
@@ -82,27 +82,27 @@ class TestCliques:
         assert nx.node_clique_number(G, [1, 2]) == {1: 4, 2: 4}
         assert nx.node_clique_number(G, 1) == 4
         assert (nx.node_clique_number(G) ==
-                     {1: 4, 2: 4, 3: 4, 4: 3, 5: 3, 6: 4,
-                      7: 3, 8: 2, 9: 2, 10: 2, 11: 2})
+                {1: 4, 2: 4, 3: 4, 4: 3, 5: 3, 6: 4,
+                 7: 3, 8: 2, 9: 2, 10: 2, 11: 2})
         assert (nx.node_clique_number(G, cliques=self.cl) ==
-                     {1: 4, 2: 4, 3: 4, 4: 3, 5: 3, 6: 4,
-                      7: 3, 8: 2, 9: 2, 10: 2, 11: 2})
+                {1: 4, 2: 4, 3: 4, 4: 3, 5: 3, 6: 4,
+                 7: 3, 8: 2, 9: 2, 10: 2, 11: 2})
 
     def test_cliques_containing_node(self):
         G = self.G
         assert (nx.cliques_containing_node(G, 1) ==
-                     [[2, 6, 1, 3]])
+                [[2, 6, 1, 3]])
         assert (list(nx.cliques_containing_node(G, [1]).values()) ==
-                     [[[2, 6, 1, 3]]])
+                [[[2, 6, 1, 3]]])
         assert ([sorted(c) for c in list(nx.cliques_containing_node(G, [1, 2]).values())] ==
-                     [[[2, 6, 1, 3]], [[2, 6, 1, 3], [2, 6, 4]]])
+                [[[2, 6, 1, 3]], [[2, 6, 1, 3], [2, 6, 4]]])
         result = nx.cliques_containing_node(G, [1, 2])
         for k, v in result.items():
             result[k] = sorted(v)
         assert (result ==
-                     {1: [[2, 6, 1, 3]], 2: [[2, 6, 1, 3], [2, 6, 4]]})
+                {1: [[2, 6, 1, 3]], 2: [[2, 6, 1, 3], [2, 6, 4]]})
         assert (nx.cliques_containing_node(G, 1) ==
-                     [[2, 6, 1, 3]])
+                [[2, 6, 1, 3]])
         expected = [{2, 6, 1, 3}, {2, 6, 4}]
         answer = [set(c) for c in nx.cliques_containing_node(G, 2)]
         assert answer in (expected, list(reversed(expected)))
@@ -115,7 +115,7 @@ class TestCliques:
         G = self.G
         B = nx.make_clique_bipartite(G)
         assert (sorted(B) ==
-                     [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+                [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
         # Project onto the nodes of the original graph.
         H = nx.project(B, range(1, 12))
         assert H.adj == G.adj
@@ -212,4 +212,4 @@ class TestEnumerateAllCliques:
                             ['a', 'b', 'c', 'e']]
 
         assert (sorted(map(sorted, cliques)) ==
-                     sorted(map(sorted, expected_cliques)))
+                sorted(map(sorted, expected_cliques)))

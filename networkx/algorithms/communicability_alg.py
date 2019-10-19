@@ -10,7 +10,7 @@ Communicability.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-from networkx.utils import *
+from networkx.utils import not_implemented_for
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Franck Kalala (franckkalala@yahoo.fr'])
 __all__ = ['communicability',

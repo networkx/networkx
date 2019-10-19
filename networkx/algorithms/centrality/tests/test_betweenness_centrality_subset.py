@@ -2,6 +2,7 @@
 import networkx as nx
 from networkx.testing import almost_equal
 
+
 class TestSubsetBetweennessCentrality:
 
     def test_K5(self):
@@ -77,21 +78,21 @@ class TestSubsetBetweennessCentrality:
         """Betweenness Centrality Subset: Diamond Multi Path"""
         G = nx.Graph()
         G.add_edges_from([
-            (1,2), 
-            (1,3), 
-            (1,4), 
-            (1,5), 
-            (1,10), 
-            (10,11), 
-            (11,12), 
-            (12,9), 
-            (2,6), 
-            (3,6), 
-            (4,6), 
-            (5,7), 
-            (7,8), 
-            (6,8), 
-            (8,9)
+            (1, 2),
+            (1, 3),
+            (1, 4),
+            (1, 5),
+            (1, 10),
+            (10, 11),
+            (11, 12),
+            (12, 9),
+            (2, 6),
+            (3, 6),
+            (4, 6),
+            (5, 7),
+            (7, 8),
+            (6, 8),
+            (8, 9)
         ])
         b = nx.betweenness_centrality_subset(
             G,
@@ -101,18 +102,18 @@ class TestSubsetBetweennessCentrality:
         )
 
         expected_b = {
-        1: 0,
-        2: 1./10,
-        3: 1./10,
-        4: 1./10,
-        5: 1./10,
-        6: 3./10,
-        7:1./10,
-        8:4./10,
-        9:0,
-        10:1./10,
-        11:1./10,
-        12:1./10,
+            1: 0,
+            2: 1./10,
+            3: 1./10,
+            4: 1./10,
+            5: 1./10,
+            6: 3./10,
+            7: 1./10,
+            8: 4./10,
+            9: 0,
+            10: 1./10,
+            11: 1./10,
+            12: 1./10,
         }
 
         for n in sorted(G):

@@ -32,6 +32,7 @@ except ImportError:
         raise ImportError("This example needs Graphviz and either "
                           "PyGraphviz or pydot")
 
+
 def lanl_graph():
     """ Return the lanl internet view graph from lanl.edges
     """

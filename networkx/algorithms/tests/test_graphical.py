@@ -42,7 +42,7 @@ class TestAtlas(object):
     @classmethod
     def setup_class(cls):
         global atlas
-        import platform
+#        import platform
 #        if platform.python_implementation() == 'Jython':
 #            raise SkipTest('graph atlas not available under Jython.')
         import networkx.generators.atlas as atlas

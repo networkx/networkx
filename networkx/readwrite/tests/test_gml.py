@@ -10,15 +10,6 @@ from networkx.readwrite.gml import literal_stringizer, literal_destringizer
 import os
 import tempfile
 
-try:
-    unicode
-except NameError:
-    unicode = str
-try:
-    unichr
-except NameError:
-    unichr = chr
-
 
 class TestGraph(object):
 
@@ -154,20 +145,20 @@ graph   [
     def test_parse_gml(self):
         G = nx.parse_gml(self.simple_data, label='label')
         assert (sorted(G.nodes()) ==
-                      ['Node 1', 'Node 2', 'Node 3'])
+                ['Node 1', 'Node 2', 'Node 3'])
         assert ([e for e in sorted(G.edges())] ==
-                      [('Node 1', 'Node 2'),
-                       ('Node 2', 'Node 3'),
-                       ('Node 3', 'Node 1')])
+                [('Node 1', 'Node 2'),
+                 ('Node 2', 'Node 3'),
+                 ('Node 3', 'Node 1')])
 
         assert ([e for e in sorted(G.edges(data=True))] ==
-                      [('Node 1', 'Node 2',
-                        {'color': {'line': 'blue', 'thickness': 3},
-                         'label': 'Edge from node 1 to node 2'}),
-                       ('Node 2', 'Node 3',
-                        {'label': 'Edge from node 2 to node 3'}),
-                       ('Node 3', 'Node 1',
-                        {'label': 'Edge from node 3 to node 1'})])
+                [('Node 1', 'Node 2',
+                  {'color': {'line': 'blue', 'thickness': 3},
+                   'label': 'Edge from node 1 to node 2'}),
+                 ('Node 2', 'Node 3',
+                  {'label': 'Edge from node 2 to node 3'}),
+                 ('Node 3', 'Node 1',
+                  {'label': 'Edge from node 3 to node 1'})])
 
     def test_read_gml(self):
         (fd, fname) = tempfile.mkstemp()
@@ -244,7 +235,7 @@ graph
         # Encoding quotes as HTML entities.
         G = nx.path_graph(1)
         G.name = "path_graph(1)"
-        attr = 'This is "quoted" and this is a copyright: ' + unichr(169)
+        attr = 'This is "quoted" and this is a copyright: ' + chr(169)
         G.nodes[0]['demo'] = attr
         fobj = tempfile.NamedTemporaryFile()
         nx.write_gml(G, fobj)
@@ -262,7 +253,7 @@ graph
         assert data == answer
 
     def test_unicode_node(self):
-        node = 'node' + unichr(169)
+        node = 'node' + chr(169)
         G = nx.Graph()
         G.add_node(node)
         fobj = tempfile.NamedTemporaryFile()
@@ -336,15 +327,12 @@ graph
 
     def test_data_types(self):
         data = [True, False, 10 ** 20, -2e33, "'", '"&&amp;&&#34;"',
-                [{(b'\xfd',): '\x7f', unichr(0x4444): (1, 2)}, (2, "3")]]
+                [{(b'\xfd',): '\x7f', chr(0x4444): (1, 2)}, (2, "3")]]
         try:  # fails under IronPython
-            data.append(unichr(0x14444))
+            data.append(chr(0x14444))
         except ValueError:
-            data.append(unichr(0x1444))
-        try:  # fails under Python 2.7
-            data.append(literal_eval('{2.3j, 1 - 2.3j, ()}'))
-        except ValueError:
-            data.append([2.3j, 1 - 2.3j, ()])
+            data.append(chr(0x1444))
+        data.append(literal_eval('{2.3j, 1 - 2.3j, ()}'))
         G = nx.Graph()
         G.name = data
         G.graph['data'] = data
@@ -353,11 +341,11 @@ graph
         gml = '\n'.join(nx.generate_gml(G, stringizer=literal_stringizer))
         G = nx.parse_gml(gml, destringizer=literal_destringizer)
         assert data == G.name
-        assert {'name': data, unicode('data'): data} == G.graph
+        assert {'name': data, str('data'): data} == G.graph
         assert (list(G.nodes(data=True)) ==
-                     [(0, dict(int=-1, data=dict(data=data)))])
+                [(0, dict(int=-1, data=dict(data=data)))])
         assert (list(G.edges(data=True)) ==
-                     [(0, 0, dict(float=-2.5, data=data))])
+                [(0, 0, dict(float=-2.5, data=data))])
         G = nx.Graph()
         G.graph['data'] = 'frozenset([1, 2, 3])'
         G = nx.parse_gml(nx.generate_gml(G), destringizer=literal_eval)
@@ -369,7 +357,7 @@ graph
 ]"""
         G = nx.parse_gml(gml)
         assert (
-            '&"\x0f' + unichr(0x4444) +
+            '&"\x0f' + chr(0x4444) +
             '&#1234567890;&#x1234567890abcdef;&unknown;' ==
             G.name)
         gml = '\n'.join(nx.generate_gml(G))
@@ -393,7 +381,7 @@ graph
         def assert_parse_error(gml):
             pytest.raises(nx.NetworkXError, nx.parse_gml, gml)
 
-        assert_parse_error(['graph [\n\n', unicode(']')])
+        assert_parse_error(['graph [\n\n', str(']')])
         assert_parse_error('')
         assert_parse_error('Creator ""')
         assert_parse_error('0')

@@ -65,7 +65,7 @@ class TestGeneratorThreshold():
         assert nxt.uncompact([3, 1, 2]) == ['d', 'd', 'd', 'i', 'd', 'd']
         assert nxt.uncompact(['d', 'd', 'i', 'd']) == ['d', 'd', 'i', 'd']
         assert (nxt.uncompact(nxt.uncompact([(1, 'd'), (2, 'd'), (3, 'i'), (0, 'd')])) ==
-                     nxt.uncompact([(1, 'd'), (2, 'd'), (3, 'i'), (0, 'd')]))
+                nxt.uncompact([(1, 'd'), (2, 'd'), (3, 'i'), (0, 'd')]))
         assert pytest.raises(TypeError, nxt.uncompact, [3., 1., 2.])
 
     def test_creation_sequence_to_weights(self):
@@ -77,7 +77,7 @@ class TestGeneratorThreshold():
         with pytest.raises(ValueError):
             nxt.weights_to_creation_sequence(deg, with_labels=True, compact=True)
         assert (nxt.weights_to_creation_sequence(deg, with_labels=True) ==
-                     [(3, 'd'), (1, 'd'), (2, 'd'), (0, 'd')])
+                [(3, 'd'), (1, 'd'), (2, 'd'), (0, 'd')])
         assert nxt.weights_to_creation_sequence(deg, compact=True) == [4]
 
     def test_find_alternating_4_cycle(self):
@@ -92,7 +92,7 @@ class TestGeneratorThreshold():
         for n, m in [(3, 0), (0, 3), (0, 2), (0, 1), (1, 3),
                      (3, 1), (1, 2), (2, 3)]:
             assert (nxt.shortest_path(cs1, n, m) ==
-                         nx.shortest_path(G, n, m))
+                    nx.shortest_path(G, n, m))
 
         spl = nxt.shortest_path_length(cs1, 3)
         spl2 = nxt.shortest_path_length([t for v, t in cs1], 2)
@@ -114,15 +114,15 @@ class TestGeneratorThreshold():
     def test_shortest_path_length(self):
         assert nxt.shortest_path_length([3, 1, 2], 1) == [1, 0, 1, 2, 1, 1]
         assert (nxt.shortest_path_length(['d', 'd', 'd', 'i', 'd', 'd'], 1) ==
-                     [1, 0, 1, 2, 1, 1])
+                [1, 0, 1, 2, 1, 1])
         assert (nxt.shortest_path_length(('d', 'd', 'd', 'i', 'd', 'd'), 1) ==
-                     [1, 0, 1, 2, 1, 1])
+                [1, 0, 1, 2, 1, 1])
         assert pytest.raises(TypeError, nxt.shortest_path, [3., 1., 2.], 1)
 
     def random_threshold_sequence(self):
         assert len(nxt.random_threshold_sequence(10, 0.5)) == 10
         assert (nxt.random_threshold_sequence(10, 0.5, seed=42) ==
-                     ['d', 'i', 'd', 'd', 'd', 'i', 'i', 'i', 'd', 'd'])
+                ['d', 'i', 'd', 'd', 'd', 'i', 'i', 'i', 'd', 'd'])
         assert pytest.raises(ValueError, nxt.random_threshold_sequence, 10, 1.5)
 
     def test_right_d_threshold_sequence(self):
@@ -142,19 +142,19 @@ class TestGeneratorThreshold():
 
         wseq = nxt.creation_sequence_to_weights(nxt.uncompact([3, 1, 2, 3, 3, 2, 3]))
         assert (wseq ==
-                     [s * 0.125 for s in [4, 4, 4, 3, 5, 5, 2, 2, 2, 6, 6, 6, 1, 1, 7, 7, 7]])
+                [s * 0.125 for s in [4, 4, 4, 3, 5, 5, 2, 2, 2, 6, 6, 6, 1, 1, 7, 7, 7]])
 
         wseq = nxt.creation_sequence_to_weights([3, 1, 2, 3, 3, 2, 3])
         assert (wseq ==
-                     [s * 0.125 for s in [4, 4, 4, 3, 5, 5, 2, 2, 2, 6, 6, 6, 1, 1, 7, 7, 7]])
+                [s * 0.125 for s in [4, 4, 4, 3, 5, 5, 2, 2, 2, 6, 6, 6, 1, 1, 7, 7, 7]])
 
         wseq = nxt.creation_sequence_to_weights(list(enumerate('ddidiiidididi')))
         assert (wseq ==
-                     [s * 0.1 for s in [5, 5, 4, 6, 3, 3, 3, 7, 2, 8, 1, 9, 0]])
+                [s * 0.1 for s in [5, 5, 4, 6, 3, 3, 3, 7, 2, 8, 1, 9, 0]])
 
         wseq = nxt.creation_sequence_to_weights('ddidiiidididi')
         assert (wseq ==
-                     [s * 0.1 for s in [5, 5, 4, 6, 3, 3, 3, 7, 2, 8, 1, 9, 0]])
+                [s * 0.1 for s in [5, 5, 4, 6, 3, 3, 3, 7, 2, 8, 1, 9, 0]])
 
         wseq = nxt.creation_sequence_to_weights('ddidiiidididid')
         ws = [s / float(12) for s in [6, 6, 5, 7, 4, 4, 4, 8, 3, 9, 2, 10, 1, 11]]
@@ -184,7 +184,7 @@ class TestGeneratorThreshold():
         G = nxt.threshold_graph(cs)
         assert nxt.density('ddiiddid') == nx.density(G)
         assert (sorted(nxt.degree_sequence(cs)) ==
-                     sorted(d for n, d in G.degree()))
+                sorted(d for n, d in G.degree()))
 
         ts = nxt.triangle_sequence(cs)
         assert ts == list(nx.triangles(G).values())
@@ -236,6 +236,6 @@ class TestGeneratorThreshold():
         cs = 'ddiiddid'
         G = nxt.threshold_graph(cs)
         assert pytest.raises(nx.exception.NetworkXError,
-                      nxt.threshold_graph, cs, create_using=nx.DiGraph())
+                             nxt.threshold_graph, cs, create_using=nx.DiGraph())
         MG = nxt.threshold_graph(cs, create_using=nx.MultiGraph())
         assert sorted(MG.edges()) == sorted(G.edges())

@@ -138,7 +138,7 @@ class TestGeneratorClassic():
         assert_edges_equal(mb.edges(), b.edges())
 
     def test_binomial_tree(self):
-        for n in range(0,4):
+        for n in range(0, 4):
             b = nx.binomial_tree(n)
             assert nx.number_of_nodes(b) == 2**n
             assert nx.number_of_edges(b) == (2**n - 1)
@@ -350,7 +350,7 @@ class TestGeneratorClassic():
         p = nx.path_graph(10)
         assert nx.is_connected(p)
         assert (sorted(d for n, d in p.degree()) ==
-                     [1, 1, 2, 2, 2, 2, 2, 2, 2, 2])
+                [1, 1, 2, 2, 2, 2, 2, 2, 2, 2])
         assert p.order() - 1 == p.size()
 
         dp = nx.path_graph(3, create_using=nx.DiGraph)
@@ -377,7 +377,7 @@ class TestGeneratorClassic():
 
         s = star_graph(10)
         assert (sorted(d for n, d in s.degree()) ==
-                     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10])
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10])
 
         pytest.raises(nx.NetworkXError,
                       star_graph, 10, create_using=nx.DiGraph)
@@ -395,7 +395,7 @@ class TestGeneratorClassic():
     def test_turan_graph(self):
         assert nx.number_of_edges(nx.turan_graph(13, 4)) == 63
         assert is_isomorphic(nx.turan_graph(13, 4),
-                                  nx.complete_multipartite_graph(3, 4, 3, 3))
+                             nx.complete_multipartite_graph(3, 4, 3, 3))
 
     def test_wheel_graph(self):
         for n, G in [(0, nx.null_graph()), (1, nx.empty_graph(1)),
@@ -406,7 +406,7 @@ class TestGeneratorClassic():
 
         g = nx.wheel_graph(10)
         assert (sorted(d for n, d in g.degree()) ==
-                     [3, 3, 3, 3, 3, 3, 3, 3, 3, 9])
+                [3, 3, 3, 3, 3, 3, 3, 3, 3, 9])
 
         pytest.raises(nx.NetworkXError,
                       nx.wheel_graph, 10, create_using=nx.DiGraph)

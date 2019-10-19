@@ -30,7 +30,7 @@ class TestModularity(object):
         permutation = [4, 0, 1, 2, 3]
         npt.assert_equal(nx.modularity_matrix(self.G), B)
         npt.assert_equal(nx.modularity_matrix(self.G, nodelist=permutation),
-                     B[numpy.ix_(permutation, permutation)])
+                         B[numpy.ix_(permutation, permutation)])
 
     def test_modularity_weight(self):
         "Modularity matrix with weights"
@@ -61,5 +61,5 @@ class TestModularity(object):
         mm = nx.directed_modularity_matrix(self.DG,  nodelist=sorted(self.DG))
         npt.assert_equal(mm, B)
         npt.assert_equal(nx.directed_modularity_matrix(self.DG,
-                                                   nodelist=node_permutation),
-                     B[numpy.ix_(idx_permutation, idx_permutation)])
+                                                       nodelist=node_permutation),
+                         B[numpy.ix_(idx_permutation, idx_permutation)])

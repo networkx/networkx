@@ -34,7 +34,7 @@ class TestWikipediaExample(object):
         g2.add_edges_from(self.g2edges)
         gm = iso.GraphMatcher(g1, g2)
         assert gm.is_isomorphic()
-        #Just testing some cases
+        # Just testing some cases
         assert gm.subgraph_is_monomorphic()
 
         mapping = sorted(gm.mapping.items())
@@ -52,7 +52,6 @@ class TestWikipediaExample(object):
         g3 = g2.subgraph([1, 2, 3, 4])
         gm = iso.GraphMatcher(g1, g3)
         assert gm.subgraph_is_isomorphic()
-
 
     def test_subgraph_mono(self):
         g1 = nx.Graph()
@@ -112,7 +111,7 @@ class TestVF2GraphDB(object):
         graph = self.create_graph(os.path.join(head, 'si2_b06_m200.B99'))
         gm = iso.GraphMatcher(graph, subgraph)
         assert gm.subgraph_is_isomorphic()
-        #Just testing some cases
+        # Just testing some cases
         assert gm.subgraph_is_monomorphic()
 
     # There isn't a similar test implemented for subgraph monomorphism,
@@ -169,7 +168,7 @@ def test_multiedge():
             else:
                 gm = iso.DiGraphMatcher(g1, g2)
             assert gm.is_isomorphic()
-            #Testing if monomorphism works in multigraphs
+            # Testing if monomorphism works in multigraphs
             assert gm.subgraph_is_monomorphic()
 
 
@@ -191,12 +190,12 @@ def test_selfloop():
             else:
                 gm = iso.DiGraphMatcher(g1, g2)
             assert gm.is_isomorphic()
-            
+
 
 def test_selfloop_mono():
     # Simple test for graphs with selfloops
     edges0 = [(0, 1), (0, 2), (1, 2), (1, 3),
-             (2, 4), (3, 1), (3, 2), (4, 2), (4, 5), (5, 4)]
+              (2, 4), (3, 1), (3, 2), (4, 2), (4, 5), (5, 4)]
     edges = edges0 + [(2, 2)]
     nodes = list(range(6))
 
@@ -252,7 +251,7 @@ def test_monomorphism_iter1():
     assert {'A': 'Z', 'B': 'X', 'C': 'Y'} in x
     assert len(x) == 3
     gm21 = iso.DiGraphMatcher(g2, g1)
-    #Check if StopIteration exception returns False
+    # Check if StopIteration exception returns False
     assert not gm21.subgraph_is_monomorphic()
 
 
@@ -299,6 +298,7 @@ def test_multiple():
 #            assert_true(m['B'] == 'B')
 #            assert_true('C' not in m)
 
+
 def test_noncomparable_nodes():
     node1 = object()
     node2 = object()
@@ -308,7 +308,7 @@ def test_noncomparable_nodes():
     G = nx.path_graph([node1, node2, node3])
     gm = iso.GraphMatcher(G, G)
     assert gm.is_isomorphic()
-    #Just testing some cases
+    # Just testing some cases
     assert gm.subgraph_is_monomorphic()
 
     # DiGraph
@@ -316,5 +316,5 @@ def test_noncomparable_nodes():
     H = nx.path_graph([node3, node2, node1], create_using=nx.DiGraph)
     dgm = iso.DiGraphMatcher(G, H)
     assert dgm.is_isomorphic()
-    #Just testing some cases
+    # Just testing some cases
     assert gm.subgraph_is_monomorphic()

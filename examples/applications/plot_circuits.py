@@ -96,5 +96,6 @@ def main():
     formula = circuit_to_formula(circuit)
     print(formula_to_string(formula))
 
+
 if __name__ == '__main__':
     main()

@@ -51,7 +51,7 @@ How to make a new release of ``networkx``
 
    git clean -fxd
    python setup.py sdist bdist_wheel
-   twine upload -s dist/networkx*.zip
+   twine upload -s dist/*
 
 - Update documentation on the web:
   The documentation is kept in a separate repo: networkx/documentation
@@ -62,8 +62,8 @@ How to make a new release of ``networkx``
     Assuming you are at the top-level of the ``documentation`` repo::
 
       cp -a latest networkx-<major>.<minor> 
-      git add networkx-<major>.<minor>
       ln -sfn networkx-<major>.<minor> stable
+      git add networkx-<major>.<minor> stable
       git commit -m "Add <major>.<minor> docs"
       # maybe squash all the Deploy GitHub Pages commits
       # git rebase -i HEAD~XX where XX is the number of commits back

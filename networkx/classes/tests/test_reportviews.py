@@ -27,10 +27,10 @@ class TestNodeView(object):
         G = self.G.copy()
         nv = G.nodes
         assert 7 in nv
-        assert not 9 in nv
+        assert 9 not in nv
         G.remove_node(7)
         G.add_node(9)
-        assert not 7 in nv
+        assert 7 not in nv
         assert 9 in nv
 
     def test_getitem(self):
@@ -145,7 +145,7 @@ class TestNodeDataView(object):
             if n == 3:
                 assert d == 'bar'
             else:
-                assert d == None
+                assert d is None
         # data='foo', default=1
         for n, d in G.nodes.data('foo', default=1):
             if n == 3:

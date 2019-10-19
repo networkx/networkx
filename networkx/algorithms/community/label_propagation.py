@@ -91,14 +91,13 @@ def asyn_lpa_communities(G, weight=None, seed=None):
             max_freq = max(label_freq.values())
             best_labels = [label for label, freq in label_freq.items()
                            if freq == max_freq]
-            
+
             # Continue until all nodes have a majority label
             if labels[node] not in best_labels:
                 labels[node] = seed.choice(best_labels)
                 cont = True
 
-    # TODO In Python 3.3 or later, this should be `yield from ...`.
-    return iter(groups(labels).values())
+    yield from groups(labels).values()
 
 
 @not_implemented_for('directed')

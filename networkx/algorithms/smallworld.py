@@ -75,7 +75,7 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
 
     G = G.copy()
     keys, degrees = zip(*G.degree())  # keys, degree
-    cdf = nx.utils.cumulative_distribution(degrees)  # cdf of degree
+    cdf = cumulative_distribution(degrees)  # cdf of degree
     nnodes = len(G)
     nedges = nx.number_of_edges(G)
     niter = niter*nedges

@@ -77,8 +77,8 @@ class TestMaximalIndependantSet(object):
         G = self.florentine
         indep = nx.maximal_independent_set(G, ["Medici", "Bischeri"])
         assert (sorted(indep) ==
-                     sorted(["Medici", "Bischeri", "Castellani", "Pazzi",
-                             "Ginori", "Lamberteschi"]))
+                sorted(["Medici", "Bischeri", "Castellani", "Pazzi",
+                        "Ginori", "Lamberteschi"]))
 
     def test_bipartite(self):
         G = nx.complete_bipartite_graph(12, 34)

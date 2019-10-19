@@ -104,8 +104,8 @@ def test_directed_node_connectivity():
     D = nx.cycle_graph(10).to_directed()  # 2 reciprocal edges
     assert 1 == approx.node_connectivity(G)
     assert 1 == approx.node_connectivity(G, 1, 4)
-    assert 2 ==  approx.node_connectivity(D)
-    assert 2 ==  approx.node_connectivity(D, 1, 4)
+    assert 2 == approx.node_connectivity(D)
+    assert 2 == approx.node_connectivity(D, 1, 4)
 
 
 class TestAllPairsNodeConnectivityApprox:
@@ -122,8 +122,8 @@ class TestAllPairsNodeConnectivityApprox:
         cls.K10 = nx.complete_graph(10)
         cls.K5 = nx.complete_graph(5)
         cls.G_list = [cls.path, cls.directed_path, cls.cycle,
-                       cls.directed_cycle, cls.gnp, cls.directed_gnp, cls.K10,
-                       cls.K5, cls.K20]
+                      cls.directed_cycle, cls.gnp, cls.directed_gnp, cls.K10,
+                      cls.K5, cls.K20]
 
     def test_cycles(self):
         K_undir = approx.all_pairs_node_connectivity(self.cycle)

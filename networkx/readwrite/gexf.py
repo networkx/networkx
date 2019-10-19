@@ -117,7 +117,7 @@ def generate_gexf(G, encoding='utf-8', prettyprint=True, version='1.2draft'):
     >>> linefeed = chr(10) # linefeed=\n
     >>> s = linefeed.join(nx.generate_gexf(G))  # doctest: +SKIP
     >>> for line in nx.generate_gexf(G):  # doctest: +SKIP
-    ...    print line
+    ...    print(line)
 
     Notes
     -----

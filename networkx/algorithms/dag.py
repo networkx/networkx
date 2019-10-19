@@ -19,7 +19,7 @@ In general, these functions do not check for acyclic-ness, so it is up
 to the user to check for that.
 """
 
-from collections import defaultdict, deque
+from collections import deque
 from math import gcd
 from functools import partial
 from itertools import chain
@@ -504,7 +504,7 @@ def transitive_closure(G, reflexive=False):
         is a reflexive tranistive closure of G.
         If False (the default) non-trivial cycles create self-loops.
         If None, self-loops are not created.
-        
+
     Returns
     -------
     NetworkX DiGraph

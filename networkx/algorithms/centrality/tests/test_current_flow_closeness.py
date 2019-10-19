@@ -6,6 +6,7 @@ scipy = pytest.importorskip('scipy')
 import networkx as nx
 from networkx.testing import almost_equal
 
+
 class TestFlowClosenessCentrality(object):
 
     def test_K4(self):

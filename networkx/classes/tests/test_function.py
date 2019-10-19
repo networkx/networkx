@@ -2,7 +2,7 @@
 import random
 import pytest
 import networkx as nx
-from networkx.testing.utils import *
+from networkx.testing.utils import assert_edges_equal, assert_nodes_equal
 
 
 class TestFunction(object):
@@ -27,7 +27,7 @@ class TestFunction(object):
         assert_edges_equal(self.G.edges(nbunch=[0, 1, 3]),
                            list(nx.edges(self.G, nbunch=[0, 1, 3])))
         assert (sorted(self.DG.edges(nbunch=[0, 1, 3])) ==
-                     sorted(nx.edges(self.DG, nbunch=[0, 1, 3])))
+                sorted(nx.edges(self.DG, nbunch=[0, 1, 3])))
 
     def test_degree(self):
         assert_edges_equal(self.G.degree(), list(nx.degree(self.G)))
@@ -35,11 +35,11 @@ class TestFunction(object):
         assert_edges_equal(self.G.degree(nbunch=[0, 1]),
                            list(nx.degree(self.G, nbunch=[0, 1])))
         assert (sorted(self.DG.degree(nbunch=[0, 1])) ==
-                     sorted(nx.degree(self.DG, nbunch=[0, 1])))
+                sorted(nx.degree(self.DG, nbunch=[0, 1])))
         assert_edges_equal(self.G.degree(weight='weight'),
                            list(nx.degree(self.G, weight='weight')))
         assert (sorted(self.DG.degree(weight='weight')) ==
-                     sorted(nx.degree(self.DG, weight='weight')))
+                sorted(nx.degree(self.DG, weight='weight')))
 
     def test_neighbors(self):
         assert list(self.G.neighbors(1)) == list(nx.neighbors(self.G, 1))
@@ -161,13 +161,13 @@ class TestFunction(object):
 
     def test_subgraph(self):
         assert (self.G.subgraph([0, 1, 2, 4]).adj ==
-                     nx.subgraph(self.G, [0, 1, 2, 4]).adj)
+                nx.subgraph(self.G, [0, 1, 2, 4]).adj)
         assert (self.DG.subgraph([0, 1, 2, 4]).adj ==
-                     nx.subgraph(self.DG, [0, 1, 2, 4]).adj)
+                nx.subgraph(self.DG, [0, 1, 2, 4]).adj)
         assert (self.G.subgraph([0, 1, 2, 4]).adj ==
-                     nx.induced_subgraph(self.G, [0, 1, 2, 4]).adj)
+                nx.induced_subgraph(self.G, [0, 1, 2, 4]).adj)
         assert (self.DG.subgraph([0, 1, 2, 4]).adj ==
-                     nx.induced_subgraph(self.DG, [0, 1, 2, 4]).adj)
+                nx.induced_subgraph(self.DG, [0, 1, 2, 4]).adj)
         # subgraph-subgraph chain is allowed in function interface
         H = nx.induced_subgraph(self.G.subgraph([0, 1, 2, 4]), [0, 1, 4])
         assert H._graph is not self.G
@@ -175,9 +175,9 @@ class TestFunction(object):
 
     def test_edge_subgraph(self):
         assert (self.G.edge_subgraph([(1, 2), (0, 3)]).adj ==
-                     nx.edge_subgraph(self.G, [(1, 2), (0, 3)]).adj)
+                nx.edge_subgraph(self.G, [(1, 2), (0, 3)]).adj)
         assert (self.DG.edge_subgraph([(1, 2), (0, 3)]).adj ==
-                     nx.edge_subgraph(self.DG, [(1, 2), (0, 3)]).adj)
+                nx.edge_subgraph(self.DG, [(1, 2), (0, 3)]).adj)
 
     def test_restricted_view(self):
         H = nx.restricted_view(self.G, [0, 2, 5], [(1, 2), (3, 4)])
@@ -215,7 +215,7 @@ class TestFunction(object):
 
     def test_freeze(self):
         G = nx.freeze(self.G)
-        assert G.frozen == True
+        assert G.frozen
         pytest.raises(nx.NetworkXError, G.add_node, 1)
         pytest.raises(nx.NetworkXError, G.add_nodes_from, [1])
         pytest.raises(nx.NetworkXError, G.remove_node, 1)
@@ -227,10 +227,10 @@ class TestFunction(object):
         pytest.raises(nx.NetworkXError, G.clear)
 
     def test_is_frozen(self):
-        assert nx.is_frozen(self.G) == False
+        assert not nx.is_frozen(self.G)
         G = nx.freeze(self.G)
         assert G.frozen == nx.is_frozen(self.G)
-        assert G.frozen == True
+        assert G.frozen
 
     def test_info(self):
         G = nx.path_graph(5)

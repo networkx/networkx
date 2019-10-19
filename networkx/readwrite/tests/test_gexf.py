@@ -465,7 +465,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         nx.write_gexf(G, fh)
         fh.seek(0)
         H = nx.read_gexf(fh, node_type=int)
-        assert H.nodes[1]['testattr'] is True
+        assert H.nodes[1]['testattr']
 
     # Test for NaN, INF and -INF
     def test_specials(self):
@@ -475,9 +475,6 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         G.add_node(1, testattr=inf, strdata='inf', key='a')
         G.add_node(2, testattr=nan, strdata='nan', key='b')
         G.add_node(3, testattr=-inf, strdata='-inf', key='c')
-        fh = io.BytesIO()
-        nx.write_gexf(G, fh)
-        fh.seek(0)
         fh = io.BytesIO()
         nx.write_gexf(G, fh)
         fh.seek(0)
@@ -522,7 +519,8 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert (
             sorted(sorted(e) for e in G.edges()) ==
-            sorted(sorted(e) for e in H.edges()))
+            sorted(sorted(e) for e in H.edges())
+        )
 
     def test_multigraph_with_missing_attributes(self):
         G = nx.MultiGraph()
@@ -537,7 +535,8 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert (
             sorted(sorted(e) for e in G.edges()) ==
-            sorted(sorted(e) for e in H.edges()))
+            sorted(sorted(e) for e in H.edges())
+        )
 
     def test_missing_viz_attributes(self):
         G = nx.Graph()
@@ -554,7 +553,8 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert (
             sorted(sorted(e) for e in G.edges()) ==
-            sorted(sorted(e) for e in H.edges()))
+            sorted(sorted(e) for e in H.edges())
+        )
 
         # Second graph for the other branch
         G = nx.Graph()
@@ -571,7 +571,8 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert (
             sorted(sorted(e) for e in G.edges()) ==
-            sorted(sorted(e) for e in H.edges()))
+            sorted(sorted(e) for e in H.edges())
+        )
 
     def test_slice_and_spell(self):
         # Test spell first, so version = 1.2
@@ -585,7 +586,8 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert (
             sorted(sorted(e) for e in G.edges()) ==
-            sorted(sorted(e) for e in H.edges()))
+            sorted(sorted(e) for e in H.edges())
+        )
 
         G = nx.Graph()
         G.add_node(0, label='1', color='green')
@@ -597,7 +599,8 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert (
             sorted(sorted(e) for e in G.edges()) ==
-            sorted(sorted(e) for e in H.edges()))
+            sorted(sorted(e) for e in H.edges())
+        )
 
     def test_add_parent(self):
         G = nx.Graph()
@@ -609,4 +612,5 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert sorted(G.nodes()) == sorted(H.nodes())
         assert (
             sorted(sorted(e) for e in G.edges()) ==
-            sorted(sorted(e) for e in H.edges()))
+            sorted(sorted(e) for e in H.edges())
+        )

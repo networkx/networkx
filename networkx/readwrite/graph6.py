@@ -21,7 +21,6 @@ For more information, see the `graph6`_ homepage.
 
 """
 from itertools import islice
-import sys
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -118,10 +117,7 @@ def from_graph6_bytes(string):
     if string.startswith(b'>>graph6<<'):
         string = string[10:]
 
-    if sys.version_info < (3, ):
-        data = [ord(c) - 63 for c in string]
-    else:
-        data = [c - 63 for c in string]
+    data = [c - 63 for c in string]
     if any(c > 63 for c in data):
         raise ValueError('each input character must be in range(63, 127)')
 
@@ -165,7 +161,7 @@ def to_graph6_bytes(G, nodes=None, header=True):
 
     Examples
     --------
-    >>> nx.to_graph6_bytes(nx.path_graph(2)) # doctest: +SKIP
+    >>> nx.to_graph6_bytes(nx.path_graph(2))
     b'>>graph6<<A_\\n'
 
     See Also
@@ -292,7 +288,7 @@ def write_graph6(G, path, nodes=None, header=True):
         >>> with tempfile.NamedTemporaryFile() as f:
         ...     nx.write_graph6(nx.path_graph(2), f.name)
         ...     _ = f.seek(0)
-        ...     print(f.read())  # doctest: +SKIP
+        ...     print(f.read())
         b'>>graph6<<A_\\n'
 
     See Also
@@ -352,7 +348,7 @@ def write_graph6_file(G, f, nodes=None, header=True):
         >>> with tempfile.NamedTemporaryFile() as f:
         ...     nx.write_graph6(nx.path_graph(2), f)
         ...     _ = f.seek(0)
-        ...     print(f.read())  # doctest: +SKIP
+        ...     print(f.read())
         b'>>graph6<<A_\\n'
 
     See Also

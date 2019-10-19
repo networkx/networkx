@@ -81,9 +81,8 @@ class TestEdgelist:
         bytesIO = io.BytesIO(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=True)
         assert_edges_equal(G.edges(data=True),
-                        [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
-                        
-        
+                           [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
+
         s = """\
 # comment line
 1 2 {'weight':2.0}
@@ -97,7 +96,7 @@ class TestEdgelist:
         StringIO = io.StringIO(s)
         G = nx.read_edgelist(StringIO, nodetype=int, data=True)
         assert_edges_equal(G.edges(data=True),
-                        [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
+                           [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
 
     def test_write_edgelist_1(self):
         fh = io.BytesIO()
@@ -135,12 +134,8 @@ class TestEdgelist:
 
     def test_unicode(self):
         G = nx.Graph()
-        try:  # Python 3.x
-            name1 = chr(2344) + chr(123) + chr(6543)
-            name2 = chr(5543) + chr(1543) + chr(324)
-        except ValueError:  # Python 2.6+
-            name1 = unichr(2344) + unichr(123) + unichr(6543)
-            name2 = unichr(5543) + unichr(1543) + unichr(324)
+        name1 = chr(2344) + chr(123) + chr(6543)
+        name2 = chr(5543) + chr(1543) + chr(324)
         G.add_edge(name1, 'Radiohead', **{name2: 3})
         fd, fname = tempfile.mkstemp()
         nx.write_edgelist(G, fname)
@@ -151,12 +146,8 @@ class TestEdgelist:
 
     def test_latin1_issue(self):
         G = nx.Graph()
-        try:  # Python 3.x
-            name1 = chr(2344) + chr(123) + chr(6543)
-            name2 = chr(5543) + chr(1543) + chr(324)
-        except ValueError:  # Python 2.6+
-            name1 = unichr(2344) + unichr(123) + unichr(6543)
-            name2 = unichr(5543) + unichr(1543) + unichr(324)
+        name1 = chr(2344) + chr(123) + chr(6543)
+        name2 = chr(5543) + chr(1543) + chr(324)
         G.add_edge(name1, 'Radiohead', **{name2: 3})
         fd, fname = tempfile.mkstemp()
         pytest.raises(UnicodeEncodeError,
@@ -167,13 +158,8 @@ class TestEdgelist:
 
     def test_latin1(self):
         G = nx.Graph()
-        try:  # Python 3.x
-            blurb = chr(1245)  # just to trigger the exception
-            name1 = 'Bj' + chr(246) + 'rk'
-            name2 = chr(220) + 'ber'
-        except ValueError:  # Python 2.6+
-            name1 = 'Bj' + unichr(246) + 'rk'
-            name2 = unichr(220) + 'ber'
+        name1 = 'Bj' + chr(246) + 'rk'
+        name2 = chr(220) + 'ber'
         G.add_edge(name1, 'Radiohead', **{name2: 3})
         fd, fname = tempfile.mkstemp()
         nx.write_edgelist(G, fname, encoding='latin-1')

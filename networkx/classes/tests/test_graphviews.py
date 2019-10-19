@@ -35,17 +35,19 @@ class TestReverseView(object):
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
+
             def my_method(self):
                 return "me"
+
             def to_directed_class(self):
                 return MyGraph()
 
         M = MyGraph()
         M.add_edge(1, 2)
         RM = nx.reverse_view(M)
-        print("RM class",RM.__class__)
+        print("RM class", RM.__class__)
         RMC = RM.copy()
-        print("RMC class",RMC.__class__)
+        print("RMC class", RMC.__class__)
         print(RMC.edges)
         assert RMC.has_edge(2, 1)
         assert RMC.my_method() == "me"
@@ -172,8 +174,8 @@ class TestChainsOfViews(object):
         cls.Rv = cls.DG.reverse()
         cls.MRv = cls.MDG.reverse()
         cls.graphs = [cls.G, cls.DG, cls.MG, cls.MDG,
-                       cls.Gv, cls.DGv, cls.MGv, cls.MDGv,
-                       cls.Rv, cls.MRv]
+                      cls.Gv, cls.DGv, cls.MGv, cls.MDGv,
+                      cls.Rv, cls.MRv]
         for G in cls.graphs:
             G.edges, G.nodes, G.degree
 
@@ -311,8 +313,10 @@ class TestChainsOfViews(object):
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
+
             def my_method(self):
                 return "me"
+
             def to_directed_class(self):
                 return MyGraph()
 

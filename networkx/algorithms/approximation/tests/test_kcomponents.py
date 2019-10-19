@@ -259,6 +259,6 @@ class TestAntiGraph:
             assert sum(d for n, d in G.degree()) == sum(d for n, d in A.degree())
             # AntiGraph is a ThinGraph, so all the weights are 1
             assert (sum(d for n, d in A.degree()) ==
-                         sum(d for n, d in A.degree(weight='weight')))
+                    sum(d for n, d in A.degree(weight='weight')))
             assert (sum(d for n, d in G.degree(nodes)) ==
-                         sum(d for n, d in A.degree(nodes)))
+                    sum(d for n, d in A.degree(nodes)))

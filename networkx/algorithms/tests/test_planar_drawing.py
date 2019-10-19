@@ -107,7 +107,7 @@ def check_embedding_data(embedding_data):
     msg = "Planar drawing does not conform to the embedding (internal " \
           "triangulation)"
     assert planar_drawing_conforms_to_embedding(embedding,
-                                                     pos_internally), msg
+                                                pos_internally), msg
     check_edge_intersections(embedding, pos_internally)
 
 

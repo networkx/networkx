@@ -6,9 +6,14 @@ import pytest
 
 import networkx as nx
 from networkx.utils.decorators import open_file, not_implemented_for
-from networkx.utils.decorators import nodes_or_number, preserve_random_state, \
-    py_random_state, np_random_state, random_state
+from networkx.utils.decorators import (
+    preserve_random_state,
+    py_random_state,
+    np_random_state,
+    random_state
+)
 from networkx.utils.misc import PythonRandomInterface
+
 
 def test_not_implemented_decorator():
     @not_implemented_for('directed')
@@ -169,7 +174,7 @@ class TestRandomState(object):
     @py_random_state(1)
     def instantiate_py_random_state(self, random_state):
         assert (isinstance(random_state, random.Random) or
-                    isinstance(random_state, PythonRandomInterface))
+                isinstance(random_state, PythonRandomInterface))
         return random_state.random()
 
     def test_random_state_None(self):

@@ -11,7 +11,6 @@
 """
 """
 from collections.abc import Mapping
-import networkx as nx
 
 __all__ = ['AtlasView', 'AdjacencyView', 'MultiAdjacencyView',
            'UnionAtlas', 'UnionAdjacency',

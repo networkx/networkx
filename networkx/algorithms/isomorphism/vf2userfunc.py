@@ -31,7 +31,6 @@
     it must determine if there is an isomorphism between the two sets of edges.
 """
 
-import networkx as nx
 from . import isomorphvf2 as vf2
 
 __all__ = ['GraphMatcher',

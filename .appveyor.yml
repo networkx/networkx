@@ -11,16 +11,12 @@ environment:
     CACHE_DIR: "%LOCALAPPDATA%\\pip\\Cache"
 
   matrix:
-    - PYTHON: "C:\\Python35-x64"
-      PYTHON_VERSION: "3.5.3"
-      PYTHON_ARCH: "64"
-
     - PYTHON: "C:\\Python36-x64"
-      PYTHON_VERSION: "3.6.6"
+      PYTHON_VERSION: "3.6.8"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python37-x64"
-      PYTHON_VERSION: "3.7.0"
+      PYTHON_VERSION: "3.7.5"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python38-x64"

@@ -1,7 +1,24 @@
 # -*- encoding: utf-8 -*-
 import pytest
 import networkx as nx
-from networkx.utils import *
+from networkx.utils import (
+    create_py_random_state,
+    create_random_state,
+    discrete_sequence,
+    dict_to_numpy_array,
+    dict_to_numpy_array1,
+    dict_to_numpy_array2,
+    is_string_like,
+    iterable,
+    groups,
+    make_list_of_ints,
+    make_str,
+    pairwise,
+    powerlaw_sequence,
+    PythonRandomInterface,
+    random,
+    to_tuple
+)
 
 
 def test_is_string_like():
@@ -42,33 +59,17 @@ def test_random_number_distribution():
 
 
 def test_make_str_with_bytes():
-    import sys
-    PY2 = sys.version_info[0] == 2
-
     x = "qualité"
     y = make_str(x)
-    if PY2:
-        assert isinstance(y, unicode)
-        # Since file encoding is utf-8, the é will be two bytes.
-        assert len(y) == 8
-    else:
-        assert isinstance(y, str)
-        assert len(y) == 7
+    assert isinstance(y, str)
+    assert len(y) == 7
 
 
 def test_make_str_with_unicode():
-    import sys
-    PY2 = sys.version_info[0] == 2
-    if PY2:
-        x = unicode("qualité", encoding='utf-8')
-        y = make_str(x)
-        assert isinstance(y, unicode)
-        assert len(y) == 7
-    else:
-        x = "qualité"
-        y = make_str(x)
-        assert isinstance(y, str)
-        assert len(y) == 7
+    x = "qualité"
+    y = make_str(x)
+    assert isinstance(y, str)
+    assert len(y) == 7
 
 
 class TestNumpyArray(object):
@@ -218,6 +219,6 @@ def test_PythonRandomInterface():
     assert rng.expovariate(1.5) == rs42.exponential(1/1.5)
     assert np.all(rng.shuffle([1, 2, 3]) == rs42.shuffle([1, 2, 3]))
     assert np.all(rng.sample([1, 2, 3], 2) ==
-                       rs42.choice([1, 2, 3], (2,), replace=False))
+                  rs42.choice([1, 2, 3], (2,), replace=False))
     assert rng.randint(3, 5) == rs42.randint(3, 6)
     assert rng.random() == rs42.random_sample()

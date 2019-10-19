@@ -21,10 +21,6 @@ For more information, see the `sparse6`_ homepage.
 .. _sparse6: http://users.cecs.anu.edu.au/~bdm/data/formats.html
 
 """
-from itertools import chain
-import math
-import sys
-
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file, not_implemented_for
@@ -146,10 +142,7 @@ def from_sparse6_bytes(string):
     if not string.startswith(b':'):
         raise NetworkXError('Expected leading colon in sparse6')
 
-    if sys.version_info < (3, ):
-        chars = [ord(c) - 63 for c in string[1:]]
-    else:
-        chars = [c - 63 for c in string[1:]]
+    chars = [c - 63 for c in string[1:]]
     n, data = data_to_n(chars)
     k = 1
     while 1 << k < n:
@@ -172,7 +165,7 @@ def from_sparse6_bytes(string):
             b = (d >> dLen) & 1  # grab top remaining bit
 
             x = d & ((1 << dLen) - 1)  # partially built up value of x
-            xLen = dLen		# how many bits included so far in x
+            xLen = dLen         # how many bits included so far in x
             while xLen < k:  # now grab full chunks until we have enough
                 try:
                     d = next(chunks)
@@ -233,7 +226,7 @@ def to_sparse6_bytes(G, nodes=None, header=True):
 
     Examples
     --------
-    >>> nx.to_sparse6_bytes(nx.path_graph(2))  # doctest: +SKIP
+    >>> nx.to_sparse6_bytes(nx.path_graph(2))
     b'>>sparse6<<:An\\n'
 
     See Also
@@ -352,7 +345,7 @@ def write_sparse6(G, path, nodes=None, header=True):
         >>> import tempfile
         >>> with tempfile.NamedTemporaryFile() as f:
         ...     nx.write_sparse6(nx.path_graph(2), f.name)
-        ...     print(f.read())  # doctest: +SKIP
+        ...     print(f.read())
         b'>>sparse6<<:An\\n'
 
     You can also write a sparse6 file by giving an open file-like object::
@@ -360,7 +353,7 @@ def write_sparse6(G, path, nodes=None, header=True):
         >>> with tempfile.NamedTemporaryFile() as f:
         ...     nx.write_sparse6(nx.path_graph(2), f)
         ...     _ = f.seek(0)
-        ...     print(f.read())  # doctest: +SKIP
+        ...     print(f.read())
         b'>>sparse6<<:An\\n'
 
     See Also
