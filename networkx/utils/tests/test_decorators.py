@@ -6,8 +6,12 @@ import pytest
 
 import networkx as nx
 from networkx.utils.decorators import open_file, not_implemented_for
-from networkx.utils.decorators import nodes_or_number, preserve_random_state, \
-    py_random_state, np_random_state, random_state
+from networkx.utils.decorators import (
+    preserve_random_state,
+    py_random_state,
+    np_random_state,
+    random_state
+)
 from networkx.utils.misc import PythonRandomInterface
 
 

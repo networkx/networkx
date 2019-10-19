@@ -106,14 +106,18 @@ def all_simple_paths(G, source, target, cutoff=None):
     target : nodes
        Single node or iterable of nodes at which to end path
 
-    cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+    cutoff : integer, dict, optional
+       If an integer is passed then specifies the depth to stop the search.
+       Only paths of length <= cutoff are returned.
+       If a dictionary is passed then different cutoffs can be used for different weights.
+       (e.g. {'weight1': cutoff_value1, 'weight2': cutoff_value2})
+       THe depth of search can be specified by using `None` as key (e.g. {None: cutoff})
 
     Returns
     -------
     path_generator: generator
        A generator that produces lists of simple paths.  If there are no paths
-       between the source and target within the given cutoff the generator
+       between the source and target within the given cutoff_len the generator
        produces no output.
 
     Examples
@@ -131,11 +135,26 @@ def all_simple_paths(G, source, target, cutoff=None):
         [0, 3]
 
     You can generate only those paths that are shorter than a certain
-    length by using the `cutoff` keyword argument::
+    length by using the `cutoff` keyword argument and passing an int::
 
         >>> paths = nx.all_simple_paths(G, source=0, target=3, cutoff=2)
         >>> print(list(paths))
         [[0, 1, 3], [0, 2, 3], [0, 3]]
+
+    For weighted graphs the cuttoffs can refer to weights.
+    The key None refers to the depth of search
+        >>> G[0][1]['weight'] = 0.5
+        >>> G[0][2]['weight'] = 1.2
+        >>> G[0][3]['weight'] = 0.5
+        >>> G[1][2]['weight'] = 0.5
+        >>> G[1][3]['weight'] = 0.6
+        >>> G[2][3]['weight'] = 1.1
+
+        >>> cutoffs = {None: 2, 'weight': 2}
+
+        >>> paths = nx.all_simple_paths(G, source=0, target=3, cutoff=cutoffs)
+        >>> print(list(paths))
+        [[0, 1, 3], [0, 3]]
 
     To get each path as the corresponding list of edges, you can use the
     :func:`networkx.utils.pairwise` helper function::
@@ -227,6 +246,7 @@ def all_simple_paths(G, source, target, cutoff=None):
     all_shortest_paths, shortest_path
 
     """
+
     if source not in G:
         raise nx.NodeNotFound('source node %s not in graph' % source)
     if target in G:
@@ -238,14 +258,26 @@ def all_simple_paths(G, source, target, cutoff=None):
             raise nx.NodeNotFound('target node %s not in graph' % target)
     if source in targets:
         return []
+
     if cutoff is None:
         cutoff = len(G) - 1
-    if cutoff < 1:
-        return []
-    if G.is_multigraph():
-        return _all_simple_paths_multigraph(G, source, targets, cutoff)
+
+    if isinstance(cutoff, int):
+        if cutoff < 1:
+            return []
+
+        if G.is_multigraph():
+            return _all_simple_paths_multigraph(G, source, targets, cutoff)
+        else:
+            return _all_simple_paths_graph(G, source, targets, cutoff)
+    elif isinstance(cutoff, dict):
+        if G.is_multigraph():
+            raise NotImplementedError('Not implemented for weighted multigraph')
+            # return _all_simple_paths_weighted_multigraph(G, source, targets, cutoff)
+        else:
+            return _all_simple_paths_weighted_graph(G, source, targets, cutoff)
     else:
-        return _all_simple_paths_graph(G, source, targets, cutoff)
+        raise TypeError('cutoff is not int nor dict')
 
 
 def _all_simple_paths_graph(G, source, targets, cutoff):
@@ -297,6 +329,58 @@ def _all_simple_paths_multigraph(G, source, targets, cutoff):
             for target in targets - set(visited.keys()):
                 count = ([child] + list(children)).count(target)
                 for i in range(count):
+                    yield list(visited) + [target]
+            stack.pop()
+            visited.popitem()
+
+
+def _all_simple_paths_weighted_graph(G, source, targets, cutoff):
+
+    def _sum_weight(nodes, w):
+        s = sum([G[u][v].get(w, 0) for u, v in pairwise(nodes)])
+        return s
+
+    def _is_path_below_cutoff(_cutoff):
+        for k, v in _cutoff.items():
+            if _sum_weight(list(visited) + [child], k) > v:
+                return False
+        return True
+
+    if isinstance(cutoff, dict):
+        if None in cutoff:
+            cutoff = dict(cutoff)
+            cutoff_len = cutoff[None]
+            del cutoff[None]
+        else:
+            cutoff_len = len(G) - 1
+
+    visited = collections.OrderedDict.fromkeys([source])
+    stack = [iter(G[source])]
+
+    while stack:
+        children = stack[-1]
+        child = next(children, None)
+        if child is None:
+            stack.pop()
+            visited.popitem()
+        elif len(visited) < cutoff_len:
+            if child in visited:
+                continue
+            path_below_cutoff = _is_path_below_cutoff(cutoff)
+            if not path_below_cutoff:
+                continue
+            if child in targets:
+                yield list(visited) + [child]
+            visited[child] = None
+            if targets - set(visited.keys()):  # expand stack until find all targets
+                stack.append(iter(G[child]))
+            else:
+                visited.popitem()  # maybe other ways to child
+        else:  # len(visited) == cutoff:
+            for target in (targets & (set(children) | {child})) - set(visited.keys()):
+                # check if cutoffs are valid for all weights
+                path_below_cutoff = _is_path_below_cutoff(cutoff)
+                if path_below_cutoff:
                     yield list(visited) + [target]
             stack.pop()
             visited.popitem()
@@ -757,7 +841,7 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     # neighs for extracting correct neighbor information
     neighs = [Gsucc, Gpred]
     # variables to hold shortest discovered path
-    #finaldist = 1e30000
+    # finaldist = 1e30000
     finalpath = []
     dir = 1
     while fringe[0] and fringe[1]:

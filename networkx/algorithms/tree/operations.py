@@ -11,7 +11,7 @@ from functools import partial
 from itertools import chain
 
 import networkx as nx
-from networkx.utils import accumulate
+from itertools import accumulate
 
 __all__ = ['join']
 

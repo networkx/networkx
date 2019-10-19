@@ -183,7 +183,7 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
 
     # Initialize/reset the residual network.
     # This is way too slow
-    #nx.set_edge_attributes(R, 0, 'flow')
+    # nx.set_edge_attributes(R, 0, 'flow')
     for u in R:
         for e in R[u].values():
             e['flow'] = 0

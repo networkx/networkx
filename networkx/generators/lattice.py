@@ -27,7 +27,6 @@ be found about `Triangular Tiling`_, and `Square, Hex and Triangle Grids`_
 
 from math import sqrt
 
-from networkx.classes import Graph
 from networkx.classes import set_node_attributes
 from networkx.algorithms.minors import contracted_nodes
 from networkx.algorithms.operators.product import cartesian_product

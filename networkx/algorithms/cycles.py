@@ -16,7 +16,6 @@ Cycle finding algorithms
 """
 
 from collections import defaultdict
-from itertools import tee
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise

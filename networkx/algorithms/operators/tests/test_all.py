@@ -1,6 +1,6 @@
 import pytest
 import networkx as nx
-from networkx.testing import *
+from networkx.testing import assert_edges_equal
 
 
 def test_union_all_attributes():

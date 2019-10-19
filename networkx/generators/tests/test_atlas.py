@@ -3,7 +3,7 @@ from itertools import groupby
 import pytest
 
 import networkx as nx
-from networkx.testing import *
+from networkx.testing import assert_edges_equal, assert_nodes_equal
 from networkx import graph_atlas
 from networkx import graph_atlas_g
 from networkx.generators.atlas import NUM_GRAPHS

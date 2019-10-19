@@ -9,7 +9,7 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 # BSD license.
 
 import networkx as nx
-from networkx.algorithms.flow.utils import *
+from networkx.algorithms.flow.utils import build_residual_network
 
 __all__ = ['edmonds_karp']
 

@@ -349,7 +349,7 @@ class GraphML(object):
                  (np.uint16, "int"), (np.uint32, "int"),
                  (np.uint64, "int"), (np.int_, "int"),
                  (np.intc, "int"), (np.intp, "int"),
-                ] + types
+                 ] + types
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)

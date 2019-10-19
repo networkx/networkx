@@ -11,7 +11,6 @@
 #          Christopher Ellison
 #          Ben Edwards (bedwards@cs.unm.edu)
 """Strongly connected components."""
-import warnings as _warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 

@@ -6,7 +6,6 @@ import networkx as nx
 
 from networkx.algorithms.tree import branchings
 from networkx.algorithms.tree import recognition
-from networkx.testing import *
 
 #
 # Explicitly discussed examples from Edmonds paper.

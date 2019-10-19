@@ -2,6 +2,7 @@
 #
 # Author: Yuto Yamaguchi <yuto.ymgc@gmail.com>
 
+
 def _propagate(P, F, B):
     """Propagate labels by one step
 

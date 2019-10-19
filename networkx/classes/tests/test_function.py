@@ -2,7 +2,7 @@
 import random
 import pytest
 import networkx as nx
-from networkx.testing.utils import *
+from networkx.testing.utils import assert_edges_equal, assert_nodes_equal
 
 
 class TestFunction(object):
@@ -215,7 +215,7 @@ class TestFunction(object):
 
     def test_freeze(self):
         G = nx.freeze(self.G)
-        assert G.frozen == True
+        assert G.frozen
         pytest.raises(nx.NetworkXError, G.add_node, 1)
         pytest.raises(nx.NetworkXError, G.add_nodes_from, [1])
         pytest.raises(nx.NetworkXError, G.remove_node, 1)
@@ -227,10 +227,10 @@ class TestFunction(object):
         pytest.raises(nx.NetworkXError, G.clear)
 
     def test_is_frozen(self):
-        assert nx.is_frozen(self.G) == False
+        assert not nx.is_frozen(self.G)
         G = nx.freeze(self.G)
         assert G.frozen == nx.is_frozen(self.G)
-        assert G.frozen == True
+        assert G.frozen
 
     def test_info(self):
         G = nx.path_graph(5)

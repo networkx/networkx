@@ -21,10 +21,6 @@ For more information, see the `sparse6`_ homepage.
 .. _sparse6: http://users.cecs.anu.edu.au/~bdm/data/formats.html
 
 """
-from itertools import chain
-import math
-import sys
-
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file, not_implemented_for
@@ -169,7 +165,7 @@ def from_sparse6_bytes(string):
             b = (d >> dLen) & 1  # grab top remaining bit
 
             x = d & ((1 << dLen) - 1)  # partially built up value of x
-            xLen = dLen		# how many bits included so far in x
+            xLen = dLen         # how many bits included so far in x
             while xLen < k:  # now grab full chunks until we have enough
                 try:
                     d = next(chunks)

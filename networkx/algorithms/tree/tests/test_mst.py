@@ -13,8 +13,7 @@ from unittest import TestCase
 import pytest
 
 import networkx as nx
-from networkx.testing import (assert_graphs_equal, assert_nodes_equal,
-                              assert_edges_equal)
+from networkx.testing import assert_nodes_equal, assert_edges_equal
 
 
 def test_unknown_algorithm():

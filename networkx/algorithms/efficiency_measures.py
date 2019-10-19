@@ -8,8 +8,6 @@
 # information.
 """Provides functions for computing the efficiency of nodes and graphs."""
 
-from itertools import permutations
-
 import networkx as nx
 from networkx.exception import NetworkXNoPath
 from ..utils import not_implemented_for
@@ -113,6 +111,7 @@ def global_efficiency(G):
     # TODO This can be made more efficient by computing all pairs shortest
     # path lengths in parallel.
     return g_eff
+
 
 @not_implemented_for('directed')
 def local_efficiency(G):

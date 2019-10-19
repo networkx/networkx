@@ -145,7 +145,7 @@ class TestFindPathStart(TestCase):
 
         # Test graph with no Eulerian path return None.
         edges = [(0, 1), (1, 2), (2, 3), (2, 4)]
-        assert find_path_start(nx.DiGraph(edges)) == None
+        assert find_path_start(nx.DiGraph(edges)) is None
 
 
 class TestEulerianPath(TestCase):

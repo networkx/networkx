@@ -16,7 +16,6 @@ from networkx.utils import random_state
 try:
     from numpy import array, asmatrix, asarray, dot, ndarray, ones, sqrt, zeros
     from numpy.linalg import norm, qr
-    from numpy.random import normal
     from scipy.linalg import eigh, inv
     from scipy.sparse import csc_matrix, spdiags
     from scipy.sparse.linalg import eigsh, lobpcg

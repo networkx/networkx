@@ -40,10 +40,6 @@ import networkx as nx
 from networkx.generators.classic import empty_graph, cycle_graph, path_graph, complete_graph
 from networkx.exception import NetworkXError
 
-#------------------------------------------------------------------------------
-#   Tools for creating small graphs
-#------------------------------------------------------------------------------
-
 
 def make_small_undirected_graph(graph_description, create_using=None):
     """
@@ -172,9 +168,9 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
     return G
 
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 #   Various small and named graphs
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 def bull_graph(create_using=None):
     """Returns the Bull graph. """

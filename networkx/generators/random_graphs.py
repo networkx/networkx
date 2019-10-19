@@ -40,11 +40,6 @@ __all__ = ['fast_gnp_random_graph',
            'random_kernel_graph']
 
 
-#-------------------------------------------------------------------------
-#  Some Famous Random Graphs
-#-------------------------------------------------------------------------
-
-
 @py_random_state(2)
 def fast_gnp_random_graph(n, p, seed=None, directed=False):
     """Returns a $G_{n,p}$ random graph, also known as an Erdős-Rényi graph or
@@ -335,8 +330,8 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     """
     if k > n:
         raise nx.NetworkXError("k>=n, choose smaller k or larger n")
-    
-    #If k == n the graph return is a complete graph
+
+    # If k == n the graph return is a complete graph
     if k == n:
         return nx.complete_graph(n)
 
@@ -408,8 +403,8 @@ def watts_strogatz_graph(n, k, p, seed=None):
     """
     if k > n:
         raise nx.NetworkXError("k>n, choose smaller k or larger n")
-    
-    #If k == n, the graph is complete not Watts-Strogatz
+
+    # If k == n, the graph is complete not Watts-Strogatz
     if k == n:
         return nx.complete_graph(n)
 
@@ -721,7 +716,7 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
     if p < 0 or p > 1:
         raise nx.NetworkXError("Dual Barabási–Albert network must have 0 <= p <= 1,"
                                "p = %f" % p)
-    
+
     # For simplicity, if p == 0 or 1, just return BA
     if p == 1:
         return barabasi_albert_graph(n, m1, seed)
@@ -729,13 +724,13 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
         return barabasi_albert_graph(n, m2, seed)
 
     # Add max(m1,m2) initial nodes (m0 in barabasi-speak)
-    G = empty_graph(max(m1,m2))
+    G = empty_graph(max(m1, m2))
     # Target nodes for new edges
-    targets = list(range(max(m1,m2)))
+    targets = list(range(max(m1, m2)))
     # List of existing nodes, with nodes repeated once for each adjacent edge
     repeated_nodes = []
     # Start adding the remaining nodes.
-    source = max(m1,m2)
+    source = max(m1, m2)
     # Pick which m to use first time (m1 or m2)
     if seed.random() < p:
         m = m1
@@ -851,7 +846,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 prohibited_nodes.append(src_node)
                 # This will raise an exception if the sequence is empty
                 dest_node = seed.choice([nd for nd in attachment_preference
-                                           if nd not in prohibited_nodes])
+                                         if nd not in prohibited_nodes])
                 # Adding the new edge
                 G.add_edge(src_node, dest_node)
 
@@ -887,7 +882,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 # neighbor with 'node', with preferential attachment
                 neighbor_nodes.append(node)
                 dest_node = seed.choice([nd for nd in attachment_preference
-                                           if nd not in neighbor_nodes])
+                                         if nd not in neighbor_nodes])
                 # Rewire
                 G.remove_edge(node, src_node)
                 G.add_edge(node, dest_node)

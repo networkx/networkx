@@ -222,7 +222,7 @@ class AS_graph_generator(object):
         d = 0
         while d < edge_num and (len(t_options) > 0 or len(m_options) > 0):
             if len(m_options) == 0 or (len(t_options) > 0 and
-               self.seed.random() < t_edge_prob):  # add edge to a T node
+                                       self.seed.random() < t_edge_prob):  # add edge to a T node
                 j = self.choose_node_pref_attach(t_options)
                 t_options.remove(j)
             else:
@@ -390,7 +390,7 @@ class AS_graph_generator(object):
             i += 1
         for _ in range(self.n_cp):
             self.nodes['CP'].add(self.add_node(i, 'CP', 0.05, self.d_cp,
-                                 self.t_cp))
+                                               self.t_cp))
             i += 1
         for _ in range(self.n_c):
             self.nodes['C'].add(self.add_node(i, 'C', 0, self.d_c, self.t_c))

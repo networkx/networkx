@@ -35,8 +35,10 @@ class TestReverseView(object):
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
+
             def my_method(self):
                 return "me"
+
             def to_directed_class(self):
                 return MyGraph()
 
@@ -311,8 +313,10 @@ class TestChainsOfViews(object):
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
+
             def my_method(self):
                 return "me"
+
             def to_directed_class(self):
                 return MyGraph()
 

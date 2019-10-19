@@ -21,7 +21,6 @@ For more information, see the `graph6`_ homepage.
 
 """
 from itertools import islice
-import sys
 
 import networkx as nx
 from networkx.exception import NetworkXError

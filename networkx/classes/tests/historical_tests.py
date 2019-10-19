@@ -3,7 +3,7 @@
 import pytest
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
-from networkx.testing import *
+from networkx.testing import assert_edges_equal, assert_nodes_equal
 
 
 class HistoricalTests(object):
@@ -53,10 +53,10 @@ class HistoricalTests(object):
         G.remove_nodes_from(['H', 'I', 'J', 'K', 'L'])
         G.add_nodes_from([1, 2, 3, 4])
         assert (sorted(G.nodes(), key=str) ==
-                     [1, 2, 3, 4, 'A', 'B', 'C', 'D', 'E', 'F', 'G'])
+                [1, 2, 3, 4, 'A', 'B', 'C', 'D', 'E', 'F', 'G'])
         # test __iter__
         assert (sorted(G, key=str) ==
-                     [1, 2, 3, 4, 'A', 'B', 'C', 'D', 'E', 'F', 'G'])
+                [1, 2, 3, 4, 'A', 'B', 'C', 'D', 'E', 'F', 'G'])
 
     def test_contains(self):
         G = self.G()
@@ -80,10 +80,10 @@ class HistoricalTests(object):
         G.add_nodes_from(list("ABCD"))
         G.add_nodes_from(self.P3)  # add nbunch of nodes (nbunch=Graph)
         assert (sorted(G.nodes(), key=str) ==
-                     [1, 2, 3, 'A', 'B', 'C', 'D'])
+                [1, 2, 3, 'A', 'B', 'C', 'D'])
         G.remove_nodes_from(self.P3)  # remove nbunch of nodes (nbunch=Graph)
         assert (sorted(G.nodes(), key=str) ==
-                     ['A', 'B', 'C', 'D'])
+                ['A', 'B', 'C', 'D'])
 
     def test_nbunch_is_set(self):
         G = self.G()
@@ -106,11 +106,11 @@ class HistoricalTests(object):
         n_iter = self.P3.nodes()
         G.add_nodes_from(n_iter)
         assert (sorted(G.nodes(), key=str) ==
-                     [1, 2, 3, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
+                [1, 2, 3, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
         n_iter = self.P3.nodes()  # rebuild same iterator
         G.remove_nodes_from(n_iter)  # remove nbunch of nodes (nbunch=iterator)
         assert (sorted(G.nodes(), key=str) ==
-                     ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
+                ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
 
     def test_nbunch_graph(self):
         G = self.G()
@@ -324,8 +324,8 @@ class HistoricalTests(object):
             assert DG.name == G.name
             assert DG.adj == G.adj
             assert (sorted(DG.out_edges(list('AB'))) ==
-                         [('A', 'B'), ('A', 'C'), ('B', 'A'),
-                          ('B', 'C'), ('B', 'D')])
+                    [('A', 'B'), ('A', 'C'), ('B', 'A'),
+                     ('B', 'C'), ('B', 'D')])
             DG.remove_edge('A', 'B')
             assert DG.has_edge('B', 'A')  # this removes B-A but not  A-B
             assert not DG.has_edge('A', 'B')
@@ -342,9 +342,9 @@ class HistoricalTests(object):
             assert UG.name == G.name
             assert UG.adj != G.adj
             assert (sorted(UG.edges(list('AB'))) ==
-                         [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')])
+                    [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')])
             assert (sorted(UG.edges(['A', 'B'])) ==
-                         [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')])
+                    [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')])
             UG.remove_edge('A', 'B')
             assert not UG.has_edge('B', 'A')
             assert not UG.has_edge('A', 'B')
@@ -366,15 +366,15 @@ class HistoricalTests(object):
                           ('C', 'B'), ('C', 'D')])
         G.add_nodes_from('GJK')
         assert (sorted(G.nodes()) ==
-                     ['A', 'B', 'C', 'D', 'G', 'J', 'K'])
+                ['A', 'B', 'C', 'D', 'G', 'J', 'K'])
         assert_edges_equal(G.edges(),
                            [('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'B'), ('C', 'D')])
 
         assert (sorted([v for k, v in G.degree()]) ==
-                     [0, 0, 0, 2, 2, 3, 3])
+                [0, 0, 0, 2, 2, 3, 3])
         assert (sorted(G.degree(), key=str) ==
-                     [('A', 2), ('B', 3), ('C', 3), ('D', 2),
-                      ('G', 0), ('J', 0), ('K', 0)])
+                [('A', 2), ('B', 3), ('C', 3), ('D', 2),
+                 ('G', 0), ('J', 0), ('K', 0)])
         assert sorted(G.neighbors('A')) == ['B', 'C']
         pytest.raises(nx.NetworkXError, G.neighbors, 'X')
         G.clear()

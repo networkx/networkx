@@ -112,6 +112,31 @@ def test_digraph_all_simple_paths_with_two_targets_cutoff():
     assert set(tuple(p) for p in paths) == {(0, 1, 2, 3), (0, 1, 2, 4)}
 
 
+def test_all_simple_paths_weighted_graph_with_multiple_cutoffs():
+    edges = [(1, 2), (2, 10), (1, 5), (5, 4), (4, 3), (3, 10)]
+    distances = [5, 6, 1, 3, 2, 2]
+    d = {e: {'Distance': dist} for e, dist in zip(edges, distances)}
+
+    G = nx.Graph(edges)
+    nx.set_edge_attributes(G, d)
+
+    paths = list(nx.all_simple_paths(G, 1, 10, cutoff={'Distance': 10}))
+    assert len(paths), 1
+    assert paths[0], [1, 5, 4, 3, 10]
+
+
+def test_all_simple_paths_weighted_graph_with_len_in_cutoff():
+    edges = [(1, 2), (2, 10), (1, 5), (5, 4), (4, 3), (3, 10)]
+    distances = [5, 6, 1, 3, 2, 2]
+    d = {e: {'Distance': dist} for e, dist in zip(edges, distances)}
+
+    G = nx.Graph(edges)
+    nx.set_edge_attributes(G, d)
+
+    paths = list(nx.all_simple_paths(G, 1, 10, cutoff={None: 2, 'Distance': 10}))
+    assert len(paths), 0
+
+
 def test_all_simple_paths_with_two_targets_in_line_emits_two_paths():
     G = nx.path_graph(4)
     paths = nx.all_simple_paths(G, 0, [2, 3])
@@ -362,7 +387,7 @@ def test_ssp_multigraph():
         paths = list(nx.shortest_simple_paths(G, 1, 4))
 
 
-def test_ssp_source_missing():
+def test_ssp_source_missing2():
     with pytest.raises(nx.NetworkXNoPath):
         G = nx.Graph()
         nx.add_path(G, [0, 1, 2])

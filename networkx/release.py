@@ -158,7 +158,7 @@ def get_info(dynamic=True):
             vcs_info = (None, (None, None))
         else:
             revision = vcs_info[1][0]
-        #del sys.path[0]
+        # del sys.path[0]
 
     if import_failed or (dynamic and not dynamic_failed):
         # We are here if:

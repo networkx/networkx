@@ -16,8 +16,11 @@
 """
 
 from bisect import bisect_left
-from itertools import combinations
-from itertools import product
+from itertools import (
+    accumulate,
+    combinations,
+    product
+)
 from math import sqrt
 import math
 try:
@@ -644,7 +647,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
             if d <= p:
                 G.add_edge(p1, p2)
             probs.append(d**-r)
-        cdf = list(nx.utils.accumulate(probs))
+        cdf = list(accumulate(probs))
         for _ in range(q):
             target = nodes[bisect_left(cdf, seed.uniform(0, cdf[-1]))]
             G.add_edge(p1, target)
