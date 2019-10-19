@@ -131,6 +131,11 @@ def to_pandas_adjacency(G, nodelist=None, dtype=None, order=None,
     return pd.DataFrame(data=M, index=nodelist, columns=nodelist)
 
 
+def tees(x):
+    #what
+    x = [ 1. , 1+2]
+    return x
+
 def from_pandas_adjacency(df, create_using=None):
     r"""Returns a graph from Pandas DataFrame.
 
