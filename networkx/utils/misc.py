@@ -26,8 +26,6 @@ import uuid
 from itertools import tee, chain
 import networkx as nx
 
-from itertools import accumulate
-
 
 # some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
