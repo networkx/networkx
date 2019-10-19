@@ -189,13 +189,13 @@ class TestWeightedPath(WeightedTestBase):
         assert P['v'] == ['u']
         assert D['v'] == 9
         (P, D) = nx.dijkstra_predecessor_and_distance(XG, 's', cutoff=8)
-        assert not 'v' in D
+        assert 'v' not in D
 
     def test_single_source_dijkstra_path_length(self):
         pl = nx.single_source_dijkstra_path_length
         assert dict(pl(self.MXG4, 0))[2] == 4
         spl = pl(self.MXG4, 0, cutoff=2)
-        assert not 2 in spl
+        assert 2 not in spl
 
     def test_bidirectional_dijkstra_multigraph(self):
         G = nx.MultiGraph()
@@ -214,11 +214,11 @@ class TestWeightedPath(WeightedTestBase):
 
     def test_negative_edge_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
-        assert nx.negative_edge_cycle(G) == False
+        assert not nx.negative_edge_cycle(G)
         G.add_edge(8, 9, weight=-7)
         G.add_edge(9, 8, weight=3)
         graph_size = len(G)
-        assert nx.negative_edge_cycle(G) == True
+        assert nx.negative_edge_cycle(G)
         assert graph_size == len(G)
         pytest.raises(ValueError, nx.single_source_dijkstra_path_length, G, 8)
         pytest.raises(ValueError, nx.single_source_dijkstra, G, 8)
@@ -547,7 +547,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert dist == {0: 0, 1: 1, 2: 2, 3: 1}
 
         pred, dist = nx.goldberg_radzik(G, 0)
-        assert pred[0] == None
+        assert pred[0] is None
         assert pred[1] == 0
         assert pred[2] in [1, 3]
         assert pred[3] == 0

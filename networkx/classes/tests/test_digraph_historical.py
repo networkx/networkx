@@ -3,7 +3,6 @@
 import pytest
 import networkx
 import networkx as nx
-from networkx.testing.utils import *
 
 from .historical_tests import HistoricalTests
 

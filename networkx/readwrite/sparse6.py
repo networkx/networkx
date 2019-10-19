@@ -169,7 +169,7 @@ def from_sparse6_bytes(string):
             b = (d >> dLen) & 1  # grab top remaining bit
 
             x = d & ((1 << dLen) - 1)  # partially built up value of x
-            xLen = dLen		# how many bits included so far in x
+            xLen = dLen         # how many bits included so far in x
             while xLen < k:  # now grab full chunks until we have enough
                 try:
                     d = next(chunks)

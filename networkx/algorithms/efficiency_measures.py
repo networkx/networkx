@@ -114,6 +114,7 @@ def global_efficiency(G):
     # path lengths in parallel.
     return g_eff
 
+
 @not_implemented_for('directed')
 def local_efficiency(G):
     """Returns the average local efficiency of the graph.

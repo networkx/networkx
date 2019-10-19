@@ -6,7 +6,10 @@ scipy = pytest.importorskip('scipy')
 
 import networkx as nx
 from networkx.testing import almost_equal
-from networkx.algorithms.communicability_alg import *
+from networkx.algorithms.communicability_alg import (
+    communicability,
+    communicability_exp
+)
 
 
 class TestCommunicability:

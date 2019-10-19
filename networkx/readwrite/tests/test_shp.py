@@ -287,4 +287,4 @@ class TestMissingAttrWrite(object):
             if u == A and v == B:
                 assert d['foo'] == 100
             if u == A and v == C:
-                assert d['foo'] == None
+                assert d['foo'] is None

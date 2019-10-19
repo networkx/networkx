@@ -54,7 +54,7 @@ class TestPrefixTree(object):
         # Next, we check that the "sources" of each of the nodes is the
         # rightmost letter in the string corresponding to the path to
         # that node.
-        assert source_label(root) == None
+        assert source_label(root) is None
         assert source_label(a) == 'a'
         assert source_label(i) == 'i'
         assert source_label(t) == 't'

@@ -2,7 +2,7 @@ import networkx as nx
 import pytest
 
 import networkx.generators.line as line
-from networkx.testing.utils import *
+from networkx.testing.utils import assert_edges_equal
 
 
 def test_node_func():

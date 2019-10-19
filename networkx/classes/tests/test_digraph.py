@@ -12,8 +12,8 @@ from .test_graph import TestEdgeSubgraph as TestGraphEdgeSubgraph
 class BaseDiGraphTester(BaseGraphTester):
     def test_has_successor(self):
         G = self.K3
-        assert G.has_successor(0, 1) == True
-        assert G.has_successor(0, -1) == False
+        assert G.has_successor(0, 1)
+        assert not G.has_successor(0, -1)
 
     def test_successors(self):
         G = self.K3
@@ -23,8 +23,8 @@ class BaseDiGraphTester(BaseGraphTester):
 
     def test_has_predecessor(self):
         G = self.K3
-        assert G.has_predecessor(0, 1) == True
-        assert G.has_predecessor(0, -1) == False
+        assert G.has_predecessor(0, 1)
+        assert not G.has_predecessor(0, -1)
 
     def test_predecessors(self):
         G = self.K3

@@ -2,7 +2,11 @@ import pickle
 import gc
 
 import networkx as nx
-from networkx.testing.utils import *
+from networkx.testing.utils import (
+    assert_graphs_equal,
+    assert_edges_equal,
+    assert_nodes_equal
+)
 
 import pytest
 
@@ -38,8 +42,8 @@ class BaseGraphTester(object):
 
     def test_has_edge(self):
         G = self.K3
-        assert G.has_edge(0, 1) == True
-        assert G.has_edge(0, -1) == False
+        assert G.has_edge(0, 1)
+        assert not G.has_edge(0, -1)
 
     def test_neighbors(self):
         G = self.K3
@@ -626,8 +630,8 @@ class TestGraph(BaseAttrGraphTester):
         G = self.K3
         assert G.get_edge_data(0, 1) == {}
         assert G[0][1] == {}
-        assert G.get_edge_data(10, 20) == None
-        assert G.get_edge_data(-1, 0) == None
+        assert G.get_edge_data(10, 20) is None
+        assert G.get_edge_data(-1, 0) is None
         assert G.get_edge_data(-1, 0, default=1) == 1
 
     def test_update(self):

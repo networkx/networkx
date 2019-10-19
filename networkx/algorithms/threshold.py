@@ -747,12 +747,12 @@ def eigenvalues(creation_sequence):
     See::
 
       @Article{degree-merris-1994,
-       author = 	 {Russel Merris},
-       title = 	 {Degree maximal graphs are Laplacian integral},
-       journal = 	 {Linear Algebra Appl.},
-       year = 	 {1994},
-       volume = 	 {199},
-       pages = 	 {381--389},
+       author = {Russel Merris},
+       title = {Degree maximal graphs are Laplacian integral},
+       journal = {Linear Algebra Appl.},
+       year = {1994},
+       volume = {199},
+       pages = {381--389},
       }
 
     """

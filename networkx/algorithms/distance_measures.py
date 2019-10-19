@@ -551,8 +551,8 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
             for (u, v, k, d) in G.edges(keys=True, data=True):
                 d[weight] = 1/d[weight]
         else:
-           for (u, v, d) in G.edges(data=True):
-               d[weight] = 1/d[weight]
+            for (u, v, d) in G.edges(data=True):
+                d[weight] = 1/d[weight]
     # Replace with collapsing topology or approximated zero?
 
     # Using determinants to compute the effective resistance is more memory

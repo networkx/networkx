@@ -10,7 +10,7 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 
 from collections import deque
 import networkx as nx
-from .utils import *
+from .utils import build_residual_network, CurrentEdge
 from .edmondskarp import edmonds_karp_core
 
 __all__ = ['shortest_augmenting_path']

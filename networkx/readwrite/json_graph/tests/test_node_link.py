@@ -2,7 +2,7 @@
 import json
 import pytest
 import networkx as nx
-from networkx.readwrite.json_graph import *
+from networkx.readwrite.json_graph import node_link_data, node_link_graph
 
 
 class TestNodeLink:
@@ -55,10 +55,7 @@ class TestNodeLink:
         assert H[(0, 0)][(1, 0)]['color'] == [255, 255, 0]
 
     def test_unicode_keys(self):
-        try:
-            q = unicode("qualité", 'utf-8')
-        except NameError:
-            q = "qualité"
+        q = "qualité"
         G = nx.Graph()
         G.add_node(1, **{q: q})
         s = node_link_data(G)
@@ -74,11 +71,7 @@ class TestNodeLink:
             node_link_data(G, attrs)
 
     def test_string_ids(self):
-        try:
-            q = unicode("qualité", 'utf-8')
-        except NameError:
-            q = "qualité"
-
+        q = "qualité"
         G = nx.DiGraph()
         G.add_node('A')
         G.add_node(q)

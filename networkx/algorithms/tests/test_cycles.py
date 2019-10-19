@@ -45,12 +45,12 @@ class TestCycles:
         assert sort_cy == [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5],
                            ['A', 'B', 'C']]
 
-    def test_cycle_basis(self):
+    def test_cycle_basis2(self):
         with pytest.raises(nx.NetworkXNotImplemented):
             G = nx.DiGraph()
             cy = networkx.cycle_basis(G, 0)
 
-    def test_cycle_basis(self):
+    def test_cycle_basis3(self):
         with pytest.raises(nx.NetworkXNotImplemented):
             G = nx.MultiGraph()
             cy = networkx.cycle_basis(G, 0)

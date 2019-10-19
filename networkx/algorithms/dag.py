@@ -504,7 +504,7 @@ def transitive_closure(G, reflexive=False):
         is a reflexive tranistive closure of G.
         If False (the default) non-trivial cycles create self-loops.
         If None, self-loops are not created.
-        
+
     Returns
     -------
     NetworkX DiGraph

@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """Generators of  x-y pairs of node data."""
 import networkx as nx
 __author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>'])
@@ -36,8 +36,8 @@ def node_attribute_xy(G, attribute, nodes=None):
 
     Notes
     -----
-    For undirected graphs each edge is produced twice, once for each edge 
-    representation (u,v) and (v,u), with the exception of self-loop edges 
+    For undirected graphs each edge is produced twice, once for each edge
+    representation (u,v) and (v,u), with the exception of self-loop edges
     which only appear once.
     """
     if nodes is None:
@@ -74,7 +74,7 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
        The degree type for target node (directed graphs only).
 
     weight: string or None, optional (default=None)
-       The edge attribute that holds the numerical value used 
+       The edge attribute that holds the numerical value used
        as a weight.  If None, then each edge has weight 1.
        The degree is the sum of the edge weights adjacent to the node.
 
@@ -99,8 +99,8 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
 
     Notes
     -----
-    For undirected graphs each edge is produced twice, once for each edge 
-    representation (u,v) and (v,u), with the exception of self-loop edges 
+    For undirected graphs each edge is produced twice, once for each edge
+    representation (u,v) and (v,u), with the exception of self-loop edges
     which only appear once.
     """
     if nodes is None:

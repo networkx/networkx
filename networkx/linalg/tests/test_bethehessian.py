@@ -17,9 +17,9 @@ class TestBetheHessian(object):
 
     def test_bethe_hessian(self):
         "Bethe Hessian matrix"
-        H = numpy.array([[ 4, -2,  0],
+        H = numpy.array([[4, -2,  0],
                          [-2,  5, -2],
-                         [ 0, -2,  4]])
+                         [0, -2,  4]])
         permutation = [2, 0, 1]
         # Bethe Hessian gives expected form
         npt.assert_equal(nx.bethe_hessian_matrix(self.P, r=2).todense(), H)

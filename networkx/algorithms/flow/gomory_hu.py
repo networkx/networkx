@@ -104,7 +104,7 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
     >>> U, V = list(nx.connected_components(T))
     >>> # Thus U and V form a partition that defines a minimum cut
     ... # between u and v in G. You can compute the edge cut set,
-    ... # that is, the set of edges that if removed from G will 
+    ... # that is, the set of edges that if removed from G will
     ... # disconnect u from v in G, with this information:
     ... cutset = set()
     >>> for x, nbrs in ((n, G[n]) for n in U):

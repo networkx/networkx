@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import pytest
 import networkx as nx
-from networkx.testing.utils import *
+from networkx.testing.utils import assert_edges_equal, assert_nodes_equal
 import io
 import tempfile
 import os
@@ -55,7 +55,7 @@ class BaseGraphML(object):
                                                   ('n6', 'n8'),
                                                   ('n8', 'n7'),
                                                   ('n8', 'n9'),
-                                                   ])
+                                                  ])
         cls.simple_directed_fh = \
             io.BytesIO(cls.simple_directed_data.encode('UTF-8'))
 
@@ -172,7 +172,7 @@ class BaseGraphML(object):
         cls.simple_undirected_graph.add_edge('n0', 'n2', id='foo')
         cls.simple_undirected_graph.add_edges_from([('n1', 'n2'),
                                                     ('n2', 'n3'),
-                                                     ])
+                                                    ])
         fh = io.BytesIO(cls.simple_undirected_data.encode('UTF-8'))
         cls.simple_undirected_fh = fh
 
@@ -484,12 +484,12 @@ class TestReadGraphML(BaseGraphML):
         G = nx.read_graphml(fh)
         H = nx.parse_graphml(s)
         for graph in [G, H]:
-            assert graph.nodes['n0']['test'] == True
-            assert graph.nodes['n2']['test'] == False
-            assert graph.nodes['n3']['test'] == False
-            assert graph.nodes['n4']['test'] == True
-            assert graph.nodes['n5']['test'] == False
-            assert graph.nodes['n6']['test'] == True
+            assert graph.nodes['n0']['test']
+            assert not graph.nodes['n2']['test']
+            assert not graph.nodes['n3']['test']
+            assert graph.nodes['n4']['test']
+            assert not graph.nodes['n5']['test']
+            assert graph.nodes['n6']['test']
 
     def test_graphml_header_line(self):
         good = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -536,7 +536,7 @@ class TestReadGraphML(BaseGraphML):
             G = nx.read_graphml(fh)
             H = nx.parse_graphml(s)
             for graph in [G, H]:
-                assert graph.nodes['n0']['test'] == True
+                assert graph.nodes['n0']['test']
 
         fh = io.BytesIO(ugly.encode('UTF-8'))
         pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
@@ -930,10 +930,10 @@ class TestWriteGraphML(BaseGraphML):
         self.writer(G, fh)
         fh.seek(0)
         H = nx.read_graphml(fh)
-        assert H.nodes['n0']['special'] is False
-        assert H.nodes['n1']['special'] is 0
-        assert H.edges['n0', 'n1', 0]['special'] is False
-        assert H.edges['n0', 'n1', 1]['special'] is 0
+        assert not H.nodes['n0']['special']
+        assert H.nodes['n1']['special'] == 0
+        assert not H.edges['n0', 'n1', 0]['special']
+        assert H.edges['n0', 'n1', 1]['special'] == 0
 
     def test_multigraph_to_graph(self):
         # test converting multigraph to graph if no parallel edges found
@@ -947,10 +947,7 @@ class TestWriteGraphML(BaseGraphML):
         os.unlink(fname)
 
     def test_numpy_float(self):
-        try:
-            import numpy as np
-        except:
-            return
+        np = pytest.importorskip('numpy')
         wt = np.float(3.4)
         G = nx.Graph([(1, 2, {'weight': wt})])
         fd, fname = tempfile.mkstemp()
@@ -961,10 +958,7 @@ class TestWriteGraphML(BaseGraphML):
         os.unlink(fname)
 
     def test_numpy_float64(self):
-        try:
-            import numpy as np
-        except:
-            return
+        np = pytest.importorskip('numpy')
         wt = np.float64(3.4)
         G = nx.Graph([(1, 2, {'weight': wt})])
         fd, fname = tempfile.mkstemp()
@@ -980,10 +974,7 @@ class TestWriteGraphML(BaseGraphML):
         os.unlink(fname)
 
     def test_numpy_float32(self):
-        try:
-            import numpy as np
-        except:
-            return
+        np = pytest.importorskip('numpy')
         wt = np.float32(3.4)
         G = nx.Graph([(1, 2, {'weight': wt})])
         fd, fname = tempfile.mkstemp()

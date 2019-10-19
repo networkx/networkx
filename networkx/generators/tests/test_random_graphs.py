@@ -55,7 +55,7 @@ class TestGeneratorsRandom(object):
         G = connected_watts_strogatz_graph(10, 2, 0.1, tries=10, seed=seed)
         assert len(G) == 10
         assert G.number_of_edges() == 10
-        pytest.raises(NetworkXError, connected_watts_strogatz_graph, \
+        pytest.raises(NetworkXError, connected_watts_strogatz_graph,
                       10, 2, 0.1, tries=0)
 
         G = watts_strogatz_graph(10, 4, 0.25, seed)
