@@ -16,7 +16,7 @@ from collections import defaultdict
 
 import networkx as nx
 from networkx.utils import arbitrary_element, generate_unique_node
-from networkx.utils.decorators import *
+from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['line_graph', 'inverse_line_graph']
 
@@ -303,7 +303,7 @@ def inverse_line_graph(G):
         v = list(G)[0]
         a = (v, 0)
         b = (v, 1)
-        H = nx.Graph([(a,b)])
+        H = nx.Graph([(a, b)])
         return H
     elif G.number_of_nodes() > 1 and G.number_of_edges() == 0:
         msg = (

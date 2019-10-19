@@ -11,7 +11,6 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 from collections import deque
 from itertools import islice
 import networkx as nx
-#from networkx.algorithms.flow.utils import *
 from ...utils import arbitrary_element
 from .utils import build_residual_network
 from .utils import CurrentEdge

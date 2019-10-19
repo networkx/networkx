@@ -3,7 +3,6 @@ import random
 
 import networkx
 import pytest
-import pytest
 numpy = pytest.importorskip('numpy')
 scipy = pytest.importorskip('scipy')
 

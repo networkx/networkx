@@ -92,7 +92,7 @@ class UnionFind:
         """
         # Ensure fully pruned paths
         for x in self.parents.keys():
-            _ = self[x] # Evaluated for side-effect only
+            _ = self[x]  # Evaluated for side-effect only
 
         yield from groups(self.parents).values()
 

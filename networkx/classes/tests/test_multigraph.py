@@ -3,7 +3,7 @@
 import pytest
 
 import networkx as nx
-from networkx.testing.utils import *
+from networkx.testing.utils import assert_edges_equal
 
 from .test_graph import BaseAttrGraphTester, TestGraph
 
@@ -11,17 +11,17 @@ from .test_graph import BaseAttrGraphTester, TestGraph
 class BaseMultiGraphTester(BaseAttrGraphTester):
     def test_has_edge(self):
         G = self.K3
-        assert G.has_edge(0, 1) == True
-        assert G.has_edge(0, -1) == False
-        assert G.has_edge(0, 1, 0) == True
-        assert G.has_edge(0, 1, 1) == False
+        assert G.has_edge(0, 1)
+        assert not G.has_edge(0, -1)
+        assert G.has_edge(0, 1, 0)
+        assert not G.has_edge(0, 1, 1)
 
     def test_get_edge_data(self):
         G = self.K3
         assert G.get_edge_data(0, 1) == {0: {}}
         assert G[0][1] == {0: {}}
         assert G[0][1][0] == {}
-        assert G.get_edge_data(10, 20) == None
+        assert G.get_edge_data(10, 20) is None
         assert G.get_edge_data(0, 1, 0) == {}
 
     def test_adjacency(self):

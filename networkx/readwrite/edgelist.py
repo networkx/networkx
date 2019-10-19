@@ -445,7 +445,7 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
      a b 1
      a c 3.14159
      d e 42
-    
+
     See Also
     --------
     write_weighted_edgelist

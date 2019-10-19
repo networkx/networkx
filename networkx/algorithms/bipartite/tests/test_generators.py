@@ -2,9 +2,19 @@
 
 import pytest
 import networkx as nx
-from networkx.algorithms.bipartite.generators import *
+from ..generators import (
+    alternating_havel_hakimi_graph,
+    complete_bipartite_graph,
+    configuration_model,
+    gnmk_random_graph,
+    havel_hakimi_graph,
+    preferential_attachment_graph,
+    random_graph,
+    reverse_havel_hakimi_graph
+)
 
-"""Generators - Bipartite
+"""
+Generators - Bipartite
 ----------------------
 """
 

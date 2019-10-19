@@ -362,7 +362,7 @@ def test_ssp_multigraph():
         paths = list(nx.shortest_simple_paths(G, 1, 4))
 
 
-def test_ssp_source_missing():
+def test_ssp_source_missing2():
     with pytest.raises(nx.NetworkXNoPath):
         G = nx.Graph()
         nx.add_path(G, [0, 1, 2])

@@ -465,7 +465,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         nx.write_gexf(G, fh)
         fh.seek(0)
         H = nx.read_gexf(fh, node_type=int)
-        assert H.nodes[1]['testattr'] == True
+        assert H.nodes[1]['testattr']
 
     # Test for NaN, INF and -INF
     def test_specials(self):

@@ -181,7 +181,7 @@ def _cliques_heuristic(G, H, k, min_density):
         sh_cnumber = nx.core_number(SH)
         SG = nx.k_core(G.subgraph(SH), k)
         while not (_same(sh_cnumber) and nx.density(SH) >= min_density):
-            #!! This subgraph must be writable => .copy()
+            # This subgraph must be writable => .copy()
             SH = H.subgraph(SG).copy()
             if len(SH) <= k:
                 break

@@ -263,9 +263,10 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     # feasible spanning tree.
     n = len(N)  # number of nodes
     for p, d in enumerate(D):
-        if d > 0:  # Must be greater-than here. Zero-demand nodes must have
-                   # edges pointing towards the root to ensure strong
-                   # feasibility.
+        # Must be greater-than here. Zero-demand nodes must have
+        # edges pointing towards the root to ensure strong
+        # feasibility.
+        if d > 0:
             S.append(-1)
             T.append(p)
         else:
@@ -525,8 +526,8 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         Wn, We = find_cycle(i, p, q)
         j, s, t = find_leaving_edge(Wn, We)
         augment_flow(Wn, We, residual_capacity(j, s))
-        if i != j:  # Do nothing more if the entering edge is the same as the
-                    # the leaving edge.
+        # Do nothing more if the entering edge is the same as the leaving edge.
+        if i != j:
             if parent[t] != s:
                 # Ensure that s is the parent of t.
                 s, t = t, s

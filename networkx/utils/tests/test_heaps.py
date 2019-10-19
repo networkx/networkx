@@ -1,6 +1,6 @@
 import pytest
 import networkx as nx
-from networkx.utils import *
+from networkx.utils import BinaryHeap, PairingHeap
 
 
 class X(object):

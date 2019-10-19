@@ -1,5 +1,9 @@
 import networkx as nx
-from networkx.testing import *
+from networkx.testing import (
+    assert_graphs_equal,
+    assert_edges_equal,
+    assert_nodes_equal
+)
 
 # thanks to numpy for this GenericTest class (numpy/testing/test_utils.py)
 

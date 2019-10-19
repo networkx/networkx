@@ -66,7 +66,7 @@ def flatten(obj, result=None):
 
 def make_list_of_ints(sequence):
     """Return list of ints from sequence of integral numbers.
-    
+
     All elements of the sequence must satisfy int(element) == element
     or a ValueError is raised. Sequence is iterated through once.
 
@@ -109,7 +109,7 @@ def is_list_of_ints(intlist):
     return True
 
 
-#TODO Remove this?
+# TODO Remove this?
 def make_str(x):
     """Returns the string representation of t."""
     return str(x)

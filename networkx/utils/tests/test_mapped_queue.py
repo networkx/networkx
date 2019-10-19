@@ -127,11 +127,11 @@ class TestMappedQueue(object):
         q = MappedQueue()
         for elt in to_push:
             inserted = q.push(elt)
-            assert inserted == True
+            assert inserted
         assert q.h == h_sifted
         self._check_map(q)
         inserted = q.push(1)
-        assert inserted == False
+        assert not inserted
 
     def test_pop(self):
         h = [3, 4, 6, 0, 1, 2, 5]

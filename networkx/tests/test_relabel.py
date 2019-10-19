@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import pytest
 import networkx as nx
-from networkx.algorithms.operators import *
 from networkx.generators.classic import empty_graph
 from networkx.testing import assert_nodes_equal, assert_edges_equal
 

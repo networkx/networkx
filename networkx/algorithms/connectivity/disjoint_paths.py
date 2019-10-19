@@ -50,17 +50,17 @@ def edge_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes.
-        The function has to accept at least three parameters: a Digraph, 
-        a source node, and a target node. And return a residual network 
-        that follows NetworkX conventions (see :meth:`maximum_flow` for 
-        details). If flow_func is None, the default maximum flow function 
+        The function has to accept at least three parameters: a Digraph,
+        a source node, and a target node. And return a residual network
+        that follows NetworkX conventions (see :meth:`maximum_flow` for
+        details). If flow_func is None, the default maximum flow function
         (:meth:`edmonds_karp`) is used. The choice of the default function
         may change from version to version and should not be relied on.
         Default value: None.
 
     cutoff : int
         Maximum number of paths to yield. Some of the maximum flow
-        algorithms, such as :meth:`edmonds_karp` (the default) and 
+        algorithms, such as :meth:`edmonds_karp` (the default) and
         :meth:`shortest_augmenting_path` support the cutoff parameter,
         and will terminate when the flow value reaches or exceeds the
         cutoff. Other algorithms will ignore this parameter.
@@ -111,16 +111,16 @@ def edge_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
 
     If you need to compute edge disjoint paths on several pairs of
     nodes in the same graph, it is recommended that you reuse the
-    data structures that NetworkX uses in the computation: the 
+    data structures that NetworkX uses in the computation: the
     auxiliary digraph for edge connectivity, and the residual
     network for the underlying maximum flow computation.
 
     Example of how to compute edge disjoint paths among all pairs of
-    nodes of the platonic icosahedral graph reusing the data 
+    nodes of the platonic icosahedral graph reusing the data
     structures.
 
     >>> import itertools
-    >>> # You also have to explicitly import the function for 
+    >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
     >>> from networkx.algorithms.connectivity import (
     ...     build_auxiliary_edge_connectivity)
@@ -310,7 +310,7 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
     Example of how to compute node disjoint paths reusing the data
     structures:
 
-    >>> # You also have to explicitly import the function for 
+    >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
     >>> from networkx.algorithms.connectivity import (
     ...     build_auxiliary_node_connectivity)

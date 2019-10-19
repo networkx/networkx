@@ -1,7 +1,7 @@
 import networkx as nx
 import io
-from networkx.readwrite.p2g import *
-from networkx.testing import *
+from networkx.readwrite.p2g import read_p2g, write_p2g
+from networkx.testing import assert_edges_equal
 
 
 class TestP2G:

@@ -102,7 +102,7 @@ class TestUnweightedPath:
     def test_predecessor_cutoff(self):
         G = nx.path_graph(4)
         p = nx.predecessor(G, 0, 3)
-        assert not 4 in p
+        assert 4 not in p
 
     def test_predecessor_target(self):
         G = nx.path_graph(4)

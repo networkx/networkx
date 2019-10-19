@@ -1,7 +1,7 @@
 import json
 import pytest
 import networkx as nx
-from networkx.readwrite.json_graph import *
+from networkx.readwrite.json_graph import adjacency_data, adjacency_graph
 
 
 class TestAdjacency:

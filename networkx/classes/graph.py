@@ -438,7 +438,7 @@ class Graph(object):
         See Also
         --------
         number_of_nodes, order  which are identical
-        
+
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc

@@ -10,7 +10,7 @@
 import pytest
 
 import networkx as nx
-from networkx.testing.utils import *
+from networkx.testing.utils import assert_edges_equal, assert_nodes_equal
 from networkx.utils import arbitrary_element
 
 

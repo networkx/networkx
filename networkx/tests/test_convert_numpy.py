@@ -1,23 +1,13 @@
 import pytest
+np = pytest.importorskip('numpy')
+np_assert_equal = np.testing.assert_equal
 
 import networkx as nx
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
 from networkx.testing.utils import assert_graphs_equal
 
-#numpy = pytest.importorskip("numpy")
-
 
 class TestConvertNumpy(object):
-    @classmethod
-    def setup_class(cls):
-        global np
-        global np_assert_equal
-        try:
-            import numpy as np
-            np_assert_equal = np.testing.assert_equal
-        except ImportError:
-            pytest.skip('Numpy not available', allow_module_level=True)
-
     def setup_method(self):
         self.G1 = barbell_graph(10, 3)
         self.G2 = cycle_graph(10, create_using=nx.DiGraph)
@@ -249,14 +239,6 @@ class TestConvertNumpy(object):
 
 
 class TestConvertNumpyArray(object):
-
-    @classmethod
-    def setup_class(cls):
-        global np
-        global np_assert_equal
-        np = pytest.importorskip('numpy')
-        np_assert_equal = np.testing.assert_equal
-
     def setup_method(self):
         self.G1 = barbell_graph(10, 3)
         self.G2 = cycle_graph(10, create_using=nx.DiGraph)

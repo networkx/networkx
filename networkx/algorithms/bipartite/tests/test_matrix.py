@@ -56,10 +56,6 @@ class TestBiadjacencyMatrix:
         with pytest.raises(nx.NetworkXError):
             bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [0], [1, 1])
 
-    def test_duplicate_col(self):
-        with pytest.raises(nx.NetworkXError):
-            bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [0], [1, 1])
-
     def test_format_keyword(self):
         with pytest.raises(nx.NetworkXError):
             bipartite.biadjacency_matrix(nx.Graph([(1, 0)]), [0], format='foo')

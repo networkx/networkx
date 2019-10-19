@@ -180,7 +180,7 @@ class TestConvert():
         assert_edges_equal(sorted(XGM.edges()), sorted(GW.edges()))
         GI = nx.MultiGraph(dod)  # convert can't tell whether to duplicate edges!
         assert_nodes_equal(sorted(XGM.nodes()), sorted(GI.nodes()))
-        #assert_not_equal(sorted(XGM.edges()), sorted(GI.edges()))
+        # assert_not_equal(sorted(XGM.edges()), sorted(GI.edges()))
         assert not sorted(XGM.edges()) == sorted(GI.edges())
         GE = from_dict_of_dicts(dod, create_using=nx.MultiGraph,
                                 multigraph_input=False)

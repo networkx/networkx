@@ -5,7 +5,12 @@ numpy = pytest.importorskip('numpy')
 scipy = pytest.importorskip('scipy')
 
 import networkx as nx
-from networkx.algorithms.centrality.subgraph_alg import *
+from networkx.algorithms.centrality.subgraph_alg import (
+    estrada_index,
+    communicability_betweenness_centrality,
+    subgraph_centrality,
+    subgraph_centrality_exp
+)
 from networkx.testing import almost_equal
 
 

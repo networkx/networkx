@@ -5,6 +5,7 @@
 import os
 import tempfile
 import pytest
+yaml = pytest.importorskip("yaml")
 
 import networkx as nx
 from networkx.testing import assert_edges_equal, assert_nodes_equal
@@ -46,9 +47,3 @@ class TestYaml(object):
 
     def testMultiGraph(self):
         self.assert_equal(self.MG, data=True)
-
-
-# fixture for pytest tests
-def setup_module(module):
-    import pytest
-    yaml = pytest.importorskip("yaml")

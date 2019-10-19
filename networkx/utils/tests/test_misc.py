@@ -1,7 +1,24 @@
 # -*- encoding: utf-8 -*-
 import pytest
 import networkx as nx
-from networkx.utils import *
+from networkx.utils import (
+    create_py_random_state,
+    create_random_state,
+    discrete_sequence,
+    dict_to_numpy_array,
+    dict_to_numpy_array1,
+    dict_to_numpy_array2,
+    is_string_like,
+    iterable,
+    groups,
+    make_list_of_ints,
+    make_str,
+    pairwise,
+    powerlaw_sequence,
+    PythonRandomInterface,
+    random,
+    to_tuple
+)
 
 
 def test_is_string_like():
