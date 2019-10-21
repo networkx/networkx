@@ -5,8 +5,10 @@ These are not imported into the base networkx namespace but
 can be accessed, for example, as
 
 >>> import networkx
->>> networkx.utils.is_string_like('spam')
+>>> networkx.utils.is_list_of_ints([1, 2, 3])
 True
+>>> networkx.utils.is_list_of_ints([1, 2, "spam"])
+False
 """
 # Authors:      Aric Hagberg (hagberg@lanl.gov),
 #               Dan Schult(dschult@colgate.edu),
@@ -34,6 +36,9 @@ import networkx as nx
 
 def is_string_like(obj):  # from John Hunter, types-free version
     """Check if obj is string."""
+    msg = "is_string_like is deprecated and will be removed in 2.6." \
+          "Use isinstance(obj, str) instead."
+    warnings.warn(msg, DeprecationWarning)
     return isinstance(obj, str)
 
 

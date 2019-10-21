@@ -5,8 +5,7 @@ from pathlib import Path
 
 import networkx as nx
 from decorator import decorator
-from networkx.utils import is_string_like, create_random_state, \
-                           create_py_random_state
+from networkx.utils import create_random_state, create_py_random_state
 
 __all__ = [
     'not_implemented_for',
@@ -202,7 +201,7 @@ def open_file(path_arg, mode='r'):
         # Now we have the path_arg. There are two types of input to consider:
         #   1) string representing a path that should be opened
         #   2) an already opened file object
-        if is_string_like(path):
+        if isinstance(path, str):
             ext = splitext(path)[1]
             fobj = _dispatch_dict[ext](path, mode=mode)
             close_fobj = True

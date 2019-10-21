@@ -31,7 +31,8 @@ Deprecations
 ------------
 
 - [`#3680 <https://github.com/networkx/networkx/pull/3680>`_]
-  Deprecate `make_str`.  Use `str` instead.
+  Deprecate `make_str(x)` for `str(x)`.
+  Deprecate `is_string_like(obj)` for `isinstance(obj, str)`.
 
 Pull requests merged in this release
 ------------------------------------

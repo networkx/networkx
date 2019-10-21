@@ -1,5 +1,6 @@
 import tempfile
 import os
+import pathlib
 import random
 
 import pytest
@@ -97,11 +98,7 @@ class TestOpenFileDecorator(object):
         self.writer_arg0(self.fobj)
 
     def test_writer_arg0_pathlib(self):
-        try:
-            import pathlib
-            self.writer_arg0(pathlib.Path(self.name))
-        except ImportError:
-            return
+        self.writer_arg0(pathlib.Path(self.name))
 
     def test_writer_arg1_str(self):
         self.writer_arg1(self.name)

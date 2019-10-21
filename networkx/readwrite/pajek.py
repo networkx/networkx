@@ -25,7 +25,7 @@ for format information.
 import warnings
 
 import networkx as nx
-from networkx.utils import is_string_like, open_file
+from networkx.utils import open_file
 
 __all__ = ['read_pajek', 'parse_pajek', 'generate_pajek', 'write_pajek']
 
@@ -68,12 +68,12 @@ def generate_pajek(G):
         s = ' '.join(map(make_qstr, (id, n, x, y, shape)))
         # only optional attributes are left in na.
         for k, v in na.items():
-            if is_string_like(v) and v.strip() != '':
+            if isinstance(v, str) and v.strip() != '':
                 s += ' %s %s' % (make_qstr(k), make_qstr(v))
             else:
                 warnings.warn('Node attribute %s is not processed. %s.' %
                               (k,
-                               'Empty attribute' if is_string_like(v) else
+                               'Empty attribute' if isinstance(v, str) else
                                'Non-string attribute'))
         yield s
 
@@ -87,12 +87,12 @@ def generate_pajek(G):
         value = d.pop('weight', 1.0)  # use 1 as default edge value
         s = ' '.join(map(make_qstr, (nodenumber[u], nodenumber[v], value)))
         for k, v in d.items():
-            if is_string_like(v) and v.strip() != '':
+            if isinstance(v, str) and v.strip() != '':
                 s += ' %s %s' % (make_qstr(k), make_qstr(v))
             else:
                 warnings.warn('Edge attribute %s is not processed. %s.' %
                               (k,
-                               'Empty attribute' if is_string_like(v) else
+                               'Empty attribute' if isinstance(v, str) else
                                'Non-string attribute'))
         yield s
 
@@ -111,7 +111,7 @@ def write_pajek(G, path, encoding='UTF-8'):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G = nx.path_graph(4)
     >>> nx.write_pajek(G, "test.net")
 
     Warnings
@@ -146,13 +146,13 @@ def read_pajek(path, encoding='UTF-8'):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G = nx.path_graph(4)
     >>> nx.write_pajek(G, "test.net")
-    >>> G=nx.read_pajek("test.net")
+    >>> G = nx.read_pajek("test.net")
 
     To create a Graph instead of a MultiGraph use
 
-    >>> G1=nx.Graph(G)
+    >>> G1 = nx.Graph(G)
 
     References
     ----------
@@ -182,7 +182,7 @@ def parse_pajek(lines):
     """
     import shlex
     # multigraph=False
-    if is_string_like(lines):
+    if isinstance(lines, str):
         lines = iter(lines.split('\n'))
     lines = iter([line.rstrip('\n') for line in lines])
     G = nx.MultiDiGraph()  # are multiedges allowed in Pajek? assume yes
@@ -273,7 +273,7 @@ def make_qstr(t):
     """Returns the string representation of t.
     Add outer double-quotes if the string has a space.
     """
-    if not is_string_like(t):
+    if not isinstance(t, str):
         t = str(t)
     if " " in t:
         t = r'"%s"' % t

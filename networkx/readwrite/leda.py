@@ -22,7 +22,7 @@ __all__ = ['read_leda', 'parse_leda']
 
 import networkx as nx
 from networkx.exception import NetworkXError
-from networkx.utils import open_file, is_string_like
+from networkx.utils import open_file
 
 
 @open_file(0, mode='rb')
@@ -72,7 +72,7 @@ def parse_leda(lines):
     ----------
     .. [1] http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html
     """
-    if is_string_like(lines):
+    if isinstance(lines, str):
         lines = iter(lines.split('\n'))
     lines = iter([line.rstrip('\n') for line in lines
                   if not (line.startswith('#') or line.startswith('\n') or line == '')])
