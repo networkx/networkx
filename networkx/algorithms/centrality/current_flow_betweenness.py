@@ -362,10 +362,3 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
         betweenness[e] /= nb
     return dict(((ordering[s], ordering[t]), float(v))
                 for (s, t), v in betweenness.items())
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

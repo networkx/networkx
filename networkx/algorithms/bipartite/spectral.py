@@ -75,10 +75,3 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
             i = index[n]
             sb[n] = coshA[i, i] / expA[i, i]
         return sb
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

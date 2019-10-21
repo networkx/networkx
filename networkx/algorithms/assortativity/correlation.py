@@ -285,10 +285,3 @@ def numeric_ac(M):
     xy = numpy.outer(x, y)
     ab = numpy.outer(a, b)
     return (xy * (M - ab)).sum() / numpy.sqrt(vara * varb)
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

@@ -1240,10 +1240,3 @@ def simrank_similarity_numpy(G, source=None, target=None, importance_factor=0.9,
     if source is not None:
         return newsim[source]
     return newsim
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

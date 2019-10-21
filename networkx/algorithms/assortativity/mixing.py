@@ -235,10 +235,3 @@ def mixing_dict(xy, normalized=False):
             for j in jdict:
                 jdict[j] /= psum
     return d
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

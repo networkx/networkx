@@ -90,9 +90,3 @@ def non_randomness(G, k=None):
     nr_rd = (nr - ((n - 2 * k) * p + k)) / math.sqrt(2 * k * p * (1 - p))
 
     return nr, nr_rd
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')

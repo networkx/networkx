@@ -119,10 +119,3 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
         neighbors = (nbr for _, nbr in G.edges(u) if nbr in nodes)
         for v, degv in ydeg(neighbors, weight=weight):
             yield degu, degv
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

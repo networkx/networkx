@@ -99,9 +99,3 @@ def read_gpickle(path):
     .. [1] https://docs.python.org/2/library/pickle.html
     """
     return pickle.load(path)
-
-
-# fixture for pytest
-def teardown_module(module):
-    import os
-    os.unlink('test.gpickle')

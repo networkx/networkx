@@ -164,9 +164,3 @@ def adjacency_matrix(G, nodelist=None, weight='weight'):
 
 
 adj_matrix = adjacency_matrix
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    scipy = pytest.importorskip('scipy')

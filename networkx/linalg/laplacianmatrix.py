@@ -367,9 +367,3 @@ def _transition_matrix(G, nodelist=None, weight='weight',
         raise nx.NetworkXError("walk_type must be random, lazy, or pagerank")
 
     return P
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')

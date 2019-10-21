@@ -1069,10 +1069,3 @@ def rescale_layout(pos, scale=1):
         for i in range(pos.shape[1]):
             pos[:, i] *= scale / lim
     return pos
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

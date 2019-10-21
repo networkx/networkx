@@ -582,10 +582,3 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
             order.extend(component)
 
     return order
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy.sparse = pytest.importorskip('scipy.sparse')

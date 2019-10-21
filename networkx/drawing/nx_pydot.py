@@ -339,9 +339,3 @@ def pydot_layout(G, prog='neato', root=None):
             xx, yy = pos.split(",")
             node_pos[n] = (float(xx), float(yy))
     return node_pos
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    pydot = pytest.importorskip('pydot')

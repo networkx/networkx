@@ -142,10 +142,3 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     predicted = _predict(F, label_dict)
 
     return predicted
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

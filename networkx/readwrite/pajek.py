@@ -278,9 +278,3 @@ def make_qstr(t):
     if " " in t:
         t = r'"%s"' % t
     return t
-
-
-# fixture for pytest
-def teardown_module(module):
-    import os
-    os.unlink('test.net')

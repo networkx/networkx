@@ -98,14 +98,3 @@ def read_yaml(path):
 
     G = yaml.load(path, Loader=yaml.FullLoader)
     return G
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    yaml = pytest.importorskip('yaml')
-
-
-def teardown_module(module):
-    import os
-    os.unlink('test.yaml')

@@ -832,11 +832,3 @@ def write_gml(G, path, stringizer=None):
     """
     for line in generate_gml(G, stringizer):
         path.write((line + '\n').encode('ascii'))
-
-
-# fixture for pytest
-def teardown_module(module):
-    import os
-    for fname in ['test.gml', 'test.gml.gz']:
-        if os.path.isfile(fname):
-            os.unlink(fname)

@@ -136,10 +136,3 @@ def second_order_centrality(G):
     return dict(zip(G.nodes,
                     [np.sqrt((2*np.sum(M[:, i])-n*(n+1))) for i in range(n)]
                     ))  # eq 6
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

@@ -1235,11 +1235,3 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     """
     return from_numpy_matrix(A, parallel_edges=parallel_edges,
                              create_using=create_using)
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')
-    pandas = pytest.importorskip('pandas')

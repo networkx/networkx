@@ -465,9 +465,3 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=''):
     graph.draw(path, format, prog, args)
     path.close()
     nx.utils.default_opener(filename)
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    pygraphviz = pytest.importorskip('pygraphviz')

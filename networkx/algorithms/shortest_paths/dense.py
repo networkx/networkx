@@ -209,9 +209,3 @@ def floyd_warshall(G, weight='weight'):
     """
     # could make this its own function to reduce memory costs
     return floyd_warshall_predecessor_and_distance(G, weight=weight)[1]
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
