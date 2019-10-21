@@ -7,12 +7,11 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Unit tests for bridge-finding algorithms."""
-from unittest import TestCase
 
 import networkx as nx
 
 
-class TestBridges(TestCase):
+class TestBridges:
     """Unit tests for the bridge-finding function."""
 
     def test_single_bridge(self):
@@ -26,17 +25,17 @@ class TestBridges(TestCase):
         G = nx.Graph(edges)
         source = 1
         bridges = list(nx.bridges(G, source))
-        self.assertEqual(bridges, [(5, 6)])
+        assert bridges == [(5, 6)]
 
     def test_barbell_graph(self):
         # The (3, 0) barbell graph has two triangles joined by a single edge.
         G = nx.barbell_graph(3, 0)
         source = 0
         bridges = list(nx.bridges(G, source))
-        self.assertEqual(bridges, [(2, 3)])
+        assert bridges == [(2, 3)]
 
 
-class TestLocalBridges(TestCase):
+class TestLocalBridges:
     """Unit tests for the local_bridge function."""
 
     @classmethod

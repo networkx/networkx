@@ -8,7 +8,6 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Unit tests for the :mod:`networkx.algorithms.tree.mst` module."""
-from unittest import TestCase
 
 import pytest
 
@@ -178,7 +177,7 @@ class MinimumSpanningTreeTestBase(object):
         assert_edges_equal(sorted(T.edges()), [(0, 1), (0, 2)])
 
 
-class TestBoruvka(MinimumSpanningTreeTestBase, TestCase):
+class TestBoruvka(MinimumSpanningTreeTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
     using Borůvka's algorithm.
 
@@ -225,7 +224,7 @@ class MultigraphMSTTestBase(MinimumSpanningTreeTestBase):
         assert_edges_equal([(0, 1, 'a')], list(mst_edges))
 
 
-class TestKruskal(MultigraphMSTTestBase, TestCase):
+class TestKruskal(MultigraphMSTTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
     using Kruskal's algorithm.
 
@@ -233,7 +232,7 @@ class TestKruskal(MultigraphMSTTestBase, TestCase):
     algorithm = 'kruskal'
 
 
-class TestPrim(MultigraphMSTTestBase, TestCase):
+class TestPrim(MultigraphMSTTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
     using Prim's algorithm.
 

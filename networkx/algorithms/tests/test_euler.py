@@ -1,4 +1,3 @@
-from unittest import TestCase
 import collections
 
 import pytest
@@ -6,7 +5,7 @@ import pytest
 import networkx as nx
 
 
-class TestIsEulerian(TestCase):
+class TestIsEulerian:
     def test_is_eulerian(self):
         assert nx.is_eulerian(nx.complete_graph(5))
         assert nx.is_eulerian(nx.complete_graph(7))
@@ -38,7 +37,7 @@ class TestIsEulerian(TestCase):
         assert not nx.is_eulerian(G)
 
 
-class TestEulerianCircuit(TestCase):
+class TestEulerianCircuit:
     def test_eulerian_circuit_cycle(self):
         G = nx.cycle_graph(4)
 
@@ -105,7 +104,7 @@ class TestEulerianCircuit(TestCase):
             f = list(nx.eulerian_circuit(nx.complete_graph(4)))
 
 
-class TestIsSemiEulerian(TestCase):
+class TestIsSemiEulerian:
     def test_is_semieulerian(self):
         # Test graphs with Eulerian paths but no cycles return True.
         assert nx.is_semieulerian(nx.path_graph(4))
@@ -119,7 +118,7 @@ class TestIsSemiEulerian(TestCase):
         assert not nx.is_semieulerian(nx.hypercube_graph(6))
 
 
-class TestHasEulerianPath(TestCase):
+class TestHasEulerianPath:
     def test_has_eulerian_path_cyclic(self):
         # Test graphs with Eulerian cycles return True.
         assert nx.has_eulerian_path(nx.complete_graph(5))
@@ -134,7 +133,7 @@ class TestHasEulerianPath(TestCase):
         assert nx.has_eulerian_path(G)
 
 
-class TestFindPathStart(TestCase):
+class TestFindPathStart:
     def testfind_path_start(self):
         find_path_start = nx.algorithms.euler._find_path_start
         # Test digraphs return correct starting node.
@@ -148,14 +147,14 @@ class TestFindPathStart(TestCase):
         assert find_path_start(nx.DiGraph(edges)) is None
 
 
-class TestEulerianPath(TestCase):
+class TestEulerianPath:
     def test_eulerian_path(self):
         x = [(4, 0), (0, 1), (1, 2), (2, 0)]
         for e1, e2 in zip(x, nx.eulerian_path(nx.DiGraph(x))):
             assert e1 == e2
 
 
-class TestEulerize(TestCase):
+class TestEulerize:
     def test_disconnected(self):
         with pytest.raises(nx.NetworkXError):
             G = nx.from_edgelist([(0, 1), (2, 3)])

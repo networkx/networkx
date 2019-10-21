@@ -66,10 +66,8 @@ class TestOrderedGraph(TestGraph):
         self.Graph = MyGraph
 
 
-# class ThinGraphTester(TestGraph):
-#     def setUp(self):
-class TestThinGraph(TestGraph):
-    def setup_method(self):
+class ThinGraphTester(TestGraph):
+    def setUp(self):
         all_edge_dict = {'weight': 1}
 
         class MyGraph(nx.Graph):
@@ -108,10 +106,8 @@ class TestOrderedDiGraph(TestDiGraph):
         self.Graph = MyGraph
 
 
-# class ThinDiGraphTester(TestDiGraph):
-#     def setUp(self):
-class TestThinDiGraph(TestDiGraph):
-    def setup_method(self):
+class ThinDiGraphTester(TestDiGraph):
+    def setUp(self):
         all_edge_dict = {'weight': 1}
 
         class MyGraph(nx.DiGraph):

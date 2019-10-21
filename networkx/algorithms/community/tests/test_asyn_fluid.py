@@ -65,9 +65,6 @@ def test_two_clique_communities():
 
 
 def test_five_clique_ring():
-    """Not auto-tested (not named test_...) due to cross-version seed issues
-    python3.4 in particular gives different results.
-    """
     test = Graph()
 
     # c1
