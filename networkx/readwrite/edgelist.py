@@ -458,12 +458,3 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
                          data=(('weight', float),),
                          encoding=encoding
                          )
-
-
-# fixture for pytest
-def teardown_module(module):
-    import os
-    for fname in ['test.edgelist', 'test.edgelist.gz',
-                  'test.weighted.edgelist']:
-        if os.path.isfile(fname):
-            os.unlink(fname)

@@ -1176,11 +1176,3 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
     except TypeError:
         rgba_colors[:, -1] = alpha
     return rgba_colors
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    mpl = pytest.importorskip('matplotlib')
-    mpl.use('PS', warn=False)
-    plt = pytest.importorskip('matplotlib.pyplot')

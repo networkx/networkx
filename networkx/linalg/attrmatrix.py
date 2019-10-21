@@ -446,10 +446,3 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
         return M, ordering
     else:
         return M
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

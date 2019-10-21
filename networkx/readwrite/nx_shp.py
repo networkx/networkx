@@ -322,9 +322,3 @@ def write_shp(G, outdir):
         create_feature(g, edges, attributes)
 
     nodes, edges = None, None
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    ogr = pytest.importorskip('ogr')

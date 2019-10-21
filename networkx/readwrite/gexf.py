@@ -1035,18 +1035,3 @@ def relabel_gexf_graph(G):
         if 'parents' in H.nodes[m]:
             H.nodes[m]['parents'] = [mapping[p] for p in G.nodes[n]['parents']]
     return H
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    xml.etree.cElementTree = pytest.importorskip('xml.etree.cElementTree')
-
-
-# fixture for pytest
-def teardown_module(module):
-    import os
-    try:
-        os.unlink('test.gexf')
-    except Exception as e:
-        pass

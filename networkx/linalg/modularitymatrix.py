@@ -157,10 +157,3 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
     # Expected adjacency matrix
     X = k_out * k_in / m
     return A - X
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

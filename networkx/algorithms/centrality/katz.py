@@ -334,10 +334,3 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
         norm = 1.0
     centrality = dict(zip(nodelist, map(float, centrality / norm)))
     return centrality
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

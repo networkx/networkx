@@ -152,10 +152,3 @@ def local_and_global_consistency(G, alpha=0.99,
     predicted = _predict(F, label_dict)
 
     return predicted
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

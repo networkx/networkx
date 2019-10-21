@@ -397,9 +397,3 @@ def create_py_random_state(random_state=None):
         return random.Random(random_state)
     msg = '%r cannot be used to generate a random.Random instance'
     raise ValueError(msg % random_state)
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')

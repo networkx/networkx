@@ -901,18 +901,3 @@ class GraphMLReader(GraphML):
             if default is not None:
                 graphml_key_defaults[attr_id] = default.text
         return graphml_keys, graphml_key_defaults
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    xml.etree.ElementTree = pytest.importorskip('xml.etree.ElementTree')
-
-
-# fixture for pytest
-def teardown_module(module):
-    import os
-    try:
-        os.unlink('test.graphml')
-    except:
-        pass

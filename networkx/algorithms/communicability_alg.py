@@ -168,10 +168,3 @@ def communicability_exp(G):
         for v in G:
             c[u][v] = float(expA[mapping[u], mapping[v]])
     return c
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

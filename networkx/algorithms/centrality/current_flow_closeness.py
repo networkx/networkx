@@ -103,9 +103,3 @@ def current_flow_closeness_centrality(G, weight=None,
 
 
 information_centrality = current_flow_closeness_centrality
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')

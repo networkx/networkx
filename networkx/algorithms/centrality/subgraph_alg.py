@@ -315,10 +315,3 @@ def estrada_index(G):
     >>> ei=nx.estrada_index(G)
     """
     return sum(subgraph_centrality(G).values())
-
-
-# fixture for pytest
-def setup_module(module):
-    import pytest
-    numpy = pytest.importorskip('numpy')
-    scipy = pytest.importorskip('scipy')

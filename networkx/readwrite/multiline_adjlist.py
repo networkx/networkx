@@ -372,11 +372,3 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
                                    create_using=create_using,
                                    nodetype=nodetype,
                                    edgetype=edgetype)
-
-
-# fixture for pytest
-def teardown_module(module):
-    import os
-    for fname in ['test.adjlist', 'test.adjlist.gz']:
-        if os.path.isfile(fname):
-            os.unlink(fname)
