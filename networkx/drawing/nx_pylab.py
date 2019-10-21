@@ -23,7 +23,6 @@ pygraphviz:     http://pygraphviz.github.io/
 """
 from numbers import Number
 import networkx as nx
-from networkx.utils import is_string_like
 from networkx.drawing.layout import shell_layout, \
     circular_layout, kamada_kawai_layout, spectral_layout, \
     spring_layout, random_layout, planar_layout
@@ -798,7 +797,7 @@ def draw_networkx_labels(G, pos,
     text_items = {}  # there is no text collection so we'll fake one
     for n, label in labels.items():
         (x, y) = pos[n]
-        if not is_string_like(label):
+        if not isinstance(label, str):
             label = str(label)  # this makes "1" and 1 labeled the same
         t = ax.text(x, y,
                     label,
@@ -944,7 +943,7 @@ def draw_networkx_edge_labels(G, pos,
                         ec=(1.0, 1.0, 1.0),
                         fc=(1.0, 1.0, 1.0),
                         )
-        if not is_string_like(label):
+        if not isinstance(label, str):
             label = str(label)  # this makes "1" and 1 labeled the same
 
         # set optional alignment

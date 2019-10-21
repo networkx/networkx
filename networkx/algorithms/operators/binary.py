@@ -8,7 +8,6 @@ Operations on graphs including union, intersection, difference.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-from networkx.utils import is_string_like
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Pieter Swart (swart@lanl.gov)',
                             'Dan Schult(dschult@colgate.edu)'])
@@ -65,7 +64,7 @@ def union(G, H, rename=(None, None), name=None):
             return graph
 
         def label(x):
-            if is_string_like(x):
+            if isinstance(x, str):
                 name = prefix + x
             else:
                 name = prefix + repr(x)
@@ -381,7 +380,7 @@ def full_join(G, H, rename=(None, None)):
             return graph
 
         def label(x):
-            if is_string_like(x):
+            if isinstance(x, str):
                 name = prefix + x
             else:
                 name = prefix + repr(x)
