@@ -16,7 +16,6 @@
 """Functions for detecting communities based on modularity.
 """
 
-import networkx as nx
 from networkx.algorithms.community.quality import modularity
 
 from networkx.utils.mapped_queue import MappedQueue

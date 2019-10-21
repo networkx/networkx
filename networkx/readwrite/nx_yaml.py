@@ -23,7 +23,6 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['read_yaml', 'write_yaml']
 
-import networkx as nx
 from networkx.utils import open_file
 
 

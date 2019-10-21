@@ -145,7 +145,6 @@ polynomial-time algorithm is known to exist).
 #    Complexity Sciences Center and Physics Department, UC Davis.
 
 import sys
-import networkx as nx
 
 __all__ = ['GraphMatcher',
            'DiGraphMatcher']

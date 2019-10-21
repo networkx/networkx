@@ -8,7 +8,6 @@
 # information.
 """Basic algorithms for breadth-first searching the nodes of a graph."""
 
-import networkx as nx
 from .breadth_first_search import generic_bfs_edges
 
 __all__ = ['bfs_beam_edges']

@@ -46,15 +46,8 @@ for examples.
 import warnings
 from collections import defaultdict
 
-try:
-    from xml.etree.cElementTree import Element, ElementTree
-    from xml.etree.cElementTree import tostring, fromstring
-except ImportError:
-    try:
-        from xml.etree.ElementTree import Element, ElementTree
-        from xml.etree.ElementTree import tostring, fromstring
-    except ImportError:
-        pass
+from xml.etree.ElementTree import Element, ElementTree
+from xml.etree.ElementTree import tostring, fromstring
 
 try:
     import lxml.etree as lxmletree

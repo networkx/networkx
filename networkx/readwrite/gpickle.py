@@ -30,7 +30,6 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu
 
 __all__ = ['read_gpickle', 'write_gpickle']
 
-import networkx as nx
 from networkx.utils import open_file
 
 try:

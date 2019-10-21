@@ -2,7 +2,6 @@
 """
 Mixing matrices for node attributes and degree.
 """
-import networkx as nx
 from networkx.utils import dict_to_numpy_array
 from networkx.algorithms.assortativity.pairs import node_degree_xy, \
     node_attribute_xy

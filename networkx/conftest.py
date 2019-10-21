@@ -1,9 +1,10 @@
 import pytest
 import networkx
+import sys
 
 
 @pytest.fixture(autouse=True)
-def add_np(doctest_namespace):
+def add_nx(doctest_namespace):
     doctest_namespace["nx"] = networkx
 
 
@@ -110,7 +111,6 @@ needs_scipy = [
 needs_matplotlib = ["drawing/nx_pylab.py"]
 needs_pandas = ["convert_matrix.py"]
 needs_yaml = ["readwrite/nx_yaml.py"]
-# needs_xml?
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
 needs_ogr = ["readwrite/nx_shp.py"]
@@ -131,3 +131,7 @@ if not has_pydot:
     collect_ignore += needs_pydot
 if not has_ogr:
     collect_ignore += needs_ogr
+
+# FIXME:  This is to avoid errors on AppVeyor
+if sys.platform.startswith("win"):
+    collect_ignore += ["readwrite/graph6.py", "readwrite/sparse6.py"]

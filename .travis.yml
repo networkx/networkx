@@ -36,7 +36,6 @@ matrix:
       python: 3.7
       env:
       - OPTIONAL_DEPS=1
-      - DOCTEST=1
       - PIP_FLAGS="--pre"
       addons:
         apt:
@@ -64,8 +63,6 @@ matrix:
       language: generic
       env: TRAVIS_PYTHON_VERSION=3.8
     - python: 3.6
-      env:
-      - DOCTEST=1
     - python: 3.8
     - python: pypy3.6-7.1.1
 

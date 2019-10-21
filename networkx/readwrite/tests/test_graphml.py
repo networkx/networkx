@@ -879,7 +879,7 @@ class TestWriteGraphML(BaseGraphML):
 
         xml = parse(fh)
         # Children are the key elements, and the graph element
-        children = xml.getroot().getchildren()
+        children = list(xml.getroot())
         assert len(children) == 3
 
         keys = [child.items() for child in children[:2]]
@@ -1022,4 +1022,4 @@ class TestXMLGraphML(TestWriteGraphML):
     @classmethod
     def setup_class(cls):
         TestWriteGraphML.setup_class()
-        _ = pytest.importorskip("xml.etree.ElementTree")
+        pytest.importorskip("xml.etree.ElementTree")
