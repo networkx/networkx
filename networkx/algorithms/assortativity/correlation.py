@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Node assortativity coefficients and correlation measures.
 """
-import networkx as nx
 from networkx.algorithms.assortativity.mixing import degree_mixing_matrix, \
     attribute_mixing_matrix, numeric_mixing_matrix
 from networkx.algorithms.assortativity.pairs import node_degree_xy
@@ -46,8 +45,8 @@ def degree_assortativity_coefficient(G, x='out', y='in', weight=None,
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> r=nx.degree_assortativity_coefficient(G)
+    >>> G = nx.path_graph(4)
+    >>> r = nx.degree_assortativity_coefficient(G)
     >>> print("%3.1f"%r)
     -0.5
 
@@ -113,8 +112,8 @@ def degree_pearson_correlation_coefficient(G, x='out', y='in',
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> r=nx.degree_pearson_correlation_coefficient(G)
+    >>> G = nx.path_graph(4)
+    >>> r = nx.degree_pearson_correlation_coefficient(G)
     >>> print("%3.1f"%r)
     -0.5
 
@@ -163,7 +162,7 @@ def attribute_assortativity_coefficient(G, attribute, nodes=None):
 
     Examples
     --------
-    >>> G=nx.Graph()
+    >>> G = nx.Graph()
     >>> G.add_nodes_from([0,1],color='red')
     >>> G.add_nodes_from([2,3],color='blue')
     >>> G.add_edges_from([(0,1),(2,3)])
@@ -211,7 +210,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
 
     Examples
     --------
-    >>> G=nx.Graph()
+    >>> G = nx.Graph()
     >>> G.add_nodes_from([0,1],size=2)
     >>> G.add_nodes_from([2,3],size=3)
     >>> G.add_edges_from([(0,1),(2,3)])

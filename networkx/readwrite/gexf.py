@@ -24,15 +24,8 @@ import time
 
 import networkx as nx
 from networkx.utils import open_file, make_str
-try:
-    from xml.etree.cElementTree import (Element, ElementTree, SubElement,
-                                        tostring)
-except ImportError:
-    try:
-        from xml.etree.ElementTree import (Element, ElementTree, SubElement,
-                                           tostring)
-    except ImportError:
-        pass
+
+from xml.etree.ElementTree import Element, ElementTree, SubElement, tostring
 
 __all__ = ['write_gexf', 'read_gexf', 'relabel_gexf_graph', 'generate_gexf']
 

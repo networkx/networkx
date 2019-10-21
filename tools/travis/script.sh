@@ -28,7 +28,7 @@ if [[ "${REPORT_COVERAGE}" == 1 ]]; then
 elif [[ "${DOCTEST}" == 1 ]]; then
   pytest --doctest-modules --pyargs networkx
 else
-  pytest --pyargs networkx
+  pytest --doctest-modules --pyargs networkx
 fi
 
 cd $NX_SOURCE

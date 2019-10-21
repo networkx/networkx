@@ -11,7 +11,6 @@
 #          Aric Hagberg (aric.hagberg@gmail.com)
 """Biconnected components and articulation points."""
 from itertools import chain
-import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = [

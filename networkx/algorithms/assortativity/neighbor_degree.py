@@ -4,7 +4,6 @@
 #    Aric Hagberg <hagberg@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-import networkx as nx
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg (hagberg@lanl.gov)'])
 __all__ = ["average_neighbor_degree"]

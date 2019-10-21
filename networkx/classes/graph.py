@@ -20,7 +20,7 @@ For directed graphs see DiGraph and MultiDiGraph.
 from copy import deepcopy
 
 import networkx as nx
-from networkx.classes.coreviews import AtlasView, AdjacencyView
+from networkx.classes.coreviews import AdjacencyView
 from networkx.classes.reportviews import NodeView, EdgeView, DegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
