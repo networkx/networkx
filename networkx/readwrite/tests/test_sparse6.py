@@ -1,14 +1,13 @@
 from io import BytesIO
 import tempfile
-from unittest import TestCase
-
+import pytest
 
 import networkx as nx
 from networkx.testing.utils import assert_edges_equal
 from networkx.testing.utils import assert_nodes_equal
 
 
-class TestSparseGraph6(object):
+class TestSparseGraph6:
 
     def test_from_sparse6_bytes(self):
         data = b':Q___eDcdFcDeFcE`GaJ`IaHbKNbLM'
@@ -26,10 +25,10 @@ class TestSparseGraph6(object):
     def test_from_bytes_multigraph_graph(self):
         graph_data = b':An'
         G = nx.from_sparse6_bytes(graph_data)
-        assert type(G), nx.Graph
+        assert type(G) == nx.Graph
         multigraph_data = b':Ab'
         M = nx.from_sparse6_bytes(multigraph_data)
-        assert type(M), nx.MultiGraph
+        assert type(M) == nx.MultiGraph
 
     def test_read_sparse6(self):
         data = b':Q___eDcdFcDeFcE`GaJ`IaHbKNbLM'
@@ -52,7 +51,7 @@ class TestSparseGraph6(object):
                                 10, 11, 12, 13, 14, 15, 16, 17])
 
 
-class TestWriteSparse6(TestCase):
+class TestWriteSparse6:
     """Unit tests for writing graphs in the sparse6 format.
 
     Most of the test cases were checked against the sparse6 encoder in Sage.
@@ -63,43 +62,43 @@ class TestWriteSparse6(TestCase):
         G = nx.null_graph()
         result = BytesIO()
         nx.write_sparse6(G, result)
-        self.assertEqual(result.getvalue(), b'>>sparse6<<:?\n')
+        assert result.getvalue() == b'>>sparse6<<:?\n'
 
     def test_trivial_graph(self):
         G = nx.trivial_graph()
         result = BytesIO()
         nx.write_sparse6(G, result)
-        self.assertEqual(result.getvalue(), b'>>sparse6<<:@\n')
+        assert result.getvalue() == b'>>sparse6<<:@\n'
 
     def test_empty_graph(self):
         G = nx.empty_graph(5)
         result = BytesIO()
         nx.write_sparse6(G, result)
-        self.assertEqual(result.getvalue(), b'>>sparse6<<:D\n')
+        assert result.getvalue() == b'>>sparse6<<:D\n'
 
     def test_large_empty_graph(self):
         G = nx.empty_graph(68)
         result = BytesIO()
         nx.write_sparse6(G, result)
-        self.assertEqual(result.getvalue(), b'>>sparse6<<:~?@C\n')
+        assert result.getvalue() == b'>>sparse6<<:~?@C\n'
 
     def test_very_large_empty_graph(self):
         G = nx.empty_graph(258049)
         result = BytesIO()
         nx.write_sparse6(G, result)
-        self.assertEqual(result.getvalue(), b'>>sparse6<<:~~???~?@\n')
+        assert result.getvalue() == b'>>sparse6<<:~~???~?@\n'
 
     def test_complete_graph(self):
         G = nx.complete_graph(4)
         result = BytesIO()
         nx.write_sparse6(G, result)
-        self.assertEqual(result.getvalue(), b'>>sparse6<<:CcKI\n')
+        assert result.getvalue() == b'>>sparse6<<:CcKI\n'
 
     def test_no_header(self):
         G = nx.complete_graph(4)
         result = BytesIO()
         nx.write_sparse6(G, result, header=False)
-        self.assertEqual(result.getvalue(), b':CcKI\n')
+        assert result.getvalue() == b':CcKI\n'
 
     def test_padding(self):
         codes = (b':Cdv', b':DaYn', b':EaYnN', b':FaYnL', b':GaYnLz')
@@ -107,7 +106,7 @@ class TestWriteSparse6(TestCase):
             G = nx.path_graph(n)
             result = BytesIO()
             nx.write_sparse6(G, result, header=False)
-            self.assertEqual(result.getvalue(), code + b'\n')
+            assert result.getvalue() == code + b'\n'
 
     def test_complete_bipartite(self):
         G = nx.complete_bipartite_graph(6, 9)
@@ -129,8 +128,8 @@ class TestWriteSparse6(TestCase):
             assert g2.order() == g.order()
             assert_edges_equal(g2.edges(), g.edges())
 
-    def no_directed_graphs(self):
-        with self.assertRaises(nx.NetworkXNotImplemented):
+    def test_no_directed_graphs(self):
+        with pytest.raises(nx.NetworkXNotImplemented):
             nx.write_sparse6(nx.DiGraph(), BytesIO())
 
     def test_write_path(self):
@@ -141,7 +140,7 @@ class TestWriteSparse6(TestCase):
         # file should be closed now, so write_sparse6 can open it
         nx.write_sparse6(nx.null_graph(), fullfilename)
         fh = open(fullfilename, mode='rb')
-        self.assertEqual(fh.read(), b'>>sparse6<<:?\n')
+        assert fh.read() == b'>>sparse6<<:?\n'
         fh.close()
         import os
         os.remove(fullfilename)

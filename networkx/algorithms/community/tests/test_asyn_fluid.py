@@ -64,10 +64,7 @@ def test_two_clique_communities():
     assert result == ground_truth
 
 
-def five_clique_ring():
-    """Not auto-tested (not named test_...) due to cross-version seed issues
-    python3.4 in particular gives different results.
-    """
+def test_five_clique_ring():
     test = Graph()
 
     # c1

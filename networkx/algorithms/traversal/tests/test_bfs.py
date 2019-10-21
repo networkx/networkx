@@ -57,14 +57,14 @@ class TestBreadthLimitedSearch:
         nx.add_path(D, [2, 7, 8, 9, 10])
         cls.D = D
 
-    def bfs_test_successor(self):
+    def test_limited_bfs_successor(self):
         assert (dict(nx.bfs_successors(self.G, source=1, depth_limit=3)) ==
                 {1: [0, 2], 2: [3, 7], 3: [4], 7: [8]})
         result = {n: sorted(s) for n, s in nx.bfs_successors(self.D, source=7,
                                                              depth_limit=2)}
         assert result == {8: [9], 2: [3], 7: [2, 8]}
 
-    def bfs_test_predecessor(self):
+    def test_limited_bfs_predecessor(self):
         assert (dict(nx.bfs_predecessors(self.G, source=1,
                                          depth_limit=3)) ==
                 {0: 1, 2: 1, 3: 2, 4: 3, 7: 2, 8: 7})
@@ -72,11 +72,11 @@ class TestBreadthLimitedSearch:
                                          depth_limit=2)) ==
                 {2: 7, 3: 2, 8: 7, 9: 8})
 
-    def bfs_test_tree(self):
+    def test_limited_bfs_tree(self):
         T = nx.bfs_tree(self.G, source=3, depth_limit=1)
         assert sorted(T.edges()) == [(3, 2), (3, 4)]
 
-    def bfs_test_edges(self):
+    def test_limited_bfs_edges(self):
         edges = nx.bfs_edges(self.G, source=9, depth_limit=4)
         assert list(edges) == [(9, 8), (9, 10), (8, 7),
                                (7, 2), (2, 1), (2, 3)]

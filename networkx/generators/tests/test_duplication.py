@@ -71,7 +71,6 @@ class TestPartialDuplicationGraph(object):
             p = 0.5
             q = 0.5
             G = partial_duplication_graph(N, n, p, q)
-            assert len(G) == n
 
     def test_invalid_probabilities(self):
         N = 1

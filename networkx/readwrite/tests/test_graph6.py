@@ -1,8 +1,7 @@
 
 from io import BytesIO
 import tempfile
-from unittest import TestCase
-
+import pytest
 
 import networkx as nx
 import networkx.readwrite.graph6 as g6
@@ -20,7 +19,7 @@ class TestGraph6Utils(object):
                     [42, 43])
 
 
-class TestFromGraph6Bytes(TestCase):
+class TestFromGraph6Bytes:
 
     def test_from_graph6_bytes(self):
         data = b'DF{'
@@ -38,7 +37,7 @@ class TestFromGraph6Bytes(TestCase):
         assert_edges_equal(G.edges(), Gin.edges())
 
 
-class TestReadGraph6(TestCase):
+class TestReadGraph6:
 
     def test_read_many_graph6(self):
         """Test for reading many graphs from a file into a list."""
@@ -50,43 +49,43 @@ class TestReadGraph6(TestCase):
             assert sorted(G) == list(range(5))
 
 
-class TestWriteGraph6(TestCase):
+class TestWriteGraph6:
     """Unit tests for writing a graph to a file in graph6 format."""
 
     def test_null_graph(self):
         result = BytesIO()
         nx.write_graph6(nx.null_graph(), result)
-        self.assertEqual(result.getvalue(), b'>>graph6<<?\n')
+        assert result.getvalue() == b'>>graph6<<?\n'
 
     def test_trivial_graph(self):
         result = BytesIO()
         nx.write_graph6(nx.trivial_graph(), result)
-        self.assertEqual(result.getvalue(), b'>>graph6<<@\n')
+        assert result.getvalue() == b'>>graph6<<@\n'
 
     def test_complete_graph(self):
         result = BytesIO()
         nx.write_graph6(nx.complete_graph(4), result)
-        self.assertEqual(result.getvalue(), b'>>graph6<<C~\n')
+        assert result.getvalue() == b'>>graph6<<C~\n'
 
     def test_large_complete_graph(self):
         result = BytesIO()
         nx.write_graph6(nx.complete_graph(67), result, header=False)
-        self.assertEqual(result.getvalue(), b'~?@B' + b'~' * 368 + b'w\n')
+        assert result.getvalue() == b'~?@B' + b'~' * 368 + b'w\n'
 
     def test_no_header(self):
         result = BytesIO()
         nx.write_graph6(nx.complete_graph(4), result, header=False)
-        self.assertEqual(result.getvalue(), b'C~\n')
+        assert result.getvalue() == b'C~\n'
 
     def test_complete_bipartite_graph(self):
         result = BytesIO()
         G = nx.complete_bipartite_graph(6, 9)
         nx.write_graph6(G, result, header=False)
         # The expected encoding here was verified by Sage.
-        self.assertEqual(result.getvalue(), b'N??F~z{~Fw^_~?~?^_?\n')
+        assert result.getvalue() == b'N??F~z{~Fw^_~?~?^_?\n'
 
-    def no_directed_graphs(self):
-        with self.assertRaises(nx.NetworkXNotImplemented):
+    def test_no_directed_graphs(self):
+        with pytest.raises(nx.NetworkXNotImplemented):
             nx.write_graph6(nx.DiGraph(), BytesIO())
 
     def test_length(self):
@@ -113,7 +112,7 @@ class TestWriteGraph6(TestCase):
         with tempfile.NamedTemporaryFile() as f:
             g6.write_graph6_file(nx.null_graph(), f)
             f.seek(0)
-            self.assertEqual(f.read(), b'>>graph6<<?\n')
+            assert f.read() == b'>>graph6<<?\n'
 
     def test_relabeling(self):
         G = nx.Graph([(0, 1)])

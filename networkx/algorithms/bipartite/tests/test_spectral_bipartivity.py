@@ -31,7 +31,7 @@ class TestSpectralBipartivity(object):
         G.add_edge(1, 2)
         assert almost_equal(sb(G), 0.890, places=3)
 
-    def k23_like(self):
+    def test_k23_like(self):
         # K2,3-like
         G = nx.complete_bipartite_graph(2, 3)
         G.add_edge(0, 1)

@@ -7,8 +7,6 @@
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more
 # information.
 """Unit tests for the beam search functions."""
-from unittest import TestCase
-
 
 import networkx as nx
 
@@ -17,7 +15,7 @@ def identity(x):
     return x
 
 
-class TestBeamSearch(TestCase):
+class TestBeamSearch:
     """Unit tests for the beam search function."""
 
     def test_narrow(self):

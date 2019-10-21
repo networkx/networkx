@@ -9,7 +9,6 @@
 """Unit tests for the chain decomposition functions."""
 from itertools import cycle
 from itertools import islice
-from unittest import TestCase
 
 import networkx as nx
 
@@ -46,7 +45,7 @@ def cyclic_equals(seq1, seq2):
     return any(x == tuple(seq2) for x in cycles(seq1))
 
 
-class TestChainDecomposition(TestCase):
+class TestChainDecomposition:
     """Unit tests for the chain decomposition function."""
 
     def assertContainsChain(self, chain, expected):
@@ -79,7 +78,7 @@ class TestChainDecomposition(TestCase):
             [(6, 8), (8, 7), (7, 6)],
         ]
         chains = list(nx.chain_decomposition(G, root=1))
-        self.assertEqual(len(chains), len(expected))
+        assert len(chains) == len(expected)
 # This chain decomposition isn't unique
 #        for chain in chains:
 #            print(chain)
@@ -93,7 +92,7 @@ class TestChainDecomposition(TestCase):
             [(0, 1), (1, 2), (2, 0)],
             [(3, 4), (4, 5), (5, 3)],
         ]
-        self.assertEqual(len(chains), len(expected))
+        assert len(chains) == len(expected)
         for chain in chains:
             self.assertContainsChain(chain, expected)
 
@@ -111,7 +110,7 @@ class TestChainDecomposition(TestCase):
             [('a', 'b'), ('b', 'c'), ('c', 'a')],
             [('d', 'e'), ('e', 'f'), ('f', 'd')],
         ]
-        self.assertEqual(len(chains), len(expected))
+        assert len(chains) == len(expected)
         for chain in chains:
             self.assertContainsChain(chain, expected)
 
@@ -127,6 +126,6 @@ class TestChainDecomposition(TestCase):
             [('a', 'b'), ('b', 'c'), ('c', 'a')],
             [('d', 'e'), ('e', 'f'), ('f', 'd')],
         ]
-        self.assertEqual(len(chains), len(expected))
+        assert len(chains) == len(expected)
         for chain in chains:
             self.assertContainsChain(chain, expected)
