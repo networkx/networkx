@@ -44,6 +44,10 @@ class TestOpenFileDecorator(object):
         self.fobj = tempfile.NamedTemporaryFile('wb+', delete=False)
         self.name = self.fobj.name
 
+    def teardown_method(self):
+        self.fobj.close()
+        os.unlink(self.name)
+
     def write(self, path):
         for text in self.text:
             path.write(text.encode('ascii'))
@@ -139,10 +143,6 @@ class TestOpenFileDecorator(object):
 
     def test_writer_kwarg_path_none(self):
         self.writer_kwarg(path=None)
-
-    def tearDown(self):
-        self.fobj.close()
-        os.unlink(self.name)
 
 
 @preserve_random_state

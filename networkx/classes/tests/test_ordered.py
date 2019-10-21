@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-class SmokeTestOrdered(object):
+class TestOrdered(object):
     # Just test instantiation.
     def test_graph(self):
         G = nx.OrderedGraph()

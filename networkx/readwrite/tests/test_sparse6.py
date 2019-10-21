@@ -1,7 +1,7 @@
 from io import BytesIO
 import tempfile
 from unittest import TestCase
-
+import pytest
 
 import networkx as nx
 from networkx.testing.utils import assert_edges_equal
@@ -129,8 +129,8 @@ class TestWriteSparse6(TestCase):
             assert g2.order() == g.order()
             assert_edges_equal(g2.edges(), g.edges())
 
-    def no_directed_graphs(self):
-        with self.assertRaises(nx.NetworkXNotImplemented):
+    def test_no_directed_graphs(self):
+        with pytest.raises(nx.NetworkXNotImplemented):
             nx.write_sparse6(nx.DiGraph(), BytesIO())
 
     def test_write_path(self):

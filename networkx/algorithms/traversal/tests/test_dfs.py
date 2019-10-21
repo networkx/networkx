@@ -94,19 +94,19 @@ class TestDepthLimitedSearch:
         nx.add_path(D, [2, 7, 8, 9, 10])
         cls.D = D
 
-    def dls_test_preorder_nodes(self):
+    def test_dls_preorder_nodes(self):
         assert list(nx.dfs_preorder_nodes(self.G, source=0,
                                           depth_limit=2)) == [0, 1, 2]
         assert list(nx.dfs_preorder_nodes(self.D, source=1,
                                           depth_limit=2)) == ([1, 0])
 
-    def dls_test_postorder_nodes(self):
+    def test_dls_postorder_nodes(self):
         assert list(nx.dfs_postorder_nodes(self.G,
                                            source=3, depth_limit=3)) == [1, 7, 2, 5, 4, 3]
         assert list(nx.dfs_postorder_nodes(self.D,
                                            source=2, depth_limit=2)) == ([3, 7, 2])
 
-    def dls_test_successor(self):
+    def test_dls_successor(self):
         result = nx.dfs_successors(self.G, source=4, depth_limit=3)
         assert ({n: set(v) for n, v in result.items()} ==
                 {2: {1, 7}, 3: {2}, 4: {3, 5}, 5: {6}})
@@ -114,7 +114,7 @@ class TestDepthLimitedSearch:
         assert ({n: set(v) for n, v in result.items()} ==
                 {8: {9}, 2: {3}, 7: {8, 2}})
 
-    def dls_test_predecessor(self):
+    def test_dls_predecessor(self):
         assert (nx.dfs_predecessors(self.G, source=0, depth_limit=3) ==
                 {1: 0, 2: 1, 3: 2, 7: 2})
         assert (nx.dfs_predecessors(self.D, source=2, depth_limit=3) ==

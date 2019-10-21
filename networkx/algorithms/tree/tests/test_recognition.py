@@ -47,11 +47,17 @@ class TestTreeRecognition(object):
     def test_null_tree(self):
         with pytest.raises(nx.NetworkXPointlessConcept):
             nx.is_tree(self.graph())
+
+    def test_null_tree2(self):
+        with pytest.raises(nx.NetworkXPointlessConcept):
             nx.is_tree(self.multigraph())
 
     def test_null_forest(self):
         with pytest.raises(nx.NetworkXPointlessConcept):
             nx.is_forest(self.graph())
+
+    def test_null_forest2(self):
+        with pytest.raises(nx.NetworkXPointlessConcept):
             nx.is_forest(self.multigraph())
 
     def test_is_tree(self):

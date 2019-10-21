@@ -36,7 +36,7 @@ from networkx.generators.random_graphs import watts_strogatz_graph
 
 class TestGeneratorsRandom(object):
 
-    def smoke_test_random_graph(self):
+    def test_random_graph(self):
         seed = 42
         G = gnp_random_graph(100, 0.25, seed)
         G = gnp_random_graph(100, 0.25, seed, directed=True)
