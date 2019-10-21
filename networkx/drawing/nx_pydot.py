@@ -23,7 +23,7 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 #    All rights reserved.
 #    BSD license.
 from locale import getpreferredencoding
-from networkx.utils import open_file, make_str
+from networkx.utils import open_file
 import networkx as nx
 
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
@@ -208,22 +208,22 @@ def to_pydot(N):
         pass
 
     for n, nodedata in N.nodes(data=True):
-        str_nodedata = dict((k, make_str(v)) for k, v in nodedata.items())
-        p = pydot.Node(make_str(n), **str_nodedata)
+        str_nodedata = dict((k, str(v)) for k, v in nodedata.items())
+        p = pydot.Node(str(n), **str_nodedata)
         P.add_node(p)
 
     if N.is_multigraph():
         for u, v, key, edgedata in N.edges(data=True, keys=True):
-            str_edgedata = dict((k, make_str(v)) for k, v in edgedata.items()
+            str_edgedata = dict((k, str(v)) for k, v in edgedata.items()
                                 if k != 'key')
-            edge = pydot.Edge(make_str(u), make_str(v),
-                              key=make_str(key), **str_edgedata)
+            edge = pydot.Edge(str(u), str(v),
+                              key=str(key), **str_edgedata)
             P.add_edge(edge)
 
     else:
         for u, v, edgedata in N.edges(data=True):
-            str_edgedata = dict((k, make_str(v)) for k, v in edgedata.items())
-            edge = pydot.Edge(make_str(u), make_str(v), **str_edgedata)
+            str_edgedata = dict((k, str(v)) for k, v in edgedata.items())
+            edge = pydot.Edge(str(u), str(v), **str_edgedata)
             P.add_edge(edge)
     return P
 
@@ -302,7 +302,7 @@ def pydot_layout(G, prog='neato', root=None):
     import pydot
     P = to_pydot(G)
     if root is not None:
-        P.set("root", make_str(root))
+        P.set("root", str(root))
 
     # List of low-level bytes comprising a string in the dot language converted
     # from the passed graph with the passed external GraphViz command.
@@ -329,7 +329,7 @@ def pydot_layout(G, prog='neato', root=None):
 
     node_pos = {}
     for n in G.nodes():
-        pydot_node = pydot.Node(make_str(n)).get_name()
+        pydot_node = pydot.Node(str(n)).get_name()
         node = Q.get_node(pydot_node)
 
         if isinstance(node, list):

@@ -30,6 +30,8 @@ API Changes
 Deprecations
 ------------
 
+- [`#3680 <https://github.com/networkx/networkx/pull/3680>`_]
+  Deprecate `make_str`.  Use `str` instead.
 
 Pull requests merged in this release
 ------------------------------------

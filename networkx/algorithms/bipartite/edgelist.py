@@ -34,7 +34,7 @@ __all__ = ['generate_edgelist',
            'read_edgelist']
 
 import networkx as nx
-from networkx.utils import open_file, make_str, not_implemented_for
+from networkx.utils import open_file, not_implemented_for
 
 
 @open_file(1, mode='wb')
@@ -144,7 +144,7 @@ def generate_edgelist(G, delimiter=' ', data=True):
     if data is True or data is False:
         for n in part0:
             for e in G.edges(n, data=data):
-                yield delimiter.join(map(make_str, e))
+                yield delimiter.join(map(str, e))
     else:
         for n in part0:
             for u, v, d in G.edges(n, data=True):
@@ -153,7 +153,7 @@ def generate_edgelist(G, delimiter=' ', data=True):
                     e.extend(d[k] for k in data)
                 except KeyError:
                     pass  # missing data for this edge, should warn?
-                yield delimiter.join(map(make_str, e))
+                yield delimiter.join(map(str, e))
 
 
 def parse_edgelist(lines, comments='#', delimiter=None,

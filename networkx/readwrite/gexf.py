@@ -23,7 +23,7 @@ import itertools
 import time
 
 import networkx as nx
-from networkx.utils import open_file, make_str
+from networkx.utils import open_file
 
 from xml.etree.ElementTree import Element, ElementTree, SubElement, tostring
 
@@ -300,7 +300,7 @@ class GEXFWriter(GEXF):
         for u, v, dd in G.edges(data=True):
             eid = dd.get('id')
             if eid is not None:
-                self.all_edge_ids.add(make_str(eid))
+                self.all_edge_ids.add(str(eid))
         # set graph attributes
         if G.graph.get('mode') == 'dynamic':
             mode = 'dynamic'
@@ -323,24 +323,24 @@ class GEXFWriter(GEXF):
         nodes_element = Element('nodes')
         for node, data in G.nodes(data=True):
             node_data = data.copy()
-            node_id = make_str(node_data.pop('id', node))
+            node_id = str(node_data.pop('id', node))
             kw = {'id': node_id}
-            label = make_str(node_data.pop('label', node))
+            label = str(node_data.pop('label', node))
             kw['label'] = label
             try:
                 pid = node_data.pop('pid')
-                kw['pid'] = make_str(pid)
+                kw['pid'] = str(pid)
             except KeyError:
                 pass
             try:
                 start = node_data.pop('start')
-                kw['start'] = make_str(start)
+                kw['start'] = str(start)
                 self.alter_graph_mode_timeformat(start)
             except KeyError:
                 pass
             try:
                 end = node_data.pop('end')
-                kw['end'] = make_str(end)
+                kw['end'] = str(end)
                 self.alter_graph_mode_timeformat(end)
             except KeyError:
                 pass
@@ -369,9 +369,9 @@ class GEXFWriter(GEXF):
                     edge_id = edge_data.pop('id', None)
                     if edge_id is None:
                         edge_id = next(self.edge_id)
-                        while make_str(edge_id) in self.all_edge_ids:
+                        while str(edge_id) in self.all_edge_ids:
                             edge_id = next(self.edge_id)
-                        self.all_edge_ids.add(make_str(edge_id))
+                        self.all_edge_ids.add(str(edge_id))
                     yield u, v, edge_id, edge_data
             else:
                 for u, v, data in G.edges(data=True):
@@ -379,37 +379,37 @@ class GEXFWriter(GEXF):
                     edge_id = edge_data.pop('id', None)
                     if edge_id is None:
                         edge_id = next(self.edge_id)
-                        while make_str(edge_id) in self.all_edge_ids:
+                        while str(edge_id) in self.all_edge_ids:
                             edge_id = next(self.edge_id)
-                        self.all_edge_ids.add(make_str(edge_id))
+                        self.all_edge_ids.add(str(edge_id))
                     yield u, v, edge_id, edge_data
         edges_element = Element('edges')
         for u, v, key, edge_data in edge_key_data(G):
-            kw = {'id': make_str(key)}
+            kw = {'id': str(key)}
             try:
                 edge_weight = edge_data.pop('weight')
-                kw['weight'] = make_str(edge_weight)
+                kw['weight'] = str(edge_weight)
             except KeyError:
                 pass
             try:
                 edge_type = edge_data.pop('type')
-                kw['type'] = make_str(edge_type)
+                kw['type'] = str(edge_type)
             except KeyError:
                 pass
             try:
                 start = edge_data.pop('start')
-                kw['start'] = make_str(start)
+                kw['start'] = str(start)
                 self.alter_graph_mode_timeformat(start)
             except KeyError:
                 pass
             try:
                 end = edge_data.pop('end')
-                kw['end'] = make_str(end)
+                kw['end'] = str(end)
                 self.alter_graph_mode_timeformat(end)
             except KeyError:
                 pass
-            source_id = make_str(G.nodes[u].get('id', u))
-            target_id = make_str(G.nodes[v].get('id', v))
+            source_id = str(G.nodes[u].get('id', u))
+            target_id = str(G.nodes[v].get('id', v))
             edge_element = Element('edge',
                                    source=source_id, target=target_id, **kw)
             default = G.graph.get('edge_default', {})
@@ -446,13 +446,13 @@ class GEXFWriter(GEXF):
                         self.alter_graph_mode_timeformat(start)
                         self.alter_graph_mode_timeformat(end)
                         break
-                attr_id = self.get_attr_id(make_str(k),
+                attr_id = self.get_attr_id(str(k),
                                            self.xml_type[val_type],
                                            node_or_edge, default, mode)
                 for val, start, end in v:
                     e = Element('attvalue')
                     e.attrib['for'] = attr_id
-                    e.attrib['value'] = make_str(val)
+                    e.attrib['value'] = str(val)
                     # Handle nan, inf, -inf differently
                     if val_type == float:
                         if e.attrib['value'] == 'inf':
@@ -462,22 +462,22 @@ class GEXFWriter(GEXF):
                         elif e.attrib['value'] == '-inf':
                             e.attrib['value'] = '-INF'
                     if start is not None:
-                        e.attrib['start'] = make_str(start)
+                        e.attrib['start'] = str(start)
                     if end is not None:
-                        e.attrib['end'] = make_str(end)
+                        e.attrib['end'] = str(end)
                     attvalues.append(e)
             else:
                 # static data
                 mode = 'static'
-                attr_id = self.get_attr_id(make_str(k),
+                attr_id = self.get_attr_id(str(k),
                                            self.xml_type[val_type],
                                            node_or_edge, default, mode)
                 e = Element('attvalue')
                 e.attrib['for'] = attr_id
                 if isinstance(v, bool):
-                    e.attrib['value'] = make_str(v).lower()
+                    e.attrib['value'] = str(v).lower()
                 else:
-                    e.attrib['value'] = make_str(v)
+                    e.attrib['value'] = str(v)
                     # Handle float nan, inf, -inf differently
                     if val_type == float:
                         if e.attrib['value'] == 'inf':
@@ -504,7 +504,7 @@ class GEXFWriter(GEXF):
             default_title = default.get(title)
             if default_title is not None:
                 default_element = Element('default')
-                default_element.text = make_str(default_title)
+                default_element.text = str(default_title)
                 attribute.append(default_element)
             # new insert it into the XML
             attributes_element = None
@@ -597,10 +597,10 @@ class GEXFWriter(GEXF):
             for start, end in spells:
                 e = Element('spell')
                 if start is not None:
-                    e.attrib['start'] = make_str(start)
+                    e.attrib['start'] = str(start)
                     self.alter_graph_mode_timeformat(start)
                 if end is not None:
-                    e.attrib['end'] = make_str(end)
+                    e.attrib['end'] = str(end)
                     self.alter_graph_mode_timeformat(end)
                 spells_element.append(e)
             node_or_edge_element.append(spells_element)

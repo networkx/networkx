@@ -25,7 +25,7 @@ for format information.
 import warnings
 
 import networkx as nx
-from networkx.utils import is_string_like, open_file, make_str
+from networkx.utils import is_string_like, open_file
 
 __all__ = ['read_pajek', 'parse_pajek', 'generate_pajek', 'write_pajek']
 
@@ -207,7 +207,7 @@ def parse_pajek(lines):
                 l = next(lines)
                 try:
                     splitline = [x.decode('utf-8') for x in
-                                 shlex.split(make_str(l).encode('utf-8'))]
+                                 shlex.split(str(l).encode('utf-8'))]
                 except AttributeError:
                     splitline = shlex.split(str(l))
                 id, label = splitline[0:2]
@@ -234,7 +234,7 @@ def parse_pajek(lines):
             for l in lines:
                 try:
                     splitline = [x.decode('utf-8') for x in
-                                 shlex.split(make_str(l).encode('utf-8'))]
+                                 shlex.split(str(l).encode('utf-8'))]
                 except AttributeError:
                     splitline = shlex.split(str(l))
 
