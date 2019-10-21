@@ -37,7 +37,7 @@ __all__ = ['generate_adjlist',
            'parse_adjlist',
            'read_adjlist']
 
-from networkx.utils import make_str, open_file
+from networkx.utils import open_file
 import networkx as nx
 
 
@@ -77,15 +77,15 @@ def generate_adjlist(G, delimiter=' '):
     directed = G.is_directed()
     seen = set()
     for s, nbrs in G.adjacency():
-        line = make_str(s) + delimiter
+        line = str(s) + delimiter
         for t, data in nbrs.items():
             if not directed and t in seen:
                 continue
             if G.is_multigraph():
                 for d in data.values():
-                    line += make_str(t) + delimiter
+                    line += str(t) + delimiter
             else:
-                line += make_str(t) + delimiter
+                line += str(t) + delimiter
         if not directed:
             seen.add(s)
         yield line[:-len(delimiter)]

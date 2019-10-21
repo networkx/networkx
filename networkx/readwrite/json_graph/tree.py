@@ -6,7 +6,6 @@
 #    BSD license.
 from itertools import chain
 import networkx as nx
-from networkx.utils import make_str
 __author__ = """Aric Hagberg (hagberg@lanl.gov))"""
 __all__ = ['tree_data', 'tree_graph']
 
@@ -140,13 +139,13 @@ def tree_graph(data, attrs=_attrs):
             grandchildren = data.get(children, [])
             if grandchildren:
                 add_children(child, grandchildren)
-            nodedata = dict((make_str(k), v) for k, v in data.items()
+            nodedata = dict((str(k), v) for k, v in data.items()
                             if k != id_ and k != children)
             graph.add_node(child, **nodedata)
 
     root = data[id_]
     children_ = data.get(children, [])
-    nodedata = dict((make_str(k), v) for k, v in data.items()
+    nodedata = dict((str(k), v) for k, v in data.items()
                     if k != id_ and k != children)
     graph.add_node(root, **nodedata)
     add_children(root, children_)

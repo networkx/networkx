@@ -40,7 +40,7 @@ __all__ = ['generate_multiline_adjlist',
            'parse_multiline_adjlist',
            'read_multiline_adjlist']
 
-from networkx.utils import make_str, open_file
+from networkx.utils import open_file
 import networkx as nx
 
 
@@ -92,21 +92,21 @@ def generate_multiline_adjlist(G, delimiter=' '):
                              for u, datadict in nbrs.items()
                              for key, data in datadict.items()]
                 deg = len(nbr_edges)
-                yield make_str(s) + delimiter + str(deg)
+                yield str(s) + delimiter + str(deg)
                 for u, d in nbr_edges:
                     if d is None:
-                        yield make_str(u)
+                        yield str(u)
                     else:
-                        yield make_str(u) + delimiter + make_str(d)
+                        yield str(u) + delimiter + str(d)
         else:  # directed single edges
             for s, nbrs in G.adjacency():
                 deg = len(nbrs)
-                yield make_str(s) + delimiter + str(deg)
+                yield str(s) + delimiter + str(deg)
                 for u, d in nbrs.items():
                     if d is None:
-                        yield make_str(u)
+                        yield str(u)
                     else:
-                        yield make_str(u) + delimiter + make_str(d)
+                        yield str(u) + delimiter + str(d)
     else:  # undirected
         if G.is_multigraph():
             seen = set()  # helper dict used to avoid duplicate edges
@@ -116,24 +116,24 @@ def generate_multiline_adjlist(G, delimiter=' '):
                              if u not in seen
                              for key, data in datadict.items()]
                 deg = len(nbr_edges)
-                yield make_str(s) + delimiter + str(deg)
+                yield str(s) + delimiter + str(deg)
                 for u, d in nbr_edges:
                     if d is None:
-                        yield make_str(u)
+                        yield str(u)
                     else:
-                        yield make_str(u) + delimiter + make_str(d)
+                        yield str(u) + delimiter + str(d)
                 seen.add(s)
         else:  # undirected single edges
             seen = set()  # helper dict used to avoid duplicate edges
             for s, nbrs in G.adjacency():
                 nbr_edges = [(u, d) for u, d in nbrs.items() if u not in seen]
                 deg = len(nbr_edges)
-                yield make_str(s) + delimiter + str(deg)
+                yield str(s) + delimiter + str(deg)
                 for u, d in nbr_edges:
                     if d is None:
-                        yield make_str(u)
+                        yield str(u)
                     else:
-                        yield make_str(u) + delimiter + make_str(d)
+                        yield str(u) + delimiter + str(d)
                 seen.add(s)
 
 

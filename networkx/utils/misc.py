@@ -107,9 +107,10 @@ def is_list_of_ints(intlist):
     return True
 
 
-# TODO Remove this?
 def make_str(x):
     """Returns the string representation of t."""
+    msg = "make_str is deprecated and will be removed in 2.6. Use str instead."
+    warnings.warn(msg, DeprecationWarning)
     return str(x)
 
 

@@ -891,7 +891,7 @@ class TestWriteGraphML(BaseGraphML):
     def test_more_multigraph_keys(self):
         """Writing keys as edge id attributes means keys become strings.
         The original keys are stored as data, so read them back in
-        if `make_str(key) == edge_id`
+        if `str(key) == edge_id`
         This allows the adjacency to remain the same.
         """
         G = nx.MultiGraph()
