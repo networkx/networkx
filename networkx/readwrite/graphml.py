@@ -46,8 +46,7 @@ for examples.
 import warnings
 from collections import defaultdict
 
-from xml.etree.ElementTree import Element, ElementTree
-from xml.etree.ElementTree import tostring, fromstring
+from xml.etree.ElementTree import Element, ElementTree, tostring, fromstring
 
 try:
     import lxml.etree as lxmletree
@@ -57,9 +56,16 @@ except ImportError:
 import networkx as nx
 from networkx.utils import open_file
 
-__all__ = ['write_graphml', 'read_graphml', 'generate_graphml',
-           'write_graphml_xml', 'write_graphml_lxml',
-           'parse_graphml', 'GraphMLWriter', 'GraphMLReader']
+__all__ = [
+    "write_graphml",
+    "read_graphml",
+    "generate_graphml",
+    "write_graphml_xml",
+    "write_graphml_lxml",
+    "parse_graphml",
+    "GraphMLWriter",
+    "GraphMLReader",
+]
 
 
 @open_file(1, mode='wb')
@@ -363,11 +369,6 @@ class GraphML(object):
 class GraphMLWriter(GraphML):
     def __init__(self, graph=None, encoding="utf-8", prettyprint=True,
                  infer_numeric_types=False):
-        try:
-            import xml.etree.ElementTree
-        except ImportError:
-            msg = 'GraphML writer requires xml.elementtree.ElementTree'
-            raise ImportError(msg)
         self.myElement = Element
 
         self.infer_numeric_types = infer_numeric_types
@@ -700,11 +701,6 @@ class GraphMLReader(GraphML):
     """Read a GraphML document.  Produces NetworkX graph objects."""
 
     def __init__(self, node_type=str, edge_key_type=int):
-        try:
-            import xml.etree.ElementTree
-        except ImportError:
-            msg = 'GraphML reader requires xml.elementtree.ElementTree'
-            raise ImportError(msg)
         self.node_type = node_type
         self.edge_key_type = edge_key_type
         self.multigraph = False  # assume multigraph and test for multiedges
