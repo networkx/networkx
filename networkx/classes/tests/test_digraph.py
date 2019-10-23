@@ -5,8 +5,9 @@ import pytest
 
 import networkx as nx
 from networkx.testing import assert_nodes_equal
-from .test_graph import BaseGraphTester, BaseAttrGraphTester, TestGraph
-from .test_graph import TestEdgeSubgraph as TestGraphEdgeSubgraph
+from .test_graph import BaseGraphTester, BaseAttrGraphTester
+from .test_graph import TestGraph as ttttGraph
+from .test_graph import TestEdgeSubgraph as ttttGraphEdgeSubgraph
 
 
 class BaseDiGraphTester(BaseGraphTester):
@@ -169,7 +170,7 @@ class BaseAttrDiGraphTester(BaseDiGraphTester, BaseAttrGraphTester):
     pass
 
 
-class TestDiGraph(BaseAttrDiGraphTester, TestGraph):
+class TestDiGraph(BaseAttrDiGraphTester, ttttGraph):
     """Tests specific to dict-of-dict-of-dict digraph data structure"""
 
     def setup_method(self):
@@ -246,7 +247,7 @@ class TestDiGraph(BaseAttrDiGraphTester, TestGraph):
         G.remove_edges_from([(0, 0)])  # silent fail
 
 
-class TestEdgeSubgraph(TestGraphEdgeSubgraph):
+class TestEdgeSubgraph(ttttGraphEdgeSubgraph):
     """Unit tests for the :meth:`DiGraph.edge_subgraph` method."""
 
     def setup_method(self):

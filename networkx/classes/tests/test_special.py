@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 from collections import OrderedDict
 import networkx as nx
-from .test_graph import TestGraph
-from .test_digraph import TestDiGraph
-from .test_multigraph import TestMultiGraph
-from .test_multidigraph import TestMultiDiGraph
+from .test_graph import TestGraph as ttttGraph
+from .test_graph import BaseGraphTester
+from .test_digraph import TestDiGraph as ttttDiGraph
+from .test_digraph import BaseDiGraphTester
+from .test_multigraph import TestMultiGraph as ttttMultiGraph
+from .test_multidigraph import TestMultiDiGraph as ttttMultiDiGraph
 
 
 def test_factories():
@@ -48,15 +50,15 @@ def test_factories():
             assert isinstance(G._adj[1][2], mydict5)
 
 
-class TestSpecialGraph(TestGraph):
+class TestSpecialGraph(ttttGraph):
     def setup_method(self):
-        TestGraph.setup_method(self)
+        ttttGraph.setup_method(self)
         self.Graph = nx.Graph
 
 
-class TestOrderedGraph(TestGraph):
+class TestOrderedGraph(ttttGraph):
     def setup_method(self):
-        TestGraph.setup_method(self)
+        ttttGraph.setup_method(self)
 
         class MyGraph(nx.Graph):
             node_dict_factory = OrderedDict
@@ -66,7 +68,7 @@ class TestOrderedGraph(TestGraph):
         self.Graph = MyGraph
 
 
-class ThinGraphTester(TestGraph):
+class ThinGraphTester(BaseGraphTester):
     def setUp(self):
         all_edge_dict = {'weight': 1}
 
@@ -88,15 +90,15 @@ class ThinGraphTester(TestGraph):
         self.K3._node[2] = {}
 
 
-class TestSpecialDiGraph(TestDiGraph):
+class TestSpecialDiGraph(ttttDiGraph):
     def setup_method(self):
-        TestDiGraph.setup_method(self)
+        ttttDiGraph.setup_method(self)
         self.Graph = nx.DiGraph
 
 
-class TestOrderedDiGraph(TestDiGraph):
+class TestOrderedDiGraph(ttttDiGraph):
     def setup_method(self):
-        TestDiGraph.setup_method(self)
+        ttttDiGraph.setup_method(self)
 
         class MyGraph(nx.DiGraph):
             node_dict_factory = OrderedDict
@@ -106,7 +108,7 @@ class TestOrderedDiGraph(TestDiGraph):
         self.Graph = MyGraph
 
 
-class ThinDiGraphTester(TestDiGraph):
+class ThinDiGraphTester(BaseDiGraphTester):
     def setUp(self):
         all_edge_dict = {'weight': 1}
 
@@ -128,15 +130,15 @@ class ThinDiGraphTester(TestDiGraph):
         self.K3._node[2] = {}
 
 
-class TestSpecialMultiGraph(TestMultiGraph):
+class TestSpecialMultiGraph(ttttMultiGraph):
     def setup_method(self):
-        TestMultiGraph.setup_method(self)
+        ttttMultiGraph.setup_method(self)
         self.Graph = nx.MultiGraph
 
 
-class TestOrderedMultiGraph(TestMultiGraph):
+class TestOrderedMultiGraph(ttttMultiGraph):
     def setup_method(self):
-        TestMultiGraph.setup_method(self)
+        ttttMultiGraph.setup_method(self)
 
         class MyGraph(nx.MultiGraph):
             node_dict_factory = OrderedDict
@@ -147,15 +149,15 @@ class TestOrderedMultiGraph(TestMultiGraph):
         self.Graph = MyGraph
 
 
-class TestSpecialMultiDiGraph(TestMultiDiGraph):
+class TestSpecialMultiDiGraph(ttttMultiDiGraph):
     def setup_method(self):
-        TestMultiDiGraph.setup_method(self)
+        ttttMultiDiGraph.setup_method(self)
         self.Graph = nx.MultiDiGraph
 
 
-class TestOrderedMultiDiGraph(TestMultiDiGraph):
+class TestOrderedMultiDiGraph(ttttMultiDiGraph):
     def setup_method(self):
-        TestMultiDiGraph.setup_method(self)
+        ttttMultiDiGraph.setup_method(self)
 
         class MyGraph(nx.MultiDiGraph):
             node_dict_factory = OrderedDict
