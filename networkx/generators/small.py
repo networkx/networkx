@@ -83,6 +83,10 @@ def make_small_graph(graph_description, create_using=None):
 
     Use the create_using argument to choose the graph class/type.
     """
+
+    if graph_description[0] not in ("adjacencylist", "edgelist"):
+        raise NetworkXError("ltype must be either adjacencylist or edgelist")
+
     ltype = graph_description[0]
     name = graph_description[1]
     n = graph_description[2]
