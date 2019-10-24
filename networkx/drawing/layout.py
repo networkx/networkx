@@ -765,7 +765,7 @@ def _kamada_kawai_costfn(pos_vec, np, invdist, meanweight, dim):
 def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
     """Position nodes using the eigenvectors of the graph Laplacian.
 
-    Using the unnormalized Laplacion, the layout shows possible clusters of
+    Using the unnormalized Laplacian, the layout shows possible clusters of
     nodes which are an approximation of the ratio cut. If dim is the number of
     dimensions then the positions are the entries of the dim eigenvectors
     corresponding to the ascending eigenvalues starting from the second one.
