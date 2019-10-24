@@ -1,5 +1,5 @@
 import pytest
-numpy = pytest.importorskip('numpy')
+np = pytest.importorskip('numpy')
 npt = pytest.importorskip('numpy.testing')
 scipy = pytest.importorskip('scipy')
 
@@ -21,24 +21,24 @@ class TestModularity(object):
 
     def test_modularity(self):
         "Modularity matrix"
-        B = numpy.matrix([[-1.125,  0.25,  0.25,  0.625,  0.],
-                          [0.25, -0.5,  0.5, -0.25,  0.],
-                          [0.25,  0.5, -0.5, -0.25,  0.],
-                          [0.625, -0.25, -0.25, -0.125,  0.],
-                          [0.,  0.,  0.,  0.,  0.]])
+        B = np.array([[-1.125,  0.25,  0.25,  0.625,  0.],
+                      [0.25, -0.5,  0.5, -0.25,  0.],
+                      [0.25,  0.5, -0.5, -0.25,  0.],
+                      [0.625, -0.25, -0.25, -0.125,  0.],
+                      [0.,  0.,  0.,  0.,  0.]])
 
         permutation = [4, 0, 1, 2, 3]
         npt.assert_equal(nx.modularity_matrix(self.G), B)
         npt.assert_equal(nx.modularity_matrix(self.G, nodelist=permutation),
-                         B[numpy.ix_(permutation, permutation)])
+                         B[np.ix_(permutation, permutation)])
 
     def test_modularity_weight(self):
         "Modularity matrix with weights"
-        B = numpy.matrix([[-1.125,  0.25,  0.25,  0.625,  0.],
-                          [0.25, -0.5,  0.5, -0.25,  0.],
-                          [0.25,  0.5, -0.5, -0.25,  0.],
-                          [0.625, -0.25, -0.25, -0.125,  0.],
-                          [0.,  0.,  0.,  0.,  0.]])
+        B = np.array([[-1.125,  0.25,  0.25,  0.625,  0.],
+                      [0.25, -0.5,  0.5, -0.25,  0.],
+                      [0.25,  0.5, -0.5, -0.25,  0.],
+                      [0.625, -0.25, -0.25, -0.125,  0.],
+                      [0.,  0.,  0.,  0.,  0.]])
 
         G_weighted = self.G.copy()
         for n1, n2 in G_weighted.edges():
@@ -50,16 +50,17 @@ class TestModularity(object):
 
     def test_directed_modularity(self):
         "Directed Modularity matrix"
-        B = numpy.matrix([[-0.2,  0.6,  0.8, -0.4, -0.4, -0.4],
-                          [0.,  0.,  0.,  0.,  0.,  0.],
-                          [0.7,  0.4, -0.3, -0.6,  0.4, -0.6],
-                          [-0.2, -0.4, -0.2, -0.4,  0.6,  0.6],
-                          [-0.2, -0.4, -0.2,  0.6, -0.4,  0.6],
-                          [-0.1, -0.2, -0.1,  0.8, -0.2, -0.2]])
+        B = np.array([[-0.2,  0.6,  0.8, -0.4, -0.4, -0.4],
+                      [0.,  0.,  0.,  0.,  0.,  0.],
+                      [0.7,  0.4, -0.3, -0.6,  0.4, -0.6],
+                      [-0.2, -0.4, -0.2, -0.4,  0.6,  0.6],
+                      [-0.2, -0.4, -0.2,  0.6, -0.4,  0.6],
+                      [-0.1, -0.2, -0.1,  0.8, -0.2, -0.2]])
         node_permutation = [5, 1, 2, 3, 4, 6]
         idx_permutation = [4, 0, 1, 2, 3, 5]
         mm = nx.directed_modularity_matrix(self.DG,  nodelist=sorted(self.DG))
         npt.assert_equal(mm, B)
-        npt.assert_equal(nx.directed_modularity_matrix(self.DG,
-                                                       nodelist=node_permutation),
-                         B[numpy.ix_(idx_permutation, idx_permutation)])
+        npt.assert_equal(
+            nx.directed_modularity_matrix(self.DG, nodelist=node_permutation),
+            B[np.ix_(idx_permutation, idx_permutation)]
+        )

@@ -311,7 +311,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
     self_loops : Boolean
        If this is True, any edges joining `u` and `v` in `G` become
        self-loops on the new node in the returned graph.
-    
+
     copy : Boolean
         If this is True (default True), make a copy of
         `G` and return that instead of directly changing `G`.
@@ -325,7 +325,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
        will be merged into the node `u`, so only `u` will appear in the
        returned graph.
        if Copy is False:
-       Modifies `G` with `u` and `v` identified in a single node. 
+       Modifies `G` with `u` and `v` identified in a single node.
        The right node `v` will be merged into the node `u`, so
        only `u` will appear in the returned graph.
 
@@ -367,7 +367,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
     -----
     This function is also available as `identified_nodes`.
     """
-    #Copying has significant overhead and can be disabled if needed
+    # Copying has significant overhead and can be disabled if needed
     if copy:
         H = G.copy()
     else:
@@ -386,12 +386,12 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
         new_edges = ((u, w if w != v else u, d)
                      for x, w, d in G.edges(v, data=True)
                      if self_loops or w != u)
-    
-    #If the H=G, the generators change as H changes
-    #This makes the new_edges independent of H
+
+    # If the H=G, the generators change as H changes
+    # This makes the new_edges independent of H
     if not copy:
         new_edges = list(new_edges)
-    
+
     v_data = H.nodes[v]
     H.remove_node(v)
     H.add_edges_from(new_edges)

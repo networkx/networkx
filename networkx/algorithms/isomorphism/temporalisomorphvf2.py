@@ -104,7 +104,7 @@ class TimeRespectingGraphMatcher(GraphMatcher):
         """
         dates = []
         for n in neighbors:
-            if type(Gx) == type(nx.Graph()):  # Graph G[u][v] returns the data dictionary.
+            if isinstance(Gx, nx.Graph):  # Graph G[u][v] returns the data dictionary.
                 dates.append(Gx[Gx_node][n][self.temporal_attribute_name])
             else:  # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
                 for edge in Gx[Gx_node][n].values():  # Iterates all edges between node pair.
@@ -165,7 +165,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         Get the dates of edges from predecessors.
         """
         pred_dates = []
-        if type(Gx) == type(nx.DiGraph()):  # Graph G[u][v] returns the data dictionary.
+        if isinstance(Gx, nx.DiGraph):  # Graph G[u][v] returns the data dictionary.
             for n in pred:
                 pred_dates.append(Gx[n][Gx_node][self.temporal_attribute_name])
         else:  # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
@@ -179,7 +179,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         Get the dates of edges to successors.
         """
         succ_dates = []
-        if type(Gx) == type(nx.DiGraph()):  # Graph G[u][v] returns the data dictionary.
+        if isinstance(Gx, nx.DiGraph):  # Graph G[u][v] returns the data dictionary.
             for n in succ:
                 succ_dates.append(Gx[Gx_node][n][self.temporal_attribute_name])
         else:  # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
