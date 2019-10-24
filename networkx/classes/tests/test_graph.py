@@ -60,6 +60,7 @@ class BaseGraphTester(object):
         gc.collect()
         before = count_objects_of_type(self.Graph)
         G.copy()
+        gc.collect()
         after = count_objects_of_type(self.Graph)
         assert before == after
 
@@ -71,6 +72,7 @@ class BaseGraphTester(object):
         G = MyGraph()
         before = count_objects_of_type(MyGraph)
         G.copy()
+        gc.collect()
         after = count_objects_of_type(MyGraph)
         assert before == after
 
@@ -81,16 +83,6 @@ class BaseGraphTester(object):
         assert_edges_equal(G.edges([0, 1]), [(0, 1), (0, 2), (1, 2)])
         with pytest.raises(nx.NetworkXError):
             G.edges(-1)
-
-    def test_weighted_degree(self):
-        G = self.Graph()
-        G.add_edge(1, 2, weight=2)
-        G.add_edge(2, 3, weight=3)
-        assert (sorted(d for n, d in G.degree(weight='weight')) ==
-                [2, 3, 5])
-        assert dict(G.degree(weight='weight')) == {1: 2, 2: 5, 3: 3}
-        assert G.degree(1, weight='weight') == 2
-        assert G.degree([1], weight='weight') == [(1, 2)]
 
     def test_degree(self):
         G = self.K3
@@ -337,7 +329,7 @@ class BaseAttrGraphTester(BaseGraphTester):
             assert G._succ[1][2] is G._pred[2][1]
 
     def test_graph_attr(self):
-        G = self.K3
+        G = self.K3.copy()
         G.graph['foo'] = 'bar'
         assert G.graph['foo'] == 'bar'
         del G.graph['foo']
@@ -346,7 +338,7 @@ class BaseAttrGraphTester(BaseGraphTester):
         assert H.graph['foo'] == 'bar'
 
     def test_node_attr(self):
-        G = self.K3
+        G = self.K3.copy()
         G.add_node(1, foo='bar')
         assert_nodes_equal(G.nodes(), [0, 1, 2])
         assert_nodes_equal(G.nodes(data=True),
@@ -360,7 +352,7 @@ class BaseAttrGraphTester(BaseGraphTester):
                            [(0, 'bar'), (1, 'baz'), (2, 'bar')])
 
     def test_node_attr2(self):
-        G = self.K3
+        G = self.K3.copy()
         a = {'foo': 'bar'}
         G.add_node(3, **a)
         assert_nodes_equal(G.nodes(), [0, 1, 2, 3])
@@ -557,7 +549,7 @@ class TestGraph(BaseAttrGraphTester):
         assert H.nodes[3]['c'] == 'cyan'
 
     def test_remove_node(self):
-        G = self.K3
+        G = self.K3.copy()
         G.remove_node(0)
         assert G.adj == {1: {2: {}}, 2: {1: {}}}
         with pytest.raises(nx.NetworkXError):
@@ -565,7 +557,7 @@ class TestGraph(BaseAttrGraphTester):
 
         # generator here to implement list,set,string...
     def test_remove_nodes_from(self):
-        G = self.K3
+        G = self.K3.copy()
         G.remove_nodes_from([0, 1])
         assert G.adj == {2: {}}
         G.remove_nodes_from([-1])  # silent fail
@@ -600,20 +592,20 @@ class TestGraph(BaseAttrGraphTester):
             G.add_edges_from([0])  # not a tuple
 
     def test_remove_edge(self):
-        G = self.K3
+        G = self.K3.copy()
         G.remove_edge(0, 1)
         assert G.adj == {0: {2: {}}, 1: {2: {}}, 2: {0: {}, 1: {}}}
         with pytest.raises(nx.NetworkXError):
             G.remove_edge(-1, 0)
 
     def test_remove_edges_from(self):
-        G = self.K3
+        G = self.K3.copy()
         G.remove_edges_from([(0, 1)])
         assert G.adj == {0: {2: {}}, 1: {2: {}}, 2: {0: {}, 1: {}}}
         G.remove_edges_from([(0, 0)])  # silent fail
 
     def test_clear(self):
-        G = self.K3
+        G = self.K3.copy()
         G.clear()
         assert G.adj == {}
 
@@ -627,7 +619,7 @@ class TestGraph(BaseAttrGraphTester):
             G.edges(-1, True)
 
     def test_get_edge_data(self):
-        G = self.K3
+        G = self.K3.copy()
         assert G.get_edge_data(0, 1) == {}
         assert G[0][1] == {}
         assert G.get_edge_data(10, 20) is None
