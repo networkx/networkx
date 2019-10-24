@@ -6,7 +6,6 @@
 
 from copy import deepcopy
 from functools import lru_cache
-from itertools import product
 from random import choice
 
 import networkx as nx
@@ -20,6 +19,14 @@ D_NODE_W = 'weight'
 D_NODE_VALUE = 1
 PKEY = 'partitions'
 CLUSTER_EVAL_CACHE_SIZE = 2048
+
+
+def _split_n_from(n: int, min_size_of_first_part: int):
+    # splits j in two parts of which the first is at least
+    # the second argument
+    assert n >= min_size_of_first_part
+    for p1 in range(min_size_of_first_part, n + 1):
+        yield p1, n - p1
 
 
 def lukes_partitioning(G,
@@ -77,6 +84,7 @@ def lukes_partitioning(G,
         if nx.is_directed(G):
             root = [n for n, d in G.in_degree() if d == 0]
             assert len(root) == 1
+            root = root[0]
             t_G = deepcopy(G)
         else:
             root = choice(list(G.nodes))
@@ -123,7 +131,7 @@ def lukes_partitioning(G,
                 yield x
 
     @not_implemented_for('undirected')
-    def _one_node_just_over_leaves(gr):
+    def _a_parent_of_leaves_only(gr):
         tleaves = set(_leaves(gr))
         for n in set(gr.nodes) - tleaves:
             if all([x in tleaves for x in nx.descendants(gr, n)]):
@@ -181,7 +189,7 @@ def lukes_partitioning(G,
 
     # CORE ALGORITHM -----------------------
     while True:
-        x_node = _one_node_just_over_leaves(t_G)
+        x_node = _a_parent_of_leaves_only(t_G)
         weight_of_x = safe_G.nodes[x_node][node_weight]
         best_value = 0
         best_partition = None
@@ -189,20 +197,14 @@ def lukes_partitioning(G,
         x_descendants = nx.descendants(t_G, x_node)
         for i_node in x_descendants:
             for j in range(weight_of_x, max_size + 1):
-                for a, b in product(range(weight_of_x, max_size + 1),
-                                    range(0, max_size + 1)):
-                    if not a + b == j:
-                        # we are only interested in a, b couples that sum to j
-                        continue
-
-                    if a in t_G.nodes[x_node][PKEY].keys() \
-                            and b in t_G.nodes[i_node][PKEY].keys():
-                        part1 = t_G.nodes[x_node][PKEY][a]
-                        part2 = t_G.nodes[i_node][PKEY][b]
-                    else:
+                for a, b in _split_n_from(j, weight_of_x):
+                    if a not in t_G.nodes[x_node][PKEY].keys() \
+                            or b not in t_G.nodes[i_node][PKEY].keys():
                         # it's not possible to form this particular weight sum
                         continue
 
+                    part1 = t_G.nodes[x_node][PKEY][a]
+                    part2 = t_G.nodes[i_node][PKEY][b]
                     part, value = _concatenate_or_merge(part1, part2,
                                                         x_node, i_node, j)
 
@@ -210,7 +212,7 @@ def lukes_partitioning(G,
                         # we annotate in the buffer the best partition for j
                         bp_buffer[j] = part, value
 
-                    # we also keep track of the best partition of the x node
+                    # we also keep track of the overall best partition
                     if best_value <= value:
                         best_value = value
                         best_partition = part
