@@ -6,7 +6,7 @@ import networkx as nx
 from networkx.testing.utils import assert_edges_equal
 
 from .test_graph import BaseAttrGraphTester
-from .test_graph import TestGraph as ttttGraph
+from .test_graph import TestGraph as _TestGraph
 
 
 class BaseMultiGraphTester(BaseAttrGraphTester):
@@ -145,7 +145,7 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
                                     'listdata': [20, 200], 'weight':20})])
 
 
-class TestMultiGraph(BaseMultiGraphTester, ttttGraph):
+class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
     def setup_method(self):
         self.Graph = nx.MultiGraph
         # build K3
