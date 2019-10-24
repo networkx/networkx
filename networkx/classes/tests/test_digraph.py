@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-
 import pytest
-
 
 import networkx as nx
 from networkx.testing import assert_nodes_equal
@@ -167,7 +165,6 @@ class BaseAttrDiGraphTester(BaseDiGraphTester, BaseAttrGraphTester):
         assert dict(G.out_degree(weight='other')) == {0: 2.2, 1: 2, 2: 2}
         assert G.out_degree(0, weight='other') == 2.2
         assert list(G.out_degree(iter([0]), weight='other')) == [(0, 2.2)]
-
 
 
 class TestDiGraph(BaseAttrDiGraphTester, _TestGraph):
