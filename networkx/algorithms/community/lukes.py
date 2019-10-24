@@ -15,13 +15,17 @@ from networkx.utils import not_implemented_for
 __all__ = ['lukes_partitioning']
 
 D_EDGE_W = 'weight'
+D_EDGE_VALUE = 1.0
 D_NODE_W = 'weight'
+D_NODE_VALUE = 1
+PKEY = 'partitions'
+CLUSTER_EVAL_CACHE_SIZE = 2048
 
 
 def lukes_partitioning(G,
                        max_size: int,
                        node_weight=None,
-                       edge_weight=None) -> tuple:
+                       edge_weight=None) -> list:
 
     """Optimal partitioning of a weighted tree using the Lukes algorithm.
 
@@ -49,8 +53,8 @@ def lukes_partitioning(G,
 
     Returns
     -------
-    partition : tuple
-        A tuple of sets of nodes representing the partition.
+    partition : list
+        A list of sets of nodes representing the partition.
 
     Raises
     -------
@@ -68,26 +72,26 @@ def lukes_partitioning(G,
     """
     # First sanity check and tree preparation
     if not nx.is_tree(G):
-        raise nx.NotATree('lukes_clustering works only on trees')
+        raise nx.NotATree('lukes_partitioning works only on trees')
     else:
         if nx.is_directed(G):
             root = [n for n, d in G.in_degree() if d == 0]
             assert len(root) == 1
-            d_graph = deepcopy(G)
+            t_G = deepcopy(G)
         else:
             root = choice(list(G.nodes))
             # this has the desirable side effect of not inheriting attributes
-            d_graph = nx.dfs_tree(G, root)
+            t_G = nx.dfs_tree(G, root)
 
     # Since we do not want to screw up the original graph,
     # if we have a blank attribute, we make a deepcopy
     if edge_weight is None or node_weight is None:
         safe_G = deepcopy(G)
         if edge_weight is None:
-            nx.set_edge_attributes(safe_G, 1.0, D_EDGE_W)
+            nx.set_edge_attributes(safe_G, D_EDGE_VALUE, D_EDGE_W)
             edge_weight = D_EDGE_W
         if node_weight is None:
-            nx.set_node_attributes(safe_G, 1, D_NODE_W)
+            nx.set_node_attributes(safe_G, D_NODE_VALUE, D_NODE_W)
             node_weight = D_NODE_W
     else:
         safe_G = G
@@ -99,19 +103,20 @@ def lukes_partitioning(G,
     all_n_attr = nx.get_node_attributes(safe_G, node_weight).values()
     for x in all_n_attr:
         if not isinstance(x, int):
-            raise TypeError('lukes_clustering needs integer '
+            raise TypeError('lukes_partitioning needs integer '
                             'values for node_weight ({})'
                             .format(node_weight))
 
     # todo check that the values of edge_weight implement <= and sum()
     # (in an algebraically closed fashion)
 
-    # this functions are defined here for two reasons:
-    # - brevity: we can leverage global "G" and "safe_G"
+    # SUBROUTINES -----------------------
+    # these functions are defined here for two reasons:
+    # - brevity: we can leverage global "safe_G"
     # - caching: signatures are hashable
 
     @not_implemented_for('undirected')
-    # this is intended to be called only on d_graph
+    # this is intended to be called only on t_G
     def _leaves(gr):
         for x in gr.nodes:
             if not nx.descendants(gr, x):
@@ -124,7 +129,7 @@ def lukes_partitioning(G,
             if all([x in tleaves for x in nx.descendants(gr, n)]):
                 return n
 
-    @lru_cache(2048)
+    @lru_cache(CLUSTER_EVAL_CACHE_SIZE)
     def _value_of_cluster(cluster: frozenset):
         valid_edges = [e for e in safe_G.edges
                        if e[0] in cluster and e[1] in cluster]
@@ -133,7 +138,7 @@ def lukes_partitioning(G,
     def _value_of_partition(partition: list):
         return sum([_value_of_cluster(frozenset(c)) for c in partition])
 
-    @lru_cache(2048)
+    @lru_cache(CLUSTER_EVAL_CACHE_SIZE)
     def _weight_of_cluster(cluster: frozenset):
         return sum([safe_G.nodes[n][node_weight] for n in cluster])
 
@@ -142,8 +147,8 @@ def lukes_partitioning(G,
         assert len(ccx) == 1
         return ccx[0]
 
-    def _concatenate_merge(partition_1: list, partition_2: list,
-                           x, i, ref_weigth):
+    def _concatenate_or_merge(partition_1: list, partition_2: list,
+                              x, i, ref_weigth):
 
         ccx = _pivot(partition_1, x)
         cci = _pivot(partition_2, i)
@@ -162,43 +167,44 @@ def lukes_partitioning(G,
             return option_1, _value_of_partition(option_1)
 
     # INITIALIZATION -----------------------
-    leaves = set(_leaves(d_graph))
+    leaves = set(_leaves(t_G))
     for lv in leaves:
-        d_graph.nodes[lv]['partitions'] = dict()
+        t_G.nodes[lv][PKEY] = dict()
         slot = safe_G.nodes[lv][node_weight]
-        d_graph.nodes[lv]['partitions'][slot] = [{lv}]
-        d_graph.nodes[lv]['partitions'][0] = [{lv}]
+        t_G.nodes[lv][PKEY][slot] = [{lv}]
+        t_G.nodes[lv][PKEY][0] = [{lv}]
 
-    for inner in [x for x in d_graph.nodes if x not in leaves]:
-        d_graph.nodes[inner]['partitions'] = dict()
+    for inner in [x for x in t_G.nodes if x not in leaves]:
+        t_G.nodes[inner][PKEY] = dict()
         slot = safe_G.nodes[inner][node_weight]
-        d_graph.nodes[inner]['partitions'][slot] = [{inner}]
+        t_G.nodes[inner][PKEY][slot] = [{inner}]
 
     # CORE ALGORITHM -----------------------
     while True:
-        x_node = _one_node_just_over_leaves(d_graph)
+        x_node = _one_node_just_over_leaves(t_G)
         weight_of_x = safe_G.nodes[x_node][node_weight]
         best_value = 0
         best_partition = None
         bp_buffer = dict()
-        x_descendants = nx.descendants(d_graph, x_node)
-        for i in x_descendants:
+        x_descendants = nx.descendants(t_G, x_node)
+        for i_node in x_descendants:
             for j in range(weight_of_x, max_size + 1):
                 for a, b in product(range(weight_of_x, max_size + 1),
                                     range(0, max_size + 1)):
                     if not a + b == j:
                         # we are only interested in a, b couples that sum to j
                         continue
-                    if a in d_graph.nodes[x_node]['partitions'].keys() \
-                            and b in d_graph.nodes[i]['partitions'].keys():
-                        part1 = d_graph.nodes[x_node]['partitions'][a]
-                        part2 = d_graph.nodes[i]['partitions'][b]
+
+                    if a in t_G.nodes[x_node][PKEY].keys() \
+                            and b in t_G.nodes[i_node][PKEY].keys():
+                        part1 = t_G.nodes[x_node][PKEY][a]
+                        part2 = t_G.nodes[i_node][PKEY][b]
                     else:
                         # it's not possible to form this particular weight sum
                         continue
 
-                    part, value = _concatenate_merge(part1, part2,
-                                                     x_node, i, j)
+                    part, value = _concatenate_or_merge(part1, part2,
+                                                        x_node, i_node, j)
 
                     if j not in bp_buffer.keys() or bp_buffer[j][1] < value:
                         # we annotate in the buffer the best partition for j
@@ -214,15 +220,15 @@ def lukes_partitioning(G,
             # (the key phrase is make all x == x')
             # so that they are used by the subsequent children
             for w, (best_part_for_vl, vl) in bp_buffer.items():
-                d_graph.nodes[x_node]['partitions'][w] = best_part_for_vl
+                t_G.nodes[x_node][PKEY][w] = best_part_for_vl
             bp_buffer.clear()
 
         # the absolute best partition for this node
-        # across all weights has to be stored in 0
-        d_graph.nodes[x_node]['partitions'][0] = best_partition
-        d_graph.remove_nodes_from(x_descendants)
+        # across all weights has to be stored at 0
+        t_G.nodes[x_node][PKEY][0] = best_partition
+        t_G.remove_nodes_from(x_descendants)
 
         if x_node == root:
             # the 0-labeled partition of root
-            # is the optimal one for the tree
-            return d_graph.nodes[root]['partitions'][0]
+            # is the optimal one for the whole tree
+            return t_G.nodes[root][PKEY][0]
