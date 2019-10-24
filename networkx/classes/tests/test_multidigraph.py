@@ -2,8 +2,9 @@
 import pytest
 from networkx.testing import assert_edges_equal
 import networkx as nx
-from .test_multigraph import BaseMultiGraphTester, TestMultiGraph
-from .test_multigraph import TestEdgeSubgraph as TestMultiGraphEdgeSubgraph
+from .test_multigraph import BaseMultiGraphTester
+from .test_multigraph import TestMultiGraph as _TestMultiGraph
+from .test_multigraph import TestEdgeSubgraph as _TestMultiGraphEdgeSubgraph
 
 
 class BaseMultiDiGraphTester(BaseMultiGraphTester):
@@ -220,7 +221,7 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         pytest.raises(nx.NetworkXError, R.remove_edge, 1, 0)
 
 
-class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
+class TestMultiDiGraph(BaseMultiDiGraphTester, _TestMultiGraph):
     def setup_method(self):
         self.Graph = nx.MultiDiGraph
         # build K3
@@ -335,7 +336,7 @@ class TestMultiDiGraph(BaseMultiDiGraphTester, TestMultiGraph):
         G.remove_edges_from([(0, 0)])  # silent fail
 
 
-class TestEdgeSubgraph(TestMultiGraphEdgeSubgraph):
+class TestEdgeSubgraph(_TestMultiGraphEdgeSubgraph):
     """Unit tests for the :meth:`MultiDiGraph.edge_subgraph` method."""
 
     def setup_method(self):

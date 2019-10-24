@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 from collections import OrderedDict
 import networkx as nx
-from .test_graph import TestGraph
+from .test_graph import TestGraph as _TestGraph
 from .test_graph import BaseGraphTester
-from .test_digraph import TestDiGraph
+from .test_digraph import TestDiGraph as _TestDiGraph
 from .test_digraph import BaseDiGraphTester
-from .test_multigraph import TestMultiGraph
-from .test_multidigraph import TestMultiDiGraph
+from .test_multigraph import TestMultiGraph as _TestMultiGraph
+from .test_multidigraph import TestMultiDiGraph as _TestMultiDiGraph
 
 
 def test_factories():
@@ -50,15 +50,15 @@ def test_factories():
             assert isinstance(G._adj[1][2], mydict5)
 
 
-class TestSpecialGraph(TestGraph):
+class TestSpecialGraph(_TestGraph):
     def setup_method(self):
-        TestGraph.setup_method(self)
+        _TestGraph.setup_method(self)
         self.Graph = nx.Graph
 
 
-class TestOrderedGraph(TestGraph):
+class TestOrderedGraph(_TestGraph):
     def setup_method(self):
-        TestGraph.setup_method(self)
+        _TestGraph.setup_method(self)
 
         class MyGraph(nx.Graph):
             node_dict_factory = OrderedDict
@@ -90,15 +90,15 @@ class TestThinGraph(BaseGraphTester):
         self.K3._node[2] = {}
 
 
-class TestSpecialDiGraph(TestDiGraph):
+class TestSpecialDiGraph(_TestDiGraph):
     def setup_method(self):
-        TestDiGraph.setup_method(self)
+        _TestDiGraph.setup_method(self)
         self.Graph = nx.DiGraph
 
 
-class TestOrderedDiGraph(TestDiGraph):
+class TestOrderedDiGraph(_TestDiGraph):
     def setup_method(self):
-        TestDiGraph.setup_method(self)
+        _TestDiGraph.setup_method(self)
 
         class MyGraph(nx.DiGraph):
             node_dict_factory = OrderedDict
@@ -140,15 +140,15 @@ class TestThinDiGraph(BaseDiGraphTester):
         self.P3._node[2] = {}
 
 
-class TestSpecialMultiGraph(TestMultiGraph):
+class TestSpecialMultiGraph(_TestMultiGraph):
     def setup_method(self):
-        TestMultiGraph.setup_method(self)
+        _TestMultiGraph.setup_method(self)
         self.Graph = nx.MultiGraph
 
 
-class TestOrderedMultiGraph(TestMultiGraph):
+class TestOrderedMultiGraph(_TestMultiGraph):
     def setup_method(self):
-        TestMultiGraph.setup_method(self)
+        _TestMultiGraph.setup_method(self)
 
         class MyGraph(nx.MultiGraph):
             node_dict_factory = OrderedDict
@@ -159,15 +159,15 @@ class TestOrderedMultiGraph(TestMultiGraph):
         self.Graph = MyGraph
 
 
-class TestSpecialMultiDiGraph(TestMultiDiGraph):
+class TestSpecialMultiDiGraph(_TestMultiDiGraph):
     def setup_method(self):
-        TestMultiDiGraph.setup_method(self)
+        _TestMultiDiGraph.setup_method(self)
         self.Graph = nx.MultiDiGraph
 
 
-class TestOrderedMultiDiGraph(TestMultiDiGraph):
+class TestOrderedMultiDiGraph(_TestMultiDiGraph):
     def setup_method(self):
-        TestMultiDiGraph.setup_method(self)
+        _TestMultiDiGraph.setup_method(self)
 
         class MyGraph(nx.MultiDiGraph):
             node_dict_factory = OrderedDict
