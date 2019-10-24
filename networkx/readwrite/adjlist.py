@@ -210,7 +210,7 @@ def parse_adjlist(lines, comments='#', delimiter=None,
         G.add_node(u)
         if nodetype is not None:
             try:
-                vlist = map(nodetype, vlist)
+                vlist = list(map(nodetype, vlist))
             except:
                 raise TypeError("Failed to convert nodes ({}) to type {}"
                                 .format(','.join(vlist), nodetype))
