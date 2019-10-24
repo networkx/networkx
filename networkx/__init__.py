@@ -125,3 +125,7 @@ from networkx.testing.test import run as test
 
 import networkx.drawing
 from networkx.drawing import *
+
+import networkx.graphspace_python
+from networkx.graphspace_python import *
+

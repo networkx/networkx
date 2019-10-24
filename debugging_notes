@@ -1,0 +1,6 @@
+Requirement already satisfied: networkx>=1.11 in ./Desktop/networkx (from graphspace_python) (2.5rc1.dev20191023160122)
+
+File "/home/tasnina/anaconda3/lib/python3.7/site-packages/graphspace_python/graphs/classes/gsgraph.py", line 526, in add_node
+    if float(nx.__version__) >= 2:
+ValueError: could not convert string to float: '2.5rc1.dev_20191024044204'
+
