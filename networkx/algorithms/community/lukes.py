@@ -37,8 +37,8 @@ def lukes_partitioning(G,
     """Optimal partitioning of a weighted tree using the Lukes algorithm.
 
     This algorithm partitions a connected, acyclic graph featuring integer
-    node weights and float edge_weights. The resulting partitions are such
-    that the total weight of the nodes in each partition does not exceed
+    node weights and float edge weights. The resulting clusters are such
+    that the total weight of the nodes in each cluster does not exceed
     max_size and that the weight of the edges that are cut by the partition
     is minimum. The algorithm is based on LUKES[1].
 
@@ -61,7 +61,8 @@ def lukes_partitioning(G,
     Returns
     -------
     partition : list
-        A list of sets of nodes representing the partition.
+        A list of sets of nodes representing the clusters of the
+        partition.
 
     Raises
     -------
