@@ -7,4 +7,5 @@ Developer Guide
    :maxdepth: 2
 
    contribute
+   code_of_conduct
    gitwash/index
