@@ -5,7 +5,7 @@
 #    BSD license.
 import collections
 from heapq import heappush, heappop
-from itertools import count
+from itertools import count, groupby
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -14,12 +14,15 @@ from networkx.utils import pairwise
 __author__ = """\n""".join(['Sérgio Nery Simões <sergionery@gmail.com>',
                             'Aric Hagberg <aric.hagberg@gmail.com>',
                             'Andrey Paramonov',
-                            'Jordi Torrents <jordi.t21@gmail.com>'])
+                            'Jordi Torrents <jordi.t21@gmail.com>',
+                            'Jorge Martín Pérez <jmartinp@it.uc3m.es>'])
 
 __all__ = [
     'all_simple_paths',
     'is_simple_path',
     'shortest_simple_paths',
+    'all_trails',
+    'all_trails_as_edge_paths'
 ]
 
 
@@ -811,3 +814,187 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
     raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+
+
+def all_trails(G, source, target, cutoff=None):
+    """
+
+    Generate all trails in the digraph G from source to target.
+
+    A trail is a walk without repeated edges.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+
+    source : node
+       Starting node for path
+
+    target : nodes
+       Single node or iterable of nodes at which to end path
+
+    cutoff : integer, optional
+        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    path_generator: generator
+       A generator that produces lists of trails. If there are no paths
+       between the source and target within the given cutoff the generator
+       produces no output.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> 
+    >>> 
+    >>> dg = nx.DiGraph()
+    >>> dg.add_edges_from([(1,2),(2,1),(2,3),(3,2),(3,4),(4,3),(3,5),(5,3)])
+    >>> trail = nx.all_trails(G=dg, source=1, target=[1,2,3,4,5])
+    >>> for t in sorted(trail):
+    ...     print(t)
+    [1, 2]
+    [1, 2, 1]
+    [1, 2, 3]
+    [1, 2, 3, 2]
+    [1, 2, 3, 2, 1]
+    [1, 2, 3, 4]
+    [1, 2, 3, 4, 3]
+    [1, 2, 3, 4, 3, 2]
+    [1, 2, 3, 4, 3, 2, 1]
+    [1, 2, 3, 4, 3, 5]
+    [1, 2, 3, 4, 3, 5, 3]
+    [1, 2, 3, 4, 3, 5, 3, 2]
+    [1, 2, 3, 4, 3, 5, 3, 2, 1]
+    [1, 2, 3, 5]
+    [1, 2, 3, 5, 3]
+    [1, 2, 3, 5, 3, 2]
+    [1, 2, 3, 5, 3, 2, 1]
+    [1, 2, 3, 5, 3, 4]
+    [1, 2, 3, 5, 3, 4, 3]
+    [1, 2, 3, 5, 3, 4, 3, 2]
+    [1, 2, 3, 5, 3, 4, 3, 2, 1]
+
+
+    See Also
+    --------
+    all_shortest_paths
+    shortest_path
+    all_simple_paths
+
+    """
+    if not nx.is_directed(G):
+        raise NotImplementedError('graph is not directed')
+
+    dg = nx.DiGraph()
+
+    # Create nodes representing connection links
+    for src,dst in G.edges():
+        orig = {'id': 's' + str(src) + "_" + str(dst), 'len': len(str(src)),
+                'type': 'src', 'init': src}
+        dest = {'id': 'd' + str(dst) + "_" + str(src), 'len': len(str(dst)),
+                'type': 'dst', 'init': dst}
+        dg.add_edge(orig['id'], dest['id'])
+        nx.set_node_attributes(G=dg, values={orig['id']: orig,
+                                             dest['id']: dest})
+
+    # Create connections between the nodes belonging same original node
+    exp_nodes = {}
+    for n,data in dg.nodes(data=True):
+        n_id = n[1:1+data['len']]
+        if n_id not in exp_nodes:
+            exp_nodes[n_id] = {'src': [], 'dst': []}
+        exp_nodes[n_id][data['type']] += [n]
+
+    for props in exp_nodes.values(): # Connect the intra nodes
+        for dst in props['dst']:
+            for src in props['src']:
+                dg.add_edge(dst, src)
+
+    # Get the possible sources and destinations for expanded version
+    sources = [n for n,d in dg.nodes(data=True)\
+                 if d['type'] == 'src' and d['init'] == source]
+    check = lambda id_,t: id_ in t if type(t) == list else id_ == t
+    targets = [n for n,d in dg.nodes(data=True)\
+                 if d['type'] == 'dst' and check(d['init'], target)]
+
+    # Postprocess all single paths to obtain the trails
+    trails = []
+    for src in sources:
+        for target in targets:
+            for path in nx.all_simple_paths(G=dg, source=src, target=target):
+                trail = list(map(lambda n: dg.nodes[n]['init'], path))
+                yield [x[0] for x in groupby(trail)]
+
+
+def all_trails_as_edge_paths(G, source, target, cutoff=None):
+    """
+
+    Generate all trails in the digraph G from source to target.
+    The generated paths comes as tuples representing the edges.
+
+    A trail is a walk without repeated edges.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+
+    source : node
+       Starting node for path
+
+    target : nodes
+       Single node or iterable of nodes at which to end path
+
+    cutoff : integer, optional
+        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    path_generator: generator
+       A generator that produces lists of trails. If there are no paths
+       between the source and target within the given cutoff the generator
+       produces no output. Lists are tuples of edges
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> dg = nx.DiGraph()
+    >>> dg.add_edges_from([(1,2),(2,1),(2,3),(3,2),(3,4),(4,3),(3,5),(5,3)])
+    >>> trails = sorted(nx.all_trails(G=dg, source=1, target=[1,2,3,4,5]))
+    >>> for trail in map(nx.utils.pairwise, trails):
+    ...     print(list(trail))
+    [(1, 2)]
+    [(1, 2), (2, 1)]
+    [(1, 2), (2, 3)]
+    [(1, 2), (2, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 4)]
+    [(1, 2), (2, 3), (3, 4), (4, 3)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 4), (4, 3), (3, 5), (5, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 5)]
+    [(1, 2), (2, 3), (3, 5), (5, 3)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 2), (2, 1)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3), (3, 2)]
+    [(1, 2), (2, 3), (3, 5), (5, 3), (3, 4), (4, 3), (3, 2), (2, 1)]
+
+
+    See Also
+    --------
+    all_shortest_paths
+    shortest_path
+    all_simple_paths
+    all_trails
+
+    """
+    paths = nx.all_trails(G, source, target, cutoff)
+    for trail in map(nx.utils.pairwise, paths):
+        yield list(trail)
+
