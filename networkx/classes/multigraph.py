@@ -1023,7 +1023,7 @@ class MultiGraph(Graph):
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         G.add_edges_from((u, v, key, deepcopy(datadict))
-                         for u, nbrs in self.adj.items()
+                         for u, nbrs in self._adj.items()
                          for v, keydict in nbrs.items()
                          for key, datadict in keydict.items())
         return G
