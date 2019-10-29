@@ -469,7 +469,7 @@ class Graph(object):
         >>> G[0]
         AtlasView({1: {}})
         """
-        return self.adj[n]
+        return self._adj[n]
 
     def add_node(self, node_for_adding, **attr):
         """Add a single node `node_for_adding` and update node attributes.
