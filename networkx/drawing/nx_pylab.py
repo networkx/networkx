@@ -611,7 +611,7 @@ def draw_networkx_edges(G, pos,
                                          transOffset=ax.transData,
                                          alpha=alpha
                                          )
-        
+
         edge_collection.set_cmap(edge_cmap)
         edge_collection.set_clim(edge_vmin, edge_vmax)
 
