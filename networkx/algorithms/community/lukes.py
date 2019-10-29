@@ -116,9 +116,6 @@ def lukes_partitioning(G,
                             'values for node_weight ({})'
                             .format(node_weight))
 
-    # todo check that the values of edge_weight implement <= and sum()
-    # (in an algebraically closed fashion)
-
     # SUBROUTINES -----------------------
     # these functions are defined here for two reasons:
     # - brevity: we can leverage global "safe_G"
