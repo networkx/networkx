@@ -36,11 +36,10 @@ def betweenness_centrality_parallel(G, processes=None):
     node_divisor = len(p._pool) * 4
     node_chunks = list(chunks(G.nodes(), int(G.order() / node_divisor)))
     num_chunks = len(node_chunks)
-    bt_sc = p.starmap(nx.betweenness_centrality_source,
-                      zip([G] * num_chunks,
-                        [True] * num_chunks,
-                        [None] * num_chunks,
-                        node_chunks))
+    bt_sc = p.starmap(
+        nx.betweenness_centrality_source,
+        zip([G] * num_chunks, [True] * num_chunks, [None] * num_chunks, node_chunks),
+    )
 
     # Reduce the partial solutions
     bt_c = bt_sc[0]
