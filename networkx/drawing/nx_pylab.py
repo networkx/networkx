@@ -612,6 +612,9 @@ def draw_networkx_edges(G, pos,
                                          alpha=alpha
                                          )
 
+        edge_collection.set_cmap(edge_cmap)
+        edge_collection.set_clim(edge_vmin, edge_vmax)
+
         edge_collection.set_zorder(1)  # edges go behind nodes
         edge_collection.set_label(label)
         ax.add_collection(edge_collection)
