@@ -172,7 +172,7 @@ class TestPylab(object):
         # See Issue #3295
         G = nx.path_graph(3, create_using=nx.MultiDiGraph)
         nx.draw_networkx(G, edgelist=[(0, 1, 0)])
-        nx.draw_networkx(G, edgelist=[(0, 1, 0)], node_size=[10, 20])
+        nx.draw_networkx(G, edgelist=[(0, 1, 0)], node_size=[10, 20, 0])
 
     def test_alpha_iter(self):
         pos = nx.random_layout(self.G)
