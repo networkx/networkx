@@ -1220,8 +1220,7 @@ class Graph(object):
 
         Notes
         -----
-        It is usually more convenient (and faster) to access the
-        adjacency dictionary as ``G[n]``:
+        Alternate ways to access the neighbors are ``G.adj[n]`` or ``G[n]``:
 
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge('a', 'b', weight=7)
