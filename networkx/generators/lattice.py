@@ -126,7 +126,6 @@ def grid_graph(dim, periodic=False):
     >>> len(G)
     6
     """
-    dlabel = "%s" % dim
     if not dim:
         return empty_graph(0)
 
