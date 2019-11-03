@@ -100,7 +100,7 @@ class TestIntervalGraph:
 
     def test_interval_graph_4(self):
         """ this test is to see that an interval supports infinite number"""
-        intervals = {(-math.inf, 0), (-1,-1), (1,1), (1, math.inf)}
+        intervals = {(-math.inf, 0), (-1, -1), (1, 1), (1, math.inf)}
 
         expected_graph = nx.Graph()
         expected_graph.add_nodes_from(intervals)

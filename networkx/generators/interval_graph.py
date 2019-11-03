@@ -18,9 +18,10 @@ __all__ = ['interval_graph']
 def interval_graph(intervals):
     """ Generates an interval graph for a list of intervals given.
 
-    In graph theory, an interval graph is an undirected graph formed from a set of intervals
-    on the real line, with a vertex for each interval and an edge between vertices whose
-    intervals intersect. It is the intersection graph of the intervals.
+    In graph theory, an interval graph is an undirected graph formed from a set
+    of intervals on the real line, with a vertex for each interval and an edge
+    between vertices whose intervals intersect.
+    It is the intersection graph of the intervals.
 
     More information can be found at:
     https://en.wikipedia.org/wiki/Interval_graph
@@ -48,7 +49,7 @@ def interval_graph(intervals):
     valid_intervals = {interval for interval in intervals if __check_interval(interval)}
 
     graph.add_nodes_from(valid_intervals)
-    sorted_ = sorted(valid_intervals, key=lambda x:x[0])
+    sorted_ = sorted(valid_intervals, key=lambda x: x[0])
 
     edges = list()
     for i in range(len(valid_intervals)):
