@@ -36,32 +36,13 @@ def interval_graph(intervals):
     G : networkx graph
 
     Raises
-    ------
+    --------
     :exc:`TypeError`
-        If `intervals` contains None or an element which is not
+        if `intervals` contains None or an element which is not
         collections.abc.Sequence or not a length of 2.
     :exc:`ValueError`
-        If `intervals` contains an interval such that min1 > max1
+        if `intervals` contains an interval such that min1 > max1
         where min1,max1 = interval
-
-    Examples
-    --------
-    Following is an example to generate interval_graph which is actually K_3.
-    >>> import networkx as nx
-    >>> intervals = [(1, 4), [3, 5], [2.5, 4]]
-    >>> G = nx.interval_graph(intervals)
-    >>> len(G.nodes)
-    3
-    >>> len(G.edges)
-    3
-
-    Another example which is an independent graph of order 4 follows.
-    >>> intervals = [(1, 2), [3, 5], [6, 8], (9, 10)]
-    >>> G = nx.interval_graph(intervals)
-    >>> len(G.nodes)
-    4
-    >>> len(G.edges)
-    0
     """
 
     if intervals is None or len(intervals) == 0:
@@ -94,8 +75,9 @@ def interval_graph(intervals):
 
 
 def __check_interval_type(interval):
-    return interval is not None and isinstance(interval, Sequence)\
-           and len(interval) == 2
+    if interval is None:
+        return False
+    return isinstance(interval, Sequence) and len(interval) == 2
 
 
 def __check_interval_val(interval):
