@@ -10,20 +10,11 @@
 #
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
-from __future__ import print_function
 
-import sys
-import os
 from datetime import date
 
 from sphinx_gallery.sorting import ExplicitOrder
 import sphinx_rtd_theme
-
-# Check Sphinx version
-import sphinx
-
-if sphinx.__version__ < "2.2":
-    raise RuntimeError("Sphinx 2.2 or newer required")
 
 # If your extensions are in another directory, add it here.
 # These locations are relative to conf.py
@@ -143,10 +134,9 @@ napoleon_use_param = False
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
-# html_theme_options = {
-#    "rightsidebar": "true",
-#    "relbarbgcolor: "black"
-# }
+html_theme_options = {
+    "canonical_url": "https://networkx.github.io/documentation/stable/"
+}
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
@@ -220,7 +210,7 @@ default_role = "obj"
 
 numpydoc_show_class_members = False
 
-# Add the 'copybutton' javascript, to hide/show the prompt in code
-# examples
+
+# Add the 'copybutton' javascript, to hide/show the prompt in code examples
 def setup(app):
     app.add_javascript("copybutton.js")
