@@ -343,3 +343,11 @@ Cographs
    :toctree: generated/
 
    random_cograph
+
+Wheelgraph
+------------
+.. automodule:: networkx.generators.wheel_graph
+.. autosummary::
+   :toctree: generated/
+
+   wheel_graph
