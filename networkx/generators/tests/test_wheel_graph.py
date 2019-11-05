@@ -10,7 +10,7 @@
 """Unit tests for the :mod:`networkx.generators.wheel_graph` module.
 """
 import networkx as nx
-from networkx import wheel_graph
+import networkx.generators.wheel_graph as wheel_graph
 
 import pytest
 
@@ -50,5 +50,5 @@ class TestWheelGraph:
         assert len(w_graph.edges) == 18
 
         assert w_graph.degree[1] == 9
-        for i in range(2, n+1):
+        for i in range(2, n + 1):
             assert w_graph.degree[i] == 3

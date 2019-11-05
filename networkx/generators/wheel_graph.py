@@ -58,13 +58,13 @@ def wheel_graph(n: int):
         raise ValueError('n must be an integer.')
 
     graph = nx.Graph()
-    nodes = list(range(1, n+1))
+    nodes = list(range(1, n + 1))
     graph.add_nodes_from(nodes)
 
-    edges_for_cycle = [(i, i+1) for i in range(2, n)]
+    edges_for_cycle = [(i, i + 1) for i in range(2, n)]
     edges_for_cycle.append((n, 2))
 
-    edges_from_center = [(1, i) for i in range(2, n+1)]
+    edges_from_center = [(1, i) for i in range(2, n + 1)]
 
     graph.add_edges_from(edges_for_cycle)
     graph.add_edges_from(edges_from_center)
