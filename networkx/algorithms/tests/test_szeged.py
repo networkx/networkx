@@ -26,7 +26,7 @@ class TestsSzegedIndex(object):
 
         assert expected == actual
 
-    def test_bipartite_graph_2(self):
+    def test_bipartite_graph_1(self):
         """Tests that the Szeged index of the complete bipartite K_(n,m) is
         n * m * (n-1) * (m-1). The calculation is from following.
         There are n*m edges in K_(n,m).
@@ -40,42 +40,21 @@ class TestsSzegedIndex(object):
         """
         n = 3
         m = 4
-        g = nx.complete_bipartite_graph(n,m)
+        g = nx.complete_bipartite_graph(n, m)
 
-        expected = n * m * (n-1) * (m-1)
+        expected = n * m * (n - 1) * (m - 1)
         actual = szeged_index(g)
 
         assert expected == actual
 
-    def test_bipartite_graph_1(self):
+    def test_bipartite_graph_2(self):
         """Tests that the Szeged index of the complete bipartite K_(n,n) is n^2 * (n-1)^2
         It is a special case of K_(n,m).
         """
         n = 10
-        g = nx.complete_bipartite_graph(n,n)
+        g = nx.complete_bipartite_graph(n, n)
 
-        expected = (n ** 2) * ((n-1) ** 2)
-        actual = szeged_index(g)
-
-        assert expected == actual
-
-    def test_bipartite_graph_2(self):
-        """Tests that the Szeged index of the complete bipartite K_(n,m) is
-        n * m * (n-1) * (m-1). The calculation is from following.
-        There are n*m edges in K_(n,m).
-        Let e = xy be an edge such that x is in the partition of size n, say A,
-        and y is in the partition of size m, say B.
-        For any vertex w in B - {y}, it satisfies 1 = d(w,x) < d(w,y) = inf.
-        Hence |{w in V(G) : d(w, x) < d(w,y)}| = |B| - 1 = m - 1.
-        Similarly, |{w in V(G) : d(w, y) < d(w,x)}| = |A| - 1 = n - 1.
-        These equality implies that szeged(K_(n,m)) = n * m * (n-1) * (m-1).
-
-        """
-        n = 3
-        m = 4
-        g = nx.complete_bipartite_graph(n,m)
-
-        expected = n * m * (n-1) * (m-1)
+        expected = (n ** 2) * ((n - 1) ** 2)
         actual = szeged_index(g)
 
         assert expected == actual
@@ -87,7 +66,7 @@ class TestsSzegedIndex(object):
         n = 5  # number of edges
         g = nx.path_graph(n + 1)
 
-        expected = sum([(i-1)*(n-i) for i in range(1, n+1)])
+        expected = sum([(i - 1) * (n - i) for i in range(1, n + 1)])
         actual = szeged_index(g)
 
         assert expected == actual

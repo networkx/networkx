@@ -19,8 +19,8 @@ __all__ = ['szeged_index']
 def szeged_index(g: nx.Graph):
     """Returns the Szeged index of the given graph.
 
-    The *Szeged index* of a graph introduced by Ivan Gutman of the concept of the Wiener index,
-    introduced by Harry Wiener.
+    The *Szeged index* of a graph introduced by Ivan Gutman of the concept of the
+    Wiener index, introduced by Harry Wiener.
 
     Parameters
     ----------
@@ -47,7 +47,7 @@ def szeged_index(g: nx.Graph):
     return sum(__szeged_value_for_edge(g, edge) for edge in edges)
 
 
-def __szeged_value_for_edge(g:nx.Graph, edge):
+def __szeged_value_for_edge(g: nx.Graph, edge):
     u = edge[0]
     v = edge[1]
 
