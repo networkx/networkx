@@ -43,8 +43,17 @@ def szeged_index(g: nx.Graph):
     https://en.wikipedia.org/wiki/Szeged_index
 
     """
-    edges = g.edges
-    return sum(__szeged_value_for_edge(g, edge) for edge in edges)
+    if nx.is_connected(g):
+        return __szeged_index_for_connected(g)
+
+    components = nx.connected_components(g)
+    return sum([__szeged_index_for_connected(g.subgraph(component)) for component in components])
+
+
+def __szeged_index_for_connected(g: nx.Graph):
+    if len(g.edges) == 0:
+        return 0
+    return sum(__szeged_value_for_edge(g, edge) for edge in g.edges)
 
 
 def __szeged_value_for_edge(g: nx.Graph, edge):

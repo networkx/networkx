@@ -15,8 +15,19 @@ from networkx import szeged_index
 class TestsSzegedIndex(object):
     """Unit tests for computing the Szeged index of a graph."""
 
+    def test_graph_of_size_0(self):
+        """Tests that the Szeged index of a graph having no edge is 0.
+        """
+        n = 10
+        g = nx.Graph()
+        g.add_nodes_from(list(range(1, n + 1)))
+        expected = 0
+        actual = szeged_index(g)
+
+        assert expected == actual
+
     def test_complete_graph(self):
-        """Tests that the Szeged index of the complete graph K_n is 0.
+        """Tests that the Szeged index of a complete graph K_n is 0.
         It is trivial, since for any e = xy, w in V(G), d(x,w) = d(y,w) = 1.
         """
         n = 10  # number of edges
@@ -67,6 +78,22 @@ class TestsSzegedIndex(object):
         g = nx.path_graph(n + 1)
 
         expected = sum([(i - 1) * (n - i) for i in range(1, n + 1)])
+        actual = szeged_index(g)
+
+        assert expected == actual
+
+    def test_path_graph2(self):
+        """Tests that the Szeged index of a graph having two independent paths
+        P_n, P_m, i.e disconnected, is
+        sum([(i-1)*(n-i) for i in [1 ... n]] + sum([(i-1)*(m-i) for i in [1 ... m]].
+        """
+        n = 5
+        m = 7
+        g1 = nx.path_graph(n + 1)
+        g2 = nx.path_graph(m + 1)
+        g = nx.disjoint_union(g1, g2)
+        expected = sum([(i - 1) * (n - i) for i in range(1, n + 1)]) + \
+            sum([(i - 1) * (m - i) for i in range(1, m + 1)])
         actual = szeged_index(g)
 
         assert expected == actual
