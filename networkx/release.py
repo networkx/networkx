@@ -184,7 +184,6 @@ dev = True
 
 
 description = "Python package for creating and manipulating graphs and networks"
-license = 'BSD'
 authors = {'Hagberg': ('Aric Hagberg', 'hagberg@lanl.gov'),
            'Schult': ('Dan Schult', 'dschult@colgate.edu'),
            'Swart': ('Pieter Swart', 'swart@lanl.gov')}
