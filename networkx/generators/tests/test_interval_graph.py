@@ -11,7 +11,7 @@
 
 """
 import networkx as nx
-import networkx.generators.interval_graph as interval_graph
+from networkx.generators.interval_graph import interval_graph
 from networkx.testing import assert_edges_equal
 import math
 import pytest
