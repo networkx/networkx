@@ -123,10 +123,10 @@ def __list__dist_and_degree(g):
     dist_pairs = dict(spl(g))
 
     nodes = list(g.nodes)
-    l = list()
+    dist_degrees_tuple = list()
     for i in range(len(nodes)):
         for j in range(i + 1, len(nodes)):
             d_ij = dist_pairs[nodes[i]][nodes[j]]
-            l.append((d_ij, g.degree[nodes[i]], g.degree[nodes[j]]))
+            dist_degrees_tuple.append((d_ij, g.degree[nodes[i]], g.degree[nodes[j]]))
 
-    return l
+    return dist_degrees_tuple
