@@ -9,7 +9,7 @@
 """Unit tests for the :mod:`networkx.algorithms.szeged` module."""
 
 import networkx as nx
-from networkx import szeged_index
+from networkx.algorithms.szeged import szeged_index
 
 
 class TestsSzegedIndex(object):
