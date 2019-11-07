@@ -74,7 +74,6 @@ import networkx.algorithms.shortest_paths
 import networkx.algorithms.tournament
 import networkx.algorithms.traversal
 import networkx.algorithms.tree
-import networkx.algorithms.szeged
 
 # Make certain functions from some of the previous subpackages available
 # to the user as direct imports from the `networkx` namespace.

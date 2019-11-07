@@ -47,7 +47,8 @@ def szeged_index(g: nx.Graph):
         return __szeged_index_for_connected(g)
 
     components = nx.connected_components(g)
-    return sum([__szeged_index_for_connected(g.subgraph(component)) for component in components])
+    return sum([__szeged_index_for_connected(g.subgraph(component))
+                for component in components])
 
 
 def __szeged_index_for_connected(g: nx.Graph):
