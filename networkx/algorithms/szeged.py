@@ -1,7 +1,7 @@
 # szeged.py - functions related to the Szeged index of a graph
 #
 # Copyright 2015 NetworkX developers.
-#
+# Jangwon Yie <kleinaberoho10@gmail.com>
 # This file is part of NetworkX.
 #
 # NetworkX is distributed under a BSD license; see LICENSE.txt for more

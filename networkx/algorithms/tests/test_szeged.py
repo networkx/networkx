@@ -1,4 +1,4 @@
-# test_c.py - unit tests for the szeged module
+# test_szeged.py - unit tests for the szeged module
 #
 # Copyright 2015 NetworkX developers.
 #
