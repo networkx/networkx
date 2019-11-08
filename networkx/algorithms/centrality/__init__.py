@@ -16,3 +16,4 @@ from .reaching import *
 from .percolation import *
 from .second_order import *
 from .voterank_alg import *
+from .parallel_harmonic import *

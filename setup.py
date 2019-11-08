@@ -134,7 +134,7 @@ extras_require = {'all': ['numpy', 'scipy', 'pandas', 'matplotlib',
                   'pydot': ['pydot'],
                   'pygraphviz': ['pygraphviz'],
                   'pyyaml': ['pyyaml'],
-                  'scipy': ['scipy']
+                  'scipy': ['scipy'],
                  }
 
 with open("README.rst", "r") as fh:
