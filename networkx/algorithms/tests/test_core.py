@@ -145,7 +145,6 @@ class TestCore:
         k_truss_subgraph = nx.k_truss(self.G, 4)
         assert sorted(k_truss_subgraph.nodes()) == list(range(1, 9))
 
-
         k_truss_subgraph = nx.k_truss(self.G, 5)
         assert sorted(k_truss_subgraph.nodes()) == []
 
