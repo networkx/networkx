@@ -370,7 +370,7 @@ def k_truss(G, k):
     """Returns the k-truss of `G`.
 
     The k-truss is the maximal subgraph of `G` which contains at least three
-    vertices where every edge is incident to at least `k` triangles.
+    vertices where every edge is incident to at least `k-2` triangles.
 
     Parameters
     ----------
