@@ -148,7 +148,6 @@ class TestCore:
         k_truss_subgraph = nx.k_truss(self.G, 5)
         assert sorted(k_truss_subgraph.nodes()) == []
 
-
     def test_onion_layers(self):
         layers = nx.onion_layers(self.G)
         nodes_by_layer = [sorted([n for n in layers if layers[n] == val])
