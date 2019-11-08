@@ -418,7 +418,7 @@ def k_truss(G, k):
             seen.add(u)
             new_nbrs = [v for v in nbrs_u if v not in seen]
             for v in new_nbrs:
-                if len(nbrs_u & set(H[v])) < k:
+                if len(nbrs_u & set(H[v])) < (k-2):
                     to_drop.append((u, v))
         H.remove_edges_from(to_drop)
         n_dropped = len(to_drop)
