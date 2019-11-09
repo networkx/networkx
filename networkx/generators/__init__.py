@@ -27,3 +27,4 @@ from networkx.generators.spectral_graph_forge import *
 from networkx.generators.stochastic import *
 from networkx.generators.trees import *
 from networkx.generators.triads import *
+from networkx.generators.intersection_graph import *

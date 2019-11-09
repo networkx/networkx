@@ -343,3 +343,11 @@ Cographs
    :toctree: generated/
 
    random_cograph
+
+Intersection Graph
+------------
+.. automodule:: networkx.generators.intersection_graph
+.. autosummary::
+   :toctree: generated/
+
+   intersection_graph
