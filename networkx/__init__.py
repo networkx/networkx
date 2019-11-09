@@ -74,7 +74,6 @@ from networkx import release
 __author__ = '%s <%s>\n%s <%s>\n%s <%s>' % \
     (release.authors['Hagberg'] + release.authors['Schult'] +
         release.authors['Swart'])
-__license__ = release.license
 
 __date__ = release.date
 __version__ = release.version
