@@ -17,10 +17,6 @@ from collections import deque
 from itertools import chain
 from itertools import combinations
 from itertools import islice
-try:
-    from itertools import ifilter as filter
-except ImportError:
-    pass
 import networkx as nx
 from networkx.utils import not_implemented_for
 __author__ = """Dan Schult (dschult@colgate.edu)"""

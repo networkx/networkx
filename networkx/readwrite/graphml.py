@@ -96,10 +96,6 @@ def write_graphml_xml(G, path, encoding='utf-8', prettyprint=True,
 
     Notes
     -----
-    It may be a good idea in Python2 to convert strings to unicode
-    before giving the graph to write_gml. At least the strings with
-    either many characters to escape.
-
     This implementation does not support mixed graphs (directed
     and unidirected edges together) hyperedges, nested graphs, or ports.
     """
@@ -319,17 +315,9 @@ class GraphML(object):
         ' '.join(['http://graphml.graphdrawing.org/xmlns',
                   'http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd'])
 
-    try:
-        chr(12345)     # Fails on Py!=3.
-        unicode = str  # Py3k's str is our unicode type
-        long = int     # Py3K's int is our long type
-    except ValueError:
-        # Python 2.x
-        pass
-
     types = [(int, "integer"),  # for Gephi GraphML bug
-             (str, "yfiles"), (str, "string"), (unicode, "string"),
-             (int, "int"), (long, "long"),
+             (str, "yfiles"), (str, "string"),
+             (int, "int"),
              (float, "float"), (float, "double"),
              (bool, "boolean")]
 
@@ -403,24 +391,11 @@ class GraphMLWriter(GraphML):
         if self.infer_numeric_types:
             types = self.attribute_types[(name, scope)]
 
-            try:
-                chr(12345)     # Fails on Py<3.
-                local_long = int     # Py3's int is Py2's long type
-                local_unicode = str  # Py3's str is Py2's unicode type
-            except ValueError:
-                # Python 2.x
-                local_long = long
-                local_unicode = unicode
-
             if len(types) > 1:
                 if str in types:
                     return str
-                elif local_unicode in types:
-                    return local_unicode
                 elif float in types:
                     return float
-                elif local_long in types:
-                    return local_long
                 else:
                     return int
             else:

@@ -60,7 +60,7 @@ def jit_graph(data, create_using=None):
         G = create_using
         G.clear()
 
-    if nx.utils.is_string_like(data):
+    if isinstance(data, str):
         data = json.loads(data)
 
     for node in data:
