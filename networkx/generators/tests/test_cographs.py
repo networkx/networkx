@@ -1,12 +1,4 @@
 # -*- encoding: utf-8 -*-
-# test_cographs.py - unit tests for cograph generators
-#
-# Copyright 2010-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.generators.cographs` module.
 
 """

@@ -1,13 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2017-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg <aric.hagberg@gmail.com>
-#          Jordi Torrents <jtorrents@milnou.net>
 """One-mode (unipartite) projections of bipartite graphs."""
 import networkx as nx
 from networkx.utils import not_implemented_for

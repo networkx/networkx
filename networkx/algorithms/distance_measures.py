@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    William Schwartz <wkschwartz@gmail.com>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Dan Schult (dschult@colgate.edu)
-#          Brian Kiefer (bkiefer@asu.edu)
 """Graph diameter, radius, eccentricity and other properties."""
 
 import networkx as nx

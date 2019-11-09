@@ -1,14 +1,4 @@
 # -*- coding: utf-8 -*-
-# $Id: maximalIndependentSet.py 576 2011-03-01 05:50:34Z lleeoo $
-#    Leo Lopes <leo.lopes@monash.edu>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Leo Lopes <leo.lopes@monash.edu>
-#          Loïc Séguin-C. <loicseguin@gmail.com>
 """
 Algorithm to find a maximal (not maximum) independent set.
 

@@ -1,12 +1,3 @@
-# test_triads.py - unit tests for the triads module
-#
-# Copyright 2015 NetworkX developers.
-# Copyright 2009 Diederik van Liere <diederik.vanliere@rotman.utoronto.ca>.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.triads` module."""
 
 import networkx as nx

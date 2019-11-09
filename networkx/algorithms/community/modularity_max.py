@@ -1,15 +1,3 @@
-# modularity_max.py - functions for finding communities based on modularity
-#
-# Copyright 2018 Edward L. Platt
-#
-# This file is part of NetworkX
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Authors:
-#   Edward L. Platt <ed@elplatt.com>
-#
 # TODO:
 #   - Alter equations for weighted case
 #   - Write tests for weighted case

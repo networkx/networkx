@@ -1,17 +1,7 @@
 # -*- encoding: utf-8 -*-
-#    Copyright 2015 NetworkX developers.
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """
 Functions for identifying isolate (degree zero) nodes.
 """
-
-__author__ = """\n""".join(['Drew Conway <drew.conway@nyu.edu>',
-                            'Aric Hagberg <hagberg@lanl.gov>'])
 
 __all__ = ['is_isolate', 'isolates', 'number_of_isolates']
 

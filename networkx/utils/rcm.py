@@ -1,17 +1,12 @@
 """
 Cuthill-McKee ordering of graph nodes to produce sparse matrices
 """
-#    Copyright (C) 2011-2014 by
-#    Aric Hagberg <aric.hagberg@gmail.com>
-#    All rights reserved.
-#    BSD license.
 from collections import deque
 from operator import itemgetter
 
 import networkx as nx
 from ..utils import arbitrary_element
 
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['cuthill_mckee_ordering',
            'reverse_cuthill_mckee_ordering']
 

@@ -1,12 +1,6 @@
-#    Copyright (C) 2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from itertools import chain
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov))"""
+
 __all__ = ['tree_data', 'tree_graph']
 
 _attrs = dict(id='id', children='children')

@@ -1,17 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2006-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:
-#    Aric Hagberg <aric.hagberg@gmail.com>
-#    Dan Schult <dschult@colgate.edu>
-#    Ben Edwards <bedwards@cs.unm.edu>
-#    Neil Girdhar <neil.girdhar@mcgill.ca>
-#
 """Algorithms for directed acyclic graphs (DAGs).
 
 Note that most of these functions are only guaranteed to work for DAGs.

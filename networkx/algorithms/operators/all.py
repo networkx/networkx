@@ -1,16 +1,7 @@
 """Operations on many graphs.
 """
-#    Copyright (C) 2013 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from itertools import zip_longest
 import networkx as nx
-
-__author__ = """\n""".join(['Robert King <kingrobertking@gmail.com>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
 
 __all__ = ['union_all', 'compose_all', 'disjoint_union_all',
            'intersection_all']

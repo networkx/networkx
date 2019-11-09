@@ -1,13 +1,3 @@
-# minors.py - functions for computing minors of graphs
-#
-# Copyright 2015 Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>.
-# Copyright 2010 Drew Conway <drew.conway@nyu.edu>
-# Copyright 2010 Aric Hagberg <hagberg@lanl.gov>
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Provides functions for computing minors of a graph."""
 from itertools import chain
 from itertools import combinations

@@ -12,12 +12,6 @@ import networkx as nx
 from networkx.algorithms.components import connected_components
 from networkx.utils import arbitrary_element, not_implemented_for
 
-__authors__ = "\n".join(['Jesus Cerquides <cerquide@iiia.csic.es>',
-                         'Julien Klaus <julien.klaus@uni-jena.de'])
-#    Copyright (C) 2010 by
-#    Jesus Cerquides <cerquide@iiia.csic.es>
-#    All rights reserved.
-#    BSD license.
 
 __all__ = ['is_chordal',
            'find_induced_nodes',

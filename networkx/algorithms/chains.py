@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-# chains.py - functions for finding chains in a graph
-#
-# Copyright 2004-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for finding chains in a graph."""
 
 import networkx as nx

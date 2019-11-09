@@ -1,9 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """Functions for finding and manipulating cliques.
 
 Finding the largest clique in a graph is NP-complete problem, so most of
@@ -19,7 +13,7 @@ from itertools import combinations
 from itertools import islice
 import networkx as nx
 from networkx.utils import not_implemented_for
-__author__ = """Dan Schult (dschult@colgate.edu)"""
+
 __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
            'make_clique_bipartite', 'graph_clique_number',
            'graph_number_of_cliques', 'node_clique_number',

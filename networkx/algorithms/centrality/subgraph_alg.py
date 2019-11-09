@@ -2,16 +2,9 @@
 """
 Subraph centrality and communicability betweenness.
 """
-#    Copyright (C) 2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
 from networkx.utils import not_implemented_for
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Franck Kalala (franckkalala@yahoo.fr'])
+
 __all__ = ['subgraph_centrality_exp',
            'subgraph_centrality',
            'communicability_betweenness_centrality',

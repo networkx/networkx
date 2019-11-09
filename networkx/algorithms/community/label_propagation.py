@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2015-2019 Aitor Almeida
-#    All rights reserved.
-#    BSD license.
-#
-# Author:   Aitor Almeida <aitoralmeida@gmail.com>
 """
 Label propagation community detection algorithms.
 """

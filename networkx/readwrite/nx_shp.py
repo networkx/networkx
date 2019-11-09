@@ -11,15 +11,8 @@ and regulated by Esri as a (mostly) open specification for data
 interoperability among Esri and other software products."
 See https://en.wikipedia.org/wiki/Shapefile for additional information.
 """
-#    Copyright (C) 2004-2019 by
-#    Ben Reilly <benwreilly@gmail.com>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-__author__ = """Ben Reilly (benwreilly@gmail.com)"""
+
 __all__ = ['read_shp', 'write_shp']
 
 

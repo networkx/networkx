@@ -1,17 +1,7 @@
 """
 Eigenvalue spectrum of graphs.
 """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)',
-                        'Jean-Gabriel Young (jean.gabriel.young@gmail.com)'])
 
 __all__ = ['laplacian_spectrum', 'adjacency_spectrum', 'modularity_spectrum',
            'normalized_laplacian_spectrum', 'bethe_hessian_spectrum']

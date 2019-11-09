@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2012 by
-#    Sergio Nery Simoes <sergionery@gmail.com>
-#    All rights reserved.
-#    BSD license.
 import collections
 from heapq import heappush, heappop
 from itertools import count
@@ -10,11 +6,6 @@ from itertools import count
 import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.utils import pairwise
-
-__author__ = """\n""".join(['Sérgio Nery Simões <sergionery@gmail.com>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Andrey Paramonov',
-                            'Jordi Torrents <jordi.t21@gmail.com>'])
 
 __all__ = [
     'all_simple_paths',

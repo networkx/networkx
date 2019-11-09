@@ -1,12 +1,4 @@
 # -*- encoding: utf-8 -*-
-# test_random_graphs.py - unit tests for random graph generators
-#
-# Copyright 2010-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.generators.random_graphs` module.
 
 """

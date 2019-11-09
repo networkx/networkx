@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-#    Copyright (C) 2010 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:
-#   Nima Mohammadi <nima.irt@gmail.com>
-#   Aric Hagberg <hagberg@lanl.gov>
-#   Mike Trenfield <william.trenfield@utsouthwestern.edu>
 """
 Eulerian circuits and graphs.
 """

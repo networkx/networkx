@@ -1,16 +1,7 @@
 """
 Adjacency matrix and incidence matrix of graphs.
 """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)'])
 
 __all__ = ['incidence_matrix',
            'adj_matrix', 'adjacency_matrix',

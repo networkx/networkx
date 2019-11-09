@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2011-2012 by
-#   Nicholas Mancuso <nick.mancuso@gmail.com>
-#   All rights reserved.
-#   BSD license.
 """Functions for finding node and edge dominating sets.
 
 A `dominating set`_ for an undirected graph *G* with vertex set *V*
@@ -21,8 +17,6 @@ from ...utils import not_implemented_for
 
 __all__ = ["min_weighted_dominating_set",
            "min_edge_dominating_set"]
-
-__author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
 
 # TODO Why doesn't this algorithm work for directed graphs?

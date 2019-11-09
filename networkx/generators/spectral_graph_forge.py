@@ -1,8 +1,3 @@
-#    Copyright (C) 2017-2019 by
-#    Luca Baldesi
-#    BSD license.
-#
-# Author:  Luca Baldesi (luca.baldesi@unitn.it)
 """Generates graphs with a given eigenvector structure"""
 
 

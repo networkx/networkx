@@ -1,13 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Ben Edwards (bedwards@cs.unm.edu)
-#          Aric Hagberg (hagberg@lanl.gov)
 """Functions for computing rich-club coefficients."""
 
 import networkx as nx

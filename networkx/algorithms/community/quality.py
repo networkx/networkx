@@ -1,11 +1,3 @@
-# quality.py - functions for measuring partitions of a graph
-#
-# Copyright 2015-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for measuring the quality of a partition (into
 communities).
 

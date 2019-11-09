@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Joel Miller (joel.c.miller.research@gmail.com)
 """Generate graphs with given degree and triangle sequence.
 """
 import networkx as nx

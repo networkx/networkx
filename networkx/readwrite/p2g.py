@@ -31,16 +31,8 @@ edges. Observe that node labeled "c" has an outgoing edge to
 itself. Indeed, self-loops are allowed. Node index starts from 0.
 
 """
-#    Copyright (C) 2008-2012 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx
 from networkx.utils import open_file
-__author__ = '\n'.join(['Willem Ligtenberg (w.p.a.ligtenberg@tue.nl)',
-                        'Aric Hagberg (aric.hagberg@gmail.com)'])
 
 
 @open_file(1, mode='w')

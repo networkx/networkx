@@ -1,9 +1,3 @@
-#    Copyright 2016-2019 NetworkX developers.
-#    Copyright (C) 2016 by
-#    Nishant Nikhil <nishantiam@gmail.com>
-#    All rights reserved.
-#    BSD license.
-
 import networkx as nx
 import networkx.algorithms.bipartite as bipartite
 

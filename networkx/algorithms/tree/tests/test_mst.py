@@ -1,12 +1,4 @@
 # -*- encoding: utf-8 -*-
-# test_mst.py - unit tests for minimum spanning tree functions
-#
-# Copyright 2016-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.tree.mst` module."""
 
 import pytest

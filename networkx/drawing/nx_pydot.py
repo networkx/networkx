@@ -13,15 +13,6 @@ pydot:         https://github.com/erocarrera/pydot
 Graphviz:      https://www.graphviz.org
 DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
-# Author: Aric Hagberg (aric.hagberg@gmail.com)
-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Cecil Curry <leycec@gmail.com>
-#    All rights reserved.
-#    BSD license.
 from locale import getpreferredencoding
 from networkx.utils import open_file
 import networkx as nx

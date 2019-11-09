@@ -1,14 +1,3 @@
-#    Copyright (C) 2010-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Jon Olav Vik <jonovik@gmail.com>
-#          Dan Schult <dschult@colgate.edu>
-#          Aric Hagberg <hagberg@lanl.gov>
-#          Debsankha Manik <dmanik@nld.ds.mpg.de>
 """
 ========================
 Cycle finding algorithms

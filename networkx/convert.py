@@ -8,24 +8,16 @@ Examples
 --------
 Create a graph with a single edge from a dictionary of dictionaries
 
->>> d={0: {1: 1}} # dict-of-dicts single edge (0,1)
->>> G=nx.Graph(d)
+>>> d = {0: {1: 1}}  # dict-of-dicts single edge (0,1)
+>>> G = nx.Graph(d)
 
 See Also
 --------
 nx_agraph, nx_pydot
 """
-#    Copyright (C) 2006-2013 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import warnings
 import networkx as nx
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Dan Schult(dschult@colgate.edu)'])
+
 __all__ = ['to_networkx_graph',
            'from_dict_of_dicts', 'to_dict_of_dicts',
            'from_dict_of_lists', 'to_dict_of_lists',

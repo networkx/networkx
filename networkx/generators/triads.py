@@ -1,14 +1,7 @@
-# triads.py - generators for triad graphs
-#
-# Copyright 2015 NetworkX developers.
+# See https://github.com/networkx/networkx/pull/1474
 # Copyright 2011 Reya Group <http://www.reyagroup.com>
 # Copyright 2011 Alex Levenson <alex@isnotinvain.com>
 # Copyright 2011 Diederik van Liere <diederik.vanliere@rotman.utoronto.ca>
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions that generate the triad graphs, that is, the possible
 digraphs on three nodes.
 

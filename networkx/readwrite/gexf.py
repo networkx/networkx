@@ -1,11 +1,3 @@
-# Copyright (C) 2013-2019 by
-#
-# Authors: Aric Hagberg <hagberg@lanl.gov>
-#          Dan Schult <dschult@colgate.edu>
-#          Pieter Swart <swart@lanl.gov>
-# All rights reserved.
-# BSD license.
-# Based on GraphML NetworkX GraphML reader
 """Read and write graphs in GEXF format.
 
 GEXF (Graph Exchange XML Format) is a language for describing complex

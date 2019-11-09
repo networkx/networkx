@@ -1,5 +1,3 @@
-#    BSD license.
-
 import networkx as nx
 
 __all__ = ['cytoscape_data', 'cytoscape_graph']

@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2011 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
+"""Functions for computing clustering of pairs
+
+"""
+
 import itertools
 import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
+
 __all__ = ['clustering',
            'average_clustering',
            'latapy_clustering',
            'robins_alexander_clustering']
 
-# functions for computing clustering of pairs
 
 
 def cc_dot(nu, nv):

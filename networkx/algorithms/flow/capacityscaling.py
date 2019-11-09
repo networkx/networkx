@@ -3,11 +3,6 @@
 Capacity scaling minimum cost flow algorithm.
 """
 
-__author__ = """ysitu <ysitu@users.noreply.github.com>"""
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
-
 __all__ = ['capacity_scaling']
 
 from itertools import chain

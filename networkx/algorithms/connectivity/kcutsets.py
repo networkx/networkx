@@ -17,8 +17,6 @@ from networkx.algorithms.flow import (
 default_flow_func = edmonds_karp
 
 
-__author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
-
 __all__ = ['all_node_cuts']
 
 

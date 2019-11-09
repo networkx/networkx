@@ -52,15 +52,6 @@ Released under the 3-Clause BSD license::
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>
 """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Add platform dependent shared library path to sys.path
-#
 
 import sys
 if sys.version_info[:2] < (3, 6):

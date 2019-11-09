@@ -1,13 +1,3 @@
-# disjoint_paths.py - Flow based node and edge disjoint paths.
-#
-# Copyright 2017-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Author: Jordi Torrents <jordi.t21@gmail.com>
 """Flow based node and edge disjoint paths."""
 import networkx as nx
 from networkx.exception import NetworkXNoPath

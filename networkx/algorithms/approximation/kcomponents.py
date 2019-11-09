@@ -1,9 +1,5 @@
 """ Fast approximation for k-component structure
 """
-#    Copyright (C) 2015 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    All rights reserved.
-#    BSD license.
 import itertools
 from collections import defaultdict
 from collections.abc import Mapping
@@ -14,8 +10,6 @@ from networkx.utils import not_implemented_for
 
 from networkx.algorithms.approximation import local_node_connectivity
 
-
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>'])
 
 __all__ = ['k_components']
 

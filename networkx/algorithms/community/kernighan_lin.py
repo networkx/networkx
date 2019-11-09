@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-# kernighan_lin.py - Kernighan–Lin bipartition algorithm
-#
-# Copyright 2011 Ben Edwards <bedwards@cs.unm.edu>.
-# Copyright 2011 Aric Hagberg <hagberg@lanl.gov>.
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for computing the Kernighan–Lin bipartition algorithm."""
 
 from collections import defaultdict

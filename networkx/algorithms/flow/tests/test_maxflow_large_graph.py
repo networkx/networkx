@@ -2,10 +2,6 @@
 """Maximum flow algorithms test suite on large graphs.
 """
 
-__author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
-# Copyright (C) 2010 Loïc Séguin-C. <loicseguin@gmail.com>
-# All rights reserved.
-# BSD license.
 import os
 
 import networkx as nx

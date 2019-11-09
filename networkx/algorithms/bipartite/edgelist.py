@@ -22,12 +22,6 @@ Arbitrary data::
 
 For each edge (u, v) the node u is assigned to part 0 and the node v to part 1.
 """
-#    Copyright (C) 2015 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 __all__ = ['generate_edgelist',
            'write_edgelist',
            'parse_edgelist',

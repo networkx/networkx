@@ -1,14 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2006-2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg <aric.hagberg@gmail.com>
-#                        Pieter Swart <swart@lanl.gov>
-#                        Dan Schult <dschult@colgate.edu>
 """
 Generators and functions for bipartite graphs.
 """

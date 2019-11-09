@@ -3,13 +3,6 @@
 Various small and named graphs, together with some compact generators.
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 __all__ = ['make_small_graph',
            'LCF_graph',

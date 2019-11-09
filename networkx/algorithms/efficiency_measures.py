@@ -1,11 +1,3 @@
-# efficiency.py - functions for computing node, edge, and graph efficiency
-#
-# Copyright 2011, 2012, 2013, 2014, 2015 NetworkX developers
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Provides functions for computing the efficiency of nodes and graphs."""
 
 import networkx as nx

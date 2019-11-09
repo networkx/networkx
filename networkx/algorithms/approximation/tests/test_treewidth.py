@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2018 by
-#    Rudolf-Andreas Floren <rudi.floren@gmail.com>
-#    Dominik Meier <dominik.meier@rwth-aachen.de>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
 from networkx.algorithms.approximation import treewidth_min_degree
 from networkx.algorithms.approximation import treewidth_min_fill_in

@@ -1,13 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg <aric.hagberg@gmail.com>
-#          Sérgio Nery Simões <sergionery@gmail.com>
 """
 Compute the shortest paths and path lengths between nodes in the graph.
 

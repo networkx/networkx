@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-# Author: Yuto Yamaguchi <yuto.ymgc@gmail.com>
 """Function for computing Local and global consistency algorithm by Zhou et al.
 
 References

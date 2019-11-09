@@ -1,11 +1,4 @@
 # -*- encoding: utf-8 -*-
-#    Copyright (C) 2015-2019 by
-#        Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>
-#        NetworkX developers
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:      Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>
 """Functions for generating trees."""
 from collections import defaultdict
 

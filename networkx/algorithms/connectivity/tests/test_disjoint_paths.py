@@ -1,11 +1,3 @@
-# test_disjoint_paths.py - Tests for flow based node and edge disjoint paths.
-#
-# Copyright 2016 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 import pytest
 
 import networkx as nx

@@ -1,12 +1,4 @@
-# coding=utf8
-#    Copyright (C) 2018 by
-#    Pranay Kanwar <pranay.kanwar@gmail.com>
-#    All rights reserved.
-#    BSD license.
-#
 """Percolation centrality measures."""
-
-__author__ = """\n""".join(['Pranay Kanwar <pranay.kanwar@gmail.com>'])
 
 import networkx as nx
 

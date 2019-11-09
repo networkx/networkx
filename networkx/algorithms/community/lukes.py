@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-# lukes.py - Lukes tree partitioning algorithm
-# Author: Federico Rosato <federico.rosato@supsi.ch>
 """Lukes Algorithm for exact optimal weighted tree partitioning."""
 
 from copy import deepcopy

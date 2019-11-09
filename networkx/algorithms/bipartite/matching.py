@@ -1,13 +1,3 @@
-# matching.py - bipartite graph maximum matching algorithms
-#
-# Copyright 2015 Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>,
-# Copyright 2019 Søren Fuglede Jørgensen
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
 # This module uses material from the Wikipedia article Hopcroft--Karp algorithm
 # <https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm>, accessed on
 # January 3, 2015, which is released under the Creative Commons

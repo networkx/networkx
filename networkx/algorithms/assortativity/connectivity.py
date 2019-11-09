@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-#    Copyright (C) 2011 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-#
-# Authors: Jordi Torrents <jtorrents@milnou.net>
-#          Aric Hagberg <hagberg@lanl.gov>
-
 from collections import defaultdict
 
 __all__ = ['average_degree_connectivity',

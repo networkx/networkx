@@ -4,16 +4,9 @@
 Bipartite Graph Algorithms
 ==========================
 """
-#    Copyright (C) 2013-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
 from networkx.algorithms.components import connected_components
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
+
 __all__ = ['is_bipartite',
            'is_bipartite_node_set',
            'color',

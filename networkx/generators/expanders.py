@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-# Copyright 2014 "cheebee7i".
-# Copyright 2014 "alexbrc".
-# Copyright 2014 Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>.
 """Provides explicit constructions of expander graphs.
 
 """

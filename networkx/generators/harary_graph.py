@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2018-2019 by
-#    Weisheng Si <w.si@westernsydney.edu.au>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Weisheng Si (w.si@westernsydney.edu.au)
-#
 """Generators for Harary graphs
 
 This module gives two generators for the Harary graph, which was
