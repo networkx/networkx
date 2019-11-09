@@ -70,10 +70,10 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
 
     Raises
     ------
-    NetworkXNotImplemented : Exception
+    NetworkXNotImplemented
         Raised if the input graph is directed.
 
-    NetworkXError: Exception
+    NetworkXError
         Raised if the input graph is an empty Graph.
 
     Examples

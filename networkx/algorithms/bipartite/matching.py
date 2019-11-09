@@ -85,8 +85,7 @@ def hopcroft_karp_matching(G, top_nodes=None):
 
     Raises
     ------
-    AmbiguousSolution : Exception
-
+    AmbiguousSolution
       Raised if the input bipartite graph is disconnected and no container
       with all nodes in one bipartite set is provided. When determining
       the nodes in each bipartite set more than one valid solution is
@@ -202,8 +201,7 @@ def eppstein_matching(G, top_nodes=None):
 
     Raises
     ------
-    AmbiguousSolution : Exception
-
+    AmbiguousSolution
       Raised if the input bipartite graph is disconnected and no container
       with all nodes in one bipartite set is provided. When determining
       the nodes in each bipartite set more than one valid solution is
@@ -436,8 +434,7 @@ def to_vertex_cover(G, matching, top_nodes=None):
 
     Raises
     ------
-    AmbiguousSolution : Exception
-
+    AmbiguousSolution
       Raised if the input bipartite graph is disconnected and no container
       with all nodes in one bipartite set is provided. When determining
       the nodes in each bipartite set more than one valid solution is
@@ -531,12 +528,10 @@ def minimum_weight_full_matching(G, top_nodes=None, weight='weight'):
 
     Raises
     ------
-    ValueError : Exception
-
+    ValueError
       Raised if the input bipartite graph is not complete.
 
-    ImportError : Exception
-
+    ImportError
       Raised if SciPy is not available.
 
     Notes
