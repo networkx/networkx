@@ -43,17 +43,6 @@ def intersection_graph(sets):
         if 'sets' is string
         if `sets` contains None, empty collection, dict element.
 
-    Examples
-    --------
-        >>> import networkx as nx
-        >>> from networkx.generators.intersection_graph import intersection_graph
-        >>> sets = {{1, 2, 3}, {3, 4}, {4, 5}}
-        >>> G = intersection_graph(sets)
-        >>> G.nodes
-        [(1, 2, 3), (3, 4), (4, 5)]
-        >>> G.edges
-        [((1, 2, 3), (3, 4)), ((3, 4), (4, 5))]
-
     """
 
     if sets is None:
