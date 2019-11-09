@@ -1,11 +1,5 @@
 """Unit tests for pydot drawing functions."""
-try:
-    try:
-        from cStringIO import StringIO
-    except ImportError:
-        from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import StringIO
 import tempfile
 import networkx as nx
 from networkx.testing import assert_graphs_equal

@@ -15,15 +15,6 @@ from math import ceil, sqrt
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-try:
-    from itertools import izip as zip
-except ImportError:
-    pass
-try:
-    range = xrange
-except NameError:
-    pass
-
 
 @not_implemented_for('undirected')
 def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):

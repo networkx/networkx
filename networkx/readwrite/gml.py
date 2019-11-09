@@ -39,13 +39,7 @@ For additional documentation on the GML file format, please see the
 Several example graphs in GML format may be found on Mark Newman's
 `Network data page <http://www-personal.umich.edu/~mejn/netdata/>`_.
 """
-try:
-    try:
-        from cStringIO import StringIO
-    except ImportError:
-        from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import StringIO
 from ast import literal_eval
 from collections import defaultdict
 import networkx as nx
@@ -53,34 +47,10 @@ from networkx.exception import NetworkXError
 from networkx.utils import open_file
 
 import re
-try:
-    import htmlentitydefs
-except ImportError:
-    # Python 3.x
-    import html.entities as htmlentitydefs
+import html.entities as htmlentitydefs
 
 __all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
 
-
-try:
-    long
-except NameError:
-    long = int
-try:
-    unicode
-except NameError:
-    unicode = str
-try:
-    unichr
-except NameError:
-    unichr = chr
-try:
-    literal_eval(r"u'\u4444'")
-except SyntaxError:
-    # Remove 'u' prefixes in unicode literals in Python 3
-    def rtp_fix_unicode(s): return s[1:]
-else:
-    rtp_fix_unicode = None
 
 
 def escape(text):
@@ -114,7 +84,7 @@ def unescape(text):
             except KeyError:
                 return text  # leave unchanged
         try:
-            return chr(code) if code < 256 else unichr(code)
+            return chr(code)
         except (ValueError, OverflowError):
             return text  # leave unchanged
 
@@ -139,10 +109,8 @@ def literal_destringizer(rep):
     ValueError
         If `rep` is not a Python literal.
     """
-    if isinstance(rep, (str, unicode)):
+    if isinstance(rep, str):
         orig_rep = rep
-        if rtp_fix_unicode is not None:
-            rep = rtp_fix_unicode(rep)
         try:
             return literal_eval(rep)
         except SyntaxError:
@@ -278,7 +246,7 @@ def parse_gml(lines, label='label', destringizer=None):
         return line
 
     def filter_lines(lines):
-        if isinstance(lines, (str, unicode)):
+        if isinstance(lines, str):
             lines = decode_line(lines)
             lines = lines.splitlines()
             for line in lines:
@@ -507,14 +475,14 @@ def literal_stringizer(value):
     :func:`networkx.readwrite.gml.literal_destringizer` function.
     """
     def stringize(value):
-        if isinstance(value, (int, long, bool)) or value is None:
+        if isinstance(value, (int, bool)) or value is None:
             if value is True:  # GML uses 1/0 for boolean values.
                 buf.write(str(1))
             elif value is False:
                 buf.write(str(0))
             else:
                 buf.write(str(value))
-        elif isinstance(value, unicode):
+        elif isinstance(value, str):
             text = repr(value)
             if text[0] != 'u':
                 try:
@@ -668,14 +636,14 @@ def generate_gml(G, stringizer=None):
     valid_keys = re.compile('^[A-Za-z][0-9A-Za-z]*$')
 
     def stringize(key, value, ignored_keys, indent, in_list=False):
-        if not isinstance(key, (str, unicode)):
+        if not isinstance(key, str):
             raise NetworkXError('%r is not a string' % (key,))
         if not valid_keys.match(key):
             raise NetworkXError('%r is not a valid key' % (key,))
         if not isinstance(key, str):
             key = str(key)
         if key not in ignored_keys:
-            if isinstance(value, (int, long, bool)):
+            if isinstance(value, (int, bool)):
                 if key == 'label':
                     yield indent + key + ' "' + str(value) + '"'
                 elif value is True:
@@ -720,7 +688,7 @@ def generate_gml(G, stringizer=None):
                     except ValueError:
                         raise NetworkXError(
                             '%r cannot be converted into a string' % (value,))
-                if not isinstance(value, (str, unicode)):
+                if not isinstance(value, str):
                     raise NetworkXError('%r is not a string' % (value,))
                 yield indent + key + ' "' + escape(value) + '"'
 

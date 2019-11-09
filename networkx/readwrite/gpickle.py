@@ -32,10 +32,7 @@ __all__ = ['read_gpickle', 'write_gpickle']
 
 from networkx.utils import open_file
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 
 
 @open_file(1, mode='wb')
