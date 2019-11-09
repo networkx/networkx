@@ -1,11 +1,3 @@
-# test_efficiency.py - unit tests for the efficiency module
-#
-# Copyright 2015-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.efficiency` module."""
 
 import networkx as nx

@@ -1,15 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Richard Penney <rwpenney@users.sourceforge.net>
-#    Michael Fedell <mfedell@jpl.nasa.gov>
-#    Valentino Constantinou <vconstan@jpl.nasa.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg <aric.hagberg@gmail.com>,
-#          Dan Schult <dschult@colgate.edu>
 """
 ******
 Layout

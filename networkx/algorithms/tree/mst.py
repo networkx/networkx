@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2017 NetworkX Developers
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Loïc Séguin-C. <loicseguin@gmail.com>
-#    All rights reserved.
-#    BSD license.
 """
 Algorithms for calculating min/max spanning trees/forests.
 

@@ -3,11 +3,6 @@
 Utility classes and functions for network flow algorithms.
 """
 
-__author__ = """ysitu <ysitu@users.noreply.github.com>"""
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
-
 from collections import deque
 import networkx as nx
 

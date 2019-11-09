@@ -1,18 +1,3 @@
-# breadth_first_search.py - breadth-first traversal of a graph
-#
-# Copyright (C) 2004-2019 NetworkX Developers
-#   Aric Hagberg <hagberg@lanl.gov>
-#   Dan Schult <dschult@colgate.edu>
-#   Pieter Swart <swart@lanl.gov>
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Authors:
-#     Aric Hagberg <aric.hagberg@gmail.com>
-#
 """Basic algorithms for breadth-first searching the nodes of a graph."""
 import networkx as nx
 from collections import deque

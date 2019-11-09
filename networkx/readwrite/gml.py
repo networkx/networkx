@@ -1,12 +1,4 @@
 # encoding: utf-8
-#    Copyright (C) 2008-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """
 Read graphs in GML format.
 

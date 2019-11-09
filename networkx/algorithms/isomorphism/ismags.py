@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 ****************
 ISMAGS Algorithm
@@ -114,7 +112,6 @@ References
     .. [2] https://en.wikipedia.org/wiki/Maximum_common_induced_subgraph
 """
 
-__author__ = 'P C Kroon (p.c.kroon@rug.nl)'
 __all__ = ['ISMAGS']
 
 from collections import defaultdict, Counter

@@ -1,11 +1,3 @@
-# test_structuralholes.py - unit tests for the structuralholes module
-#
-# Copyright 2017 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.structuralholes` module."""
 import math
 import networkx as nx

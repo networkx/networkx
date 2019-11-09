@@ -13,13 +13,6 @@ Format
 http://pyyaml.org/wiki/PyYAML
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 __all__ = ['read_yaml', 'write_yaml']
 

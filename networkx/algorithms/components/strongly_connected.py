@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Eben Kenah
-#          Aric Hagberg (hagberg@lanl.gov)
-#          Christopher Ellison
-#          Ben Edwards (bedwards@cs.unm.edu)
 """Strongly connected components."""
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for

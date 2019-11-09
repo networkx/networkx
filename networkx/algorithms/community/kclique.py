@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2011 by
-#    Conrad Lee <conradlee@gmail.com>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from collections import defaultdict
 import networkx as nx
-__author__ = """\n""".join(['Conrad Lee <conradlee@gmail.com>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
+
 __all__ = ['k_clique_communities']
 
 

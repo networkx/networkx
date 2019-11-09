@@ -1,14 +1,4 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2011-2019 by
-#   Nicholas Mancuso <nick.mancuso@gmail.com>
-#   All rights reserved.
-#   BSD license.
-#   Copyright 2016-2019 NetworkX developers.
-#   NetworkX is distributed under a BSD license
-#
-# Authors:    Nicholas Mancuso (nick.mancuso@gmail.com)
-#             Jeffery Finkelstein <jeffrey.finkelstein@gmail.com>
-#             Dan Schult <dschult@colgate.edu>
 """Functions for computing large cliques."""
 import networkx as nx
 from networkx.utils import not_implemented_for

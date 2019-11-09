@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2010 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author:  Andrey Paramonov <paramon@acdlabs.ru>
 """ Functions measuring similarity using graph edit distance.
 
 The graph edit distance is the number of edge/node changes needed
@@ -23,8 +15,6 @@ alternative GED algorithms, in order to improve the choices available.
 """
 from itertools import product
 import networkx as nx
-
-__author__ = 'Andrey Paramonov <paramon@acdlabs.ru>'
 
 __all__ = [
     'graph_edit_distance',

@@ -1,11 +1,3 @@
-# test_utils.py - unit tests for the community utils module
-#
-# Copyright 2016 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.community.utils` module.
 
 """

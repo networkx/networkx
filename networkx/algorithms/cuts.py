@@ -1,14 +1,4 @@
 # -*- coding: utf-8 -*-
-# cuts.py - functions for computing and evaluating cuts
-#
-# Copyright 2011 Ben Edwards <bedwards@cs.unm.edu>.
-# Copyright 2011 Aric Hagberg <hagberg@lanl.gov>.
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for finding and evaluating cuts in a graph.
 
 """

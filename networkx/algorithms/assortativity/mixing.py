@@ -5,7 +5,7 @@ Mixing matrices for node attributes and degree.
 from networkx.utils import dict_to_numpy_array
 from networkx.algorithms.assortativity.pairs import node_degree_xy, \
     node_attribute_xy
-__author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>'])
+
 __all__ = ['attribute_mixing_matrix',
            'attribute_mixing_dict',
            'degree_mixing_matrix',

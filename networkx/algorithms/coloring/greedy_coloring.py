@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2014 by
-#    Christian Olsson <chro@itu.dk>
-#    Jan Aagaard Meier <jmei@itu.dk>
-#    Henrik Haugbølle <hhau@itu.dk>
-#    Arya McCarthy <admccarthy@smu.edu>
-#    All rights reserved.
-#    BSD license.
 """
 Greedy graph coloring using various strategies.
 """

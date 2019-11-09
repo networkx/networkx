@@ -1,14 +1,3 @@
-#    Copyright(C) 2011-2019 by
-#    Ben Edwards <bedwards@cs.unm.edu>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Konstantinos Karakatsanis <dinoskarakas@gmail.com>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:  Ben Edwards (bedwards@cs.unm.edu)
-#           Aric Hagberg (hagberg@lanl.gov)
-#           Konstantinos Karakatsanis (dinoskarakas@gmail.com)
-#           Jean-Gabriel Young (jean.gabriel.young@gmail.com)
 """Generators for classes of graphs used in studying social networks."""
 import itertools
 import math

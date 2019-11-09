@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-# Author: Yuto Yamaguchi <yuto.ymgc@gmail.com>
 """Function for computing Harmonic function algorithm by Zhu et al.
 
 References

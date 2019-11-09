@@ -1,14 +1,4 @@
 # -*- coding: utf-8 -*-
-# gomory_hu.py - function for computing Gomory Hu trees
-#
-# Copyright 2017-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Author: Jordi Torrents <jordi.t21@gmail.com>
 """
 Gomory-Hu tree of undirected Graphs.
 """

@@ -12,8 +12,6 @@ from networkx.utils import not_implemented_for
 from networkx.algorithms.flow import edmonds_karp
 default_flow_func = edmonds_karp
 
-__author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
-
 __all__ = ['k_components']
 
 

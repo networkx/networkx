@@ -1,14 +1,7 @@
 """Hubs and authorities analysis of graph structure.
 """
-#    Copyright (C) 2008-2012 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#    NetworkX:http://networkx.github.io/
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+
 __all__ = ['hits', 'hits_numpy', 'hits_scipy', 'authority_matrix', 'hub_matrix']
 
 

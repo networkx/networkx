@@ -1,15 +1,5 @@
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Tomas Gavenciak <gavento@ucw.cz>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Tomas Gavenciak <gavento@ucw.cz>
-#          Aric Hagberg <aric.hagberg@lanl.gov>
 """Functions for reading and writing graphs in the *sparse6* format.
 
 The *sparse6* file format is a space-efficient format for large sparse

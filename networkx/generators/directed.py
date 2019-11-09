@@ -1,14 +1,4 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2019 by
-#   Aric Hagberg <hagberg@lanl.gov>
-#   Dan Schult <dschult@colgate.edu>
-#   Pieter Swart <swart@lanl.gov>
-# Copyright (C) 2009 by Willem Ligtenberg <W.P.A.Ligtenberg@tue.nl>
-# All rights reserved.
-# BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Willem Ligtenberg (W.P.A.Ligtenberg@tue.nl)
 """
 Generators for some directed graphs, including growing network (GN) graphs and
 scale-free graphs.

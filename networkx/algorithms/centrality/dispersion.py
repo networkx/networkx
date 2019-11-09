@@ -1,9 +1,5 @@
 from itertools import combinations
 
-__author__ = "\n".join(['Ben Edwards (bedwards@cs.unm.edu)',
-                        'Huston Hedinger (hstn@hdngr.com)',
-                        'Dan Schult (dschult@colgate.edu)'])
-
 __all__ = ['dispersion']
 
 

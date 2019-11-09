@@ -1,10 +1,3 @@
-#    Copyright (C) 2016-2019 by
-#    Minas Gjoka
-#    Balint Tillman
-#    BSD license.
-#
-# Authors:  Minas Gjoka (minas.gjoka@gmail.com)
-#           Balint Tillman (tillman.balint@gmail.com)
 """Generate graphs with a given joint degree and directed joint degree"""
 
 import networkx as nx

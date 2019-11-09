@@ -19,8 +19,6 @@ default_flow_func = edmonds_karp
 from .utils import (build_auxiliary_node_connectivity,
                     build_auxiliary_edge_connectivity)
 
-__author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
-
 __all__ = ['average_node_connectivity',
            'local_node_connectivity',
            'node_connectivity',

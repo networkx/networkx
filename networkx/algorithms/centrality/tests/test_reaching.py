@@ -1,9 +1,3 @@
-#    Copyright (C) 2015-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """Unit tests for the :mod:`networkx.algorithms.centrality.reaching` module."""
 import pytest
 

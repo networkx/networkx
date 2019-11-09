@@ -1,8 +1,3 @@
-#    Copyright (C) 2019 by
-#    Luca Baldesi
-#    BSD license.
-#
-# Author:  Luca Baldesi (baldo.plus@gmail.com)
 """Generates graphs resembling the Internet Autonomous System network"""
 
 import networkx as nx

@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Efraim Rodrigues (efraimnaassom@gmail.com)
 r"""Generators for cographs
 
 A cograph is a graph containing no path on four vertices.

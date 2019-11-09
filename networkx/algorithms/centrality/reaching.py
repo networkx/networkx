@@ -1,10 +1,4 @@
 # -*- encoding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """Functions for computing reaching centrality of a node or a graph."""
 
 import networkx as nx

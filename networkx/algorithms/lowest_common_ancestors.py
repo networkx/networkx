@@ -1,14 +1,3 @@
-# Copyright (C) 2013 by
-#   Alex Roper <aroper@umich.edu>
-# Copyright (C) 2017 by
-#   Aric Hagberg <hagberg@lanl.gov>
-#   Dan Schult <dschult@colgate.edu>
-#   Pieter Swart <swart@lanl.gov>
-#
-#   All rights reserved.
-#   BSD license.
-#
-# Author:  Alex Roper <aroper@umich.edu>
 """Algorithms for finding the lowest common ancestor of trees and DAGs."""
 from collections import defaultdict
 from collections.abc import Mapping, Set

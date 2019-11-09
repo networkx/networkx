@@ -1,14 +1,4 @@
 # -*- encoding: utf-8 -*-
-# test_kernighan_lin.py - unit tests for Kernighan–Lin bipartition algorithm
-#
-# Copyright 2011 Ben Edwards <bedwards@cs.unm.edu>.
-# Copyright 2011 Aric Hagberg <hagberg@lanl.gov>.
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.community.kernighan_lin`
 module.
 

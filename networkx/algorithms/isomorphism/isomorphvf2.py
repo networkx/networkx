@@ -135,14 +135,10 @@ polynomial-time algorithm is known to exist).
 
 """
 
-#    Copyright (C) 2007-2009 by the NetworkX maintainers
-#    All rights reserved.
-#    BSD license.
-
-#    This work was originally coded by Christopher Ellison
-#    as part of the Computational Mechanics Python (CMPy) project.
-#    James P. Crutchfield, principal investigator.
-#    Complexity Sciences Center and Physics Department, UC Davis.
+# This work was originally coded by Christopher Ellison
+# as part of the Computational Mechanics Python (CMPy) project.
+# James P. Crutchfield, principal investigator.
+# Complexity Sciences Center and Physics Department, UC Davis.
 
 import sys
 

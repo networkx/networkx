@@ -1,11 +1,3 @@
-# test_minors.py - unit tests for the minors module
-#
-# Copyright 2015 Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.minors` module."""
 import pytest
 

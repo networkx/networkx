@@ -1,12 +1,3 @@
-# test_matching.py - unit tests for bipartite matching algorithms
-#
-# Copyright 2015 Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>,
-# Copyright 2019 Søren Fuglede Jørgensen
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.bipartite.matching` module."""
 import itertools
 

@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2018 by
-#    Utkarsh Upadhyay <musically.ut@gmail.com>
-#    All rights reserved.
-#    BSD license.
 """
 Equitable coloring of graphs with bounded degree.
 """

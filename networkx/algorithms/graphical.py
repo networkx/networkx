@@ -1,20 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test sequences for graphiness.
 """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import heapq
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)'
-                        'Joel Miller (joel.c.miller.research@gmail.com)'
-                        'Ben Edwards'
-                        'Brian Cloteaux <brian.cloteaux@nist.gov>'])
 
 __all__ = ['is_graphical',
            'is_multigraphical',

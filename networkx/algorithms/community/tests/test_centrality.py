@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-# test_centrality.py - unit tests for algorithms.community.centrality
-#
-# Copyright 2015, 2016 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.community.centrality`
 module.
 

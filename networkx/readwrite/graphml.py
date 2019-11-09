@@ -1,12 +1,3 @@
-#    Copyright (C) 2008-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Salim Fadhley
-#          Aric Hagberg (hagberg@lanl.gov)
 """
 *******
 GraphML

@@ -1,15 +1,6 @@
 # -*- coding: utf-8 -*-
 """Floyd-Warshall algorithm for shortest paths.
 """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg <aric.hagberg@gmail.com>
-#          Miguel Sozinho Ramalho <m.ramalho@fe.up.pt>
 import networkx as nx
 
 __all__ = ['floyd_warshall',

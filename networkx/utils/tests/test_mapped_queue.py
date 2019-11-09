@@ -1,17 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-# priorityq: An object-oriented priority queue with updatable priorities.
-#
-# Copyright 2018 Edward L. Platt
-#
-# This file is part of NetworkX
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Authors:
-#   Edward L. Platt <ed@elplatt.com>
-
 
 from networkx.utils.mapped_queue import MappedQueue
 

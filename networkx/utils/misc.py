@@ -10,16 +10,7 @@ True
 >>> networkx.utils.is_list_of_ints([1, 2, "spam"])
 False
 """
-# Authors:      Aric Hagberg (hagberg@lanl.gov),
-#               Dan Schult(dschult@colgate.edu),
-#               Ben Edwards(bedwards@cs.unm.edu)
 
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from collections import defaultdict
 from collections import deque
 import warnings

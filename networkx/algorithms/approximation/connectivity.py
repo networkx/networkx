@@ -1,15 +1,9 @@
 """ Fast approximation for node connectivity
 """
-#    Copyright (C) 2015 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    All rights reserved.
-#    BSD license.
 import itertools
 from operator import itemgetter
 
 import networkx as nx
-
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>'])
 
 __all__ = ['local_node_connectivity',
            'node_connectivity',

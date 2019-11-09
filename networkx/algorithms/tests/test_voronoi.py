@@ -1,12 +1,3 @@
-# test_voronoi.py - unit tests for the networkx.algorithms.voronoi module
-#
-# Copyright 2016-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-
 import networkx as nx
 from networkx.utils import pairwise
 

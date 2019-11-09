@@ -1,12 +1,4 @@
 # -*- encoding: utf-8 -*-
-# test_coding.py - unit tests for the coding module
-#
-# Copyright 2015-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`~networkx.algorithms.tree.coding` module."""
 from itertools import product
 

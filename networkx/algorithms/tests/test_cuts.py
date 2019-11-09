@@ -1,11 +1,3 @@
-# test_cuts.py - unit tests for the cuts module
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.cuts` module."""
 
 

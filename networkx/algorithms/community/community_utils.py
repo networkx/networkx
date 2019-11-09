@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-# utils.py - helper functions for community-finding algorithms
-#
-# Copyright 2011 Ben Edwards <bedwards@cs.unm.edu>.
-# Copyright 2011 Aric Hagberg <hagberg@lanl.gov>.
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Helper functions for community-finding algorithms."""
 
 __all__ = ['is_partition']

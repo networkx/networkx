@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2011-2019 by
-#   Julien Klaus <julien.klaus@uni-jena.de>
-#   All rights reserved.
-#   BSD license.
-#   Copyright 2016-2019 NetworkX developers.
-#   NetworkX is distributed under a BSD license
-#
-# Authors: Julien Klaus <julien.klaus@uni-jena.de>
 r"""Function for computing the moral graph of a directed graph."""
 
 from networkx.utils import not_implemented_for

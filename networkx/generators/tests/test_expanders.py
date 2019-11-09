@@ -1,6 +1,3 @@
-# Copyright 2014 "cheebee7i".
-# Copyright 2014 "alexbrc".
-# Copyright 2014 Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>.
 """Unit tests for the :mod:`networkx.generators.expanders` module.
 
 """

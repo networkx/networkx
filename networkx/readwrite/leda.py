@@ -10,13 +10,6 @@ See http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fi
 """
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 __all__ = ['read_leda', 'parse_leda']
 

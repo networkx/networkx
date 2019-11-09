@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-#    Copyright (C) 2015-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Haochen Wu (wuhaochen42@gmail.com)
 """Algorithms to calculate reciprocity in a directed graph."""
 from networkx import NetworkXError
 from ..utils import not_implemented_for

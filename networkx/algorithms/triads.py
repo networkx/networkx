@@ -1,20 +1,10 @@
-# triads.py - functions for analyzing triads of a graph
-#
-# Copyright 2015 NetworkX developers.
+# See https://github.com/networkx/networkx/pull/1474
 # Copyright 2011 Reya Group <http://www.reyagroup.com>
 # Copyright 2011 Alex Levenson <alex@isnotinvain.com>
 # Copyright 2011 Diederik van Liere <diederik.vanliere@rotman.utoronto.ca>
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for analyzing triads of a graph."""
 
 from networkx.utils import not_implemented_for
-
-__author__ = '\n'.join(['Alex Levenson (alex@isnontinvain.com)',
-                        'Diederik van Liere (diederik.vanliere@rotman.utoronto.ca)'])
 
 __all__ = ['triadic_census']
 

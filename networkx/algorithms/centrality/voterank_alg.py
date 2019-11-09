@@ -1,14 +1,7 @@
-#   Copyright (C) 2017 by
-#   Fredrik Erlandsson <fredrik.e@gmail.com>
-#   All rights reserved.
-#   BSD license.
-#
 """Algorithm to compute influential seeds in a graph using voterank."""
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['voterank']
-__author__ = """\n""".join(['Fredrik Erlandsson <fredrik.e@gmail.com>',
-                            'Piotr Brodka (piotr.brodka@pwr.edu.pl'])
 
 
 @not_implemented_for('directed')

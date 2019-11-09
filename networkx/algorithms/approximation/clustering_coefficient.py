@@ -1,15 +1,8 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013 by
-#   Fred Morstatter <fred.morstatter@asu.edu>
-#   Jordi Torrents <jtorrents@milnou.net>
-#   All rights reserved.
-#   BSD license.
 from networkx.utils import not_implemented_for
 from networkx.utils import py_random_state
 
 __all__ = ['average_clustering']
-__author__ = """\n""".join(['Fred Morstatter <fred.morstatter@asu.edu>',
-                            'Jordi Torrents <jtorrents@milnou.net>'])
 
 
 @py_random_state(2)

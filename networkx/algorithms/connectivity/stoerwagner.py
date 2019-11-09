@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-# Copyright (C) 2014
-# ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
 """
 Stoer-Wagner minimum cut algorithm.
 """
@@ -13,8 +8,6 @@ import networkx as nx
 from ...utils import BinaryHeap
 from ...utils import not_implemented_for
 from ...utils import arbitrary_element
-
-__author__ = 'ysitu <ysitu@users.noreply.github.com>'
 
 __all__ = ['stoer_wagner']
 

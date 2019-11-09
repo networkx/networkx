@@ -1,11 +1,3 @@
-#    Copyright (C) 2010-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """Current-flow closeness centrality measures."""
 import networkx as nx
 

@@ -1,23 +1,11 @@
 # -*- coding: utf-8 -*-
 """Swap edges in a graph.
 """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 import math
 from networkx.utils import py_random_state
 
 import networkx as nx
-
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)',
-                        'Joel Miller (joel.c.miller.research@gmail.com)',
-                        'Ben Edwards'])
 
 __all__ = ['double_edge_swap',
            'connected_double_edge_swap']

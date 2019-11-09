@@ -29,13 +29,6 @@ tar.gz file. This is why write_versionfile() includes an early escape.
 
 """
 
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-
 import os
 import sys
 import time

@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
-#
-# Author: ysitu <ysitu@users.noreply.github.com>
 """
 Algebraic connectivity and Fiedler vectors of undirected graphs.
 """

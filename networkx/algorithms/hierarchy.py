@@ -2,14 +2,8 @@
 """
 Flow Hierarchy.
 """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-__authors__ = "\n".join(['Ben Edwards (bedwards@cs.unm.edu)'])
+
 __all__ = ['flow_hierarchy']
 
 

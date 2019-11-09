@@ -4,8 +4,7 @@
 from networkx.algorithms.assortativity.mixing import degree_mixing_matrix, \
     attribute_mixing_matrix, numeric_mixing_matrix
 from networkx.algorithms.assortativity.pairs import node_degree_xy
-__author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                       'Oleguer Sagarra <oleguer.sagarra@gmail.com>'])
+
 __all__ = ['degree_pearson_correlation_coefficient',
            'degree_assortativity_coefficient',
            'attribute_assortativity_coefficient',

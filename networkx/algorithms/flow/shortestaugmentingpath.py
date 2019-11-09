@@ -3,11 +3,6 @@
 Shortest augmenting path algorithm for maximum flow problems.
 """
 
-__author__ = """ysitu <ysitu@users.noreply.github.com>"""
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
-
 from collections import deque
 import networkx as nx
 from .utils import build_residual_network, CurrentEdge
