@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Shortest augmenting path algorithm for maximum flow problems.
 """

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import random
 import networkx as nx
 import itertools as it

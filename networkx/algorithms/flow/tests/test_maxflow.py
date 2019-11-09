@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Maximum flow algorithms test suite.
 """
 import pytest

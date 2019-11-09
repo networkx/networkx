@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Algorithms to characterize the number of triangles in a graph."""
 
 from itertools import chain

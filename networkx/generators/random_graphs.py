@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Generators for random graphs.
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Node assortativity coefficients and correlation measures.
 """
 from networkx.algorithms.assortativity.mixing import degree_mixing_matrix, \

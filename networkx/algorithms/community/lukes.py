@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Lukes Algorithm for exact optimal weighted tree partitioning."""
 
 from copy import deepcopy

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ==========================
 Bipartite Graph Algorithms

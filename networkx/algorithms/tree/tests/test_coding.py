@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 """Unit tests for the :mod:`~networkx.algorithms.tree.coding` module."""
 from itertools import product
 

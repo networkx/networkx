@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Flow based connectivity algorithms
 """

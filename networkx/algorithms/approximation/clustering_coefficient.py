@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from networkx.utils import not_implemented_for
 from networkx.utils import py_random_state
 

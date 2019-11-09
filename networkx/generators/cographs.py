@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""Generators for cographs
 
 A cograph is a graph containing no path on four vertices.

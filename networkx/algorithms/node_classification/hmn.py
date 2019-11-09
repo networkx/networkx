@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Function for computing Harmonic function algorithm by Zhu et al.
 
 References

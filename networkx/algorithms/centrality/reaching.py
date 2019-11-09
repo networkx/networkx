@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 """Functions for computing reaching centrality of a node or a graph."""
 
 import networkx as nx

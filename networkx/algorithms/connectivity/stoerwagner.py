@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Stoer-Wagner minimum cut algorithm.
 """

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Label propagation community detection algorithms.
 """

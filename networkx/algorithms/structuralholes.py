@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 """Functions for computing measures of structural holes."""
 
 import networkx as nx

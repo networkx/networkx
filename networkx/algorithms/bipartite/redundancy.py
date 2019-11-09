@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Node redundancy for bipartite graphs."""
 from itertools import combinations
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """One-mode (unipartite) projections of bipartite graphs."""
 import networkx as nx
 from networkx.utils import not_implemented_for

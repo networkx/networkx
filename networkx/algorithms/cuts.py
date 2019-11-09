@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for finding and evaluating cuts in a graph.
 
 """

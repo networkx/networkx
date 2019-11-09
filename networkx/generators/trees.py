@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 """Functions for generating trees."""
 from collections import defaultdict
 

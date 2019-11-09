@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Helper functions for community-finding algorithms."""
 
 __all__ = ['is_partition']

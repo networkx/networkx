@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import networkx as nx
 
 __all__ = ['degree_centrality',

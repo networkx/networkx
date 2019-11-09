@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Load centrality."""
 from operator import itemgetter
 

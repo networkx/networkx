@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Generators and functions for bipartite graphs.
 """

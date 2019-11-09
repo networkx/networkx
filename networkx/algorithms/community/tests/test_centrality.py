@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Unit tests for the :mod:`networkx.algorithms.community.centrality`
 module.
 

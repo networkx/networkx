@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for computing dominating sets in a graph."""
 from itertools import chain
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Swap edges in a graph.
 """
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Algorithms for directed acyclic graphs (DAGs).
 
 Note that most of these functions are only guaranteed to work for DAGs.

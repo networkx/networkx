@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Algorithm to find a maximal (not maximum) independent set.
 

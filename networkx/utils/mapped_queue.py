@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Priority queue class with updatable priorities.
 """
 

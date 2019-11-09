@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Generate graphs with given degree and triangle sequence.
 """
 import networkx as nx

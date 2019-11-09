@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Test sequences for graphiness.
 """
 import heapq

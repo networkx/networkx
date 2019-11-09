@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Algorithms for finding k-edge-connected components and subgraphs.
 

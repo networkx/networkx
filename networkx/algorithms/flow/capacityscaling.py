@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Capacity scaling minimum cost flow algorithm.
 """

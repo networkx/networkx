@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Biconnected components and articulation points."""
 from itertools import chain
 from networkx.utils.decorators import not_implemented_for

@@ -1,4 +1,3 @@
-# encoding: utf-8
 """
 Read graphs in GML format.
 

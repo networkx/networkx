@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for computing large cliques."""
 import networkx as nx
 from networkx.utils import not_implemented_for

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Compute the shortest paths and path lengths between nodes in the graph.
 

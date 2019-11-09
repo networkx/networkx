@@ -1,23 +1,7 @@
-# -*- coding: utf-8 -*-
-#
-# Sphinx documentation build configuration file, created by
-# sphinx-quickstart.py on Sat Mar  8 21:47:50 2008.
-#
-# This file is execfile()d with the current directory set to its containing dir.
-#
-# The contents of this file are pickled, so don't put values in the namespace
-# that aren't pickleable (module imports are okay, they're removed automatically).
-#
-# All configuration values have a default value; values that are commented out
-# serve to show the default value.
-
 from datetime import date
 
 from sphinx_gallery.sorting import ExplicitOrder
 import sphinx_rtd_theme
-
-# If your extensions are in another directory, add it here.
-# These locations are relative to conf.py
 
 # General configuration
 # ---------------------

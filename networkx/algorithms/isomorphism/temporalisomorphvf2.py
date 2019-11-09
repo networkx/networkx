@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 *****************************
 Time-respecting VF2 Algorithm

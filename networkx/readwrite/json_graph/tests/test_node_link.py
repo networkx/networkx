@@ -1,4 +1,3 @@
-#  -*- coding: utf-8 -*-
 import json
 import pytest
 import networkx as nx

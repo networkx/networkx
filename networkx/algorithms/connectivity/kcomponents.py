@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Moody and White algorithm for k-components
 """

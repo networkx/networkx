@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 import pytest
 import networkx as nx
 from networkx.utils import (

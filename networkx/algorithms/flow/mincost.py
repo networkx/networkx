@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Minimum cost flow algorithms on directed connected graphs.
 """

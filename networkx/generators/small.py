@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Various small and named graphs, together with some compact generators.
 

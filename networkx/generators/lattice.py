@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for generating grid graphs and lattices
 
 The :func:`grid_2d_graph`, :func:`triangular_lattice_graph`, and

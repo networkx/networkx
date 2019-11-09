@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for computing rich-club coefficients."""
 
 import networkx as nx

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for computing treewidth decomposition.
 
 Treewidth of an undirected graph is a number associated with the graph.
