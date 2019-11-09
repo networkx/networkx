@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 """
 Functions for identifying isolate (degree zero) nodes.
 """

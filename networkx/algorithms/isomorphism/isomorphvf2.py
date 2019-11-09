@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 *************
 VF2 Algorithm

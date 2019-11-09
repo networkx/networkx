@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Floyd-Warshall algorithm for shortest paths.
 """
 import networkx as nx

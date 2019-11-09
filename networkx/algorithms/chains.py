@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for finding chains in a graph."""
 
 import networkx as nx

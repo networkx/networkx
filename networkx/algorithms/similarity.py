@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """ Functions measuring similarity using graph edit distance.
 
 The graph edit distance is the number of edge/node changes needed

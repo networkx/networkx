@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r""" Computation of graph non-randomness
 """
 

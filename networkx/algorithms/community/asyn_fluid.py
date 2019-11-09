@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Asynchronous Fluid Communities algorithm for community detection."""
 
 from collections import Counter

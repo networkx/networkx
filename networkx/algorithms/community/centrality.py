@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for computing communities based on centrality notions."""
 
 import networkx as nx

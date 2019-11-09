@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Shortest path algorithms for weighed graphs.
 """

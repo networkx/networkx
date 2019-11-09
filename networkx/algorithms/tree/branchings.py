@@ -1,4 +1,3 @@
-# encoding: utf-8
 """
 Algorithms for finding optimum branchings and spanning arborescences.
 

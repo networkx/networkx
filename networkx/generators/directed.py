@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Generators for some directed graphs, including growing network (GN) graphs and
 scale-free graphs.

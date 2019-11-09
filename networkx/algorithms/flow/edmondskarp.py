@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Edmonds-Karp algorithm for maximum flow problems.
 """

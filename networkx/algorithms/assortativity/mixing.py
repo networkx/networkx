@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Mixing matrices for node attributes and degree.
 """

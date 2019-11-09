@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Gomory-Hu tree of undirected Graphs.
 """

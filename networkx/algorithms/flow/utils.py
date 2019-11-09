@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Utility classes and functions for network flow algorithms.
 """

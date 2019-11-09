@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for finding node and edge dominating sets.
 
 A `dominating set`_ for an undirected graph *G* with vertex set *V*

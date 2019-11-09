@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for computing eigenvector centrality."""
 
 from math import sqrt

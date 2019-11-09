@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Generators for Harary graphs
 
 This module gives two generators for the Harary graph, which was

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Provides explicit constructions of expander graphs.
 
 """

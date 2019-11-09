@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Greedy graph coloring using various strategies.
 """

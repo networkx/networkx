@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Highest-label preflow-push algorithm for maximum flow problems.
 """

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Kanevsky all minimum node k cutsets algorithm.
 """

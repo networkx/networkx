@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for computing an approximate minimum weight vertex cover.
 
 A |vertex cover|_ is a subset of nodes such that each edge in the graph

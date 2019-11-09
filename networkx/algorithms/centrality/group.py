@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Group centrality measures."""
 from itertools import combinations
 

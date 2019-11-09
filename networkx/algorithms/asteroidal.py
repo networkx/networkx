@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Algorithms for asteroidal triples and asteroidal numbers in graphs.
 

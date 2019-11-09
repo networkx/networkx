@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Equitable coloring of graphs with bounded degree.
 """

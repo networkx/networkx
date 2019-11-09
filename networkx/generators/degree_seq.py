@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Generate graphs with a given degree sequence or expected degree sequence.
 """
 

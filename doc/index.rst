@@ -1,5 +1,3 @@
-..  -*- coding: utf-8 -*-
-
 .. _contents:
 
 Overview of NetworkX_

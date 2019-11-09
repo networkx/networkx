@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Copyright (c) 2015 – Thomson Licensing, SAS
 
 Redistribution and use in source and binary forms, with or without

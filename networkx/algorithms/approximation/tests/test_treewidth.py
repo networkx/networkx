@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import networkx as nx
 from networkx.algorithms.approximation import treewidth_min_degree
 from networkx.algorithms.approximation import treewidth_min_fill_in

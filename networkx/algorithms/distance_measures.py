@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Graph diameter, radius, eccentricity and other properties."""
 
 import networkx as nx

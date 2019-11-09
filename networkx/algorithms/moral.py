@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""Function for computing the moral graph of a directed graph."""
 
 from networkx.utils import not_implemented_for

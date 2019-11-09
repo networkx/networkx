@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Bridge-finding algorithms."""
 from itertools import chain
 

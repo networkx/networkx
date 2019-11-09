@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import collections
 from heapq import heappush, heappop
 from itertools import count

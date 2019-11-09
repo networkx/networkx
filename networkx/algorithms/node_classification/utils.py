@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 
 def _propagate(P, F, B):

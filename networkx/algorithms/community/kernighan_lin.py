@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for computing the Kernighan–Lin bipartition algorithm."""
 
 from collections import defaultdict

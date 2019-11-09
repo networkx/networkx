@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Shortest paths and path lengths using the A* ("A star") algorithm.
 """
 from heapq import heappush, heappop

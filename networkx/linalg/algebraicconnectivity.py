@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Algebraic connectivity and Fiedler vectors of undirected graphs.
 """

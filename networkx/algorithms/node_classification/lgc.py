@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Function for computing Local and global consistency algorithm by Zhou et al.
 
 References
