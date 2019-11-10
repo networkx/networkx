@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 ===========
 Knuth Miles
@@ -22,14 +21,6 @@ References.
 .. [2] http://www-cs-faculty.stanford.edu/~knuth/sgb.html
 
 """
-# Author: Aric Hagberg (hagberg@lanl.gov)
-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 import re
 import sys
@@ -44,7 +35,8 @@ def miles_graph():
     """
     # open file miles_dat.txt.gz (or miles_dat.txt)
     import gzip
-    fh = gzip.open('knuth_miles.txt.gz', 'r')
+
+    fh = gzip.open("knuth_miles.txt.gz", "r")
 
     G = nx.Graph()
     G.position = {}
@@ -77,33 +69,33 @@ def miles_graph():
     return G
 
 
-if __name__ == '__main__':
+G = miles_graph()
 
-    G = miles_graph()
+print("Loaded miles_dat.txt containing 128 cities.")
+print(f"digraph has {nx.number_of_nodes(G)} nodes with {nx.number_of_edges(G)} edges")
 
-    print("Loaded miles_dat.txt containing 128 cities.")
-    print("digraph has %d nodes with %d edges"
-          % (nx.number_of_nodes(G), nx.number_of_edges(G)))
+# make new graph of cites, edge if less then 300 miles between them
+H = nx.Graph()
+for v in G:
+    H.add_node(v)
+for (u, v, d) in G.edges(data=True):
+    if d["weight"] < 300:
+        H.add_edge(u, v)
 
-    # make new graph of cites, edge if less then 300 miles between them
-    H = nx.Graph()
-    for v in G:
-        H.add_node(v)
-    for (u, v, d) in G.edges(data=True):
-        if d['weight'] < 300:
-            H.add_edge(u, v)
+# draw with matplotlib/pylab
+plt.figure(figsize=(8, 8))
+# with nodes colored by degree sized by population
+node_color = [float(H.degree(v)) for v in H]
+nx.draw(
+    H,
+    G.position,
+    node_size=[G.population[v] for v in H],
+    node_color=node_color,
+    with_labels=False,
+)
 
-    # draw with matplotlib/pylab
-    plt.figure(figsize=(8, 8))
-    # with nodes colored by degree sized by population
-    node_color = [float(H.degree(v)) for v in H]
-    nx.draw(H, G.position,
-            node_size=[G.population[v] for v in H],
-            node_color=node_color,
-            with_labels=False)
+# scale the axes equally
+plt.xlim(-5000, 500)
+plt.ylim(-2000, 3500)
 
-    # scale the axes equally
-    plt.xlim(-5000, 500)
-    plt.ylim(-2000, 3500)
-
-    plt.show()
+plt.show()

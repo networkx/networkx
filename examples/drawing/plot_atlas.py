@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 =====
 Atlas
@@ -7,14 +6,6 @@ Atlas
 Atlas of all graphs of 6 nodes or less.
 
 """
-# Author: Aric Hagberg (hagberg@lanl.gov)
-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 import random
 
@@ -26,13 +17,14 @@ except ImportError:
         import pydot
         from networkx.drawing.nx_pydot import graphviz_layout
     except ImportError:
-        raise ImportError("This example needs Graphviz and either "
-                          "PyGraphviz or pydot.")
+        raise ImportError("This example needs Graphviz and either PyGraphviz or pydot.")
 
 import matplotlib.pyplot as plt
 
 import networkx as nx
-from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic as isomorphic
+from networkx.algorithms.isomorphism.isomorph import (
+    graph_could_be_isomorphic as isomorphic,
+)
 from networkx.generators.atlas import graph_atlas_g
 
 
@@ -72,26 +64,17 @@ def iso(G1, glist):
     return False
 
 
-if __name__ == '__main__':
-    G = atlas6()
+G = atlas6()
 
-    print("graph has %d nodes with %d edges"
-          % (nx.number_of_nodes(G), nx.number_of_edges(G)))
-    print(nx.number_connected_components(G), "connected components")
+print(f"graph has {nx.number_of_nodes(G)} nodes with {nx.number_of_edges(G)} edges")
+print(nx.number_connected_components(G), "connected components")
 
-    plt.figure(1, figsize=(8, 8))
-    # layout graphs with positions using graphviz neato
-    pos = graphviz_layout(G, prog="neato")
-    # color nodes the same in each connected subgraph
-    C = (G.subgraph(c) for c in nx.connected_components(G))
-    for g in C:
-        c = [random.random()] * nx.number_of_nodes(g)  # random color...
-        nx.draw(g,
-                pos,
-                node_size=40,
-                node_color=c,
-                vmin=0.0,
-                vmax=1.0,
-                with_labels=False
-               )
-    plt.show()
+plt.figure(1, figsize=(8, 8))
+# layout graphs with positions using graphviz neato
+pos = graphviz_layout(G, prog="neato")
+# color nodes the same in each connected subgraph
+C = (G.subgraph(c) for c in nx.connected_components(G))
+for g in C:
+    c = [random.random()] * nx.number_of_nodes(g)  # random color...
+    nx.draw(g, pos, node_size=40, node_color=c, vmin=0.0, vmax=1.0, with_labels=False)
+plt.show()

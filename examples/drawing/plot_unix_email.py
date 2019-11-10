@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 ==========
 Unix Email
@@ -17,14 +16,6 @@ The sample unix email mailbox called "unix_email.mbox" may be found here:
 https://raw.githubusercontent.com/networkx/networkx/master/examples/drawing/unix_email.mbox
 
 """
-# Author: Aric Hagberg (hagberg@lanl.gov)
-
-#    Copyright (C) 2005-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 from email.utils import getaddresses, parseaddr
 import mailbox
@@ -44,13 +35,13 @@ def mbox_graph():
 
     # parse each messages and build graph
     for msg in mbox:  # msg is python email.Message.Message object
-        (source_name, source_addr) = parseaddr(msg['From'])  # sender
+        (source_name, source_addr) = parseaddr(msg["From"])  # sender
         # get all recipients
         # see https://docs.python.org/3/library/email.html
-        tos = msg.get_all('to', [])
-        ccs = msg.get_all('cc', [])
-        resent_tos = msg.get_all('resent-to', [])
-        resent_ccs = msg.get_all('resent-cc', [])
+        tos = msg.get_all("to", [])
+        ccs = msg.get_all("cc", [])
+        resent_tos = msg.get_all("resent-to", [])
+        resent_ccs = msg.get_all("resent-cc", [])
         all_recipients = getaddresses(tos + ccs + resent_tos + resent_ccs)
         # now add the edges for this mail message
         for (target_name, target_addr) in all_recipients:
@@ -59,14 +50,12 @@ def mbox_graph():
     return G
 
 
-if __name__ == '__main__':
+G = mbox_graph()
 
-    G = mbox_graph()
+# print edges with message subject
+for (u, v, d) in G.edges(data=True):
+    print(f"From: {u} To: {v} Subject: {d['message']['Subject']}")
 
-    # print edges with message subject
-    for (u, v, d) in G.edges(data=True):
-        print("From: %s To: %s Subject: %s" % (u, v, d['message']["Subject"]))
-
-    pos = nx.spring_layout(G, iterations=10)
-    nx.draw(G, pos, node_size=0, alpha=0.4, edge_color='r', font_size=16, with_labels=True)
-    plt.show()
+pos = nx.spring_layout(G, iterations=10)
+nx.draw(G, pos, node_size=0, alpha=0.4, edge_color="r", font_size=16, with_labels=True)
+plt.show()
