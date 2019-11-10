@@ -36,10 +36,10 @@ def is_semiconnected(G, topo_order=None):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is undirected.
 
-    NetworkXPointlessConcept :
+    NetworkXPointlessConcept
         If the graph is empty.
 
     Examples

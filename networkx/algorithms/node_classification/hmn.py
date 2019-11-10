@@ -34,14 +34,15 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     label_name : string
         name of target labels to predict
 
-    Raises
-    ----------
-    `NetworkXError` if no nodes on `G` has `label_name`.
-
     Returns
     ----------
     predicted : array, shape = [n_samples]
         Array of predicted labels
+
+    Raises
+    ----------
+    NetworkXError
+        If no nodes on `G` has `label_name`.
 
     Examples
     --------

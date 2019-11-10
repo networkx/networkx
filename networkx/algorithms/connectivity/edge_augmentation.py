@@ -197,10 +197,10 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
 
     Raises
     ------
-    NetworkXUnfeasible:
+    NetworkXUnfeasible
         If partial is False and no k-edge-augmentation exists.
 
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If the input graph is directed or a multigraph.
 
     ValueError:
@@ -424,7 +424,7 @@ def one_edge_augmentation(G, avail=None, weight=None, partial=False):
 
     Raises
     ------
-    NetworkXUnfeasible:
+    NetworkXUnfeasible
         If partial is False and no one-edge-augmentation exists.
 
     Notes
@@ -474,7 +474,7 @@ def bridge_augmentation(G, avail=None, weight=None):
 
     Raises
     ------
-    NetworkXUnfeasible:
+    NetworkXUnfeasible
         If no bridge-augmentation exists.
 
     Notes

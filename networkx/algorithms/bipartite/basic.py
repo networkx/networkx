@@ -34,11 +34,12 @@ def color(G):
     Returns
     -------
     color : dictionary
-       A dictionary keyed by node with a 1 or 0 as data for each node color.
+        A dictionary keyed by node with a 1 or 0 as data for each node color.
 
     Raises
     ------
-    exc:`NetworkXError` if the graph is not two-colorable.
+    NetworkXError
+        If the graph is not two-colorable.
 
     Examples
     --------

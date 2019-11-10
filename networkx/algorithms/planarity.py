@@ -849,7 +849,7 @@ class PlanarEmbedding(nx.DiGraph):
 
         Raises
         ------
-        nx.NetworkXException
+        NetworkXException
             This exception is raised with a short explanation if the
             PlanarEmbedding is invalid.
         """
@@ -912,7 +912,7 @@ class PlanarEmbedding(nx.DiGraph):
 
         Raises
         ------
-        nx.NetworkXException
+        NetworkXException
             If the reference_neighbor does not exist.
 
         See Also
@@ -954,7 +954,7 @@ class PlanarEmbedding(nx.DiGraph):
 
         Raises
         ------
-        nx.NetworkXException
+        NetworkXException
             If the reference_neighbor does not exist.
 
         See Also

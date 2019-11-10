@@ -36,7 +36,7 @@ def weakly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
 
     Examples
@@ -88,7 +88,7 @@ def number_weakly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
 
     See Also
@@ -128,7 +128,7 @@ def is_weakly_connected(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
 
     See Also
