@@ -38,7 +38,7 @@ def voterank(G, number_of_nodes=None, max_iter=10000):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is digraph.
 
     References

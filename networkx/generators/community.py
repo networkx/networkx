@@ -162,7 +162,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
 
     Raises
     ------
-    NetworkXError:
+    NetworkXError
      If p is not in [0,1]
 
     Examples
@@ -291,7 +291,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
 
     Raises
     ------
-    NetworkXError:
+    NetworkXError
       If p_in,p_out are not in [0,1] or
 
     Examples

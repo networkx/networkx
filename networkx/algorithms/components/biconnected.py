@@ -43,7 +43,7 @@ def is_biconnected(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is not undirected.
 
     Examples
@@ -119,7 +119,7 @@ def biconnected_component_edges(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is not undirected.
 
     Examples
@@ -193,7 +193,7 @@ def biconnected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is not undirected.
 
     See Also
@@ -287,7 +287,7 @@ def articulation_points(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is not undirected.
 
     Examples

@@ -921,7 +921,7 @@ def planar_layout(G, scale=1, center=None, dim=2):
 
     Raises
     ------
-    nx.NetworkXException
+    NetworkXException
         If G is not planar
 
     Examples
@@ -981,6 +981,7 @@ def spiral_layout(G, scale=1, center=None, dim=2,
     -------
     ValueError
         If dim != 2
+
     Examples
     --------
     >>> G = nx.path_graph(4)

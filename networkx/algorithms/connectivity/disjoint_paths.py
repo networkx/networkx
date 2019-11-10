@@ -82,10 +82,10 @@ def edge_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
 
     Raises
     ------
-    NetworkXNoPath : exception
+    NetworkXNoPath
         If there is no path between source and target.
 
-    NetworkXError : exception
+    NetworkXError
         If source or target are not in the graph G.
 
     See also
@@ -284,10 +284,10 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
 
     Raises
     ------
-    NetworkXNoPath : exception
+    NetworkXNoPath
         If there is no path between source and target.
 
-    NetworkXError : exception
+    NetworkXError
         If source or target are not in the graph G.
 
     Examples

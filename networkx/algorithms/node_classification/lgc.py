@@ -38,14 +38,15 @@ def local_and_global_consistency(G, alpha=0.99,
     label_name : string
         Name of target labels to predict
 
-    Raises
-    ----------
-    `NetworkXError` if no nodes on `G` has `label_name`.
-
     Returns
     ----------
     predicted : array, shape = [n_samples]
         Array of predicted labels
+
+    Raises
+    ------
+    NetworkXError
+        If no nodes on `G` has `label_name`.
 
     Examples
     --------

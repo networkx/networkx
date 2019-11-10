@@ -307,7 +307,7 @@ def _bidirectional_shortest_path(G, source, target, exclude):
 
     Raises
     ------
-    NetworkXNoPath: exception
+    NetworkXNoPath
         If there is no path or if nodes are adjacent and have only one path
         between them
 

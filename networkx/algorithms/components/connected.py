@@ -38,7 +38,7 @@ def connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is directed.
 
     Examples
@@ -119,7 +119,7 @@ def is_connected(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is directed.
 
     Examples
@@ -166,7 +166,7 @@ def node_connected_component(G, n):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is directed.
 
     See Also

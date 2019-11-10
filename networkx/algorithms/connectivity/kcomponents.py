@@ -47,7 +47,7 @@ def k_components(G, flow_func=None):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If the input graph is directed.
 
     Examples

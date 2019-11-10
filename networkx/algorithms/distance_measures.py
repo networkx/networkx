@@ -402,16 +402,16 @@ def barycenter(G, weight=None, attr=None, sp=None):
 
     Returns
     -------
-    :class:`list`
+    list
         Nodes of `G` that induce the barycenter of `G`.
 
     Raises
     ------
-    :exc:`networkx.NetworkXNoPath`
+    NetworkXNoPath
         If `G` is disconnected. `G` may appear disconnected to
         :func:`barycenter` if `sp` is given but is missing shortest path
         lengths for any pairs.
-    :exc:`ValueError`
+    ValueError
         If `sp` and `weight` are both given.
 
     See Also
