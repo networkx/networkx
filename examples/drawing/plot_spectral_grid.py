@@ -26,8 +26,8 @@ import networkx as nx
 
 
 options = {
-    'node_color': 'C0',
-    'node_size': 100,
+    "node_color": "C0",
+    "node_size": 100,
 }
 
 G = nx.grid_2d_graph(6, 6)

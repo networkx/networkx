@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 =============
 Write Dotfile
@@ -13,14 +12,6 @@ See https://networkx.github.io/documentation/latest/reference/drawing.html
 for more info.
 
 """
-# Author: Aric Hagberg (hagberg@lanl.gov)
-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 import networkx as nx
 
@@ -30,16 +21,20 @@ import networkx as nx
 try:
     import pygraphviz
     from networkx.drawing.nx_agraph import write_dot
+
     print("using package pygraphviz")
 except ImportError:
     try:
         import pydot
         from networkx.drawing.nx_pydot import write_dot
+
         print("using package pydot")
     except ImportError:
         print()
         print("Both pygraphviz and pydot were not found ")
-        print("see  https://networkx.github.io/documentation/latest/reference/drawing.html")
+        print(
+            "see https://networkx.github.io/documentation/latest/reference/drawing.html"
+        )
         print()
         raise
 

@@ -3,16 +3,9 @@
 Javascript
 ==========
 
-Example of writing JSON format graph data and using the D3 Javascript library to produce an HTML/Javascript drawing.
+Example of writing JSON format graph data and using the D3 Javascript library
+to produce an HTML/Javascript drawing.
 """
-# Author: Aric Hagberg <aric.hagberg@gmail.com>
-
-#    Copyright (C) 2011-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import json
 
 import flask

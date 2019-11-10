@@ -1,7 +1,11 @@
 from datetime import date
-
 from sphinx_gallery.sorting import ExplicitOrder
 import sphinx_rtd_theme
+from warnings import filterwarnings
+
+filterwarnings(
+    "ignore", message="Matplotlib is currently using agg", category=UserWarning
+)
 
 # General configuration
 # ---------------------
@@ -69,7 +73,7 @@ exclude_patterns = ["release/release_template.rst"]
 
 # General substitutions.
 project = "NetworkX"
-copyright = "2004-{}, NetworkX Developers".format(date.today().year)
+copyright = f"2004-{date.today().year}, NetworkX Developers"
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
