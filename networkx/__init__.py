@@ -2,55 +2,10 @@
 NetworkX
 ========
 
-NetworkX is a Python package for the creation, manipulation,
-and study of the structure, dynamics, and functions
-of complex networks.
+NetworkX is a Python package for the creation, manipulation, and study of the
+structure, dynamics, and functions of complex networks.
 
-Website (including documentation)::
-
-    http://networkx.github.io
-
-Mailing list::
-
-    https://groups.google.com/forum/#!forum/networkx-discuss
-
-Source::
-
-    https://github.com/networkx/networkx
-
-Bug reports::
-
-    https://github.com/networkx/networkx/issues
-
-Simple example
---------------
-
-Find the shortest path between two nodes in an undirected graph::
-
-    >>> import networkx as nx
-    >>> G = nx.Graph()
-    >>> G.add_edge('A', 'B', weight=4)
-    >>> G.add_edge('B', 'D', weight=2)
-    >>> G.add_edge('A', 'C', weight=3)
-    >>> G.add_edge('C', 'D', weight=4)
-    >>> nx.shortest_path(G, 'A', 'D', weight='weight')
-    ['A', 'B', 'D']
-
-Bugs
-----
-
-Please report any bugs that you find `here <https://github.com/networkx/networkx/issues>`_.
-Or, even better, fork the repository on GitHub and create a pull request (PR).
-
-License
--------
-
-Released under the 3-Clause BSD license::
-
-   Copyright (C) 2004-2019 NetworkX Developers
-   Aric Hagberg <hagberg@lanl.gov>
-   Dan Schult <dschult@colgate.edu>
-   Pieter Swart <swart@lanl.gov>
+See https://networkx.github.io for complete documentation.
 """
 
 import sys
