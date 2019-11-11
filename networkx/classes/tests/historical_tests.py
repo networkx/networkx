@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Original NetworkX graph tests"""
 import pytest
 import networkx as nx

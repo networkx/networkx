@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import pytest
 import networkx as nx
 from networkx.generators.classic import empty_graph

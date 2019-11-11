@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import networkx as nx
 from networkx.testing.utils import assert_nodes_equal
 

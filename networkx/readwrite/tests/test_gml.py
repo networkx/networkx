@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 from ast import literal_eval
 import codecs

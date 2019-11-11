@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import pytest
 np = pytest.importorskip('numpy')
 scipy = pytest.importorskip('scipy')

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import random
 import pytest
 import networkx as nx
