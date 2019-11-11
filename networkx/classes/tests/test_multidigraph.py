@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import pytest
 from networkx.testing import assert_edges_equal
 import networkx as nx

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import pytest
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 ====================
 Generators - Non Isomorphic Trees

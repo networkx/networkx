@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # https://github.com/scikit-image/scikit-image/blob/master/doc/release/contribs.py
 import subprocess
 import sys

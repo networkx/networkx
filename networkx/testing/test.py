@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-
-
 def run(verbosity=1, doctest=False):
     """Run NetworkX tests.
 
