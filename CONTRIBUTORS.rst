@@ -132,6 +132,45 @@ is partially historical, and now, mostly arbitrary.
 - Erwan Le Merrer
 - Søren Fuglede Jørgensen, GitHub: `fuglede <https://github.com/fuglede>`_
 - Salim BELHADDAD, LinkedIn `<https://www.linkedin.com/in/salymdotme/>`_
+- ysitu 
+- Tomas Gavenciak
+- Luca Baldesi
+- Yuto Yamaguchi
+- James Clough
+- Minas Gjoka
+- Drew Conway
+- Alex Levenson
+- Haochen Wu 
+- Erwan  Le Merrer
+- Alex Roper
+- P C Kroon
+- Christopher Ellison   
+- D. Eppstein
+- Federico Rosato
+- Aitor Almeida
+- Ferran Parés
+- Christian Olsson
+- Fredrik Erlandsson
+- Nanda H Krishna
+- Nicholas Mancuso
+- Fred Morstatter
+- Ollie Glass       
+- Rodrigo Dorantes-Gilardi 
+- Pranay Kanwar
+- Balint Tillman
+- Diederik van Liere
+- Ferdinando Papale
+- Miguel Sozinho Ramalho
+- Brandon Liu
+- Nima Mohammadi
+- Jason Grout
+- Jan Aagaard Meier
+- Henrik Haugbølle
+- Piotr Brodka
+- Sasha Gutfraind
+- Alessandro Luongo
+- Huston Hedinger
+- Oleguer Sagarra
 
 Support
 -------
