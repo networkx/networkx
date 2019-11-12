@@ -238,7 +238,7 @@ class _AntiGraph(nx.Graph):
         try:
             return iter(set(self._adj) - set(self._adj[n]) - set([n]))
         except KeyError:
-            raise NetworkXError("The node %s is not in the graph." % (n,))
+            raise NetworkXError(f"The node {n} is not in the graph.")
 
     class AntiAtlasView(Mapping):
         """An adjacency inner dict for AntiGraph"""

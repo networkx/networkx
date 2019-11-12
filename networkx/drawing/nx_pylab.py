@@ -387,7 +387,7 @@ def draw_networkx_nodes(G, pos,
     try:
         xy = np.asarray([pos[v] for v in nodelist])
     except KeyError as e:
-        raise nx.NetworkXError('Node %s has no position.' % e)
+        raise nx.NetworkXError(f"Node {e} has no position.")
     except ValueError:
         raise nx.NetworkXError('Bad value in node positions.')
 

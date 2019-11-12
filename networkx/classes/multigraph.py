@@ -577,8 +577,7 @@ class MultiGraph(Graph):
         try:
             d = self._adj[u][v]
         except KeyError:
-            raise NetworkXError(
-                "The edge %s-%s is not in the graph." % (u, v))
+            raise NetworkXError(f"The edge {u}-{v} is not in the graph.")
         # remove the edge with specified data
         if key is None:
             d.popitem()

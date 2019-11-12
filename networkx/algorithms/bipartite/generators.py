@@ -56,7 +56,7 @@ def complete_bipartite_graph(n1, n2, create_using=None):
     G.add_nodes_from(top, bipartite=0)
     G.add_nodes_from(bottom, bipartite=1)
     G.add_edges_from((u, v) for u in top for v in bottom)
-    G.graph['name'] = "complete_bipartite_graph(%s,%s)" % (n1, n2)
+    G.graph['name'] = f"complete_bipartite_graph({n1},{n2})"
     return G
 
 
@@ -105,9 +105,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise nx.NetworkXError(
-            'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'
-            % (suma, sumb))
+        raise nx.NetworkXError(f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}")
 
     G = _add_nodes_with_bipartite_label(G, lena, lenb)
 
@@ -179,9 +177,7 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise nx.NetworkXError(
-            'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'
-            % (suma, sumb))
+        raise nx.NetworkXError(f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}")
 
     G = _add_nodes_with_bipartite_label(G, naseq, nbseq)
 
@@ -252,9 +248,7 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise nx.NetworkXError(
-            'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'
-            % (suma, sumb))
+        raise nx.NetworkXError(f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}")
 
     G = _add_nodes_with_bipartite_label(G, lena, lenb)
 
@@ -326,9 +320,7 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise nx.NetworkXError(
-            'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'
-            % (suma, sumb))
+        raise nx.NetworkXError(f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}")
 
     G = _add_nodes_with_bipartite_label(G, naseq, nbseq)
 
@@ -404,7 +396,7 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
         raise nx.NetworkXError("Directed Graph not supported")
 
     if p > 1:
-        raise nx.NetworkXError("probability %s > 1" % (p))
+        raise nx.NetworkXError(f"probability {p} > 1")
 
     naseq = len(aseq)
     G = _add_nodes_with_bipartite_label(G, naseq, 0)
@@ -479,7 +471,7 @@ def random_graph(n, m, p, seed=None, directed=False):
     G = _add_nodes_with_bipartite_label(G, n, m)
     if directed:
         G = nx.DiGraph(G)
-    G.name = "fast_gnp_random_graph(%s,%s,%s)" % (n, m, p)
+    G.name = f"fast_gnp_random_graph({n},{m},{p})"
 
     if p <= 0:
         return G
@@ -564,7 +556,7 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
     G = _add_nodes_with_bipartite_label(G, n, m)
     if directed:
         G = nx.DiGraph(G)
-    G.name = "bipartite_gnm_random_graph(%s,%s,%s)" % (n, m, k)
+    G.name = f"bipartite_gnm_random_graph({n},{m},{k})"
     if n == 1 or m == 1:
         return G
     max_edges = n * m  # max_edges for bipartite networks

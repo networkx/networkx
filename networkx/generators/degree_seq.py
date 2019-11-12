@@ -736,7 +736,7 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
             return DSRG.generate()
         except nx.NetworkXUnfeasible:
             pass
-    raise nx.NetworkXError('failed to generate graph in %d tries' % tries)
+    raise nx.NetworkXError(f"failed to generate graph in {tries} tries")
 
 
 class DegreeSequenceRandomGraph(object):

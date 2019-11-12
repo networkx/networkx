@@ -65,7 +65,7 @@ class TestDegreeCentrality:
         exact = {0: .444, 1: .444, 2: .333, 3: .667, 4: .333,
                  5: .556, 6: .556, 7: .333, 8: .222, 9: .111}
         for n, dc in d.items():
-            assert almost_equal(exact[n], float("%5.3f" % dc))
+            assert almost_equal(exact[n], float(f"{dc:.3f}"))
 
     def test_degree_centrality_4(self):
         d = nx.degree_centrality(self.F)
@@ -74,7 +74,7 @@ class TestDegreeCentrality:
                0.071, 0.429, 0.071, 0.214, 0.214, 0.143, 0.286, 0.214]
         exact = dict(zip(names, dcs))
         for n, dc in d.items():
-            assert almost_equal(exact[n], float("%5.3f" % dc))
+            assert almost_equal(exact[n], float(f"{dc:.3f}"))
 
     def test_indegree_centrality(self):
         d = nx.in_degree_centrality(self.G)

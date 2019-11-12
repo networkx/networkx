@@ -399,7 +399,7 @@ class GraphMLWriter(GraphML):
         try:
             return self.keys[keys_key]
         except KeyError:
-            new_id = "d%i" % len(list(self.keys))
+            new_id = f"d{len(list(self.keys))}"
             self.keys[keys_key] = new_id
             key_kwargs = {"id": new_id,
                           "for": scope,
@@ -680,7 +680,7 @@ class GraphMLReader(GraphML):
         else:
             raise ValueError("Must specify either 'path' or 'string' as kwarg")
         (keys, defaults) = self.find_graphml_keys(self.xml)
-        for g in self.xml.findall("{%s}graph" % self.NS_GRAPHML):
+        for g in self.xml.findall(f"{{{self.NS_GRAPHML}}}graph"):
             yield self.make_graph(g, keys, defaults)
 
     def make_graph(self, graph_xml, graphml_keys, defaults, G=None):
@@ -703,14 +703,14 @@ class GraphMLReader(GraphML):
             if key_for == 'edge':
                 G.graph['edge_default'].update({name: python_type(value)})
         # hyperedges are not supported
-        hyperedge = graph_xml.find("{%s}hyperedge" % self.NS_GRAPHML)
+        hyperedge = graph_xml.find(f"{{{self.NS_GRAPHML}}}hyperedge")
         if hyperedge is not None:
             raise nx.NetworkXError("GraphML reader doesn't support hyperedges")
         # add nodes
-        for node_xml in graph_xml.findall("{%s}node" % self.NS_GRAPHML):
+        for node_xml in graph_xml.findall(f"{{{self.NS_GRAPHML}}}node"):
             self.add_node(G, node_xml, graphml_keys, defaults)
         # add edges
-        for edge_xml in graph_xml.findall("{%s}edge" % self.NS_GRAPHML):
+        for edge_xml in graph_xml.findall(f"{{{self.NS_GRAPHML}}}edge"):
             self.add_edge(G, edge_xml, graphml_keys)
         # add graph data
         data = self.decode_data_elements(graphml_keys, graph_xml)
@@ -730,7 +730,7 @@ class GraphMLReader(GraphML):
         """Add a node to the graph.
         """
         # warn on finding unsupported ports tag
-        ports = node_xml.find("{%s}port" % self.NS_GRAPHML)
+        ports = node_xml.find(f"{{{self.NS_GRAPHML}}}port")
         if ports is not None:
             warnings.warn("GraphML port tag not supported.")
         # find the node by id and cast it to the appropriate type
@@ -740,14 +740,14 @@ class GraphMLReader(GraphML):
         G.add_node(node_id, **data)
         # get child nodes
         if node_xml.attrib.get('yfiles.foldertype') == 'group':
-            graph_xml = node_xml.find("{%s}graph" % self.NS_GRAPHML)
+            graph_xml = node_xml.find(f"{{{self.NS_GRAPHML}}}graph")
             self.make_graph(graph_xml, graphml_keys, defaults, G)
 
     def add_edge(self, G, edge_element, graphml_keys):
         """Add an edge to the graph.
         """
         # warn on finding unsupported ports tag
-        ports = edge_element.find("{%s}port" % self.NS_GRAPHML)
+        ports = edge_element.find(f"{{{self.NS_GRAPHML}}}port")
         if ports is not None:
             warnings.warn("GraphML port tag not supported.")
 
@@ -787,13 +787,13 @@ class GraphMLReader(GraphML):
     def decode_data_elements(self, graphml_keys, obj_xml):
         """Use the key information to decode the data XML if present."""
         data = {}
-        for data_element in obj_xml.findall("{%s}data" % self.NS_GRAPHML):
+        for data_element in obj_xml.findall(f"{{{self.NS_GRAPHML}}}data"):
             key = data_element.get("key")
             try:
                 data_name = graphml_keys[key]['name']
                 data_type = graphml_keys[key]['type']
             except KeyError:
-                raise nx.NetworkXError("Bad GraphML data: no key %s" % key)
+                raise nx.NetworkXError(f"Bad GraphML data: no key {key}")
             text = data_element.text
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element)) == 0:
@@ -808,21 +808,21 @@ class GraphMLReader(GraphML):
                 # Assume yfiles as subelements, try to extract node_label
                 node_label = None
                 for node_type in ['ShapeNode', 'SVGNode', 'ImageNode']:
-                    pref = "{%s}%s/{%s}" % (self.NS_Y, node_type, self.NS_Y)
-                    geometry = data_element.find("%sGeometry" % pref)
+                    pref = f"{{{self.NS_Y}}}{node_type}/{{{self.NS_Y}}}"
+                    geometry = data_element.find(f"{pref}Geometry")
                     if geometry is not None:
                         data['x'] = geometry.get('x')
                         data['y'] = geometry.get('y')
                     if node_label is None:
-                        node_label = data_element.find("%sNodeLabel" % pref)
+                        node_label = data_element.find(f"{pref}NodeLabel")
                 if node_label is not None:
                     data['label'] = node_label.text
 
                 # check all the different types of edges avaivable in yEd.
                 for e in ['PolyLineEdge', 'SplineEdge', 'QuadCurveEdge',
                           'BezierEdge', 'ArcEdge']:
-                    pref = "{%s}%s/{%s}" % (self.NS_Y, e, self.NS_Y)
-                    edge_label = data_element.find("%sEdgeLabel" % pref)
+                    pref = f"{{{self.NS_Y}}}{e}/{{{self.NS_Y}}}"
+                    edge_label = data_element.find(f"{pref}EdgeLabel")
                     if edge_label is not None:
                         break
 
@@ -835,7 +835,7 @@ class GraphMLReader(GraphML):
         """
         graphml_keys = {}
         graphml_key_defaults = {}
-        for k in graph_element.findall("{%s}key" % self.NS_GRAPHML):
+        for k in graph_element.findall(f"{{{self.NS_GRAPHML}}}key"):
             attr_id = k.get("id")
             attr_type = k.get('attr.type')
             attr_name = k.get("attr.name")
@@ -845,14 +845,14 @@ class GraphMLReader(GraphML):
                 attr_type = 'yfiles'
             if attr_type is None:
                 attr_type = "string"
-                warnings.warn("No key type for id %s. Using string" % attr_id)
+                warnings.warn(f"No key type for id {attr_id}. Using string")
             if attr_name is None:
-                raise nx.NetworkXError("Unknown key for id %s." % attr_id)
+                raise nx.NetworkXError(f"Unknown key for id {attr_id}.")
             graphml_keys[attr_id] = {"name": attr_name,
                                      "type": self.python_type[attr_type],
                                      "for": k.get("for")}
             # check for "default" subelement of key element
-            default = k.find("{%s}default" % self.NS_GRAPHML)
+            default = k.find(f"{{{self.NS_GRAPHML}}}default")
             if default is not None:
                 graphml_key_defaults[attr_id] = default.text
         return graphml_keys, graphml_key_defaults

@@ -516,7 +516,6 @@ class DiGraphMatcher(GraphMatcher):
 
     Suitable for DiGraph and MultiDiGraph instances.
     """
-#    __doc__ += "Notes\n%s-----" % (indent,) + sources.replace('\n','\n'+indent)
 
     def __init__(self, G1, G2):
         """Initialize DiGraphMatcher.

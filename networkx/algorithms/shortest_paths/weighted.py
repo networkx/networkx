@@ -229,8 +229,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     try:
         return length[target]
     except KeyError:
-        raise nx.NetworkXNoPath(
-            "Node %s not reachable from %s" % (target, source))
+        raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
 
 def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
@@ -1183,7 +1182,7 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     In NetworkX v2.2 this changed to the source node having predecessor `[]`
     """
     if source not in G:
-        raise nx.NodeNotFound("Node %s is not found in the graph" % source)
+        raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
     if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
@@ -1418,8 +1417,7 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
     try:
         return length[target]
     except KeyError:
-        raise nx.NetworkXNoPath(
-            "node %s not reachable from %s" % (target, source))
+        raise nx.NetworkXNoPath(f"node {target} not reachable from {source}")
 
 
 def single_source_bellman_ford_path(G, source, weight='weight'):
@@ -1594,7 +1592,7 @@ def single_source_bellman_ford(G, source, target=None, weight='weight'):
     try:
         return (dist[target], paths[target])
     except KeyError:
-        msg = "Node %s not reachable from %s" % (target, source)
+        msg = f"Node {target} not reachable from {source}"
         raise nx.NetworkXNoPath(msg)
 
 
@@ -1758,7 +1756,7 @@ def goldberg_radzik(G, source, weight='weight'):
 
     """
     if source not in G:
-        raise nx.NodeNotFound("Node %s is not found in the graph" % source)
+        raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
     if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
@@ -2069,7 +2067,7 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
                         revpath = paths[1][w][:]
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
-    raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 
 def johnson(G, weight='weight'):
