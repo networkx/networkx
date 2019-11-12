@@ -357,8 +357,8 @@ def k_corona(G, k, core_number=None):
 def k_truss(G, k):
     """Returns the k-truss of `G`.
 
-    The k-truss is the maximal subgraph of `G` which contains at least three
-    vertices where every edge is incident to at least `k` triangles.
+    The k-truss is the maximal induced subgraph of `G` which contains at least
+    three vertices where every edge is incident to at least `k-2` triangles.
 
     Parameters
     ----------
@@ -387,6 +387,12 @@ def k_truss(G, k):
 
     Graph, node, and edge attributes are copied to the subgraph.
 
+    K-trusses were originally defined in [2] which states that the k-truss
+    is the maximal induced subgraph where each edge belongs to at least
+    `k-2` triangles. A more recent paper, [1], uses a slightly different
+    definition requiring that each edge belong to at least `k` triangles.
+    This implementation uses the original definition of `k-2` triangles.
+
     References
     ----------
     .. [1] Bounds and Algorithms for k-truss. Paul Burkhardt, Vance Faber,
@@ -406,7 +412,7 @@ def k_truss(G, k):
             seen.add(u)
             new_nbrs = [v for v in nbrs_u if v not in seen]
             for v in new_nbrs:
-                if len(nbrs_u & set(H[v])) < k:
+                if (len(nbrs_u & set(H[v])) < (k - 2)):
                     to_drop.append((u, v))
         H.remove_edges_from(to_drop)
         n_dropped = len(to_drop)
@@ -418,7 +424,7 @@ def k_truss(G, k):
 @not_implemented_for('multigraph')
 @not_implemented_for('directed')
 def onion_layers(G):
-    """Returns the layer of each vertex in the onion decomposition of the graph.
+    """Returns the layer of each vertex in an onion decomposition of the graph.
 
     The onion decomposition refines the k-core decomposition by providing
     information on the internal organization of each k-shell. It is usually

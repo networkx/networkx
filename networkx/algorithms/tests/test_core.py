@@ -133,12 +133,18 @@ class TestCore:
         assert sorted(k_truss_subgraph.nodes()) == list(range(1, 21))
         # k=1
         k_truss_subgraph = nx.k_truss(self.G, 1)
-        assert sorted(k_truss_subgraph.nodes()) == list(range(1, 13))
+        assert sorted(k_truss_subgraph.nodes()) == list(range(1, 21))
         # k=2
         k_truss_subgraph = nx.k_truss(self.G, 2)
-        assert sorted(k_truss_subgraph.nodes()) == list(range(1, 9))
+        assert sorted(k_truss_subgraph.nodes()) == list(range(1, 21))
         # k=3
         k_truss_subgraph = nx.k_truss(self.G, 3)
+        assert sorted(k_truss_subgraph.nodes()) == list(range(1, 13))
+
+        k_truss_subgraph = nx.k_truss(self.G, 4)
+        assert sorted(k_truss_subgraph.nodes()) == list(range(1, 9))
+
+        k_truss_subgraph = nx.k_truss(self.G, 5)
         assert sorted(k_truss_subgraph.nodes()) == []
 
     def test_onion_layers(self):
