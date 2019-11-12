@@ -504,7 +504,7 @@ def degree_correlation(creation_sequence):
     if denom == 0:
         if numer == 0:
             return 1
-        raise ValueError("Zero Denominator but Numerator is %s" % numer)
+        raise ValueError(f"Zero Denominator but Numerator is {numer}")
     return numer / float(denom)
 
 
@@ -539,9 +539,9 @@ def shortest_path(creation_sequence, u, v):
 
     verts = [s[0] for s in cs]
     if v not in verts:
-        raise ValueError("Vertex %s not in graph from creation_sequence" % v)
+        raise ValueError(f"Vertex {v} not in graph from creation_sequence")
     if u not in verts:
-        raise ValueError("Vertex %s not in graph from creation_sequence" % u)
+        raise ValueError(f"Vertex {u} not in graph from creation_sequence")
     # Done checking
     if u == v:
         return [u]

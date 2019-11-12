@@ -302,8 +302,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
             # The graph seems to be chordal by now. We update the treewidth
             current_treewidth = max(current_treewidth, len(clique_wanna_be))
             if current_treewidth > treewidth_bound:
-                raise nx.NetworkXTreewidthBoundExceeded(
-                    "treewidth_bound exceeded: %s" % current_treewidth)
+                raise nx.NetworkXTreewidthBoundExceeded(f"treewidth_bound exceeded: {current_treewidth}")
         else:
             # sg is not a clique,
             # look for an edge that is not included in sg

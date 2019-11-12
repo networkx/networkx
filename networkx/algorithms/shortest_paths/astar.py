@@ -126,7 +126,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             enqueued[neighbor] = ncost, h
             push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
-    raise nx.NetworkXNoPath("Node %s not reachable from %s" % (target, source))
+    raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
 
 def astar_path_length(G, source, target, heuristic=None, weight='weight'):

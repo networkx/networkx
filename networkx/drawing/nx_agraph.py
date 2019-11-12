@@ -277,7 +277,7 @@ def pygraphviz_layout(G, prog='neato', root=None, args=''):
         raise ImportError('requires pygraphviz ',
                           'http://pygraphviz.github.io/')
     if root is not None:
-        args += "-Groot=%s" % root
+        args += f"-Groot={root}"
     A = to_agraph(G)
     A.layout(prog=prog, args=args)
     node_pos = {}
@@ -408,9 +408,9 @@ def view_pygraphviz(G, edgelabel=None, prog='dot', args='',
     if path is None:
         ext = 'png'
         if suffix:
-            suffix = '_%s.%s' % (suffix, ext)
+            suffix = f"_{suffix}.{ext}"
         else:
-            suffix = '.%s' % (ext,)
+            suffix = f".{ext}"
         path = tempfile.NamedTemporaryFile(suffix=suffix, delete=False)
     else:
         # Assume the decorator worked and it is a file-object.

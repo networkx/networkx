@@ -326,9 +326,9 @@ def _triangles(G, e):
     """ Return list of all triangles containing edge e"""
     u, v = e
     if u not in G:
-        raise nx.NetworkXError("Vertex %s not in graph" % u)
+        raise nx.NetworkXError(f"Vertex {u} not in graph")
     if v not in G[u]:
-        raise nx.NetworkXError("Edge (%s, %s) not in graph" % (u, v))
+        raise nx.NetworkXError(f"Edge ({u}, {v}) not in graph")
     triangle_list = []
     for x in G[u]:
         if x in G[v]:
@@ -363,10 +363,10 @@ def _odd_triangle(G, T):
     """
     for u in T:
         if u not in G.nodes():
-            raise nx.NetworkXError("Vertex %s not in graph" % u)
+            raise nx.NetworkXError(f"Vertex {u} not in graph")
     for e in list(combinations(T, 2)):
         if e[0] not in G[e[1]]:
-            raise nx.NetworkXError("Edge (%s, %s) not in graph" % (e[0], e[1]))
+            raise nx.NetworkXError(f"Edge ({e[0]}, {e[1]}) not in graph")
 
     T_neighbors = defaultdict(int)
     for t in T:

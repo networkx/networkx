@@ -74,10 +74,9 @@ def resource_allocation_index(G, ebunch=None):
     >>> G = nx.complete_graph(5)
     >>> preds = nx.resource_allocation_index(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %.8f' % (u, v, p)
-    ...
-    '(0, 1) -> 0.75000000'
-    '(2, 3) -> 0.75000000'
+    ...     print(f'({u}, {v}) -> {p:.8f}')
+    (0, 1) -> 0.75000000
+    (2, 3) -> 0.75000000
 
     References
     ----------
@@ -128,10 +127,9 @@ def jaccard_coefficient(G, ebunch=None):
     >>> G = nx.complete_graph(5)
     >>> preds = nx.jaccard_coefficient(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %.8f' % (u, v, p)
-    ...
-    '(0, 1) -> 0.60000000'
-    '(2, 3) -> 0.60000000'
+    ...     print(f'({u}, {v}) -> {p:.8f}')
+    (0, 1) -> 0.60000000
+    (2, 3) -> 0.60000000
 
     References
     ----------
@@ -186,10 +184,9 @@ def adamic_adar_index(G, ebunch=None):
     >>> G = nx.complete_graph(5)
     >>> preds = nx.adamic_adar_index(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %.8f' % (u, v, p)
-    ...
-    '(0, 1) -> 2.16404256'
-    '(2, 3) -> 2.16404256'
+    ...     print(f'({u}, {v}) -> {p:.8f}')
+    (0, 1) -> 2.16404256
+    (2, 3) -> 2.16404256
 
     References
     ----------
@@ -239,10 +236,9 @@ def preferential_attachment(G, ebunch=None):
     >>> G = nx.complete_graph(5)
     >>> preds = nx.preferential_attachment(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %d' % (u, v, p)
-    ...
-    '(0, 1) -> 16'
-    '(2, 3) -> 16'
+    ...     print(f'({u}, {v}) -> {p}')
+    (0, 1) -> 16
+    (2, 3) -> 16
 
     References
     ----------
@@ -305,8 +301,8 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
     >>> G.nodes[2]['community'] = 0
     >>> preds = nx.cn_soundarajan_hopcroft(G, [(0, 2)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %d' % (u, v, p)
-    '(0, 2) -> 2'
+    ...     print(f'({u}, {v}) -> {p}')
+    (0, 2) -> 2
 
     References
     ----------
@@ -379,8 +375,8 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
     >>> G.nodes[3]['community'] = 0
     >>> preds = nx.ra_index_soundarajan_hopcroft(G, [(0, 3)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %.8f' % (u, v, p)
-    '(0, 3) -> 0.50000000'
+    ...     print(f'({u}, {v}) -> {p:.8f}')
+    (0, 3) -> 0.50000000
 
     References
     ----------
@@ -455,14 +451,12 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
     >>> G.nodes[4]['community'] = 0
     >>> preds = nx.within_inter_cluster(G, [(0, 4)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %.8f' % (u, v, p)
-    ...
-    '(0, 4) -> 1.99800200'
+    ...     print(f'({u}, {v}) -> {p:.8f}')
+    (0, 4) -> 1.99800200
     >>> preds = nx.within_inter_cluster(G, [(0, 4)], delta=0.5)
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %.8f' % (u, v, p)
-    ...
-    '(0, 4) -> 1.33333333'
+    ...     print(f'({u}, {v}) -> {p:.8f}')
+    (0, 4) -> 1.33333333
 
     References
     ----------

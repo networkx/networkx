@@ -536,27 +536,26 @@ def info(G, n=None):
     """
     info = ''  # append this all to a string
     if n is None:
-        info += "Name: %s\n" % G.name
+        info += f"Name: {G.name}\n"
         type_name = [type(G).__name__]
-        info += "Type: %s\n" % ",".join(type_name)
-        info += "Number of nodes: %d\n" % G.number_of_nodes()
-        info += "Number of edges: %d\n" % G.number_of_edges()
+        info += f"Type: {','.join(type_name)}\n"
+        info += f"Number of nodes: {G.number_of_nodes()}\n"
+        info += f"Number of edges: {G.number_of_edges()}\n"
         nnodes = G.number_of_nodes()
         if len(G) > 0:
             if G.is_directed():
                 deg = sum(d for n, d in G.in_degree()) / float(nnodes)
-                info += "Average in degree: %8.4f\n" % deg
+                info += f"Average in degree: {deg:8.4f}\n"
                 deg = sum(d for n, d in G.out_degree()) / float(nnodes)
-                info += "Average out degree: %8.4f" % deg
+                info += f"Average out degree: {deg:8.4f}"
             else:
                 s = sum(dict(G.degree()).values())
-                info += "Average degree: %8.4f" % (float(s) / float(nnodes))
-
+                info += f"Average degree: {(float(s) / float(nnodes)):8.4f}"
     else:
         if n not in G:
-            raise nx.NetworkXError("node %s not in graph" % (n,))
-        info += "Node % s has the following properties:\n" % n
-        info += "Degree: %d\n" % G.degree(n)
+            raise nx.NetworkXError(f"node {n} not in graph")
+        info += f"Node {n} has the following properties:\n"
+        info += f"Degree: {G.degree(n)}\n"
         info += "Neighbors: "
         info += ' '.join(str(nbr) for nbr in G.neighbors(n))
     return info

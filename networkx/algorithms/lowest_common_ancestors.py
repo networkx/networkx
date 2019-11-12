@@ -64,7 +64,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
         for u, v in pairs:
             for n in (u, v):
                 if n not in G:
-                    msg = "The node %s is not in the digraph." % str(n)
+                    msg = f"The node {str(n)} is not in the digraph."
                     raise nx.NodeNotFound(msg)
             pair_dict[u].add(v)
             pair_dict[v].add(u)
@@ -251,7 +251,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
 
     for n in pairset:
         if n not in G:
-            msg = "The node %s is not in the digraph." % str(n)
+            msg = f"The node {str(n)} is not in the digraph."
             raise nx.NodeNotFound(msg)
 
     # Generate the transitive closure over the dag (not G) of all nodes, and

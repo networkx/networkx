@@ -151,9 +151,9 @@ def edge_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
 
     """
     if s not in G:
-        raise nx.NetworkXError('node %s not in graph' % s)
+        raise nx.NetworkXError(f"node {s} not in graph")
     if t not in G:
-        raise nx.NetworkXError('node %s not in graph' % t)
+        raise nx.NetworkXError(f"node {t} not in graph")
 
     if flow_func is None:
         flow_func = default_flow_func
@@ -346,9 +346,9 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
 
     """
     if s not in G:
-        raise nx.NetworkXError('node %s not in graph' % s)
+        raise nx.NetworkXError(f"node {s} not in graph")
     if t not in G:
-        raise nx.NetworkXError('node %s not in graph' % t)
+        raise nx.NetworkXError(f"node {t} not in graph")
 
     if auxiliary is None:
         H = build_auxiliary_node_connectivity(G)
@@ -360,8 +360,8 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
         raise nx.NetworkXError('Invalid auxiliary digraph.')
 
     # Maximum possible edge disjoint paths
-    possible = min(H.out_degree('%sB' % mapping[s]),
-                   H.in_degree('%sA' % mapping[t]))
+    possible = min(H.out_degree(f'{mapping[s]}B'),
+                   H.in_degree(f'{mapping[t]}A'))
     if not possible:
         raise NetworkXNoPath
 
@@ -375,7 +375,7 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
 
     # The edge disjoint paths in the auxiliary digraph correspond to the node
     # disjoint paths in the original graph.
-    paths_edges = edge_disjoint_paths(H, '%sB' % mapping[s], '%sA' % mapping[t],
+    paths_edges = edge_disjoint_paths(H, f'{mapping[s]}B', f'{mapping[t]}A',
                                       **kwargs)
     for path in paths_edges:
         # Each node in the original graph maps to two nodes in auxiliary graph

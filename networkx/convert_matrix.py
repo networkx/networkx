@@ -334,7 +334,7 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     try:
         eattrs = zip(*[df[col] for col in cols])
     except (KeyError, TypeError) as e:
-        msg = "Invalid edge_attr argument: %s" % edge_attr
+        msg = f"Invalid edge_attr argument: {edge_attr}"
         raise nx.NetworkXError(msg)
     for s, t, attrs in zip(df[source], df[target], eattrs):
         if g.is_multigraph():
@@ -547,13 +547,12 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     G = nx.empty_graph(0, create_using)
     n, m = A.shape
     if n != m:
-        raise nx.NetworkXError("Adjacency matrix is not square.",
-                               "nx,ny=%s" % (A.shape,))
+        raise nx.NetworkXError('Adjacency matrix is not square.', f"nx,ny={A.shape}")
     dt = A.dtype
     try:
         python_type = kind_to_python_type[dt.kind]
     except Exception:
-        raise TypeError("Unknown numpy data type: %s" % dt)
+        raise TypeError(f"Unknown numpy data type: {dt}")
 
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n))
@@ -802,7 +801,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     # From Scipy 1.1.0, asformat will throw a ValueError instead of an
     # AttributeError if the format if not recognized.
     except (AttributeError, ValueError):
-        raise nx.NetworkXError("Unknown sparse matrix format: %s" % format)
+        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}")
 
 
 def _csr_gen_triples(A):
@@ -932,8 +931,7 @@ def from_scipy_sparse_matrix(A, parallel_edges=False, create_using=None,
     G = nx.empty_graph(0, create_using)
     n, m = A.shape
     if n != m:
-        raise nx.NetworkXError(
-            "Adjacency matrix is not square. nx,ny=%s" % (A.shape,))
+        raise nx.NetworkXError(f"Adjacency matrix is not square. nx,ny={A.shape}")
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n))
     # Create an iterable over (u, v, w) triples and for each triple, add an

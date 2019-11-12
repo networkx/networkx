@@ -218,14 +218,14 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     """
     if source not in G:
-        raise nx.NodeNotFound('source node %s not in graph' % source)
+        raise nx.NodeNotFound(f"source node {source} not in graph")
     if target in G:
         targets = {target}
     else:
         try:
             targets = set(target)
         except TypeError:
-            raise nx.NodeNotFound('target node %s not in graph' % target)
+            raise nx.NodeNotFound(f"target node {target} not in graph")
     if source in targets:
         return []
     if cutoff is None:
@@ -371,10 +371,10 @@ def shortest_simple_paths(G, source, target, weight=None):
 
     """
     if source not in G:
-        raise nx.NodeNotFound('source node %s not in graph' % source)
+        raise nx.NodeNotFound(f"source node {source} not in graph")
 
     if target not in G:
-        raise nx.NodeNotFound('target node %s not in graph' % target)
+        raise nx.NodeNotFound(f"target node {target} not in graph")
 
     if weight is None:
         length_func = len
@@ -515,7 +515,7 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
     """
     # does BFS from both source and target and meets in the middle
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
-        raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+        raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
     if target == source:
         return ({target: None}, {source: None}, source)
 
@@ -603,7 +603,7 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
                         # found path
                         return pred, succ, w
 
-    raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 
 def _bidirectional_dijkstra(G, source, target, weight='weight',
@@ -675,7 +675,7 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     shortest_path_length
     """
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
-        raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+        raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
     if source == target:
         return (0, [source])
 
@@ -800,4 +800,4 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
                         revpath = paths[1][w][:]
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
-    raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
