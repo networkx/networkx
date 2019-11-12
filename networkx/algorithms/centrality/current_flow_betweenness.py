@@ -116,7 +116,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     l = 1  # parameter in approximation, adjustable
     k = l * int(np.ceil((cstar / epsilon)**2 * np.log(n)))
     if k > kmax:
-        msg = 'Number random pairs k>kmax (%d>%d) ' % (k, kmax)
+        msg = f"Number random pairs k>kmax ({k}>{kmax}) "
         raise nx.NetworkXError(msg, 'Increase kmax or epsilon')
     cstar2k = cstar / (2 * k)
     for i in range(k):

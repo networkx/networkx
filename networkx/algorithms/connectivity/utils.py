@@ -43,9 +43,9 @@ def build_auxiliary_node_connectivity(G):
 
     for i, node in enumerate(G):
         mapping[node] = i
-        H.add_node('%dA' % i, id=node)
-        H.add_node('%dB' % i, id=node)
-        H.add_edge('%dA' % i, '%dB' % i, capacity=1)
+        H.add_node(f"{i}A", id=node)
+        H.add_node(f"{i}B", id=node)
+        H.add_edge(f"{i}A", f'{i}B', capacity=1)
 
     edges = []
     for (source, target) in G.edges():

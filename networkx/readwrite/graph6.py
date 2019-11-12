@@ -115,7 +115,7 @@ def from_graph6_bytes(string):
     nd = (n * (n - 1) // 2 + 5) // 6
     if len(data) != nd:
         raise NetworkXError(
-            'Expected %d bits but got %d in graph6' % (n * (n - 1) // 2, len(data) * 6))
+            f'Expected {n * (n - 1) // 2} bits but got {len(data) * 6} in graph6')
 
     G = nx.Graph()
     G.add_nodes_from(range(n))

@@ -140,9 +140,9 @@ def dinitz(G, s, t, capacity='capacity', residual=None, value_only=False, cutoff
 
 def dinitz_impl(G, s, t, capacity, residual, cutoff):
     if s not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(s))
+        raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(t))
+        raise nx.NetworkXError(f"node {str(t)} not in graph")
     if s == t:
         raise nx.NetworkXError('source and sink are the same node')
 

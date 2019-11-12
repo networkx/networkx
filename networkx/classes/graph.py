@@ -610,7 +610,7 @@ class Graph(object):
             nbrs = list(adj[n])  # list handles self-loops (allows mutation)
             del self._node[n]
         except KeyError:  # NetworkXError if n not in self
-            raise NetworkXError("The node %s is not in the graph." % (n,))
+            raise NetworkXError(f"The node {n} is not in the graph.")
         for u in nbrs:
             del adj[u][n]   # remove all edges n-u in graph
         del adj[n]          # now remove node
@@ -924,8 +924,7 @@ class Graph(object):
                 u, v = e
                 dd = {}  # doesn't need edge_attr_dict_factory
             else:
-                raise NetworkXError(
-                    "Edge tuple %s must be a 2-tuple or 3-tuple." % (e,))
+                raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
             if u not in self._node:
                 self._adj[u] = self.adjlist_inner_dict_factory()
                 self._node[u] = self.node_attr_dict_factory()
@@ -1002,7 +1001,7 @@ class Graph(object):
             if u != v:  # self-loop needs only one entry removed
                 del self._adj[v][u]
         except KeyError:
-            raise NetworkXError("The edge %s-%s is not in the graph" % (u, v))
+            raise NetworkXError(f"The edge {u}-{v} is not in the graph")
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -1223,7 +1222,7 @@ class Graph(object):
         try:
             return iter(self._adj[n])
         except KeyError:
-            raise NetworkXError("The node %s is not in the graph." % (n,))
+            raise NetworkXError(f"The node {n} is not in the graph.")
 
     @property
     def edges(self):

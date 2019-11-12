@@ -638,8 +638,7 @@ def barabasi_albert_graph(n, m, seed=None):
     """
 
     if m < 1 or m >= n:
-        raise nx.NetworkXError("Barabási–Albert network must have m >= 1"
-                               " and m < n, m = %d, n = %d" % (m, n))
+        raise nx.NetworkXError(f"Barabási–Albert network must have m >= 1 and m < n, m = {m}, n = {n}")
 
     # Add m initial nodes (m0 in barabasi-speak)
     G = empty_graph(m)
@@ -701,14 +700,11 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
     """
 
     if m1 < 1 or m1 >= n:
-        raise nx.NetworkXError("Dual Barabási–Albert network must have m1 >= 1"
-                               " and m1 < n, m1 = %d, n = %d" % (m1, n))
+        raise nx.NetworkXError(f"Dual Barabási–Albert network must have m1 >= 1 and m1 < n, m1 = {m1}, n = {n}")
     if m2 < 1 or m2 >= n:
-        raise nx.NetworkXError("Dual Barabási–Albert network must have m2 >= 1"
-                               " and m2 < n, m2 = %d, n = %d" % (m2, n))
+        raise nx.NetworkXError(f"Dual Barabási–Albert network must have m2 >= 1 and m2 < n, m2 = {m2}, n = {n}")
     if p < 0 or p > 1:
-        raise nx.NetworkXError("Dual Barabási–Albert network must have 0 <= p <= 1,"
-                               "p = %f" % p)
+        raise nx.NetworkXError(f"Dual Barabási–Albert network must have 0 <= p <= 1, p = {p}")
 
     # For simplicity, if p == 0 or 1, just return BA
     if p == 1:
@@ -958,12 +954,10 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
     """
 
     if m < 1 or n < m:
-        raise nx.NetworkXError(
-            "NetworkXError must have m>1 and m<n, m=%d,n=%d" % (m, n))
+        raise nx.NetworkXError(f"NetworkXError must have m>1 and m<n, m={m},n={n}")
 
     if p > 1 or p < 0:
-        raise nx.NetworkXError(
-            "NetworkXError p must be in [0,1], p=%f" % (p))
+        raise nx.NetworkXError(f"NetworkXError p must be in [0,1], p={p}")
 
     G = empty_graph(m)  # add m initial nodes (m0 in barabasi-speak)
     repeated_nodes = list(G.nodes())  # list of existing nodes to sample from
@@ -1177,8 +1171,7 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
         index = seed.randint(0, n - 1)
         zseq[index] = swap.pop()
 
-    raise nx.NetworkXError('Exceeded max (%d) attempts for a valid tree'
-                           ' sequence.' % tries)
+    raise nx.NetworkXError(f"Exceeded max ({tries}) attempts for a valid tree sequence.")
 
 
 @py_random_state(3)

@@ -187,8 +187,7 @@ def to_pydot(N):
         P = pydot.Dot('', graph_type=graph_type, strict=strict,
                       **graph_defaults)
     else:
-        P = pydot.Dot('"%s"' % name, graph_type=graph_type, strict=strict,
-                      **graph_defaults)
+        P = pydot.Dot(f'"{name}"', graph_type=graph_type, strict=strict, **graph_defaults)
     try:
         P.set_node_defaults(**N.graph['node'])
     except KeyError:
@@ -303,12 +302,12 @@ def pydot_layout(G, prog='neato', root=None):
     D = str(D_bytes, encoding=getpreferredencoding())
 
     if D == "":  # no data returned
-        print("Graphviz layout with %s failed" % (prog))
+        print(f"Graphviz layout with {prog} failed")
         print()
         print("To debug what happened try:")
         print("P = nx.nx_pydot.to_pydot(G)")
         print("P.write_dot(\"file.dot\")")
-        print("And then run %s on file.dot" % (prog))
+        print(f"And then run {prog} on file.dot")
         return
 
     # List of one or more "pydot.Dot" instances deserialized from this string.

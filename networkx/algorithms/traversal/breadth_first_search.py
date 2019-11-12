@@ -337,7 +337,7 @@ def descendants_at_distance(G, source, distance):
         The descendants of `source` in `G` at the given `distance` from `source`
     """
     if not G.has_node(source):
-        raise nx.NetworkXError("The node %s is not in the graph." % source)
+        raise nx.NetworkXError(f"The node {source} is not in the graph.")
     current_distance = 0
     queue = {source}
     visited = {source}

@@ -44,7 +44,7 @@ def k_clique_communities(G, k, cliques=None):
        doi:10.1038/nature03607
     """
     if k < 2:
-        raise nx.NetworkXError("k=%d, k must be greater than 1." % k)
+        raise nx.NetworkXError(f"k={k}, k must be greater than 1.")
     if cliques is None:
         cliques = nx.find_cliques(G)
     cliques = [frozenset(c) for c in cliques if len(c) >= k]
