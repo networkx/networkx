@@ -64,7 +64,17 @@ matrix:
       env: TRAVIS_PYTHON_VERSION=3.8
     - python: 3.6
     - python: 3.8
+      env:
+      - OPTIONAL_DEPS=1
+      - PIP_FLAGS="--pre"
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
     - python: pypy3.6-7.1.1
+  allow_failures:
+    - python: 3.8
 
 before_install:
   # prepare the system to install prerequisites or dependencies
