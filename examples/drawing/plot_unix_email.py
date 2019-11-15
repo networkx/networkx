@@ -3,23 +3,22 @@
 Unix Email
 ==========
 
-Create a directed graph, allowing multiple edges and self loops, from
-a unix mailbox.  The nodes are email addresses with links
-that point from the sender to the receivers.  The edge data
-is a Python email.Message object which contains all of
-the email message data.
+Create a directed graph, allowing multiple edges and self loops, from a unix
+mailbox.  The nodes are email addresses with links that point from the sender
+to the receivers.  The edge data is a Python email.Message object which
+contains all of the email message data.
 
-This example shows the power of `DiGraph` to hold edge data
-of arbitrary Python objects (in this case a list of email messages).
+This example shows the power of `DiGraph` to hold edge data of arbitrary Python
+objects (in this case a list of email messages).
+
 
 The sample unix email mailbox called "unix_email.mbox" may be found here:
-https://raw.githubusercontent.com/networkx/networkx/master/examples/drawing/unix_email.mbox
 
+- https://github.com/networkx/networkx/blob/master/examples/drawing/unix_email.mbox
 """
 
 from email.utils import getaddresses, parseaddr
 import mailbox
-import sys
 
 import matplotlib.pyplot as plt
 import networkx as nx

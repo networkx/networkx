@@ -5,7 +5,6 @@ Print Graph
 
 Example subclass of the Graph class.
 """
-from copy import deepcopy
 
 import matplotlib.pyplot as plt
 import networkx as nx

@@ -4,20 +4,18 @@ Lanl Routes
 ===========
 
 Routes to LANL from 186 sites on the Internet.
+
+The data file can be found at:
+
+- https://github.com/networkx/networkx/blob/master/examples/drawing/lanl_routes.edgelist
 """
 
 import matplotlib.pyplot as plt
 import networkx as nx
 
-try:
-    import pygraphviz
-    from networkx.drawing.nx_agraph import graphviz_layout
-except ImportError:
-    try:
-        import pydot
-        from networkx.drawing.nx_pydot import graphviz_layout
-    except ImportError:
-        raise ImportError("This example needs Graphviz and either PyGraphviz or pydot")
+# This example needs Graphviz and either PyGraphviz or pydot
+# from networkx.drawing.nx_pydot import graphviz_layout
+from networkx.drawing.nx_agraph import graphviz_layout
 
 
 def lanl_graph():
@@ -50,7 +48,7 @@ def lanl_graph():
 
 G = lanl_graph()
 
-print("graph has {nx.number_of_nodes(G)} nodes with {nx.number_of_edges(G)} edges")
+print(f"graph has {nx.number_of_nodes(G)} nodes with {nx.number_of_edges(G)} edges")
 print(nx.number_connected_components(G), "connected components")
 
 plt.figure(figsize=(8, 8))
@@ -58,7 +56,7 @@ plt.figure(figsize=(8, 8))
 pos = graphviz_layout(G, prog="twopi", root=0)
 # draw nodes, coloring by rtt ping time
 options = {"with_labels": False, "alpha": 0.5, "node_size": 15}
-nx.draw( G, pos, node_color=[G.rtt[v] for v in G], **options)
+nx.draw(G, pos, node_color=[G.rtt[v] for v in G], **options)
 # adjust the plot limits
 xmax = 1.02 * max(xx for xx, yy in pos.values())
 ymax = 1.02 * max(yy for xx, yy in pos.values())
