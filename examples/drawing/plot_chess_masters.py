@@ -112,7 +112,7 @@ for (u, v, d) in G.edges(data=True):
         wins[v] += 1.0
 try:
     pos = nx.nx_agraph.graphviz_layout(H)
-except:
+except ImportError:
     pos = nx.spring_layout(H, iterations=20)
 
 plt.rcParams["text.usetex"] = False

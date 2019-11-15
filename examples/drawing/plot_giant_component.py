@@ -12,23 +12,12 @@ import math
 import matplotlib.pyplot as plt
 import networkx as nx
 
-try:
-    import pygraphviz
-    from networkx.drawing.nx_agraph import graphviz_layout
+# This example needs Graphviz and either PyGraphviz or pydot.
+# from networkx.drawing.nx_pydot import graphviz_layout as layout
+from networkx.drawing.nx_agraph import graphviz_layout as layout
 
-    layout = graphviz_layout
-except ImportError:
-    try:
-        import pydot
-        from networkx.drawing.nx_pydot import graphviz_layout
-
-        layout = graphviz_layout
-    except ImportError:
-        print(
-            "PyGraphviz and pydot not found;\n"
-            "drawing with spring layout will be slow."
-        )
-        layout = nx.spring_layout
+# If you don't have pygraphviz or pydot, you can do this
+# layout = nx.spring_layout
 
 
 n = 150  # 150 nodes

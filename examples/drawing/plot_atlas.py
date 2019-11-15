@@ -4,20 +4,13 @@ Atlas
 =====
 
 Atlas of all graphs of 6 nodes or less.
-
 """
 
 import random
 
-try:
-    import pygraphviz
-    from networkx.drawing.nx_agraph import graphviz_layout
-except ImportError:
-    try:
-        import pydot
-        from networkx.drawing.nx_pydot import graphviz_layout
-    except ImportError:
-        raise ImportError("This example needs Graphviz and either PyGraphviz or pydot.")
+# This example needs Graphviz and either PyGraphviz or pydot.
+# from networkx.drawing.nx_pydot import graphviz_layout
+from networkx.drawing.nx_agraph import graphviz_layout
 
 import matplotlib.pyplot as plt
 

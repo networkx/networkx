@@ -3,27 +3,23 @@
 Knuth Miles
 ===========
 
-`miles_graph()` returns an undirected graph over the 128 US cities from
-the datafile `miles_dat.txt`. The cities each have location and population
-data.  The edges are labeled with the distance between the two cities.
+`miles_graph()` returns an undirected graph over the 128 US cities from.  The
+cities each have location and population data.  The edges are labeled with the
+distance between the two cities.
 
-This example is described in Section 1.1 in Knuth's book (see [1]_ and [2]_).
+This example is described in Section 1.1 of
+
+    Donald E. Knuth, "The Stanford GraphBase: A Platform for Combinatorial
+    Computing", ACM Press, New York, 1993.
+    http://www-cs-faculty.stanford.edu/~knuth/sgb.html
 
 The data file can be found at:
-https://github.com/networkx/networkx/blob/master/examples/drawing/knuth_miles.txt.gz
 
-References.
------------
-
-.. [1] Donald E. Knuth,
-   "The Stanford GraphBase: A Platform for Combinatorial Computing",
-   ACM Press, New York, 1993.
-.. [2] http://www-cs-faculty.stanford.edu/~knuth/sgb.html
-
+- https://github.com/networkx/networkx/blob/master/examples/drawing/knuth_miles.txt.gz
 """
 
+import gzip
 import re
-import sys
 
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -34,7 +30,6 @@ def miles_graph():
         from the Stanford GraphBase.
     """
     # open file miles_dat.txt.gz (or miles_dat.txt)
-    import gzip
 
     fh = gzip.open("knuth_miles.txt.gz", "r")
 
