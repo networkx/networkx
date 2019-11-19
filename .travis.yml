@@ -65,14 +65,10 @@ matrix:
     - python: 3.6
     - python: 3.8
       env:
-      - OPTIONAL_DEPS=1
       - PIP_FLAGS="--pre"
-      addons:
-        apt:
-          packages:
-          - libgdal-dev
-          - graphviz
     - python: pypy3.6-7.1.1
+      env:
+      - MIN_DEPS=1
 
 before_install:
   # prepare the system to install prerequisites or dependencies
@@ -90,7 +86,10 @@ install:
   - pip install --upgrade pip
   - pip install --retries 3 ${PIP_FLAGS} -r requirements.txt
   - if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
+      pip install --retries 3 ${PIP_FLAGS} -r requirements/optional.txt;
       pip install --retries 3 ${PIP_FLAGS} -r requirements/extras.txt;
+    elif [[ "${MIN_DEPS}" != 1 ]]; then
+      pip install --retries 3 ${PIP_FLAGS} -r requirements/optional.txt;
     fi
   # install networkx
   - printenv PWD

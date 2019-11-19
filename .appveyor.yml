@@ -22,6 +22,7 @@ environment:
     - PYTHON: "C:\\Python38-x64"
       PYTHON_VERSION: "3.8.0"
       PYTHON_ARCH: "64"
+      PIP_FLAGS: "--pre"
 
 install:
   # Install Python (from the official .msi of http://python.org) and pip when
@@ -34,7 +35,8 @@ install:
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
 
   # install required packages
-  - "pip install --cache-dir=%CACHE_DIR% -r requirements.txt"
+  - "pip install --cache-dir=%CACHE_DIR% %PIP_FLAGS% -r requirements.txt"
+  - "pip install --cache-dir=%CACHE_DIR% %PIP_FLAGS% -r requirements/optional.txt"
 
   # Install the build and runtime dependencies of the project.
   # - "%CMD_IN_ENV% pip install --timeout=60 -r requirements.txt"
