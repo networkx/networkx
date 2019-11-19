@@ -70,6 +70,7 @@ class TestGomoryHuTree:
                 cut_value, edge = self.minimum_edge_weight(T, u, v)
                 assert nx.minimum_cut_value(G, u, v) == cut_value
 
+    @pytest.mark.slow
     def test_les_miserables_graph_cutset(self):
         G = nx.les_miserables_graph()
         nx.set_edge_attributes(G, 1, "capacity")

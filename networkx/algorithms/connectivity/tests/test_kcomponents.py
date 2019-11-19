@@ -90,6 +90,7 @@ def _check_connectivity(G, k_components):
             assert K >= k
 
 
+@pytest.mark.slow
 def test_torrents_and_ferraro_graph():
     G = torrents_and_ferraro_graph()
     result = nx.k_components(G)
@@ -105,12 +106,14 @@ def test_torrents_and_ferraro_graph():
     assert all(len(c) == 5 for c in result[4])
 
 
+@pytest.mark.slow
 def test_random_gnp():
     G = nx.gnp_random_graph(50, 0.2, seed=42)
     result = nx.k_components(G)
     _check_connectivity(G, result)
 
 
+@pytest.mark.slow
 def test_shell():
     constructor = [(20, 80, 0.8), (80, 180, 0.6)]
     G = nx.random_shell_graph(constructor, seed=42)

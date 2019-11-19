@@ -123,8 +123,10 @@ html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 html_theme_options = {
-    "canonical_url": "https://networkx.github.io/documentation/stable/"
+    "canonical_url": "https://networkx.github.io/documentation/stable/",
+    "navigation_depth": 3,
 }
+
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths

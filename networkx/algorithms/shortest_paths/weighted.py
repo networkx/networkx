@@ -1160,12 +1160,12 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     >>> sorted(dist.items())
     [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
-    >>> import pytest
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> G[1][2]['weight'] = -7
-    >>> pytest.raises(nx.NetworkXUnbounded, \
-                      nx.bellman_ford_predecessor_and_distance, G, 0)
-    <ExceptionInfo NetworkXUnbounded tblen=3>
+    >>> nx.bellman_ford_predecessor_and_distance(G, 0)
+    Traceback (most recent call last):
+        ...
+    networkx.exception.NetworkXUnbounded: Negative cost cycle detected.
 
     Notes
     -----
@@ -1737,11 +1737,12 @@ def goldberg_radzik(G, source, weight='weight'):
     >>> sorted(dist.items())
     [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
-    >>> import pytest
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> G[1][2]['weight'] = -7
-    >>> pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 0)
-    <ExceptionInfo NetworkXUnbounded tblen=3>
+    >>> nx.goldberg_radzik(G, 0)
+    Traceback (most recent call last):
+        ...
+    networkx.exception.NetworkXUnbounded: Negative cost cycle detected.
 
     Notes
     -----

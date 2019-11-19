@@ -11,6 +11,17 @@ matrix:
       python: 3.7
       env:
       - OPTIONAL_DEPS=1
+      - MINIMUM_REQUIREMENTS=1
+      - REPORT_COVERAGE=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+    - os: linux
+      python: 3.7
+      env:
+      - OPTIONAL_DEPS=1
       - BUILD_DOCS=1
       - DEPLOY_DOCS=1
       addons:
@@ -21,17 +32,6 @@ matrix:
           - texlive
           - texlive-latex-extra
           - latexmk
-    - os: linux
-      python: 3.7
-      env:
-      - OPTIONAL_DEPS=1
-      - MINIMUM_REQUIREMENTS=1
-      - REPORT_COVERAGE=1
-      addons:
-        apt:
-          packages:
-          - libgdal-dev
-          - graphviz
     - os: linux
       python: 3.7
       env:
@@ -63,6 +63,7 @@ matrix:
       language: generic
       env: TRAVIS_PYTHON_VERSION=3.8
     - python: 3.6
+    - python: 3.7
     - python: 3.8
       env:
       - PIP_FLAGS="--pre"
@@ -101,8 +102,9 @@ install:
 script:
   - if [[ "${BUILD_DOCS}" == 1 ]]; then
       source tools/travis/build_docs.sh;
+    else
+      source tools/travis/script.sh;
     fi
-  - source tools/travis/script.sh
 
 after_success:
   - if [[ "${REPORT_COVERAGE}" == 1 ]]; then
