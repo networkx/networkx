@@ -38,8 +38,7 @@ import warnings
 import re
 import html.entities as htmlentitydefs
 
-__all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
-
+__all__ = ["read_gml", "parse_gml", "generate_gml", "write_gml"]
 
 
 def escape(text):
@@ -48,9 +47,10 @@ def escape(text):
     Use XML character references for unprintable or non-ASCII
     characters, double quotes and ampersands in a string
     """
+
     def fixup(m):
         ch = m.group(0)
-        return '&#' + str(ord(ch)) + ';'
+        return "&#" + str(ord(ch)) + ";"
 
     text = re.sub('[^ -~]|[&"]', fixup, text)
     return text if isinstance(text, str) else str(text)
@@ -58,11 +58,12 @@ def escape(text):
 
 def unescape(text):
     """Replace XML character references with the referenced characters"""
+
     def fixup(m):
         text = m.group(0)
-        if text[1] == '#':
+        if text[1] == "#":
             # Character reference
-            if text[2] == 'x':
+            if text[2] == "x":
                 code = int(text[3:-1], 16)
             else:
                 code = int(text[2:-1])
@@ -105,13 +106,13 @@ def literal_destringizer(rep):
         try:
             return literal_eval(rep)
         except SyntaxError:
-            raise ValueError('%r is not a valid Python literal' % (orig_rep,))
+            raise ValueError("%r is not a valid Python literal" % (orig_rep,))
     else:
-        raise ValueError('%r is not a string' % (rep,))
+        raise ValueError("%r is not a string" % (rep,))
 
 
-@open_file(0, mode='rb')
-def read_gml(path, label='label', destringizer=None):
+@open_file(0, mode="rb")
+def read_gml(path, label="label", destringizer=None):
     """Read graph in GML format from `path`.
 
     Parameters
@@ -162,15 +163,16 @@ def read_gml(path, label='label', destringizer=None):
     >>> nx.write_gml(G, 'test.gml')
     >>> H = nx.read_gml('test.gml')
     """
+
     def filter_lines(lines):
         for line in lines:
             try:
-                line = line.decode('ascii')
+                line = line.decode("ascii")
             except UnicodeDecodeError:
-                raise NetworkXError('input is not ASCII-encoded')
+                raise NetworkXError("input is not ASCII-encoded")
             if not isinstance(line, str):
                 lines = str(lines)
-            if line and line[-1] == '\n':
+            if line and line[-1] == "\n":
                 line = line[:-1]
             yield line
 
@@ -178,7 +180,7 @@ def read_gml(path, label='label', destringizer=None):
     return G
 
 
-def parse_gml(lines, label='label', destringizer=None):
+def parse_gml(lines, label="label", destringizer=None):
     """Parse GML graph from a string or iterable.
 
     Parameters
@@ -226,12 +228,13 @@ def parse_gml(lines, label='label', destringizer=None):
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
     """
+
     def decode_line(line):
         if isinstance(line, bytes):
             try:
-                line.decode('ascii')
+                line.decode("ascii")
             except UnicodeDecodeError:
-                raise NetworkXError('input is not ASCII-encoded')
+                raise NetworkXError("input is not ASCII-encoded")
         if not isinstance(line, str):
             line = str(line)
         return line
@@ -245,10 +248,10 @@ def parse_gml(lines, label='label', destringizer=None):
         else:
             for line in lines:
                 line = decode_line(line)
-                if line and line[-1] == '\n':
+                if line and line[-1] == "\n":
                     line = line[:-1]
-                if line.find('\n') != -1:
-                    raise NetworkXError('input line contains newline')
+                if line.find("\n") != -1:
+                    raise NetworkXError("input line contains newline")
                 yield line
 
     G = parse_gml_lines(filter_lines(lines), label, destringizer)
@@ -258,19 +261,19 @@ def parse_gml(lines, label='label', destringizer=None):
 def parse_gml_lines(lines, label, destringizer):
     """Parse GML `lines` into a graph.
     """
+
     def tokenize():
         patterns = [
-            r'[A-Za-z][0-9A-Za-z_]*\b',  # keys
+            r"[A-Za-z][0-9A-Za-z_]*\b",  # keys
             # reals
-            r'[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?',
-            r'[+-]?[0-9]+',   # ints
-            r'".*?"',         # strings
-            r'\[',            # dict start
-            r'\]',            # dict end
-            r'#.*$|\s+'       # comments and whitespaces
+            r"[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?",
+            r"[+-]?[0-9]+",  # ints
+            r'".*?"',  # strings
+            r"\[",  # dict start
+            r"\]",  # dict end
+            r"#.*$|\s+",  # comments and whitespaces
         ]
-        tokens = re.compile(
-            '|'.join('(' + pattern + ')' for pattern in patterns))
+        tokens = re.compile("|".join("(" + pattern + ")" for pattern in patterns))
         lineno = 0
         for line in lines:
             length = len(line)
@@ -281,7 +284,7 @@ def parse_gml_lines(lines, label, destringizer):
                     for i in range(len(patterns)):
                         group = match.group(i + 1)
                         if group is not None:
-                            if i == 0:    # keys
+                            if i == 0:  # keys
                                 value = group.rstrip()
                             elif i == 1:  # reals
                                 value = float(group)
@@ -289,22 +292,24 @@ def parse_gml_lines(lines, label, destringizer):
                                 value = int(group)
                             else:
                                 value = group
-                            if i != 6:    # comments and whitespaces
+                            if i != 6:  # comments and whitespaces
                                 yield (i, value, lineno + 1, pos + 1)
                             pos += len(group)
                             break
                 else:
-                    raise NetworkXError('cannot tokenize %r at (%d, %d)' %
-                                        (line[pos:], lineno + 1, pos + 1))
+                    raise NetworkXError(
+                        "cannot tokenize %r at (%d, %d)"
+                        % (line[pos:], lineno + 1, pos + 1)
+                    )
             lineno += 1
         yield (None, None, lineno + 1, 1)  # EOF
 
     def unexpected(curr_token, expected):
         category, value, lineno, pos = curr_token
         raise NetworkXError(
-            'expected %s, found %s at (%d, %d)' %
-            (expected, repr(value) if value is not None else 'EOF', lineno,
-             pos))
+            "expected %s, found %s at (%d, %d)"
+            % (expected, repr(value) if value is not None else "EOF", lineno, pos)
+        )
 
     def consume(curr_token, category, expected):
         if curr_token[0] == category:
@@ -343,18 +348,22 @@ def parse_gml_lines(lines, label, destringizer):
                                 pass
                         curr_token = next(tokens)
                     except Exception:
-                        msg = "an int, float, string, '[' or string" + \
-                              " convertable ASCII value for node id or label"
+                        msg = (
+                            "an int, float, string, '[' or string"
+                            + " convertable ASCII value for node id or label"
+                        )
                         unexpected(curr_token, msg)
                 else:  # Otherwise error out
                     unexpected(curr_token, "an int, float, string or '['")
             dct[key].append(value)
-        dct = {key: (value if not isinstance(value, list) or len(value) != 1
-                     else value[0]) for key, value in dct.items()}
+        dct = {
+            key: (value if not isinstance(value, list) or len(value) != 1 else value[0])
+            for key, value in dct.items()
+        }
         return curr_token, dct
 
     def parse_dict(curr_token):
-        curr_token = consume(curr_token, 4, "'['")    # dict start
+        curr_token = consume(curr_token, 4, "'['")  # dict start
         curr_token, dct = parse_kv(curr_token)
         curr_token = consume(curr_token, 5, "']'")  # dict end
         return curr_token, dct
@@ -362,76 +371,74 @@ def parse_gml_lines(lines, label, destringizer):
     def parse_graph():
         curr_token, dct = parse_kv(next(tokens))
         if curr_token[0] is not None:  # EOF
-            unexpected(curr_token, 'EOF')
-        if 'graph' not in dct:
-            raise NetworkXError('input contains no graph')
-        graph = dct['graph']
+            unexpected(curr_token, "EOF")
+        if "graph" not in dct:
+            raise NetworkXError("input contains no graph")
+        graph = dct["graph"]
         if isinstance(graph, list):
-            raise NetworkXError('input contains more than one graph')
+            raise NetworkXError("input contains more than one graph")
         return graph
 
     tokens = tokenize()
     graph = parse_graph()
 
-    directed = graph.pop('directed', False)
-    multigraph = graph.pop('multigraph', False)
+    directed = graph.pop("directed", False)
+    multigraph = graph.pop("multigraph", False)
     if not multigraph:
         G = nx.DiGraph() if directed else nx.Graph()
     else:
         G = nx.MultiDiGraph() if directed else nx.MultiGraph()
-    G.graph.update((key, value) for key, value in graph.items()
-                   if key != 'node' and key != 'edge')
+    G.graph.update(
+        (key, value) for key, value in graph.items() if key != "node" and key != "edge"
+    )
 
     def pop_attr(dct, category, attr, i):
         try:
             return dct.pop(attr)
         except KeyError:
-            raise NetworkXError(
-                "%s #%d has no '%s' attribute" % (category, i, attr))
+            raise NetworkXError("%s #%d has no '%s' attribute" % (category, i, attr))
 
-    nodes = graph.get('node', [])
+    nodes = graph.get("node", [])
     mapping = {}
     node_labels = set()
     for i, node in enumerate(nodes if isinstance(nodes, list) else [nodes]):
-        id = pop_attr(node, 'node', 'id', i)
+        id = pop_attr(node, "node", "id", i)
         if id in G:
-            raise NetworkXError('node id %r is duplicated' % (id,))
-        if label is not None and label != 'id':
-            node_label = pop_attr(node, 'node', label, i)
+            raise NetworkXError("node id %r is duplicated" % (id,))
+        if label is not None and label != "id":
+            node_label = pop_attr(node, "node", label, i)
             if node_label in node_labels:
-                raise NetworkXError('node label %r is duplicated' %
-                                    (node_label,))
+                raise NetworkXError("node label %r is duplicated" % (node_label,))
             node_labels.add(node_label)
             mapping[id] = node_label
         G.add_node(id, **node)
 
-    edges = graph.get('edge', [])
+    edges = graph.get("edge", [])
     for i, edge in enumerate(edges if isinstance(edges, list) else [edges]):
-        source = pop_attr(edge, 'edge', 'source', i)
-        target = pop_attr(edge, 'edge', 'target', i)
+        source = pop_attr(edge, "edge", "source", i)
+        target = pop_attr(edge, "edge", "target", i)
         if source not in G:
-            raise NetworkXError(
-                'edge #%d has an undefined source %r' % (i, source))
+            raise NetworkXError("edge #%d has an undefined source %r" % (i, source))
         if target not in G:
-            raise NetworkXError(
-                'edge #%d has an undefined target %r' % (i, target))
+            raise NetworkXError("edge #%d has an undefined target %r" % (i, target))
         if not multigraph:
             if not G.has_edge(source, target):
                 G.add_edge(source, target, **edge)
             else:
                 msg = "edge #%d (%r%s%r) is duplicated.\n"
                 msg2 = 'Hint: If multigraph add "multigraph 1" to file header.'
-                info = (i, source, '->' if directed else '--', target)
+                info = (i, source, "->" if directed else "--", target)
                 raise nx.NetworkXError((msg % info) + msg2)
         else:
-            key = edge.pop('key', None)
+            key = edge.pop("key", None)
             if key is not None and G.has_edge(source, target, key):
                 raise nx.NetworkXError(
-                    'edge #%d (%r%s%r, %r) is duplicated' %
-                    (i, source, '->' if directed else '--', target, key))
+                    "edge #%d (%r%s%r, %r) is duplicated"
+                    % (i, source, "->" if directed else "--", target, key)
+                )
             G.add_edge(source, target, key, **edge)
 
-    if label is not None and label != 'id':
+    if label is not None and label != "id":
         G = nx.relabel_nodes(G, mapping)
     return G
 
@@ -465,8 +472,9 @@ def literal_stringizer(value):
     The original value can be recovered using the
     :func:`networkx.readwrite.gml.literal_destringizer` function.
     """
-    msg = "literal_stringizer is deprecated and will be removed in 2.6." 
+    msg = "literal_stringizer is deprecated and will be removed in 2.6."
     warnings.warn(msg, DeprecationWarning)
+
     def stringize(value):
         if isinstance(value, (int, bool)) or value is None:
             if value is True:  # GML uses 1/0 for boolean values.
@@ -477,66 +485,65 @@ def literal_stringizer(value):
                 buf.write(str(value))
         elif isinstance(value, str):
             text = repr(value)
-            if text[0] != 'u':
+            if text[0] != "u":
                 try:
-                    value.encode('latin1')
+                    value.encode("latin1")
                 except UnicodeEncodeError:
-                    text = 'u' + text
+                    text = "u" + text
             buf.write(text)
         elif isinstance(value, (float, complex, str, bytes)):
             buf.write(repr(value))
         elif isinstance(value, list):
-            buf.write('[')
+            buf.write("[")
             first = True
             for item in value:
                 if not first:
-                    buf.write(',')
+                    buf.write(",")
                 else:
                     first = False
                 stringize(item)
-            buf.write(']')
+            buf.write("]")
         elif isinstance(value, tuple):
             if len(value) > 1:
-                buf.write('(')
+                buf.write("(")
                 first = True
                 for item in value:
                     if not first:
-                        buf.write(',')
+                        buf.write(",")
                     else:
                         first = False
                     stringize(item)
-                buf.write(')')
+                buf.write(")")
             elif value:
-                buf.write('(')
+                buf.write("(")
                 stringize(value[0])
-                buf.write(',)')
+                buf.write(",)")
             else:
-                buf.write('()')
+                buf.write("()")
         elif isinstance(value, dict):
-            buf.write('{')
+            buf.write("{")
             first = True
             for key, value in value.items():
                 if not first:
-                    buf.write(',')
+                    buf.write(",")
                 else:
                     first = False
                 stringize(key)
-                buf.write(':')
+                buf.write(":")
                 stringize(value)
-            buf.write('}')
+            buf.write("}")
         elif isinstance(value, set):
-            buf.write('{')
+            buf.write("{")
             first = True
             for item in value:
                 if not first:
-                    buf.write(',')
+                    buf.write(",")
                 else:
                     first = False
                 stringize(item)
-            buf.write('}')
+            buf.write("}")
         else:
-            raise ValueError(
-                '%r cannot be converted into a Python literal' % (value,))
+            raise ValueError("%r cannot be converted into a Python literal" % (value,))
 
     buf = StringIO()
     stringize(value)
@@ -622,51 +629,55 @@ def generate_gml(G, stringizer=None):
       ]
     ]
     """
-    valid_keys = re.compile('^[A-Za-z][0-9A-Za-z]*$')
+    valid_keys = re.compile("^[A-Za-z][0-9A-Za-z]*$")
 
     def stringize(key, value, ignored_keys, indent, in_list=False):
         if not isinstance(key, str):
-            raise NetworkXError('%r is not a string' % (key,))
+            raise NetworkXError("%r is not a string" % (key,))
         if not valid_keys.match(key):
-            raise NetworkXError('%r is not a valid key' % (key,))
+            raise NetworkXError("%r is not a valid key" % (key,))
         if not isinstance(key, str):
             key = str(key)
         if key not in ignored_keys:
             if isinstance(value, (int, bool)):
-                if key == 'label':
+                if key == "label":
                     yield indent + key + ' "' + str(value) + '"'
                 elif value is True:
                     # python bool is an instance of int
-                    yield indent + key + ' 1'
+                    yield indent + key + " 1"
                 elif value is False:
-                    yield indent + key + ' 0'
+                    yield indent + key + " 0"
                 # GML only supports signed 32-bit integers
-                elif value < -2**31 or value >= 2**31:
+                elif value < -2 ** 31 or value >= 2 ** 31:
                     yield indent + key + ' "' + str(value) + '"'
                 else:
-                    yield indent + key + ' ' + str(value)
+                    yield indent + key + " " + str(value)
             elif isinstance(value, float):
                 text = repr(value).upper()
                 # GML requires that a real literal contain a decimal point, but
                 # repr may not output a decimal point when the mantissa is
                 # integral and hence needs fixing.
-                epos = text.rfind('E')
-                if epos != -1 and text.find('.', 0, epos) == -1:
-                    text = text[:epos] + '.' + text[epos:]
-                if key == 'label':
+                epos = text.rfind("E")
+                if epos != -1 and text.find(".", 0, epos) == -1:
+                    text = text[:epos] + "." + text[epos:]
+                if key == "label":
                     yield indent + key + ' "' + text + '"'
                 else:
-                    yield indent + key + ' ' + text
+                    yield indent + key + " " + text
             elif isinstance(value, dict):
-                yield indent + key + ' ['
-                next_indent = indent + '  '
+                yield indent + key + " ["
+                next_indent = indent + "  "
                 for key, value in value.items():
                     for line in stringize(key, value, (), next_indent):
                         yield line
-                yield indent + ']'
-            elif isinstance(value, (list, tuple)) and key != 'label' \
-                    and value and not in_list:
-                next_indent = indent + '  '
+                yield indent + "]"
+            elif (
+                isinstance(value, (list, tuple))
+                and key != "label"
+                and value
+                and not in_list
+            ):
+                next_indent = indent + "  "
                 for val in value:
                     for line in stringize(key, val, (), next_indent, True):
                         yield line
@@ -676,58 +687,59 @@ def generate_gml(G, stringizer=None):
                         value = stringizer(value)
                     except ValueError:
                         raise NetworkXError(
-                            '%r cannot be converted into a string' % (value,))
+                            "%r cannot be converted into a string" % (value,)
+                        )
                 if not isinstance(value, str):
-                    raise NetworkXError('%r is not a string' % (value,))
+                    raise NetworkXError("%r is not a string" % (value,))
                 yield indent + key + ' "' + escape(value) + '"'
 
     multigraph = G.is_multigraph()
-    yield 'graph ['
+    yield "graph ["
 
     # Output graph attributes
     if G.is_directed():
-        yield '  directed 1'
+        yield "  directed 1"
     if multigraph:
-        yield '  multigraph 1'
-    ignored_keys = {'directed', 'multigraph', 'node', 'edge'}
+        yield "  multigraph 1"
+    ignored_keys = {"directed", "multigraph", "node", "edge"}
     for attr, value in G.graph.items():
-        for line in stringize(attr, value, ignored_keys, '  '):
+        for line in stringize(attr, value, ignored_keys, "  "):
             yield line
 
     # Output node data
     node_id = dict(zip(G, range(len(G))))
-    ignored_keys = {'id', 'label'}
+    ignored_keys = {"id", "label"}
     for node, attrs in G.nodes.items():
-        yield '  node ['
-        yield '    id ' + str(node_id[node])
-        for line in stringize('label', node, (), '    '):
+        yield "  node ["
+        yield "    id " + str(node_id[node])
+        for line in stringize("label", node, (), "    "):
             yield line
         for attr, value in attrs.items():
-            for line in stringize(attr, value, ignored_keys, '    '):
+            for line in stringize(attr, value, ignored_keys, "    "):
                 yield line
-        yield '  ]'
+        yield "  ]"
 
     # Output edge data
-    ignored_keys = {'source', 'target'}
-    kwargs = {'data': True}
+    ignored_keys = {"source", "target"}
+    kwargs = {"data": True}
     if multigraph:
-        ignored_keys.add('key')
-        kwargs['keys'] = True
+        ignored_keys.add("key")
+        kwargs["keys"] = True
     for e in G.edges(**kwargs):
-        yield '  edge ['
-        yield '    source ' + str(node_id[e[0]])
-        yield '    target ' + str(node_id[e[1]])
+        yield "  edge ["
+        yield "    source " + str(node_id[e[0]])
+        yield "    target " + str(node_id[e[1]])
         if multigraph:
-            for line in stringize('key', e[2], (), '    '):
+            for line in stringize("key", e[2], (), "    "):
                 yield line
         for attr, value in e[-1].items():
-            for line in stringize(attr, value, ignored_keys, '    '):
+            for line in stringize(attr, value, ignored_keys, "    "):
                 yield line
-        yield '  ]'
-    yield ']'
+        yield "  ]"
+    yield "]"
 
 
-@open_file(1, mode='wb')
+@open_file(1, mode="wb")
 def write_gml(G, path, stringizer=None):
     """Write a graph `G` in GML format to the file or file handle `path`.
 
@@ -788,4 +800,4 @@ def write_gml(G, path, stringizer=None):
     >>> nx.write_gml(G, "test.gml.gz")
     """
     for line in generate_gml(G, stringizer):
-        path.write((line + '\n').encode('ascii'))
+        path.write((line + "\n").encode("ascii"))
