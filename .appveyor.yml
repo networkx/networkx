@@ -49,7 +49,7 @@ test_script:
   # Change to a non-source folder to make sure we run the tests on the
   # installed library.
   - "pushd %TEMP%"
-  - "pytest --doctest-modules --pyargs networkx"
+  - "pytest --doctest-modules --durations=10 --pyargs networkx"
 
 cache:
   # Avoid re-downloading large packages

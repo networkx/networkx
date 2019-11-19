@@ -294,13 +294,13 @@ def optimal_edit_paths(
 
     Examples
     --------
-    >>> G1 = nx.cycle_graph(6)
-    >>> G2 = nx.wheel_graph(7)
+    >>> G1 = nx.cycle_graph(4)
+    >>> G2 = nx.wheel_graph(5)
     >>> paths, cost = nx.optimal_edit_paths(G1, G2)
     >>> len(paths)
-    84
+    40
     >>> cost
-    7.0
+    5.0
 
     See Also
     --------

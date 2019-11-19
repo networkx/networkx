@@ -132,6 +132,7 @@ def _check_separating_sets(G):
             assert not nx.is_connected(nx.restricted_view(G, cut, []))
 
 
+@pytest.mark.slow
 def test_torrents_and_ferraro_graph():
     G = torrents_and_ferraro_graph()
     _check_separating_sets(G)
@@ -210,6 +211,7 @@ def test_disconnected_graph():
     pytest.raises(nx.NetworkXError, next, cuts)
 
 
+@pytest.mark.slow
 def test_alternative_flow_functions():
     graphs = [nx.grid_2d_graph(4, 4), nx.cycle_graph(5)]
     for G in graphs:

@@ -42,15 +42,15 @@ def require_partition(func):
         >>> foo(G, partition)
         partition is valid!
         >>> partition = [{0}, {2, 3}, {4}]
-        >>> foo(G, partition)  # doctest: +IGNORE_EXCEPTION_DETAIL
+        >>> foo(G, partition)
         Traceback (most recent call last):
           ...
-        NetworkXError: `partition` is not a valid partition of the nodes of G
+        networkx.exception.NetworkXError: `partition` is not a valid partition of the nodes of G
         >>> partition = [{0, 1}, {1, 2, 3}, {4}]
-        >>> foo(G, partition)  # doctest: +IGNORE_EXCEPTION_DETAIL
+        >>> foo(G, partition)
         Traceback (most recent call last):
           ...
-        NetworkXError: `partition` is not a valid partition of the nodes of G
+        networkx.exception.NetworkXError: `partition` is not a valid partition of the nodes of G
 
     """
     @wraps(func)

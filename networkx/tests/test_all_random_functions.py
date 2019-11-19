@@ -47,7 +47,7 @@ def run_all_random_functions(seed):
     sizes = (20, 20, 10)
     colors = [1, 2, 3]
     G = nx.barbell_graph(12, 20)
-    deg_sequence =  [3, 2, 1, 3, 2, 1, 3, 2, 1, 2, 1, 2, 1]
+    deg_sequence = [3, 2, 1, 3, 2, 1, 3, 2, 1, 2, 1, 2, 1]
     in_degree_sequence = w = sequence = aseq = bseq = deg_sequence
 
     # print("starting...")
@@ -205,6 +205,7 @@ def run_all_random_functions(seed):
 # seed = 14
 
 
+@pytest.mark.slow
 # print("NetworkX Version:", nx.__version__)
 def test_rng_interface():
     global progress
