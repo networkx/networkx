@@ -199,5 +199,5 @@ class TestConvertPandas(object):
         dftrue = pd.DataFrame(data)
         df = dftrue[["A", "C", "B"]]
         G = nx.from_pandas_adjacency(df, create_using=nx.DiGraph())
-        df = nx.to_pandas_adjacency(G, dtype=int)
+        df = nx.to_pandas_adjacency(G, dtype="int64")
         pd.testing.assert_frame_equal(df, dftrue)
