@@ -1,13 +1,3 @@
-# boykovkolmogorov.py - Boykov Kolmogorov algorithm for maximum flow problems.
-#
-# Copyright 2016-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Author: Jordi Torrents <jordi.t21@gmail.com>
 """
 Boykov-Kolmogorov algorithm for maximum flow problems.
 """
@@ -183,7 +173,7 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
 
     # Initialize/reset the residual network.
     # This is way too slow
-    #nx.set_edge_attributes(R, 0, 'flow')
+    # nx.set_edge_attributes(R, 0, 'flow')
     for u in R:
         for e in R[u].values():
             e['flow'] = 0

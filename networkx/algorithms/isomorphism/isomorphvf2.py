@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 *************
 VF2 Algorithm
@@ -101,8 +100,8 @@ If G'=(N',E') is a monomorphism, then:
     N' is a subset of N
     E' is a subset of the set of edges in E relating nodes in N'
 
-Note that if G' is a node-induced subgraph of G, then it is always a 
-subgraph monomorphism of G, but the opposite is not always true, as a 
+Note that if G' is a node-induced subgraph of G, then it is always a
+subgraph monomorphism of G, but the opposite is not always true, as a
 monomorphism can have fewer edges.
 
 References
@@ -135,17 +134,12 @@ polynomial-time algorithm is known to exist).
 
 """
 
-#    Copyright (C) 2007-2009 by the NetworkX maintainers
-#    All rights reserved.
-#    BSD license.
-
-#    This work was originally coded by Christopher Ellison
-#    as part of the Computational Mechanics Python (CMPy) project.
-#    James P. Crutchfield, principal investigator.
-#    Complexity Sciences Center and Physics Department, UC Davis.
+# This work was originally coded by Christopher Ellison
+# as part of the Computational Mechanics Python (CMPy) project.
+# James P. Crutchfield, principal investigator.
+# Complexity Sciences Center and Physics Department, UC Davis.
 
 import sys
-import networkx as nx
 
 __all__ = ['GraphMatcher',
            'DiGraphMatcher']
@@ -408,7 +402,7 @@ class GraphMatcher(object):
 
         This function returns True if it is adding the candidate pair
         to the current partial isomorphism/monomorphism mapping is allowable.
-        The addition is allowable if the inclusion of the candidate pair does 
+        The addition is allowable if the inclusion of the candidate pair does
         not make it impossible for an isomorphism/monomorphism to be found.
         """
 
@@ -626,7 +620,7 @@ class DiGraphMatcher(GraphMatcher):
 
         This function returns True if it is adding the candidate pair
         to the current partial isomorphism/monomorphism mapping is allowable.
-        The addition is allowable if the inclusion of the candidate pair does 
+        The addition is allowable if the inclusion of the candidate pair does
         not make it impossible for an isomorphism/monomorphism to be found.
         """
 

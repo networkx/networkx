@@ -1,8 +1,10 @@
 """Unit tests for PyGraphviz interface."""
 import os
 import tempfile
-from nose import SkipTest
-from nose.tools import assert_true, assert_equal, assert_raises
+import pytest
+pygraphviz = pytest.importorskip('pygraphviz')
+
+
 from networkx.testing import assert_edges_equal, assert_nodes_equal, \
         assert_graphs_equal
 
@@ -10,13 +12,6 @@ import networkx as nx
 
 
 class TestAGraph(object):
-    @classmethod
-    def setupClass(cls):
-        global pygraphviz
-        try:
-            import pygraphviz
-        except ImportError:
-            raise SkipTest('PyGraphviz not available.')
 
     def build_graph(self, G):
         edges = [('A', 'B'), ('A', 'C'), ('A', 'C'), ('B', 'C'), ('A', 'D')]
@@ -28,7 +23,7 @@ class TestAGraph(object):
     def assert_equal(self, G1, G2):
         assert_nodes_equal(G1.nodes(), G2.nodes())
         assert_edges_equal(G1.edges(), G2.edges())
-        assert_equal(G1.graph['metal'], G2.graph['metal'])
+        assert G1.graph['metal'] == G2.graph['metal']
 
     def agraph_checks(self, G):
         G = self.build_graph(G)
@@ -55,7 +50,7 @@ class TestAGraph(object):
         G = nx.Graph(name='test')
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
-        assert_equal(G.name, 'test')
+        assert G.name == 'test'
 
     def test_undirected(self):
         self.agraph_checks(nx.Graph())
@@ -71,7 +66,7 @@ class TestAGraph(object):
 
     def test_view_pygraphviz(self):
         G = nx.Graph()  # "An empty graph cannot be drawn."
-        assert_raises(nx.NetworkXException, nx.nx_agraph.view_pygraphviz, G)
+        pytest.raises(nx.NetworkXException, nx.nx_agraph.view_pygraphviz, G)
         G = nx.barbell_graph(4, 6)
         nx.nx_agraph.view_pygraphviz(G)
 
@@ -87,7 +82,7 @@ class TestAGraph(object):
         # edges: u,v
         G = nx.Graph()
         G = self.build_graph(G)
-        G.node['E']['n'] = 'keyword'
+        G.nodes['E']['n'] = 'keyword'
         G.edges[('A', 'B')]['u'] = 'keyword'
         G.edges[('A', 'B')]['v'] = 'keyword'
         A = nx.nx_agraph.to_agraph(G)
@@ -96,7 +91,7 @@ class TestAGraph(object):
         G = nx.Graph()
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
-        #assert_graphs_equal(G, H)
+        # assert_graphs_equal(G, H)
         AA = nx.nx_agraph.to_agraph(H)
         HH = nx.nx_agraph.from_agraph(AA)
         assert_graphs_equal(H, HH)
@@ -111,8 +106,8 @@ class TestAGraph(object):
         G.graph["dimen"] = 2
         pos = nx.nx_agraph.pygraphviz_layout(G, prog='neato')
         pos = list(pos.values())
-        assert_equal(len(pos), 5)
-        assert_equal(len(pos[0]), 2)
+        assert len(pos) == 5
+        assert len(pos[0]) == 2
 
     def test_3d_layout(self):
         G = nx.Graph()
@@ -120,5 +115,5 @@ class TestAGraph(object):
         G.graph["dimen"] = 3
         pos = nx.nx_agraph.pygraphviz_layout(G, prog='neato')
         pos = list(pos.values())
-        assert_equal(len(pos), 5)
-        assert_equal(len(pos[0]), 3)
+        assert len(pos) == 5
+        assert len(pos[0]) == 3

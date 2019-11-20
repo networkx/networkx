@@ -1,15 +1,3 @@
-#    Copyright (C) 2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:
-#     Aric Hagberg <hagberg@lanl.gov>
-#     Pieter Swart <swart@lanl.gov>
-#     Dan Schult <dschult@colgate.edu>
-#     Ben Edwards <bedwards@cs.unm.edu>
 """
 Graph products.
 """

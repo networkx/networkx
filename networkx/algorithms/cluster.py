@@ -1,24 +1,10 @@
-# -*- coding: utf-8 -*-
-#
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """Algorithms to characterize the number of triangles in a graph."""
 
 from itertools import chain
 from itertools import combinations
 from collections import Counter
 
-import networkx as nx
 from networkx.utils import not_implemented_for
-
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Dan Schult (dschult@colgate.edu)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Jordi Torrents <jtorrents@milnou.net>'])
 
 __all__ = ['triangles', 'average_clustering', 'clustering', 'transitivity',
            'square_clustering', 'generalized_degree']
@@ -152,7 +138,7 @@ def _directed_triangles_and_degree_iter(G, nodes=None):
 
 
 @not_implemented_for('multigraph')
-def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight = 'weight'):
+def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight='weight'):
     """ Return an iterator of
     (node, total_degree, reciprocal_degree, directed_weighted_triangles).
 

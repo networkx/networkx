@@ -1,9 +1,3 @@
-#    Copyright (C) 2006-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
 
 __all__ = ['convert_node_labels_to_integers', 'relabel_nodes']

@@ -1,31 +1,20 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg <hagberg@lanl.gov>
-#          Pieter Swart <swart@lanl.gov>
-#          Dan Schult <dschult@colgate.edu>
 """Functional interface to graph methods and assorted utilities.
 """
 
 from collections import Counter
 from itertools import chain
-try:
-    from itertools import zip_longest
-except ImportError:
-    from itertools import izip_longest as zip_longest
 
 import networkx as nx
 from networkx.utils import pairwise, not_implemented_for
 
+from networkx.classes.graphviews import subgraph_view, reverse_view
+
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
-           'is_directed', 'info', 'freeze', 'is_frozen', 'subgraph',
-           'induced_subgraph', 'edge_subgraph', 'restricted_view',
-           'reverse_view', 'to_directed', 'to_undirected',
+           'is_directed', 'info', 'freeze', 'is_frozen',
+           'subgraph', 'subgraph_view', 'induced_subgraph', 'reverse_view',
+           'edge_subgraph', 'restricted_view',
+           'to_directed', 'to_undirected',
            'add_star', 'add_path', 'add_cycle',
            'create_empty_copy', 'set_node_attributes',
            'get_node_attributes', 'set_edge_attributes',
@@ -490,15 +479,6 @@ def restricted_view(G, nodes, edges):
         else:
             hide_edges = nxf.hide_edges(edges)
     return nx.graphviews.subgraph_view(G, hide_nodes, hide_edges)
-
-
-@not_implemented_for('undirected')
-def reverse_view(digraph):
-    """Provide a reverse view of the digraph with edges reversed.
-
-    Identical to digraph.reverse(copy=False)
-    """
-    return nx.graphviews.reverse_view(digraph)
 
 
 def to_directed(graph):

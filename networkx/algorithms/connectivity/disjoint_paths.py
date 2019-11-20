@@ -1,13 +1,3 @@
-# disjoint_paths.py - Flow based node and edge disjoint paths.
-#
-# Copyright 2017-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Author: Jordi Torrents <jordi.t21@gmail.com>
 """Flow based node and edge disjoint paths."""
 import networkx as nx
 from networkx.exception import NetworkXNoPath
@@ -18,21 +8,10 @@ from networkx.algorithms.flow import preflow_push
 from networkx.algorithms.flow import shortest_augmenting_path
 default_flow_func = edmonds_karp
 # Functions to build auxiliary data structures.
-from networkx.algorithms.flow import build_residual_network
 from .utils import build_auxiliary_node_connectivity
 from .utils import build_auxiliary_edge_connectivity
 
-try:
-    from itertools import filterfalse as _filterfalse
-except ImportError:  # Python 2
-    def _filterfalse(predicate, iterable):
-        # https://docs.python.org/3/library/itertools.html
-        # filterfalse(lambda x: x%2, range(10)) --> 0 2 4 6 8
-        if predicate is None:
-            predicate = bool
-        for x in iterable:
-            if not predicate(x):
-                yield x
+from itertools import filterfalse as _filterfalse
 
 __all__ = [
     'edge_disjoint_paths',
@@ -60,17 +39,17 @@ def edge_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes.
-        The function has to accept at least three parameters: a Digraph, 
-        a source node, and a target node. And return a residual network 
-        that follows NetworkX conventions (see :meth:`maximum_flow` for 
-        details). If flow_func is None, the default maximum flow function 
+        The function has to accept at least three parameters: a Digraph,
+        a source node, and a target node. And return a residual network
+        that follows NetworkX conventions (see :meth:`maximum_flow` for
+        details). If flow_func is None, the default maximum flow function
         (:meth:`edmonds_karp`) is used. The choice of the default function
         may change from version to version and should not be relied on.
         Default value: None.
 
     cutoff : int
         Maximum number of paths to yield. Some of the maximum flow
-        algorithms, such as :meth:`edmonds_karp` (the default) and 
+        algorithms, such as :meth:`edmonds_karp` (the default) and
         :meth:`shortest_augmenting_path` support the cutoff parameter,
         and will terminate when the flow value reaches or exceeds the
         cutoff. Other algorithms will ignore this parameter.
@@ -93,10 +72,10 @@ def edge_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
 
     Raises
     ------
-    NetworkXNoPath : exception
+    NetworkXNoPath
         If there is no path between source and target.
 
-    NetworkXError : exception
+    NetworkXError
         If source or target are not in the graph G.
 
     See also
@@ -121,16 +100,16 @@ def edge_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
 
     If you need to compute edge disjoint paths on several pairs of
     nodes in the same graph, it is recommended that you reuse the
-    data structures that NetworkX uses in the computation: the 
+    data structures that NetworkX uses in the computation: the
     auxiliary digraph for edge connectivity, and the residual
     network for the underlying maximum flow computation.
 
     Example of how to compute edge disjoint paths among all pairs of
-    nodes of the platonic icosahedral graph reusing the data 
+    nodes of the platonic icosahedral graph reusing the data
     structures.
 
     >>> import itertools
-    >>> # You also have to explicitly import the function for 
+    >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
     >>> from networkx.algorithms.connectivity import (
     ...     build_auxiliary_edge_connectivity)
@@ -295,10 +274,10 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
 
     Raises
     ------
-    NetworkXNoPath : exception
+    NetworkXNoPath
         If there is no path between source and target.
 
-    NetworkXError : exception
+    NetworkXError
         If source or target are not in the graph G.
 
     Examples
@@ -320,7 +299,7 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
     Example of how to compute node disjoint paths reusing the data
     structures:
 
-    >>> # You also have to explicitly import the function for 
+    >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
     >>> from networkx.algorithms.connectivity import (
     ...     build_auxiliary_node_connectivity)
@@ -400,7 +379,7 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
                                       **kwargs)
     for path in paths_edges:
         # Each node in the original graph maps to two nodes in auxiliary graph
-        yield list(_unique_everseen(H.node[node]['id'] for node in path))
+        yield list(_unique_everseen(H.nodes[node]['id'] for node in path))
 
 
 def _unique_everseen(iterable):

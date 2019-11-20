@@ -1,10 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 Utilities for connectivity package
 """
 import networkx as nx
-
-__author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
 __all__ = ['build_auxiliary_node_connectivity',
            'build_auxiliary_edge_connectivity']
@@ -24,7 +21,7 @@ def build_auxiliary_node_connectivity(G):
     For a directed graph having `n` nodes and `m` arcs we derive a
     directed graph D with `2n` nodes and `m+n` arcs by replacing each
     original node `v` with two nodes `vA`, `vB` linked by an (internal)
-    arc (`vA`, `vB`) in D. Then for each arc (`u`, `v`) in G we add one 
+    arc (`vA`, `vB`) in D. Then for each arc (`u`, `v`) in G we add one
     arc (`uB`, `vA`) in D. Finally we set the attribute capacity = 1 for
     each arc in D.
 

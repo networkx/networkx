@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Jon Crall (erotemic@gmail.com)
 """
 Algorithms for finding k-edge-connected components and subgraphs.
 
@@ -58,7 +49,7 @@ def k_edge_components(G, k):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If the input graph is a multigraph.
 
     ValueError:
@@ -141,7 +132,7 @@ def k_edge_subgraphs(G, k):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If the input graph is a multigraph.
 
     ValueError:
@@ -225,7 +216,7 @@ def bridge_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If the input graph is directed or a multigraph.
 
     Notes

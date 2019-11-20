@@ -1,11 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """
 ***************
 Graphviz AGraph
@@ -465,12 +457,3 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=''):
     graph.draw(path, format, prog, args)
     path.close()
     nx.utils.default_opener(filename)
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import pygraphviz
-    except:
-        raise SkipTest("pygraphviz not available")

@@ -1,31 +1,22 @@
 """Unit tests for layout functions."""
-from nose import SkipTest
-from nose.tools import assert_almost_equal, assert_equal, \
-    assert_true, assert_false, assert_raises
+import pytest
+numpy = pytest.importorskip('numpy')
+test_smoke_empty_graphscipy = pytest.importorskip('scipy')
+
+
+import pytest
 import networkx as nx
+from networkx.testing import almost_equal
 
 
 class TestLayout(object):
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
-    scipy = None
 
     @classmethod
-    def setupClass(cls):
-        global numpy, scipy
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-        try:
-            import scipy
-        except ImportError:
-            pass    # Almost all tests still viable
-
-    def setUp(self):
-        self.Gi = nx.grid_2d_graph(5, 5)
-        self.Gs = nx.Graph()
-        nx.add_path(self.Gs, 'abcdef')
-        self.bigG = nx.grid_2d_graph(25, 25)  # > 500 nodes for sparse
+    def setup_class(cls):
+        cls.Gi = nx.grid_2d_graph(5, 5)
+        cls.Gs = nx.Graph()
+        nx.add_path(cls.Gs, 'abcdef')
+        cls.bigG = nx.grid_2d_graph(25, 25)  # > 500 nodes for sparse
 
     @staticmethod
     def collect_node_distances(positions):
@@ -40,9 +31,9 @@ class TestLayout(object):
 
     def test_spring_fixed_without_pos(self):
         G = nx.path_graph(4)
-        assert_raises(ValueError, nx.spring_layout, G, fixed=[0])
+        pytest.raises(ValueError, nx.spring_layout, G, fixed=[0])
         pos = {0: (1, 1), 2: (0, 0)}
-        assert_raises(ValueError, nx.spring_layout, G, fixed=[0, 1], pos=pos)
+        pytest.raises(ValueError, nx.spring_layout, G, fixed=[0, 1], pos=pos)
         nx.spring_layout(G, fixed=[0, 2], pos=pos)  # No ValueError
 
     def test_spring_init_pos(self):
@@ -55,7 +46,7 @@ class TestLayout(object):
         fixed_pos = [0]
         pos = nx.fruchterman_reingold_layout(G, pos=init_pos, fixed=fixed_pos)
         has_nan = any(math.isnan(c) for coords in pos.values() for c in coords)
-        assert_false(has_nan, 'values should not be nan')
+        assert not has_nan, 'values should not be nan'
 
     def test_smoke_empty_graph(self):
         G = []
@@ -68,8 +59,7 @@ class TestLayout(object):
         vpos = nx.shell_layout(G)
         vpos = nx.bipartite_layout(G, G)
         vpos = nx.spiral_layout(G)
-        if self.scipy is not None:
-            vpos = nx.kamada_kawai_layout(G)
+        # FIXME vpos = nx.kamada_kawai_layout(G)
 
     def test_smoke_int(self):
         G = self.Gi
@@ -85,9 +75,8 @@ class TestLayout(object):
         vpos = nx.spectral_layout(self.bigG.to_directed())
         vpos = nx.shell_layout(G)
         vpos = nx.spiral_layout(G)
-        if self.scipy is not None:
-            vpos = nx.kamada_kawai_layout(G)
-            vpos = nx.kamada_kawai_layout(G, dim=1)
+        vpos = nx.kamada_kawai_layout(G)
+        vpos = nx.kamada_kawai_layout(G, dim=1)
 
     def test_smoke_string(self):
         G = self.Gs
@@ -99,9 +88,8 @@ class TestLayout(object):
         vpos = nx.spectral_layout(G)
         vpos = nx.shell_layout(G)
         vpos = nx.spiral_layout(G)
-        if self.scipy is not None:
-            vpos = nx.kamada_kawai_layout(G)
-            vpos = nx.kamada_kawai_layout(G, dim=1)
+        vpos = nx.kamada_kawai_layout(G)
+        vpos = nx.kamada_kawai_layout(G, dim=1)
 
     def check_scale_and_center(self, pos, scale, center):
         center = numpy.array(center)
@@ -125,12 +113,11 @@ class TestLayout(object):
         sc(nx.circular_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.shell_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.spiral_layout(G, scale=2, center=c), scale=2, center=c)
-        if self.scipy is not None:
-            sc(nx.kamada_kawai_layout(G, scale=2, center=c), scale=2, center=c)
+        sc(nx.kamada_kawai_layout(G, scale=2, center=c), scale=2, center=c)
 
     def test_planar_layout_non_planar_input(self):
         G = nx.complete_graph(9)
-        assert_raises(nx.NetworkXException, nx.planar_layout, G)
+        pytest.raises(nx.NetworkXException, nx.planar_layout, G)
 
     def test_smoke_planar_layout_embedding_input(self):
         embedding = nx.PlanarEmbedding()
@@ -148,45 +135,40 @@ class TestLayout(object):
         sc(nx.circular_layout(G), scale=1, center=c)
         sc(nx.shell_layout(G), scale=1, center=c)
         sc(nx.spiral_layout(G), scale=1, center=c)
-        if self.scipy is not None:
-            sc(nx.kamada_kawai_layout(G), scale=1, center=c)
+        sc(nx.kamada_kawai_layout(G), scale=1, center=c)
 
     def test_circular_planar_and_shell_dim_error(self):
         G = nx.path_graph(4)
-        assert_raises(ValueError, nx.circular_layout, G, dim=1)
-        assert_raises(ValueError, nx.shell_layout, G, dim=1)
-        assert_raises(ValueError, nx.shell_layout, G, dim=3)
-        assert_raises(ValueError, nx.planar_layout, G, dim=1)
-        assert_raises(ValueError, nx.planar_layout, G, dim=3)
+        pytest.raises(ValueError, nx.circular_layout, G, dim=1)
+        pytest.raises(ValueError, nx.shell_layout, G, dim=1)
+        pytest.raises(ValueError, nx.shell_layout, G, dim=3)
+        pytest.raises(ValueError, nx.planar_layout, G, dim=1)
+        pytest.raises(ValueError, nx.planar_layout, G, dim=3)
 
     def test_adjacency_interface_numpy(self):
         A = nx.to_numpy_array(self.Gs)
         pos = nx.drawing.layout._fruchterman_reingold(A)
-        assert_equal(pos.shape, (6, 2))
+        assert pos.shape == (6, 2)
         pos = nx.drawing.layout._fruchterman_reingold(A, dim=3)
-        assert_equal(pos.shape, (6, 3))
+        assert pos.shape == (6, 3)
 
     def test_adjacency_interface_scipy(self):
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('scipy not available.')
         A = nx.to_scipy_sparse_matrix(self.Gs, dtype='d')
         pos = nx.drawing.layout._sparse_fruchterman_reingold(A)
-        assert_equal(pos.shape, (6, 2))
+        assert pos.shape == (6, 2)
         pos = nx.drawing.layout._sparse_spectral(A)
-        assert_equal(pos.shape, (6, 2))
+        assert pos.shape == (6, 2)
         pos = nx.drawing.layout._sparse_fruchterman_reingold(A, dim=3)
-        assert_equal(pos.shape, (6, 3))
+        assert pos.shape == (6, 3)
 
     def test_single_nodes(self):
         G = nx.path_graph(1)
         vpos = nx.shell_layout(G)
-        assert_false(vpos[0].any())
+        assert not vpos[0].any()
         G = nx.path_graph(4)
         vpos = nx.shell_layout(G, [[0], [1, 2], [3]])
-        assert_false(vpos[0].any())
-        assert_true(vpos[3].any())  # ensure node 3 not at origin (#3188)
+        assert not vpos[0].any()
+        assert vpos[3].any()  # ensure node 3 not at origin (#3188)
 
     def test_smoke_initial_pos_fruchterman_reingold(self):
         pos = nx.circular_layout(self.Gi)
@@ -196,94 +178,94 @@ class TestLayout(object):
         # Dense version (numpy based)
         pos = nx.circular_layout(self.Gi)
         npos = nx.spring_layout(self.Gi, pos=pos, fixed=[(0, 0)])
-        assert_equal(tuple(pos[(0, 0)]), tuple(npos[(0, 0)]))
+        assert tuple(pos[(0, 0)]) == tuple(npos[(0, 0)])
         # Sparse version (scipy based)
         pos = nx.circular_layout(self.bigG)
         npos = nx.spring_layout(self.bigG, pos=pos, fixed=[(0, 0)])
         for axis in range(2):
-            assert_almost_equal(pos[(0, 0)][axis], npos[(0, 0)][axis])
+            assert almost_equal(pos[(0, 0)][axis], npos[(0, 0)][axis])
 
     def test_center_parameter(self):
         G = nx.path_graph(1)
         vpos = nx.random_layout(G, center=(1, 1))
         vpos = nx.circular_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
         vpos = nx.planar_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
         vpos = nx.spring_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
         vpos = nx.fruchterman_reingold_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
         vpos = nx.spectral_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
         vpos = nx.shell_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
         vpos = nx.spiral_layout(G, center=(1, 1))
-        assert_equal(tuple(vpos[0]), (1, 1))
+        assert tuple(vpos[0]) == (1, 1)
 
     def test_center_wrong_dimensions(self):
         G = nx.path_graph(1)
-        assert_equal(id(nx.spring_layout), id(nx.fruchterman_reingold_layout))
-        assert_raises(ValueError, nx.random_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.circular_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.planar_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.spring_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.spring_layout, G, dim=3, center=(1, 1))
-        assert_raises(ValueError, nx.spectral_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.spectral_layout, G, dim=3, center=(1, 1))
-        assert_raises(ValueError, nx.shell_layout, G, center=(1, 1, 1))
-        assert_raises(ValueError, nx.spiral_layout, G, center=(1, 1, 1))
+        assert id(nx.spring_layout) == id(nx.fruchterman_reingold_layout)
+        pytest.raises(ValueError, nx.random_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.circular_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.planar_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.spring_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.spring_layout, G, dim=3, center=(1, 1))
+        pytest.raises(ValueError, nx.spectral_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.spectral_layout, G, dim=3, center=(1, 1))
+        pytest.raises(ValueError, nx.shell_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.spiral_layout, G, center=(1, 1, 1))
 
     def test_empty_graph(self):
         G = nx.empty_graph()
         vpos = nx.random_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.circular_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.planar_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.bipartite_layout(G, G)
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.spring_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.fruchterman_reingold_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.spectral_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.shell_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
         vpos = nx.spiral_layout(G, center=(1, 1))
-        assert_equal(vpos, {})
+        assert vpos == {}
 
     def test_bipartite_layout(self):
         G = nx.complete_bipartite_graph(3, 5)
         top, bottom = nx.bipartite.sets(G)
 
         vpos = nx.bipartite_layout(G, top)
-        assert_equal(len(vpos), len(G))
+        assert len(vpos) == len(G)
 
         top_x = vpos[list(top)[0]][0]
         bottom_x = vpos[list(bottom)[0]][0]
         for node in top:
-            assert_equal(vpos[node][0], top_x)
+            assert vpos[node][0] == top_x
         for node in bottom:
-            assert_equal(vpos[node][0], bottom_x)
+            assert vpos[node][0] == bottom_x
 
         vpos = nx.bipartite_layout(G, top,
                                    align='horizontal',
                                    center=(2, 2),
                                    scale=2,
                                    aspect_ratio=1)
-        assert_equal(len(vpos), len(G))
+        assert len(vpos) == len(G)
 
         top_y = vpos[list(top)[0]][1]
         bottom_y = vpos[list(bottom)[0]][1]
         for node in top:
-            assert_equal(vpos[node][1], top_y)
+            assert vpos[node][1] == top_y
         for node in bottom:
-            assert_equal(vpos[node][1], bottom_y)
+            assert vpos[node][1] == bottom_y
 
-        assert_raises(ValueError, nx.bipartite_layout, G, top, align='foo')
+        pytest.raises(ValueError, nx.bipartite_layout, G, top, align='foo')
 
     def test_kamada_kawai_costfn_1d(self):
         costfn = nx.drawing.layout._kamada_kawai_costfn
@@ -293,9 +275,9 @@ class TestLayout(object):
 
         cost, grad = costfn(pos, numpy, invdist, meanweight=0, dim=1)
 
-        assert_almost_equal(cost, ((3 / 2.0 - 1) ** 2))
-        assert_almost_equal(grad[0], -0.5)
-        assert_almost_equal(grad[1], 0.5)
+        assert almost_equal(cost, ((3 / 2.0 - 1) ** 2))
+        assert almost_equal(grad[0], -0.5)
+        assert almost_equal(grad[1], 0.5)
 
     def test_kamada_kawai_costfn_2d(self):
         costfn = nx.drawing.layout._kamada_kawai_costfn
@@ -317,7 +299,7 @@ class TestLayout(object):
                 diff = numpy.linalg.norm(pos[i] - pos[j])
                 expected_cost += (diff * invdist[i][j] - 1.0) ** 2
 
-        assert_almost_equal(cost, expected_cost)
+        assert almost_equal(cost, expected_cost)
 
         dx = 1e-4
         for nd in range(pos.shape[0]):
@@ -333,7 +315,7 @@ class TestLayout(object):
                 cminus = costfn(pos0, numpy, invdist,
                                 meanweight=meanwt, dim=pos.shape[1])[0]
 
-                assert_almost_equal(grad[idx], (cplus - cminus) / (2 * dx),
+                assert almost_equal(grad[idx], (cplus - cminus) / (2 * dx),
                                     places=5)
 
     def test_spiral_layout(self):
@@ -355,7 +337,7 @@ class TestLayout(object):
         distances_equidistant = self.collect_node_distances(pos_equidistant)
         for d in range(1, len(distances_equidistant) - 1):
             # test similarity to two decimal places
-            assert_almost_equal(
+            assert almost_equal(
                 distances_equidistant[d],
                 distances_equidistant[d+1],
                 2

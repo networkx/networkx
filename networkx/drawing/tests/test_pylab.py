@@ -1,26 +1,21 @@
 """Unit tests for matplotlib drawing functions."""
 import os
 import itertools
-from nose import SkipTest
+import pytest
+
+mpl = pytest.importorskip('matplotlib')
+mpl.use('PS', warn=False)
+plt = pytest.importorskip('matplotlib.pyplot')
+plt.rcParams['text.usetex'] = False
+
 import networkx as nx
 
 
 class TestPylab(object):
-    @classmethod
-    def setupClass(cls):
-        global plt
-        try:
-            import matplotlib as mpl
-            mpl.use('PS', warn=False)
-            import matplotlib.pyplot as plt
-            plt.rcParams['text.usetex'] = False
-        except ImportError:
-            raise SkipTest('matplotlib not available.')
-        except RuntimeError:
-            raise SkipTest('matplotlib not available.')
 
-    def setUp(self):
-        self.G = nx.barbell_graph(4, 6)
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.barbell_graph(4, 6)
 
     def test_draw(self):
         try:
@@ -101,11 +96,11 @@ class TestPylab(object):
                                    edge_color=[(0.4, 1.0, 0.0)])
             # with rgba tuple and 4 edges - is interpretted with cmap
             nx.draw_networkx_edges(G, pos, edgelist=[(9, 10), (10, 11),
-                                   (10, 12), (10, 13)],
+                                                     (10, 12), (10, 13)],
                                    edge_color=(0.0, 1.0, 1.0, 0.5))
             # with rgba tuple in list
             nx.draw_networkx_edges(G, pos, edgelist=[(9, 10), (10, 11),
-                                   (10, 12), (10, 13)],
+                                                     (10, 12), (10, 13)],
                                    edge_color=[(0.0, 1.0, 1.0, 0.5)])
             # with color string and global alpha
             nx.draw_networkx_edges(G, pos, edgelist=[(11, 12), (11, 13)],
@@ -177,7 +172,7 @@ class TestPylab(object):
         # See Issue #3295
         G = nx.path_graph(3, create_using=nx.MultiDiGraph)
         nx.draw_networkx(G, edgelist=[(0, 1, 0)])
-        nx.draw_networkx(G, edgelist=[(0, 1, 0)], node_size=[10, 20])
+        nx.draw_networkx(G, edgelist=[(0, 1, 0)], node_size=[10, 20, 0])
 
     def test_alpha_iter(self):
         pos = nx.random_layout(self.G)

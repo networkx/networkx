@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Algorithms for chordal graphs.
 
@@ -9,14 +8,9 @@ https://en.wikipedia.org/wiki/Chordal_graph
 import sys
 
 import networkx as nx
+from networkx.algorithms.components import connected_components
 from networkx.utils import arbitrary_element, not_implemented_for
 
-__authors__ = "\n".join(['Jesus Cerquides <cerquide@iiia.csic.es>',
-                         'Julien Klaus <julien.klaus@uni-jena.de'])
-#    Copyright (C) 2010 by
-#    Jesus Cerquides <cerquide@iiia.csic.es>
-#    All rights reserved.
-#    BSD license.
 
 __all__ = ['is_chordal',
            'find_induced_nodes',
@@ -199,7 +193,7 @@ def chordal_graph_cliques(G):
         raise nx.NetworkXError("Input graph is not chordal.")
 
     cliques = set()
-    for C in nx.connected.connected_component_subgraphs(G):
+    for C in (G.subgraph(c).copy() for c in connected_components(G)):
         cliques |= _connected_chordal_graph_cliques(C)
 
     return cliques

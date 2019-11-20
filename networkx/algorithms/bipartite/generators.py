@@ -1,20 +1,8 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2006-2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg <aric.hagberg@gmail.com>
-#                        Pieter Swart <swart@lanl.gov>
-#                        Dan Schult <dschult@colgate.edu>
 """
 Generators and functions for bipartite graphs.
 """
 import math
 import numbers
-import random
 from functools import reduce
 import networkx as nx
 from networkx.utils import nodes_or_number, py_random_state

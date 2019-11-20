@@ -1,4 +1,4 @@
-from nose.tools import assert_raises, raises
+import pytest
 import networkx as nx
 from networkx.algorithms.approximation.steinertree import metric_closure
 from networkx.algorithms.approximation.steinertree import steiner_tree
@@ -6,7 +6,8 @@ from networkx.testing.utils import assert_edges_equal
 
 
 class TestSteinerTree:
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         G = nx.Graph()
         G.add_edge(1, 2, weight=10)
         G.add_edge(2, 3, weight=10)
@@ -15,13 +16,13 @@ class TestSteinerTree:
         G.add_edge(5, 6, weight=10)
         G.add_edge(2, 7, weight=1)
         G.add_edge(7, 5, weight=1)
-        self.G = G
-        self.term_nodes = [1, 2, 3, 4, 5]
+        cls.G = G
+        cls.term_nodes = [1, 2, 3, 4, 5]
 
     def test_connected_metric_closure(self):
         G = self.G.copy()
         G.add_node(100)
-        assert_raises(nx.NetworkXError, metric_closure, G)
+        pytest.raises(nx.NetworkXError, metric_closure, G)
 
     def test_metric_closure(self):
         M = metric_closure(self.G)
@@ -57,21 +58,21 @@ class TestSteinerTree:
                                  (5, 7, {'weight': 1})]
         assert_edges_equal(list(S.edges(data=True)), expected_steiner_tree)
 
-    @raises(nx.NetworkXNotImplemented)
     def test_multigraph_steiner_tree(self):
-        G = nx.MultiGraph()
-        G.add_edges_from([
-            (1, 2, 0, {'weight': 1}),
-            (2, 3, 0, {'weight': 999}),
-            (2, 3, 1, {'weight': 1}),
-            (3, 4, 0, {'weight': 1}),
-            (3, 5, 0, {'weight': 1})
-        ])
-        terminal_nodes = [2, 4, 5]
-        expected_edges = [
-            (2, 3, 1, {'weight': 1}),  # edge with key 1 has lower weight
-            (3, 4, 0, {'weight': 1}),
-            (3, 5, 0, {'weight': 1})
-        ]
-        # not implemented
-        T = steiner_tree(G, terminal_nodes)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            G = nx.MultiGraph()
+            G.add_edges_from([
+                (1, 2, 0, {'weight': 1}),
+                (2, 3, 0, {'weight': 999}),
+                (2, 3, 1, {'weight': 1}),
+                (3, 4, 0, {'weight': 1}),
+                (3, 5, 0, {'weight': 1})
+            ])
+            terminal_nodes = [2, 4, 5]
+            expected_edges = [
+                (2, 3, 1, {'weight': 1}),  # edge with key 1 has lower weight
+                (3, 4, 0, {'weight': 1}),
+                (3, 5, 0, {'weight': 1})
+            ]
+            # not implemented
+            T = steiner_tree(G, terminal_nodes)

@@ -1,16 +1,6 @@
-#    Copyright (C) 2010-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """Current-flow betweenness centrality measures for subsets of nodes."""
-import itertools
-
 import networkx as nx
-from networkx.algorithms.centrality.flow_matrix import *
+from networkx.algorithms.centrality.flow_matrix import flow_matrix_row
 from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
 
 __all__ = ['current_flow_betweenness_centrality_subset',
@@ -246,13 +236,3 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
         betweenness[e] /= nb
     return dict(((ordering[s], ordering[t]), v)
                 for (s, t), v in betweenness.items())
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import scipy
-    except:
-        raise SkipTest("NumPy not available")

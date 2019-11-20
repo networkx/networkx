@@ -1,15 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 Edmonds-Karp algorithm for maximum flow problems.
 """
 
-__author__ = """ysitu <ysitu@users.noreply.github.com>"""
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
-
 import networkx as nx
-from networkx.algorithms.flow.utils import *
+from networkx.algorithms.flow.utils import build_residual_network
 
 __all__ = ['edmonds_karp']
 

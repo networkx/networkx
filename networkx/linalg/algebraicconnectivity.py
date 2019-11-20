@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
-#
-# Author: ysitu <ysitu@users.noreply.github.com>
 """
 Algebraic connectivity and Fiedler vectors of undirected graphs.
 """
@@ -16,7 +10,6 @@ from networkx.utils import random_state
 try:
     from numpy import array, asmatrix, asarray, dot, ndarray, ones, sqrt, zeros
     from numpy.linalg import norm, qr
-    from numpy.random import normal
     from scipy.linalg import eigh, inv
     from scipy.sparse import csc_matrix, spdiags
     from scipy.sparse.linalg import eigsh, lobpcg
@@ -583,13 +576,3 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
             order.extend(component)
 
     return order
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import scipy.sparse
-    except ImportError:
-        raise SkipTest('SciPy not available.')

@@ -1,13 +1,3 @@
-# -*- encoding: utf-8 -*-
-#
-# coding.py - functions for encoding and decoding trees as sequences
-#
-# Copyright 2015-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for encoding and decoding trees.
 
 Since a tree is a highly restricted form of graph, it can be represented

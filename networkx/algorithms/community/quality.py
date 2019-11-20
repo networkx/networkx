@@ -1,11 +1,3 @@
-# quality.py - functions for measuring partitions of a graph
-#
-# Copyright 2015-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for measuring the quality of a partition (into
 communities).
 
@@ -50,15 +42,15 @@ def require_partition(func):
         >>> foo(G, partition)
         partition is valid!
         >>> partition = [{0}, {2, 3}, {4}]
-        >>> foo(G, partition)  # doctest: +IGNORE_EXCEPTION_DETAIL
+        >>> foo(G, partition)
         Traceback (most recent call last):
           ...
-        NetworkXError: `partition` is not a valid partition of the nodes of G
+        networkx.exception.NetworkXError: `partition` is not a valid partition of the nodes of G
         >>> partition = [{0, 1}, {1, 2, 3}, {4}]
-        >>> foo(G, partition)  # doctest: +IGNORE_EXCEPTION_DETAIL
+        >>> foo(G, partition)
         Traceback (most recent call last):
           ...
-        NetworkXError: `partition` is not a valid partition of the nodes of G
+        networkx.exception.NetworkXError: `partition` is not a valid partition of the nodes of G
 
     """
     @wraps(func)

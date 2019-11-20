@@ -1,14 +1,3 @@
-#    Copyright (C) 2010-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Jon Olav Vik <jonovik@gmail.com>
-#          Dan Schult <dschult@colgate.edu>
-#          Aric Hagberg <hagberg@lanl.gov>
-#          Debsankha Manik <dmanik@nld.ds.mpg.de>
 """
 ========================
 Cycle finding algorithms
@@ -16,7 +5,6 @@ Cycle finding algorithms
 """
 
 from collections import defaultdict
-from itertools import tee
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
@@ -524,8 +512,8 @@ def minimum_cycle_basis(G, weight=None):
     Examples
     --------
     >>> G=nx.Graph()
-    >>> G.add_cycle([0,1,2,3])
-    >>> G.add_cycle([0,3,4,5])
+    >>> nx.add_cycle(G, [0,1,2,3])
+    >>> nx.add_cycle(G, [0,3,4,5])
     >>> print([sorted(c) for c in nx.minimum_cycle_basis(G)])
     [[0, 1, 2, 3], [0, 3, 4, 5]]
 
@@ -541,8 +529,8 @@ def minimum_cycle_basis(G, weight=None):
     simple_cycles, cycle_basis
     """
     # We first split the graph in commected subgraphs
-    return sum((_min_cycle_basis(c, weight) for c in
-                nx.connected_component_subgraphs(G)), [])
+    return sum((_min_cycle_basis(G.subgraph(c), weight) for c in
+                nx.connected_components(G)), [])
 
 
 def _min_cycle_basis(comp, weight):

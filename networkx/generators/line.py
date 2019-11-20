@@ -1,22 +1,10 @@
-#    Copyright (C) 2013-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:      James Clough <james.clough91@gmail.com>
-#               Aric Hagberg <hagberg@lanl.gov>
-#               Pieter Swart <swart@lanl.gov>
-#               Dan Schult <dschult@colgate.edu>
-#               chebee7i <chebee7i@gmail.com>
 """Functions for generating line graphs."""
 from itertools import combinations
 from collections import defaultdict
 
 import networkx as nx
 from networkx.utils import arbitrary_element, generate_unique_node
-from networkx.utils.decorators import *
+from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['line_graph', 'inverse_line_graph']
 
@@ -303,7 +291,7 @@ def inverse_line_graph(G):
         v = list(G)[0]
         a = (v, 0)
         b = (v, 1)
-        H = nx.Graph([(a,b)])
+        H = nx.Graph([(a, b)])
         return H
     elif G.number_of_nodes() > 1 and G.number_of_edges() == 0:
         msg = (

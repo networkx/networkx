@@ -1,14 +1,4 @@
-# efficiency.py - functions for computing node, edge, and graph efficiency
-#
-# Copyright 2011, 2012, 2013, 2014, 2015 NetworkX developers
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Provides functions for computing the efficiency of nodes and graphs."""
-
-from itertools import permutations
 
 import networkx as nx
 from networkx.exception import NetworkXNoPath
@@ -113,6 +103,7 @@ def global_efficiency(G):
     # TODO This can be made more efficient by computing all pairs shortest
     # path lengths in parallel.
     return g_eff
+
 
 @not_implemented_for('directed')
 def local_efficiency(G):

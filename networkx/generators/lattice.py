@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Pieter Swart (swart@lanl.gov)
-#          Joel Miller (jmiller@lanl.gov)
-#          Dan Schult (dschult@lanl.gov)
 """Functions for generating grid graphs and lattices
 
 The :func:`grid_2d_graph`, :func:`triangular_lattice_graph`, and
@@ -27,7 +15,6 @@ be found about `Triangular Tiling`_, and `Square, Hex and Triangle Grids`_
 
 from math import sqrt
 
-from networkx.classes import Graph
 from networkx.classes import set_node_attributes
 from networkx.algorithms.minors import contracted_nodes
 from networkx.algorithms.operators.product import cartesian_product

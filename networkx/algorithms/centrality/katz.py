@@ -1,15 +1,3 @@
-# coding=utf8
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (aric.hagberg@gmail.com)
-#          Pieter Swart (swart@lanl.gov)
-#          Sasha Gutfraind (ag362@cornell.edu)
-#          Vincent Gauthier (vgauthier@luxbulb.org)
 """Katz centrality."""
 from math import sqrt
 
@@ -334,13 +322,3 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
         norm = 1.0
     centrality = dict(zip(nodelist, map(float, centrality / norm)))
     return centrality
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

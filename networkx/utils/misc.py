@@ -5,19 +5,12 @@ These are not imported into the base networkx namespace but
 can be accessed, for example, as
 
 >>> import networkx
->>> networkx.utils.is_string_like('spam')
+>>> networkx.utils.is_list_of_ints([1, 2, 3])
 True
+>>> networkx.utils.is_list_of_ints([1, 2, "spam"])
+False
 """
-# Authors:      Aric Hagberg (hagberg@lanl.gov),
-#               Dan Schult(dschult@colgate.edu),
-#               Ben Edwards(bedwards@cs.unm.edu)
 
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from collections import defaultdict
 from collections import deque
 import warnings
@@ -26,35 +19,6 @@ import uuid
 from itertools import tee, chain
 import networkx as nx
 
-# itertools.accumulate is only available on Python 3.2 or later.
-#
-# Once support for Python versions less than 3.2 is dropped, this code should
-# be removed.
-try:
-    from itertools import accumulate
-except ImportError:
-    import operator
-
-    # The code for this function is from the Python 3.5 documentation,
-    # distributed under the PSF license:
-    # <https://docs.python.org/3.5/library/itertools.html#itertools.accumulate>
-    def accumulate(iterable, func=operator.add):
-        it = iter(iterable)
-        try:
-            total = next(it)
-        except StopIteration:
-            return
-        yield total
-        for element in it:
-            total = func(total, element)
-            yield total
-
-# 2.x/3.x compatibility
-try:
-    basestring
-except NameError:
-    basestring = str
-    unicode = str
 
 # some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
@@ -63,7 +27,10 @@ except NameError:
 
 def is_string_like(obj):  # from John Hunter, types-free version
     """Check if obj is string."""
-    return isinstance(obj, basestring)
+    msg = "is_string_like is deprecated and will be removed in 2.6." \
+          "Use isinstance(obj, str) instead."
+    warnings.warn(msg, DeprecationWarning)
+    return isinstance(obj, str)
 
 
 def iterable(obj):
@@ -93,7 +60,7 @@ def flatten(obj, result=None):
 
 def make_list_of_ints(sequence):
     """Return list of ints from sequence of integral numbers.
-    
+
     All elements of the sequence must satisfy int(element) == element
     or a ValueError is raised. Sequence is iterated through once.
 
@@ -136,26 +103,11 @@ def is_list_of_ints(intlist):
     return True
 
 
-PY2 = sys.version_info[0] == 2
-if PY2:
-    def make_str(x):
-        """Returns the string representation of t."""
-        if isinstance(x, unicode):
-            return x
-        else:
-            # Note, this will not work unless x is ascii-encoded.
-            # That is good, since we should be working with unicode anyway.
-            # Essentially, unless we are reading a file, we demand that users
-            # convert any encoded strings to unicode before using the library.
-            #
-            # Also, the str() is necessary to convert integers, etc.
-            # unicode(3) works, but unicode(3, 'unicode-escape') wants a buffer
-            #
-            return unicode(str(x), 'unicode-escape')
-else:
-    def make_str(x):
-        """Returns the string representation of t."""
-        return str(x)
+def make_str(x):
+    """Returns the string representation of t."""
+    msg = "make_str is deprecated and will be removed in 2.6. Use str instead."
+    warnings.warn(msg, DeprecationWarning)
+    return str(x)
 
 
 def generate_unique_node():
@@ -442,12 +394,3 @@ def create_py_random_state(random_state=None):
         return random.Random(random_state)
     msg = '%r cannot be used to generate a random.Random instance'
     raise ValueError(msg % random_state)
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")

@@ -1,17 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 Subraph centrality and communicability betweenness.
 """
-#    Copyright (C) 2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-from networkx.utils import *
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Franck Kalala (franckkalala@yahoo.fr'])
+from networkx.utils import not_implemented_for
+
 __all__ = ['subgraph_centrality_exp',
            'subgraph_centrality',
            'communicability_betweenness_centrality',
@@ -77,10 +69,10 @@ def subgraph_centrality_exp(G):
     # alternative implementation that calculates the matrix exponential
     import scipy.linalg
     nodelist = list(G)  # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G, nodelist)
+    A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
-    expA = scipy.linalg.expm(A.A)
+    expA = scipy.linalg.expm(A)
     # convert diagonal to dictionary keyed by node
     sc = dict(zip(nodelist, map(float, expA.diagonal())))
     return sc
@@ -315,17 +307,3 @@ def estrada_index(G):
     >>> ei=nx.estrada_index(G)
     """
     return sum(subgraph_centrality(G).values())
-
-# fixture for nose tests
-
-
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

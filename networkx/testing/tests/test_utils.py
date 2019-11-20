@@ -1,17 +1,22 @@
-from nose.tools import *
 import networkx as nx
-from networkx.testing import *
+from networkx.testing import (
+    assert_graphs_equal,
+    assert_edges_equal,
+    assert_nodes_equal
+)
 
 # thanks to numpy for this GenericTest class (numpy/testing/test_utils.py)
 
 
 class _GenericTest(object):
-    def _test_equal(self, a, b):
-        self._assert_func(a, b)
+    @classmethod
+    def _test_equal(cls, a, b):
+        cls._assert_func(a, b)
 
-    def _test_not_equal(self, a, b):
+    @classmethod
+    def _test_not_equal(cls, a, b):
         try:
-            self._assert_func(a, b)
+            cls._assert_func(a, b)
             passed = True
         except AssertionError:
             pass
@@ -20,8 +25,7 @@ class _GenericTest(object):
 
 
 class TestNodesEqual(_GenericTest):
-    def setUp(self):
-        self._assert_func = assert_nodes_equal
+    _assert_func = assert_nodes_equal
 
     def test_nodes_equal(self):
         a = [1, 2, 5, 4]
@@ -49,8 +53,7 @@ class TestNodesEqual(_GenericTest):
 
 
 class TestEdgesEqual(_GenericTest):
-    def setUp(self):
-        self._assert_func = assert_edges_equal
+    _assert_func = assert_edges_equal
 
     def test_edges_equal(self):
         a = [(1, 2), (5, 4)]
@@ -116,8 +119,7 @@ class TestEdgesEqual(_GenericTest):
 
 
 class TestGraphsEqual(_GenericTest):
-    def setUp(self):
-        self._assert_func = assert_graphs_equal
+    _assert_func = assert_graphs_equal
 
     def test_graphs_equal(self):
         G = nx.path_graph(4)

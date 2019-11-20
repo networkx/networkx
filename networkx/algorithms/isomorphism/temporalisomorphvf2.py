@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 *****************************
 Time-respecting VF2 Algorithm
@@ -67,7 +66,6 @@ Handles directed and undirected graphs and graphs with parallel edges.
 """
 
 import networkx as nx
-from datetime import datetime, timedelta
 from .isomorphvf2 import GraphMatcher, DiGraphMatcher
 
 __all__ = ['TimeRespectingGraphMatcher',
@@ -87,6 +85,7 @@ class TimeRespectingGraphMatcher(GraphMatcher):
         syntactic and semantic feasibility:
 
         >>> from networkx.algorithms import isomorphism
+        >>> from datetime import timedelta
         >>> G1 = nx.Graph(nx.path_graph(4, create_using=nx.Graph()))
 
         >>> G2 = nx.Graph(nx.path_graph(4, create_using=nx.Graph()))
@@ -104,7 +103,7 @@ class TimeRespectingGraphMatcher(GraphMatcher):
         """
         dates = []
         for n in neighbors:
-            if type(Gx) == type(nx.Graph()):  # Graph G[u][v] returns the data dictionary.
+            if isinstance(Gx, nx.Graph):  # Graph G[u][v] returns the data dictionary.
                 dates.append(Gx[Gx_node][n][self.temporal_attribute_name])
             else:  # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
                 for edge in Gx[Gx_node][n].values():  # Iterates all edges between node pair.
@@ -149,6 +148,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         syntactic and semantic feasibility:
 
         >>> from networkx.algorithms import isomorphism
+        >>> from datetime import timedelta
         >>> G1 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
 
         >>> G2 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
@@ -164,7 +164,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         Get the dates of edges from predecessors.
         """
         pred_dates = []
-        if type(Gx) == type(nx.DiGraph()):  # Graph G[u][v] returns the data dictionary.
+        if isinstance(Gx, nx.DiGraph):  # Graph G[u][v] returns the data dictionary.
             for n in pred:
                 pred_dates.append(Gx[n][Gx_node][self.temporal_attribute_name])
         else:  # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
@@ -178,7 +178,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         Get the dates of edges to successors.
         """
         succ_dates = []
-        if type(Gx) == type(nx.DiGraph()):  # Graph G[u][v] returns the data dictionary.
+        if isinstance(Gx, nx.DiGraph):  # Graph G[u][v] returns the data dictionary.
             for n in succ:
                 succ_dates.append(Gx[Gx_node][n][self.temporal_attribute_name])
         else:  # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.

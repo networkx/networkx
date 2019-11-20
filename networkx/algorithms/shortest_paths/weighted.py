@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:  Aric Hagberg <hagberg@lanl.gov>
-#           Loïc Séguin-C. <loicseguin@gmail.com>
-#           Dan Schult <dschult@colgate.edu>
-#           Niels van Adrichem <n.l.m.vanadrichem@tudelft.nl>
 """
 Shortest path algorithms for weighed graphs.
 """
@@ -1172,11 +1160,12 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     >>> sorted(dist.items())
     [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
-    >>> from nose.tools import assert_raises
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> G[1][2]['weight'] = -7
-    >>> assert_raises(nx.NetworkXUnbounded, \
-                      nx.bellman_ford_predecessor_and_distance, G, 0)
+    >>> nx.bellman_ford_predecessor_and_distance(G, 0)
+    Traceback (most recent call last):
+        ...
+    networkx.exception.NetworkXUnbounded: Negative cost cycle detected.
 
     Notes
     -----
@@ -1748,10 +1737,12 @@ def goldberg_radzik(G, source, weight='weight'):
     >>> sorted(dist.items())
     [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
-    >>> from nose.tools import assert_raises
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> G[1][2]['weight'] = -7
-    >>> assert_raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 0)
+    >>> nx.goldberg_radzik(G, 0)
+    Traceback (most recent call last):
+        ...
+    networkx.exception.NetworkXUnbounded: Negative cost cycle detected.
 
     Notes
     -----

@@ -1,7 +1,3 @@
-# Copyright (C) 2018
-# Robert Gmyr <robert@gmyr.net>
-# All rights reserved.
-# BSD license.
 """Functions for computing sparsifiers of graphs."""
 import math
 import networkx as nx

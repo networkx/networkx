@@ -1,15 +1,7 @@
 """PageRank analysis of graph structure. """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#    NetworkX:http://networkx.github.io/
 import networkx as nx
 from networkx.utils import not_implemented_for
-__author__ = """\n""".join(["Aric Hagberg <aric.hagberg@gmail.com>",
-                            "Brandon Liu <brandon.k.liu@gmail.com"])
+
 __all__ = ['pagerank', 'pagerank_numpy', 'pagerank_scipy', 'google_matrix']
 
 
@@ -468,16 +460,3 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
         if err < N * tol:
             return dict(zip(nodelist, map(float, x)))
     raise nx.PowerIterationFailedConvergence(max_iter)
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

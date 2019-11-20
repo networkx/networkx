@@ -1,17 +1,8 @@
 """Laplacian matrix of graphs.
 """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
 from networkx.utils import not_implemented_for
-__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)',
-                        'Alejandro Weinstein <alejandro.weinstein@gmail.com>'])
+
 __all__ = ['laplacian_matrix',
            'normalized_laplacian_matrix',
            'directed_laplacian_matrix',
@@ -367,13 +358,3 @@ def _transition_matrix(G, nodelist=None, weight='weight',
         raise nx.NetworkXError("walk_type must be random, lazy, or pagerank")
 
     return P
-
-# fixture for nose tests
-
-
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")

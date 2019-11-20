@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
 """Functions for computing dominating sets in a graph."""
 from itertools import chain
 
 import networkx as nx
 from networkx.utils import arbitrary_element
 
-__author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 __all__ = ['dominating_set', 'is_dominating_set']
 
 

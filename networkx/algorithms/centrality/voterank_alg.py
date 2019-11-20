@@ -1,14 +1,7 @@
-#   Copyright (C) 2017 by
-#   Fredrik Erlandsson <fredrik.e@gmail.com>
-#   All rights reserved.
-#   BSD license.
-#
 """Algorithm to compute influential seeds in a graph using voterank."""
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['voterank']
-__author__ = """\n""".join(['Fredrik Erlandsson <fredrik.e@gmail.com>',
-                            'Piotr Brodka (piotr.brodka@pwr.edu.pl'])
 
 
 @not_implemented_for('directed')
@@ -38,7 +31,7 @@ def voterank(G, number_of_nodes=None, max_iter=10000):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is digraph.
 
     References
@@ -63,10 +56,10 @@ def voterank(G, number_of_nodes=None, max_iter=10000):
             v['voterank'][0] = 0
         # step 2 - vote
         for n, nbr in G.edges():
-            G.node[n]['voterank'][0] += G.node[nbr]['voterank'][1]
-            G.node[nbr]['voterank'][0] += G.node[n]['voterank'][1]
+            G.nodes[n]['voterank'][0] += G.nodes[nbr]['voterank'][1]
+            G.nodes[nbr]['voterank'][0] += G.nodes[n]['voterank'][1]
         for n in voterank:
-            G.node[n]['voterank'][0] = 0
+            G.nodes[n]['voterank'][0] = 0
         # step 3 - select top node
         n, value = max(G.nodes(data=True),
                        key=lambda x: x[1]['voterank'][0])
@@ -76,8 +69,8 @@ def voterank(G, number_of_nodes=None, max_iter=10000):
         if len(voterank) >= number_of_nodes:
             return voterank
         # weaken the selected node
-        G.node[n]['voterank'] = [0, 0]
+        G.nodes[n]['voterank'] = [0, 0]
         # step 4 - update voterank properties
         for nbr in G.neighbors(n):
-            G.node[nbr]['voterank'][1] -= 1 / avgDegree
+            G.nodes[nbr]['voterank'][1] -= 1 / avgDegree
     return voterank

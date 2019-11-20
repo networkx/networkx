@@ -1,17 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2006-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:
-#    Aric Hagberg <aric.hagberg@gmail.com>
-#    Dan Schult <dschult@colgate.edu>
-#    Ben Edwards <bedwards@cs.unm.edu>
-#    Neil Girdhar <neil.girdhar@mcgill.ca>
-#
 """Algorithms for directed acyclic graphs (DAGs).
 
 Note that most of these functions are only guaranteed to work for DAGs.
@@ -19,8 +5,8 @@ In general, these functions do not check for acyclic-ness, so it is up
 to the user to check for that.
 """
 
-from collections import defaultdict, deque
-from fractions import gcd
+from collections import deque
+from math import gcd
 from functools import partial
 from itertools import chain
 from itertools import product
@@ -504,7 +490,7 @@ def transitive_closure(G, reflexive=False):
         is a reflexive tranistive closure of G.
         If False (the default) non-trivial cycles create self-loops.
         If None, self-loops are not created.
-        
+
     Returns
     -------
     NetworkX DiGraph
@@ -893,7 +879,7 @@ def dag_to_branching(G):
 
         >>> for source, nodes in sources.items():
         ...     for v in nodes:
-        ...         B.node[v].update(G.node[source])
+        ...         B.nodes[v].update(G.nodes[source])
 
     Notes
     -----

@@ -1,13 +1,3 @@
-# dinitz.py - Dinitz' algorithm for maximum flow problems.
-#
-# Copyright 2016-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Author: Jordi Torrents <jordi.t21@gmail.com>
 """
 Dinitz' algorithm for maximum flow problems.
 """

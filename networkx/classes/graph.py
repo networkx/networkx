@@ -1,13 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author:  Aric Hagberg (hagberg@lanl.gov),
-#          Pieter Swart (swart@lanl.gov),
-#          Dan Schult(dschult@colgate.edu)
 """Base class for undirected graphs.
 
 The Graph class allows any hashable object as a node
@@ -17,16 +7,13 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 
 For directed graphs see DiGraph and MultiDiGraph.
 """
-import warnings
 from copy import deepcopy
-from collections.abc import Mapping
 
 import networkx as nx
-from networkx.classes.coreviews import AtlasView, AdjacencyView
+from networkx.classes.coreviews import AdjacencyView
 from networkx.classes.reportviews import NodeView, EdgeView, DegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
-from networkx.utils import pairwise
 
 
 class Graph(object):
@@ -438,7 +425,7 @@ class Graph(object):
         See Also
         --------
         number_of_nodes, order  which are identical
-        
+
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -760,42 +747,6 @@ class Graph(object):
         # setattr doesn't work because attribute already exists
         self.__dict__['nodes'] = nodes
         return nodes
-
-    # for backwards compatibility with 1.x, will be removed for 3.x
-    node = nodes
-
-    def add_path(self, nodes, **attr):
-        msg = "add_path is deprecated. Use nx.add_path instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.add_path(self, nodes, **attr)
-
-    def add_cycle(self, nodes, **attr):
-        msg = "add_cycle is deprecated. Use nx.add_cycle instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.add_cycle(self, nodes, **attr)
-
-    def add_star(self, nodes, **attr):
-        msg = "add_star is deprecated. Use nx.add_star instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.add_star(self, nodes, **attr)
-
-    def nodes_with_selfloops(self):
-        msg = "nodes_with_selfloops is deprecated." \
-              "Use nx.nodes_with_selfloops instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.nodes_with_selfloops(self)
-
-    def number_of_selfloops(self):
-        msg = "number_of_selfloops is deprecated." \
-              "Use nx.number_of_selfloops instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.number_of_selfloops(self)
-
-    def selfloop_edges(self, data=False, keys=False, default=None):
-        msg = "selfloop_edges is deprecated. Use nx.selfloop_edges instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.selfloop_edges(self, data, keys, default)
-    # Done with backward compatibility methods for 1.x
 
     def number_of_nodes(self):
         """Returns the number of nodes in the graph.
@@ -1259,8 +1210,7 @@ class Graph(object):
 
         Notes
         -----
-        It is usually more convenient (and faster) to access the
-        adjacency dictionary as ``G[n]``:
+        Alternate ways to access the neighbors are ``G.adj[n]`` or ``G[n]``:
 
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge('a', 'b', weight=7)
@@ -1464,12 +1414,6 @@ class Graph(object):
     def is_directed(self):
         """Returns True if graph is directed, False otherwise."""
         return False
-
-    def fresh_copy(self):
-        # remove by v3 if not before
-        msg = 'G.fresh_copy is deprecated. Use G.__class__ instead'
-        warnings.warn(msg, DeprecationWarning, stacklevel=2)
-        return self.__class__()
 
     def copy(self, as_view=False):
         """Returns a copy of the graph.

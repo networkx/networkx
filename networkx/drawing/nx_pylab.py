@@ -1,11 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """
 **********
 Matplotlib
@@ -23,7 +15,6 @@ pygraphviz:     http://pygraphviz.github.io/
 """
 from numbers import Number
 import networkx as nx
-from networkx.utils import is_string_like
 from networkx.drawing.layout import shell_layout, \
     circular_layout, kamada_kawai_layout, spectral_layout, \
     spring_layout, random_layout, planar_layout
@@ -85,9 +76,7 @@ def draw(G, pos=None, ax=None, **kwds):
     Notes
     -----
     This function has the same name as pylab.draw and pyplot.draw
-    so beware when using
-
-    >>> from networkx import *
+    so beware when using `from networkx import *`
 
     since you might overwrite the pylab.draw function.
 
@@ -615,6 +604,9 @@ def draw_networkx_edges(G, pos,
                                          alpha=alpha
                                          )
 
+        edge_collection.set_cmap(edge_cmap)
+        edge_collection.set_clim(edge_vmin, edge_vmax)
+
         edge_collection.set_zorder(1)  # edges go behind nodes
         edge_collection.set_label(label)
         ax.add_collection(edge_collection)
@@ -800,7 +792,7 @@ def draw_networkx_labels(G, pos,
     text_items = {}  # there is no text collection so we'll fake one
     for n, label in labels.items():
         (x, y) = pos[n]
-        if not is_string_like(label):
+        if not isinstance(label, str):
             label = str(label)  # this makes "1" and 1 labeled the same
         t = ax.text(x, y,
                     label,
@@ -946,7 +938,7 @@ def draw_networkx_edge_labels(G, pos,
                         ec=(1.0, 1.0, 1.0),
                         fc=(1.0, 1.0, 1.0),
                         )
-        if not is_string_like(label):
+        if not isinstance(label, str):
             label = str(label)  # this makes "1" and 1 labeled the same
 
         # set optional alignment
@@ -1032,7 +1024,7 @@ def draw_random(G, **kwargs):
 def draw_spectral(G, **kwargs):
     """Draw the graph G with a spectral 2D layout.
 
-    Using the unnormalized Laplacion, the layout shows possible clusters of
+    Using the unnormalized Laplacian, the layout shows possible clusters of
     nodes which are an approximation of the ratio cut. The positions are the
     entries of the second and third eigenvectors corresponding to the
     ascending eigenvalues starting from the second one.
@@ -1178,15 +1170,3 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
     except TypeError:
         rgba_colors[:, -1] = alpha
     return rgba_colors
-
-# fixture for nose tests
-
-
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import matplotlib as mpl
-        mpl.use('PS', warn=False)
-        import matplotlib.pyplot as plt
-    except ImportError:
-        raise SkipTest("matplotlib not available")

@@ -1,13 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:   Aric Hagberg <hagberg@lanl.gov>
-#            Dan Schult <dschult@colgate.edu>
-#            Pieter Swart <swart@lanl.gov>
 """Base class for directed graphs."""
 from copy import deepcopy
 
@@ -1194,7 +1184,7 @@ class DiGraph(Graph):
         if copy:
             H = self.__class__()
             H.graph.update(deepcopy(self.graph))
-            H.add_nodes_from((n, deepcopy(d)) for n, d in self.node.items())
+            H.add_nodes_from((n, deepcopy(d)) for n, d in self.nodes.items())
             H.add_edges_from((v, u, deepcopy(d)) for u, v, d
                              in self.edges(data=True))
             return H

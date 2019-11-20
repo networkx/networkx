@@ -4,8 +4,6 @@
 
 __all__ = ['attr_matrix', 'attr_sparse_matrix']
 
-import networkx as nx
-
 
 def _node_value(G, node_attr):
     """Returns a function that returns a value from G.nodes[u].
@@ -446,16 +444,3 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
         return M, ordering
     else:
         return M
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

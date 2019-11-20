@@ -1,5 +1,5 @@
 import json
-from nose.tools import assert_true, assert_false, assert_raises
+import pytest
 import networkx as nx
 from networkx.readwrite.json_graph import jit_data, jit_graph
 
@@ -15,7 +15,7 @@ class TestJIT(object):
         G.add_edge('Node1', 'Node2')
         d = jit_data(G)
         K = jit_graph(json.loads(d))
-        assert_true(nx.is_isomorphic(G, K))
+        assert nx.is_isomorphic(G, K)
 
     def test_jit_2(self):
         G = nx.Graph()
@@ -26,7 +26,7 @@ class TestJIT(object):
         G.add_edge(1, 2)
         d = jit_data(G)
         K = jit_graph(json.loads(d))
-        assert_true(nx.is_isomorphic(G, K))
+        assert nx.is_isomorphic(G, K)
 
     def test_jit_directed(self):
         G = nx.DiGraph()
@@ -37,7 +37,7 @@ class TestJIT(object):
         G.add_edge(1, 2)
         d = jit_data(G)
         K = jit_graph(json.loads(d), create_using=nx.DiGraph())
-        assert_true(nx.is_isomorphic(G, K))
+        assert nx.is_isomorphic(G, K)
 
     def test_jit_multi_directed(self):
         G = nx.MultiDiGraph()
@@ -46,19 +46,19 @@ class TestJIT(object):
         G.add_edge(1, 2, weight=9, something=0)
         G.add_edge(2, 3, weight=4, something=3)
         G.add_edge(1, 2)
-        assert_raises(nx.NetworkXNotImplemented, jit_data, G)
+        pytest.raises(nx.NetworkXNotImplemented, jit_data, G)
 
         H = nx.DiGraph(G)
         d = jit_data(H)
         K = jit_graph(json.loads(d), create_using=nx.MultiDiGraph())
-        assert_true(nx.is_isomorphic(H, K))
+        assert nx.is_isomorphic(H, K)
         K.add_edge(1, 2)
-        assert_false(nx.is_isomorphic(H, K))
-        assert_true(nx.is_isomorphic(G, K))
+        assert not nx.is_isomorphic(H, K)
+        assert nx.is_isomorphic(G, K)
 
     def test_jit_round_trip(self):
         G = nx.Graph()
         d = nx.jit_data(G)
         H = jit_graph(json.loads(d))
         K = jit_graph(d)
-        assert_true(nx.is_isomorphic(H, K))
+        assert nx.is_isomorphic(H, K)

@@ -1,12 +1,6 @@
-#    Copyright (C) 2011-2013 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from itertools import chain
 import networkx as nx
-__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
+
 __all__ = ['adjacency_data', 'adjacency_graph']
 
 _attrs = dict(id='id', key='key')

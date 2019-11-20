@@ -1,10 +1,3 @@
-#    Copyright 2016-2019 NetworkX developers.
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """
 Union-find data structure.
 """
@@ -92,11 +85,9 @@ class UnionFind:
         """
         # Ensure fully pruned paths
         for x in self.parents.keys():
-            _ = self[x] # Evaluated for side-effect only
+            _ = self[x]  # Evaluated for side-effect only
 
-        # TODO In Python 3.3+, this should be `yield from ...`.
-        for block in groups(self.parents).values():
-            yield block
+        yield from groups(self.parents).values()
 
     def union(self, *objects):
         """Find the sets containing the objects and merge them all."""

@@ -1,17 +1,16 @@
-from nose.tools import assert_equal, assert_raises
+import pytest
 from networkx import Graph, NetworkXError
-from networkx.algorithms.community.asyn_fluid import *
-import random
+from networkx.algorithms.community.asyn_fluid import asyn_fluidc
 
 
 def test_exceptions():
     test = Graph()
     test.add_node('a')
-    assert_raises(NetworkXError, asyn_fluidc, test, 'hi')
-    assert_raises(NetworkXError, asyn_fluidc, test, -1)
-    assert_raises(NetworkXError, asyn_fluidc, test, 3)
+    pytest.raises(NetworkXError, asyn_fluidc, test, 'hi')
+    pytest.raises(NetworkXError, asyn_fluidc, test, -1)
+    pytest.raises(NetworkXError, asyn_fluidc, test, 3)
     test.add_node('b')
-    assert_raises(NetworkXError, asyn_fluidc, test, 1)
+    pytest.raises(NetworkXError, asyn_fluidc, test, 1)
 
 
 def test_single_node():
@@ -24,7 +23,7 @@ def test_single_node():
 
     communities = asyn_fluidc(test, 1)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth
 
 
 def test_two_nodes():
@@ -37,7 +36,7 @@ def test_two_nodes():
 
     communities = asyn_fluidc(test, 2)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth
 
 
 def test_two_clique_communities():
@@ -62,13 +61,10 @@ def test_two_clique_communities():
 
     communities = asyn_fluidc(test, 2, seed=7)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth
 
 
-def five_clique_ring():
-    """Not auto-tested (not named test_...) due to cross-version seed issues
-    python3.4 in particular gives different results.
-    """
+def test_five_clique_ring():
     test = Graph()
 
     # c1
@@ -127,4 +123,4 @@ def five_clique_ring():
 
     communities = asyn_fluidc(test, 5, seed=9)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth

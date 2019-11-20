@@ -1,6 +1,6 @@
-from nose.tools import *
+import pytest
 import networkx as nx
-from networkx.utils import *
+from networkx.utils import BinaryHeap, PairingHeap
 
 
 class X(object):
@@ -92,34 +92,34 @@ def _test_heap_class(cls, *args, **kwargs):
     # Basic behavioral test
     for op in data:
         if op[-1] is not nx.NetworkXError:
-            assert_equal(op[-1], getattr(heap, op[0])(*op[1:-1]))
+            assert op[-1] == getattr(heap, op[0])(*op[1:-1])
         else:
-            assert_raises(op[-1], getattr(heap, op[0]), *op[1:-1])
+            pytest.raises(op[-1], getattr(heap, op[0]), *op[1:-1])
     # Coverage test.
     for i in range(99, -1, -1):
-        assert_true(heap.insert(i, i))
+        assert heap.insert(i, i)
     for i in range(50):
-        assert_equal(heap.pop(), (i, i))
+        assert heap.pop() == (i, i)
     for i in range(100):
-        assert_equal(heap.insert(i, i), i < 50)
+        assert heap.insert(i, i) == (i < 50)
     for i in range(100):
-        assert_false(heap.insert(i, i + 1))
+        assert not heap.insert(i, i + 1)
     for i in range(50):
-        assert_equal(heap.pop(), (i, i))
+        assert heap.pop() == (i, i)
     for i in range(100):
-        assert_equal(heap.insert(i, i + 1), i < 50)
+        assert heap.insert(i, i + 1) == (i < 50)
     for i in range(49):
-        assert_equal(heap.pop(), (i, i + 1))
-    assert_equal(sorted([heap.pop(), heap.pop()]), [(49, 50), (50, 50)])
+        assert heap.pop() == (i, i + 1)
+    assert sorted([heap.pop(), heap.pop()]) == [(49, 50), (50, 50)]
     for i in range(51, 100):
-        assert_false(heap.insert(i, i + 1, True))
+        assert not heap.insert(i, i + 1, True)
     for i in range(51, 70):
-        assert_equal(heap.pop(), (i, i + 1))
+        assert heap.pop() == (i, i + 1)
     for i in range(100):
-        assert_true(heap.insert(i, i))
+        assert heap.insert(i, i)
     for i in range(100):
-        assert_equal(heap.pop(), (i, i))
-    assert_raises(nx.NetworkXError, heap.pop)
+        assert heap.pop() == (i, i)
+    pytest.raises(nx.NetworkXError, heap.pop)
 
 
 def test_PairingHeap():

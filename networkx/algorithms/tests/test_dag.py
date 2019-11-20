@@ -1,16 +1,9 @@
 from itertools import combinations, permutations
 
-from nose.tools import assert_equal
-from nose.tools import assert_false
-from nose.tools import assert_in
-from nose.tools import assert_raises
-from nose.tools import assert_true
-from nose.tools import raises
-from nose.tools import ok_
+import pytest
 
 import networkx as nx
 from networkx.testing.utils import assert_edges_equal
-from networkx.utils import arbitrary_element
 from networkx.utils import consume
 from networkx.utils import pairwise
 
@@ -20,28 +13,28 @@ class TestDagLongestPath(object):
 
     def test_empty(self):
         G = nx.DiGraph()
-        assert_equal(nx.dag_longest_path(G), [])
+        assert nx.dag_longest_path(G) == []
 
     def test_unweighted1(self):
         edges = [(1, 2), (2, 3), (2, 4), (3, 5), (5, 6), (3, 7)]
         G = nx.DiGraph(edges)
-        assert_equal(nx.dag_longest_path(G), [1, 2, 3, 5, 6])
+        assert nx.dag_longest_path(G) == [1, 2, 3, 5, 6]
 
     def test_unweighted2(self):
         edges = [(1, 2), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
         G = nx.DiGraph(edges)
-        assert_equal(nx.dag_longest_path(G), [1, 2, 3, 4, 5])
+        assert nx.dag_longest_path(G) == [1, 2, 3, 4, 5]
 
     def test_weighted(self):
         G = nx.DiGraph()
         edges = [(1, 2, -5), (2, 3, 1), (3, 4, 1), (4, 5, 0), (3, 5, 4),
                  (1, 6, 2)]
         G.add_weighted_edges_from(edges)
-        assert_equal(nx.dag_longest_path(G), [2, 3, 5])
+        assert nx.dag_longest_path(G) == [2, 3, 5]
 
     def test_undirected_not_implemented(self):
         G = nx.Graph()
-        assert_raises(nx.NetworkXNotImplemented, nx.dag_longest_path, G)
+        pytest.raises(nx.NetworkXNotImplemented, nx.dag_longest_path, G)
 
     def test_unorderable_nodes(self):
         """Tests that computing the longest path does not depend on
@@ -50,21 +43,9 @@ class TestDagLongestPath(object):
         For more information, see issue #1989.
 
         """
-        # TODO In Python 3, instances of the `object` class are
-        # unorderable by default, so we wouldn't need to define our own
-        # class here, we could just instantiate an instance of the
-        # `object` class. However, we still support Python 2; when
-        # support for Python 2 is dropped, this test can be simplified
-        # by replacing `Unorderable()` by `object()`.
-        class Unorderable(object):
-            def __lt__(self, other):
-                error_msg = "< not supported between instances of {} and {}"
-                types = (type(self).__name__, type(other).__name__)
-                raise TypeError(error_msg.format(types))
-
         # Create the directed path graph on four nodes in a diamond shape,
         # with nodes represented as (unorderable) Python objects.
-        nodes = [Unorderable() for n in range(4)]
+        nodes = [object() for n in range(4)]
         G = nx.DiGraph()
         G.add_edge(nodes[0], nodes[1])
         G.add_edge(nodes[0], nodes[2])
@@ -84,32 +65,33 @@ class TestDagLongestPathLength(object):
     def test_unweighted(self):
         edges = [(1, 2), (2, 3), (2, 4), (3, 5), (5, 6), (5, 7)]
         G = nx.DiGraph(edges)
-        assert_equal(nx.dag_longest_path_length(G), 4)
+        assert nx.dag_longest_path_length(G) == 4
 
         edges = [(1, 2), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
         G = nx.DiGraph(edges)
-        assert_equal(nx.dag_longest_path_length(G), 4)
+        assert nx.dag_longest_path_length(G) == 4
 
         # test degenerate graphs
         G = nx.DiGraph()
         G.add_node(1)
-        assert_equal(nx.dag_longest_path_length(G), 0)
+        assert nx.dag_longest_path_length(G) == 0
 
     def test_undirected_not_implemented(self):
         G = nx.Graph()
-        assert_raises(nx.NetworkXNotImplemented, nx.dag_longest_path_length, G)
+        pytest.raises(nx.NetworkXNotImplemented, nx.dag_longest_path_length, G)
 
     def test_weighted(self):
         edges = [(1, 2, -5), (2, 3, 1), (3, 4, 1), (4, 5, 0), (3, 5, 4),
                  (1, 6, 2)]
         G = nx.DiGraph()
         G.add_weighted_edges_from(edges)
-        assert_equal(nx.dag_longest_path_length(G), 5)
+        assert nx.dag_longest_path_length(G) == 5
 
 
 class TestDAG:
 
-    def setUp(self):
+    @classmethod
+    def setup_class(cls):
         pass
 
     def test_topological_sort1(self):
@@ -117,43 +99,43 @@ class TestDAG:
 
         for algorithm in [nx.topological_sort,
                           nx.lexicographical_topological_sort]:
-            assert_equal(tuple(algorithm(DG)), (1, 2, 3))
+            assert tuple(algorithm(DG)) == (1, 2, 3)
 
         DG.add_edge(3, 2)
 
         for algorithm in [nx.topological_sort,
                           nx.lexicographical_topological_sort]:
-            assert_raises(nx.NetworkXUnfeasible, consume, algorithm(DG))
+            pytest.raises(nx.NetworkXUnfeasible, consume, algorithm(DG))
 
         DG.remove_edge(2, 3)
 
         for algorithm in [nx.topological_sort,
                           nx.lexicographical_topological_sort]:
-            assert_equal(tuple(algorithm(DG)), (1, 3, 2))
+            assert tuple(algorithm(DG)) == (1, 3, 2)
 
         DG.remove_edge(3, 2)
 
-        assert_in(tuple(nx.topological_sort(DG)), {(1, 2, 3), (1, 3, 2)})
-        assert_equal(tuple(nx.lexicographical_topological_sort(DG)), (1, 2, 3))
+        assert tuple(nx.topological_sort(DG)) in {(1, 2, 3), (1, 3, 2)}
+        assert tuple(nx.lexicographical_topological_sort(DG)) == (1, 2, 3)
 
     def test_is_directed_acyclic_graph(self):
         G = nx.generators.complete_graph(2)
-        assert_false(nx.is_directed_acyclic_graph(G))
-        assert_false(nx.is_directed_acyclic_graph(G.to_directed()))
-        assert_false(nx.is_directed_acyclic_graph(nx.Graph([(3, 4), (4, 5)])))
-        assert_true(nx.is_directed_acyclic_graph(nx.DiGraph([(3, 4), (4, 5)])))
+        assert not nx.is_directed_acyclic_graph(G)
+        assert not nx.is_directed_acyclic_graph(G.to_directed())
+        assert not nx.is_directed_acyclic_graph(nx.Graph([(3, 4), (4, 5)]))
+        assert nx.is_directed_acyclic_graph(nx.DiGraph([(3, 4), (4, 5)]))
 
     def test_topological_sort2(self):
         DG = nx.DiGraph({1: [2], 2: [3], 3: [4],
                          4: [5], 5: [1], 11: [12],
                          12: [13], 13: [14], 14: [15]})
-        assert_raises(nx.NetworkXUnfeasible, consume, nx.topological_sort(DG))
+        pytest.raises(nx.NetworkXUnfeasible, consume, nx.topological_sort(DG))
 
-        assert_false(nx.is_directed_acyclic_graph(DG))
+        assert not nx.is_directed_acyclic_graph(DG)
 
         DG.remove_edge(1, 2)
         consume(nx.topological_sort(DG))
-        assert_true(nx.is_directed_acyclic_graph(DG))
+        assert nx.is_directed_acyclic_graph(DG)
 
     def test_topological_sort3(self):
         DG = nx.DiGraph()
@@ -163,25 +145,25 @@ class TestDAG:
         DG.add_edges_from([(4, i) for i in range(12, 15)])
 
         def validate(order):
-            ok_(isinstance(order, list))
-            assert_equal(set(order), set(DG))
+            assert isinstance(order, list)
+            assert set(order) == set(DG)
             for u, v in combinations(order, 2):
-                assert_false(nx.has_path(DG, v, u))
+                assert not nx.has_path(DG, v, u)
         validate(list(nx.topological_sort(DG)))
 
         DG.add_edge(14, 1)
-        assert_raises(nx.NetworkXUnfeasible, consume, nx.topological_sort(DG))
+        pytest.raises(nx.NetworkXUnfeasible, consume, nx.topological_sort(DG))
 
     def test_topological_sort4(self):
         G = nx.Graph()
         G.add_edge(1, 2)
         # Only directed graphs can be topologically sorted.
-        assert_raises(nx.NetworkXError, consume, nx.topological_sort(G))
+        pytest.raises(nx.NetworkXError, consume, nx.topological_sort(G))
 
     def test_topological_sort5(self):
         G = nx.DiGraph()
         G.add_edge(0, 1)
-        assert_equal(list(nx.topological_sort(G)), [0, 1])
+        assert list(nx.topological_sort(G)) == [0, 1]
 
     def test_topological_sort6(self):
         for algorithm in [nx.topological_sort,
@@ -210,22 +192,22 @@ class TestDAG:
                         first = False
                         DG.remove_node(2)
 
-            assert_raises(RuntimeError, runtime_error)
-            assert_raises(RuntimeError, runtime_error2)
-            assert_raises(nx.NetworkXUnfeasible, unfeasible_error)
+            pytest.raises(RuntimeError, runtime_error)
+            pytest.raises(RuntimeError, runtime_error2)
+            pytest.raises(nx.NetworkXUnfeasible, unfeasible_error)
 
     def test_all_topological_sorts_1(self):
         DG = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 5)])
-        assert_equal(list(nx.all_topological_sorts(DG)), [[1, 2, 3, 4, 5]])
+        assert list(nx.all_topological_sorts(DG)) == [[1, 2, 3, 4, 5]]
 
     def test_all_topological_sorts_2(self):
         DG = nx.DiGraph([(1, 3), (2, 1), (2, 4), (4, 3), (4, 5)])
-        assert_equal(sorted(nx.all_topological_sorts(DG)),
-                     [[2, 1, 4, 3, 5],
-                      [2, 1, 4, 5, 3],
-                      [2, 4, 1, 3, 5],
-                      [2, 4, 1, 5, 3],
-                      [2, 4, 5, 1, 3]])
+        assert (sorted(nx.all_topological_sorts(DG)) ==
+                [[2, 1, 4, 3, 5],
+                 [2, 1, 4, 5, 3],
+                 [2, 4, 1, 3, 5],
+                 [2, 4, 1, 5, 3],
+                 [2, 4, 5, 1, 3]])
 
     def test_all_topological_sorts_3(self):
         def unfeasible():
@@ -241,23 +223,23 @@ class TestDAG:
         def not_implemted_2():
             G = nx.MultiGraph([(1, 2), (1, 2), (2, 3)])
             list(nx.all_topological_sorts(G))
-        assert_raises(nx.NetworkXUnfeasible, unfeasible)
-        assert_raises(nx.NetworkXNotImplemented, not_implemented)
-        assert_raises(nx.NetworkXNotImplemented, not_implemted_2)
+        pytest.raises(nx.NetworkXUnfeasible, unfeasible)
+        pytest.raises(nx.NetworkXNotImplemented, not_implemented)
+        pytest.raises(nx.NetworkXNotImplemented, not_implemted_2)
 
     def test_all_topological_sorts_4(self):
         DG = nx.DiGraph()
         for i in range(7):
             DG.add_node(i)
-        assert_equal(sorted(map(list, permutations(DG.nodes))),
-                     sorted(nx.all_topological_sorts(DG)))
+        assert (sorted(map(list, permutations(DG.nodes))) ==
+                sorted(nx.all_topological_sorts(DG)))
 
     def test_all_topological_sorts_multigraph_1(self):
         DG = nx.MultiDiGraph([(1, 2), (1, 2), (2, 3),
                               (3, 4), (3, 5), (3, 5), (3, 5)])
-        assert_equal(sorted(nx.all_topological_sorts(DG)),
-                     sorted([[1, 2, 3, 4, 5],
-                             [1, 2, 3, 5, 4]]))
+        assert (sorted(nx.all_topological_sorts(DG)) ==
+                sorted([[1, 2, 3, 4, 5],
+                        [1, 2, 3, 5, 4]]))
 
     def test_all_topological_sorts_multigraph_2(self):
         N = 9
@@ -265,28 +247,28 @@ class TestDAG:
         for i in range(1, N):
             edges.extend([(i, i+1)] * i)
         DG = nx.MultiDiGraph(edges)
-        assert_equal(list(nx.all_topological_sorts(DG)),
-                     [list(range(1, N+1))])
+        assert (list(nx.all_topological_sorts(DG)) ==
+                [list(range(1, N+1))])
 
     def test_ancestors(self):
         G = nx.DiGraph()
         ancestors = nx.algorithms.dag.ancestors
         G.add_edges_from([
             (1, 2), (1, 3), (4, 2), (4, 3), (4, 5), (2, 6), (5, 6)])
-        assert_equal(ancestors(G, 6), set([1, 2, 4, 5]))
-        assert_equal(ancestors(G, 3), set([1, 4]))
-        assert_equal(ancestors(G, 1), set())
-        assert_raises(nx.NetworkXError, ancestors, G, 8)
+        assert ancestors(G, 6) == set([1, 2, 4, 5])
+        assert ancestors(G, 3) == set([1, 4])
+        assert ancestors(G, 1) == set()
+        pytest.raises(nx.NetworkXError, ancestors, G, 8)
 
     def test_descendants(self):
         G = nx.DiGraph()
         descendants = nx.algorithms.dag.descendants
         G.add_edges_from([
             (1, 2), (1, 3), (4, 2), (4, 3), (4, 5), (2, 6), (5, 6)])
-        assert_equal(descendants(G, 1), set([2, 3, 6]))
-        assert_equal(descendants(G, 4), set([2, 3, 5, 6]))
-        assert_equal(descendants(G, 3), set())
-        assert_raises(nx.NetworkXError, descendants, G, 8)
+        assert descendants(G, 1) == set([2, 3, 6])
+        assert descendants(G, 4) == set([2, 3, 5, 6])
+        assert descendants(G, 3) == set()
+        pytest.raises(nx.NetworkXError, descendants, G, 8)
 
     def test_transitive_closure(self):
         G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
@@ -300,19 +282,19 @@ class TestDAG:
         soln = sorted(solution + [(n, n) for n in G])
         assert_edges_equal(sorted(nx.transitive_closure(G).edges()), soln)
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
-        assert_raises(nx.NetworkXNotImplemented, nx.transitive_closure, G)
+        pytest.raises(nx.NetworkXNotImplemented, nx.transitive_closure, G)
 
         # test if edge data is copied
         G = nx.DiGraph([(1, 2, {"a": 3}), (2, 3, {"b": 0}), (3, 4)])
         H = nx.transitive_closure(G)
         for u, v in G.edges():
-            assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
+            assert G.get_edge_data(u, v) == H.get_edge_data(u, v)
 
         k = 10
         G = nx.DiGraph((i, i + 1, {"f": "b", "weight": i}) for i in range(k))
         H = nx.transitive_closure(G)
         for u, v in G.edges():
-            assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
+            assert G.get_edge_data(u, v) == H.get_edge_data(u, v)
 
     def test_reflexive_transitive_closure(self):
         G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
@@ -348,19 +330,19 @@ class TestDAG:
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4)]
         assert_edges_equal(transitive_closure(G).edges(), solution)
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
-        assert_raises(nx.NetworkXNotImplemented, transitive_closure, G)
+        pytest.raises(nx.NetworkXNotImplemented, transitive_closure, G)
 
         # test if edge data is copied
         G = nx.DiGraph([(1, 2, {"a": 3}), (2, 3, {"b": 0}), (3, 4)])
         H = transitive_closure(G)
         for u, v in G.edges():
-            assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
+            assert G.get_edge_data(u, v) == H.get_edge_data(u, v)
 
         k = 10
         G = nx.DiGraph((i, i + 1, {"foo": "bar", "weight": i}) for i in range(k))
         H = transitive_closure(G)
         for u, v in G.edges():
-            assert_equal(G.get_edge_data(u, v), H.get_edge_data(u, v))
+            assert G.get_edge_data(u, v) == H.get_edge_data(u, v)
 
     def test_transitive_reduction(self):
         G = nx.DiGraph([(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)])
@@ -372,12 +354,12 @@ class TestDAG:
         solution = [(1, 2), (2, 3), (2, 4)]
         assert_edges_equal(transitive_reduction(G).edges(), solution)
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
-        assert_raises(nx.NetworkXNotImplemented, transitive_reduction, G)
+        pytest.raises(nx.NetworkXNotImplemented, transitive_reduction, G)
 
     def _check_antichains(self, solution, result):
         sol = [frozenset(a) for a in solution]
         res = [frozenset(a) for a in result]
-        assert_true(set(sol) == set(res))
+        assert set(sol) == set(res)
 
     def test_antichains(self):
         antichains = nx.algorithms.dag.antichains
@@ -404,19 +386,19 @@ class TestDAG:
 
         def f(x): return list(antichains(x))
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
-        assert_raises(nx.NetworkXNotImplemented, f, G)
+        pytest.raises(nx.NetworkXNotImplemented, f, G)
         G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
-        assert_raises(nx.NetworkXUnfeasible, f, G)
+        pytest.raises(nx.NetworkXUnfeasible, f, G)
 
     def test_lexicographical_topological_sort(self):
         G = nx.DiGraph([(1, 2), (2, 3), (1, 4), (1, 5), (2, 6)])
-        assert_equal(list(nx.lexicographical_topological_sort(G)),
-                     [1, 2, 3, 4, 5, 6])
-        assert_equal(list(nx.lexicographical_topological_sort(
-            G, key=lambda x: x)),
+        assert (list(nx.lexicographical_topological_sort(G)) ==
+                [1, 2, 3, 4, 5, 6])
+        assert (list(nx.lexicographical_topological_sort(
+            G, key=lambda x: x)) ==
             [1, 2, 3, 4, 5, 6])
-        assert_equal(list(nx.lexicographical_topological_sort(
-            G, key=lambda x: -x)),
+        assert (list(nx.lexicographical_topological_sort(
+            G, key=lambda x: -x)) ==
             [1, 5, 4, 2, 6, 3])
 
     def test_lexicographical_topological_sort2(self):
@@ -442,50 +424,46 @@ class TestDAG:
         G.add_edges_from((test_nodes[a], test_nodes[b]) for a, b in edges)
 
         sorting = list(nx.lexicographical_topological_sort(G, key=sorting_key))
-        # order reported does depend on order of list(G) in python 3.5
-        # and that is not deterministic due to dicts not being ordered until v3.6
-        # after dropping NX support for 3.5 this can become:
-        # assert_equal(sorting, test_nodes)
-        assert_equal(set(sorting), set(test_nodes))
+        assert sorting == test_nodes
 
 
 def test_is_aperiodic_cycle():
     G = nx.DiGraph()
     nx.add_cycle(G, [1, 2, 3, 4])
-    assert_false(nx.is_aperiodic(G))
+    assert not nx.is_aperiodic(G)
 
 
 def test_is_aperiodic_cycle2():
     G = nx.DiGraph()
     nx.add_cycle(G, [1, 2, 3, 4])
     nx.add_cycle(G, [3, 4, 5, 6, 7])
-    assert_true(nx.is_aperiodic(G))
+    assert nx.is_aperiodic(G)
 
 
 def test_is_aperiodic_cycle3():
     G = nx.DiGraph()
     nx.add_cycle(G, [1, 2, 3, 4])
     nx.add_cycle(G, [3, 4, 5, 6])
-    assert_false(nx.is_aperiodic(G))
+    assert not nx.is_aperiodic(G)
 
 
 def test_is_aperiodic_cycle4():
     G = nx.DiGraph()
     nx.add_cycle(G, [1, 2, 3, 4])
     G.add_edge(1, 3)
-    assert_true(nx.is_aperiodic(G))
+    assert nx.is_aperiodic(G)
 
 
 def test_is_aperiodic_selfloop():
     G = nx.DiGraph()
     nx.add_cycle(G, [1, 2, 3, 4])
     G.add_edge(1, 1)
-    assert_true(nx.is_aperiodic(G))
+    assert nx.is_aperiodic(G)
 
 
 def test_is_aperiodic_raise():
     G = nx.Graph()
-    assert_raises(nx.NetworkXError,
+    pytest.raises(nx.NetworkXError,
                   nx.is_aperiodic,
                   G)
 
@@ -493,12 +471,12 @@ def test_is_aperiodic_raise():
 def test_is_aperiodic_bipartite():
     # Bipartite graph
     G = nx.DiGraph(nx.davis_southern_women_graph())
-    assert_false(nx.is_aperiodic(G))
+    assert not nx.is_aperiodic(G)
 
 
 def test_is_aperiodic_rary_tree():
     G = nx.full_rary_tree(3, 27, create_using=nx.DiGraph())
-    assert_false(nx.is_aperiodic(G))
+    assert not nx.is_aperiodic(G)
 
 
 def test_is_aperiodic_disconnected():
@@ -506,17 +484,17 @@ def test_is_aperiodic_disconnected():
     G = nx.DiGraph()
     nx.add_cycle(G, [1, 2, 3, 4])
     nx.add_cycle(G, [5, 6, 7, 8])
-    assert_false(nx.is_aperiodic(G))
+    assert not nx.is_aperiodic(G)
     G.add_edge(1, 3)
     G.add_edge(5, 7)
-    assert_true(nx.is_aperiodic(G))
+    assert nx.is_aperiodic(G)
 
 
 def test_is_aperiodic_disconnected2():
     G = nx.DiGraph()
     nx.add_cycle(G, [0, 1, 2])
     G.add_edge(3, 3)
-    assert_false(nx.is_aperiodic(G))
+    assert not nx.is_aperiodic(G)
 
 
 class TestDagToBranching(object):
@@ -530,8 +508,8 @@ class TestDagToBranching(object):
         G = nx.DiGraph([(0, 1), (0, 2), (1, 3), (2, 3)])
         B = nx.dag_to_branching(G)
         expected = nx.DiGraph([(0, 1), (1, 3), (0, 2), (2, 4)])
-        assert_true(nx.is_arborescence(B))
-        assert_true(nx.is_isomorphic(B, expected))
+        assert nx.is_arborescence(B)
+        assert nx.is_isomorphic(B, expected)
 
     def test_multiple_roots(self):
         """Tests that a directed acyclic graph with multiple degree zero
@@ -542,9 +520,9 @@ class TestDagToBranching(object):
         G = nx.DiGraph([(0, 1), (0, 2), (1, 3), (2, 3), (5, 2)])
         B = nx.dag_to_branching(G)
         expected = nx.DiGraph([(0, 1), (1, 3), (0, 2), (2, 4), (5, 6), (6, 7)])
-        assert_true(nx.is_branching(B))
-        assert_false(nx.is_arborescence(B))
-        assert_true(nx.is_isomorphic(B, expected))
+        assert nx.is_branching(B)
+        assert not nx.is_arborescence(B)
+        assert nx.is_isomorphic(B, expected)
 
     # # Attributes are not copied by this function. If they were, this would
     # # be a good test to uncomment.
@@ -580,7 +558,7 @@ class TestDagToBranching(object):
         """
         A = nx.balanced_tree(2, 2, create_using=nx.DiGraph())
         B = nx.dag_to_branching(A)
-        assert_true(nx.is_isomorphic(A, B))
+        assert nx.is_isomorphic(A, B)
 
     def test_already_branching(self):
         """Tests that a directed acyclic graph that is already a
@@ -591,22 +569,22 @@ class TestDagToBranching(object):
         T2 = nx.balanced_tree(2, 2, create_using=nx.DiGraph())
         G = nx.disjoint_union(T1, T2)
         B = nx.dag_to_branching(G)
-        assert_true(nx.is_isomorphic(G, B))
+        assert nx.is_isomorphic(G, B)
 
-    @raises(nx.HasACycle)
     def test_not_acyclic(self):
         """Tests that a non-acyclic graph causes an exception."""
-        G = nx.DiGraph(pairwise('abc', cyclic=True))
-        nx.dag_to_branching(G)
+        with pytest.raises(nx.HasACycle):
+            G = nx.DiGraph(pairwise('abc', cyclic=True))
+            nx.dag_to_branching(G)
 
-    @raises(nx.NetworkXNotImplemented)
     def test_undirected(self):
-        nx.dag_to_branching(nx.Graph())
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.dag_to_branching(nx.Graph())
 
-    @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
-        nx.dag_to_branching(nx.MultiGraph())
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.dag_to_branching(nx.MultiGraph())
 
-    @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
-        nx.dag_to_branching(nx.MultiDiGraph())
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.dag_to_branching(nx.MultiDiGraph())

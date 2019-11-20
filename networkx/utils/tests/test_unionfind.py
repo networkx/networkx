@@ -1,5 +1,3 @@
-from nose.tools import *
-
 import networkx as nx
 
 
@@ -13,6 +11,7 @@ def test_unionfind():
     x = nx.utils.UnionFind()
     x.union(0, 'a')
 
+
 def test_subtree_union():
     # See https://github.com/networkx/networkx/pull/3224
     # (35db1b551ee65780794a357794f521d8768d5049).
@@ -22,4 +21,4 @@ def test_subtree_union():
     uf.union(3, 4)
     uf.union(4, 5)
     uf.union(1, 5)
-    assert_equal(list(uf.to_sets()), [set([1, 2, 3, 4, 5])])
+    assert list(uf.to_sets()) == [set([1, 2, 3, 4, 5])]

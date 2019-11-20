@@ -1,11 +1,3 @@
-# tournament.py - functions for tournament graphs
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions concerning tournament graphs.
 
 A `tournament graph`_ is a complete oriented graph. In other words, it

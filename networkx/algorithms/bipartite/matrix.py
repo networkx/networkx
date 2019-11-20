@@ -1,20 +1,12 @@
-# -*- coding: utf-8 -*-
 """
 ====================
 Biadjacency matrices
 ====================
 """
-#    Copyright (C) 2013-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import itertools
 from networkx.convert_matrix import _generate_weighted_edges
 import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
+
 __all__ = ['biadjacency_matrix', 'from_biadjacency_matrix']
 
 
@@ -167,13 +159,3 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
         triples = chain(((u, v, 1) for d in range(w)) for (u, v, w) in triples)
     G.add_weighted_edges_from(triples, weight=edge_attribute)
     return G
-
-# fixture for nose tests
-
-
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

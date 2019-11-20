@@ -1,7 +1,6 @@
 from itertools import combinations
 
-from nose.tools import assert_equal
-from nose.tools import raises
+import pytest
 
 import networkx as nx
 from networkx.algorithms.community import k_clique_communities
@@ -12,9 +11,9 @@ def test_overlapping_K5():
     G.add_edges_from(combinations(range(5), 2))  # Add a five clique
     G.add_edges_from(combinations(range(2, 7), 2))  # Add another five clique
     c = list(k_clique_communities(G, 4))
-    assert_equal(c, [frozenset(range(7))])
+    assert c == [frozenset(range(7))]
     c = set(k_clique_communities(G, 5))
-    assert_equal(c, {frozenset(range(5)), frozenset(range(2, 7))})
+    assert c == {frozenset(range(5)), frozenset(range(2, 7))}
 
 
 def test_isolated_K5():
@@ -22,7 +21,7 @@ def test_isolated_K5():
     G.add_edges_from(combinations(range(0, 5), 2))  # Add a five clique
     G.add_edges_from(combinations(range(5, 10), 2))  # Add another five clique
     c = set(k_clique_communities(G, 5))
-    assert_equal(c, {frozenset(range(5)), frozenset(range(5, 10))})
+    assert c == {frozenset(range(5)), frozenset(range(5, 10))}
 
 
 class TestZacharyKarateClub(object):
@@ -32,7 +31,7 @@ class TestZacharyKarateClub(object):
 
     def _check_communities(self, k, expected):
         communities = set(k_clique_communities(self.G, k))
-        assert_equal(communities, expected)
+        assert communities == expected
 
     def test_k2(self):
         # clique percolation with k=2 is just connected components
@@ -61,6 +60,6 @@ class TestZacharyKarateClub(object):
         self._check_communities(6, expected)
 
 
-@raises(nx.NetworkXError)
 def test_bad_k():
-    list(k_clique_communities(nx.Graph(), 1))
+    with pytest.raises(nx.NetworkXError):
+        list(k_clique_communities(nx.Graph(), 1))

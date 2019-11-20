@@ -3,28 +3,14 @@
 
 import os
 import tempfile
-from nose import SkipTest
-from nose.tools import assert_equal
-from nose.tools import raises
+import pytest
+ogr = pytest.importorskip('osgeo.ogr')
 
 import networkx as nx
 
 
 class TestShp(object):
-    @classmethod
-    def setupClass(cls):
-        global ogr
-        try:
-            from osgeo import ogr
-        except ImportError:
-            raise SkipTest('ogr not available.')
-
-    def deletetmp(self, drv, *paths):
-        for p in paths:
-            if os.path.exists(p):
-                drv.DeleteDataSource(p)
-
-    def setUp(self):
+    def setup_method(self):
 
         def createlayer(driver, layerType=ogr.wkbLineString):
             lyr = driver.CreateLayer("edges", None, layerType)
@@ -89,16 +75,21 @@ class TestShp(object):
         self.testdir = testdir
         self.drv = drv
 
+    def deletetmp(self, drv, *paths):
+        for p in paths:
+            if os.path.exists(p):
+                drv.DeleteDataSource(p)
+
     def testload(self):
 
         def compare_graph_paths_names(g, paths, names):
             expected = nx.DiGraph()
             for p in paths:
                 nx.add_path(expected, p)
-            assert_equal(sorted(expected.nodes), sorted(g.nodes))
-            assert_equal(sorted(expected.edges()), sorted(g.edges()))
+            assert sorted(expected.nodes) == sorted(g.nodes)
+            assert sorted(expected.edges()) == sorted(g.edges())
             g_names = [g.get_edge_data(s, e)['Name'] for s, e in g.edges()]
-            assert_equal(names, sorted(g_names))
+            assert names == sorted(g_names)
 
         # simplified
         G = nx.read_shp(self.shppath)
@@ -119,7 +110,7 @@ class TestShp(object):
         while feature:
             actualwkt.append(feature.GetGeometryRef().ExportToWkt())
             feature = lyr.GetNextFeature()
-        assert_equal(sorted(expected), sorted(actualwkt))
+        assert sorted(expected) == sorted(actualwkt)
 
     def test_geometryexport(self):
         expectedpoints_simple = (
@@ -174,7 +165,7 @@ class TestShp(object):
                 last = ref.GetPointCount() - 1
                 edge_nodes = (ref.GetPoint_2D(0), ref.GetPoint_2D(last))
                 name = feature.GetFieldAsString('Name')
-                assert_equal(graph.get_edge_data(*edge_nodes)['Name'], name)
+                assert graph.get_edge_data(*edge_nodes)['Name'] == name
                 feature = lyr.GetNextFeature()
 
         tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
@@ -202,7 +193,7 @@ class TestShp(object):
 
         H = nx.read_shp(tpath)
         for n, d in H.nodes(data=True):
-            assert_equal(d['label'], label)
+            assert d['label'] == label
 
     def test_wkt_export(self):
         G = nx.DiGraph()
@@ -225,34 +216,22 @@ class TestShp(object):
         self.checkgeom(shpdir.GetLayerByName("nodes"), points)
         self.checkgeom(shpdir.GetLayerByName("edges"), line)
 
-    def tearDown(self):
+    def teardown_method(self):
         self.deletetmp(self.drv, self.testdir, self.shppath)
 
 
-@raises(RuntimeError)
 def test_read_shp_nofile():
-    try:
-        from osgeo import ogr
-    except ImportError:
-        raise SkipTest('ogr not available.')
-    G = nx.read_shp("hopefully_this_file_will_not_be_available")
+    with pytest.raises(RuntimeError):
+        G = nx.read_shp("hopefully_this_file_will_not_be_available")
 
 
 class TestMissingGeometry(object):
-    @classmethod
-    def setup_class(cls):
-        global ogr
-        try:
-            from osgeo import ogr
-        except ImportError:
-            raise SkipTest('ogr not available.')
-
-    def setUp(self):
+    def setup_method(self):
         self.setup_path()
         self.delete_shapedir()
         self.create_shapedir()
 
-    def tearDown(self):
+    def teardown_method(self):
         self.delete_shapedir()
 
     def setup_path(self):
@@ -272,25 +251,17 @@ class TestMissingGeometry(object):
         if os.path.exists(self.path):
             drv.DeleteDataSource(self.path)
 
-    @raises(nx.NetworkXError)
     def test_missing_geometry(self):
-        G = nx.read_shp(self.path)
+        with pytest.raises(nx.NetworkXError):
+            G = nx.read_shp(self.path)
 
 
 class TestMissingAttrWrite(object):
-    @classmethod
-    def setup_class(cls):
-        global ogr
-        try:
-            from osgeo import ogr
-        except ImportError:
-            raise SkipTest('ogr not available.')
-
-    def setUp(self):
+    def setup_method(self):
         self.setup_path()
         self.delete_shapedir()
 
-    def tearDown(self):
+    def teardown_method(self):
         self.delete_shapedir()
 
     def setup_path(self):
@@ -314,6 +285,6 @@ class TestMissingAttrWrite(object):
 
         for u, v, d in H.edges(data=True):
             if u == A and v == B:
-                assert_equal(d['foo'], 100)
+                assert d['foo'] == 100
             if u == A and v == C:
-                assert_equal(d['foo'], None)
+                assert d['foo'] is None

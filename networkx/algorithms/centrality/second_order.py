@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Copyright (c) 2015 – Thomson Licensing, SAS
 
 Redistribution and use in source and binary forms, with or without
@@ -136,13 +135,3 @@ def second_order_centrality(G):
     return dict(zip(G.nodes,
                     [np.sqrt((2*np.sum(M[:, i])-n*(n+1))) for i in range(n)]
                     ))  # eq 6
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import scipy
-    except:
-        raise SkipTest("NumPy not available")

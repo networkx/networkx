@@ -3,7 +3,6 @@ edge_match functions to use during isomorphism checks.
 """
 from itertools import permutations
 import types
-import networkx as nx
 
 __all__ = ['categorical_node_match',
            'categorical_edge_match',
@@ -19,16 +18,9 @@ __all__ = ['categorical_node_match',
 
 def copyfunc(f, name=None):
     """Returns a deepcopy of a function."""
-    try:
-        # Python <3
-        return types.FunctionType(f.func_code, f.func_globals,
-                                  name or f.__name__, f.func_defaults,
-                                  f.func_closure)
-    except AttributeError:
-        # Python >=3
-        return types.FunctionType(f.__code__, f.__globals__,
-                                  name or f.__name__, f.__defaults__,
-                                  f.__closure__)
+    return types.FunctionType(f.__code__, f.__globals__,
+                              name or f.__name__, f.__defaults__,
+                              f.__closure__)
 
 
 def allclose(x, y, rtol=1.0000000000000001e-05, atol=1e-08):
@@ -95,7 +87,7 @@ Examples
 
 
 def categorical_node_match(attr, default):
-    if nx.utils.is_string_like(attr):
+    if isinstance(attr, str):
         def match(data1, data2):
             return data1.get(attr, default) == data2.get(attr, default)
     else:
@@ -117,7 +109,7 @@ except NotImplementedError:
 
 
 def categorical_multiedge_match(attr, default):
-    if nx.utils.is_string_like(attr):
+    if isinstance(attr, str):
         def match(datasets1, datasets2):
             values1 = set([data.get(attr, default) for data in datasets1.values()])
             values2 = set([data.get(attr, default) for data in datasets2.values()])
@@ -181,7 +173,7 @@ Examples
 
 
 def numerical_node_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08):
-    if nx.utils.is_string_like(attr):
+    if isinstance(attr, str):
         def match(data1, data2):
             return close(data1.get(attr, default),
                          data2.get(attr, default),
@@ -207,7 +199,7 @@ except NotImplementedError:
 
 
 def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08):
-    if nx.utils.is_string_like(attr):
+    if isinstance(attr, str):
         def match(datasets1, datasets2):
             values1 = sorted([data.get(attr, default) for data in datasets1.values()])
             values2 = sorted([data.get(attr, default) for data in datasets2.values()])
@@ -279,7 +271,7 @@ Examples
 
 
 def generic_node_match(attr, default, op):
-    if nx.utils.is_string_like(attr):
+    if isinstance(attr, str):
         def match(data1, data2):
             return op(data1.get(attr, default), data2.get(attr, default))
     else:
@@ -346,7 +338,7 @@ def generic_multiedge_match(attr, default, op):
 
     # This is slow, but generic.
     # We must test every possible isomorphism between the edges.
-    if nx.utils.is_string_like(attr):
+    if isinstance(attr, str):
         attr = [attr]
         default = [default]
         op = [op]

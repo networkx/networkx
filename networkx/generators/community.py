@@ -1,14 +1,3 @@
-#    Copyright(C) 2011-2019 by
-#    Ben Edwards <bedwards@cs.unm.edu>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Konstantinos Karakatsanis <dinoskarakas@gmail.com>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:  Ben Edwards (bedwards@cs.unm.edu)
-#           Aric Hagberg (hagberg@lanl.gov)
-#           Konstantinos Karakatsanis (dinoskarakas@gmail.com)
-#           Jean-Gabriel Young (jean.gabriel.young@gmail.com)
 """Generators for classes of graphs used in studying social networks."""
 import itertools
 import math
@@ -162,7 +151,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
 
     Raises
     ------
-    NetworkXError:
+    NetworkXError
      If p is not in [0,1]
 
     Examples
@@ -291,7 +280,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
 
     Raises
     ------
-    NetworkXError:
+    NetworkXError
       If p_in,p_out are not in [0,1] or
 
     Examples

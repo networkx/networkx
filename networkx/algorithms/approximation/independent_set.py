@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Independent Set
 
@@ -26,13 +25,8 @@ BIT Numerical Mathematics, 32(2), 180–196. Springer.
 doi:10.1007/BF01994876
 
 """
-#   Copyright (C) 2011-2012 by
-#   Nicholas Mancuso <nick.mancuso@gmail.com>
-#   All rights reserved.
-#   BSD license.
 from networkx.algorithms.approximation import clique_removal
 __all__ = ["maximum_independent_set"]
-__author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
 
 def maximum_independent_set(G):

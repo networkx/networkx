@@ -1,18 +1,3 @@
-# breadth_first_search.py - breadth-first traversal of a graph
-#
-# Copyright (C) 2004-2019 NetworkX Developers
-#   Aric Hagberg <hagberg@lanl.gov>
-#   Dan Schult <dschult@colgate.edu>
-#   Pieter Swart <swart@lanl.gov>
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Authors:
-#     Aric Hagberg <aric.hagberg@gmail.com>
-#
 """Basic algorithms for breadth-first searching the nodes of a graph."""
 import networkx as nx
 from collections import deque
@@ -161,9 +146,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
         successors = G.predecessors
     else:
         successors = G.neighbors
-    # TODO In Python 3.3+, this should be `yield from ...`
-    for e in generic_bfs_edges(G, source, successors, depth_limit):
-        yield e
+    yield from generic_bfs_edges(G, source, successors, depth_limit)
 
 
 def bfs_tree(G, source, reverse=False, depth_limit=None):

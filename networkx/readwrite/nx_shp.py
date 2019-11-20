@@ -11,15 +11,8 @@ and regulated by Esri as a (mostly) open specification for data
 interoperability among Esri and other software products."
 See https://en.wikipedia.org/wiki/Shapefile for additional information.
 """
-#    Copyright (C) 2004-2019 by
-#    Ben Reilly <benwreilly@gmail.com>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-__author__ = """Ben Reilly (benwreilly@gmail.com)"""
+
 __all__ = ['read_shp', 'write_shp']
 
 
@@ -76,7 +69,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
 
     Examples
     --------
-    >>> G=nx.read_shp('test.shp') # doctest: +SKIP
+    >>> G = nx.read_shp('test.shp') # doctest: +SKIP
 
     References
     ----------
@@ -275,7 +268,6 @@ def write_shp(G, outdir):
         newfield = ogr.FieldDefn(key, fields[key])
         layer.CreateField(newfield)
 
-
     drv = ogr.GetDriverByName("ESRI Shapefile")
     shpdir = drv.CreateDataSource(outdir)
     # delete pre-existing output first otherwise ogr chokes
@@ -323,12 +315,3 @@ def write_shp(G, outdir):
         create_feature(g, edges, attributes)
 
     nodes, edges = None, None
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import ogr
-    except:
-        raise SkipTest("OGR not available")

@@ -1,16 +1,11 @@
-from nose import SkipTest
-from nose.tools import *
+import pytest
+np = pytest.importorskip('numpy')
 
 import networkx as nx
 
-try:
-    import numpy as np
-except:
-    raise SkipTest('NumPy not available.')
 
 from networkx.algorithms.tree import branchings
 from networkx.algorithms.tree import recognition
-from networkx.testing import *
 
 #
 # Explicitly discussed examples from Edmonds paper.
@@ -112,7 +107,7 @@ def sorted_edges(G, attr='weight', default=1):
 def assert_equal_branchings(G1, G2, attr='weight', default=1):
     edges1 = list(G1.edges(data=True))
     edges2 = list(G2.edges(data=True))
-    assert_equal(len(edges1), len(edges2))
+    assert len(edges1) == len(edges2)
 
     # Grab the weights only.
     e1 = sorted_edges(G1, attr, default)
@@ -124,7 +119,7 @@ def assert_equal_branchings(G1, G2, attr='weight', default=1):
     print
 
     for a, b in zip(e1, e2):
-        assert_equal(a[:2], b[:2])
+        assert a[:2] == b[:2]
         np.testing.assert_almost_equal(a[2], b[2])
 
 
@@ -132,38 +127,38 @@ def assert_equal_branchings(G1, G2, attr='weight', default=1):
 
 def test_optimal_branching1():
     G = build_branching(optimal_arborescence_1)
-    assert_true(recognition.is_arborescence(G), True)
-    assert_equal(branchings.branching_weight(G),  131)
+    assert recognition.is_arborescence(G), True
+    assert branchings.branching_weight(G) == 131
 
 
 def test_optimal_branching2a():
     G = build_branching(optimal_branching_2a)
-    assert_true(recognition.is_arborescence(G), True)
-    assert_equal(branchings.branching_weight(G),  53)
+    assert recognition.is_arborescence(G), True
+    assert branchings.branching_weight(G) == 53
 
 
 def test_optimal_branching2b():
     G = build_branching(optimal_branching_2b)
-    assert_true(recognition.is_arborescence(G), True)
-    assert_equal(branchings.branching_weight(G),  53)
+    assert recognition.is_arborescence(G), True
+    assert branchings.branching_weight(G) == 53
 
 
 def test_optimal_arborescence2():
     G = build_branching(optimal_arborescence_2)
-    assert_true(recognition.is_arborescence(G), True)
-    assert_equal(branchings.branching_weight(G),  51)
+    assert recognition.is_arborescence(G), True
+    assert branchings.branching_weight(G) == 51
 
 
 def test_greedy_suboptimal_branching1a():
     G = build_branching(greedy_subopt_branching_1a)
-    assert_true(recognition.is_arborescence(G), True)
-    assert_equal(branchings.branching_weight(G), 128)
+    assert recognition.is_arborescence(G), True
+    assert branchings.branching_weight(G) == 128
 
 
 def test_greedy_suboptimal_branching1b():
     G = build_branching(greedy_subopt_branching_1b)
-    assert_true(recognition.is_arborescence(G), True)
-    assert_equal(branchings.branching_weight(G), 127)
+    assert recognition.is_arborescence(G), True
+    assert branchings.branching_weight(G) == 127
 
 
 def test_greedy_max1():
@@ -302,9 +297,9 @@ def test_mst():
     edges = [(set([0, 1]), 7), (set([0, 3]), 5), (set([3, 5]), 6),
              (set([1, 4]), 7), (set([4, 2]), 5), (set([4, 6]), 9)]
 
-    assert_equal(x.number_of_edges(), len(edges))
+    assert x.number_of_edges() == len(edges)
     for u, v, d in x.edges(data=True):
-        assert_true((set([u, v]), d['weight']) in edges)
+        assert (set([u, v]), d['weight']) in edges
 
 
 def test_mixed_nodetypes():
@@ -349,8 +344,8 @@ def test_edge_attribute_preservation_normal_graph():
     ed = branchings.Edmonds(G)
     B = ed.find_optimum('weight', preserve_attrs=True, seed=1)
 
-    assert_equal(B[0][1]['otherattr'], 1)
-    assert_equal(B[0][1]['otherattr2'], 3)
+    assert B[0][1]['otherattr'] == 1
+    assert B[0][1]['otherattr2'] == 3
 
 
 def test_edge_attribute_preservation_multigraph():
@@ -367,8 +362,8 @@ def test_edge_attribute_preservation_multigraph():
     ed = branchings.Edmonds(G)
     B = ed.find_optimum('weight', preserve_attrs=True)
 
-    assert_equal(B[0][1][0]['otherattr'], 1)
-    assert_equal(B[0][1][0]['otherattr2'], 3)
+    assert B[0][1][0]['otherattr'] == 1
+    assert B[0][1][0]['otherattr2'] == 3
 
 
 def test_edge_attribute_discard():
@@ -384,5 +379,5 @@ def test_edge_attribute_discard():
     B = ed.find_optimum('weight', preserve_attrs=False)
 
     edge_dict = B[0][1]
-    with assert_raises(KeyError):
+    with pytest.raises(KeyError):
         _ = edge_dict['otherattr']

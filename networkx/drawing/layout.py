@@ -1,15 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Richard Penney <rwpenney@users.sourceforge.net>
-#    Michael Fedell <mfedell@jpl.nasa.gov>
-#    Valentino Constantinou <vconstan@jpl.nasa.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg <aric.hagberg@gmail.com>,
-#          Dan Schult <dschult@colgate.edu>
 """
 ******
 Layout
@@ -765,7 +753,7 @@ def _kamada_kawai_costfn(pos_vec, np, invdist, meanweight, dim):
 def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
     """Position nodes using the eigenvectors of the graph Laplacian.
 
-    Using the unnormalized Laplacion, the layout shows possible clusters of
+    Using the unnormalized Laplacian, the layout shows possible clusters of
     nodes which are an approximation of the ratio cut. If dim is the number of
     dimensions then the positions are the entries of the dim eigenvectors
     corresponding to the ascending eigenvalues starting from the second one.
@@ -921,7 +909,7 @@ def planar_layout(G, scale=1, center=None, dim=2):
 
     Raises
     ------
-    nx.NetworkXException
+    NetworkXException
         If G is not planar
 
     Examples
@@ -981,6 +969,7 @@ def spiral_layout(G, scale=1, center=None, dim=2,
     -------
     ValueError
         If dim != 2
+
     Examples
     --------
     >>> G = nx.path_graph(4)
@@ -1069,16 +1058,3 @@ def rescale_layout(pos, scale=1):
         for i in range(pos.shape[1]):
             pos[:, i] *= scale / lim
     return pos
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except ImportError:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except ImportError:
-        raise SkipTest("SciPy not available")

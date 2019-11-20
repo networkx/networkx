@@ -1,11 +1,9 @@
 from itertools import groupby
 
-from nose.tools import assert_equal
-from nose.tools import assert_less_equal
-from nose.tools import raises
+import pytest
 
 import networkx as nx
-from networkx.testing import *
+from networkx.testing import assert_edges_equal, assert_nodes_equal
 from networkx import graph_atlas
 from networkx import graph_atlas_g
 from networkx.generators.atlas import NUM_GRAPHS
@@ -15,13 +13,13 @@ from networkx.utils import pairwise
 class TestAtlasGraph(object):
     """Unit tests for the :func:`~networkx.graph_atlas` function."""
 
-    @raises(ValueError)
     def test_index_too_small(self):
-        graph_atlas(-1)
+        with pytest.raises(ValueError):
+            graph_atlas(-1)
 
-    @raises(ValueError)
     def test_index_too_large(self):
-        graph_atlas(NUM_GRAPHS)
+        with pytest.raises(ValueError):
+            graph_atlas(NUM_GRAPHS)
 
     def test_graph(self):
         G = graph_atlas(6)
@@ -32,33 +30,34 @@ class TestAtlasGraph(object):
 class TestAtlasGraphG(object):
     """Unit tests for the :func:`~networkx.graph_atlas_g` function."""
 
-    def setUp(self):
-        self.GAG = graph_atlas_g()
+    @classmethod
+    def setup_class(cls):
+        cls.GAG = graph_atlas_g()
 
     def test_sizes(self):
         G = self.GAG[0]
-        assert_equal(G.number_of_nodes(), 0)
-        assert_equal(G.number_of_edges(), 0)
+        assert G.number_of_nodes() == 0
+        assert G.number_of_edges() == 0
 
         G = self.GAG[7]
-        assert_equal(G.number_of_nodes(), 3)
-        assert_equal(G.number_of_edges(), 3)
+        assert G.number_of_nodes() == 3
+        assert G.number_of_edges() == 3
 
     def test_names(self):
         for i, G in enumerate(self.GAG):
-            assert_equal(int(G.name[1:]), i)
+            assert int(G.name[1:]) == i
 
     def test_nondecreasing_nodes(self):
         # check for nondecreasing number of nodes
         for n1, n2 in pairwise(map(len, self.GAG)):
-            assert_less_equal(n2, n1 + 1)
+            assert n2 <= n1 + 1
 
     def test_nondecreasing_edges(self):
         # check for nondecreasing number of edges (for fixed number of
         # nodes)
         for n, group in groupby(self.GAG, key=nx.number_of_nodes):
             for m1, m2 in pairwise(map(nx.number_of_edges, group)):
-                assert_less_equal(m2, m1 + 1)
+                assert m2 <= m1 + 1
 
     def test_nondecreasing_degree_sequence(self):
         # Check for lexicographically nondecreasing degree sequences
@@ -75,4 +74,4 @@ class TestAtlasGraphG(object):
                         continue
                     d1 = sorted(d for v, d in G1.degree())
                     d2 = sorted(d for v, d in G2.degree())
-                    assert_less_equal(d1, d2)
+                    assert d1 <= d2

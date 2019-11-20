@@ -1,28 +1,10 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (aric.hagberg@gmail.com)
-#          Pieter Swart (swart@lanl.gov)
-#          Dan Schult (dschult@colgate.edu)
-#          Joel Miller (joel.c.miller.research@gmail.com)
-#          Nathan Lemons (nlemons@gmail.com)
-#          Brian Cloteaux (brian.cloteaux@nist.gov)
 """Generate graphs with a given degree sequence or expected degree sequence.
 """
 
 import heapq
 from itertools import chain
 from itertools import combinations
-# In Python 3, the function is `zip_longest`, in Python 2 `izip_longest`.
-try:
-    from itertools import zip_longest
-except ImportError:
-    from itertools import izip_longest as zip_longest
+from itertools import zip_longest
 import math
 from operator import itemgetter
 

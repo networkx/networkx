@@ -1,57 +1,58 @@
-from nose.tools import *
 import networkx as nx
 from networkx.algorithms import bipartite
+from networkx.testing import almost_equal
 
 
 class TestBipartiteCentrality(object):
 
-    def setUp(self):
-        self.P4 = nx.path_graph(4)
-        self.K3 = nx.complete_bipartite_graph(3, 3)
-        self.C4 = nx.cycle_graph(4)
-        self.davis = nx.davis_southern_women_graph()
-        self.top_nodes = [n for n, d in self.davis.nodes(data=True)
-                          if d['bipartite'] == 0]
+    @classmethod
+    def setup_class(cls):
+        cls.P4 = nx.path_graph(4)
+        cls.K3 = nx.complete_bipartite_graph(3, 3)
+        cls.C4 = nx.cycle_graph(4)
+        cls.davis = nx.davis_southern_women_graph()
+        cls.top_nodes = [n for n, d in cls.davis.nodes(data=True)
+                         if d['bipartite'] == 0]
 
     def test_degree_centrality(self):
         d = bipartite.degree_centrality(self.P4, [1, 3])
         answer = {0: 0.5, 1: 1.0,  2: 1.0, 3:  0.5}
-        assert_equal(d, answer)
+        assert d == answer
         d = bipartite.degree_centrality(self.K3, [0, 1, 2])
         answer = {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0, 5: 1.0}
-        assert_equal(d, answer)
+        assert d == answer
         d = bipartite.degree_centrality(self.C4, [0, 2])
         answer = {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0}
-        assert_equal(d, answer)
+        assert d == answer
 
     def test_betweenness_centrality(self):
         c = bipartite.betweenness_centrality(self.P4, [1, 3])
         answer = {0: 0.0, 1: 1.0, 2: 1.0, 3: 0.0}
-        assert_equal(c, answer)
+        assert c == answer
         c = bipartite.betweenness_centrality(self.K3, [0, 1, 2])
         answer = {0: 0.125, 1: 0.125, 2: 0.125, 3: 0.125, 4: 0.125, 5: 0.125}
-        assert_equal(c, answer)
+        assert c == answer
         c = bipartite.betweenness_centrality(self.C4, [0, 2])
         answer = {0: 0.25, 1: 0.25, 2: 0.25, 3: 0.25}
-        assert_equal(c, answer)
+        assert c == answer
 
     def test_closeness_centrality(self):
         c = bipartite.closeness_centrality(self.P4, [1, 3])
         answer = {0: 2.0 / 3, 1: 1.0, 2: 1.0, 3: 2.0 / 3}
-        assert_equal(c, answer)
+        assert c == answer
         c = bipartite.closeness_centrality(self.K3, [0, 1, 2])
         answer = {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0, 5: 1.0}
-        assert_equal(c, answer)
+        assert c == answer
         c = bipartite.closeness_centrality(self.C4, [0, 2])
         answer = {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0}
-        assert_equal(c, answer)
+        assert c == answer
         G = nx.Graph()
         G.add_node(0)
         G.add_node(1)
         c = bipartite.closeness_centrality(G, [0])
-        assert_equal(c, {1: 0.0})
+        assert c == {1: 0.0}
         c = bipartite.closeness_centrality(G, [1])
-        assert_equal(c, {1: 0.0})
+        assert c == {1: 0.0}
 
     def test_davis_degree_centrality(self):
         G = self.davis
@@ -89,7 +90,7 @@ class TestBipartiteCentrality(object):
                   'E13': 0.17,
                   'E14': 0.17}
         for node, value in answer.items():
-            assert_almost_equal(value, deg[node], places=2)
+            assert almost_equal(value, deg[node], places=2)
 
     def test_davis_betweenness_centrality(self):
         G = self.davis
@@ -127,7 +128,7 @@ class TestBipartiteCentrality(object):
                   'E13': 0.00,
                   'E14': 0.00}
         for node, value in answer.items():
-            assert_almost_equal(value, bet[node], places=2)
+            assert almost_equal(value, bet[node], places=2)
 
     def test_davis_closeness_centrality(self):
         G = self.davis
@@ -165,4 +166,4 @@ class TestBipartiteCentrality(object):
                   'E13': 0.52,
                   'E14': 0.52}
         for node, value in answer.items():
-            assert_almost_equal(value, clos[node], places=2)
+            assert almost_equal(value, clos[node], places=2)

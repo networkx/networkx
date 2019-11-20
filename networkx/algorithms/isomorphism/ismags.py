@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """
 ****************
 ISMAGS Algorithm
@@ -114,7 +111,6 @@ References
     .. [2] https://en.wikipedia.org/wiki/Maximum_common_induced_subgraph
 """
 
-__author__ = 'P C Kroon (p.c.kroon@rug.nl)'
 __all__ = ['ISMAGS']
 
 from collections import defaultdict, Counter
@@ -598,9 +594,9 @@ class ISMAGS:
         assert len(node_partitions) == 1
         node_partitions = node_partitions[0]
         permutations, cosets = self._process_ordered_pair_partitions(graph,
-                                                 node_partitions,
-                                                 node_partitions,
-                                                 edge_colors)
+                                                                     node_partitions,
+                                                                     node_partitions,
+                                                                     edge_colors)
         if self._symmetry_cache is not None:
             self._symmetry_cache[key] = permutations, cosets
         return permutations, cosets
@@ -795,7 +791,7 @@ class ISMAGS:
 
         # Note, we modify candidates here. Doesn't seem to affect results, but
         # remember this.
-        #candidates = candidates.copy()
+        # candidates = candidates.copy()
         sgn_candidates = intersect(candidates[sgn])
         candidates[sgn] = frozenset([sgn_candidates])
         for gn in sgn_candidates:
@@ -853,7 +849,7 @@ class ISMAGS:
                                        to_be_mapped=to_be_mapped)
             # Unmap sgn-gn. Strictly not necessary since it'd get overwritten
             # when making a new mapping for sgn.
-            #del mapping[sgn]
+            # del mapping[sgn]
 
     def _largest_common_subgraph(self, candidates, constraints,
                                  to_be_mapped=None):
@@ -1068,11 +1064,11 @@ class ISMAGS:
                 new_top_partitions, new_bottom_partitions = opp
 
                 new_perms, new_cosets = self._process_ordered_pair_partitions(graph,
-                                                          new_top_partitions,
-                                                          new_bottom_partitions,
-                                                          edge_colors,
-                                                          orbits,
-                                                          cosets)
+                                                                              new_top_partitions,
+                                                                              new_bottom_partitions,
+                                                                              edge_colors,
+                                                                              orbits,
+                                                                              cosets)
                 # COMBINATION
                 permutations += new_perms
                 cosets.update(new_cosets)

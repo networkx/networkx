@@ -17,6 +17,7 @@ Highlights
 This release is the result of 6 months of work with over X pull requests by
 X contributors. Highlights include:
 
+- Dropped support for Python 3.5.
 
 Improvements
 ------------
@@ -29,6 +30,12 @@ API Changes
 Deprecations
 ------------
 
+- [`#3680 <https://github.com/networkx/networkx/pull/3680>`_]
+  Deprecate `make_str(x)` for `str(x)`.
+  Deprecate `is_string_like(obj)` for `isinstance(obj, str)`.
+
+- [`#3725 <https://github.com/networkx/networkx/pull/3725>`_]
+  Deprecate `literal_stringizer` and `literal_destringizer`.
 
 Pull requests merged in this release
 ------------------------------------

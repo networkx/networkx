@@ -1,10 +1,3 @@
-#    Copyright (C) 2011-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-
 """
 Read and write NetworkX graphs as JavaScript InfoVis Toolkit (JIT) format JSON.
 
@@ -60,7 +53,7 @@ def jit_graph(data, create_using=None):
         G = create_using
         G.clear()
 
-    if nx.utils.is_string_like(data):
+    if isinstance(data, str):
         data = json.loads(data)
 
     for node in data:

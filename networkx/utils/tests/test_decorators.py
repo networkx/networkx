@@ -1,15 +1,20 @@
 import tempfile
 import os
+import pathlib
 import random
 
-from nose.tools import *
-from nose import SkipTest
+import pytest
 
 import networkx as nx
 from networkx.utils.decorators import open_file, not_implemented_for
-from networkx.utils.decorators import nodes_or_number, preserve_random_state, \
-    py_random_state, np_random_state, random_state
+from networkx.utils.decorators import (
+    preserve_random_state,
+    py_random_state,
+    np_random_state,
+    random_state
+)
 from networkx.utils.misc import PythonRandomInterface
+
 
 def test_not_implemented_decorator():
     @not_implemented_for('directed')
@@ -18,27 +23,31 @@ def test_not_implemented_decorator():
     test1(nx.Graph())
 
 
-@raises(KeyError)
 def test_not_implemented_decorator_key():
-    @not_implemented_for('foo')
-    def test1(G):
-        pass
-    test1(nx.Graph())
+    with pytest.raises(KeyError):
+        @not_implemented_for('foo')
+        def test1(G):
+            pass
+        test1(nx.Graph())
 
 
-@raises(nx.NetworkXNotImplemented)
 def test_not_implemented_decorator_raise():
-    @not_implemented_for('graph')
-    def test1(G):
-        pass
-    test1(nx.Graph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        @not_implemented_for('graph')
+        def test1(G):
+            pass
+        test1(nx.Graph())
 
 
 class TestOpenFileDecorator(object):
-    def setUp(self):
+    def setup_method(self):
         self.text = ['Blah... ', 'BLAH ', 'BLAH!!!!']
         self.fobj = tempfile.NamedTemporaryFile('wb+', delete=False)
         self.name = self.fobj.name
+
+    def teardown_method(self):
+        self.fobj.close()
+        os.unlink(self.name)
 
     def write(self, path):
         for text in self.text:
@@ -89,32 +98,28 @@ class TestOpenFileDecorator(object):
         self.writer_arg0(self.fobj)
 
     def test_writer_arg0_pathlib(self):
-        try:
-            import pathlib
-            self.writer_arg0(pathlib.Path(self.name))
-        except ImportError:
-            return
+        self.writer_arg0(pathlib.Path(self.name))
 
     def test_writer_arg1_str(self):
         self.writer_arg1(self.name)
-        assert_equal(self.read(self.name), ''.join(self.text))
+        assert self.read(self.name) == ''.join(self.text)
 
     def test_writer_arg1_fobj(self):
         self.writer_arg1(self.fobj)
-        assert_false(self.fobj.closed)
+        assert not self.fobj.closed
         self.fobj.close()
-        assert_equal(self.read(self.name), ''.join(self.text))
+        assert self.read(self.name) == ''.join(self.text)
 
     def test_writer_arg2default_str(self):
         self.writer_arg2default(0, path=None)
         self.writer_arg2default(0, path=self.name)
-        assert_equal(self.read(self.name), ''.join(self.text))
+        assert self.read(self.name) == ''.join(self.text)
 
     def test_writer_arg2default_fobj(self):
         self.writer_arg2default(0, path=self.fobj)
-        assert_false(self.fobj.closed)
+        assert not self.fobj.closed
         self.fobj.close()
-        assert_equal(self.read(self.name), ''.join(self.text))
+        assert self.read(self.name) == ''.join(self.text)
 
     def test_writer_arg2default_fobj_path_none(self):
         self.writer_arg2default(0, path=None)
@@ -122,23 +127,19 @@ class TestOpenFileDecorator(object):
     def test_writer_arg4default_fobj(self):
         self.writer_arg4default(0, 1, dog='dog', other='other')
         self.writer_arg4default(0, 1, dog='dog', other='other', path=self.name)
-        assert_equal(self.read(self.name), ''.join(self.text))
+        assert self.read(self.name) == ''.join(self.text)
 
     def test_writer_kwarg_str(self):
         self.writer_kwarg(path=self.name)
-        assert_equal(self.read(self.name), ''.join(self.text))
+        assert self.read(self.name) == ''.join(self.text)
 
     def test_writer_kwarg_fobj(self):
         self.writer_kwarg(path=self.fobj)
         self.fobj.close()
-        assert_equal(self.read(self.name), ''.join(self.text))
+        assert self.read(self.name) == ''.join(self.text)
 
     def test_writer_kwarg_path_none(self):
         self.writer_kwarg(path=None)
-
-    def tearDown(self):
-        self.fobj.close()
-        os.unlink(self.name)
 
 
 @preserve_random_state
@@ -153,51 +154,48 @@ def test_preserve_random_state():
 
 class TestRandomState(object):
     @classmethod
-    def setUp(cls):
+    def setup_class(cls):
         global np
-        try:
-            import numpy as np
-        except ImportError:
-            raise SkipTest('NumPy not available.')
+        np = pytest.importorskip("numpy")
 
     @random_state(1)
     def instantiate_random_state(self, random_state):
-        assert_true(isinstance(random_state, np.random.RandomState))
+        assert isinstance(random_state, np.random.RandomState)
         return random_state.random_sample()
 
     @np_random_state(1)
     def instantiate_np_random_state(self, random_state):
-        assert_true(isinstance(random_state, np.random.RandomState))
+        assert isinstance(random_state, np.random.RandomState)
         return random_state.random_sample()
 
     @py_random_state(1)
     def instantiate_py_random_state(self, random_state):
-        assert_true(isinstance(random_state, random.Random) or
-                    isinstance(random_state, PythonRandomInterface))
+        assert (isinstance(random_state, random.Random) or
+                isinstance(random_state, PythonRandomInterface))
         return random_state.random()
 
     def test_random_state_None(self):
         np.random.seed(42)
         rv = np.random.random_sample()
         np.random.seed(42)
-        assert_equal(rv, self.instantiate_random_state(None))
+        assert rv == self.instantiate_random_state(None)
         np.random.seed(42)
-        assert_equal(rv, self.instantiate_np_random_state(None))
+        assert rv == self.instantiate_np_random_state(None)
 
         random.seed(42)
         rv = random.random()
         random.seed(42)
-        assert_equal(rv, self.instantiate_py_random_state(None))
+        assert rv == self.instantiate_py_random_state(None)
 
     def test_random_state_np_random(self):
         np.random.seed(42)
         rv = np.random.random_sample()
         np.random.seed(42)
-        assert_equal(rv, self.instantiate_random_state(np.random))
+        assert rv == self.instantiate_random_state(np.random)
         np.random.seed(42)
-        assert_equal(rv, self.instantiate_np_random_state(np.random))
+        assert rv == self.instantiate_np_random_state(np.random)
         np.random.seed(42)
-        assert_equal(rv, self.instantiate_py_random_state(np.random))
+        assert rv == self.instantiate_py_random_state(np.random)
 
     def test_random_state_int(self):
         np.random.seed(42)
@@ -209,20 +207,20 @@ class TestRandomState(object):
         seed = 1
         rval = self.instantiate_random_state(seed)
         rval_expected = np.random.RandomState(seed).rand()
-        assert_true(rval, rval_expected)
+        assert rval, rval_expected
 
         rval = self.instantiate_np_random_state(seed)
         rval_expected = np.random.RandomState(seed).rand()
-        assert_true(rval, rval_expected)
+        assert rval, rval_expected
         # test that global seed wasn't changed in function
-        assert_equal(np_rv, np.random.random_sample())
+        assert np_rv == np.random.random_sample()
 
         random.seed(42)
         rval = self.instantiate_py_random_state(seed)
         rval_expected = random.Random(seed).random()
-        assert_true(rval, rval_expected)
+        assert rval, rval_expected
         # test that global seed wasn't changed in function
-        assert_equal(py_rv, random.random())
+        assert py_rv == random.random()
 
     def test_random_state_np_random_RandomState(self):
         np.random.seed(42)
@@ -233,55 +231,55 @@ class TestRandomState(object):
         rng = np.random.RandomState(seed)
         rval = self.instantiate_random_state(rng)
         rval_expected = np.random.RandomState(seed).rand()
-        assert_true(rval, rval_expected)
+        assert rval, rval_expected
 
         rval = self.instantiate_np_random_state(seed)
         rval_expected = np.random.RandomState(seed).rand()
-        assert_true(rval, rval_expected)
+        assert rval, rval_expected
 
         rval = self.instantiate_py_random_state(seed)
         rval_expected = np.random.RandomState(seed).rand()
-        assert_true(rval, rval_expected)
+        assert rval, rval_expected
         # test that global seed wasn't changed in function
-        assert_equal(np_rv, np.random.random_sample())
+        assert np_rv == np.random.random_sample()
 
     def test_random_state_py_random(self):
         seed = 1
         rng = random.Random(seed)
         rv = self.instantiate_py_random_state(rng)
-        assert_true(rv, random.Random(seed).random())
+        assert rv, random.Random(seed).random()
 
-        assert_raises(ValueError, self.instantiate_random_state, rng)
-        assert_raises(ValueError, self.instantiate_np_random_state, rng)
+        pytest.raises(ValueError, self.instantiate_random_state, rng)
+        pytest.raises(ValueError, self.instantiate_np_random_state, rng)
 
 
-@raises(nx.NetworkXError)
 def test_random_state_string_arg_index():
-    @random_state('a')
-    def make_random_state(rs):
-        pass
-    rstate = make_random_state(1)
+    with pytest.raises(nx.NetworkXError):
+        @random_state('a')
+        def make_random_state(rs):
+            pass
+        rstate = make_random_state(1)
 
 
-@raises(nx.NetworkXError)
 def test_py_random_state_string_arg_index():
-    @py_random_state('a')
-    def make_random_state(rs):
-        pass
-    rstate = make_random_state(1)
+    with pytest.raises(nx.NetworkXError):
+        @py_random_state('a')
+        def make_random_state(rs):
+            pass
+        rstate = make_random_state(1)
 
 
-@raises(nx.NetworkXError)
 def test_random_state_invalid_arg_index():
-    @random_state(2)
-    def make_random_state(rs):
-        pass
-    rstate = make_random_state(1)
+    with pytest.raises(nx.NetworkXError):
+        @random_state(2)
+        def make_random_state(rs):
+            pass
+        rstate = make_random_state(1)
 
 
-@raises(nx.NetworkXError)
 def test_py_random_state_invalid_arg_index():
-    @py_random_state(2)
-    def make_random_state(rs):
-        pass
-    rstate = make_random_state(1)
+    with pytest.raises(nx.NetworkXError):
+        @py_random_state(2)
+        def make_random_state(rs):
+            pass
+        rstate = make_random_state(1)

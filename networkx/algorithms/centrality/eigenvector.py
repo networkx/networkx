@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:
-#     Aric Hagberg <aric.hagberg@gmail.com>
-#     Pieter Swart <swart@lanl.gov>
-#     Sasha Gutfraind <ag362@cornell.edu>
 """Functions for computing eigenvector centrality."""
 
 from math import sqrt
@@ -236,12 +224,3 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     largest = eigenvector.flatten().real
     norm = sp.sign(largest.sum()) * sp.linalg.norm(largest)
     return dict(zip(G, largest / norm))
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

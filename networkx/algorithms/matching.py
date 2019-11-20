@@ -1,17 +1,3 @@
-# Copyright 2016 NetworkX developers.
-# Copyright (C) 2004-2019 by
-#   Aric Hagberg <hagberg@lanl.gov>
-#   Dan Schult <dschult@colgate.edu>
-#   Pieter Swart <swart@lanl.gov>
-#
-# Copyright (C) 2008 by
-#   Joris van Rantwijk.
-#
-# Copyright (C) 2011 by
-#   Nicholas Mancuso <nick.mancuso@gmail.com>
-#
-# All rights reserved.
-# BSD license.
 """Functions for computing and verifying matchings in a graph."""
 from collections import Counter
 from itertools import combinations
