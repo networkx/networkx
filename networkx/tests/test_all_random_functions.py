@@ -1,5 +1,6 @@
 import pytest
-np = pytest.importorskip('numpy')
+
+np = pytest.importorskip("numpy")
 import random
 
 import networkx as nx
@@ -46,8 +47,8 @@ def run_all_random_functions(seed):
     sizes = (20, 20, 10)
     colors = [1, 2, 3]
     G = nx.barbell_graph(12, 20)
-    deg_sequence = in_degree_sequence = w = sequence = aseq = bseq = \
-        [3, 2, 1, 3, 2, 1, 3, 2, 1, 2, 1, 2, 1]
+    deg_sequence =  [3, 2, 1, 3, 2, 1, 3, 2, 1, 2, 1, 2, 1]
+    in_degree_sequence = w = sequence = aseq = bseq = deg_sequence
 
     # print("starting...")
     t(nx.maximal_independent_set, G, seed=seed)
@@ -81,43 +82,58 @@ def run_all_random_functions(seed):
 
     t(nx.spectral_graph_forge, G, alpha, seed=seed)
     t(nx.algorithms.community.asyn_fluidc, G, k, max_iter=1, seed=seed)
-    t(nx.algorithms.connectivity.edge_augmentation.greedy_k_edge_augmentation,
-      G, k, seed=seed)
+    t(
+        nx.algorithms.connectivity.edge_augmentation.greedy_k_edge_augmentation,
+        G,
+        k,
+        seed=seed,
+    )
     t(nx.algorithms.coloring.strategy_random_sequential, G, colors, seed=seed)
 
-    cs = ['d', 'i', 'i', 'd', 'd', 'i']
+    cs = ["d", "i", "i", "d", "d", "i"]
     t(threshold.swap_d, cs, seed=seed)
     t(nx.configuration_model, deg_sequence, seed=seed)
-    t(nx.directed_configuration_model,
-        in_degree_sequence, in_degree_sequence, seed=seed)
+    t(
+        nx.directed_configuration_model,
+        in_degree_sequence,
+        in_degree_sequence,
+        seed=seed,
+    )
     t(nx.expected_degree_graph, w, seed=seed)
     t(nx.random_degree_sequence_graph, sequence, seed=seed)
-    joint_degrees = {1: {4: 1},
-                     2: {2: 2, 3: 2, 4: 2},
-                     3: {2: 2, 4: 1},
-                     4: {1: 1, 2: 2, 3: 1}}
+    joint_degrees = {
+        1: {4: 1},
+        2: {2: 2, 3: 2, 4: 2},
+        3: {2: 2, 4: 1},
+        4: {1: 1, 2: 2, 3: 1},
+    }
     t(nx.joint_degree_graph, joint_degrees, seed=seed)
-    joint_degree_sequence = [(1, 0), (1, 0), (1, 0), (2, 0), (1, 0), (2, 1),
-                             (0, 1), (0, 1)]
+    joint_degree_sequence = [
+        (1, 0),
+        (1, 0),
+        (1, 0),
+        (2, 0),
+        (1, 0),
+        (2, 1),
+        (0, 1),
+        (0, 1),
+    ]
     t(nx.random_clustered_graph, joint_degree_sequence, seed=seed)
-    constructor = [(3, 3, .5), (10, 10, .7)]
+    constructor = [(3, 3, 0.5), (10, 10, 0.7)]
     t(nx.random_shell_graph, constructor, seed=seed)
     mapping = {1: 0.4, 2: 0.3, 3: 0.3}
     t(nx.utils.random_weighted_sample, mapping, k, seed=seed)
     t(nx.utils.weighted_choice, mapping, seed=seed)
     t(nx.algorithms.bipartite.configuration_model, aseq, bseq, seed=seed)
-    t(nx.algorithms.bipartite.preferential_attachment_graph,
-      aseq, p, seed=seed)
+    t(nx.algorithms.bipartite.preferential_attachment_graph, aseq, p, seed=seed)
 
     def kernel_integral(u, w, z):
-        return (z - w)
+        return z - w
 
     t(nx.random_kernel_graph, n, kernel_integral, seed=seed)
 
     sizes = [75, 75, 300]
-    probs = [[0.25, 0.05, 0.02],
-             [0.05, 0.35, 0.07],
-             [0.02, 0.07, 0.40]]
+    probs = [[0.25, 0.05, 0.02], [0.05, 0.35, 0.07], [0.02, 0.07, 0.40]]
     t(nx.stochastic_block_model, sizes, probs, seed=seed)
     t(nx.random_partition_graph, sizes, p_in, p_out, seed=seed)
 
@@ -163,13 +179,22 @@ def run_all_random_functions(seed):
     t(nx.random_tree, n, seed=seed)
     t(nx.utils.powerlaw_sequence, n, seed=seed)
     t(nx.utils.zipf_rv, 2.3, seed=seed)
-    cdist = [.2, .4, .5, .7, .9, 1.0]
+    cdist = [0.2, 0.4, 0.5, 0.7, 0.9, 1.0]
     t(nx.utils.discrete_sequence, n, cdistribution=cdist, seed=seed)
     t(nx.algorithms.bipartite.random_graph, n, m, p, seed=seed)
     t(nx.algorithms.bipartite.gnmk_random_graph, n, m, k, seed=seed)
     LFR = nx.generators.LFR_benchmark_graph
-    t(LFR, 25, 3, 1.5, 0.1, average_degree=3, min_community=10,
-        seed=seed, max_community=20)
+    t(
+        LFR,
+        25,
+        3,
+        1.5,
+        0.1,
+        average_degree=3,
+        min_community=10,
+        seed=seed,
+        max_community=20,
+    )
     t(nx.random_internet_as_graph, n, seed=seed)
     # print("done")
 
@@ -193,13 +218,14 @@ def test_rng_interface():
 
         # check that both global RNGs are unaffected
         after_np_rv = np.random.rand()
-#        if np_rv != after_np_rv:
-#            print(np_rv, after_np_rv, "don't match np!")
+        #        if np_rv != after_np_rv:
+        #            print(np_rv, after_np_rv, "don't match np!")
         assert np_rv == after_np_rv
         after_py_rv = random.random()
-#        if py_rv != after_py_rv:
-#            print(py_rv, after_py_rv, "don't match py!")
+        #        if py_rv != after_py_rv:
+        #            print(py_rv, after_py_rv, "don't match py!")
         assert py_rv == after_py_rv
+
 
 #        print("\nDone testing seed:", seed)
 

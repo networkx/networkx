@@ -22,15 +22,18 @@ flow_funcs = [
 # Some nice synthetic graphs
 ##
 def graph_example_1():
-    G = nx.convert_node_labels_to_integers(nx.grid_graph([5, 5]),
-                                           label_attribute='labels')
-    rlabels = nx.get_node_attributes(G, 'labels')
+    G = nx.convert_node_labels_to_integers(
+        nx.grid_graph([5, 5]), label_attribute="labels"
+    )
+    rlabels = nx.get_node_attributes(G, "labels")
     labels = {v: k for k, v in rlabels.items()}
 
-    for nodes in [(labels[(0, 0)], labels[(1, 0)]),
-                  (labels[(0, 4)], labels[(1, 4)]),
-                  (labels[(3, 0)], labels[(4, 0)]),
-                  (labels[(3, 4)], labels[(4, 4)])]:
+    for nodes in [
+        (labels[(0, 0)], labels[(1, 0)]),
+        (labels[(0, 4)], labels[(1, 4)]),
+        (labels[(3, 0)], labels[(4, 0)]),
+        (labels[(3, 4)], labels[(4, 4)]),
+    ]:
         new_node = G.order() + 1
         # Petersen graph is triconnected
         P = nx.petersen_graph()
@@ -56,13 +59,13 @@ def graph_example_1():
 
 
 def torrents_and_ferraro_graph():
-    G = nx.convert_node_labels_to_integers(nx.grid_graph([5, 5]),
-                                           label_attribute='labels')
-    rlabels = nx.get_node_attributes(G, 'labels')
+    G = nx.convert_node_labels_to_integers(
+        nx.grid_graph([5, 5]), label_attribute="labels"
+    )
+    rlabels = nx.get_node_attributes(G, "labels")
     labels = {v: k for k, v in rlabels.items()}
 
-    for nodes in [(labels[(0, 4)], labels[(1, 4)]),
-                  (labels[(3, 4)], labels[(4, 4)])]:
+    for nodes in [(labels[(0, 4)], labels[(1, 4)]), (labels[(3, 4)], labels[(4, 4)])]:
         new_node = G.order() + 1
         # Petersen graph is triconnected
         P = nx.petersen_graph()
@@ -87,8 +90,7 @@ def torrents_and_ferraro_graph():
         # This stupid mistake make one reviewer very angry :P
         G.add_edge(new_node + 16, new_node + 8)
 
-    for nodes in [(labels[(0, 0)], labels[(1, 0)]),
-                  (labels[(3, 0)], labels[(4, 0)])]:
+    for nodes in [(labels[(0, 0)], labels[(1, 0)]), (labels[(3, 0)], labels[(4, 0)])]:
         new_node = G.order() + 1
         # Petersen graph is triconnected
         P = nx.petersen_graph()
@@ -209,8 +211,7 @@ def test_disconnected_graph():
 
 
 def test_alternative_flow_functions():
-    graphs = [nx.grid_2d_graph(4, 4),
-              nx.cycle_graph(5)]
+    graphs = [nx.grid_2d_graph(4, 4), nx.cycle_graph(5)]
     for G in graphs:
         node_conn = nx.node_connectivity(G)
         for flow_func in flow_funcs:
@@ -261,13 +262,7 @@ def test_cycle_graph():
 
 def test_complete_graph():
     G = nx.complete_graph(5)
-    solution = [
-        {0, 1, 2, 3},
-        {0, 1, 2, 4},
-        {0, 1, 3, 4},
-        {0, 2, 3, 4},
-        {1, 2, 3, 4},
-    ]
+    solution = [{0, 1, 2, 3}, {0, 1, 2, 4}, {0, 1, 3, 4}, {0, 2, 3, 4}, {1, 2, 3, 4}]
     cuts = list(nx.all_node_cuts(G))
     assert len(solution) == len(cuts)
     for cut in cuts:
