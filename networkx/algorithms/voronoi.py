@@ -22,13 +22,13 @@ def voronoi_cells(G, center_nodes, weight='weight'):
 
     Parameters
     ----------
-    G : NetworkX graph
+    `G` : NetworkX graph
 
-    center_nodes : set
+    `center_nodes` : set
         A nonempty set of nodes in the graph `G` that represent the
         center of the Voronoi cells.
 
-    weight : string or function
+    `weight` : string or function
         The edge attribute (or an arbitrary function) representing the
         weight of an edge. This keyword argument is as described in the
         documentation for :func:`~networkx.multi_source_dijkstra_path`,
