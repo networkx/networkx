@@ -103,3 +103,90 @@ def triadic_census(G):
     # integral value.
     census['003'] = ((n * (n - 1) * (n - 2)) // 6) - sum(census.values())
     return census
+
+
+@not_implemented_for('undirected')
+def triads_by_name(G):
+    """Returns a list of triads for each triadic type in a directed graph.
+
+    Parameters
+    ----------
+    G : digraph
+       A NetworkX DiGraph
+
+    Returns
+    -------
+    census : dict
+       Dictionary with triad types as keys and lists of triads as values.
+    """
+    pass
+
+
+@not_implemented_for('undirected')
+def triads_by_name(G):
+    """Returns a list of triads for each triadic type in a directed graph.
+
+    Parameters
+    ----------
+    G : digraph
+       A NetworkX DiGraph
+
+    Returns
+    -------
+    census : dict
+       Dictionary with triad types as keys and lists of triads as values.
+    """
+    pass
+
+@not_implemented_for('undirected')
+def triadic_closures(G):
+    """Returns a list of order-3 subgraphs of G that are triadic closures.
+
+    Parameters
+    ----------
+    G : digraph
+       A NetworkX DiGraph
+
+    Returns
+    -------
+    closures : list
+       List of triads of G that are triadic closures
+    """
+    pass
+
+@not_implemented_for('undirected')
+def focal_closures(G, attr_name):
+    """Returns a list of order-3 subgraphs of G that are focally closed.
+
+    Parameters
+    ----------
+    G : digraph
+       A NetworkX DiGraph
+    attr_name : str
+        An attribute name
+
+
+    Returns
+    -------
+    closures : list
+       List of triads of G that are focally closed on attr_name
+    """
+    pass
+
+@not_implemented_for('undirected')
+def stable_triads(G, crit_func):
+    """Returns a list of order-3 subgraphs of G that are stable.
+
+    Parameters
+    ----------
+    G : digraph
+       A NetworkX DiGraph
+    crit_func : function
+       A function that determines if a triad (order-3 digraph) is stable
+
+    Returns
+    -------
+    triads : list
+       List of triads in G that are stable
+    """
+    pass
