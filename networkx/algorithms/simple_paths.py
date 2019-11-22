@@ -259,7 +259,7 @@ def all_simple_paths(G, source, target, cutoff=None):
         raise TypeError('cutoff is neither int nor dict')
 
 
-def _path_cost(G, path, weight, is_multigraph):
+def _path_cost(G, path, weight):
     if weight is None:
         return len(path)
     else:
@@ -268,16 +268,16 @@ def _path_cost(G, path, weight, is_multigraph):
             return cost
         else:
             for u, v in pairwise(path):
-                if is_multigraph:
+                if G.is_multigraph():
                     cost += min([attr.get(weight, 1) for attr in G[u][v].values()])
                 else:
                     cost += G[u][v].get(weight, 1)
             return cost
 
 
-def _is_path_under_cutoff(G, path, cutoff, is_multigraph):
+def _is_path_under_cutoff(G, path, cutoff):
     for k, v in cutoff.items():
-        if _path_cost(G, path, k, is_multigraph) > v:
+        if _path_cost(G, path, k) > v:
             return False
     return True
 
@@ -337,7 +337,6 @@ def _all_simple_paths_multigraph(G, source, targets, cutoff):
 
 
 def _all_simple_paths_weighted_graph(G, source, targets, cutoff):
-    is_multigraph = G.is_multigraph()
 
     visited = collections.OrderedDict.fromkeys([source])
     stack = [iter(G[source])]
@@ -348,13 +347,11 @@ def _all_simple_paths_weighted_graph(G, source, targets, cutoff):
         if child is None:
             stack.pop()
             visited.popitem()
-        elif _is_path_under_cutoff(G, list(visited), cutoff,
-                                   is_multigraph=is_multigraph):
+        elif _is_path_under_cutoff(G, list(visited), cutoff):
             if child in visited:
                 continue
             if child in targets:
-                if _is_path_under_cutoff(G, list(visited) + [child], cutoff,
-                                         is_multigraph=is_multigraph):
+                if _is_path_under_cutoff(G, list(visited) + [child], cutoff):
                     yield list(visited) + [child]
             visited[child] = None
             if targets - set(visited.keys()):  # expand stack until find all targets
@@ -368,23 +365,20 @@ def _all_simple_paths_weighted_graph(G, source, targets, cutoff):
 
 def _all_simple_paths_weighted_multigraph(G, source, targets, cutoff):
 
-    is_multigraph = G.is_multigraph()
-
     visited = collections.OrderedDict.fromkeys([source])
     stack = [iter(G[source])]
+
     while stack:
         children = stack[-1]
         child = next(children, None)
         if child is None:
             stack.pop()
             visited.popitem()
-        elif _is_path_under_cutoff(G, list(visited), cutoff,
-                                   is_multigraph=is_multigraph):
+        elif _is_path_under_cutoff(G, list(visited), cutoff):
             if child in visited:
                 continue
             if child in targets:
-                if _is_path_under_cutoff(G, list(visited) + [child], cutoff,
-                                         is_multigraph=is_multigraph):
+                if _is_path_under_cutoff(G, list(visited) + [child], cutoff):
                     yield list(visited) + [child]
             visited[child] = None
             if targets - set(visited.keys()):  # expand stack until find all targets
