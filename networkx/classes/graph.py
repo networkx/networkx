@@ -1650,7 +1650,7 @@ class Graph(object):
             # Create a subgraph SG based on a (possibly multigraph) G
             SG = G.__class__()
             SG.add_nodes_from((n, G.nodes[n]) for n in largest_wcc)
-            if SG.is_multigraph:
+            if SG.is_multigraph():
                 SG.add_edges_from((n, nbr, key, d)
                     for n, nbrs in G.adj.items() if n in largest_wcc
                     for nbr, keydict in nbrs.items() if nbr in largest_wcc
