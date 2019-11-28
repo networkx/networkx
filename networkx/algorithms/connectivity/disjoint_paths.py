@@ -225,7 +225,7 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
                         residual=None):
     r"""Computes node disjoint paths between source and target.
 
-    Node dijoint paths are paths that only share their first and last
+    Node disjoint paths are paths that only share their first and last
     nodes. The number of node independent paths between two nodes is
     equal to their local node connectivity.
 
