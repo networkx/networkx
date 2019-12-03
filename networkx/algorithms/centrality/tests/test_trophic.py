@@ -72,3 +72,40 @@ class TestTrophicMeasures:
         for nid, level in d.items():
             expected_level = expected_d[nid]
             assert almost_equal(expected_level, level)
+
+    def test_trophic_levels_simple(self):
+
+        matrix_a = np.array([[0,0],[1,0]])
+        G = nx.from_numpy_matrix(matrix_a, create_using=nx.DiGraph)
+        d = nx.trophic_levels(G)
+        assert almost_equal(d[0], 2)
+        assert almost_equal(d[1], 1)
+        
+    def test_trophic_levels_more_complex(self):
+
+        matrix = np.array([[0,1,0,0],
+            [0,0,1,0],
+            [0,0,0,1],
+            [0,0,0,0]])
+        G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph)
+        d = nx.trophic_levels(G)
+        expected_result = [1,2,3,4]
+        for ind in range(4):
+            assert almost_equal(d[ind], expected_result[ind])
+
+
+        matrix = np.array([[0,1,1,0],
+            [0,0,1,1],
+            [0,0,0,1],
+            [0,0,0,0]])
+        G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph)
+        d = nx.trophic_levels(G)
+
+        expected_result = [1,2,2.5,3.25]
+        print("Calculated result: ", d)
+        print("Expected Result: ", expected_result)
+        
+        for ind in range(4):
+            assert almost_equal(d[ind], expected_result[ind])
+
+
