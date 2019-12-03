@@ -37,8 +37,26 @@ def trophic_levels(G, weight='weight'):
     nodes : dict
         Dictionary of nodes with trophic level as the vale.
     """
-    # defensive copy is required - we plan to drop nodes
+    # defensive copy is required - we plan to drop nodes and hack on weights
     G = G.copy()
+
+    # reweight: normalise incoming edge weights so they sum to 1
+    # TODO check this is reasonable/robust method
+    for nid in G.nodes:
+        in_edges = G.in_edges(nbunch=nid ,data=weight)
+        # sum the incoming edge weights
+        in_weight = 0
+        for _, _, edge_weight in in_edges:
+            if edge_weight is None:
+                in_weight += 1
+            else:
+                in_weight += edge_weight
+
+        # normalise incoming edge weights so they sum to 1
+        for u, v, edge_weight in in_edges:
+            if edge_weight is None:
+                edge_weight = 1
+            G[u][v][weight] = edge_weight / in_weight
 
     # drop nodes of in-degree zero, keep a list of ids
     z = [nid for nid, d in G.in_degree if d == 0]
@@ -46,7 +64,7 @@ def trophic_levels(G, weight='weight'):
         G.remove_node(nid)
 
     # find adjacency matrix
-    q = nx.linalg.graphmatrix.adjacency_matrix(G, weight=weight).T
+    q = nx.adjacency_matrix(G, weight=weight).T
 
     # must be square, size of number of nodes
     assert len(q.shape) == 2
