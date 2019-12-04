@@ -1,6 +1,6 @@
 """Trophic levels"""
-import networkx as nx
 import numpy as np
+import networkx as nx
 
 from networkx.utils import not_implemented_for
 
@@ -37,55 +37,33 @@ def trophic_levels(G, weight='weight'):
     nodes : dict
         Dictionary of nodes with trophic level as the vale.
     """
-    # defensive copy is required - we plan to drop nodes and hack on weights
-    G = G.copy()
-
-    # reweight: normalise incoming edge weights so they sum to 1
-    # TODO check this is reasonable/robust method
-    for nid in G.nodes:
-        in_edges = G.in_edges(nbunch=nid ,data=weight)
-        # sum the incoming edge weights
-        in_weight = 0
-        for _, _, edge_weight in in_edges:
-            if edge_weight is None:
-                in_weight += 1
-            else:
-                in_weight += edge_weight
-
-        # normalise incoming edge weights so they sum to 1
-        for u, v, edge_weight in in_edges:
-            if edge_weight is None:
-                edge_weight = 1
-            G[u][v][weight] = edge_weight / in_weight
-
-    # drop nodes of in-degree zero, keep a list of ids
-    z = [nid for nid, d in G.in_degree if d == 0]
-    for nid in z:
-        G.remove_node(nid)
-
     # find adjacency matrix
-    q = nx.adjacency_matrix(G, weight=weight).T
+    a = nx.adjacency_matrix(G, weight=weight).T
+    a = np.asarray(a.todense())
 
-    # must be square, size of number of nodes
-    assert len(q.shape) == 2
-    assert q.shape[0] == q.shape[1]
-    assert q.shape[0] == len(G)
+    # drop rows/columns where in-degree is zero
+    rowsum = np.sum(a, axis=1)
+    p = a[rowsum != 0][:, rowsum != 0]
+    # normalise so sum of in-degree weights is 1 along each row
+    p = p / rowsum[rowsum != 0][:, np.newaxis]
 
-    nn = q.shape[0]
-
+    # calculate trophic levels
+    nn = p.shape[0]
     i = np.eye(nn)
-    n = np.linalg.inv(i - q)
-    y = np.dot(np.asarray(n), np.ones(nn)) + 1
+    n = np.linalg.inv(i - p)
+    y = n.sum(axis=1) + 1
 
     levels = {}
 
-    # all nodes with degree zero have trophic level == 1
-    for nid in z:
-        levels[nid] = 1
+    # all nodes with in-degree zero have trophic level == 1
+    zero_node_ids = (node_id for node_id, degree in G.in_degree if degree == 0)
+    for node_id in zero_node_ids:
+        levels[node_id] = 1
 
     # all other nodes have levels as calculated
-    for i, nid in enumerate(G.nodes):
-        levels[nid] = y[i]
+    nonzero_node_ids = (node_id for node_id, degree in G.in_degree if degree != 0)
+    for i, node_id in enumerate(nonzero_node_ids):
+        levels[node_id] = y[i]
 
     return levels
 
