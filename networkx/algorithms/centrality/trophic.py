@@ -9,7 +9,7 @@ __all__ = ['trophic_levels']
 
 @not_implemented_for('undirected')
 def trophic_levels(G, weight='weight'):
-    """Compute the trophic levels of nodes.
+    r"""Compute the trophic levels of nodes.
 
     The trophic level of a node $i$ is
 
@@ -25,7 +25,7 @@ def trophic_levels(G, weight='weight'):
 
     and nodes with $k_^{in}_i = 0$ have $s_i = 1$ by convention.
 
-    These are calculated using the method outlined in Stephen Levine (1980) J. theor. Biol. 83, 195-207
+    These are calculated using the method outlined in Levine [1]_.
 
     Parameters
     ----------
@@ -36,6 +36,10 @@ def trophic_levels(G, weight='weight'):
     -------
     nodes : dict
         Dictionary of nodes with trophic level as the vale.
+
+    References
+    ----------
+    .. [1] Stephen Levine (1980) J. theor. Biol. 83, 195-207
     """
     # find adjacency matrix
     a = nx.adjacency_matrix(G, weight=weight).T
