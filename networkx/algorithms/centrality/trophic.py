@@ -71,5 +71,19 @@ def trophic_levels(G, weight='weight'):
     return levels
 
 
-# trophic_difference for each edge is $x_ij = s_i - s_j$
-# trophic_coherence is the standard deviation of trophic distances
+def trophic_differences(G, weight='weight'):
+    """Trophic difference for each edge is $x_ij = s_i - s_j$
+    """
+    levels = trophic_levels(G, weight=weight)
+    diffs = {}
+    for u, v in G.edges:
+        diffs[(u, v)] = levels[u] - levels[v]
+    return diffs
+
+
+def trophic_coherence(G, weight='weight'):
+    """Trophic coherence is the standard deviation of trophic differences between all edges
+    in a graph
+    """
+    diffs = trophic_differences(G, weight=weight)
+    return np.std(list(diffs.values()))
