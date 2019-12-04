@@ -42,8 +42,7 @@ def trophic_levels(G, weight='weight'):
     .. [1] Stephen Levine (1980) J. theor. Biol. 83, 195-207
     """
     # find adjacency matrix
-    a = nx.adjacency_matrix(G, weight=weight).T
-    a = np.asarray(a.todense())
+    a = nx.adjacency_matrix(G, weight=weight).T.toarray()
 
     # drop rows/columns where in-degree is zero
     rowsum = np.sum(a, axis=1)
