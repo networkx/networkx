@@ -19,9 +19,11 @@ if sys.argv[-1] == "setup.py":
     print()
 
 if sys.version_info[:2] < (3, 6):
-    error = "NetworkX 2.5+ requires Python 3.6 or later (%d.%d detected). \n" \
-    "For Python 2.7, please install version 2.2 using: \n" \
-    "$ pip install 'networkx==2.2'"  % sys.version_info[:2]
+    error = (
+        "NetworkX 2.5+ requires Python 3.6 or later (%d.%d detected). \n"
+        "For Python 2.7, please install version 2.2 using: \n"
+        "$ pip install 'networkx==2.2'" % sys.version_info[:2]
+    )
     sys.stderr.write(error + "\n")
     sys.exit(1)
 
