@@ -15,4 +15,4 @@ USA), pp. 11--15, Aug 2008
 .. only:: html
 
    `PDF <http://math.lanl.gov/~hagberg/Papers/hagberg-2008-exploring.pdf>`_
-   `BibTeX <http://math.lanl.gov/~hagberg/Publications/hagberg-2008-exploring.shtml>`_
+   `BibTeX <http://conference.scipy.org/proceedings/SciPy2008/paper_2/reference.bib>`_
