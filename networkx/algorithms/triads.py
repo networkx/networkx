@@ -5,6 +5,8 @@
 """Functions for analyzing triads of a graph."""
 
 from networkx.utils import not_implemented_for
+from itertools import combinations, permutations
+from collections import defaultdict
 
 __all__ = ['triadic_census']
 
@@ -54,7 +56,7 @@ def triadic_census(G):
     Returns
     -------
     census : dict
-       Dictionary with triad names as keys and number of occurrences as values.
+       Dictionary with triad type as keys and number of occurrences as values.
 
     Notes
     -----
@@ -96,7 +98,6 @@ def triadic_census(G):
                                    v not in G.succ[w]):
                     code = _tricode(G, v, u, w)
                     census[TRICODE_TO_NAME[code]] += 1
-
     # null triads = total number of possible triads - all found triads
     #
     # Use integer division here, since we know this formula guarantees an
@@ -106,8 +107,8 @@ def triadic_census(G):
 
 
 @not_implemented_for('undirected')
-def triads_by_name(G):
-    """Returns a list of triads for each triadic type in a directed graph.
+def all_triplets(G):
+    """Returns a generator of all possible sets of 3 nodes in a DiGraph.
 
     Parameters
     ----------
@@ -116,15 +117,34 @@ def triads_by_name(G):
 
     Returns
     -------
-    census : dict
-       Dictionary with triad types as keys and lists of triads as values.
+    triplets : generator of 3-tuples
+       Generator of tuples of 3 nodes
     """
-    pass
+    triplets = combinations(G.nodes(), 3)
+    return triplets
+
+@not_implemented_for('undirected')
+def all_triads(G):
+    """A generator of all possible triads in G.
+
+    Parameters
+    ----------
+    G : digraph
+       A NetworkX DiGraph
+
+    Returns
+    -------
+    all_triads : generator of DiGraphs
+       Generator of triads (order-3 DiGraphs)
+    """
+    triplets = combinations(G.nodes(), 3)
+    for triplet in triplets:
+        yield G.subgraph(triplet).copy()
 
 
 @not_implemented_for('undirected')
-def triads_by_name(G):
-    """Returns a list of triads for each triadic type in a directed graph.
+def triads_by_type(G):
+    """Returns a list of all triads for each triad type in a directed graph.
 
     Parameters
     ----------
@@ -133,8 +153,87 @@ def triads_by_name(G):
 
     Returns
     -------
-    census : dict
+    tri_by_type : dict
        Dictionary with triad types as keys and lists of triads as values.
+    """
+    o = G.order()
+    assert o >= 3, "G should have at least 3 nodes."
+    num_triads = o*(o-1)*(o-2) // 6
+    #if num_triads > TRIAD_LIMIT: print(WARNING)
+    all_tri = all_triads(G)
+    tri_by_type = defaultdict(list)
+    for triad in all_tri:
+        name = triad_type(triad)
+        tri_by_type[name].append(triad)
+    return tri_by_type
+
+@not_implemented_for('undirected')
+def triad_type(G):
+    """Returns the sociological triad type for a triad.
+
+    Parameters
+    ----------
+    G : digraph
+       A NetworkX DiGraph with 3 nodes
+
+    Returns
+    -------
+    triad_type : str
+       A string identifying the triad type
+    """
+    assert G.order() == 3, 'Graph is not a triad'
+    num_edges = len(G.edges())
+    if num_edges == 6: return "300"
+    elif num_edges == 5: return "210"
+    elif num_edges == 0: return "003"
+    elif num_edges == 1: return "012"
+    elif num_edges == 2:
+        e1, e2 = G.edges()
+        if set(e1) == set(e2): return "102"
+        elif e1[0] == e2[0]: return "021D"
+        elif e1[1] == e2[1]: return "021U"
+        elif e1[1] == e2[0] or e2[1] == e1[0]: return "021C"
+    elif num_edges == 3:
+        for (e1, e2, e3) in permutations(G.edges(), 3):
+            if set(e1) == set(e2):
+                if e3[0] in e1:
+                    return "111U"
+                if e3[1] in e1:
+                    return "111D"
+            elif set(e1).symmetric_difference(set(e2)) == set(e3):
+                if {e1[0], e2[0], e3[0]} == {e1[0], e2[0], e3[0]} == set(
+                                                        G.nodes()):
+                    return "030C"
+                if e3 == (e1[0], e2[1]) and e2 == (e1[1], e3[1]):
+                    return "030T"
+    elif num_edges == 4:
+        for (e1, e2, e3, e4) in permutations(G.edges(), 4):
+            if set(e1)==set(e2):
+                if set(e3)==set(e4):
+                    return "201"
+                if {e3[0]}=={e4[0]}==set(e3).intersection(set(e4)):
+                    return "120D"
+                if {e3[1]}=={e4[1]}==set(e3).intersection(set(e4)):
+                    return "120U"
+                if e3[1]==e4[0]:
+                    return "120C"
+    else:
+        raise ValueError("Invalid triad G")
+
+
+@not_implemented_for('undirected')
+def random_triad(G):
+    """Returns a random triad from a directed graph.
+
+    Parameters
+    ----------
+    G : digraph
+       A NetworkX DiGraph
+
+    Returns
+    -------
+    G2 : subgraph
+       A randomly selected triad (order-3 NetworkX DiGraph)
     """
     pass
 
