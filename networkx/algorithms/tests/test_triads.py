@@ -20,11 +20,11 @@ def test_all_triplets():
     G = nx.DiGraph()
     G.add_edges_from(['01', '02', '03', '04', '05', '12', '16', '51', '56',
                       '65'])
-    expected = [f"{i},{j},{k}" for i in range(7) for j in range(i+1,7)\
-                                                for k in range(j+1, 7)]
+    expected = [f"{i},{j},{k}" for i in range(7) for j in range(i+1, 7)
+                for k in range(j+1, 7)]
     expected = [set(x.split(',')) for x in expected]
     actual = list(set(x) for x in nx.all_triplets(G))
-    assert all([any([s1==s2 for s1 in expected]) for s2 in actual])
+    assert all([any([s1 == s2 for s1 in expected]) for s2 in actual])
 
 
 def test_all_triads():
@@ -32,30 +32,30 @@ def test_all_triads():
     G = nx.DiGraph()
     G.add_edges_from(['01', '02', '03', '04', '05', '12', '16', '51', '56',
                       '65'])
-    expected = [f"{i},{j},{k}" for i in range(7) for j in range(i+1,7)\
-                                                for k in range(j+1, 7)]
+    expected = [f"{i},{j},{k}" for i in range(7) for j in range(i+1, 7)
+                for k in range(j+1, 7)]
     expected = [G.subgraph(x.split(',')) for x in expected]
     actual = list(nx.all_triads(G))
     assert all(any([nx.is_isomorphic(G1, G2) for G1 in expected]
-                                            ) for G2 in actual])
+                    ) for G2 in actual])
 
 
 def test_triad_type():
     """Tests the triad_type function."""
     # 0 edges (1 type)
-    G = nx.DiGraph({0:[], 1:[], 2:[]})
+    G = nx.DiGraph({0: [], 1: [], 2: []})
     assert nx.triad_type(G) == '003'
     # 1 edge (1 type)
-    G = nx.DiGraph({0:[1], 1:[], 2:[]})
+    G = nx.DiGraph({0: [1], 1: [], 2: []})
     assert nx.triad_type(G) == '012'
     # 2 edges (4 types)
-    G = nx.DiGraph([(0, 1), (0,2)])
+    G = nx.DiGraph([(0, 1), (0, 2)])
     assert nx.triad_type(G) == '021D'
-    G = nx.DiGraph({0:[1], 1:[0], 2:[]})
+    G = nx.DiGraph({0: [1], 1: [0], 2: []})
     assert nx.triad_type(G) == '102'
     G = nx.DiGraph([(0, 1), (2, 1)])
     assert nx.triad_type(G) == '021U'
-    G = nx.DiGraph([(0, 1), (1,2)])
+    G = nx.DiGraph([(0, 1), (1, 2)])
     assert nx.triad_type(G) == '021C'
     # 3 edges (4 types)
     G = nx.DiGraph([(0, 1), (1, 0), (2, 1)])
@@ -82,6 +82,7 @@ def test_triad_type():
     G = nx.DiGraph([(0, 1), (1, 0), (1, 2), (2, 1), (0, 2), (2, 0)])
     assert nx.triad_type(G) == '300'
 
+
 def test_triads_by_type():
     """Tests the all_triplets function."""
     G = nx.DiGraph()
@@ -102,3 +103,4 @@ def test_triads_by_type():
         expected_Gs = expected[tri_type]
         for a in actual_Gs:
             assert any(nx.is_isomorphic(a, e) for e in expected_Gs)
+    pass

@@ -123,6 +123,7 @@ def all_triplets(G):
     triplets = combinations(G.nodes(), 3)
     return triplets
 
+
 @not_implemented_for('undirected')
 def all_triads(G):
     """A generator of all possible triads in G.
@@ -159,13 +160,14 @@ def triads_by_type(G):
     o = G.order()
     assert o >= 3, "G should have at least 3 nodes."
     num_triads = o*(o-1)*(o-2) // 6
-    #if num_triads > TRIAD_LIMIT: print(WARNING)
+    # if num_triads > TRIAD_LIMIT: print(WARNING)
     all_tri = all_triads(G)
     tri_by_type = defaultdict(list)
     for triad in all_tri:
         name = triad_type(triad)
         tri_by_type[name].append(triad)
     return tri_by_type
+
 
 @not_implemented_for('undirected')
 def triad_type(G):
@@ -183,16 +185,24 @@ def triad_type(G):
     """
     assert G.order() == 3, 'Graph is not a triad'
     num_edges = len(G.edges())
-    if num_edges == 6: return "300"
-    elif num_edges == 5: return "210"
-    elif num_edges == 0: return "003"
-    elif num_edges == 1: return "012"
+    if num_edges == 6:
+        return "300"
+    elif num_edges == 5:
+        return "210"
+    elif num_edges == 0:
+        return "003"
+    elif num_edges == 1:
+        return "012"
     elif num_edges == 2:
         e1, e2 = G.edges()
-        if set(e1) == set(e2): return "102"
-        elif e1[0] == e2[0]: return "021D"
-        elif e1[1] == e2[1]: return "021U"
-        elif e1[1] == e2[0] or e2[1] == e1[0]: return "021C"
+        if set(e1) == set(e2):
+            return "102"
+        elif e1[0] == e2[0]:
+            return "021D"
+        elif e1[1] == e2[1]:
+            return "021U"
+        elif e1[1] == e2[0] or e2[1] == e1[0]:
+            return "021C"
     elif num_edges == 3:
         for (e1, e2, e3) in permutations(G.edges(), 3):
             if set(e1) == set(e2):
@@ -208,14 +218,14 @@ def triad_type(G):
                     return "030T"
     elif num_edges == 4:
         for (e1, e2, e3, e4) in permutations(G.edges(), 4):
-            if set(e1)==set(e2):
-                if set(e3)==set(e4):
+            if set(e1) == set(e2):
+                if set(e3) == set(e4):
                     return "201"
-                if {e3[0]}=={e4[0]}==set(e3).intersection(set(e4)):
+                if {e3[0]} == {e4[0]} == set(e3).intersection(set(e4)):
                     return "120D"
-                if {e3[1]}=={e4[1]}==set(e3).intersection(set(e4)):
+                if {e3[1]} == {e4[1]} == set(e3).intersection(set(e4)):
                     return "120U"
-                if e3[1]==e4[0]:
+                if e3[1] == e4[0]:
                     return "120C"
     else:
         raise ValueError("Invalid triad G")
@@ -237,6 +247,7 @@ def random_triad(G):
     """
     pass
 
+
 @not_implemented_for('undirected')
 def triadic_closures(G):
     """Returns a list of order-3 subgraphs of G that are triadic closures.
@@ -252,6 +263,7 @@ def triadic_closures(G):
        List of triads of G that are triadic closures
     """
     pass
+
 
 @not_implemented_for('undirected')
 def focal_closures(G, attr_name):
@@ -271,6 +283,7 @@ def focal_closures(G, attr_name):
        List of triads of G that are focally closed on attr_name
     """
     pass
+
 
 @not_implemented_for('undirected')
 def stable_triads(G, crit_func):
