@@ -288,7 +288,7 @@ def focal_closures(G, attr_name):
 
 
 @not_implemented_for('undirected')
-def stable_triads(G, crit_func):
+def balanced_triads(G, crit_func):
     """Returns a list of order-3 subgraphs of G that are stable.
 
     Parameters
