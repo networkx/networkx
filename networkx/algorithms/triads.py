@@ -8,7 +8,9 @@ from networkx.utils import not_implemented_for
 from itertools import combinations, permutations
 from collections import defaultdict
 
-__all__ = ['triadic_census']
+__all__ = __all__ = ['triadic_census', 'all_triplets', 'all_triads',
+                     'triads_by_type', 'triad_type', 'random_triad',
+                     'triadic_closures', 'focal_closures', 'balanced_triads']
 
 #: The integer codes representing each type of triad.
 #:
