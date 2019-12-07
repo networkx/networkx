@@ -159,7 +159,7 @@ def triads_by_type(G):
     """
     o = G.order()
     assert o >= 3, "G should have at least 3 nodes."
-    num_triads = o*(o-1)*(o-2) // 6
+    num_triads = o * (o - 1) * (o - 2) // 6
     # if num_triads > TRIAD_LIMIT: print(WARNING)
     all_tri = all_triads(G)
     tri_by_type = defaultdict(list)
@@ -211,8 +211,8 @@ def triad_type(G):
                 if e3[1] in e1:
                     return "111D"
             elif set(e1).symmetric_difference(set(e2)) == set(e3):
-                if {e1[0], e2[0], e3[0]} == {e1[0], e2[0], e3[0]} == set(
-                                                        G.nodes()):
+                if {e1[0], e2[0], e3[0]} == {e1[0], e2[0],
+                                             e3[0]} == set(G.nodes()):
                     return "030C"
                 if e3 == (e1[0], e2[1]) and e2 == (e1[1], e3[1]):
                     return "030T"
