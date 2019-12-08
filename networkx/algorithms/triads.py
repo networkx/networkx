@@ -161,7 +161,7 @@ def triads_by_type(G):
     """
     o = G.order()
     assert o >= 3, "G should have at least 3 nodes."
-    num_triads = o * (o - 1) * (o - 2) // 6
+    # num_triads = o * (o - 1) * (o - 2) // 6
     # if num_triads > TRIAD_LIMIT: print(WARNING)
     all_tri = all_triads(G)
     tri_by_type = defaultdict(list)
