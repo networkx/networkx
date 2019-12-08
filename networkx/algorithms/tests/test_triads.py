@@ -98,7 +98,6 @@ def test_triads_by_type():
             expected[name] = [triad]
     actual = nx.triads_by_type(G)
     assert set(actual.keys()) == set(expected.keys())
-    test = []
     for tri_type, actual_Gs in actual.items():
         expected_Gs = expected[tri_type]
         for a in actual_Gs:
