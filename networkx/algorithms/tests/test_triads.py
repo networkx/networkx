@@ -90,7 +90,7 @@ def test_triads_by_type():
     G.add_edges_from(['01', '02', '03', '04', '05', '12', '16', '51', '56',
                       '65'])
     all_triads = nx.all_triads(G)
-    expected = {}
+    expected = defaultdict(list)
     for triad in all_triads:
         name = nx.triad_type(triad)
         expected[name].append(triad)
