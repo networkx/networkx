@@ -187,11 +187,7 @@ def triad_type(G):
     """
     assert G.order() == 3, 'Graph is not a triad'
     num_edges = len(G.edges())
-    if num_edges == 6:
-        return "300"
-    elif num_edges == 5:
-        return "210"
-    elif num_edges == 0:
+    if num_edges == 0:
         return "003"
     elif num_edges == 1:
         return "012"
@@ -229,6 +225,10 @@ def triad_type(G):
                     return "120U"
                 if e3[1] == e4[0]:
                     return "120C"
+    elif num_edges == 5:
+        return "210"
+    elif num_edges == 6:
+        return "300"
     else:
         raise ValueError("Invalid triad G")
 

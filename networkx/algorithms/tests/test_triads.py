@@ -1,6 +1,7 @@
 """Unit tests for the :mod:`networkx.algorithms.triads` module."""
 
 import networkx as nx
+from collections import defaultdict
 
 
 def test_triadic_census():
@@ -92,10 +93,7 @@ def test_triads_by_type():
     expected = {}
     for triad in all_triads:
         name = nx.triad_type(triad)
-        if name in expected.keys():
-            expected[name].append(triad)
-        else:
-            expected[name] = [triad]
+        expected[name].append(triad)
     actual = nx.triads_by_type(G)
     assert set(actual.keys()) == set(expected.keys())
     for tri_type, actual_Gs in actual.items():
