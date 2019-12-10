@@ -674,6 +674,7 @@ def draw_networkx_edges(G, pos,
                                     color=arrow_color,
                                     linewidth=line_width,
                                     connectionstyle=connectionstyle,
+                                    linestyle=style,
                                     zorder=1)  # arrows go behind nodes
 
             # There seems to be a bug in matplotlib to make collections of
