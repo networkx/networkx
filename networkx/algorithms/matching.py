@@ -196,7 +196,6 @@ def min_weight_matching(G, maxcardinality=False, weight='weight'):
     -------
     matching : set
         A maximal matching of the graph.
-        
     """
     if len(G.edges) == 0:
         return max_weight_matching(G, maxcardinality, weight)

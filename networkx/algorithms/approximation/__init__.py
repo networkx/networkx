@@ -4,8 +4,8 @@ problems.
     .. warning:: The approximation submodule is not imported in the top-level
         ``networkx``.
 
-    These functions can be imported with
-    ``from networkx.algorithms import approximation``.
+    These functions can be accessed using
+    ``networkx.approximation.function_name``
 
 """
 from networkx.algorithms.approximation.clustering_coefficient import *

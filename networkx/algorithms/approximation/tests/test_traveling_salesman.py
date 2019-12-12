@@ -18,7 +18,7 @@ def test_christofides_hamiltonian():
         H = nx.Graph()
         H.add_edges_from(nx.approximation.christofides(G))
         H.remove_edges_from(nx.find_cycle(H))
-        assert len(H.edges)==0
+        assert len(H.edges) == 0
 
 
 def test_TSP_unweighted():
