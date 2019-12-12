@@ -30,6 +30,8 @@ Several example graphs in GML format may be found on Mark Newman's
 from io import StringIO
 from ast import literal_eval
 from collections import defaultdict
+from enum import Enum
+from typing import Any, NamedTuple
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file
@@ -258,10 +260,30 @@ def parse_gml(lines, label="label", destringizer=None):
     return G
 
 
+class Pattern(Enum):
+    """ encodes the index of each token-matching pattern in `tokenize`. """
+    KEYS = 0
+    REALS = 1
+    INTS = 2
+    STRINGS = 3
+    DICT_START = 4
+    DICT_END = 5
+    COMMENT_WHITESPACE = 6
+
+
+class Token(NamedTuple):
+    category: Pattern
+    value: Any
+    line: int
+    position: int
+
+
+LIST_START_VALUE = "_networkx_list_start"
+
+
 def parse_gml_lines(lines, label, destringizer):
     """Parse GML `lines` into a graph.
     """
-
     def tokenize():
         patterns = [
             r"[A-Za-z][0-9A-Za-z_]*\b",  # keys
@@ -273,74 +295,70 @@ def parse_gml_lines(lines, label, destringizer):
             r"\]",  # dict end
             r"#.*$|\s+",  # comments and whitespaces
         ]
-        tokens = re.compile("|".join("(" + pattern + ")" for pattern in patterns))
+        tokens = re.compile("|".join(f"({pattern})" for pattern in patterns))
         lineno = 0
         for line in lines:
             length = len(line)
             pos = 0
             while pos < length:
                 match = tokens.match(line, pos)
-                if match is not None:
-                    for i in range(len(patterns)):
-                        group = match.group(i + 1)
-                        if group is not None:
-                            if i == 0:  # keys
-                                value = group.rstrip()
-                            elif i == 1:  # reals
-                                value = float(group)
-                            elif i == 2:  # ints
-                                value = int(group)
-                            else:
-                                value = group
-                            if i != 6:  # comments and whitespaces
-                                yield (i, value, lineno + 1, pos + 1)
-                            pos += len(group)
-                            break
-                else:
-                    raise NetworkXError(
-                        "cannot tokenize %r at (%d, %d)"
-                        % (line[pos:], lineno + 1, pos + 1)
-                    )
+                if match is None:
+                    m = "cannot tokenize %r at (%d, %d)"
+                    raise NetworkXError(m % (line[pos:], lineno + 1, pos + 1))
+                for i in range(len(patterns)):
+                    group = match.group(i + 1)
+                    if group is not None:
+                        if i == 0:  # keys
+                            value = group.rstrip()
+                        elif i == 1:  # reals
+                            value = float(group)
+                        elif i == 2:  # ints
+                            value = int(group)
+                        else:
+                            value = group
+                        if i != 6:    # comments and whitespaces
+                            yield Token(Pattern(i), value, lineno + 1, pos + 1)
+                        pos += len(group)
+                        break
             lineno += 1
-        yield (None, None, lineno + 1, 1)  # EOF
+        yield Token(None, None, lineno + 1, 1)  # EOF
 
     def unexpected(curr_token, expected):
         category, value, lineno, pos = curr_token
-        raise NetworkXError(
-            "expected %s, found %s at (%d, %d)"
-            % (expected, repr(value) if value is not None else "EOF", lineno, pos)
-        )
+        value = repr(value) if value is not None else "EOF"
+        msg = "expected %s, found %s at (%d, %d)"
+        raise NetworkXError(msg % (expected, value, lineno, pos))
 
     def consume(curr_token, category, expected):
-        if curr_token[0] == category:
+        if curr_token.category == category:
             return next(tokens)
         unexpected(curr_token, expected)
 
     def parse_kv(curr_token):
         dct = defaultdict(list)
-        while curr_token[0] == 0:  # keys
-            key = curr_token[1]
+        while curr_token.category == Pattern.KEYS:
+            key = curr_token.value
             curr_token = next(tokens)
-            category = curr_token[0]
-            if category == 1 or category == 2:  # reals or ints
-                value = curr_token[1]
+            category = curr_token.category
+            if category == Pattern.REALS or category == Pattern.INTS:
+                value = curr_token.value
                 curr_token = next(tokens)
-            elif category == 3:  # strings
-                value = unescape(curr_token[1][1:-1])
+            elif category == Pattern.STRINGS:
+                value = unescape(curr_token.value[1:-1])
                 if destringizer:
                     try:
                         value = destringizer(value)
                     except ValueError:
                         pass
                 curr_token = next(tokens)
-            elif category == 4:  # dict start
+            elif category == Pattern.DICT_START:
                 curr_token, value = parse_dict(curr_token)
             else:
                 # Allow for string convertible id and label values
                 if key in ("id", "label", "source", "target"):
                     try:
                         # String convert the token value
-                        value = unescape(str(curr_token[1]))
+                        value = unescape(str(curr_token.value))
                         if destringizer:
                             try:
                                 value = destringizer(value)
@@ -356,21 +374,31 @@ def parse_gml_lines(lines, label, destringizer):
                 else:  # Otherwise error out
                     unexpected(curr_token, "an int, float, string or '['")
             dct[key].append(value)
-        dct = {
-            key: (value if not isinstance(value, list) or len(value) != 1 else value[0])
-            for key, value in dct.items()
-        }
+
+        def clean_dict_value(value):
+            if not isinstance(value, list):
+                return value
+            if len(value) == 1:
+                return value[0]
+            if value[0] == LIST_START_VALUE:
+                return value[1:]
+            return value
+
+        dct = {key: clean_dict_value(value) for key, value in dct.items()}
         return curr_token, dct
 
     def parse_dict(curr_token):
-        curr_token = consume(curr_token, 4, "'['")  # dict start
+        # dict start
+        curr_token = consume(curr_token, Pattern.DICT_START, "'['")
+        # dict contents
         curr_token, dct = parse_kv(curr_token)
-        curr_token = consume(curr_token, 5, "']'")  # dict end
+        # dict end
+        curr_token = consume(curr_token, Pattern.DICT_END, "']'")
         return curr_token, dct
 
     def parse_graph():
         curr_token, dct = parse_kv(next(tokens))
-        if curr_token[0] is not None:  # EOF
+        if curr_token.category is not None:  # EOF
             unexpected(curr_token, "EOF")
         if "graph" not in dct:
             raise NetworkXError("input contains no graph")
@@ -388,15 +416,15 @@ def parse_gml_lines(lines, label, destringizer):
         G = nx.DiGraph() if directed else nx.Graph()
     else:
         G = nx.MultiDiGraph() if directed else nx.MultiGraph()
-    G.graph.update(
-        (key, value) for key, value in graph.items() if key != "node" and key != "edge"
-    )
+    graph_attr = {k: v for k, v in graph.items() if k not in ("node", "edge")}
+    G.graph.update(graph_attr)
 
     def pop_attr(dct, category, attr, i):
         try:
             return dct.pop(attr)
         except KeyError:
-            raise NetworkXError("%s #%d has no '%s' attribute" % (category, i, attr))
+            outputs = (category, i, attr)
+            raise NetworkXError("%s #%d has no '%s' attribute" % outputs)
 
     nodes = graph.get("node", [])
     mapping = {}
@@ -408,7 +436,7 @@ def parse_gml_lines(lines, label, destringizer):
         if label is not None and label != "id":
             node_label = pop_attr(node, "node", label, i)
             if node_label in node_labels:
-                raise NetworkXError("node label %r is duplicated" % (node_label,))
+                raise NetworkXError(f"node label {node_label!r} is duplicated")
             node_labels.add(node_label)
             mapping[id] = node_label
         G.add_node(id, **node)
@@ -418,24 +446,23 @@ def parse_gml_lines(lines, label, destringizer):
         source = pop_attr(edge, "edge", "source", i)
         target = pop_attr(edge, "edge", "target", i)
         if source not in G:
-            raise NetworkXError("edge #%d has an undefined source %r" % (i, source))
+            raise NetworkXError(f"edge #{i} has undefined source {source!r}")
         if target not in G:
-            raise NetworkXError("edge #%d has an undefined target %r" % (i, target))
+            raise NetworkXError(f"edge #{i} has undefined target {target!r}")
         if not multigraph:
             if not G.has_edge(source, target):
                 G.add_edge(source, target, **edge)
             else:
-                msg = "edge #%d (%r%s%r) is duplicated.\n"
-                msg2 = 'Hint: If multigraph add "multigraph 1" to file header.'
-                info = (i, source, "->" if directed else "--", target)
-                raise nx.NetworkXError((msg % info) + msg2)
+                arrow = "->" if directed else "--"
+                msg = f"edge #{i} ({source!r}{arrow}{target!r}) is duplicated"
+                raise nx.NetworkXError(msg)
         else:
             key = edge.pop("key", None)
             if key is not None and G.has_edge(source, target, key):
-                raise nx.NetworkXError(
-                    "edge #%d (%r%s%r, %r) is duplicated"
-                    % (i, source, "->" if directed else "--", target, key)
-                )
+                arrow = "->" if directed else "--"
+                msg = f"edge #{i} ({source!r}{arrow}{target!r}, {key!r})"
+                msg2 = 'Hint: If multigraph add "multigraph 1" to file header.'
+                raise nx.NetworkXError(msg + " is duplicated\n" + msg2)
             G.add_edge(source, target, key, **edge)
 
     if label is not None and label != "id":
@@ -543,7 +570,8 @@ def literal_stringizer(value):
                 stringize(item)
             buf.write("}")
         else:
-            raise ValueError("%r cannot be converted into a Python literal" % (value,))
+            msg = "{value!r} cannot be converted into a Python literal"
+            raise ValueError(msg)
 
     buf = StringIO()
     stringize(value)
@@ -670,16 +698,13 @@ def generate_gml(G, stringizer=None):
                 for key, value in value.items():
                     for line in stringize(key, value, (), next_indent):
                         yield line
-                yield indent + "]"
-            elif (
-                isinstance(value, (list, tuple))
-                and key != "label"
-                and value
-                and not in_list
-            ):
-                next_indent = indent + "  "
+                yield indent + ']'
+            elif isinstance(value, (list, tuple)) and key != 'label' \
+                    and value and not in_list:
+                if len(value) == 1:
+                    yield indent + key + ' ' + '"{}"'.format(LIST_START_VALUE)
                 for val in value:
-                    for line in stringize(key, val, (), next_indent, True):
+                    for line in stringize(key, val, (), indent, True):
                         yield line
             else:
                 if stringizer:
