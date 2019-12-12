@@ -3,6 +3,7 @@
 The Christofides algorithm provides a 3/2-approximation of TSP.
 """
 import networkx as nx
+from networkx.utils import not_implemented_for
 
 __all__ = ["christofides", "traveling_salesman_problem"]
 
@@ -29,16 +30,16 @@ def christofides(G, weight='weight', tree=None):
 
     Parameters
     ----------
-    G : NetworkX graph
+    G : Graph
       Undirected complete graph
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight.
-       If key not found, uses 1 as weight.
+    weight : string, optional (default='weight')
+      Edge data key corresponding to the edge weight.
+      If key not found, uses 1 as weight.
 
-    tree : NetworkX graph or None (default: computed using kruskal method)
-       A minimum spanning tree of G. Or, if None, the minimum spanning
-       tree is computed using :function:`networkx.minimum_spanning_tree`
+    tree : NetworkX graph or None (default: computed)
+      A minimum spanning tree of G. Or, if None, the minimum spanning
+      tree is computed using :func:`networkx.minimum_spanning_tree`
 
     Returns
     -------
@@ -48,8 +49,8 @@ def christofides(G, weight='weight', tree=None):
     References
     ----------
     .. [1] Christofides, Nicos. "Worst-case analysis of a new heuristic for
-    the travelling salesman problem." No. RR-388. Carnegie-Mellon Univ
-    Pittsburgh Pa Management Sciences Research Group, 1976.
+      the travelling salesman problem." No. RR-388. Carnegie-Mellon Univ
+      Pittsburgh Pa Management Sciences Research Group, 1976.
     """
     # Check that G is a complete graph
     for e in nx.selfloop_edges(G):
@@ -88,7 +89,7 @@ def traveling_salesman_problem(G, nodes, weight=None, cycle=True):
     This function then turns that hamiltonian cycle through `nodes`
     into a cycle on the original graph using shortest paths between
     nodes. It then returns the minimal cycle through `nodes` in `G`.
-    If `cycle is False`, the biggest weight is removed to make a path. 
+    If `cycle is False`, the biggest weight is removed to make a path.
 
     Parameters
     ----------
@@ -122,7 +123,8 @@ def traveling_salesman_problem(G, nodes, weight=None, cycle=True):
     GG = nx.Graph()
     for u in nodes:
         for v in nodes:
-            if u == v: continue
+            if u == v:
+                continue
             GG.add_edge(u, v, weight=dist[u][v])
     best_GG = list(christofides(GG, weight=weight))
 
