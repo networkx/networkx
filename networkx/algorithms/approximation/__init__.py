@@ -8,7 +8,6 @@ problems.
     ``from networkx.algorithms import approximation``.
 
 """
-from networkx.algorithms.approximation.christofides import *
 from networkx.algorithms.approximation.clustering_coefficient import *
 from networkx.algorithms.approximation.clique import *
 from networkx.algorithms.approximation.connectivity import *
@@ -18,5 +17,6 @@ from networkx.algorithms.approximation.independent_set import *
 from networkx.algorithms.approximation.matching import *
 from networkx.algorithms.approximation.ramsey import *
 from networkx.algorithms.approximation.steinertree import *
-from networkx.algorithms.approximation.vertex_cover import *
+from networkx.algorithms.approximation.traveling_salesman import *
 from networkx.algorithms.approximation.treewidth import *
+from networkx.algorithms.approximation.vertex_cover import *

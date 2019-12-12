@@ -198,14 +198,14 @@ def min_weight_matching(G, maxcardinality=False, weight='weight'):
         A maximal matching of the graph.
         
     """
-    if not len(G.edges):
-        return max_weight_matching(G, maxcardinality=maxcardinality, weight=weight)
-    I = nx.Graph()
-    min_weight = min([W[weight] if weight in W else 1 for _, _, W in G.edges(data=True)])
-    I.add_weighted_edges_from([
-        (u, v, 1/(1+w[weight]-min_weight if weight in w else 1)) for u, v, w in G.edges(data=True)
-    ], weight=weight)
-    return max_weight_matching(I, maxcardinality=maxcardinality, weight=weight)
+    if len(G.edges) == 0:
+        return max_weight_matching(G, maxcardinality, weight)
+    G_edges = G.edges(data=weight, default=1)
+    min_weight = min([w for _, _, w in G_edges])
+    InvG = nx.Graph()
+    edges = ((u, v, 1 / (1 + w - min_weight)) for u, v, w in G_edges)
+    InvG.add_weighted_edges_from(edges, weight=weight)
+    return max_weight_matching(InvG, maxcardinality, weight)
 
 
 def max_weight_matching(G, maxcardinality=False, weight='weight'):
