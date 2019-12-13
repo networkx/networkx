@@ -1,11 +1,12 @@
-"""Approximations of graph properties and Heuristic functions for optimization
-problems.
+"""Approximations of graph properties and Heuristic methods for optimization.
 
-    .. warning:: The approximation submodule is not imported in the top-level
-        ``networkx``.
+    .. warning:: These functions are not imported in the top-level of ``networkx``
 
     These functions can be accessed using
     ``networkx.approximation.function_name``
+
+    They can be imported using ``from networkx.algorithms import approximation``
+    or ``from networkx.algorithms.approximation import function_name``
 
 """
 from networkx.algorithms.approximation.clustering_coefficient import *
