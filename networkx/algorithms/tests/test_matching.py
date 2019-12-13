@@ -1,4 +1,5 @@
 from itertools import permutations
+from pytest import raises
 import math
 
 import networkx as nx
@@ -265,6 +266,13 @@ class TestMaxWeightMatching(object):
         assert_edges_equal(nx.max_weight_matching(G), answer)
         assert_edges_equal(nx.min_weight_matching(G), answer)
 
+    def test_wrong_graph_type(self):
+        error = nx.NetworkXNotImplemented
+        raises(error, nx.max_weight_matching, nx.MultiGraph())
+        raises(error, nx.max_weight_matching, nx.MultiDiGraph())
+        raises(error, nx.max_weight_matching, nx.DiGraph())
+        raises(error, nx.min_weight_matching, nx.DiGraph())
+
 
 class TestIsMatching(object):
     """Unit tests for the
@@ -394,3 +402,9 @@ class TestMaximalMatching(object):
             matching = nx.maximal_matching(G)
             assert len(matching) == 1
             assert nx.is_maximal_matching(G, matching)
+
+    def test_wrong_graph_type(self):
+        error = nx.NetworkXNotImplemented
+        raises(error, nx.maximal_matching, nx.MultiGraph())
+        raises(error, nx.maximal_matching, nx.MultiDiGraph())
+        raises(error, nx.maximal_matching, nx.DiGraph())
