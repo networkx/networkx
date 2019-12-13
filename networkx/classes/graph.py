@@ -189,9 +189,7 @@ class Graph(object):
     dict-like object. In general, the dict-like features should be
     maintained but extra features can be added. To replace one of the
     dicts create a new graph class by changing the class(!) variable
-    holding the factory for that dict-like structure. The variable names are
-    node_dict_factory, node_attr_dict_factory, adjlist_inner_dict_factory,
-    adjlist_outer_dict_factory, edge_attr_dict_factory and graph_attr_dict_factory.
+    holding the factory for that dict-like structure.
 
     node_dict_factory : function, (default: dict)
         Factory function to be used to create the dict containing node
@@ -324,7 +322,7 @@ class Graph(object):
         self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
         self.edge_attr_dict_factory = self.edge_attr_dict_factory
 
-        self.graph = self.graph_attr_dict_factory()   # dictionary for graph attributes
+        self.graph = self.graph_attr_dict_factory()   # graph attribute dict
         self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         # attempt to load graph with data
@@ -502,9 +500,8 @@ class Graph(object):
         """
         if node_for_adding not in self._node:
             self._adj[node_for_adding] = self.adjlist_inner_dict_factory()
-            attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory(
-            )
-            attr_dict.update(attr)
+            attrd = self._node[node_for_adding] = self.node_attr_dict_factory()
+            attrd.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
 
@@ -1330,7 +1327,7 @@ class Graph(object):
             return default
 
     def adjacency(self):
-        """Returns an iterator over (node, adjacency dict) tuples for all nodes.
+        """Returns an iterator over (node, adjacency dict) tuples for all nodes
 
         For directed graphs, only outgoing neighbors/adjacencies are included.
 

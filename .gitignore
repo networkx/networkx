@@ -50,6 +50,7 @@ networkx.egg-info/
 
 # VS Code settings
 .vscode
-test.edgelist
 
+# created by docstring Examples
+test.edgelist
 test.edgelist.gz
