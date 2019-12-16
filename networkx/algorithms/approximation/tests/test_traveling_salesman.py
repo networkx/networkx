@@ -11,14 +11,27 @@ def test_christofides_exception():
 
 
 def test_christofides_hamiltonian():
-    for _ in range(100):
-        G = nx.complete_graph(20)
-        for (u, v) in G.edges():
-            G[u][v]['weight'] = random.randint(0, 10)
-        H = nx.Graph()
-        H.add_edges_from(nx.approximation.christofides(G))
-        H.remove_edges_from(nx.find_cycle(H))
-        assert len(H.edges) == 0
+    random.seed(42)
+    G = nx.complete_graph(20)
+    for (u, v) in G.edges():
+        G[u][v]['weight'] = random.randint(0, 10)
+
+    H = nx.Graph()
+    H.add_edges_from(nx.approximation.christofides(G))
+    H.remove_edges_from(nx.find_cycle(H))
+    assert len(H.edges) == 0
+
+    tree = nx.minimum_spanning_tree(G, weight='weight')
+    H = nx.Graph()
+    H.add_edges_from(nx.approximation.christofides(G, tree))
+    H.remove_edges_from(nx.find_cycle(H))
+    assert len(H.edges) == 0
+
+
+def test_christofides_selfloop():
+    G = nx.complete_graph(10)
+    G.add_edge(3, 3)
+    raises(ValueError, nx.approximation.christofides, G)
 
 
 def test_TSP_unweighted():

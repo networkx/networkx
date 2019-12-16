@@ -302,6 +302,19 @@ class TestIsMatching(object):
         G = nx.path_graph(4)
         assert nx.is_matching(G, {(0, 1), (2, 3)})
 
+    def test_incorrect_input(self):
+        error = nx.NetworkXNotImplemented
+        G = nx.path_graph(4)
+        # edge not in G
+        raises(error, nx.is_matching, G, {(0, 5), (1, 2), (2, 3)})
+        # selfloop for node not in G
+        raises(error, nx.is_matching, G, {(5, 5), (1, 2), (2, 3)})
+        # selfloop edge not in G
+        raises(error, nx.is_matching, G, {(0, 0), (1, 2), (2, 3)})
+        # selfloop edge in G
+        G.add_edge(0, 0)
+        assert not nx.is_matching(G, {(0, 0), (1, 2), (2, 3)})
+
     def test_invalid(self):
         G = nx.path_graph(4)
         assert not nx.is_matching(G, {(0, 1), (1, 2), (2, 3)})

@@ -95,10 +95,12 @@ def is_matching(G, matching):
     for e in matching:
         if len(e) == 1:  # self-loop
             if next(iter(e)) not in G:
-                return False
+                msg = f"Matching includes edge {e} not in G"
+                raise nx.NetworkXNotImplemented(msg)
             continue
         if not G.has_edge(*e):
-            return False
+            msg = f"Matching includes edge {e} not in G"
+            raise nx.NetworkXNotImplemented(msg)
     # TODO This is parallelizable.
     return all(len(set(e1) & set(e2)) == 0
                for e1, e2 in combinations(matching, 2))
