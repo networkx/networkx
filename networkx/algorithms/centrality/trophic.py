@@ -1,6 +1,6 @@
 """Trophic levels"""
-import networkx as nx
 import numpy as np
+import networkx as nx
 
 from networkx.utils import not_implemented_for
 
@@ -9,7 +9,7 @@ __all__ = ['trophic_levels']
 
 @not_implemented_for('undirected')
 def trophic_levels(G, weight='weight'):
-    """Compute the trophic levels of nodes.
+    r"""Compute the trophic levels of nodes.
 
     The trophic level of a node $i$ is
 
@@ -25,7 +25,7 @@ def trophic_levels(G, weight='weight'):
 
     and nodes with $k_^{in}_i = 0$ have $s_i = 1$ by convention.
 
-    These are calculated using the method outlined in Stephen Levine (1980) J. theor. Biol. 83, 195-207
+    These are calculated using the method outlined in Levine [1]_.
 
     Parameters
     ----------
@@ -36,41 +36,54 @@ def trophic_levels(G, weight='weight'):
     -------
     nodes : dict
         Dictionary of nodes with trophic level as the vale.
+
+    References
+    ----------
+    .. [1] Stephen Levine (1980) J. theor. Biol. 83, 195-207
     """
-    # defensive copy is required - we plan to drop nodes
-    G = G.copy()
-
-    # drop nodes of in-degree zero, keep a list of ids
-    z = [nid for nid, d in G.in_degree if d == 0]
-    for nid in z:
-        G.remove_node(nid)
-
     # find adjacency matrix
-    q = nx.linalg.graphmatrix.adjacency_matrix(G, weight=weight).T
+    a = nx.adjacency_matrix(G, weight=weight).T.toarray()
 
-    # must be square, size of number of nodes
-    assert len(q.shape) == 2
-    assert q.shape[0] == q.shape[1]
-    assert q.shape[0] == len(G)
+    # drop rows/columns where in-degree is zero
+    rowsum = np.sum(a, axis=1)
+    p = a[rowsum != 0][:, rowsum != 0]
+    # normalise so sum of in-degree weights is 1 along each row
+    p = p / rowsum[rowsum != 0][:, np.newaxis]
 
-    nn = q.shape[0]
-
+    # calculate trophic levels
+    nn = p.shape[0]
     i = np.eye(nn)
-    n = np.linalg.inv(i - q)
-    y = np.dot(np.asarray(n), np.ones(nn)) + 1
+    n = np.linalg.inv(i - p)
+    y = n.sum(axis=1) + 1
 
     levels = {}
 
-    # all nodes with degree zero have trophic level == 1
-    for nid in z:
-        levels[nid] = 1
+    # all nodes with in-degree zero have trophic level == 1
+    zero_node_ids = (node_id for node_id, degree in G.in_degree if degree == 0)
+    for node_id in zero_node_ids:
+        levels[node_id] = 1
 
     # all other nodes have levels as calculated
-    for i, nid in enumerate(G.nodes):
-        levels[nid] = y[i]
+    nonzero_node_ids = (node_id for node_id, degree in G.in_degree if degree != 0)
+    for i, node_id in enumerate(nonzero_node_ids):
+        levels[node_id] = y[i]
 
     return levels
 
 
-# trophic_difference for each edge is $x_ij = s_i - s_j$
-# trophic_coherence is the standard deviation of trophic distances
+def trophic_differences(G, weight='weight'):
+    """Trophic difference for each edge is $x_ij = s_i - s_j$
+    """
+    levels = trophic_levels(G, weight=weight)
+    diffs = {}
+    for u, v in G.edges:
+        diffs[(u, v)] = levels[u] - levels[v]
+    return diffs
+
+
+def trophic_coherence(G, weight='weight'):
+    """Trophic coherence is the standard deviation of trophic differences between all edges
+    in a graph
+    """
+    diffs = trophic_differences(G, weight=weight)
+    return np.std(list(diffs.values()))
