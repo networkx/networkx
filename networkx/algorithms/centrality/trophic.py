@@ -53,7 +53,12 @@ def trophic_levels(G, weight='weight'):
     # calculate trophic levels
     nn = p.shape[0]
     i = np.eye(nn)
-    n = np.linalg.inv(i - p)
+    try:
+        n = np.linalg.inv(i - p)
+    except np.linalg.LinAlgError as err:
+        # LinAlgError is raised when there is a non-basal node
+        err.args = (err.args[0] + ". Trophic levels are only defined for graphs with at least one basal node i.e. one node with no incoming edges.",) + err.args[1:]
+        raise
     y = n.sum(axis=1) + 1
 
     levels = {}
