@@ -147,8 +147,22 @@ class TestTrophicMeasures:
 
     def test_trophic_differences(self):
 
-        matrix_a = np.array([[0,0],[1,0]])
+        matrix_a = np.array([[0,1],[0,0]])
         G = nx.from_numpy_matrix(matrix_a, create_using=nx.DiGraph)
         diffs = nx.trophic_differences(G)
-        assert almost_equal(diffs[(1,0)], 1)
+        assert almost_equal(diffs[(0,1)], 1)
 
+
+        matrix_b = np.array([[0,1,1,0],
+            [0,0,1,1],
+            [0,0,0,1],
+            [0,0,0,0]])
+        G = nx.from_numpy_matrix(matrix_b, create_using=nx.DiGraph)
+        diffs = nx.trophic_differences(G)
+        print(diffs)
+        assert almost_equal(diffs[(0,1)], 1)
+        assert almost_equal(diffs[(0,2)], 1.5)
+        assert almost_equal(diffs[(1,2)], 0.5)
+        assert almost_equal(diffs[(1,3)], 1.25)
+        assert almost_equal(diffs[(2,3)], 0.75)
+        
