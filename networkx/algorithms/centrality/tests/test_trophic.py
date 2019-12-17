@@ -108,4 +108,29 @@ class TestTrophicMeasures:
         for ind in range(4):
             assert almost_equal(d[ind], expected_result[ind])
 
+    def test_trophic_levels_even_more_complex(self):
+
+
+        # Another, bigger matrix
+        matrix = np.array([
+        [0, 0, 0, 0, 0],
+        [0, 1, 0, 1, 0],
+        [1, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0],
+        [0, 0, 0, 1, 0]])
+
+        # Generated this linear system using pen and paper:
+        K = np.matrix([
+        [1, 0,  -1,0,   0],
+        [0, .5, 0,  -.5,    0],
+        [0, 0,  1,  0,      0],
+        [0, -.5,0,  1,      -.5],
+        [0, 0,  0,  0,      1],
+        ])
+        result_1 = np.ravel(np.matmul(np.linalg.inv(K), np.ones(5)))
+        G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph)
+        result_2 = nx.trophic_levels(G)
+
+        for ind in range(5):
+            assert almost_equal(result_1[ind], result_2[ind])        
 
