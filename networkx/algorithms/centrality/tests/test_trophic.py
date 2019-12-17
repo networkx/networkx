@@ -138,8 +138,17 @@ class TestTrophicMeasures:
 
     # Check it raises the correct error with graphs with only non-basal nodes
     @raises(np.linalg.LinAlgError)
-    def test_singular_matrix(self):
+    def test_torphic_levels_singular_matrix(self):
 
         matrix = np.identity(4)
         G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph)
         result = nx.trophic_levels(G)        
+
+
+    def test_trophic_differences(self):
+
+        matrix_a = np.array([[0,0],[1,0]])
+        G = nx.from_numpy_matrix(matrix_a, create_using=nx.DiGraph)
+        diffs = nx.trophic_differences(G)
+        assert almost_equal(diffs[(1,0)], 1)
+

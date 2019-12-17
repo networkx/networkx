@@ -4,7 +4,7 @@ import networkx as nx
 
 from networkx.utils import not_implemented_for
 
-__all__ = ['trophic_levels']
+__all__ = ['trophic_levels', 'trophic_differences']
 
 
 @not_implemented_for('undirected')
@@ -76,16 +76,18 @@ def trophic_levels(G, weight='weight'):
     return levels
 
 
+@not_implemented_for('undirected')
 def trophic_differences(G, weight='weight'):
-    """Trophic difference for each edge is $x_ij = s_i - s_j$
+    """Trophic difference for each edge is $x_ij = s_j - s_i$
     """
     levels = trophic_levels(G, weight=weight)
     diffs = {}
     for u, v in G.edges:
-        diffs[(u, v)] = levels[u] - levels[v]
+        diffs[(u, v)] = levels[v] - levels[u]
     return diffs
 
 
+@not_implemented_for('undirected')
 def trophic_coherence(G, weight='weight'):
     """Trophic coherence is the standard deviation of trophic differences between all edges
     in a graph
