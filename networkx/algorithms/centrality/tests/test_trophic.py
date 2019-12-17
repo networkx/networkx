@@ -165,4 +165,58 @@ class TestTrophicMeasures:
         assert almost_equal(diffs[(1,2)], 0.5)
         assert almost_equal(diffs[(1,3)], 1.25)
         assert almost_equal(diffs[(2,3)], 0.75)
+
+    def test_trophic_coherence_no_cannibalism(self):
+
+        matrix_a = np.array([[0,1],[0,0]])
+        G = nx.from_numpy_matrix(matrix_a, create_using=nx.DiGraph)
+        q = nx.trophic_coherence(G, cannibalism=False)
+        assert almost_equal(q,0)
+
+    
+        matrix_b = np.array([[0,1,1,0],
+            [0,0,1,1],
+            [0,0,0,1],
+            [0,0,0,0]])
+        G = nx.from_numpy_matrix(matrix_b, create_using=nx.DiGraph)
+        q = nx.trophic_coherence(G, cannibalism=False)
+        assert almost_equal(q, np.std([1,1.5,0.5,0.75,1.25]))
+
+
+        matrix_c = np.array([[0,1,1,0],
+            [0,1,1,1],
+            [0,0,0,1],
+            [0,0,0,1]])
+        G = nx.from_numpy_matrix(matrix_c, create_using=nx.DiGraph)
+        q = nx.trophic_coherence(G, cannibalism=False)
+        # Ignore the self-link
+        assert almost_equal(q, np.std([1,1.5,0.5,0.75,1.25]))
+        
+
+    def test_trophic_coherence_cannibalism(self):
+
+        matrix_a = np.array([[0,1],[0,0]])
+        G = nx.from_numpy_matrix(matrix_a, create_using=nx.DiGraph)
+        q = nx.trophic_coherence(G, cannibalism=True)
+        assert almost_equal(q,0)        
+
+
+        matrix_b = np.matrix([
+        [0, 0, 0, 0, 0],
+        [0, 1, 0, 1, 0],
+        [1, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0],
+        [0, 0, 0, 1, 0]])
+        G = nx.from_numpy_matrix(matrix_b, create_using=nx.DiGraph)
+        q = nx.trophic_coherence(G, cannibalism=True)
+        assert almost_equal(q,2)        
+
+        matrix_c = np.array([[0,1,1,0],
+            [0,0,1,1],
+            [0,0,0,1],
+            [0,0,0,0]])
+        G = nx.from_numpy_matrix(matrix_c, create_using=nx.DiGraph)
+        q = nx.trophic_coherence(G, cannibalism=True)
+        # Ignore the self-link
+        assert almost_equal(q, np.std([1,1.5,0.5,0.75,1.25]))
         
