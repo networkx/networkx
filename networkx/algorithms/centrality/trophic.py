@@ -57,7 +57,9 @@ def trophic_levels(G, weight='weight'):
         n = np.linalg.inv(i - p)
     except np.linalg.LinAlgError as err:
         # LinAlgError is raised when there is a non-basal node
-        err.args = (err.args[0] + ". Trophic levels are only defined for graphs with at least one basal node i.e. one node with no incoming edges.",) + err.args[1:]
+        msg = ". Trophic levels are only defined for graphs with at least one basal node " + \
+              "i.e. one node with no incoming edges."
+        err.args = (err.args[0] + msg,) + err.args[1:]
         raise
     y = n.sum(axis=1) + 1
 
@@ -80,7 +82,7 @@ def trophic_levels(G, weight='weight'):
 def trophic_differences(G, weight='weight'):
     r"""Compute the trophic difference of a graph.
 
-    Trophic difference for each edge is 
+    Trophic difference for each edge is
 
     .. math::
         x_ij = s_j - s_i
@@ -112,14 +114,14 @@ def trophic_differences(G, weight='weight'):
 def trophic_coherence(G, weight='weight', cannibalism=False):
     r"""Compute the trophic coherence of a graph.
 
-    Trophic coherence is defined by [1] as the standard deviation of the trophic 
+    Trophic coherence is defined by [1] as the standard deviation of the trophic
     differences of the edges of a directed graph
-    
+
     Parameters
     ----------
     G : DiGraph
         A directed networkx graph
-    
+
     cannibalism: Boolean
         If set to False, self edges are not considered in the calculation
 
