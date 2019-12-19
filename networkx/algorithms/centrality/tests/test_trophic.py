@@ -1,9 +1,10 @@
 """Unit tests for trophic measures
 """
+import pytest
+
 import networkx as nx
 import numpy as np
 from networkx.testing import almost_equal
-from nose.tools import raises
 
 
 class TestTrophicMeasures:
@@ -136,14 +137,13 @@ class TestTrophicMeasures:
         for ind in range(5):
             assert almost_equal(result_1[ind], result_2[ind])        
 
-    # Check it raises the correct error with graphs with only non-basal nodes
-    @raises(np.linalg.LinAlgError)
-    def test_torphic_levels_singular_matrix(self):
-
+    def test_trophic_levels_singular_matrix(self):
+        """Should raise an error with graphs with only non-basal nodes
+        """
         matrix = np.identity(4)
         G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph)
-        result = nx.trophic_levels(G)        
-
+        with pytest.raises(np.linalg.LinAlgError):
+            nx.trophic_levels(G)
 
     def test_trophic_differences(self):
 
