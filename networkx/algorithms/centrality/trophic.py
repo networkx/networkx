@@ -4,7 +4,7 @@ import networkx as nx
 
 from networkx.utils import not_implemented_for
 
-__all__ = ['trophic_levels']
+__all__ = ['trophic_levels', 'trophic_differences', 'trophic_coherence']
 
 
 @not_implemented_for('undirected')
@@ -53,7 +53,12 @@ def trophic_levels(G, weight='weight'):
     # calculate trophic levels
     nn = p.shape[0]
     i = np.eye(nn)
-    n = np.linalg.inv(i - p)
+    try:
+        n = np.linalg.inv(i - p)
+    except np.linalg.LinAlgError as err:
+        # LinAlgError is raised when there is a non-basal node
+        err.args = (err.args[0] + ". Trophic levels are only defined for graphs with at least one basal node i.e. one node with no incoming edges.",) + err.args[1:]
+        raise
     y = n.sum(axis=1) + 1
 
     levels = {}
@@ -71,19 +76,70 @@ def trophic_levels(G, weight='weight'):
     return levels
 
 
+@not_implemented_for('undirected')
 def trophic_differences(G, weight='weight'):
-    """Trophic difference for each edge is $x_ij = s_i - s_j$
+    r"""Compute the trophic difference of a graph.
+
+    Trophic difference for each edge is 
+
+    .. math::
+        x_ij = s_j - s_i
+    Johnson et al [1]_.
+
+    Parameters
+    ----------
+    G : DiGraph
+        A directed networkx graph
+
+    Returns
+    -------
+    diffs : dict
+        Dictionary of edges with trophic differences as the value.
+
+    References
+    ----------
+    .. [1] Samuel Johnson, Virginia Dominguez-Garcia, Luca Donetti, Miguel A. Munoz (2014) PNAS
+        "Trophic coherence determines food-web stability"
     """
     levels = trophic_levels(G, weight=weight)
     diffs = {}
     for u, v in G.edges:
-        diffs[(u, v)] = levels[u] - levels[v]
+        diffs[(u, v)] = levels[v] - levels[u]
     return diffs
 
 
-def trophic_coherence(G, weight='weight'):
-    """Trophic coherence is the standard deviation of trophic differences between all edges
-    in a graph
+@not_implemented_for('undirected')
+def trophic_coherence(G, weight='weight', cannibalism=False):
+    r"""Compute the trophic coherence of a graph.
+
+    Trophic coherence is defined by [1] as the standard deviation of the trophic 
+    differences of the edges of a directed graph
+    
+    Parameters
+    ----------
+    G : DiGraph
+        A directed networkx graph
+    
+    cannibalism: Boolean
+        If set to False, self edges are not considered in the calculation
+
+    Returns
+    -------
+    trophic_coherence : float
+        The trophic coherence of a graph
+
+    References
+    ----------
+    .. [1] Samuel Johnson, Virginia Dominguez-Garcia, Luca Donetti, Miguel A. Munoz (2014) PNAS
+        "Trophic coherence determines food-web stability"
     """
-    diffs = trophic_differences(G, weight=weight)
+
+    if cannibalism:
+        diffs = trophic_differences(G, weight=weight)
+    else:
+        # If no cannibalism, remove self-edges
+        # Make a copy so we do not change G's edges in memory
+        G_2 = G.copy()
+        G_2.remove_edges_from(nx.selfloop_edges(G_2))
+        diffs = trophic_differences(G_2, weight=weight)
     return np.std(list(diffs.values()))

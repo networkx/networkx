@@ -3,6 +3,8 @@
 import networkx as nx
 import numpy as np
 from networkx.testing import almost_equal
+from nose.tools import raises
+
 
 class TestTrophicMeasures:
     def test_trophic_levels(self):
@@ -108,4 +110,113 @@ class TestTrophicMeasures:
         for ind in range(4):
             assert almost_equal(d[ind], expected_result[ind])
 
+    def test_trophic_levels_even_more_complex(self):
 
+
+        # Another, bigger matrix
+        matrix = np.array([
+        [0, 0, 0, 0, 0],
+        [0, 1, 0, 1, 0],
+        [1, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0],
+        [0, 0, 0, 1, 0]])
+
+        # Generated this linear system using pen and paper:
+        K = np.matrix([
+        [1, 0,  -1,0,   0],
+        [0, .5, 0,  -.5,    0],
+        [0, 0,  1,  0,      0],
+        [0, -.5,0,  1,      -.5],
+        [0, 0,  0,  0,      1],
+        ])
+        result_1 = np.ravel(np.matmul(np.linalg.inv(K), np.ones(5)))
+        G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph)
+        result_2 = nx.trophic_levels(G)
+
+        for ind in range(5):
+            assert almost_equal(result_1[ind], result_2[ind])        
+
+    # Check it raises the correct error with graphs with only non-basal nodes
+    @raises(np.linalg.LinAlgError)
+    def test_torphic_levels_singular_matrix(self):
+
+        matrix = np.identity(4)
+        G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph)
+        result = nx.trophic_levels(G)        
+
+
+    def test_trophic_differences(self):
+
+        matrix_a = np.array([[0,1],[0,0]])
+        G = nx.from_numpy_matrix(matrix_a, create_using=nx.DiGraph)
+        diffs = nx.trophic_differences(G)
+        assert almost_equal(diffs[(0,1)], 1)
+
+
+        matrix_b = np.array([[0,1,1,0],
+            [0,0,1,1],
+            [0,0,0,1],
+            [0,0,0,0]])
+        G = nx.from_numpy_matrix(matrix_b, create_using=nx.DiGraph)
+        diffs = nx.trophic_differences(G)
+        print(diffs)
+        assert almost_equal(diffs[(0,1)], 1)
+        assert almost_equal(diffs[(0,2)], 1.5)
+        assert almost_equal(diffs[(1,2)], 0.5)
+        assert almost_equal(diffs[(1,3)], 1.25)
+        assert almost_equal(diffs[(2,3)], 0.75)
+
+    def test_trophic_coherence_no_cannibalism(self):
+
+        matrix_a = np.array([[0,1],[0,0]])
+        G = nx.from_numpy_matrix(matrix_a, create_using=nx.DiGraph)
+        q = nx.trophic_coherence(G, cannibalism=False)
+        assert almost_equal(q,0)
+
+    
+        matrix_b = np.array([[0,1,1,0],
+            [0,0,1,1],
+            [0,0,0,1],
+            [0,0,0,0]])
+        G = nx.from_numpy_matrix(matrix_b, create_using=nx.DiGraph)
+        q = nx.trophic_coherence(G, cannibalism=False)
+        assert almost_equal(q, np.std([1,1.5,0.5,0.75,1.25]))
+
+
+        matrix_c = np.array([[0,1,1,0],
+            [0,1,1,1],
+            [0,0,0,1],
+            [0,0,0,1]])
+        G = nx.from_numpy_matrix(matrix_c, create_using=nx.DiGraph)
+        q = nx.trophic_coherence(G, cannibalism=False)
+        # Ignore the self-link
+        assert almost_equal(q, np.std([1,1.5,0.5,0.75,1.25]))
+        
+
+    def test_trophic_coherence_cannibalism(self):
+
+        matrix_a = np.array([[0,1],[0,0]])
+        G = nx.from_numpy_matrix(matrix_a, create_using=nx.DiGraph)
+        q = nx.trophic_coherence(G, cannibalism=True)
+        assert almost_equal(q,0)        
+
+
+        matrix_b = np.matrix([
+        [0, 0, 0, 0, 0],
+        [0, 1, 0, 1, 0],
+        [1, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0],
+        [0, 0, 0, 1, 0]])
+        G = nx.from_numpy_matrix(matrix_b, create_using=nx.DiGraph)
+        q = nx.trophic_coherence(G, cannibalism=True)
+        assert almost_equal(q,2)        
+
+        matrix_c = np.array([[0,1,1,0],
+            [0,0,1,1],
+            [0,0,0,1],
+            [0,0,0,0]])
+        G = nx.from_numpy_matrix(matrix_c, create_using=nx.DiGraph)
+        q = nx.trophic_coherence(G, cannibalism=True)
+        # Ignore the self-link
+        assert almost_equal(q, np.std([1,1.5,0.5,0.75,1.25]))
+        
