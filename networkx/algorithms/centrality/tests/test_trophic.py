@@ -153,6 +153,44 @@ def test_trophic_levels_singular_matrix():
         nx.trophic_levels(G)
 
 
+def test_trophic_levels_singular_with_basal():
+    """Should compute or approximate when there are basal nodes but matrix is singular
+    """
+    G = nx.DiGraph()
+    G.add_edge('a', 'b')  # a has in-degree zero
+
+    G.add_edge('c', 'b')  # b is one level above a, c and d
+    G.add_edge('d', 'b')
+
+    G.add_edge('c', 'd')  # c and d form a loop
+    G.add_edge('d', 'c')
+
+    levels = nx.trophic_levels(G)
+
+    expected = {
+        'a': 1,
+        'b': 2,
+
+        # by the logic that c and d must be equal, and are one level below b
+        'c': 1,
+        'd': 1
+    }
+    assert levels == expected
+
+    # if self-loops are allowed, smaller example:
+    G = nx.DiGraph()
+    G.add_edge('a', 'b')  # a has in-degree zero
+    G.add_edge('c', 'b')  # b is one level above a and c
+    G.add_edge('c', 'c')  # c has a self-loop
+    levels = nx.trophic_levels(G)
+    expected = {
+        'a': 1,
+        'b': 2,
+        'c': 1
+    }
+    assert levels == expected
+
+
 def test_trophic_differences():
     matrix_a = np.array([[0, 1], [0, 0]])
     G = nx.from_numpy_matrix(matrix_a, create_using=nx.DiGraph)
