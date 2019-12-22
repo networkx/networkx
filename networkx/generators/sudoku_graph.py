@@ -3,7 +3,7 @@
 This module gives a generator for n-Sudoku graphs. It can be used to develop
 algorithms for solving or generating Sudoku puzzles.
 
-A completed Sudoku grid is a 9x9 array of integers between 1 and 9, with no 
+A completed Sudoku grid is a 9x9 array of integers between 1 and 9, with no
 number appearing twice in the same row, column, or 3x3 box.
 
    8 6 4 | 3 7 1 | 2 5 9
@@ -20,9 +20,9 @@ number appearing twice in the same row, column, or 3x3 box.
 
 
 The Sudoku graph is an undirected graph with 81 vertices, corresponding to
-thecells of a Sudoku grid. It is a regular graph of degree 20. Two distinct 
-vertices are adjacent if and only if the corresponding cells belong to the 
-samerow, column, or box. A completed Sudoku grid corresponds to a vertex 
+the cells of a Sudoku grid. It is a regular graph of degree 20. Two distinct
+vertices are adjacent if and only if the corresponding cells belong to the
+same row, column, or box. A completed Sudoku grid corresponds to a vertex
 coloring of the Sudoku graph with nine colors.
 
 More generally, the n-Sudoku graph is a graph with n^4 vertices, corresponding
@@ -31,10 +31,10 @@ only if they belong to the same row, column, or n^2 by n^2 box.
 
 References
 ----------
-.. [1] Sander, Torsten (2009), "Sudoku graphs are integral", 
+.. [1] Sander, Torsten (2009), "Sudoku graphs are integral",
    Electronic Journal of Combinatorics, 16 (1): Note 25, 7pp, MR 2529816
 .. [2] Wikipedia contributors. "Glossary of Sudoku." Wikipedia, The Free
-   Encyclopedia, 3 Dec. 2019. Web. 22 Dec. 2019. 
+   Encyclopedia, 3 Dec. 2019. Web. 22 Dec. 2019.
 """
 
 import networkx as nx
@@ -52,9 +52,9 @@ def sudoku_graph(n=3):
 
     Parameters
     ----------
-    k: integer
+    n: integer
        The order of the Sudoku graph, equal to the square root of the
-       number of rows.
+       number of rows. The default is 3.
 
     Returns
     -------
@@ -79,7 +79,7 @@ def sudoku_graph(n=3):
 
     References
     ----------
-    .. [1] Sander, Torsten (2009), "Sudoku graphs are integral", 
+    .. [1] Sander, Torsten (2009), "Sudoku graphs are integral",
        Electronic Journal of Combinatorics, 16 (1): Note 25, 7pp, MR 2529816
     .. [2] Wikipedia contributors. "Glossary of Sudoku." Wikipedia, The Free
        Encyclopedia, 3 Dec. 2019. Web. 22 Dec. 2019.
@@ -102,13 +102,13 @@ def sudoku_graph(n=3):
         for j in range(1, n2):
             for i in range(j):
                 G.add_edge(row_start + i, row_start + j)
-    
+
     # Add edges for cells in the same column
     for col_no in range(0, n2):
         for j in range(col_no, n4, n2):
             for i in range(col_no, j, n2):
                 G.add_edge(i, j)
-    
+
     # Add edges for cells in the same box
     for band_no in range(n):
         for stack_no in range(n):
