@@ -43,7 +43,7 @@ from networkx.exception import NetworkXError
 __all__ = ['sudoku_graph']
 
 
-def sudoku_graph(n=3, create_using=None):
+def sudoku_graph(n=3):
     """Returns the n-Sudoku graph. The default value of n is 3.
 
     The n-Sudoku graph is a graph with n^4 vertices, corresponding to the
@@ -56,13 +56,26 @@ def sudoku_graph(n=3, create_using=None):
        The order of the Sudoku graph, equal to the square root of the
        number of rows.
 
-    create_using : NetworkX graph constructor, optional Graph type to create
-       (default=nx.Graph). If graph instance, then cleared before populated.
-
     Returns
     -------
     NetworkX graph
         The n-Sudoku graph Sud(n).
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.sudoku_graph()
+    >>> G.number_of_nodes()
+    81
+    >>> G.number_of_edges()
+    810
+    >>> sorted(G.neighbors(42))
+    [6, 15, 24, 33, 34, 35, 36, 37, 38, 39, 40, 41, 43, 44, 51, 52, 53, 60, 69, 78]
+    >>> G = nx.sudoku_graph(2)
+    >>> G.number_of_nodes()
+    16
+    >>> G.number_of_edges()
+    56
 
     References
     ----------
@@ -71,13 +84,6 @@ def sudoku_graph(n=3, create_using=None):
     .. [2] Wikipedia contributors. "Glossary of Sudoku." Wikipedia, The Free
        Encyclopedia, 3 Dec. 2019. Web. 22 Dec. 2019.
 
-    >>> G = sudoku_graph()
-    >>> G.number_of_nodes()
-    81
-    >>> G.number_of_edges()
-    810
-    >>> sorted(G.neighbors(42))
-    [6, 15, 24, 33, 34, 35, 36, 37, 38, 39, 40, 41, 43, 44, 51, 52, 53, 60, 69, 78]
     """
 
     if n < 0:
@@ -88,7 +94,7 @@ def sudoku_graph(n=3, create_using=None):
     n4 = n3 * n
 
     # Construct an empty graph with n^4 nodes
-    G = nx.empty_graph(n4, create_using)
+    G = nx.empty_graph(n4)
 
     # Add edges for cells in the same row
     for row_no in range(0, n2):
