@@ -27,7 +27,7 @@ coloring of the Sudoku graph with nine colors.
 
 More generally, the n-Sudoku graph is a graph with n^4 vertices, corresponding
 to the cells of an n^2 by n^2 grid. Two distinct vertices are adjacent if and
-only if they belong to the same row, column, or n^2 by n^2 box.
+only if they belong to the same row, column, or n by n box.
 
 References
 ----------
