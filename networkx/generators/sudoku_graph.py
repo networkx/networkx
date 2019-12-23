@@ -31,10 +31,12 @@ only if they belong to the same row, column, or n by n box.
 
 References
 ----------
-.. [1] Sander, Torsten (2009), "Sudoku graphs are integral",
-   Electronic Journal of Combinatorics, 16 (1): Note 25, 7pp, MR 2529816
-.. [2] Wikipedia contributors. "Glossary of Sudoku." Wikipedia, The Free
-   Encyclopedia, 3 Dec. 2019. Web. 22 Dec. 2019.
+.. [1] Herzberg, A. M., & Murty, M. R. (2007). Sudoku squares and chromatic
+    polynomials. Notices of the AMS, 54(6), 708-717.
+.. [2] Sander, Torsten (2009), "Sudoku graphs are integral",
+    Electronic Journal of Combinatorics, 16 (1): Note 25, 7pp, MR 2529816
+.. [3] Wikipedia contributors. "Glossary of Sudoku." Wikipedia, The Free
+    Encyclopedia, 3 Dec. 2019. Web. 22 Dec. 2019.
 """
 
 import networkx as nx
@@ -79,11 +81,12 @@ def sudoku_graph(n=3):
 
     References
     ----------
-    .. [1] Sander, Torsten (2009), "Sudoku graphs are integral",
+    .. [1] Herzberg, A. M., & Murty, M. R. (2007). Sudoku squares and chromatic
+       polynomials. Notices of the AMS, 54(6), 708-717.
+    .. [2] Sander, Torsten (2009), "Sudoku graphs are integral",
        Electronic Journal of Combinatorics, 16 (1): Note 25, 7pp, MR 2529816
-    .. [2] Wikipedia contributors. "Glossary of Sudoku." Wikipedia, The Free
+    .. [3] Wikipedia contributors. "Glossary of Sudoku." Wikipedia, The Free
        Encyclopedia, 3 Dec. 2019. Web. 22 Dec. 2019.
-
     """
 
     if n < 0:
