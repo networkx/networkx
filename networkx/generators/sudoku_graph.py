@@ -48,7 +48,7 @@ def sudoku_graph(n=3):
 
     The n-Sudoku graph is a graph with n^4 vertices, corresponding to the
     cells of an n^2 by n^2 grid. Two distinct vertices are adjacent if and
-    only if they belong to the same row, column, or n^2 by n^2 box.
+    only if they belong to the same row, column, or n-by-n box.
 
     Parameters
     ----------
