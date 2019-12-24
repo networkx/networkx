@@ -113,8 +113,9 @@ def sudoku_graph(n=3):
                 G.add_edge(i, j)
 
     # Add edges for cells in the same box
-    for band_start in range(0, n4, n3):
-        for box_start in range(band_start, band_start + n2, n):
+    for band_no in range(n):
+        for stack_no in range(n):
+            box_start = n3 * band_no + n * stack_no
             for j in range(1, n2):
                 for i in range(j):
                     u = box_start + (i % n) + n2 * (i // n)
@@ -122,3 +123,8 @@ def sudoku_graph(n=3):
                     G.add_edge(u, v)
 
     return G
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
