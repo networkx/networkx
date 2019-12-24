@@ -123,8 +123,3 @@ def sudoku_graph(n=3):
                     G.add_edge(u, v)
 
     return G
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
