@@ -766,7 +766,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
     3) With $(1 - p - q)$ probability, $m$ new nodes are added to the graph
     with edges attached preferentially.
 
-    When $p = q = 0$, the model behaves just like the Barabási–Alber mo
+    When $p = q = 0$, the model behaves just like the Barabási–Alber model.
 
     Parameters
     ----------
