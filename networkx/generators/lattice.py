@@ -107,14 +107,13 @@ def grid_graph(dim, periodic=False):
     To produce a 2 by 3 by 4 grid graph, a graph on 24 nodes:
 
     >>> from networkx import grid_graph
-    >>> G = grid_graph(dim=[2, 3, 4])
+    >>> G = grid_graph(dim=(2, 3, 4))
     >>> len(G)
     24
-    >>> G = grid_graph(dim=[range(7, 9), range(3, 6)])
+    >>> G = grid_graph(dim=(range(7, 9), range(3, 6)))
     >>> len(G)
     6
     """
-    dlabel = "%s" % dim
     if not dim:
         return empty_graph(0)
 
