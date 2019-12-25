@@ -101,6 +101,11 @@ def connected_caveman_graph(l, k):
     G : NetworkX Graph
       connected caveman graph
 
+    Raises
+    ------
+    NetworkXError
+        If the size of cliques `k` is smaller than 2.
+
     Notes
     -----
     This returns an undirected graph, it can be converted to a directed
@@ -118,6 +123,10 @@ def connected_caveman_graph(l, k):
     .. [1] Watts, D. J. 'Networks, Dynamics, and the Small-World Phenomenon.'
        Amer. J. Soc. 105, 493-527, 1999.
     """
+    if k < 2:
+        raise nx.NetworkXError('The size of cliques in a connected caveman graph '
+                               'must be at least 2.')
+
     G = nx.caveman_graph(l, k)
     for start in range(0, l * k, k):
         G.remove_edge(start, start + 1)
