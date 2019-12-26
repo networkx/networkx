@@ -5,13 +5,13 @@ import networkx as nx
 
 
 def test_sudoku_negative():
-    """Verify that an error is raised when generating a Sudoku graph of order -1."""
+    """Raise an error when generating a Sudoku graph of order -1."""
     pytest.raises(nx.NetworkXError, nx.sudoku_graph, n=-1)
 
 
 @pytest.mark.parametrize('n', [0, 1, 2, 3, 4])
 def test_sudoku_generator(n):
-    """Generate Sudoku graphs of various sizes and verify that they have the expected properties."""
+    """Generate Sudoku graphs of various sizes and verify their properties."""
     G = nx.sudoku_graph(n)
     expected_nodes = n ** 4
     expected_degree = (n - 1) * (3 * n + 1)

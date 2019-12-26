@@ -99,6 +99,10 @@ def sudoku_graph(n=3):
     # Construct an empty graph with n^4 nodes
     G = nx.empty_graph(n4)
 
+    # A Sudoku graph of order 0 or 1 has no edges
+    if n < 2:
+        return G
+
     # Add edges for cells in the same row
     for row_no in range(0, n2):
         row_start = row_no * n2
