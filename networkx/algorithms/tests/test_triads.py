@@ -2,10 +2,11 @@
 
 import networkx as nx
 from collections import defaultdict
+from random import sample
 
 
 def test_triadic_census():
-    """Tests the triadic census function."""
+    """Tests the triadic_census function."""
     G = nx.DiGraph()
     G.add_edges_from(['01', '02', '03', '04', '05', '12', '16', '51', '56',
                       '65'])
@@ -14,6 +15,16 @@ def test_triadic_census():
                 '111D': 1, '300': 0, '120D': 0, '021C': 2}
     actual = nx.triadic_census(G)
     assert expected == actual
+
+
+def test_is_triad():
+    """Tests the is_triad function"""
+    G = nx.karate_club_graph()
+    G = G.to_directed()
+    for i in range(100):
+        nodes = sample(G.nodes(), 3)
+        G2 = G.subgraph(nodes)
+        assert nx.is_triad(G2)
 
 
 def test_all_triplets():
@@ -100,4 +111,11 @@ def test_triads_by_type():
         expected_Gs = expected[tri_type]
         for a in actual_Gs:
             assert any(nx.is_isomorphic(a, e) for e in expected_Gs)
-    pass
+
+
+def test_random_triad():
+    """Tests the random_triad function"""
+    G = nx.karate_club_graph()
+    G = G.to_directed()
+    for i in range(100):
+        assert nx.is_triad(nx.random_triad(G))

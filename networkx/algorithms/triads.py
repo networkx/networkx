@@ -7,10 +7,10 @@
 from networkx.utils import not_implemented_for
 from itertools import combinations, permutations
 from collections import defaultdict
+from random import sample
 
-__all__ = ['triadic_census', 'all_triplets', 'all_triads',
-                     'triads_by_type', 'triad_type', 'random_triad',
-                     'triadic_closures', 'focal_closures', 'balanced_triads']
+__all__ = ['triadic_census', 'is_triad', 'all_triplets', 'all_triads',
+           'triads_by_type', 'triad_type', 'random_triad']
 
 #: The integer codes representing each type of triad.
 #:
@@ -77,6 +77,8 @@ def triadic_census(G):
         http://vlado.fmf.uni-lj.si/pub/networks/doc/triads/triads.pdf
 
     """
+    if not is_triad(G):
+        raise nx.NetworkXAlgorithmError("G is not a triad (order-3 DiGraph)")
     # Initialize the count for each triad to be zero.
     census = {name: 0 for name in TRIAD_NAMES}
     n = len(G)
@@ -106,6 +108,26 @@ def triadic_census(G):
     # integral value.
     census['003'] = ((n * (n - 1) * (n - 2)) // 6) - sum(census.values())
     return census
+
+
+def is_triad(G):
+    """Returns True if the graph G is a triad, else False.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX Graph
+
+    Returns
+    -------
+    istriad : boolean
+       Whether G is a valid triad
+    """
+    if isinstance(G, nx.Graph):
+        if G.order() == 3 and nx.is_directed(G):
+            if not any((n, n) in G.edges() for n in G.nodes()):
+                return True
+    return False
 
 
 @not_implemented_for('undirected')
@@ -159,8 +181,8 @@ def triads_by_type(G):
     tri_by_type : dict
        Dictionary with triad types as keys and lists of triads as values.
     """
-    o = G.order()
-    assert o >= 3, "G should have at least 3 nodes."
+    if not is_triad(G):
+        raise nx.NetworkXAlgorithmError("G is not a triad (order-3 DiGraph)")
     # num_triads = o * (o - 1) * (o - 2) // 6
     # if num_triads > TRIAD_LIMIT: print(WARNING)
     all_tri = all_triads(G)
@@ -212,7 +234,8 @@ def triad_type(G):
         Oxford.
         http://www.stats.ox.ac.uk/snijders/Trans_Triads_ha.pdf
     """
-    assert G.order() == 3, 'Graph is not a triad'
+    if not is_triad(G):
+        raise nx.NetworkXAlgorithmError("G is not a triad (order-3 DiGraph)")
     num_edges = len(G.edges())
     if num_edges == 0:
         return "003"
@@ -233,17 +256,18 @@ def triad_type(G):
             if set(e1) == set(e2):
                 if e3[0] in e1:
                     return "111U"
-                if e3[1] in e1:
-                    return "111D"
+                # e3[1] in e1:
+                return "111D"
             elif set(e1).symmetric_difference(set(e2)) == set(e3):
                 if {e1[0], e2[0], e3[0]} == {e1[0], e2[0],
                                              e3[0]} == set(G.nodes()):
                     return "030C"
-                if e3 == (e1[0], e2[1]) and e2 == (e1[1], e3[1]):
-                    return "030T"
+                # e3 == (e1[0], e2[1]) and e2 == (e1[1], e3[1]):
+                return "030T"
     elif num_edges == 4:
         for (e1, e2, e3, e4) in permutations(G.edges(), 4):
             if set(e1) == set(e2):
+                # identify pair of symmetric edges (which necessarily exists)
                 if set(e3) == set(e4):
                     return "201"
                 if {e3[0]} == {e4[0]} == set(e3).intersection(set(e4)):
@@ -256,13 +280,11 @@ def triad_type(G):
         return "210"
     elif num_edges == 6:
         return "300"
-    else:
-        raise ValueError("Invalid triad G")
 
 
 @not_implemented_for('undirected')
 def random_triad(G):
-    """Returns a random triad from a directed graph.
+    '''Returns a random triad from a directed graph.
 
     Parameters
     ----------
@@ -273,13 +295,18 @@ def random_triad(G):
     -------
     G2 : subgraph
        A randomly selected triad (order-3 NetworkX DiGraph)
-    """
-    pass
+    '''
+    if not is_triad(G):
+        raise nx.NetworkXAlgorithmError("G is not a triad (order-3 DiGraph)")
+    nodes = sample(G.nodes(), 3)
+    G2 = G.subgraph(nodes)
+    return G2
 
 
+"""
 @not_implemented_for('undirected')
 def triadic_closures(G):
-    """Returns a list of order-3 subgraphs of G that are triadic closures.
+    '''Returns a list of order-3 subgraphs of G that are triadic closures.
 
     Parameters
     ----------
@@ -290,13 +317,13 @@ def triadic_closures(G):
     -------
     closures : list
        List of triads of G that are triadic closures
-    """
+    '''
     pass
 
 
 @not_implemented_for('undirected')
 def focal_closures(G, attr_name):
-    """Returns a list of order-3 subgraphs of G that are focally closed.
+    '''Returns a list of order-3 subgraphs of G that are focally closed.
 
     Parameters
     ----------
@@ -310,13 +337,13 @@ def focal_closures(G, attr_name):
     -------
     closures : list
        List of triads of G that are focally closed on attr_name
-    """
+    '''
     pass
 
 
 @not_implemented_for('undirected')
 def balanced_triads(G, crit_func):
-    """Returns a list of order-3 subgraphs of G that are stable.
+    '''Returns a list of order-3 subgraphs of G that are stable.
 
     Parameters
     ----------
@@ -329,5 +356,6 @@ def balanced_triads(G, crit_func):
     -------
     triads : list
        List of triads in G that are stable
-    """
+    '''
     pass
+"""
