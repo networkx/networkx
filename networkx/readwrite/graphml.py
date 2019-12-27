@@ -716,13 +716,13 @@ class GraphMLReader(GraphML):
         data = self.decode_data_elements(graphml_keys, graph_xml)
         G.graph.update(data)
 
-        # switch to Graph or DiGraph if no parallel edges were found.
-        if not self.multigraph:
+        # switch to Graph or DiGraph if no parallel edges were found and
+        # no explicit edge ids are given in the input file.
+        if not self.multigraph and len(self.edge_ids) == 0:
             if G.is_directed():
                 G = nx.DiGraph(G)
             else:
                 G = nx.Graph(G)
-            nx.set_edge_attributes(G, values=self.edge_ids, name='id')
 
         return G
 

@@ -28,7 +28,7 @@ class BaseGraphML(object):
     <node id="n8"/>
     <node id="n9"/>
     <node id="n10"/>
-    <edge id="foo" source="n0" target="n2"/>
+    <edge source="n0" target="n2"/>
     <edge source="n1" target="n2"/>
     <edge source="n2" target="n3"/>
     <edge source="n3" target="n5"/>
@@ -43,7 +43,7 @@ class BaseGraphML(object):
 </graphml>"""
         cls.simple_directed_graph = nx.DiGraph()
         cls.simple_directed_graph.add_node('n10')
-        cls.simple_directed_graph.add_edge('n0', 'n2', id='foo')
+        cls.simple_directed_graph.add_edge('n0', 'n2')
         cls.simple_directed_graph.add_edges_from([('n1', 'n2'),
                                                   ('n2', 'n3'),
                                                   ('n3', 'n5'),
@@ -82,19 +82,19 @@ class BaseGraphML(object):
     <node id="n5">
       <data key="d0">turquoise</data>
     </node>
-    <edge id="e0" source="n0" target="n2">
+    <edge source="n0" target="n2">
       <data key="d1">1.0</data>
     </edge>
-    <edge id="e1" source="n0" target="n1">
+    <edge source="n0" target="n1">
       <data key="d1">1.0</data>
     </edge>
-    <edge id="e2" source="n1" target="n3">
+    <edge source="n1" target="n3">
       <data key="d1">2.0</data>
     </edge>
-    <edge id="e3" source="n3" target="n2"/>
-    <edge id="e4" source="n2" target="n4"/>
-    <edge id="e5" source="n3" target="n5"/>
-    <edge id="e6" source="n5" target="n4">
+    <edge source="n3" target="n2"/>
+    <edge source="n2" target="n4"/>
+    <edge source="n3" target="n5"/>
+    <edge source="n5" target="n4">
       <data key="d1">1.1</data>
     </edge>
   </graph>
@@ -107,13 +107,13 @@ class BaseGraphML(object):
         cls.attribute_graph.add_node('n3', color='red')
         cls.attribute_graph.add_node('n4')
         cls.attribute_graph.add_node('n5', color='turquoise')
-        cls.attribute_graph.add_edge('n0', 'n2', id='e0', weight=1.0)
-        cls.attribute_graph.add_edge('n0', 'n1', id='e1', weight=1.0)
-        cls.attribute_graph.add_edge('n1', 'n3', id='e2', weight=2.0)
-        cls.attribute_graph.add_edge('n3', 'n2', id='e3')
-        cls.attribute_graph.add_edge('n2', 'n4', id='e4')
-        cls.attribute_graph.add_edge('n3', 'n5', id='e5')
-        cls.attribute_graph.add_edge('n5', 'n4', id='e6', weight=1.1)
+        cls.attribute_graph.add_edge('n0', 'n2', weight=1.0)
+        cls.attribute_graph.add_edge('n0', 'n1', weight=1.0)
+        cls.attribute_graph.add_edge('n1', 'n3', weight=2.0)
+        cls.attribute_graph.add_edge('n3', 'n2')
+        cls.attribute_graph.add_edge('n2', 'n4')
+        cls.attribute_graph.add_edge('n3', 'n5')
+        cls.attribute_graph.add_edge('n5', 'n4', weight=1.1)
         cls.attribute_fh = io.BytesIO(cls.attribute_data.encode('UTF-8'))
 
         cls.attribute_numeric_type_data = """<?xml version='1.0' encoding='utf-8'?>
@@ -160,7 +160,7 @@ class BaseGraphML(object):
     <node id="n1"/>
     <node id="n2"/>
     <node id="n10"/>
-    <edge id="foo" source="n0" target="n2"/>
+    <edge source="n0" target="n2"/>
     <edge source="n1" target="n2"/>
     <edge source="n2" target="n3"/>
   </graph>
@@ -168,13 +168,81 @@ class BaseGraphML(object):
 #    <edge source="n8" target="n10" directed="false"/>
         cls.simple_undirected_graph = nx.Graph()
         cls.simple_undirected_graph.add_node('n10')
-        cls.simple_undirected_graph.add_edge('n0', 'n2', id='foo')
+        cls.simple_undirected_graph.add_edge('n0', 'n2')
         cls.simple_undirected_graph.add_edges_from([('n1', 'n2'),
                                                     ('n2', 'n3'),
                                                     ])
         fh = io.BytesIO(cls.simple_undirected_data.encode('UTF-8'))
         cls.simple_undirected_fh = fh
 
+        cls.undirected_multigraph_data = """<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <graph id="G">
+    <node id="n0"/>
+    <node id="n1"/>
+    <node id="n2"/>
+    <node id="n10"/>
+    <edge id="e0" source="n0" target="n2"/>
+    <edge id="e1" source="n1" target="n2"/>
+    <edge id="e2" source="n2" target="n1"/>
+  </graph>
+</graphml>"""
+        cls.undirected_multigraph = nx.MultiGraph()
+        cls.undirected_multigraph.add_node('n10')
+        cls.undirected_multigraph.add_edge('n0', 'n2', id='e0')
+        cls.undirected_multigraph.add_edge('n1', 'n2', id='e1')
+        cls.undirected_multigraph.add_edge('n2', 'n1', id='e2')
+        fh = io.BytesIO(cls.undirected_multigraph_data.encode('UTF-8'))
+        cls.undirected_multigraph_fh = fh
+
+        cls.undirected_multigraph_no_multiedge_data = """<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <graph id="G">
+    <node id="n0"/>
+    <node id="n1"/>
+    <node id="n2"/>
+    <node id="n10"/>
+    <edge id="e0" source="n0" target="n2"/>
+    <edge id="e1" source="n1" target="n2"/>
+    <edge id="e2" source="n2" target="n3"/>
+  </graph>
+</graphml>"""
+        cls.undirected_multigraph_no_multiedge = nx.MultiGraph()
+        cls.undirected_multigraph_no_multiedge.add_node('n10')
+        cls.undirected_multigraph_no_multiedge.add_edge('n0', 'n2', id='e0')
+        cls.undirected_multigraph_no_multiedge.add_edge('n1', 'n2', id='e1')
+        cls.undirected_multigraph_no_multiedge.add_edge('n2', 'n3', id='e2')
+        fh = io.BytesIO(cls.undirected_multigraph_no_multiedge_data.encode('UTF-8'))
+        cls.undirected_multigraph_no_multiedge_fh = fh
+
+        cls.multigraph_only_ids_for_multiedges_data = """<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <graph id="G">
+    <node id="n0"/>
+    <node id="n1"/>
+    <node id="n2"/>
+    <node id="n10"/>
+    <edge source="n0" target="n2"/>
+    <edge id="e1" source="n1" target="n2"/>
+    <edge id="e2" source="n2" target="n1"/>
+  </graph>
+</graphml>"""
+        cls.multigraph_only_ids_for_multiedges = nx.MultiGraph()
+        cls.multigraph_only_ids_for_multiedges.add_node('n10')
+        cls.multigraph_only_ids_for_multiedges.add_edge('n0', 'n2')
+        cls.multigraph_only_ids_for_multiedges.add_edge('n1', 'n2', id='e1')
+        cls.multigraph_only_ids_for_multiedges.add_edge('n2', 'n1', id='e2')
+        fh = io.BytesIO(cls.multigraph_only_ids_for_multiedges_data.encode('UTF-8'))
+        cls.multigraph_only_ids_for_multiedges_fh = fh
 
 class TestReadGraphML(BaseGraphML):
     def test_read_simple_directed_graphml(self):
@@ -200,6 +268,39 @@ class TestReadGraphML(BaseGraphML):
         self.simple_undirected_fh.seek(0)
 
         I = nx.parse_graphml(self.simple_undirected_data)
+        assert_nodes_equal(G.nodes(), I.nodes())
+        assert_edges_equal(G.edges(), I.edges())
+
+    def test_read_undirected_multigraph_graphml(self):
+        G = self.undirected_multigraph
+        H = nx.read_graphml(self.undirected_multigraph_fh)
+        assert_nodes_equal(G.nodes(), H.nodes())
+        assert_edges_equal(G.edges(), H.edges())
+        self.undirected_multigraph_fh.seek(0)
+
+        I = nx.parse_graphml(self.undirected_multigraph_data)
+        assert_nodes_equal(G.nodes(), I.nodes())
+        assert_edges_equal(G.edges(), I.edges())
+
+    def test_read_undirected_multigraph_no_multiedge_graphml(self):
+        G = self.undirected_multigraph_no_multiedge
+        H = nx.read_graphml(self.undirected_multigraph_no_multiedge_fh)
+        assert_nodes_equal(G.nodes(), H.nodes())
+        assert_edges_equal(G.edges(), H.edges())
+        self.undirected_multigraph_no_multiedge_fh.seek(0)
+
+        I = nx.parse_graphml(self.undirected_multigraph_no_multiedge_data)
+        assert_nodes_equal(G.nodes(), I.nodes())
+        assert_edges_equal(G.edges(), I.edges())
+
+    def test_read_undirected_multigraph_only_ids_for_multiedges_graphml(self):
+        G = self.multigraph_only_ids_for_multiedges
+        H = nx.read_graphml(self.multigraph_only_ids_for_multiedges_fh)
+        assert_nodes_equal(G.nodes(), H.nodes())
+        assert_edges_equal(G.edges(), H.edges())
+        self.multigraph_only_ids_for_multiedges_fh.seek(0)
+
+        I = nx.parse_graphml(self.multigraph_only_ids_for_multiedges_data)
         assert_nodes_equal(G.nodes(), I.nodes())
         assert_edges_equal(G.edges(), I.edges())
 
@@ -437,13 +538,13 @@ class TestReadGraphML(BaseGraphML):
         fh = io.BytesIO(data.encode('UTF-8'))
         G = nx.read_graphml(fh)
         assert list(G.edges()) == [('n0', 'n1')]
-        assert G['n0']['n1']['id'] == 'e0'
+        assert G.has_edge('n0', 'n1', key='e0')
         assert G.nodes['n0']['label'] == '1'
         assert G.nodes['n1']['label'] == '2'
 
         H = nx.parse_graphml(data)
         assert list(H.edges()) == [('n0', 'n1')]
-        assert H['n0']['n1']['id'] == 'e0'
+        assert H.has_edge('n0', 'n1', key='e0')
         assert H.nodes['n0']['label'] == '1'
         assert H.nodes['n1']['label'] == '2'
 
@@ -933,17 +1034,6 @@ class TestWriteGraphML(BaseGraphML):
         assert H.nodes['n1']['special'] == 0
         assert not H.edges['n0', 'n1', 0]['special']
         assert H.edges['n0', 'n1', 1]['special'] == 0
-
-    def test_multigraph_to_graph(self):
-        # test converting multigraph to graph if no parallel edges found
-        G = nx.MultiGraph()
-        G.add_edges_from([('a', 'b', 2), ('b', 'c', 3)])  # no multiedges
-        fd, fname = tempfile.mkstemp()
-        self.writer(G, fname)
-        H = nx.read_graphml(fname)
-        assert not H.is_multigraph()
-        os.close(fd)
-        os.unlink(fname)
 
     def test_numpy_float(self):
         np = pytest.importorskip('numpy')
