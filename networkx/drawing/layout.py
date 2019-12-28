@@ -168,7 +168,7 @@ def circular_layout(G, scale=1, center=None, dim=2):
     return pos
 
 
-def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
+def shell_layout(G, nlist=None, rotate=None, scale=1, center=None, dim=2):
     """Position nodes in concentric circles.
 
     Parameters
@@ -178,6 +178,11 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
 
     nlist : list of lists
        List of node lists for each shell.
+
+    rotate : angle in radians (default=pi/len(nlist))
+       Angle by which to rotate the starting position of each shell
+       relative to the starting position of the previous shell.
+       To recreate behavior before v2.5 use rotate=0.
 
     scale : number (default: 1)
         Scale factor for positions.
@@ -227,25 +232,27 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
         # draw the whole graph in one shell
         nlist = [list(G)]
 
+    radius_bump = scale / len(nlist)
+
     if len(nlist[0]) == 1:
         # single node at center
         radius = 0.0
     else:
         # else start at r=1
-        radius = 1.0
+        radius = radius_bump
 
+    if rotate is None:
+        rotate = np.pi / len(nlist)
+    first_theta = rotate
     npos = {}
     for nodes in nlist:
-        # Discard the extra angle since it matches 0 radians.
-        theta = np.linspace(0, 1, len(nodes) + 1)[:-1] * 2 * np.pi
-        theta = theta.astype(np.float32)
-        pos = np.column_stack([np.cos(theta), np.sin(theta)])
-        if len(pos) > 1:
-            pos = rescale_layout(pos, scale=scale * radius / len(nlist)) + center
-        else:
-            pos = np.array([(scale * radius + center[0], center[1])])
+        # Discard the last angle (endpoint=False) since 2*pi matches 0 radians
+        theta = np.linspace(0, 2 * np.pi, len(nodes),
+                            endpoint=False, dtype=np.float32) + first_theta
+        pos = radius * np.column_stack([np.cos(theta), np.sin(theta)]) + center
         npos.update(zip(nodes, pos))
-        radius += 1.0
+        radius += radius_bump
+        first_theta += rotate
 
     return npos
 
@@ -474,7 +481,7 @@ def fruchterman_reingold_layout(G,
         pos = _sparse_fruchterman_reingold(A, k, pos_arr, fixed,
                                            iterations, threshold,
                                            dim, seed)
-    except:
+    except ValueError:
         A = nx.to_numpy_array(G, weight=weight)
         if k is None and fixed is not None:
             # We must adjust k by domain size for layouts not near 1x1
@@ -575,7 +582,7 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
     # make sure we have a LIst of Lists representation
     try:
         A = A.tolil()
-    except:
+    except AttributeError:
         A = (coo_matrix(A)).tolil()
 
     if pos is None:
@@ -935,7 +942,7 @@ def planar_layout(G, scale=1, center=None, dim=2):
             raise nx.NetworkXException("G is not planar.")
     pos = nx.combinatorial_embedding_to_pos(embedding)
     node_list = list(embedding)
-    pos = np.row_stack((pos[x] for x in node_list))
+    pos = np.row_stack([pos[x] for x in node_list])
     pos = pos.astype(np.float64)
     pos = rescale_layout(pos, scale=scale) + center
     return dict(zip(node_list, pos))

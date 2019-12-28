@@ -1,12 +1,10 @@
 """Unit tests for layout functions."""
+import networkx as nx
+from networkx.testing import almost_equal
+
 import pytest
 numpy = pytest.importorskip('numpy')
 test_smoke_empty_graphscipy = pytest.importorskip('scipy')
-
-
-import pytest
-import networkx as nx
-from networkx.testing import almost_equal
 
 
 class TestLayout(object):
@@ -151,6 +149,8 @@ class TestLayout(object):
         assert pos.shape == (6, 2)
         pos = nx.drawing.layout._fruchterman_reingold(A, dim=3)
         assert pos.shape == (6, 3)
+        pos = nx.drawing.layout._sparse_fruchterman_reingold(A)
+        assert pos.shape == (6, 2)
 
     def test_adjacency_interface_scipy(self):
         A = nx.to_scipy_sparse_matrix(self.Gs, dtype='d')
@@ -169,6 +169,9 @@ class TestLayout(object):
         vpos = nx.shell_layout(G, [[0], [1, 2], [3]])
         assert not vpos[0].any()
         assert vpos[3].any()  # ensure node 3 not at origin (#3188)
+        assert numpy.linalg.norm(vpos[3]) <= 1  # ensure node 3 fits (#3753)
+        vpos = nx.shell_layout(G, [[0], [1, 2], [3]], rotate=0)
+        assert numpy.linalg.norm(vpos[3]) <= 1  # ensure node 3 fits (#3753)
 
     def test_smoke_initial_pos_fruchterman_reingold(self):
         pos = nx.circular_layout(self.Gi)
