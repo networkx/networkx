@@ -720,7 +720,7 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     """
     if not sources:
         raise ValueError('sources must not be empty')
-    target = G.get_node(target, what='Target') # make sure target is in G
+    target = G.get_node(target, what='Target')  # make sure target is in G
     if target in sources:
         return (0, [target])
     weight = _weight_function(G, weight)

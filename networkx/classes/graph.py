@@ -1335,7 +1335,7 @@ class Graph(object):
         ----------
         node : node
         what : string
-            The string used in the exception's message in case the node is not 
+            The string used in the exception's message in case the node is not
             found.
         """
         _node = {node} & self._node.keys()
