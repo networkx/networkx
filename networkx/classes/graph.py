@@ -1328,6 +1328,21 @@ class Graph(object):
         except KeyError:
             return default
 
+    def get_node(self, node, what='Node'):
+        """Returns the internal node of G or raises a NodeNotFound exception.
+
+        Parameters
+        ----------
+        node : node
+        what : string
+            The string used in the exception's message in case the node is not 
+            found.
+        """
+        _node = {node} & self._node.keys()
+        if not _node:
+            raise nx.NodeNotFound(f'{what} {node} is not in G')
+        return _node.pop()
+
     def adjacency(self):
         """Returns an iterator over (node, adjacency dict) tuples for all nodes.
 

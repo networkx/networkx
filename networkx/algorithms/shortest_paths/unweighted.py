@@ -214,9 +214,9 @@ def bidirectional_shortest_path(G, source, target):
     This algorithm is used by shortest_path(G, source, target).
     """
 
-    if source not in G or target not in G:
-        msg = 'Either source {} or target {} is not in G'
-        raise nx.NodeNotFound(msg.format(source, target))
+    # make sure both source and target are contained in G
+    source = G.get_node(source, what='Source')    
+    target = G.get_node(target, what='Target')    
 
     # call helper to do the real work
     results = _bidirectional_pred_succ(G, source, target)

@@ -720,10 +720,14 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     """
     if not sources:
         raise ValueError('sources must not be empty')
+    target = G.get_node(target, what='Target') # make sure target is in G
     if target in sources:
         return (0, [target])
     weight = _weight_function(G, weight)
-    paths = {source: [source] for source in sources}  # dictionary of paths
+
+    # dictionary of paths
+    paths = {source: [G.get_node(source, what='Source')] for source in sources}
+
     dist = _dijkstra_multisource(G, sources, weight, paths=paths,
                                  cutoff=cutoff, target=target)
     if target is None:
@@ -1582,8 +1586,11 @@ def single_source_bellman_ford(G, source, target=None, weight='weight'):
     single_source_bellman_ford_path()
     single_source_bellman_ford_path_length()
     """
+    target = G.get_node(target, what='Target')  # make sure target is in G
     if source == target:
         return (0, [source])
+
+    source = G.get_node(source, what='Source')  # make sure source is in G
 
     weight = _weight_function(G, weight)
 
