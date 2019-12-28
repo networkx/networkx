@@ -170,6 +170,8 @@ class TestLayout(object):
         assert not vpos[0].any()
         assert vpos[3].any()  # ensure node 3 not at origin (#3188)
         assert numpy.linalg.norm(vpos[3]) <= 1  # ensure node 3 fits (#3753)
+        vpos = nx.shell_layout(G, [[0], [1, 2], [3]], rotate=0)
+        assert numpy.linalg.norm(vpos[3]) <= 1  # ensure node 3 fits (#3753)
 
     def test_smoke_initial_pos_fruchterman_reingold(self):
         pos = nx.circular_layout(self.Gi)
