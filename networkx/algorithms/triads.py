@@ -4,10 +4,12 @@
 # Copyright 2011 Diederik van Liere <diederik.vanliere@rotman.utoronto.ca>
 """Functions for analyzing triads of a graph."""
 
-from networkx.utils import not_implemented_for
 from itertools import combinations, permutations
 from collections import defaultdict
 from random import sample
+
+import networkx as nx
+from networkx.utils import not_implemented_for
 
 __all__ = ['triadic_census', 'is_triad', 'all_triplets', 'all_triads',
            'triads_by_type', 'triad_type', 'random_triad']
@@ -77,8 +79,6 @@ def triadic_census(G):
         http://vlado.fmf.uni-lj.si/pub/networks/doc/triads/triads.pdf
 
     """
-    if not is_triad(G):
-        raise nx.NetworkXAlgorithmError("G is not a triad (order-3 DiGraph)")
     # Initialize the count for each triad to be zero.
     census = {name: 0 for name in TRIAD_NAMES}
     n = len(G)
@@ -181,8 +181,6 @@ def triads_by_type(G):
     tri_by_type : dict
        Dictionary with triad types as keys and lists of triads as values.
     """
-    if not is_triad(G):
-        raise nx.NetworkXAlgorithmError("G is not a triad (order-3 DiGraph)")
     # num_triads = o * (o - 1) * (o - 2) // 6
     # if num_triads > TRIAD_LIMIT: print(WARNING)
     all_tri = all_triads(G)
@@ -296,8 +294,6 @@ def random_triad(G):
     G2 : subgraph
        A randomly selected triad (order-3 NetworkX DiGraph)
     '''
-    if not is_triad(G):
-        raise nx.NetworkXAlgorithmError("G is not a triad (order-3 DiGraph)")
     nodes = sample(G.nodes(), 3)
     G2 = G.subgraph(nodes)
     return G2
