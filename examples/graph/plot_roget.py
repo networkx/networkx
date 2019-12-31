@@ -50,7 +50,7 @@ def roget_graph():
         (headname, tails) = line.split(":")
 
         # head
-        numfind = re.compile("^\d+")  # re to find the number of this word
+        numfind = re.compile(r"^\d+")  # re to find the number of this word
         head = numfind.findall(headname)[0]  # get the number
 
         G.add_node(head)
