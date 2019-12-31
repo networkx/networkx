@@ -23,7 +23,7 @@ def lanl_graph():
     """
     try:
         fh = open("lanl_routes.edgelist", "r")
-    except IOError:
+    except OSError:
         print("lanl.edges not found")
         raise
 
