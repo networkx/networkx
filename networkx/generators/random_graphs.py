@@ -794,11 +794,11 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
        Physical review letters, 85(24), 5234.
     """
     if m < 1 or m >= n:
-        msg = "Extended Barabasi-Albert network needs m>=1 and m<n, m=%d, n=%d"
-        raise nx.NetworkXError(msg % (m, n))
+        msg = f"Extended Barabasi-Albert network needs m>=1 and m<n, m={m}, n={n}"
+        raise nx.NetworkXError(msg)
     if p + q >= 1:
-        msg = "Extended Barabasi-Albert network needs p + q <= 1, p=%d, q=%d"
-        raise nx.NetworkXError(msg % (p, q))
+        msg = f"Extended Barabasi-Albert network needs p + q <= 1, p={p}, q={q}"
+        raise nx.NetworkXError(msg)
 
     # Add m initial nodes (m0 in barabasi-speak)
     G = empty_graph(m)

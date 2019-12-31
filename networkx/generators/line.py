@@ -455,8 +455,8 @@ def _select_starting_cell(G, starting_edge=None):
     else:
         e = starting_edge
         if e[0] not in G[e[1]]:
-            msg = 'starting_edge (%s, %s) is not in the Graph'
-            raise nx.NetworkXError(msg % e)
+            msg = f"starting_edge ({e[0]}, {e[1]}) is not in the Graph"
+            raise nx.NetworkXError(msg)
     e_triangles = _triangles(G, e)
     r = len(e_triangles)
     if r == 0:

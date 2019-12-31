@@ -417,8 +417,9 @@ def barycenter(G, weight=None, attr=None, sp=None):
     for v, dists in sp:
         if len(dists) < n:
             raise nx.NetworkXNoPath(
-                ("Input graph %r is disconnected, so every induced subgraph "
-                 "has infinite barycentricity.") % G)
+                f"Input graph {G} is disconnected, so every induced subgraph "
+                "has infinite barycentricity."
+        )
         barycentricity = sum(dists.values())
         if attr is not None:
             G.nodes[v][attr] = barycentricity

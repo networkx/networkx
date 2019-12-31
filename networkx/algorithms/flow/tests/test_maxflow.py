@@ -16,9 +16,6 @@ flow_value_funcs = [nx.maximum_flow_value, nx.minimum_cut_value]
 interface_funcs = sum([max_min_funcs, flow_value_funcs], [])
 all_funcs = sum([flow_funcs, interface_funcs], [])
 
-msg = "Assertion failed in function: {0}"
-msgi = "Assertion failed in function: {0} in interface {1}"
-
 
 def compute_cutset(G, partition):
     reachable, non_reachable = partition
@@ -29,47 +26,50 @@ def compute_cutset(G, partition):
 
 
 def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
-    assert set(G) == set(flowDict), msg.format(flow_func.__name__)
+    errmsg = f"Assertion failed in function: {flow_func.__name__}"
+    assert set(G) == set(flowDict), errmsg
     for u in G:
-        assert set(G[u]) == set(flowDict[u]), msg.format(flow_func.__name__)
+        assert set(G[u]) == set(flowDict[u]), errmsg
     excess = {u: 0 for u in flowDict}
     for u in flowDict:
         for v, flow in flowDict[u].items():
             if capacity in G[u][v]:
                 assert flow <= G[u][v][capacity]
-            assert flow >= 0, msg.format(flow_func.__name__)
+            assert flow >= 0, errmsg
             excess[u] -= flow
             excess[v] += flow
     for u, exc in excess.items():
         if u == s:
-            assert exc == -solnValue, msg.format(flow_func.__name__)
+            assert exc == -solnValue, errmsg
         elif u == t:
-            assert exc == solnValue, msg.format(flow_func.__name__)
+            assert exc == solnValue, errmsg
         else:
-            assert exc == 0, msg.format(flow_func.__name__)
+            assert exc == 0, errmsg
 
 
 def validate_cuts(G, s, t, solnValue, partition, capacity, flow_func):
-    assert all(n in G for n in partition[0]), msg.format(flow_func.__name__)
-    assert all(n in G for n in partition[1]), msg.format(flow_func.__name__)
+    errmsg = f"Assertion failed in function: {flow_func.__name__}"
+    assert all(n in G for n in partition[0]), errmsg
+    assert all(n in G for n in partition[1]), errmsg
     cutset = compute_cutset(G, partition)
-    assert all(G.has_edge(u, v) for (u, v) in cutset), msg.format(flow_func.__name__)
-    assert solnValue == sum(G[u][v][capacity] for (u, v) in cutset), msg.format(flow_func.__name__)
+    assert all(G.has_edge(u, v) for (u, v) in cutset), errmsg
+    assert solnValue == sum(G[u][v][capacity] for (u, v) in cutset), errmsg
     H = G.copy()
     H.remove_edges_from(cutset)
     if not G.is_directed():
-        assert not nx.is_connected(H), msg.format(flow_func.__name__)
+        assert not nx.is_connected(H), errmsg
     else:
-        assert not nx.is_strongly_connected(H), msg.format(flow_func.__name__)
+        assert not nx.is_strongly_connected(H), errmsg
 
 
 def compare_flows_and_cuts(G, s, t, solnFlows, solnValue, capacity='capacity'):
     for flow_func in flow_funcs:
+        errmsg = f"Assertion failed in function: {flow_func.__name__}"
         R = flow_func(G, s, t, capacity)
         # Test both legacy and new implementations.
         flow_value = R.graph['flow_value']
         flow_dict = build_flow_dict(G, R)
-        assert flow_value == solnValue, msg.format(flow_func.__name__)
+        assert flow_value == solnValue, errmsg
         validate_flows(G, s, t, flow_dict, solnValue, capacity, flow_func)
         # Minimum cut
         cut_value, partition = nx.minimum_cut(G, s, t, capacity=capacity,
@@ -390,11 +390,14 @@ class TestMaxFlowMinCutInterface:
         fv = 3.0
         for interface_func in interface_funcs:
             for flow_func in flow_funcs:
+                errmsg = (
+                    f"Assertion failed in function: {flow_func.__name__} "
+                    f"in interface {interface_func.__name__}"
+                )
                 result = interface_func(G, 'x', 'y', flow_func=flow_func)
                 if interface_func in max_min_funcs:
                     result = result[0]
-                assert fv == result, msgi.format(flow_func.__name__,
-                                                 interface_func.__name__)
+                assert fv == result, errmsg
 
     def test_minimum_cut_no_cutoff(self):
         G = self.G
@@ -413,11 +416,14 @@ class TestMaxFlowMinCutInterface:
         )
         for interface_func in interface_funcs:
             for flow_func, kwargs in to_test:
+                errmsg = (
+                    f"Assertion failed in function: {flow_func.__name__} "
+                    f"in interface {interface_func.__name__}"
+                )
                 result = interface_func(G, 0, 2, flow_func=flow_func, **kwargs)
                 if interface_func in max_min_funcs:
                     result = result[0]
-                assert fv == result, msgi.format(flow_func.__name__,
-                                                 interface_func.__name__)
+                assert fv == result, errmsg
 
     def test_kwargs_default_flow_func(self):
         G = self.H
@@ -432,13 +438,16 @@ class TestMaxFlowMinCutInterface:
         R = build_residual_network(G, 'capacity')
         for interface_func in interface_funcs:
             for flow_func in flow_funcs:
+                errmsg = (
+                    f"Assertion failed in function: {flow_func.__name__} "
+                    f"in interface {interface_func.__name__}"
+                )
                 for i in range(3):
                     result = interface_func(G, 'x', 'y', flow_func=flow_func,
                                             residual=R)
                     if interface_func in max_min_funcs:
                         result = result[0]
-                    assert fv == result, msgi.format(flow_func.__name__,
-                                                     interface_func.__name__)
+                    assert fv == result, errmsg
 
 
 # Tests specific to one algorithm

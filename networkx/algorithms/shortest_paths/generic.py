@@ -485,8 +485,8 @@ def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
         raise ValueError(f'method not supported: {method}')
 
     if target not in pred:
-        raise nx.NetworkXNoPath('Target {} cannot be reached'
-                                'from Source {}'.format(target, source))
+        raise nx.NetworkXNoPath(f'Target {target} cannot be reached'
+                                f'from Source {source}')
 
     stack = [[target, 0]]
     top = 0

@@ -298,12 +298,12 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
             G.nodes[i]['end'] = i + 1
 
         if sys.version_info < (3, 8):
-            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2\
+            expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/1.2\
 draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:\
 schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
 gexf.xsd">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
     <nodes>
@@ -318,14 +318,14 @@ gexf.xsd">
       <edge id="2" source="2" target="3" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
         else:
-            expected = """<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
+            expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=\
 "http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
 gexf.xsd" version="1.2">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
     <nodes>
@@ -340,7 +340,7 @@ gexf.xsd" version="1.2">
       <edge source="2" target="3" id="2" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
         obtained = '\n'.join(nx.generate_gexf(G))
         assert expected == obtained
 
@@ -349,12 +349,12 @@ gexf.xsd" version="1.2">
         G.add_edges_from([(0, 1, {'id': 0}), (1, 2, {'id': 2}), (2, 3)])
 
         if sys.version_info < (3, 8):
-            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/\
+            expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/\
 1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:\
 schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
 gexf.xsd">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
     <nodes>
@@ -369,13 +369,13 @@ gexf.xsd">
       <edge id="1" source="2" target="3" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
         else:
-            expected = """<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
+            expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.\
 gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
     <nodes>
@@ -390,7 +390,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
       <edge source="2" target="3" id="1" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
 
         obtained = '\n'.join(nx.generate_gexf(G))
         assert expected == obtained
@@ -405,11 +405,11 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         G[0][1]['edge-number'] = numpy.float64(1.1)
 
         if sys.version_info < (3, 8):
-            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft"\
+            expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft"\
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation\
 ="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
     <attributes class="edge" mode="static">
@@ -450,14 +450,14 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
       <edge id="2" source="2" target="3" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
         else:
-            expected = """<gexf xmlns="http://www.gexf.net/1.2draft"\
+            expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft"\
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation\
 ="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd"\
  version="1.2">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
     <attributes mode="static" class="edge">
@@ -498,7 +498,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
       <edge source="2" target="3" id="2" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
         obtained = '\n'.join(nx.generate_gexf(G))
         assert expected == obtained
 

@@ -64,8 +64,8 @@ def triad_graph(triad_name):
 
     """
     if triad_name not in TRIAD_EDGES:
-        raise ValueError('unknown triad name "{}"; use one of the triad names'
-                         ' in the TRIAD_NAMES constant'.format(triad_name))
+        raise ValueError(f'unknown triad name "{triad_name}"; use one of the triad names'
+                         ' in the TRIAD_NAMES constant')
     G = DiGraph()
     G.add_nodes_from('abc')
     G.add_edges_from(TRIAD_EDGES[triad_name])

@@ -21,8 +21,6 @@ flow_funcs = [
     shortest_augmenting_path,
 ]
 
-msg = "Assertion failed in function: {0}"
-
 
 def gen_pyramid(N):
     # This graph admits a flow of value 1 for which every arc is at
@@ -53,26 +51,25 @@ def read_graph(name):
 def validate_flows(G, s, t, soln_value, R, flow_func):
     flow_value = R.graph["flow_value"]
     flow_dict = build_flow_dict(G, R)
-    assert soln_value == flow_value, msg.format(flow_func.__name__)
-    assert set(G) == set(flow_dict), msg.format(flow_func.__name__)
+    errmsg = f"Assertion failed in function: {flow_func.__name__}"
+    assert soln_value == flow_value, errmsg
+    assert set(G) == set(flow_dict), errmsg
     for u in G:
-        assert set(G[u]) == set(flow_dict[u]), msg.format(flow_func.__name__)
+        assert set(G[u]) == set(flow_dict[u]), errmsg
     excess = {u: 0 for u in flow_dict}
     for u in flow_dict:
         for v, flow in flow_dict[u].items():
-            assert flow <= G[u][v].get("capacity", float("inf")), msg.format(
-                flow_func.__name__
-            )
-            assert flow >= 0, msg.format(flow_func.__name__)
+            assert flow <= G[u][v].get("capacity", float("inf")), errmsg 
+            assert flow >= 0, errmsg
             excess[u] -= flow
             excess[v] += flow
     for u, exc in excess.items():
         if u == s:
-            assert exc == -soln_value, msg.format(flow_func.__name__)
+            assert exc == -soln_value, errmsg
         elif u == t:
-            assert exc == soln_value, msg.format(flow_func.__name__)
+            assert exc == soln_value, errmsg
         else:
-            assert exc == 0, msg.format(flow_func.__name__)
+            assert exc == 0, errmsg
 
 
 class TestMaxflowLargeGraph:
@@ -85,8 +82,9 @@ class TestMaxflowLargeGraph:
 
         for flow_func in flow_funcs:
             kwargs["flow_func"] = flow_func
+            errmsg = f"Assertion failed in function: {flow_func.__name__}"
             flow_value = nx.maximum_flow_value(G, 1, 2, **kwargs)
-            assert flow_value == 5 * (N - 1), msg.format(flow_func.__name__)
+            assert flow_value == 5 * (N - 1), errmsg
 
     def test_pyramid(self):
         N = 10
@@ -97,8 +95,9 @@ class TestMaxflowLargeGraph:
 
         for flow_func in flow_funcs:
             kwargs["flow_func"] = flow_func
+            errmsg = f"Assertion failed in function: {flow_func.__name__}"
             flow_value = nx.maximum_flow_value(G, (0, 0), "t", **kwargs)
-            assert almost_equal(flow_value, 1.0), msg.format(flow_func.__name__)
+            assert almost_equal(flow_value, 1.0), errmsg
 
     def test_gl1(self):
         G = read_graph("gl1")

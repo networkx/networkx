@@ -284,8 +284,7 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
         return str({nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
-        return '{}({!r}, {!r})'.format(self.__class__.__name__, self._atlas,
-                               self.NODE_OK)
+        return f"{self.__class__.__name__}({self._atlas!r}, {self.NODE_OK!r})"
 
 
 class FilterAdjacency(Mapping):   # edgedict
@@ -331,8 +330,8 @@ class FilterAdjacency(Mapping):   # edgedict
         return str({nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
-        return '{}({!r}, {!r}, {!r})'.format(self.__class__.__name__, self._atlas,
-                                   self.NODE_OK, self.EDGE_OK)
+        name = self.__class__.__name__
+        return f"{name}({self._atlas!r}, {self.NODE_OK!r}, {self.EDGE_OK!r})"
 
 
 class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict

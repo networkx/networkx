@@ -105,13 +105,13 @@ def write_adjlist(G, path, comments="#", delimiter=' ', encoding='utf-8'):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G = nx.path_graph(4)
     >>> nx.write_adjlist(G,"test.adjlist")
 
     The path can be a filehandle or a string with the name of the file. If a
     filehandle is provided, it has to be opened in 'wb' mode.
 
-    >>> fh=open("test.adjlist",'wb')
+    >>> fh = open("test.adjlist",'wb')
     >>> nx.write_adjlist(G, fh)
 
     Notes
@@ -126,7 +126,7 @@ def write_adjlist(G, path, comments="#", delimiter=' ', encoding='utf-8'):
     import time
     pargs = comments + " ".join(sys.argv) + '\n'
     header = (pargs
-              + comments + " GMT {}\n".format(time.asctime(time.gmtime()))
+              + comments + f" GMT {time.asctime(time.gmtime())}\n"
               + comments + f" {G.name}\n")
     path.write(header.encode(encoding))
 
@@ -195,15 +195,13 @@ def parse_adjlist(lines, comments='#', delimiter=None,
             try:
                 u = nodetype(u)
             except:
-                raise TypeError("Failed to convert node ({}) to type {}"
-                                .format(u, nodetype))
+                raise TypeError(f"Failed to convert node ({u}) to type {nodetype}")
         G.add_node(u)
         if nodetype is not None:
             try:
                 vlist = list(map(nodetype, vlist))
             except:
-                raise TypeError("Failed to convert nodes ({}) to type {}"
-                                .format(','.join(vlist), nodetype))
+                raise TypeError(f"Failed to convert nodes ({','.join(vlist)}) to type {nodetype}")
         G.add_edges_from([(u, v) for v in vlist])
     return G
 
@@ -238,26 +236,26 @@ def read_adjlist(path, comments="#", delimiter=None, create_using=None,
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G = nx.path_graph(4)
     >>> nx.write_adjlist(G, "test.adjlist")
-    >>> G=nx.read_adjlist("test.adjlist")
+    >>> G = nx.read_adjlist("test.adjlist")
 
     The path can be a filehandle or a string with the name of the file. If a
     filehandle is provided, it has to be opened in 'rb' mode.
 
-    >>> fh=open("test.adjlist", 'rb')
-    >>> G=nx.read_adjlist(fh)
+    >>> fh = open("test.adjlist", 'rb')
+    >>> G = nx.read_adjlist(fh)
 
     Filenames ending in .gz or .bz2 will be compressed.
 
     >>> nx.write_adjlist(G,"test.adjlist.gz")
-    >>> G=nx.read_adjlist("test.adjlist.gz")
+    >>> G = nx.read_adjlist("test.adjlist.gz")
 
     The optional nodetype is a function to convert node strings to nodetype.
 
     For example
 
-    >>> G=nx.read_adjlist("test.adjlist", nodetype=int)
+    >>> G = nx.read_adjlist("test.adjlist", nodetype=int)
 
     will attempt to convert all nodes to integer type.
 
@@ -268,7 +266,7 @@ def read_adjlist(path, comments="#", delimiter=None, create_using=None,
     created.  The default is `nx.Graph`, an undirected graph.
     To read the data as a directed graph use
 
-    >>> G=nx.read_adjlist("test.adjlist", create_using=nx.DiGraph)
+    >>> G = nx.read_adjlist("test.adjlist", create_using=nx.DiGraph)
 
     Notes
     -----

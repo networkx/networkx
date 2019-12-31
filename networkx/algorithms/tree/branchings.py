@@ -423,12 +423,12 @@ class Edmonds:
                     continue
 
             # Put v into bucket D^i.
-            # print("Adding node {0}".format(v))
+            # print(f"Adding node {v}")
             D.add(v)
             B.add_node(v)
 
             edge, weight = desired_edge(v)
-            # print("Max edge is {0!r}".format(edge))
+            # print(f"Max edge is {edge!r}")
             if edge is None:
                 # If there is no edge, continue with a new node at (I1).
                 continue
@@ -456,7 +456,7 @@ class Edmonds:
                 else:
                     acceptable = True
 
-                # print("Edge is acceptable: {0}".format(acceptable))
+                # print(f"Edge is acceptable: {acceptable}")
                 if acceptable:
                     dd = {attr: weight}
                     B.add_edge(u, v, edge[2], **dd)
@@ -606,7 +606,7 @@ class Edmonds:
                         break
                 else:
                     raise Exception("Couldn't find edge incoming to merged node.")
-                # print("not a root. removing {0}".format(edgekey))
+                # print(f"not a root. removing {edgekey}")
 
                 edges.remove(edgekey)
 

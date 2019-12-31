@@ -38,7 +38,7 @@ def single_source_shortest_path_length(G, source, cutoff=None):
     >>> length[4]
     4
     >>> for node in length:
-    ...     print('{}: {}'.format(node, length[node]))
+    ...     print(f"{node}: {length[node]}")
     0: 0
     1: 1
     2: 2
@@ -116,7 +116,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     >>> length[0]
     4
     >>> for node in range(5):
-    ...     print('{}: {}'.format(node, length[node]))
+    ...     print(f"{node}: {length[node]}")
     0: 4
     1: 3
     2: 2
@@ -164,7 +164,7 @@ def all_pairs_shortest_path_length(G, cutoff=None):
     >>> G = nx.path_graph(5)
     >>> length = dict(nx.all_pairs_shortest_path_length(G))
     >>> for node in [0, 1, 2, 3, 4]:
-    ...     print('1 - {}: {}'.format(node, length[1][node]))
+    ...     print(f"1 - {node}: {length[1][node]}")
     1 - 0: 1
     1 - 1: 0
     1 - 2: 1
@@ -215,8 +215,8 @@ def bidirectional_shortest_path(G, source, target):
     """
 
     if source not in G or target not in G:
-        msg = 'Either source {} or target {} is not in G'
-        raise nx.NodeNotFound(msg.format(source, target))
+        msg = f"Either source {source} or target {target} is not in G"
+        raise nx.NodeNotFound(msg)
 
     # call helper to do the real work
     results = _bidirectional_pred_succ(G, source, target)

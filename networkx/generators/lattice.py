@@ -213,8 +213,8 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
         return H
     if periodic:
         if n < 5 or m < 3:
-            msg = "m > 2 and n > 4 required for periodic. m={}, n={}"
-            raise NetworkXError(msg.format(m, n))
+            msg = f"m > 2 and n > 4 required for periodic. m={m}, n={n}"
+            raise NetworkXError(msg)
 
     N = (n + 1) // 2  # number of nodes in row
     rows = range(m + 1)

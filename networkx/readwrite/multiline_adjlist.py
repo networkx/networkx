@@ -169,7 +169,7 @@ def write_multiline_adjlist(G, path, delimiter=' ',
 
     pargs = comments + " ".join(sys.argv)
     header = (f"{pargs}\n"
-              + comments + " GMT {}\n".format(time.asctime(time.gmtime()))
+              + comments + f" GMT {time.asctime(time.gmtime())}\n"
               + comments + f" {G.name}\n")
     path.write(header.encode(encoding))
 
@@ -234,8 +234,7 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
             try:
                 u = nodetype(u)
             except:
-                raise TypeError("Failed to convert node ({}) to type {}"
-                                .format(u, nodetype))
+                raise TypeError(f"Failed to convert node ({u}) to type {nodetype}")
         G.add_node(u)
         for i in range(deg):
             while True:
@@ -259,16 +258,12 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
                 try:
                     v = nodetype(v)
                 except:
-                    raise TypeError(
-                        "Failed to convert node ({}) to type {}"
-                        .format(v, nodetype))
+                    raise TypeError("Failed to convert node ({v}) to type {nodetype}")
             if edgetype is not None:
                 try:
                     edgedata = {'weight': edgetype(data)}
                 except:
-                    raise TypeError(
-                        "Failed to convert edge data ({}) to type {}"
-                        .format(data, edgetype))
+                    raise TypeError("Failed to convert edge data ({data}) to type {edgetype}")
             else:
                 try:  # try to evaluate
                     edgedata = literal_eval(data)
