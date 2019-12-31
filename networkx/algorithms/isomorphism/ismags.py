@@ -182,7 +182,7 @@ def make_partitions(items, test):
                 partition.add(item)
                 break
         else:  # No break
-            partitions.append(set((item,)))
+            partitions.append({item})
     return partitions
 
 

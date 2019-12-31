@@ -123,8 +123,7 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
     """
     writer = GEXFWriter(encoding=encoding, prettyprint=prettyprint, version=version)
     writer.add_graph(G)
-    for line in str(writer).splitlines():
-        yield line
+    yield from str(writer).splitlines()
 
 
 @open_file(0, mode="rb")
@@ -171,7 +170,7 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     return G
 
 
-class GEXF(object):
+class GEXF:
     versions = {}
     d = {
         "NS_GEXF": "http://www.gexf.net/1.1draft",
@@ -282,7 +281,7 @@ class GEXFWriter(GEXF):
         # Make meta element a non-graph element
         # Also add lastmodifieddate as attribute, not tag
         meta_element = Element("meta")
-        subelement_text = "NetworkX {}".format(nx.__version__)
+        subelement_text = f"NetworkX {nx.__version__}"
         SubElement(meta_element, "creator").text = subelement_text
         meta_element.set("lastmodifieddate", time.strftime("%Y-%m-%d"))
         self.xml.append(meta_element)

@@ -21,4 +21,4 @@ def test_subtree_union():
     uf.union(3, 4)
     uf.union(4, 5)
     uf.union(1, 5)
-    assert list(uf.to_sets()) == [set([1, 2, 3, 4, 5])]
+    assert list(uf.to_sets()) == [{1, 2, 3, 4, 5}]

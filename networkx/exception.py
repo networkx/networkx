@@ -121,5 +121,5 @@ class PowerIterationFailedConvergence(ExceededMaxIterations):
     def __init__(self, num_iterations, *args, **kw):
         msg = 'power iteration failed to converge within {} iterations'
         exception_message = msg.format(num_iterations)
-        superinit = super(PowerIterationFailedConvergence, self).__init__
+        superinit = super().__init__
         superinit(self, exception_message, *args, **kw)

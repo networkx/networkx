@@ -134,7 +134,7 @@ def label_propagation_communities(G):
                 _update_label(n, labeling, G)
 
     for label in set(labeling.values()):
-        yield set((x for x in labeling if labeling[x] == label))
+        yield {x for x in labeling if labeling[x] == label}
 
 
 def _color_network(G):
@@ -148,7 +148,7 @@ def _color_network(G):
         if color in coloring:
             coloring[color].add(node)
         else:
-            coloring[color] = set([node])
+            coloring[color] = {node}
     return coloring
 
 

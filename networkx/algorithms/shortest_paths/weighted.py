@@ -730,7 +730,7 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     try:
         return (dist[target], paths[target])
     except KeyError:
-        raise nx.NetworkXNoPath("No path to {}.".format(target))
+        raise nx.NetworkXNoPath(f"No path to {target}.")
 
 
 def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None,
@@ -809,7 +809,7 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
     fringe = []
     for source in sources:
         if source not in G:
-            raise nx.NodeNotFound("Source {} not in G".format(source))
+            raise nx.NodeNotFound(f"Source {source} not in G")
         seen[source] = 0
         push(fringe, (0, next(c), source))
     while fringe:
@@ -1256,7 +1256,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
     """
     for s in source:
         if s not in G:
-            raise nx.NodeNotFound("Source {} not in G".format(s))
+            raise nx.NodeNotFound(f"Source {s} not in G")
 
     if pred is None:
         pred = {v: [] for v in source}
@@ -1801,7 +1801,7 @@ def goldberg_radzik(G, source, weight='weight'):
             # nonpositive reduced costs into to_scan in (reverse) topological
             # order.
             stack = [(u, iter(G_succ[u].items()))]
-            in_stack = set([u])
+            in_stack = {u}
             neg_count[u] = 0
             while stack:
                 u, it = stack[-1]
@@ -1851,7 +1851,7 @@ def goldberg_radzik(G, source, weight='weight'):
 
     # Set of nodes relabled in the last round of scan operations. Denoted by B
     # in Goldberg and Radzik's paper.
-    relabeled = set([source])
+    relabeled = {source}
 
     while relabeled:
         to_scan = topo_sort(relabeled)

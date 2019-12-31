@@ -249,7 +249,7 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
     node_value = _node_value(G, node_attr)
 
     if rc_order is None:
-        ordering = list(set([node_value(n) for n in G]))
+        ordering = list({node_value(n) for n in G})
     else:
         ordering = rc_order
 
@@ -258,7 +258,7 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
     index = dict(zip(ordering, range(N)))
     M = np.zeros((N, N), dtype=dtype, order=order)
 
-    seen = set([])
+    seen = set()
     for u, nbrdict in G.adjacency():
         for v in nbrdict:
             # Obtain the node attribute values.
@@ -413,7 +413,7 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
     node_value = _node_value(G, node_attr)
 
     if rc_order is None:
-        ordering = list(set([node_value(n) for n in G]))
+        ordering = list({node_value(n) for n in G})
     else:
         ordering = rc_order
 
@@ -422,7 +422,7 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
     index = dict(zip(ordering, range(N)))
     M = sparse.lil_matrix((N, N), dtype=dtype)
 
-    seen = set([])
+    seen = set()
     for u, nbrdict in G.adjacency():
         for v in nbrdict:
             # Obtain the node attribute values.

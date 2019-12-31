@@ -34,7 +34,7 @@ def check_eigenvector(A, l, x):
     assert almost_equal(ny, l * nx)
 
 
-class TestAlgebraicConnectivity(object):
+class TestAlgebraicConnectivity:
 
     def test_directed(self):
         G = nx.DiGraph()
@@ -187,7 +187,7 @@ class TestAlgebraicConnectivity(object):
     _methods = methods
 
 
-class TestSpectralOrdering(object):
+class TestSpectralOrdering:
 
     def test_nullgraph(self):
         for graph in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
@@ -215,13 +215,13 @@ class TestSpectralOrdering(object):
         for method in self._methods:
             order = nx.spectral_ordering(G, weight='spam', method=method)
             assert set(order) == set(G)
-            assert set([1, 3]) in (set(order[:-1]), set(order[1:]))
+            assert {1, 3} in (set(order[:-1]), set(order[1:]))
         G = nx.MultiDiGraph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1), (2, 3, 2)])
         for method in self._methods:
             order = nx.spectral_ordering(G, method=method)
             assert set(order) == set(G)
-            assert set([2, 3]) in (set(order[:-1]), set(order[1:]))
+            assert {2, 3} in (set(order[:-1]), set(order[1:]))
 
     def test_path(self):
         # based on setup_class numpy is installed if we get here

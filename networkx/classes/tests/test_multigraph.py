@@ -1,4 +1,3 @@
-
 import pytest
 
 import networkx as nx
@@ -274,7 +273,7 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
             G.remove_edge(-1, 0)
 
 
-class TestEdgeSubgraph(object):
+class TestEdgeSubgraph:
     """Unit tests for the :meth:`MultiGraph.edge_subgraph` method."""
 
     def setup_method(self):
@@ -284,7 +283,7 @@ class TestEdgeSubgraph(object):
         nx.add_path(G, range(5))
         # Add some node, edge, and graph attributes.
         for i in range(5):
-            G.nodes[i]['name'] = 'node{}'.format(i)
+            G.nodes[i]['name'] = f'node{i}'
         G.adj[0][1][0]['name'] = 'edge010'
         G.adj[0][1][1]['name'] = 'edge011'
         G.adj[3][4][0]['name'] = 'edge340'

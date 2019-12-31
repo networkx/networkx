@@ -15,7 +15,7 @@ def _matches_to_sets(matches):
     return set(map(lambda m: frozenset(m.items()), matches))
 
 
-class TestSelfIsomorphism(object):
+class TestSelfIsomorphism:
     data = [
         (
             [(0, dict(name='a')),
@@ -94,7 +94,7 @@ class TestSelfIsomorphism(object):
                     [{n: n for n in graph.nodes}])
 
 
-class TestSubgraphIsomorphism(object):
+class TestSubgraphIsomorphism:
     def test_isomorphism(self):
         g1 = nx.Graph()
         nx.add_cycle(g1, range(4))
@@ -165,7 +165,7 @@ class TestSubgraphIsomorphism(object):
                 _matches_to_sets(expected_symmetric + expected_asymmetric))
 
 
-class TestWikipediaExample(object):
+class TestWikipediaExample:
     # Nodes 'a', 'b', 'c' and 'd' form a column.
     # Nodes 'g', 'h', 'i' and 'j' form a column.
     g1edges = [['a', 'g'], ['a', 'h'], ['a', 'i'],
@@ -188,7 +188,7 @@ class TestWikipediaExample(object):
         assert gm.is_isomorphic()
 
 
-class TestLargestCommonSubgraph(object):
+class TestLargestCommonSubgraph:
     def test_mcis(self):
         # Example graphs from DOI: 10.1002/spe.588
         graph1 = nx.Graph()

@@ -7,7 +7,7 @@ import os
 from networkx.testing import almost_equal
 
 
-class BaseGraphML(object):
+class BaseGraphML:
     @classmethod
     def setup_class(cls):
         cls.simple_directed_data = """<?xml version="1.0" encoding="UTF-8"?>

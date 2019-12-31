@@ -50,10 +50,10 @@ class TestDistance:
         assert nx.radius(self.G) == 4
 
     def test_periphery(self):
-        assert set(nx.periphery(self.G)) == set([1, 4, 13, 16])
+        assert set(nx.periphery(self.G)) == {1, 4, 13, 16}
 
     def test_center(self):
-        assert set(nx.center(self.G)) == set([6, 7, 10, 11])
+        assert set(nx.center(self.G)) == {6, 7, 10, 11}
 
     def test_bound_diameter(self):
         assert nx.diameter(self.G, usebounds=True) == 6
@@ -62,11 +62,11 @@ class TestDistance:
         assert nx.radius(self.G, usebounds=True) == 4
 
     def test_bound_periphery(self):
-        result = set([1, 4, 13, 16])
+        result = {1, 4, 13, 16}
         assert set(nx.periphery(self.G, usebounds=True)) == result
 
     def test_bound_center(self):
-        result = set([6, 7, 10, 11])
+        result = {6, 7, 10, 11}
         assert set(nx.center(self.G, usebounds=True)) == result
 
     def test_radius_exception(self):
@@ -187,7 +187,7 @@ class TestResistanceDistance:
             nx.resistance_distance(self.G, 1, 9)
 
 
-class TestBarycenter(object):
+class TestBarycenter:
     """Test :func:`networkx.algorithms.distance_measures.barycenter`."""
     def barycenter_as_subgraph(self, g, **kwargs):
         """Return the subgraph induced on the barycenter of g"""

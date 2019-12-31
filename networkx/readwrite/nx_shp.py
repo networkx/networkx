@@ -86,7 +86,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
     net = nx.DiGraph()
     shp = ogr.Open(path)
     if shp is None:
-        raise RuntimeError("Unable to open {}".format(path))
+        raise RuntimeError(f"Unable to open {path}")
     for lyr in shp:
         fields = [x.GetName() for x in lyr.schema]
         for f in lyr:
@@ -177,8 +177,7 @@ def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
     elif geom.GetGeometryType() == ogr.wkbMultiLineString:
         for i in range(geom.GetGeometryCount()):
             geom_i = geom.GetGeometryRef(i)
-            for edge in edges_from_line(geom_i, attrs, simplify, geom_attrs):
-                yield edge
+            yield from edges_from_line(geom_i, attrs, simplify, geom_attrs)
 
 
 def write_shp(G, outdir):

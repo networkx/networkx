@@ -4,7 +4,7 @@ import pickle
 import networkx as nx
 
 
-class TestAtlasView(object):
+class TestAtlasView:
     # node->data
     def setup(self):
         self.d = {0: {'color': 'blue', 'weight': 1.2}, 1: {}, 2: {'color': 1}}
@@ -59,7 +59,7 @@ class TestAtlasView(object):
         assert repr(self.av) == out
 
 
-class TestAdjacencyView(object):
+class TestAdjacencyView:
     # node->nbr->data
     def setup(self):
         dd = {'color': 'blue', 'weight': 1.2}
@@ -140,7 +140,7 @@ class TestMultiAdjacencyView(TestAdjacencyView):
         assert not hasattr(self.adjview, '__setitem__')
 
 
-class TestUnionAtlas(object):
+class TestUnionAtlas:
     # node->data
     def setup(self):
         self.s = {0: {'color': 'blue', 'weight': 1.2}, 1: {}, 2: {'color': 1}}
@@ -192,11 +192,11 @@ class TestUnionAtlas(object):
         assert str(self.av) == out
 
     def test_repr(self):
-        out = "{}({}, {})".format(self.av.__class__.__name__, self.s, self.p)
+        out = f"{self.av.__class__.__name__}({self.s}, {self.p})"
         assert repr(self.av) == out
 
 
-class TestUnionAdjacency(object):
+class TestUnionAdjacency:
     # node->nbr->data
     def setup(self):
         dd = {'color': 'blue', 'weight': 1.2}
@@ -242,7 +242,7 @@ class TestUnionAdjacency(object):
 
     def test_repr(self):
         clsname = self.adjview.__class__.__name__
-        out = "{}({}, {})".format(clsname, self.s, self.p)
+        out = f"{clsname}({self.s}, {self.p})"
         assert repr(self.adjview) == out
 
 
@@ -312,7 +312,7 @@ class TestUnionMultiAdjacency(TestUnionAdjacency):
         assert hasattr(avcopy, '__setitem__')
 
 
-class TestFilteredGraphs(object):
+class TestFilteredGraphs:
     def setup(self):
         self.Graphs = [nx.Graph,
                        nx.DiGraph,

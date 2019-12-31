@@ -11,7 +11,7 @@ import networkx as nx
 from networkx.algorithms import isomorphism as iso
 
 
-class TestWikipediaExample(object):
+class TestWikipediaExample:
     # Source: https://en.wikipedia.org/wiki/Graph_isomorphism
 
     # Nodes 'a', 'b', 'c' and 'd' form a column.
@@ -62,7 +62,7 @@ class TestWikipediaExample(object):
         assert gm.subgraph_is_monomorphic()
 
 
-class TestVF2GraphDB(object):
+class TestVF2GraphDB:
     # http://amalfi.dis.unina.it/graph/db/
 
     @staticmethod
@@ -118,7 +118,7 @@ class TestVF2GraphDB(object):
     # feel free to create one.
 
 
-class TestAtlas(object):
+class TestAtlas:
     @classmethod
     def setup_class(cls):
         global atlas

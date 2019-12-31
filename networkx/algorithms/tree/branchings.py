@@ -44,7 +44,7 @@ __all__ = [
     'Edmonds'
 ]
 
-KINDS = set(['max', 'min'])
+KINDS = {'max', 'min'}
 
 STYLES = {
     'branching': 'branching',
@@ -175,14 +175,14 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
     """
 
     def __init__(self, incoming_graph_data=None, **attr):
-        cls = super(MultiDiGraph_EdgeKey, self)
+        cls = super()
         cls.__init__(incoming_graph_data=incoming_graph_data, **attr)
 
         self._cls = cls
         self.edge_index = {}
 
     def remove_node(self, n):
-        keys = set([])
+        keys = set()
         for keydict in self.pred[n].values():
             keys.update(keydict)
         for keydict in self.succ[n].values():
@@ -206,7 +206,7 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
         if key in self.edge_index:
             uu, vv, _ = self.edge_index[key]
             if (u != uu) or (v != vv):
-                raise Exception("Key {0!r} is already in use.".format(key))
+                raise Exception(f"Key {key!r} is already in use.")
 
         self._cls.add_edge(u, v, key, **attr)
         self.edge_index[key] = (u, v, self.succ[u][v][key])
@@ -219,7 +219,7 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
         try:
             u, v, _ = self.edge_index[key]
         except KeyError:
-            raise KeyError('Invalid edge key {0!r}'.format(key))
+            raise KeyError(f'Invalid edge key {key!r}')
         else:
             del self.edge_index[key]
             self._cls.remove_edge(u, v, key)
@@ -251,7 +251,7 @@ def get_path(G, u, v):
     return nodes, edges
 
 
-class Edmonds(object):
+class Edmonds:
     """
     Edmonds algorithm for finding optimal branchings and spanning arborescences.
 
@@ -374,7 +374,7 @@ class Edmonds(object):
         # This enormous while loop could use some refactoring...
 
         G, B = self.G, self.B
-        D = set([])
+        D = set()
         nodes = iter(list(G.nodes()))
         attr = self._attr
         G_pred = G.pred
@@ -548,7 +548,7 @@ class Edmonds(object):
             """
             if u not in G:
                 # print(G.nodes(), u)
-                raise Exception('{0!r} not in G'.format(u))
+                raise Exception(f'{u!r} not in G')
             for v in G.pred[u]:
                 for edgekey in G.pred[u][v]:
                     if edgekey in edgekeys:

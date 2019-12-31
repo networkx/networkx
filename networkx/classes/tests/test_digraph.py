@@ -122,7 +122,7 @@ class BaseDiGraphTester(BaseGraphTester):
             R.remove_edge(1, 0)
 
     def test_reverse_hashable(self):
-        class Foo(object):
+        class Foo:
             pass
         x = Foo()
         y = Foo()
@@ -251,7 +251,7 @@ class TestEdgeSubgraph(_TestGraphEdgeSubgraph):
         G = nx.DiGraph(nx.path_graph(5))
         # Add some node, edge, and graph attributes.
         for i in range(5):
-            G.nodes[i]['name'] = 'node{}'.format(i)
+            G.nodes[i]['name'] = f'node{i}'
         G.edges[0, 1]['name'] = 'edge01'
         G.edges[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'

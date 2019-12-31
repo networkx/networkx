@@ -40,13 +40,13 @@ class TestConvert():
 
     def test_exceptions(self):
         # NX graph
-        class G(object):
+        class G:
             adj = None
 
         pytest.raises(nx.NetworkXError, to_networkx_graph, G)
 
         # pygraphviz  agraph
-        class G(object):
+        class G:
             is_strict = None
 
         pytest.raises(nx.NetworkXError, to_networkx_graph, G)
@@ -56,7 +56,7 @@ class TestConvert():
         pytest.raises(TypeError, to_networkx_graph, G)
 
         # list or generator of edges
-        class G(object):
+        class G:
             next = None
 
         pytest.raises(nx.NetworkXError, to_networkx_graph, G)

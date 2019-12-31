@@ -10,7 +10,7 @@ import tempfile
 from textwrap import dedent
 
 
-class TestGraph(object):
+class TestGraph:
     @classmethod
     def setup_class(cls):
         cls.simple_data = """Creator "me"
@@ -347,7 +347,7 @@ graph
         gml = "\n".join(nx.generate_gml(G, stringizer=literal_stringizer))
         G = nx.parse_gml(gml, destringizer=literal_destringizer)
         assert data == G.name
-        assert {"name": data, str("data"): data} == G.graph
+        assert {"name": data, "data": data} == G.graph
         assert list(G.nodes(data=True)) == [(0, dict(int=-1, data=dict(data=data)))]
         assert list(G.edges(data=True)) == [(0, 0, dict(float=-2.5, data=data))]
         G = nx.Graph()
@@ -382,14 +382,14 @@ graph
         pytest.raises(ValueError, literal_stringizer, frozenset([1, 2, 3]))
         pytest.raises(ValueError, literal_stringizer, literal_stringizer)
         with tempfile.TemporaryFile() as f:
-            f.write(codecs.BOM_UTF8 + "graph[]".encode("ascii"))
+            f.write(codecs.BOM_UTF8 + b"graph[]")
             f.seek(0)
             pytest.raises(nx.NetworkXError, nx.read_gml, f)
 
         def assert_parse_error(gml):
             pytest.raises(nx.NetworkXError, nx.parse_gml, gml)
 
-        assert_parse_error(["graph [\n\n", str("]")])
+        assert_parse_error(["graph [\n\n", "]"])
         assert_parse_error("")
         assert_parse_error('Creator ""')
         assert_parse_error("0")
@@ -522,7 +522,7 @@ def byte_file():
     _file_handle.seek(0)
 
 
-class TestPropertyLists(object):
+class TestPropertyLists:
     def test_writing_graph_with_multi_element_property_list(self):
         g = nx.Graph()
         g.add_node("n1", properties=["element", 0, 1, 2.5, True, False])

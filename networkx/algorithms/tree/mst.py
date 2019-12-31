@@ -293,7 +293,7 @@ def prim_mst_edges(G, minimum, weight='weight',
 
 ALGORITHMS = {
     'boruvka': boruvka_mst_edges,
-    u'borůvka': boruvka_mst_edges,
+    'borůvka': boruvka_mst_edges,
     'kruskal': kruskal_mst_edges,
     'prim': prim_mst_edges
 }
@@ -384,7 +384,7 @@ def minimum_spanning_edges(G, algorithm='kruskal', weight='weight',
     try:
         algo = ALGORITHMS[algorithm]
     except KeyError:
-        msg = '{} is not a valid choice for an algorithm.'.format(algorithm)
+        msg = f'{algorithm} is not a valid choice for an algorithm.'
         raise ValueError(msg)
 
     return algo(G, minimum=True, weight=weight, keys=keys, data=data,
@@ -475,7 +475,7 @@ def maximum_spanning_edges(G, algorithm='kruskal', weight='weight',
     try:
         algo = ALGORITHMS[algorithm]
     except KeyError:
-        msg = '{} is not a valid choice for an algorithm.'.format(algorithm)
+        msg = f'{algorithm} is not a valid choice for an algorithm.'
         raise ValueError(msg)
 
     return algo(G, minimum=False, weight=weight, keys=keys, data=data,

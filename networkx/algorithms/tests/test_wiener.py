@@ -8,7 +8,7 @@ from networkx import path_graph
 from networkx import wiener_index
 
 
-class TestWienerIndex(object):
+class TestWienerIndex:
     """Unit tests for computing the Wiener index of a graph."""
 
     def test_disconnected_graph(self):

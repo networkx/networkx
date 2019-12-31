@@ -12,7 +12,7 @@ from networkx.testing import almost_equal
 # information retrieval."  http://citeseer.ist.psu.edu/713792.html
 
 
-class TestPageRank(object):
+class TestPageRank:
 
     @classmethod
     def setup_class(cls):
@@ -41,7 +41,7 @@ class TestPageRank(object):
         for n in G:
             assert almost_equal(p[n], G.pagerank[n], places=4)
 
-        nstart = dict((n, random.random()) for n in G)
+        nstart = {n: random.random() for n in G}
         p = networkx.pagerank(G, alpha=0.9, tol=1.e-08, nstart=nstart)
         for n in G:
             assert almost_equal(p[n], G.pagerank[n], places=4)
@@ -55,7 +55,7 @@ class TestPageRank(object):
         p = networkx.pagerank_numpy(G, alpha=0.9)
         for n in G:
             assert almost_equal(p[n], G.pagerank[n], places=4)
-        personalize = dict((n, random.random()) for n in G)
+        personalize = {n: random.random() for n in G}
         p = networkx.pagerank_numpy(G, alpha=0.9, personalization=personalize)
 
     def test_google_matrix(self):
@@ -140,11 +140,11 @@ class TestPageRankScipy(TestPageRank):
         p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.e-08)
         for n in G:
             assert almost_equal(p[n], G.pagerank[n], places=4)
-        personalize = dict((n, random.random()) for n in G)
+        personalize = {n: random.random() for n in G}
         p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.e-08,
                                     personalization=personalize)
 
-        nstart = dict((n, random.random()) for n in G)
+        nstart = {n: random.random() for n in G}
         p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.e-08, nstart=nstart)
         for n in G:
             assert almost_equal(p[n], G.pagerank[n], places=4)

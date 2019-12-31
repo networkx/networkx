@@ -8,7 +8,7 @@ from networkx.utils import consume
 from networkx.utils import pairwise
 
 
-class TestDagLongestPath(object):
+class TestDagLongestPath:
     """Unit tests computing the longest path in a directed acyclic graph."""
 
     def test_empty(self):
@@ -56,7 +56,7 @@ class TestDagLongestPath(object):
         nx.dag_longest_path(G)
 
 
-class TestDagLongestPathLength(object):
+class TestDagLongestPathLength:
     """Unit tests for computing the length of a longest path in a
     directed acyclic graph.
 
@@ -255,8 +255,8 @@ class TestDAG:
         ancestors = nx.algorithms.dag.ancestors
         G.add_edges_from([
             (1, 2), (1, 3), (4, 2), (4, 3), (4, 5), (2, 6), (5, 6)])
-        assert ancestors(G, 6) == set([1, 2, 4, 5])
-        assert ancestors(G, 3) == set([1, 4])
+        assert ancestors(G, 6) == {1, 2, 4, 5}
+        assert ancestors(G, 3) == {1, 4}
         assert ancestors(G, 1) == set()
         pytest.raises(nx.NetworkXError, ancestors, G, 8)
 
@@ -265,8 +265,8 @@ class TestDAG:
         descendants = nx.algorithms.dag.descendants
         G.add_edges_from([
             (1, 2), (1, 3), (4, 2), (4, 3), (4, 5), (2, 6), (5, 6)])
-        assert descendants(G, 1) == set([2, 3, 6])
-        assert descendants(G, 4) == set([2, 3, 5, 6])
+        assert descendants(G, 1) == {2, 3, 6}
+        assert descendants(G, 4) == {2, 3, 5, 6}
         assert descendants(G, 3) == set()
         pytest.raises(nx.NetworkXError, descendants, G, 8)
 
@@ -413,7 +413,7 @@ class TestDAG:
                 self.priority = 1
 
             def __repr__(self):
-                return 'Node({})'.format(self.label)
+                return f'Node({self.label})'
 
         def sorting_key(node):
             return node.priority
@@ -497,7 +497,7 @@ def test_is_aperiodic_disconnected2():
     assert not nx.is_aperiodic(G)
 
 
-class TestDagToBranching(object):
+class TestDagToBranching:
     """Unit tests for the :func:`networkx.dag_to_branching` function."""
 
     def test_single_root(self):

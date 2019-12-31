@@ -3,7 +3,7 @@ import itertools
 __all__ = ['greedy_coloring_with_interchange']
 
 
-class Node(object):
+class Node:
 
     __slots__ = ['node_id', 'color', 'adj_list', 'adj_color']
 
@@ -14,8 +14,8 @@ class Node(object):
         self.adj_color = [None for _ in range(n)]
 
     def __repr__(self):
-        return "Node_id: {0}, Color: {1}, Adj_list: ({2}), \
-            adj_color: ({3})".format(
+        return "Node_id: {}, Color: {}, Adj_list: ({}), \
+            adj_color: ({})".format(
             self.node_id, self.color, self.adj_list, self.adj_color)
 
     def assign_color(self, adj_entry, color):
@@ -46,7 +46,7 @@ class Node(object):
             adj_color_node = adj_color_node.col_next
 
 
-class AdjEntry(object):
+class AdjEntry:
 
     __slots__ = ['node_id', 'next', 'mate', 'col_next', 'col_prev']
 
@@ -58,8 +58,8 @@ class AdjEntry(object):
         self.col_prev = None
 
     def __repr__(self):
-        return "Node_id: {0}, Next: ({1}), Mate: ({2}), \
-            col_next: ({3}), col_prev: ({4})".format(
+        return "Node_id: {}, Next: ({}), Mate: ({}), \
+            col_next: ({}), col_prev: ({})".format(
             self.node_id,
             self.next,
             self.mate.node_id,

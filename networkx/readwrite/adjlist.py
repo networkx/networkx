@@ -127,7 +127,7 @@ def write_adjlist(G, path, comments="#", delimiter=' ', encoding='utf-8'):
     pargs = comments + " ".join(sys.argv) + '\n'
     header = (pargs
               + comments + " GMT {}\n".format(time.asctime(time.gmtime()))
-              + comments + " {}\n".format(G.name))
+              + comments + f" {G.name}\n")
     path.write(header.encode(encoding))
 
     for line in generate_adjlist(G, delimiter):

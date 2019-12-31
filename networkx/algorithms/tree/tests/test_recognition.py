@@ -2,7 +2,7 @@ import pytest
 import networkx as nx
 
 
-class TestTreeRecognition(object):
+class TestTreeRecognition:
 
     graph = nx.Graph
     multigraph = nx.MultiGraph

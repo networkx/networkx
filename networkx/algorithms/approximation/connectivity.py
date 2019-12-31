@@ -202,7 +202,7 @@ def node_connectivity(G, s=None, t=None):
     K = minimum_degree
     # compute local node connectivity with all non-neighbors nodes
     # and store the minimum
-    for w in set(G) - set(neighbors(v)) - set([v]):
+    for w in set(G) - set(neighbors(v)) - {v}:
         K = min(K, local_node_connectivity(G, v, w, cutoff=K))
     # Same for non adjacent pairs of neighbors of v
     for x, y in iter_func(neighbors(v), 2):

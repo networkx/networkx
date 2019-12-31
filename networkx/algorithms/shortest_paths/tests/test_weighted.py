@@ -1,4 +1,3 @@
-
 import pytest
 
 import networkx as nx
@@ -22,7 +21,7 @@ def validate_length_path(G, s, t, soln_len, length, path):
     validate_path(G, s, t, length, path)
 
 
-class WeightedTestBase(object):
+class WeightedTestBase:
     """Base class for test classes that test functions for computing
     shortest paths in weighted graphs.
 
@@ -283,7 +282,7 @@ class TestWeightedPath(WeightedTestBase):
         assert out[0][1][3] == [0, 6, 5, 4, 3]
 
 
-class TestDijkstraPathLength(object):
+class TestDijkstraPathLength:
     """Unit tests for the :func:`networkx.dijkstra_path_length`
     function.
 
@@ -313,7 +312,7 @@ class TestDijkstraPathLength(object):
         assert length == 1 / 10
 
 
-class TestMultiSourceDijkstra(object):
+class TestMultiSourceDijkstra:
     """Unit tests for the multi-source dialect of Dijkstra's shortest
     path algorithms.
 

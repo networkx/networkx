@@ -189,7 +189,7 @@ class NodeView(Mapping, Set):
         return str(list(self))
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, tuple(self))
+        return '{}({!r})'.format(self.__class__.__name__, tuple(self))
 
 
 class NodeDataView(Set):
@@ -274,15 +274,15 @@ class NodeDataView(Set):
 
     def __repr__(self):
         if self._data is False:
-            return '%s(%r)' % (self.__class__.__name__, tuple(self))
+            return '{}({!r})'.format(self.__class__.__name__, tuple(self))
         if self._data is True:
-            return '%s(%r)' % (self.__class__.__name__, dict(self))
+            return '{}({!r})'.format(self.__class__.__name__, dict(self))
         return '%s(%r, data=%r)' % \
                (self.__class__.__name__, dict(self), self._data)
 
 
 # DegreeViews
-class DiDegreeView(object):
+class DiDegreeView:
     """A View class for degree of nodes in a NetworkX Graph
 
     The functionality is like dict.items() with (node, degree) pairs.
@@ -373,7 +373,7 @@ class DiDegreeView(object):
         return str(list(self))
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, dict(self))
+        return '{}({!r})'.format(self.__class__.__name__, dict(self))
 
 
 class DegreeView(DiDegreeView):
@@ -614,7 +614,7 @@ class OutMultiDegreeView(DiDegreeView):
 
 
 # EdgeDataViews
-class OutEdgeDataView(object):
+class OutEdgeDataView:
     """EdgeDataView for outward edges of DiGraph; See EdgeDataView"""
     __slots__ = ('_viewer', '_nbunch', '_data', '_default',
                  '_adjdict', '_nodes_nbrs', '_report')
@@ -667,7 +667,7 @@ class OutEdgeDataView(object):
         return str(list(self))
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, list(self))
+        return '{}({!r})'.format(self.__class__.__name__, list(self))
 
 
 class EdgeDataView(OutEdgeDataView):

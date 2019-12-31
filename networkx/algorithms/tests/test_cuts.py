@@ -4,7 +4,7 @@
 import networkx as nx
 
 
-class TestCutSize(object):
+class TestCutSize:
     """Unit tests for the :func:`~networkx.cut_size` function."""
 
     def test_symmetric(self):
@@ -45,7 +45,7 @@ class TestCutSize(object):
         assert nx.cut_size(G, {'a'}, {'b'}) == 2
 
 
-class TestVolume(object):
+class TestVolume:
     """Unit tests for the :func:`~networkx.volume` function."""
 
     def test_graph(self):
@@ -67,7 +67,7 @@ class TestVolume(object):
         assert nx.volume(G, {0, 1}) == 4
 
 
-class TestNormalizedCutSize(object):
+class TestNormalizedCutSize:
     """Unit tests for the :func:`~networkx.normalized_cut_size`
     function.
 
@@ -92,7 +92,7 @@ class TestNormalizedCutSize(object):
         assert expected == size
 
 
-class TestConductance(object):
+class TestConductance:
     """Unit tests for the :func:`~networkx.conductance` function."""
 
     def test_graph(self):
@@ -106,7 +106,7 @@ class TestConductance(object):
         assert expected == conductance
 
 
-class TestEdgeExpansion(object):
+class TestEdgeExpansion:
     """Unit tests for the :func:`~networkx.edge_expansion` function."""
 
     def test_graph(self):
@@ -118,7 +118,7 @@ class TestEdgeExpansion(object):
         assert expected == expansion
 
 
-class TestNodeExpansion(object):
+class TestNodeExpansion:
     """Unit tests for the :func:`~networkx.node_expansion` function.
 
     """
@@ -133,7 +133,7 @@ class TestNodeExpansion(object):
         assert expected == expansion
 
 
-class TestBoundaryExpansion(object):
+class TestBoundaryExpansion:
     """Unit tests for the :func:`~networkx.boundary_expansion` function.
 
     """
@@ -148,7 +148,7 @@ class TestBoundaryExpansion(object):
         assert expected == expansion
 
 
-class TestMixingExpansion(object):
+class TestMixingExpansion:
     """Unit tests for the :func:`~networkx.mixing_expansion` function.
 
     """

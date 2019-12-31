@@ -3,7 +3,7 @@ import pytest
 import networkx as nx
 
 
-class TestStochasticGraph(object):
+class TestStochasticGraph:
     """Unit tests for the :func:`~networkx.stochastic_graph` function.
 
     """

@@ -106,7 +106,7 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     for i in range(n - 1):
         # Pick an arbitrary node u and create a set A = {u}.
         u = arbitrary_element(G)
-        A = set([u])
+        A = {u}
         # Repeatedly pick the node "most tightly connected" to A and add it to
         # A. The tightness of connectivity of a node not in A is defined by the
         # of edges connecting it to nodes in A.

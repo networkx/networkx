@@ -21,7 +21,7 @@ class NotAPartition(NetworkXError):
     def __init__(self, G, collection):
         msg = '{} is not a valid partition of the graph {}'
         msg = msg.format(G, collection)
-        super(NotAPartition, self).__init__(msg)
+        super().__init__(msg)
 
 
 def require_partition(func):

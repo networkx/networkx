@@ -11,7 +11,7 @@ from networkx.testing.utils import (
 import pytest
 
 
-class BaseGraphTester(object):
+class BaseGraphTester:
     """ Tests for data-structure independent graph class features."""
 
     def test_contains(self):
@@ -666,7 +666,7 @@ class TestGraph(BaseAttrGraphTester):
         # update nodes only
         H = self.Graph()
         H.update(nodes=[3, 4])
-        assert H.nodes ^ {3, 4} == set([])
+        assert H.nodes ^ {3, 4} == set()
         assert H.size() == 0
 
         # update edges only
@@ -680,7 +680,7 @@ class TestGraph(BaseAttrGraphTester):
             nx.Graph().update()
 
 
-class TestEdgeSubgraph(object):
+class TestEdgeSubgraph:
     """Unit tests for the :meth:`Graph.edge_subgraph` method."""
 
     def setup_method(self):
@@ -688,7 +688,7 @@ class TestEdgeSubgraph(object):
         G = nx.path_graph(5)
         # Add some node, edge, and graph attributes.
         for i in range(5):
-            G.nodes[i]['name'] = 'node{}'.format(i)
+            G.nodes[i]['name'] = f'node{i}'
         G.edges[0, 1]['name'] = 'edge01'
         G.edges[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'

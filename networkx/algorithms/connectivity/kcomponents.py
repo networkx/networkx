@@ -191,8 +191,7 @@ def _generate_partition(G, cuts, k):
                     component.add(node)
         if len(component) < G.order():
             components.append(component)
-    for component in _consolidate(components, k + 1):
-        yield component
+    yield from _consolidate(components, k + 1)
 
 
 def _reconstruct_k_components(k_comps):

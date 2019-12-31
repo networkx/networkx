@@ -196,10 +196,10 @@ def test_grid_2d_graph():
     # neighbors of the four corner nodes.
     G = nx.grid_2d_graph(5, 5)
     solution = [
-        set([(0, 1), (1, 0)]),
-        set([(3, 0), (4, 1)]),
-        set([(3, 4), (4, 3)]),
-        set([(0, 3), (1, 4)]),
+        {(0, 1), (1, 0)},
+        {(3, 0), (4, 1)},
+        {(3, 4), (4, 3)},
+        {(0, 3), (1, 4)},
     ]
     for cut in nx.all_node_cuts(G):
         assert cut in solution
@@ -246,8 +246,8 @@ def test_non_repeated_cuts():
     cuts = list(nx.all_node_cuts(G))
     if len(solution) != len(cuts):
         print(nx.info(G))
-        print("Solution: {}".format(solution))
-        print("Result: {}".format(cuts))
+        print(f"Solution: {solution}")
+        print(f"Result: {cuts}")
     assert len(solution) == len(cuts)
     for cut in cuts:
         assert cut in solution

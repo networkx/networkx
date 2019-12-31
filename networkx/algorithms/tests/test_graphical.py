@@ -37,7 +37,7 @@ def test_negative_input():
     assert not nx.is_graphical([-1], 'eg')
 
 
-class TestAtlas(object):
+class TestAtlas:
     @classmethod
     def setup_class(cls):
         global atlas

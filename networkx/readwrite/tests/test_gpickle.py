@@ -9,7 +9,7 @@ from networkx.testing.utils import (
 )
 
 
-class TestGpickle(object):
+class TestGpickle:
     @classmethod
     def setup_class(cls):
         G = nx.Graph(name="test")

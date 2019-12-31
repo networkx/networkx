@@ -212,7 +212,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     # Determine if we include self-loops or not.
     shift = 0 if selfloops else 1
 
-    edges = set([])
+    edges = set()
     for u in G:
         # Label nodes as a sorted tuple of nodes in original graph.
         nodes = [sorted_node(*x) for x in get_edges(u)]
@@ -492,7 +492,7 @@ def _select_starting_cell(G, starting_edge=None):
             # check if odd triangles containing e form complete subgraph
             # there must be exactly s+2 of them
             # and they must all be connected
-            triangle_nodes = set([])
+            triangle_nodes = set()
             for T in odd_triangles:
                 for x in T:
                     triangle_nodes.add(x)

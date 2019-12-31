@@ -5,7 +5,7 @@ from networkx.classes.reportviews import NodeDataView
 
 
 # Nodes
-class TestNodeView(object):
+class TestNodeView:
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9)
@@ -65,7 +65,7 @@ class TestNodeView(object):
         assert nodes is not nodes(data="weight")
 
 
-class TestNodeDataView(object):
+class TestNodeDataView:
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9)
@@ -187,7 +187,7 @@ def test_nodedataview_unhashable():
     Gn | Gn
 
 
-class TestNodeViewSetOps(object):
+class TestNodeViewSetOps:
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9)
@@ -259,7 +259,7 @@ class TestNodeDataViewDefaultSetOps(TestNodeDataViewSetOps):
 
 
 # Edges Data View
-class TestEdgeDataView(object):
+class TestEdgeDataView:
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9)
@@ -472,7 +472,7 @@ class TestInMultiEdgeDataView(TestOutMultiEdgeDataView):
 
 
 # Edge Views
-class TestEdgeView(object):
+class TestEdgeView:
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9)
@@ -833,7 +833,7 @@ class TestInMultiEdgeView(TestMultiEdgeView):
 
 
 # Degrees
-class TestDegreeView(object):
+class TestDegreeView:
     GRAPH = nx.Graph
     dview = nx.reportviews.DegreeView
 

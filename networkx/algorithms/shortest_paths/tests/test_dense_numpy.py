@@ -6,7 +6,7 @@ npt = pytest.importorskip('numpy.testing')
 import networkx as nx
 
 
-class TestFloydNumpy(object):
+class TestFloydNumpy:
 
     def test_cycle_numpy(self):
         dist = nx.floyd_warshall_numpy(nx.cycle_graph(7))

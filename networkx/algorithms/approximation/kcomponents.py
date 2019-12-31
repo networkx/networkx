@@ -158,13 +158,13 @@ def k_components(G, min_density=0.95):
 def _cliques_heuristic(G, H, k, min_density):
     h_cnumber = nx.core_number(H)
     for i, c_value in enumerate(sorted(set(h_cnumber.values()), reverse=True)):
-        cands = set(n for n, c in h_cnumber.items() if c == c_value)
+        cands = {n for n, c in h_cnumber.items() if c == c_value}
         # Skip checking for overlap for the highest core value
         if i == 0:
             overlap = False
         else:
             overlap = set.intersection(*[
-                set(x for x in H[n] if x not in cands)
+                {x for x in H[n] if x not in cands}
                 for n in cands])
         if overlap and len(overlap) < k:
             SH = H.subgraph(cands | overlap)
@@ -229,14 +229,14 @@ class _AntiGraph(nx.Graph):
         """
         all_edge_dict = self.all_edge_dict
         return {node: all_edge_dict for node in
-                set(self._adj) - set(self._adj[n]) - set([n])}
+                set(self._adj) - set(self._adj[n]) - {n}}
 
     def neighbors(self, n):
         """Returns an iterator over all neighbors of node n in the
            dense graph.
         """
         try:
-            return iter(set(self._adj) - set(self._adj[n]) - set([n]))
+            return iter(set(self._adj) - set(self._adj[n]) - {n})
         except KeyError:
             raise NetworkXError(f"The node {n} is not in the graph.")
 
@@ -255,7 +255,7 @@ class _AntiGraph(nx.Graph):
             return (n for n in self._graph if n not in self._atlas and n != self._node)
 
         def __getitem__(self, nbr):
-            nbrs = set(self._graph._adj) - set(self._atlas) - set([self._node])
+            nbrs = set(self._graph._adj) - set(self._atlas) - {self._node}
             if nbr in nbrs:
                 return self._graph.all_edge_dict
             raise KeyError(nbr)
@@ -301,11 +301,11 @@ class _AntiGraph(nx.Graph):
         def __iter__(self):
             all_nodes = set(self._succ)
             for n in self._nodes:
-                nbrs = all_nodes - set(self._succ[n]) - set([n])
+                nbrs = all_nodes - set(self._succ[n]) - {n}
                 yield (n, len(nbrs))
 
         def __getitem__(self, n):
-            nbrs = set(self._succ) - set(self._succ[n]) - set([n])
+            nbrs = set(self._succ) - set(self._succ[n]) - {n}
             # AntiGraph is a ThinGraph so all edges have weight 1
             return len(nbrs) + (n in nbrs)
 
@@ -363,4 +363,4 @@ class _AntiGraph(nx.Graph):
 
         """
         for n in self._adj:
-            yield (n, set(self._adj) - set(self._adj[n]) - set([n]))
+            yield (n, set(self._adj) - set(self._adj[n]) - {n})

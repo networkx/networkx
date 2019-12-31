@@ -6,7 +6,7 @@ from networkx.testing.utils import assert_edges_equal, assert_nodes_equal
 from networkx.utils import arbitrary_element
 
 
-class TestQuotient(object):
+class TestQuotient:
     """Unit tests for computing quotient graphs."""
 
     def test_quotient_graph_complete_multipartite(self):
@@ -216,7 +216,7 @@ class TestQuotient(object):
         assert_edges_equal(H.edges(), [(0, 1)])
 
 
-class TestContraction(object):
+class TestContraction:
     """Unit tests for node and edge contraction functions."""
 
     def test_undirected_node_contraction(self):

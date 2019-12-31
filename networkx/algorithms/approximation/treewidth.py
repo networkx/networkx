@@ -189,7 +189,7 @@ def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
     """
 
     # make dict-of-sets structure
-    graph = {n: set(G[n]) - set([n]) for n in G}
+    graph = {n: set(G[n]) - {n} for n in G}
 
     # stack containing nodes and neighbors in the order from the heuristic
     node_stack = []

@@ -50,7 +50,7 @@ def single_source_shortest_path_length(G, source, cutoff=None):
     shortest_path_length
     """
     if source not in G:
-        raise nx.NodeNotFound('Source {} is not in G'.format(source))
+        raise nx.NodeNotFound(f'Source {source} is not in G')
     if cutoff is None:
         cutoff = float('inf')
     nextlevel = {source: 1}
@@ -76,7 +76,7 @@ def _single_shortest_path_length(adj, firstlevel, cutoff):
     n = len(adj)
     while nextlevel and cutoff >= level:
         thislevel = nextlevel  # advance to next level
-        nextlevel = set([])  # and start a new set (fringe)
+        nextlevel = set()  # and start a new set (fringe)
         found = []
         for v in thislevel:
             if v not in seen:
@@ -128,7 +128,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     single_source_shortest_path_length, shortest_path_length
     """
     if target not in G:
-        raise nx.NodeNotFound('Target {} is not in G'.format(target))
+        raise nx.NodeNotFound(f'Target {target} is not in G')
 
     if cutoff is None:
         cutoff = float('inf')
@@ -328,7 +328,7 @@ def single_source_shortest_path(G, source, cutoff=None):
     shortest_path
     """
     if source not in G:
-        raise nx.NodeNotFound("Source {} not in G".format(source))
+        raise nx.NodeNotFound(f"Source {source} not in G")
 
     def join(p1, p2):
         return p1 + p2
@@ -409,7 +409,7 @@ def single_target_shortest_path(G, target, cutoff=None):
     shortest_path, single_source_shortest_path
     """
     if target not in G:
-        raise nx.NodeNotFound("Target {} not in G".format(target))
+        raise nx.NodeNotFound(f"Target {target} not in G")
 
     def join(p1, p2):
         return p2 + p1
@@ -489,7 +489,7 @@ def predecessor(G, source, target=None, cutoff=None, return_seen=None):
 
     """
     if source not in G:
-        raise nx.NodeNotFound("Source {} not in G".format(source))
+        raise nx.NodeNotFound(f"Source {source} not in G")
 
     level = 0                  # the current level
     nextlevel = [source]       # list of nodes to check at next level

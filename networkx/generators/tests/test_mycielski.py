@@ -3,7 +3,7 @@
 import networkx as nx
 
 
-class TestMycielski(object):
+class TestMycielski:
 
     def test_construction(self):
         G = nx.path_graph(2)

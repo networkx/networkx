@@ -7,7 +7,7 @@ import networkx as nx
 from networkx.generators.degree_seq import havel_hakimi_graph
 
 
-class TestModularity(object):
+class TestModularity:
 
     @classmethod
     def setup_class(cls):

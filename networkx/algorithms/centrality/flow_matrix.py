@@ -31,7 +31,7 @@ def flow_matrix_row(G, weight=None, dtype=float, solver='lu'):
 # Class to compute the inverse laplacian only for specified rows
 # Allows computation of the current-flow matrix without storing entire
 # inverse laplacian matrix
-class InverseLaplacian(object):
+class InverseLaplacian:
     def __init__(self, L, width=None, dtype=None):
         global np
         import numpy as np
