@@ -185,8 +185,8 @@ def open_file(path_arg, mode='r'):
             except KeyError:
                 # Could not find the keyword. Thus, no default was specified
                 # in the function signature and the user did not provide it.
-                msg = 'Missing required keyword argument: {0}'
-                raise nx.NetworkXError(msg.format(path_arg))
+                msg = f"Missing required keyword argument: {path_arg}"
+                raise nx.NetworkXError(msg)
             else:
                 is_kwarg = True
         except IndexError:

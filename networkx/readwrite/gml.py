@@ -302,8 +302,8 @@ def parse_gml_lines(lines, label, destringizer):
             while pos < length:
                 match = tokens.match(line, pos)
                 if match is None:
-                    m = "cannot tokenize %r at (%d, %d)"
-                    raise NetworkXError(m % (line[pos:], lineno + 1, pos + 1))
+                    m = f"cannot tokenize {line[pos:]} at ({lineno + 1}, {pos + 1})"
+                    raise NetworkXError(m)
                 for i in range(len(patterns)):
                     group = match.group(i + 1)
                     if group is not None:

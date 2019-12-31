@@ -160,8 +160,7 @@ def check_edge_intersections(G, pos):
                     # Check if intersection lies between the points
                     if (point_in_between(pos[a], pos[b], (px, py)) and
                             point_in_between(pos[c], pos[d], (px, py))):
-                        msg = "There is an intersection at {},{}".format(px,
-                                                                         py)
+                        msg = f"There is an intersection at {px},{py}"
                         raise nx.NetworkXException(msg)
 
                 #  Check overlap

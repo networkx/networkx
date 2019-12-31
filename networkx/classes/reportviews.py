@@ -189,7 +189,7 @@ class NodeView(Mapping, Set):
         return str(list(self))
 
     def __repr__(self):
-        return '{}({!r})'.format(self.__class__.__name__, tuple(self))
+        return f"{self.__class__.__name__}({tuple(self)})"
 
 
 class NodeDataView(Set):
@@ -273,12 +273,12 @@ class NodeDataView(Set):
         return str(list(self))
 
     def __repr__(self):
+        name = self.__class__.__name__
         if self._data is False:
-            return '{}({!r})'.format(self.__class__.__name__, tuple(self))
+            return f"{name}({tuple(self)})"
         if self._data is True:
-            return '{}({!r})'.format(self.__class__.__name__, dict(self))
-        return '%s(%r, data=%r)' % \
-               (self.__class__.__name__, dict(self), self._data)
+            return f"{name}({dict(self)})"
+        return f"{name}({dict(self)}, data={self._data!r})"
 
 
 # DegreeViews
@@ -373,7 +373,7 @@ class DiDegreeView:
         return str(list(self))
 
     def __repr__(self):
-        return '{}({!r})'.format(self.__class__.__name__, dict(self))
+        return f"{self.__class__.__name__}({dict(self)})"
 
 
 class DegreeView(DiDegreeView):
@@ -667,7 +667,7 @@ class OutEdgeDataView:
         return str(list(self))
 
     def __repr__(self):
-        return '{}({!r})'.format(self.__class__.__name__, list(self))
+        return f"{self.__class__.__name__}({list(self)})"
 
 
 class EdgeDataView(OutEdgeDataView):
@@ -934,7 +934,7 @@ class OutEdgeView(Set, Mapping):
         return str(list(self))
 
     def __repr__(self):
-        return "{0.__class__.__name__}({1!r})".format(self, list(self))
+        return f"{self.__class__.__name__}({list(self)})"
 
 
 class EdgeView(OutEdgeView):
@@ -980,7 +980,7 @@ class EdgeView(OutEdgeView):
     >>> EVdata = G.edges(data='color', default='aqua')
     >>> G.add_edge(2, 3, color='blue')
     >>> assert((2, 3, 'blue') in EVdata)
-    >>> for u, v, c in EVdata: print("({}, {}) has color: {}".format(u, v, c))
+    >>> for u, v, c in EVdata: print(f"({u}, {v}) has color: {c}")
     (0, 1) has color: aqua
     (1, 2) has color: aqua
     (2, 3) has color: blue

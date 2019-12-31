@@ -278,7 +278,7 @@ class TestClosenessCentrality:
             test_cc = nx.incremental_closeness_centrality(
                 G, edge, prev_cc, insert)
             # inc_elapsed = (timeit.default_timer() - start)
-            # print("incremental time: {}".format(inc_elapsed))
+            # print(f"incremental time: {inc_elapsed}")
 
             if insert:
                 G.add_edges_from([edge])
@@ -288,7 +288,7 @@ class TestClosenessCentrality:
             # start = timeit.default_timer()
             real_cc = nx.closeness_centrality(G)
             # reg_elapsed = (timeit.default_timer() - start)
-            # print("regular time: {}".format(reg_elapsed))
+            # print(f"regular time: {reg_elapsed}")
             # Example output:
             # incremental time: 0.208
             # regular time: 0.276

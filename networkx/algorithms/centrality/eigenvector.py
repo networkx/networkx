@@ -53,7 +53,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     --------
     >>> G = nx.path_graph(4)
     >>> centrality = nx.eigenvector_centrality(G)
-    >>> sorted((v, '{:0.2f}'.format(c)) for v, c in centrality.items())
+    >>> sorted((v, f"{c:0.2f}") for v, c in centrality.items())
     [(0, '0.37'), (1, '0.60'), (2, '0.60'), (3, '0.37')]
 
     Raises
@@ -177,7 +177,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     --------
     >>> G = nx.path_graph(4)
     >>> centrality = nx.eigenvector_centrality_numpy(G)
-    >>> print(['{} {:0.2f}'.format(node, centrality[node]) for node in centrality])
+    >>> print([f"{node} {centrality[node]:0.2f}" for node in centrality]) 
     ['0 0.37', '1 0.60', '2 0.60', '3 0.37']
 
     See Also

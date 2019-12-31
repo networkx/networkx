@@ -3,8 +3,7 @@ Utilities for connectivity package
 """
 import networkx as nx
 
-__all__ = ['build_auxiliary_node_connectivity',
-           'build_auxiliary_edge_connectivity']
+__all__ = ["build_auxiliary_node_connectivity", "build_auxiliary_edge_connectivity"]
 
 
 def build_auxiliary_node_connectivity(G):
@@ -45,17 +44,17 @@ def build_auxiliary_node_connectivity(G):
         mapping[node] = i
         H.add_node(f"{i}A", id=node)
         H.add_node(f"{i}B", id=node)
-        H.add_edge(f"{i}A", f'{i}B', capacity=1)
+        H.add_edge(f"{i}A", f"{i}B", capacity=1)
 
     edges = []
     for (source, target) in G.edges():
-        edges.append(('%sB' % mapping[source], '%sA' % mapping[target]))
+        edges.append((f"{mapping[source]}B", f"{mapping[target]}A"))
         if not directed:
-            edges.append(('%sB' % mapping[target], '%sA' % mapping[source]))
+            edges.append((f"{mapping[target]}B", f"{mapping[source]}A"))
     H.add_edges_from(edges, capacity=1)
 
     # Store mapping as graph attribute
-    H.graph['mapping'] = mapping
+    H.graph["mapping"] = mapping
     return H
 
 

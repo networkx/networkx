@@ -47,8 +47,8 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 #:
 #:     with gzip.open('atlas.dat.gz', 'wb') as f:
 #:         for i, G in enumerate(graph_atlas_g()):
-#:             f.write(bytes('GRAPH {}\n'.format(i), encoding='utf-8'))
-#:             f.write(bytes('NODES {}\n'.format(len(G)), encoding='utf-8'))
+#:             f.write(bytes(f'GRAPH {i}\n', encoding='utf-8'))
+#:             f.write(bytes(f'NODES {len(G)}\n', encoding='utf-8'))
 #:             write_edgelist(G, f, data=False)
 #:
 ATLAS_FILE = os.path.join(THIS_DIR, 'atlas.dat.gz')
