@@ -65,8 +65,7 @@ def cuthill_mckee_ordering(G, heuristic=None):
        Springer-Verlag New York, Inc., New York, NY, USA.
     """
     for c in nx.connected_components(G):
-        for n in connected_cuthill_mckee_ordering(G.subgraph(c), heuristic):
-            yield n
+        yield from connected_cuthill_mckee_ordering(G.subgraph(c), heuristic)
 
 
 def reverse_cuthill_mckee_ordering(G, heuristic=None):

@@ -333,7 +333,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     # Node connectivity is bounded by degree.
     v, K = min(G.degree(), key=itemgetter(1))
     # compute local node connectivity with all its non-neighbors nodes
-    for w in set(G) - set(neighbors(v)) - set([v]):
+    for w in set(G) - set(neighbors(v)) - {v}:
         kwargs['cutoff'] = K
         K = min(K, local_node_connectivity(G, v, w, **kwargs))
     # Also for non adjacent pairs of neighbors of v

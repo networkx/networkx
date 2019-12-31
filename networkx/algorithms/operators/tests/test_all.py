@@ -21,7 +21,7 @@ def test_union_all_attributes():
     j.nodes[0]['x'] = 7
 
     ghj = nx.union_all([g, h, j], rename=('g', 'h', 'j'))
-    assert set(ghj.nodes()) == set(['h0', 'h1', 'g0', 'g1', 'j0', 'j1'])
+    assert set(ghj.nodes()) == {'h0', 'h1', 'g0', 'g1', 'j0', 'j1'}
     for n in ghj:
         graph, node = n
         assert ghj.nodes[n] == eval(graph).nodes[int(node)]
@@ -44,7 +44,7 @@ def test_intersection_all():
     R.add_edge(2, 3)
     R.add_edge(4, 1)
     I = nx.intersection_all([G, H, R])
-    assert set(I.nodes()) == set([1, 2, 3, 4])
+    assert set(I.nodes()) == {1, 2, 3, 4}
     assert sorted(I.edges()) == [(2, 3)]
 
 

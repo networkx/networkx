@@ -12,7 +12,7 @@ from networkx.algorithms.community.quality import inter_community_edges
 from networkx.testing import almost_equal
 
 
-class TestPerformance(object):
+class TestPerformance:
     """Unit tests for the :func:`performance` function."""
 
     def test_bad_partition(self):
@@ -30,7 +30,7 @@ class TestPerformance(object):
         assert almost_equal(14 / 15, performance(G, partition))
 
 
-class TestCoverage(object):
+class TestCoverage:
     """Unit tests for the :func:`coverage` function."""
 
     def test_bad_partition(self):

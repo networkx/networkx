@@ -233,11 +233,10 @@ def bridge_components(G):
     """
     H = G.copy()
     H.remove_edges_from(bridges(G))
-    for cc in nx.connected_components(H):
-        yield cc
+    yield from nx.connected_components(H)
 
 
-class EdgeComponentAuxGraph(object):
+class EdgeComponentAuxGraph:
     r"""A simple algorithm to find all k-edge-connected components in a graph.
 
     Constructing the AuxillaryGraph (which may take some time) allows for the
@@ -410,8 +409,7 @@ class EdgeComponentAuxGraph(object):
         R.add_edges_from(e for e, w in aux_weights.items() if w >= k)
 
         # Return the nodes that are k-edge-connected in the original graph
-        for cc in nx.connected_components(R):
-            yield cc
+        yield from nx.connected_components(R)
 
     def k_edge_subgraphs(self, k):
         """Queries the auxiliary graph for k-edge-connected subgraphs.
@@ -455,8 +453,7 @@ class EdgeComponentAuxGraph(object):
             else:
                 # Call subgraph solution to refine the results
                 C = H.subgraph(cc)
-                for sub_cc in k_edge_subgraphs(C, k):
-                    yield sub_cc
+                yield from k_edge_subgraphs(C, k)
 
 
 def _low_degree_nodes(G, k, nbunch=None):
@@ -500,11 +497,9 @@ def _high_degree_components(G, k):
 
     # Note: remaining connected components may not be k-edge-connected
     if G.is_directed():
-        for cc in nx.strongly_connected_components(H):
-            yield cc
+        yield from nx.strongly_connected_components(H)
     else:
-        for cc in nx.connected_components(H):
-            yield cc
+        yield from nx.connected_components(H)
 
 
 def general_k_edge_subgraphs(G, k):

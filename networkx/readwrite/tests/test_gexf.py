@@ -6,7 +6,7 @@ import pytest
 import networkx as nx
 
 
-class TestGEXF(object):
+class TestGEXF:
     @classmethod
     def setup_class(cls):
         _ = pytest.importorskip("xml.etree.ElementTree")

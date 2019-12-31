@@ -958,7 +958,7 @@ def is_weighted(G, edge=None, weight='weight'):
     if edge is not None:
         data = G.get_edge_data(*edge)
         if data is None:
-            msg = 'Edge {!r} does not exist.'.format(edge)
+            msg = f'Edge {edge!r} does not exist.'
             raise nx.NetworkXError(msg)
         return weight in data
 
@@ -1015,7 +1015,7 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
     if edge is not None:
         data = G.get_edge_data(*edge)
         if data is None:
-            msg = 'Edge {!r} does not exist.'.format(edge)
+            msg = f'Edge {edge!r} does not exist.'
             raise nx.NetworkXError(msg)
         return weight in data and data[weight] < 0
 

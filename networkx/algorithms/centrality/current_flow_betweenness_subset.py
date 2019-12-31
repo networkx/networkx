@@ -120,7 +120,7 @@ def current_flow_betweenness_centrality_subset(G, sources, targets,
         nb = 2.0
     for v in H:
         betweenness[v] = betweenness[v] / nb + 1.0 / (2 - n)
-    return dict((ordering[k], v) for k, v in betweenness.items())
+    return {ordering[k]: v for k, v in betweenness.items()}
 
 
 @not_implemented_for('directed')
@@ -234,5 +234,5 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
                 j = mapping[tt]
                 betweenness[e] += 0.5 * np.abs(row[i] - row[j])
         betweenness[e] /= nb
-    return dict(((ordering[s], ordering[t]), v)
-                for (s, t), v in betweenness.items())
+    return {(ordering[s], ordering[t]): v
+                for (s, t), v in betweenness.items()}

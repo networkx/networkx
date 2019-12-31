@@ -5,7 +5,7 @@ from networkx.testing import almost_equal
 import pytest
 
 
-class TestKatzCentrality(object):
+class TestKatzCentrality:
 
     def test_K5(self):
         """Katz centrality: K5"""
@@ -16,7 +16,7 @@ class TestKatzCentrality(object):
         b_answer = dict.fromkeys(G, v)
         for n in sorted(G):
             assert almost_equal(b[n], b_answer[n])
-        nstart = dict([(n, 1) for n in G])
+        nstart = {n: 1 for n in G}
         b = nx.katz_centrality(G, alpha, nstart=nstart)
         for n in sorted(G):
             assert almost_equal(b[n], b_answer[n])
@@ -102,7 +102,7 @@ class TestKatzCentrality(object):
             e = nx.katz_centrality(G, 0.1, beta='foo')
 
 
-class TestKatzCentralityNumpy(object):
+class TestKatzCentralityNumpy:
 
     @classmethod
     def setup_class(cls):
@@ -119,7 +119,7 @@ class TestKatzCentralityNumpy(object):
         b_answer = dict.fromkeys(G, v)
         for n in sorted(G):
             assert almost_equal(b[n], b_answer[n])
-        nstart = dict([(n, 1) for n in G])
+        nstart = {n: 1 for n in G}
         b = nx.eigenvector_centrality_numpy(G)
         for n in sorted(G):
             assert almost_equal(b[n], b_answer[n], places=3)
@@ -202,7 +202,7 @@ class TestKatzCentralityNumpy(object):
         b_answer = dict.fromkeys(G, v)
         for n in sorted(G):
             assert almost_equal(b[n], b_answer[n])
-        nstart = dict([(n, 1) for n in G])
+        nstart = {n: 1 for n in G}
         b = nx.eigenvector_centrality_numpy(G, weight=None)
         for n in sorted(G):
             assert almost_equal(b[n], b_answer[n], places=3)
@@ -218,7 +218,7 @@ class TestKatzCentralityNumpy(object):
             assert almost_equal(b[n], b_answer[n], places=4)
 
 
-class TestKatzCentralityDirected(object):
+class TestKatzCentralityDirected:
     @classmethod
     def setup_class(cls):
         G = nx.DiGraph()
@@ -291,7 +291,7 @@ class TestKatzCentralityDirectedNumpy(TestKatzCentralityDirected):
             assert almost_equal(a, b)
 
 
-class TestKatzEigenvectorVKatz(object):
+class TestKatzEigenvectorVKatz:
 
     @classmethod
     def setup_class(cls):

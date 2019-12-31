@@ -10,7 +10,7 @@ class TestCliques:
         self.G = cnlti(nx.generators.havel_hakimi_graph(z), first_label=1)
         self.cl = list(nx.find_cliques(self.G))
         H = nx.complete_graph(6)
-        H = nx.relabel_nodes(H, dict([(i, i + 1) for i in range(6)]))
+        H = nx.relabel_nodes(H, {i: i + 1 for i in range(6)})
         H.remove_edges_from([(2, 6), (2, 5), (2, 4), (1, 3), (5, 3)])
         self.H = H
 

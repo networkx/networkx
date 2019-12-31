@@ -25,7 +25,7 @@ from networkx.generators.random_graphs import random_shell_graph
 from networkx.generators.random_graphs import watts_strogatz_graph
 
 
-class TestGeneratorsRandom(object):
+class TestGeneratorsRandom:
 
     def test_random_graph(self):
         seed = 42

@@ -4,7 +4,7 @@ import networkx as nx
 from networkx.testing.utils import assert_edges_equal, assert_nodes_equal
 
 
-class TestFunction(object):
+class TestFunction:
     def setup_method(self):
         self.G = nx.Graph({0: [1, 2, 3], 1: [1, 2, 0], 4: []}, name='Test')
         self.Gdegree = {0: 3, 1: 2, 2: 2, 3: 1, 4: 0}

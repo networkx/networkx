@@ -1,5 +1,3 @@
-
-
 def _propagate(P, F, B):
     """Propagate labels by one step
 

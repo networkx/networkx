@@ -1,4 +1,3 @@
-
 from io import BytesIO
 import tempfile
 import pytest
@@ -9,7 +8,7 @@ from networkx.testing.utils import assert_edges_equal
 from networkx.testing.utils import assert_nodes_equal
 
 
-class TestGraph6Utils(object):
+class TestGraph6Utils:
 
     def test_n_data_n_conversion(self):
         for i in [0, 1, 42, 62, 63, 64, 258047, 258048, 7744773, 68719476735]:

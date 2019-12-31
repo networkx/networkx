@@ -49,7 +49,7 @@ class AtlasView(Mapping):
         return str(self._atlas)  # {nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self._atlas)
+        return f'{self.__class__.__name__}({self._atlas!r})'
 
 
 class AdjacencyView(AtlasView):
@@ -145,7 +145,7 @@ class UnionAtlas(Mapping):
         return str({nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
-        return '%s(%r, %r)' % (self.__class__.__name__, self._succ, self._pred)
+        return f'{self.__class__.__name__}({self._succ!r}, {self._pred!r})'
 
 
 class UnionAdjacency(Mapping):
@@ -196,7 +196,7 @@ class UnionAdjacency(Mapping):
         return str({nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
-        return '%s(%r, %r)' % (self.__class__.__name__, self._succ, self._pred)
+        return f'{self.__class__.__name__}({self._succ!r}, {self._pred!r})'
 
 
 class UnionMultiInner(UnionAtlas):
@@ -267,7 +267,7 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
     def __getitem__(self, key):
         if key in self._atlas and self.NODE_OK(key):
             return self._atlas[key]
-        raise KeyError("Key {} not found".format(key))
+        raise KeyError(f"Key {key} not found")
 
     def copy(self):
         try:  # check that NODE_OK has attr 'nodes'
@@ -284,7 +284,7 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
         return str({nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
-        return '%s(%r, %r)' % (self.__class__.__name__, self._atlas,
+        return '{}({!r}, {!r})'.format(self.__class__.__name__, self._atlas,
                                self.NODE_OK)
 
 
@@ -311,7 +311,7 @@ class FilterAdjacency(Mapping):   # edgedict
             def new_node_ok(nbr):
                 return self.NODE_OK(nbr) and self.EDGE_OK(node, nbr)
             return FilterAtlas(self._atlas[node], new_node_ok)
-        raise KeyError("Key {} not found".format(node))
+        raise KeyError(f"Key {node} not found")
 
     def copy(self):
         try:  # check that NODE_OK has attr 'nodes'
@@ -331,7 +331,7 @@ class FilterAdjacency(Mapping):   # edgedict
         return str({nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
-        return '%s(%r, %r, %r)' % (self.__class__.__name__, self._atlas,
+        return '{}({!r}, {!r}, {!r})'.format(self.__class__.__name__, self._atlas,
                                    self.NODE_OK, self.EDGE_OK)
 
 
@@ -359,7 +359,7 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
             def new_node_ok(key):
                 return self.EDGE_OK(nbr, key)
             return FilterAtlas(self._atlas[nbr], new_node_ok)
-        raise KeyError("Key {} not found".format(nbr))
+        raise KeyError(f"Key {nbr} not found")
 
     def copy(self):
         try:  # check that NODE_OK has attr 'nodes'
@@ -380,7 +380,7 @@ class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
             def edge_ok(nbr, key):
                 return self.NODE_OK(nbr) and self.EDGE_OK(node, nbr, key)
             return FilterMultiInner(self._atlas[node], self.NODE_OK, edge_ok)
-        raise KeyError("Key {} not found".format(node))
+        raise KeyError(f"Key {node} not found")
 
     def copy(self):
         try:  # check that NODE_OK has attr 'nodes'

@@ -63,7 +63,7 @@ def put_time_config_2(G, att_name):
     return G
 
 
-class TestTimeRespectingGraphMatcher(object):
+class TestTimeRespectingGraphMatcher:
     """
         A test class for the undirected temporal graph matcher.
     """
@@ -146,7 +146,7 @@ class TestTimeRespectingGraphMatcher(object):
         assert count_match == 10
 
 
-class TestDiTimeRespectingGraphMatcher(object):
+class TestDiTimeRespectingGraphMatcher:
     """
         A test class for the directed time-respecting graph matcher.
     """

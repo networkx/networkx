@@ -1,20 +1,19 @@
-
 from networkx.utils.mapped_queue import MappedQueue
 
 
-class TestMappedQueue(object):
+class TestMappedQueue:
 
     def setup(self):
         pass
 
     def _check_map(self, q):
-        d = dict((elt, pos) for pos, elt in enumerate(q.h))
+        d = {elt: pos for pos, elt in enumerate(q.h)}
         assert d == q.d
 
     def _make_mapped_queue(self, h):
         q = MappedQueue()
         q.h = h
-        q.d = dict((elt, pos) for pos, elt in enumerate(h))
+        q.d = {elt: pos for pos, elt in enumerate(h)}
         return q
 
     def test_heapify(self):

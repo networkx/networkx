@@ -41,7 +41,7 @@ def hide_multiedges(edges):
 
 
 # write show_nodes as a class to make SubGraph pickleable
-class show_nodes(object):
+class show_nodes:
     def __init__(self, nodes):
         self.nodes = set(nodes)
 

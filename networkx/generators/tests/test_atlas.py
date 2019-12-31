@@ -10,7 +10,7 @@ from networkx.generators.atlas import NUM_GRAPHS
 from networkx.utils import pairwise
 
 
-class TestAtlasGraph(object):
+class TestAtlasGraph:
     """Unit tests for the :func:`~networkx.graph_atlas` function."""
 
     def test_index_too_small(self):
@@ -27,7 +27,7 @@ class TestAtlasGraph(object):
         assert_edges_equal(G.edges(), [(0, 1), (0, 2)])
 
 
-class TestAtlasGraphG(object):
+class TestAtlasGraphG:
     """Unit tests for the :func:`~networkx.graph_atlas_g` function."""
 
     @classmethod

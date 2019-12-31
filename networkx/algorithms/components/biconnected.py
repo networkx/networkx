@@ -152,8 +152,7 @@ def biconnected_component_edges(G):
            Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
 
     """
-    for comp in _biconnected_dfs(G, components=True):
-        yield comp
+    yield from _biconnected_dfs(G, components=True)
 
 
 @not_implemented_for('directed')

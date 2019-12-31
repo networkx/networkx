@@ -784,7 +784,7 @@ def draw_networkx_labels(G, pos,
         ax = plt.gca()
 
     if labels is None:
-        labels = dict((n, n) for n in G.nodes())
+        labels = {n: n for n in G.nodes()}
 
     # set optional alignment
     horizontalalignment = kwds.get('horizontalalignment', 'center')

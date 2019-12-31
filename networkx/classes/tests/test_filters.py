@@ -2,7 +2,7 @@ import pytest
 import networkx as nx
 
 
-class TestFilterFactory(object):
+class TestFilterFactory:
     def test_no_filter(self):
         nf = nx.filters.no_filter
         assert nf()

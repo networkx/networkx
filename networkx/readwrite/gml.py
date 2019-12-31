@@ -108,9 +108,9 @@ def literal_destringizer(rep):
         try:
             return literal_eval(rep)
         except SyntaxError:
-            raise ValueError("%r is not a valid Python literal" % (orig_rep,))
+            raise ValueError(f"{orig_rep!r} is not a valid Python literal")
     else:
-        raise ValueError("%r is not a string" % (rep,))
+        raise ValueError(f"{rep!r} is not a string")
 
 
 @open_file(0, mode="rb")
@@ -245,8 +245,7 @@ def parse_gml(lines, label="label", destringizer=None):
         if isinstance(lines, str):
             lines = decode_line(lines)
             lines = lines.splitlines()
-            for line in lines:
-                yield line
+            yield from lines
         else:
             for line in lines:
                 line = decode_line(line)
@@ -430,7 +429,7 @@ def parse_gml_lines(lines, label, destringizer):
     for i, node in enumerate(nodes if isinstance(nodes, list) else [nodes]):
         id = pop_attr(node, "node", "id", i)
         if id in G:
-            raise NetworkXError("node id %r is duplicated" % (id,))
+            raise NetworkXError(f"node id {id!r} is duplicated")
         if label is not None and label != "id":
             node_label = pop_attr(node, "node", label, i)
             if node_label in node_labels:
@@ -659,9 +658,9 @@ def generate_gml(G, stringizer=None):
 
     def stringize(key, value, ignored_keys, indent, in_list=False):
         if not isinstance(key, str):
-            raise NetworkXError("%r is not a string" % (key,))
+            raise NetworkXError(f"{key!r} is not a string")
         if not valid_keys.match(key):
-            raise NetworkXError("%r is not a valid key" % (key,))
+            raise NetworkXError(f"{key!r} is not a valid key")
         if not isinstance(key, str):
             key = str(key)
         if key not in ignored_keys:
@@ -694,26 +693,24 @@ def generate_gml(G, stringizer=None):
                 yield indent + key + " ["
                 next_indent = indent + "  "
                 for key, value in value.items():
-                    for line in stringize(key, value, (), next_indent):
-                        yield line
+                    yield from stringize(key, value, (), next_indent)
                 yield indent + ']'
             elif isinstance(value, (list, tuple)) and key != 'label' \
                     and value and not in_list:
                 if len(value) == 1:
-                    yield indent + key + ' ' + '"{}"'.format(LIST_START_VALUE)
+                    yield indent + key + ' ' + f'"{LIST_START_VALUE}"'
                 for val in value:
-                    for line in stringize(key, val, (), indent, True):
-                        yield line
+                    yield from stringize(key, val, (), indent, True)
             else:
                 if stringizer:
                     try:
                         value = stringizer(value)
                     except ValueError:
                         raise NetworkXError(
-                            "%r cannot be converted into a string" % (value,)
+                            f"{value!r} cannot be converted into a string"
                         )
                 if not isinstance(value, str):
-                    raise NetworkXError("%r is not a string" % (value,))
+                    raise NetworkXError(f"{value!r} is not a string")
                 yield indent + key + ' "' + escape(value) + '"'
 
     multigraph = G.is_multigraph()
@@ -726,8 +723,7 @@ def generate_gml(G, stringizer=None):
         yield "  multigraph 1"
     ignored_keys = {"directed", "multigraph", "node", "edge"}
     for attr, value in G.graph.items():
-        for line in stringize(attr, value, ignored_keys, "  "):
-            yield line
+        yield from stringize(attr, value, ignored_keys, "  ")
 
     # Output node data
     node_id = dict(zip(G, range(len(G))))
@@ -735,11 +731,9 @@ def generate_gml(G, stringizer=None):
     for node, attrs in G.nodes.items():
         yield "  node ["
         yield "    id " + str(node_id[node])
-        for line in stringize("label", node, (), "    "):
-            yield line
+        yield from stringize("label", node, (), "    ")
         for attr, value in attrs.items():
-            for line in stringize(attr, value, ignored_keys, "    "):
-                yield line
+            yield from stringize(attr, value, ignored_keys, "    ")
         yield "  ]"
 
     # Output edge data
@@ -753,11 +747,9 @@ def generate_gml(G, stringizer=None):
         yield "    source " + str(node_id[e[0]])
         yield "    target " + str(node_id[e[1]])
         if multigraph:
-            for line in stringize("key", e[2], (), "    "):
-                yield line
+            yield from stringize("key", e[2], (), "    ")
         for attr, value in e[-1].items():
-            for line in stringize(attr, value, ignored_keys, "    "):
-                yield line
+            yield from stringize(attr, value, ignored_keys, "    ")
         yield "  ]"
     yield "]"
 

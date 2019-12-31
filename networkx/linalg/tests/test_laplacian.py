@@ -9,7 +9,7 @@ from networkx.generators.degree_seq import havel_hakimi_graph
 from networkx.generators.expanders import margulis_gabber_galil_graph
 
 
-class TestLaplacian(object):
+class TestLaplacian:
 
     @classmethod
     def setup_class(cls):
@@ -94,7 +94,7 @@ class TestLaplacian(object):
         npt.assert_almost_equal(L, GL, decimal=3)
 
         # Make the graph strongly connected, so we can use a random and lazy walk
-        G.add_edges_from((((2, 5), (6, 1))))
+        G.add_edges_from(((2, 5), (6, 1)))
         GL = np.array([[1., -0.3062, -0.4714,  0.,  0., -0.3227],
                        [-0.3062,  1., -0.1443,  0., -0.3162,  0.],
                        [-0.4714, -0.1443,  1.,  0., -0.0913,  0.],
@@ -145,7 +145,7 @@ class TestLaplacian(object):
         npt.assert_almost_equal(L, GL, decimal=3)
 
         # Make the graph strongly connected, so we can use a random and lazy walk
-        G.add_edges_from((((2, 5), (6, 1))))
+        G.add_edges_from(((2, 5), (6, 1)))
 
         GL = np.array([[0.1395, -0.0349, -0.0465, 0, 0, -0.0581],
                        [-0.0349, 0.0930, -0.0116, 0, -0.0465, 0],

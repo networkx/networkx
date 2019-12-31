@@ -62,8 +62,8 @@ def test_brandes_erlebach_book():
         H.remove_edges_from(edge_cut)
         assert not nx.is_connected(H), msg.format(flow_func.__name__)
         # node cuts
-        assert set([6, 7]) == minimum_st_node_cut(G, 1, 11, **kwargs), msg.format(flow_func.__name__)
-        assert set([6, 7]) == nx.minimum_node_cut(G, 1, 11, **kwargs), msg.format(flow_func.__name__)
+        assert {6, 7} == minimum_st_node_cut(G, 1, 11, **kwargs), msg.format(flow_func.__name__)
+        assert {6, 7} == nx.minimum_node_cut(G, 1, 11, **kwargs), msg.format(flow_func.__name__)
         node_cut = nx.minimum_node_cut(G, **kwargs)
         assert 2 == len(node_cut), msg.format(flow_func.__name__)
         H = G.copy()
@@ -94,7 +94,7 @@ def test_white_harary_paper():
         assert not nx.is_connected(H), msg.format(flow_func.__name__)
         # node cuts
         node_cut = nx.minimum_node_cut(G, **kwargs)
-        assert set([0]) == node_cut, msg.format(flow_func.__name__)
+        assert {0} == node_cut, msg.format(flow_func.__name__)
         H = G.copy()
         H.remove_nodes_from(node_cut)
         assert not nx.is_connected(H), msg.format(flow_func.__name__)

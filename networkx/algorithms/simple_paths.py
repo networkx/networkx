@@ -420,7 +420,7 @@ def shortest_simple_paths(G, source, target, weight=None):
             break
 
 
-class PathBuffer(object):
+class PathBuffer:
 
     def __init__(self):
         self.paths = set()

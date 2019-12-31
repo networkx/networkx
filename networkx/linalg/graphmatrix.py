@@ -68,7 +68,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
         else:
             edgelist = list(G.edges())
     A = scipy.sparse.lil_matrix((len(nodelist), len(edgelist)))
-    node_index = dict((node, i) for i, node in enumerate(nodelist))
+    node_index = {node: i for i, node in enumerate(nodelist)}
     for ei, e in enumerate(edgelist):
         (u, v) = e[:2]
         if u == v:

@@ -475,8 +475,8 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
         if Cu != Cv:
             return 0
         cnbors = set(nx.common_neighbors(G, u, v))
-        within = set(w for w in cnbors
-                     if _community(G, w, community) == Cu)
+        within = {w for w in cnbors
+                     if _community(G, w, community) == Cu}
         inter = cnbors - within
         return len(within) / (len(inter) + delta)
 

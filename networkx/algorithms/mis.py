@@ -60,7 +60,7 @@ def maximal_independent_set(G, nodes=None, seed=None):
 
     """
     if not nodes:
-        nodes = set([seed.choice(list(G))])
+        nodes = {seed.choice(list(G))}
     else:
         nodes = set(nodes)
     if not nodes.issubset(G):

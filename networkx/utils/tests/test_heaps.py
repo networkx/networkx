@@ -3,7 +3,7 @@ import networkx as nx
 from networkx.utils import BinaryHeap, PairingHeap
 
 
-class X(object):
+class X:
 
     def __eq__(self, other):
         raise self is other

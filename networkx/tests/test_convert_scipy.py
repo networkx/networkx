@@ -5,7 +5,7 @@ from networkx.testing import assert_graphs_equal
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
 
 
-class TestConvertNumpy(object):
+class TestConvertNumpy:
     @classmethod
     def setup_class(cls):
         global np, sp, sparse, np_assert_equal
@@ -22,7 +22,7 @@ class TestConvertNumpy(object):
         self.G4 = self.create_weighted(nx.DiGraph())
 
     def test_exceptions(self):
-        class G(object):
+        class G:
             format = None
 
         pytest.raises(nx.NetworkXError, nx.to_networkx_graph, G)

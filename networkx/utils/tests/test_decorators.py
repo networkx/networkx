@@ -39,7 +39,7 @@ def test_not_implemented_decorator_raise():
         test1(nx.Graph())
 
 
-class TestOpenFileDecorator(object):
+class TestOpenFileDecorator:
     def setup_method(self):
         self.text = ['Blah... ', 'BLAH ', 'BLAH!!!!']
         self.fobj = tempfile.NamedTemporaryFile('wb+', delete=False)
@@ -60,7 +60,7 @@ class TestOpenFileDecorator(object):
     @staticmethod
     @open_file(0, 'wb')
     def writer_arg0(path):
-        path.write('demo'.encode('ascii'))
+        path.write(b'demo')
 
     @open_file(1, 'wb+')
     def writer_arg1(self, path):
@@ -152,7 +152,7 @@ def test_preserve_random_state():
     assert(abs(r - 0.61879477158568) < 1e-16)
 
 
-class TestRandomState(object):
+class TestRandomState:
     @classmethod
     def setup_class(cls):
         global np

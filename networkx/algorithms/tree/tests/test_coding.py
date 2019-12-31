@@ -7,7 +7,7 @@ from networkx.testing import assert_nodes_equal
 from networkx.testing import assert_edges_equal
 
 
-class TestPruferSequence(object):
+class TestPruferSequence:
     """Unit tests for the Prüfer sequence encoding and decoding
     functions.
 
@@ -72,7 +72,7 @@ class TestPruferSequence(object):
             assert list(seq) == seq2
 
 
-class TestNestedTuple(object):
+class TestNestedTuple:
     """Unit tests for the nested tuple encoding and decoding functions.
 
     """

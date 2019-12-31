@@ -67,7 +67,7 @@ def choose_pref_attach(degs, seed):
     return nodes[i]
 
 
-class AS_graph_generator(object):
+class AS_graph_generator:
     """ Generates random internet AS graphs.
     """
 
@@ -128,8 +128,8 @@ class AS_graph_generator(object):
             for j in self.G.nodes():
                 if i != j:
                     self.add_edge(i, j, 'peer')
-            self.customers[i] = set([])
-            self.providers[i] = set([])
+            self.customers[i] = set()
+            self.providers[i] = set()
         return self.G
 
     def add_edge(self, i, j, kind):
@@ -374,7 +374,7 @@ class AS_graph_generator(object):
         self.graph_regions(5)
         self.customers = {}
         self.providers = {}
-        self.nodes = {'T': set([]), 'M': set([]), 'CP': set([]), 'C': set([])}
+        self.nodes = {'T': set(), 'M': set(), 'CP': set(), 'C': set()}
 
         self.t_graph()
         self.nodes['T'] = set(list(self.G.nodes()))

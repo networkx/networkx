@@ -163,8 +163,7 @@ def generate_graphml(G, encoding='utf-8', prettyprint=True):
     """
     writer = GraphMLWriter(encoding=encoding, prettyprint=prettyprint)
     writer.add_graph_element(G)
-    for line in str(writer).splitlines():
-        yield line
+    yield from str(writer).splitlines()
 
 
 @open_file(0, mode='rb')
@@ -297,7 +296,7 @@ def parse_graphml(graphml_string, node_type=str):
     return glist[0]
 
 
-class GraphML(object):
+class GraphML:
     NS_GRAPHML = "http://graphml.graphdrawing.org/xmlns"
     NS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
     # xmlns:y="http://www.yworks.com/xml/graphml"
@@ -524,7 +523,7 @@ class GraphMLWriter(GraphML):
                 elem.tail = i
 
 
-class IncrementalElement(object):
+class IncrementalElement:
     """Wrapper for _IncrementalWriter providing an Element like interface.
 
     This wrapper does not intend to be a complete implementation but rather to
