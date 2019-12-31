@@ -43,7 +43,7 @@ def miles_graph():
         if line.startswith("*"):  # skip comments
             continue
 
-        numfind = re.compile("^\d+")
+        numfind = re.compile(r"^\d+")
 
         if numfind.match(line):  # this line is distances
             dist = line.split()

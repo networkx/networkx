@@ -54,10 +54,9 @@ class AntiGraph(nx.Graph):
            The adjacency dictionary for nodes connected to n.
 
         """
-        return dict(
-            (node, self.all_edge_dict)
-            for node in set(self.adj) - set(self.adj[n]) - set([n])
-        )
+        return {
+            node: self.all_edge_dict for node in set(self.adj) - set(self.adj[n]) - {n}
+        }
 
     def neighbors(self, n):
         """Return an iterator over all neighbors of node n in the
@@ -65,7 +64,7 @@ class AntiGraph(nx.Graph):
 
         """
         try:
-            return iter(set(self.adj) - set(self.adj[n]) - set([n]))
+            return iter(set(self.adj) - set(self.adj[n]) - {n})
         except KeyError:
             raise NetworkXError(f"The node {n} is not in the graph.")
 
@@ -109,7 +108,7 @@ class AntiGraph(nx.Graph):
                     n,
                     {
                         v: self.all_edge_dict
-                        for v in set(self.adj) - set(self.adj[n]) - set([n])
+                        for v in set(self.adj) - set(self.adj[n]) - {n}
                     },
                 )
                 for n in self.nodes()
@@ -123,7 +122,7 @@ class AntiGraph(nx.Graph):
                     n,
                     {
                         v: self.all_edge_dict
-                        for v in set(self.nodes()) - set(self.adj[n]) - set([n])
+                        for v in set(self.nodes()) - set(self.adj[n]) - {n}
                     },
                 )
                 for n in self.nbunch_iter(nbunch)
@@ -153,7 +152,7 @@ class AntiGraph(nx.Graph):
 
         """
         for n in self.adj:
-            yield (n, set(self.adj) - set(self.adj[n]) - set([n]))
+            yield (n, set(self.adj) - set(self.adj[n]) - {n})
 
 
 # Build several pairs of graphs, a regular graph
