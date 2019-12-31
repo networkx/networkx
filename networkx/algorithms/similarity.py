@@ -1047,7 +1047,7 @@ def optimize_edit_paths(
         [ins_costs[i] if i == j else inf for i in range(n) for j in range(n)]
     ).reshape(n, n)
     Cv = make_CostMatrix(C, m, n)
-    # debug_print('Cv: {} x {}'.format(m, n))
+    # debug_print(f"Cv: {m} x {n}")
     # debug_print(Cv.C)
 
     pending_g = list(G1.edges)
@@ -1095,7 +1095,7 @@ def optimize_edit_paths(
         [ins_costs[i] if i == j else inf for i in range(n) for j in range(n)]
     ).reshape(n, n)
     Ce = make_CostMatrix(C, m, n)
-    # debug_print('Ce: {} x {}'.format(m, n))
+    # debug_print(f'Ce: {m} x {n}')
     # debug_print(Ce.C)
     # debug_print()
 

@@ -458,6 +458,5 @@ def contracted_edge(G, edge, self_loops=True):
 
     """
     if not G.has_edge(*edge):
-        raise ValueError('Edge {} does not exist in graph G; cannot contract'
-                         ' it'.format(edge))
+        raise ValueError(f'Edge {edge} does not exist in graph G; cannot contract it')
     return contracted_nodes(G, *edge, self_loops=self_loops)

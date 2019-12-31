@@ -67,8 +67,8 @@ def boruvka_mst_edges(G, minimum=True, weight='weight',
             if isnan(wt):
                 if ignore_nan:
                     continue
-                msg = "NaN found as an edge weight. Edge %s"
-                raise ValueError(msg % (e,))
+                msg = f"NaN found as an edge weight. Edge {e}"
+                raise ValueError(msg)
             if wt < minwt:
                 minwt = wt
                 boundary = e
@@ -152,8 +152,8 @@ def kruskal_mst_edges(G, minimum, weight='weight',
                 if isnan(wt):
                     if ignore_nan:
                         continue
-                    msg = "NaN found as an edge weight. Edge %s"
-                    raise ValueError(msg % ((u, v, k, d),))
+                    msg = f"NaN found as an edge weight. Edge {(u, v, k, d)}"
+                    raise ValueError(msg)
                 yield wt, u, v, k, d
     else:
         edges = G.edges(data=True)
@@ -165,8 +165,8 @@ def kruskal_mst_edges(G, minimum, weight='weight',
                 if isnan(wt):
                     if ignore_nan:
                         continue
-                    msg = "NaN found as an edge weight. Edge %s"
-                    raise ValueError(msg % ((u, v, d),))
+                    msg = f"NaN found as an edge weight. Edge {(u, v, d)}"
+                    raise ValueError(msg)
                 yield wt, u, v, d
     edges = sorted(filter_nan_edges(), key=itemgetter(0))
     # Multigraphs need to handle edge keys in addition to edge data.
@@ -243,8 +243,8 @@ def prim_mst_edges(G, minimum, weight='weight',
                     if isnan(wt):
                         if ignore_nan:
                             continue
-                        msg = "NaN found as an edge weight. Edge %s"
-                        raise ValueError(msg % ((u, v, k, d),))
+                        msg = f"NaN found as an edge weight. Edge {(u, v, k, d)}"
+                        raise ValueError(msg)
                     push(frontier, (wt, next(c), u, v, k, d))
         else:
             for v, d in G.adj[u].items():
@@ -252,8 +252,8 @@ def prim_mst_edges(G, minimum, weight='weight',
                 if isnan(wt):
                     if ignore_nan:
                         continue
-                    msg = "NaN found as an edge weight. Edge %s"
-                    raise ValueError(msg % ((u, v, d),))
+                    msg = f"NaN found as an edge weight. Edge {(u, v, d)}"
+                    raise ValueError(msg)
                 push(frontier, (wt, next(c), u, v, d))
         while frontier:
             if is_multigraph:
@@ -384,7 +384,7 @@ def minimum_spanning_edges(G, algorithm='kruskal', weight='weight',
     try:
         algo = ALGORITHMS[algorithm]
     except KeyError:
-        msg = f'{algorithm} is not a valid choice for an algorithm.'
+        msg = f"{algorithm} is not a valid choice for an algorithm."
         raise ValueError(msg)
 
     return algo(G, minimum=True, weight=weight, keys=keys, data=data,
@@ -475,7 +475,7 @@ def maximum_spanning_edges(G, algorithm='kruskal', weight='weight',
     try:
         algo = ALGORITHMS[algorithm]
     except KeyError:
-        msg = f'{algorithm} is not a valid choice for an algorithm.'
+        msg = f"{algorithm} is not a valid choice for an algorithm."
         raise ValueError(msg)
 
     return algo(G, minimum=False, weight=weight, keys=keys, data=data,

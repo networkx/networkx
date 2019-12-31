@@ -343,7 +343,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     >>> length[4]
     4
     >>> for node in [0, 1, 2, 3, 4]:
-    ...     print('{}: {}'.format(node, length[node]))
+    ...     print(f"{node}: {length[node]}")
     0: 0
     1: 1
     2: 2
@@ -427,7 +427,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
     >>> print(length[4])
     4
     >>> for node in [0, 1, 2, 3, 4]:
-    ...     print('{}: {}'.format(node, length[node]))
+    ...     print(f"{node}: {length[node]}")
     0: 0
     1: 1
     2: 2
@@ -584,7 +584,7 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None,
     >>> G = nx.path_graph(5)
     >>> length = nx.multi_source_dijkstra_path_length(G, {0, 4})
     >>> for node in [0, 1, 2, 3, 4]:
-    ...     print('{}: {}'.format(node, length[node]))
+    ...     print(f"{node}: {length[node]}")
     0: 0
     1: 1
     2: 2
@@ -671,7 +671,7 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     >>> G = nx.path_graph(5)
     >>> length, path = nx.multi_source_dijkstra(G, {0, 4})
     >>> for node in [0, 1, 2, 3, 4]:
-    ...     print('{}: {}'.format(node, length[node]))
+    ...     print(f"{node}: {length[node]}")
     0: 0
     1: 1
     2: 2
@@ -959,7 +959,7 @@ def all_pairs_dijkstra(G, cutoff=None, weight='weight'):
     >>> print(len_path[3][0][1])
     2
     >>> for node in [0, 1, 2, 3, 4]:
-    ...     print('3 - {}: {}'.format(node, len_path[3][0][node]))
+    ...     print(f"3 - {node}: {len_path[3][0][node]}")
     3 - 0: 3
     3 - 1: 2
     3 - 2: 1
@@ -1021,7 +1021,7 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
     >>> G = nx.path_graph(5)
     >>> length = dict(nx.all_pairs_dijkstra_path_length(G))
     >>> for node in [0, 1, 2, 3, 4]:
-    ...     print('1 - {}: {}'.format(node, length[1][node]))
+    ...     print(f"1 - {node}: {length[1][node]}")
     1 - 0: 1
     1 - 1: 0
     1 - 2: 1
@@ -1497,7 +1497,7 @@ def single_source_bellman_ford_path_length(G, source, weight='weight'):
     >>> length[4]
     4
     >>> for node in [0, 1, 2, 3, 4]:
-    ...     print('{}: {}'.format(node, length[node]))
+    ...     print(f"{node}: {length[node]}")
     0: 0
     1: 1
     2: 2
@@ -1555,7 +1555,7 @@ def single_source_bellman_ford(G, source, target=None, weight='weight'):
     >>> print(length[4])
     4
     >>> for node in [0, 1, 2, 3, 4]:
-    ...     print('{}: {}'.format(node, length[node]))
+    ...     print(f"{node}: {length[node]}")
     0: 0
     1: 1
     2: 2
@@ -1617,7 +1617,7 @@ def all_pairs_bellman_ford_path_length(G, weight='weight'):
     >>> G = nx.path_graph(5)
     >>> length = dict(nx.all_pairs_bellman_ford_path_length(G))
     >>> for node in [0, 1, 2, 3, 4]:
-    ...     print('1 - {}: {}'.format(node, length[1][node]))
+    ...     print(f"1 - {node}: {length[1][node]}")
     1 - 0: 1
     1 - 1: 0
     1 - 2: 1
@@ -1992,8 +1992,8 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     shortest_path_length
     """
     if source not in G or target not in G:
-        msg = 'Either source {} or target {} is not in G'
-        raise nx.NodeNotFound(msg.format(source, target))
+        msg = f"Either source {source} or target {target} is not in G"
+        raise nx.NodeNotFound(msg)
 
     if source == target:
         return (0, [source])

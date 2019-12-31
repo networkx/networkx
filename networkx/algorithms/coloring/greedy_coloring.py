@@ -326,7 +326,7 @@ def greedy_color(G, strategy='largest_first', interchange=False):
     strategy = STRATEGIES.get(strategy, strategy)
     if not callable(strategy):
         raise nx.NetworkXError('strategy must be callable or a valid string. '
-                               '{} not valid.'.format(strategy))
+                               f'{strategy} not valid.')
     # Perform some validation on the arguments before executing any
     # strategy functions.
     if interchange:

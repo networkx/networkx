@@ -179,9 +179,9 @@ def from_pandas_adjacency(df, create_using=None):
     try:
         df = df[df.index]
     except Exception:
-        msg = "%s not in columns"
         missing = list(set(df.index).difference(set(df.columns)))
-        raise nx.NetworkXError("Columns must match Indices.", msg % missing)
+        msg = f"{missing} not in columns"
+        raise nx.NetworkXError("Columns must match Indices.", msg)
 
     A = df.values
     G = from_numpy_matrix(A, create_using=create_using)
@@ -328,8 +328,8 @@ def from_pandas_edgelist(df, source='source', target='target', edge_attr=None,
     else:
         cols = [edge_attr]
     if len(cols) == 0:
-        msg = "Invalid edge_attr argument. No columns found with name: %s"
-        raise nx.NetworkXError(msg % cols)
+        msg = f"Invalid edge_attr argument. No columns found with name: {cols}"
+        raise nx.NetworkXError(msg)
 
     try:
         eattrs = zip(*[df[col] for col in cols])

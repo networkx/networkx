@@ -217,7 +217,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         edges = nx.selfloop_edges(G, data=True, keys=True)
     for e in edges:
         if abs(e[-1].get(weight, 0)) == inf:
-            raise nx.NetworkXError('edge {!r} has infinite weight'.format(e[:-1]))
+            raise nx.NetworkXError(f'edge {e[:-1]!r} has infinite weight')
 
     ###########################################################################
     # Quick infeasibility detection
@@ -234,8 +234,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         edges = nx.selfloop_edges(G, data=True, keys=True)
     for e in edges:
         if e[-1].get(capacity, inf) < 0:
-            raise nx.NetworkXUnfeasible(
-                'edge {!r} has negative capacity'.format(e[:-1]))
+            raise nx.NetworkXUnfeasible(f'edge {e[:-1]!r} has negative capacity')
 
     ###########################################################################
     # Initialization

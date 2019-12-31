@@ -176,7 +176,7 @@ def _generate_no_biconnected(max_attempts=50):
         else:
             if attempts >= max_attempts:
                 msg = f"Tried {attempts} times: no suitable Graph."
-                raise Exception(msg % max_attempts)
+                raise Exception(msg)
             else:
                 attempts += 1
 
