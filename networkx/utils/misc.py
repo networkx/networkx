@@ -300,7 +300,7 @@ def create_random_state(random_state=None):
     raise ValueError(msg % random_state)
 
 
-class PythonRandomInterface(object):
+class PythonRandomInterface:
     try:
         def __init__(self, rng=None):
             import numpy

@@ -11,7 +11,7 @@ def l1dist(x, y):
     return sum(abs(a - b) for a, b in zip(x, y))
 
 
-class TestRandomGeometricGraph(object):
+class TestRandomGeometricGraph:
     """Unit tests for the :func:`~networkx.random_geometric_graph`
     function.
 
@@ -75,7 +75,7 @@ class TestRandomGeometricGraph(object):
                 assert not dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25
 
 
-class TestSoftRandomGeometricGraph(object):
+class TestSoftRandomGeometricGraph:
     """Unit tests for the :func:`~networkx.soft_random_geometric_graph`
     function.
 
@@ -170,7 +170,7 @@ def join(G, u, v, theta, alpha, metric):
     return (u_weight + v_weight) * metric(u_pos, v_pos) ** alpha >= theta
 
 
-class TestGeographicalThresholdGraph(object):
+class TestGeographicalThresholdGraph:
     """Unit tests for the :func:`~networkx.geographical_threshold_graph`
     function.
 
@@ -226,7 +226,7 @@ class TestGeographicalThresholdGraph(object):
         assert len(G.edges) == 0
 
 
-class TestWaxmanGraph(object):
+class TestWaxmanGraph:
     """Unit tests for the :func:`~networkx.waxman_graph` function."""
 
     def test_number_of_nodes_1(self):
@@ -252,7 +252,7 @@ class TestWaxmanGraph(object):
         assert len(G) == 50
 
 
-class TestNavigableSmallWorldGraph(object):
+class TestNavigableSmallWorldGraph:
 
     def test_navigable_small_world(self):
         G = nx.navigable_small_world_graph(5, p=1, q=0, seed=42)
@@ -268,7 +268,7 @@ class TestNavigableSmallWorldGraph(object):
         assert nx.is_isomorphic(G, gg)
 
 
-class TestThresholdedRandomGeometricGraph(object):
+class TestThresholdedRandomGeometricGraph:
     """Unit tests for the :func:`~networkx.thresholded_random_geometric_graph`
     function.
 

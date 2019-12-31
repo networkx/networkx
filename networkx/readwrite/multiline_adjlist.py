@@ -168,9 +168,9 @@ def write_multiline_adjlist(G, path, delimiter=' ',
     import time
 
     pargs = comments + " ".join(sys.argv)
-    header = ("{}\n".format(pargs)
+    header = (f"{pargs}\n"
               + comments + " GMT {}\n".format(time.asctime(time.gmtime()))
-              + comments + " {}\n".format(G.name))
+              + comments + f" {G.name}\n")
     path.write(header.encode(encoding))
 
     for multiline in generate_multiline_adjlist(G, delimiter):
@@ -229,7 +229,7 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
             (u, deg) = line.strip().split(delimiter)
             deg = int(deg)
         except:
-            raise TypeError("Failed to read node and degree on line ({})".format(line))
+            raise TypeError(f"Failed to read node and degree on line ({line})")
         if nodetype is not None:
             try:
                 u = nodetype(u)
@@ -242,7 +242,7 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
                 try:
                     line = next(lines)
                 except StopIteration:
-                    msg = "Failed to find neighbor for node ({})".format(u)
+                    msg = f"Failed to find neighbor for node ({u})"
                     raise TypeError(msg)
                 p = line.find(comments)
                 if p >= 0:

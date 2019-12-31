@@ -289,8 +289,8 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     edge_cut = minimum_st_edge_cut(H, f'{mapping[s]}B', f'{mapping[t]}A',
                                    **kwargs)
     # Each node in the original graph maps to two nodes of the auxiliary graph
-    node_cut = set(H.nodes[node]['id'] for edge in edge_cut for node in edge)
-    return node_cut - set([s, t])
+    node_cut = {H.nodes[node]['id'] for edge in edge_cut for node in edge}
+    return node_cut - {s, t}
 
 
 def minimum_node_cut(G, s=None, t=None, flow_func=None):
@@ -423,7 +423,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     # Initial node cutset is all neighbors of the node with minimum degree.
     min_cut = set(G[v])
     # Compute st node cuts between v and all its non-neighbors nodes in G.
-    for w in set(G) - set(neighbors(v)) - set([v]):
+    for w in set(G) - set(neighbors(v)) - {v}:
         this_cut = minimum_st_node_cut(G, v, w, **kwargs)
         if len(min_cut) >= len(this_cut):
             min_cut = this_cut

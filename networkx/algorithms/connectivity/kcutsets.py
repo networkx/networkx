@@ -138,7 +138,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                 E1 = flowed_edges = [(u, w) for (u, w, d) in
                                      R.edges(data=True)
                                      if d['flow'] != 0]
-                VE1 = incident_nodes = set([n for edge in E1 for n in edge])
+                VE1 = incident_nodes = {n for edge in E1 for n in edge}
                 # Remove saturated edges form the residual network.
                 # Note that reversed edges are introduced with capacity 0
                 # in the residual graph and they need to be removed too.
@@ -156,7 +156,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                 for n, scc in cmap.items():
                     inv_cmap[scc].append(n)
                 # Find the incident nodes in the condensed graph.
-                VE1 = set([cmap[n] for n in VE1])
+                VE1 = {cmap[n] for n in VE1}
                 # step 7: Compute all antichains of L;
                 # they map to closed sets in H.
                 # Any edge in H that links a closed set is part of a cutset.

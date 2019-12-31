@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-class TestOrdered(object):
+class TestOrdered:
     # Just test instantiation.
     def test_graph(self):
         G = nx.OrderedGraph()
@@ -16,7 +16,7 @@ class TestOrdered(object):
         G = nx.OrderedMultiDiGraph()
 
 
-class TestOrderedFeatures(object):
+class TestOrderedFeatures:
     @classmethod
     def setup_class(cls):
         cls.G = nx.OrderedDiGraph()

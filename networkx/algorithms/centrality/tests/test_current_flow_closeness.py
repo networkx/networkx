@@ -6,7 +6,7 @@ import networkx as nx
 from networkx.testing import almost_equal
 
 
-class TestFlowClosenessCentrality(object):
+class TestFlowClosenessCentrality:
 
     def test_K4(self):
         """Closeness centrality: K4"""
@@ -34,5 +34,5 @@ class TestFlowClosenessCentrality(object):
             assert almost_equal(b[n], b_answer[n])
 
 
-class TestWeightedFlowClosenessCentrality(object):
+class TestWeightedFlowClosenessCentrality:
     pass

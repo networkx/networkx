@@ -264,7 +264,7 @@ class TestGenericPath:
             list(nx.all_shortest_paths(G, 0, 1, weight='weight', method='SPAM'))
 
 
-class TestAverageShortestPathLength(object):
+class TestAverageShortestPathLength:
 
     def test_cycle_graph(self):
         ans = nx.average_shortest_path_length(nx.cycle_graph(7))
@@ -344,7 +344,7 @@ class TestAverageShortestPathLength(object):
             nx.average_shortest_path_length(G, weight='weight', method='SPAM')
 
 
-class TestAverageShortestPathLengthNumpy(object):
+class TestAverageShortestPathLengthNumpy:
 
     @classmethod
     def setup_class(cls):

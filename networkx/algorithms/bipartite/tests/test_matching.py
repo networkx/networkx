@@ -191,7 +191,7 @@ def test_eppstein_matching():
     assert all(x in set(matching.keys()) for x in set(matching.values()))
 
 
-class TestMinimumWeightFullMatching(object):
+class TestMinimumWeightFullMatching:
 
     @classmethod
     def setup_class(cls):

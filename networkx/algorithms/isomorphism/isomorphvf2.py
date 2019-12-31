@@ -145,7 +145,7 @@ __all__ = ['GraphMatcher',
            'DiGraphMatcher']
 
 
-class GraphMatcher(object):
+class GraphMatcher:
     """Implementation of VF2 algorithm for matching undirected graphs.
 
     Suitable for Graph and MultiGraph instances.
@@ -292,8 +292,7 @@ class GraphMatcher(object):
         # Declare that we are looking for a graph-graph isomorphism.
         self.test = 'graph'
         self.initialize()
-        for mapping in self.match():
-            yield mapping
+        yield from self.match()
 
     def match(self):
         """Extends the isomorphism mapping.
@@ -315,8 +314,7 @@ class GraphMatcher(object):
                     if self.semantic_feasibility(G1_node, G2_node):
                         # Recursive call, adding the feasible state.
                         newstate = self.state.__class__(self, G1_node, G2_node)
-                        for mapping in self.match():
-                            yield mapping
+                        yield from self.match()
 
                         # restore data structures
                         newstate.restore()
@@ -384,16 +382,14 @@ class GraphMatcher(object):
         # Declare that we are looking for graph-subgraph isomorphism.
         self.test = 'subgraph'
         self.initialize()
-        for mapping in self.match():
-            yield mapping
+        yield from self.match()
 
     def subgraph_monomorphisms_iter(self):
         """Generator over monomorphisms between a subgraph of G1 and G2."""
         # Declare that we are looking for graph-subgraph monomorphism.
         self.test = 'mono'
         self.initialize()
-        for mapping in self.match():
-            yield mapping
+        yield from self.match()
 
 #    subgraph_isomorphisms_iter.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
 
@@ -531,7 +527,7 @@ class DiGraphMatcher(GraphMatcher):
         >>> G2 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
         >>> DiGM = isomorphism.DiGraphMatcher(G1,G2)
         """
-        super(DiGraphMatcher, self).__init__(G1, G2)
+        super().__init__(G1, G2)
 
     def candidate_pairs_iter(self):
         """Iterator over candidate pairs of nodes in G1 and G2."""
@@ -822,7 +818,7 @@ class DiGraphMatcher(GraphMatcher):
         return True
 
 
-class GMState(object):
+class GMState:
     """Internal representation of state for the GraphMatcher class.
 
     This class is used internally by the GraphMatcher class.  It is used
@@ -875,7 +871,7 @@ class GMState(object):
             # Now we add every other node...
 
             # Updates for T_1^{inout}
-            new_nodes = set([])
+            new_nodes = set()
             for node in GM.core_1:
                 new_nodes.update([neighbor for neighbor in GM.G1[node] if neighbor not in GM.core_1])
             for node in new_nodes:
@@ -883,7 +879,7 @@ class GMState(object):
                     GM.inout_1[node] = self.depth
 
             # Updates for T_2^{inout}
-            new_nodes = set([])
+            new_nodes = set()
             for node in GM.core_2:
                 new_nodes.update([neighbor for neighbor in GM.G2[node] if neighbor not in GM.core_2])
             for node in new_nodes:
@@ -906,7 +902,7 @@ class GMState(object):
                     del vector[node]
 
 
-class DiGMState(object):
+class DiGMState:
     """Internal representation of state for the DiGraphMatcher class.
 
     This class is used internally by the DiGraphMatcher class.  It is used
@@ -964,7 +960,7 @@ class DiGMState(object):
             # Now we add every other node...
 
             # Updates for T_1^{in}
-            new_nodes = set([])
+            new_nodes = set()
             for node in GM.core_1:
                 new_nodes.update([predecessor for predecessor in GM.G1.predecessors(node)
                                   if predecessor not in GM.core_1])
@@ -973,7 +969,7 @@ class DiGMState(object):
                     GM.in_1[node] = self.depth
 
             # Updates for T_2^{in}
-            new_nodes = set([])
+            new_nodes = set()
             for node in GM.core_2:
                 new_nodes.update([predecessor for predecessor in GM.G2.predecessors(node)
                                   if predecessor not in GM.core_2])
@@ -982,7 +978,7 @@ class DiGMState(object):
                     GM.in_2[node] = self.depth
 
             # Updates for T_1^{out}
-            new_nodes = set([])
+            new_nodes = set()
             for node in GM.core_1:
                 new_nodes.update([successor for successor in GM.G1.successors(node) if successor not in GM.core_1])
             for node in new_nodes:
@@ -990,7 +986,7 @@ class DiGMState(object):
                     GM.out_1[node] = self.depth
 
             # Updates for T_2^{out}
-            new_nodes = set([])
+            new_nodes = set()
             for node in GM.core_2:
                 new_nodes.update([successor for successor in GM.G2.successors(node) if successor not in GM.core_2])
             for node in new_nodes:

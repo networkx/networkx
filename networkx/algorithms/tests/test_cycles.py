@@ -154,7 +154,7 @@ class TestCycles:
 #    networkx/algorithms/traversal/tests/test_edgedfs.py
 
 
-class TestFindCycle(object):
+class TestFindCycle:
     @classmethod
     def setup_class(cls):
         cls.nodes = [0, 1, 2, 3]
@@ -292,7 +292,7 @@ def assert_basis_equal(a, b):
     assert sorted(a) == sorted(b)
 
 
-class TestMinimumCycles(object):
+class TestMinimumCycles:
     @classmethod
     def setup_class(cls):
         T = nx.Graph()

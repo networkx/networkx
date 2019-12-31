@@ -174,7 +174,7 @@ def check_edge_intersections(G, pos):
     # No edge intersection found
 
 
-class Vector(object):
+class Vector:
     """Compare vectors by their angle without loss of precision
 
     All vectors in direction [0, 1] are the smallest.

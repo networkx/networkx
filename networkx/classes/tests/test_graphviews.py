@@ -6,7 +6,7 @@ from networkx.testing import assert_edges_equal, assert_nodes_equal
 # Note: SubGraph views are not tested here. They have their own testing file
 
 
-class TestReverseView(object):
+class TestReverseView:
     def setup(self):
         self.G = nx.path_graph(9, create_using=nx.DiGraph())
         self.rv = nx.reverse_view(self.G)
@@ -53,7 +53,7 @@ class TestReverseView(object):
         assert RMC.my_method() == "me"
 
 
-class TestMultiReverseView(object):
+class TestMultiReverseView:
     def setup(self):
         self.G = nx.path_graph(9, create_using=nx.MultiDiGraph())
         self.G.add_edge(4, 5)
@@ -85,7 +85,7 @@ class TestMultiReverseView(object):
         pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, MG)
 
 
-class TestToDirected(object):
+class TestToDirected:
     def setup(self):
         self.G = nx.path_graph(9)
         self.dv = nx.to_directed(self.G)
@@ -123,7 +123,7 @@ class TestToDirected(object):
         assert sorted(self.dv.edges) == expected
 
 
-class TestToUndirected(object):
+class TestToUndirected:
     def setup(self):
         self.DG = nx.path_graph(9, create_using=nx.DiGraph())
         self.uv = nx.to_undirected(self.DG)
@@ -160,7 +160,7 @@ class TestToUndirected(object):
         assert sorted(self.uv.edges) == expected
 
 
-class TestChainsOfViews(object):
+class TestChainsOfViews:
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9)

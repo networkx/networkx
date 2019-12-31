@@ -1,8 +1,7 @@
-
 import networkx as nx
 
 
-class TestClosenessVitality(object):
+class TestClosenessVitality:
 
     def test_unweighted(self):
         G = nx.cycle_graph(3)

@@ -8,7 +8,7 @@ FORWARD = nx.algorithms.edgedfs.FORWARD
 REVERSE = nx.algorithms.edgedfs.REVERSE
 
 
-class TestEdgeBFS(object):
+class TestEdgeBFS:
     @classmethod
     def setup_class(cls):
         cls.nodes = [0, 1, 2, 3]

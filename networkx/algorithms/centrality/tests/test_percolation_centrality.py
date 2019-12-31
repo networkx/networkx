@@ -30,7 +30,7 @@ def example1b_G():
     return G
 
 
-class TestPercolationCentrality(object):
+class TestPercolationCentrality:
     def test_percolation_example1a(self):
         """percolation centrality: example 1a"""
         G = example1a_G()

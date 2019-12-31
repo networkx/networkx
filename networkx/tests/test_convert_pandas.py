@@ -6,7 +6,7 @@ import networkx as nx
 from networkx.testing import assert_nodes_equal, assert_edges_equal, assert_graphs_equal
 
 
-class TestConvertPandas(object):
+class TestConvertPandas:
     def setup_method(self):
         self.rng = pd.np.random.RandomState(seed=5)
         ints = self.rng.randint(1, 11, size=(3, 2))

@@ -253,7 +253,7 @@ def test_cutoff():
                 continue
             for cutoff in [3, 2, 1]:
                 result = local_func(G, 0, 4, flow_func=flow_func, cutoff=cutoff)
-                assert cutoff == result, "cutoff error in {0}".format(flow_func.__name__)
+                assert cutoff == result, f"cutoff error in {flow_func.__name__}"
 
 
 def test_invalid_auxiliary():

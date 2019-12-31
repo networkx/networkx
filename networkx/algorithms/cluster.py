@@ -127,11 +127,11 @@ def _directed_triangles_and_degree_iter(G, nodes=None):
         for j in chain(ipreds, isuccs):
             jpreds = set(G._pred[j]) - {j}
             jsuccs = set(G._succ[j]) - {j}
-            directed_triangles += sum((1 for k in
+            directed_triangles += sum(1 for k in
                                        chain((ipreds & jpreds),
                                              (ipreds & jsuccs),
                                              (isuccs & jpreds),
-                                             (isuccs & jsuccs))))
+                                             (isuccs & jsuccs)))
         dtotal = len(ipreds) + len(isuccs)
         dbidirectional = len(ipreds & isuccs)
         yield (i, dtotal, dbidirectional, directed_triangles)
@@ -447,7 +447,7 @@ def square_clustering(G, nodes=None):
         clustering[v] = 0
         potential = 0
         for u, w in combinations(G[v], 2):
-            squares = len((set(G[u]) & set(G[w])) - set([v]))
+            squares = len((set(G[u]) & set(G[w])) - {v})
             clustering[v] += squares
             degm = squares + 1
             if w in G[u]:

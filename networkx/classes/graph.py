@@ -16,7 +16,7 @@ from networkx.exception import NetworkXError
 import networkx.convert as convert
 
 
-class Graph(object):
+class Graph:
     """
     Base class for undirected graphs.
 

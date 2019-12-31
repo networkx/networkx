@@ -7,7 +7,7 @@ numpy = pytest.importorskip('numpy')
 test_smoke_empty_graphscipy = pytest.importorskip('scipy')
 
 
-class TestLayout(object):
+class TestLayout:
 
     @classmethod
     def setup_class(cls):

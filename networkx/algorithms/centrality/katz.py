@@ -142,7 +142,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
 
     if nstart is None:
         # choose starting vector with entries of 0
-        x = dict([(n, 0) for n in G])
+        x = {n: 0 for n in G}
     else:
         x = nstart
 

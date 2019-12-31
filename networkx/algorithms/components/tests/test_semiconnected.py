@@ -3,7 +3,7 @@ import networkx as nx
 import pytest
 
 
-class TestIsSemiconnected(object):
+class TestIsSemiconnected:
 
     def test_undirected(self):
         pytest.raises(nx.NetworkXNotImplemented, nx.is_semiconnected,

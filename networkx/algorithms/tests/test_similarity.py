@@ -174,8 +174,8 @@ class TestSimilarity:
                           ([(0, 1), (1, 2), (2, 0)], [((0, 1), (1, 2)), ((1, 2), (0, 2)), (None, (0, 1))]),
                           ([(0, 2), (1, 0), (2, 1)], [((0, 1), (0, 2)), ((1, 2), (0, 1)), (None, (1, 2))]),
                           ([(0, 2), (1, 1), (2, 0)], [((0, 1), (1, 2)), ((1, 2), (0, 1)), (None, (0, 2))])]
-        assert (set(canonical(*p) for p in paths) ==
-                set(canonical(*p) for p in expected_paths))
+        assert ({canonical(*p) for p in paths} ==
+                {canonical(*p) for p in expected_paths})
 
     def test_optimize_graph_edit_distance(self):
         G1 = circular_ladder_graph(2)

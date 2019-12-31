@@ -235,7 +235,7 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
             H = contracted_nodes(H, (0, j), (N, j))
     elif n % 2:
         # remove extra nodes
-        H.remove_nodes_from(((N, j) for j in rows[1::2]))
+        H.remove_nodes_from((N, j) for j in rows[1::2])
 
     # Add position node attributes
     if with_positions:

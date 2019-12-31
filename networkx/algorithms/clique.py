@@ -280,8 +280,7 @@ def find_cliques_recursive(G):
             else:
                 cand_q = cand & adj_q
                 if cand_q:
-                    for clique in expand(subg_q, cand_q):
-                        yield clique
+                    yield from expand(subg_q, cand_q)
             Q.pop()
 
     return expand(set(G), set(G))
@@ -460,10 +459,10 @@ def node_clique_number(G, nodes=None, cliques=None):
                 d = {}
                 for n in nodes:
                     H = nx.ego_graph(G, n)
-                    d[n] = max((len(c) for c in find_cliques(H)))
+                    d[n] = max(len(c) for c in find_cliques(H))
             else:
                 H = nx.ego_graph(G, nodes)
-                d = max((len(c) for c in find_cliques(H)))
+                d = max(len(c) for c in find_cliques(H))
             return d
         # nodes is None--find all cliques
         cliques = list(find_cliques(G))

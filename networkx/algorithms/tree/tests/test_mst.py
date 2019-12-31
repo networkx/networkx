@@ -11,7 +11,7 @@ def test_unknown_algorithm():
         nx.minimum_spanning_tree(nx.Graph(), algorithm='random')
 
 
-class MinimumSpanningTreeTestBase(object):
+class MinimumSpanningTreeTestBase:
     """Base class for test classes for minimum spanning tree algorithms.
 
     This class contains some common tests that will be inherited by
@@ -180,7 +180,7 @@ class TestBoruvka(MinimumSpanningTreeTestBase):
         Borůvka's algorithm.
 
         """
-        edges = nx.minimum_spanning_edges(self.G, algorithm=u'borůvka')
+        edges = nx.minimum_spanning_edges(self.G, algorithm='borůvka')
         # Edges from the spanning edges functions don't come in sorted
         # orientation, so we need to sort each edge individually.
         actual = sorted((min(u, v), max(u, v), d) for u, v, d in edges)

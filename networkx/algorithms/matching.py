@@ -57,7 +57,7 @@ def matching_dict_to_set(matching):
     # only the (frozen)set `{u, v}` appears as an element in the
     # returned set.
 
-    return set((u, v) for (u, v) in set(map(frozenset, matching.items())))
+    return {(u, v) for (u, v) in set(map(frozenset, matching.items()))}
 
 
 def is_matching(G, matching):
@@ -262,8 +262,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
         def leaves(self):
             for t in self.childs:
                 if isinstance(t, Blossom):
-                    for v in t.leaves():
-                        yield v
+                    yield from t.leaves()
                 else:
                     yield t
 

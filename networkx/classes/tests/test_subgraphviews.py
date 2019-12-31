@@ -3,7 +3,7 @@ import pytest
 import networkx as nx
 
 
-class TestSubGraphView(object):
+class TestSubGraphView:
     gview = staticmethod(nx.graphviews.subgraph_view)
     graph = nx.Graph
     hide_edges_filter = staticmethod(nx.filters.hide_edges)
@@ -209,7 +209,7 @@ class TestMultiDiGraphView(TestMultiGraphView, TestSubDiGraphView):
 
 
 # induced_subgraph
-class TestInducedSubGraph(object):
+class TestInducedSubGraph:
     @classmethod
     def setup_class(cls):
         cls.K3 = G = nx.complete_graph(3)
@@ -270,14 +270,14 @@ class TestInducedSubGraph(object):
 
 
 # edge_subgraph
-class TestEdgeSubGraph(object):
+class TestEdgeSubGraph:
     @classmethod
     def setup_class(cls):
         # Create a path graph on five nodes.
         cls.G = G = nx.path_graph(5)
         # Add some node, edge, and graph attributes.
         for i in range(5):
-            G.nodes[i]['name'] = 'node{}'.format(i)
+            G.nodes[i]['name'] = f'node{i}'
         G.edges[0, 1]['name'] = 'edge01'
         G.edges[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'

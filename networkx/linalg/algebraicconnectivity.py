@@ -31,7 +31,7 @@ except ImportError:
             return y
 
 
-class _PCGSolver(object):
+class _PCGSolver:
     """Preconditioned conjugate gradient method.
 
     To solve Ax = b:
@@ -82,7 +82,7 @@ class _PCGSolver(object):
             p = daxpy(p, z, a=beta)
 
 
-class _CholeskySolver(object):
+class _CholeskySolver:
     """Cholesky factorization.
 
     To solve Ax = b:
@@ -108,7 +108,7 @@ class _CholeskySolver(object):
         _cholesky = None
 
 
-class _LUSolver(object):
+class _LUSolver:
     """LU factorization.
 
     To solve Ax = b:

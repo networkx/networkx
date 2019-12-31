@@ -8,7 +8,7 @@ import networkx as nx
 import random
 
 
-class TestMaximalIndependantSet(object):
+class TestMaximalIndependantSet:
     def setup(self):
         self.florentine = nx.Graph()
         self.florentine.add_edge('Acciaiuoli', 'Medici')

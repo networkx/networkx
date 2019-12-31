@@ -11,7 +11,7 @@ plt.rcParams['text.usetex'] = False
 import networkx as nx
 
 
-class TestPylab(object):
+class TestPylab:
 
     @classmethod
     def setup_class(cls):

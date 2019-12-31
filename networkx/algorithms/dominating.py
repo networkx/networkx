@@ -47,7 +47,7 @@ def dominating_set(G, start_with=None):
     if start_with is None:
         start_with = arbitrary_element(all_nodes)
     if start_with not in G:
-        raise nx.NetworkXError('node {} is not in G'.format(start_with))
+        raise nx.NetworkXError(f'node {start_with} is not in G')
     dominating_set = {start_with}
     dominated_nodes = set(G[start_with])
     remaining_nodes = all_nodes - dominated_nodes - dominating_set
@@ -87,6 +87,6 @@ def is_dominating_set(G, nbunch):
     .. [1] https://en.wikipedia.org/wiki/Dominating_set
 
     """
-    testset = set(n for n in nbunch if n in G)
+    testset = {n for n in nbunch if n in G}
     nbrs = set(chain.from_iterable(G[n] for n in testset))
     return len(set(G) - testset - nbrs) == 0

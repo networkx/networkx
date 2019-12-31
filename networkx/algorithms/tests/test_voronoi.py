@@ -2,7 +2,7 @@ import networkx as nx
 from networkx.utils import pairwise
 
 
-class TestVoronoiCells(object):
+class TestVoronoiCells:
     """Unit tests for the Voronoi cells function."""
 
     def test_isolates(self):

@@ -9,7 +9,7 @@ ogr = pytest.importorskip('osgeo.ogr')
 import networkx as nx
 
 
-class TestShp(object):
+class TestShp:
     def setup_method(self):
 
         def createlayer(driver, layerType=ogr.wkbLineString):
@@ -225,7 +225,7 @@ def test_read_shp_nofile():
         G = nx.read_shp("hopefully_this_file_will_not_be_available")
 
 
-class TestMissingGeometry(object):
+class TestMissingGeometry:
     def setup_method(self):
         self.setup_path()
         self.delete_shapedir()
@@ -256,7 +256,7 @@ class TestMissingGeometry(object):
             G = nx.read_shp(self.path)
 
 
-class TestMissingAttrWrite(object):
+class TestMissingAttrWrite:
     def setup_method(self):
         self.setup_path()
         self.delete_shapedir()

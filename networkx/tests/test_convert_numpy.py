@@ -7,7 +7,7 @@ from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
 from networkx.testing.utils import assert_graphs_equal
 
 
-class TestConvertNumpy(object):
+class TestConvertNumpy:
     def setup_method(self):
         self.G1 = barbell_graph(10, 3)
         self.G2 = cycle_graph(10, create_using=nx.DiGraph)
@@ -238,7 +238,7 @@ class TestConvertNumpy(object):
         assert A.dtype == int
 
 
-class TestConvertNumpyArray(object):
+class TestConvertNumpyArray:
     def setup_method(self):
         self.G1 = barbell_graph(10, 3)
         self.G2 = cycle_graph(10, create_using=nx.DiGraph)

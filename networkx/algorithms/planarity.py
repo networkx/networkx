@@ -138,7 +138,7 @@ def get_counterexample_recursive(G):
     return subgraph
 
 
-class Interval(object):
+class Interval:
     """Represents a set of return edges.
 
     All return edges in an interval induce a same constraint on the contained
@@ -164,7 +164,7 @@ class Interval(object):
                 planarity_state.lowpt[self.high] > planarity_state.lowpt[b])
 
 
-class ConflictPair(object):
+class ConflictPair:
     """Represents a different constraint between two intervals.
 
     The edges in the left interval must have a different orientation than
@@ -198,7 +198,7 @@ def top_of_stack(l):
     return l[-1]
 
 
-class LRPlanarity(object):
+class LRPlanarity:
     """A class to maintain the state during planarity check."""
     __slots__ = [
         'G', 'roots', 'height', 'lowpt', 'lowpt2', 'nesting_depth',

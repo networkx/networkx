@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-class BaseTestAttributeMixing(object):
+class BaseTestAttributeMixing:
 
     @classmethod
     def setup_class(cls):
@@ -39,7 +39,7 @@ class BaseTestAttributeMixing(object):
         cls.S = S
 
 
-class BaseTestDegreeMixing(object):
+class BaseTestDegreeMixing:
 
     @classmethod
     def setup_class(cls):

@@ -21,7 +21,7 @@ def validate_possible_communities(result, *expected):
     assert any(set_of_sets(result) == set_of_sets(p) for p in expected)
 
 
-class TestGirvanNewman(object):
+class TestGirvanNewman:
     """Unit tests for the
     :func:`networkx.algorithms.community.centrality.girvan_newman`
     function.

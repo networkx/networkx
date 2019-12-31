@@ -82,7 +82,7 @@ def _generate_graphs():
                 edgelist.append(line.rstrip())
                 line = f.readline()
             G = nx.Graph()
-            G.name = 'G{}'.format(graph_index)
+            G.name = f'G{graph_index}'
             G.add_nodes_from(range(num_nodes))
             G.add_edges_from(tuple(map(int, e.split())) for e in edgelist)
             yield G
@@ -122,7 +122,7 @@ def graph_atlas(i):
 
     """
     if not (0 <= i < NUM_GRAPHS):
-        raise ValueError('index must be between 0 and {}'.format(NUM_GRAPHS))
+        raise ValueError(f'index must be between 0 and {NUM_GRAPHS}')
     return next(islice(_generate_graphs(), i, None))
 
 

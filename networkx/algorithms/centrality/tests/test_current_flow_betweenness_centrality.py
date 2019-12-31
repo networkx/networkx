@@ -13,7 +13,7 @@ npt = pytest.importorskip('numpy.testing')
 scipy = pytest.importorskip('scipy')
 
 
-class TestFlowBetweennessCentrality(object):
+class TestFlowBetweennessCentrality:
     def test_K4_normalized(self):
         """Betweenness centrality: K4"""
         G = nx.complete_graph(4)
@@ -80,7 +80,7 @@ class TestFlowBetweennessCentrality(object):
                 assert almost_equal(b[n], b_answer[n])
 
 
-class TestApproximateFlowBetweennessCentrality(object):
+class TestApproximateFlowBetweennessCentrality:
 
     def test_K4_normalized(self):
         "Approximate current-flow betweenness centrality: K4 normalized"
@@ -138,11 +138,11 @@ class TestApproximateFlowBetweennessCentrality(object):
                 npt.assert_allclose(b[n], b_answer[n], atol=epsilon)
 
 
-class TestWeightedFlowBetweennessCentrality(object):
+class TestWeightedFlowBetweennessCentrality:
     pass
 
 
-class TestEdgeFlowBetweennessCentrality(object):
+class TestEdgeFlowBetweennessCentrality:
 
     def test_K4(self):
         """Edge flow betweenness centrality: K4"""
