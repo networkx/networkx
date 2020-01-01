@@ -677,7 +677,7 @@ def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
     cutoff : integer, float
         If specified, the maximum flow algorithm will terminate when the
         flow value reaches or exceeds the cutoff. This is only for the
-        algorithms that support the cutoff parameter: :meth:`edmonds_karp`
+        algorithms that support the cutoff parameter: e.g., :meth:`edmonds_karp`
         and :meth:`shortest_augmenting_path`. Other algorithms will ignore
         this parameter. Default value: None.
 
