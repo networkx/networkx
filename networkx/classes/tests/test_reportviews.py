@@ -1,6 +1,7 @@
 import pytest
 
 import networkx as nx
+from networkx.classes.reportviews import NodeDataView
 
 
 # Nodes
@@ -8,10 +9,11 @@ class TestNodeView(object):
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9)
-        cls.nv = cls.G.nodes   # NodeView(G)
+        cls.nv = cls.G.nodes  # NodeView(G)
 
     def test_pickle(self):
         import pickle
+
         nv = self.nv
         pnv = pickle.loads(pickle.dumps(nv, -1))
         assert nv == pnv
@@ -36,9 +38,9 @@ class TestNodeView(object):
     def test_getitem(self):
         G = self.G.copy()
         nv = G.nodes
-        G.nodes[3]['foo'] = 'bar'
+        G.nodes[3]["foo"] = "bar"
         assert nv[7] == {}
-        assert nv[3] == {'foo': 'bar'}
+        assert nv[3] == {"foo": "bar"}
 
     def test_iter(self):
         nv = self.nv
@@ -60,16 +62,16 @@ class TestNodeView(object):
         nodes = self.nv
         assert nodes is nodes()
         assert nodes is not nodes(data=True)
-        assert nodes is not nodes(data='weight')
+        assert nodes is not nodes(data="weight")
 
 
 class TestNodeDataView(object):
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9)
-        cls.nv = cls.G.nodes.data()   # NodeDataView(G)
+        cls.nv = NodeDataView(cls.G)
         cls.ndv = cls.G.nodes.data(True)
-        cls.nwv = cls.G.nodes.data('foo')
+        cls.nwv = cls.G.nodes.data("foo")
 
     def test_viewtype(self):
         nv = self.G.nodes
@@ -79,6 +81,7 @@ class TestNodeDataView(object):
 
     def test_pickle(self):
         import pickle
+
         nv = self.nv
         pnv = pickle.loads(pickle.dumps(nv, -1))
         assert nv == pnv
@@ -89,88 +92,97 @@ class TestNodeDataView(object):
         assert str(self.ndv) == msg
 
     def test_repr(self):
-        msg = "NodeDataView({0: {}, 1: {}, 2: {}, 3: {}, " + \
-              "4: {}, 5: {}, 6: {}, 7: {}, 8: {}})"
-        assert repr(self.ndv) == msg
+        expected = "NodeDataView((0, 1, 2, 3, 4, 5, 6, 7, 8))"
+        assert repr(self.nv) == expected
+        expected = (
+            "NodeDataView({0: {}, 1: {}, 2: {}, 3: {}, "
+            + "4: {}, 5: {}, 6: {}, 7: {}, 8: {}})"
+        )
+        assert repr(self.ndv) == expected
+        expected = (
+            "NodeDataView({0: None, 1: None, 2: None, 3: None, 4: None, "
+            + "5: None, 6: None, 7: None, 8: None}, data='foo')"
+        )
+        assert repr(self.nwv) == expected
 
     def test_contains(self):
         G = self.G.copy()
         nv = G.nodes.data()
-        nwv = G.nodes.data('foo')
-        G.nodes[3]['foo'] = 'bar'
+        nwv = G.nodes.data("foo")
+        G.nodes[3]["foo"] = "bar"
         assert (7, {}) in nv
-        assert (3, {'foo': 'bar'}) in nv
-        assert (3, 'bar') in nwv
+        assert (3, {"foo": "bar"}) in nv
+        assert (3, "bar") in nwv
         assert (7, None) in nwv
         # default
-        nwv_def = G.nodes(data='foo', default='biz')
-        assert (7, 'biz') in nwv_def
-        assert (3, 'bar') in nwv_def
+        nwv_def = G.nodes(data="foo", default="biz")
+        assert (7, "biz") in nwv_def
+        assert (3, "bar") in nwv_def
 
     def test_getitem(self):
         G = self.G.copy()
         nv = G.nodes
-        G.nodes[3]['foo'] = 'bar'
-        assert nv[3] == {'foo': 'bar'}
+        G.nodes[3]["foo"] = "bar"
+        assert nv[3] == {"foo": "bar"}
         # default
-        nwv_def = G.nodes(data='foo', default='biz')
-        assert nwv_def[7], 'biz'
-        assert nwv_def[3] == 'bar'
+        nwv_def = G.nodes(data="foo", default="biz")
+        assert nwv_def[7], "biz"
+        assert nwv_def[3] == "bar"
 
     def test_iter(self):
         G = self.G.copy()
         nv = G.nodes.data()
         ndv = G.nodes.data(True)
-        nwv = G.nodes.data('foo')
+        nwv = G.nodes.data("foo")
         for i, (n, d) in enumerate(nv):
             assert i == n
             assert d == {}
         inv = iter(nv)
         assert next(inv) == (0, {})
-        G.nodes[3]['foo'] = 'bar'
+        G.nodes[3]["foo"] = "bar"
         # default
         for n, d in nv:
             if n == 3:
-                assert d == {'foo': 'bar'}
+                assert d == {"foo": "bar"}
             else:
                 assert d == {}
         # data=True
         for n, d in ndv:
             if n == 3:
-                assert d == {'foo': 'bar'}
+                assert d == {"foo": "bar"}
             else:
                 assert d == {}
         # data='foo'
         for n, d in nwv:
             if n == 3:
-                assert d == 'bar'
+                assert d == "bar"
             else:
                 assert d is None
         # data='foo', default=1
-        for n, d in G.nodes.data('foo', default=1):
+        for n, d in G.nodes.data("foo", default=1):
             if n == 3:
-                assert d == 'bar'
+                assert d == "bar"
             else:
                 assert d == 1
 
 
 def test_nodedataview_unhashable():
     G = nx.path_graph(9)
-    G.nodes[3]['foo'] = 'bar'
+    G.nodes[3]["foo"] = "bar"
     nvs = [G.nodes.data()]
     nvs.append(G.nodes.data(True))
     H = G.copy()
-    H.nodes[4]['foo'] = {1, 2, 3}
+    H.nodes[4]["foo"] = {1, 2, 3}
     nvs.append(H.nodes.data(True))
     # raise unhashable
     for nv in nvs:
         pytest.raises(TypeError, set, nv)
-        pytest.raises(TypeError, eval, 'nv | nv', locals())
+        pytest.raises(TypeError, eval, "nv | nv", locals())
     # no raise... hashable
     Gn = G.nodes.data(False)
     set(Gn)
     Gn | Gn
-    Gn = G.nodes.data('foo')
+    Gn = G.nodes.data("foo")
     set(Gn)
     Gn | Gn
 
@@ -179,7 +191,7 @@ class TestNodeViewSetOps(object):
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9)
-        cls.G.nodes[3]['foo'] = 'bar'
+        cls.G.nodes[3]["foo"] = "bar"
         cls.nv = cls.G.nodes
 
     def n_its(self, nodes):
@@ -228,22 +240,22 @@ class TestNodeDataViewSetOps(TestNodeViewSetOps):
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9)
-        cls.G.nodes[3]['foo'] = 'bar'
-        cls.nv = cls.G.nodes.data('foo')
+        cls.G.nodes[3]["foo"] = "bar"
+        cls.nv = cls.G.nodes.data("foo")
 
     def n_its(self, nodes):
-        return {(node, 'bar' if node == 3 else None) for node in nodes}
+        return {(node, "bar" if node == 3 else None) for node in nodes}
 
 
 class TestNodeDataViewDefaultSetOps(TestNodeDataViewSetOps):
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9)
-        cls.G.nodes[3]['foo'] = 'bar'
-        cls.nv = cls.G.nodes.data('foo', default=1)
+        cls.G.nodes[3]["foo"] = "bar"
+        cls.nv = cls.G.nodes.data("foo", default=1)
 
     def n_its(self, nodes):
-        return {(node, 'bar' if node == 3 else 1) for node in nodes}
+        return {(node, "bar" if node == 3 else 1) for node in nodes}
 
 
 # Edges Data View
@@ -255,6 +267,7 @@ class TestEdgeDataView(object):
 
     def test_pickle(self):
         import pickle
+
         ev = self.eview(self.G)(data=True)
         pev = pickle.loads(pickle.dumps(ev, -1))
         assert list(ev) == list(pev)
@@ -270,17 +283,19 @@ class TestEdgeDataView(object):
 
     def test_repr(self):
         ev = self.eview(self.G)(data=True)
-        rep = "EdgeDataView([(0, 1, {}), (1, 2, {}), " + \
-              "(2, 3, {}), (3, 4, {}), " + \
-              "(4, 5, {}), (5, 6, {}), " + \
-              "(6, 7, {}), (7, 8, {})])"
+        rep = (
+            "EdgeDataView([(0, 1, {}), (1, 2, {}), "
+            + "(2, 3, {}), (3, 4, {}), "
+            + "(4, 5, {}), (5, 6, {}), "
+            + "(6, 7, {}), (7, 8, {})])"
+        )
         assert repr(ev) == rep
 
     def test_iterdata(self):
         G = self.G.copy()
         evr = self.eview(G)
         ev = evr(data=True)
-        ev_def = evr(data='foo', default=1)
+        ev_def = evr(data="foo", default=1)
 
         for u, v, d in ev:
             pass
@@ -290,11 +305,11 @@ class TestEdgeDataView(object):
             pass
         assert wt == 1
 
-        self.modify_edge(G, (2, 3), foo='bar')
+        self.modify_edge(G, (2, 3), foo="bar")
         for e in ev:
             assert len(e) == 3
             if set(e[:2]) == {2, 3}:
-                assert e[2] == {'foo': 'bar'}
+                assert e[2] == {"foo": "bar"}
                 checked = True
             else:
                 assert e[2] == {}
@@ -303,7 +318,7 @@ class TestEdgeDataView(object):
         for e in ev_def:
             assert len(e) == 3
             if set(e[:2]) == {2, 3}:
-                assert e[2] == 'bar'
+                assert e[2] == "bar"
                 checked_wt = True
             else:
                 assert e[2] == 1
@@ -332,7 +347,7 @@ class TestEdgeDataView(object):
 
     def test_len(self):
         evr = self.eview(self.G)
-        ev = evr(data='foo')
+        ev = evr(data="foo")
         assert len(ev) == 8
         assert len(evr(1)) == 2
         assert len(evr([1, 2, 3])) == 4
@@ -356,15 +371,17 @@ class TestOutEdgeDataView(TestEdgeDataView):
 
     def test_repr(self):
         ev = self.eview(self.G)(data=True)
-        rep = "OutEdgeDataView([(0, 1, {}), (1, 2, {}), " + \
-              "(2, 3, {}), (3, 4, {}), " + \
-              "(4, 5, {}), (5, 6, {}), " + \
-              "(6, 7, {}), (7, 8, {})])"
+        rep = (
+            "OutEdgeDataView([(0, 1, {}), (1, 2, {}), "
+            + "(2, 3, {}), (3, 4, {}), "
+            + "(4, 5, {}), (5, 6, {}), "
+            + "(6, 7, {}), (7, 8, {})])"
+        )
         assert repr(ev) == rep
 
     def test_len(self):
         evr = self.eview(self.G)
-        ev = evr(data='foo')
+        ev = evr(data="foo")
         assert len(ev) == 8
         assert len(evr(1)) == 1
         assert len(evr([1, 2, 3])) == 3
@@ -388,10 +405,12 @@ class TestInEdgeDataView(TestOutEdgeDataView):
 
     def test_repr(self):
         ev = self.eview(self.G)(data=True)
-        rep = "InEdgeDataView([(0, 1, {}), (1, 2, {}), " + \
-              "(2, 3, {}), (3, 4, {}), " + \
-              "(4, 5, {}), (5, 6, {}), " + \
-              "(6, 7, {}), (7, 8, {})])"
+        rep = (
+            "InEdgeDataView([(0, 1, {}), (1, 2, {}), "
+            + "(2, 3, {}), (3, 4, {}), "
+            + "(4, 5, {}), (5, 6, {}), "
+            + "(6, 7, {}), (7, 8, {})])"
+        )
         assert repr(ev) == rep
 
 
@@ -406,10 +425,12 @@ class TestMultiEdgeDataView(TestEdgeDataView):
 
     def test_repr(self):
         ev = self.eview(self.G)(data=True)
-        rep = "MultiEdgeDataView([(0, 1, {}), (1, 2, {}), " + \
-              "(2, 3, {}), (3, 4, {}), " + \
-              "(4, 5, {}), (5, 6, {}), " + \
-              "(6, 7, {}), (7, 8, {})])"
+        rep = (
+            "MultiEdgeDataView([(0, 1, {}), (1, 2, {}), "
+            + "(2, 3, {}), (3, 4, {}), "
+            + "(4, 5, {}), (5, 6, {}), "
+            + "(6, 7, {}), (7, 8, {})])"
+        )
         assert repr(ev) == rep
 
 
@@ -424,10 +445,12 @@ class TestOutMultiEdgeDataView(TestOutEdgeDataView):
 
     def test_repr(self):
         ev = self.eview(self.G)(data=True)
-        rep = "OutMultiEdgeDataView([(0, 1, {}), (1, 2, {}), " + \
-              "(2, 3, {}), (3, 4, {}), " + \
-              "(4, 5, {}), (5, 6, {}), " + \
-              "(6, 7, {}), (7, 8, {})])"
+        rep = (
+            "OutMultiEdgeDataView([(0, 1, {}), (1, 2, {}), "
+            + "(2, 3, {}), (3, 4, {}), "
+            + "(4, 5, {}), (5, 6, {}), "
+            + "(6, 7, {}), (7, 8, {})])"
+        )
         assert repr(ev) == rep
 
 
@@ -439,10 +462,12 @@ class TestInMultiEdgeDataView(TestOutMultiEdgeDataView):
 
     def test_repr(self):
         ev = self.eview(self.G)(data=True)
-        rep = "InMultiEdgeDataView([(0, 1, {}), (1, 2, {}), " + \
-              "(2, 3, {}), (3, 4, {}), " + \
-              "(4, 5, {}), (5, 6, {}), " + \
-              "(6, 7, {}), (7, 8, {})])"
+        rep = (
+            "InMultiEdgeDataView([(0, 1, {}), (1, 2, {}), "
+            + "(2, 3, {}), (3, 4, {}), "
+            + "(4, 5, {}), (5, 6, {}), "
+            + "(6, 7, {}), (7, 8, {})])"
+        )
         assert repr(ev) == rep
 
 
@@ -455,6 +480,7 @@ class TestEdgeView(object):
 
     def test_pickle(self):
         import pickle
+
         ev = self.eview(self.G)
         pev = pickle.loads(pickle.dumps(ev, -1))
         assert ev == pev
@@ -470,8 +496,10 @@ class TestEdgeView(object):
 
     def test_repr(self):
         ev = self.eview(self.G)
-        rep = "EdgeView([(0, 1), (1, 2), (2, 3), (3, 4), " + \
-            "(4, 5), (5, 6), (6, 7), (7, 8)])"
+        rep = (
+            "EdgeView([(0, 1), (1, 2), (2, 3), (3, 4), "
+            + "(4, 5), (5, 6), (6, 7), (7, 8)])"
+        )
         assert repr(ev) == rep
 
     def test_call(self):
@@ -579,8 +607,10 @@ class TestOutEdgeView(TestEdgeView):
 
     def test_repr(self):
         ev = self.eview(self.G)
-        rep = "OutEdgeView([(0, 1), (1, 2), (2, 3), (3, 4), " + \
-            "(4, 5), (5, 6), (6, 7), (7, 8)])"
+        rep = (
+            "OutEdgeView([(0, 1), (1, 2), (2, 3), (3, 4), "
+            + "(4, 5), (5, 6), (6, 7), (7, 8)])"
+        )
         assert repr(ev) == rep
 
 
@@ -592,8 +622,10 @@ class TestInEdgeView(TestEdgeView):
 
     def test_repr(self):
         ev = self.eview(self.G)
-        rep = "InEdgeView([(0, 1), (1, 2), (2, 3), (3, 4), " + \
-            "(4, 5), (5, 6), (6, 7), (7, 8)])"
+        rep = (
+            "InEdgeView([(0, 1), (1, 2), (2, 3), (3, 4), "
+            + "(4, 5), (5, 6), (6, 7), (7, 8)])"
+        )
         assert repr(ev) == rep
 
 
@@ -601,7 +633,7 @@ class TestMultiEdgeView(TestEdgeView):
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9, nx.MultiGraph())
-        cls.G.add_edge(1, 2, key=3, foo='bar')
+        cls.G.add_edge(1, 2, key=3, foo="bar")
         cls.eview = nx.reportviews.MultiEdgeView
 
     def modify_edge(self, G, e, **kwds):
@@ -618,8 +650,10 @@ class TestMultiEdgeView(TestEdgeView):
 
     def test_repr(self):
         ev = self.eview(self.G)
-        rep = "MultiEdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0), " + \
-            "(3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
+        rep = (
+            "MultiEdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0), "
+            + "(3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
+        )
         assert repr(ev) == rep
 
     def test_call(self):
@@ -659,34 +693,34 @@ class TestMultiEdgeView(TestEdgeView):
             pass
         assert wt == 1
 
-        self.modify_edge(G, (2, 3, 0), foo='bar')
+        self.modify_edge(G, (2, 3, 0), foo="bar")
         ev = evr(keys=True, data=True)
         for e in ev:
             assert len(e) == 4
-            print('edge:', e)
+            print("edge:", e)
             if set(e[:2]) == {2, 3}:
                 print(self.G._adj[2][3])
                 assert e[2] == 0
-                assert e[3] == {'foo': 'bar'}
+                assert e[3] == {"foo": "bar"}
                 checked = True
             elif set(e[:3]) == {1, 2, 3}:
                 assert e[2] == 3
-                assert e[3] == {'foo': 'bar'}
+                assert e[3] == {"foo": "bar"}
                 checked_multi = True
             else:
                 assert e[2] == 0
                 assert e[3] == {}
         assert checked
         assert checked_multi
-        ev = evr(keys=True, data='foo', default=1)
+        ev = evr(keys=True, data="foo", default=1)
         for e in ev:
             if set(e[:2]) == {1, 2} and e[2] == 3:
-                assert e[3] == 'bar'
+                assert e[3] == "bar"
             if set(e[:2]) == {1, 2} and e[2] == 0:
                 assert e[3] == 1
             if set(e[:2]) == {2, 3}:
                 assert e[2] == 0
-                assert e[3] == 'bar'
+                assert e[3] == "bar"
                 assert len(e) == 4
                 checked_wt = True
         assert checked_wt
@@ -696,12 +730,12 @@ class TestMultiEdgeView(TestEdgeView):
         elist = sorted([(i, i + 1, 0) for i in range(8)] + [(1, 2, 3)])
         assert sorted(list(ev)) == elist
         # test order of arguments:graph, nbunch, data, keys, default
-        ev = evr((1, 2), 'foo', True, 1)
+        ev = evr((1, 2), "foo", True, 1)
         for e in ev:
             if set(e[:2]) == {1, 2}:
                 assert e[2] in {0, 3}
                 if e[2] == 3:
-                    assert e[3] == 'bar'
+                    assert e[3] == "bar"
                 else:  # e[2] == 0
                     assert e[3] == 1
         if G.is_directed():
@@ -760,7 +794,7 @@ class TestOutMultiEdgeView(TestMultiEdgeView):
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9, nx.MultiDiGraph())
-        cls.G.add_edge(1, 2, key=3, foo='bar')
+        cls.G.add_edge(1, 2, key=3, foo="bar")
         cls.eview = nx.reportviews.OutMultiEdgeView
 
     def modify_edge(self, G, e, **kwds):
@@ -770,8 +804,10 @@ class TestOutMultiEdgeView(TestMultiEdgeView):
 
     def test_repr(self):
         ev = self.eview(self.G)
-        rep = "OutMultiEdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0),"\
-              + " (3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
+        rep = (
+            "OutMultiEdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0),"
+            + " (3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
+        )
         assert repr(ev) == rep
 
 
@@ -779,7 +815,7 @@ class TestInMultiEdgeView(TestMultiEdgeView):
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9, nx.MultiDiGraph())
-        cls.G.add_edge(1, 2, key=3, foo='bar')
+        cls.G.add_edge(1, 2, key=3, foo="bar")
         cls.eview = nx.reportviews.InMultiEdgeView
 
     def modify_edge(self, G, e, **kwds):
@@ -789,8 +825,10 @@ class TestInMultiEdgeView(TestMultiEdgeView):
 
     def test_repr(self):
         ev = self.eview(self.G)
-        rep = "InMultiEdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0), "\
-              + "(3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
+        rep = (
+            "InMultiEdgeView([(0, 1, 0), (1, 2, 0), (1, 2, 3), (2, 3, 0), "
+            + "(3, 4, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 8, 0)])"
+        )
         assert repr(ev) == rep
 
 
@@ -807,6 +845,7 @@ class TestDegreeView(object):
 
     def test_pickle(self):
         import pickle
+
         deg = self.G.degree
         pdeg = pickle.loads(pickle.dumps(deg, -1))
         assert dict(deg) == dict(pdeg)
@@ -833,7 +872,7 @@ class TestDegreeView(object):
         assert next(idv) == (0, dv[0])
         assert next(idv) == (1, dv[1])
         # weighted
-        dv = self.dview(self.G, weight='foo')
+        dv = self.dview(self.G, weight="foo")
         for n, d in dv:
             pass
         idv = iter(dv)
@@ -855,7 +894,7 @@ class TestDegreeView(object):
         assert dv[1] == 3
         assert dv[2] == 2
         assert dv[3] == 3
-        dv = self.dview(self.G, weight='foo')
+        dv = self.dview(self.G, weight="foo")
         assert dv[0] == 1
         assert dv[1] == 5
         assert dv[2] == 2
@@ -863,13 +902,13 @@ class TestDegreeView(object):
 
     def test_weight(self):
         dv = self.dview(self.G)
-        dvw = dv(0, weight='foo')
+        dvw = dv(0, weight="foo")
         assert dvw == 1
-        dvw = dv(1, weight='foo')
+        dvw = dv(1, weight="foo")
         assert dvw == 5
-        dvw = dv([2, 3], weight='foo')
+        dvw = dv([2, 3], weight="foo")
         assert sorted(dvw) == [(2, 2), (3, 5)]
-        dvd = dict(dv(weight='foo'))
+        dvd = dict(dv(weight="foo"))
         assert dvd[0] == 1
         assert dvd[1] == 5
         assert dvd[2] == 2
@@ -919,7 +958,7 @@ class TestOutDegreeView(TestDegreeView):
         assert dv[1] == 2
         assert dv[2] == 1
         assert dv[3] == 1
-        dv = self.dview(self.G, weight='foo')
+        dv = self.dview(self.G, weight="foo")
         assert dv[0] == 1
         assert dv[1] == 4
         assert dv[2] == 1
@@ -927,13 +966,13 @@ class TestOutDegreeView(TestDegreeView):
 
     def test_weight(self):
         dv = self.dview(self.G)
-        dvw = dv(0, weight='foo')
+        dvw = dv(0, weight="foo")
         assert dvw == 1
-        dvw = dv(1, weight='foo')
+        dvw = dv(1, weight="foo")
         assert dvw == 4
-        dvw = dv([2, 3], weight='foo')
+        dvw = dv([2, 3], weight="foo")
         assert sorted(dvw) == [(2, 1), (3, 1)]
-        dvd = dict(dv(weight='foo'))
+        dvd = dict(dv(weight="foo"))
         assert dvd[0] == 1
         assert dvd[1] == 4
         assert dvd[2] == 1
@@ -969,7 +1008,7 @@ class TestInDegreeView(TestDegreeView):
         assert dv[1] == 1
         assert dv[2] == 1
         assert dv[3] == 2
-        dv = self.dview(self.G, weight='foo')
+        dv = self.dview(self.G, weight="foo")
         assert dv[0] == 0
         assert dv[1] == 1
         assert dv[2] == 1
@@ -977,13 +1016,13 @@ class TestInDegreeView(TestDegreeView):
 
     def test_weight(self):
         dv = self.dview(self.G)
-        dvw = dv(0, weight='foo')
+        dvw = dv(0, weight="foo")
         assert dvw == 0
-        dvw = dv(1, weight='foo')
+        dvw = dv(1, weight="foo")
         assert dvw == 1
-        dvw = dv([2, 3], weight='foo')
+        dvw = dv([2, 3], weight="foo")
         assert sorted(dvw) == [(2, 1), (3, 4)]
-        dvd = dict(dv(weight='foo'))
+        dvd = dict(dv(weight="foo"))
         assert dvd[0] == 0
         assert dvd[1] == 1
         assert dvd[2] == 1
@@ -1019,7 +1058,7 @@ class TestMultiDegreeView(TestDegreeView):
         assert dv[1] == 4
         assert dv[2] == 2
         assert dv[3] == 4
-        dv = self.dview(self.G, weight='foo')
+        dv = self.dview(self.G, weight="foo")
         assert dv[0] == 1
         assert dv[1] == 7
         assert dv[2] == 2
@@ -1027,13 +1066,13 @@ class TestMultiDegreeView(TestDegreeView):
 
     def test_weight(self):
         dv = self.dview(self.G)
-        dvw = dv(0, weight='foo')
+        dvw = dv(0, weight="foo")
         assert dvw == 1
-        dvw = dv(1, weight='foo')
+        dvw = dv(1, weight="foo")
         assert dvw == 7
-        dvw = dv([2, 3], weight='foo')
+        dvw = dv([2, 3], weight="foo")
         assert sorted(dvw) == [(2, 2), (3, 7)]
-        dvd = dict(dv(weight='foo'))
+        dvd = dict(dv(weight="foo"))
         assert dvd[0] == 1
         assert dvd[1] == 7
         assert dvd[2] == 2
@@ -1079,7 +1118,7 @@ class TestOutMultiDegreeView(TestDegreeView):
         assert dv[1] == 3
         assert dv[2] == 1
         assert dv[3] == 1
-        dv = self.dview(self.G, weight='foo')
+        dv = self.dview(self.G, weight="foo")
         assert dv[0] == 1
         assert dv[1] == 6
         assert dv[2] == 1
@@ -1087,13 +1126,13 @@ class TestOutMultiDegreeView(TestDegreeView):
 
     def test_weight(self):
         dv = self.dview(self.G)
-        dvw = dv(0, weight='foo')
+        dvw = dv(0, weight="foo")
         assert dvw == 1
-        dvw = dv(1, weight='foo')
+        dvw = dv(1, weight="foo")
         assert dvw == 6
-        dvw = dv([2, 3], weight='foo')
+        dvw = dv([2, 3], weight="foo")
         assert sorted(dvw) == [(2, 1), (3, 1)]
-        dvd = dict(dv(weight='foo'))
+        dvd = dict(dv(weight="foo"))
         assert dvd[0] == 1
         assert dvd[1] == 6
         assert dvd[2] == 1
@@ -1129,7 +1168,7 @@ class TestInMultiDegreeView(TestDegreeView):
         assert dv[1] == 1
         assert dv[2] == 1
         assert dv[3] == 3
-        dv = self.dview(self.G, weight='foo')
+        dv = self.dview(self.G, weight="foo")
         assert dv[0] == 0
         assert dv[1] == 1
         assert dv[2] == 1
@@ -1137,13 +1176,13 @@ class TestInMultiDegreeView(TestDegreeView):
 
     def test_weight(self):
         dv = self.dview(self.G)
-        dvw = dv(0, weight='foo')
+        dvw = dv(0, weight="foo")
         assert dvw == 0
-        dvw = dv(1, weight='foo')
+        dvw = dv(1, weight="foo")
         assert dvw == 1
-        dvw = dv([2, 3], weight='foo')
+        dvw = dv([2, 3], weight="foo")
         assert sorted(dvw) == [(2, 1), (3, 6)]
-        dvd = dict(dv(weight='foo'))
+        dvd = dict(dv(weight="foo"))
         assert dvd[0] == 0
         assert dvd[1] == 1
         assert dvd[2] == 1
