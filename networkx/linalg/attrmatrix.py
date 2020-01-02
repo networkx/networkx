@@ -2,7 +2,7 @@
     Functions for constructing matrix-like objects from graph attributes.
 """
 
-__all__ = ['attr_matrix', 'attr_sparse_matrix']
+__all__ = ["attr_matrix", "attr_sparse_matrix"]
 
 
 def _node_value(G, node_attr):
@@ -30,10 +30,15 @@ def _node_value(G, node_attr):
 
     """
     if node_attr is None:
-        def value(u): return u
-    elif not hasattr(node_attr, '__call__'):
+
+        def value(u):
+            return u
+
+    elif not hasattr(node_attr, "__call__"):
         # assume it is a key for the node attribute dictionary
-        def value(u): return G.nodes[u][node_attr]
+        def value(u):
+            return G.nodes[u][node_attr]
+
     else:
         # Advanced:  Allow users to specify something else.
         #
@@ -80,25 +85,41 @@ def _edge_value(G, edge_attr):
         # topological count of edges
 
         if G.is_multigraph():
-            def value(u, v): return len(G[u][v])
-        else:
-            def value(u, v): return 1
 
-    elif not hasattr(edge_attr, '__call__'):
+            def value(u, v):
+                return len(G[u][v])
+
+        else:
+
+            def value(u, v):
+                return 1
+
+    elif not hasattr(edge_attr, "__call__"):
         # assume it is a key for the edge attribute dictionary
 
-        if edge_attr == 'weight':
+        if edge_attr == "weight":
             # provide a default value
             if G.is_multigraph():
-                def value(u, v): return sum([d.get(edge_attr, 1) for d in G[u][v].values()])
+
+                def value(u, v):
+                    return sum([d.get(edge_attr, 1) for d in G[u][v].values()])
+
             else:
-                def value(u, v): return G[u][v].get(edge_attr, 1)
+
+                def value(u, v):
+                    return G[u][v].get(edge_attr, 1)
+
         else:
             # otherwise, the edge attribute MUST exist for each edge
             if G.is_multigraph():
-                def value(u, v): return sum([d[edge_attr] for d in G[u][v].values()])
+
+                def value(u, v):
+                    return sum([d[edge_attr] for d in G[u][v].values()])
+
             else:
-                def value(u, v): return G[u][v][edge_attr]
+
+                def value(u, v):
+                    return G[u][v][edge_attr]
 
     else:
         # Advanced:  Allow users to specify something else.
@@ -120,8 +141,15 @@ def _edge_value(G, edge_attr):
     return value
 
 
-def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
-                rc_order=None, dtype=None, order=None):
+def attr_matrix(
+    G,
+    edge_attr=None,
+    node_attr=None,
+    normalized=False,
+    rc_order=None,
+    dtype=None,
+    order=None,
+):
     """Returns a NumPy matrix using attributes from G.
 
     If only `G` is passed in, then the adjacency matrix is constructed.
@@ -242,8 +270,7 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
     try:
         import numpy as np
     except ImportError:
-        raise ImportError(
-            "attr_matrix() requires numpy: http://scipy.org/ ")
+        raise ImportError("attr_matrix() requires numpy: http://scipy.org/ ")
 
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)
@@ -282,8 +309,9 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
         return M
 
 
-def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
-                       normalized=False, rc_order=None, dtype=None):
+def attr_sparse_matrix(
+    G, edge_attr=None, node_attr=None, normalized=False, rc_order=None, dtype=None
+):
     """Returns a SciPy sparse matrix using attributes from G.
 
     If only `G` is passed in, then the adjacency matrix is constructed.
@@ -406,8 +434,7 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
         import numpy as np
         from scipy import sparse
     except ImportError:
-        raise ImportError(
-            "attr_sparse_matrix() requires scipy: http://scipy.org/ ")
+        raise ImportError("attr_sparse_matrix() requires scipy: http://scipy.org/ ")
 
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)

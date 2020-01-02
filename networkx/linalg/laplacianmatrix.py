@@ -3,14 +3,16 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['laplacian_matrix',
-           'normalized_laplacian_matrix',
-           'directed_laplacian_matrix',
-           'directed_combinatorial_laplacian_matrix']
+__all__ = [
+    "laplacian_matrix",
+    "normalized_laplacian_matrix",
+    "directed_laplacian_matrix",
+    "directed_combinatorial_laplacian_matrix",
+]
 
 
-@not_implemented_for('directed')
-def laplacian_matrix(G, nodelist=None, weight='weight'):
+@not_implemented_for("directed")
+def laplacian_matrix(G, nodelist=None, weight="weight"):
     """Returns the Laplacian matrix of G.
 
     The graph Laplacian is the matrix L = D - A, where
@@ -45,18 +47,18 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
     laplacian_spectrum
     """
     import scipy.sparse
+
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
-                                  format='csr')
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
     diags = A.sum(axis=1)
-    D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format='csr')
+    D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
     return D - A
 
 
-@not_implemented_for('directed')
-def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
+@not_implemented_for("directed")
+def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     r"""Returns the normalized Laplacian matrix of G.
 
     The normalized graph Laplacian is the matrix
@@ -107,31 +109,34 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
        Laplacian, Electronic Journal of Linear Algebra, Volume 16, pp. 90-98,
        March 2007.
     """
+    import numpy as np
     import scipy
     import scipy.sparse
+
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
-                                  format='csr')
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
     diags = A.sum(axis=1).flatten()
-    D = scipy.sparse.spdiags(diags, [0], m, n, format='csr')
+    D = scipy.sparse.spdiags(diags, [0], m, n, format="csr")
     L = D - A
-    with scipy.errstate(divide='ignore'):
-        diags_sqrt = 1.0 / scipy.sqrt(diags)
-    diags_sqrt[scipy.isinf(diags_sqrt)] = 0
-    DH = scipy.sparse.spdiags(diags_sqrt, [0], m, n, format='csr')
+    with scipy.errstate(divide="ignore"):
+        diags_sqrt = 1.0 / np.sqrt(diags)
+    diags_sqrt[np.isinf(diags_sqrt)] = 0
+    DH = scipy.sparse.spdiags(diags_sqrt, [0], m, n, format="csr")
     return DH.dot(L.dot(DH))
+
 
 ###############################################################################
 # Code based on
 # https://bitbucket.org/bedwards/networkx-community/src/370bd69fc02f/networkx/algorithms/community/
 
 
-@not_implemented_for('undirected')
-@not_implemented_for('multigraph')
-def directed_laplacian_matrix(G, nodelist=None, weight='weight',
-                              walk_type=None, alpha=0.95):
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
+def directed_laplacian_matrix(
+    G, nodelist=None, weight="weight", walk_type=None, alpha=0.95
+):
     r"""Returns the directed Laplacian matrix of G.
 
     The graph directed Laplacian is the matrix
@@ -187,28 +192,30 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
        Laplacians and the Cheeger inequality for directed graphs.
        Annals of Combinatorics, 9(1), 2005
     """
-    import scipy as sp
+    import numpy as np
     from scipy.sparse import spdiags, linalg
 
-    P = _transition_matrix(G, nodelist=nodelist, weight=weight,
-                           walk_type=walk_type, alpha=alpha)
+    P = _transition_matrix(
+        G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
+    )
 
     n, m = P.shape
 
     evals, evecs = linalg.eigs(P.T, k=1)
     v = evecs.flatten().real
     p = v / v.sum()
-    sqrtp = sp.sqrt(p)
+    sqrtp = np.sqrt(p)
     Q = spdiags(sqrtp, [0], n, n) * P * spdiags(1.0 / sqrtp, [0], n, n)
-    I = sp.identity(len(G))
+    I = np.identity(len(G))
 
     return I - (Q + Q.T) / 2.0
 
 
-@not_implemented_for('undirected')
-@not_implemented_for('multigraph')
-def directed_combinatorial_laplacian_matrix(G, nodelist=None, weight='weight',
-                                            walk_type=None, alpha=0.95):
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
+def directed_combinatorial_laplacian_matrix(
+    G, nodelist=None, weight="weight", walk_type=None, alpha=0.95
+):
     r"""Return the directed combinatorial Laplacian matrix of G.
 
     The graph directed combinatorial Laplacian is the matrix
@@ -265,8 +272,9 @@ def directed_combinatorial_laplacian_matrix(G, nodelist=None, weight='weight',
     """
     from scipy.sparse import spdiags, linalg
 
-    P = _transition_matrix(G, nodelist=nodelist, weight=weight,
-                           walk_type=walk_type, alpha=alpha)
+    P = _transition_matrix(
+        G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
+    )
 
     n, m = P.shape
 
@@ -277,11 +285,10 @@ def directed_combinatorial_laplacian_matrix(G, nodelist=None, weight='weight',
 
     Phi = Phi.todense()
 
-    return Phi - (Phi*P + P.T*Phi) / 2.0
+    return Phi - (Phi * P + P.T * Phi) / 2.0
 
 
-def _transition_matrix(G, nodelist=None, weight='weight',
-                       walk_type=None, alpha=0.95):
+def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=0.95):
     """Returns the transition matrix of G.
 
     This is a row stochastic giving the transition probabilities while
@@ -319,9 +326,9 @@ def _transition_matrix(G, nodelist=None, weight='weight',
     NetworkXError
         If walk_type not specified or alpha not in valid range
     """
-
-    import scipy as sp
+    import numpy as np
     from scipy.sparse import identity, spdiags
+
     if walk_type is None:
         if nx.is_strongly_connected(G):
             if nx.is_aperiodic(G):
@@ -331,11 +338,10 @@ def _transition_matrix(G, nodelist=None, weight='weight',
         else:
             walk_type = "pagerank"
 
-    M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
-                                  dtype=float)
+    M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
     n, m = M.shape
     if walk_type in ["random", "lazy"]:
-        DI = spdiags(1.0 / sp.array(M.sum(axis=1).flat), [0], n, n)
+        DI = spdiags(1.0 / np.array(M.sum(axis=1).flat), [0], n, n)
         if walk_type == "random":
             P = DI * M
         else:
@@ -344,11 +350,11 @@ def _transition_matrix(G, nodelist=None, weight='weight',
 
     elif walk_type == "pagerank":
         if not (0 < alpha < 1):
-            raise nx.NetworkXError('alpha must be between 0 and 1')
+            raise nx.NetworkXError("alpha must be between 0 and 1")
         # this is using a dense representation
         M = M.todense()
         # add constant to dangling nodes' row
-        dangling = sp.where(M.sum(axis=1) == 0)
+        dangling = np.where(M.sum(axis=1) == 0)
         for d in dangling[0]:
             M[d] = 1.0 / n
         # normalize

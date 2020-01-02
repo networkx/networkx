@@ -2,11 +2,11 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['bethe_hessian_matrix']
+__all__ = ["bethe_hessian_matrix"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def bethe_hessian_matrix(G, r=None, nodelist=None):
     r"""Returns the Bethe Hessian matrix of G.
 
@@ -63,14 +63,16 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
        arXiv:1507.00827, 2015.
     """
     import scipy.sparse
+
     if nodelist is None:
         nodelist = list(G)
     if r is None:
-        r = sum([d ** 2 for v, d in nx.degree(G)]) /\
-            sum([d for v, d in nx.degree(G)]) - 1
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format='csr')
+        r = (
+            sum([d ** 2 for v, d in nx.degree(G)]) / sum([d for v, d in nx.degree(G)]) - 1
+        )
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format="csr")
     n, m = A.shape
     diags = A.sum(axis=1)
-    D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format='csr')
-    I = scipy.sparse.eye(m, n, format='csr')
+    D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
+    I = scipy.sparse.eye(m, n, format="csr")
     return (r ** 2 - 1) * I - r * A + D

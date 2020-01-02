@@ -1,7 +1,7 @@
 import pytest
-np = pytest.importorskip('numpy')
-npt = pytest.importorskip('numpy.testing')
-scipy = pytest.importorskip('scipy')
+np = pytest.importorskip("numpy")
+npt = pytest.importorskip("numpy.testing")
+scipy = pytest.importorskip("scipy")
 
 import networkx as nx
 from networkx.generators.degree_seq import havel_hakimi_graph
@@ -16,8 +16,20 @@ class TestModularity:
         # Graph used as an example in Sec. 4.1 of Langville and Meyer,
         # "Google's PageRank and Beyond". (Used for test_directed_laplacian)
         cls.DG = nx.DiGraph()
-        cls.DG.add_edges_from(((1, 2), (1, 3), (3, 1), (3, 2), (3, 5), (4, 5), (4, 6),
-                               (5, 4), (5, 6), (6, 4)))
+        cls.DG.add_edges_from(
+            (
+                (1, 2),
+                (1, 3),
+                (3, 1),
+                (3, 2),
+                (3, 5),
+                (4, 5),
+                (4, 6),
+                (5, 4),
+                (5, 6),
+                (6, 4),
+            )
+        )
 
     def test_modularity(self):
         "Modularity matrix"
@@ -29,8 +41,10 @@ class TestModularity:
 
         permutation = [4, 0, 1, 2, 3]
         npt.assert_equal(nx.modularity_matrix(self.G), B)
-        npt.assert_equal(nx.modularity_matrix(self.G, nodelist=permutation),
-                         B[np.ix_(permutation, permutation)])
+        npt.assert_equal(
+            nx.modularity_matrix(self.G, nodelist=permutation),
+            B[np.ix_(permutation, permutation)],
+        )
 
     def test_modularity_weight(self):
         "Modularity matrix with weights"
@@ -58,9 +72,9 @@ class TestModularity:
                       [-0.1, -0.2, -0.1,  0.8, -0.2, -0.2]])
         node_permutation = [5, 1, 2, 3, 4, 6]
         idx_permutation = [4, 0, 1, 2, 3, 5]
-        mm = nx.directed_modularity_matrix(self.DG,  nodelist=sorted(self.DG))
+        mm = nx.directed_modularity_matrix(self.DG, nodelist=sorted(self.DG))
         npt.assert_equal(mm, B)
         npt.assert_equal(
             nx.directed_modularity_matrix(self.DG, nodelist=node_permutation),
-            B[np.ix_(idx_permutation, idx_permutation)]
+            B[np.ix_(idx_permutation, idx_permutation)],
         )
