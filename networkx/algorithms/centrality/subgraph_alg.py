@@ -4,15 +4,16 @@ Subraph centrality and communicability betweenness.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['subgraph_centrality_exp',
-           'subgraph_centrality',
-           'communicability_betweenness_centrality',
-           'estrada_index'
-           ]
+__all__ = [
+    "subgraph_centrality_exp",
+    "subgraph_centrality",
+    "communicability_betweenness_centrality",
+    "estrada_index",
+]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def subgraph_centrality_exp(G):
     r"""Returns the subgraph centrality for each node of G.
 
@@ -61,13 +62,29 @@ def subgraph_centrality_exp(G):
     Examples
     --------
     (Example from [1]_)
-    >>> G = nx.Graph([(1,2),(1,5),(1,8),(2,3),(2,8),(3,4),(3,6),(4,5),(4,7),(5,6),(6,7),(7,8)])
+    >>> G = nx.Graph(
+    ...     [
+    ...         (1, 2),
+    ...         (1, 5),
+    ...         (1, 8),
+    ...         (2, 3),
+    ...         (2, 8),
+    ...         (3, 4),
+    ...         (3, 6),
+    ...         (4, 5),
+    ...         (4, 7),
+    ...         (5, 6),
+    ...         (6, 7),
+    ...         (7, 8),
+    ...     ]
+    ... )
     >>> sc = nx.subgraph_centrality_exp(G)
-    >>> print(['%s %0.2f'%(node,sc[node]) for node in sorted(sc)])
+    >>> print([f"{node} {sc[node]:0.2f}" for node in sorted(sc)])
     ['1 3.90', '2 3.90', '3 3.64', '4 3.71', '5 3.64', '6 3.71', '7 3.64', '8 3.90']
     """
     # alternative implementation that calculates the matrix exponential
     import scipy.linalg
+
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
@@ -78,8 +95,8 @@ def subgraph_centrality_exp(G):
     return sc
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def subgraph_centrality(G):
     r"""Returns subgraph centrality for each node in G.
 
@@ -125,9 +142,24 @@ def subgraph_centrality(G):
     Examples
     --------
     (Example from [1]_)
-    >>> G = nx.Graph([(1,2),(1,5),(1,8),(2,3),(2,8),(3,4),(3,6),(4,5),(4,7),(5,6),(6,7),(7,8)])
+    >>> G = nx.Graph(
+    ...     [
+    ...         (1, 2),
+    ...         (1, 5),
+    ...         (1, 8),
+    ...         (2, 3),
+    ...         (2, 8),
+    ...         (3, 4),
+    ...         (3, 6),
+    ...         (4, 5),
+    ...         (4, 7),
+    ...         (5, 6),
+    ...         (6, 7),
+    ...         (7, 8),
+    ...     ]
+    ... )
     >>> sc = nx.subgraph_centrality(G)
-    >>> print(['%s %0.2f'%(node,sc[node]) for node in sorted(sc)])
+    >>> print([f"{node} {sc[node]:0.2f}" for node in sorted(sc)])
     ['1 3.90', '2 3.90', '3 3.64', '4 3.71', '5 3.64', '6 3.71', '7 3.64', '8 3.90']
 
     References
@@ -138,23 +170,24 @@ def subgraph_centrality(G):
        https://arxiv.org/abs/cond-mat/0504730
 
     """
-    import numpy
+    import numpy as np
     import numpy.linalg
+
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G, nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
     w, v = numpy.linalg.eigh(A.A)
-    vsquare = numpy.array(v)**2
-    expw = numpy.exp(w)
-    xg = numpy.dot(vsquare, expw)
+    vsquare = np.array(v) ** 2
+    expw = np.exp(w)
+    xg = np.dot(vsquare, expw)
     # convert vector dictionary keyed by node
     sc = dict(zip(nodelist, map(float, xg)))
     return sc
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def communicability_betweenness_centrality(G, normalized=True):
     r"""Returns subgraph communicability for all pairs of nodes in G.
 
@@ -215,11 +248,25 @@ def communicability_betweenness_centrality(G, normalized=True):
 
     Examples
     --------
-    >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
+    >>> G = nx.Graph(
+    ...     [
+    ...         (0, 1),
+    ...         (1, 2),
+    ...         (1, 5),
+    ...         (5, 4),
+    ...         (2, 4),
+    ...         (2, 3),
+    ...         (4, 3),
+    ...         (3, 6),
+    ...     ]
+    ... )
     >>> cbc = nx.communicability_betweenness_centrality(G)
+    >>> print([f"{node} {cbc[node]:0.2f}" for node in sorted(cbc)])
+    ['0 0.03', '1 0.45', '2 0.51', '3 0.45', '4 0.40', '5 0.19', '6 0.03']
     """
-    import scipy
+    import numpy as np
     import scipy.linalg
+
     nodelist = list(G)  # ordering of nodes in matrix
     n = len(nodelist)
     A = nx.to_numpy_matrix(G, nodelist)
@@ -239,7 +286,7 @@ def communicability_betweenness_centrality(G, normalized=True):
         # sum with row/col of node v and diag set to zero
         B[i, :] = 0
         B[:, i] = 0
-        B -= scipy.diag(scipy.diag(B))
+        B -= np.diag(np.diag(B))
         cbc[v] = float(B.sum())
         # put row and col back
         A[i, :] = row
@@ -256,7 +303,7 @@ def _rescale(cbc, normalized):
         if order <= 2:
             scale = None
         else:
-            scale = 1.0 / ((order - 1.0)**2 - (order - 1.0))
+            scale = 1.0 / ((order - 1.0) ** 2 - (order - 1.0))
     if scale is not None:
         for v in cbc:
             cbc[v] *= scale
@@ -303,7 +350,21 @@ def estrada_index(G):
 
     Examples
     --------
-    >>> G=nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
-    >>> ei=nx.estrada_index(G)
+    >>> G = nx.Graph(
+    ...     [
+    ...         (0, 1),
+    ...         (1, 2),
+    ...         (1, 5),
+    ...         (5, 4),
+    ...         (2, 4),
+    ...         (2, 3),
+    ...         (4, 3),
+    ...         (3, 6),
+    ...     ]
+    ... )
+    >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
+    >>> ei = nx.estrada_index(G)
+    >>> print(f"{ei:0.5}")
+    20.55
     """
     return sum(subgraph_centrality(G).values())

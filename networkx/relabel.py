@@ -1,6 +1,6 @@
 import networkx as nx
 
-__all__ = ['convert_node_labels_to_integers', 'relabel_nodes']
+__all__ = ["convert_node_labels_to_integers", "relabel_nodes"]
 
 
 def relabel_nodes(G, mapping, copy=True):
@@ -104,9 +104,10 @@ def _relabel_inplace(G, mapping):
         try:
             nodes = reversed(list(nx.topological_sort(D)))
         except nx.NetworkXUnfeasible:
-            raise nx.NetworkXUnfeasible('The node label sets are overlapping '
-                                        'and no ordering can resolve the '
-                                        'mapping. Use copy=True.')
+            raise nx.NetworkXUnfeasible(
+                "The node label sets are overlapping and no ordering can "
+                "resolve the mapping. Use copy=True."
+            )
     else:
         # non-overlapping label sets
         nodes = old_labels
@@ -126,19 +127,25 @@ def _relabel_inplace(G, mapping):
         except KeyError:
             raise KeyError(f"Node {old} is not in the graph")
         if multigraph:
-            new_edges = [(new, new if old == target else target, key, data)
-                         for (_, target, key, data)
-                         in G.edges(old, data=True, keys=True)]
+            new_edges = [
+                (new, new if old == target else target, key, data)
+                for (_, target, key, data) in G.edges(old, data=True, keys=True)
+            ]
             if directed:
-                new_edges += [(new if old == source else source, new, key, data)
-                              for (source, _, key, data)
-                              in G.in_edges(old, data=True, keys=True)]
+                new_edges += [
+                    (new if old == source else source, new, key, data)
+                    for (source, _, key, data) in G.in_edges(old, data=True, keys=True)
+                ]
         else:
-            new_edges = [(new, new if old == target else target, data)
-                         for (_, target, data) in G.edges(old, data=True)]
+            new_edges = [
+                (new, new if old == target else target, data)
+                for (_, target, data) in G.edges(old, data=True)
+            ]
             if directed:
-                new_edges += [(new if old == source else source, new, data)
-                              for (source, _, data) in G.in_edges(old, data=True)]
+                new_edges += [
+                    (new if old == source else source, new, data)
+                    for (source, _, data) in G.in_edges(old, data=True)
+                ]
         G.remove_node(old)
         G.add_edges_from(new_edges)
     return G
@@ -149,17 +156,22 @@ def _relabel_copy(G, mapping):
     H.add_nodes_from(mapping.get(n, n) for n in G)
     H._node.update((mapping.get(n, n), d.copy()) for n, d in G.nodes.items())
     if G.is_multigraph():
-        H.add_edges_from((mapping.get(n1, n1), mapping.get(n2, n2), k, d.copy())
-                         for (n1, n2, k, d) in G.edges(keys=True, data=True))
+        H.add_edges_from(
+            (mapping.get(n1, n1), mapping.get(n2, n2), k, d.copy())
+            for (n1, n2, k, d) in G.edges(keys=True, data=True)
+        )
     else:
-        H.add_edges_from((mapping.get(n1, n1), mapping.get(n2, n2), d.copy())
-                         for (n1, n2, d) in G.edges(data=True))
+        H.add_edges_from(
+            (mapping.get(n1, n1), mapping.get(n2, n2), d.copy())
+            for (n1, n2, d) in G.edges(data=True)
+        )
     H.graph.update(G.graph)
     return H
 
 
-def convert_node_labels_to_integers(G, first_label=0, ordering="default",
-                                    label_attribute=None):
+def convert_node_labels_to_integers(
+    G, first_label=0, ordering="default", label_attribute=None
+):
     """Returns a copy of the graph G with the nodes relabeled using
     consecutive integers.
 
@@ -214,6 +226,5 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
     H = relabel_nodes(G, mapping)
     # create node attribute with the old label
     if label_attribute is not None:
-        nx.set_node_attributes(H, {v: k for k, v in mapping.items()},
-                               label_attribute)
+        nx.set_node_attributes(H, {v: k for k, v in mapping.items()}, label_attribute)
     return H

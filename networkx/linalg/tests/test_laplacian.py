@@ -1,8 +1,8 @@
 import pytest
 
-np = pytest.importorskip('numpy')
-npt = pytest.importorskip('numpy.testing')
-pytest.importorskip('scipy')
+np = pytest.importorskip("numpy")
+npt = pytest.importorskip("numpy.testing")
+pytest.importorskip("scipy")
 
 import networkx as nx
 from networkx.generators.degree_seq import havel_hakimi_graph
@@ -16,7 +16,7 @@ class TestLaplacian:
         deg = [3, 2, 2, 1, 0]
         cls.G = havel_hakimi_graph(deg)
         cls.WG = nx.Graph(
-            (u, v, {'weight': 0.5, 'other': 0.3}) for (u, v) in cls.G.edges()
+            (u, v, {"weight": 0.5, "other": 0.3}) for (u, v) in cls.G.edges()
         )
         cls.WG.add_node(4)
         cls.MG = nx.MultiGraph(cls.G)
@@ -43,7 +43,7 @@ class TestLaplacian:
         )
         npt.assert_equal(nx.laplacian_matrix(self.WG).todense(), WL)
         npt.assert_equal(nx.laplacian_matrix(self.WG, weight=None).todense(), NL)
-        npt.assert_equal(nx.laplacian_matrix(self.WG, weight='other').todense(), OL)
+        npt.assert_equal(nx.laplacian_matrix(self.WG, weight="other").todense(), OL)
 
     def test_normalized_laplacian(self):
         "Generalized Graph Laplacian"
@@ -63,18 +63,24 @@ class TestLaplacian:
                         [-0.3536,  0.,  0.,  0.5,  0.],
                         [0.,  0.,  0.,  0.,  0.]])
 
-        npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.G, nodelist=range(5)).todense(),
-                                G, decimal=3)
-        npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.G).todense(),
-                                GL, decimal=3)
-        npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.MG).todense(),
-                                GL, decimal=3)
-        npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.WG).todense(),
-                                GL, decimal=3)
-        npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.WG, weight='other').todense(),
-                                GL, decimal=3)
-        npt.assert_almost_equal(nx.normalized_laplacian_matrix(self.Gsl).todense(),
-                                Lsl, decimal=3)
+        npt.assert_almost_equal(
+            nx.normalized_laplacian_matrix(self.G, nodelist=range(5)).todense(), G, decimal=3
+        )
+        npt.assert_almost_equal(
+            nx.normalized_laplacian_matrix(self.G).todense(), GL, decimal=3
+        )
+        npt.assert_almost_equal(
+            nx.normalized_laplacian_matrix(self.MG).todense(), GL, decimal=3
+        )
+        npt.assert_almost_equal(
+            nx.normalized_laplacian_matrix(self.WG).todense(), GL, decimal=3
+        )
+        npt.assert_almost_equal(
+            nx.normalized_laplacian_matrix(self.WG, weight="other").todense(), GL, decimal=3
+        )
+        npt.assert_almost_equal(
+            nx.normalized_laplacian_matrix(self.Gsl).todense(), Lsl, decimal=3
+        )
 
     def test_directed_laplacian(self):
         "Directed Laplacian"
@@ -82,8 +88,20 @@ class TestLaplacian:
         # "Google's PageRank and Beyond". The graph contains dangling nodes, so
         # the pagerank random walk is selected by directed_laplacian
         G = nx.DiGraph()
-        G.add_edges_from(((1, 2), (1, 3), (3, 1), (3, 2), (3, 5), (4, 5), (4, 6),
-                          (5, 4), (5, 6), (6, 4)))
+        G.add_edges_from(
+            (
+                (1, 2),
+                (1, 3),
+                (3, 1),
+                (3, 2),
+                (3, 5),
+                (4, 5),
+                (4, 6),
+                (5, 4),
+                (5, 6),
+                (6, 4),
+            )
+        )
         GL = np.array([[0.9833, -0.2941, -0.3882, -0.0291, -0.0231, -0.0261],
                        [-0.2941,  0.8333, -0.2339, -0.0536, -0.0589, -0.0554],
                        [-0.3882, -0.2339,  0.9833, -0.0278, -0.0896, -0.0251],
@@ -101,7 +119,7 @@ class TestLaplacian:
                        [0.,  0.,  0.,  1., -0.5, -0.5],
                        [0., -0.3162, -0.0913, -0.5,  1., -0.25],
                        [-0.3227,  0.,  0., -0.5, -0.25,  1.]])
-        L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G), walk_type='random')
+        L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G), walk_type="random")
         npt.assert_almost_equal(L, GL, decimal=3)
 
         GL = np.array([[0.5, -0.1531, -0.2357,  0.,  0., -0.1614],
@@ -110,7 +128,7 @@ class TestLaplacian:
                        [0.,  0.,  0.,  0.5, -0.25, -0.25],
                        [0., -0.1581, -0.0456, -0.25,  0.5, -0.125],
                        [-0.1614,  0.,  0., -0.25, -0.125,  0.5]])
-        L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G), walk_type='lazy')
+        L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G), walk_type="lazy")
         npt.assert_almost_equal(L, GL, decimal=3)
 
     def test_directed_combinatorial_laplacian(self):
@@ -140,8 +158,7 @@ class TestLaplacian:
                        [-0.0020, -0.0062, -0.0083, -0.1356, 0.2026, -0.0505],
                        [-0.0027, -0.0069, -0.0027, -0.2187, -0.0505, 0.2815]])
 
-        L = nx.directed_combinatorial_laplacian_matrix(G, alpha=0.9,
-                                                       nodelist=sorted(G))
+        L = nx.directed_combinatorial_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G))
         npt.assert_almost_equal(L, GL, decimal=3)
 
         # Make the graph strongly connected, so we can use a random and lazy walk
@@ -154,9 +171,9 @@ class TestLaplacian:
                        [0, -0.0465, -0.0116, -0.1163, 0.2326, -0.0581],
                        [-0.0581, 0, 0, -0.1163, -0.0581, 0.2326]])
 
-        L = nx.directed_combinatorial_laplacian_matrix(G, alpha=0.9,
-                                                       nodelist=sorted(G),
-                                                       walk_type='random')
+        L = nx.directed_combinatorial_laplacian_matrix(
+            G, alpha=0.9, nodelist=sorted(G), walk_type="random"
+        )
         npt.assert_almost_equal(L, GL, decimal=3)
 
         GL = np.array([[0.0698, -0.0174, -0.0233, 0, 0, -0.0291],
@@ -166,9 +183,9 @@ class TestLaplacian:
                        [0, -0.0233, -0.0058, -0.0581, 0.1163, -0.0291],
                        [-0.0291, 0, 0, -0.0581, -0.0291, 0.1163]])
 
-        L = nx.directed_combinatorial_laplacian_matrix(G, alpha=0.9,
-                                                       nodelist=sorted(G),
-                                                       walk_type='lazy')
+        L = nx.directed_combinatorial_laplacian_matrix(
+            G, alpha=0.9, nodelist=sorted(G), walk_type="lazy"
+        )
         npt.assert_almost_equal(L, GL, decimal=3)
 
         E = nx.DiGraph(margulis_gabber_galil_graph(2))

@@ -7,20 +7,20 @@ Base exceptions and errors for NetworkX.
 """
 
 __all__ = [
-    'HasACycle',
-    'NodeNotFound',
-    'PowerIterationFailedConvergence',
-    'ExceededMaxIterations',
-    'AmbiguousSolution',
-    'NetworkXAlgorithmError',
-    'NetworkXException',
-    'NetworkXError',
-    'NetworkXNoCycle',
-    'NetworkXNoPath',
-    'NetworkXNotImplemented',
-    'NetworkXPointlessConcept',
-    'NetworkXUnbounded',
-    'NetworkXUnfeasible',
+    "HasACycle",
+    "NodeNotFound",
+    "PowerIterationFailedConvergence",
+    "ExceededMaxIterations",
+    "AmbiguousSolution",
+    "NetworkXAlgorithmError",
+    "NetworkXException",
+    "NetworkXError",
+    "NetworkXNoCycle",
+    "NetworkXNoPath",
+    "NetworkXNotImplemented",
+    "NetworkXPointlessConcept",
+    "NetworkXUnbounded",
+    "NetworkXUnfeasible",
 ]
 
 

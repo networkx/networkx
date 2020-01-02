@@ -3,13 +3,10 @@ Adjacency matrix and incidence matrix of graphs.
 """
 import networkx as nx
 
-__all__ = ['incidence_matrix',
-           'adj_matrix', 'adjacency_matrix',
-           ]
+__all__ = ["incidence_matrix", "adj_matrix", "adjacency_matrix"]
 
 
-def incidence_matrix(G, nodelist=None, edgelist=None,
-                     oriented=False, weight=None):
+def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=None):
     """Returns incidence matrix of G.
 
     The incidence matrix assigns each row to a node and each column to an edge.
@@ -60,6 +57,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
        http://academicearth.org/lectures/network-applications-incidence-matrix
     """
     import scipy.sparse
+
     if nodelist is None:
         nodelist = list(G)
     if edgelist is None:
@@ -92,10 +90,10 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
         else:
             A[ui, ei] = wt
             A[vi, ei] = wt
-    return A.asformat('csc')
+    return A.asformat("csc")
 
 
-def adjacency_matrix(G, nodelist=None, weight='weight'):
+def adjacency_matrix(G, nodelist=None, weight="weight"):
     """Returns adjacency matrix of G.
 
     Parameters

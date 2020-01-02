@@ -1,6 +1,6 @@
 import pytest
 
-np = pytest.importorskip('numpy')
+np = pytest.importorskip("numpy")
 import numpy.testing as npt
 
 import networkx as nx
@@ -14,10 +14,10 @@ def test_attr_matrix():
     G.add_edge(1, 2, thickness=3)
 
     def node_attr(u):
-        return G.nodes[u].get('size', .5) * 3
+        return G.nodes[u].get("size", .5) * 3
 
     def edge_attr(u, v):
-        return G[u][v].get('thickness', .5)
+        return G[u][v].get("thickness", .5)
 
     M = nx.attr_matrix(G, edge_attr=edge_attr, node_attr=node_attr)
     npt.assert_equal(M[0], np.array([[6.]]))
@@ -70,7 +70,7 @@ def test_attr_matrix_multigraph():
 
 
 def test_attr_sparse_matrix():
-    pytest.importorskip('scipy')
+    pytest.importorskip("scipy")
     G = nx.Graph()
     G.add_edge(0, 1, thickness=1, weight=3)
     G.add_edge(0, 2, thickness=2)
