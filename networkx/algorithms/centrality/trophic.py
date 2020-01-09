@@ -57,8 +57,8 @@ def trophic_levels(G, weight='weight'):
         n = np.linalg.inv(i - p)
     except np.linalg.LinAlgError as err:
         # LinAlgError is raised when there is a non-basal node
-        msg = ". Trophic levels are only defined for graphs with at least one basal node " + \
-              "i.e. one node with no incoming edges."
+        msg = ". Trophic levels are only defined for graphs where every node has a path from a basal node " + \
+              " (basal nodes are nodes with no incoming edges)."
         err.args = (err.args[0] + msg,) + err.args[1:]
         raise
     y = n.sum(axis=1) + 1
