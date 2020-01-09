@@ -521,7 +521,8 @@ class DiGraph(Graph):
         except KeyError:  # NetworkXError if n not in self
             raise NetworkXError(f"The node {n} is not in the digraph.")
         for u in nbrs:
-            del self._pred[u][n]   # remove all edges n-u in digraph
+            if n in self._pred[u]:
+                del self._pred[u][n]   # remove all edges n-u in digraph
         del self._succ[n]          # remove node from succ
         for u in self._pred[n]:
             del self._succ[u][n]   # remove all edges n-u in digraph
