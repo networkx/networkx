@@ -43,7 +43,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
         The number of communities to be found.
 
     max_iter : integer
-        The number of maximum iterations allowed. By default 15.
+        The number of maximum iterations allowed. By default 100.
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
