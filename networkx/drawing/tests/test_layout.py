@@ -75,6 +75,7 @@ class TestLayout:
         vpos = nx.spiral_layout(G)
         vpos = nx.kamada_kawai_layout(G)
         vpos = nx.kamada_kawai_layout(G, dim=1)
+        vpos = nx.kamada_kawai_layout(G, dim=3)
 
     def test_smoke_string(self):
         G = self.Gs
@@ -88,6 +89,7 @@ class TestLayout:
         vpos = nx.spiral_layout(G)
         vpos = nx.kamada_kawai_layout(G)
         vpos = nx.kamada_kawai_layout(G, dim=1)
+        vpos = nx.kamada_kawai_layout(G, dim=3)
 
     def check_scale_and_center(self, pos, scale, center):
         center = numpy.array(center)
@@ -282,19 +284,11 @@ class TestLayout:
         assert almost_equal(grad[0], -0.5)
         assert almost_equal(grad[1], 0.5)
 
-    def test_kamada_kawai_costfn_2d(self):
+    def check_kamada_kawai_costfn(self, pos, invdist, meanwt, dim):
         costfn = nx.drawing.layout._kamada_kawai_costfn
 
-        pos = numpy.array([[1.3, -3.2],
-                           [2.7, -0.3],
-                           [5.1, 2.5]])
-        invdist = 1 / numpy.array([[0.1, 2.1, 1.7],
-                                   [2.1, 0.2, 0.6],
-                                   [1.7, 0.6, 0.3]])
-        meanwt = 0.3
-
         cost, grad = costfn(pos.ravel(), numpy, invdist,
-                            meanweight=meanwt, dim=2)
+                            meanweight=meanwt, dim=dim)
 
         expected_cost = 0.5 * meanwt * numpy.sum(numpy.sum(pos, axis=0) ** 2)
         for i in range(pos.shape[0]):
@@ -320,6 +314,27 @@ class TestLayout:
 
                 assert almost_equal(grad[idx], (cplus - cminus) / (2 * dx),
                                     places=5)
+
+    def test_kamada_kawai_costfn(self):
+        invdist = 1 / numpy.array([[0.1, 2.1, 1.7],
+                                   [2.1, 0.2, 0.6],
+                                   [1.7, 0.6, 0.3]])
+        meanwt = 0.3
+
+        # 2d
+        pos = numpy.array([[1.3, -3.2],
+                           [2.7, -0.3],
+                           [5.1, 2.5]])
+
+        self.check_kamada_kawai_costfn(pos, invdist, meanwt, 2)
+
+        # 3d
+        pos = numpy.array([[0.9, 8.6, -8.7],
+                           [-10, -0.5, -7.1],
+                           [9.1, -8.1, 1.6]])
+
+        self.check_kamada_kawai_costfn(pos, invdist, meanwt, 3)
+
 
     def test_spiral_layout(self):
 
