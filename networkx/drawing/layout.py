@@ -687,6 +687,8 @@ def kamada_kawai_layout(G, dist=None,
 
     G, center = _process_params(G, center, dim)
     nNodes = len(G)
+    if nNodes == 0:
+        return {}
 
     if dist is None:
         dist = dict(nx.shortest_path_length(G, weight=weight))
