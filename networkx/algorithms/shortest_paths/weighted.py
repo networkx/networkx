@@ -828,9 +828,12 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
                 if vu_dist > cutoff:
                     continue
             if u in dist:
-                if vu_dist < dist[u]:
+                u_dist = dist[u]
+                if vu_dist < u_dist:
                     raise ValueError('Contradictory paths found:',
                                      'negative weights?')
+                elif pred is not None and vu_dist == u_dist:
+                    pred[u].append(v)
             elif u not in seen or vu_dist < seen[u]:
                 seen[u] = vu_dist
                 push(fringe, (vu_dist, next(c), u))
