@@ -57,7 +57,7 @@ class TestLayout:
         vpos = nx.shell_layout(G)
         vpos = nx.bipartite_layout(G, G)
         vpos = nx.spiral_layout(G)
-        # FIXME vpos = nx.kamada_kawai_layout(G)
+        vpos = nx.kamada_kawai_layout(G)
 
     def test_smoke_int(self):
         G = self.Gi
@@ -115,6 +115,10 @@ class TestLayout:
         sc(nx.spiral_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.kamada_kawai_layout(G, scale=2, center=c), scale=2, center=c)
 
+        c = (2, 3, 5)
+        sc(nx.kamada_kawai_layout(G, dim=3, scale=2, center=c), scale=2, center=c)
+
+
     def test_planar_layout_non_planar_input(self):
         G = nx.complete_graph(9)
         pytest.raises(nx.NetworkXException, nx.planar_layout, G)
@@ -136,6 +140,10 @@ class TestLayout:
         sc(nx.shell_layout(G), scale=1, center=c)
         sc(nx.spiral_layout(G), scale=1, center=c)
         sc(nx.kamada_kawai_layout(G), scale=1, center=c)
+
+        c = (0, 0, 0)
+        sc(nx.kamada_kawai_layout(G, dim=3), scale=1, center=c)
+
 
     def test_circular_planar_and_shell_dim_error(self):
         G = nx.path_graph(4)
@@ -220,6 +228,7 @@ class TestLayout:
         pytest.raises(ValueError, nx.spectral_layout, G, dim=3, center=(1, 1))
         pytest.raises(ValueError, nx.shell_layout, G, center=(1, 1, 1))
         pytest.raises(ValueError, nx.spiral_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.kamada_kawai_layout, G, center=(1, 1, 1))
 
     def test_empty_graph(self):
         G = nx.empty_graph()
@@ -240,6 +249,8 @@ class TestLayout:
         vpos = nx.shell_layout(G, center=(1, 1))
         assert vpos == {}
         vpos = nx.spiral_layout(G, center=(1, 1))
+        assert vpos == {}
+        vpos = nx.kamada_kawai_layout(G, center=(1, 1))
         assert vpos == {}
 
     def test_bipartite_layout(self):
