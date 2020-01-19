@@ -488,6 +488,7 @@ def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
         raise nx.NetworkXNoPath(f'Target {target} cannot be reached'
                                 f'from Source {source}')
 
+    hits = {target}
     stack = [[target, 0]]
     top = 0
     while top >= 0:
@@ -495,11 +496,17 @@ def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
         if node == source:
             yield [p for p, n in reversed(stack[:top + 1])]
         if len(pred[node]) > i:
+            stack[top][1] = i + 1
+            next = pred[node][i]
+            if next in hits:
+                continue
+            else:
+                hits.add(next)
             top += 1
             if top == len(stack):
-                stack.append([pred[node][i], 0])
+                stack.append([next, 0])
             else:
-                stack[top] = [pred[node][i], 0]
+                stack[top] = [next, 0]
         else:
-            stack[top - 1][1] += 1
+            hits.discard(node)
             top -= 1
