@@ -687,6 +687,8 @@ def kamada_kawai_layout(G, dist=None,
 
     G, center = _process_params(G, center, dim)
     nNodes = len(G)
+    if nNodes == 0:
+        return {}
 
     if dist is None:
         dist = dict(nx.shortest_path_length(G, weight=weight))
@@ -701,7 +703,9 @@ def kamada_kawai_layout(G, dist=None,
             dist_mtx[row][col] = rdist[nc]
 
     if pos is None:
-        if dim >= 2:
+        if dim >= 3:
+            pos = random_layout(G, dim=dim)
+        elif dim == 2:
             pos = circular_layout(G, dim=dim)
         else:
             pos = {n: pt for n, pt in zip(G, np.linspace(0, 1, len(G)))}
