@@ -33,6 +33,7 @@ __all__ = [
     "spiral_layout",
     "multipartite_layout",
     "arf_layout",
+    "topo_layout",
 ]
 
 
@@ -1300,3 +1301,195 @@ def rescale_layout_dict(pos, scale=1):
     pos_v = np.array(list(pos.values()))
     pos_v = rescale_layout(pos_v, scale=scale)
     return dict(zip(pos, pos_v))
+
+
+
+def _assign_layers(G, root_is_sink=True):
+    """
+    Assigns nodes to layers (O(|V| * |E|)):
+    * topologically sorts the graph.
+    * assigns each node to its own layer. (O(|V|))
+    * repeats the following bubble-sort like algo until convergence
+    (for the worst case (linear chain of nodes ordered in opposite
+    direction) it is O(|V|), but we have eliminated this case with topo sort):
+        * walks nodes and moves them into the layer further than the maximum
+        layer of its either in or out neighbours (O(|E|))
+    * eliminates gaps. O(|V|)
+    """
+    from ..algorithms import topological_sort
+    node2layer = {}
+
+    ts = list(topological_sort(G))
+    if root_is_sink:
+        ts = list(reversed(ts))
+    for k, v in enumerate(ts):
+        node2layer[v] = k
+    del ts
+
+    if root_is_sink:
+        def getNeighbours(v):
+            for v1 in G.out_edges(v):
+                yield v1[1]
+    else:
+        def getNeighbours(v):
+            for v1 in G.in_edges(v):
+                yield v1[0]
+
+    #cumulativeMoves = 0
+    movedVertices = 1
+    while movedVertices:
+        movedVertices = 0
+        node2layer_new = type(node2layer)(node2layer)
+        for v, l in node2layer.items():
+            ns = list(getNeighbours(v))
+            if ns:
+                it = (node2layer[n] for n in ns)
+                r = max(it) + 1
+                if node2layer[v] != r:
+                    node2layer_new[v] = r
+                    movedVertices += 1
+            else:
+                node2layer_new[v] = 0
+            node2layer = node2layer_new
+            #print("movedVertices", movedVertices)
+            #cumulativeMoves += movedVertices
+    
+        layers = {}
+        for v, k in node2layer.items():
+            if k in layers:
+                layers[k] |= {v}
+            else:
+                layers[k] = {v}
+
+        for i, (l, s) in enumerate(sorted(layers.items(), key=lambda x: x[0])):
+            for v in s:
+                node2layer[v] = i
+
+    ls1 = [None] * len(layers)
+    for l, s in layers.items():
+        ls1[l] = s
+    return ls1
+
+
+def _layers2coords_naive(layers, base_layout=None):
+    coords = {}
+    for i, layer in enumerate(layers):
+        scale = len(layer) / 2
+        if base_layout:
+            layer = sorted(layer, key=lambda v: base_layout[v][0])
+        for j, v in enumerate(layer):
+            x = i
+            y = j - scale
+            coords[v] = x, y
+    return coords
+
+
+try:
+    try:
+        from sklearn.decomposition import FastICA
+
+        def _autorotate_layout_np(m):
+            """ICA"""
+            p = FastICA(2)
+            return p.fit_transform(m)
+
+    except ImportError:
+        from numpy.linalg import eig
+
+        def _autorotate_layout_np(m):
+            """PCA"""
+            m1 = m[:] - m.mean(axis=0)
+            c = m1.T @ m1
+            l, u = eig(c)
+            if l[0] > l[1]:
+                rm = u
+            else:
+                rm = -u.T
+            return m1 @ rm
+
+
+    def _autorotate_layout(base_layout):
+        """Rotates the layout, placing the dimension
+        with the maximum variance or statistical independence
+        with either ICA or PCA to the first axis."""
+        if len(base_layout) > 3:
+            import numpy as np
+            m = np.vstack(tuple(base_layout.values()))
+            r = _autorotate_layout_np(m)
+            return dict(zip(base_layout, r))
+        else:
+            return base_layout
+
+except ImportError:
+    def _autorotate_layout(base_layout):
+        """Does nothing since the dependencies are not available"""
+        return base_layout
+
+
+def _layers2coords(G, layers, vertical=True,
+                   base_layout_gen=arf_layout,
+                   seed=None):
+    """
+    Orders vertices within layers. Repeats following loop for some max_iter:
+        * Puts the vertices on a square grid (i, j) where `i` is a number of the layer and `j` is the number within layer. The coords are centered. O(|V|) for each layer.
+        * Does `base_layout_gen` (`arf_layout` by default), initializing it with this grid in the hope that it would reduce intersections and bring related vertices closer to each other.
+        * Rotates the resulting layout, extracting the dimension with the maximum variance with either ICA or PCA.
+        * Uses it to determine relative ordering of vertices within layers. Uses sort for that. O(|V| * log(|V|)) for each layer.
+    """
+
+    import numpy as np
+    base_layout = None
+
+    if base_layout_gen is not None:
+        for i in range(3):
+            coords = _layers2coords_naive(layers, base_layout)
+            base_layout = base_layout_gen(G, pos=coords, max_iter=10)
+            base_layout = _autorotate_layout(base_layout)
+
+    maxLayer = len(layers) - 1
+    for v, p in _layers2coords_naive(layers, base_layout).items():
+        p = np.array(p) + seed.rand(2) * 0.1
+        if vertical:
+            p = np.flip(p)
+            p[1] = maxLayer - p[1]
+        coords[v] = p
+
+    return coords
+
+
+@np_random_state(3)
+def topo_layout(G, root_is_sink=True, vertical=True, seed=None):
+    """Tries to put nodes of a DAG into layers on a square grid to make all the edges go to the same general direction.
+
+    Parameters
+    ----------
+    G : NetworkX directed acyclic graph
+        A position will be assigned to every node in G.
+    root_is_sink : bool (default: True)
+        If it is True, the sinks (nodes where edges terminate)
+        will be considered roots. Otherwise sources will.
+    vertical : bool (default: True)
+        If True, the graph will have roots at top and leaves at bottom.
+        Otherwise roots will be at left and leaves at right.
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node
+    layers : iterable
+        An iterable of iterables, each describes a layer in the graph.
+    Raises
+    -------
+    ValueError
+        If dim != 2
+
+    Notes
+    -----
+    This algorithm is implemented very inefficiently.
+
+    Its only good point is that it takes not so many lines of code and that it is conceptually naïve and straightforward. It was the main goal - not to code the whole Sugiyama algo which is more than [1000 LOC in C](https://github.com/igraph/igraph/blob/17e1bb9e06bf2192ad98fe630a9bd5ab9a2a8ad1/src/sugiyama.c) or [450 LOC in python](https://github.com/bdcht/grandalf/blob/master/grandalf/layouts.py#L58-L778) and not to code whole Reingold-Tilford algo which is [more than 500 LOC in C](https://github.com/igraph/igraph/blob/17e1bb9e06bf2192ad98fe630a9bd5ab9a2a8ad1/src/layout.c#L699L1341).
+
+    No formal proofs, just heuristics.
+    """
+    layers = _assign_layers(G, root_is_sink)
+    coords = _layers2coords(G, layers, vertical, seed=seed)
+    return coords, layers
