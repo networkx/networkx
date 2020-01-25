@@ -61,12 +61,14 @@ def _semantic_feasibility(self, G1_node, G2_node):
         for neighbor in G1_adj[G1_node]:
             # G1_node is not in core_1, so we must handle R_self separately
             if neighbor == G1_node:
-                if not edge_match(G1_adj[G1_node][G1_node],
-                                  G2_adj[G2_node][G2_node]):
+                if G2_node in G2_adj[G2_node] and \
+                        not edge_match(G1_adj[G1_node][G1_node],
+                                       G2_adj[G2_node][G2_node]):
                     return False
             elif neighbor in core_1:
-                if not edge_match(G1_adj[G1_node][neighbor],
-                                  G2_adj[G2_node][core_1[neighbor]]):
+                if core_1[neighbor] in G2_adj[G2_node] and \
+                        not edge_match(G1_adj[G1_node][neighbor],
+                                       G2_adj[G2_node][core_1[neighbor]]):
                     return False
         # syntactic check has already verified that neighbors are symmetric
 
