@@ -417,7 +417,7 @@ def average_shortest_path_length(G, weight=None, method=None):
 
 
 def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
-    """Compute all shortest paths in the graph.
+    """Compute all shortest simple paths in the graph.
 
     Parameters
     ----------
@@ -464,7 +464,10 @@ def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
 
     Notes
     -----
-    There may be many shortest paths between the source and target.
+    There may be many shortest paths between the source and target.  If G
+    contains zero-weight cycles, this function will not produce all shortest
+    paths because doing so would produce infinitely many paths of unbounded
+    length -- instead, we only produce the shortest simple paths.
 
     See Also
     --------
@@ -484,16 +487,59 @@ def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
     else:
         raise ValueError(f'method not supported: {method}')
 
+    return _all_shortest_simple_paths(G, {source}, target, pred)
+
+def _all_shortest_simple_paths(G, sources, target, pred):
+    """Compute all shortest simple paths in the graph, from any source in
+    sources to target
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    sources : set
+       Starting nodes for path.
+
+    target : node
+       Ending node for path.
+
+    pred : dict
+       A dictionary of predecessor lists, keyed by node
+
+    Returns
+    -------
+    paths : generator of lists
+        A generator of all paths between source and target.
+
+    Raises
+    ------
+    NetworkXNoPath
+        If `target` cannot be reached from `source`.
+
+    Notes
+    -----
+    There may be many shortest paths between the source and target.  If G
+    contains zero-weight cycles, this function will not produce all shortest
+    paths because doing so would produce infinitely many paths of unbounded
+    length -- instead, we only produce the shortest simple paths.
+
+    See Also
+    --------
+    shortest_path()
+    single_source_shortest_path()
+    all_pairs_shortest_path()
+    all_shortest_paths()
+    """
     if target not in pred:
         raise nx.NetworkXNoPath(f'Target {target} cannot be reached'
-                                f'from Source {source}')
+                                f'from given sources')
 
     hits = {target}
     stack = [[target, 0]]
     top = 0
     while top >= 0:
         node, i = stack[top]
-        if node == source:
+        if node in sources:
             yield [p for p, n in reversed(stack[:top + 1])]
         if len(pred[node]) > i:
             stack[top][1] = i + 1
@@ -506,7 +552,7 @@ def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
             if top == len(stack):
                 stack.append([next, 0])
             else:
-                stack[top] = [next, 0]
+                stack[top][:] = [next, 0]
         else:
             hits.discard(node)
             top -= 1
