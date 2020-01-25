@@ -489,6 +489,7 @@ def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
 
     return _all_shortest_simple_paths(G, {source}, target, pred)
 
+
 def _all_shortest_simple_paths(G, sources, target, pred):
     """Compute all shortest simple paths in the graph, from any source in
     sources to target
