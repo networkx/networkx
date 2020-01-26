@@ -1279,7 +1279,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
         if all(pred_u not in in_q for pred_u in pred[u]):
             dist_u = dist[u]
             for v, e in G_succ[u].items():
-                dist_v = dist_u + weight(v, u, e)
+                dist_v = dist_u + weight(u, v, e)
 
                 if dist_v < dist.get(v, inf):
                     if v not in in_q:
