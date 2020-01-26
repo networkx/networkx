@@ -7,7 +7,8 @@ from heapq import heappush, heappop
 from itertools import count
 import networkx as nx
 from networkx.utils import generate_unique_node
-from networkx.algorithms.shortest_paths.generic import _all_shortest_simple_paths
+from networkx.algorithms.shortest_paths.generic import (
+    _build_paths_from_predecessors)
 
 
 __all__ = ['dijkstra_path',
@@ -1304,7 +1305,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
         sources = set(source)
         dsts = [target] if target is not None else pred
         for dst in dsts:
-            gen = _all_shortest_simple_paths(G, sources, dst, pred)
+            gen = _build_paths_from_predecessors(sources, dst, pred)
             paths[dst] = next(gen)
 
     return dist

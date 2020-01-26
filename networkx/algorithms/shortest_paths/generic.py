@@ -487,17 +487,15 @@ def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
     else:
         raise ValueError(f'method not supported: {method}')
 
-    return _all_shortest_simple_paths(G, {source}, target, pred)
+    return _build_paths_from_predecessors({source}, target, pred)
 
 
-def _all_shortest_simple_paths(G, sources, target, pred):
-    """Compute all shortest simple paths in the graph, from any source in
-    sources to target
+def _build_paths_from_predecessors(sources, target, pred):
+    """Compute all simple paths to target, given the predecessors found in
+    pred, terminating when any source in sources is found.
 
     Parameters
     ----------
-    G : NetworkX graph
-
     sources : set
        Starting nodes for path.
 
@@ -519,10 +517,10 @@ def _all_shortest_simple_paths(G, sources, target, pred):
 
     Notes
     -----
-    There may be many shortest paths between the source and target.  If G
-    contains zero-weight cycles, this function will not produce all shortest
-    paths because doing so would produce infinitely many paths of unbounded
-    length -- instead, we only produce the shortest simple paths.
+    There may be many paths between the sources and target.  If there are
+    cycles among the predecessors, this function will not produce all
+    possible paths because doing so would produce infinitely many paths
+    of unbounded length -- instead, we only produce simple paths.
 
     See Also
     --------
@@ -530,12 +528,13 @@ def _all_shortest_simple_paths(G, sources, target, pred):
     single_source_shortest_path()
     all_pairs_shortest_path()
     all_shortest_paths()
+    bellman_ford_path()
     """
     if target not in pred:
         raise nx.NetworkXNoPath(f'Target {target} cannot be reached'
                                 f'from given sources')
 
-    hits = {target}
+    seen = {target}
     stack = [[target, 0]]
     top = 0
     while top >= 0:
@@ -545,15 +544,15 @@ def _all_shortest_simple_paths(G, sources, target, pred):
         if len(pred[node]) > i:
             stack[top][1] = i + 1
             next = pred[node][i]
-            if next in hits:
+            if next in seen:
                 continue
             else:
-                hits.add(next)
+                seen.add(next)
             top += 1
             if top == len(stack):
                 stack.append([next, 0])
             else:
                 stack[top][:] = [next, 0]
         else:
-            hits.discard(node)
+            seen.discard(node)
             top -= 1
