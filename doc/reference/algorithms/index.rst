@@ -64,7 +64,6 @@ Algorithms
    sparsifiers
    structuralholes
    swap
-   threshold
    tournament
    traversal
    tree
