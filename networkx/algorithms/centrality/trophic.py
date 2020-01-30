@@ -151,8 +151,13 @@ def trophic_coherence(G, weight='weight', cannibalism=False):
         diffs = trophic_differences(G, weight=weight)
     else:
         # If no cannibalism, remove self-edges
+        self_loops = nx.selfloop_edges(G)
+        if self_loops:
         # Make a copy so we do not change G's edges in memory
         G_2 = G.copy()
-        G_2.remove_edges_from(nx.selfloop_edges(G_2))
+            G_2.remove_edges_from(self_loops)
+        else:
+            # Avoid copy otherwise
+            G_2 = G
         diffs = trophic_differences(G_2, weight=weight)
     return np.std(list(diffs.values()))
