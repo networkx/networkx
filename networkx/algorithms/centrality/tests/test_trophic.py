@@ -19,7 +19,8 @@ def test_trophic_levels():
 
 
 def test_trophic_levels_levine():
-    """Example from Figure 5 in Stephen Levine (1980) J. theor. Biol. 83, 195-207
+    """Example from Figure 5 in Stephen Levine (1980) J. theor. Biol. 83,
+    195-207
     """
     S = nx.DiGraph()
     S.add_edge(1, 2, weight=1.0)
@@ -100,7 +101,6 @@ def test_trophic_levels_more_complex():
     for ind in range(4):
         assert almost_equal(d[ind], expected_result[ind])
 
-
     matrix = np.array([
         [0, 1, 1, 0],
         [0, 0, 1, 1],
@@ -151,14 +151,15 @@ def test_trophic_levels_singular_matrix():
     G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph)
     with pytest.raises(nx.NetworkXError) as e:
         nx.trophic_levels(G)
-    msg = "Trophic levels are only defined for graphs where every node has a path " + \
-          "from a basal node (basal nodes are nodes with no incoming edges)."
+    msg = "Trophic levels are only defined for graphs where every node " + \
+          "has a path from a basal node (basal nodes are nodes with no " + \
+          "incoming edges)."
     assert msg in str(e.value)
 
 
 def test_trophic_levels_singular_with_basal():
-    """Should fail to compute if there are any parts of the graph which are not reachable
-    from any basal node (with in-degree zero).
+    """Should fail to compute if there are any parts of the graph which are not
+    reachable from any basal node (with in-degree zero).
     """
     G = nx.DiGraph()
     # a has in-degree zero
@@ -174,8 +175,9 @@ def test_trophic_levels_singular_with_basal():
 
     with pytest.raises(nx.NetworkXError) as e:
         nx.trophic_levels(G)
-    msg = "Trophic levels are only defined for graphs where every node has a path " + \
-          "from a basal node (basal nodes are nodes with no incoming edges)."
+    msg = "Trophic levels are only defined for graphs where every node " + \
+          "has a path from a basal node (basal nodes are nodes with no " + \
+          "incoming edges)."
     assert msg in str(e.value)
 
     # if self-loops are allowed, smaller example:
@@ -185,8 +187,9 @@ def test_trophic_levels_singular_with_basal():
     G.add_edge('c', 'c')  # c has a self-loop
     with pytest.raises(nx.NetworkXError) as e:
         nx.trophic_levels(G)
-    msg = "Trophic levels are only defined for graphs where every node has a path " + \
-          "from a basal node (basal nodes are nodes with no incoming edges)."
+    msg = "Trophic levels are only defined for graphs where every node " + \
+          "has a path from a basal node (basal nodes are nodes with no " + \
+          "incoming edges)."
     assert msg in str(e.value)
 
 

@@ -57,8 +57,9 @@ def trophic_levels(G, weight='weight'):
         n = np.linalg.inv(i - p)
     except np.linalg.LinAlgError as err:
         # LinAlgError is raised when there is a non-basal node
-        msg = "Trophic levels are only defined for graphs where every node has a path " + \
-              "from a basal node (basal nodes are nodes with no incoming edges)."
+        msg = "Trophic levels are only defined for graphs where every " + \
+              "node has a path from a basal node (basal nodes are nodes " + \
+              "with no incoming edges)."
         raise nx.NetworkXError(msg) from err
     y = n.sum(axis=1) + 1
 
@@ -70,7 +71,8 @@ def trophic_levels(G, weight='weight'):
         levels[node_id] = 1
 
     # all other nodes have levels as calculated
-    nonzero_node_ids = (node_id for node_id, degree in G.in_degree if degree != 0)
+    nonzero_node_ids = (node_id for node_id, degree in G.in_degree
+                        if degree != 0)
     for i, node_id in enumerate(nonzero_node_ids):
         levels[node_id] = y[i]
 
@@ -99,8 +101,8 @@ def trophic_differences(G, weight='weight'):
 
     References
     ----------
-    .. [1] Samuel Johnson, Virginia Dominguez-Garcia, Luca Donetti, Miguel A. Munoz (2014) PNAS
-        "Trophic coherence determines food-web stability"
+    .. [1] Samuel Johnson, Virginia Dominguez-Garcia, Luca Donetti, Miguel A.
+        Munoz (2014) PNAS "Trophic coherence determines food-web stability"
     """
     levels = trophic_levels(G, weight=weight)
     diffs = {}
@@ -113,8 +115,8 @@ def trophic_differences(G, weight='weight'):
 def trophic_coherence(G, weight='weight', cannibalism=False):
     r"""Compute the trophic coherence of a graph.
 
-    Trophic coherence is defined by [1] as the standard deviation of the trophic
-    differences of the edges of a directed graph
+    Trophic coherence is defined by [1] as the standard deviation of the
+    trophic differences of the edges of a directed graph.
 
     Parameters
     ----------
@@ -131,8 +133,8 @@ def trophic_coherence(G, weight='weight', cannibalism=False):
 
     References
     ----------
-    .. [1] Samuel Johnson, Virginia Dominguez-Garcia, Luca Donetti, Miguel A. Munoz (2014) PNAS
-        "Trophic coherence determines food-web stability"
+    .. [1] Samuel Johnson, Virginia Dominguez-Garcia, Luca Donetti, Miguel A.
+        Munoz (2014) PNAS "Trophic coherence determines food-web stability"
     """
 
     if cannibalism:
