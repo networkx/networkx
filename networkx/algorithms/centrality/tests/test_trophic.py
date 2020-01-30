@@ -149,46 +149,45 @@ def test_trophic_levels_singular_matrix():
     """
     matrix = np.identity(4)
     G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph)
-    with pytest.raises(np.linalg.LinAlgError):
+    with pytest.raises(nx.NetworkXError) as e:
         nx.trophic_levels(G)
+    msg = "Trophic levels are only defined for graphs where every node has a path " + \
+          "from a basal node (basal nodes are nodes with no incoming edges)."
+    assert msg in str(e.value)
 
 
 def test_trophic_levels_singular_with_basal():
-    """Should compute or approximate when there are basal nodes but matrix is singular
+    """Should fail to compute if there are any parts of the graph which are not reachable
+    from any basal node (with in-degree zero).
     """
     G = nx.DiGraph()
-    G.add_edge('a', 'b')  # a has in-degree zero
+    # a has in-degree zero
+    G.add_edge('a', 'b')
 
-    G.add_edge('c', 'b')  # b is one level above a, c and d
+    # b is one level above a, c and d
+    G.add_edge('c', 'b')
     G.add_edge('d', 'b')
 
-    G.add_edge('c', 'd')  # c and d form a loop
+    # c and d form a loop, neither are reachable from a
+    G.add_edge('c', 'd')
     G.add_edge('d', 'c')
 
-    levels = nx.trophic_levels(G)
-
-    expected = {
-        'a': 1,
-        'b': 2,
-
-        # by the logic that c and d must be equal, and are one level below b
-        'c': 1,
-        'd': 1
-    }
-    assert levels == expected
+    with pytest.raises(nx.NetworkXError) as e:
+        nx.trophic_levels(G)
+    msg = "Trophic levels are only defined for graphs where every node has a path " + \
+          "from a basal node (basal nodes are nodes with no incoming edges)."
+    assert msg in str(e.value)
 
     # if self-loops are allowed, smaller example:
     G = nx.DiGraph()
     G.add_edge('a', 'b')  # a has in-degree zero
     G.add_edge('c', 'b')  # b is one level above a and c
     G.add_edge('c', 'c')  # c has a self-loop
-    levels = nx.trophic_levels(G)
-    expected = {
-        'a': 1,
-        'b': 2,
-        'c': 1
-    }
-    assert levels == expected
+    with pytest.raises(nx.NetworkXError) as e:
+        nx.trophic_levels(G)
+    msg = "Trophic levels are only defined for graphs where every node has a path " + \
+          "from a basal node (basal nodes are nodes with no incoming edges)."
+    assert msg in str(e.value)
 
 
 def test_trophic_differences():
