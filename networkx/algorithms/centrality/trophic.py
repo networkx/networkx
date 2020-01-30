@@ -86,13 +86,15 @@ def trophic_levels(G, weight='weight'):
 
 @not_implemented_for('undirected')
 def trophic_differences(G, weight='weight'):
-    r"""Compute the trophic difference of a graph.
+    r"""Compute the trophic differences of the edges of a directed graph.
 
-    Trophic difference for each edge is
+    The trophic difference $x_ij$ for each edge is defined in Johnson et al.
+    [1]_ as:
 
     .. math::
         x_ij = s_j - s_i
-    Johnson et al [1]_.
+
+    Where $s_i$ is the trophic level of node $i$.
 
     Parameters
     ----------
@@ -118,10 +120,12 @@ def trophic_differences(G, weight='weight'):
 
 @not_implemented_for('undirected')
 def trophic_coherence(G, weight='weight', cannibalism=False):
-    r"""Compute the trophic coherence of a graph.
+    r"""Compute the trophic incoherence parameter of a graph.
 
-    Trophic coherence is defined by [1] as the standard deviation of the
-    trophic differences of the edges of a directed graph.
+    Trophic coherence is defined as the homogeneity of the distribution of
+    trophic distances: the more similar, the more coherent. This is measured by
+    the standard deviation of the trophic differences and referred to as the
+    trophic incoherence parameter $q$ by [1].
 
     Parameters
     ----------
@@ -153,8 +157,8 @@ def trophic_coherence(G, weight='weight', cannibalism=False):
         # If no cannibalism, remove self-edges
         self_loops = nx.selfloop_edges(G)
         if self_loops:
-        # Make a copy so we do not change G's edges in memory
-        G_2 = G.copy()
+            # Make a copy so we do not change G's edges in memory
+            G_2 = G.copy()
             G_2.remove_edges_from(self_loops)
         else:
             # Avoid copy otherwise
