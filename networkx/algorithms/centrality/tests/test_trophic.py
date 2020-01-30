@@ -1,7 +1,7 @@
 """Test trophic levels, trophic differences and trophic coherence
 """
-import numpy as np
 import pytest
+np = pytest.importorskip('numpy')
 
 import networkx as nx
 from networkx.testing import almost_equal

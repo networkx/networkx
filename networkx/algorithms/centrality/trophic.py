@@ -1,5 +1,4 @@
 """Trophic levels"""
-import numpy as np
 import networkx as nx
 
 from networkx.utils import not_implemented_for
@@ -41,6 +40,12 @@ def trophic_levels(G, weight='weight'):
     ----------
     .. [1] Stephen Levine (1980) J. theor. Biol. 83, 195-207
     """
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(
+            "trophic_levels() requires NumPy: http://scipy.org/")
+
     # find adjacency matrix
     a = nx.adjacency_matrix(G, weight=weight).T.toarray()
 
@@ -136,6 +141,11 @@ def trophic_coherence(G, weight='weight', cannibalism=False):
     .. [1] Samuel Johnson, Virginia Dominguez-Garcia, Luca Donetti, Miguel A.
         Munoz (2014) PNAS "Trophic coherence determines food-web stability"
     """
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(
+            "trophic_coherence() requires NumPy: http://scipy.org/")
 
     if cannibalism:
         diffs = trophic_differences(G, weight=weight)
