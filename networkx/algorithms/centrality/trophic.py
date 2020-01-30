@@ -3,7 +3,8 @@ import networkx as nx
 
 from networkx.utils import not_implemented_for
 
-__all__ = ['trophic_levels', 'trophic_differences', 'trophic_coherence']
+__all__ = ['trophic_levels', 'trophic_differences',
+           'trophic_incoherence_parameter']
 
 
 @not_implemented_for('undirected')
@@ -119,7 +120,7 @@ def trophic_differences(G, weight='weight'):
 
 
 @not_implemented_for('undirected')
-def trophic_coherence(G, weight='weight', cannibalism=False):
+def trophic_incoherence_parameter(G, weight='weight', cannibalism=False):
     r"""Compute the trophic incoherence parameter of a graph.
 
     Trophic coherence is defined as the homogeneity of the distribution of
@@ -137,7 +138,7 @@ def trophic_coherence(G, weight='weight', cannibalism=False):
 
     Returns
     -------
-    trophic_coherence : float
+    trophic_incoherence_parameter : float
         The trophic coherence of a graph
 
     References
@@ -149,7 +150,8 @@ def trophic_coherence(G, weight='weight', cannibalism=False):
         import numpy as np
     except ImportError:
         raise ImportError(
-            "trophic_coherence() requires NumPy: http://scipy.org/")
+            "trophic_incoherence_parameter() requires NumPy: " +
+            "http://scipy.org/")
 
     if cannibalism:
         diffs = trophic_differences(G, weight=weight)

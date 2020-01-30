@@ -215,10 +215,10 @@ def test_trophic_differences():
     assert almost_equal(diffs[(2, 3)], 0.75)
 
 
-def test_trophic_coherence_no_cannibalism():
+def test_trophic_incoherence_parameter_no_cannibalism():
     matrix_a = np.array([[0, 1], [0, 0]])
     G = nx.from_numpy_matrix(matrix_a, create_using=nx.DiGraph)
-    q = nx.trophic_coherence(G, cannibalism=False)
+    q = nx.trophic_incoherence_parameter(G, cannibalism=False)
     assert almost_equal(q, 0)
 
     matrix_b = np.array([
@@ -228,7 +228,7 @@ def test_trophic_coherence_no_cannibalism():
         [0, 0, 0, 0]
     ])
     G = nx.from_numpy_matrix(matrix_b, create_using=nx.DiGraph)
-    q = nx.trophic_coherence(G, cannibalism=False)
+    q = nx.trophic_incoherence_parameter(G, cannibalism=False)
     assert almost_equal(q, np.std([1, 1.5, 0.5, 0.75, 1.25]))
 
     matrix_c = np.array([
@@ -238,15 +238,15 @@ def test_trophic_coherence_no_cannibalism():
         [0, 0, 0, 1]
     ])
     G = nx.from_numpy_matrix(matrix_c, create_using=nx.DiGraph)
-    q = nx.trophic_coherence(G, cannibalism=False)
+    q = nx.trophic_incoherence_parameter(G, cannibalism=False)
     # Ignore the -link
     assert almost_equal(q, np.std([1, 1.5, 0.5, 0.75, 1.25]))
 
 
-def test_trophic_coherence_cannibalism():
+def test_trophic_incoherence_parameter_cannibalism():
     matrix_a = np.array([[0, 1], [0, 0]])
     G = nx.from_numpy_matrix(matrix_a, create_using=nx.DiGraph)
-    q = nx.trophic_coherence(G, cannibalism=True)
+    q = nx.trophic_incoherence_parameter(G, cannibalism=True)
     assert almost_equal(q, 0)
 
     matrix_b = np.array([
@@ -257,7 +257,7 @@ def test_trophic_coherence_cannibalism():
         [0, 0, 0, 1, 0]
     ])
     G = nx.from_numpy_matrix(matrix_b, create_using=nx.DiGraph)
-    q = nx.trophic_coherence(G, cannibalism=True)
+    q = nx.trophic_incoherence_parameter(G, cannibalism=True)
     assert almost_equal(q, 2)
 
     matrix_c = np.array([
@@ -267,6 +267,6 @@ def test_trophic_coherence_cannibalism():
         [0, 0, 0, 0]
     ])
     G = nx.from_numpy_matrix(matrix_c, create_using=nx.DiGraph)
-    q = nx.trophic_coherence(G, cannibalism=True)
+    q = nx.trophic_incoherence_parameter(G, cannibalism=True)
     # Ignore the -link
     assert almost_equal(q, np.std([1, 1.5, 0.5, 0.75, 1.25]))
