@@ -4,21 +4,27 @@ import networkx as nx
 from networkx.utils import pairwise
 
 
-def validate_path(G, s, t, soln_len, path):
+def validate_path(G, s, t, soln_len, path, weight='weight'):
     assert path[0] == s
     assert path[-1] == t
-    if not G.is_multigraph():
-        computed = sum(G[u][v].get('weight', 1) for u, v in pairwise(path))
-        assert soln_len == computed
+
+    if callable(weight):
+        weight_f = weight
     else:
-        computed = sum(min(e.get('weight', 1) for e in G[u][v].values())
-                       for u, v in pairwise(path))
-        assert soln_len == computed
+        if G.is_multigraph():
+            def weight_f(u, v, d):
+                return min(e.get(weight, 1) for e in d.values())
+        else:
+            def weight_f(u, v, d):
+                return d.get(weight, 1)
+
+    computed = sum(weight_f(u, v, G[u][v]) for u, v in pairwise(path))
+    assert soln_len == computed
 
 
-def validate_length_path(G, s, t, soln_len, length, path):
+def validate_length_path(G, s, t, soln_len, length, path, weight='weight'):
     assert soln_len == length
-    validate_path(G, s, t, length, path)
+    validate_path(G, s, t, length, path, weight=weight)
 
 
 class WeightedTestBase:
@@ -141,6 +147,52 @@ class TestWeightedPath(WeightedTestBase):
         # check absent source
         G = nx.path_graph(2)
         pytest.raises(nx.NodeNotFound, nx.bidirectional_dijkstra, G, 3, 0)
+
+    def test_weight_functions(self):
+        def heuristic(*z):
+            return hash(z)
+
+        def getpath(pred, v, s):
+            return [v] if v == s else getpath(pred, pred[v], s) + [v]
+
+        def goldberg_radzik(g, s, t, weight='weight'):
+            pred, dist = nx.goldberg_radzik(g, s, weight=weight)
+            dist = dist[t]
+            return dist, getpath(pred, t, s)
+
+        def astar(g, s, t, weight='weight'):
+            path = nx.astar_path(g, s, t, heuristic, weight=weight)
+            dist = nx.astar_path_length(g, s, t, heuristic, weight=weight)
+            return dist, path
+
+        def vlp(G, s, t, l, F, w):
+            res = F(G, s, t, weight=w)
+            validate_length_path(G, s, t, l, *res, weight=w)
+
+        G = self.cycle
+        s = 6
+        t = 4
+        path = [6] + list(range(t + 1))
+
+        def weight(u, v, _):
+            return 1 + v**2
+
+        length = sum(weight(u, v, None) for u, v in pairwise(path))
+        vlp(G, s, t, length, nx.bidirectional_dijkstra, weight)
+        vlp(G, s, t, length, nx.single_source_dijkstra, weight)
+        vlp(G, s, t, length, nx.single_source_bellman_ford, weight)
+        vlp(G, s, t, length, goldberg_radzik, weight)
+        vlp(G, s, t, length, astar, weight)
+
+        def weight(u, v, _):
+            return 2**(u * v)
+
+        length = sum(weight(u, v, None) for u, v in pairwise(path))
+        vlp(G, s, t, length, nx.bidirectional_dijkstra, weight)
+        vlp(G, s, t, length, nx.single_source_dijkstra, weight)
+        vlp(G, s, t, length, nx.single_source_bellman_ford, weight)
+        vlp(G, s, t, length, goldberg_radzik, weight)
+        vlp(G, s, t, length, astar, weight)
 
     def test_bidirectional_dijkstra_no_path(self):
         with pytest.raises(nx.NetworkXNoPath):

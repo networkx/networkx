@@ -1279,7 +1279,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
         if all(pred_u not in in_q for pred_u in pred[u]):
             dist_u = dist[u]
             for v, e in G_succ[u].items():
-                dist_v = dist_u + weight(v, u, e)
+                dist_v = dist_u + weight(u, v, e)
 
                 if dist_v < dist.get(v, inf):
                     if v not in in_q:
@@ -1997,6 +1997,8 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
 
     if source == target:
         return (0, [source])
+
+    weight = _weight_function(G, weight)
     push = heappush
     pop = heappop
     # Init:  [Forward, Backward]
@@ -2010,9 +2012,9 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     push(fringe[1], (0, next(c), target))
     # neighs for extracting correct neighbor information
     if G.is_directed():
-        neighs = [G.successors, G.predecessors]
+        neighs = [G._succ, G._pred]
     else:
-        neighs = [G.neighbors, G.neighbors]
+        neighs = [G._adj, G._adj]
     # variables to hold shortest discovered path
     # finaldist = 1e30000
     finalpath = []
@@ -2033,22 +2035,11 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
             # we have now discovered the shortest path
             return (finaldist, finalpath)
 
-        for w in neighs[dir](v):
+        for w, d in neighs[dir][v].items():
             if(dir == 0):  # forward
-                if G.is_multigraph():
-                    minweight = min((dd.get(weight, 1)
-                                     for k, dd in G[v][w].items()))
-                else:
-                    minweight = G[v][w].get(weight, 1)
-                vwLength = dists[dir][v] + minweight  # G[v][w].get(weight,1)
+                vwLength = dists[dir][v] + weight(v, w, d)
             else:  # back, must remember to change v,w->w,v
-                if G.is_multigraph():
-                    minweight = min((dd.get(weight, 1)
-                                     for k, dd in G[w][v].items()))
-                else:
-                    minweight = G[w][v].get(weight, 1)
-                vwLength = dists[dir][v] + minweight  # G[w][v].get(weight,1)
-
+                vwLength = dists[dir][v] + weight(w, v, d)
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
                     raise ValueError(
