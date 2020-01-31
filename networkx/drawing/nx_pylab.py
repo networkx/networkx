@@ -639,11 +639,10 @@ def draw_networkx_edges(G, pos,
             shrink_target = 0  # space from  head to target
             if np.iterable(node_size):  # many node sizes
                 src_node, dst_node = edgelist[i][:2]
-                index_node = nodelist.index(dst_node)
-                marker_size = node_size[index_node]
-                shrink_target = to_marker_edge(marker_size, node_shape)
+                shrink_source = to_marker_edge(node_size[nodelist.index(src_node)], node_shape)
+                shrink_target = to_marker_edge(node_size[nodelist.index(dst_node)], node_shape)
             else:
-                shrink_target = to_marker_edge(node_size, node_shape)
+                shrink_source = shrink_target = to_marker_edge(node_size, node_shape)
 
             if shrink_source < min_source_margin:
                 shrink_source = min_source_margin
