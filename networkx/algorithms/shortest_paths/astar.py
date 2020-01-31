@@ -70,7 +70,6 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
 
     push = heappush
     pop = heappop
-    G_succ = G._succ if G.is_directed() else G._adj
     weight = _weight_function(G, weight)
 
     # The queue stores priority, node, cost to reach, and parent.
@@ -113,7 +112,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
 
         explored[curnode] = parent
 
-        for neighbor, w in G_succ[curnode].items():
+        for neighbor, w in G[curnode].items():
             ncost = dist + weight(curnode, neighbor, w)
             if neighbor in enqueued:
                 qcost, h = enqueued[neighbor]
@@ -166,5 +165,4 @@ def astar_path_length(G, source, target, heuristic=None, weight='weight'):
 
     weight = _weight_function(G, weight)
     path = astar_path(G, source, target, heuristic, weight)
-    G_succ = G._succ if G.is_directed() else G._adj
-    return sum(weight(u, v, G_succ[u][v]) for u, v in zip(path[:-1], path[1:]))
+    return sum(weight(u, v, G[u][v]) for u, v in zip(path[:-1], path[1:]))
