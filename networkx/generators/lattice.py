@@ -43,10 +43,10 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
         If a container, elements become the coordinate of the nodes.
 
     periodic : bool or iterable
-        If `periodic` is iterable, it should have length two -- the first
-        and second entries will determine if boundaries in the respective
-        axes are joined.  Otherwise, both dimensions are periodic if and
-        only if `periodic` evaluates to true.
+        If `periodic` is True, both dimensions are periodic. If False, none
+        are periodic.  If `periodic` is iterable, it should yield 2 bool
+        values indicating whether the 1st and 2nd axes, respectively, are
+        periodic.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
@@ -100,10 +100,10 @@ def grid_graph(dim, periodic=False):
         of `dim`.
 
     periodic : bool or iterable
-        If `periodic` is iterable, its entries are iterated over with dim
-        and when an entry evaluates to true, the nodes along the
-        corresponding dimension's boundaries are joined.  Otherwise, all
-        dimensions are periodic if `periodic` evaluates to true.
+        If `periodic` is True, all dimensions are periodic. If False all
+        dimensions are not periodic. If `periodic` is iterable, it should
+        yield `dim` bool values each of which indicates whether the
+        corresponding axis is periodic.
 
     Returns
     -------
