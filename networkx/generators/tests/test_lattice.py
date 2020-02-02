@@ -4,6 +4,7 @@ import pytest
 
 import networkx as nx
 from networkx.testing import assert_edges_equal
+from itertools import product
 
 
 class TestGrid2DGraph:
@@ -45,6 +46,13 @@ class TestGrid2DGraph:
                         (4, 2, nx.cubical_graph())]:
             G = nx.grid_2d_graph(m, n, periodic=True)
             assert nx.could_be_isomorphic(G, H)
+
+    def test_periodic_iterable(self):
+        m, n = 3, 7
+        for a, b in product([0, 1], [0, 1]):
+            G = nx.grid_2d_graph(m, n, periodic=(a, b))
+            assert G.number_of_nodes() == m * n
+            assert G.number_of_edges() == (m + a - 1) * n + (n + b - 1) * m
 
     def test_periodic_directed(self):
         G = nx.grid_2d_graph(4, 2, periodic=True)
@@ -97,6 +105,16 @@ class TestGridGraph:
         G = nx.grid_graph([range(7, 9), range(3, 6)])
         assert len(G) == 2 * 3
         assert nx.is_isomorphic(G, nx.grid_graph([2, 3]))
+
+    def test_periodic_iterable(self):
+        m, n, k = 3, 7, 5
+        for a, b, c in product([0, 1], [0, 1], [0, 1]):
+            G = nx.grid_graph([m, n, k], periodic=(a, b, c))
+            num_e = ((m + a - 1) * n * k
+                     + (n + b - 1) * m * k
+                     + (k + c - 1) * m * n)
+            assert G.number_of_nodes() == m * n * k
+            assert G.number_of_edges() == num_e
 
 
 class TestHypercubeGraph:
