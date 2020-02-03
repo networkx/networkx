@@ -249,7 +249,7 @@ def test_trophic_incoherence_parameter_no_cannibalism():
         [0, 0, 0, 1],
         [0, 0, 0, 0]
     ])
-    G = nx.from_numpy_matrix(matrix_c, create_using=nx.DiGraph)
+    G = nx.from_numpy_matrix(matrix_d, create_using=nx.DiGraph)
     q = nx.trophic_incoherence_parameter(G, cannibalism=False)
     # Ignore the -link
     assert almost_equal(q, np.std([1, 1.5, 0.5, 0.75, 1.25]))
