@@ -110,8 +110,8 @@ def circular_layout(G, scale=1, center=None, dim=2):
     G : NetworkX graph or list of nodes
         A position will be assigned to every node in G.
 
-    scale : number (default: 1)
-        Scale factor for positions.
+    scale : number or None (default: 1)
+        Scale factor for positions. If None, no rescaling is performed.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
@@ -184,8 +184,8 @@ def shell_layout(G, nlist=None, rotate=None, scale=1, center=None, dim=2):
        relative to the starting position of the previous shell.
        To recreate behavior before v2.5 use rotate=0.
 
-    scale : number (default: 1)
-        Scale factor for positions.
+    scale : number or None (default: 1)
+        Scale factor for positions. If None, no rescaling is performed.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
@@ -273,8 +273,8 @@ def bipartite_layout(G, nodes, align='vertical',
     align : string (default='vertical')
         The alignment of nodes. Vertical or horizontal.
 
-    scale : number (default: 1)
-        Scale factor for positions.
+    scale : number or None (default: 1)
+        Scale factor for positions. If None, no rescaling is performed.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
@@ -664,8 +664,8 @@ def kamada_kawai_layout(G, dist=None,
         The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
-    scale : number (default: 1)
-        Scale factor for positions.
+    scale : number or None (default: 1)
+        Scale factor for positions. If None, no rescaling is performed.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
@@ -778,8 +778,8 @@ def spectral_layout(G, weight='weight', scale=1, center=None, dim=2):
         The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
-    scale : number (default: 1)
-        Scale factor for positions.
+    scale : number or None (default: 1)
+        Scale factor for positions. If None, no rescaling is performed.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
@@ -904,8 +904,8 @@ def planar_layout(G, scale=1, center=None, dim=2):
         A position will be assigned to every node in G. If G is of type
         nx.PlanarEmbedding, the positions are selected accordingly.
 
-    scale : number (default: 1)
-        Scale factor for positions.
+    scale : number or None (default: 1)
+        Scale factor for positions. If None, no rescaling is performed.
 
     center : array-like or None
         Coordinate pair around which to center the layout.
@@ -960,8 +960,8 @@ def spiral_layout(G, scale=1, center=None, dim=2,
     ----------
     G : NetworkX graph or list of nodes
         A position will be assigned to every node in G.
-    scale : number (default: 1)
-        Scale factor for positions.
+    scale : number or None (default: 1)
+        Scale factor for positions. If None, no rescaling is performed.
     center : array-like or None
         Coordinate pair around which to center the layout.
     dim : int
@@ -1050,8 +1050,9 @@ def rescale_layout(pos, scale=1):
     pos : numpy array
         positions to be scaled. Each row is a position.
 
-    scale : number (default: 1)
-        The size of the resulting extent in all directions.
+    scale : number or None (default: 1)
+        The size of the resulting extent in all directions.  If None,
+        no rescaling is performed.
 
     Returns
     -------
@@ -1059,6 +1060,10 @@ def rescale_layout(pos, scale=1):
         scaled positions. Each row is a position.
 
     """
+    # Check if rescaling should happen
+    if scale is None:
+        return pos
+
     # Find max length over all dimensions
     lim = 0  # max coordinate for all axes
     for i in range(pos.shape[1]):
