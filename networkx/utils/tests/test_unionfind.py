@@ -23,6 +23,7 @@ def test_subtree_union():
     uf.union(1, 5)
     assert list(uf.to_sets()) == [{1, 2, 3, 4, 5}]
 
+
 def test_unionfind_weights():
     # Tests if weights are computed correctly with unions of many elements
     uf = nx.utils.UnionFind()
