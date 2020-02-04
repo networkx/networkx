@@ -132,6 +132,13 @@ Second Order Centrality
 
    second_order_centrality
 
+Trophic
+-------
+.. autosummary::
+   :toctree: generated/
+
+   trophic
+
 VoteRank
 -----------
 .. autosummary::
