@@ -184,8 +184,8 @@ def shell_layout(G, nlist=None, rotate=None, scale=1, center=None, dim=2):
        relative to the starting position of the previous shell.
        To recreate behavior before v2.5 use rotate=0.
 
-    scale : number or None (default: 1)
-        Scale factor for positions. If None, no rescaling is performed.
+    scale : number (default: 1)
+        Scale factor for positions.
 
     center : array-like or None
         Coordinate pair around which to center the layout.

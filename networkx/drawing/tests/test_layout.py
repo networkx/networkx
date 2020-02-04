@@ -91,6 +91,16 @@ class TestLayout:
         nx.kamada_kawai_layout(G, dim=1)
         nx.kamada_kawai_layout(G, dim=3)
 
+    def test_smoke_scale_none(self):
+        G = self.Gs
+        nx.circular_layout(G, scale=None)
+        nx.bipartite_layout(G, G, scale=None)
+        nx.fruchterman_reingold_layout(G, scale=None)
+        nx.kamada_kawai_layout(G, scale=None)
+        nx.spectral_layout(G, scale=None)
+        nx.planar_layout(G, scale=None)
+        nx.spiral_layout(G, scale=None)
+
     def check_scale_and_center(self, pos, scale, center):
         center = numpy.array(center)
         low = center - scale
@@ -118,7 +128,6 @@ class TestLayout:
         c = (2, 3, 5)
         sc(nx.kamada_kawai_layout(G, dim=3, scale=2, center=c), scale=2, center=c)
 
-
     def test_planar_layout_non_planar_input(self):
         G = nx.complete_graph(9)
         pytest.raises(nx.NetworkXException, nx.planar_layout, G)
@@ -143,7 +152,6 @@ class TestLayout:
 
         c = (0, 0, 0)
         sc(nx.kamada_kawai_layout(G, dim=3), scale=1, center=c)
-
 
     def test_circular_planar_and_shell_dim_error(self):
         G = nx.path_graph(4)
@@ -345,7 +353,6 @@ class TestLayout:
                            [9.1, -8.1, 1.6]])
 
         self.check_kamada_kawai_costfn(pos, invdist, meanwt, 3)
-
 
     def test_spiral_layout(self):
 
