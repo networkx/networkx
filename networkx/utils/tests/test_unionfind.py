@@ -32,3 +32,11 @@ def test_unionfind_weights():
     uf.union(3, 6, 9)
     uf.union(1, 2, 3, 4, 5, 6, 7, 8, 9)
     assert uf.weights[uf[1]] == 9
+
+
+def test_empty_union():
+    # Tests if a null-union does nothing.
+    uf = nx.utils.UnionFind((0, 1))
+    uf.union()
+    assert uf[0] == 0
+    assert uf[1] == 1
