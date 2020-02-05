@@ -22,3 +22,21 @@ def test_subtree_union():
     uf.union(4, 5)
     uf.union(1, 5)
     assert list(uf.to_sets()) == [{1, 2, 3, 4, 5}]
+
+
+def test_unionfind_weights():
+    # Tests if weights are computed correctly with unions of many elements
+    uf = nx.utils.UnionFind()
+    uf.union(1, 4, 7)
+    uf.union(2, 5, 8)
+    uf.union(3, 6, 9)
+    uf.union(1, 2, 3, 4, 5, 6, 7, 8, 9)
+    assert uf.weights[uf[1]] == 9
+
+
+def test_empty_union():
+    # Tests if a null-union does nothing.
+    uf = nx.utils.UnionFind((0, 1))
+    uf.union()
+    assert uf[0] == 0
+    assert uf[1] == 1
