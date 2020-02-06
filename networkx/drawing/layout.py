@@ -28,7 +28,8 @@ __all__ = ['bipartite_layout',
            'spectral_layout',
            'planar_layout',
            'fruchterman_reingold_layout',
-           'spiral_layout']
+           'spiral_layout',
+           'multipartite_layout']
 
 
 def _process_params(G, center, dim):
@@ -1029,6 +1030,101 @@ def spiral_layout(G, scale=1, center=None, dim=2,
     pos = rescale_layout(np.array(pos), scale=scale) + center
 
     pos = dict(zip(G, pos))
+
+    return pos
+
+
+def multipartite_layout(G, subset_key='subset', align='vertical', scale=1,
+                        center=None, aspect_ratio=4/3):
+    """Position nodes in layers of straight lines.
+
+    Parameters
+    ----------
+    G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
+
+    subset_key : string (default='subset')
+        Key of node data to be used as layer subset.
+
+    align : string (default='vertical')
+        The alignment of nodes. Vertical or horizontal.
+
+    scale : number (default: 1)
+        Scale factor for positions.
+
+    center : array-like or None
+        Coordinate pair around which to center the layout.
+
+    aspect_ratio : number (default=4/3):
+        The ratio of the width to the height of the layout.
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node.
+
+    Examples
+    --------
+    >>> G = nx.complete_multipartite_graph(28, 16, 10)
+    >>> pos = nx.multipartite_layout(G)
+
+    Notes
+    -----
+    This algorithm currently only works in two dimensions and does not
+    try to minimize edge crossings.
+
+    """
+    import numpy as np
+
+    G, center = _process_params(G, center=center, dim=2)
+    if len(G) == 0:
+        return {}
+
+    height = 1
+    width = aspect_ratio * height
+    offset = (width/2, height/2)
+
+    layers = {}
+    for v,data in G.nodes(data=True):
+        try:
+            l = data[subset_key]
+        except KeyError:
+            msg = "all nodes must have subset_key (default='subset') as data"
+            raise ValueError(msg)
+
+        layers[l] = [v] + layers.get(l,[])
+
+    pos = None
+    nodes = []
+    if align == 'vertical':
+        prev_size = height/2
+        for i,layer in layers.items():
+            size = len(layer)
+            xs = np.repeat(i,size)
+            ys = np.arange(0,size)
+            layer_pos = np.column_stack([xs,ys]) - offset + (0,(prev_size-size)/2)
+            if pos is None:
+                pos = layer_pos
+            else:
+                pos = np.concatenate([pos,layer_pos])
+            nodes.extend(layer)
+        pos = rescale_layout(pos,scale=scale) + center
+        pos = dict(zip(nodes,pos))
+
+    if align == 'horizontal':
+        prev_size = width/2
+        for i,layer in layers.items():
+            size = len(layer)
+            xs = np.arange(0,size)
+            ys = np.repeat(i,size)
+            layer_pos = np.column_stack([xs,ys]) - offset + ((prev_size-size)/2,0)
+            if pos is None:
+                pos = layer_pos
+            else:
+                pos = np.concatenate([pos,layer_pos])
+            nodes.extend(layer)
+        pos = rescale_layout(pos,scale=scale) + center
+        pos = dict(zip(nodes,pos))
 
     return pos
 
