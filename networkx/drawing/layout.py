@@ -1085,46 +1085,48 @@ def multipartite_layout(G, subset_key='subset', align='vertical', scale=1,
     offset = (width/2, height/2)
 
     layers = {}
-    for v,data in G.nodes(data=True):
+    for v, data in G.nodes(data=True):
         try:
-            l = data[subset_key]
+            layer = data[subset_key]
         except KeyError:
             msg = "all nodes must have subset_key (default='subset') as data"
             raise ValueError(msg)
 
-        layers[l] = [v] + layers.get(l,[])
+        layers[layer] = [v] + layers.get(layer, [])
 
     pos = None
     nodes = []
     if align == 'vertical':
         prev_size = height/2
-        for i,layer in layers.items():
+        for i, layer in layers.items():
             size = len(layer)
-            xs = np.repeat(i,size)
-            ys = np.arange(0,size)
-            layer_pos = np.column_stack([xs,ys]) - offset + (0,(prev_size-size)/2)
+            xs = np.repeat(i, size)
+            ys = np.arange(0, size)
+            layer_pos = np.column_stack([xs, ys]) - offset
+            layer_pos += (0, (prev_size-size)/2)
             if pos is None:
                 pos = layer_pos
             else:
-                pos = np.concatenate([pos,layer_pos])
+                pos = np.concatenate([pos, layer_pos])
             nodes.extend(layer)
-        pos = rescale_layout(pos,scale=scale) + center
-        pos = dict(zip(nodes,pos))
+        pos = rescale_layout(pos, scale=scale) + center
+        pos = dict(zip(nodes, pos))
 
     if align == 'horizontal':
         prev_size = width/2
-        for i,layer in layers.items():
+        for i, layer in layers.items():
             size = len(layer)
-            xs = np.arange(0,size)
-            ys = np.repeat(i,size)
-            layer_pos = np.column_stack([xs,ys]) - offset + ((prev_size-size)/2,0)
+            xs = np.arange(0, size)
+            ys = np.repeat(i, size)
+            layer_pos = np.column_stack([xs, ys]) - offset
+            layer_pos += ((prev_size-size)/2, 0)
             if pos is None:
                 pos = layer_pos
             else:
-                pos = np.concatenate([pos,layer_pos])
+                pos = np.concatenate([pos, layer_pos])
             nodes.extend(layer)
-        pos = rescale_layout(pos,scale=scale) + center
-        pos = dict(zip(nodes,pos))
+        pos = rescale_layout(pos, scale=scale) + center
+        pos = dict(zip(nodes, pos))
 
     return pos
 
