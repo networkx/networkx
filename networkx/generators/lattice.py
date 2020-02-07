@@ -255,10 +255,7 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
         jj = (j for i in cols for j in rows)
         xx = (0.5 * (j % 2) + i for i in cols for j in rows)
         h = sqrt(3) / 2
-        if periodic:
-            yy = (h * j + .01 * i * i for i in cols for j in rows)
-        else:
-            yy = (h * j for i in cols for j in rows)
+        yy = (h * j for i in cols for j in rows)
         pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy)
                if (i, j) in H}
         set_node_attributes(H, pos, 'pos')
@@ -349,10 +346,7 @@ def hexagonal_lattice_graph(m, n, periodic=False, with_positions=True,
     xx = (0.5 + i + i // 2 + (j % 2) * ((i % 2) - .5)
           for i in cols for j in rows)
     h = sqrt(3) / 2
-    if periodic:
-        yy = (h * j + .01 * i * i for i in cols for j in rows)
-    else:
-        yy = (h * j for i in cols for j in rows)
+    yy = (h * j for i in cols for j in rows)
     # exclude nodes not in G
     pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy) if (i, j) in G}
     set_node_attributes(G, pos, 'pos')
