@@ -598,6 +598,21 @@ class TestEdgeView:
         result.remove((0, 1))
         assert ev - some_edges, result
 
+    def test_contains_edge_tuples_graph(self):
+
+        graph = self.G
+        end_nodes = [n for n in graph.nodes if nx.degree(graph, n) == 1]
+        end_edges = graph.edges(end_nodes)
+
+        inclusion = {}
+        for edge in graph.edges:
+            inclusion[edge] = edge in end_edges
+
+        for edge_tuple in [(0, 1), (7, 8)]:
+            assert inclusion[edge_tuple]
+        for edge_tuple in [(1, 2), (2, 3), (3, 4), (4, 5), (6, 7)]:
+            assert not inclusion[edge_tuple]
+
 
 class TestOutEdgeView(TestEdgeView):
     @classmethod
@@ -612,6 +627,21 @@ class TestOutEdgeView(TestEdgeView):
             + "(4, 5), (5, 6), (6, 7), (7, 8)])"
         )
         assert repr(ev) == rep
+
+    def test_contains_edge_tuples_digraph(self):
+
+        graph = self.G
+        end_nodes = [n for n in graph.nodes if nx.degree(graph, n) == 1]
+        end_edges = graph.edges(end_nodes)
+
+        inclusion = {}
+        for edge in graph.edges:
+            inclusion[edge] = edge in end_edges
+
+        for edge_tuple in [(0, 1)]:
+            assert inclusion[edge_tuple]
+        for edge_tuple in [(1, 2), (2, 3), (3, 4), (4, 5), (6, 7), (7, 8)]:
+            assert not inclusion[edge_tuple]
 
 
 class TestInEdgeView(TestEdgeView):
