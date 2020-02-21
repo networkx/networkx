@@ -1000,6 +1000,11 @@ def random_lobster(n, p1, p2, seed=None):
     leaf nodes. A caterpillar is a tree that reduces to a path graph
     when pruning all leaf nodes; setting `p2` to zero produces a caterpillar.
 
+    This implementation iterates on the probabilities `p1` and `p2` to add
+    edges at levels 1 and 2, respectively. Graphs are therefore constructed
+    iteratively with uniform randomness at each level rather than being selected
+    uniformly at random from the set of all possible lobsters.
+
     Parameters
     ----------
     n : int
@@ -1015,11 +1020,11 @@ def random_lobster(n, p1, p2, seed=None):
     Raises
     ------
     NetworkXError
-        If `p1` or `p2` parameters are >= 1 the while loops will never finish.
+        If `p1` or `p2` parameters are >= 1 because the while loops would never finish.
     """
     p1, p2 = abs(p1), abs(p2)
     if any([p >= 1 for p in [p1, p2]]):
-        raise nx.NetworkXError(f"Probability value of `p1` and `p2` must be < 1.")
+        raise nx.NetworkXError("Probability values for `p1` and `p2` must both be < 1.")
 
     # a necessary ingredient in any self-respecting graph library
     llen = int(2 * seed.random() * n + 0.5)
