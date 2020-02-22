@@ -608,15 +608,27 @@ class TestEdgeView:
         for edge in graph.edges:
             inclusion[edge] = edge in end_edges
 
-        if self.G.is_directed():
-            assert inclusion[(0, 1)]
-            for edge_tuple in [(1, 2), (2, 3), (3, 4), (4, 5), (6, 7), (7, 8)]:
-                assert not inclusion[edge_tuple]
+        if type(self.G) in {nx.Graph, nx.DiGraph}:
+            if self.G.is_directed():
+                assert inclusion[(0, 1)]
+                for edge_tuple in [(1, 2), (2, 3), (3, 4), (4, 5), (6, 7), (7, 8)]:
+                    assert not inclusion[edge_tuple]
+            else:
+                assert inclusion[(0, 1)]
+                assert inclusion[(7, 8)]
+                for edge_tuple in [(1, 2), (2, 3), (3, 4), (4, 5), (6, 7)]:
+                    assert not inclusion[edge_tuple]
+
         else:
-            assert inclusion[(0, 1)]
-            assert inclusion[(7, 8)]
-            for edge_tuple in [(1, 2), (2, 3), (3, 4), (4, 5), (6, 7)]:
-                assert not inclusion[edge_tuple]
+            if self.G.is_directed():
+                assert inclusion[(0, 1)]
+                for edge_tuple in [(1, 2), (2, 3), (3, 4), (4, 5), (6, 7), (7, 8)]:
+                    assert not inclusion[edge_tuple]
+            else:
+                assert inclusion[(0, 1)]
+                assert inclusion[(7, 8)]
+                for edge_tuple in [(1, 2), (2, 3), (3, 4), (4, 5), (6, 7)]:
+                    assert not inclusion[edge_tuple]
 
 
 class TestOutEdgeView(TestEdgeView):

@@ -766,6 +766,7 @@ class OutMultiEdgeDataView(OutEdgeDataView):
         else:
             nbunch = list(viewer._graph.nbunch_iter(nbunch))
             self._nodes_nbrs = lambda: [(n, adjdict[n]) for n in nbunch]
+            self._adjdict = {u: self._adjdict[u] for u in self._adjdict if u in nbunch}
         self._nbunch = nbunch
         self._data = data
         self._default = default
