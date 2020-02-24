@@ -51,6 +51,12 @@ class TestSpectrum:
         e = sorted(nx.adjacency_spectrum(self.P))
         npt.assert_almost_equal(e, evals)
 
+    def test_normalized_adjacency_spectrum(self):
+        "Normalized Adjacency eigenvalues"
+        evals = np.array([-1, 0, 1])
+        e = sorted(nx.normalized_adjacency_spectrum(self.P))
+        npt.assert_almost_equal(e, evals)
+
     def test_modularity_spectrum(self):
         "Modularity eigenvalues"
         evals = np.array([-1.5, 0.0, 0.0])
