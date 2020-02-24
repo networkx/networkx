@@ -3,7 +3,12 @@ Adjacency matrix and incidence matrix of graphs.
 """
 import networkx as nx
 
-__all__ = ["incidence_matrix", "adj_matrix", "adjacency_matrix"]
+__all__ = [
+    "incidence_matrix",
+    "adj_matrix",
+    "adjacency_matrix",
+    "normalized_adjacency_matrix"
+]
 
 
 def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=None):
@@ -149,6 +154,75 @@ def adjacency_matrix(G, nodelist=None, weight="weight"):
     adjacency_spectrum
     """
     return nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight)
+
+
+def normalized_adjacency_matrix(G, nodelist=None, weight="weight"):
+    """Returns normalized adjacency matrix of G.
+
+    The normalized adjacency matrix is the matrix
+
+    .. math::
+        AN = D^{-1/2} A D^{-1/2}
+
+    where `A` is the adjacency matrix and `D` is the diagonal matrix of node degrees. 
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph
+
+    nodelist : list, optional
+       The rows and columns are ordered according to the nodes in nodelist.
+       If nodelist is None, then the ordering is produced by G.nodes().
+
+    weight : string or None, optional (default='weight')
+       The edge data key used to provide each value in the matrix.
+       If None, then each edge has weight 1.
+
+    Returns
+    -------
+    AN : SciPy sparse matrix
+      Normalized adjacency matrix representation of G.
+
+    Notes
+    -----
+    For directed graphs, entry i,j corresponds to an edge from i to j.
+
+    If you want a pure Python adjacency matrix representation try
+    networkx.convert.to_dict_of_dicts which will return a
+    dictionary-of-dictionaries format that can be addressed as a
+    sparse matrix.
+
+    For MultiGraph/MultiDiGraph with parallel edges the weights are summed.
+    See to_numpy_matrix for other options.
+
+    The convention used for self-loop edges in graphs is to assign the
+    diagonal matrix entry value to the edge weight attribute
+    (or the number 1 if the edge has no weight attribute).  If the
+    alternate convention of doubling the edge weight is desired the
+    resulting Scipy sparse matrix can be modified as follows:
+
+    >>> import scipy as sp
+    >>> G = nx.Graph([(1,1)])
+    >>> AN = nx.normalized_adjacency_matrix(G)
+    >>> print(AN.todense())
+    [[1.]]
+    >>> AN.setdiag(AN.diagonal()*2)
+    >>> print(AN.todense())
+    [[2.]]
+
+    See Also
+    --------
+    adjacency_matrix
+    normalized_adjacency_spectrum
+    """
+    import numpy as np
+    import scipy.sparse as sp
+
+    A = adjacency_matrix(G, nodelist, weight)
+    diags = A.sum(axis=1).A1
+    D_sqrt = sp.diags(np.power(diags, -0.5), format='csr')
+    return D_sqrt @ A @ D_sqrt
 
 
 adj_matrix = adjacency_matrix
