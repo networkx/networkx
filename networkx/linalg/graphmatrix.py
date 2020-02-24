@@ -164,7 +164,7 @@ def normalized_adjacency_matrix(G, nodelist=None, weight="weight"):
     .. math::
         AN = D^{-1/2} A D^{-1/2}
 
-    where `A` is the adjacency matrix and `D` is the diagonal matrix of node degrees. 
+    where `A` is the adjacency matrix and `D` is the diagonal matrix of node degrees.
 
     Parameters
     ----------
