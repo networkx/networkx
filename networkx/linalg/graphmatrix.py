@@ -217,11 +217,15 @@ def normalized_adjacency_matrix(G, nodelist=None, weight="weight"):
     normalized_adjacency_spectrum
     """
     import numpy as np
+    import scipy
     import scipy.sparse as sp
 
     A = adjacency_matrix(G, nodelist, weight)
     diags = A.sum(axis=1).A1
-    D_sqrt = sp.diags(np.power(diags, -0.5), format='csr')
+    with scipy.errstate(divide='ignore'):
+        diags_sqrt = 1.0 / np.sqrt(diags)
+    diags_sqrt[np.isinf(diags_sqrt)] = 0.
+    D_sqrt = sp.diags(diags_sqrt, format='csr')
     return D_sqrt @ A @ D_sqrt
 
 
