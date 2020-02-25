@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-def laplacian_spectrum(G, weight="weight"):
+def laplacian_spectrum(G, weight="weight", signless=False):
     """Returns eigenvalues of the Laplacian of G
 
     Parameters
@@ -23,6 +23,9 @@ def laplacian_spectrum(G, weight="weight"):
     weight : string or None, optional (default='weight')
        The edge data key used to compute each value in the matrix.
        If None, then each edge has weight 1.
+
+    signless : boolean (default=False)
+       If True, then use the signless Laplacian
 
     Returns
     -------
@@ -40,10 +43,10 @@ def laplacian_spectrum(G, weight="weight"):
     """
     from scipy.linalg import eigvalsh
 
-    return eigvalsh(nx.laplacian_matrix(G, weight=weight).todense())
+    return eigvalsh(nx.laplacian_matrix(G, weight=weight, signless=signless).todense())
 
 
-def normalized_laplacian_spectrum(G, weight="weight"):
+def normalized_laplacian_spectrum(G, weight="weight", signless=False):
     """Return eigenvalues of the normalized Laplacian of G
 
     Parameters
@@ -54,6 +57,9 @@ def normalized_laplacian_spectrum(G, weight="weight"):
     weight : string or None, optional (default='weight')
        The edge data key used to compute each value in the matrix.
        If None, then each edge has weight 1.
+
+    signless : boolean (default=False)
+       If True, then use the signless Laplacian
 
     Returns
     -------
@@ -71,7 +77,8 @@ def normalized_laplacian_spectrum(G, weight="weight"):
     """
     from scipy.linalg import eigvalsh
 
-    return eigvalsh(nx.normalized_laplacian_matrix(G, weight=weight).todense())
+    return eigvalsh(nx.normalized_laplacian_matrix(G, weight=weight,
+                                                   signless=signless).todense())
 
 
 def adjacency_spectrum(G, weight="weight"):
