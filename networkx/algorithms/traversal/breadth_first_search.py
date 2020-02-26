@@ -119,12 +119,12 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
 
     Notes
     -----
-    The naming of this function is very similar to bfs_edges. The difference
+    The naming of this function is very similar to edge_bfs. The difference
     is that 'edge_bfs' yields edges even if they extend back to an already
     explored node while 'bfs_edges' yields the edges of the tree that results
     from a breadth-first-search (BFS) so no edges are reported if they extend
     to already explored nodes. That means 'edge_bfs' reports all edges while
-    'bfs_edges' only report those traversed by a node-based BFS. Yet another
+    'bfs_edges' only reports those traversed by a node-based BFS. Yet another
     description is that 'bfs_edges' reports the edges traversed during BFS
     while 'edge_bfs' reports all edges in the order they are explored.
 
