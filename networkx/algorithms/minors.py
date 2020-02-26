@@ -49,15 +49,8 @@ def equivalence_classes(iterable, relation):
     return {frozenset(block) for block in blocks}
 
 
-def quotient_graph(
-    G,
-    partition,
-    edge_relation=None,
-    node_data=None,
-    edge_data=None,
-    relabel=False,
-    create_using=None,
-):
+def quotient_graph(G, partition, edge_relation=None, node_data=None,
+                   edge_data=None, labels=False, create_using=None):
     """Returns the quotient graph of `G` under the specified equivalence
     relation on nodes.
 
@@ -115,11 +108,13 @@ def quotient_graph(
         * 'density', the density of the subgraph of `G` that this
           block represents.
 
-    relabel : bool
-        If True, relabel the nodes of the quotient graph to be
-        nonnegative integers. Otherwise, the nodes are identified with
-        :class:`frozenset` instances representing the blocks given in
-        `partition`.
+    labels : dict or function
+        If a ``dict`` it must be a mapping of the blocks, as ``frozenset``
+        objects, to block labels. If a function then it must be the function
+        on the nodes of G associated with the equivalence relation used to
+        create the quotient, i.e. the function ``f`` such that the
+        equivalence relation given by ``x <-> y`` if and only if ``f(x) = f(y)``
+        on the nodes of G.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
@@ -196,9 +191,17 @@ def quotient_graph(
 
         >>> G = nx.path_graph(6)
         >>> partition = [{0, 1}, {2, 3}, {4, 5}]
-        >>> M = nx.quotient_graph(G, partition, relabel=True)
+        >>> labels = {frozenset({0, 1}): 'A', frozenset({2, 3}): 'B', frozenset({4, 5}): 'C'}
+        >>> M = nx.quotient_graph(G, partition, labels=labels)
         >>> list(M.edges())
-        [(0, 1), (1, 2)]
+        [('A', 'B'), ('B', 'C')]
+
+        >>> G = nx.path_graph(6)
+        >>> labels = {frozenset({0, 1}): 'A', frozenset({2, 3}): 'B', frozenset({4, 5}): 'C'}
+        >>> f = lambda x: v for k, v in labels if x in k
+        >>> M = nx.quotient_graph(G, partition, labels=f)
+        >>> list(M.edges())
+        [('A', 'B'), ('B', 'C')]
 
     .. _Strongly connected component: https://en.wikipedia.org/wiki/Strongly_connected_component
 
@@ -215,9 +218,8 @@ def quotient_graph(
     if callable(partition):
         # equivalence_classes always return partition of whole G.
         partition = equivalence_classes(G, partition)
-        return _quotient_graph(
-            G, partition, edge_relation, node_data, edge_data, relabel, create_using
-        )
+        return _quotient_graph(G, partition, edge_relation, node_data,
+                               edge_data, labels, create_using)
 
     # If the user provided partition as a collection of sets. Then we
     # need to check if partition covers all of G nodes. If the answer
@@ -225,20 +227,13 @@ def quotient_graph(
     partition_nodes = set().union(*partition)
     if len(partition_nodes) != len(G):
         G = G.subgraph(partition_nodes)
-    return _quotient_graph(
-        G, partition, edge_relation, node_data, edge_data, relabel, create_using
-    )
+
+    return _quotient_graph(G, partition, edge_relation, node_data,
+                           edge_data, labels, create_using)
 
 
-def _quotient_graph(
-    G,
-    partition,
-    edge_relation=None,
-    node_data=None,
-    edge_data=None,
-    relabel=False,
-    create_using=None,
-):
+def _quotient_graph(G, partition, edge_relation=None, node_data=None,
+                    edge_data=None, labels=None, create_using=None):
     # Each node in the graph must be in exactly one block.
     if any(sum(1 for b in partition if v in b) != 1 for v in G):
         raise NetworkXException("each node must be in exactly one block")
@@ -307,12 +302,16 @@ def _quotient_graph(
     # If requested by the user, relabel the nodes to be integers,
     # numbered in increasing order from zero in the same order as the
     # iteration order of `partition`.
-    if relabel:
-        # Can't use nx.convert_node_labels_to_integers() here since we
-        # want the order of iteration to be the same for backward
-        # compatibility with the nx.blockmodel() function.
-        labels = {b: i for i, b in enumerate(partition)}
-        H = nx.relabel_nodes(H, labels)
+    if labels:
+        # labels must be either a mapping, i.e. a dict, of blocks to labels,
+        # or the function which is the basis of the equivalence relation
+        # used to create the quotient
+        if isinstance(labels, dict):
+            H = nx.relabel_nodes(H, labels)
+        elif isinstance(labels, typing.Callable):
+            b_iters = tuple(tee(b, 1)[0] for b in partition)
+            _labels = {b: labels(next(b_iters[i])) for i, b in enumerate(partition)}
+
     return H
 
 

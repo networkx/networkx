@@ -112,7 +112,8 @@ class TestQuotient:
     def test_path(self):
         G = nx.path_graph(6)
         partition = [{0, 1}, {2, 3}, {4, 5}]
-        M = nx.quotient_graph(G, partition, relabel=True)
+        labels = {frozenset({0,1}): 0, frozenset({2,3}): 1, frozenset({4,5}): 2}
+        M = nx.quotient_graph(G, partition, labels=labels)
         assert_nodes_equal(M, [0, 1, 2])
         assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
@@ -123,7 +124,8 @@ class TestQuotient:
     def test_multigraph_path(self):
         G = nx.MultiGraph(nx.path_graph(6))
         partition = [{0, 1}, {2, 3}, {4, 5}]
-        M = nx.quotient_graph(G, partition, relabel=True)
+        labels = {frozenset({0,1}): 0, frozenset({2,3}): 1, frozenset({4,5}): 2}
+        M = nx.quotient_graph(G, partition, labels=labels)
         assert_nodes_equal(M, [0, 1, 2])
         assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
@@ -135,7 +137,8 @@ class TestQuotient:
         G = nx.DiGraph()
         nx.add_path(G, range(6))
         partition = [{0, 1}, {2, 3}, {4, 5}]
-        M = nx.quotient_graph(G, partition, relabel=True)
+        labels = {frozenset({0,1}): 0, frozenset({2,3}): 1, frozenset({4,5}): 2}
+        M = nx.quotient_graph(G, partition, labels=labels)
         assert_nodes_equal(M, [0, 1, 2])
         assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
@@ -147,7 +150,8 @@ class TestQuotient:
         G = nx.MultiDiGraph()
         nx.add_path(G, range(6))
         partition = [{0, 1}, {2, 3}, {4, 5}]
-        M = nx.quotient_graph(G, partition, relabel=True)
+        labels = {frozenset({0,1}): 0, frozenset({2,3}): 1, frozenset({4,5}): 2}
+        M = nx.quotient_graph(G, partition, labels=labels)
         assert_nodes_equal(M, [0, 1, 2])
         assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
@@ -166,7 +170,8 @@ class TestQuotient:
         for i in range(5):
             G[i][i + 1]["weight"] = i + 1
         partition = [{0, 1}, {2, 3}, {4, 5}]
-        M = nx.quotient_graph(G, partition, relabel=True)
+        labels = {frozenset({0,1}): 0, frozenset({2,3}): 1, frozenset({4,5}): 2}
+        M = nx.quotient_graph(G, partition, labels=labels)
         assert_nodes_equal(M, [0, 1, 2])
         assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         assert M[0][1]["weight"] == 2
@@ -179,7 +184,8 @@ class TestQuotient:
     def test_barbell(self):
         G = nx.barbell_graph(3, 0)
         partition = [{0, 1, 2}, {3, 4, 5}]
-        M = nx.quotient_graph(G, partition, relabel=True)
+        labels = {frozenset({0,1,2}): 0, frozenset({3,4,5}): 1}
+        M = nx.quotient_graph(G, partition, labels=labels)
         assert_nodes_equal(M, [0, 1])
         assert_edges_equal(M.edges(), [(0, 1)])
         for n in M:
@@ -192,7 +198,8 @@ class TestQuotient:
         # Add an extra edge joining the bells.
         G.add_edge(0, 5)
         partition = [{0, 1, 2}, {3, 4, 5}]
-        M = nx.quotient_graph(G, partition, relabel=True)
+        labels = {frozenset({0,1,2}): 0, frozenset({3,4,5}): 1}
+        M = nx.quotient_graph(G, partition, labels=labels)
         assert_nodes_equal(M, [0, 1])
         assert_edges_equal(M.edges(), [(0, 1)])
         assert M[0][1]["weight"] == 2
@@ -204,7 +211,8 @@ class TestQuotient:
     def test_blockmodel(self):
         G = nx.path_graph(6)
         partition = [[0, 1], [2, 3], [4, 5]]
-        M = nx.quotient_graph(G, partition, relabel=True)
+        labels = {frozenset({0,1}): 0, frozenset({2,3}): 1, frozenset({4,5}): 2}
+        M = nx.quotient_graph(G, partition, labels=labels)
         assert_nodes_equal(M.nodes(), [0, 1, 2])
         assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M.nodes():
@@ -215,7 +223,9 @@ class TestQuotient:
     def test_multigraph_blockmodel(self):
         G = nx.MultiGraph(nx.path_graph(6))
         partition = [[0, 1], [2, 3], [4, 5]]
-        M = nx.quotient_graph(G, partition, create_using=nx.MultiGraph(), relabel=True)
+        labels = {frozenset({0,1}): 0, frozenset({2,3}): 1, frozenset({4,5}): 2}
+        M = nx.quotient_graph(G, partition,
+                              create_using=nx.MultiGraph(), labels=labels)
         assert_nodes_equal(M.nodes(), [0, 1, 2])
         assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M.nodes():
@@ -226,12 +236,13 @@ class TestQuotient:
     def test_quotient_graph_incomplete_partition(self):
         G = nx.path_graph(6)
         partition = []
-        H = nx.quotient_graph(G, partition, relabel=True)
+        H = nx.quotient_graph(G, partition, labels=None)
         assert_nodes_equal(H.nodes(), [])
         assert_edges_equal(H.edges(), [])
 
         partition = [[0, 1], [2, 3], [5]]
-        H = nx.quotient_graph(G, partition, relabel=True)
+        labels = {frozenset([0,1]): 0, frozenset([2,3]): 1, frozenset([5]): 2}
+        H = nx.quotient_graph(G, partition, labels=labels)
         assert_nodes_equal(H.nodes(), [0, 1, 2])
         assert_edges_equal(H.edges(), [(0, 1)])
 
