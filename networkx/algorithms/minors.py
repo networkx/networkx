@@ -3,6 +3,8 @@ from itertools import chain
 from itertools import combinations
 from itertools import permutations
 from itertools import product
+from itertools import tee
+from typing import Callable
 
 import networkx as nx
 from networkx import density
@@ -50,7 +52,7 @@ def equivalence_classes(iterable, relation):
 
 
 def quotient_graph(G, partition, edge_relation=None, node_data=None,
-                   edge_data=None, labels=False, create_using=None):
+                   edge_data=None, labels=None, create_using=None):
     """Returns the quotient graph of `G` under the specified equivalence
     relation on nodes.
 
@@ -108,12 +110,14 @@ def quotient_graph(G, partition, edge_relation=None, node_data=None,
         * 'density', the density of the subgraph of `G` that this
           block represents.
 
-    labels : dict or function
-        If a ``dict`` it must be a mapping of the blocks, as ``frozenset``
-        objects, to block labels. If a function then it must be the function
-        on the nodes of G associated with the equivalence relation used to
-        create the quotient, i.e. the function ``f`` such that the
-        equivalence relation given by ``x <-> y`` if and only if ``f(x) = f(y)``
+    labels : None or dict or function
+        If ``None`` the blocks are labelled as themselves, namely
+        ``frozenset`` objects. If a ``dict`` it must be a mapping of
+        the blocks, as ``frozenset`` objects, to block labels. If a
+        function then it must be the function on the nodes of G
+        associated with the equivalence relation used to create the
+        quotient, i.e. the function ``f`` such that the equivalence
+        relation given by ``x <-> y`` if and only if ``f(x) = f(y)``
         on the nodes of G.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
@@ -191,14 +195,15 @@ def quotient_graph(G, partition, edge_relation=None, node_data=None,
 
         >>> G = nx.path_graph(6)
         >>> partition = [{0, 1}, {2, 3}, {4, 5}]
-        >>> labels = {frozenset({0, 1}): 'A', frozenset({2, 3}): 'B', frozenset({4, 5}): 'C'}
+        >>> labels = {frozenset(b): l for b, l in zip(partition, ["A", "B", "C"])}
         >>> M = nx.quotient_graph(G, partition, labels=labels)
         >>> list(M.edges())
         [('A', 'B'), ('B', 'C')]
 
         >>> G = nx.path_graph(6)
-        >>> labels = {frozenset({0, 1}): 'A', frozenset({2, 3}): 'B', frozenset({4, 5}): 'C'}
-        >>> f = lambda x: v for k, v in labels if x in k
+        >>> partition = [{0, 1}, {2, 3}, {4, 5}]
+        >>> labels = {frozenset(b): l for b, l in zip(partition, ["A", "B", "C"])}
+        >>> f = lambda x: {x: v for k, v in labels.items() if x in k}.get(x)
         >>> M = nx.quotient_graph(G, partition, labels=f)
         >>> list(M.edges())
         [('A', 'B'), ('B', 'C')]
@@ -299,18 +304,18 @@ def _quotient_graph(G, partition, edge_relation=None, node_data=None,
             (b, c, edge_data(b, c)) for (b, c) in block_pairs if edge_relation(b, c)
         )
     H.add_edges_from(edges)
-    # If requested by the user, relabel the nodes to be integers,
-    # numbered in increasing order from zero in the same order as the
-    # iteration order of `partition`.
-    if labels:
-        # labels must be either a mapping, i.e. a dict, of blocks to labels,
-        # or the function which is the basis of the equivalence relation
-        # used to create the quotient
-        if isinstance(labels, dict):
-            H = nx.relabel_nodes(H, labels)
-        elif isinstance(labels, typing.Callable):
-            b_iters = tuple(tee(b, 1)[0] for b in partition)
-            _labels = {b: labels(next(b_iters[i])) for i, b in enumerate(partition)}
+    # If requested by the user, relabel the nodes using a dict mapping
+    # or the function on the nodes of G associated with the equivalence
+    # relation used to create the quotient graph
+    if isinstance(labels, dict):
+        H = nx.relabel_nodes(H, labels)
+    elif isinstance(labels, Callable):
+        b_iters = tuple(tee(b, 1)[0] for b in partition)
+        _labels = {
+            b: labels(next(b_iters[i]))
+            for i, b in enumerate(partition)
+        }
+        H = nx.relabel_nodes(H, _labels)
 
     return H
 
@@ -496,4 +501,5 @@ def contracted_edge(G, edge, self_loops=True):
     """
     if not G.has_edge(*edge):
         raise ValueError(f"Edge {edge} does not exist in graph G; cannot contract it")
+
     return contracted_nodes(G, *edge, self_loops=self_loops)

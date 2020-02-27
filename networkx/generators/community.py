@@ -569,7 +569,8 @@ def stochastic_block_model(
     >>> g = nx.stochastic_block_model(sizes, probs, seed=0)
     >>> len(g)
     450
-    >>> H = nx.quotient_graph(g, g.graph['partition'], relabel=True)
+    >>> labels = {frozenset(c): i for i, c in enumerate(g.graph['partition'])}
+    >>> H = nx.quotient_graph(g, g.graph['partition'], labels=labels)
     >>> for v in H.nodes(data=True):
     ...     print(round(v[1]['density'], 3))
     ...

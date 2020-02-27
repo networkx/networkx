@@ -58,7 +58,8 @@ H = nx.convert_node_labels_to_integers(H)
 # Create parititions with hierarchical clustering
 partitions = create_hc(H)
 # Build blockmodel graph
-BM = nx.quotient_graph(H, partitions, relabel=True)
+labels = {frozenset(b): i for i, b in enumerate(partitions)}
+BM = nx.quotient_graph(H, partitions, labels=labels)
 
 # Draw original graph
 pos = nx.spring_layout(H, iterations=100)
