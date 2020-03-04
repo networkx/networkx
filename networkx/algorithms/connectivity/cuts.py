@@ -281,7 +281,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     if mapping is None:
         raise nx.NetworkXError('Invalid auxiliary digraph.')
     if G.has_edge(s, t) or G.has_edge(t, s):
-        return []
+        return {}
     kwargs = dict(flow_func=flow_func, residual=residual, auxiliary=H)
 
     # The edge cut in the auxiliary digraph corresponds to the node cut in the
