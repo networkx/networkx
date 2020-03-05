@@ -383,9 +383,8 @@ def create_py_random_state(random_state=None):
             return PythonRandomInterface(random_state)
         if isinstance(random_state, PythonRandomInterface):
             return random_state
-        has_numpy = True
     except ImportError:
-        has_numpy = False
+        pass
 
     if random_state is None or random_state is random:
         return random._inst
