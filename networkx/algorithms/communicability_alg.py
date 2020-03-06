@@ -68,7 +68,6 @@ def communicability(G):
     >>> c = nx.communicability(G)
     """
     import numpy
-    import scipy.linalg
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
