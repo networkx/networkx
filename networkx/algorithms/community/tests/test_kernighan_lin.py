@@ -17,6 +17,7 @@ def test_partition():
     C = kernighan_lin_bisection(G)
     assert_partition_equal(C, [{0, 1, 2}, {3, 4, 5}])
 
+
 def test_partition_argument():
     G = nx.barbell_graph(3, 0)
     partition = [{0, 1, 2}, {3, 4, 5}]
