@@ -61,8 +61,8 @@ def connected_components(G):
     for v in G:
         if v not in seen:
             c = set(_plain_bfs(G, v))
-            yield c
             seen.update(c)
+            yield c
 
 
 def number_connected_components(G):
