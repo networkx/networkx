@@ -43,5 +43,6 @@ def test_multigraph():
     M = nx.MultiGraph(G.edges())
     M.add_edges_from(G.edges())
     M.remove_edge(1, 2)
-    A, B = kernighan_lin_bisection(M)
-    assert_partition_equal([A, B], [{0, 1}, {2, 3}])
+    for seed in range(100):
+        A, B = kernighan_lin_bisection(M, seed=seed)
+        assert_partition_equal([A, B], [{0, 1}, {2, 3}])

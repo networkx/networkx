@@ -1,6 +1,5 @@
 """Functions for computing the Kernighan–Lin bipartition algorithm."""
 
-import numpy as np
 import networkx as nx
 from itertools import count
 from networkx.utils import not_implemented_for, py_random_state, BinaryHeap
@@ -91,10 +90,9 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
     labels = list(G)
     seed.shuffle(labels)
     index = {v: i for i, v in enumerate(labels)}
-    side = np.zeros(n, int)
 
     if partition is None:
-        side[range(n // 2)] = 1
+        side = [0] * (n // 2) + [1] * ((n + 1) // 2)
     else:
         try:
             A, B = partition
@@ -102,7 +100,9 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
             raise nx.NetworkXError('partition must be two sets')
         if not is_partition(G, (A, B)):
             raise nx.NetworkXError('partition invalid')
-        side[[index[a] for a in A]] = 1
+        side = [0] * n
+        for a in A:
+            side[a] = 1
 
     if G.is_multigraph():
         edges = [{index[u]: sum(e.get(weight, 1) for e in d.values())
@@ -116,8 +116,10 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
         min_cost, min_i, _ = min(costs)
         if min_cost >= 0:
             break
-        move = [x for _, _, pair in costs[:min_i + 1] for x in pair]
-        side[move] = 1 - side[move]
+
+        for _, _, (u, v) in costs[:min_i + 1]:
+            side[u] = 1
+            side[v] = 0
 
     A = set(u for u, s in zip(labels, side) if s == 0)
     B = set(u for u, s in zip(labels, side) if s == 1)
