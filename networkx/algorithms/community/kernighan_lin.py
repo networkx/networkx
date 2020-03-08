@@ -16,11 +16,11 @@ def _kernighan_lin_sweep(edges, side):
     """
     costs0, costs1 = costs = BinaryHeap(), BinaryHeap()
     for u, side_u, edges_u in zip(count(), side, edges):
-        cost_u = sum(w if side[v] else -w for v, w in edges_u.items())
+        cost_u = sum(w if side[v] else -w for v, w in edges_u)
         costs[side_u].insert(u, cost_u if side_u else -cost_u)
 
     def _update_costs(costs_x, x):
-        for y, w in edges[x].items():
+        for y, w in edges[x]:
             costs_y = costs[side[y]]
             cost_y = costs_y.get(y)
             if cost_y is not None:
@@ -105,10 +105,10 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
             side[a] = 1
 
     if G.is_multigraph():
-        edges = [{index[u]: sum(e.get(weight, 1) for e in d.values())
-                  for u, d in G[v].items()} for v in labels]
+        edges = [[(index[u], sum(e.get(weight, 1) for e in d.values()))
+                  for u, d in G[v].items()] for v in labels]
     else:
-        edges = [{index[u]: e.get(weight, 1) for u, e in G[v].items()}
+        edges = [[(index[u], e.get(weight, 1)) for u, e in G[v].items()]
                  for v in labels]
 
     for i in range(max_iter):
