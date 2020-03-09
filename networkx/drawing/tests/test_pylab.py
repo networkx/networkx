@@ -168,6 +168,24 @@ class TestPylab:
         G = nx.Graph()
         nx.draw(G)
 
+    def test_draw_empty_nodes_return_values(self):
+        # See Issue #3833
+        from matplotlib.collections import PathCollection, LineCollection
+        G = nx.Graph([(1, 2), (2, 3)])
+        DG = nx.DiGraph([(1, 2), (2, 3)])
+        pos = nx.circular_layout(G)
+        assert isinstance(nx.draw_networkx_nodes(G, pos, nodelist=[]), PathCollection)
+        assert isinstance(nx.draw_networkx_nodes(DG, pos, nodelist=[]), PathCollection)
+
+        # drawing empty edges either return an empty LineCollection or empty list.
+        assert isinstance(nx.draw_networkx_edges(G, pos, edgelist=[], arrows=True),
+                          LineCollection)
+        assert isinstance(nx.draw_networkx_edges(G, pos, edgelist=[], arrows=False),
+                          LineCollection)
+        assert isinstance(nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=False),
+                          LineCollection)
+        assert nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=True) == []
+
     def test_multigraph_edgelist_tuples(self):
         # See Issue #3295
         G = nx.path_graph(3, create_using=nx.MultiDiGraph)
