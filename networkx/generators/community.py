@@ -377,7 +377,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
             break
         assigned += size
         sizes.append(size)
-    return random_partition_graph(sizes, p_in, p_out, directed, seed)
+    return random_partition_graph(sizes, p_in, p_out, seed, directed)
 
 
 def ring_of_cliques(num_cliques, clique_size):
