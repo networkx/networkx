@@ -88,3 +88,11 @@ class TestConnected:
         pytest.raises(NetworkXNotImplemented, nx.node_connected_component, self.DG, 1)
         pytest.raises(NetworkXNotImplemented, nx.is_connected, self.DG)
         pytest.raises(nx.NetworkXPointlessConcept, nx.is_connected, nx.Graph())
+
+    def test_connected_mutability(self):
+        G = self.grid
+        seen = set()
+        for component in nx.connected_components(G):
+            assert len(seen & component) == 0
+            seen.update(component)
+            component.clear()
