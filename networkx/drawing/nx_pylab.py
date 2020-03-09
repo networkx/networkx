@@ -368,6 +368,7 @@ def draw_networkx_nodes(G, pos,
     from collections.abc import Iterable
     try:
         import matplotlib.pyplot as plt
+        from matplotlib.collections import PathCollection
         import numpy as np
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
@@ -382,7 +383,7 @@ def draw_networkx_nodes(G, pos,
         nodelist = list(G)
 
     if len(nodelist) == 0:  # empty nodelist, no drawing
-        return
+        return PathCollection(None)
 
     try:
         xy = np.asarray([pos[v] for v in nodelist])
@@ -567,7 +568,10 @@ def draw_networkx_edges(G, pos,
         edgelist = list(G.edges())
 
     if not edgelist or len(edgelist) == 0:  # no edges!
-        return None
+        if not G.is_directed() or not arrows:
+            return LineCollection(None)
+        else:
+            return []
 
     if nodelist is None:
         nodelist = list(G.nodes())
