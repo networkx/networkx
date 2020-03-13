@@ -118,7 +118,7 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
     """
     if method not in ('dijkstra', 'bellman-ford'):
         # so we don't need to check in each branch later
-        raise ValueError('method not supported: {}'.format(method))
+        raise ValueError(f'method not supported: {method}')
     method = 'unweighted' if weight is None else method
     if source is None:
         if target is None:
@@ -260,7 +260,7 @@ def shortest_path_length(G,
     """
     if method not in ('dijkstra', 'bellman-ford'):
         # so we don't need to check in each branch later
-        raise ValueError('method not supported: {}'.format(method))
+        raise ValueError(f'method not supported: {method}')
     method = 'unweighted' if weight is None else method
     if source is None:
         if target is None:
@@ -376,7 +376,7 @@ def average_shortest_path_length(G, weight=None, method=None):
     if method is None:
         method = 'unweighted' if weight is None else 'dijkstra'
     if method not in supported_methods:
-        raise ValueError('method not supported: {}'.format(method))
+        raise ValueError(f'method not supported: {method}')
 
     n = len(G)
     # For the special case of the null graph, raise an exception, since
@@ -482,11 +482,11 @@ def all_shortest_paths(G, source, target, weight=None, method='dijkstra'):
         pred, dist = nx.bellman_ford_predecessor_and_distance(G, source,
                                                               weight=weight)
     else:
-        raise ValueError('method not supported: {}'.format(method))
+        raise ValueError(f'method not supported: {method}')
 
     if target not in pred:
-        raise nx.NetworkXNoPath('Target {} cannot be reached'
-                                'from Source {}'.format(target, source))
+        raise nx.NetworkXNoPath(f'Target {target} cannot be reached'
+                                f'from Source {source}')
 
     stack = [[target, 0]]
     top = 0

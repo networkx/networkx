@@ -244,10 +244,10 @@ def joint_degree_graph(joint_degrees, seed=None):
 
                 # k_unsat and l_unsat consist of nodes of degree k and l that
                 # are unsaturated (nodes that have at least 1 available stub)
-                k_unsat = set(v for v in k_nodes if h_node_residual[v] > 0)
+                k_unsat = {v for v in k_nodes if h_node_residual[v] > 0}
 
                 if k != l:
-                    l_unsat = set(w for w in l_nodes if h_node_residual[w] > 0)
+                    l_unsat = {w for w in l_nodes if h_node_residual[w] > 0}
                 else:
                     l_unsat = k_unsat
                     n_edges_add = joint_degrees[k][l] // 2

@@ -19,7 +19,7 @@ def test_single_node():
     test.add_node('a')
 
     # ground truth
-    ground_truth = set([frozenset(['a'])])
+    ground_truth = {frozenset(['a'])}
 
     communities = asyn_fluidc(test, 1)
     result = {frozenset(c) for c in communities}
@@ -32,7 +32,7 @@ def test_two_nodes():
     test.add_edge('a', 'b')
 
     # ground truth
-    ground_truth = set([frozenset(['a']), frozenset(['b'])])
+    ground_truth = {frozenset(['a']), frozenset(['b'])}
 
     communities = asyn_fluidc(test, 2)
     result = {frozenset(c) for c in communities}
@@ -56,8 +56,8 @@ def test_two_clique_communities():
     test.add_edge('f', 'e')
 
     # ground truth
-    ground_truth = set([frozenset(['a', 'c', 'b']),
-                        frozenset(['e', 'd', 'f'])])
+    ground_truth = {frozenset(['a', 'c', 'b']),
+                        frozenset(['e', 'd', 'f'])}
 
     communities = asyn_fluidc(test, 2, seed=7)
     result = {frozenset(c) for c in communities}
@@ -115,11 +115,11 @@ def test_five_clique_ring():
     test.add_edge('5a', '1c')
 
     # ground truth
-    ground_truth = set([frozenset(['1a', '1b', '1c', '1d']),
+    ground_truth = {frozenset(['1a', '1b', '1c', '1d']),
                         frozenset(['2a', '2b', '2c', '2d']),
                         frozenset(['3a', '3b', '3c', '3d']),
                         frozenset(['4a', '4b', '4c', '4d']),
-                        frozenset(['5a', '5b', '5c', '5d'])])
+                        frozenset(['5a', '5b', '5c', '5d'])}
 
     communities = asyn_fluidc(test, 5, seed=9)
     result = {frozenset(c) for c in communities}

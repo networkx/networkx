@@ -4,7 +4,7 @@ import networkx as nx
 from networkx.readwrite.json_graph import jit_data, jit_graph
 
 
-class TestJIT(object):
+class TestJIT:
     def test_jit(self):
         G = nx.Graph()
         G.add_node('Node1', node_data='foobar')

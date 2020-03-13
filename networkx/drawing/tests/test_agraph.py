@@ -11,7 +11,7 @@ from networkx.testing import assert_edges_equal, assert_nodes_equal, \
 import networkx as nx
 
 
-class TestAGraph(object):
+class TestAGraph:
 
     def build_graph(self, G):
         edges = [('A', 'B'), ('A', 'C'), ('A', 'C'), ('B', 'C'), ('A', 'D')]

@@ -1,14 +1,16 @@
 from ast import literal_eval
 import codecs
+from contextlib import contextmanager
 import io
 import pytest
 import networkx as nx
 from networkx.readwrite.gml import literal_stringizer, literal_destringizer
 import os
 import tempfile
+from textwrap import dedent
 
 
-class TestGraph(object):
+class TestGraph:
     @classmethod
     def setup_class(cls):
         cls.simple_data = """Creator "me"
@@ -345,7 +347,7 @@ graph
         gml = "\n".join(nx.generate_gml(G, stringizer=literal_stringizer))
         G = nx.parse_gml(gml, destringizer=literal_destringizer)
         assert data == G.name
-        assert {"name": data, str("data"): data} == G.graph
+        assert {"name": data, "data": data} == G.graph
         assert list(G.nodes(data=True)) == [(0, dict(int=-1, data=dict(data=data)))]
         assert list(G.edges(data=True)) == [(0, 0, dict(float=-2.5, data=data))]
         G = nx.Graph()
@@ -380,14 +382,14 @@ graph
         pytest.raises(ValueError, literal_stringizer, frozenset([1, 2, 3]))
         pytest.raises(ValueError, literal_stringizer, literal_stringizer)
         with tempfile.TemporaryFile() as f:
-            f.write(codecs.BOM_UTF8 + "graph[]".encode("ascii"))
+            f.write(codecs.BOM_UTF8 + b"graph[]")
             f.seek(0)
             pytest.raises(nx.NetworkXError, nx.read_gml, f)
 
         def assert_parse_error(gml):
             pytest.raises(nx.NetworkXError, nx.parse_gml, gml)
 
-        assert_parse_error(["graph [\n\n", str("]")])
+        assert_parse_error(["graph [\n\n", "]"])
         assert_parse_error("")
         assert_parse_error('Creator ""')
         assert_parse_error("0")
@@ -511,3 +513,97 @@ graph
         finally:
             os.close(fd)
             os.unlink(fname)
+
+
+@contextmanager
+def byte_file():
+    _file_handle = io.BytesIO()
+    yield _file_handle
+    _file_handle.seek(0)
+
+
+class TestPropertyLists:
+    def test_writing_graph_with_multi_element_property_list(self):
+        g = nx.Graph()
+        g.add_node("n1", properties=["element", 0, 1, 2.5, True, False])
+        with byte_file() as f:
+            nx.write_gml(g, f)
+        result = f.read().decode()
+
+        assert result == dedent("""\
+            graph [
+              node [
+                id 0
+                label "n1"
+                properties "element"
+                properties 0
+                properties 1
+                properties 2.5
+                properties 1
+                properties 0
+              ]
+            ]
+        """)
+
+    def test_writing_graph_with_one_element_property_list(self):
+        g = nx.Graph()
+        g.add_node("n1", properties=["element"])
+        with byte_file() as f:
+            nx.write_gml(g, f)
+        result = f.read().decode()
+
+        assert result == dedent("""\
+            graph [
+              node [
+                id 0
+                label "n1"
+                properties "_networkx_list_start"
+                properties "element"
+              ]
+            ]
+        """)
+
+    def test_reading_graph_with_list_property(self):
+        with byte_file() as f:
+            f.write(dedent("""
+              graph [
+                node [
+                  id 0
+                  label "n1"
+                  properties "element"
+                  properties 0
+                  properties 1
+                  properties 2.5
+                ]
+              ]
+            """).encode("ascii"))
+            f.seek(0)
+            graph = nx.read_gml(f)
+        assert graph.nodes(data=True)["n1"] == {
+            'properties': [
+                'element',
+                0,
+                1,
+                2.5,
+            ]
+        }
+
+    def test_reading_graph_with_single_element_list_property(self):
+        with byte_file() as f:
+            f.write(dedent("""
+              graph [
+                node [
+                  id 0
+                  label "n1"
+                  properties "_networkx_list_start"
+                  properties "element"
+                ]
+              ]
+            """).encode("ascii"))
+            f.seek(0)
+            graph = nx.read_gml(f)
+        assert graph.nodes(data=True)["n1"] == {
+            'properties': [
+                'element',
+            ]
+        }

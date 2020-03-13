@@ -24,7 +24,7 @@ def test_isolated_K5():
     assert c == {frozenset(range(5)), frozenset(range(5, 10))}
 
 
-class TestZacharyKarateClub(object):
+class TestZacharyKarateClub:
 
     def setup(self):
         self.G = nx.karate_club_graph()

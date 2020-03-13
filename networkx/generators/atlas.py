@@ -47,8 +47,8 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 #:
 #:     with gzip.open('atlas.dat.gz', 'wb') as f:
 #:         for i, G in enumerate(graph_atlas_g()):
-#:             f.write(bytes('GRAPH {}\n'.format(i), encoding='utf-8'))
-#:             f.write(bytes('NODES {}\n'.format(len(G)), encoding='utf-8'))
+#:             f.write(bytes(f'GRAPH {i}\n', encoding='utf-8'))
+#:             f.write(bytes(f'NODES {len(G)}\n', encoding='utf-8'))
 #:             write_edgelist(G, f, data=False)
 #:
 ATLAS_FILE = os.path.join(THIS_DIR, 'atlas.dat.gz')
@@ -82,7 +82,7 @@ def _generate_graphs():
                 edgelist.append(line.rstrip())
                 line = f.readline()
             G = nx.Graph()
-            G.name = 'G{}'.format(graph_index)
+            G.name = f'G{graph_index}'
             G.add_nodes_from(range(num_nodes))
             G.add_edges_from(tuple(map(int, e.split())) for e in edgelist)
             yield G
@@ -122,7 +122,7 @@ def graph_atlas(i):
 
     """
     if not (0 <= i < NUM_GRAPHS):
-        raise ValueError('index must be between 0 and {}'.format(NUM_GRAPHS))
+        raise ValueError(f'index must be between 0 and {NUM_GRAPHS}')
     return next(islice(_generate_graphs(), i, None))
 
 

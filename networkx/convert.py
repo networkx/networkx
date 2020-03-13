@@ -18,10 +18,15 @@ nx_agraph, nx_pydot
 import warnings
 import networkx as nx
 
-__all__ = ['to_networkx_graph',
-           'from_dict_of_dicts', 'to_dict_of_dicts',
-           'from_dict_of_lists', 'to_dict_of_lists',
-           'from_edgelist', 'to_edgelist']
+__all__ = [
+    "to_networkx_graph",
+    "from_dict_of_dicts",
+    "to_dict_of_dicts",
+    "from_dict_of_lists",
+    "to_dict_of_lists",
+    "from_edgelist",
+    "to_edgelist",
+]
 
 
 def to_networkx_graph(data, create_using=None, multigraph_input=False):
@@ -65,12 +70,14 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     # NX graph
     if hasattr(data, "adj"):
         try:
-            result = from_dict_of_dicts(data.adj,
-                                        create_using=create_using,
-                                        multigraph_input=data.is_multigraph())
-            if hasattr(data, 'graph'):  # data.graph should be dict-like
+            result = from_dict_of_dicts(
+                data.adj,
+                create_using=create_using,
+                multigraph_input=data.is_multigraph(),
+            )
+            if hasattr(data, "graph"):  # data.graph should be dict-like
                 result.graph.update(data.graph)
-            if hasattr(data, 'nodes'):  # data.nodes should be dict-like
+            if hasattr(data, "nodes"):  # data.nodes should be dict-like
                 # result.add_node_from(data.nodes.items()) possible but
                 # for custom node_attr_dict_factory which may be hashable
                 # will be unexpected behavior
@@ -90,8 +97,9 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     # dict of dicts/lists
     if isinstance(data, dict):
         try:
-            return from_dict_of_dicts(data, create_using=create_using,
-                                      multigraph_input=multigraph_input)
+            return from_dict_of_dicts(
+                data, create_using=create_using, multigraph_input=multigraph_input
+            )
         except:
             try:
                 return from_dict_of_lists(data, create_using=create_using)
@@ -100,8 +108,9 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
 
     # list or generator of edges
 
-    if (isinstance(data, (list, tuple)) or
-            any(hasattr(data, attr) for attr in ['_adjdict', 'next', '__next__'])):
+    if isinstance(data, (list, tuple)) or any(
+        hasattr(data, attr) for attr in ["_adjdict", "next", "__next__"]
+    ):
         try:
             return from_edgelist(data, create_using=create_using)
         except:
@@ -110,6 +119,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     # Pandas DataFrame
     try:
         import pandas as pd
+
         if isinstance(data, pd.DataFrame):
             if data.shape[0] == data.shape[1]:
                 try:
@@ -119,42 +129,43 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                     raise nx.NetworkXError(msg)
             else:
                 try:
-                    return nx.from_pandas_edgelist(data, edge_attr=True, create_using=create_using)
+                    return nx.from_pandas_edgelist(
+                        data, edge_attr=True, create_using=create_using
+                    )
                 except:
                     msg = "Input is not a correct Pandas DataFrame edge-list."
                     raise nx.NetworkXError(msg)
     except ImportError:
-        msg = 'pandas not found, skipping conversion test.'
+        msg = "pandas not found, skipping conversion test."
         warnings.warn(msg, ImportWarning)
 
     # numpy matrix or ndarray
     try:
         import numpy
+
         if isinstance(data, (numpy.matrix, numpy.ndarray)):
             try:
                 return nx.from_numpy_matrix(data, create_using=create_using)
             except:
-                raise nx.NetworkXError(
-                    "Input is not a correct numpy matrix or array.")
+                raise nx.NetworkXError("Input is not a correct numpy matrix or array.")
     except ImportError:
-        warnings.warn('numpy not found, skipping conversion test.',
-                      ImportWarning)
+        warnings.warn("numpy not found, skipping conversion test.", ImportWarning)
 
     # scipy sparse matrix - any format
     try:
         import scipy
+
         if hasattr(data, "format"):
             try:
                 return nx.from_scipy_sparse_matrix(data, create_using=create_using)
             except:
                 raise nx.NetworkXError(
-                    "Input is not a correct scipy sparse matrix type.")
+                    "Input is not a correct scipy sparse matrix type."
+                )
     except ImportError:
-        warnings.warn('scipy not found, skipping conversion test.',
-                      ImportWarning)
+        warnings.warn("scipy not found, skipping conversion test.", ImportWarning)
 
-    raise nx.NetworkXError(
-        "Input is not a known data type for conversion.")
+    raise nx.NetworkXError("Input is not a known data type for conversion.")
 
 
 def to_dict_of_lists(G, nodelist=None):
@@ -216,8 +227,9 @@ def from_dict_of_lists(d, create_using=None):
                     G.add_edge(node, nbr)
             seen[node] = 1  # don't allow reverse edge to show up
     else:
-        G.add_edges_from(((node, nbr) for node, nbrlist in d.items()
-                          for nbr in nbrlist))
+        G.add_edges_from(
+            ((node, nbr) for node, nbrlist in d.items() for nbr in nbrlist)
+        )
     return G
 
 
@@ -294,31 +306,37 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
         # make a copy of the list of edge data (but not the edge data)
         if G.is_directed():
             if G.is_multigraph():
-                G.add_edges_from((u, v, key, data)
-                                 for u, nbrs in d.items()
-                                 for v, datadict in nbrs.items()
-                                 for key, data in datadict.items())
+                G.add_edges_from(
+                    (u, v, key, data)
+                    for u, nbrs in d.items()
+                    for v, datadict in nbrs.items()
+                    for key, data in datadict.items()
+                )
             else:
-                G.add_edges_from((u, v, data)
-                                 for u, nbrs in d.items()
-                                 for v, datadict in nbrs.items()
-                                 for key, data in datadict.items())
+                G.add_edges_from(
+                    (u, v, data)
+                    for u, nbrs in d.items()
+                    for v, datadict in nbrs.items()
+                    for key, data in datadict.items()
+                )
         else:  # Undirected
             if G.is_multigraph():
-                seen = set()   # don't add both directions of undirected graph
+                seen = set()  # don't add both directions of undirected graph
                 for u, nbrs in d.items():
                     for v, datadict in nbrs.items():
                         if (u, v) not in seen:
-                            G.add_edges_from((u, v, key, data)
-                                             for key, data in datadict.items())
+                            G.add_edges_from(
+                                (u, v, key, data) for key, data in datadict.items()
+                            )
                             seen.add((v, u))
             else:
-                seen = set()   # don't add both directions of undirected graph
+                seen = set()  # don't add both directions of undirected graph
                 for u, nbrs in d.items():
                     for v, datadict in nbrs.items():
                         if (u, v) not in seen:
-                            G.add_edges_from((u, v, data)
-                                             for key, data in datadict.items())
+                            G.add_edges_from(
+                                (u, v, data) for key, data in datadict.items()
+                            )
                             seen.add((v, u))
 
     else:  # not a multigraph to multigraph transfer
@@ -334,9 +352,9 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
                         G[u][v][0].update(data)
                     seen.add((v, u))
         else:
-            G.add_edges_from(((u, v, data)
-                              for u, nbrs in d.items()
-                              for v, data in nbrs.items()))
+            G.add_edges_from(
+                ((u, v, data) for u, nbrs in d.items() for v, data in nbrs.items())
+            )
     return G
 
 

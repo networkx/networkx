@@ -168,9 +168,9 @@ def write_multiline_adjlist(G, path, delimiter=' ',
     import time
 
     pargs = comments + " ".join(sys.argv)
-    header = ("{}\n".format(pargs)
-              + comments + " GMT {}\n".format(time.asctime(time.gmtime()))
-              + comments + " {}\n".format(G.name))
+    header = (f"{pargs}\n"
+              + comments + f" GMT {time.asctime(time.gmtime())}\n"
+              + comments + f" {G.name}\n")
     path.write(header.encode(encoding))
 
     for multiline in generate_multiline_adjlist(G, delimiter):
@@ -229,20 +229,19 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
             (u, deg) = line.strip().split(delimiter)
             deg = int(deg)
         except:
-            raise TypeError("Failed to read node and degree on line ({})".format(line))
+            raise TypeError(f"Failed to read node and degree on line ({line})")
         if nodetype is not None:
             try:
                 u = nodetype(u)
             except:
-                raise TypeError("Failed to convert node ({}) to type {}"
-                                .format(u, nodetype))
+                raise TypeError(f"Failed to convert node ({u}) to type {nodetype}")
         G.add_node(u)
         for i in range(deg):
             while True:
                 try:
                     line = next(lines)
                 except StopIteration:
-                    msg = "Failed to find neighbor for node ({})".format(u)
+                    msg = f"Failed to find neighbor for node ({u})"
                     raise TypeError(msg)
                 p = line.find(comments)
                 if p >= 0:
@@ -259,16 +258,12 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
                 try:
                     v = nodetype(v)
                 except:
-                    raise TypeError(
-                        "Failed to convert node ({}) to type {}"
-                        .format(v, nodetype))
+                    raise TypeError("Failed to convert node ({v}) to type {nodetype}")
             if edgetype is not None:
                 try:
                     edgedata = {'weight': edgetype(data)}
                 except:
-                    raise TypeError(
-                        "Failed to convert edge data ({}) to type {}"
-                        .format(data, edgetype))
+                    raise TypeError("Failed to convert edge data ({data}) to type {edgetype}")
             else:
                 try:  # try to evaluate
                     edgedata = literal_eval(data)

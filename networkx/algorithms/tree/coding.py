@@ -117,7 +117,7 @@ def to_nested_tuple(T, root, canonical_form=False):
     if not nx.is_tree(T):
         raise nx.NotATree('provided graph is not a tree')
     if root not in T:
-        raise nx.NodeNotFound('Graph {} contains no node {}'.format(T, root))
+        raise nx.NodeNotFound(f'Graph {T} contains no node {root}')
 
     return _make_tuple(T, root, None)
 

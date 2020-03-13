@@ -73,7 +73,7 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
             (u, v) = edge
             # Get copy of graph needed for this search
             if low_memory:
-                verts = set([u, v])
+                verts = {u, v}
                 for i in range(k):
                     for w in verts.copy():
                         verts.update(G[w])
@@ -158,7 +158,7 @@ def is_kl_connected(G, k, l, low_memory=False):
         (u, v) = edge
         # Get copy of graph needed for this search
         if low_memory:
-            verts = set([u, v])
+            verts = {u, v}
             for i in range(k):
                 [verts.update(G.neighbors(w)) for w in verts.copy()]
             G2 = G.subgraph(verts)

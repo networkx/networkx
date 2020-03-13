@@ -9,7 +9,7 @@ __all__ = ['CurrentEdge', 'Level', 'GlobalRelabelThreshold',
            'build_residual_network', 'detect_unboundedness', 'build_flow_dict']
 
 
-class CurrentEdge(object):
+class CurrentEdge:
     """Mechanism for iterating over out-edges incident to a node in a circular
     manner. StopIteration exception is raised when wraparound occurs.
     """
@@ -35,7 +35,7 @@ class CurrentEdge(object):
         self._curr = next(self._it)
 
 
-class Level(object):
+class Level:
     """Active and inactive nodes in a level.
     """
     __slots__ = ('active', 'inactive')
@@ -45,7 +45,7 @@ class Level(object):
         self.inactive = set()
 
 
-class GlobalRelabelThreshold(object):
+class GlobalRelabelThreshold:
     """Measurement of work before the global relabeling heuristic should be
     applied.
     """
@@ -140,7 +140,7 @@ def detect_unboundedness(R, s, t):
     """Detect an infinite-capacity s-t path in R.
     """
     q = deque([s])
-    seen = set([s])
+    seen = {s}
     inf = R.graph['inf']
     while q:
         u = q.popleft()

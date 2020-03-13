@@ -235,7 +235,7 @@ Note that for undirected graphs, adjacency iteration sees each edge twice.
     >>> for n, nbrs in FG.adj.items():
     ...    for nbr, eattr in nbrs.items():
     ...        wt = eattr['weight']
-    ...        if wt < 0.5: print('(%d, %d, %.3f)' % (n, nbr, wt))
+    ...        if wt < 0.5: print(f"({n}, {nbr}, {wt:.3})")
     (1, 2, 0.125)
     (2, 1, 0.125)
     (3, 4, 0.375)
@@ -246,7 +246,7 @@ Convenient access to all edges is achieved with the edges property.
 .. nbplot::
 
     >>> for (u, v, wt) in FG.edges.data('weight'):
-    ...     if wt < 0.5: print('(%d, %d, %.3f)' % (u, v, wt))
+    ...     if wt < 0.5: print(f"({u}, {v}, {wt:.3})")
     (1, 2, 0.125)
     (3, 4, 0.375)
 

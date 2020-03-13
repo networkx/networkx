@@ -22,6 +22,6 @@ def is_partition(G, communities):
     # return all(sum(1 if v in c else 0 for c in communities) == 1 for v in G)
     if not isinstance(communities, list):
         communities = list(communities)
-    nodes = set(n for c in communities for n in c if n in G)
+    nodes = {n for c in communities for n in c if n in G}
 
     return len(G) == len(nodes) == sum(len(c) for c in communities)

@@ -94,7 +94,7 @@ class TimeRespectingGraphMatcher(GraphMatcher):
         """
         self.temporal_attribute_name = temporal_attribute_name
         self.delta = delta
-        super(TimeRespectingGraphMatcher, self).__init__(G1, G2)
+        super().__init__(G1, G2)
 
     def one_hop(self, Gx, Gx_node, neighbors):
         """
@@ -157,7 +157,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         """
         self.temporal_attribute_name = temporal_attribute_name
         self.delta = delta
-        super(TimeRespectingDiGraphMatcher, self).__init__(G1, G2)
+        super().__init__(G1, G2)
 
     def get_pred_dates(self, Gx, Gx_node, core_x, pred):
         """

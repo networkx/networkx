@@ -3,7 +3,7 @@ import pytest
 import networkx as nx
 
 
-class TestConfigurationModel(object):
+class TestConfigurationModel:
     """Unit tests for the :func:`~networkx.configuration_model`
     function.
 

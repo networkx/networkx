@@ -10,7 +10,7 @@ from networkx.algorithms.tournament import random_tournament
 from networkx.algorithms.tournament import hamiltonian_path
 
 
-class TestIsTournament(object):
+class TestIsTournament:
     """Unit tests for the :func:`networkx.tournament.is_tournament`
     function.
 
@@ -48,7 +48,7 @@ class TestIsTournament(object):
         assert not is_tournament(G)
 
 
-class TestRandomTournament(object):
+class TestRandomTournament:
     """Unit tests for the :func:`networkx.tournament.random_tournament`
     function.
 
@@ -64,7 +64,7 @@ class TestRandomTournament(object):
             assert is_tournament(G)
 
 
-class TestHamiltonianPath(object):
+class TestHamiltonianPath:
     """Unit tests for the :func:`networkx.tournament.hamiltonian_path`
     function.
 
@@ -91,7 +91,7 @@ class TestHamiltonianPath(object):
         assert path[0] in G[path[-1]]
 
 
-class TestReachability(object):
+class TestReachability:
     """Unit tests for the :func:`networkx.tournament.is_reachable`
     function.
 
@@ -114,7 +114,7 @@ class TestReachability(object):
         assert not is_reachable(G, 1, 0)
 
 
-class TestStronglyConnected(object):
+class TestStronglyConnected:
     """Unit tests for the
     :func:`networkx.tournament.is_strongly_connected` function.
 

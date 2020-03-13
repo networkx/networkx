@@ -68,7 +68,7 @@ def not_implemented_for(*graph_types):
             raise KeyError('use one or more of ',
                            'directed, undirected, multigraph, graph')
         if match:
-            msg = 'not implemented for %s type' % ' '.join(graph_types)
+            msg = f"not implemented for {' '.join(graph_types)} type"
             raise nx.NetworkXNotImplemented(msg)
         else:
             return not_implement_for_func(*args, **kwargs)
@@ -185,8 +185,8 @@ def open_file(path_arg, mode='r'):
             except KeyError:
                 # Could not find the keyword. Thus, no default was specified
                 # in the function signature and the user did not provide it.
-                msg = 'Missing required keyword argument: {0}'
-                raise nx.NetworkXError(msg.format(path_arg))
+                msg = f"Missing required keyword argument: {path_arg}"
+                raise nx.NetworkXError(msg)
             else:
                 is_kwarg = True
         except IndexError:
@@ -289,7 +289,7 @@ def nodes_or_number(which_args):
                 nodes = tuple(n)
             else:
                 if n < 0:
-                    msg = "Negative number of nodes not valid: %i" % n
+                    msg = "Negative number of nodes not valid: {n}"
                     raise nx.NetworkXError(msg)
             new_args[i] = (n, nodes)
         return func_to_be_decorated(*new_args, **kw)

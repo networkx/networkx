@@ -79,9 +79,9 @@ def union(G, H, rename=(None, None), name=None):
 
     # add nodes
     R.add_nodes_from(G)
-    R.add_edges_from(G_edges)
-    # add edges
     R.add_nodes_from(H)
+    # add edges
+    R.add_edges_from(G_edges)
     R.add_edges_from(H_edges)
     # add node attributes
     for n in G:

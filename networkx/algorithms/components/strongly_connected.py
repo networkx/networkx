@@ -228,8 +228,7 @@ def strongly_connected_components_recursive(G):
         stack.append(v)
         for w in G[v]:
             if w not in visited:
-                for c in visit(w, cnt):
-                    yield c
+                yield from visit(w, cnt)
             if w not in component:
                 root[v] = min(root[v], root[w])
         if root[v] == visited[v]:
@@ -249,8 +248,7 @@ def strongly_connected_components_recursive(G):
     stack = []
     for source in G:
         if source not in visited:
-            for c in visit(source, cnt):
-                yield c
+            yield from visit(source, cnt)
 
 
 @not_implemented_for('undirected')

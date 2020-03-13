@@ -4,7 +4,7 @@ import networkx as nx
 from networkx.testing import almost_equal
 
 
-class TestStructuralHoles(object):
+class TestStructuralHoles:
     """Unit tests for computing measures of structural holes.
 
     The expected values for these functions were originally computed using the

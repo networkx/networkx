@@ -8,7 +8,7 @@ import networkx as nx
 from networkx.testing import almost_equal
 
 
-class TestEigenvectorCentrality(object):
+class TestEigenvectorCentrality:
 
     def test_K5(self):
         """Eigenvector centrality: K5"""
@@ -18,7 +18,7 @@ class TestEigenvectorCentrality(object):
         b_answer = dict.fromkeys(G, v)
         for n in sorted(G):
             assert almost_equal(b[n], b_answer[n])
-        nstart = dict([(n, 1) for n in G])
+        nstart = {n: 1 for n in G}
         b = nx.eigenvector_centrality(G, nstart=nstart)
         for n in sorted(G):
             assert almost_equal(b[n], b_answer[n])
@@ -52,7 +52,7 @@ class TestEigenvectorCentrality(object):
             b = nx.eigenvector_centrality(G, max_iter=0)
 
 
-class TestEigenvectorCentralityDirected(object):
+class TestEigenvectorCentralityDirected:
 
     @classmethod
     def setup_class(cls):
@@ -103,7 +103,7 @@ class TestEigenvectorCentralityDirected(object):
             assert almost_equal(a, b)
 
 
-class TestEigenvectorCentralityExceptions(object):
+class TestEigenvectorCentralityExceptions:
 
     def test_multigraph(self):
         with pytest.raises(nx.NetworkXException):

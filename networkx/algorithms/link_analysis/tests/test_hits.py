@@ -39,7 +39,7 @@ class TestHITS:
 
     def test_hits_nstart(self):
         G = self.G
-        nstart = dict([(i, 1. / 2) for i in G])
+        nstart = {i: 1. / 2 for i in G}
         h, a = networkx.hits(G, nstart=nstart)
 
     def test_hits_numpy(self):

@@ -17,9 +17,12 @@ del sys
 # Release data
 from networkx import release
 
-__author__ = '%s <%s>\n%s <%s>\n%s <%s>' % \
-    (release.authors['Hagberg'] + release.authors['Schult'] +
-        release.authors['Swart'])
+
+__author__ = (
+    f"{release.authors['Hagberg'][0]} <{release.authors['Hagberg'][1]}>\n"
+    f"{release.authors['Schult'][0]} <{release.authors['Schult'][1]}>\n"
+    f"{release.authors['Swart'][0]} <{release.authors['Swart'][1]}>"
+)
 
 __date__ = release.date
 __version__ = release.version

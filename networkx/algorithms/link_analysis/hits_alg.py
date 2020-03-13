@@ -2,7 +2,7 @@
 """
 import networkx as nx
 
-__all__ = ['hits', 'hits_numpy', 'hits_scipy', 'authority_matrix', 'hub_matrix']
+__all__ = ["hits", "hits_numpy", "hits_scipy", "authority_matrix", "hub_matrix"]
 
 
 def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
@@ -44,8 +44,8 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> h,a=nx.hits(G)
+    >>> G = nx.path_graph(4)
+    >>> h, a = nx.hits(G)
 
     Notes
     -----
@@ -90,11 +90,11 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
         # doing a left multiply a^T=hlast^T*G
         for n in h:
             for nbr in G[n]:
-                a[nbr] += hlast[n] * G[n][nbr].get('weight', 1)
+                a[nbr] += hlast[n] * G[n][nbr].get("weight", 1)
         # now multiply h=Ga
         for n in h:
             for nbr in G[n]:
-                h[n] += a[nbr] * G[n][nbr].get('weight', 1)
+                h[n] += a[nbr] * G[n][nbr].get("weight", 1)
         # normalize vector
         s = 1.0 / max(h.values())
         for n in h:
@@ -154,8 +154,8 @@ def hits_numpy(G, normalized=True):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> h,a=nx.hits(G)
+    >>> G = nx.path_graph(4)
+    >>> h, a = nx.hits(G)
 
     Notes
     -----
@@ -179,8 +179,7 @@ def hits_numpy(G, normalized=True):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError(
-            "hits_numpy() requires NumPy: http://scipy.org/")
+        raise ImportError("hits_numpy() requires NumPy: http://scipy.org/")
     if len(G) == 0:
         return {}, {}
     H = nx.hub_matrix(G, list(G))
@@ -234,8 +233,8 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> h,a=nx.hits(G)
+    >>> G = nx.path_graph(4)
+    >>> h, a = nx.hits(G)
 
     Notes
     -----
@@ -272,14 +271,13 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
         import scipy.sparse
         import numpy as np
     except ImportError:
-        raise ImportError(
-            "hits_scipy() requires SciPy: http://scipy.org/")
+        raise ImportError("hits_scipy() requires SciPy: http://scipy.org/")
     if len(G) == 0:
         return {}, {}
     M = nx.to_scipy_sparse_matrix(G, nodelist=list(G))
     (n, m) = M.shape  # should be square
     A = M.T * M  # authority matrix
-    x = scipy.ones((n, 1)) / n  # initial guess
+    x = np.ones((n, 1)) / n  # initial guess
     # power iteration on authority matrix
     i = 0
     while True:
@@ -287,7 +285,7 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
         x = A * x
         x = x / x.max()
         # check convergence, l1 norm
-        err = scipy.absolute(x - xlast).sum()
+        err = np.absolute(x - xlast).sum()
         if err < tol:
             break
         if i > max_iter:

@@ -182,7 +182,7 @@ def make_partitions(items, test):
                 partition.add(item)
                 break
         else:  # No break
-            partitions.append(set((item,)))
+            partitions.append({item})
     return partitions
 
 
@@ -948,8 +948,7 @@ class ISMAGS:
             # top and bot have only one element
             if len(top) != 1 or len(bot) != 1:
                 raise IndexError("Not all nodes are coupled. This is"
-                                 " impossible: {}, {}".format(top_partitions,
-                                                              bottom_partitions))
+                                 f" impossible: {top_partitions}, {bottom_partitions}")
             if top != bot:
                 permutations.add(frozenset((next(iter(top)), next(iter(bot)))))
         return permutations

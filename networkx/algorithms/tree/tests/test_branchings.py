@@ -294,12 +294,12 @@ def test_mst():
     G = G.to_directed()
     x = branchings.minimum_spanning_arborescence(G)
 
-    edges = [(set([0, 1]), 7), (set([0, 3]), 5), (set([3, 5]), 6),
-             (set([1, 4]), 7), (set([4, 2]), 5), (set([4, 6]), 9)]
+    edges = [({0, 1}, 7), ({0, 3}, 5), ({3, 5}, 6),
+             ({1, 4}, 7), ({4, 2}, 5), ({4, 6}, 9)]
 
     assert x.number_of_edges() == len(edges)
     for u, v, d in x.edges(data=True):
-        assert (set([u, v]), d['weight']) in edges
+        assert ({u, v}, d['weight']) in edges
 
 
 def test_mixed_nodetypes():

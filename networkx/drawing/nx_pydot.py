@@ -187,8 +187,7 @@ def to_pydot(N):
         P = pydot.Dot('', graph_type=graph_type, strict=strict,
                       **graph_defaults)
     else:
-        P = pydot.Dot('"%s"' % name, graph_type=graph_type, strict=strict,
-                      **graph_defaults)
+        P = pydot.Dot(f'"{name}"', graph_type=graph_type, strict=strict, **graph_defaults)
     try:
         P.set_node_defaults(**N.graph['node'])
     except KeyError:
@@ -199,21 +198,21 @@ def to_pydot(N):
         pass
 
     for n, nodedata in N.nodes(data=True):
-        str_nodedata = dict((k, str(v)) for k, v in nodedata.items())
+        str_nodedata = {k: str(v) for k, v in nodedata.items()}
         p = pydot.Node(str(n), **str_nodedata)
         P.add_node(p)
 
     if N.is_multigraph():
         for u, v, key, edgedata in N.edges(data=True, keys=True):
-            str_edgedata = dict((k, str(v)) for k, v in edgedata.items()
-                                if k != 'key')
+            str_edgedata = {k: str(v) for k, v in edgedata.items()
+                                if k != 'key'}
             edge = pydot.Edge(str(u), str(v),
                               key=str(key), **str_edgedata)
             P.add_edge(edge)
 
     else:
         for u, v, edgedata in N.edges(data=True):
-            str_edgedata = dict((k, str(v)) for k, v in edgedata.items())
+            str_edgedata = {k: str(v) for k, v in edgedata.items()}
             edge = pydot.Edge(str(u), str(v), **str_edgedata)
             P.add_edge(edge)
     return P
@@ -303,12 +302,12 @@ def pydot_layout(G, prog='neato', root=None):
     D = str(D_bytes, encoding=getpreferredencoding())
 
     if D == "":  # no data returned
-        print("Graphviz layout with %s failed" % (prog))
+        print(f"Graphviz layout with {prog} failed")
         print()
         print("To debug what happened try:")
         print("P = nx.nx_pydot.to_pydot(G)")
         print("P.write_dot(\"file.dot\")")
-        print("And then run %s on file.dot" % (prog))
+        print(f"And then run {prog} on file.dot")
         return
 
     # List of one or more "pydot.Dot" instances deserialized from this string.

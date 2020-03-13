@@ -5,6 +5,10 @@ Javascript
 
 Example of writing JSON format graph data and using the D3 Javascript library
 to produce an HTML/Javascript drawing.
+
+You will need to download the following directory:
+
+- https://github.com/networkx/networkx/tree/master/examples/javascript/force
 """
 import json
 

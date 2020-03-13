@@ -19,11 +19,10 @@ if sys.argv[-1] == "setup.py":
     print()
 
 if sys.version_info[:2] < (3, 6):
-    python_version = f"{sys.version_info[0]}.{sys.version_info[1]}"
     error = (
-        f"NetworkX 2.5+ requires Python 3.6 or later ({python_version} detected).\n\n"
-        "For Python 2.7, please install version 2.2 using:\n\n"
-        "$ pip install 'networkx==2.2'"
+        "NetworkX 2.5+ requires Python 3.6 or later (%d.%d detected). \n"
+        "For Python 2.7, please install version 2.2 using: \n"
+        "$ pip install 'networkx==2.2'" % sys.version_info[:2]
     )
     sys.stderr.write(error + "\n")
     sys.exit(1)
@@ -65,7 +64,7 @@ packages = [
     "networkx.utils",
 ]
 
-docdirbase = f"share/doc/networkx-{version}"
+docdirbase = "share/doc/networkx-%s" % version
 # add basic documentation
 data = [(docdirbase, glob("*.txt"))]
 # add examples

@@ -101,11 +101,11 @@ def _build_flow_dict(G, R, capacity, weight):
         for u in G:
             flow_dict[u] = {}
             for v, es in G[u].items():
-                flow_dict[u][v] = dict(
+                flow_dict[u][v] = {
                     # Always saturate negative selfloops.
-                    (k, (0 if (u != v or e.get(capacity, inf) <= 0 or
-                               e.get(weight, 0) >= 0) else e[capacity]))
-                    for k, e in es.items())
+                    k: (0 if (u != v or e.get(capacity, inf) <= 0 or
+                               e.get(weight, 0) >= 0) else e[capacity])
+                    for k, e in es.items()}
             for v, es in R[u].items():
                 if v in flow_dict[u]:
                     flow_dict[u][v].update((k[0], e['flow'])
@@ -113,11 +113,11 @@ def _build_flow_dict(G, R, capacity, weight):
                                            if e['flow'] > 0)
     else:
         for u in G:
-            flow_dict[u] = dict(
+            flow_dict[u] = {
                 # Always saturate negative selfloops.
-                (v, (0 if (u != v or e.get(capacity, inf) <= 0 or
-                           e.get(weight, 0) >= 0) else e[capacity]))
-                for v, e in G[u].items())
+                v: (0 if (u != v or e.get(capacity, inf) <= 0 or
+                           e.get(weight, 0) >= 0) else e[capacity])
+                for v, e in G[u].items()}
             flow_dict[u].update((v, e['flow']) for v, es in R[u].items()
                                 for e in es.values() if e['flow'] > 0)
     return flow_dict

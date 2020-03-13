@@ -116,7 +116,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     l = 1  # parameter in approximation, adjustable
     k = l * int(np.ceil((cstar / epsilon)**2 * np.log(n)))
     if k > kmax:
-        msg = 'Number random pairs k>kmax (%d>%d) ' % (k, kmax)
+        msg = f"Number random pairs k>kmax ({k}>{kmax}) "
         raise nx.NetworkXError(msg, 'Increase kmax or epsilon')
     cstar2k = cstar / (2 * k)
     for i in range(k):
@@ -136,7 +136,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     else:
         factor = nb / 2.0
     # remap to original node names and "unnormalize" if required
-    return dict((ordering[k], float(v * factor)) for k, v in betweenness.items())
+    return {ordering[k]: float(v * factor) for k, v in betweenness.items()}
 
 
 @not_implemented_for('directed')
@@ -240,7 +240,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
         nb = 2.0
     for v in H:
         betweenness[v] = float((betweenness[v] - v) * 2.0 / nb)
-    return dict((ordering[k], v) for k, v in betweenness.items())
+    return {ordering[k]: v for k, v in betweenness.items()}
 
 
 @not_implemented_for('directed')
@@ -352,5 +352,5 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
             betweenness[e] += (i + 1 - pos[i]) * row[i]
             betweenness[e] += (n - i - pos[i]) * row[i]
         betweenness[e] /= nb
-    return dict(((ordering[s], ordering[t]), float(v))
-                for (s, t), v in betweenness.items())
+    return {(ordering[s], ordering[t]): float(v)
+                for (s, t), v in betweenness.items()}

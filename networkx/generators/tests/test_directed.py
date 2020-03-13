@@ -14,7 +14,7 @@ from networkx.generators.directed import random_uniform_k_out_graph
 from networkx.generators.directed import scale_free_graph
 
 
-class TestGeneratorsDirected(object):
+class TestGeneratorsDirected:
     def test_smoke_test_random_graphs(self):
         gn_graph(100)
         gnr_graph(100, 0.5)
@@ -54,7 +54,7 @@ class TestGeneratorsDirected(object):
         pytest.raises(ValueError, scale_free_graph, 100, gamma=-0.3)
 
 
-class TestRandomKOutGraph(object):
+class TestRandomKOutGraph:
     """Unit tests for the
     :func:`~networkx.generators.directed.random_k_out_graph` function.
 
@@ -79,7 +79,7 @@ class TestRandomKOutGraph(object):
         assert nx.number_of_selfloops(G) == 0
 
 
-class TestUniformRandomKOutGraph(object):
+class TestUniformRandomKOutGraph:
     """Unit tests for the
     :func:`~networkx.generators.directed.random_uniform_k_out_graph`
     function.

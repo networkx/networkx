@@ -212,7 +212,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     # Determine if we include self-loops or not.
     shift = 0 if selfloops else 1
 
-    edges = set([])
+    edges = set()
     for u in G:
         # Label nodes as a sorted tuple of nodes in original graph.
         nodes = [sorted_node(*x) for x in get_edges(u)]
@@ -326,9 +326,9 @@ def _triangles(G, e):
     """ Return list of all triangles containing edge e"""
     u, v = e
     if u not in G:
-        raise nx.NetworkXError("Vertex %s not in graph" % u)
+        raise nx.NetworkXError(f"Vertex {u} not in graph")
     if v not in G[u]:
-        raise nx.NetworkXError("Edge (%s, %s) not in graph" % (u, v))
+        raise nx.NetworkXError(f"Edge ({u}, {v}) not in graph")
     triangle_list = []
     for x in G[u]:
         if x in G[v]:
@@ -363,10 +363,10 @@ def _odd_triangle(G, T):
     """
     for u in T:
         if u not in G.nodes():
-            raise nx.NetworkXError("Vertex %s not in graph" % u)
+            raise nx.NetworkXError(f"Vertex {u} not in graph")
     for e in list(combinations(T, 2)):
         if e[0] not in G[e[1]]:
-            raise nx.NetworkXError("Edge (%s, %s) not in graph" % (e[0], e[1]))
+            raise nx.NetworkXError(f"Edge ({e[0]}, {e[1]}) not in graph")
 
     T_neighbors = defaultdict(int)
     for t in T:
@@ -455,8 +455,8 @@ def _select_starting_cell(G, starting_edge=None):
     else:
         e = starting_edge
         if e[0] not in G[e[1]]:
-            msg = 'starting_edge (%s, %s) is not in the Graph'
-            raise nx.NetworkXError(msg % e)
+            msg = f"starting_edge ({e[0]}, {e[1]}) is not in the Graph"
+            raise nx.NetworkXError(msg)
     e_triangles = _triangles(G, e)
     r = len(e_triangles)
     if r == 0:
@@ -492,7 +492,7 @@ def _select_starting_cell(G, starting_edge=None):
             # check if odd triangles containing e form complete subgraph
             # there must be exactly s+2 of them
             # and they must all be connected
-            triangle_nodes = set([])
+            triangle_nodes = set()
             for T in odd_triangles:
                 for x in T:
                     triangle_nodes.add(x)

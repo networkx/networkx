@@ -343,3 +343,11 @@ Cographs
    :toctree: generated/
 
    random_cograph
+
+Sudoku
+------
+.. automodule:: networkx.generators.sudoku
+.. autosummary::
+   :toctree: generated/
+
+   sudoku_graph

@@ -150,7 +150,7 @@ def create_component_structure(G):
     component_structure = {}
     for v in V:
         label = 0
-        closed_neighborhood = set(G[v]).union(set([v]))
+        closed_neighborhood = set(G[v]).union({v})
         row_dict = {}
         for u in closed_neighborhood:
             row_dict[u] = 0

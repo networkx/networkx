@@ -8,7 +8,7 @@ import pytest
 pydot = pytest.importorskip('pydot')
 
 
-class TestPydot(object):
+class TestPydot:
     def pydot_checks(self, G, prog):
         '''
         Validate :mod:`pydot`-based usage of the passed NetworkX graph with the

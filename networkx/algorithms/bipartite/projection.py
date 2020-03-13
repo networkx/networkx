@@ -98,7 +98,7 @@ def projected_graph(B, nodes, multigraph=False):
     G.graph.update(B.graph)
     G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     for u in nodes:
-        nbrs2 = set(v for nbr in B[u] for v in B[nbr] if v != u)
+        nbrs2 = {v for nbr in B[u] for v in B[nbr] if v != u}
         if multigraph:
             for n in nbrs2:
                 if directed:
@@ -190,7 +190,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
     n_top = float(len(B) - len(nodes))
     for u in nodes:
         unbrs = set(B[u])
-        nbrs2 = set((n for nbr in unbrs for n in B[nbr])) - set([u])
+        nbrs2 = {n for nbr in unbrs for n in B[nbr]} - {u}
         for v in nbrs2:
             vnbrs = set(pred[v])
             common = unbrs & vnbrs
@@ -286,7 +286,7 @@ def collaboration_weighted_projected_graph(B, nodes):
     G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     for u in nodes:
         unbrs = set(B[u])
-        nbrs2 = set(n for nbr in unbrs for n in B[nbr] if n != u)
+        nbrs2 = {n for nbr in unbrs for n in B[nbr] if n != u}
         for v in nbrs2:
             vnbrs = set(pred[v])
             common_degree = (len(B[n]) for n in unbrs & vnbrs)
@@ -383,7 +383,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     for u in nodes:
         unbrs = set(B[u])
-        nbrs2 = set((n for nbr in unbrs for n in B[nbr])) - set([u])
+        nbrs2 = {n for nbr in unbrs for n in B[nbr]} - {u}
         for v in nbrs2:
             vnbrs = set(pred[v])
             if jaccard:
@@ -496,7 +496,7 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     G.graph.update(B.graph)
     G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     for u in nodes:
-        nbrs2 = set((n for nbr in set(B[u]) for n in B[nbr])) - set([u])
+        nbrs2 = {n for nbr in set(B[u]) for n in B[nbr]} - {u}
         for v in nbrs2:
             weight = weight_function(B, u, v)
             G.add_edge(u, v, weight=weight)

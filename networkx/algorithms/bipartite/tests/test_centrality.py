@@ -3,7 +3,7 @@ from networkx.algorithms import bipartite
 from networkx.testing import almost_equal
 
 
-class TestBipartiteCentrality(object):
+class TestBipartiteCentrality:
 
     @classmethod
     def setup_class(cls):

@@ -1,12 +1,10 @@
-
-
 import networkx as nx
 from networkx.algorithms.community import (
     greedy_modularity_communities,
     _naive_greedy_modularity_communities)
 
 
-class TestCNM(object):
+class TestCNM:
 
     def setup(self):
         self.G = nx.karate_club_graph()
@@ -23,7 +21,7 @@ class TestCNM(object):
         self._check_communities({john_a, overlap, mr_hi})
 
 
-class TestNaive(object):
+class TestNaive:
 
     def setup(self):
         self.G = nx.karate_club_graph()

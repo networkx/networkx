@@ -368,6 +368,7 @@ def draw_networkx_nodes(G, pos,
     from collections.abc import Iterable
     try:
         import matplotlib.pyplot as plt
+        from matplotlib.collections import PathCollection
         import numpy as np
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
@@ -382,12 +383,12 @@ def draw_networkx_nodes(G, pos,
         nodelist = list(G)
 
     if len(nodelist) == 0:  # empty nodelist, no drawing
-        return
+        return PathCollection(None)
 
     try:
         xy = np.asarray([pos[v] for v in nodelist])
     except KeyError as e:
-        raise nx.NetworkXError('Node %s has no position.' % e)
+        raise nx.NetworkXError(f"Node {e} has no position.")
     except ValueError:
         raise nx.NetworkXError('Bad value in node positions.')
 
@@ -567,7 +568,10 @@ def draw_networkx_edges(G, pos,
         edgelist = list(G.edges())
 
     if not edgelist or len(edgelist) == 0:  # no edges!
-        return None
+        if not G.is_directed() or not arrows:
+            return LineCollection(None)
+        else:
+            return []
 
     if nodelist is None:
         nodelist = list(G.nodes())
@@ -638,12 +642,13 @@ def draw_networkx_edges(G, pos,
             shrink_source = 0  # space from source to tail
             shrink_target = 0  # space from  head to target
             if np.iterable(node_size):  # many node sizes
-                src_node, dst_node = edgelist[i][:2]
-                index_node = nodelist.index(dst_node)
-                marker_size = node_size[index_node]
-                shrink_target = to_marker_edge(marker_size, node_shape)
+                source, target = edgelist[i][:2]
+                source_node_size = node_size[nodelist.index(source)]
+                target_node_size = node_size[nodelist.index(target)]
+                shrink_source = to_marker_edge(source_node_size, node_shape)
+                shrink_target = to_marker_edge(target_node_size, node_shape)
             else:
-                shrink_target = to_marker_edge(node_size, node_shape)
+                shrink_source = shrink_target = to_marker_edge(node_size, node_shape)
 
             if shrink_source < min_source_margin:
                 shrink_source = min_source_margin
@@ -674,6 +679,7 @@ def draw_networkx_edges(G, pos,
                                     color=arrow_color,
                                     linewidth=line_width,
                                     connectionstyle=connectionstyle,
+                                    linestyle=style,
                                     zorder=1)  # arrows go behind nodes
 
             # There seems to be a bug in matplotlib to make collections of
@@ -783,7 +789,7 @@ def draw_networkx_labels(G, pos,
         ax = plt.gca()
 
     if labels is None:
-        labels = dict((n, n) for n in G.nodes())
+        labels = {n: n for n in G.nodes()}
 
     # set optional alignment
     horizontalalignment = kwds.get('horizontalalignment', 'center')

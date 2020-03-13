@@ -204,8 +204,7 @@ def eulerian_circuit(G, source=None, keys=False):
             else:
                 yield u, v
     else:
-        for u, v in _simplegraph_eulerian_circuit(G, source):
-            yield u, v
+        yield from _simplegraph_eulerian_circuit(G, source)
 
 
 def has_eulerian_path(G):
@@ -290,8 +289,7 @@ def eulerian_path(G, source=None, keys=False):
             else:
                 yield u, v
     else:
-        for u, v in _simplegraph_eulerian_circuit(G, source):
-            yield u, v
+        yield from _simplegraph_eulerian_circuit(G, source)
 
 
 @not_implemented_for('directed')

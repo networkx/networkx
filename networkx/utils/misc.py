@@ -67,28 +67,29 @@ def make_list_of_ints(sequence):
     If sequence is a list, the non-int values are replaced with ints.
     So, no new list is created
     """
-    msg = 'sequence is not all integers: %s'
     if not isinstance(sequence, list):
         result = []
         for i in sequence:
+            errmsg = f"sequence is not all integers: {i}"
             try:
                 ii = int(i)
             except ValueError:
-                raise nx.NetworkXError(msg % i) from None
+                raise nx.NetworkXError(errmsg) from None
             if ii != i:
-                raise nx.NetworkXError(msg % i)
+                raise nx.NetworkXError(errmsg)
             result.append(ii)
         return result
     # original sequence is a list... in-place conversion to ints
     for indx, i in enumerate(sequence):
+        errmsg = f"sequence is not all integers: {i}"
         if isinstance(i, int):
             continue
         try:
             ii = int(i)
         except ValueError:
-            raise nx.NetworkXError(msg % i) from None
+            raise nx.NetworkXError(errmsg) from None
         if ii != i:
-            raise nx.NetworkXError(msg % i)
+            raise nx.NetworkXError(errmsg)
         sequence[indx] = ii
     return sequence
 
@@ -296,11 +297,11 @@ def create_random_state(random_state=None):
         return random_state
     if isinstance(random_state, int):
         return np.random.RandomState(random_state)
-    msg = '%r cannot be used to generate a numpy.random.RandomState instance'
-    raise ValueError(msg % random_state)
+    msg = f"{random_state} cannot be used to generate a numpy.random.RandomState instance"
+    raise ValueError(msg)
 
 
-class PythonRandomInterface(object):
+class PythonRandomInterface:
     try:
         def __init__(self, rng=None):
             import numpy
@@ -382,9 +383,8 @@ def create_py_random_state(random_state=None):
             return PythonRandomInterface(random_state)
         if isinstance(random_state, PythonRandomInterface):
             return random_state
-        has_numpy = True
     except ImportError:
-        has_numpy = False
+        pass
 
     if random_state is None or random_state is random:
         return random._inst
@@ -392,5 +392,5 @@ def create_py_random_state(random_state=None):
         return random_state
     if isinstance(random_state, int):
         return random.Random(random_state)
-    msg = '%r cannot be used to generate a random.Random instance'
-    raise ValueError(msg % random_state)
+    msg = f"{random_state} cannot be used to generate a random.Random instance"
+    raise ValueError(msg)

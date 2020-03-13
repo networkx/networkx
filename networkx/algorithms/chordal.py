@@ -290,7 +290,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
     if s is None:
         s = arbitrary_element(G)
     unnumbered.remove(s)
-    numbered = set([s])
+    numbered = {s}
     current_treewidth = -1
     while unnumbered:  # and current_treewidth <= treewidth_bound:
         v = _max_cardinality_node(G, unnumbered, numbered)
@@ -302,8 +302,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
             # The graph seems to be chordal by now. We update the treewidth
             current_treewidth = max(current_treewidth, len(clique_wanna_be))
             if current_treewidth > treewidth_bound:
-                raise nx.NetworkXTreewidthBoundExceeded(
-                    "treewidth_bound exceeded: %s" % current_treewidth)
+                raise nx.NetworkXTreewidthBoundExceeded(f"treewidth_bound exceeded: {current_treewidth}")
         else:
             # sg is not a clique,
             # look for an edge that is not included in sg
@@ -316,14 +315,14 @@ def _connected_chordal_graph_cliques(G):
     """Returns the set of maximal cliques of a connected chordal graph."""
     if G.number_of_nodes() == 1:
         x = frozenset(G.nodes())
-        return set([x])
+        return {x}
     else:
         cliques = set()
         unnumbered = set(G.nodes())
         v = arbitrary_element(G)
         unnumbered.remove(v)
-        numbered = set([v])
-        clique_wanna_be = set([v])
+        numbered = {v}
+        clique_wanna_be = {v}
         while unnumbered:
             v = _max_cardinality_node(G, unnumbered, numbered)
             unnumbered.remove(v)
@@ -387,7 +386,7 @@ def complete_to_chordal_graph(G):
     alpha = {node: 0 for node in H}
     if nx.is_chordal(H):
         return H, alpha
-    chords = set([])
+    chords = set()
     weight = {node: 0 for node in H.nodes()}
     unnumbered_nodes = list(H.nodes())
     for i in range(len(H.nodes()), 0, -1):

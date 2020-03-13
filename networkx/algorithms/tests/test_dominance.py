@@ -2,7 +2,7 @@ import networkx as nx
 import pytest
 
 
-class TestImmediateDominators(object):
+class TestImmediateDominators:
 
     def test_exceptions(self):
         G = nx.Graph()
@@ -85,7 +85,7 @@ class TestImmediateDominators(object):
                     {0: 1, 1: 7, 2: 7, 3: 4, 4: 5, 5: 7, 6: 4, 7: 7})
 
 
-class TestDominanceFrontiers(object):
+class TestDominanceFrontiers:
 
     def test_exceptions(self):
         G = nx.Graph()
@@ -131,8 +131,8 @@ class TestDominanceFrontiers(object):
         G = nx.DiGraph(edges)
         assert ({u: df
                  for u, df in nx.dominance_frontiers(G, 5).items()} ==
-                {1: set([2]), 2: set([1]), 3: set([2]),
-                 4: set([1]), 5: set()})
+                {1: {2}, 2: {1}, 3: {2},
+                 4: {1}, 5: set()})
 
     def test_irreducible2(self):
         # Graph taken from Figure 4 of
@@ -143,20 +143,20 @@ class TestDominanceFrontiers(object):
                  (6, 4), (6, 5)]
         G = nx.DiGraph(edges)
         assert (nx.dominance_frontiers(G, 6) ==
-                {1: set([2]), 2: set([1, 3]), 3: set([2]), 4: set([2, 3]), 5: set([1]), 6: set([])})
+                {1: {2}, 2: {1, 3}, 3: {2}, 4: {2, 3}, 5: {1}, 6: set()})
 
     def test_domrel_png(self):
         # Graph taken from https://commons.wikipedia.org/wiki/File:Domrel.png
         edges = [(1, 2), (2, 3), (2, 4), (2, 6), (3, 5), (4, 5), (5, 2)]
         G = nx.DiGraph(edges)
         assert (nx.dominance_frontiers(G, 1) ==
-                {1: set([]), 2: set([2]), 3: set([5]), 4: set([5]),
-                 5: set([2]), 6: set()})
+                {1: set(), 2: {2}, 3: {5}, 4: {5},
+                 5: {2}, 6: set()})
         # Test postdominance.
         with nx.utils.reversed(G):
             assert (nx.dominance_frontiers(G, 6) ==
-                    {1: set(), 2: set([2]), 3: set([2]), 4: set([2]),
-                     5: set([2]), 6: set()})
+                    {1: set(), 2: {2}, 3: {2}, 4: {2},
+                     5: {2}, 6: set()})
 
     def test_boost_example(self):
         # Graph taken from Figure 1 of
@@ -165,13 +165,13 @@ class TestDominanceFrontiers(object):
                  (5, 7), (6, 4)]
         G = nx.DiGraph(edges)
         assert (nx.dominance_frontiers(G, 0) ==
-                {0: set(), 1: set(), 2: set([7]), 3: set([7]),
-                 4: set([4, 7]), 5: set([7]), 6: set([4]), 7: set()})
+                {0: set(), 1: set(), 2: {7}, 3: {7},
+                 4: {4, 7}, 5: {7}, 6: {4}, 7: set()})
         # Test postdominance.
         with nx.utils.reversed(G):
             assert (nx.dominance_frontiers(G, 7) ==
-                    {0: set(), 1: set(), 2: set([1]), 3: set([1]),
-                     4: set([1, 4]), 5: set([1]), 6: set([4]), 7: set()})
+                    {0: set(), 1: set(), 2: {1}, 3: {1},
+                     4: {1, 4}, 5: {1}, 6: {4}, 7: set()})
 
     def test_discard_issue(self):
         # https://github.com/networkx/networkx/issues/2071
@@ -191,10 +191,10 @@ class TestDominanceFrontiers(object):
         ]
         )
         df = nx.dominance_frontiers(g, 'b0')
-        assert df == {'b4': set(), 'b5': set(['b3']), 'b6': set(['b7']),
-                      'b7': set(['b3']),
-                      'b0': set(), 'b1': set(['b1']), 'b2': set(['b3']),
-                      'b3': set(['b1']), 'b8': set(['b7'])}
+        assert df == {'b4': set(), 'b5': {'b3'}, 'b6': {'b7'},
+                      'b7': {'b3'},
+                      'b0': set(), 'b1': {'b1'}, 'b2': {'b3'},
+                      'b3': {'b1'}, 'b8': {'b7'}}
 
     def test_loop(self):
         g = nx.DiGraph()
@@ -249,12 +249,12 @@ class TestDominanceFrontiers(object):
         g.add_edges_from(edges)
         df = nx.dominance_frontiers(g, 'entry')
         answer = {'entry': set(),
-                  '1': set(['exit']),
-                  '2': set(['exit', '2']),
-                  '3': set(['exit', '3', '2']),
-                  '4': set(['exit', '4', '3', '2']),
-                  '5': set(['exit', '3', '2']),
-                  '6': set(['exit', '2']),
+                  '1': {'exit'},
+                  '2': {'exit', '2'},
+                  '3': {'exit', '3', '2'},
+                  '4': {'exit', '4', '3', '2'},
+                  '5': {'exit', '3', '2'},
+                  '6': {'exit', '2'},
                   'exit': set()}
         for n in df:
             assert set(df[n]) == set(answer[n])
