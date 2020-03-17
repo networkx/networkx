@@ -82,3 +82,14 @@ Validating partitions
    :toctree: generated/
 
    is_partition
+
+Dendrogram from Girvan-Newman partitions
+----------------------------------------
+.. automodule:: networkx.algorithms.community.dendrogram_from_girvan_newman
+.. autosummary::
+   :toctree: generated/
+
+   girvan_newman_partitions
+   agglomerative_matrix
+   girvan_newman_best_partition
+   distance_of_partition
