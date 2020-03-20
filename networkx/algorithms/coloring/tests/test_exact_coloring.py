@@ -7,7 +7,6 @@ from networkx.algorithms.coloring.tests.test_coloring import verify_length, veri
 
 
 class TestExactColoring:
-
     fixed_graphs = [
         (2, nx.generators.small.cubical_graph()),
         (2, nx.generators.small.desargues_graph()),
@@ -30,12 +29,18 @@ class TestExactColoring:
         (4, nx.generators.small.tetrahedral_graph()),
         (5, nx.generators.classic.lollipop_graph(5, 3)),
         (6, nx.generators.classic.lollipop_graph(6, 6)),
-    ]
+        ]
 
-    all_pairs = []
-    for g in fixed_graphs[-5:]:
-        for h in fixed_graphs[-5:]:
-            all_pairs.append((max(g[0], h[0]), nx.disjoint_union(g[1], h[1])))
+    disjoint_components = []
+    for f in fixed_graphs[-3:]:
+        for g in fixed_graphs[-5:-2]:
+            for h in fixed_graphs[-7:-4]:
+                disjoint_components.append(
+                    (
+                        max(f[0], g[0], h[0]),
+                        nx.disjoint_union_all([f[1], g[1], h[1]])
+                    )
+                    )
 
     generated_graphs = [(2, nx.star_graph(n)) for n in range(1, 7)]\
         + [(2, nx.path_graph(n)) for n in range(2, 7)]\
@@ -56,9 +61,8 @@ class TestExactColoring:
             (r, nx.windmill_graph(n, r)) for r in range(2, n*2)
             ] for n in range(1, 7)))\
 
-
     @pytest.mark.parametrize(
-        "expected_chromatic_number,test_graph",
+        "expected_chromatic_number, test_graph",
         fixed_graphs
         )
     def test_fixed_graphs(self, expected_chromatic_number, test_graph):
@@ -67,7 +71,7 @@ class TestExactColoring:
         assert verify_coloring(test_graph, coloring)
 
     @pytest.mark.parametrize(
-        "expected_chromatic_number,test_graph",
+        "expected_chromatic_number, test_graph",
         generated_graphs
         )
     def test_generated_graphs(self, expected_chromatic_number, test_graph):
@@ -76,8 +80,8 @@ class TestExactColoring:
         assert verify_coloring(test_graph, coloring)
 
     @pytest.mark.parametrize(
-        "expected_chromatic_number,test_graph",
-        all_pairs
+        "expected_chromatic_number, test_graph",
+        disjoint_components
         )
     def test_disjoint_graphs(self, expected_chromatic_number, test_graph):
         coloring = nx.coloring.exact_color(test_graph)
