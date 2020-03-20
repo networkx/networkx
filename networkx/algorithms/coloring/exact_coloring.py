@@ -15,7 +15,7 @@ __all__ = ['exact_color']
 
 class Solution():
     """Stores a node-color mapping.
-    
+
     Attributes
     ----------
     used_colors : int
@@ -48,11 +48,11 @@ class Solution():
 
 def exact_color(graph: nx.Graph) -> Dict[T, int]:
     """Color a graph using the minimum number of colors.
-    
+
     Finds an exact coloring of the given graph.
     If the graph is not connected, the algorithm recursively colors
     all connected components separately.
-    
+
     A valid coloring maps each node to a color in a way so that adjacent nodes
     are mapped to different colors.
     Exact coloring is a valid coloring that uses minimum number of
@@ -60,7 +60,7 @@ def exact_color(graph: nx.Graph) -> Dict[T, int]:
     backtracking approach to find the coloring.
 
     The algorithm is known as backGCP, described in [1]_.
-    
+
     The following implementation has a custom-engineered heuristic, optimized
     for random graphs.
 
@@ -87,7 +87,7 @@ def exact_color(graph: nx.Graph) -> Dict[T, int]:
     >>> graph = nx.generators.small.petersen_graph()
     >>> node_to_color_mapping = nx.coloring.exact_color(graph)
     >>> node_to_color_mapping
-    {0: 0, 1: 1, 2: 0, 3: 1, 4: 2, 5: 1, 6: 2, 7: 2, 8: 0, 9: 0}
+    {0: 0, 1: 1, 2: 0, 3: 1, 4: 2, 5: 1, 8: 0, 6: 2, 9: 0, 7: 2}
     >>> chromatic_number = len(set(node_to_color_mapping.values()))
     >>> chromatic_number
     3
@@ -110,10 +110,10 @@ def exact_color(graph: nx.Graph) -> Dict[T, int]:
             initial_solution = Solution.initial()
             dummy_solution = Solution.dummy()
             best_solution = _recurse(
-                graph.subgraph(connected_component),
-                initial_solution,
-                dummy_solution
-                )
+                                graph.subgraph(connected_component),
+                                initial_solution,
+                                dummy_solution
+                                )
             # Amend the partial solution
             color_mapping = {**color_mapping, **best_solution.color_mapping}
 
@@ -121,10 +121,10 @@ def exact_color(graph: nx.Graph) -> Dict[T, int]:
 
 
 def _recurse(
-    graph: nx.Graph,
-    partial_solution: Solution,
-    best_solution: Solution
-    ) -> Solution:
+        graph: nx.Graph,
+        partial_solution: Solution,
+        best_solution: Solution
+        ) -> Solution:
     """Finds best solution given partial coloring and best coloring found so far.
 
     Parameters
@@ -143,14 +143,14 @@ def _recurse(
         cannot be improved given partial matching, the algorithm simply
         returns `best_solution` parameter.
     """
-    
+
     # There are sill nodes to color
     if len(partial_solution.color_mapping) < len(graph):
         node_to_color, usable_colors = _choose_branching_node(
-            graph,
-            partial_solution, 
-            best_solution
-            )
+                                            graph,
+                                            partial_solution, 
+                                            best_solution
+                                            )
 
         if usable_colors is not None:
             for color in usable_colors:
@@ -160,18 +160,18 @@ def _recurse(
                 if color >= partial_solution.used_colors:
                     partial_solution.used_colors += 1
                     increased_color_count = True
-                
+
                 # Best solution could improve while iterating so this
                 # comparison actually improves pruning unnecessary branches
                 if partial_solution.used_colors < best_solution.used_colors:
                     partial_solution.color_mapping[node_to_color] = color
                     best_solution = _recurse(
-                        graph,
-                        partial_solution,
-                        best_solution
-                        )
+                                        graph,
+                                        partial_solution,
+                                        best_solution
+                                        )
                     del partial_solution.color_mapping[node_to_color]
-                
+
                 # Efficiently revert the partial solution
                 if increased_color_count:
                     partial_solution.used_colors -= 1
@@ -184,12 +184,12 @@ def _recurse(
 
 
 def _choose_branching_node(
-    graph: nx.Graph,
-    partial_solution: Solution,
-    best_solution: Solution
-    ) -> T:
+        graph: nx.Graph,
+        partial_solution: Solution,
+        best_solution: Solution
+        ) -> T:
     """A heuristic that finds the best node for the algorithm to branch on.
-    
+
     Parameters
     ----------
     graph : NetworkX graph
@@ -197,7 +197,7 @@ def _choose_branching_node(
         Partial coloring: some of the nodes are already mapped to colors.
     best_solution : Solution
         Best solution found so far. Allows for efficient branch pruning.
-    
+
     Returns
     ----------
     Tuple[Union[None, int], Union[None, List[int]]]
@@ -208,7 +208,7 @@ def _choose_branching_node(
         The heuristic returns as few unique colors as possible while ensuring
         that the optimal solution will always be found.
     """
-    
+
     # Store information about the most promising node
     best_usable_colors_count = 0
     best_neighbor_count = -1
@@ -219,11 +219,11 @@ def _choose_branching_node(
         # Make sure the node is not colored
         if node not in partial_solution.color_mapping:
             usable_colors = _get_usable_colorings(
-                graph,
-                node,
-                partial_solution,
-                best_solution
-                )
+                                graph,
+                                node,
+                                partial_solution,
+                                best_solution
+                                )
 
             # Cannot color a node, return immediately
             if len(usable_colors) == 0:
@@ -233,22 +233,22 @@ def _choose_branching_node(
             neighbor_count = len(graph[node])
 
             # Promote nodes that do not increase the number of used colors
-            definitely_replace = best_occupied_colors == None \
-                or (usable_colors[-1] < partial_solution.used_colors \
+            definitely_replace = best_occupied_colors is None \
+                or (usable_colors[-1] < partial_solution.used_colors
                     and best_occupied_colors[-1] == partial_solution.used_colors)
 
             # Disallow replacing solutions that increase the number of colors
             allow_replace = definitely_replace \
-                or not (usable_colors[-1] == partial_solution.used_colors \
+                or not (usable_colors[-1] == partial_solution.used_colors
                         and best_occupied_colors[-1] < partial_solution.used_colors)
 
             # Promote nodes that lead to less branching, in case of a tie,
             # choose the node with the largest number of neighbors
             found_better_node = definitely_replace \
                 or (allow_replace \
-                    and (usable_colors_count < best_usable_colors_count \
-                        or (usable_colors_count == best_usable_colors_count \
-                            and neighbor_count > best_neighbor_count)))
+                    and (usable_colors_count < best_usable_colors_count
+                            or (usable_colors_count == best_usable_colors_count
+                                and neighbor_count > best_neighbor_count)))
 
             if found_better_node:
                 best_neighbor_count = neighbor_count
@@ -260,16 +260,16 @@ def _choose_branching_node(
 
 
 def _get_usable_colorings(
-    graph: nx.Graph,
-    node: T,
-    partial_solution: Solution,
-    best_solution: Solution
-    ) -> List[int]:
+        graph: nx.Graph,
+        node: T,
+        partial_solution: Solution,
+        best_solution: Solution
+        ) -> List[int]:
     """A heuristic finding as few unique colors as possible to color the node.
 
     Ensures that the optimal solution will be found if all colors are
     exhaustively tried out on the specified node.
-    
+
     Parameters
     ----------
     graph : NetworkX graph
@@ -279,20 +279,20 @@ def _get_usable_colorings(
         Partial coloring: some of the nodes are already mapped to colors.
     best_solution : Solution
         Best solution found so far. Allows for efficient branch pruning.
-    
+
     Returns
     ----------
     List[int]
         A list of usable colors for the specified node.
     """
-    
+
     usable_colors = []
     # There can be at most 1 new color
     # It should be less that current optimum
     maximum_inclusive_permissible_color = min(
-        partial_solution.used_colors,
-        best_solution.used_colors - 2
-        )
+                                            partial_solution.used_colors,
+                                            best_solution.used_colors - 2
+                                            )
     uncolored_neighbors = 0
     occupied_colors = [False] * (len(graph[node]) + 1)
 
