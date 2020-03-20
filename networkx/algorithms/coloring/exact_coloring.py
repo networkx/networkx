@@ -14,7 +14,7 @@ __all__ = ['exact_color']
 
 
 class Solution():
-    """Stores a vertex-color mapping.
+    """Stores a node-color mapping.
     
     Attributes
     ----------
@@ -24,7 +24,7 @@ class Solution():
         Partial mapping between graph nodes and integers representing colors.
     """
 
-    def __init__(self, used_colors, color_mapping):
+    def __init__(self, used_colors: int, color_mapping: Dict[T, int]):
         self.used_colors = used_colors
         self.color_mapping = color_mapping
 
@@ -213,7 +213,7 @@ def _choose_branching_node(
     best_usable_colors_count = 0
     best_neighbor_count = -1
     best_node = None
-    best_allowed_colors = None
+    best_occupied_colors = None
 
     for node in graph.nodes:
         # Make sure the node is not colored
@@ -233,14 +233,14 @@ def _choose_branching_node(
             neighbor_count = len(graph[node])
 
             # Promote nodes that do not increase the number of used colors
-            definitely_replace = best_allowed_colors == None \
+            definitely_replace = best_occupied_colors == None \
                 or (usable_colors[-1] < partial_solution.used_colors \
-                    and best_allowed_colors[-1] == partial_solution.used_colors)
+                    and best_occupied_colors[-1] == partial_solution.used_colors)
 
             # Disallow replacing solutions that increase the number of colors
             allow_replace = definitely_replace \
                 or not (usable_colors[-1] == partial_solution.used_colors \
-                        and best_allowed_colors[-1] < partial_solution.used_colors)
+                        and best_occupied_colors[-1] < partial_solution.used_colors)
 
             # Promote nodes that lead to less branching, in case of a tie,
             # choose the node with the largest number of neighbors
@@ -254,9 +254,9 @@ def _choose_branching_node(
                 best_neighbor_count = neighbor_count
                 best_usable_colors_count = usable_colors_count
                 best_node = node
-                best_allowed_colors = usable_colors
+                best_occupied_colors = usable_colors
 
-    return best_node, best_allowed_colors
+    return best_node, best_occupied_colors
 
 
 def _get_usable_colorings(
@@ -265,29 +265,50 @@ def _get_usable_colorings(
     partial_solution: Solution,
     best_solution: Solution
     ) -> List[int]:
-    """Do X and return a list."""
+    """A heuristic finding as few unique colors as possible to color the node.
+
+    Ensures that the optimal solution will be found if all colors are
+    exhaustively tried out on the specified node.
+    
+    Parameters
+    ----------
+    graph : NetworkX graph
+    node : int
+        Node for which usable colors are to be determined.
+    partial_solution : Solution
+        Partial coloring: some of the nodes are already mapped to colors.
+    best_solution : Solution
+        Best solution found so far. Allows for efficient branch pruning.
+    
+    Returns
+    ----------
+    List[int]
+        A list of usable colors for the specified node.
+    """
     
     usable_colors = []
-    # There can be at most 1 new color and it should be less that current best
+    # There can be at most 1 new color
+    # It should be less that current optimum
     maximum_inclusive_permissible_color = min(
         partial_solution.used_colors,
         best_solution.used_colors - 2
         )
     uncolored_neighbors = 0
-    allowed_colors = [True] * (len(graph[node]) + 1)
+    occupied_colors = [False] * (len(graph[node]) + 1)
+
     for neighbor in graph[node]:
         if neighbor not in partial_solution.color_mapping:
             uncolored_neighbors += 1
         else:
             color = partial_solution.color_mapping[neighbor]
-            if (color < len(allowed_colors)):
-                allowed_colors[color] = False
+            if (color < len(occupied_colors)):
+                occupied_colors[color] = True
 
     color = 0
     # Key heuristic: limit the number of used colors as much as possible
     while color <= maximum_inclusive_permissible_color \
             and len(usable_colors) <= uncolored_neighbors:
-        if allowed_colors[color]:
+        if not occupied_colors[color]:
             usable_colors.append(color)
         color += 1
 
