@@ -18,8 +18,20 @@ __all__ = ['exact_color']
 
 custom_infinity = 2**31
 
+class Solution():
+    def __init__(self, used_colors, color_mapping):
+        self.used_colors = used_colors
+        self.color_mapping = color_mapping
+
+    def copy(self):
+        return Solution(
+            self.used_colors,
+            self.color_mapping.copy()
+        )
+
+
 # backGCP algorithm
-def exact_color(graph, upper_bound_on_number_of_steps: int = -1, alpha_ratio: float = 1.0):
+def exact_color(graph, is_connected = False):
     """Color a graph using the minimum number of colors.
     
     Finds an exact coloring of the given graph.
@@ -42,117 +54,122 @@ def exact_color(graph, upper_bound_on_number_of_steps: int = -1, alpha_ratio: fl
     .. [2] (TODO) (my github)
     """
 
+    # color mapping for an empty graph
     if len(graph) == 0:
         return {}
 
-    # solution = (colorCount, vertex_to_color)
-    dummy_solution = [custom_infinity, {}]
-    initial_solution = [0, {}]
+    if is_connected or nx.is_connected(graph):
+        # this dummy solution will be replaced by the algorithm
+        dummy_solution = Solution(custom_infinity, {})
+        initial_solution = Solution(0, {})
+        best_solution = _recurse(graph, initial_solution, dummy_solution)
+        return best_solution.color_mapping
+    else:
+        connected_components = nx.connected_components(graph)
+        solutions = dict()
+        for connected_component in connected_components:
+            solution = exact_color(graph.subgraph(connected_component), True)
+            solutions = {**solutions, **solution}
+        return solutions
 
-    best_solution, remaining_number_of_steps = _recurse(graph, initial_solution, dummy_solution, upper_bound_on_number_of_steps, alpha_ratio)
-    return best_solution[1]
 
-
-def _recurse(graph, current_solution, best_solution, upper_bound_on_number_of_steps, alpha_ratio):
-    upper_bound_on_number_of_steps_left = upper_bound_on_number_of_steps
-
-    # there exists a limit to the number of executed steps
-    # and already found a valid solution
-    if upper_bound_on_number_of_steps != -1 and len(best_solution[1]) == len(graph):
-        if upper_bound_on_number_of_steps == 0:
-            return best_solution
-        else:
-            upper_bound_on_number_of_steps -= 1
+def _recurse(graph, current_solution, best_solution):
+    """ Returns best solution given the currently considered solution and
+        best solution found so far.
+    """
     
-    if len(current_solution[1]) < len(graph):
-    
-        # choose a vertex to color
-        vertex_to_color = 0
-        coloring_possibilities = []
-        if False:
-            vertex_to_color, coloring_possibilities = _choose_suitable_vertex_fast(graph, current_solution, best_solution)
-        else:
-            vertex_to_color, coloring_possibilities = _choose_suitable_vertex(graph, current_solution, best_solution)
+    if len(current_solution.color_mapping) < len(graph):
+        node_to_color, usable_colors = _choose_branching_node(
+            graph,
+            current_solution, 
+            best_solution
+            )
 
         # for in possible colors
-        for color in coloring_possibilities:
+        for color in usable_colors:
             increased_color_count = False
-            if color >= current_solution[0]:
-                current_solution[0] += 1
+            if color >= current_solution.used_colors:
+                current_solution.used_colors += 1
                 increased_color_count = True
-            if current_solution[0] * alpha_ratio < best_solution[0]:
-                current_solution[1][vertex_to_color] = color
+            if current_solution.used_colors < best_solution.used_colors:
+                current_solution.color_mapping[node_to_color] = color
 
                 # recurse and update best statistics
-                best_solution, upper_bound_on_number_of_steps_left = _recurse(graph, current_solution, best_solution, upper_bound_on_number_of_steps_left, alpha_ratio)
+                best_solution = _recurse(graph, current_solution, best_solution)
 
-                del current_solution[1][vertex_to_color]
+                del current_solution.color_mapping[node_to_color]
             if increased_color_count:
-                current_solution[0] -= 1
+                current_solution.used_colors -= 1
     
     else:
-        # warning! there may be vertices with negative colorings!
-        best_solution = (current_solution[0], current_solution[1].copy())
+        # all of the nodes are colored
+        # clone the current solution since it is the best solution found so far
+        best_solution = current_solution.copy()
 
-    return best_solution, upper_bound_on_number_of_steps_left
+    return best_solution
 
-    # may return -1 if there is no suitable vertex
-def _choose_suitable_vertex(graph, current_solution, best_solution):
-    min_color_possibilities = custom_infinity
+
+def _choose_branching_node(graph, current_solution, best_solution):
+    """ may return -1 if there is no suitable node """
+    
+    min_score = custom_infinity
     max_neighbor_count = -1
-    max_vertex = -1
-    best_coloring = None
+    best_node = None
+    best_allowed_colors = None
 
     for node in graph.nodes:
-        if node not in current_solution[1]:
-            colorings_neighbor = _get_possible_colorings(graph, node, current_solution, best_solution)
-            if len(colorings_neighbor) == 0:
-                best_coloring = colorings_neighbor
-                return node, best_coloring
-            score = len(colorings_neighbor)
-            if colorings_neighbor[len(colorings_neighbor) - 1] == current_solution[0]:
+        # node is not colored
+        if node not in current_solution.color_mapping:
+            usable_colors = _get_possible_colorings(
+                graph,
+                node,
+                current_solution,
+                best_solution
+                )
+
+            # cannot color a node, return immediately
+            if len(usable_colors) == 0:
+                return node, usable_colors
+
+            score = len(usable_colors)
+
+            # defer nodes that require using more colors
+            if usable_colors[-1] == current_solution.used_colors:
                 score += custom_infinity / 2
-            if score < min_color_possibilities or (score == min_color_possibilities and len(graph[node]) > max_neighbor_count):
+
+            if score < min_score  or \
+                (score == min_score and len(graph[node]) > max_neighbor_count):
                 max_neighbor_count = len(graph[node])
-                min_color_possibilities = score
-                max_vertex = node
-                best_coloring = colorings_neighbor
+                min_score = score
+                best_node = node
+                best_allowed_colors = usable_colors
 
-    return max_vertex, best_coloring
+    return best_node, best_allowed_colors
 
 
-def _choose_suitable_vertex_fast(graph, current_solution, best_solution):
-    max_neighbor_count = -1
-    max_vertex = -1
-
-    for node in graph.nodes:
-        if node not in current_solution[1]:
-            score = len(graph[node])
-            if score > max_neighbor_count:
-                max_neighbor_count = score
-                max_vertex = node
-
-    best_coloring = _get_possible_colorings(graph, max_vertex, current_solution, best_solution)
-    return max_vertex, best_coloring
-
-def _get_possible_colorings(graph, vertex, current_solution, best_solution):
-    possibilities = []
-    maximumInclusivePermissiblecolor = min(current_solution[0], best_solution[0] - 2)
-    numberOfUnknownVertices = 0
-    occupiedcolors = [False] * (len(graph[vertex]) + 1)
-    for neighbor in graph[vertex]:
-        if neighbor not in current_solution[1]:
-            numberOfUnknownVertices += 1
+def _get_possible_colorings(graph, node, current_solution, best_solution):
+    usable_colors = []
+    # there can be at most 1 new color and it should be less that current best
+    maximum_inclusive_permissible_color = min(
+        current_solution.used_colors,
+        best_solution.used_colors - 2
+        )
+    uncolored_neighbors = 0
+    allowed_colors = [True] * (len(graph[node]) + 1)
+    for neighbor in graph[node]:
+        if neighbor not in current_solution.color_mapping:
+            uncolored_neighbors += 1
         else:
-            color = current_solution[1][neighbor]
-            if (color < len(occupiedcolors)):
-                occupiedcolors[color] = True
+            color = current_solution.color_mapping[neighbor]
+            if (color < len(allowed_colors)):
+                allowed_colors[color] = False
 
-    colorCandidate = 0
-    while colorCandidate <= maximumInclusivePermissiblecolor \
-        and len(possibilities) <= numberOfUnknownVertices:
-        if not occupiedcolors[colorCandidate]:
-            possibilities.append(colorCandidate)
-        colorCandidate += 1
+    color = 0
+    # key heuristic: limit the number of used colors as much as possible
+    while color <= maximum_inclusive_permissible_color \
+            and len(usable_colors) <= uncolored_neighbors:
+        if allowed_colors[color]:
+            usable_colors.append(color)
+        color += 1
 
-    return possibilities;
+    return usable_colors
