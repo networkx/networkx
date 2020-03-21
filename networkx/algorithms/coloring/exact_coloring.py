@@ -109,10 +109,10 @@ def exact_color(graph: nx.Graph) -> Dict[T, int]:
             initial_solution = Solution.initial()
             dummy_solution = Solution.dummy()
             best_solution = _recurse(
-                                graph.subgraph(connected_component),
-                                initial_solution,
-                                dummy_solution
-                                )
+                graph.subgraph(connected_component),
+                initial_solution,
+                dummy_solution
+                )
             # Amend the partial solution
             color_mapping = {**color_mapping, **best_solution.color_mapping}
 
@@ -146,10 +146,10 @@ def _recurse(
     # There are sill nodes to color
     if len(partial_solution.color_mapping) < len(graph):
         node_to_color, usable_colors = _choose_branching_node(
-                                            graph,
-                                            partial_solution, 
-                                            best_solution
-                                            )
+            graph,
+            partial_solution, 
+            best_solution
+            )
 
         if usable_colors is not None:
             for color in usable_colors:
@@ -165,10 +165,10 @@ def _recurse(
                 if partial_solution.used_colors < best_solution.used_colors:
                     partial_solution.color_mapping[node_to_color] = color
                     best_solution = _recurse(
-                                        graph,
-                                        partial_solution,
-                                        best_solution
-                                        )
+                        graph,
+                        partial_solution,
+                        best_solution
+                        )
                     del partial_solution.color_mapping[node_to_color]
 
                 # Efficiently revert the partial solution
@@ -218,11 +218,11 @@ def _choose_branching_node(
         # Make sure the node is not colored
         if node not in partial_solution.color_mapping:
             usable_colors = _get_usable_colorings(
-                                graph,
-                                node,
-                                partial_solution,
-                                best_solution
-                                )
+                graph,
+                node,
+                partial_solution,
+                best_solution
+                )
 
             # Cannot color a node, return immediately
             if len(usable_colors) == 0:
@@ -244,10 +244,14 @@ def _choose_branching_node(
             # Promote nodes that lead to less branching, in case of a tie,
             # choose the node with the largest number of neighbors
             found_better_node = definitely_replace \
-                or (allow_replace \
-                    and (usable_colors_count < best_usable_colors_count
-                            or (usable_colors_count == best_usable_colors_count
-                                and neighbor_count > best_neighbor_count)))
+                or (
+                        allow_replace
+                        and (
+                                usable_colors_count < best_usable_colors_count
+                                or (usable_colors_count == best_usable_colors_count
+                                    and neighbor_count > best_neighbor_count)
+                            )
+                    )
 
             if found_better_node:
                 best_neighbor_count = neighbor_count
@@ -289,9 +293,9 @@ def _get_usable_colorings(
     # There can be at most 1 new color
     # It should be less that current optimum
     maximum_inclusive_permissible_color = min(
-                                            partial_solution.used_colors,
-                                            best_solution.used_colors - 2
-                                            )
+        partial_solution.used_colors,
+        best_solution.used_colors - 2
+        )
     uncolored_neighbors = 0
     occupied_colors = [False] * (len(graph[node]) + 1)
 

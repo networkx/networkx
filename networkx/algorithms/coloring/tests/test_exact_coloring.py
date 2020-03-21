@@ -9,38 +9,38 @@ from networkx.algorithms.coloring.tests.test_coloring \
 
 class TestExactColoring:
     fixed_graphs = [
-                    (2, nx.generators.small.cubical_graph()),
-                    (2, nx.generators.small.desargues_graph()),
-                    (2, nx.generators.small.heawood_graph()),
-                    (2, nx.generators.small.moebius_kantor_graph()),
-                    (2, nx.generators.small.pappus_graph()),
-                    (3, nx.generators.small.bull_graph()),
-                    (3, nx.generators.small.diamond_graph()),
-                    (3, nx.generators.small.dodecahedral_graph()),
-                    (3, nx.generators.small.frucht_graph()),
-                    (3, nx.generators.small.octahedral_graph()),
-                    (3, nx.generators.small.petersen_graph()),
-                    (3, nx.generators.small.truncated_cube_graph()),
-                    (3, nx.generators.small.truncated_tetrahedron_graph()),
-                    (3, nx.generators.small.tutte_graph()),
-                    (4, nx.generators.small.chvatal_graph()),
-                    (4, nx.generators.small.icosahedral_graph()),
-                    (4, nx.generators.small.hoffman_singleton_graph()),
-                    (4, nx.generators.small.house_x_graph()),
-                    (4, nx.generators.small.tetrahedral_graph()),
-                    (5, nx.generators.classic.lollipop_graph(5, 3)),
-                    (6, nx.generators.classic.lollipop_graph(6, 6))
-                    ]
+        (2, nx.generators.small.cubical_graph()),
+        (2, nx.generators.small.desargues_graph()),
+        (2, nx.generators.small.heawood_graph()),
+        (2, nx.generators.small.moebius_kantor_graph()),
+        (2, nx.generators.small.pappus_graph()),
+        (3, nx.generators.small.bull_graph()),
+        (3, nx.generators.small.diamond_graph()),
+        (3, nx.generators.small.dodecahedral_graph()),
+        (3, nx.generators.small.frucht_graph()),
+        (3, nx.generators.small.octahedral_graph()),
+        (3, nx.generators.small.petersen_graph()),
+        (3, nx.generators.small.truncated_cube_graph()),
+        (3, nx.generators.small.truncated_tetrahedron_graph()),
+        (3, nx.generators.small.tutte_graph()),
+        (4, nx.generators.small.chvatal_graph()),
+        (4, nx.generators.small.icosahedral_graph()),
+        (4, nx.generators.small.hoffman_singleton_graph()),
+        (4, nx.generators.small.house_x_graph()),
+        (4, nx.generators.small.tetrahedral_graph()),
+        (5, nx.generators.classic.lollipop_graph(5, 3)),
+        (6, nx.generators.classic.lollipop_graph(6, 6))
+        ]
 
     disjoint_components = []
     for f in fixed_graphs[-3:]:
         for g in fixed_graphs[-5:-2]:
             for h in fixed_graphs[-7:-4]:
                 disjoint_components.append(
-                        (
-                            max(f[0], g[0], h[0]),
-                            nx.disjoint_union_all([f[1], g[1], h[1]])
-                        )
+                    (
+                        max(f[0], g[0], h[0]),
+                        nx.disjoint_union_all([f[1], g[1], h[1]])
+                    )
                     )
 
     generated_graphs = [(2, nx.star_graph(n)) for n in range(1, 7)]\
@@ -65,27 +65,27 @@ class TestExactColoring:
             ] for n in range(1, 7)))
 
     @pytest.mark.parametrize(
-                            "expected_chromatic_number, test_graph",
-                            fixed_graphs
-                            )
+        "expected_chromatic_number, test_graph",
+        fixed_graphs
+        )
     def test_fixed_graphs(self, expected_chromatic_number, test_graph):
         coloring = nx.coloring.exact_color(test_graph)
         assert verify_length(coloring, expected_chromatic_number)
         assert verify_coloring(test_graph, coloring)
 
     @pytest.mark.parametrize(
-                            "expected_chromatic_number, test_graph",
-                            generated_graphs
-                            )
+        "expected_chromatic_number, test_graph",
+        generated_graphs
+        )
     def test_generated_graphs(self, expected_chromatic_number, test_graph):
         coloring = nx.coloring.exact_color(test_graph)
         assert verify_length(coloring, expected_chromatic_number)
         assert verify_coloring(test_graph, coloring)
 
     @pytest.mark.parametrize(
-                            "expected_chromatic_number, test_graph",
-                            disjoint_components
-                            )
+        "expected_chromatic_number, test_graph",
+        disjoint_components
+        )
     def test_disjoint_graphs(self, expected_chromatic_number, test_graph):
         coloring = nx.coloring.exact_color(test_graph)
         assert verify_length(coloring, expected_chromatic_number)
