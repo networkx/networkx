@@ -38,7 +38,7 @@ class TestExactColoring:
             for h in fixed_graphs[-7:-4]:
                 disjoint_components.append(
                     (max(f[0], g[0], h[0]),
-                    nx.disjoint_union_all([f[1], g[1], h[1]]))
+                     nx.disjoint_union_all([f[1], g[1], h[1]]))
                 )
 
     generated_graphs = [(2, nx.star_graph(n)) for n in range(1, 7)]\
