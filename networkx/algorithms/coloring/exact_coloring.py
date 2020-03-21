@@ -122,8 +122,7 @@ def exact_color(graph: nx.Graph) -> Dict[T, int]:
 def _recurse(
         graph: nx.Graph,
         partial_solution: Solution,
-        best_solution: Solution
-    ) -> Solution:
+        best_solution: Solution) -> Solution:
     """Finds best solution given partial coloring and best coloring found so far.
 
     Parameters
@@ -185,8 +184,7 @@ def _recurse(
 def _choose_branching_node(
         graph: nx.Graph,
         partial_solution: Solution,
-        best_solution: Solution
-    ) -> T:
+        best_solution: Solution) -> T:
     """A heuristic that finds the best node for the algorithm to branch on.
 
     Parameters
@@ -266,8 +264,7 @@ def _get_usable_colorings(
         graph: nx.Graph,
         node: T,
         partial_solution: Solution,
-        best_solution: Solution
-    ) -> List[int]:
+        best_solution: Solution) -> List[int]:
     """A heuristic finding as few unique colors as possible to color the node.
 
     Ensures that the optimal solution will be found if all colors are
