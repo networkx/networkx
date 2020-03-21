@@ -112,7 +112,7 @@ def exact_color(graph: nx.Graph) -> Dict[T, int]:
                 graph.subgraph(connected_component),
                 initial_solution,
                 dummy_solution
-                )
+            )
             # Amend the partial solution
             color_mapping = {**color_mapping, **best_solution.color_mapping}
 
@@ -123,7 +123,7 @@ def _recurse(
         graph: nx.Graph,
         partial_solution: Solution,
         best_solution: Solution
-        ) -> Solution:
+    ) -> Solution:
     """Finds best solution given partial coloring and best coloring found so far.
 
     Parameters
@@ -147,9 +147,9 @@ def _recurse(
     if len(partial_solution.color_mapping) < len(graph):
         node_to_color, usable_colors = _choose_branching_node(
             graph,
-            partial_solution, 
+            partial_solution,
             best_solution
-            )
+        )
 
         if usable_colors is not None:
             for color in usable_colors:
@@ -168,7 +168,7 @@ def _recurse(
                         graph,
                         partial_solution,
                         best_solution
-                        )
+                    )
                     del partial_solution.color_mapping[node_to_color]
 
                 # Efficiently revert the partial solution
@@ -186,7 +186,7 @@ def _choose_branching_node(
         graph: nx.Graph,
         partial_solution: Solution,
         best_solution: Solution
-        ) -> T:
+    ) -> T:
     """A heuristic that finds the best node for the algorithm to branch on.
 
     Parameters
@@ -222,7 +222,7 @@ def _choose_branching_node(
                 node,
                 partial_solution,
                 best_solution
-                )
+            )
 
             # Cannot color a node, return immediately
             if len(usable_colors) == 0:
@@ -245,13 +245,13 @@ def _choose_branching_node(
             # choose the node with the largest number of neighbors
             found_better_node = definitely_replace \
                 or (
-                        allow_replace
-                        and (
-                                usable_colors_count < best_usable_colors_count
-                                or (usable_colors_count == best_usable_colors_count
-                                    and neighbor_count > best_neighbor_count)
-                            )
+                    allow_replace
+                    and (
+                        usable_colors_count < best_usable_colors_count
+                        or (usable_colors_count == best_usable_colors_count
+                            and neighbor_count > best_neighbor_count)
                     )
+                )
 
             if found_better_node:
                 best_neighbor_count = neighbor_count
@@ -267,7 +267,7 @@ def _get_usable_colorings(
         node: T,
         partial_solution: Solution,
         best_solution: Solution
-        ) -> List[int]:
+    ) -> List[int]:
     """A heuristic finding as few unique colors as possible to color the node.
 
     Ensures that the optimal solution will be found if all colors are
@@ -295,7 +295,7 @@ def _get_usable_colorings(
     maximum_inclusive_permissible_color = min(
         partial_solution.used_colors,
         best_solution.used_colors - 2
-        )
+    )
     uncolored_neighbors = 0
     occupied_colors = [False] * (len(graph[node]) + 1)
 
