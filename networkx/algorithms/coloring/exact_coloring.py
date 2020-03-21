@@ -73,6 +73,16 @@ def exact_color(graph: nx.Graph) -> Dict[T, int]:
     Dict[Any, int]
         Mapping between graph nodes and integers representing colors
 
+    Examples
+    ----------
+    >>> graph = nx.generators.small.petersen_graph()
+    >>> coloring = nx.algorithms.coloring.exact_coloring.exact_color(graph)
+    >>> coloring
+    {0: 0, 1: 1, 2: 0, 3: 1, 4: 2, 5: 1, 8: 0, 6: 2, 9: 0, 7: 2}
+    >>> chromatic_number = len(set(coloring.values()))
+    >>> chromatic_number
+    3
+
     References
     ----------
     .. [1] Zhaoyang Zhou, Chu-Min Li, Chong Huang, Ruchu Xu:
@@ -80,17 +90,6 @@ def exact_color(graph: nx.Graph) -> Dict[T, int]:
            Computers & Operations Research. Volume 51, November 2014,
            Pages 282-301.
            https://home.mis.u-picardie.fr/~cli/color6COR2014publishedVersion.pdf
-
-    Examples
-    ----------
-    >>> import networkx as nx
-    >>> graph = nx.generators.small.petersen_graph()
-    >>> node_to_color_mapping = nx.coloring.exact_color(graph)
-    >>> node_to_color_mapping
-    {0: 0, 1: 1, 2: 0, 3: 1, 4: 2, 5: 1, 8: 0, 6: 2, 9: 0, 7: 2}
-    >>> chromatic_number = len(set(node_to_color_mapping.values()))
-    >>> chromatic_number
-    3
     """
 
     # Color mapping for an empty graph
