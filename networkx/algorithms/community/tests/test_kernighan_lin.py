@@ -6,7 +6,7 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms.community import kernighan_lin_bisection
-
+from itertools import permutations
 
 def assert_partition_equal(x, y):
     assert set(map(frozenset, x)) == set(map(frozenset, y))
@@ -50,6 +50,9 @@ def test_multigraph():
     M = nx.MultiGraph(G.edges())
     M.add_edges_from(G.edges())
     M.remove_edge(1, 2)
-    for seed in range(100):
-        A, B = kernighan_lin_bisection(M, seed=seed)
-        assert_partition_equal([A, B], [{0, 1}, {2, 3}])
+    for labels in permutations(range(4)):
+        mapping = dict(zip(M, labels))
+        A, B = kernighan_lin_bisection(nx.relabel_nodes(M, mapping), seed=0)
+        assert_partition_equal([A, B],
+                               [{mapping[0], mapping[1]},
+                                {mapping[2], mapping[3]}])
