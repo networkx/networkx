@@ -1097,7 +1097,8 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
 
 
 def bellman_ford_predecessor_and_distance(G, source, target=None,
-                                          weight='weight', use_neg_cycle_heuristic=True):
+                                          weight='weight',
+                                          use_neg_cycle_heuristic=False):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
 
