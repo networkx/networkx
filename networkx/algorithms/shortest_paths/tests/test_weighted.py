@@ -277,6 +277,20 @@ class TestWeightedPath(WeightedTestBase):
         G.add_edge(9, 10)
         pytest.raises(ValueError, nx.bidirectional_dijkstra, G, 8, 10)
 
+    def test_negative_edge_cycle_fast(self):
+        G = nx.cycle_graph(5, create_using=nx.DiGraph())
+        assert nx.bellman_ford_predecessor_and_distance_early_stopping(G)
+        G.add_edge(8, 9, weight=-7)
+        G.add_edge(9, 8, weight=3)
+        graph_size = len(G)
+        pytest.raises(nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance_early_stopping, G, 8)
+        assert graph_size == len(G)
+        pytest.raises(ValueError, nx.single_source_dijkstra_path_length, G, 8)
+        pytest.raises(ValueError, nx.single_source_dijkstra, G, 8)
+        pytest.raises(ValueError, nx.dijkstra_predecessor_and_distance, G, 8)
+        G.add_edge(9, 10)
+        pytest.raises(ValueError, nx.bidirectional_dijkstra, G, 8, 10)
+
     def test_weight_function(self):
         """Tests that a callable weight is interpreted as a weight
         function instead of an edge attribute.
