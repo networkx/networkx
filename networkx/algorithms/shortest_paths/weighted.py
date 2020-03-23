@@ -1320,7 +1320,7 @@ def bellman_ford_predecessor_and_distance_early_stopping(
         source=None,
         target=None,
         neg_cycle_detection_callback=None,
-        weight='weight')]:
+        weight='weight'):
     """Ok
     """
 
@@ -1441,7 +1441,7 @@ def _bellman_ford_early_stopping(
                 elif dist.get(v) is not None and dist_v == dist.get(v):
                     pred[v].append(u)
 
-    elif paths is not None:
+    if paths is not None:
         dsts = [target] if target is not None else pred
         for dst in dsts:
 
