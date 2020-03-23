@@ -7,6 +7,7 @@ from heapq import heappush, heappop
 from itertools import count
 import networkx as nx
 from networkx.utils import generate_unique_node
+from typing import Union, Dict, Tuple, List, Any
 
 
 __all__ = ['dijkstra_path',
@@ -23,6 +24,7 @@ __all__ = ['dijkstra_path',
            'all_pairs_dijkstra_path_length',
            'dijkstra_predecessor_and_distance',
            'bellman_ford_path',
+           'bellman_ford_predecessor_and_distance_early_stopping',
            'bellman_ford_path_length',
            'single_source_bellman_ford',
            'single_source_bellman_ford_path',
@@ -1297,6 +1299,149 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                     pred[v].append(u)
 
     if paths is not None:
+        dsts = [target] if target is not None else pred
+        for dst in dsts:
+
+            path = [dst]
+            cur = dst
+
+            while pred[cur]:
+                cur = pred[cur][0]
+                path.append(cur)
+
+            path.reverse()
+            paths[dst] = path
+
+    return dist
+
+
+def bellman_ford_predecessor_and_distance_early_stopping(
+        G,
+        source=None,
+        target=None,
+        neg_cycle_detection_callback=None,
+        weight='weight')]:
+    """Ok
+    """
+
+    if source is None:
+        source = list(G)
+    elif not isinstance(source, list):
+        source = [source]
+
+    if len(source) == 1:
+        source_vertex = source[0]
+        if source_vertex not in G:
+            raise nx.NodeNotFound(f"Node {source_vertex} is not found in the graph")
+        weight = _weight_function(G, weight)
+        if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
+            raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+
+        dist = {source_vertex: 0}
+        pred = {source_vertex: []}
+
+        if len(G) == 1:
+            return pred, dist
+    else:
+        pred = None
+
+    weight = _weight_function(G, weight)
+
+    dist = _bellman_ford_early_stopping(
+        G,
+        source,
+        weight,
+        pred=pred,
+        neg_cycle_detection_callback=neg_cycle_detection_callback,
+        target=target)
+
+    return (pred, dist)
+
+
+def _bellman_ford_early_stopping(
+        G,
+        source,
+        weight,
+        pred=None,
+        paths=None,
+        dist=None,
+        recent_update=None,
+        neg_cycle_detection_callback=None,
+        target=None):
+    """Relaxation loop for Bellman–Ford algorithm with negative cycle detection.
+    """
+    for s in source:
+        if s not in G:
+            raise nx.NodeNotFound(f"Source {s} not in G")
+
+    if pred is None:
+        pred = {v: [] for v in source}
+
+    if dist is None:
+        dist = {v: 0 for v in source}
+
+    predEdges = {v: (None,None) for v in G}
+
+    if recent_update is None:
+        recent_update = {v: (None,None) for v in G}
+
+    G_succ = G.succ if G.is_directed() else G.adj
+    inf = float('inf')
+    n = len(G)
+
+    count = {}
+    q = deque(source)
+    in_q = set(source)
+    iteration = 0
+    vertices_in_current_iteration = len(q)
+    vertices_in_next_iteration = 0
+    while q:
+        if vertices_in_current_iteration == 0:
+            vertices_in_current_iteration = vertices_in_next_iteration
+            vertices_in_next_iteration = 0
+            iteration += 1
+        u = q.popleft()
+        in_q.remove(u)
+
+        # Skip relaxations if any of the predecessors of u is in the queue.
+        if all(pred_u not in in_q for pred_u in pred[u]):
+            dist_u = dist[u]
+            for v, e in G_succ[u].items():
+                dist_v = dist_u + weight(u, v, e)
+
+                if dist_v < dist.get(v, inf):
+                    begin_neg_cycle = False
+                    # TODO: check off-by-one-error
+                    # Core heuristic of the cycle-detection algorithm
+                    if recent_update[u][0] == v\
+                            or recent_update[u][1] == v\
+                            or iteration == n + 1:
+                        begin_neg_cycle = True
+
+                    recent_update[v] = recent_update[u] if predEdges[v][0] == u else (u, v)
+
+                    if v not in in_q:
+                        q.append(v)
+                        in_q.add(v)
+                        vertices_in_next_iteration += 1
+                        count_v = count.get(v, 0) + 1
+                        if count_v == n:
+                            raise nx.NetworkXUnbounded(
+                                "Negative cost cycle detected.")
+                        count[v] = count_v
+                    dist[v] = dist_v
+                    pred[v] = [u]
+                    if begin_neg_cycle:
+                        if neg_cycle_detection_callback is not None:
+                            neg_cycle_detection_callback((u, v))
+                        raise nx.NetworkXUnbounded(
+                            "Negative cost cycle detected.")
+                        break
+
+                elif dist.get(v) is not None and dist_v == dist.get(v):
+                    pred[v].append(u)
+
+    elif paths is not None:
         dsts = [target] if target is not None else pred
         for dst in dsts:
 
