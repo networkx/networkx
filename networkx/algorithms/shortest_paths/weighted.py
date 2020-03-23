@@ -1301,7 +1301,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                     if use_neg_cycle_heuristic and (
                             recent_update[u][0] == v or recent_update[u][1] == v):
                         raise nx.NetworkXUnbounded(
-                            f"Negative cost cycle detected. Edge: ({u},{v}).")
+                            f"Negative cost cycle detected.")
 
                     # Transfer the earliest changing edge from the update path
                     # if the same source vertex is responsible for the update
