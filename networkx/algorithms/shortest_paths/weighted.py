@@ -1946,7 +1946,7 @@ def negative_edge_cycle(G, weight='weight', use_neg_cycle_heuristic=True):
 
     try:
         bellman_ford_predecessor_and_distance(G, newnode, weight,
-                                use_neg_cycle_heuristic=use_neg_cycle_heuristic)
+            use_neg_cycle_heuristic=use_neg_cycle_heuristic)
     except nx.NetworkXUnbounded:
         return True
     finally:
