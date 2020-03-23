@@ -1128,6 +1128,10 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
        dictionary of edge attributes for that edge. The function must
        return a number.
 
+    use_neg_cycle_heuristic : bool
+        Determines whether to use to use a heuristic to early detect negative
+        cycles at a negligible cost.
+
     Returns
     -------
     pred, dist : dictionaries
@@ -1240,6 +1244,10 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
     target: node label, optional
         Ending node for path. Path lengths to other destinations may (and
         probably will) be incorrect.
+
+    use_neg_cycle_heuristic : bool
+        Determines whether to use to use a heuristic to early detect negative
+        cycles at a negligible cost.
 
     Returns
     -------
@@ -1903,6 +1911,11 @@ def negative_edge_cycle(G, weight='weight', use_neg_cycle_heuristic=True):
        positional arguments: the two endpoints of an edge and the
        dictionary of edge attributes for that edge. The function must
        return a number.
+
+    use_neg_cycle_heuristic : bool
+        Determines whether to use to use a heuristic to early detect negative
+        cycles at a negligible cost. In case of graphs with negative cycle
+        the performance of detection increases by an order of magnitude.
 
     Returns
     -------
