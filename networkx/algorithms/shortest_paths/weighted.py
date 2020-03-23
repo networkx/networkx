@@ -7,7 +7,6 @@ from heapq import heappush, heappop
 from itertools import count
 import networkx as nx
 from networkx.utils import generate_unique_node
-from typing import Union, Dict, Tuple, List, Any
 
 
 __all__ = ['dijkstra_path',
@@ -1275,9 +1274,8 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
     if dist is None:
         dist = {v: 0 for v in source}
 
-    pred_edge = {v: (None,None) for v in G}
-
-    recent_update = {v: (None,None) for v in G}
+    pred_edge = {v: (None, None) for v in G}
+    recent_update = {v: (None, None) for v in G}
 
     G_succ = G.succ if G.is_directed() else G.adj
     inf = float('inf')
@@ -1947,7 +1945,7 @@ def negative_edge_cycle(G, weight='weight', use_neg_cycle_heuristic=True):
 
     try:
         bellman_ford_predecessor_and_distance(G, newnode, weight,
-            use_neg_cycle_heuristic=use_neg_cycle_heuristic)
+                                use_neg_cycle_heuristic=use_neg_cycle_heuristic)
     except nx.NetworkXUnbounded:
         return True
     finally:
