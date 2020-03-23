@@ -1128,7 +1128,7 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
        return a number.
 
     use_neg_cycle_heuristic : bool
-        Determines whether to use to use a heuristic to early detect negative
+        Determines whether to use a heuristic to early detect negative
         cycles at a negligible cost.
 
     Returns
@@ -1245,7 +1245,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
         probably will) be incorrect.
 
     use_neg_cycle_heuristic : bool
-        Determines whether to use to use a heuristic to early detect negative
+        Determines whether to use a heuristic to early detect negative
         cycles at a negligible cost.
 
     Returns
@@ -1274,6 +1274,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
     if dist is None:
         dist = {v: 0 for v in source}
 
+    # Graph nodes cannot be None, so this is a valid initialization
     pred_edge = {v: (None, None) for v in G}
     recent_update = {v: (None, None) for v in G}
 
@@ -1911,9 +1912,9 @@ def negative_edge_cycle(G, weight='weight', use_neg_cycle_heuristic=True):
        return a number.
 
     use_neg_cycle_heuristic : bool
-        Determines whether to use to use a heuristic to early detect negative
-        cycles at a negligible cost. In case of graphs with negative cycle
-        the performance of detection increases by an order of magnitude.
+        Determines whether to use a heuristic to early detect negative
+        cycles at a negligible cost. In case of graphs with a negative cycle,
+        the performance of detection increases by at least an order of magnitude.
 
     Returns
     -------
