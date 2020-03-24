@@ -45,7 +45,8 @@ def connected_components(G):
     >>> largest_cc = max(nx.connected_components(G), key=len)
 
     To create the induced subgraph of each component use:
-    >>> S = [G.subgraph(c).copy() for c in connected_components(G)]
+
+    >>> S = [G.subgraph(c).copy() for c in nx.connected_components(G)]
 
     See Also
     --------
