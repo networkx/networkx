@@ -1,13 +1,10 @@
-#-*- coding: utf-8 -*-
 """Generators of  x-y pairs of node data."""
-import networkx as nx
-__author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['node_attribute_xy',
            'node_degree_xy']
 
 
 def node_attribute_xy(G, attribute, nodes=None):
-    """Return iterator of node-attribute pairs for all edges in G.
+    """Returns iterator of node-attribute pairs for all edges in G.
 
     Parameters
     ----------
@@ -36,8 +33,8 @@ def node_attribute_xy(G, attribute, nodes=None):
 
     Notes
     -----
-    For undirected graphs each edge is produced twice, once for each edge 
-    representation (u,v) and (v,u), with the exception of self-loop edges 
+    For undirected graphs each edge is produced twice, once for each edge
+    representation (u,v) and (v,u), with the exception of self-loop edges
     which only appear once.
     """
     if nodes is None:
@@ -74,7 +71,7 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
        The degree type for target node (directed graphs only).
 
     weight: string or None, optional (default=None)
-       The edge attribute that holds the numerical value used 
+       The edge attribute that holds the numerical value used
        as a weight.  If None, then each edge has weight 1.
        The degree is the sum of the edge weights adjacent to the node.
 
@@ -99,8 +96,8 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
 
     Notes
     -----
-    For undirected graphs each edge is produced twice, once for each edge 
-    representation (u,v) and (v,u), with the exception of self-loop edges 
+    For undirected graphs each edge is produced twice, once for each edge
+    representation (u,v) and (v,u), with the exception of self-loop edges
     which only appear once.
     """
     if nodes is None:
@@ -119,16 +116,3 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
         neighbors = (nbr for _, nbr in G.edges(u) if nbr in nodes)
         for v, degv in ydeg(neighbors, weight=weight):
             yield degu, degv
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

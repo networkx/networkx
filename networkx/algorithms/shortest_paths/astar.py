@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Salim Fadhley <salimfadhley@gmail.com>
-#          Matteo Dell'Amico <matteodellamico@gmail.com>
 """Shortest paths and path lengths using the A* ("A star") algorithm.
 """
 from heapq import heappush, heappop
@@ -15,13 +5,13 @@ from itertools import count
 
 import networkx as nx
 from networkx.utils import not_implemented_for
+from networkx.algorithms.shortest_paths.weighted import _weight_function
 
 __all__ = ['astar_path', 'astar_path_length']
 
 
-@not_implemented_for('multigraph')
 def astar_path(G, source, target, heuristic=None, weight='weight'):
-    """Return a list of nodes in a shortest path between source and target
+    """Returns a list of nodes in a shortest path between source and target
     using the A* ("A-star") algorithm.
 
     There may be more than one shortest path.  This returns only one.
@@ -70,8 +60,8 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
 
     """
     if source not in G or target not in G:
-        msg = 'Either source {} or target {} is not in G'
-        raise nx.NodeNotFound(msg.format(source, target))
+        msg = f"Either source {source} or target {target} is not in G"
+        raise nx.NodeNotFound(msg)
 
     if heuristic is None:
         # The default heuristic is h=0 - same as Dijkstra's algorithm
@@ -80,6 +70,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
 
     push = heappush
     pop = heappop
+    weight = _weight_function(G, weight)
 
     # The queue stores priority, node, cost to reach, and parent.
     # Uses Python heapq to keep in priority order.
@@ -110,14 +101,19 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             return path
 
         if curnode in explored:
-            continue
+            # Do not override the parent of starting node
+            if explored[curnode] is None:
+                continue
+
+            # Skip bad paths that were enqueued before finding a better one
+            qcost, h = enqueued[curnode]
+            if qcost < dist:
+                continue
 
         explored[curnode] = parent
 
         for neighbor, w in G[curnode].items():
-            if neighbor in explored:
-                continue
-            ncost = dist + w.get(weight, 1)
+            ncost = dist + weight(curnode, neighbor, w)
             if neighbor in enqueued:
                 qcost, h = enqueued[neighbor]
                 # if qcost <= ncost, a less costly path from the
@@ -131,11 +127,11 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             enqueued[neighbor] = ncost, h
             push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
-    raise nx.NetworkXNoPath("Node %s not reachable from %s" % (source, target))
+    raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
 
 def astar_path_length(G, source, target, heuristic=None, weight='weight'):
-    """Return the length of the shortest path between source and target using
+    """Returns the length of the shortest path between source and target using
     the A* ("A-star") algorithm.
 
     Parameters
@@ -164,8 +160,9 @@ def astar_path_length(G, source, target, heuristic=None, weight='weight'):
 
     """
     if source not in G or target not in G:
-        msg = 'Either source {} or target {} is not in G'
-        raise nx.NodeNotFound(msg.format(source, target))
+        msg = f"Either source {source} or target {target} is not in G"
+        raise nx.NodeNotFound(msg)
 
+    weight = _weight_function(G, weight)
     path = astar_path(G, source, target, heuristic, weight)
-    return sum(G[u][v].get(weight, 1) for u, v in zip(path[:-1], path[1:]))
+    return sum(weight(u, v, G[u][v]) for u, v in zip(path[:-1], path[1:]))

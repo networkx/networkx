@@ -1,9 +1,8 @@
 import networkx as nx
-#from networkx.generators.smax import li_smax_graph
 
 
 def s_metric(G, normalized=True):
-    """Return the s-metric of graph.
+    """Returns the s-metric of graph.
 
     The s-metric is defined as the sum of the products deg(u)*deg(v)
     for every edge (u,v) in G. If norm is provided construct the

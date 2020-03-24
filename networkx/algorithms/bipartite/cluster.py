@@ -1,19 +1,15 @@
-#-*- coding: utf-8 -*-
-#    Copyright (C) 2011 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
+"""Functions for computing clustering of pairs
+
+"""
+
 import itertools
 import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
+
 __all__ = ['clustering',
            'average_clustering',
            'latapy_clustering',
            'robins_alexander_clustering']
 
-# functions for computing clustering of pairs
 
 
 def cc_dot(nu, nv):
@@ -43,25 +39,25 @@ def latapy_clustering(G, nodes=None, mode='dot'):
 
        c_u = \frac{\sum_{v \in N(N(u))} c_{uv} }{|N(N(u))|}
 
-    where `N(N(u))` are the second order neighbors of `u` in `G` excluding `u`, 
-    and `c_{uv}` is the pairwise clustering coefficient between nodes 
+    where `N(N(u))` are the second order neighbors of `u` in `G` excluding `u`,
+    and `c_{uv}` is the pairwise clustering coefficient between nodes
     `u` and `v`.
 
     The mode selects the function for `c_{uv}` which can be:
 
-    `dot`: 
+    `dot`:
 
     .. math::
 
        c_{uv}=\frac{|N(u)\cap N(v)|}{|N(u) \cup N(v)|}
 
-    `min`: 
+    `min`:
 
     .. math::
 
        c_{uv}=\frac{|N(u)\cap N(v)|}{min(|N(u)|,|N(v)|)}
 
-    `max`: 
+    `max`:
 
     .. math::
 
@@ -74,12 +70,12 @@ def latapy_clustering(G, nodes=None, mode='dot'):
         A bipartite graph
 
     nodes : list or iterable (optional)
-        Compute bipartite clustering for these nodes. The default 
+        Compute bipartite clustering for these nodes. The default
         is all nodes in G.
 
     mode : string
         The pariwise bipartite clustering method to be used in the computation.
-        It must be "dot", "max", or "min". 
+        It must be "dot", "max", or "min".
 
     Returns
     -------
@@ -91,10 +87,10 @@ def latapy_clustering(G, nodes=None, mode='dot'):
     --------
     >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4) # path graphs are bipartite
-    >>> c = bipartite.clustering(G) 
+    >>> c = bipartite.clustering(G)
     >>> c[0]
     0.5
-    >>> c = bipartite.clustering(G,mode='min') 
+    >>> c = bipartite.clustering(G,mode='min')
     >>> c[0]
     1.0
 
@@ -107,7 +103,7 @@ def latapy_clustering(G, nodes=None, mode='dot'):
     References
     ----------
     .. [1] Latapy, Matthieu, Clémence Magnien, and Nathalie Del Vecchio (2008).
-       Basic notions for the analysis of large two-mode networks. 
+       Basic notions for the analysis of large two-mode networks.
        Social Networks 30(1), 31--48.
     """
     if not nx.algorithms.bipartite.is_bipartite(G):
@@ -124,7 +120,7 @@ def latapy_clustering(G, nodes=None, mode='dot'):
     ccs = {}
     for v in nodes:
         cc = 0.0
-        nbrs2 = set([u for nbr in G[v] for u in G[nbr]]) - set([v])
+        nbrs2 = {u for nbr in G[v] for u in G[nbr]} - {v}
         for u in nbrs2:
             cc += cc_func(set(G[u]), set(G[v]))
         if cc > 0.0:  # len(nbrs2)>0
@@ -139,7 +135,7 @@ clustering = latapy_clustering
 def average_clustering(G, nodes=None, mode='dot'):
     r"""Compute the average bipartite clustering coefficient.
 
-    A clustering coefficient for the whole graph is the average, 
+    A clustering coefficient for the whole graph is the average,
 
     .. math::
 
@@ -161,40 +157,40 @@ def average_clustering(G, nodes=None, mode='dot'):
         a bipartite graph
 
     nodes : list or iterable, optional
-        A container of nodes to use in computing the average.  
-        The nodes should be either the entire graph (the default) or one of the 
+        A container of nodes to use in computing the average.
+        The nodes should be either the entire graph (the default) or one of the
         bipartite sets.
 
     mode : string
-        The pariwise bipartite clustering method. 
-        It must be "dot", "max", or "min" 
+        The pariwise bipartite clustering method.
+        It must be "dot", "max", or "min"
 
     Returns
     -------
     clustering : float
-       The average bipartite clustering for the given set of nodes or the 
+       The average bipartite clustering for the given set of nodes or the
        entire graph if no nodes are specified.
 
     Examples
     --------
     >>> from networkx.algorithms import bipartite
     >>> G=nx.star_graph(3) # star graphs are bipartite
-    >>> bipartite.average_clustering(G) 
+    >>> bipartite.average_clustering(G)
     0.75
     >>> X,Y=bipartite.sets(G)
-    >>> bipartite.average_clustering(G,X) 
+    >>> bipartite.average_clustering(G,X)
     0.0
-    >>> bipartite.average_clustering(G,Y) 
+    >>> bipartite.average_clustering(G,Y)
     1.0
 
     See Also
     --------
     clustering
 
-    Notes    
+    Notes
     -----
     The container of nodes passed to this function must contain all of the nodes
-    in one of the bipartite sets ("top" or "bottom") in order to compute 
+    in one of the bipartite sets ("top" or "bottom") in order to compute
     the correct average bipartite clustering coefficients.
     See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
     for further details on how bipartite graphs are handled in NetworkX.
@@ -203,7 +199,7 @@ def average_clustering(G, nodes=None, mode='dot'):
     References
     ----------
     .. [1] Latapy, Matthieu, Clémence Magnien, and Nathalie Del Vecchio (2008).
-        Basic notions for the analysis of large two-mode networks. 
+        Basic notions for the analysis of large two-mode networks.
         Social Networks 30(1), 31--48.
     """
     if nodes is None:
@@ -247,8 +243,8 @@ def robins_alexander_clustering(G):
 
     References
     ----------
-    .. [1] Robins, G. and M. Alexander (2004). Small worlds among interlocking 
-           directors: Network structure and distance in bipartite graphs. 
+    .. [1] Robins, G. and M. Alexander (2004). Small worlds among interlocking
+           directors: Network structure and distance in bipartite graphs.
            Computational & Mathematical Organization Theory 10(1), 69–94.
 
     """
@@ -265,7 +261,7 @@ def _four_cycles(G):
     cycles = 0
     for v in G:
         for u, w in itertools.combinations(G[v], 2):
-            cycles += len((set(G[u]) & set(G[w])) - set([v]))
+            cycles += len((set(G[u]) & set(G[w])) - {v})
     return cycles / 4
 
 
@@ -273,8 +269,8 @@ def _threepaths(G):
     paths = 0
     for v in G:
         for u in G[v]:
-            for w in set(G[u]) - set([v]):
-                paths += len(set(G[w]) - set([v, u]))
+            for w in set(G[u]) - {v}:
+                paths += len(set(G[w]) - {v, u})
     # Divide by two because we count each three path twice
     # one for each possible starting point
     return paths / 2

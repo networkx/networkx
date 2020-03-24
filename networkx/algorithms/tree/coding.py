@@ -1,13 +1,3 @@
-# -*- encoding: utf-8 -*-
-#
-# coding.py - functions for encoding and decoding trees as sequences
-#
-# Copyright 2015-2018 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for encoding and decoding trees.
 
 Since a tree is a highly restricted form of graph, it can be represented
@@ -127,7 +117,7 @@ def to_nested_tuple(T, root, canonical_form=False):
     if not nx.is_tree(T):
         raise nx.NotATree('provided graph is not a tree')
     if root not in T:
-        raise nx.NodeNotFound('Graph {} contains no node {}'.format(T, root))
+        raise nx.NodeNotFound(f'Graph {T} contains no node {root}')
 
     return _make_tuple(T, root, None)
 
@@ -258,7 +248,7 @@ def to_prufer_sequence(T):
     relabel the nodes of your tree to the appropriate format.
 
     This implementation is from [1]_ and has a running time of
-    $O(n \log n)$.
+    $O(n)$.
 
     See also
     --------
@@ -303,7 +293,7 @@ def to_prufer_sequence(T):
     def parents(u):
         return next(v for v in T[u] if degree[v] > 1)
 
-    index = u = min(k for k in range(n) if degree[k] == 1)
+    index = u = next(k for k in range(n) if degree[k] == 1)
     result = []
     for i in range(n - 2):
         v = parents(u)
@@ -312,7 +302,7 @@ def to_prufer_sequence(T):
         if v < index and degree[v] == 1:
             u = v
         else:
-            index = u = min(k for k in range(index + 1, n) if degree[k] == 1)
+            index = u = next(k for k in range(index + 1, n) if degree[k] == 1)
     return result
 
 
@@ -347,7 +337,7 @@ def from_prufer_sequence(sequence):
     relabel the nodes of your tree to the appropriate format.
 
     This implementation is from [1]_ and has a running time of
-    $O(n \log n)$.
+    $O(n)$.
 
     References
     ----------
@@ -387,7 +377,7 @@ def from_prufer_sequence(sequence):
     # tree. After the loop, there should be exactly two nodes that are
     # not in this set.
     not_orphaned = set()
-    index = u = min(k for k in range(n) if degree[k] == 1)
+    index = u = next(k for k in range(n) if degree[k] == 1)
     for v in sequence:
         T.add_edge(u, v)
         not_orphaned.add(u)
@@ -395,7 +385,7 @@ def from_prufer_sequence(sequence):
         if v < index and degree[v] == 1:
             u = v
         else:
-            index = u = min(k for k in range(index + 1, n) if degree[k] == 1)
+            index = u = next(k for k in range(index + 1, n) if degree[k] == 1)
     # At this point, there must be exactly two orphaned nodes; join them.
     orphans = set(T) - not_orphaned
     u, v = orphans

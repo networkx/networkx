@@ -1,17 +1,4 @@
-# -*- coding: utf-8 -*-
-#   Copyright (C) 2011-2018 by
-#   Nicholas Mancuso <nick.mancuso@gmail.com>
-#   All rights reserved.
-#   BSD license.
-#   Copyright 2016-2018 NetworkX developers.
-#   NetworkX is distributed under a BSD license
-#
-# Authors:    Nicholas Mancuso (nick.mancuso@gmail.com)
-#             Jeffery Finkelstein <jeffrey.finkelstein@gmail.com>
-#             Dan Schult <dschult@colgate.edu>
 """Functions for computing large cliques."""
-from operator import itemgetter
-
 import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.algorithms.approximation import ramsey
@@ -68,7 +55,7 @@ def max_clique(G):
 
 
 def clique_removal(G):
-    """ Repeatedly remove cliques from the graph.
+    r""" Repeatedly remove cliques from the graph.
 
     Results in a $O(|V|/(\log |V|)^2)$ approximation of maximum clique
     and independent set. Returns the largest independent set found, along

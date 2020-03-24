@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-#   Copyright (C) 2011-2012 by
-#   Nicholas Mancuso <nick.mancuso@gmail.com>
-#   All rights reserved.
-#   BSD license.
 """Functions for finding node and edge dominating sets.
 
 A `dominating set`_ for an undirected graph *G* with vertex set *V*
@@ -15,7 +10,6 @@ incident to an endpoint of at least one edge in *F*.
 .. _edge dominating set: https://en.wikipedia.org/wiki/Edge_dominating_set
 
 """
-from __future__ import division
 
 from ..matching import maximal_matching
 from ...utils import not_implemented_for
@@ -23,13 +17,11 @@ from ...utils import not_implemented_for
 __all__ = ["min_weighted_dominating_set",
            "min_edge_dominating_set"]
 
-__author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
-
 
 # TODO Why doesn't this algorithm work for directed graphs?
 @not_implemented_for('directed')
 def min_weighted_dominating_set(G, weight=None):
-    """Returns a dominating set that approximates the minimum weight node
+    r"""Returns a dominating set that approximates the minimum weight node
     dominating set.
 
     Parameters
@@ -38,7 +30,7 @@ def min_weighted_dominating_set(G, weight=None):
         Undirected graph.
 
     weight : string
-        The node attribute storing the weight of an edge. If provided,
+        The node attribute storing the weight of an node. If provided,
         the node attribute with this key must be a number for each
         node. If not provided, each node is assumed to have weight one.
 
@@ -109,7 +101,7 @@ def min_weighted_dominating_set(G, weight=None):
 
 
 def min_edge_dominating_set(G):
-    r"""Return minimum cardinality edge dominating set.
+    r"""Returns minimum cardinality edge dominating set.
 
     Parameters
     ----------

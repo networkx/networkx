@@ -3,15 +3,7 @@ Graph isomorphism functions.
 """
 import networkx as nx
 from networkx.exception import NetworkXError
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Christopher Ellison cellison@cse.ucdavis.edu)'])
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
+
 __all__ = ['could_be_isomorphic',
            'fast_could_be_isomorphic',
            'faster_could_be_isomorphic',

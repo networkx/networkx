@@ -1,9 +1,3 @@
-#    Copyright 2016-2018 NetworkX developers.
-#    Copyright (C) 2016 by
-#    Nishant Nikhil <nishantiam@gmail.com>
-#    All rights reserved.
-#    BSD license.
-
 """ Functions related to graph covers."""
 
 import networkx as nx

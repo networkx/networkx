@@ -1,20 +1,12 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2014 by
-#    Christian Olsson <chro@itu.dk>
-#    Jan Aagaard Meier <jmei@itu.dk>
-#    Henrik Haugbølle <hhau@itu.dk>
-#    Arya McCarthy <admccarthy@smu.edu>
-#    All rights reserved.
-#    BSD license.
 """
 Greedy graph coloring using various strategies.
 """
 from collections import defaultdict, deque
 import itertools
-import random
 
 import networkx as nx
 from networkx.utils import arbitrary_element
+from networkx.utils import py_random_state
 from . import greedy_coloring_with_interchange as _interchange
 
 __all__ = ['greedy_color', 'strategy_connected_sequential',
@@ -34,14 +26,18 @@ def strategy_largest_first(G, colors):
     return sorted(G, key=G.degree, reverse=True)
 
 
-def strategy_random_sequential(G, colors):
+@py_random_state(2)
+def strategy_random_sequential(G, colors, seed=None):
     """Returns a random permutation of the nodes of ``G`` as a list.
 
     ``G`` is a NetworkX graph. ``colors`` is ignored.
 
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
     """
     nodes = list(G)
-    random.shuffle(nodes)
+    seed.shuffle(nodes)
     return nodes
 
 
@@ -139,8 +135,7 @@ def strategy_independent_set(G, colors):
     while len(remaining_nodes) > 0:
         nodes = _maximal_independent_set(G.subgraph(remaining_nodes))
         remaining_nodes -= nodes
-        for v in nodes:
-            yield v
+        yield from nodes
 
 
 def strategy_connected_sequential_bfs(G, colors):
@@ -190,12 +185,12 @@ def strategy_connected_sequential(G, colors, traversal='bfs'):
     else:
         raise nx.NetworkXError("Please specify one of the strings 'bfs' or"
                                " 'dfs' for connected sequential ordering")
-    for component in nx.connected_component_subgraphs(G):
+    for component in nx.connected_components(G):
         source = arbitrary_element(component)
         # Yield the source node, then all the nodes in the specified
         # traversal order.
         yield source
-        for (_, end) in traverse(component, source):
+        for (_, end) in traverse(G.subgraph(component), source):
             yield end
 
 
@@ -282,18 +277,17 @@ def greedy_color(G, strategy='largest_first', interchange=False):
        * ``'connected_sequential_bfs'``
        * ``'connected_sequential_dfs'``
        * ``'connected_sequential'`` (alias for the previous strategy)
-       * ``'strategy_saturation_largest_first'``
+       * ``'saturation_largest_first'``
        * ``'DSATUR'`` (alias for the previous strategy)
 
     interchange: bool
        Will use the color interchange algorithm described by [3]_ if set
        to ``True``.
 
-       Note that ``strategy_saturation_largest_first`` and
-       ``strategy_independent_set`` do not work with
-       interchange. Furthermore, if you use interchange with your own
-       strategy function, you cannot rely on the values in the
-       ``colors`` argument.
+       Note that ``saturation_largest_first`` and ``independent_set``
+       do not work with interchange. Furthermore, if you use
+       interchange with your own strategy function, you cannot rely
+       on the values in the ``colors`` argument.
 
     Returns
     -------
@@ -310,8 +304,8 @@ def greedy_color(G, strategy='largest_first', interchange=False):
     Raises
     ------
     NetworkXPointlessConcept
-        If ``strategy`` is ``strategy_saturation_largest_first`` or
-        ``strategy_independent_set`` and ``interchange`` is ``True``.
+        If ``strategy`` is ``saturation_largest_first`` or
+        ``independent_set`` and ``interchange`` is ``True``.
 
     References
     ----------
@@ -332,16 +326,16 @@ def greedy_color(G, strategy='largest_first', interchange=False):
     strategy = STRATEGIES.get(strategy, strategy)
     if not callable(strategy):
         raise nx.NetworkXError('strategy must be callable or a valid string. '
-                               '{0} not valid.'.format(strategy))
+                               f'{strategy} not valid.')
     # Perform some validation on the arguments before executing any
     # strategy functions.
     if interchange:
         if strategy is strategy_independent_set:
-            msg = 'interchange cannot be used with strategy_independent_set'
+            msg = 'interchange cannot be used with independent_set'
             raise nx.NetworkXPointlessConcept(msg)
         if strategy is strategy_saturation_largest_first:
             msg = ('interchange cannot be used with'
-                   ' strategy_saturation_largest_first')
+                   ' saturation_largest_first')
             raise nx.NetworkXPointlessConcept(msg)
     colors = {}
     nodes = strategy(G, colors)

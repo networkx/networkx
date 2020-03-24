@@ -2,11 +2,6 @@
 Min-heaps.
 """
 
-__author__ = """ysitu <ysitu@users.noreply.github.com>"""
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
-
 from heapq import heappop, heappush
 from itertools import count
 import networkx as nx
@@ -14,7 +9,7 @@ import networkx as nx
 __all__ = ['MinHeap', 'PairingHeap', 'BinaryHeap']
 
 
-class MinHeap(object):
+class MinHeap:
     """Base class for min-heaps.
 
     A MinHeap stores a collection of key-value pairs ordered by their values.
@@ -22,7 +17,7 @@ class MinHeap(object):
     value in an existing pair and deleting the minimum pair.
     """
 
-    class _Item(object):
+    class _Item:
         """Used by subclassess to represent a key-value pair.
         """
         __slots__ = ('key', 'value')
@@ -70,7 +65,7 @@ class MinHeap(object):
         raise NotImplementedError
 
     def get(self, key, default=None):
-        """Return the value associated with a key.
+        """Returns the value associated with a key.
 
         Parameters
         ----------
@@ -112,22 +107,22 @@ class MinHeap(object):
         raise NotImplementedError
 
     def __nonzero__(self):
-        """Return whether the heap if empty.
+        """Returns whether the heap if empty.
         """
         return bool(self._dict)
 
     def __bool__(self):
-        """Return whether the heap if empty.
+        """Returns whether the heap if empty.
         """
         return bool(self._dict)
 
     def __len__(self):
-        """Return the number of key-value pairs in the heap.
+        """Returns the number of key-value pairs in the heap.
         """
         return len(self._dict)
 
     def __contains__(self, key):
-        """Return whether a key exists in the heap.
+        """Returns whether a key exists in the heap.
 
         Parameters
         ----------
@@ -172,7 +167,7 @@ class PairingHeap(MinHeap):
     def __init__(self):
         """Initialize a pairing heap.
         """
-        super(PairingHeap, self).__init__()
+        super().__init__()
         self._root = None
 
     @_inherit_doc(MinHeap)
@@ -308,7 +303,7 @@ class BinaryHeap(MinHeap):
     def __init__(self):
         """Initialize a binary heap.
         """
-        super(BinaryHeap, self).__init__()
+        super().__init__()
         self._heap = []
         self._count = count()
 

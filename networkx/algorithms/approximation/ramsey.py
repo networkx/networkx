@@ -1,16 +1,10 @@
-# -*- coding: utf-8 -*-
 """
 Ramsey numbers.
 """
-#   Copyright (C) 2011 by
-#   Nicholas Mancuso <nick.mancuso@gmail.com>
-#   All rights reserved.
-#   BSD license.
 import networkx as nx
 from ...utils import arbitrary_element
 
 __all__ = ["ramsey_R2"]
-__author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
 
 def ramsey_R2(G):

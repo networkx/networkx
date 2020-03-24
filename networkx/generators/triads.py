@@ -1,14 +1,7 @@
-# triads.py - generators for triad graphs
-#
-# Copyright 2015 NetworkX developers.
+# See https://github.com/networkx/networkx/pull/1474
 # Copyright 2011 Reya Group <http://www.reyagroup.com>
 # Copyright 2011 Alex Levenson <alex@isnotinvain.com>
 # Copyright 2011 Diederik van Liere <diederik.vanliere@rotman.utoronto.ca>
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions that generate the triad graphs, that is, the possible
 digraphs on three nodes.
 
@@ -62,7 +55,7 @@ def triad_graph(triad_name):
 
     Raises
     ------
-    :exc:`ValueError`
+    ValueError
         If `triad_name` is not the name of a triad.
 
     See also
@@ -71,8 +64,8 @@ def triad_graph(triad_name):
 
     """
     if triad_name not in TRIAD_EDGES:
-        raise ValueError('unknown triad name "{}"; use one of the triad names'
-                         ' in the TRIAD_NAMES constant'.format(triad_name))
+        raise ValueError(f'unknown triad name "{triad_name}"; use one of the triad names'
+                         ' in the TRIAD_NAMES constant')
     G = DiGraph()
     G.add_nodes_from('abc')
     G.add_edges_from(TRIAD_EDGES[triad_name])

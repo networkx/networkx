@@ -1,21 +1,10 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Christopher Ellison
 """Attracting components."""
-import warnings as _warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['number_attracting_components',
            'attracting_components',
            'is_attracting_component',
-           'attracting_component_subgraphs',
            ]
 
 
@@ -31,6 +20,9 @@ def attracting_components(G):
     nodes.  If a random walker enters the attractor containing the node, then
     the node will be visited infinitely often.
 
+    To obtain induced subgraphs on each component use:
+    ``(G.subgraph(c).copy() for c in attracting_components(G))``
+
     Parameters
     ----------
     G : DiGraph, MultiDiGraph
@@ -43,7 +35,7 @@ def attracting_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is undirected.
 
     See Also
@@ -75,7 +67,7 @@ def number_attracting_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is undirected.
 
     See Also
@@ -103,7 +95,7 @@ def is_attracting_component(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is undirected.
 
     See Also
@@ -116,19 +108,3 @@ def is_attracting_component(G):
     if len(ac) == 1:
         return len(ac[0]) == len(G)
     return False
-
-
-@not_implemented_for('undirected')
-def attracting_component_subgraphs(G, copy=True):
-    """DEPRECATED: Use ``(G.subgraph(c) for c in attracting_components(G))``
-
-           Or ``(G.subgraph(c).copy() for c in attracting_components(G))``
-    """
-    msg = "attracting_component_subgraphs is deprecated and will be removed" \
-        "in 2.2. Use (G.subgraph(c).copy() for c in attracting_components(G))"
-    _warnings.warn(msg, DeprecationWarning)
-    for c in attracting_components(G):
-        if copy:
-            yield G.subgraph(c).copy()
-        else:
-            yield G.subgraph(c)

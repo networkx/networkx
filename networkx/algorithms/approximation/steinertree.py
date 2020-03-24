@@ -1,4 +1,4 @@
-from itertools import combinations, chain
+from itertools import chain
 
 from networkx.utils import pairwise, not_implemented_for
 import networkx as nx
@@ -46,6 +46,7 @@ def metric_closure(G, weight='weight'):
     return M
 
 
+@not_implemented_for('multigraph')
 @not_implemented_for('directed')
 def steiner_tree(G, terminal_nodes, weight='weight'):
     """ Return an approximation to the minimum Steiner tree of a graph.

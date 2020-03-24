@@ -1,24 +1,12 @@
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov),
-#          Pieter Swart (swart@lanl.gov),
-#          Dan Schult(dschult@colgate.edu)
 """
 """
-from collections import Mapping
-import networkx as nx
+from collections.abc import Mapping
 
 __all__ = ['AtlasView', 'AdjacencyView', 'MultiAdjacencyView',
            'UnionAtlas', 'UnionAdjacency',
            'UnionMultiInner', 'UnionMultiAdjacency',
            'FilterAtlas', 'FilterAdjacency',
            'FilterMultiInner', 'FilterMultiAdjacency',
-           'ReadOnlyGraph',
            ]
 
 
@@ -61,7 +49,7 @@ class AtlasView(Mapping):
         return str(self._atlas)  # {nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self._atlas)
+        return f'{self.__class__.__name__}({self._atlas!r})'
 
 
 class AdjacencyView(AtlasView):
@@ -157,7 +145,7 @@ class UnionAtlas(Mapping):
         return str({nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
-        return '%s(%r, %r)' % (self.__class__.__name__, self._succ, self._pred)
+        return f'{self.__class__.__name__}({self._succ!r}, {self._pred!r})'
 
 
 class UnionAdjacency(Mapping):
@@ -208,7 +196,7 @@ class UnionAdjacency(Mapping):
         return str({nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
-        return '%s(%r, %r)' % (self.__class__.__name__, self._succ, self._pred)
+        return f'{self.__class__.__name__}({self._succ!r}, {self._pred!r})'
 
 
 class UnionMultiInner(UnionAtlas):
@@ -259,27 +247,6 @@ class UnionMultiAdjacency(UnionAdjacency):
         return UnionMultiInner(self._succ[node], self._pred[node])
 
 
-class ReadOnlyGraph(object):
-    """A Mixin Class to mask the write methods of a graph class."""
-
-    def not_allowed(self, *args, **kwds):
-        msg = "SubGraph Views are readonly. Mutations not allowed"
-        raise nx.NetworkXError(msg)
-
-    add_node = not_allowed
-    remove_node = not_allowed
-    add_nodes_from = not_allowed
-    remove_nodes_from = not_allowed
-
-    add_edge = not_allowed
-    remove_edge = not_allowed
-    add_edges_from = not_allowed
-    add_weighted_edges_from = not_allowed
-    remove_edges_from = not_allowed
-
-    clear = not_allowed
-
-
 class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
     def __init__(self, d, NODE_OK):
         self._atlas = d
@@ -300,7 +267,7 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
     def __getitem__(self, key):
         if key in self._atlas and self.NODE_OK(key):
             return self._atlas[key]
-        raise KeyError("Key {} not found".format(key))
+        raise KeyError(f"Key {key} not found")
 
     def copy(self):
         try:  # check that NODE_OK has attr 'nodes'
@@ -317,8 +284,7 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
         return str({nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
-        return '%s(%r, %r)' % (self.__class__.__name__, self._atlas,
-                               self.NODE_OK)
+        return f"{self.__class__.__name__}({self._atlas!r}, {self.NODE_OK!r})"
 
 
 class FilterAdjacency(Mapping):   # edgedict
@@ -344,7 +310,7 @@ class FilterAdjacency(Mapping):   # edgedict
             def new_node_ok(nbr):
                 return self.NODE_OK(nbr) and self.EDGE_OK(node, nbr)
             return FilterAtlas(self._atlas[node], new_node_ok)
-        raise KeyError("Key {} not found".format(node))
+        raise KeyError(f"Key {node} not found")
 
     def copy(self):
         try:  # check that NODE_OK has attr 'nodes'
@@ -364,8 +330,8 @@ class FilterAdjacency(Mapping):   # edgedict
         return str({nbr: self[nbr] for nbr in self})
 
     def __repr__(self):
-        return '%s(%r, %r, %r)' % (self.__class__.__name__, self._atlas,
-                                   self.NODE_OK, self.EDGE_OK)
+        name = self.__class__.__name__
+        return f"{name}({self._atlas!r}, {self.NODE_OK!r}, {self.EDGE_OK!r})"
 
 
 class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
@@ -392,7 +358,7 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
             def new_node_ok(key):
                 return self.EDGE_OK(nbr, key)
             return FilterAtlas(self._atlas[nbr], new_node_ok)
-        raise KeyError("Key {} not found".format(nbr))
+        raise KeyError(f"Key {nbr} not found")
 
     def copy(self):
         try:  # check that NODE_OK has attr 'nodes'
@@ -413,7 +379,7 @@ class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
             def edge_ok(nbr, key):
                 return self.NODE_OK(nbr) and self.EDGE_OK(node, nbr, key)
             return FilterMultiInner(self._atlas[node], self.NODE_OK, edge_ok)
-        raise KeyError("Key {} not found".format(node))
+        raise KeyError(f"Key {node} not found")
 
     def copy(self):
         try:  # check that NODE_OK has attr 'nodes'

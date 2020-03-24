@@ -2,7 +2,7 @@
 
 set -e
 
-section "Script section"
+section "script section"
 
 export NX_SOURCE=$PWD
 export NX_INSTALL=$(pip show networkx | grep Location | awk '{print $2"/networkx"}')
@@ -11,7 +11,6 @@ export NX_INSTALL=$(pip show networkx | grep Location | awk '{print $2"/networkx
 # package (except during the report).  So to restrict coverage, we must
 # inform coverage through the .coveragerc file.
 cp .coveragerc $NX_INSTALL
-cp setup.cfg $NX_INSTALL
 
 # Move to new directory so that networkx is not imported from repository.
 # Why? Because we want the tests to make sure that NetworkX was installed
@@ -22,16 +21,16 @@ cp setup.cfg $NX_INSTALL
 cd $NX_INSTALL
 printenv PWD
 
-# Run nosetests.
+# Run pytest.
 if [[ "${REPORT_COVERAGE}" == 1 ]]; then
-  nosetests --verbosity=2 --with-ignore-docstrings --with-coverage --cover-package=networkx
+  pytest --cov=networkx --runslow --doctest-modules --pyargs networkx
   cp -a .coverage $NX_SOURCE
 else
-  nosetests --verbosity=2 --with-ignore-docstrings
+  pytest --doctest-modules --durations=10 --pyargs networkx
 fi
 
 cd $NX_SOURCE
 
-section_end "Script section"
+section_end "script section"
 
 set +e

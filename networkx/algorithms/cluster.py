@@ -1,25 +1,10 @@
-# -*- coding: utf-8 -*-
-#
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """Algorithms to characterize the number of triangles in a graph."""
-from __future__ import division
 
 from itertools import chain
 from itertools import combinations
 from collections import Counter
 
-import networkx as nx
 from networkx.utils import not_implemented_for
-
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Dan Schult (dschult@colgate.edu)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Jordi Torrents <jtorrents@milnou.net>'])
 
 __all__ = ['triangles', 'average_clustering', 'clustering', 'transitivity',
            'square_clustering', 'generalized_degree']
@@ -142,18 +127,18 @@ def _directed_triangles_and_degree_iter(G, nodes=None):
         for j in chain(ipreds, isuccs):
             jpreds = set(G._pred[j]) - {j}
             jsuccs = set(G._succ[j]) - {j}
-            directed_triangles += sum((1 for k in
+            directed_triangles += sum(1 for k in
                                        chain((ipreds & jpreds),
                                              (ipreds & jsuccs),
                                              (isuccs & jpreds),
-                                             (isuccs & jsuccs))))
+                                             (isuccs & jsuccs)))
         dtotal = len(ipreds) + len(isuccs)
         dbidirectional = len(ipreds & isuccs)
         yield (i, dtotal, dbidirectional, directed_triangles)
 
 
 @not_implemented_for('multigraph')
-def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight = 'weight'):
+def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight='weight'):
     """ Return an iterator of
     (node, total_degree, reciprocal_degree, directed_weighted_triangles).
 
@@ -213,7 +198,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
 
        C = \frac{1}{n}\sum_{v \in G} c_v,
 
-    where `n` is the number of nodes in `G`.
+    where :math:`n` is the number of nodes in `G`.
 
     Parameters
     ----------
@@ -266,15 +251,15 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
 def clustering(G, nodes=None, weight=None):
     r"""Compute the clustering coefficient for nodes.
 
-    For unweighted graphs, the clustering of a node `u`
+    For unweighted graphs, the clustering of a node :math:`u`
     is the fraction of possible triangles through that node that exist,
 
     .. math::
 
       c_u = \frac{2 T(u)}{deg(u)(deg(u)-1)},
 
-    where `T(u)` is the number of triangles through node `u` and
-    `deg(u)` is the degree of `u`.
+    where :math:`T(u)` is the number of triangles through node :math:`u` and
+    :math:`deg(u)` is the degree of :math:`u`.
 
     For weighted graphs, there are several ways to define clustering [1]_.
     the one used here is defined
@@ -283,12 +268,12 @@ def clustering(G, nodes=None, weight=None):
     .. math::
 
        c_u = \frac{1}{deg(u)(deg(u)-1))}
-             \sum_{uv} (\hat{w}_{uv} \hat{w}_{uw} \hat{w}_{vw})^{1/3}.
+             \sum_{vw} (\hat{w}_{uv} \hat{w}_{uw} \hat{w}_{vw})^{1/3}.
 
-    The edge weights `\hat{w}_{uv}` are normalized by the maximum weight in the
-    network `\hat{w}_{uv} = w_{uv}/\max(w)`.
+    The edge weights :math:`\hat{w}_{uv}` are normalized by the maximum weight
+    in the network :math:`\hat{w}_{uv} = w_{uv}/\max(w)`.
 
-    The value of `c_u` is assigned to 0 if `deg(u) < 2`.
+    The value of :math:`c_u` is assigned to 0 if :math:`deg(u) < 2`.
 
     For directed graphs, the clustering is similarly defined as the fraction
     of all possible directed triangles or geometric average of the subgraph
@@ -299,9 +284,10 @@ def clustering(G, nodes=None, weight=None):
        c_u = \frac{1}{deg^{tot}(u)(deg^{tot}(u)-1) - 2deg^{\leftrightarrow}(u)}
              T(u),
 
-    where `T(u)` is the number of directed triangles through node `u`,
-    `deg^{tot}(u)` is the sum of in degree and out degree of `u` and
-    `deg^{\leftrightarrow}(u)` is the reciprocal degree of `u`.
+    where :math:`T(u)` is the number of directed triangles through node
+    :math:`u`, :math:`deg^{tot}(u)` is the sum of in degree and out degree of
+    :math:`u` and :math:`deg^{\leftrightarrow}(u)` is the reciprocal degree of
+    :math:`u`.
 
     Parameters
     ----------
@@ -412,10 +398,11 @@ def square_clustering(G, nodes=None):
        \sum_{w=u+1}^{k_v} q_v(u,w) }{ \sum_{u=1}^{k_v}
        \sum_{w=u+1}^{k_v} [a_v(u,w) + q_v(u,w)]},
 
-    where `q_v(u,w)` are the number of common neighbors of `u` and `w`
-    other than `v` (ie squares), and
-    `a_v(u,w) = (k_u - (1+q_v(u,w)+\theta_{uv}))(k_w - (1+q_v(u,w)+\theta_{uw}))`,
-    where `\theta_{uw} = 1` if `u` and `w` are connected and 0 otherwise.
+    where :math:`q_v(u,w)` are the number of common neighbors of :math:`u` and
+    :math:`w` other than :math:`v` (ie squares), and :math:`a_v(u,w) = (k_u -
+    (1+q_v(u,w)+\theta_{uv}))(k_w - (1+q_v(u,w)+\theta_{uw}))`, where
+    :math:`\theta_{uw} = 1` if :math:`u` and :math:`w` are connected and 0
+    otherwise.
 
     Parameters
     ----------
@@ -439,8 +426,8 @@ def square_clustering(G, nodes=None):
 
     Notes
     -----
-    While `C_3(v)` (triangle clustering) gives the probability that
-    two neighbors of node v are connected with each other, `C_4(v)` is
+    While :math:`C_3(v)` (triangle clustering) gives the probability that
+    two neighbors of node v are connected with each other, :math:`C_4(v)` is
     the probability that two neighbors of node v share a common
     neighbor different from v. This algorithm can be applied to both
     bipartite and unipartite networks.
@@ -460,7 +447,7 @@ def square_clustering(G, nodes=None):
         clustering[v] = 0
         potential = 0
         for u, w in combinations(G[v], 2):
-            squares = len((set(G[u]) & set(G[w])) - set([v]))
+            squares = len((set(G[u]) & set(G[w])) - {v})
             clustering[v] += squares
             degm = squares + 1
             if w in G[u]:
@@ -476,14 +463,15 @@ def square_clustering(G, nodes=None):
 
 @not_implemented_for('directed')
 def generalized_degree(G, nodes=None):
-    """ Compute the generalized degree for nodes.
+    r""" Compute the generalized degree for nodes.
 
     For each node, the generalized degree shows how many edges of given
     triangle multiplicity the node is connected to. The triangle multiplicity
     of an edge is the number of triangles an edge participates in. The
-    generalized degree of node `i` can be written as a vector
-    `\mathbf{k}_i=(k_i^{(0)}, \dotsc, k_i^{(N-2)})` where `k_i^{(j)}` is the
-    number of edges attached to node `i` that participate in `j` triangles.
+    generalized degree of node :math:`i` can be written as a vector
+    :math:`\mathbf{k}_i=(k_i^{(0)}, \dotsc, k_i^{(N-2)})` where
+    :math:`k_i^{(j)}` is the number of edges attached to node :math:`i` that
+    participate in :math:`j` triangles.
 
     Parameters
     ----------
@@ -504,8 +492,7 @@ def generalized_degree(G, nodes=None):
     >>> print(nx.generalized_degree(G,0))
     Counter({3: 4})
     >>> print(nx.generalized_degree(G))
-    {0: Counter({3: 4}), 1: Counter({3: 4}), 2: Counter({3: 4}), \
-3: Counter({3: 4}), 4: Counter({3: 4})}
+    {0: Counter({3: 4}), 1: Counter({3: 4}), 2: Counter({3: 4}), 3: Counter({3: 4}), 4: Counter({3: 4})}
 
     To recover the number of triangles attached to a node:
 
@@ -521,9 +508,9 @@ def generalized_degree(G, nodes=None):
     The return value does not include a `zero` entry if no edges of a
     particular triangle multiplicity are present.
 
-    The number of triangles node `i` is attached to can be recovered from
-    the generalized degree `\mathbf{k}_i=(k_i^{(0)}, \dotsc, k_i^{(N-2)})` by
-    `(k_i^{(1)}+2k_i^{(2)}+\dotsc +(N-2)k_i^{(N-2)})/2`.
+    The number of triangles node :math:`i` is attached to can be recovered from
+    the generalized degree :math:`\mathbf{k}_i=(k_i^{(0)}, \dotsc,
+    k_i^{(N-2)})` by :math:`(k_i^{(1)}+2k_i^{(2)}+\dotsc +(N-2)k_i^{(N-2)})/2`.
 
     References
     ----------

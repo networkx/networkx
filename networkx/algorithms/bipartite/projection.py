@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2017-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg <aric.hagberg@gmail.com>
-#          Jordi Torrents <jtorrents@milnou.net>
 """One-mode (unipartite) projections of bipartite graphs."""
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -108,7 +98,7 @@ def projected_graph(B, nodes, multigraph=False):
     G.graph.update(B.graph)
     G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     for u in nodes:
-        nbrs2 = set(v for nbr in B[u] for v in B[nbr] if v != u)
+        nbrs2 = {v for nbr in B[u] for v in B[nbr] if v != u}
         if multigraph:
             for n in nbrs2:
                 if directed:
@@ -144,8 +134,8 @@ def weighted_projected_graph(B, nodes, ratio=False):
 
     ratio: Bool (default=False)
         If True, edge weight is the ratio between actual shared neighbors
-        and possible shared neighbors. If False, edges weight is the number
-        of shared neighbors.
+        and maximum possible shared neighbors (i.e., the size of the other
+        node set). If False, edges weight is the number of shared neighbors.
 
     Returns
     -------
@@ -200,7 +190,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
     n_top = float(len(B) - len(nodes))
     for u in nodes:
         unbrs = set(B[u])
-        nbrs2 = set((n for nbr in unbrs for n in B[nbr])) - set([u])
+        nbrs2 = {n for nbr in unbrs for n in B[nbr]} - {u}
         for v in nbrs2:
             vnbrs = set(pred[v])
             common = unbrs & vnbrs
@@ -255,7 +245,7 @@ def collaboration_weighted_projected_graph(B, nodes):
     >>> G = bipartite.collaboration_weighted_projected_graph(B, [0, 2, 4, 5])
     >>> list(G)
     [0, 2, 4, 5]
-    >>> for edge in G.edges(data=True): print(edge)
+    >>> for edge in sorted(G.edges(data=True)): print(edge)
     ...
     (0, 2, {'weight': 0.5})
     (0, 5, {'weight': 0.5})
@@ -296,7 +286,7 @@ def collaboration_weighted_projected_graph(B, nodes):
     G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     for u in nodes:
         unbrs = set(B[u])
-        nbrs2 = set(n for nbr in unbrs for n in B[nbr] if n != u)
+        nbrs2 = {n for nbr in unbrs for n in B[nbr] if n != u}
         for v in nbrs2:
             vnbrs = set(pred[v])
             common_degree = (len(B[n]) for n in unbrs & vnbrs)
@@ -393,7 +383,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     for u in nodes:
         unbrs = set(B[u])
-        nbrs2 = set((n for nbr in unbrs for n in B[nbr])) - set([u])
+        nbrs2 = {n for nbr in unbrs for n in B[nbr]} - {u}
         for v in nbrs2:
             vnbrs = set(pred[v])
             if jaccard:
@@ -454,7 +444,7 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     >>> # Add some arbitrary weight to the edges
     >>> for i,(u,v) in enumerate(B.edges()):
     ...     B.edges[u, v]['weight'] = i + 1
-    ... 
+    ...
     >>> for edge in B.edges(data=True):
     ...     print(edge)
     ...
@@ -506,7 +496,7 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     G.graph.update(B.graph)
     G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     for u in nodes:
-        nbrs2 = set((n for nbr in set(B[u]) for n in B[nbr])) - set([u])
+        nbrs2 = {n for nbr in set(B[u]) for n in B[nbr]} - {u}
         for v in nbrs2:
             weight = weight_function(B, u, v)
             G.add_edge(u, v, weight=weight)

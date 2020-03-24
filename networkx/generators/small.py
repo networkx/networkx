@@ -1,15 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 Various small and named graphs, together with some compact generators.
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 __all__ = ['make_small_graph',
            'LCF_graph',
@@ -39,10 +31,6 @@ __all__ = ['make_small_graph',
 import networkx as nx
 from networkx.generators.classic import empty_graph, cycle_graph, path_graph, complete_graph
 from networkx.exception import NetworkXError
-
-#------------------------------------------------------------------------------
-#   Tools for creating small graphs
-#------------------------------------------------------------------------------
 
 
 def make_small_undirected_graph(graph_description, create_using=None):
@@ -87,6 +75,10 @@ def make_small_graph(graph_description, create_using=None):
 
     Use the create_using argument to choose the graph class/type.
     """
+
+    if graph_description[0] not in ("adjacencylist", "edgelist"):
+        raise NetworkXError("ltype must be either adjacencylist or edgelist")
+
     ltype = graph_description[0]
     name = graph_description[1]
     n = graph_description[2]
@@ -172,12 +164,12 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
     return G
 
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 #   Various small and named graphs
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 def bull_graph(create_using=None):
-    """Return the Bull graph. """
+    """Returns the Bull graph. """
     description = [
         "adjacencylist",
         "Bull Graph",
@@ -189,7 +181,7 @@ def bull_graph(create_using=None):
 
 
 def chvatal_graph(create_using=None):
-    """Return the Chvátal graph."""
+    """Returns the Chvátal graph."""
     description = [
         "adjacencylist",
         "Chvatal Graph",
@@ -203,7 +195,7 @@ def chvatal_graph(create_using=None):
 
 
 def cubical_graph(create_using=None):
-    """Return the 3-regular Platonic Cubical graph."""
+    """Returns the 3-regular Platonic Cubical graph."""
     description = [
         "adjacencylist",
         "Platonic Cubical Graph",
@@ -223,7 +215,7 @@ def desargues_graph(create_using=None):
 
 
 def diamond_graph(create_using=None):
-    """Return the Diamond graph. """
+    """Returns the Diamond graph. """
     description = [
         "adjacencylist",
         "Diamond Graph",
@@ -242,7 +234,7 @@ def dodecahedral_graph(create_using=None):
 
 
 def frucht_graph(create_using=None):
-    """Return the Frucht Graph.
+    """Returns the Frucht Graph.
 
     The Frucht Graph is the smallest cubical graph whose
     automorphism group consists only of the identity element.
@@ -281,7 +273,7 @@ def hoffman_singleton_graph():
 
 
 def house_graph(create_using=None):
-    """Return the House graph (square with triangle on top)."""
+    """Returns the House graph (square with triangle on top)."""
     description = [
         "adjacencylist",
         "House Graph",
@@ -293,7 +285,7 @@ def house_graph(create_using=None):
 
 
 def house_x_graph(create_using=None):
-    """Return the House graph with a cross inside the house square."""
+    """Returns the House graph with a cross inside the house square."""
     description = [
         "adjacencylist",
         "House-with-X-inside Graph",
@@ -305,7 +297,7 @@ def house_x_graph(create_using=None):
 
 
 def icosahedral_graph(create_using=None):
-    """Return the Platonic Icosahedral graph."""
+    """Returns the Platonic Icosahedral graph."""
     description = [
         "adjacencylist",
         "Platonic Icosahedral Graph",
@@ -341,14 +333,14 @@ def krackhardt_kite_graph(create_using=None):
 
 
 def moebius_kantor_graph(create_using=None):
-    """Return the Moebius-Kantor graph."""
+    """Returns the Moebius-Kantor graph."""
     G = LCF_graph(16, [5, -5], 8, create_using)
     G.name = "Moebius-Kantor Graph"
     return G
 
 
 def octahedral_graph(create_using=None):
-    """Return the Platonic Octahedral graph."""
+    """Returns the Platonic Octahedral graph."""
     description = [
         "adjacencylist",
         "Platonic Octahedral Graph",
@@ -367,7 +359,7 @@ def pappus_graph():
 
 
 def petersen_graph(create_using=None):
-    """Return the Petersen graph."""
+    """Returns the Petersen graph."""
     description = [
         "adjacencylist",
         "Petersen Graph",
@@ -405,7 +397,7 @@ def tetrahedral_graph(create_using=None):
 
 
 def truncated_cube_graph(create_using=None):
-    """Return the skeleton of the truncated cube."""
+    """Returns the skeleton of the truncated cube."""
     description = [
         "adjacencylist",
         "Truncated Cube Graph",
@@ -422,7 +414,7 @@ def truncated_cube_graph(create_using=None):
 
 
 def truncated_tetrahedron_graph(create_using=None):
-    """Return the skeleton of the truncated Platonic tetrahedron."""
+    """Returns the skeleton of the truncated Platonic tetrahedron."""
     G = path_graph(12, create_using)
 #    G.add_edges_from([(1,3),(1,10),(2,7),(4,12),(5,12),(6,8),(9,11)])
     G.add_edges_from([(0, 2), (0, 9), (1, 6), (3, 11), (4, 11), (5, 7), (8, 10)])
@@ -431,7 +423,7 @@ def truncated_tetrahedron_graph(create_using=None):
 
 
 def tutte_graph(create_using=None):
-    """Return the Tutte graph."""
+    """Returns the Tutte graph."""
     description = [
         "adjacencylist",
         "Tutte's Graph",

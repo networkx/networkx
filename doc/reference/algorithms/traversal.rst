@@ -49,3 +49,11 @@ Depth First Search on Edges
    :toctree: generated/
 
    edge_dfs
+
+Breadth First Search on Edges
+-----------------------------
+.. automodule:: networkx.algorithms.traversal.edgebfs
+.. autosummary::
+   :toctree: generated/
+
+   edge_bfs

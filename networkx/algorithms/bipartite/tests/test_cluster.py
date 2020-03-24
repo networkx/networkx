@@ -1,5 +1,5 @@
 import networkx as nx
-from nose.tools import *
+import pytest
 from networkx.algorithms.bipartite.cluster import cc_dot, cc_min, cc_max
 import networkx.algorithms.bipartite as bipartite
 
@@ -25,55 +25,55 @@ def test_star_graph():
     G = nx.star_graph(3)
     # all modes are the same
     answer = {0: 0, 1: 1, 2: 1, 3: 1}
-    assert_equal(bipartite.clustering(G, mode='dot'), answer)
-    assert_equal(bipartite.clustering(G, mode='min'), answer)
-    assert_equal(bipartite.clustering(G, mode='max'), answer)
+    assert bipartite.clustering(G, mode='dot') == answer
+    assert bipartite.clustering(G, mode='min') == answer
+    assert bipartite.clustering(G, mode='max') == answer
 
 
-@raises(nx.NetworkXError)
 def test_not_bipartite():
-    bipartite.clustering(nx.complete_graph(4))
+    with pytest.raises(nx.NetworkXError):
+        bipartite.clustering(nx.complete_graph(4))
 
 
-@raises(nx.NetworkXError)
 def test_bad_mode():
-    bipartite.clustering(nx.path_graph(4), mode='foo')
+    with pytest.raises(nx.NetworkXError):
+        bipartite.clustering(nx.path_graph(4), mode='foo')
 
 
 def test_path_graph():
     G = nx.path_graph(4)
     answer = {0: 0.5, 1: 0.5, 2: 0.5, 3: 0.5}
-    assert_equal(bipartite.clustering(G, mode='dot'), answer)
-    assert_equal(bipartite.clustering(G, mode='max'), answer)
+    assert bipartite.clustering(G, mode='dot') == answer
+    assert bipartite.clustering(G, mode='max') == answer
     answer = {0: 1, 1: 1, 2: 1, 3: 1}
-    assert_equal(bipartite.clustering(G, mode='min'), answer)
+    assert bipartite.clustering(G, mode='min') == answer
 
 
 def test_average_path_graph():
     G = nx.path_graph(4)
-    assert_equal(bipartite.average_clustering(G, mode='dot'), 0.5)
-    assert_equal(bipartite.average_clustering(G, mode='max'), 0.5)
-    assert_equal(bipartite.average_clustering(G, mode='min'), 1)
+    assert bipartite.average_clustering(G, mode='dot') == 0.5
+    assert bipartite.average_clustering(G, mode='max') == 0.5
+    assert bipartite.average_clustering(G, mode='min') == 1
 
 
 def test_ra_clustering_davis():
     G = nx.davis_southern_women_graph()
     cc4 = round(bipartite.robins_alexander_clustering(G), 3)
-    assert_equal(cc4, 0.468)
+    assert cc4 == 0.468
 
 
 def test_ra_clustering_square():
     G = nx.path_graph(4)
     G.add_edge(0, 3)
-    assert_equal(bipartite.robins_alexander_clustering(G), 1.0)
+    assert bipartite.robins_alexander_clustering(G) == 1.0
 
 
 def test_ra_clustering_zero():
     G = nx.Graph()
-    assert_equal(bipartite.robins_alexander_clustering(G), 0)
+    assert bipartite.robins_alexander_clustering(G) == 0
     G.add_nodes_from(range(4))
-    assert_equal(bipartite.robins_alexander_clustering(G), 0)
+    assert bipartite.robins_alexander_clustering(G) == 0
     G.add_edges_from([(0, 1), (2, 3), (3, 4)])
-    assert_equal(bipartite.robins_alexander_clustering(G), 0)
+    assert bipartite.robins_alexander_clustering(G) == 0
     G.add_edge(1, 2)
-    assert_equal(bipartite.robins_alexander_clustering(G), 0)
+    assert bipartite.robins_alexander_clustering(G) == 0

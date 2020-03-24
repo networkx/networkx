@@ -31,7 +31,7 @@ def flow_matrix_row(G, weight=None, dtype=float, solver='lu'):
 # Class to compute the inverse laplacian only for specified rows
 # Allows computation of the current-flow matrix without storing entire
 # inverse laplacian matrix
-class InverseLaplacian(object):
+class InverseLaplacian:
     def __init__(self, L, width=None, dtype=None):
         global np
         import numpy as np
@@ -50,10 +50,10 @@ class InverseLaplacian(object):
         pass
 
     def solve(self, r):
-        raise("Implement solver")
+        raise nx.NetworkXError("Implement solver")
 
     def solve_inverse(self, r):
-        raise("Implement solver")
+        raise nx.NetworkXError("Implement solver")
 
     def get_rows(self, r1, r2):
         for r in range(r1, r2 + 1):
@@ -116,13 +116,13 @@ class CGInverseLaplacian(InverseLaplacian):
 
     def solve(self, rhs):
         s = np.zeros(rhs.shape, dtype=self.dtype)
-        s[1:] = linalg.cg(self.L1, rhs[1:], M=self.M)[0]
+        s[1:] = linalg.cg(self.L1, rhs[1:], M=self.M, atol=0)[0]
         return s
 
     def solve_inverse(self, r):
         rhs = np.zeros(self.n, self.dtype)
         rhs[r] = 1
-        return linalg.cg(self.L1, rhs[1:], M=self.M)[0]
+        return linalg.cg(self.L1, rhs[1:], M=self.M, atol=0)[0]
 
 
 # graph laplacian, sparse version, will move to linalg/laplacianmatrix.py

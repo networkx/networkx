@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-# bridges.py - bridge-finding algorithms
-#
-# Copyright 2004-2018 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Bridge-finding algorithms."""
 from itertools import chain
 

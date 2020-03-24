@@ -1,24 +1,16 @@
-# coding=utf8
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """Betweenness centrality measures."""
-from __future__ import division
 from heapq import heappush, heappop
 from itertools import count
-import random
 
-import networkx as nx
+from networkx.utils import py_random_state
+from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['betweenness_centrality', 'edge_betweenness_centrality',
            'edge_betweenness']
 
 
+@py_random_state(5)
+@not_implemented_for('multigraph')
 def betweenness_centrality(G, k=None, normalized=True, weight=None,
                            endpoints=False, seed=None):
     r"""Compute the shortest-path betweenness centrality for nodes.
@@ -58,6 +50,11 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
     endpoints : bool, optional
       If True include the endpoints in the shortest path counts.
 
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+        Note that this is only used if k is not None.
+
     Returns
     -------
     nodes : dictionary
@@ -81,6 +78,22 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
     For weighted graphs the edge weights must be greater than zero.
     Zero edge weights can produce an infinite number of equal length
     paths between pairs of nodes.
+
+    The total number of paths between source and target is counted
+    differently for directed and undirected graphs. Directed paths
+    are easy to count. Undirected paths are tricky: should a path
+    from "u" to "v" count as 1 undirected path or as 2 directed paths?
+
+    For betweenness_centrality we report the number of undirected
+    paths when G is undirected.
+
+    For betweenness_centrality_subset the reporting is different.
+    If the source and target subsets are the same, then we want
+    to count undirected paths. But if the source and target subsets
+    differ -- for example, if sources is {0} and targets is {1},
+    then we are only counting the paths in one direction. They are
+    undirected paths but we are counting them in a directed way.
+    To count them as undirected paths, each should count as half a path.
 
     References
     ----------
@@ -106,8 +119,7 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
     if k is None:
         nodes = G
     else:
-        random.seed(seed)
-        nodes = random.sample(G.nodes(), k)
+        nodes = seed.sample(G.nodes(), k)
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS
@@ -125,6 +137,7 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
     return betweenness
 
 
+@py_random_state(4)
 def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
                                 seed=None):
     r"""Compute betweenness centrality for edges.
@@ -158,6 +171,11 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+        Note that this is only used if k is not None.
 
     Returns
     -------
@@ -193,8 +211,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
     if k is None:
         nodes = G
     else:
-        random.seed(seed)
-        nodes = random.sample(G.nodes(), k)
+        nodes = seed.sample(G.nodes(), k)
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS

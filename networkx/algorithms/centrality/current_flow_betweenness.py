@@ -1,28 +1,28 @@
-#    Copyright (C) 2010-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """Current-flow betweenness centrality measures."""
-import random
-
 import networkx as nx
-from networkx.algorithms.centrality.flow_matrix import *
-from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
+from networkx.algorithms.centrality.flow_matrix import (
+    CGInverseLaplacian,
+    flow_matrix_row,
+    FullInverseLaplacian,
+    laplacian_sparse_matrix,
+    SuperLUInverseLaplacian,
+)
+from networkx.utils import (not_implemented_for,
+                            reverse_cuthill_mckee_ordering,
+                            py_random_state)
 
 __all__ = ['current_flow_betweenness_centrality',
            'approximate_current_flow_betweenness_centrality',
            'edge_current_flow_betweenness_centrality']
 
 
+@py_random_state(7)
 @not_implemented_for('directed')
 def approximate_current_flow_betweenness_centrality(G, normalized=True,
                                                     weight=None,
                                                     dtype=float, solver='full',
-                                                    epsilon=0.5, kmax=10000):
+                                                    epsilon=0.5, kmax=10000,
+                                                    seed=None):
     r"""Compute the approximate current-flow betweenness centrality for nodes.
 
     Approximates the current-flow betweenness centrality within absolute
@@ -56,6 +56,10 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
 
     kmax: int
        Maximum number of sample node pairs to use for approximation.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -112,11 +116,11 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     l = 1  # parameter in approximation, adjustable
     k = l * int(np.ceil((cstar / epsilon)**2 * np.log(n)))
     if k > kmax:
-        raise nx.NetworkXError('Number random pairs k>kmax (%d>%d) ' % (k, kmax),
-                               'Increase kmax or epsilon')
+        msg = f"Number random pairs k>kmax ({k}>{kmax}) "
+        raise nx.NetworkXError(msg, 'Increase kmax or epsilon')
     cstar2k = cstar / (2 * k)
     for i in range(k):
-        s, t = random.sample(range(n), 2)
+        s, t = seed.sample(range(n), 2)
         b = np.zeros(n, dtype=dtype)
         b[s] = 1
         b[t] = -1
@@ -132,7 +136,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     else:
         factor = nb / 2.0
     # remap to original node names and "unnormalize" if required
-    return dict((ordering[k], float(v * factor)) for k, v in betweenness.items())
+    return {ordering[k]: float(v * factor) for k, v in betweenness.items()}
 
 
 @not_implemented_for('directed')
@@ -236,14 +240,14 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
         nb = 2.0
     for v in H:
         betweenness[v] = float((betweenness[v] - v) * 2.0 / nb)
-    return dict((ordering[k], v) for k, v in betweenness.items())
+    return {ordering[k]: v for k, v in betweenness.items()}
 
 
 @not_implemented_for('directed')
 def edge_current_flow_betweenness_centrality(G, normalized=True,
                                              weight=None,
                                              dtype=float, solver='full'):
-    """Compute current-flow betweenness centrality for edges.
+    r"""Compute current-flow betweenness centrality for edges.
 
     Current-flow betweenness centrality uses an electrical current
     model for information spreading in contrast to betweenness
@@ -348,15 +352,5 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
             betweenness[e] += (i + 1 - pos[i]) * row[i]
             betweenness[e] += (n - i - pos[i]) * row[i]
         betweenness[e] /= nb
-    return dict(((ordering[s], ordering[t]), float(v))
-                for (s, t), v in betweenness.items())
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import scipy
-    except:
-        raise SkipTest("NumPy not available")
+    return {(ordering[s], ordering[t]): float(v)
+                for (s, t), v in betweenness.items()}

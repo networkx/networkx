@@ -1,18 +1,25 @@
 # After changing this file, check it on:
 #   http://lint.travis-ci.org/
 #
-sudo: false
-
 language: python
 
-cache:
-  directories:
-    - $HOME/.cache/pip
+cache: pip
 
 matrix:
   include:
     - os: linux
-      python: 2.7
+      python: 3.7
+      env:
+      - OPTIONAL_DEPS=1
+      - MINIMUM_REQUIREMENTS=1
+      - REPORT_COVERAGE=1
+      addons:
+        apt:
+          packages:
+          - libgdal-dev
+          - graphviz
+    - os: linux
+      python: 3.7
       env:
       - OPTIONAL_DEPS=1
       - BUILD_DOCS=1
@@ -26,39 +33,10 @@ matrix:
           - texlive-latex-extra
           - latexmk
     - os: linux
-      python: 2.7
-      env:
-      - OPTIONAL_DEPS=1
-      - MINIMUM_REQUIREMENTS=1
-      - REPORT_COVERAGE=1
-      addons:
-        apt:
-          packages:
-          - libgdal-dev
-          - graphviz
-    - os: linux
-      python: 2.7
+      python: 3.7
       env:
       - OPTIONAL_DEPS=1
       - PIP_FLAGS="--pre"
-      addons:
-        apt:
-          packages:
-          - libgdal-dev
-          - graphviz
-    - os: linux
-      python: 3.6
-      env: OPTIONAL_DEPS=1
-      addons:
-        apt:
-          packages:
-          - libgdal-dev
-          - graphviz
-    - os: linux
-      python: 3.6
-      env:
-      - OPTIONAL_DEPS=1
-      - MINIMUM_REQUIREMENTS=1
       addons:
         apt:
           packages:
@@ -68,16 +46,30 @@ matrix:
       osx_image: xcode7.3
       language: generic
       env:
-      - TRAVIS_PYTHON_VERSION=3.6.0
+      - TRAVIS_PYTHON_VERSION=3.6
       - OPTIONAL_DEPS=1
       - OSX_PKG_ENV=miniconda
     - os: osx
       language: generic
-      env: TRAVIS_PYTHON_VERSION=3.6
-    - python: 2.7
-    - python: 3.4
-    - python: 3.5
+      env: TRAVIS_PYTHON_VERSION=3.7
+      cache:
+        # As for now travis caches only "$HOME/.cache/pip"
+        # https://docs.travis-ci.com/user/caching/#pip-cache
+        pip: false
+        directories:
+          - $HOME/Library/Caches/pip
+    - os: osx
+      osx_image: xcode11
+      language: generic
+      env: TRAVIS_PYTHON_VERSION=3.8
     - python: 3.6
+    - python: 3.7
+    - python: 3.8
+      env:
+      - PIP_FLAGS="--pre"
+    - python: pypy3.6-7.1.1
+      env:
+      - MIN_DEPS=1
 
 before_install:
   # prepare the system to install prerequisites or dependencies
@@ -95,7 +87,10 @@ install:
   - pip install --upgrade pip
   - pip install --retries 3 ${PIP_FLAGS} -r requirements.txt
   - if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
+      pip install --retries 3 ${PIP_FLAGS} -r requirements/optional.txt;
       pip install --retries 3 ${PIP_FLAGS} -r requirements/extras.txt;
+    elif [[ "${MIN_DEPS}" != 1 ]]; then
+      pip install --retries 3 ${PIP_FLAGS} -r requirements/optional.txt;
     fi
   # install networkx
   - printenv PWD
@@ -107,8 +102,9 @@ install:
 script:
   - if [[ "${BUILD_DOCS}" == 1 ]]; then
       source tools/travis/build_docs.sh;
+    else
+      source tools/travis/script.sh;
     fi
-  - source tools/travis/script.sh
 
 after_success:
   - if [[ "${REPORT_COVERAGE}" == 1 ]]; then

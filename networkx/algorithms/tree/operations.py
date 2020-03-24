@@ -1,17 +1,9 @@
-# operations.py - binary operations on trees
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Operations on trees."""
 from functools import partial
 from itertools import chain
 
 import networkx as nx
-from networkx.utils import accumulate
+from itertools import accumulate
 
 __all__ = ['join']
 

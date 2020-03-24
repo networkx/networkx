@@ -1,14 +1,3 @@
-#    Copyright (C) 2010-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Jon Olav Vik <jonovik@gmail.com>
-#          Dan Schult <dschult@colgate.edu>
-#          Aric Hagberg <hagberg@lanl.gov>
-#          Debsankha Manik <dmanik@nld.ds.mpg.de>
 """
 ========================
 Cycle finding algorithms
@@ -16,11 +5,9 @@ Cycle finding algorithms
 """
 
 from collections import defaultdict
-from itertools import tee
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
-from networkx.algorithms.traversal.edgedfs import helper_funcs
 
 __all__ = [
     'cycle_basis', 'simple_cycles',
@@ -88,7 +75,7 @@ def cycle_basis(G, root=None):
                 if nbr not in used:   # new node
                     pred[nbr] = z
                     stack.append(nbr)
-                    used[nbr] = set([z])
+                    used[nbr] = {z}
                 elif nbr == z:          # self loops
                     cycles.append([z])
                 elif nbr not in zused:  # found a cycle
@@ -168,7 +155,7 @@ def simple_cycles(G):
     cycle_basis
     """
     def _unblock(thisnode, blocked, B):
-        stack = set([thisnode])
+        stack = {thisnode}
         while stack:
             node = stack.pop()
             if node in blocked:
@@ -182,9 +169,20 @@ def simple_cycles(G):
     # Also we save the actual graph so we can mutate it. We only take the
     # edges because we do not want to copy edge and node attributes here.
     subG = type(G)(G.edges())
-    sccs = list(nx.strongly_connected_components(subG))
+    sccs = [scc for scc in nx.strongly_connected_components(subG)
+            if len(scc) > 1]
+
+    # Johnson's algorithm exclude self cycle edges like (v, v)
+    # To be backward compatible, we record those cycles in advance
+    # and then remove from subG
+    for v in subG:
+        if subG.has_edge(v, v):
+            yield [v]
+            subG.remove_edge(v, v)
+
     while sccs:
         scc = sccs.pop()
+        sccG = subG.subgraph(scc)
         # order of scc determines ordering of nodes
         startnode = scc.pop()
         # Processing node runs "circuit" routine from recursive version
@@ -193,7 +191,7 @@ def simple_cycles(G):
         closed = set()   # nodes involved in a cycle
         blocked.add(startnode)
         B = defaultdict(set)  # graph portions that yield no elementary circuit
-        stack = [(startnode, list(subG[startnode]))]  # subG gives comp nbrs
+        stack = [(startnode, list(sccG[startnode]))]  # sccG gives comp nbrs
         while stack:
             thisnode, nbrs = stack[-1]
             if nbrs:
@@ -204,7 +202,7 @@ def simple_cycles(G):
 #                        print "Found a cycle", path, closed
                 elif nextnode not in blocked:
                     path.append(nextnode)
-                    stack.append((nextnode, list(subG[nextnode])))
+                    stack.append((nextnode, list(sccG[nextnode])))
                     closed.discard(nextnode)
                     blocked.add(nextnode)
                     continue
@@ -213,16 +211,16 @@ def simple_cycles(G):
                 if thisnode in closed:
                     _unblock(thisnode, blocked, B)
                 else:
-                    for nbr in subG[thisnode]:
+                    for nbr in sccG[thisnode]:
                         if thisnode not in B[nbr]:
                             B[nbr].add(thisnode)
                 stack.pop()
 #                assert path[-1] == thisnode
                 path.pop()
         # done processing this node
-        subG.remove_node(startnode)
         H = subG.subgraph(scc)  # make smaller to avoid work in SCC routine
-        sccs.extend(list(nx.strongly_connected_components(H)))
+        sccs.extend(scc for scc in nx.strongly_connected_components(H)
+                    if len(scc) > 1)
 
 
 @not_implemented_for('undirected')
@@ -252,7 +250,7 @@ def recursive_simple_cycles(G):
     >>> edges = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)]
     >>> G = nx.DiGraph(edges)
     >>> nx.recursive_simple_cycles(G)
-    [[0], [0, 1, 2], [0, 2], [1, 2], [2]]
+    [[0], [2], [0, 1, 2], [0, 2], [1, 2]]
 
     See Also
     --------
@@ -307,6 +305,15 @@ def recursive_simple_cycles(G):
     blocked = defaultdict(bool)  # vertex: blocked from search?
     B = defaultdict(list)  # graph portions that yield no elementary circuit
     result = []            # list to accumulate the circuits found
+
+    # Johnson's algorithm exclude self cycle edges like (v, v)
+    # To be backward compatible, we record those cycles in advance
+    # and then remove from subG
+    for v in G:
+        if G.has_edge(v, v):
+            result.append([v])
+            G.remove_edge(v, v)
+
     # Johnson's algorithm requires some ordering of the nodes.
     # They might not be sortable so we assign an arbitrary ordering.
     ordering = dict(zip(G, range(len(G))))
@@ -319,7 +326,7 @@ def recursive_simple_cycles(G):
         strongcomp = nx.strongly_connected_components(subgraph)
         mincomp = min(strongcomp, key=lambda ns: min(ordering[n] for n in ns))
         component = G.subgraph(mincomp)
-        if component:
+        if len(component) > 1:
             # smallest node in the component according to the ordering
             startnode = min(component, key=ordering.__getitem__)
             for node in component:
@@ -329,9 +336,11 @@ def recursive_simple_cycles(G):
     return result
 
 
-def find_cycle(G, source=None, orientation='original'):
-    """
-    Returns the edges of a cycle found via a directed, depth-first traversal.
+def find_cycle(G, source=None, orientation=None):
+    """Returns a cycle found via depth-first traversal.
+
+    The cycle is a list of edges indicating the cyclic path.
+    Orientation of directed edges is controlled by `orientation`.
 
     Parameters
     ----------
@@ -343,30 +352,29 @@ def find_cycle(G, source=None, orientation='original'):
         is chosen arbitrarily and repeatedly until all edges from each node in
         the graph are searched.
 
-    orientation : 'original' | 'reverse' | 'ignore'
+    orientation : None | 'original' | 'reverse' | 'ignore' (default: None)
         For directed graphs and directed multigraphs, edge traversals need not
-        respect the original orientation of the edges. When set to 'reverse',
-        then every edge will be traversed in the reverse direction. When set to
-        'ignore', then each directed edge is treated as a single undirected
-        edge that can be traversed in either direction. For undirected graphs
-        and undirected multigraphs, this parameter is meaningless and is not
-        consulted by the algorithm.
+        respect the original orientation of the edges.
+        When set to 'reverse' every edge is traversed in the reverse direction.
+        When set to 'ignore', every edge is treated as undirected.
+        When set to 'original', every edge is treated as directed.
+        In all three cases, the yielded edge tuples add a last entry to
+        indicate the direction in which that edge was traversed.
+        If orientation is None, the yielded edge has no direction indicated.
+        The direction is respected, but not reported.
 
     Returns
     -------
     edges : directed edges
-        A list of directed edges indicating the path taken for the loop. If
-        no cycle is found, then an exception is raised. For graphs, an
-        edge is of the form `(u, v)` where `u` and `v` are the tail and head
-        of the edge as determined by the traversal. For multigraphs, an edge is
-        of the form `(u, v, key)`, where `key` is the key of the edge. When the
-        graph is directed, then `u` and `v` are always in the order of the
-        actual directed edge. If orientation is 'ignore', then an edge takes
-        the form `(u, v, key, direction)` where direction indicates if the edge
-        was followed in the forward (tail to head) or reverse (head to tail)
-        direction. When the direction is forward, the value of `direction`
-        is 'forward'. When the direction is reverse, the value of `direction`
-        is 'reverse'.
+        A list of directed edges indicating the path taken for the loop.
+        If no cycle is found, then an exception is raised.
+        For graphs, an edge is of the form `(u, v)` where `u` and `v`
+        are the tail and head of the edge as determined by the traversal.
+        For multigraphs, an edge is of the form `(u, v, key)`, where `key` is
+        the key of the edge. When the graph is directed, then `u` and `v`
+        are always in the order of the actual directed edge.
+        If orientation is not None then the edge tuple is extended to include
+        the direction of traversal ('forward' or 'reverse') on that edge.
 
     Raises
     ------
@@ -394,7 +402,17 @@ def find_cycle(G, source=None, orientation='original'):
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
     """
-    out_edge, key, tailhead = helper_funcs(G, orientation)
+    if not G.is_directed() or orientation in (None, 'original'):
+        def tailhead(edge):
+            return edge[:2]
+    elif orientation == 'reverse':
+        def tailhead(edge):
+            return edge[1], edge[0]
+    elif orientation == 'ignore':
+        def tailhead(edge):
+            if edge[-1] == 'reverse':
+                return edge[1], edge[0]
+            return edge[:2]
 
     explored = set()
     cycle = []
@@ -494,9 +512,9 @@ def minimum_cycle_basis(G, weight=None):
     Examples
     --------
     >>> G=nx.Graph()
-    >>> G.add_cycle([0,1,2,3])
-    >>> G.add_cycle([0,3,4,5])
-    >>> print(nx.minimum_cycle_basis(G))
+    >>> nx.add_cycle(G, [0,1,2,3])
+    >>> nx.add_cycle(G, [0,3,4,5])
+    >>> print([sorted(c) for c in nx.minimum_cycle_basis(G)])
     [[0, 1, 2, 3], [0, 3, 4, 5]]
 
     References:
@@ -511,8 +529,8 @@ def minimum_cycle_basis(G, weight=None):
     simple_cycles, cycle_basis
     """
     # We first split the graph in commected subgraphs
-    return sum((_min_cycle_basis(c, weight) for c in
-                nx.connected_component_subgraphs(G)), [])
+    return sum((_min_cycle_basis(G.subgraph(c), weight) for c in
+                nx.connected_components(G)), [])
 
 
 def _min_cycle_basis(comp, weight):
@@ -527,7 +545,7 @@ def _min_cycle_basis(comp, weight):
     N = len(edges_excl)
 
     # We maintain a set of vectors orthogonal to sofar found cycles
-    set_orth = [set([edge]) for edge in edges_excl]
+    set_orth = [{edge} for edge in edges_excl]
     for k in range(N):
         # kth cycle is "parallel" to kth vector in set_orth
         new_cycle = _min_cycle(comp, set_orth[k], weight=weight)

@@ -1,15 +1,5 @@
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Tomas Gavenciak <gavento@ucw.cz>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Tomas Gavenciak <gavento@ucw.cz>
-#          Aric Hagberg <aric.hagberg@lanl.gov>
 """Functions for reading and writing graphs in the *graph6* format.
 
 The *graph6* file format is suitable for small graphs or large dense
@@ -21,7 +11,6 @@ For more information, see the `graph6`_ homepage.
 
 """
 from itertools import islice
-import sys
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -109,7 +98,7 @@ def from_graph6_bytes(string):
 
     """
     def bits():
-        """Return sequence of individual bits from 6-bit-per-value
+        """Returns sequence of individual bits from 6-bit-per-value
         list of data values."""
         for d in data:
             for i in [5, 4, 3, 2, 1, 0]:
@@ -118,10 +107,7 @@ def from_graph6_bytes(string):
     if string.startswith(b'>>graph6<<'):
         string = string[10:]
 
-    if sys.version_info < (3, ):
-        data = [ord(c) - 63 for c in string]
-    else:
-        data = [c - 63 for c in string]
+    data = [c - 63 for c in string]
     if any(c > 63 for c in data):
         raise ValueError('each input character must be in range(63, 127)')
 
@@ -129,7 +115,7 @@ def from_graph6_bytes(string):
     nd = (n * (n - 1) // 2 + 5) // 6
     if len(data) != nd:
         raise NetworkXError(
-            'Expected %d bits but got %d in graph6' % (n * (n - 1) // 2, len(data) * 6))
+            f'Expected {n * (n - 1) // 2} bits but got {len(data) * 6} in graph6')
 
     G = nx.Graph()
     G.add_nodes_from(range(n))
@@ -165,7 +151,7 @@ def to_graph6_bytes(G, nodes=None, header=True):
 
     Examples
     --------
-    >>> nx.to_graph6_bytes(nx.path_graph(2)) # doctest: +SKIP
+    >>> nx.to_graph6_bytes(nx.path_graph(2))
     b'>>graph6<<A_\\n'
 
     See Also
@@ -292,7 +278,7 @@ def write_graph6(G, path, nodes=None, header=True):
         >>> with tempfile.NamedTemporaryFile() as f:
         ...     nx.write_graph6(nx.path_graph(2), f.name)
         ...     _ = f.seek(0)
-        ...     print(f.read())  # doctest: +SKIP
+        ...     print(f.read())
         b'>>graph6<<A_\\n'
 
     See Also
@@ -352,7 +338,7 @@ def write_graph6_file(G, f, nodes=None, header=True):
         >>> with tempfile.NamedTemporaryFile() as f:
         ...     nx.write_graph6(nx.path_graph(2), f)
         ...     _ = f.seek(0)
-        ...     print(f.read())  # doctest: +SKIP
+        ...     print(f.read())
         b'>>graph6<<A_\\n'
 
     See Also

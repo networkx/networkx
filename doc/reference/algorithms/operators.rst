@@ -20,6 +20,7 @@ Operators
    intersection
    difference
    symmetric_difference
+   full_join
 
 
 .. automodule:: networkx.algorithms.operators.all
@@ -38,6 +39,7 @@ Operators
 
    cartesian_product
    lexicographic_product
+   rooted_product
    strong_product
    tensor_product
    power

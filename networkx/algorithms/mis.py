@@ -1,28 +1,18 @@
-# -*- coding: utf-8 -*-
-# $Id: maximalIndependentSet.py 576 2011-03-01 05:50:34Z lleeoo $
-#    Leo Lopes <leo.lopes@monash.edu>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Leo Lopes <leo.lopes@monash.edu>
-#          Loïc Séguin-C. <loicseguin@gmail.com>
 """
 Algorithm to find a maximal (not maximum) independent set.
 
 """
-import random
 import networkx as nx
 from networkx.utils import not_implemented_for
+from networkx.utils import py_random_state
 
 __all__ = ['maximal_independent_set']
 
 
+@py_random_state(2)
 @not_implemented_for('directed')
-def maximal_independent_set(G, nodes=None):
-    """Return a random maximal independent set guaranteed to contain
+def maximal_independent_set(G, nodes=None, seed=None):
+    """Returns a random maximal independent set guaranteed to contain
     a given set of nodes.
 
     An independent set is a set of nodes such that the subgraph
@@ -37,6 +27,10 @@ def maximal_independent_set(G, nodes=None):
     nodes : list or iterable
        Nodes that must be part of the independent set. This set of nodes
        must be independent.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -66,20 +60,18 @@ def maximal_independent_set(G, nodes=None):
 
     """
     if not nodes:
-        nodes = set([random.choice(list(G))])
+        nodes = {seed.choice(list(G))}
     else:
         nodes = set(nodes)
     if not nodes.issubset(G):
-        raise nx.NetworkXUnfeasible(
-            "%s is not a subset of the nodes of G" % nodes)
+        raise nx.NetworkXUnfeasible(f"{nodes} is not a subset of the nodes of G")
     neighbors = set.union(*[set(G.adj[v]) for v in nodes])
     if set.intersection(neighbors, nodes):
-        raise nx.NetworkXUnfeasible(
-            "%s is not an independent set of G" % nodes)
+        raise nx.NetworkXUnfeasible(f"{nodes} is not an independent set of G")
     indep_nodes = list(nodes)
     available_nodes = set(G.nodes()).difference(neighbors.union(nodes))
     while available_nodes:
-        node = random.choice(list(available_nodes))
+        node = seed.choice(list(available_nodes))
         indep_nodes.append(node)
         available_nodes.difference_update(list(G.adj[node]) + [node])
     return indep_nodes

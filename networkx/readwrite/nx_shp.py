@@ -11,15 +11,8 @@ and regulated by Esri as a (mostly) open specification for data
 interoperability among Esri and other software products."
 See https://en.wikipedia.org/wiki/Shapefile for additional information.
 """
-#    Copyright (C) 2004-2018 by
-#    Ben Reilly <benwreilly@gmail.com>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-__author__ = """Ben Reilly (benwreilly@gmail.com)"""
+
 __all__ = ['read_shp', 'write_shp']
 
 
@@ -76,7 +69,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
 
     Examples
     --------
-    >>> G=nx.read_shp('test.shp') # doctest: +SKIP
+    >>> G = nx.read_shp('test.shp') # doctest: +SKIP
 
     References
     ----------
@@ -93,7 +86,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
     net = nx.DiGraph()
     shp = ogr.Open(path)
     if shp is None:
-        raise RuntimeError("Unable to open {}".format(path))
+        raise RuntimeError(f"Unable to open {path}")
     for lyr in shp:
         fields = [x.GetName() for x in lyr.schema]
         for f in lyr:
@@ -184,8 +177,7 @@ def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
     elif geom.GetGeometryType() == ogr.wkbMultiLineString:
         for i in range(geom.GetGeometryCount()):
             geom_i = geom.GetGeometryRef(i)
-            for edge in edges_from_line(geom_i, attrs, simplify, geom_attrs):
-                yield edge
+            yield from edges_from_line(geom_i, attrs, simplify, geom_attrs)
 
 
 def write_shp(G, outdir):
@@ -275,7 +267,6 @@ def write_shp(G, outdir):
         newfield = ogr.FieldDefn(key, fields[key])
         layer.CreateField(newfield)
 
-
     drv = ogr.GetDriverByName("ESRI Shapefile")
     shpdir = drv.CreateDataSource(outdir)
     # delete pre-existing output first otherwise ogr chokes
@@ -323,12 +314,3 @@ def write_shp(G, outdir):
         create_feature(g, edges, attributes)
 
     nodes, edges = None, None
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import ogr
-    except:
-        raise SkipTest("OGR not available")

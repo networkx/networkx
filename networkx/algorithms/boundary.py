@@ -1,10 +1,3 @@
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Copyright 2015 NetworkX developers.
-#    All rights reserved.
-#    BSD license.
 """Routines to find the boundary of a set of nodes.
 
 An edge boundary is a set of edges, each of which has exactly one
@@ -16,8 +9,6 @@ nodes in *S* that are outside *S*.
 
 """
 from itertools import chain
-
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
 
 __all__ = ['edge_boundary', 'node_boundary']
 

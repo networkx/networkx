@@ -5,55 +5,20 @@ These are not imported into the base networkx namespace but
 can be accessed, for example, as
 
 >>> import networkx
->>> networkx.utils.is_string_like('spam')
+>>> networkx.utils.is_list_of_ints([1, 2, 3])
 True
+>>> networkx.utils.is_list_of_ints([1, 2, "spam"])
+False
 """
-# Authors:      Aric Hagberg (hagberg@lanl.gov),
-#               Dan Schult(dschult@colgate.edu),
-#               Ben Edwards(bedwards@cs.unm.edu)
 
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from collections import defaultdict
 from collections import deque
+import warnings
 import sys
 import uuid
 from itertools import tee, chain
 import networkx as nx
 
-# itertools.accumulate is only available on Python 3.2 or later.
-#
-# Once support for Python versions less than 3.2 is dropped, this code should
-# be removed.
-try:
-    from itertools import accumulate
-except ImportError:
-    import operator
-
-    # The code for this function is from the Python 3.5 documentation,
-    # distributed under the PSF license:
-    # <https://docs.python.org/3.5/library/itertools.html#itertools.accumulate>
-    def accumulate(iterable, func=operator.add):
-        it = iter(iterable)
-        try:
-            total = next(it)
-        except StopIteration:
-            return
-        yield total
-        for element in it:
-            total = func(total, element)
-            yield total
-
-# 2.x/3.x compatibility
-try:
-    basestring
-except NameError:
-    basestring = str
-    unicode = str
 
 # some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
@@ -62,7 +27,10 @@ except NameError:
 
 def is_string_like(obj):  # from John Hunter, types-free version
     """Check if obj is string."""
-    return isinstance(obj, basestring)
+    msg = "is_string_like is deprecated and will be removed in 2.6." \
+          "Use isinstance(obj, str) instead."
+    warnings.warn(msg, DeprecationWarning)
+    return isinstance(obj, str)
 
 
 def iterable(obj):
@@ -90,6 +58,42 @@ def flatten(obj, result=None):
     return obj.__class__(result)
 
 
+def make_list_of_ints(sequence):
+    """Return list of ints from sequence of integral numbers.
+
+    All elements of the sequence must satisfy int(element) == element
+    or a ValueError is raised. Sequence is iterated through once.
+
+    If sequence is a list, the non-int values are replaced with ints.
+    So, no new list is created
+    """
+    if not isinstance(sequence, list):
+        result = []
+        for i in sequence:
+            errmsg = f"sequence is not all integers: {i}"
+            try:
+                ii = int(i)
+            except ValueError:
+                raise nx.NetworkXError(errmsg) from None
+            if ii != i:
+                raise nx.NetworkXError(errmsg)
+            result.append(ii)
+        return result
+    # original sequence is a list... in-place conversion to ints
+    for indx, i in enumerate(sequence):
+        errmsg = f"sequence is not all integers: {i}"
+        if isinstance(i, int):
+            continue
+        try:
+            ii = int(i)
+        except ValueError:
+            raise nx.NetworkXError(errmsg) from None
+        if ii != i:
+            raise nx.NetworkXError(errmsg)
+        sequence[indx] = ii
+    return sequence
+
+
 def is_list_of_ints(intlist):
     """ Return True if list is a list of ints. """
     if not isinstance(intlist, list):
@@ -100,26 +104,11 @@ def is_list_of_ints(intlist):
     return True
 
 
-PY2 = sys.version_info[0] == 2
-if PY2:
-    def make_str(x):
-        """Return the string representation of t."""
-        if isinstance(x, unicode):
-            return x
-        else:
-            # Note, this will not work unless x is ascii-encoded.
-            # That is good, since we should be working with unicode anyway.
-            # Essentially, unless we are reading a file, we demand that users
-            # convert any encoded strings to unicode before using the library.
-            #
-            # Also, the str() is necessary to convert integers, etc.
-            # unicode(3) works, but unicode(3, 'unicode-escape') wants a buffer
-            #
-            return unicode(str(x), 'unicode-escape')
-else:
-    def make_str(x):
-        """Return the string representation of t."""
-        return str(x)
+def make_str(x):
+    """Returns the string representation of t."""
+    msg = "make_str is deprecated and will be removed in 2.6. Use str instead."
+    warnings.warn(msg, DeprecationWarning)
+    return str(x)
 
 
 def generate_unique_node():
@@ -295,10 +284,9 @@ def create_random_state(random_state=None):
     Parameters
     ----------
     random_state : int or RandomState instance or None  optional (default=None)
-        If int, `random_state` is the seed used by the random number generator,
-        if numpy.random.RandomState instance, `random_state` is the random
-        number generator,
-        if None, the random number generator is the RandomState instance used
+        If int, return a numpy.random.RandomState instance set with seed=int.
+        if numpy.random.RandomState instance, return it.
+        if None or numpy.random, return the global random number generator used
         by numpy.random.
     """
     import numpy as np
@@ -309,5 +297,100 @@ def create_random_state(random_state=None):
         return random_state
     if isinstance(random_state, int):
         return np.random.RandomState(random_state)
-    msg = '%r cannot be used to generate a numpy.random.RandomState instance'
-    raise ValueError(msg % random_state)
+    msg = f"{random_state} cannot be used to generate a numpy.random.RandomState instance"
+    raise ValueError(msg)
+
+
+class PythonRandomInterface:
+    try:
+        def __init__(self, rng=None):
+            import numpy
+            if rng is None:
+                self._rng = numpy.random.mtrand._rand
+            self._rng = rng
+    except ImportError:
+        msg = 'numpy not found, only random.random available.'
+        warnings.warn(msg, ImportWarning)
+
+    def random(self):
+        return self._rng.random_sample()
+
+    def uniform(self, a, b):
+        return a + (b - a) * self._rng.random_sample()
+
+    def randrange(self, a, b=None):
+        return self._rng.randint(a, b)
+
+    def choice(self, seq):
+        return seq[self._rng.randint(0, len(seq))]
+
+    def gauss(self, mu, sigma):
+        return self._rng.normal(mu, sigma)
+
+    def shuffle(self, seq):
+        return self._rng.shuffle(seq)
+
+#    Some methods don't match API for numpy RandomState.
+#    Commented out versions are not used by NetworkX
+
+    def sample(self, seq, k):
+        return self._rng.choice(list(seq), size=(k,), replace=False)
+
+    def randint(self, a, b):
+        return self._rng.randint(a, b + 1)
+
+#    exponential as expovariate with 1/argument,
+    def expovariate(self, scale):
+        return self._rng.exponential(1/scale)
+
+#    pareto as paretovariate with 1/argument,
+    def paretovariate(self, shape):
+        return self._rng.pareto(shape)
+
+#    weibull as weibullvariate multiplied by beta,
+#    def weibullvariate(self, alpha, beta):
+#        return self._rng.weibull(alpha) * beta
+#
+#    def triangular(self, low, high, mode):
+#        return self._rng.triangular(low, mode, high)
+#
+#    def choices(self, seq, weights=None, cum_weights=None, k=1):
+#        return self._rng.choice(seq
+
+
+def create_py_random_state(random_state=None):
+    """Returns a random.Random instance depending on input.
+
+    Parameters
+    ----------
+    random_state : int or random number generator or None (default=None)
+        If int, return a random.Random instance set with seed=int.
+        if random.Random instance, return it.
+        if None or the `random` package, return the global random number
+        generator used by `random`.
+        if np.random package, return the global numpy random number
+        generator wrapped in a PythonRandomInterface class.
+        if np.random.RandomState instance, return it wrapped in
+        PythonRandomInterface
+        if a PythonRandomInterface instance, return it
+    """
+    import random
+    try:
+        import numpy as np
+        if random_state is np.random:
+            return PythonRandomInterface(np.random.mtrand._rand)
+        if isinstance(random_state, np.random.RandomState):
+            return PythonRandomInterface(random_state)
+        if isinstance(random_state, PythonRandomInterface):
+            return random_state
+    except ImportError:
+        pass
+
+    if random_state is None or random_state is random:
+        return random._inst
+    if isinstance(random_state, random.Random):
+        return random_state
+    if isinstance(random_state, int):
+        return random.Random(random_state)
+    msg = f"{random_state} cannot be used to generate a random.Random instance"
+    raise ValueError(msg)

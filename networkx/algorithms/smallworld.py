@@ -1,9 +1,3 @@
-#    Copyright (C) 2017 by
-#    Romain Fontugne <romain@iij.ad.jp>
-#    All rights reserved.
-#    BSD license.
-#
-# Author:  Romain Fontugne (romain@iij.ad.jp)
 """Functions for estimating the small-world-ness of graphs.
 
 A small world network is characterized by a small average shortest path length,
@@ -20,33 +14,38 @@ For more information, see the Wikipedia article on small-world network [1]_.
 .. [1] Small-world network:: https://en.wikipedia.org/wiki/Small-world_network
 
 """
-import random
 import networkx as nx
 from networkx.utils import not_implemented_for
+from networkx.utils import py_random_state
 
 __all__ = ['random_reference', 'lattice_reference', 'sigma', 'omega']
 
 
+@py_random_state(3)
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def random_reference(G, niter=1, connectivity=True):
+def random_reference(G, niter=1, connectivity=True, seed=None):
     """Compute a random graph by swapping edges of a given graph.
 
     Parameters
     ----------
     G : graph
-       An undirected graph with 4 or more nodes.
+        An undirected graph with 4 or more nodes.
 
     niter : integer (optional, default=1)
-       An edge is rewired approximately `niter` times.
+        An edge is rewired approximately `niter` times.
 
-    connectivity: boolean (optional, default=True)
+    connectivity : boolean (optional, default=True)
         When True, ensure connectivity for the randomized graph.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
     G : graph
-       The randomized graph.
+        The randomized graph.
 
     Notes
     -----
@@ -55,9 +54,9 @@ def random_reference(G, niter=1, connectivity=True):
 
     References
     ----------
-    .. [1] Maslov, Sergei, and Kim Sneppen. "Specificity and stability in
-    topology of protein networks." Science 296.5569 (2002): 910-913.
-
+    .. [1] Maslov, Sergei, and Kim Sneppen.
+           "Specificity and stability in topology of protein networks."
+           Science 296.5569 (2002): 910-913.
     """
     if G.is_directed():
         msg = "random_reference() not defined for directed graphs."
@@ -65,11 +64,12 @@ def random_reference(G, niter=1, connectivity=True):
     if len(G) < 4:
         raise nx.NetworkXError("Graph has less than four nodes.")
 
+    from networkx.utils import cumulative_distribution, discrete_sequence
     local_conn = nx.connectivity.local_edge_connectivity
 
     G = G.copy()
     keys, degrees = zip(*G.degree())  # keys, degree
-    cdf = nx.utils.cumulative_distribution(degrees)  # cdf of degree
+    cdf = cumulative_distribution(degrees)  # cdf of degree
     nnodes = len(G)
     nedges = nx.number_of_edges(G)
     niter = niter*nedges
@@ -81,14 +81,14 @@ def random_reference(G, niter=1, connectivity=True):
         while n < ntries:
             # pick two random edges without creating edge list
             # choose source node indices from discrete distribution
-            (ai, ci) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+            (ai, ci) = discrete_sequence(2, cdistribution=cdf, seed=seed)
             if ai == ci:
                 continue  # same source, skip
             a = keys[ai]  # convert index to label
             c = keys[ci]
             # choose target uniformly from neighbors
-            b = random.choice(list(G.neighbors(a)))
-            d = random.choice(list(G.neighbors(c)))
+            b = seed.choice(list(G.neighbors(a)))
+            d = seed.choice(list(G.neighbors(c)))
             bi = keys.index(b)
             di = keys.index(d)
             if b in [a, c, d] or d in [a, b, c]:
@@ -115,44 +115,51 @@ def random_reference(G, niter=1, connectivity=True):
     return G
 
 
+@py_random_state(4)
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def lattice_reference(G, niter=1, D=None, connectivity=True):
+def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
     """Latticize the given graph by swapping edges.
 
     Parameters
     ----------
     G : graph
-       An undirected graph with 4 or more nodes.
+        An undirected graph with 4 or more nodes.
 
     niter : integer (optional, default=1)
-       An edge is rewired approximatively niter times.
+        An edge is rewired approximatively niter times.
 
-    D: numpy.array (optional, default=None)
-       Distance to the diagonal matrix.
+    D : numpy.array (optional, default=None)
+        Distance to the diagonal matrix.
 
-    connectivity: boolean (optional, default=True)
+    connectivity : boolean (optional, default=True)
         Ensure connectivity for the latticized graph when set to True.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
     G : graph
-       The latticized graph.
+        The latticized graph.
 
     Notes
     -----
-    The implementation is adapted from the algorithm by Sporns et al. which is
-    inspired from the original work from Maslov and Sneppen (2002) [2]_.
+    The implementation is adapted from the algorithm by Sporns et al. [1]_.
+    which is inspired from the original work by Maslov and Sneppen(2002) [2]_.
 
     References
     ----------
-    .. [1] Sporns, Olaf, and Jonathan D. Zwi. "The small world of the cerebral
-    cortex." Neuroinformatics 2.2 (2004): 145-162.
-    .. [2] Maslov, Sergei, and Kim Sneppen. "Specificity and stability in
-    topology of protein networks." Science 296.5569 (2002): 910-913.
-
+    .. [1] Sporns, Olaf, and Jonathan D. Zwi.
+       "The small world of the cerebral cortex."
+       Neuroinformatics 2.2 (2004): 145-162.
+    .. [2] Maslov, Sergei, and Kim Sneppen.
+       "Specificity and stability in topology of protein networks."
+       Science 296.5569 (2002): 910-913.
     """
     import numpy as np
+    from networkx.utils import cumulative_distribution, discrete_sequence
     local_conn = nx.connectivity.local_edge_connectivity
 
     if G.is_directed():
@@ -165,7 +172,7 @@ def lattice_reference(G, niter=1, D=None, connectivity=True):
     # probability weighted by degree.
     G = G.copy()
     keys, degrees = zip(*G.degree())  # keys, degree
-    cdf = nx.utils.cumulative_distribution(degrees)  # cdf of degree
+    cdf = cumulative_distribution(degrees)  # cdf of degree
 
     nnodes = len(G)
     nedges = nx.number_of_edges(G)
@@ -188,14 +195,14 @@ def lattice_reference(G, niter=1, D=None, connectivity=True):
         while n < ntries:
             # pick two random edges without creating edge list
             # choose source node indices from discrete distribution
-            (ai, ci) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+            (ai, ci) = discrete_sequence(2, cdistribution=cdf, seed=seed)
             if ai == ci:
                 continue  # same source, skip
             a = keys[ai]  # convert index to label
             c = keys[ci]
             # choose target uniformly from neighbors
-            b = random.choice(list(G.neighbors(a)))
-            d = random.choice(list(G.neighbors(c)))
+            b = seed.choice(list(G.neighbors(a)))
+            d = seed.choice(list(G.neighbors(c)))
             bi = keys.index(b)
             di = keys.index(d)
 
@@ -226,10 +233,11 @@ def lattice_reference(G, niter=1, D=None, connectivity=True):
     return G
 
 
+@py_random_state(3)
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def sigma(G, niter=100, nrand=10):
-    """Return the small-world coefficient (sigma) of the given graph.
+def sigma(G, niter=100, nrand=10, seed=None):
+    """Returns the small-world coefficient (sigma) of the given graph.
 
     The small-world coefficient is defined as:
     sigma = C/Cr / L/Lr
@@ -244,35 +252,34 @@ def sigma(G, niter=100, nrand=10):
     ----------
     G : NetworkX graph
         An undirected graph.
-
-    niter: integer (optional, default=100)
+    niter : integer (optional, default=100)
         Approximate number of rewiring per edge to compute the equivalent
         random graph.
-
-    nrand: integer (optional, default=10)
+    nrand : integer (optional, default=10)
         Number of random graphs generated to compute the average clustering
         coefficient (Cr) and average shortest path length (Lr).
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
-    sigma
+    sigma : float
         The small-world coefficient of G.
 
     Notes
     -----
-    The implementation is adapted from the algorithm by Humphries et al.
-    [1]_[2]_.
-
+    The implementation is adapted from Humphries et al. [1]_ [2]_.
 
     References
     ----------
     .. [1] The brainstem reticular formation is a small-world, not scale-free,
-    network M. D. Humphries, K. Gurney and T. J. Prescott, Proc. Roy. Soc. B
-    2006 273, 503-511, doi:10.1098/rspb.2005.3354.
-
-    .. [2] Humphries and Gurney (2008). "Network 'Small-World-Ness': A
-    Quantitative Method for Determining Canonical Network Equivalence". PLoS
-    One. 3 (4). PMID 18446219. doi:10.1371/journal.pone.0002051.
+           network M. D. Humphries, K. Gurney and T. J. Prescott,
+           Proc. Roy. Soc. B 2006 273, 503-511, doi:10.1098/rspb.2005.3354.
+    .. [2] Humphries and Gurney (2008).
+           "Network 'Small-World-Ness': A Quantitative Method for Determining
+           Canonical Network Equivalence".
+           PLoS One. 3 (4). PMID 18446219. doi:10.1371/journal.pone.0002051.
     """
     import numpy as np
 
@@ -280,7 +287,7 @@ def sigma(G, niter=100, nrand=10):
     # for an equivalent random graph
     randMetrics = {"C": [], "L": []}
     for i in range(nrand):
-        Gr = random_reference(G, niter=niter)
+        Gr = random_reference(G, niter=niter, seed=seed)
         randMetrics["C"].append(nx.transitivity(Gr))
         randMetrics["L"].append(nx.average_shortest_path_length(Gr))
 
@@ -294,10 +301,11 @@ def sigma(G, niter=100, nrand=10):
     return sigma
 
 
+@py_random_state(3)
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def omega(G, niter=100, nrand=10):
-    """Return the small-world coefficient (omega) of a graph
+def omega(G, niter=100, nrand=10, seed=None):
+    """Returns the small-world coefficient (omega) of a graph
 
     The small-world coefficient of a graph G is:
 
@@ -326,9 +334,14 @@ def omega(G, niter=100, nrand=10):
         Number of random graphs generated to compute the average clustering
         coefficient (Cr) and average shortest path length (Lr).
 
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+
     Returns
     -------
-    omega
+    omega : float
         The small-work coefficient (omega)
 
     Notes
@@ -337,9 +350,10 @@ def omega(G, niter=100, nrand=10):
 
     References
     ----------
-    .. [1] Telesford, Joyce, Hayasaka, Burdette, and Laurienti (2011). "The
-    Ubiquity of Small-World Networks". Brain Connectivity. 1 (0038): 367-75.
-    PMC 3604768. PMID 22432451. doi:10.1089/brain.2011.0038.
+    .. [1] Telesford, Joyce, Hayasaka, Burdette, and Laurienti (2011).
+           "The Ubiquity of Small-World Networks".
+           Brain Connectivity. 1 (0038): 367-75.  PMC 3604768. PMID 22432451.
+           doi:10.1089/brain.2011.0038.
     """
     import numpy as np
 
@@ -347,8 +361,8 @@ def omega(G, niter=100, nrand=10):
     # for an equivalent random graph
     randMetrics = {"C": [], "L": []}
     for i in range(nrand):
-        Gr = random_reference(G, niter=niter)
-        Gl = lattice_reference(G, niter=niter)
+        Gr = random_reference(G, niter=niter, seed=seed)
+        Gl = lattice_reference(G, niter=niter, seed=seed)
         randMetrics["C"].append(nx.transitivity(Gl))
         randMetrics["L"].append(nx.average_shortest_path_length(Gr))
 

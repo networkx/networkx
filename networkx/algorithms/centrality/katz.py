@@ -1,15 +1,3 @@
-# coding=utf8
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (aric.hagberg@gmail.com)
-#          Pieter Swart (swart@lanl.gov)
-#          Sasha Gutfraind (ag362@cornell.edu)
-#          Vincent Gauthier (vgauthier@luxbulb.org)
 """Katz centrality."""
 from math import sqrt
 
@@ -103,7 +91,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
     >>> phi = (1 + math.sqrt(5)) / 2.0  # largest eigenvalue of adj matrix
     >>> centrality = nx.katz_centrality(G, 1/phi - 0.01)
     >>> for n, c in sorted(centrality.items()):
-    ...    print("%d %0.2f" % (n, c))
+    ...    print(f"{n} {c:.2f}")
     0 0.37
     1 0.60
     2 0.60
@@ -154,7 +142,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
 
     if nstart is None:
         # choose starting vector with entries of 0
-        x = dict([(n, 0) for n in G])
+        x = {n: 0 for n in G}
     else:
         x = nstart
 
@@ -265,7 +253,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
     >>> phi = (1 + math.sqrt(5)) / 2.0  # largest eigenvalue of adj matrix
     >>> centrality = nx.katz_centrality_numpy(G, 1/phi)
     >>> for n, c in sorted(centrality.items()):
-    ...    print("%d %0.2f" % (n, c))
+    ...    print(f"{n} {c:.2f}")
     0 0.37
     1 0.60
     2 0.60
@@ -334,13 +322,3 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
         norm = 1.0
     centrality = dict(zip(nodelist, map(float, centrality / norm)))
     return centrality
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

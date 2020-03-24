@@ -1,1 +1,1 @@
-decorator>=4.1.0
+decorator>=4.3.0

@@ -11,6 +11,7 @@ Algorithms
 
    approximation
    assortativity
+   asteroidal
    bipartite
    boundary
    bridges
@@ -29,12 +30,11 @@ Algorithms
    cycles
    cuts
    dag
-   dispersion
    distance_measures
    distance_regular
    dominance
    dominating
-   efficiency
+   efficiency_measures
    euler
    flow
    graphical
@@ -44,15 +44,24 @@ Algorithms
    isomorphism
    link_analysis
    link_prediction
+   lowest_common_ancestors
    matching
    minors
    mis
+   non_randomness
+   moral
    node_classification
    operators
+   planarity
+   planar_drawing
    reciprocity
    rich_club
    shortest_paths
+   similarity
    simple_paths
+   smallworld
+   smetric
+   sparsifiers
    structuralholes
    swap
    tournament

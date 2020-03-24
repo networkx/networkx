@@ -1,25 +1,11 @@
-# -*- coding: utf-8 -*-
-#
-# kernighan_lin.py - Kernighan–Lin bipartition algorithm
-#
-# Copyright 2011 Ben Edwards <bedwards@cs.unm.edu>.
-# Copyright 2011 Aric Hagberg <hagberg@lanl.gov>.
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for computing the Kernighan–Lin bipartition algorithm."""
-from __future__ import division
 
 from collections import defaultdict
-from itertools import islice
+from itertools import accumulate, islice
 from operator import itemgetter
-import random
 
 import networkx as nx
-from networkx.utils import not_implemented_for
+from networkx.utils import not_implemented_for, py_random_state
 from networkx.algorithms.community.community_utils import is_partition
 
 __all__ = ['kernighan_lin_bisection']
@@ -92,8 +78,10 @@ def _kernighan_lin_pass(G, A, B, weight):
     return gains
 
 
+@py_random_state(4)
 @not_implemented_for('directed')
-def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight'):
+def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
+                            seed=None):
     """Partition a graph into two blocks using the Kernighan–Lin
     algorithm.
 
@@ -115,6 +103,11 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight'):
     weight : key
         Edge data key to use as weight. If None, the weights are all
         set to one.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+        Only used if partition is None
 
     Returns
     -------
@@ -138,7 +131,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight'):
     # balanced partition.
     if partition is None:
         nodes = list(G)
-        random.shuffle(nodes)
+        seed.shuffle(nodes)
         h = len(nodes) // 2
         partition = (nodes[:h], nodes[h:])
     # Make a copy of the partition as a pair of sets.
@@ -152,7 +145,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight'):
         # `gains` is a list of triples of the form (g, u, v) for each
         # node pair (u, v), where `g` is the gain of that node pair.
         gains = _kernighan_lin_pass(G, A, B, weight)
-        csum = list(nx.utils.accumulate(g for g, u, v in gains))
+        csum = list(accumulate(g for g, u, v in gains))
         max_cgain = max(csum)
         if max_cgain <= 0:
             break

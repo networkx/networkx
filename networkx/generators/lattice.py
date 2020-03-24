@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Pieter Swart (swart@lanl.gov)
-#          Joel Miller (jmiller@lanl.gov)
-#          Dan Schult (dschult@lanl.gov)
 """Functions for generating grid graphs and lattices
 
 The :func:`grid_2d_graph`, :func:`triangular_lattice_graph`, and
@@ -24,23 +12,19 @@ be found about `Triangular Tiling`_, and `Square, Hex and Triangle Grids`_
 .. _Triangular Tiling: https://en.wikipedia.org/wiki/Triangular_tiling
 
 """
-from __future__ import division
 
 from math import sqrt
 
-from networkx.classes import Graph
 from networkx.classes import set_node_attributes
 from networkx.algorithms.minors import contracted_nodes
 from networkx.algorithms.operators.product import cartesian_product
 from networkx.exception import NetworkXError
 from networkx.relabel import relabel_nodes
-from networkx.utils import flatten
-from networkx.utils import is_list_of_ints
-from networkx.utils import nodes_or_number
-from networkx.utils import pairwise
+from networkx.utils import flatten, nodes_or_number, pairwise, iterable
 from networkx.generators.classic import cycle_graph
 from networkx.generators.classic import empty_graph
 from networkx.generators.classic import path_graph
+from itertools import repeat
 
 __all__ = ['grid_2d_graph', 'grid_graph', 'hypercube_graph',
            'triangular_lattice_graph', 'hexagonal_lattice_graph']
@@ -58,9 +42,11 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
         If an integer, nodes are from `range(n)`.
         If a container, elements become the coordinate of the nodes.
 
-    periodic : bool (default: False)
-        If this is ``True`` the nodes on the grid boundaries are joined
-        to the corresponding nodes on the opposite grid boundaries.
+    periodic : bool or iterable
+        If `periodic` is True, both dimensions are periodic. If False, none
+        are periodic.  If `periodic` is iterable, it should yield 2 bool
+        values indicating whether the 1st and 2nd axes, respectively, are
+        periodic.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
@@ -79,15 +65,20 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
                      for pi, i in pairwise(rows) for j in cols)
     G.add_edges_from(((i, j), (i, pj))
                      for i in rows for pj, j in pairwise(cols))
-    if periodic is True:
-        if len(rows) > 2:
-            first = rows[0]
-            last = rows[-1]
-            G.add_edges_from(((first, j), (last, j)) for j in cols)
-        if len(cols) > 2:
-            first = cols[0]
-            last = cols[-1]
-            G.add_edges_from(((i, first), (i, last)) for i in rows)
+
+    if iterable(periodic):
+        periodic_r, periodic_c = periodic
+    else:
+        periodic_r = periodic_c = periodic
+
+    if periodic_r and len(rows) > 2:
+        first = rows[0]
+        last = rows[-1]
+        G.add_edges_from(((first, j), (last, j)) for j in cols)
+    if periodic_c and len(cols) > 2:
+        first = cols[0]
+        last = cols[-1]
+        G.add_edges_from(((i, first), (i, last)) for i in rows)
     # both directions for directed
     if G.is_directed():
         G.add_edges_from((v, u) for u, v in G.edges())
@@ -108,9 +99,11 @@ def grid_graph(dim, periodic=False):
         that dimension. The dimension of the grid_graph is the length
         of `dim`.
 
-    periodic : bool
-        If `periodic is True` the nodes on the grid boundaries are joined
-        to the corresponding nodes on the opposite grid boundaries.
+    periodic : bool or iterable
+        If `periodic` is True, all dimensions are periodic. If False all
+        dimensions are not periodic. If `periodic` is iterable, it should
+        yield `dim` bool values each of which indicates whether the
+        corresponding axis is periodic.
 
     Returns
     -------
@@ -122,21 +115,24 @@ def grid_graph(dim, periodic=False):
     To produce a 2 by 3 by 4 grid graph, a graph on 24 nodes:
 
     >>> from networkx import grid_graph
-    >>> G = grid_graph(dim=[2, 3, 4])
+    >>> G = grid_graph(dim=(2, 3, 4))
     >>> len(G)
     24
-    >>> G = grid_graph(dim=[range(7, 9), range(3, 6)])
+    >>> G = grid_graph(dim=(range(7, 9), range(3, 6)))
     >>> len(G)
     6
     """
-    dlabel = "%s" % dim
     if not dim:
         return empty_graph(0)
 
-    func = cycle_graph if periodic else path_graph
-    G = func(dim[0])
+    if iterable(periodic):
+        func = (cycle_graph if p else path_graph for p in periodic)
+    else:
+        func = repeat(cycle_graph if periodic else path_graph)
+
+    G = next(func)(dim[0])
     for current_dim in dim[1:]:
-        Gnew = func(current_dim)
+        Gnew = next(func)(current_dim)
         G = cartesian_product(Gnew, G)
     # graph G is done but has labels of the form (1, (2, (3, 1))) so relabel
     H = relabel_nodes(G, flatten)
@@ -171,7 +167,7 @@ def hypercube_graph(n):
 
 def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
                              create_using=None):
-    """Returns the $m$ by $n$ triangular lattice graph.
+    r"""Returns the $m$ by $n$ triangular lattice graph.
 
     The `triangular lattice graph`_ is a two-dimensional `grid graph`_ in
     which each square unit has a diagonal edge (each grid unit has a chord).
@@ -229,8 +225,8 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
         return H
     if periodic:
         if n < 5 or m < 3:
-            msg = "m > 2 and n > 4 required for periodic. m={}, n={}"
-            raise NetworkXError(msg.format(m, n))
+            msg = f"m > 2 and n > 4 required for periodic. m={m}, n={n}"
+            raise NetworkXError(msg)
 
     N = (n + 1) // 2  # number of nodes in row
     rows = range(m + 1)
@@ -251,7 +247,7 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
             H = contracted_nodes(H, (0, j), (N, j))
     elif n % 2:
         # remove extra nodes
-        H.remove_nodes_from(((N, j) for j in rows[1::2]))
+        H.remove_nodes_from((N, j) for j in rows[1::2])
 
     # Add position node attributes
     if with_positions:

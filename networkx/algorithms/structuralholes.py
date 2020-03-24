@@ -1,13 +1,4 @@
-# -*- encoding: utf-8 -*-
-#
-# Copyright 2008-2018 NetworkX developers.
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """Functions for computing measures of structural holes."""
-from __future__ import division
 
 import networkx as nx
 

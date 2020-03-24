@@ -1,11 +1,3 @@
-# voronoi.py - functions for computing the Voronoi partition of a graph
-#
-# Copyright 2016-2018 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for computing the Voronoi cells of a graph."""
 import networkx as nx
 from networkx.utils import groups

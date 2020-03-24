@@ -1,26 +1,14 @@
 """Operations on many graphs.
 """
-#    Copyright (C) 2013 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-try:
-    from itertools import izip_longest as zip_longest
-except ImportError:  # Python3 has zip_longest
-    from itertools import zip_longest
+from itertools import zip_longest
 import networkx as nx
-
-__author__ = """\n""".join(['Robert King <kingrobertking@gmail.com>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
 
 __all__ = ['union_all', 'compose_all', 'disjoint_union_all',
            'intersection_all']
 
 
 def union_all(graphs, rename=(None,)):
-    """Return the union of all graphs.
+    """Returns the union of all graphs.
 
     The graphs must be disjoint, otherwise an exception is raised.
 
@@ -38,6 +26,11 @@ def union_all(graphs, rename=(None,)):
     -------
     U : a graph with the same type as the first graph in list
 
+    Raises
+    ------
+    ValueError
+       If `graphs` is an empty list.
+
     Notes
     -----
     To force a disjoint union with node relabeling, use
@@ -52,6 +45,8 @@ def union_all(graphs, rename=(None,)):
     union
     disjoint_union_all
     """
+    if not graphs:
+        raise ValueError('cannot apply union_all to an empty list')
     graphs_names = zip_longest(graphs, rename)
     U, gname = next(graphs_names)
     for H, hname in graphs_names:
@@ -61,7 +56,7 @@ def union_all(graphs, rename=(None,)):
 
 
 def disjoint_union_all(graphs):
-    """Return the disjoint union of all graphs.
+    """Returns the disjoint union of all graphs.
 
     This operation forces distinct integer node labels starting with 0
     for the first graph in the list and numbering consecutively.
@@ -75,6 +70,11 @@ def disjoint_union_all(graphs):
     -------
     U : A graph with the same type as the first graph in list
 
+    Raises
+    ------
+    ValueError
+       If `graphs` is an empty list.
+
     Notes
     -----
     It is recommended that the graphs be either all directed or all undirected.
@@ -83,6 +83,8 @@ def disjoint_union_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
+    if not graphs:
+        raise ValueError('cannot apply disjoint_union_all to an empty list')
     graphs = iter(graphs)
     U = next(graphs)
     for H in graphs:
@@ -91,7 +93,7 @@ def disjoint_union_all(graphs):
 
 
 def compose_all(graphs):
-    """Return the composition of all graphs.
+    """Returns the composition of all graphs.
 
     Composition is the simple union of the node sets and edge sets.
     The node sets of the supplied graphs need not be disjoint.
@@ -105,6 +107,11 @@ def compose_all(graphs):
     -------
     C : A graph with the same type as the first graph in list
 
+    Raises
+    ------
+    ValueError
+       If `graphs` is an empty list.
+
     Notes
     -----
     It is recommended that the supplied graphs be either all directed or all
@@ -114,6 +121,8 @@ def compose_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
+    if not graphs:
+        raise ValueError('cannot apply compose_all to an empty list')
     graphs = iter(graphs)
     C = next(graphs)
     for H in graphs:
@@ -122,7 +131,7 @@ def compose_all(graphs):
 
 
 def intersection_all(graphs):
-    """Return a new graph that contains only the edges that exist in
+    """Returns a new graph that contains only the edges that exist in
     all graphs.
 
     All supplied graphs must have the same node set.
@@ -136,11 +145,18 @@ def intersection_all(graphs):
     -------
     R : A new graph with the same type as the first graph in list
 
+    Raises
+    ------
+    ValueError
+       If `graphs` is an empty list.
+
     Notes
     -----
     Attributes from the graph, nodes, and edges are not copied to the new
     graph.
     """
+    if not graphs:
+        raise ValueError('cannot apply intersection_all to an empty list')
     graphs = iter(graphs)
     R = next(graphs)
     for H in graphs:

@@ -1,16 +1,4 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Eben Kenah
-#          Aric Hagberg (hagberg@lanl.gov)
-#          Christopher Ellison
 """Connected components."""
-import warnings as _warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 from ...utils import arbitrary_element
@@ -18,7 +6,6 @@ from ...utils import arbitrary_element
 __all__ = [
     'number_connected_components',
     'connected_components',
-    'connected_component_subgraphs',
     'is_connected',
     'node_connected_component',
 ]
@@ -40,7 +27,7 @@ def connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is directed.
 
     Examples
@@ -57,6 +44,10 @@ def connected_components(G):
 
     >>> largest_cc = max(nx.connected_components(G), key=len)
 
+    To create the induced subgraph of each component use:
+
+    >>> S = [G.subgraph(c).copy() for c in nx.connected_components(G)]
+
     See Also
     --------
     strongly_connected_components
@@ -70,29 +61,13 @@ def connected_components(G):
     seen = set()
     for v in G:
         if v not in seen:
-            c = set(_plain_bfs(G, v))
-            yield c
+            c = _plain_bfs(G, v)
             seen.update(c)
-
-
-@not_implemented_for('directed')
-def connected_component_subgraphs(G, copy=True):
-    """DEPRECATED: Use ``(G.subgraph(c) for c in connected_components(G))``
-
-           Or ``(G.subgraph(c).copy() for c in connected_components(G))``
-    """
-    msg = "connected_component_subgraphs is deprecated and will be removed" \
-          "in 2.2. Use (G.subgraph(c).copy() for c in connected_components(G))"
-    _warnings.warn(msg, DeprecationWarning)
-    for c in connected_components(G):
-        if copy:
-            yield G.subgraph(c).copy()
-        else:
-            yield G.subgraph(c)
+            yield c
 
 
 def number_connected_components(G):
-    """Return the number of connected components.
+    """Returns the number of connected components.
 
     Parameters
     ----------
@@ -120,7 +95,7 @@ def number_connected_components(G):
 
 @not_implemented_for('directed')
 def is_connected(G):
-    """Return True if the graph is connected, False otherwise.
+    """Returns True if the graph is connected, False otherwise.
 
     Parameters
     ----------
@@ -134,7 +109,7 @@ def is_connected(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is directed.
 
     Examples
@@ -164,7 +139,7 @@ def is_connected(G):
 
 @not_implemented_for('directed')
 def node_connected_component(G, n):
-    """Return the set of nodes in the component of graph containing node n.
+    """Returns the set of nodes in the component of graph containing node n.
 
     Parameters
     ----------
@@ -181,7 +156,7 @@ def node_connected_component(G, n):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is directed.
 
     See Also
@@ -193,7 +168,7 @@ def node_connected_component(G, n):
     For undirected graphs only.
 
     """
-    return set(_plain_bfs(G, n))
+    return _plain_bfs(G, n)
 
 
 def _plain_bfs(G, source):
@@ -206,6 +181,6 @@ def _plain_bfs(G, source):
         nextlevel = set()
         for v in thislevel:
             if v not in seen:
-                yield v
                 seen.add(v)
                 nextlevel.update(G_adj[v])
+    return seen

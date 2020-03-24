@@ -1,15 +1,7 @@
 """PageRank analysis of graph structure. """
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#    NetworkX:http://networkx.github.io/
 import networkx as nx
 from networkx.utils import not_implemented_for
-__author__ = """\n""".join(["Aric Hagberg <aric.hagberg@gmail.com>",
-                            "Brandon Liu <brandon.k.liu@gmail.com"])
+
 __all__ = ['pagerank', 'pagerank_numpy', 'pagerank_scipy', 'google_matrix']
 
 
@@ -17,7 +9,7 @@ __all__ = ['pagerank', 'pagerank_numpy', 'pagerank_scipy', 'google_matrix']
 def pagerank(G, alpha=0.85, personalization=None,
              max_iter=100, tol=1.0e-6, nstart=None, weight='weight',
              dangling=None):
-    """Return the PageRank of the nodes in the graph.
+    """Returns the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
     the structure of the incoming links. It was originally designed as
@@ -123,21 +115,21 @@ def pagerank(G, alpha=0.85, personalization=None,
     else:
         # Normalized nstart vector
         s = float(sum(nstart.values()))
-        x = dict((k, v / s) for k, v in nstart.items())
+        x = {k: v / s for k, v in nstart.items()}
 
     if personalization is None:
         # Assign uniform personalization vector if not given
         p = dict.fromkeys(W, 1.0 / N)
     else:
         s = float(sum(personalization.values()))
-        p = dict((k, v / s) for k, v in personalization.items())
+        p = {k: v / s for k, v in personalization.items()}
 
     if dangling is None:
         # Use personalization vector if dangling vector not specified
         dangling_weights = p
     else:
         s = float(sum(dangling.values()))
-        dangling_weights = dict((k, v / s) for k, v in dangling.items())
+        dangling_weights = {k: v / s for k, v in dangling.items()}
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
     # power iteration: make up to max_iter iterations
@@ -160,7 +152,7 @@ def pagerank(G, alpha=0.85, personalization=None,
 
 def google_matrix(G, alpha=0.85, personalization=None,
                   nodelist=None, weight='weight', dangling=None):
-    """Return the Google matrix of the graph.
+    """Returns the Google matrix of the graph.
 
     Parameters
     ----------
@@ -254,7 +246,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
 
 def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
                    dangling=None):
-    """Return the PageRank of the nodes in the graph.
+    """Returns the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
     the structure of the incoming links. It was originally designed as
@@ -336,9 +328,9 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
 
 
 def pagerank_scipy(G, alpha=0.85, personalization=None,
-                   max_iter=100, tol=1.0e-6, weight='weight',
+                   max_iter=100, tol=1.0e-6, nstart=None, weight='weight',
                    dangling=None):
-    """Return the PageRank of the nodes in the graph.
+    """Returns the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
     the structure of the incoming links. It was originally designed as
@@ -365,6 +357,9 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
 
     tol : float, optional
       Error tolerance used to check convergence in power method solver.
+
+    nstart : dictionary, optional
+      Starting value of PageRank iteration for each node.
 
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
@@ -417,6 +412,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
+    import numpy as np
     import scipy.sparse
 
     N = len(G)
@@ -426,19 +422,23 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     nodelist = list(G)
     M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
                                   dtype=float)
-    S = scipy.array(M.sum(axis=1)).flatten()
+    S = np.array(M.sum(axis=1)).flatten()
     S[S != 0] = 1.0 / S[S != 0]
     Q = scipy.sparse.spdiags(S.T, 0, *M.shape, format='csr')
     M = Q * M
 
     # initial vector
-    x = scipy.repeat(1.0 / N, N)
+    if nstart is None:
+        x = np.repeat(1.0 / N, N)
+    else:
+        x = np.array([nstart.get(n, 0) for n in nodelist], dtype=float)
+        x = x / x.sum()
 
     # Personalization vector
     if personalization is None:
-        p = scipy.repeat(1.0 / N, N)
+        p = np.repeat(1.0 / N, N)
     else:
-        p = scipy.array([personalization.get(n, 0) for n in nodelist], dtype=float)
+        p = np.array([personalization.get(n, 0) for n in nodelist], dtype=float)
         p = p / p.sum()
 
     # Dangling nodes
@@ -446,10 +446,10 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
         dangling_weights = p
     else:
         # Convert the dangling dictionary into an array in nodelist order
-        dangling_weights = scipy.array([dangling.get(n, 0) for n in nodelist],
-                                       dtype=float)
+        dangling_weights = np.array([dangling.get(n, 0) for n in nodelist],
+                                    dtype=float)
         dangling_weights /= dangling_weights.sum()
-    is_dangling = scipy.where(S == 0)[0]
+    is_dangling = np.where(S == 0)[0]
 
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
@@ -457,20 +457,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
         x = alpha * (x * M + sum(x[is_dangling]) * dangling_weights) + \
             (1 - alpha) * p
         # check convergence, l1 norm
-        err = scipy.absolute(x - xlast).sum()
+        err = np.absolute(x - xlast).sum()
         if err < N * tol:
             return dict(zip(nodelist, map(float, x)))
     raise nx.PowerIterationFailedConvergence(max_iter)
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

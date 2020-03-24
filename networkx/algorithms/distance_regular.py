@@ -1,8 +1,3 @@
-#    Copyright (C) 2011 by
-#    Dheeraj M R <dheerajrav@gmail.com>
-#    Aric Hagberg <aric.hagberg@gmail.com>
-#    All rights reserved.
-#    BSD license.
 """
 =======================
 Distance-regular graphs
@@ -12,9 +7,6 @@ Distance-regular graphs
 import networkx as nx
 from networkx.utils import not_implemented_for
 from .distance_measures import diameter
-
-__author__ = """\n""".join(['Dheeraj M R <dheerajrav@gmail.com>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
 
 __all__ = ['is_distance_regular', 'is_strongly_regular',
            'intersection_array', 'global_parameters']
@@ -68,7 +60,7 @@ def is_distance_regular(G):
 
 
 def global_parameters(b, c):
-    """Return global parameters for a given intersection array.
+    """Returns global parameters for a given intersection array.
 
     Given a distance-regular graph G with integers b_i, c_i,i = 0,....,d
     such that for any 2 vertices x,y in G at a distance i=d(x,y), there

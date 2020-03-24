@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright 2014 "cheebee7i".
-# Copyright 2014 "alexbrc".
-# Copyright 2014 Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>.
 """Provides explicit constructions of expander graphs.
 
 """
@@ -44,7 +40,7 @@ __all__ = ['margulis_gabber_galil_graph', 'chordal_cycle_graph']
 #     (x, (y + (2*x + 2)) % n),
 #
 def margulis_gabber_galil_graph(n, create_using=None):
-    """Return the Margulis-Gabber-Galil undirected MultiGraph on `n^2` nodes.
+    r"""Returns the Margulis-Gabber-Galil undirected MultiGraph on `n^2` nodes.
 
     The undirected MultiGraph is regular with degree `8`. Nodes are integer
     pairs. The second-largest eigenvalue of the adjacency matrix of the graph
@@ -77,12 +73,12 @@ def margulis_gabber_galil_graph(n, create_using=None):
         for (u, v) in (((x + 2 * y) % n, y), ((x + (2 * y + 1)) % n, y),
                        (x, (y + 2 * x) % n), (x, (y + (2 * x + 1)) % n)):
             G.add_edge((x, y), (u, v))
-    G.graph['name'] = "margulis_gabber_galil_graph({0})".format(n)
+    G.graph['name'] = f"margulis_gabber_galil_graph({n})"
     return G
 
 
 def chordal_cycle_graph(p, create_using=None):
-    """Return the chordal cycle graph on `p` nodes.
+    """Returns the chordal cycle graph on `p` nodes.
 
     The returned graph is a cycle graph on `p` nodes with chords joining each
     vertex `x` to its inverse modulo `p`. This graph is a (mildly explicit)
@@ -140,5 +136,5 @@ def chordal_cycle_graph(p, create_using=None):
         chord = pow(x, p - 2, p) if x > 0 else 0
         for y in (left, right, chord):
             G.add_edge(x, y)
-    G.graph['name'] = "chordal_cycle_graph({0})".format(p)
+    G.graph['name'] = f"chordal_cycle_graph({p})"
     return G

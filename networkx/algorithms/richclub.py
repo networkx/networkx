@@ -1,18 +1,7 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Ben Edwards (bedwards@cs.unm.edu)
-#          Aric Hagberg (hagberg@lanl.gov)
 """Functions for computing rich-club coefficients."""
-from __future__ import division
 
 import networkx as nx
-from networkx.utils import accumulate
+from itertools import accumulate
 from networkx.utils import not_implemented_for
 
 __all__ = ['rich_club_coefficient']
@@ -20,7 +9,7 @@ __all__ = ['rich_club_coefficient']
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def rich_club_coefficient(G, normalized=True, Q=100):
+def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     r"""Returns the rich-club coefficient of the graph `G`.
 
     For each degree *k*, the *rich-club coefficient* is the ratio of the
@@ -44,6 +33,9 @@ def rich_club_coefficient(G, normalized=True, Q=100):
         If `normalized` is True, perform `Q * m` double-edge
         swaps, where `m` is the number of edges in `G`, to use as a
         null-model for normalization.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -53,8 +45,8 @@ def rich_club_coefficient(G, normalized=True, Q=100):
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (1, 4), (4, 5)])
-    >>> rc = nx.rich_club_coefficient(G, normalized=False)
-    >>> rc[0] # doctest: +SKIP
+    >>> rc = nx.rich_club_coefficient(G, normalized=False, seed=42)
+    >>> rc[0]
     0.4
 
     Notes
@@ -85,7 +77,7 @@ def rich_club_coefficient(G, normalized=True, Q=100):
         # and use rich_club coefficient of R to normalize
         R = G.copy()
         E = R.number_of_edges()
-        nx.double_edge_swap(R, Q * E, max_tries=Q * E * 10)
+        nx.double_edge_swap(R, Q * E, max_tries=Q * E * 10, seed=seed)
         rcran = _compute_rc(R)
         rc = {k: v / rcran[k] for k, v in rc.items()}
     return rc

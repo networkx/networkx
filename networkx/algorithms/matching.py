@@ -1,17 +1,3 @@
-# Copyright 2016 NetworkX developers.
-# Copyright (C) 2004-2018 by
-#   Aric Hagberg <hagberg@lanl.gov>
-#   Dan Schult <dschult@colgate.edu>
-#   Pieter Swart <swart@lanl.gov>
-#
-# Copyright (C) 2008 by
-#   Joris van Rantwijk.
-#
-# Copyright (C) 2011 by
-#   Nicholas Mancuso <nick.mancuso@gmail.com>
-#
-# All rights reserved.
-# BSD license.
 """Functions for computing and verifying matchings in a graph."""
 from collections import Counter
 from itertools import combinations
@@ -71,7 +57,7 @@ def matching_dict_to_set(matching):
     # only the (frozen)set `{u, v}` appears as an element in the
     # returned set.
 
-    return set((u, v) for (u, v) in set(map(frozenset, matching.items())))
+    return {(u, v) for (u, v) in set(map(frozenset, matching.items()))}
 
 
 def is_matching(G, matching):
@@ -276,8 +262,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
         def leaves(self):
             for t in self.childs:
                 if isinstance(t, Blossom):
-                    for v in t.leaves():
-                        yield v
+                    yield from t.leaves()
                 else:
                     yield t
 

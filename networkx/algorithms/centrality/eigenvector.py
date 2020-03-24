@@ -1,43 +1,29 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:
-#     Aric Hagberg <aric.hagberg@gmail.com>
-#     Pieter Swart <swart@lanl.gov>
-#     Sasha Gutfraind <ag362@cornell.edu>
 """Functions for computing eigenvector centrality."""
-from __future__ import division
 
 from math import sqrt
 
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['eigenvector_centrality', 'eigenvector_centrality_numpy']
+__all__ = ["eigenvector_centrality", "eigenvector_centrality_numpy"]
 
 
-@not_implemented_for('multigraph')
-def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
-                           weight=None):
+@not_implemented_for("multigraph")
+def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None):
     r"""Compute the eigenvector centrality for the graph `G`.
 
     Eigenvector centrality computes the centrality for a node based on the
     centrality of its neighbors. The eigenvector centrality for node $i$ is
+    the $i$-th element of the vector $x$ defined by the equation
 
     .. math::
 
         Ax = \lambda x
 
     where $A$ is the adjacency matrix of the graph `G` with eigenvalue
-    $\lambda$. By virtue of the Perron–Frobenius theorem, there is
-    a unique and positive solution if $\lambda$ is the largest
-    eigenvalue associated with the eigenvector of the adjacency matrix
-    $A$ ([2]_).
+    $\lambda$. By virtue of the Perron–Frobenius theorem, there is a unique
+    solution $x$, all of whose entries are positive, if $\lambda$ is the
+    largest eigenvalue of the adjacency matrix $A$ ([2]_).
 
     Parameters
     ----------
@@ -66,7 +52,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     --------
     >>> G = nx.path_graph(4)
     >>> centrality = nx.eigenvector_centrality(G)
-    >>> sorted((v, '{:0.2f}'.format(c)) for v, c in centrality.items())
+    >>> sorted((v, f"{c:0.2f}") for v, c in centrality.items())
     [(0, '0.37'), (1, '0.60'), (2, '0.60'), (3, '0.37')]
 
     Raises
@@ -117,16 +103,18 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
 
     """
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept('cannot compute centrality for the'
-                                          ' null graph')
+        raise nx.NetworkXPointlessConcept(
+            "cannot compute centrality for the null graph"
+        )
     # If no initial vector is provided, start with the all-ones vector.
     if nstart is None:
         nstart = {v: 1 for v in G}
     if all(v == 0 for v in nstart.values()):
-        raise nx.NetworkXError('initial vector cannot have all zero values')
+        raise nx.NetworkXError("initial vector cannot have all zero values")
     # Normalize the initial vector so that each entry is in [0, 1]. This is
     # guaranteed to never have a divide-by-zero error by the previous line.
-    x = {k: v / sum(nstart.values()) for k, v in nstart.items()}
+    nstart_sum = sum(nstart.values())
+    x = {k: v / nstart_sum for k, v in nstart.items()}
     nnodes = G.number_of_nodes()
     # make up to max_iter iterations
     for i in range(max_iter):
@@ -135,7 +123,8 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
         # do the multiplication y^T = x^T A (left eigenvector)
         for n in x:
             for nbr in G[n]:
-                x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)
+                w = G[n][nbr].get(weight, 1) if weight else 1
+                x[nbr] += xlast[n] * w
         # Normalize the vector. The normalization denominator `norm`
         # should never be zero by the Perron--Frobenius
         # theorem. However, in case it is due to numerical error, we
@@ -188,7 +177,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     --------
     >>> G = nx.path_graph(4)
     >>> centrality = nx.eigenvector_centrality_numpy(G)
-    >>> print(['{} {:0.2f}'.format(node, centrality[node]) for node in centrality])
+    >>> print([f"{node} {centrality[node]:0.2f}" for node in centrality])
     ['0 0.37', '1 0.60', '2 0.60', '3 0.37']
 
     See Also
@@ -223,24 +212,18 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
        Networks: An Introduction.
        Oxford University Press, USA, 2010, pp. 169.
     """
+    import numpy as np
     import scipy as sp
     from scipy.sparse import linalg
+
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept('cannot compute centrality for the'
-                                          ' null graph')
-    M = nx.to_scipy_sparse_matrix(G, nodelist=list(G), weight=weight,
-                                  dtype=float)
-    eigenvalue, eigenvector = linalg.eigs(M.T, k=1, which='LR',
-                                          maxiter=max_iter, tol=tol)
+        raise nx.NetworkXPointlessConcept(
+            "cannot compute centrality for the null graph"
+        )
+    M = nx.to_scipy_sparse_matrix(G, nodelist=list(G), weight=weight, dtype=float)
+    eigenvalue, eigenvector = linalg.eigs(
+        M.T, k=1, which="LR", maxiter=max_iter, tol=tol
+    )
     largest = eigenvector.flatten().real
-    norm = sp.sign(largest.sum()) * sp.linalg.norm(largest)
+    norm = np.sign(largest.sum()) * sp.linalg.norm(largest)
     return dict(zip(G, largest / norm))
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

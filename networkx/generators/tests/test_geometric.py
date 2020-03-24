@@ -2,9 +2,6 @@ from itertools import combinations
 from math import sqrt
 import random
 
-from nose.tools import assert_equal
-from nose.tools import assert_false
-from nose.tools import assert_true
 
 import networkx as nx
 from networkx.generators.geometric import euclidean
@@ -14,17 +11,17 @@ def l1dist(x, y):
     return sum(abs(a - b) for a, b in zip(x, y))
 
 
-class TestRandomGeometricGraph(object):
+class TestRandomGeometricGraph:
     """Unit tests for the :func:`~networkx.random_geometric_graph`
     function.
 
     """
 
     def test_number_of_nodes(self):
-        G = nx.random_geometric_graph(50, 0.25)
-        assert_equal(len(G), 50)
-        G = nx.random_geometric_graph(range(50), 0.25)
-        assert_equal(len(G), 50)
+        G = nx.random_geometric_graph(50, 0.25, seed=42)
+        assert len(G) == 50
+        G = nx.random_geometric_graph(range(50), 0.25, seed=42)
+        assert len(G) == 50
 
     def test_distances(self):
         """Tests that pairs of vertices adjacent if and only if they are
@@ -38,10 +35,10 @@ class TestRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
+                assert dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25
             # Nonadjacent vertices must be at greater distance.
             else:
-                assert_false(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
+                assert not dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25
 
     def test_p(self):
         """Tests for providing an alternate distance metric to the
@@ -54,10 +51,10 @@ class TestRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
+                assert dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25
             # Nonadjacent vertices must be at greater distance.
             else:
-                assert_false(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
+                assert not dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25
 
     def test_node_names(self):
         """Tests using values other than sequential numbers as node IDs.
@@ -66,29 +63,29 @@ class TestRandomGeometricGraph(object):
         import string
         nodes = list(string.ascii_lowercase)
         G = nx.random_geometric_graph(nodes, 0.25)
-        assert_equal(len(G), len(nodes))
+        assert len(G) == len(nodes)
 
         dist = euclidean
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
+                assert dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25
             # Nonadjacent vertices must be at greater distance.
             else:
-                assert_false(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
+                assert not dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25
 
 
-class TestSoftRandomGeometricGraph(object):
+class TestSoftRandomGeometricGraph:
     """Unit tests for the :func:`~networkx.soft_random_geometric_graph`
     function.
 
     """
 
     def test_number_of_nodes(self):
-        G = nx.soft_random_geometric_graph(50, 0.25)
-        assert_equal(len(G), 50)
-        G = nx.soft_random_geometric_graph(range(50), 0.25)
-        assert_equal(len(G), 50)
+        G = nx.soft_random_geometric_graph(50, 0.25, seed=42)
+        assert len(G) == 50
+        G = nx.soft_random_geometric_graph(range(50), 0.25, seed=42)
+        assert len(G) == 50
 
     def test_distances(self):
         """Tests that pairs of vertices adjacent if and only if they are
@@ -102,7 +99,7 @@ class TestSoftRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
+                assert dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25
 
     def test_p(self):
         """Tests for providing an alternate distance metric to the
@@ -115,7 +112,7 @@ class TestSoftRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
+                assert dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25
 
     def test_node_names(self):
         """Tests using values other than sequential numbers as node IDs.
@@ -124,13 +121,13 @@ class TestSoftRandomGeometricGraph(object):
         import string
         nodes = list(string.ascii_lowercase)
         G = nx.soft_random_geometric_graph(nodes, 0.25)
-        assert_equal(len(G), len(nodes))
+        assert len(G) == len(nodes)
 
         def dist(x, y): return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
+                assert dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25
 
     def test_p_dist_default(self):
         """Tests default p_dict = 0.5 returns graph with edge count <= RGG with
@@ -142,7 +139,7 @@ class TestSoftRandomGeometricGraph(object):
         pos = {v: [random.random() for i in range(dim)] for v in range(nodes)}
         RGG = nx.random_geometric_graph(50, 0.25, pos=pos)
         SRGG = nx.soft_random_geometric_graph(50, 0.25, pos=pos)
-        assert_true(len(SRGG.edges()) <= len(RGG.edges()))
+        assert len(SRGG.edges()) <= len(RGG.edges())
 
     def test_p_dist_zero(self):
         """Tests if p_dict = 0 returns disconencted graph with 0 edges
@@ -152,7 +149,7 @@ class TestSoftRandomGeometricGraph(object):
             return 0
 
         G = nx.soft_random_geometric_graph(50, 0.25, p_dist=p_dist)
-        assert_true(len(G.edges) == 0)
+        assert len(G.edges) == 0
 
 
 def join(G, u, v, theta, alpha, metric):
@@ -173,17 +170,17 @@ def join(G, u, v, theta, alpha, metric):
     return (u_weight + v_weight) * metric(u_pos, v_pos) ** alpha >= theta
 
 
-class TestGeographicalThresholdGraph(object):
+class TestGeographicalThresholdGraph:
     """Unit tests for the :func:`~networkx.geographical_threshold_graph`
     function.
 
     """
 
     def test_number_of_nodes(self):
-        G = nx.geographical_threshold_graph(50, 100)
-        assert_equal(len(G), 50)
-        G = nx.geographical_threshold_graph(range(50), 100)
-        assert_equal(len(G), 50)
+        G = nx.geographical_threshold_graph(50, 100, seed=42)
+        assert len(G) == 50
+        G = nx.geographical_threshold_graph(range(50), 100, seed=42)
+        assert len(G) == 50
 
     def test_distances(self):
         """Tests that pairs of vertices adjacent if and only if their
@@ -197,10 +194,10 @@ class TestGeographicalThresholdGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must exceed the threshold.
             if v in G[u]:
-                assert_true(join(G, u, v, 10, -2, dist))
+                assert join(G, u, v, 10, -2, dist)
             # Nonadjacent vertices must not exceed the threshold.
             else:
-                assert_false(join(G, u, v, 10, -2, dist))
+                assert not join(G, u, v, 10, -2, dist)
 
     def test_metric(self):
         """Tests for providing an alternate distance metric to the
@@ -213,10 +210,10 @@ class TestGeographicalThresholdGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must exceed the threshold.
             if v in G[u]:
-                assert_true(join(G, u, v, 10, -2, dist))
+                assert join(G, u, v, 10, -2, dist)
             # Nonadjacent vertices must not exceed the threshold.
             else:
-                assert_false(join(G, u, v, 10, -2, dist))
+                assert not join(G, u, v, 10, -2, dist)
 
     def test_p_dist_zero(self):
         """Tests if p_dict = 0 returns disconencted graph with 0 edges
@@ -226,23 +223,23 @@ class TestGeographicalThresholdGraph(object):
             return 0
 
         G = nx.geographical_threshold_graph(50, 1, p_dist=p_dist)
-        assert_true(len(G.edges) == 0)
+        assert len(G.edges) == 0
 
 
-class TestWaxmanGraph(object):
+class TestWaxmanGraph:
     """Unit tests for the :func:`~networkx.waxman_graph` function."""
 
     def test_number_of_nodes_1(self):
-        G = nx.waxman_graph(50, 0.5, 0.1)
-        assert_equal(len(G), 50)
-        G = nx.waxman_graph(range(50), 0.5, 0.1)
-        assert_equal(len(G), 50)
+        G = nx.waxman_graph(50, 0.5, 0.1, seed=42)
+        assert len(G) == 50
+        G = nx.waxman_graph(range(50), 0.5, 0.1, seed=42)
+        assert len(G) == 50
 
     def test_number_of_nodes_2(self):
         G = nx.waxman_graph(50, 0.5, 0.1, L=1)
-        assert_equal(len(G), 50)
+        assert len(G) == 50
         G = nx.waxman_graph(range(50), 0.5, 0.1, L=1)
-        assert_equal(len(G), 50)
+        assert len(G) == 50
 
     def test_metric(self):
         """Tests for providing an alternate distance metric to the
@@ -252,36 +249,36 @@ class TestWaxmanGraph(object):
         # Use the L1 metric.
         dist = l1dist
         G = nx.waxman_graph(50, 0.5, 0.1, metric=dist)
-        assert_equal(len(G), 50)
+        assert len(G) == 50
 
 
-class TestNavigableSmallWorldGraph(object):
+class TestNavigableSmallWorldGraph:
 
     def test_navigable_small_world(self):
-        G = nx.navigable_small_world_graph(5, p=1, q=0)
+        G = nx.navigable_small_world_graph(5, p=1, q=0, seed=42)
         gg = nx.grid_2d_graph(5, 5).to_directed()
-        assert_true(nx.is_isomorphic(G, gg))
+        assert nx.is_isomorphic(G, gg)
 
         G = nx.navigable_small_world_graph(5, p=1, q=0, dim=3)
         gg = nx.grid_graph([5, 5, 5]).to_directed()
-        assert_true(nx.is_isomorphic(G, gg))
+        assert nx.is_isomorphic(G, gg)
 
         G = nx.navigable_small_world_graph(5, p=1, q=0, dim=1)
         gg = nx.grid_graph([5]).to_directed()
-        assert_true(nx.is_isomorphic(G, gg))
+        assert nx.is_isomorphic(G, gg)
 
 
-class TestThresholdedRandomGeometricGraph(object):
+class TestThresholdedRandomGeometricGraph:
     """Unit tests for the :func:`~networkx.thresholded_random_geometric_graph`
     function.
 
     """
 
     def test_number_of_nodes(self):
-        G = nx.thresholded_random_geometric_graph(50, 0.2, 0.1)
-        assert_equal(len(G), 50)
+        G = nx.thresholded_random_geometric_graph(50, 0.2, 0.1, seed=42)
+        assert len(G) == 50
         G = nx.thresholded_random_geometric_graph(range(50), 0.2, 0.1)
-        assert_equal(len(G), 50)
+        assert len(G) == 50
 
     def test_distances(self):
         """Tests that pairs of vertices adjacent if and only if they are
@@ -295,7 +292,7 @@ class TestThresholdedRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
+                assert dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25
 
     def test_p(self):
         """Tests for providing an alternate distance metric to the
@@ -308,7 +305,7 @@ class TestThresholdedRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
+                assert dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25
 
     def test_node_names(self):
         """Tests using values other than sequential numbers as node IDs.
@@ -317,13 +314,13 @@ class TestThresholdedRandomGeometricGraph(object):
         import string
         nodes = list(string.ascii_lowercase)
         G = nx.thresholded_random_geometric_graph(nodes, 0.25, 0.1)
-        assert_equal(len(G), len(nodes))
+        assert len(G) == len(nodes)
 
         def dist(x, y): return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true(dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25)
+                assert dist(G.nodes[u]['pos'], G.nodes[v]['pos']) <= 0.25
 
     def test_theta(self):
         """Tests that pairs of vertices adjacent if and only if their sum
@@ -334,4 +331,4 @@ class TestThresholdedRandomGeometricGraph(object):
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert_true((G.nodes[u]['weight'] + G.nodes[v]['weight']) >= 0.1)
+                assert (G.nodes[u]['weight'] + G.nodes[v]['weight']) >= 0.1

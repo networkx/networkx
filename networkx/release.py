@@ -29,15 +29,6 @@ tar.gz file. This is why write_versionfile() includes an early escape.
 
 """
 
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-
-from __future__ import absolute_import
-
 import os
 import sys
 import time
@@ -160,7 +151,7 @@ def get_info(dynamic=True):
             vcs_info = (None, (None, None))
         else:
             revision = vcs_info[1][0]
-        #del sys.path[0]
+        # del sys.path[0]
 
     if import_failed or (dynamic and not dynamic_failed):
         # We are here if:
@@ -177,7 +168,7 @@ def get_info(dynamic=True):
 # Version information
 name = 'networkx'
 major = "2"
-minor = "2rc1"
+minor = "5rc1"
 
 
 # Declare current release as a development release.
@@ -186,21 +177,17 @@ dev = True
 
 
 description = "Python package for creating and manipulating graphs and networks"
-
-long_description = \
-    """
-NetworkX is a Python package for the creation, manipulation, and
-study of the structure, dynamics, and functions of complex networks.
-
-"""
-license = 'BSD'
 authors = {'Hagberg': ('Aric Hagberg', 'hagberg@lanl.gov'),
            'Schult': ('Dan Schult', 'dschult@colgate.edu'),
            'Swart': ('Pieter Swart', 'swart@lanl.gov')}
 maintainer = "NetworkX Developers"
 maintainer_email = "networkx-discuss@googlegroups.com"
 url = 'http://networkx.github.io/'
-download_url = 'https://pypi.python.org/pypi/networkx/'
+project_urls = {
+    "Bug Tracker": "https://github.com/networkx/networkx/issues",
+    "Documentation": "https://networkx.github.io/documentation/stable/",
+    "Source Code": "https://github.com/networkx/networkx",
+}
 platforms = ['Linux', 'Mac OSX', 'Windows', 'Unix']
 keywords = ['Networks', 'Graph Theory', 'Mathematics',
             'network', 'graph', 'discrete mathematics', 'math']
@@ -210,12 +197,11 @@ classifiers = [
     'Intended Audience :: Science/Research',
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
-    'Programming Language :: Python :: 2',
-    'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.4',
-    'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3 :: Only',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Scientific/Engineering :: Bio-Informatics',
     'Topic :: Scientific/Engineering :: Information Analysis',

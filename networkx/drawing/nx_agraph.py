@@ -1,11 +1,3 @@
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """
 ***************
 Graphviz AGraph
@@ -35,7 +27,7 @@ __all__ = ['from_agraph', 'to_agraph',
 
 
 def from_agraph(A, create_using=None):
-    """Return a NetworkX Graph or DiGraph from a PyGraphviz graph.
+    """Returns a NetworkX Graph or DiGraph from a PyGraphviz graph.
 
     Parameters
     ----------
@@ -50,8 +42,6 @@ def from_agraph(A, create_using=None):
     >>> K5 = nx.complete_graph(5)
     >>> A = nx.nx_agraph.to_agraph(K5)
     >>> G = nx.nx_agraph.from_agraph(A)
-    >>> G = nx.nx_agraph.from_agraph(A)
-
 
     Notes
     -----
@@ -112,7 +102,7 @@ def from_agraph(A, create_using=None):
 
 
 def to_agraph(N):
-    """Return a pygraphviz graph from a NetworkX graph N.
+    """Returns a pygraphviz graph from a NetworkX graph N.
 
     Parameters
     ----------
@@ -145,7 +135,8 @@ def to_agraph(N):
     A.node_attr.update(N.graph.get('node', {}))
     A.edge_attr.update(N.graph.get('edge', {}))
 
-    A.graph_attr.update(N.graph)
+    A.graph_attr.update((k, v) for k, v in N.graph.items()
+                        if k not in ('graph', 'node', 'edge'))
 
     # add nodes
     for n, nodedata in N.nodes(data=True):
@@ -157,7 +148,8 @@ def to_agraph(N):
     # loop over edges
     if N.is_multigraph():
         for u, v, key, edgedata in N.edges(data=True, keys=True):
-            str_edgedata = {k: str(v) for k, v in edgedata.items() if k != 'key'}
+            str_edgedata = {k: str(v) for k, v in edgedata.items()
+                            if k != 'key'}
             A.add_edge(u, v, key=str(key))
             if edgedata is not None:
                 a = A.get_edge(u, v)
@@ -196,7 +188,7 @@ def write_dot(G, path):
 
 
 def read_dot(path):
-    """Return a NetworkX graph from a dot file on path.
+    """Returns a NetworkX graph from a dot file on path.
 
     Parameters
     ----------
@@ -226,7 +218,8 @@ def graphviz_layout(G, prog='neato', root=None, args=''):
     args : string, optional
       Extra arguments to Graphviz layout program
 
-    Returns : dictionary
+    Returns
+    -------
       Dictionary of x, y, positions keyed by node.
 
     Examples
@@ -238,7 +231,6 @@ def graphviz_layout(G, prog='neato', root=None, args=''):
     Notes
     -----
     This is a wrapper for pygraphviz_layout.
-
     """
     return pygraphviz_layout(G, prog=prog, root=root, args=args)
 
@@ -266,6 +258,18 @@ def pygraphviz_layout(G, prog='neato', root=None, args=''):
     >>> pos = nx.nx_agraph.graphviz_layout(G)
     >>> pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
 
+    Notes
+    -----
+    If you use complex node objects, they may have the same string
+    representation and GraphViz could treat them as the same node.
+    The layout may assign both nodes a single location. See Issue #1568
+    If this occurs in your case, consider relabeling the nodes just
+    for the layout computation using something similar to:
+
+        H = nx.convert_node_labels_to_integers(G, label_attribute='node_label')
+        H_layout = nx.nx_agraph.pygraphviz_layout(G, prog='dot')
+        G_layout = {H.nodes[n]['node_label']: p for n, p in H_layout.items()}
+
     """
     try:
         import pygraphviz
@@ -273,22 +277,22 @@ def pygraphviz_layout(G, prog='neato', root=None, args=''):
         raise ImportError('requires pygraphviz ',
                           'http://pygraphviz.github.io/')
     if root is not None:
-        args += "-Groot=%s" % root
+        args += f"-Groot={root}"
     A = to_agraph(G)
     A.layout(prog=prog, args=args)
     node_pos = {}
     for n in G:
         node = pygraphviz.Node(A, n)
         try:
-            xx, yy = node.attr["pos"].split(',')
-            node_pos[n] = (float(xx), float(yy))
+            xs = node.attr["pos"].split(',')
+            node_pos[n] = tuple(float(x) for x in xs)
         except:
             print("no position for node", n)
             node_pos[n] = (0.0, 0.0)
     return node_pos
 
 
-@nx.utils.open_file(5, 'w')
+@nx.utils.open_file(5, 'w+b')
 def view_pygraphviz(G, edgelabel=None, prog='dot', args='',
                     suffix='', path=None):
     """Views the graph G using the specified layout algorithm.
@@ -404,9 +408,9 @@ def view_pygraphviz(G, edgelabel=None, prog='dot', args='',
     if path is None:
         ext = 'png'
         if suffix:
-            suffix = '_%s.%s' % (suffix, ext)
+            suffix = f"_{suffix}.{ext}"
         else:
-            suffix = '.%s' % (ext,)
+            suffix = f".{ext}"
         path = tempfile.NamedTemporaryFile(suffix=suffix, delete=False)
     else:
         # Assume the decorator worked and it is a file-object.
@@ -453,12 +457,3 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=''):
     graph.draw(path, format, prog, args)
     path.close()
     nx.utils.default_opener(filename)
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import pygraphviz
-    except:
-        raise SkipTest("pygraphviz not available")

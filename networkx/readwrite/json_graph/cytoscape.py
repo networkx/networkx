@@ -1,5 +1,3 @@
-#    BSD license.
-
 import networkx as nx
 
 __all__ = ['cytoscape_data', 'cytoscape_graph']
@@ -8,7 +6,7 @@ _attrs = dict(name='name', ident='id')
 
 
 def cytoscape_data(G, attrs=None):
-    """Return data in Cytoscape JSON format (cyjs).
+    """Returns data in Cytoscape JSON format (cyjs).
 
     Parameters
     ----------
@@ -32,7 +30,7 @@ def cytoscape_data(G, attrs=None):
     name = attrs["name"]
     ident = attrs["ident"]
 
-    if len(set([name, ident])) < 2:
+    if len({name, ident}) < 2:
         raise nx.NetworkXError('Attribute names are not unique.')
 
     jsondata = {"data": list(G.graph.items())}
@@ -74,7 +72,7 @@ def cytoscape_graph(data, attrs=None):
     name = attrs["name"]
     ident = attrs["ident"]
 
-    if len(set([ident, name])) < 2:
+    if len({ident, name}) < 2:
         raise nx.NetworkXError('Attribute names are not unique.')
 
     multigraph = data.get('multigraph')

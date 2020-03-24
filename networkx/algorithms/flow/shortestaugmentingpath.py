@@ -1,16 +1,10 @@
-# -*- coding: utf-8 -*-
 """
 Shortest augmenting path algorithm for maximum flow problems.
 """
 
-__author__ = """ysitu <ysitu@users.noreply.github.com>"""
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
-
 from collections import deque
 import networkx as nx
-from .utils import *
+from .utils import build_residual_network, CurrentEdge
 from .edmondskarp import edmonds_karp_core
 
 __all__ = ['shortest_augmenting_path']
@@ -21,9 +15,9 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
     """Implementation of the shortest augmenting path algorithm.
     """
     if s not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(s))
+        raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(t))
+        raise nx.NetworkXError(f"node {str(t)} not in graph")
     if s == t:
         raise nx.NetworkXError('source and sink are the same node')
 
@@ -175,7 +169,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
 
 def shortest_augmenting_path(G, s, t, capacity='capacity', residual=None,
                              value_only=False, two_phase=False, cutoff=None):
-    """Find a maximum single-commodity flow using the shortest augmenting path
+    r"""Find a maximum single-commodity flow using the shortest augmenting path
     algorithm.
 
     This function returns the residual network resulting after computing

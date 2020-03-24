@@ -81,9 +81,10 @@ views.
     >>> H = nx.Graph()
     >>> H.add_nodes_from([1, 'networkx', '2.0'])
     >>> G.nodes & H.nodes  # finding common nodes in 2 graphs
-    set([1])
-    >>> G.nodes | H.nodes  # union of nodes in 2 graphs
-    set([0, 1, 2, 3, 4, 'networkx', '2.0'])
+    {1}
+    >>> # union of nodes in 2 graphs
+    >>> G.nodes | H.nodes  # doctest: +SKIP
+    {0, 1, 2, 3, 4, 'networkx', '2.0'}
 
 Similarly, ``G.edges`` now returns an EdgeView instead of a list of edges and it
 also supports set operations.
@@ -94,7 +95,7 @@ also supports set operations.
     [(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
 
 ``G.degree`` now returns a DegreeView. This is less dict-like than the other views
-in the sense that it iterates over (node, degree) pairs, does not provide 
+in the sense that it iterates over (node, degree) pairs, does not provide
 keys/values/items/get methods. It does provide lookup ``G.degree[n]`` and
 ``(node, degree)`` iteration. A dict keyed by nodes to degree values can be
 easily created if needed as ``dict(G.degree)``.
@@ -117,7 +118,7 @@ easily created if needed as ``dict(G.degree)``.
 The degree of an individual node can be calculated by ``G.degree[node]``.
 Similar changes have been made to ``in_degree`` and ``out_degree``
 for directed graphs. If you want just the degree values, here are some options.
-They are shown for ``in_degree`` of a ``DiGraph``, but similar ideas work 
+They are shown for ``in_degree`` of a ``DiGraph``, but similar ideas work
 for ``out_degree`` and ``degree``
 
     >>> DG = nx.DiGraph()
@@ -130,8 +131,13 @@ for ``out_degree`` and ``degree``
     >>> [deg[n] for n in [1, 3]]   # using lookup for only some nodes
     [1, 0]
 
-    >>> dict(DG.in_degree([1, 3])).values()    # works for nx-1 and nx-2
-    [1, 0]
+    >>> for node, in_deg in dict(DG.in_degree).items():  # works for nx1 and nx2
+    ...     print(node, in_deg)
+    1 1
+    2 1
+    3 0
+    >>> dict(DG.in_degree([1, 3])).values()    # works for nx1 and nx2
+    dict_values([1, 0])
     >>> # DG.in_degree(nlist) creates a restricted view for only nodes in nlist.
     >>> # but see the fourth option above for using lookup instead.
     >>> list(d for n, d in DG.in_degree([1, 3]))
@@ -148,7 +154,7 @@ If ``n`` is a node in ``G``, then ``G.neighbors(n)`` returns an iterator.
 
     >>> n = 1
     >>> G.neighbors(n)
-    <dictionary-keyiterator object at ...>
+    <dict_keyiterator object at ...>
     >>> list(G.neighbors(n))
     [0, 2, 3, 4]
 
@@ -169,9 +175,9 @@ DiGraphViews behave similar to GraphViews, but have a few more methods.
     >>> D.out_degree[2]
     2
     >>> D.in_edges
-    InEdgeView([(1, 2), (1, 3), (2, 3), (2, 4)])
+    InEdgeView([(1, 2), (2, 3), (1, 3), (2, 4)])
     >>> list(D.in_edges())
-    [(1, 2), (1, 3), (2, 3), (2, 4)]
+    [(1, 2), (2, 3), (1, 3), (2, 4)]
     >>> D.out_edges(2)
     OutEdgeDataView([(2, 3), (2, 4)])
     >>> list(D.out_edges(2))
@@ -181,11 +187,11 @@ DiGraphViews behave similar to GraphViews, but have a few more methods.
     >>> list(D.in_degree)
     [(1, 0), (2, 1), (3, 2), (4, 1)]
     >>> D.successors(2)
-    <dictionary-keyiterator object at ...>
+    <dict_keyiterator object at ...>
     >>> list(D.successors(2))
     [3, 4]
     >>> D.predecessors(2)
-    <dictionary-keyiterator object at ...>
+    <dict_keyiterator object at ...>
     >>> list(D.predecessors(2))
     [1]
 
@@ -241,11 +247,11 @@ because it may be a different graph type (directed/undirected) than the view.
 If ``nbunch`` was a single node source, then the same effect can now be achieved
 using the ``subgraph`` operator:
 
-    >>> nx.topological_sort(G.subgraph(nx.descendants(G, nbunch)))
-    
+    nx.topological_sort(G.subgraph(nx.descendants(G, nbunch)))
+
 To achieve a reverse topological sort, the output should be converted to a list:
 
-    >>>> reversed(list(nx.topological_sort(G)))
+    reversed(list(nx.topological_sort(G)))
 
 -------
 

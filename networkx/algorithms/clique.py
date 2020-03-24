@@ -1,9 +1,3 @@
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """Functions for finding and manipulating cliques.
 
 Finding the largest clique in a graph is NP-complete problem, so most of
@@ -17,13 +11,9 @@ from collections import deque
 from itertools import chain
 from itertools import combinations
 from itertools import islice
-try:
-    from itertools import ifilter as filter
-except ImportError:
-    pass
 import networkx as nx
 from networkx.utils import not_implemented_for
-__author__ = """Dan Schult (dschult@colgate.edu)"""
+
 __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
            'make_clique_bipartite', 'graph_clique_number',
            'graph_number_of_cliques', 'node_clique_number',
@@ -132,9 +122,8 @@ def find_cliques(G):
     To obtain a list of all maximal cliques, use
     `list(find_cliques(G))`. However, be aware that in the worst-case,
     the length of this list can be exponential in the number of nodes in
-    the graph (for example, when the graph is the complete graph). This
-    function avoids storing all cliques in memory by only keeping
-    current candidate node lists in memory during its search.
+    the graph. This function avoids storing all cliques in memory by
+    only keeping current candidate node lists in memory during its search.
 
     This implementation is based on the algorithm published by Bron and
     Kerbosch (1973) [1]_, as adapted by Tomita, Tanaka and Takahashi
@@ -239,9 +228,8 @@ def find_cliques_recursive(G):
     To obtain a list of all maximal cliques, use
     `list(find_cliques_recursive(G))`. However, be aware that in the
     worst-case, the length of this list can be exponential in the number
-    of nodes in the graph (for example, when the graph is the complete
-    graph). This function avoids storing all cliques in memory by only
-    keeping current candidate node lists in memory during its search.
+    of nodes in the graph. This function avoids storing all cliques in memory
+    by only keeping current candidate node lists in memory during its search.
 
     This implementation is based on the algorithm published by Bron and
     Kerbosch (1973) [1]_, as adapted by Tomita, Tanaka and Takahashi
@@ -292,8 +280,7 @@ def find_cliques_recursive(G):
             else:
                 cand_q = cand & adj_q
                 if cand_q:
-                    for clique in expand(subg_q, cand_q):
-                        yield clique
+                    yield from expand(subg_q, cand_q)
             Q.pop()
 
     return expand(set(G), set(G))
@@ -333,7 +320,7 @@ def make_max_clique_graph(G, create_using=None):
 
     """
     if create_using is None:
-        B = G.fresh_copy()
+        B = G.__class__()
     else:
         B = nx.empty_graph(0, create_using)
     cliques = list(enumerate(set(c) for c in find_cliques(G)))
@@ -423,7 +410,9 @@ def graph_clique_number(G, cliques=None):
     """
     if cliques is None:
         cliques = find_cliques(G)
-    return max([len(c) for c in cliques])
+    if len(G.nodes) < 1:
+        return 0
+    return max([len(c) for c in cliques] or [1])
 
 
 def graph_number_of_cliques(G, cliques=None):
@@ -470,10 +459,10 @@ def node_clique_number(G, nodes=None, cliques=None):
                 d = {}
                 for n in nodes:
                     H = nx.ego_graph(G, n)
-                    d[n] = max((len(c) for c in find_cliques(H)))
+                    d[n] = max(len(c) for c in find_cliques(H))
             else:
                 H = nx.ego_graph(G, nodes)
-                d = max((len(c) for c in find_cliques(H)))
+                d = max(len(c) for c in find_cliques(H))
             return d
         # nodes is None--find all cliques
         cliques = list(find_cliques(G))

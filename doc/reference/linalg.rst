@@ -25,14 +25,13 @@ Laplacian Matrix
    normalized_laplacian_matrix
    directed_laplacian_matrix
 
-Spectrum
----------
-.. automodule:: networkx.linalg.spectrum
+Bethe Hessian Matrix
+--------------------
+.. automodule:: networkx.linalg.bethehessianmatrix
 .. autosummary::
    :toctree: generated/
 
-   laplacian_spectrum
-   adjacency_spectrum
+   bethe_hessian_matrix
 
 Algebraic Connectivity
 ----------------------
@@ -53,3 +52,25 @@ Attribute Matrices
 
    attr_matrix
    attr_sparse_matrix
+
+Modularity Matrices
+-------------------
+
+.. automodule:: networkx.linalg.modularitymatrix
+.. autosummary::
+   :toctree: generated/
+
+   modularity_matrix
+   directed_modularity_matrix
+
+Spectrum
+---------
+.. automodule:: networkx.linalg.spectrum
+.. autosummary::
+   :toctree: generated/
+
+   adjacency_spectrum
+   laplacian_spectrum
+   bethe_hessian_spectrum
+   normalized_laplacian_spectrum
+   modularity_spectrum

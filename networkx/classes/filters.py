@@ -1,13 +1,3 @@
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author:  Aric Hagberg (hagberg@lanl.gov),
-#          Pieter Swart (swart@lanl.gov),
-#          Dan Schult(dschult@colgate.edu)
 """Filter factories to hide or show sets of nodes and edges.
 
 These filters return the function used when creating `SubGraph`.
@@ -51,7 +41,7 @@ def hide_multiedges(edges):
 
 
 # write show_nodes as a class to make SubGraph pickleable
-class show_nodes(object):
+class show_nodes:
     def __init__(self, nodes):
         self.nodes = set(nodes)
 

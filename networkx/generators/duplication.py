@@ -1,15 +1,3 @@
-# duplication.py - functions for generating graphs by duplicating nodes
-#
-# Copyright 2016-2018 NetworkX developers.
-# Copyright (C) 2004-2018 by
-# Aric Hagberg <hagberg@lanl.gov>
-# Dan Schult <dschult@colgate.edu>
-# Pieter Swart <swart@lanl.gov>
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for generating graphs based on the "duplication" method.
 
 These graph generators start with a small initial graph then duplicate
@@ -17,16 +5,16 @@ nodes and (partially) duplicate their edges. These functions are
 generally inspired by biological networks.
 
 """
-import random
-
 import networkx as nx
+from networkx.utils import py_random_state
 from networkx.exception import NetworkXError
 
 __all__ = ['partial_duplication_graph', 'duplication_divergence_graph']
 
 
+@py_random_state(4)
 def partial_duplication_graph(N, n, p, q, seed=None):
-    """Return a random graph using the partial duplication model.
+    """Returns a random graph using the partial duplication model.
 
     Parameters
     ----------
@@ -45,8 +33,9 @@ def partial_duplication_graph(N, n, p, q, seed=None):
         The probability of joining the source node to the duplicate
         node. Must be a number in the between zero and one, inclusive.
 
-    seed : int, optional
-        Seed for random number generator (default=None).
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Notes
     -----
@@ -76,29 +65,28 @@ def partial_duplication_graph(N, n, p, q, seed=None):
         raise NetworkXError(msg)
     if n > N:
         raise NetworkXError("partial duplication graph must have n <= N.")
-    if seed is not None:
-        random.seed(seed)
 
     G = nx.complete_graph(n)
     for new_node in range(n, N):
+        # Pick a random vertex, u, already in the graph.
+        src_node = seed.randint(0, new_node - 1)
+
         # Add a new vertex, v, to the graph.
         G.add_node(new_node)
-
-        # Pick a random vertex, u, already in the graph.
-        src_node = random.randint(0, new_node)
-
-        # Join v and u with probability q.
-        if random.random() < q:
-            G.add_edge(new_node, src_node)
 
         # For each neighbor of u...
         for neighbor_node in list(nx.all_neighbors(G, src_node)):
             # Add the neighbor to v with probability p.
-            if random.random() < p:
+            if seed.random() < p:
                 G.add_edge(new_node, neighbor_node)
+
+        # Join v and u with probability q.
+        if seed.random() < q:
+            G.add_edge(new_node, src_node)
     return G
 
 
+@py_random_state(2)
 def duplication_divergence_graph(n, p, seed=None):
     """Returns an undirected graph using the duplication-divergence model.
 
@@ -112,8 +100,9 @@ def duplication_divergence_graph(n, p, seed=None):
         The desired number of nodes in the graph.
     p : float
         The probability for retaining the edge of the replicated node.
-    seed : int, optional
-        A seed for the random number generator of :mod:`random` (default=None).
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -140,13 +129,11 @@ def duplication_divergence_graph(n, p, seed=None):
 
     """
     if p > 1 or p < 0:
-        msg = "NetworkXError p={0} is not in [0,1].".format(p)
+        msg = f"NetworkXError p={p} is not in [0,1]."
         raise nx.NetworkXError(msg)
     if n < 2:
         msg = 'n must be greater than or equal to 2'
         raise nx.NetworkXError(msg)
-    if seed is not None:
-        random.seed(seed)
 
     G = nx.Graph()
 
@@ -155,13 +142,13 @@ def duplication_divergence_graph(n, p, seed=None):
     i = 2
     while i < n:
         # Choose a random node from current graph to duplicate.
-        random_node = random.choice(list(G))
+        random_node = seed.choice(list(G))
         # Make the replica.
         G.add_node(i)
         # flag indicates whether at least one edge is connected on the replica.
         flag = False
         for nbr in G.neighbors(random_node):
-            if random.random() < p:
+            if seed.random() < p:
                 # Link retention step.
                 G.add_edge(i, nbr)
                 flag = True

@@ -2,9 +2,7 @@
     Functions for constructing matrix-like objects from graph attributes.
 """
 
-__all__ = ['attr_matrix', 'attr_sparse_matrix']
-
-import networkx as nx
+__all__ = ["attr_matrix", "attr_sparse_matrix"]
 
 
 def _node_value(G, node_attr):
@@ -32,10 +30,15 @@ def _node_value(G, node_attr):
 
     """
     if node_attr is None:
-        def value(u): return u
-    elif not hasattr(node_attr, '__call__'):
+
+        def value(u):
+            return u
+
+    elif not hasattr(node_attr, "__call__"):
         # assume it is a key for the node attribute dictionary
-        def value(u): return G.nodes[u][node_attr]
+        def value(u):
+            return G.nodes[u][node_attr]
+
     else:
         # Advanced:  Allow users to specify something else.
         #
@@ -82,25 +85,41 @@ def _edge_value(G, edge_attr):
         # topological count of edges
 
         if G.is_multigraph():
-            def value(u, v): return len(G[u][v])
-        else:
-            def value(u, v): return 1
 
-    elif not hasattr(edge_attr, '__call__'):
+            def value(u, v):
+                return len(G[u][v])
+
+        else:
+
+            def value(u, v):
+                return 1
+
+    elif not hasattr(edge_attr, "__call__"):
         # assume it is a key for the edge attribute dictionary
 
-        if edge_attr == 'weight':
+        if edge_attr == "weight":
             # provide a default value
             if G.is_multigraph():
-                def value(u, v): return sum([d.get(edge_attr, 1) for d in G[u][v].values()])
+
+                def value(u, v):
+                    return sum([d.get(edge_attr, 1) for d in G[u][v].values()])
+
             else:
-                def value(u, v): return G[u][v].get(edge_attr, 1)
+
+                def value(u, v):
+                    return G[u][v].get(edge_attr, 1)
+
         else:
             # otherwise, the edge attribute MUST exist for each edge
             if G.is_multigraph():
-                def value(u, v): return sum([d[edge_attr] for d in G[u][v].values()])
+
+                def value(u, v):
+                    return sum([d[edge_attr] for d in G[u][v].values()])
+
             else:
-                def value(u, v): return G[u][v][edge_attr]
+
+                def value(u, v):
+                    return G[u][v][edge_attr]
 
     else:
         # Advanced:  Allow users to specify something else.
@@ -122,8 +141,15 @@ def _edge_value(G, edge_attr):
     return value
 
 
-def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
-                rc_order=None, dtype=None, order=None):
+def attr_matrix(
+    G,
+    edge_attr=None,
+    node_attr=None,
+    normalized=False,
+    rc_order=None,
+    dtype=None,
+    order=None,
+):
     """Returns a NumPy matrix using attributes from G.
 
     If only `G` is passed in, then the adjacency matrix is constructed.
@@ -190,26 +216,21 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
     --------
     Construct an adjacency matrix:
 
-    >>> try:
-    ...    import numpy as np
-    ...    np.set_printoptions(legacy="1.13")
-    ... except TypeError:
-    ...    pass
     >>> G = nx.Graph()
     >>> G.add_edge(0, 1, thickness=1, weight=3)
     >>> G.add_edge(0, 2, thickness=2)
     >>> G.add_edge(1, 2, thickness=3)
     >>> nx.attr_matrix(G, rc_order=[0, 1, 2])
-    matrix([[ 0.,  1.,  1.],
-            [ 1.,  0.,  1.],
-            [ 1.,  1.,  0.]])
+    matrix([[0., 1., 1.],
+            [1., 0., 1.],
+            [1., 1., 0.]])
 
     Alternatively, we can obtain the matrix describing edge thickness.
 
     >>> nx.attr_matrix(G, edge_attr='thickness', rc_order=[0, 1, 2])
-    matrix([[ 0.,  1.,  2.],
-            [ 1.,  0.,  3.],
-            [ 2.,  3.,  0.]])
+    matrix([[0., 1., 2.],
+            [1., 0., 3.],
+            [2., 3., 0.]])
 
     We can also color the nodes and ask for the probability distribution over
     all edges (u,v) describing:
@@ -221,8 +242,8 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
     >>> G.nodes[2]['color'] = 'blue'
     >>> rc = ['red', 'blue']
     >>> nx.attr_matrix(G, node_attr='color', normalized=True, rc_order=rc)
-    matrix([[ 0.33333333,  0.66666667],
-            [ 1.        ,  0.        ]])
+    matrix([[0.33333333, 0.66666667],
+            [1.        , 0.        ]])
 
     For example, the above tells us that for all edges (u,v):
 
@@ -235,8 +256,8 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
     Finally, we can obtain the total weights listed by the node colors.
 
     >>> nx.attr_matrix(G, edge_attr='weight', node_attr='color', rc_order=rc)
-    matrix([[ 3.,  2.],
-            [ 2.,  0.]])
+    matrix([[3., 2.],
+            [2., 0.]])
 
     Thus, the total weight over all edges (u,v) with u and v having colors:
 
@@ -249,14 +270,13 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
     try:
         import numpy as np
     except ImportError:
-        raise ImportError(
-            "attr_matrix() requires numpy: http://scipy.org/ ")
+        raise ImportError("attr_matrix() requires numpy: http://scipy.org/ ")
 
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)
 
     if rc_order is None:
-        ordering = list(set([node_value(n) for n in G]))
+        ordering = list({node_value(n) for n in G})
     else:
         ordering = rc_order
 
@@ -265,7 +285,7 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
     index = dict(zip(ordering, range(N)))
     M = np.zeros((N, N), dtype=dtype, order=order)
 
-    seen = set([])
+    seen = set()
     for u, nbrdict in G.adjacency():
         for v in nbrdict:
             # Obtain the node attribute values.
@@ -289,8 +309,9 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
         return M
 
 
-def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
-                       normalized=False, rc_order=None, dtype=None):
+def attr_sparse_matrix(
+    G, edge_attr=None, node_attr=None, normalized=False, rc_order=None, dtype=None
+):
     """Returns a SciPy sparse matrix using attributes from G.
 
     If only `G` is passed in, then the adjacency matrix is constructed.
@@ -358,17 +379,17 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
     >>> G.add_edge(1,2,thickness=3)
     >>> M = nx.attr_sparse_matrix(G, rc_order=[0,1,2])
     >>> M.todense()
-    matrix([[ 0.,  1.,  1.],
-            [ 1.,  0.,  1.],
-            [ 1.,  1.,  0.]])
+    matrix([[0., 1., 1.],
+            [1., 0., 1.],
+            [1., 1., 0.]])
 
     Alternatively, we can obtain the matrix describing edge thickness.
 
     >>> M = nx.attr_sparse_matrix(G, edge_attr='thickness', rc_order=[0,1,2])
     >>> M.todense()
-    matrix([[ 0.,  1.,  2.],
-            [ 1.,  0.,  3.],
-            [ 2.,  3.,  0.]])
+    matrix([[0., 1., 2.],
+            [1., 0., 3.],
+            [2., 3., 0.]])
 
     We can also color the nodes and ask for the probability distribution over
     all edges (u,v) describing:
@@ -382,8 +403,8 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
     >>> M = nx.attr_sparse_matrix(G, node_attr='color', \
                                   normalized=True, rc_order=rc)
     >>> M.todense()
-    matrix([[ 0.33333333,  0.66666667],
-            [ 1.        ,  0.        ]])
+    matrix([[0.33333333, 0.66666667],
+            [1.        , 0.        ]])
 
     For example, the above tells us that for all edges (u,v):
 
@@ -398,8 +419,8 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
     >>> M = nx.attr_sparse_matrix(G, edge_attr='weight',\
                                   node_attr='color', rc_order=rc)
     >>> M.todense()
-    matrix([[ 3.,  2.],
-            [ 2.,  0.]])
+    matrix([[3., 2.],
+            [2., 0.]])
 
     Thus, the total weight over all edges (u,v) with u and v having colors:
 
@@ -413,14 +434,13 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
         import numpy as np
         from scipy import sparse
     except ImportError:
-        raise ImportError(
-            "attr_sparse_matrix() requires scipy: http://scipy.org/ ")
+        raise ImportError("attr_sparse_matrix() requires scipy: http://scipy.org/ ")
 
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)
 
     if rc_order is None:
-        ordering = list(set([node_value(n) for n in G]))
+        ordering = list({node_value(n) for n in G})
     else:
         ordering = rc_order
 
@@ -429,7 +449,7 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
     index = dict(zip(ordering, range(N)))
     M = sparse.lil_matrix((N, N), dtype=dtype)
 
-    seen = set([])
+    seen = set()
     for u, nbrdict in G.adjacency():
         for v in nbrdict:
             # Obtain the node attribute values.
@@ -451,16 +471,3 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
         return M, ordering
     else:
         return M
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

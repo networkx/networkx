@@ -1,19 +1,13 @@
-#    Copyright (C) 2011-2013 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from itertools import chain
 import networkx as nx
-__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
+
 __all__ = ['adjacency_data', 'adjacency_graph']
 
 _attrs = dict(id='id', key='key')
 
 
 def adjacency_data(G, attrs=_attrs):
-    """Return data in adjacency format that is suitable for JSON serialization
+    """Returns data in adjacency format that is suitable for JSON serialization
     and use in Javascript documents.
 
     Parameters
@@ -89,7 +83,7 @@ def adjacency_data(G, attrs=_attrs):
 
 
 def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
-    """Return graph from adjacency data format.
+    """Returns graph from adjacency data format.
 
     Parameters
     ----------

@@ -29,6 +29,7 @@ Closeness
    :toctree: generated/
 
    closeness_centrality
+   incremental_closeness_centrality
 
 Current Flow Closeness
 ----------------------
@@ -36,6 +37,7 @@ Current Flow Closeness
    :toctree: generated/
 
    current_flow_closeness_centrality
+   information_centrality
 
 (Shortest Path) Betweenness
 ---------------------------
@@ -66,6 +68,17 @@ Communicability Betweenness
 
    communicability_betweenness_centrality
 
+Group Centrality
+----------------
+.. autosummary::
+   :toctree: generated/
+
+   group_betweenness_centrality
+   group_closeness_centrality
+   group_degree_centrality
+   group_in_degree_centrality
+   group_out_degree_centrality
+
 Load
 ----
 .. autosummary::
@@ -90,6 +103,13 @@ Harmonic Centrality
 
    harmonic_centrality
 
+Dispersion
+----------
+.. autosummary::
+   :toctree: generated/
+
+   dispersion
+
 Reaching
 --------
 .. autosummary::
@@ -97,3 +117,31 @@ Reaching
 
    local_reaching_centrality
    global_reaching_centrality
+
+Percolation
+-----------
+.. autosummary::
+   :toctree: generated/
+
+   percolation_centrality
+
+Second Order Centrality
+-----------------------
+.. autosummary::
+   :toctree: generated/
+
+   second_order_centrality
+
+Trophic
+-------
+.. autosummary::
+   :toctree: generated/
+
+   trophic
+
+VoteRank
+-----------
+.. autosummary::
+   :toctree: generated/
+
+   voterank

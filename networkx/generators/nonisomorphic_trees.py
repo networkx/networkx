@@ -6,14 +6,6 @@ lists in which the i-th element specifies the distance of vertex i to
 the root.
 
 """
-#    Copyright (C) 2013 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-__author__ = "\n".join(["Aric Hagberg (hagberg@lanl.gov)",
-                        "Mridul Seth (seth.mridul@gmail.com)"])
 
 __all__ = ['nonisomorphic_trees',
            'number_of_nonisomorphic_trees']
@@ -138,7 +130,7 @@ def _next_tree(candidate):
 
 
 def _split_tree(layout):
-    """Return a tuple of two layouts, one containing the left
+    """Returns a tuple of two layouts, one containing the left
     subtree of the root vertex, and one containing the original tree
     with the left subtree removed."""
 

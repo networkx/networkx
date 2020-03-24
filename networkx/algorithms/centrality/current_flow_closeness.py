@@ -1,16 +1,13 @@
-#    Copyright (C) 2010-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """Current-flow closeness centrality measures."""
 import networkx as nx
 
 from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
-from networkx.algorithms.centrality.flow_matrix import *
+from networkx.algorithms.centrality.flow_matrix import (
+    CGInverseLaplacian,
+    FullInverseLaplacian,
+    laplacian_sparse_matrix,
+    SuperLUInverseLaplacian,
+)
 
 __all__ = ['current_flow_closeness_centrality', 'information_centrality']
 
@@ -94,16 +91,7 @@ def current_flow_closeness_centrality(G, weight=None,
             betweenness[w] += col[v]
     for v in H:
         betweenness[v] = 1.0 / (betweenness[v])
-    return dict((ordering[k], float(v)) for k, v in betweenness.items())
+    return {ordering[k]: float(v) for k, v in betweenness.items()}
 
 
 information_centrality = current_flow_closeness_centrality
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")

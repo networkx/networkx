@@ -110,6 +110,51 @@ Finally, you must push your rebased branch::
 `dangers of rebasing <http://tinyurl.com/lll385>`_.
 Also see this `LWN article <http://tinyurl.com/nqcbkj>`_.)
 
+Build environment setup
+-----------------------
+
+Once you've cloned your fork of the networkx repository,
+you should set up a Python development environment tailored for networkx.
+You may choose the environment manager of your choice.
+Here we provide instructions for two popular environment managers:
+``venv`` (pip based) and ``conda`` (Anaconda or Miniconda).
+
+venv
+^^^^
+When using ``venv``, you may find the following bash commands useful::
+
+  # Create a virtualenv named ``networkx-dev`` that lives in the directory of
+  # the same name
+  python -m venv networkx-dev
+  # Activate it
+  source networkx-dev/bin/activate
+  # Install all development and runtime dependencies of networkx
+  pip install -r <(cat requirements/*.txt)
+  # Build and install networkx from source
+  pip install -e .
+  # Test your installation
+  PYTHONPATH=. pytest networkx
+
+conda
+^^^^^
+
+When using conda, you may find the following bash commands useful::
+
+  # Create a conda environment named ``networkx-dev``
+  conda create --name networkx-dev
+  # Activate it
+  conda activate networkx-dev
+  # Install major development and runtime dependencies of networkx
+  # (the rest can be installed from conda-forge or pip, if needed)
+  conda install `for i in requirements/{default,test,doc,extras}.txt; do echo -n " --file $i "; done`
+  # Install minimal testing dependencies
+  conda install pytest
+  # Install networkx from source
+  pip install -e . --no-deps
+  # Test your installation
+  PYTHONPATH=. pytest networkx
+
+
 Guidelines
 ----------
 
@@ -137,6 +182,66 @@ Stylistic Guidelines
    import networkx as nx
 
    cimport numpy as cnp # in Cython code
+
+Testing
+-------
+
+``networkx`` has an extensive test suite that ensures correct
+execution on your system.  The test suite has to pass before a pull
+request can be merged, and tests should be added to cover any
+modifications to the code base.
+
+We make use of the `pytest <https://docs.pytest.org/en/latest/>`__
+testing framework, with tests located in the various
+``networkx/submodule/tests`` folders.
+
+To use ``pytest``, ensure that the library is installed in development mode::
+
+    $ pip install -e .
+
+Now, run all tests using::
+
+    $ PYTHONPATH=. pytest networkx
+
+Or the tests for a specific submodule::
+
+    $ PYTHONPATH=. pytest networkx/readwrite
+
+Or tests from a specific file::
+
+    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_yaml.py
+
+Or a single test within that file::
+
+    $ PYTHONPATH=. pytest networkx/readwrite/tests/test_yaml.py::TestYaml::testUndirected
+
+Use ``--doctest-modules`` to run doctests.
+For example, run all tests and all doctests using::
+
+    $ PYTHONPATH=. pytest --doctest-modules networkx
+
+Test coverage
+-------------
+
+Tests for a module should ideally cover all code in that module,
+i.e., statement coverage should be at 100%.
+
+To measure the test coverage, install
+`pytest-cov <https://pytest-cov.readthedocs.io/en/latest/>`__
+(using ``pip install pytest-cov``) and then run::
+
+  $ PYTHONPATH=. pytest --cov=networkx networkx
+
+This will print a report with one line for each file in `networkx`,
+detailing the test coverage::
+
+  Name                                             Stmts   Miss Branch BrPart  Cover
+  ----------------------------------------------------------------------------------
+  networkx/__init__.py                                33      2      2      1    91%
+  networkx/algorithms/__init__.py                    114      0      0      0   100%
+  networkx/algorithms/approximation/__init__.py       12      0      0      0   100%
+  networkx/algorithms/approximation/clique.py         42      1     18      1    97%
+  ...
 
 Pull request codes
 ------------------

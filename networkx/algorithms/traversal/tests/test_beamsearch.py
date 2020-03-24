@@ -1,15 +1,4 @@
-# test_beamsearch.py - unit tests for the beamsearch module
-#
-# Copyright 2016-2018 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the beam search functions."""
-from unittest import TestCase
-
-from nose.tools import assert_equal
 
 import networkx as nx
 
@@ -18,7 +7,7 @@ def identity(x):
     return x
 
 
-class TestBeamSearch(TestCase):
+class TestBeamSearch:
     """Unit tests for the beam search function."""
 
     def test_narrow(self):
@@ -30,9 +19,9 @@ class TestBeamSearch(TestCase):
         # search terminates.
         G = nx.cycle_graph(4)
         edges = nx.bfs_beam_edges(G, 0, identity, width=1)
-        assert_equal(list(edges), [(0, 3), (3, 2)])
+        assert list(edges) == [(0, 3), (3, 2)]
 
     def test_wide(self):
         G = nx.cycle_graph(4)
         edges = nx.bfs_beam_edges(G, 0, identity, width=2)
-        assert_equal(list(edges), [(0, 3), (0, 1), (3, 2)])
+        assert list(edges) == [(0, 3), (0, 1), (3, 2)]

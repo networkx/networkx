@@ -1,15 +1,6 @@
-#    Copyright (C) 2011-2018 by
-#
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Michael E. Rose <Michael.Ernst.Rose@gmail.com>
-#
-#    All rights reserved.
-#    BSD license.
 from itertools import chain, count
 import networkx as nx
-from networkx.utils import make_str, to_tuple
+from networkx.utils import to_tuple
 __all__ = ['node_link_data', 'node_link_graph']
 
 
@@ -18,7 +9,7 @@ _attrs = dict(source='source', target='target', name='id',
 
 
 def node_link_data(G, attrs=None):
-    """Return data in node-link format that is suitable for JSON serialization
+    """Returns data in node-link format that is suitable for JSON serialization
     and use in Javascript documents.
 
     Parameters
@@ -102,7 +93,7 @@ def node_link_data(G, attrs=None):
 
 
 def node_link_graph(data, directed=False, multigraph=True, attrs=None):
-    """Return graph from node-link data format.
+    """Returns graph from node-link data format.
 
     Parameters
     ----------
@@ -166,18 +157,18 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=None):
     c = count()
     for d in data['nodes']:
         node = to_tuple(d.get(name, next(c)))
-        nodedata = dict((make_str(k), v) for k, v in d.items() if k != name)
+        nodedata = {str(k): v for k, v in d.items() if k != name}
         graph.add_node(node, **nodedata)
     for d in data[links]:
         src = tuple(d[source]) if isinstance(d[source], list) else d[source]
         tgt = tuple(d[target]) if isinstance(d[target], list) else d[target]
         if not multigraph:
-            edgedata = dict((make_str(k), v) for k, v in d.items()
-                            if k != source and k != target)
+            edgedata = {str(k): v for k, v in d.items()
+                            if k != source and k != target}
             graph.add_edge(src, tgt, **edgedata)
         else:
             ky = d.get(key, None)
-            edgedata = dict((make_str(k), v) for k, v in d.items()
-                            if k != source and k != target and k != key)
+            edgedata = {str(k): v for k, v in d.items()
+                            if k != source and k != target and k != key}
             graph.add_edge(src, tgt, ky, **edgedata)
     return graph

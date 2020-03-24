@@ -6,10 +6,13 @@ Distance Measures
 .. autosummary::
    :toctree: generated/
 
+   barycenter
    center
    diameter
    eccentricity
+   extrema_bounding
    periphery
    radius
+   resistance_distance
 
 
