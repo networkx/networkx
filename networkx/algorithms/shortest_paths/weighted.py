@@ -1275,8 +1275,9 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
         dist = {v: 0 for v in source}
 
     # Graph nodes cannot be None, so this is a valid initialization
-    pred_edge = {v: (None, None) for v in G}
-    recent_update = {v: (None, None) for v in G}
+    nonexistent_edge = (None, None)
+    pred_edge = {v: nonexistent_edge for v in source}
+    recent_update = {v: nonexistent_edge for v in source}
 
     G_succ = G.succ if G.is_directed() else G.adj
     inf = float('inf')
@@ -1297,19 +1298,24 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
 
                 if dist_v < dist.get(v, inf):
                     # In this conditional branch we are updating v, if it happens
-                    # happens that the earliest change was also due to vertex v
-                    # it necessarily implies the existence of a negative cycle
+                    # that some earlier change was also due to node v it
+                    # necessarily implies the existence of a negative cycle since
+                    # after the update node v would lie on the update path twice
+                    # The history path is stored up to one of the source nodes,
+                    # therefore u is always in recent_update
                     if use_neg_cycle_heuristic and (
                             recent_update[u][0] == v or recent_update[u][1] == v):
                         raise nx.NetworkXUnbounded(
                             f"Negative cost cycle detected.")
 
                     # Transfer the earliest changing edge from the update path
-                    # if the same source vertex is responsible for the update
-                    # If the source vertex is responsible for the cost update,
+                    # if the same source node is responsible for the update
+                    # If the source node is responsible for the cost update,
                     # then clear the history and use it instead
+                    # Node u cannot be None. Non-existence of node v in the
+                    # dictionary defaults to None hence they will never be equal
                     recent_update[v] = recent_update[u]\
-                        if pred_edge[v][0] == u else (u, v)
+                        if pred_edge.get(v, nonexistent_edge)[0] == u else (u, v)
 
                     if v not in in_q:
                         q.append(v)
