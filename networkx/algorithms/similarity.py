@@ -12,7 +12,11 @@ and/or `optimize_edit_paths`.
 At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
+import math
+from functools import reduce
 from itertools import product
+from operator import mul
+import warnings
 import networkx as nx
 
 __all__ = [
@@ -22,6 +26,8 @@ __all__ = [
     "optimize_edit_paths",
     "simrank_similarity",
     "simrank_similarity_numpy",
+    "panther_similarity",
+    "generate_random_paths",
 ]
 
 
@@ -1386,3 +1392,192 @@ def simrank_similarity_numpy(
     if source is not None:
         return newsim[source]
     return newsim
+
+
+def n_choose_k(n, k):
+    if k < n - k:
+        return reduce(mul, range(n - k + 1, n + 1)) // math.factorial(k)
+    else:
+        return reduce(mul, range(k + 1, n + 1)) // math.factorial(n - k)
+
+
+def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
+    """Returns the Panther similarity of nodes in the graph ``G`` to node ``v``.
+    Panther is a similarity metric that says "two objects are considered
+    to be similar if they frequently appear on the same paths." [1]_.
+    The pseudo-code definition from the paper is::
+        def panther(G, u, v):
+            ...
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A NetworkX graph
+    v : node
+        Source node for whom to find the top ``k`` similar other nodes
+    k : int
+        The number of most similar nodes to return
+    path_length : int
+        How long the randomly generated paths should be (``T`` in [1]_)
+    c : float
+        A universal positive constant. Defaults to 0.5 per [1]_
+    delta : float
+        The probability that $S$ is not an epsilon-approximation to (R, phi)
+    eps : float
+        The error bound. Per [1]_, a good value is $\sqrt{1}{|E|}$). Therefore,
+        if no value is provided, the recommended computed value will be used.
+
+    Returns
+    -------
+    similarity : dictionary
+        Dictionary of nodes to similarity scores (as floats). Note:
+        the self-similarity (i.e., ``v``) will not be included in
+        the returned dictionary.
+
+    Examples
+    --------
+
+        >>> import networkx as nx
+        >>> G = nx.star_graph(10)
+        >>> nx.algorithms.panther(G, 0)
+        {3: 0.333333, 6: 0.363636, 7: 0.333333, 9: 0.363636, 10: 0.303030}
+
+
+    References
+    ----------
+    .. [1] J. Zhang, J. Tang, C. Ma, H. Tong, Y. Jing, and J. Li.
+           "Panther: Fast Top-k Similarity Search in Large Networks",
+           arXiv:1504.02577, 2015.
+    """
+    import numpy as np
+
+    num_nodes = G.number_of_nodes()
+    if num_nodes < k:
+        warnings.warn(
+            "Number of nodes is %s, but requested k is %s. "
+            "Setting k to number of nodes" % (num_nodes, k)
+        )
+        k = num_nodes
+    
+    # According to [1], they empirically determined
+    # a good value for ``eps`` to be sqrt( 1 / |E| )
+    if eps is None:
+        eps = np.sqrt(1.0 / G.number_of_edges())
+
+    # Calculate the sample size ``R`` for how many paths
+    # torandomly generate
+    t_choose_2 = n_choose_k(path_length, 2)
+    sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
+
+    paths, index_map = generate_random_paths(G, sample_size, path_length=path_length)
+    S = np.zeros(G.number_of_nodes())
+
+    # Calculate the path similarities
+    for path_index, path in enumerate(paths):
+        path_set = set(path)
+
+        # Comparing ``v`` with ``node`` (v_j)
+        for node in path_set:
+            # Don't compare with self
+            if v == node:
+                continue
+
+            # Only sum if they are share the same path
+            if path_index in index_map[node] and path_index in index_map[v]:
+                S[node] += 1 / sample_size
+
+    # Retrieve top ``k`` similar 
+    # Note: the below performed anywhere from 4-10x faster
+    # (depending on input sizes) vs the equivalent ``np.argsort(S)[::-1]``
+    top_k_unsorted = np.argpartition(S, -k)[-k:]
+    top_k_sorted = top_k_unsorted[np.argsort(S[top_k_unsorted])][::-1]
+
+    # Add back the similarity scores
+    top_k_with_val = dict(zip(top_k_sorted, S[top_k_sorted]))
+
+    # Remove the self-similarity
+    top_k_with_val.pop(v, None)
+    return top_k_with_val
+
+
+def generate_random_paths(G, sample_size, path_length=5):
+    """Randomly generate ``sample_size`` paths of length ``path_length``. 
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A NetworkX graph
+    sample_size : integer
+        The number of paths to generate. This is ``R`` in [1]_.
+    path_length : integer
+        The maximum size of the path to randomly generate.
+        This is ``T`` in [1]_. According to the paper, T >= 5 is
+        recommended.
+
+    Returns
+    -------
+    paths : list of lists
+        List of ``sample_size`` paths of length ``path_length``.
+    index_map : dictionary of lists
+        Inverted index ictionary of nodes to generated random
+        path indices into ``paths``.
+
+    Examples
+    --------
+    Note that the first return value is the list of paths, followed by
+    an inverted index mapping of nodes to the paths where it shows up::
+
+        >>> import networkx as nx
+        >>> G = nx.star_graph(3)
+        >>> nx.algorithms.generate_random_paths(G, 2)
+        ([[0, 3, 0, 2, 0, 2], [3, 0, 3, 0, 2, 0]], {0: {0, 1}, 3: {0, 1}, 2: {0, 1}})
+
+    References
+    ----------
+    .. [1] J. Zhang, J. Tang, C. Ma, H. Tong, Y. Jing, and J. Li.
+           "Panther: Fast Top-k Similarity Search in Large Networks",
+           arXiv:1504.02577, 2015.
+    """
+    import numpy as np
+
+    # Calculate transition probabilities between
+    # every pair of vertices according to Eq. (3)
+    adj_mat = nx.to_numpy_array(G)
+    transition_probabilites = adj_mat / adj_mat.sum(axis=1)[:, None]
+    nodes = np.arange(len(adj_mat))
+
+    paths = []
+    index_map = {}
+    for path_index in range(sample_size):
+        # Sample current vertex v = v_i uniformly at random
+        node = np.random.choice(nodes)
+
+        # Add v into p_r and add p_r into the path set
+        # of v, i.e., P_v
+        path = [node]
+
+        # Build the inverted index (P_v) of vertices to paths
+        index_map.setdefault(node, set())
+        index_map[node].add(path_index)
+
+        starting_node = node
+        for _ in range(path_length):
+            # Randomly sample a neighbor (v_j) according
+            # to transition probabilities from ``node`` (v) to its neighbors
+            neighbor_node = np.random.choice(
+                nodes,
+                p=transition_probabilites[starting_node]
+            )
+
+            # Set current vertex (v = v_j)
+            starting_node = neighbor_node
+
+            # Add v into p_r
+            path.append(neighbor_node)
+
+            # Add p_r into P_v
+            index_map.setdefault(neighbor_node, set())
+            index_map[neighbor_node].add(path_index)
+
+        paths.append(path)
+    return paths, index_map
