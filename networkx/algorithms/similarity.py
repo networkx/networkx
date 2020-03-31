@@ -1424,7 +1424,7 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     delta : float
         The probability that $S$ is not an epsilon-approximation to (R, phi)
     eps : float
-        The error bound. Per [1]_, a good value is $\sqrt{1}{|E|}$). Therefore,
+        The error bound. Per [1]_, a good value is ``sqrt(1/|E|)``). Therefore,
         if no value is provided, the recommended computed value will be used.
 
     Returns
@@ -1460,7 +1460,6 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
             "Setting k to number of nodes" % (num_nodes, k)
         )
         k = num_nodes
-    
     # According to [1], they empirically determined
     # a good value for ``eps`` to be sqrt( 1 / |E| )
     if eps is None:
@@ -1488,7 +1487,7 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
             if path_index in index_map[node] and path_index in index_map[v]:
                 S[node] += 1 / sample_size
 
-    # Retrieve top ``k`` similar 
+    # Retrieve top ``k`` similar
     # Note: the below performed anywhere from 4-10x faster
     # (depending on input sizes) vs the equivalent ``np.argsort(S)[::-1]``
     top_k_unsorted = np.argpartition(S, -k)[-k:]
@@ -1503,7 +1502,7 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
 
 
 def generate_random_paths(G, sample_size, path_length=5):
-    """Randomly generate ``sample_size`` paths of length ``path_length``. 
+    """Randomly generate ``sample_size`` paths of length ``path_length``.
 
     Parameters
     ----------
