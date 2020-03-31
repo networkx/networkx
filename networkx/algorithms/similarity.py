@@ -1439,15 +1439,17 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
 
         >>> import networkx as nx
         >>> G = nx.star_graph(10)
-        >>> nx.algorithms.panther(G, 0)
+        >>> nx.panther_similarity(G, 0)
         {3: 0.333333, 6: 0.363636, 7: 0.333333, 9: 0.363636, 10: 0.303030}
 
 
     References
     ----------
-    .. [1] J. Zhang, J. Tang, C. Ma, H. Tong, Y. Jing, and J. Li.
-           "Panther: Fast Top-k Similarity Search in Large Networks",
-           arXiv:1504.02577, 2015.
+    .. [1] Zhang, J., Tang, J., Ma, C., Tong, H., Jing, Y., & Li, J.
+           Panther: Fast top-k similarity search on large networks.
+           In Proceedings of the ACM SIGKDD International Conference
+           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).
+           Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
     """
     import numpy as np
 
@@ -1529,14 +1531,16 @@ def generate_random_paths(G, sample_size, path_length=5):
 
         >>> import networkx as nx
         >>> G = nx.star_graph(3)
-        >>> nx.algorithms.generate_random_paths(G, 2)
+        >>> nx.generate_random_paths(G, 2)
         ([[0, 3, 0, 2, 0, 2], [3, 0, 3, 0, 2, 0]], {0: {0, 1}, 3: {0, 1}, 2: {0, 1}})
 
     References
     ----------
-    .. [1] J. Zhang, J. Tang, C. Ma, H. Tong, Y. Jing, and J. Li.
-           "Panther: Fast Top-k Similarity Search in Large Networks",
-           arXiv:1504.02577, 2015.
+    .. [1] Zhang, J., Tang, J., Ma, C., Tong, H., Jing, Y., & Li, J.
+           Panther: Fast top-k similarity search on large networks.
+           In Proceedings of the ACM SIGKDD International Conference
+           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).
+           Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
     """
     import numpy as np
 
