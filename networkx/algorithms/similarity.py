@@ -1557,8 +1557,7 @@ def generate_random_paths(G, sample_size, path_length=5):
 
         >>> import networkx as nx
         >>> G = nx.star_graph(3)
-        >>> nx.generate_random_paths(G, 2)
-        ([[0, 3, 0, 2, 0, 2], [3, 0, 3, 0, 2, 0]], {0: {0, 1}, 3: {0, 1}, 2: {0, 1}})
+        >>> random_path = nx.generate_random_paths(G, 2)
 
     References
     ----------
