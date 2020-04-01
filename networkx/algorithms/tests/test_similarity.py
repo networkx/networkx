@@ -491,3 +491,118 @@ class TestSimilarity:
         expected = 1.0
         actual = nx.simrank_similarity_numpy(G, source=0, target=0)
         numpy.testing.assert_allclose(expected, actual, atol=1e-7)
+
+    def test_n_choose_k_small_k(self):
+        assert nx.n_choose_k(10, 4) == 210
+
+    def test_n_choose_k_big_k(self):
+        assert nx.n_choose_k(10, 8) == 45
+
+    def test_n_choose_k_same(self):
+        assert nx.n_choose_k(10, 10) == 1
+
+    def test_panther_similarity_unweighted(self):
+        numpy.random.seed(42)
+
+        G = nx.Graph()
+        G.add_edge(0, 1)
+        G.add_edge(0, 2)
+        G.add_edge(0, 3)
+        G.add_edge(1, 2)
+        G.add_edge(2, 4)
+        expected = {3: 0.5, 2: 0.5, 1: 0.5, 4: 0.125}
+        sim = nx.panther_similarity(G, 0, path_length=2)
+        assert sim == expected
+
+    def test_panther_similarity_weighted(self):
+        numpy.random.seed(42)
+
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=5)
+        G.add_edge(0, 2, weight=1)
+        G.add_edge(0, 3, weight=2)
+        G.add_edge(1, 2, weight=0.1)
+        G.add_edge(2, 4, weight=1)
+        expected = {2: 0.75, 3: 0.5, 1: 0.5, 4: 0.25}
+        sim = nx.panther_similarity(G, 0, path_length=2)
+        assert sim == expected
+
+    def test_generate_random_paths_unweighted(self):
+        numpy.random.seed(42)
+
+        num_paths = 10
+        path_length = 2
+        G = nx.Graph()
+        G.add_edge(0, 1)
+        G.add_edge(0, 2)
+        G.add_edge(0, 3)
+        G.add_edge(1, 2)
+        G.add_edge(2, 4)
+        paths, index_map = nx.generate_random_paths(
+            G,
+            num_paths,
+            path_length=path_length
+        )
+        expected_paths = [
+            [3, 0, 3],
+            [4, 2, 1],
+            [2, 1, 0],
+            [2, 0, 3],
+            [3, 0, 1],
+            [3, 0, 1],
+            [4, 2, 0],
+            [2, 1, 0],
+            [3, 0, 2],
+            [2, 1, 2],
+        ]
+        expected_map = {
+            0: {0, 2, 3, 4, 5, 6, 7, 8},
+            1: {1, 2, 4, 5, 7, 9},
+            2: {1, 2, 3, 6, 7, 8, 9},
+            3: {0, 3, 4, 5, 8},
+            4: {1, 6},
+        }
+
+        assert expected_paths == paths
+        assert expected_map == index_map
+
+    def test_generate_random_paths_weighted(self):
+        numpy.random.seed(42)
+
+        num_paths = 10
+        path_length = 6
+        G = nx.Graph()
+        G.add_edge('a', 'b', weight=0.6)
+        G.add_edge('a', 'c', weight=0.2)
+        G.add_edge('c', 'd', weight=0.1)
+        G.add_edge('c', 'e', weight=0.7)
+        G.add_edge('c', 'f', weight=0.9)
+        G.add_edge('a', 'd', weight=0.3)
+        paths, index_map = nx.generate_random_paths(
+            G,
+            num_paths,
+            path_length=path_length
+        )
+
+        expected_paths = [
+            [3, 2, 5, 2, 3, 0, 1],
+            [4, 2, 5, 2, 5, 2, 4],
+            [3, 0, 1, 0, 1, 0, 2],
+            [1, 0, 3, 0, 1, 0, 1],
+            [3, 0, 1, 0, 1, 0, 3],
+            [3, 0, 1, 0, 1, 0, 2],
+            [3, 0, 1, 0, 1, 0, 1],
+            [5, 2, 5, 2, 5, 2, 4],
+            [3, 0, 3, 0, 1, 0, 1],
+            [4, 2, 5, 2, 4, 2, 3],
+        ]
+        expected_map = {
+            3: {0, 2, 3, 4, 5, 6, 8, 9},
+            2: {0, 1, 2, 5, 7, 9},
+            5: {0, 1, 9, 7},
+            0: {0, 2, 3, 4, 5, 6, 8},
+            1: {0, 2, 3, 4, 5, 6, 8}, 4: {1, 9, 7},
+        }
+
+        assert expected_paths == paths
+        assert expected_map == index_map
