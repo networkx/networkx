@@ -28,6 +28,7 @@ __all__ = [
     "simrank_similarity_numpy",
     "panther_similarity",
     "generate_random_paths",
+    "n_choose_k",
 ]
 
 
@@ -1395,6 +1396,33 @@ def simrank_similarity_numpy(
 
 
 def n_choose_k(n, k):
+    """Pure Python implementation of the binomial coefficient
+
+    The general equation is n! / (k! * (n - k)!). The below
+    implementation is a more efficient version.
+
+    Parameters
+    ----------
+    n : int
+        Set of ``n`` elements
+    k : int
+        Unordered chosen subset of length ``k``
+
+    Returns
+    -------
+    binomial_coeff : int
+        The number of ways (disregarding order) that k objects
+        can be chosen from among n objects.
+
+    Examples
+    --------
+        >>> import networkx as nx
+        >>> nx.n_choose_k(5, 2)
+        10
+        >>> nx.n_choose_k(5, 4)
+        5
+
+    """
     if k < n - k:
         return reduce(mul, range(n - k + 1, n + 1)) // math.factorial(k)
     else:
@@ -1424,7 +1452,7 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     delta : float
         The probability that $S$ is not an epsilon-approximation to (R, phi)
     eps : float
-        The error bound. Per [1]_, a good value is ``sqrt(1/|E|)``). Therefore,
+        The error bound. Per [1]_, a good value is ``sqrt(1/|E|)``. Therefore,
         if no value is provided, the recommended computed value will be used.
 
     Returns
@@ -1439,9 +1467,7 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
 
         >>> import networkx as nx
         >>> G = nx.star_graph(10)
-        >>> nx.panther_similarity(G, 0)
-        {3: 0.333333, 6: 0.363636, 7: 0.333333, 9: 0.363636, 10: 0.303030}
-
+        >>> sim = nx.panther_similarity(G, 0)
 
     References
     ----------
@@ -1456,8 +1482,8 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     num_nodes = G.number_of_nodes()
     if num_nodes < k:
         warnings.warn(
-            "Number of nodes is %s, but requested k is %s. "
-            "Setting k to number of nodes" % (num_nodes, k)
+            f"Number of nodes is {num_nodes}, but requested k is {k}. "
+            "Setting k to number of nodes."
         )
         k = num_nodes
     # According to [1], they empirically determined
@@ -1483,8 +1509,9 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
             if v == node:
                 continue
 
-            # Only sum if they are share the same path
-            if path_index in index_map[node] and path_index in index_map[v]:
+            # Only sum if they are share the same path,
+            # i.e., ``v`` is also on the same path
+            if path_index in index_map[v]:
                 S[node] += 1 / sample_size
 
     # Retrieve top ``k`` similar
