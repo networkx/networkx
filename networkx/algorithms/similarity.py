@@ -1421,9 +1421,13 @@ def n_choose_k(n, k):
         10
         >>> nx.n_choose_k(5, 4)
         5
+        >>> nx.n_choose_k(100, 100)
+        1
 
     """
-    if k < n - k:
+    if n == k:
+        return 1
+    elif k < n - k:
         return reduce(mul, range(n - k + 1, n + 1)) // math.factorial(k)
     else:
         return reduce(mul, range(k + 1, n + 1)) // math.factorial(n - k)
