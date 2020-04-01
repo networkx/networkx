@@ -518,13 +518,13 @@ class TestSimilarity:
         numpy.random.seed(42)
 
         G = nx.Graph()
-        G.add_edge(0, 1, weight=5)
-        G.add_edge(0, 2, weight=1)
-        G.add_edge(0, 3, weight=2)
-        G.add_edge(1, 2, weight=0.1)
-        G.add_edge(2, 4, weight=1)
-        expected = {2: 0.75, 3: 0.5, 1: 0.5, 4: 0.25}
-        sim = nx.panther_similarity(G, 0, path_length=2)
+        G.add_edge('v1', 'v2', weight=5)
+        G.add_edge('v1', 'v3', weight=1)
+        G.add_edge('v1', 'v4', weight=2)
+        G.add_edge('v2', 'v3', weight=0.1)
+        G.add_edge('v3', 'v5', weight=1)
+        expected = {'v3': 0.75, 'v4': 0.5, 'v2': 0.5, 'v5': 0.25}
+        sim = nx.panther_similarity(G, 'v1', path_length=2)
         assert sim == expected
 
     def test_generate_random_paths_unweighted(self):
@@ -585,23 +585,24 @@ class TestSimilarity:
         )
 
         expected_paths = [
-            [3, 2, 5, 2, 3, 0, 1],
-            [4, 2, 5, 2, 5, 2, 4],
-            [3, 0, 1, 0, 1, 0, 2],
-            [1, 0, 3, 0, 1, 0, 1],
-            [3, 0, 1, 0, 1, 0, 3],
-            [3, 0, 1, 0, 1, 0, 2],
-            [3, 0, 1, 0, 1, 0, 1],
-            [5, 2, 5, 2, 5, 2, 4],
-            [3, 0, 3, 0, 1, 0, 1],
-            [4, 2, 5, 2, 4, 2, 3],
+            ['d', 'c', 'f', 'c', 'd', 'a', 'b'],
+            ['e', 'c', 'f', 'c', 'f', 'c', 'e'],
+            ['d', 'a', 'b', 'a', 'b', 'a', 'c'],
+            ['b', 'a', 'd', 'a', 'b', 'a', 'b'],
+            ['d', 'a', 'b', 'a', 'b', 'a', 'd'],
+            ['d', 'a', 'b', 'a', 'b', 'a', 'c'],
+            ['d', 'a', 'b', 'a', 'b', 'a', 'b'],
+            ['f', 'c', 'f', 'c', 'f', 'c', 'e'],
+            ['d', 'a', 'd', 'a', 'b', 'a', 'b'],
+            ['e', 'c', 'f', 'c', 'e', 'c', 'd'],
         ]
         expected_map = {
-            3: {0, 2, 3, 4, 5, 6, 8, 9},
-            2: {0, 1, 2, 5, 7, 9},
-            5: {0, 1, 9, 7},
-            0: {0, 2, 3, 4, 5, 6, 8},
-            1: {0, 2, 3, 4, 5, 6, 8}, 4: {1, 9, 7},
+            'd': {0, 2, 3, 4, 5, 6, 8, 9},
+            'c': {0, 1, 2, 5, 7, 9},
+            'f': {0, 1, 9, 7},
+            'a': {0, 2, 3, 4, 5, 6, 8},
+            'b': {0, 2, 3, 4, 5, 6, 8},
+            'e': {1, 9, 7},
         }
 
         assert expected_paths == paths

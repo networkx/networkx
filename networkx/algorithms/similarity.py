@@ -1492,11 +1492,13 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     if eps is None:
         eps = np.sqrt(1.0 / G.number_of_edges())
 
+    inv_node_map = {name:index for index, name in enumerate(G.nodes)}
+    node_map = np.array(G)
+
     # Calculate the sample size ``R`` for how many paths
     # torandomly generate
     t_choose_2 = n_choose_k(path_length, 2)
     sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
-
     paths, index_map = generate_random_paths(G, sample_size, path_length=path_length)
     S = np.zeros(G.number_of_nodes())
 
@@ -1510,10 +1512,12 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
             if v == node:
                 continue
 
+            node_index = inv_node_map[node]
+
             # Only sum if they are share the same path,
             # i.e., ``v`` is also on the same path
             if path_index in index_map[v]:
-                S[node] += 1 / sample_size
+                S[node_index] += 1 / sample_size
 
     # Retrieve top ``k`` similar
     # Note: the below performed anywhere from 4-10x faster
@@ -1522,7 +1526,8 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     top_k_sorted = top_k_unsorted[np.argsort(S[top_k_unsorted])][::-1]
 
     # Add back the similarity scores
-    top_k_with_val = dict(zip(top_k_sorted, S[top_k_sorted]))
+    top_k_sorted_names = map(lambda n: node_map[n], top_k_sorted)
+    top_k_with_val = dict(zip(top_k_sorted_names, S[top_k_sorted]))
 
     # Remove the self-similarity
     top_k_with_val.pop(v, None)
@@ -1574,13 +1579,16 @@ def generate_random_paths(G, sample_size, path_length=5):
     # every pair of vertices according to Eq. (3)
     adj_mat = nx.to_numpy_array(G)
     transition_probabilites = adj_mat / adj_mat.sum(axis=1)[:, None]
-    nodes = np.arange(len(adj_mat))
+
+    node_map = np.array(G)
+    num_nodes = G.number_of_nodes()
 
     paths = []
     index_map = {}
     for path_index in range(sample_size):
         # Sample current vertex v = v_i uniformly at random
-        node = np.random.choice(nodes)
+        node_index = np.random.choice(num_nodes)
+        node = node_map[node_index]
 
         # Add v into p_r and add p_r into the path set
         # of v, i.e., P_v
@@ -1590,19 +1598,20 @@ def generate_random_paths(G, sample_size, path_length=5):
         index_map.setdefault(node, set())
         index_map[node].add(path_index)
 
-        starting_node = node
+        starting_index = node_index
         for _ in range(path_length):
             # Randomly sample a neighbor (v_j) according
             # to transition probabilities from ``node`` (v) to its neighbors
-            neighbor_node = np.random.choice(
-                nodes,
-                p=transition_probabilites[starting_node]
+            neighbor_index = np.random.choice(
+                num_nodes,
+                p=transition_probabilites[starting_index]
             )
 
             # Set current vertex (v = v_j)
-            starting_node = neighbor_node
+            starting_index = neighbor_index
 
             # Add v into p_r
+            neighbor_node = node_map[neighbor_index]
             path.append(neighbor_node)
 
             # Add p_r into P_v
