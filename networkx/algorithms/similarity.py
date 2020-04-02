@@ -1492,7 +1492,7 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     if eps is None:
         eps = np.sqrt(1.0 / G.number_of_edges())
 
-    inv_node_map = {name:index for index, name in enumerate(G.nodes)}
+    inv_node_map = {name: index for index, name in enumerate(G.nodes)}
     node_map = np.array(G)
 
     # Calculate the sample size ``R`` for how many paths
