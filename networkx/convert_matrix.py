@@ -161,7 +161,7 @@ def from_pandas_adjacency(df, create_using=None):
 
     Notes
     -----
-    For directed graphs, explicitly mention create_using=nx.Digraph,
+    For directed graphs, explicitly mention create_using=nx.DiGraph,
     and entry i,j of df corresponds to an edge from i to j.
 
     If the numpy matrix has a single data type for each matrix entry it
