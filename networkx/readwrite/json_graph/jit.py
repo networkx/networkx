@@ -65,7 +65,7 @@ def jit_graph(data, create_using=None):
 
 
 @not_implemented_for('multigraph')
-def jit_data(G, indent=None):
+def jit_data(G, indent=None, default=None):
     """Returns data in JIT JSON format.
 
     Parameters
@@ -101,4 +101,4 @@ def jit_data(G, indent=None):
                 adjacency["data"] = G.edges[node, neighbour]
                 json_node["adjacencies"].append(adjacency)
         json_graph.append(json_node)
-    return json.dumps(json_graph, indent=indent)
+    return json.dumps(json_graph, indent=indent, default=default)
