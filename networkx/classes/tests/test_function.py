@@ -243,7 +243,7 @@ class TestFunction:
         assert info == expected_graph_info
 
         info = nx.info(G, n=1)
-        assert type(info)==str
+        assert type(info) == str
         expected_node_info = '\n'.join(
             ['Node 1 has the following properties:',
              'Degree: 2',
