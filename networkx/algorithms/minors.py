@@ -310,10 +310,10 @@ def _quotient_graph(G, partition, edge_relation=None, node_data=None,
     if isinstance(labels, dict):
         H = nx.relabel_nodes(H, labels)
     elif isinstance(labels, Callable):
-        b_iters = tuple(tee(b, 1)[0] for b in partition)
+        block_iters = tuple(tee(block, 1)[0] for block in partition)
         _labels = {
-            b: labels(next(b_iters[i]))
-            for i, b in enumerate(partition)
+            block: labels(next(block_iters[i]))
+            for i, block in enumerate(partition)
         }
         H = nx.relabel_nodes(H, _labels)
 
