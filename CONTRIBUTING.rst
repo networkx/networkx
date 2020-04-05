@@ -11,7 +11,7 @@ Developer overview
 
       git clone git@github.com:your-username/networkx.git
 
-   * Add the upstream repository::
+   * Navigate to the folder networkx and add the upstream repository::
 
       git remote add upstream git@github.com:networkx/networkx.git
 
