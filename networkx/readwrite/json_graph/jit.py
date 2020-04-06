@@ -78,6 +78,10 @@ def jit_data(G, indent=None, default=None):
         An indent level of 0, or negative, will only insert newlines.
         None (the default) selects the most compact representation.
 
+    default: optional, default=None
+         It will pass the value to the json.dumps function in order to
+         be able to serialize custom objects used as nodes.
+
     Returns
     -------
     data: JIT JSON string
