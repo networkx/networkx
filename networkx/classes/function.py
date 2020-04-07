@@ -525,7 +525,10 @@ def create_empty_copy(G, with_data=True):
 
 
 def info(G, n=None):
-    """Print short summary of information for the graph G or the node n.
+    """Return a summary of information for the graph G or a single node n.
+ 
+    The summary includes the number of nodes and edges (or neighbours for a single
+    node), and their average degree.
 
     Parameters
     ----------
@@ -533,6 +536,17 @@ def info(G, n=None):
        A graph
     n : node (any hashable)
        A node in the graph G
+
+    Returns
+    -------
+    info : str
+        A string containing the short summary
+
+    Raises
+    ------
+    NetworkXError
+        If n is not in the graph G
+
     """
     info = ''  # append this all to a string
     if n is None:
