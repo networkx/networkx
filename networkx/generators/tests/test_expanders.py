@@ -45,6 +45,7 @@ def test_chordal_cycle_graph():
         #     assert_less(eigs[-2], ...)
         #
 
+
 def test_paley_graph():
     """Test for the :func:`networkx.paley_graph` function."""
     primes = [3, 5, 7, 11, 13]

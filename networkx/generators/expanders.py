@@ -193,6 +193,6 @@ def paley_graph(p, create_using=None):
 
     for x in range(p):
         for x2 in square_set:
-           G.add_edge(x, (x + x2) % p)
-    G.graph['name'] =f"paley({p})"
+            G.add_edge(x, (x + x2) % p)
+    G.graph['name'] = f"paley({p})"
     return G
