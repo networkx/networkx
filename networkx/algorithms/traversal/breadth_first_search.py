@@ -64,8 +64,10 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
     queue = deque([(source, depth_limit, neighbors(source))])
     while queue:
         parent, depth_now, children = queue[0]
+        print(parent+' parent')
         try:
-            child = next(children)
+            child = next(children) 
+            print(child)         
             if child not in visited:
                 yield parent, child
                 visited.add(child)
