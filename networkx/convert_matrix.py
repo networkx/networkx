@@ -161,7 +161,7 @@ def from_pandas_adjacency(df, create_using=None):
 
     Notes
     -----
-    For directed graphs, explicitly mention create_using=nx.Digraph,
+    For directed graphs, explicitly mention create_using=nx.DiGraph,
     and entry i,j of df corresponds to an edge from i to j.
 
     If the numpy matrix has a single data type for each matrix entry it
@@ -507,7 +507,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
 
     Notes
     -----
-    For directed graphs, explicitly mention create_using=nx.Digraph,
+    For directed graphs, explicitly mention create_using=nx.DiGraph,
     and entry i,j of A corresponds to an edge from i to j.
 
     If `create_using` is :class:`networkx.MultiGraph` or
@@ -945,7 +945,7 @@ def from_scipy_sparse_matrix(
 
     Notes
     -----
-    For directed graphs, explicitly mention create_using=nx.Digraph,
+    For directed graphs, explicitly mention create_using=nx.DiGraph,
     and entry i,j of A corresponds to an edge from i to j.
 
     If `create_using` is :class:`networkx.MultiGraph` or
@@ -1222,7 +1222,7 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
 
     Notes
     -----
-    For directed graphs, explicitly mention create_using=nx.Digraph,
+    For directed graphs, explicitly mention create_using=nx.DiGraph,
     and entry i,j of A corresponds to an edge from i to j.
 
     If `create_using` is :class:`networkx.MultiGraph` or
