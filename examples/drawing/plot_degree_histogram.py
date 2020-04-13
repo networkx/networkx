@@ -12,7 +12,7 @@ import networkx as nx
 
 G = nx.gnp_random_graph(100, 0.02)
 
-degree_sequence = sorted([d for n, d in G.degree()], reverse=True)  # degree sequence
+degree_sequence = sorted([d for d in G.degree().values()], reverse=True)  # degree sequence
 degreeCount = collections.Counter(degree_sequence)
 deg, cnt = zip(*degreeCount.items())
 
