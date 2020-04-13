@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-This module implements useful functions to plot dendrograms of community
-detections performed by the Girvan-Newman algorithm on graphs.
+This module implements useful functions to prepare data for
+drawing dendrograms of community detections performed by the
+Girvan-Newman algorithm on graphs.
 """
 
 import numpy as np
@@ -78,13 +79,13 @@ def girvan_newman_partitions(G):
 
     # Does G meet the conditions?
     if nx.number_connected_components(G) > 1:
-        raise TypeError("Bad graph type: do not use a graph with" +
+        raise TypeError("Bad graph type: do not use a graph with " +
                         "more connected components")
     _nodes = nx.nodes(G)
     _nn = nx.number_of_nodes(G)
     _good_nodes = np.arange(_nn)
     if not set(_nodes) == set(_good_nodes):
-        raise TypeError("Bad graph type: use a graph with nodes" +
+        raise TypeError("Bad graph type: use a graph with nodes " +
                         "which are integers from 0 to (number_of_nodes - 1)")
 
     # Get list of partitions using
@@ -326,13 +327,13 @@ def agglomerative_matrix(G, list_partitions):
      """
     # Does G meet the conditions?
     if nx.number_connected_components(G) > 1:
-        raise TypeError("Bad graph type: do not use a graph with more" +
+        raise TypeError("Bad graph type: do not use a graph with more " +
                         " connected components")
     _nodes = nx.nodes(G)
     nn = nx.number_of_nodes(G)
     _good_nodes = np.arange(nn)
     if not set(_nodes) == set(_good_nodes):
-        raise TypeError("Bad graph type: use a graph with nodes which are" +
+        raise TypeError("Bad graph type: use a graph with nodes which are " +
                         "integers from 0 to (number_of_nodes - 1)")
 
     # Set out the list of partitions in a list of dictionaries containing
@@ -374,8 +375,8 @@ def agglomerative_matrix(G, list_partitions):
             # Look for info of communities A and B which are merged to form
             # the new community
             if number_nodes < 2:
-                raise ValueError('ERROR: the new community has less' +
-                                 ' than 2 nodes')
+                raise ValueError('ERROR: the new community has less ' +
+                                 'than 2 nodes')
             elif number_nodes == 2:
                 comA = min(nodes_in_newcom[0], nodes_in_newcom[1])
                 comB = max(nodes_in_newcom[0], nodes_in_newcom[1])
@@ -565,8 +566,8 @@ def distance_of_partition(agglomerative_matrix, n_communities):
     # Check if 'n_communities' belongs to the interval [1, number_nodes].
     nn = len(agglomerative_matrix[:, 0]) + 1
     if (n_communities < 1) or (n_communities > nn):
-        raise ValueError('ERROR: n_communities must be an integer between' +
-                         ' 1 and number_nodes')
+        raise TypeError('Bad number of communities: n_communities must be' +
+                        ' an integer between 1 and number_nodes')
 
     # High of the level of the hierarchy in which the graph is split
     # into 'n_communities' different partitions.
