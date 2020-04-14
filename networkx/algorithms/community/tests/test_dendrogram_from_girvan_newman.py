@@ -32,7 +32,7 @@ class TestDendrogram:
         G = nx.path_graph(6)
         partitions = dgn.girvan_newman_partitions(G)
         bp_G, index_bp_G = dgn.girvan_newman_best_partition(G, partitions)
-        assert bp_G == {0: 0, 1: 0, 2: 0, 3: 1, 4: 1, 5: 1}
+        assert bp_G == [{0, 1, 2}, {3, 4, 5}]
         assert index_bp_G == 0
 
     def test_distance_of_partition(self):
@@ -58,7 +58,7 @@ class TestDendrogram:
 
     def test_not_connected_graph(self):
         with pytest.raises(TypeError):
-            # graph with 4 nodes, not connected
+            # graph with 4 nodes and not connected
             nodes = [0, 1, 2, 3]
             edges = [(0, 1), (0, 2), (1, 2)]
             G = nx.Graph()
