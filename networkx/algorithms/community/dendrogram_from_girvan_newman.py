@@ -564,7 +564,7 @@ def distance_of_partition(agglomerative_matrix, n_communities):
         >>> agglomerative_mat = agglomerative_matrix(G, partitions)
         >>> n_communities = 2
         >>> dist_2comm = distance_of_partition(agglomerative_mat,
-        >>>                                    n_communities)
+        ...                                    n_communities)
         >>> print (dist_2comm)
         3
 
@@ -573,7 +573,7 @@ def distance_of_partition(agglomerative_matrix, n_communities):
 
         >>> from scipy.cluster.hierarchy import dendrogram
         >>> dendro_2comm = dendrogram(agglomerative_mat,
-        >>>                           color_threshold=dist_2comm)
+        ...                           color_threshold=dist_2comm)
 
      """
     # Check if 'n_communities' belongs to the interval [1, number_nodes].
