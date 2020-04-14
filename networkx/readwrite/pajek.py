@@ -54,7 +54,12 @@ def generate_pajek(G):
         na = G.nodes.get(n, {}).copy()
         x = na.pop('x', 0.0)
         y = na.pop('y', 0.0)
-        id = int(na.pop('id', nodenumber[n]))
+        try:
+            id = int(na.pop('id', nodenumber[n]))
+        except ValueError as e:
+            e.args += (("Pajek format requires 'id' to be an int()."
+                        " Refer to the 'Relabeling nodes' section."),)
+            raise
         nodenumber[n] = id
         shape = na.pop('shape', 'ellipse')
         s = ' '.join(map(make_qstr, (id, n, x, y, shape)))
