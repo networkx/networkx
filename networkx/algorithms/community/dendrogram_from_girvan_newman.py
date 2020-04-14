@@ -8,7 +8,6 @@ You can look at some other examples on
 [github](https://github.com/FrancescoBonacina/dendrogram_girvan-newman).
 """
 
-import numpy as np
 import networkx as nx
 
 from networkx.algorithms.community.quality import modularity
@@ -79,6 +78,7 @@ def girvan_newman_partitions(G):
     pieces, the tightly knit community structure is exposed and the
     result can be depicted as a dendrogram.
     """
+    import numpy as np
 
     # Does G meet the conditions?
     if nx.number_connected_components(G) > 1:
@@ -331,6 +331,8 @@ def agglomerative_matrix(G, list_partitions):
         >>> dendro_G = dendrogram(agglomerative_mat)
 
      """
+    import numpy as np
+
     # Does G meet the conditions?
     if nx.number_connected_components(G) > 1:
         raise TypeError("Bad graph type: do not use a graph with more " +
@@ -494,6 +496,8 @@ def girvan_newman_best_partition(G, list_partitions):
         >>> dendro_bp = dendrogram(agglomerative_mat, color_threshold=dis_bp)
 
      """
+    import numpy as np
+
     # Does G meet the conditions?
     if nx.number_connected_components(G) > 1:
         raise TypeError("Bad graph type: do not use a graph with more" +

@@ -3,10 +3,11 @@ Unit tests for the :mod:
 `networkx.algorithms.community.dendrogram_from_girvan_newman` module.
 """
 
-import numpy as np
 import networkx as nx
 import networkx.algorithms.community.dendrogram_from_girvan_newman as dgn
 import pytest
+
+np = pytest.importorskip("numpy")
 
 
 class TestDendrogram:
