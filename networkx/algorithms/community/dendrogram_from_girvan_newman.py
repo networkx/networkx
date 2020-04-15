@@ -8,6 +8,7 @@ You can look at some other examples on
 [github](https://github.com/FrancescoBonacina/dendrogram_girvan-newman).
 """
 
+import warnings  # ##
 import networkx as nx
 
 from networkx.algorithms.community.quality import modularity
@@ -78,31 +79,37 @@ def girvan_newman_partitions(G):
     pieces, the tightly knit community structure is exposed and the
     result can be depicted as a dendrogram.
     """
-    import numpy as np
+    try:
+        import numpy as np
 
-    # Does G meet the conditions?
-    if nx.number_connected_components(G) > 1:
-        raise TypeError("Bad graph type: do not use a graph with " +
-                        "more connected components")
-    _nodes = nx.nodes(G)
-    _nn = nx.number_of_nodes(G)
-    _good_nodes = np.arange(_nn)
-    if not set(_nodes) == set(_good_nodes):
-        raise TypeError("Bad graph type: use a graph with nodes " +
-                        "which are integers from 0 to (number_of_nodes - 1)")
+        # Does G meet the conditions?
+        if nx.number_connected_components(G) > 1:
+            raise TypeError("Bad graph type: do not use a graph with " +
+                            "more connected components")
+        _nodes = nx.nodes(G)
+        _nn = nx.number_of_nodes(G)
+        _good_nodes = np.arange(_nn)
+        if not set(_nodes) == set(_good_nodes):
+            raise TypeError("Bad graph type: use a graph with nodes which" +
+                            " are integers from 0 to (number_of_nodes - 1)")
 
-    # Get list of partitions using
-    # 'networkx.algorithms.community.centrality.girvan_newman'
-    _gn_partitions = list(girvan_newman(G))
+        # Get list of partitions using
+        # 'networkx.algorithms.community.centrality.girvan_newman'
+        _gn_partitions = list(girvan_newman(G))
 
-    # Sort each partition: each partition contains communities (sets of nodes)
-    # which will be sorted according to the smallest node they contain.
-    gn_partitions = []
-    for part in _gn_partitions:
-        sorted_part = sorted(part, key=lambda x: min(x))
-        gn_partitions.append(sorted_part)
+        # Sort each partition: each partition contains communities (sets of
+        # nodes) which will be sorted according to the smallest node they
+        # contain.
+        gn_partitions = []
+        for part in _gn_partitions:
+            sorted_part = sorted(part, key=lambda x: min(x))
+            gn_partitions.append(sorted_part)
 
-    return gn_partitions
+        return gn_partitions
+
+    except ImportError:
+        warnings.warn("numpy not found, skipping conversion test.",
+                      ImportWarning)
 
 
 def _list2dict(list_partitions, number_nodes):
