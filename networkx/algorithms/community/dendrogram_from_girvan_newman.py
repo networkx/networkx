@@ -108,8 +108,8 @@ def girvan_newman_partitions(G):
         return gn_partitions
 
     except ImportError:
-        warnings.warn("numpy not found, skipping conversion test.",
-                      ImportWarning)
+        warnings.warn("numpy not found, skipping test of " +
+                      "girvan_newman_partition", ImportWarning)
 
 
 def _list2dict(list_partitions, number_nodes):
@@ -439,8 +439,8 @@ def agglomerative_matrix(G, list_partitions):
         return AM
 
     except ImportError:
-        warnings.warn("numpy not found, skipping conversion test.",
-                      ImportWarning)
+        warnings.warn("numpy not found, skipping test of " +
+                      "agglomerative_matrix", ImportWarning)
 
 
 def girvan_newman_best_partition(G, list_partitions):
@@ -541,8 +541,8 @@ def girvan_newman_best_partition(G, list_partitions):
         return (best_partition, id_best_part)
 
     except ImportError:
-        warnings.warn("numpy not found, skipping conversion test.",
-                      ImportWarning)
+        warnings.warn("numpy not found, skipping test of " +
+                      "girvan_newman_best_partition", ImportWarning)
 
 
 def distance_of_partition(agglomerative_matrix, n_communities):
