@@ -8,7 +8,7 @@ You can look at some other examples on
 [github](https://github.com/FrancescoBonacina/dendrogram_girvan-newman).
 """
 
-import warnings  # ##
+import warnings
 import networkx as nx
 
 from networkx.algorithms.community.quality import modularity
@@ -63,11 +63,11 @@ def girvan_newman_partitions(G):
         >>> partitions = girvan_newman_partitions(G)
         >>> for part in partitions:
         ...     print (part)
-        >>> # [{0, 1, 2}, {3, 4, 5}]
-        >>> # [{0}, {1, 2}, {3, 4, 5}]
-        >>> # [{0}, {1, 2}, {3}, {4, 5}]
-        >>> # [{0}, {1}, {2}, {3}, {4, 5}]
-        >>> # [{0}, {1}, {2}, {3}, {4}, {5}]
+        [{0, 1, 2}, {3, 4, 5}]
+        [{0}, {1, 2}, {3, 4, 5}]
+        [{0}, {1, 2}, {3}, {4, 5}]
+        [{0}, {1}, {2}, {3}, {4, 5}]
+        [{0}, {1}, {2}, {3}, {4}, {5}]
 
     Notes
     -----
@@ -322,11 +322,11 @@ def agglomerative_matrix(G, list_partitions):
         >>> partitions = girvan_newman_partitions(G)
         >>> agglomerative_mat = agglomerative_matrix(G, partitions)
         >>> print (agglomerative_mat)
-        >>> # [[4. 5. 1. 2.]
-        >>> #  [1. 2. 1. 2.]
-        >>> #  [3. 6. 2. 3.]
-        >>> #  [0. 7. 2. 3.]
-        >>> #  [8. 9. 3. 6.]]
+        [[4. 5. 1. 2.]
+         [1. 2. 1. 2.]
+         [3. 6. 2. 3.]
+         [0. 7. 2. 3.]
+         [8. 9. 3. 6.]]
 
     To plot the dendrogram of community detection performed on graph G::
 
@@ -486,9 +486,9 @@ def girvan_newman_best_partition(G, list_partitions):
         >>> partitions = girvan_newman_partitions(G)
         >>> bp_G, index_bp_G = girvan_newman_best_partition(G, partitions)
         >>> print (bp_G)
-        >>> # [{0, 1, 2}, {3, 4, 5}]
+        [{0, 1, 2}, {3, 4, 5}]
         >>> print (index_bp_G)
-        >>> # 0
+        0
 
     To plot the dendrogram of community detection performed on graph G,
     highlighting the best partition::
@@ -586,7 +586,7 @@ def distance_of_partition(agglomerative_matrix, n_communities):
         >>> dist_2comm = distance_of_partition(agglomerative_mat,
         ...                                    n_communities)
         >>> print (dist_2comm)
-        >>> # 3
+        3
 
     To plot the dendrogram highlighting the partition which splits the graph
     into 2 communities::
