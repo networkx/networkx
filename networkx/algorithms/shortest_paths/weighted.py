@@ -232,7 +232,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
         raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
 
-def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
+def single_source_dijkstra_path(G, source, target=None, cutoff=None, weight='weight'):
     """Find shortest weighted paths in G from a source node.
 
     Compute shortest path between source and all other reachable
@@ -244,6 +244,9 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
 
     source : node
        Starting node for path.
+
+    target : node label, optional
+       Ending node for path
 
     cutoff : integer or float, optional
        Depth to stop the search. Only return paths with length <= cutoff.
@@ -293,10 +296,10 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
 
     """
     return multi_source_dijkstra_path(G, {source}, cutoff=cutoff,
-                                      weight=weight)
+                                      weight=weight, target=target)
 
 
-def single_source_dijkstra_path_length(G, source, cutoff=None,
+def single_source_dijkstra_path_length(G, source, target=None, cutoff=None,
                                        weight='weight'):
     """Find shortest weighted path lengths in G from a source node.
 
@@ -309,6 +312,9 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
 
     source : node label
        Starting node for path
+
+    target : node label, optional
+       Ending node for path
 
     cutoff : integer or float, optional
        Depth to stop the search. Only return paths with length <= cutoff.
@@ -365,7 +371,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
 
     """
     return multi_source_dijkstra_path_length(G, {source}, cutoff=cutoff,
-                                             weight=weight)
+                                             weight=weight, target=target)
 
 
 def single_source_dijkstra(G, source, target=None, cutoff=None,
@@ -467,7 +473,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None,
                                  weight=weight)
 
 
-def multi_source_dijkstra_path(G, sources, cutoff=None, weight='weight'):
+def multi_source_dijkstra_path(G, sources, target=None, cutoff=None, weight='weight'):
     """Find shortest weighted paths in G from a given set of source
     nodes.
 
@@ -483,6 +489,9 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight='weight'):
         single node, then all paths computed by this function will start
         from that node. If there are two or more nodes in the set, the
         computed paths may begin from any one of the start nodes.
+
+    target : node label, optional
+       Ending node for path
 
     cutoff : integer or float, optional
        Depth to stop the search. Only return paths with length <= cutoff.
@@ -535,12 +544,12 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight='weight'):
     multi_source_dijkstra(), multi_source_bellman_ford()
 
     """
-    length, path = multi_source_dijkstra(G, sources, cutoff=cutoff,
+    length, path = multi_source_dijkstra(G, sources, target=target, cutoff=cutoff,
                                          weight=weight)
     return path
 
 
-def multi_source_dijkstra_path_length(G, sources, cutoff=None,
+def multi_source_dijkstra_path_length(G, sources, target=None, cutoff=None,
                                       weight='weight'):
     """Find shortest weighted path lengths in G from a given set of
     source nodes.
@@ -557,6 +566,9 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None,
         single node, then all paths computed by this function will start
         from that node. If there are two or more nodes in the set, the
         computed paths may begin from any one of the start nodes.
+
+    target : node label, optional
+       Ending node for path
 
     cutoff : integer or float, optional
        Depth to stop the search. Only return paths with length <= cutoff.
@@ -614,8 +626,17 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None,
     """
     if not sources:
         raise ValueError('sources must not be empty')
+    if target in sources:
+        return 0
     weight = _weight_function(G, weight)
-    return _dijkstra_multisource(G, sources, weight, cutoff=cutoff)
+    dist = _dijkstra_multisource(G, sources, weight, cutoff=cutoff, target=target)
+
+    if target is None:
+        return dist
+    try:
+        return dist[target]
+    except KeyError:
+        raise nx.NetworkXNoPath(f"No path to {target}.")
 
 
 def multi_source_dijkstra(G, sources, target=None, cutoff=None,
