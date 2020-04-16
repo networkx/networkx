@@ -5,9 +5,9 @@ Shortest path algorithms for weighed graphs.
 from collections import deque
 from heapq import heappush, heappop
 from itertools import count
+
 import networkx as nx
 from networkx.utils import generate_unique_node
-
 
 __all__ = ['dijkstra_path',
            'dijkstra_path_length',
@@ -536,7 +536,7 @@ def multi_source_dijkstra_path(G, sources, target=None, cutoff=None, weight='wei
 
     """
     _, path = multi_source_dijkstra(G, sources, target=target, cutoff=cutoff,
-                                         weight=weight)
+                                    weight=weight)
     return path
 
 
@@ -616,7 +616,7 @@ def multi_source_dijkstra_path_length(G, sources, target=None, cutoff=None,
 
     """
     length, _ = multi_source_dijkstra(G, sources, target=target, cutoff=cutoff,
-                                         weight=weight, capture_paths=False)
+                                      weight=weight, capture_paths=False)
     return length
 
 
@@ -2014,7 +2014,7 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     push = heappush
     pop = heappop
     # Init:  [Forward, Backward]
-    dists = [{}, {}]   # dictionary of final distances
+    dists = [{}, {}]  # dictionary of final distances
     paths = [{source: [source]}, {target: [target]}]  # dictionary of paths
     fringe = [[], []]  # heap of (distance, node) for choosing node to expand
     seen = [{source: 0}, {target: 0}]  # dict of distances to seen nodes
@@ -2048,7 +2048,7 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
             return (finaldist, finalpath)
 
         for w, d in neighs[dir][v].items():
-            if(dir == 0):  # forward
+            if (dir == 0):  # forward
                 vwLength = dists[dir][v] + weight(v, w, d)
             else:  # back, must remember to change v,w->w,v
                 vwLength = dists[dir][v] + weight(w, v, d)
