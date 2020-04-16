@@ -615,23 +615,13 @@ def multi_source_dijkstra_path_length(G, sources, target=None, cutoff=None,
     multi_source_dijkstra()
 
     """
-    if not sources:
-        raise ValueError('sources must not be empty')
-    if target in sources:
-        return 0
-    weight = _weight_function(G, weight)
-    dist = _dijkstra_multisource(G, sources, weight, cutoff=cutoff, target=target)
-
-    if target is None:
-        return dist
-    try:
-        return dist[target]
-    except KeyError:
-        raise nx.NetworkXNoPath(f"No path to {target}.")
+    length, _ = multi_source_dijkstra(G, sources, target=target, cutoff=cutoff,
+                                         weight=weight, capture_paths=False)
+    return length
 
 
 def multi_source_dijkstra(G, sources, target=None, cutoff=None,
-                          weight='weight'):
+                          weight='weight', capture_paths=True):
     """Find shortest weighted paths and lengths from a given set of
     source nodes.
 
@@ -667,6 +657,9 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
        positional arguments: the two endpoints of an edge and the
        dictionary of edge attributes for that edge. The function must
        return a number.
+
+    capture_paths : boolean, optional
+       If this is set to false, path will be an empty dictionary or list.
 
     Returns
     -------
@@ -729,18 +722,16 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
     multi_source_dijkstra_path_length()
 
     """
-    if not sources:
-        raise ValueError('sources must not be empty')
-    if target in sources:
-        return (0, [target])
-    weight = _weight_function(G, weight)
-    paths = {source: [source] for source in sources}  # dictionary of paths
+    if capture_paths:
+        paths = {source: [source] for source in sources}  # dictionary of paths
+    else:
+        paths = None
     dist = _dijkstra_multisource(G, sources, weight, paths=paths,
                                  cutoff=cutoff, target=target)
     if target is None:
-        return (dist, paths)
+        return dist, paths if paths is not None else {}
     try:
-        return (dist[target], paths[target])
+        return dist[target], paths[target] if paths is not None else []
     except KeyError:
         raise nx.NetworkXNoPath(f"No path to {target}.")
 
@@ -809,6 +800,15 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
     as arguments. No need to explicitly return pred or paths.
 
     """
+    if not sources:
+        raise ValueError('sources must not be empty')
+    if target in sources:
+        if paths is not None:
+            paths[target] = [target]
+        return {target: 0}
+
+    weight = _weight_function(G, weight)
+
     G_succ = G._succ if G.is_directed() else G._adj
 
     push = heappush
