@@ -50,7 +50,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
          any NetworkX graph
          dict-of-dicts
          dict-of-lists
-         list of edges
+         container (ie set, list, tuple, iterator) of edges
          Pandas DataFrame (row per edge)
          numpy matrix
          numpy ndarray
@@ -108,7 +108,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
 
     # list or generator of edges
 
-    if isinstance(data, (list, tuple)) or any(
+    if isinstance(data, (list, tuple, set)) or any(
         hasattr(data, attr) for attr in ["_adjdict", "next", "__next__"]
     ):
         try:
