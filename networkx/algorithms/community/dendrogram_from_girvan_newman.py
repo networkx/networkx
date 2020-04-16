@@ -59,13 +59,9 @@ def girvan_newman_partitions(G):
     --------
     To get the list of partitions detected using the Girvan-Newman algorithm::
 
-        >>> G = nx.path_graph(6)
+        >>> G = nx.path_graph(4)
         >>> girvan_newman_partitions(G)
-        [[{0, 1, 2}, {3, 4, 5}],
-         [{0}, {1, 2}, {3, 4, 5}],
-         [{0}, {1, 2}, {3}, {4, 5}],
-         [{0}, {1}, {2}, {3}, {4, 5}],
-         [{0}, {1}, {2}, {3}, {4}, {5}]]
+        [[{0, 1}, {2, 3}], [{0}, {1}, {2, 3}], [{0}, {1}, {2}, {3}]]
 
     Notes
     -----
@@ -584,8 +580,7 @@ def distance_of_partition(agglomerative_matrix, n_communities):
     into 2 communities::
 
         >>> from scipy.cluster.hierarchy import dendrogram
-        >>> dendro_2comm = dendrogram(agglomerative_mat,
-        ...                           color_threshold=dist_2comm)
+        >>> dendro_2comm = dendrogram(agglomerative_mat, color_threshold=3)
 
      """
     # Check if 'n_communities' belongs to the interval [1, number_nodes].
