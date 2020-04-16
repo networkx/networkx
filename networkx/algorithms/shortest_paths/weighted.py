@@ -151,9 +151,7 @@ def dijkstra_path(G, source, target, weight='weight'):
     bidirectional_dijkstra(), bellman_ford_path()
     single_source_dijkstra()
     """
-    (length, path) = single_source_dijkstra(G, source, target=target,
-                                            weight=weight)
-    return path
+    return single_source_dijkstra_path(G, source, target=target, weight=weight)
 
 
 def dijkstra_path_length(G, source, target, weight='weight'):
@@ -222,14 +220,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     single_source_dijkstra()
 
     """
-    if source == target:
-        return 0
-    weight = _weight_function(G, weight)
-    length = _dijkstra(G, source, weight, target=target)
-    try:
-        return length[target]
-    except KeyError:
-        raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
+    return single_source_dijkstra_path_length(G, source, target=target, weight=weight)
 
 
 def single_source_dijkstra_path(G, source, target=None, cutoff=None, weight='weight'):
@@ -544,7 +535,7 @@ def multi_source_dijkstra_path(G, sources, target=None, cutoff=None, weight='wei
     multi_source_dijkstra(), multi_source_bellman_ford()
 
     """
-    length, path = multi_source_dijkstra(G, sources, target=target, cutoff=cutoff,
+    _, path = multi_source_dijkstra(G, sources, target=target, cutoff=cutoff,
                                          weight=weight)
     return path
 
