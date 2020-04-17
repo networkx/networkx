@@ -14,10 +14,12 @@ from networkx.algorithms.community.quality import modularity
 from networkx.algorithms.community.centrality import girvan_newman
 
 
-__all__ = ['girvan_newman_partitions',
-           'agglomerative_matrix',
-           'girvan_newman_best_partition',
-           'distance_of_partition']
+__all__ = [
+    "girvan_newman_partitions",
+    "agglomerative_matrix",
+    "girvan_newman_best_partition",
+    "distance_of_partition",
+]
 
 
 def girvan_newman_partitions(G):
@@ -70,14 +72,17 @@ def girvan_newman_partitions(G):
 
     # Does G meet the conditions?
     if nx.number_connected_components(G) > 1:
-        raise TypeError("Bad graph type: do not use a graph with " +
-                        "more connected components")
+        raise TypeError(
+            "Bad graph type: do not use a graph with " + "more connected components"
+        )
     _nodes = nx.nodes(G)
     _nn = nx.number_of_nodes(G)
     _good_nodes = np.arange(_nn)
     if not set(_nodes) == set(_good_nodes):
-        raise TypeError("Bad graph type: use a graph with nodes which" +
-                        " are integers from 0 to (number_of_nodes - 1)")
+        raise TypeError(
+            "Bad graph type: use a graph with nodes which"
+            + " are integers from 0 to (number_of_nodes - 1)"
+        )
 
     # Get list of partitions using
     # 'networkx.algorithms.community.centrality.girvan_newman'
@@ -115,7 +120,7 @@ def _list2dict(list_partitions, number_nodes):
             - key: integer, label of the node;
             - value: integer, label of the community the node belongs to.
     """
-    list_of_dict = [0]*(number_nodes-1)
+    list_of_dict = [0] * (number_nodes - 1)
     c = 0
 
     for part in list_partitions:
@@ -156,13 +161,13 @@ def _informative_dict(list_of_dict, number_nodes):
                 number of nodes in the community]
      """
     _list_of_dict = list_of_dict[::-1]
-    informative_dict = [0] * (number_nodes-1)
+    informative_dict = [0] * (number_nodes - 1)
 
     # Compute newdict_0, the first dict of the list 'informative_dict'
     dict_0 = dict(_list_of_dict[0])
     newkey_0 = list(dict_0.keys())
     newval_0 = [[i, 0, 1] for i in list(dict_0.values())]
-    newdict_0 = {k : v for k, v in zip(newkey_0, newval_0)}
+    newdict_0 = {k: v for k, v in zip(newkey_0, newval_0)}
 
     informative_dict[0] = newdict_0
 
@@ -172,11 +177,11 @@ def _informative_dict(list_of_dict, number_nodes):
     c = 0
     for dict_i in _list_of_dict:
         dict_pre = dict(dict_cur)  # Old dict with info about previous partitio
-        dict_cur = dict(dict_i)    # Old dict with info about current partition
+        dict_cur = dict(dict_i)  # Old dict with info about current partition
 
         if c > 0:
             # The new dict with info about the previous partition
-            newdict_pre = informative_dict[c-1]
+            newdict_pre = informative_dict[c - 1]
 
             # Look for key with different val in dict_pre and in dict_cur
             mykey = -999
@@ -185,8 +190,7 @@ def _informative_dict(list_of_dict, number_nodes):
                     mykey = i
                     break
             if mykey == -999:
-                raise ValueError('ERROR: New community not found,' +
-                                 ' fix list_of_dict')
+                raise ValueError("ERROR: New community not found," + " fix list_of_dict")
 
             # Update info of nodes belonging to the new community.
             # Community A and B are the two communities that are joined
@@ -199,9 +203,11 @@ def _informative_dict(list_of_dict, number_nodes):
                     if newdict_pre[k] != info_nodeA:
                         info_nodeB = newdict_pre[k]
                         break
-            info_newcom = [number_nodes - 1 + c,
-                           max(info_nodeA[1], info_nodeB[1]) + 1,
-                           info_nodeA[2] + info_nodeB[2]]
+            info_newcom = [
+                number_nodes - 1 + c,
+                max(info_nodeA[1], info_nodeB[1]) + 1,
+                info_nodeA[2] + info_nodeB[2],
+            ]
 
             # Create newdict_cur, the new dictionary with info about
             # the current partition
@@ -217,8 +223,10 @@ def _informative_dict(list_of_dict, number_nodes):
                 if j == info_newcom[2]:
                     break
             if j < info_newcom[2]:
-                raise ValueError('ERROR: not found the %d nodes belonging to' +
-                                 ' the new community' % info_newcom[2])
+                raise ValueError(
+                    "ERROR: not found the %d nodes belonging to"
+                    + " the new community" % info_newcom[2]
+                )
 
             informative_dict[c] = newdict_cur
 
@@ -323,14 +331,17 @@ def agglomerative_matrix(G, list_partitions):
 
     # Does G meet the conditions?
     if nx.number_connected_components(G) > 1:
-        raise TypeError("Bad graph type: do not use a graph with more " +
-                        " connected components")
+        raise TypeError(
+            "Bad graph type: do not use a graph with more " + " connected components"
+        )
     _nodes = nx.nodes(G)
     nn = nx.number_of_nodes(G)
     _good_nodes = np.arange(nn)
     if not set(_nodes) == set(_good_nodes):
-        raise TypeError("Bad graph type: use a graph with nodes which " +
-                        "are integers from 0 to (number_of_nodes - 1)")
+        raise TypeError(
+            "Bad graph type: use a graph with nodes which "
+            + "are integers from 0 to (number_of_nodes - 1)"
+        )
 
     # Set out the list of partitions in a list of dictionaries containing
     # information on the agglomeration of communities.
@@ -338,7 +349,7 @@ def agglomerative_matrix(G, list_partitions):
     list_info_dict = _informative_dict(list_of_dict, nn)
 
     # Create the 'agglomerative matrix'
-    AM = np.zeros((nn - 1, 4), dtype='float')
+    AM = np.zeros((nn - 1, 4), dtype="float")
 
     row = 0
     comA = 0
@@ -348,20 +359,20 @@ def agglomerative_matrix(G, list_partitions):
 
     for row in range(nn - 1):
         # For row from 0 to nn-2
-        if row < nn-2:
+        if row < nn - 2:
             # dict of info about previous partition and current partition
             dict_pre = dict(list_info_dict[row])
             dict_cur = dict(list_info_dict[row + 1])
 
             # Which are the nodes who belong to the new community?
-            new_com = nn + row   # Label of community created at this level
+            new_com = nn + row  # Label of community created at this level
             n_found = 0
             number_nodes = -1
             nodes_in_newcom = []
-            for i in range(nn):                # Look for all the nodes
+            for i in range(nn):  # Look for all the nodes
                 if dict_cur[i][0] == new_com:  # in the new community.
                     nodes_in_newcom.append(i)  # Their labels will be
-                    if n_found == 0:           # stored in nodes_in_newcom.
+                    if n_found == 0:  # stored in nodes_in_newcom.
                         info_newcom = dict_cur[i]
                         number_nodes = info_newcom[2]
                     n_found += 1
@@ -371,8 +382,7 @@ def agglomerative_matrix(G, list_partitions):
             # Look for info of communities A and B which are merged to form
             # the new community
             if number_nodes < 2:
-                raise ValueError('ERROR: the new community has less ' +
-                                 'than 2 nodes')
+                raise ValueError("ERROR: the new community has less " + "than 2 nodes")
             elif number_nodes == 2:
                 comA = min(nodes_in_newcom[0], nodes_in_newcom[1])
                 comB = max(nodes_in_newcom[0], nodes_in_newcom[1])
@@ -393,7 +403,7 @@ def agglomerative_matrix(G, list_partitions):
             AM[row] = [comA, comB, dist, nn_com]
 
         # For row number nn-2, the last one. (Rows go from 0 to nn-2)
-        if row == nn-2:
+        if row == nn - 2:
             dict_pre = dict(list_info_dict[row])
 
             info_comA = dict_pre[nn - 1]
@@ -409,9 +419,11 @@ def agglomerative_matrix(G, list_partitions):
 
             # Check: does the last community contain all the nodes?
             if nn_com != nn:
-                raise ValueError('ERROR: the last community (which is' +
-                                 ' the entire graph) does not contain' +
-                                 ' "number_nodes" nodes')
+                raise ValueError(
+                    "ERROR: the last community (which is"
+                    + " the entire graph) does not contain"
+                    + ' "number_nodes" nodes'
+                )
 
             # Fill the last row of the 'agglomerative_matrix'
             AM[row] = [comA, comB, dist, nn_com]
@@ -485,14 +497,17 @@ def girvan_newman_best_partition(G, list_partitions):
 
     # Does G meet the conditions?
     if nx.number_connected_components(G) > 1:
-        raise TypeError("Bad graph type: do not use a graph with more" +
-                        " connected components")
+        raise TypeError(
+            "Bad graph type: do not use a graph with more" + " connected components"
+        )
     _nodes = nx.nodes(G)
     nn = nx.number_of_nodes(G)
     _good_nodes = np.arange(nn)
     if not set(_nodes) == set(_good_nodes):
-        raise TypeError("Bad graph type: use a graph with nodes which" +
-                        " are integers from 0 to (number_of_nodes - 1)")
+        raise TypeError(
+            "Bad graph type: use a graph with nodes which"
+            + " are integers from 0 to (number_of_nodes - 1)"
+        )
 
     # Look for the best partition
     best_partition = []
@@ -565,8 +580,10 @@ def distance_of_partition(agglomerative_matrix, n_communities):
     # Check if 'n_communities' belongs to the interval [1, number_nodes].
     nn = len(agglomerative_matrix[:, 0]) + 1
     if (n_communities < 1) or (n_communities > nn):
-        raise TypeError('Bad number of communities: n_communities must be' +
-                        ' an integer between 1 and number_nodes')
+        raise TypeError(
+            "Bad number of communities: n_communities must be"
+            + " an integer between 1 and number_nodes"
+        )
 
     # High of the level of the hierarchy in which the graph is split
     # into 'n_communities' different partitions.
