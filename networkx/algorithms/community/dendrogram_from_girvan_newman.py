@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 This module implements useful functions to prepare data for
 drawing dendrograms of community detections performed by the
@@ -14,11 +13,6 @@ import networkx as nx
 from networkx.algorithms.community.quality import modularity
 from networkx.algorithms.community.centrality import girvan_newman
 
-__author__ = """Francesco Bonacina (francesco.bonacina@edu.unito.it)"""
-#    Copyright (C) 2020 by
-#    Francesco Bonacina (francesco.bonacina@edu.unito.it)
-#    All rights reserved.
-#    BSD license.
 
 __all__ = ['girvan_newman_partitions',
            'agglomerative_matrix',
@@ -59,9 +53,9 @@ def girvan_newman_partitions(G):
     --------
     To get the list of partitions detected using the Girvan-Newman algorithm::
 
-        >>> G = nx.path_graph(4)
-        >>> girvan_newman_partitions(G)
-        [[{0, 1}, {2, 3}], [{0}, {1}, {2, 3}], [{0}, {1}, {2}, {3}]]
+    >>> G = nx.path_graph(4)
+    >>> girvan_newman_partitions(G)
+    [[{0, 1}, {2, 3}], [{0}, {1}, {2, 3}], [{0}, {1}, {2}, {3}]]
 
     Notes
     -----
@@ -72,37 +66,32 @@ def girvan_newman_partitions(G):
     pieces, the tightly knit community structure is exposed and the
     result can be depicted as a dendrogram.
     """
-    try:
-        import numpy as np
+    import numpy as np
 
-        # Does G meet the conditions?
-        if nx.number_connected_components(G) > 1:
-            raise TypeError("Bad graph type: do not use a graph with " +
-                            "more connected components")
-        _nodes = nx.nodes(G)
-        _nn = nx.number_of_nodes(G)
-        _good_nodes = np.arange(_nn)
-        if not set(_nodes) == set(_good_nodes):
-            raise TypeError("Bad graph type: use a graph with nodes which" +
-                            " are integers from 0 to (number_of_nodes - 1)")
+    # Does G meet the conditions?
+    if nx.number_connected_components(G) > 1:
+        raise TypeError("Bad graph type: do not use a graph with " +
+                        "more connected components")
+    _nodes = nx.nodes(G)
+    _nn = nx.number_of_nodes(G)
+    _good_nodes = np.arange(_nn)
+    if not set(_nodes) == set(_good_nodes):
+        raise TypeError("Bad graph type: use a graph with nodes which" +
+                        " are integers from 0 to (number_of_nodes - 1)")
 
-        # Get list of partitions using
-        # 'networkx.algorithms.community.centrality.girvan_newman'
-        _gn_partitions = list(girvan_newman(G))
+    # Get list of partitions using
+    # 'networkx.algorithms.community.centrality.girvan_newman'
+    _gn_partitions = list(girvan_newman(G))
 
-        # Sort each partition: each partition contains communities (sets of
-        # nodes) which will be sorted according to the smallest node they
-        # contain.
-        gn_partitions = []
-        for part in _gn_partitions:
-            sorted_part = sorted(part, key=lambda x: min(x))
-            gn_partitions.append(sorted_part)
+    # Sort each partition: each partition contains communities (sets of
+    # nodes) which will be sorted according to the smallest node they
+    # contain.
+    gn_partitions = []
+    for part in _gn_partitions:
+        sorted_part = sorted(part, key=lambda x: min(x))
+        gn_partitions.append(sorted_part)
 
-        return gn_partitions
-
-    except ImportError:
-        warnings.warn("numpy not found, skipping test of " +
-                      "girvan_newman_partition", ImportWarning)
+    return gn_partitions
 
 
 def _list2dict(list_partitions, number_nodes):
@@ -312,127 +301,122 @@ def agglomerative_matrix(G, list_partitions):
     --------
     To get the "agglomerative matrix" of graph G::
 
-        >>> G = nx.path_graph(6)
-        >>> partitions = girvan_newman_partitions(G)
-        >>> agglomerative_matrix(G, partitions)
-        array([[4., 5., 1., 2.],
-               [1., 2., 1., 2.],
-               [3., 6., 2., 3.],
-               [0., 7., 2., 3.],
-               [8., 9., 3., 6.]])
+    >>> G = nx.path_graph(6)
+    >>> partitions = girvan_newman_partitions(G)
+    >>> agglomerative_matrix(G, partitions)
+    array([[4., 5., 1., 2.],
+           [1., 2., 1., 2.],
+           [3., 6., 2., 3.],
+           [0., 7., 2., 3.],
+           [8., 9., 3., 6.]])
 
     To plot the dendrogram of community detection performed on graph G::
 
-        >>> from scipy.cluster.hierarchy import dendrogram
-        >>> G = nx.path_graph(6)
-        >>> partitions = girvan_newman_partitions(G)
-        >>> agglomerative_mat = agglomerative_matrix(G, partitions)
-        >>> dendro_G = dendrogram(agglomerative_mat)
+    >>> from scipy.cluster.hierarchy import dendrogram
+    >>> G = nx.path_graph(6)
+    >>> partitions = girvan_newman_partitions(G)
+    >>> agglomerative_mat = agglomerative_matrix(G, partitions)
+    >>> dendro_G = dendrogram(agglomerative_mat)
 
-     """
-    try:
-        import numpy as np
+    """
+    import numpy as np
 
-        # Does G meet the conditions?
-        if nx.number_connected_components(G) > 1:
-            raise TypeError("Bad graph type: do not use a graph with more " +
-                            " connected components")
-        _nodes = nx.nodes(G)
-        nn = nx.number_of_nodes(G)
-        _good_nodes = np.arange(nn)
-        if not set(_nodes) == set(_good_nodes):
-            raise TypeError("Bad graph type: use a graph with nodes which " +
-                            "are integers from 0 to (number_of_nodes - 1)")
+    # Does G meet the conditions?
+    if nx.number_connected_components(G) > 1:
+        raise TypeError("Bad graph type: do not use a graph with more " +
+                        " connected components")
+    _nodes = nx.nodes(G)
+    nn = nx.number_of_nodes(G)
+    _good_nodes = np.arange(nn)
+    if not set(_nodes) == set(_good_nodes):
+        raise TypeError("Bad graph type: use a graph with nodes which " +
+                        "are integers from 0 to (number_of_nodes - 1)")
 
-        # Set out the list of partitions in a list of dictionaries containing
-        # information on the agglomeration of communities.
-        list_of_dict = _list2dict(list_partitions, nn)
-        list_info_dict = _informative_dict(list_of_dict, nn)
+    # Set out the list of partitions in a list of dictionaries containing
+    # information on the agglomeration of communities.
+    list_of_dict = _list2dict(list_partitions, nn)
+    list_info_dict = _informative_dict(list_of_dict, nn)
 
-        # Create the 'agglomerative matrix'
-        AM = np.zeros((nn - 1, 4), dtype='float')
+    # Create the 'agglomerative matrix'
+    AM = np.zeros((nn - 1, 4), dtype='float')
 
-        row = 0
-        comA = 0
-        comB = 0
-        dist = 0
-        nn_com = 0
+    row = 0
+    comA = 0
+    comB = 0
+    dist = 0
+    nn_com = 0
 
-        for row in range(nn - 1):
-            # For row from 0 to nn-2
-            if row < nn-2:
-                # dict of info about previous partition and current partition
-                dict_pre = dict(list_info_dict[row])
-                dict_cur = dict(list_info_dict[row + 1])
+    for row in range(nn - 1):
+        # For row from 0 to nn-2
+        if row < nn-2:
+            # dict of info about previous partition and current partition
+            dict_pre = dict(list_info_dict[row])
+            dict_cur = dict(list_info_dict[row + 1])
 
-                # Which are the nodes who belong to the new community?
-                new_com = nn + row   # Label of community created at this level
-                n_found = 0
-                number_nodes = -1
-                nodes_in_newcom = []
-                for i in range(nn):                # Look for all the nodes
-                    if dict_cur[i][0] == new_com:  # in the new community.
-                        nodes_in_newcom.append(i)  # Their labels will be
-                        if n_found == 0:           # stored in nodes_in_newcom.
-                            info_newcom = dict_cur[i]
-                            number_nodes = info_newcom[2]
-                        n_found += 1
-                    if n_found == number_nodes:
+            # Which are the nodes who belong to the new community?
+            new_com = nn + row   # Label of community created at this level
+            n_found = 0
+            number_nodes = -1
+            nodes_in_newcom = []
+            for i in range(nn):                # Look for all the nodes
+                if dict_cur[i][0] == new_com:  # in the new community.
+                    nodes_in_newcom.append(i)  # Their labels will be
+                    if n_found == 0:           # stored in nodes_in_newcom.
+                        info_newcom = dict_cur[i]
+                        number_nodes = info_newcom[2]
+                    n_found += 1
+                if n_found == number_nodes:
+                    break
+
+            # Look for info of communities A and B which are merged to form
+            # the new community
+            if number_nodes < 2:
+                raise ValueError('ERROR: the new community has less ' +
+                                 'than 2 nodes')
+            elif number_nodes == 2:
+                comA = min(nodes_in_newcom[0], nodes_in_newcom[1])
+                comB = max(nodes_in_newcom[0], nodes_in_newcom[1])
+                dist = info_newcom[1]
+                nn_com = number_nodes
+            else:
+                tmp_comA = dict_pre[nodes_in_newcom[0]][0]
+                for i in range(number_nodes):
+                    if dict_pre[nodes_in_newcom[i + 1]][0] != tmp_comA:
+                        tmp_comB = dict_pre[nodes_in_newcom[i + 1]][0]
                         break
+                comA = min(tmp_comA, tmp_comB)
+                comB = max(tmp_comA, tmp_comB)
+                dist = info_newcom[1]
+                nn_com = number_nodes
 
-                # Look for info of communities A and B which are merged to form
-                # the new community
-                if number_nodes < 2:
-                    raise ValueError('ERROR: the new community has less ' +
-                                     'than 2 nodes')
-                elif number_nodes == 2:
-                    comA = min(nodes_in_newcom[0], nodes_in_newcom[1])
-                    comB = max(nodes_in_newcom[0], nodes_in_newcom[1])
-                    dist = info_newcom[1]
-                    nn_com = number_nodes
-                else:
-                    tmp_comA = dict_pre[nodes_in_newcom[0]][0]
-                    for i in range(number_nodes):
-                        if dict_pre[nodes_in_newcom[i + 1]][0] != tmp_comA:
-                            tmp_comB = dict_pre[nodes_in_newcom[i + 1]][0]
-                            break
-                    comA = min(tmp_comA, tmp_comB)
-                    comB = max(tmp_comA, tmp_comB)
-                    dist = info_newcom[1]
-                    nn_com = number_nodes
+            # Fill the agglomerative matrix
+            AM[row] = [comA, comB, dist, nn_com]
 
-                # Fill the agglomerative matrix
-                AM[row] = [comA, comB, dist, nn_com]
+        # For row number nn-2, the last one. (Rows go from 0 to nn-2)
+        if row == nn-2:
+            dict_pre = dict(list_info_dict[row])
 
-            # For row number nn-2, the last one. (Rows go from 0 to nn-2)
-            if row == nn-2:
-                dict_pre = dict(list_info_dict[row])
+            info_comA = dict_pre[nn - 1]
+            info_comB = []
+            for i in range(nn):
+                if dict_pre[i][0] != info_comA[0]:
+                    info_comB = dict_pre[i]
+                    break
+            comA = min(info_comA[0], info_comB[0])
+            comB = max(info_comA[0], info_comB[0])
+            dist = max(info_comA[1], info_comB[1]) + 1
+            nn_com = info_comA[2] + info_comB[2]
 
-                info_comA = dict_pre[nn - 1]
-                info_comB = []
-                for i in range(nn):
-                    if dict_pre[i][0] != info_comA[0]:
-                        info_comB = dict_pre[i]
-                        break
-                comA = min(info_comA[0], info_comB[0])
-                comB = max(info_comA[0], info_comB[0])
-                dist = max(info_comA[1], info_comB[1]) + 1
-                nn_com = info_comA[2] + info_comB[2]
+            # Check: does the last community contain all the nodes?
+            if nn_com != nn:
+                raise ValueError('ERROR: the last community (which is' +
+                                 ' the entire graph) does not contain' +
+                                 ' "number_nodes" nodes')
 
-                # Check: does the last community contain all the nodes?
-                if nn_com != nn:
-                    raise ValueError('ERROR: the last community (which is' +
-                                     ' the entire graph) does not contain' +
-                                     ' "number_nodes" nodes')
+            # Fill the last row of the 'agglomerative_matrix'
+            AM[row] = [comA, comB, dist, nn_com]
 
-                # Fill the last row of the 'agglomerative_matrix'
-                AM[row] = [comA, comB, dist, nn_com]
-
-        return AM
-
-    except ImportError:
-        warnings.warn("numpy not found, skipping test of " +
-                      "agglomerative_matrix", ImportWarning)
+    return AM
 
 
 def girvan_newman_best_partition(G, list_partitions):
@@ -475,63 +459,58 @@ def girvan_newman_best_partition(G, list_partitions):
     To get the best partition of `G` among those detected by the
     Girvan-Newman algorithm::
 
-        >>> G = nx.path_graph(6)
-        >>> partitions = girvan_newman_partitions(G)
-        >>> girvan_newman_best_partition(G, partitions)
-        ([{0, 1, 2}, {3, 4, 5}], 0)
+    >>> G = nx.path_graph(6)
+    >>> partitions = girvan_newman_partitions(G)
+    >>> girvan_newman_best_partition(G, partitions)
+    ([{0, 1, 2}, {3, 4, 5}], 0)
 
     To plot the dendrogram of community detection performed on graph G,
     highlighting the best partition::
 
-        >>> from scipy.cluster.hierarchy import dendrogram
-        >>> # Create graph and perform community detection with Girvan-Newman
-        >>> G = nx.path_graph(6)
-        >>> partitions = girvan_newman_partitions(G)
-        >>> # Compute the agglomerative matrix
-        >>> agglomerative_mat = agglomerative_matrix(G, partitions)
-        >>> # Find the best partition and its distance from the ground level
-        >>> bp_G, idx_bp_G = girvan_newman_best_partition(G, partitions)
-        >>> n_communities_bp = len(bp_G)
-        >>> dis_bp = distance_of_partition(agglomerative_mat, n_communities_bp)
-        >>> # Plot the dendrogram highlighting the best partition
-        >>> dendro_bp = dendrogram(agglomerative_mat, color_threshold=dis_bp)
+    >>> from scipy.cluster.hierarchy import dendrogram
+    >>> # Create graph and perform community detection with Girvan-Newman
+    >>> G = nx.path_graph(6)
+    >>> partitions = girvan_newman_partitions(G)
+    >>> # Compute the agglomerative matrix
+    >>> agglomerative_mat = agglomerative_matrix(G, partitions)
+    >>> # Find the best partition and its distance from the ground level
+    >>> bp_G, idx_bp_G = girvan_newman_best_partition(G, partitions)
+    >>> n_communities_bp = len(bp_G)
+    >>> dis_bp = distance_of_partition(agglomerative_mat, n_communities_bp)
+    >>> # Plot the dendrogram highlighting the best partition
+    >>> dendro_bp = dendrogram(agglomerative_mat, color_threshold=dis_bp)
 
-     """
-    try:
-        import numpy as np
+    """
+    import numpy as np
 
-        # Does G meet the conditions?
-        if nx.number_connected_components(G) > 1:
-            raise TypeError("Bad graph type: do not use a graph with more" +
-                            " connected components")
-        _nodes = nx.nodes(G)
-        nn = nx.number_of_nodes(G)
-        _good_nodes = np.arange(nn)
-        if not set(_nodes) == set(_good_nodes):
-            raise TypeError("Bad graph type: use a graph with nodes which" +
-                            " are integers from 0 to (number_of_nodes - 1)")
+    # Does G meet the conditions?
+    if nx.number_connected_components(G) > 1:
+        raise TypeError("Bad graph type: do not use a graph with more" +
+                        " connected components")
+    _nodes = nx.nodes(G)
+    nn = nx.number_of_nodes(G)
+    _good_nodes = np.arange(nn)
+    if not set(_nodes) == set(_good_nodes):
+        raise TypeError("Bad graph type: use a graph with nodes which" +
+                        " are integers from 0 to (number_of_nodes - 1)")
 
-        # Look for the best partition
-        best_partition = []
-        MAX_mod = -99
-        c = 0
-        for part in list_partitions:
-            # Compute modularity
-            tmp_mod = modularity(G, part)
+    # Look for the best partition
+    best_partition = []
+    MAX_mod = -99
+    c = 0
+    for part in list_partitions:
+        # Compute modularity
+        tmp_mod = modularity(G, part)
 
-            # If modularity icreases, then update `best_partition`
-            if tmp_mod > MAX_mod:
-                MAX_mod = tmp_mod
-                best_partition = part
-                id_best_part = c
+        # If modularity icreases, then update `best_partition`
+        if tmp_mod > MAX_mod:
+            MAX_mod = tmp_mod
+            best_partition = part
+            id_best_part = c
 
-            c += 1
+        c += 1
 
-        return (best_partition, id_best_part)
-
-    except ImportError:
-        warnings.warn("numpy not found, skipping test of " +
-                      "girvan_newman_best_partition", ImportWarning)
+    return (best_partition, id_best_part)
 
 
 def distance_of_partition(agglomerative_matrix, n_communities):
@@ -569,20 +548,20 @@ def distance_of_partition(agglomerative_matrix, n_communities):
     To get the distance of the partition with 2 communities from the
     ground level::
 
-        >>> G = nx.path_graph(6)
-        >>> partitions = girvan_newman_partitions(G)
-        >>> agglomerative_mat = agglomerative_matrix(G, partitions)
-        >>> n_communities = 2
-        >>> distance_of_partition(agglomerative_mat, n_communities)
-        3
+    >>> G = nx.path_graph(6)
+    >>> partitions = girvan_newman_partitions(G)
+    >>> agglomerative_mat = agglomerative_matrix(G, partitions)
+    >>> n_communities = 2
+    >>> distance_of_partition(agglomerative_mat, n_communities)
+    3
 
     To plot the dendrogram highlighting the partition which splits the graph
     into 2 communities::
 
-        >>> from scipy.cluster.hierarchy import dendrogram
-        >>> dendro_2comm = dendrogram(agglomerative_mat, color_threshold=3)
+    >>> from scipy.cluster.hierarchy import dendrogram
+    >>> dendro_2comm = dendrogram(agglomerative_mat, color_threshold=3)
 
-     """
+    """
     # Check if 'n_communities' belongs to the interval [1, number_nodes].
     nn = len(agglomerative_matrix[:, 0]) + 1
     if (n_communities < 1) or (n_communities > nn):
