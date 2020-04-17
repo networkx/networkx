@@ -7,7 +7,6 @@ You can look at some other examples on
 [github](https://github.com/FrancescoBonacina/dendrogram_girvan-newman).
 """
 
-import warnings
 import networkx as nx
 
 from networkx.algorithms.community.quality import modularity
