@@ -22,12 +22,12 @@ __all__ = [
 
 
 def girvan_newman_partitions(G):
-    """ Returns the list of graph partitions detected by `girvan_newman`.
+    """Returns the list of graph partitions detected by `girvan_newman`.
 
     Parameters
     ----------
     G : NetworkX graph
-        `G` must meet 2 conditions:
+        `G` must meet 2 conditions
         1. `G` must contain only one connected component
         2. The nodes must be integers from 0 to (number_of_nodes - 1)
 
@@ -37,10 +37,9 @@ def girvan_newman_partitions(G):
         List of lists of sets of nodes in `G`. Each set of nodes
         is a community, each list is a sequence of communities at a
         particular level of the algorithm. The sets in each list
-        will be sorted according to the smallest node they contain.
-        e.g.:
-        [ {0}, {4}, {1,3}, {2,6,7}, {5} ]    will be sorted in this way:
-        [ {0}, {1,3}, {2,6,7}, {4}, {5} ]
+        will be sorted according to the smallest node they contain
+        (e.g., [{0}, {4}, {1, 3}, {2, 6, 7}, {5}]
+        will be sorted to [{0}, {1, 3}, {2, 6, 7}, {4}, {5}]).
         The list of partitions has length equal to (number_of_nodes - 1)
 
     Raises
@@ -52,7 +51,7 @@ def girvan_newman_partitions(G):
 
     Example
     --------
-    To get the list of partitions detected using the Girvan-Newman algorithm::
+    To get the list of partitions detected using the Girvan-Newman algorithm
 
     >>> G = nx.path_graph(4)
     >>> girvan_newman_partitions(G)
@@ -60,7 +59,7 @@ def girvan_newman_partitions(G):
 
     Notes
     -----
-    The Girvan–Newman algorithm detects communities by progressively
+    The Girvan--Newman algorithm detects communities by progressively
     removing edges from the original graph. The algorithm removes the
     "most valuable" edge, traditionally the edge with the highest
     betweenness centrality, at each step. As the graph breaks down into
@@ -152,12 +151,10 @@ def _informative_dict(list_of_dict, number_nodes):
     list
         List of dictionaries. The list has length (`number_nodes` - 1).
         The dictionary ith contains the information about the partition of the
-        level ith and it has this form:
-            - key: integer, label of the node;
-            - value: list of integers,
-                [label of the community the node belongs to,
-                distance of the community from the ground level,
-                number of nodes in the community]
+        level ith and it has key (integer, label of the node) and
+        value (list of integers, [label of the community the node belongs to,
+        distance of the community from the ground level,
+        number of nodes in the community])
      """
     _list_of_dict = list_of_dict[::-1]
     informative_dict = [0] * (number_nodes - 1)
@@ -259,6 +256,20 @@ def agglomerative_matrix(G, list_partitions):
     matrix we can use to plot a dendrogram with
     `scipy.cluster.hierarchy.dendrogram`.
 
+    The "agglomerative matrix" (AM) is a numpy.ndarray where each row
+    corresponds to a node.  The 4 columns contain the following information:
+
+    - AM[i,0] = integer, label of the existing community A. The community
+      A will be merge to the existing community B to form the ith new community.
+    - AM[i,1] = integer, label of the existing community B (With AM[i,0] < AM[i,1]).
+    - AM[i,2] = integer, distance of the ith new community from the level zero.
+    - AM[i,3] = integer, number of nodes in the ith new community.
+
+    A community with an index less than 'number_nodes' corresponds to one
+    which contains only that single node. A community with an index
+    belonging to [number_nodes, 2*number_nodes - 3] corresponds to one of
+    the new communities formed in the agglomeration process.
+
     To look at some other examples go to [github]
     (https://github.com/FrancescoBonacina/dendrogram_girvan-newman).
 
@@ -283,19 +294,6 @@ def agglomerative_matrix(G, list_partitions):
         which will contain 2 nodes, while the last row contains information
         about the 2 communities which merge to generate the entire graph
         (with 'number_nodes' nodes).
-        The 4 columns contain the following information:
-            AM[i,0] = integer, label of the existing community A. The community
-                      A will be merge to the existing community B to form the
-                      ith new community.
-            AM[i,1] = integer, label of the existing community B.
-                      (With AM[i,0] < AM[i,1]).
-            AM[i,2] = integer, distance of the ith new community from the
-                      level zero.
-            AM[i,3] = integer, number of nodes in the ith new community.
-        A community with an index less than 'number_nodes' corresponds to one
-        which contains only that single node. A community with an index
-        belonging to [number_nodes, 2*number_nodes - 3] corresponds to one of
-        the new communities formed in the agglomeration process.
 
     Raises
     ------
@@ -306,7 +304,8 @@ def agglomerative_matrix(G, list_partitions):
 
     Example
     --------
-    To get the "agglomerative matrix" of graph G::
+
+    To get the "agglomerative matrix" of graph G
 
     >>> G = nx.path_graph(6)
     >>> partitions = girvan_newman_partitions(G)
@@ -317,14 +316,13 @@ def agglomerative_matrix(G, list_partitions):
            [0., 7., 2., 3.],
            [8., 9., 3., 6.]])
 
-    To plot the dendrogram of community detection performed on graph G::
+    To plot the dendrogram of community detection performed on graph G
 
     >>> from scipy.cluster.hierarchy import dendrogram
     >>> G = nx.path_graph(6)
     >>> partitions = girvan_newman_partitions(G)
     >>> agglomerative_mat = agglomerative_matrix(G, partitions)
     >>> dendro_G = dendrogram(agglomerative_mat)
-
     """
     import numpy as np
 
@@ -431,7 +429,7 @@ def agglomerative_matrix(G, list_partitions):
 
 
 def girvan_newman_best_partition(G, list_partitions):
-    """ Returns the best partition on the `list_partitions`.
+    """Returns the best partition on the `list_partitions`.
 
     Returns the best partition among those generated by the Girvan-Newman
     algorithm. The best partition is selected according to modularity,
@@ -450,13 +448,11 @@ def girvan_newman_best_partition(G, list_partitions):
 
     Returns
     -------
-    tupla
-        Tupla of 2 elements:
-        Fisrt element: list with information about the best partition.
-                       It is a list of sets of nodes, each set of nodes
-                       is a community.
-        Second element: integer, position of the partition in `list_partitions`
-                        which corresponds to the best partition.
+    tuple
+        The first element is a list with information about the best partition.
+        It is a list of sets of nodes, each set of nodes is a community.
+        The second element is an integer, position of the partition in `list_partitions`
+        which corresponds to the best partition.
 
     Raises
     ------
@@ -468,7 +464,7 @@ def girvan_newman_best_partition(G, list_partitions):
     Example
     --------
     To get the best partition of `G` among those detected by the
-    Girvan-Newman algorithm::
+    Girvan-Newman algorithm
 
     >>> G = nx.path_graph(6)
     >>> partitions = girvan_newman_partitions(G)
@@ -476,7 +472,7 @@ def girvan_newman_best_partition(G, list_partitions):
     ([{0, 1, 2}, {3, 4, 5}], 0)
 
     To plot the dendrogram of community detection performed on graph G,
-    highlighting the best partition::
+    highlighting the best partition
 
     >>> from scipy.cluster.hierarchy import dendrogram
     >>> # Create graph and perform community detection with Girvan-Newman
@@ -558,9 +554,9 @@ def distance_of_partition(agglomerative_matrix, n_communities):
         If n_communities does not belong to [1, number_nodes]
 
     Example
-    --------
+    -------
     To get the distance of the partition with 2 communities from the
-    ground level::
+    ground level
 
     >>> G = nx.path_graph(6)
     >>> partitions = girvan_newman_partitions(G)
@@ -570,11 +566,10 @@ def distance_of_partition(agglomerative_matrix, n_communities):
     3
 
     To plot the dendrogram highlighting the partition which splits the graph
-    into 2 communities::
+    into 2 communities
 
     >>> from scipy.cluster.hierarchy import dendrogram
     >>> dendro_2comm = dendrogram(agglomerative_mat, color_threshold=3)
-
     """
     # Check if 'n_communities' belongs to the interval [1, number_nodes].
     nn = len(agglomerative_matrix[:, 0]) + 1
