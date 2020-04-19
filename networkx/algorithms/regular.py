@@ -5,7 +5,7 @@ from networkx.utils import not_implemented_for
 __all__ = ['is_regular', 'is_k_regular', 'k_factor']
 
 
-def is_regular(g):
+def is_regular(G):
     """Determines whether the graph ``G`` is a regular graph.
 
     A regular graph is a graph where each vertex has the same degree. A
@@ -22,16 +22,20 @@ def is_regular(g):
         Whether the given graph or digraph is regular.
 
     """
-    import numpy as np
-    m = nx.to_numpy_array(g)
-    in_degrees = np.sum(m, axis=0)
-    out_degrees = np.sum(m, axis=1)
-    return np.all(in_degrees == in_degrees[0]) and \
-        np.all(out_degrees == out_degrees[0])
+    n1 = nx.utils.arbitrary_element(G)
+    if not G.is_directed():
+        d1 = G.degree(n1)
+        return all(d1 == d for _, d in G.degree)
+    else:
+        d_in = G.in_degree(n1)
+        in_regular = all(d_in == d for _, d in G.in_degree)
+        d_out = G.out_degree(n1)
+        out_regular = all(d_out == d for _, d in G.out_degree)
+        return in_regular and out_regular
 
 
 @not_implemented_for('directed')
-def is_k_regular(g, k):
+def is_k_regular(G, k):
     """Determines whether the graph ``G`` is a k-regular graph.
 
     A k-regular graph is a graph where each vertex has degree k.
@@ -46,16 +50,12 @@ def is_k_regular(g, k):
         Whether the given graph is k-regular.
 
     """
-    import numpy as np
-    m = nx.to_numpy_array(g)
-    in_degrees = np.sum(m, axis=0)
-    out_degrees = np.sum(m, axis=1)
-    return np.all(in_degrees == k) and np.all(out_degrees == k)
+    return all(d == k for n, d in G.degree)
 
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def k_factor(g, k, matching_weight='weight'):
+def k_factor(G, k, matching_weight='weight'):
     """Compute a k-factor of G
 
     A k-factor of a graph is a spanning k-regular subgraph.
@@ -82,7 +82,6 @@ def k_factor(g, k, matching_weight='weight'):
        Information processing letters, 2009.
     """
 
-    import numpy as np
     from networkx.algorithms.matching import max_weight_matching
     from networkx.algorithms.matching import is_perfect_matching
 
@@ -93,7 +92,8 @@ def k_factor(g, k, matching_weight='weight'):
             self.degree = degree
 
             self.outer_vertices = [(node, x) for x in range(degree)]
-            self.core_vertices = [(node, x + degree) for x in range(degree - k)]
+            self.core_vertices = [(node, x + degree)
+                                  for x in range(degree - k)]
 
         def replace_node(self, g):
             adj_view = g[self.original]
@@ -160,11 +160,10 @@ def k_factor(g, k, matching_weight='weight'):
             g.remove_nodes_from(self.core_vertices)
 
     # Step 1
-    g = g.copy()
-    degrees = np.sum(nx.to_numpy_array(g), axis=0)
-    if np.any(degrees < k):
+    if any(d < k for _, d in G.degree):
         raise nx.NetworkXUnfeasible(
             "Graph contains a vertex with degree less than k")
+    g = G.copy()
 
     # Step 2
     gadgets = []
