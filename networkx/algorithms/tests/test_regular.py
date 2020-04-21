@@ -39,6 +39,15 @@ class TestKFactor:
         with pytest.raises(nx.NetworkXUnfeasible):
             reg.k_factor(g, 2)
 
+    def test_k_factor5(self):
+        g = gen.complete_graph(6)
+        # small k to exercise SmallKGadget
+        g_kf = reg.k_factor(g, 2)
+        for edge in g_kf.edges():
+            assert g.has_edge(edge[0], edge[1])
+        for _, degree in g_kf.degree():
+            assert degree == 2
+
 
 class TestIsRegular:
     def test_is_regular1(self):
