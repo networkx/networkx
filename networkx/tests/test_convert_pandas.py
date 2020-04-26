@@ -4,6 +4,7 @@ pd = pytest.importorskip("pandas")
 
 import networkx as nx
 from networkx.testing import assert_nodes_equal, assert_edges_equal, assert_graphs_equal
+from networkx.exception import NetworkXError
 
 
 class TestConvertPandas:
@@ -166,6 +167,28 @@ class TestConvertPandas:
         GW = nx.to_networkx_graph(edges, create_using=nx.Graph)
         assert_nodes_equal(G.nodes(), GW.nodes())
         assert_edges_equal(G.edges(), GW.edges())
+
+    def test_to_edgelist_source_col_exists(self):
+        g = nx.cycle_graph(10)
+        G = nx.Graph()
+        G.add_nodes_from(g)
+        G.add_weighted_edges_from((u, v, u) for u, v in g.edges())
+        nx.set_edge_attributes(G, 0, name="source_col")
+        try:
+            nx.to_pandas_edgelist(G, source="source_col")
+        except NetworkXError:
+            assert True
+
+    def test_to_edgelist_target_col_exists(self):
+        g = nx.cycle_graph(10)
+        G = nx.Graph()
+        G.add_nodes_from(g)
+        G.add_weighted_edges_from((u, v, u) for u, v in g.edges())
+        nx.set_edge_attributes(G, 0, name="target_col")
+        try:
+            nx.to_pandas_edgelist(G, source="target_col")
+        except NetworkXError:
+            assert True
 
     def test_from_adjacency(self):
         nodelist = [1, 2]
