@@ -173,24 +173,26 @@ class TestConvertPandas:
         G = nx.Graph()
         G.add_nodes_from(g)
         G.add_weighted_edges_from((u, v, u) for u, v in g.edges())
-        nx.set_edge_attributes(G, 0, name="source_co")
+        nx.set_edge_attributes(G, 0, name="source_col")
+        failed = False
         try:
             nx.to_pandas_edgelist(G, source="source_col")
         except NetworkXError:
-            assert True
-        assert False
+            failed = True
+        assert failed
 
     def test_to_edgelist_target_col_exists(self):
         g = nx.cycle_graph(10)
         G = nx.Graph()
         G.add_nodes_from(g)
         G.add_weighted_edges_from((u, v, u) for u, v in g.edges())
-        nx.set_edge_attributes(G, 0, name="target_co")
+        nx.set_edge_attributes(G, 0, name="target_col")
+        failed = False
         try:
             nx.to_pandas_edgelist(G, source="target_col")
         except NetworkXError:
-            assert True
-        assert False
+            failed = True
+        assert failed
 
     def test_from_adjacency(self):
         nodelist = [1, 2]
