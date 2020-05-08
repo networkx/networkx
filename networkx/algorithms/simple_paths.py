@@ -391,7 +391,7 @@ def shortest_simple_paths(G, source, target, weight=None):
         if callable(weight):
             def length_func(path):
                 return sum(weight(u, v, G.get_edge_data(u, v))
-                        for (u, v) in zip(path, path[1:]))
+                    for (u, v) in zip(path, path[1:]))
         else:
             def length_func(path):
                 return sum(G.adj[u][v][weight] for (u, v) in zip(path, path[1:]))
