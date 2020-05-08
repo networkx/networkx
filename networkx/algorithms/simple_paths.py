@@ -312,9 +312,17 @@ def shortest_simple_paths(G, source, target, weight=None):
     target : node
        Ending node for path
 
-    weight : string
-        Name of the edge attribute to be used as a weight. If None all
-        edges are considered to have unit weight. Default value None.
+    weight : string or function
+        If it is a string, it is the name of the edge attribute to be 
+        used as a weight.
+        
+        If it is a function, the weight of an edge is the value returned
+        by the function. The function must accept exactly three positional
+        arguments: the two endpoints of an edge and the dictionary of edge
+        attributes for that edge. The function must return a number.
+        
+        If None all edges are considered to have unit weight. Default 
+        value None.
 
     Returns
     -------
@@ -632,8 +640,8 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     target : node
        Ending node.
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight
+    weight: string, function, optional (default='weight')
+       Edge data key or weight function corresponding to the edge weight
 
     ignore_nodes : container of nodes
        nodes to ignore, optional
@@ -774,11 +782,9 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
         for w in neighs[dir](v):
             if callable(weight):
                 if(dir == 0):  # forward
-                    # multigraph not implemented
-                    minweight = weight(v, w, G.get_edge_data(w, v))
+                    minweight = weight(v, w, G.get_edge_data(v, w))
                     vwLength = dists[dir][v] + minweight
                 else:  # back, must remember to change v,w->w,v
-                    # multigraph not implemented
                     minweight = weight(w, v, G.get_edge_data(w, v))
                     vwLength = dists[dir][v] + minweight		
             else:
