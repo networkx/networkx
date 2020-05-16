@@ -921,6 +921,21 @@ class TestWriteGraphML(BaseGraphML):
         assert ('id', 'prop1') in keys[2]
         assert ('attr.name', 'prop1') in keys[2]
 
+        # Confirm the read graph nodes/edge are identical when compared to
+        # default writing behavior.
+        default_behavior_fh = io.BytesIO()
+        nx.write_graphml(G, default_behavior_fh)
+        default_behavior_fh.seek(0)
+        H = nx.read_graphml(default_behavior_fh)
+
+        named_key_ids_behavior_fh = io.BytesIO()
+        nx.write_graphml(G, named_key_ids_behavior_fh, named_key_ids=True)
+        named_key_ids_behavior_fh.seek(0)
+        J = nx.read_graphml(named_key_ids_behavior_fh)
+
+        assert(all(n1 == n2 for (n1, n2) in zip(H.nodes, J.nodes)))
+        assert(all(e1 == e2 for (e1, e2) in zip(H.edges, J.edges)))
+
     def test_write_read_attribute_numeric_type_graphml(self):
         from xml.etree.ElementTree import parse
 
