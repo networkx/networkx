@@ -409,7 +409,7 @@ class GraphMLWriter(GraphML):
         try:
             return self.keys[keys_key]
         except KeyError:
-            if self.named_key_ids is True:
+            if self.named_key_ids:
                 new_id = name
             else:
                 new_id = f"d{len(list(self.keys))}"
