@@ -1270,8 +1270,13 @@ def simrank_similarity(
         return sum(newsim[w][x] for (w, x) in s) / len(s) if s else 0.0
 
     def sim(u, v):
-        return importance_factor * avg_sim(list(product(G.predecessors(u),
-                                                        G.predecessors(v))))
+        if networkx.classes.function.is_directed(G):
+            return importance_factor * avg_sim(list(product(G.predecessors(u),
+                                                            G.predecessors(v))))
+        else:
+            return importance_factor * avg_sim(
+                list(networkx.algorithms.similarity.product(G[u], G[v]))
+            )
 
     for _ in range(max_iterations):
         if prevsim and _is_close(prevsim, newsim, tolerance):
