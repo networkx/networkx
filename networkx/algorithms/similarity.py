@@ -1270,7 +1270,7 @@ def simrank_similarity(
         return sum(newsim[w][x] for (w, x) in s) / len(s) if s else 0.0
 
     def sim(u, v):
-        return importance_factor * avg_sim(list(product(G[u], G[v])))
+        return importance_factor * avg_sim(list(product(G.predecessors(u), G.predecessors(v))))
 
     for _ in range(max_iterations):
         if prevsim and _is_close(prevsim, newsim, tolerance):
