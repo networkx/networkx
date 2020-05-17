@@ -1245,7 +1245,7 @@ def simrank_similarity(
 
         >>> import networkx as nx
         >>> from numpy import array
-        >>> G = nx.cycle_graph(4)
+        >>> G = nx.cycle_graph(4, create_using=nx.DiGraph)
         >>> sim = nx.simrank_similarity(G)
         >>> lol = [[sim[u][v] for v in sorted(sim[u])] for u in sorted(sim)]
         >>> sim_array = array(lol)
@@ -1347,7 +1347,7 @@ def simrank_similarity_numpy(
     --------
         >>> import networkx as nx
         >>> from numpy import array
-        >>> G = nx.cycle_graph(4)
+        >>> G = nx.cycle_graph(4, create_using=nx.DiGraph)
         >>> sim = nx.simrank_similarity_numpy(G)
 
     References
