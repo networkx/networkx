@@ -459,7 +459,18 @@ class TestSimilarity:
         G.add_node(4, label='StudentB')
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 4), (4, 2), (3, 0)])
 
-        expected = {0: {0: 1, 1: 0.0, 2: 0.1323363991265798, 3: 0.0, 4: 0.03387811817640443}, 1: {0: 0.0, 1: 1, 2: 0.4135512472705618, 3: 0.0, 4: 0.10586911930126384}, 2: {0: 0.1323363991265798, 1: 0.4135512472705618, 2: 1, 3: 0.04234764772050554, 4: 0.08822426608438655}, 3: {0: 0.0, 1: 0.0, 2: 0.04234764772050554, 3: 1, 4: 0.3308409978164495}, 4: {0: 0.03387811817640443, 1: 0.10586911930126384, 2: 0.08822426608438655, 3: 0.3308409978164495, 4: 1}}
+        expected = {
+                    0: {0: 1, 1: 0.0, 2: 0.1323363991265798, 3: 0.0,
+                        4: 0.03387811817640443},
+                    1: {0: 0.0, 1: 1, 2: 0.4135512472705618, 3: 0.0,
+                        4: 0.10586911930126384},
+                    2: {0: 0.1323363991265798, 1: 0.4135512472705618, 2: 1,
+                        3: 0.04234764772050554, 4: 0.08822426608438655},
+                    3: {0: 0.0, 1: 0.0, 2: 0.04234764772050554, 3: 1,
+                        4: 0.3308409978164495},
+                    4: {0: 0.03387811817640443, 1: 0.10586911930126384,
+                        2: 0.08822426608438655, 3: 0.3308409978164495, 4: 1}
+                   }
         # Use the importance_factor from the paper to get the same numbers.
         actual = nx.algorithms.similarity.simrank_similarity(G, importance_factor=0.8)
         assert expected == actual
@@ -477,7 +488,8 @@ class TestSimilarity:
 
         expected = {0: 1, 1: 0.0, 2: 0.1323363991265798, 3: 0.0, 4: 0.03387811817640443}
         # Use the importance_factor from the paper to get the same numbers.
-        actual = nx.algorithms.similarity.simrank_similarity(G, importance_factor=0.8, source=0)
+        actual = nx.algorithms.similarity.simrank_similarity(G, importance_factor=0.8,
+                                                             source=0)
         assert expected == actual
 
     def test_simrank_source_and_target(self):
@@ -494,7 +506,8 @@ class TestSimilarity:
         expected = 0.1323363991265798
         # Use the importance_factor from the paper to get the same numbers.
         # Use the pair (0,2) because (0,0) and (0,1) have trivial results.
-        actual = nx.algorithms.similarity.simrank_similarity(G, importance_factor=0.8, source=0, target=2)
+        actual = nx.algorithms.similarity.simrank_similarity(G, importance_factor=0.8,
+                                                             source=0, target=2)
         assert expected == actual
 
     def test_simrank_numpy_no_source_no_target(self):
