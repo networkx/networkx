@@ -259,9 +259,9 @@ def to_pandas_edgelist(
     target_nodes = [t for s, t, d in edgelist]
     all_keys = set().union(*(d.keys() for s, t, d in edgelist))
     if source in all_keys:
-        raise NetworkXError("Specified source column '{}' already exists as an attribute in some edges.".format(source))
+        raise NetworkXError(f"Source name '{source}' is an edge attribute name")
     if target in all_keys:
-        raise NetworkXError("Specified target column '{}' already exists as an attribute in some edges.".format(target))
+        raise NetworkXError(f"Target name '{target}' is an edge attribute name")
     edge_attr = {k: [d.get(k, float("nan")) for s, t, d in edgelist] for k in all_keys}
     edgelistdict = {source: source_nodes, target: target_nodes}
     edgelistdict.update(edge_attr)

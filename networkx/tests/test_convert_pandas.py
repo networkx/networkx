@@ -4,7 +4,6 @@ pd = pytest.importorskip("pandas")
 
 import networkx as nx
 from networkx.testing import assert_nodes_equal, assert_edges_equal, assert_graphs_equal
-from networkx.exception import NetworkXError
 
 
 class TestConvertPandas:
@@ -168,31 +167,33 @@ class TestConvertPandas:
         assert_nodes_equal(G.nodes(), GW.nodes())
         assert_edges_equal(G.edges(), GW.edges())
 
-    def test_to_edgelist_source_col_exists(self):
-        g = nx.cycle_graph(10)
-        G = nx.Graph()
-        G.add_nodes_from(g)
-        G.add_weighted_edges_from((u, v, u) for u, v in g.edges())
-        nx.set_edge_attributes(G, 0, name="source_col")
-        failed = False
-        try:
-            nx.to_pandas_edgelist(G, source="source_col")
-        except NetworkXError:
-            failed = True
-        assert failed
+    def test_to_edgelist_default_source_or_target_col_exists(self):
 
-    def test_to_edgelist_target_col_exists(self):
-        g = nx.cycle_graph(10)
-        G = nx.Graph()
-        G.add_nodes_from(g)
-        G.add_weighted_edges_from((u, v, u) for u, v in g.edges())
-        nx.set_edge_attributes(G, 0, name="target_col")
-        failed = False
-        try:
-            nx.to_pandas_edgelist(G, source="target_col")
-        except NetworkXError:
-            failed = True
-        assert failed
+        G = nx.path_graph(10)
+        G.add_weighted_edges_from((u, v, u) for u, v in list(G.edges))
+        nx.set_edge_attributes(G, 0, name="source")
+        pytest.raises(nx.NetworkXError, nx.to_pandas_edgelist, G)
+
+        # drop the source column to make sure an exception is also raised for the target column
+        for u, v, d in G.edges(data=True):
+            d.pop("source", None)
+
+        nx.set_edge_attributes(G, 0, name="target")
+        pytest.raises(nx.NetworkXError, nx.to_pandas_edgelist, G)
+
+    def test_to_edgelist_custom_source_or_target_col_exists(self):
+
+        G = nx.path_graph(10)
+        G.add_weighted_edges_from((u, v, u) for u, v in list(G.edges))
+        nx.set_edge_attributes(G, 0, name="source_col_name")
+        pytest.raises(nx.NetworkXError, nx.to_pandas_edgelist, G, source="source_col_name")
+
+        # drop the source column to make sure an exception is also raised for the target column
+        for u, v, d in G.edges(data=True):
+            d.pop("source_col_name", None)
+
+        nx.set_edge_attributes(G, 0, name="target_col_name")
+        pytest.raises(nx.NetworkXError, nx.to_pandas_edgelist, G, target="target_col_name")
 
     def test_from_adjacency(self):
         nodelist = [1, 2]
