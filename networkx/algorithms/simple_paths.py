@@ -227,11 +227,11 @@ def all_simple_paths(G, source, target, cutoff=None):
         except TypeError:
             raise nx.NodeNotFound(f"target node {target} not in graph")
     if source in targets:
-        return iter(()) #empty generator
+        return iter(())  # empty generator
     if cutoff is None:
         cutoff = len(G) - 1
     if cutoff < 1:
-        return iter(()) #empty generator
+        return iter(())  # empty generator
     if G.is_multigraph():
         return _all_simple_paths_multigraph(G, source, targets, cutoff)
     else:
