@@ -1330,13 +1330,12 @@ def simrank_similarity_numpy(
 
     Returns
     -------
-    similarity : dictionary or float
+    similarity : numpy matrix, numpy array or float
         If ``source`` and ``target`` are both ``None``, this returns a
-        dictionary of dictionaries, where keys are node pairs and value
-        are similarity of the pair of nodes.
+        Matrix containing SimRank scores of the nodes.
 
-        If ``source`` is not ``None`` but ``target`` is, this returns a
-        dictionary mapping node to the similarity of ``source`` and that
+        If ``source`` is not ``None`` but ``target`` is, this returns an
+        Array containing SimRank scores of ``source`` and that
         node.
 
         If neither ``source`` nor ``target`` is ``None``, this returns
