@@ -211,9 +211,8 @@ def from_pandas_adjacency(df, create_using=None):
     return G
 
 
-def to_pandas_edgelist(
-    G, source="source", target="target", nodelist=None, dtype=None, order=None
-):
+def to_pandas_edgelist(G, source="source", target="target", nodelist=None,
+                       dtype=None, order=None):
     """Returns the graph edge list as a Pandas DataFrame.
 
     Parameters
@@ -256,16 +255,23 @@ def to_pandas_edgelist(
         edgelist = G.edges(nodelist, data=True)
     source_nodes = [s for s, t, d in edgelist]
     target_nodes = [t for s, t, d in edgelist]
+
     all_keys = set().union(*(d.keys() for s, t, d in edgelist))
-    edge_attr = {k: [d.get(k, float("nan")) for s, t, d in edgelist] for k in all_keys}
+    if source in all_keys:
+        raise nx.NetworkXError(f"Source name '{source}' is an edge attr name")
+    if target in all_keys:
+        raise nx.NetworkXError(f"Target name '{target}' is an edge attr name")
+
+    nan = float("nan")
+    edge_attr = {k: [d.get(k, nan) for s, t, d in edgelist] for k in all_keys}
+
     edgelistdict = {source: source_nodes, target: target_nodes}
     edgelistdict.update(edge_attr)
     return pd.DataFrame(edgelistdict)
 
 
-def from_pandas_edgelist(
-    df, source="source", target="target", edge_attr=None, create_using=None
-):
+def from_pandas_edgelist(df, source="source", target="target", edge_attr=None,
+                         create_using=None):
     """Returns a graph from Pandas DataFrame containing an edge list.
 
     The Pandas DataFrame should contain at least two columns of node names and
@@ -356,7 +362,7 @@ def from_pandas_edgelist(
 
     try:
         eattrs = zip(*[df[col] for col in cols])
-    except (KeyError, TypeError) as e:
+    except (KeyError, TypeError):
         msg = f"Invalid edge_attr argument: {edge_attr}"
         raise nx.NetworkXError(msg)
     for s, t, attrs in zip(df[source], df[target], eattrs):
@@ -586,7 +592,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     G = nx.empty_graph(0, create_using)
     n, m = A.shape
     if n != m:
-        raise nx.NetworkXError("Adjacency matrix is not square.", f"nx,ny={A.shape}")
+        raise nx.NetworkXError(f"Adjacency matrix not square: nx,ny={A.shape}")
     dt = A.dtype
     try:
         python_type = kind_to_python_type[dt.kind]
@@ -596,25 +602,16 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n))
     # Get a list of all the entries in the matrix with nonzero entries. These
-    # coordinates will become the edges in the graph.
-    edges = map(lambda e: (int(e[0]), int(e[1])), zip(*(np.asarray(A).nonzero())))
+    # coordinates become edges in the graph. (convert to int from np.int64)
+    edges = ((int(e[0]), int(e[1])) for e in zip(*np.asarray(A).nonzero()))
     # handle numpy constructed data type
     if python_type == "void":
         # Sort the fields by their offset, then by dtype, then by name.
-        fields = sorted(
-            (offset, dtype, name) for name, (dtype, offset) in A.dtype.fields.items()
-        )
-        triples = (
-            (
-                u,
-                v,
-                {
-                    name: kind_to_python_type[dtype.kind](val)
-                    for (_, dtype, name), val in zip(fields, A[u, v])
-                },
-            )
-            for u, v in edges
-        )
+        fields = sorted((offset, dtype, name)
+                        for name, (dtype, offset) in A.dtype.fields.items())
+        triples = ((u, v, {name: kind_to_python_type[dtype.kind](val)
+                           for (_, dtype, name), val in zip(fields, A[u, v])})
+                   for u, v in edges)
     # If the entries in the adjacency matrix are integers, the graph is a
     # multigraph, and parallel_edges is True, then create parallel edges, each
     # with weight 1, for each entry in the adjacency matrix. Otherwise, create
@@ -628,9 +625,8 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
         #         for d in range(A[u, v]):
         #             G.add_edge(u, v, weight=1)
         #
-        triples = chain(
-            ((u, v, dict(weight=1)) for d in range(A[u, v])) for (u, v) in edges
-        )
+        triples = chain(((u, v, {"weight": 1}) for d in range(A[u, v]))
+                        for (u, v) in edges)
     else:  # basic data type
         triples = ((u, v, dict(weight=python_type(A[u, v]))) for u, v in edges)
     # If we are creating an undirected multigraph, only add the edges from the
@@ -720,7 +716,8 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     return M.view(np.recarray)
 
 
-def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format="csr"):
+def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
+                           weight="weight", format="csr"):
     """Returns the graph adjacency matrix as a SciPy sparse matrix.
 
     Parameters
@@ -830,7 +827,8 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
         row, col, data = [], [], []
 
     if G.is_directed():
-        M = sparse.coo_matrix((data, (row, col)), shape=(nlen, nlen), dtype=dtype)
+        M = sparse.coo_matrix((data, (row, col)),
+                              shape=(nlen, nlen), dtype=dtype)
     else:
         # symmetrize matrix
         d = data + data
@@ -918,9 +916,8 @@ def _generate_weighted_edges(A):
     return _coo_gen_triples(A.tocoo())
 
 
-def from_scipy_sparse_matrix(
-    A, parallel_edges=False, create_using=None, edge_attribute="weight"
-):
+def from_scipy_sparse_matrix(A, parallel_edges=False, create_using=None,
+                             edge_attribute="weight"):
     """Creates a new graph from an adjacency matrix given as a SciPy sparse
     matrix.
 
@@ -987,7 +984,7 @@ def from_scipy_sparse_matrix(
     G = nx.empty_graph(0, create_using)
     n, m = A.shape
     if n != m:
-        raise nx.NetworkXError(f"Adjacency matrix is not square. nx,ny={A.shape}")
+        raise nx.NetworkXError(f"Adjacency matrix not square: nx,ny={A.shape}")
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n))
     # Create an iterable over (u, v, w) triples and for each triple, add an
