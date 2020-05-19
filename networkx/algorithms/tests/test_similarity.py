@@ -449,8 +449,13 @@ class TestSimilarity:
         assert graph_edit_distance(G1, G2, node_match=nmatch, edge_match=ematch) == 1
 
     def test_simrank_no_source_no_target(self):
-        # Use the first graph from the paper cited in the docs:
-        # https://dl.acm.org/doi/pdf/10.1145/775047.775126
+        G = nx.cycle_graph(5)
+        expected = {0: {0: 1, 1: 0.3951219505902448, 2: 0.5707317069281646, 3: 0.5707317069281646, 4: 0.3951219505902449}, 1: {0: 0.3951219505902448, 1: 1, 2: 0.3951219505902449, 3: 0.5707317069281646, 4: 0.5707317069281646}, 2: {0: 0.5707317069281646, 1: 0.3951219505902449, 2: 1, 3: 0.3951219505902449, 4: 0.5707317069281646}, 3: {0: 0.5707317069281646, 1: 0.5707317069281646, 2: 0.3951219505902449, 3: 1, 4: 0.3951219505902449}, 4: {0: 0.3951219505902449, 1: 0.5707317069281646, 2: 0.5707317069281646, 3: 0.3951219505902449, 4: 1}}
+        actual = nx.simrank_similarity(G)
+        assert expected == actual
+
+        # For a DiGraph test, use the first graph from the paper cited in
+        # the docs: https://dl.acm.org/doi/pdf/10.1145/775047.775126
         G = nx.DiGraph()
         G.add_node(0, label='Univ')
         G.add_node(1, label='ProfA')
@@ -476,8 +481,13 @@ class TestSimilarity:
         assert expected == actual
 
     def test_simrank_source_no_target(self):
-        # Use the first graph from the paper cited in the docs:
-        # https://dl.acm.org/doi/pdf/10.1145/775047.775126
+        G = nx.cycle_graph(5)
+        expected = {0: 1, 1: 0.3951219505902448, 2: 0.5707317069281646, 3: 0.5707317069281646, 4: 0.3951219505902449}
+        actual = nx.simrank_similarity(G, source=0)
+        assert expected == actual
+
+        # For a DiGraph test, use the first graph from the paper cited in
+        # the docs: https://dl.acm.org/doi/pdf/10.1145/775047.775126
         G = nx.DiGraph()
         G.add_node(0, label='Univ')
         G.add_node(1, label='ProfA')
@@ -493,8 +503,12 @@ class TestSimilarity:
         assert expected == actual
 
     def test_simrank_source_and_target(self):
-        # Use the first graph from the paper cited in the docs:
-        # https://dl.acm.org/doi/pdf/10.1145/775047.775126
+        G = nx.cycle_graph(5)
+        expected = 1
+        actual = nx.simrank_similarity(G, source=0, target=0)
+
+        # For a DiGraph test, use the first graph from the paper cited in
+        # the docs: https://dl.acm.org/doi/pdf/10.1145/775047.775126
         G = nx.DiGraph()
         G.add_node(0, label='Univ')
         G.add_node(1, label='ProfA')
