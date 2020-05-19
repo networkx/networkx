@@ -602,7 +602,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n))
     # Get a list of all the entries in the matrix with nonzero entries. These
-    # coordinates will become the edges in the graph. (convert to int)
+    # coordinates become edges in the graph. (convert to int from np.int64)
     edges = ((int(e[0]), int(e[1])) for e in zip(*np.asarray(A).nonzero()))
     # handle numpy constructed data type
     if python_type == "void":
