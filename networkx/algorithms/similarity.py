@@ -1578,7 +1578,8 @@ def generate_random_paths(G, sample_size, path_length=5):
     # Calculate transition probabilities between
     # every pair of vertices according to Eq. (3)
     adj_mat = nx.to_numpy_array(G)
-    transition_probabilites = adj_mat / adj_mat.sum(axis=1)[:, None]
+    inv_row_sums = np.reciprocal(adj_mat.sum(axis=1)).reshape(-1, 1)
+    transition_probabilities = adj_mat * inv_row_sums
 
     node_map = np.array(G)
     num_nodes = G.number_of_nodes()
@@ -1587,7 +1588,7 @@ def generate_random_paths(G, sample_size, path_length=5):
     index_map = {}
     for path_index in range(sample_size):
         # Sample current vertex v = v_i uniformly at random
-        node_index = np.random.choice(num_nodes)
+        node_index = np.random.randint(0, high=num_nodes)
         node = node_map[node_index]
 
         # Add v into p_r and add p_r into the path set
@@ -1604,7 +1605,7 @@ def generate_random_paths(G, sample_size, path_length=5):
             # to transition probabilities from ``node`` (v) to its neighbors
             neighbor_index = np.random.choice(
                 num_nodes,
-                p=transition_probabilites[starting_index]
+                p=transition_probabilities[starting_index]
             )
 
             # Set current vertex (v = v_j)
