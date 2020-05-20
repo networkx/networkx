@@ -1553,7 +1553,7 @@ def generate_random_paths(G, sample_size, path_length=5):
     paths : list of lists
         List of ``sample_size`` paths of length ``path_length``.
     index_map : dictionary of lists
-        Inverted index ictionary of nodes to generated random
+        Inverted index dictionary of nodes to generated random
         path indices into ``paths``.
 
     Examples
