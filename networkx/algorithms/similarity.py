@@ -1501,7 +1501,13 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     # torandomly generate
     t_choose_2 = n_choose_k(path_length, 2)
     sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
-    paths, index_map = generate_random_paths(G, sample_size, path_length=path_length)
+    index_map = {}
+    paths = generate_random_paths(
+        G,
+        sample_size,
+        path_length=path_length,
+        index_map=index_map
+    )
     S = np.zeros(G.number_of_nodes())
 
     # Calculate the path similarities
@@ -1536,7 +1542,7 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     return top_k_with_val
 
 
-def generate_random_paths(G, sample_size, path_length=5):
+def generate_random_paths(G, sample_size, path_length=5, index_map=None):
     """Randomly generate ``sample_size`` paths of length ``path_length``.
 
     Parameters
@@ -1549,23 +1555,32 @@ def generate_random_paths(G, sample_size, path_length=5):
         The maximum size of the path to randomly generate.
         This is ``T`` in [1]_. According to the paper, T >= 5 is
         recommended.
+    index_map : dictionary, optional
+        If provided, this will be populated with the inverted
+        index of nodes mapped to the set of generated random path
+        indices within ``paths``.
 
     Returns
     -------
     paths : list of lists
         List of ``sample_size`` paths of length ``path_length``.
-    index_map : dictionary of lists
-        Inverted index dictionary of nodes to generated random
-        path indices into ``paths``.
 
     Examples
     --------
-    Note that the first return value is the list of paths, followed by
-    an inverted index mapping of nodes to the paths where it shows up::
+    Note that the return value is the list of paths::
 
         >>> import networkx as nx
         >>> G = nx.star_graph(3)
         >>> random_path = nx.generate_random_paths(G, 2)
+
+    By passing a dictionary into ``index_map``, it will build an
+    inverted index mapping of nodes to the paths in which that node is present::
+
+        >>> import networkx as nx
+        >>> G = nx.star_graph(3)
+        >>> index_map = {}
+        >>> random_path = nx.generate_random_paths(G, 2, index_map=index_map)
+        >>> paths_containing_node_0 = [random_path[path_idx] for path_idx in index_map[0]]
 
     References
     ----------
@@ -1587,7 +1602,6 @@ def generate_random_paths(G, sample_size, path_length=5):
     num_nodes = G.number_of_nodes()
 
     paths = []
-    index_map = {}
     for path_index in range(sample_size):
         # Sample current vertex v = v_i uniformly at random
         node_index = np.random.randint(0, high=num_nodes)
@@ -1598,8 +1612,9 @@ def generate_random_paths(G, sample_size, path_length=5):
         path = [node]
 
         # Build the inverted index (P_v) of vertices to paths
-        index_map.setdefault(node, set())
-        index_map[node].add(path_index)
+        if index_map is not None:
+            index_map.setdefault(node, set())
+            index_map[node].add(path_index)
 
         starting_index = node_index
         for _ in range(path_length):
@@ -1618,8 +1633,9 @@ def generate_random_paths(G, sample_size, path_length=5):
             path.append(neighbor_node)
 
             # Add p_r into P_v
-            index_map.setdefault(neighbor_node, set())
-            index_map[neighbor_node].add(path_index)
+            if index_map is not None:
+                index_map.setdefault(neighbor_node, set())
+                index_map[neighbor_node].add(path_index)
 
         paths.append(path)
-    return paths, index_map
+    return paths

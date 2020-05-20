@@ -533,6 +533,7 @@ class TestSimilarity:
     def test_generate_random_paths_unweighted(self):
         numpy.random.seed(42)
 
+        index_map = {}
         num_paths = 10
         path_length = 2
         G = nx.Graph()
@@ -541,10 +542,11 @@ class TestSimilarity:
         G.add_edge(0, 3)
         G.add_edge(1, 2)
         G.add_edge(2, 4)
-        paths, index_map = nx.generate_random_paths(
+        paths = nx.generate_random_paths(
             G,
             num_paths,
-            path_length=path_length
+            path_length=path_length,
+            index_map=index_map
         )
         expected_paths = [
             [3, 0, 3],
@@ -572,6 +574,7 @@ class TestSimilarity:
     def test_generate_random_paths_weighted(self):
         numpy.random.seed(42)
 
+        index_map = {}
         num_paths = 10
         path_length = 6
         G = nx.Graph()
@@ -581,10 +584,11 @@ class TestSimilarity:
         G.add_edge('c', 'e', weight=0.7)
         G.add_edge('c', 'f', weight=0.9)
         G.add_edge('a', 'd', weight=0.3)
-        paths, index_map = nx.generate_random_paths(
+        paths = nx.generate_random_paths(
             G,
             num_paths,
-            path_length=path_length
+            path_length=path_length,
+            index_map=index_map
         )
 
         expected_paths = [
