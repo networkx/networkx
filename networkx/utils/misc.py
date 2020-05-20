@@ -43,9 +43,11 @@ def iterable(obj):
         return False
     return True
 
+
 def empty_generator():
     """ Return a generator with no members """
     yield from ()
+
 
 def flatten(obj, result=None):
     """ Return flattened version of (possibly nested) iterable object. """
