@@ -254,6 +254,25 @@ def test_shortest_simple_paths_directed():
     assert [path for path in paths] == [[0, 1, 2, 3]]
 
 
+def test_shortest_simple_paths_directed_with_weight_fucntion():
+    def cost(u, v, x):
+        return 1
+    G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
+    paths = nx.shortest_simple_paths(G, 1, 12)
+    assert next(paths) == [1, 2, 3, 4, 8, 12]
+    assert next(paths) == [1, 5, 6, 7, 8, 12]
+    assert ([len(path) for path in nx.shortest_simple_paths(G, 1, 12, weight=cost)]
+            == sorted([len(path) for path in nx.all_simple_paths(G, 1, 12)]))
+
+
+def test_shortest_simple_paths_with_weight_fucntion():
+    def cost(u, v, x):
+        return 1
+    G = nx.cycle_graph(7, create_using=nx.DiGraph())
+    paths = nx.shortest_simple_paths(G, 0, 3, weight=cost)
+    assert [path for path in paths] == [[0, 1, 2, 3]]
+
+
 def test_Greg_Bernstein():
     g1 = nx.Graph()
     g1.add_nodes_from(["N0", "N1", "N2", "N3", "N4"])
