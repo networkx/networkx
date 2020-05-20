@@ -501,6 +501,9 @@ class TestSimilarity:
     def test_n_choose_k_same(self):
         assert nx.n_choose_k(10, 10) == 1
 
+    def test_n_choose_k_k_bigger_than_n(self):
+        assert nx.n_choose_k(5, 10) == 0
+
     def test_panther_similarity_unweighted(self):
         numpy.random.seed(42)
 

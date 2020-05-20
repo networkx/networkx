@@ -1425,6 +1425,8 @@ def n_choose_k(n, k):
         1
 
     """
+    if k > n:
+        return 0
     if n == k:
         return 1
     elif k < n - k:
