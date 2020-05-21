@@ -1873,3 +1873,20 @@ class Graph:
                         raise
             bunch = bunch_iter(nbunch, self._adj)
         return bunch
+
+    def __repr__(self):
+        """
+        Show a nice string representation of the graph.
+
+        Example:
+
+            <networkx.Graph: 7 nodes, 5 edges>
+
+        """
+
+        return '<%s%s: %s nodes, %s edges>' % (
+            'networkx.' if self.__module__.startswith('networkx') else '',
+            type(self).__name__,
+            self.number_of_nodes(),
+            self.number_of_edges()
+        )

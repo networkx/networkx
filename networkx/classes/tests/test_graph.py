@@ -1,4 +1,5 @@
 import pickle
+import re
 import gc
 
 import networkx as nx
@@ -755,3 +756,13 @@ class TestEdgeSubgraph:
 
         """
         assert self.G.graph is self.H.graph
+
+    def test_repr(self):
+        """Tests that the __repr__ method shows a nice representation of
+        the graph.
+
+        """
+        assert re.match(
+            '<.*: [0-9]+ nodes, [0-9]+ edges>',
+            repr(self.G)
+        )
