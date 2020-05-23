@@ -1,7 +1,9 @@
 import networkx as nx
 import numpy as np
 
+
 __all__ = ["distinctiveness"]
+
 
 def g_preprocess(G, alpha = 1):
     
@@ -151,6 +153,34 @@ def g_preprocess(G, alpha = 1):
 
 
 def distinctiveness (G, alpha = 1, normalize = False):
+    r"""Compute the Distinctiveness Centrality for the graph `G`.
+    
+    Distinctiveness Centrality is a set of 5 network metrics that attribute larger importance to distinctive connections.
+    The are five formulas that can be used to calculate Distinctiveness Centrality. This function calculates them all and provides results as a list of dictionaries.
+
+    Parameters
+    ----------
+    G : graph
+        A Networkx Graph or DiGraph. Multigraphs are automatically transformed into graphs, by summing arc weights.
+        Please note that each arc is expected to have a weight attribute, otherwise each missing weight will be considered equal to 1. Weights have to be >= 1.
+      
+    alpha : float or list, optional (default=1)  
+        alpha must be a number greater or equal to 1. It represents the value of the alpha parameter used in the generalized formulas of distinctiveness centrality. If one value is provided it will be used for all the five metrics. Alternatively, alpha can be a list of five numbers, to specify different coefficients, for the different metrics (e.g. alpha = [1,2,1,1,5])
+        
+    normalize : bool, optional (default=False)  
+            Normalize can be set to True, to obtain normalized scores for each metric, considering upper and lower bounds.
+    
+    Returns
+    -------
+    nodes : dictionary
+        Five dictionaries of nodes with distinctiveness centrality as the value.
+        Because distinctiveness can be calculated using five different formulas, each dictionary is named as D1, D2, D3, D4 and D5.
+    
+    References
+    ----------
+    Fronzetti Colladon, A., & Naldi, M. (2020). Distinctiveness Centrality in Social Networks. PLoS ONE, 15(5), e0233276. <https://doi.org/10.1371/journal.pone.0233276>
+
+    """   
     
     if isinstance(alpha, list) and len(alpha) == 5:
         alphalist = alpha            
