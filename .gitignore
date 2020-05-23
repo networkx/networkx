@@ -13,6 +13,7 @@ doc/build
 doc/ghpages_build
 .coverage
 *.class
+.pytest_cache
 
 # Generated while building documentation.
 doc/auto_examples

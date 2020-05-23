@@ -171,6 +171,7 @@ is partially historical, and now, mostly arbitrary.
 - Alessandro Luongo
 - Huston Hedinger
 - Oleguer Sagarra
+- Kazimierz Wojciechowski, Github `<https://github.com/kazimierz-256>`_, LinkedIn `<https://linkedin.com/in/wojciechowski-kazimierz/>`_
 
 Support
 -------
