@@ -173,8 +173,9 @@ def distinctiveness (G, alpha = 1, normalize = False):
     Returns
     -------
     nodes : dictionary
-        Five dictionaries of nodes with distinctiveness centrality as the value.
-        Because distinctiveness can be calculated using five different formulas, each dictionary is named as D1, D2, D3, D4 and D5.
+        A set of fifteen dictionaries of nodes with distinctiveness centrality as the value.
+        Because distinctiveness can be calculated using five different formulas, each dictionary is named as D1, D2, D3, D4 and D5. These measures are calculated taking the graph as undirected.
+        The other 10 measures are for the directed networks and will only be available if a DiGraph is given as input (otherwise nans will be generated). These are: D1_in, D2_in, D3_in, D4_in, D5_in, D1_out, D2_out, D3_out, D4_out and D5_out.
     
     References
     ----------
