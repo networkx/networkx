@@ -1,25 +1,29 @@
 import networkx as nx
-import numpy as np
-
 
 __all__ = ["distinctiveness"]
 
 
 def g_preprocess(G, alpha = 1):
     
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError('distinctiveness requires NumPy ',
+                          'http://scipy.org/')
+    
     if isinstance(alpha, list) and len(alpha) == 5:
         alphalist = alpha            
     elif isinstance(alpha, (int, float)):
         alphalist = [alpha] * 5
     else:
-        print("Error in the choice of alpha. Please specify a single number or a list of 5 values.")
+        raise nx.NetworkXError("Error in the choice of alpha. Please specify a single number or a list of 5 values.")
         return np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan
     
     #Make an independent copy of the graph
     G = G.copy()
     
     if G.number_of_nodes() < 3:
-        print("Error graph must have at least 3 nodes.")
+        raise nx.NetworkXError("Graph must have at least 3 nodes.")
         return np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan
     
     #From multigraph to graph
@@ -56,7 +60,7 @@ def g_preprocess(G, alpha = 1):
     numweights = len(arcweights)
     arcweights = set(arcweights)
     if any(w < 1 for w in arcweights):
-        print("ERROR: graph contains arcs with negative or zero weights, or weights lower than 1. Weights must be >= 1.")
+        raise nx.NetworkXError("Graph contains arcs with negative or zero weights, or weights lower than 1. Weights must be >= 1.")
     if numweights != len(G.edges):
         print("WARNING: weights are not specified for all arcs. Each arc must have a weight >= 1.\nMissing weights are automatically set equal to 1.")
         for u,v,data in G.edges(data=True):
@@ -173,22 +177,27 @@ def distinctiveness (G, alpha = 1, normalize = False):
     Returns
     -------
     nodes : dictionary
-        A set of fifteen dictionaries of nodes with distinctiveness centrality as the value.
-        Because distinctiveness can be calculated using five different formulas, each dictionary is named as D1, D2, D3, D4 and D5. These measures are calculated taking the graph as undirected.
+        A dictionary with 15 keys, each one indicating one distinctiveness centrality metric. The value of each key is a dictionary of nodes, with distinctiveness scores.
+        Because distinctiveness can be calculated using five different formulas, the first 5 keys are named as D1, D2, D3, D4 and D5. These measures are calculated taking the graph as undirected (DiGraph is automatically converted into Graph).
         The other 10 measures are for the directed networks and will only be available if a DiGraph is given as input (otherwise nans will be generated). These are: D1_in, D2_in, D3_in, D4_in, D5_in, D1_out, D2_out, D3_out, D4_out and D5_out.
     
     References
     ----------
     Fronzetti Colladon, A., & Naldi, M. (2020). Distinctiveness Centrality in Social Networks. PLoS ONE, 15(5), e0233276. <https://doi.org/10.1371/journal.pone.0233276>
 
-    """   
+    """
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError('distinctiveness requires NumPy ',
+                          'http://scipy.org/')
     
     if isinstance(alpha, list) and len(alpha) == 5:
         alphalist = alpha            
     elif isinstance(alpha, (int, float)):
         alphalist = [alpha] * 5
     else:
-        print("Error in the choice of alpha. Please specify a single number or a list of 5 values.")
+        raise nx.NetworkXError("Error in the choice of alpha. Please specify a single number or a list of 5 values.")
         return np.nan
         
     if any(a < 1 for a in alphalist):
