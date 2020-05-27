@@ -209,7 +209,7 @@ def g_preprocess(G, alpha=1):
             wei_insum_alpha_list = [0, 0] + [wei_insum_alpha] * 2 + [0]
             wei_outsum_alpha_list = [0, 0] + [wei_outsum_alpha] * 2 + [0]
 
-    # Calculate max arc weight
+    # Calculate max and min arc weight
     if G.number_of_edges() > 0:
         hasedges = True
         maxwij = max(dict(G.edges).items(),
@@ -444,8 +444,8 @@ def distinctiveness(G, alpha=1, normalize=False):
     elif type(G) == nx.DiGraph:
         # Set keys to zero for all nodes
         # (to take isolates into account and nodes with zero in- or out-degree)
-        d1_in, d2_in, d3_in, d4_in, d5_in, d1_out,
-        d2_out, d3_out, d4_out, d5_out = (
+        (d1_in, d2_in, d3_in, d4_in, d5_in, d1_out,
+        d2_out, d3_out, d4_out, d5_out) = (
             dict.fromkeys(Glist, 0),
             dict.fromkeys(Glist, 0),
             dict.fromkeys(Glist, 0),
