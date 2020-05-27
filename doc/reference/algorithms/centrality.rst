@@ -109,6 +109,13 @@ Dispersion
    :toctree: generated/
 
    dispersion
+   
+Distinctiveness
+----------
+.. autosummary::
+   :toctree: generated/
+
+   distinctiveness
 
 Reaching
 --------
