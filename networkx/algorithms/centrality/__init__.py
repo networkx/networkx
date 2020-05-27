@@ -7,7 +7,7 @@ from .current_flow_betweenness import *
 from .current_flow_betweenness_subset import *
 from .degree_alg import *
 from .dispersion import *
-from .distinctiveness import *
+from .distinctiveness import distinctiveness
 from .eigenvector import *
 from .group import *
 from .harmonic import *
