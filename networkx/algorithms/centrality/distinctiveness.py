@@ -296,6 +296,8 @@ def distinctiveness(G, alpha=1, normalize=False):
     --------
     >>> G = nx.star_graph(4)
     >>> d1 = nx.distinctiveness(G, alpha = 1, normalize = False)["D1"]
+    WARNING: weights are not specified for all arcs. Each arc must have a weight >= 1.
+    Missing weights are automatically set equal to 1.
     >>> for n, c in sorted(d1.items()):
     ...    print(f"{n} {c:.2f}")
     0 2.41
