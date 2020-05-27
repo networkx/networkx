@@ -295,22 +295,8 @@ def distinctiveness(G, alpha=1, normalize=False):
     Examples
     --------
     >>> G = nx.star_graph(4)
-    >>> nx.distinctiveness(G, alpha = 1, normalize = False)
-    {'D1': {0: 2.4082399653118496, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0},
-     'D2': {0: 2.4082399653118496, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0},
-     'D3': {0: 2.4082399653118496, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0},
-     'D4': {0: 4.0, 1: 0.25, 2: 0.25, 3: 0.25, 4: 0.25},
-     'D5': {0: 4.0, 1: 0.25, 2: 0.25, 3: 0.25, 4: 0.25},
-     'D1_in': nan,
-     'D2_in': nan,
-     'D3_in': nan,
-     'D4_in': nan,
-     'D5_in': nan,
-     'D1_out': nan,
-     'D2_out': nan,
-     'D3_out': nan,
-     'D4_out': nan,
-     'D5_out': nan}
+    >>> nx.distinctiveness(G, alpha = 1, normalize = False)["D1"]
+    {0: 2.4082399653118496, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}
 
     References
     ----------
