@@ -292,20 +292,6 @@ def distinctiveness(G, alpha=1, normalize=False):
         These are: D1_in, D2_in, D3_in, D4_in,
         D5_in, D1_out, D2_out, D3_out, D4_out and D5_out.
 
-    Examples
-    --------
-    >>> G = nx.star_graph(4)
-    >>> d1 = nx.distinctiveness(G, alpha = 1, normalize = False)["D1"]
-    WARNING: weights are not specified for all arcs. Each arc must have a weight >= 1.
-    Missing weights are automatically set equal to 1.
-    >>> for n, c in sorted(d1.items()):
-    ...    print(f"{n} {c:.2f}")
-    0 2.41
-    1 0.00
-    2 0.00
-    3 0.00
-    4 0.00
-
     References
     ----------
     Fronzetti Colladon, A., & Naldi, M. (2020).
