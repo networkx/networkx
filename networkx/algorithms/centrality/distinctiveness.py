@@ -295,8 +295,14 @@ def distinctiveness(G, alpha=1, normalize=False):
     Examples
     --------
     >>> G = nx.star_graph(4)
-    >>> nx.distinctiveness(G, alpha = 1, normalize = False)["D1"]
-    {0: 2.4082399653118496, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}
+    >>> d1 = nx.distinctiveness(G, alpha = 1, normalize = False)["D1"]
+    >>> for n, c in sorted(d1.items()):
+    ...    print(f"{n} {c:.2f}")
+    0 2.41
+    1 0.00
+    2 0.00
+    3 0.00
+    4 0.00
 
     References
     ----------
