@@ -266,13 +266,16 @@ def distinctiveness(G, alpha=1, normalize=False):
         the generalized formulas of distinctiveness centrality.
         If one value is provided it will be used for all the five metrics.
         Alternatively, alpha can be a list of five numbers,
-        to specify different coefficients,
+        used to specify different coefficients
         for the different metrics (e.g. alpha = [1, 2, 1, 1, 5]).
 
     normalize : bool, optional (default=False)
             Normalize can be set to True,
             to obtain normalized scores for each metric,
-            considering upper and lower bounds.
+            considering upper and lower bounds. Loose upper
+            and lower bounds are used for D3.
+            Normalization is only carried out for undirected
+            graph measures.
 
     Returns
     -------
@@ -281,13 +284,33 @@ def distinctiveness(G, alpha=1, normalize=False):
         centrality metric. The value of each key is a dictionary of nodes,
         with distinctiveness scores. Because distinctiveness can be calculated
         using five different formulas, the first 5 keys are named as D1, D2,
-        D3, D4 and D5. These measures are calculated taking the
-        graph as undirected (DiGraph is automatically converted into Graph).
-        The other 10 measures are for the directed networks and will only
+        D3, D4 and D5. These measures are calculated if a Graph is
+        given as input (otherwise nans will be generated).
+        The other 10 measures are for the directed networks and will
         be available if a DiGraph is given as input
         (otherwise nans will be generated).
         These are: D1_in, D2_in, D3_in, D4_in,
         D5_in, D1_out, D2_out, D3_out, D4_out and D5_out.
+
+    Examples
+    --------
+    >>> G = nx.star_graph(4)
+    >>> nx.distinctiveness(G, alpha = 1, normalize = False)
+    {'D1': {0: 2.4082399653118496, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0},
+     'D2': {0: 2.4082399653118496, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0},
+     'D3': {0: 2.4082399653118496, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0},
+     'D4': {0: 4.0, 1: 0.25, 2: 0.25, 3: 0.25, 4: 0.25},
+     'D5': {0: 4.0, 1: 0.25, 2: 0.25, 3: 0.25, 4: 0.25},
+     'D1_in': nan,
+     'D2_in': nan,
+     'D3_in': nan,
+     'D4_in': nan,
+     'D5_in': nan,
+     'D1_out': nan,
+     'D2_out': nan,
+     'D3_out': nan,
+     'D4_out': nan,
+     'D5_out': nan}
 
     References
     ----------
@@ -445,7 +468,7 @@ def distinctiveness(G, alpha=1, normalize=False):
         # Set keys to zero for all nodes
         # (to take isolates into account and nodes with zero in- or out-degree)
         (d1_in, d2_in, d3_in, d4_in, d5_in, d1_out,
-        d2_out, d3_out, d4_out, d5_out) = (
+         d2_out, d3_out, d4_out, d5_out) = (
             dict.fromkeys(Glist, 0),
             dict.fromkeys(Glist, 0),
             dict.fromkeys(Glist, 0),
@@ -490,27 +513,28 @@ def distinctiveness(G, alpha=1, normalize=False):
             d5_out[u] += 1 * (1 / indeg[v] ** alphalist[4])
 
         if normalize is True:
-            d1_in = {k: (v - D1min) / (D1max - D1min)
-                     for k, v in d1_in.items()}
-            d2_in = {k: (v - D2min) / (D2max - D2min)
-                     for k, v in d2_in.items()}
-            d3_in = {k: (v - D3min) / (D3max - D3min)
-                     for k, v in d3_in.items()}
-            d4_in = {k: (v - D4min) / (D4max - D4min)
-                     for k, v in d4_in.items()}
-            d5_in = {k: (v - D5min) / (D5max - D5min)
-                     for k, v in d5_in.items()}
+            print("Normalization is only carried out for undirected graph metrics.")
+            # d1_in = {k: (v - D1min) / (D1max - D1min)
+            #          for k, v in d1_in.items()}
+            # d2_in = {k: (v - D2min) / (D2max - D2min)
+            #          for k, v in d2_in.items()}
+            # d3_in = {k: (v - D3min) / (D3max - D3min)
+            #          for k, v in d3_in.items()}
+            # d4_in = {k: (v - D4min) / (D4max - D4min)
+            #          for k, v in d4_in.items()}
+            # d5_in = {k: (v - D5min) / (D5max - D5min)
+            #          for k, v in d5_in.items()}
 
-            d1_out = {k: (v - D1min) / (D1max - D1min)
-                      for k, v in d1_out.items()}
-            d2_out = {k: (v - D2min) / (D2max - D2min)
-                      for k, v in d2_out.items()}
-            d3_out = {k: (v - D3min) / (D3max - D3min)
-                      for k, v in d3_out.items()}
-            d4_out = {k: (v - D4min) / (D4max - D4min)
-                      for k, v in d4_out.items()}
-            d5_out = {k: (v - D5min) / (D5max - D5min)
-                      for k, v in d5_out.items()}
+            # d1_out = {k: (v - D1min) / (D1max - D1min)
+            #           for k, v in d1_out.items()}
+            # d2_out = {k: (v - D2min) / (D2max - D2min)
+            #           for k, v in d2_out.items()}
+            # d3_out = {k: (v - D3min) / (D3max - D3min)
+            #           for k, v in d3_out.items()}
+            # d4_out = {k: (v - D4min) / (D4max - D4min)
+            #           for k, v in d4_out.items()}
+            # d5_out = {k: (v - D5min) / (D5max - D5min)
+            #           for k, v in d5_out.items()}
 
     DC = {
         "D1": d1,
