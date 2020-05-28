@@ -7,37 +7,38 @@ np = pytest.importorskip('numpy')
 
 def small_undir_G():
     """Sample network from https://doi.org/10.1371/journal.pone.0233276"""
-    G= nx.Graph()
-    G.add_edge("A", "E", weight = 5)
-    G.add_edge("A", "B", weight = 2)
-    G.add_edge("B", "F", weight = 5)
-    G.add_edge("B", "C", weight = 2)
-    G.add_edge("B", "D", weight = 2)
-    G.add_edge("C", "D", weight = 5)
+    G = nx.Graph()
+    G.add_edge("A", "E", weight=5)
+    G.add_edge("A", "B", weight=2)
+    G.add_edge("B", "F", weight=5)
+    G.add_edge("B", "C", weight=2)
+    G.add_edge("B", "D", weight=2)
+    G.add_edge("C", "D", weight=5)
 
     return G
 
+
 def small_dir_G():
     """Sample network from https://doi.org/10.1371/journal.pone.0233276"""
-    G= nx.DiGraph()
-    G.add_edge("A", "E", weight = 5)
-    G.add_edge("A", "B", weight = 6)
-    G.add_edge("B", "A", weight = 2)
-    G.add_edge("B", "F", weight = 5)
-    G.add_edge("B", "C", weight = 2)
-    G.add_edge("B", "D", weight = 2)
-    G.add_edge("C", "D", weight = 3)
-    G.add_edge("D", "C", weight = 5)
+    G = nx.DiGraph()
+    G.add_edge("A", "E", weight=5)
+    G.add_edge("A", "B", weight=6)
+    G.add_edge("B", "A", weight=2)
+    G.add_edge("B", "F", weight=5)
+    G.add_edge("B", "C", weight=2)
+    G.add_edge("B", "D", weight=2)
+    G.add_edge("C", "D", weight=3)
+    G.add_edge("D", "C", weight=5)
 
     return G
 
 
 class TestDistinctiveness:
-    
+
     def test_undirected(self):
         G = small_undir_G()
-        DC1 = nx.distinctiveness(G, normalize = False, alpha = 1)
-        DC2 = nx.distinctiveness(G, normalize = False, alpha = 2)
+        DC1 = nx.distinctiveness(G, normalize=False, alpha=1)
+        DC2 = nx.distinctiveness(G, normalize=False, alpha=2)
         assert almost_equal(round(DC1["D1"]["A"], 3), 3.689)
         assert almost_equal(round(DC1["D1"]["B"], 3), 5.882)
         assert almost_equal(round(DC1["D2"]["A"], 3), 0.796)
@@ -59,13 +60,12 @@ class TestDistinctiveness:
         assert almost_equal(round(DC2["D4"]["E"], 3), 4.310)
         assert almost_equal(round(DC2["D5"]["A"], 3), 1.062)
         assert almost_equal(round(DC2["D5"]["F"], 3), 0.062)
-    
-    
+
     def test_directed(self):
         G = small_dir_G()
-        DC1dir = nx.distinctiveness(G, normalize = False, alpha = 1)
-        DC2dir = nx.distinctiveness(G, normalize = False, alpha = 2)
-        
+        DC1dir = nx.distinctiveness(G, normalize=False, alpha=1)
+        DC2dir = nx.distinctiveness(G, normalize=False, alpha=2)
+
         assert almost_equal(round(DC1dir["D1_in"]["A"], 3), 0.194)
         assert almost_equal(round(DC1dir["D1_out"]["A"], 3), 7.689)
         assert almost_equal(round(DC1dir["D2_in"]["B"], 3), 0.398)
