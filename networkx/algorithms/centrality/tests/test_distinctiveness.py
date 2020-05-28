@@ -1,6 +1,9 @@
 import networkx as nx
 from networkx.testing import almost_equal
 
+import pytest
+np = pytest.importorskip('numpy')
+
 
 def small_undir_G():
     """Sample network from https://doi.org/10.1371/journal.pone.0233276"""
