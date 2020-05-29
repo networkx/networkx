@@ -263,20 +263,21 @@ def distinctiveness(G, alpha=1, normalize=False,
         D1 (i) = \sum_{\substack{j=1\\j\neq i}}^{n} w_{ij}
         \log_{10}\frac{n-1}{{g_{j}}^\alpha}
 
+    Here $n$ is the total number of nodes and $g_j$ the degree of node $j$.
+    An exponent $\alpha \geq 1$ is used in the formulas to allow a
+    stronger penalization of connections with highly connected nodes.
     The metric is similar to weighted degree centrality, as it sums the
     weight of all arcs connected to a node. However, weights are penalized
     based on the number of connections that a node’s peers have. If a
     neighboring node is connected to all the other nodes as well, its
-    contribution to the sum is zero; the rationale is that node for which
-    D1 is calculated ($i$) adds the minimum possible improvement to the
-    reachability of its very well connected peer ($j$), since $j$ is already
-    connected to all other nodes. Instead, if a neighboring
-    node is connected to node $i$ only, the weight of the arc connecting
-    them is multiplied by the maximum possible factor $\log_{10}(n-1)$
-    (the rationale here is that node $j$ would be unreachable if
-    it were not connected by node $i$).
-    An exponent $\alpha \geq 1$ is used in the formulas to allow an even
-    stronger penalization of connections with highly connected nodes.
+    contribution to the sum is zero (with $\alpha = 1$); the rationale is
+    that node for which D1 is calculated ($i$) adds the minimum possible
+    improvement to the reachability of its very well connected peer ($j$),
+    since $j$ is already connected to all other nodes. Instead, if a
+    neighboring node is connected to node $i$ only, the weight of the arc
+    connecting them is multiplied by the maximum possible factor
+    $\log_{10}(n-1)$ (the rationale here is that node $j$ would be
+    unreachable if it were not connected by node $i$).
 
     Similarly to the case of in- and out-degree, it is possible to
     calculate in- and out-distinctiveness on directed graphs.
