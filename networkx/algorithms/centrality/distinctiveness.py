@@ -332,22 +332,20 @@ def distinctiveness(G, alpha=1, normalize=False,
     Returns
     -------
     nodes : dictionary
-        A dictionary with 5 or 10 keys, each one indicating a distinctiveness
-        centrality metric, for undirected or directed graphs respectively.
-        The value of each key is a dictionary of nodes,
-        with distinctiveness scores. Because distinctiveness can be calculated
-        using five different formulas, the 5 keys for undirected networks
-        are named as D1, D2, D3, D4 and D5. These measures can be calculated
-        if a Graph is given as input.
-        The other 10 measures are for directed networks and will
-        be available if a DiGraph is given as input. These are: D1_in, D2_in,
-        D3_in, D4_in, D5_in, D1_out, D2_out, D3_out, D4_out and D5_out.
+        A dictionary with a key for all selected measures.
+        Since distinctiveness can be calculated using five different
+        formulas, the 5 keys for undirected networks are named as D1,
+        D2, D3, D4 and D5. These measures can be calculated if a Graph
+        is given as input. The other 10 measures are for directed
+        networks and will be available if a DiGraph is given as input.
+        These are: D1_in, D2_in, D3_in, D4_in, D5_in, D1_out, D2_out,
+        D3_out, D4_out and D5_out.
 
     References
     ----------
     Fronzetti Colladon, A., & Naldi, M. (2020).
-     Distinctiveness Centrality in Social Networks.
-     PLoS ONE, 15(5), e0233276. <https://doi.org/10.1371/journal.pone.0233276>
+    Distinctiveness Centrality in Social Networks.
+    PLoS ONE, 15(5), e0233276. <https://doi.org/10.1371/journal.pone.0233276>
 
     """
     try:
