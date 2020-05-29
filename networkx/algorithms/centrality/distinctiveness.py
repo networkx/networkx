@@ -260,22 +260,22 @@ def distinctiveness(G, alpha=1, normalize=False,
 
     .. math::
 
-        D_1 (i) = \sum_{\substack{j=1\\j\neq i}}^{n} w_{ij}
-        \log_{10}\frac{n-1}{{g_{j}}^\alpha}.
+        D1 (i) = \sum_{\substack{j=1\\j\neq i}}^{n} w_{ij}
+        \log_{10}\frac{n-1}{{g_{j}}^\alpha}
 
     The metric is similar to weighted degree centrality, as it sums the
     weight of all arcs connected to a node. However, weights are penalized
     based on the number of connections that a node’s peers have. If a
-    neighbouring node is connected to all the other nodes as well, its
+    neighboring node is connected to all the other nodes as well, its
     contribution to the sum is zero; the rationale is that node for which
     D1 is calculated ($i$) adds the minimum possible improvement to the
     reachability of its very well connected peer ($j$), since $j$ is already
-    connected to all other nodes. Instead, if a neighbouring
+    connected to all other nodes. Instead, if a neighboring
     node is connected to node $i$ only, the weight of the arc connecting
     them is multiplied by the maximum possible factor $\log_{10}(n-1)$
     (the rationale here is that node $j$ would be unreachable if
     it were not connected by node $i$).
-    An exponent $α \geq 1$ is used in the formulas to allow an even
+    An exponent $\alpha \geq 1$ is used in the formulas to allow an even
     stronger penalization of connections with highly connected nodes.
 
     Similarly to the case of in- and out-degree, it is possible to

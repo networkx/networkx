@@ -37,8 +37,10 @@ class TestDistinctiveness:
 
     def test_undirected(self):
         G = small_undir_G()
-        DC1 = nx.distinctiveness(G, normalize=False, alpha=1)
-        DC2 = nx.distinctiveness(G, normalize=False, alpha=2)
+        DC1 = nx.distinctiveness(G, normalize=False, alpha=1,
+                                 measures=["D1", "D2", "D3", "D4", "D5"])
+        DC2 = nx.distinctiveness(G, normalize=False, alpha=2,
+                                 measures=["D1", "D2", "D3", "D4", "D5"])
         assert almost_equal(round(DC1["D1"]["A"], 3), 3.689)
         assert almost_equal(round(DC1["D1"]["B"], 3), 5.882)
         assert almost_equal(round(DC1["D2"]["A"], 3), 0.796)
@@ -63,8 +65,10 @@ class TestDistinctiveness:
 
     def test_directed(self):
         G = small_dir_G()
-        DC1dir = nx.distinctiveness(G, normalize=False, alpha=1)
-        DC2dir = nx.distinctiveness(G, normalize=False, alpha=2)
+        DC1dir = nx.distinctiveness(G, normalize=False, alpha=1,
+                                    measures=["D1", "D2", "D3", "D4", "D5"])
+        DC2dir = nx.distinctiveness(G, normalize=False, alpha=2,
+                                    measures=["D1", "D2", "D3", "D4", "D5"])
 
         assert almost_equal(round(DC1dir["D1_in"]["A"], 3), 0.194)
         assert almost_equal(round(DC1dir["D1_out"]["A"], 3), 7.689)
