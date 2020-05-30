@@ -4,12 +4,45 @@ Algorithm for testing d-separation in DAGs.
 *d-separation* is a test for conditional independence in probability
 distributions that can be factorized using DAGs.  It is a purely
 graphical test that uses the underlying graph and makes no reference
-to the actual distribution parameters.  For a detailed treatment see
-[1]_, [2]_.
+to the actual distribution parameters.  See [1]_ for a formal
+definition.
+
+The implementation is based on the conceptually simple linear time
+algorithm presented in [2]_.  Refer to [3]_, [4]_ for a couple of
+alternative algorithms.
+
+
+Examples
+--------
+
+>>> import networkx as nx
+>>> 
+>>> # HMM graph with five states and observation nodes
+... g= nx.DiGraph()
+>>> g.add_edges_from([('S1', 'S2'), ('S2', 'S3'), ('S3', 'S4'), ('S4', 'S5'),
+...                   ('S1', 'O1'), ('S2', 'O2'), ('S3', 'O3'), ('S4', 'O4'),
+...                   ('S5', 'O5')])
+>>> 
+>>> # states/obs before 'S3' are d-separated from states/obs after 'S3'
+... nx.d_separated(g, {'S1', 'S2', 'O1', 'O2'}, {'S4', 'S5', 'O4', 'O5'}, {'S3'})
+True
+
+
+References
+----------
+
+..  [1] Pearl, J.  (2009).  Causality.  Cambridge: Cambridge University Press.
+
+..  [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks.  Cambridge: Cambridge University Press.
+
+..  [3] Shachter, R.  D.  (1998).  Bayes-ball: rational pastime (for determining irrelevance and requisite information in belief networks and influence diagrams).  In , Proceedings of the Fourteenth Conference on Uncertainty in Artificial Intelligence (pp.  480–487).  San Francisco, CA, USA: Morgan Kaufmann Publishers Inc.
+
+..  [4] Koller, D., & Friedman, N. (2009). Probabilistic graphical models: principles and techniques. The MIT Press.
+
 """
 
 from collections import deque
-from typing import Hashable, AbstractSet
+from typing import AbstractSet
 
 import networkx as nx
 from networkx.utils import not_implemented_for, UnionFind
@@ -18,10 +51,10 @@ __all__ = ["d_separated"]
 
 
 @not_implemented_for("undirected")
-def d_separated(G: nx.DiGraph, x: AbstractSet[Hashable],
-                y: AbstractSet[Hashable], z: AbstractSet[Hashable]) -> bool:
+def d_separated(G: nx.DiGraph, x: AbstractSet, y: AbstractSet,
+                z: AbstractSet) -> bool:
     """
-    Return whether node sets ``x`` and ``y` are separated by ``z``.
+    Return whether node sets ``x`` and ``y`` are d-separated by ``z``.
 
     Parameters
     ----------
@@ -39,7 +72,8 @@ def d_separated(G: nx.DiGraph, x: AbstractSet[Hashable],
 
     Returns
     -------
-    bool : True if ``x`` is d-separated from ``y`` given ``z`` in ``G``.
+    b : bool
+        A boolean that is true if ``x`` is d-separated from ``y`` given ``z`` in ``G``.
 
     Raises
     ------
@@ -51,32 +85,6 @@ def d_separated(G: nx.DiGraph, x: AbstractSet[Hashable],
     NodeNotFound
         If any of the input nodes are not found in the graph,
         a :exc:`NodeNotFound` exception is raised.
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> g = nx.path_graph(10, nx.DiGraph)
-    >>> assert nx.d_separated(g, {0,1,2,3}, {5,6,7,8,9}, {4})
-
-    Notes
-    -----
-    While there are other algorithms for testing *d-separation* (for
-    e.g. [3]_), the algorithm presented in [1]_ is perhaps the simplest
-    linear time algorithm and is therefore used in this implementation.
-
-
-    References
-    ----------
-    ..  [1] Darwiche, A.  (2009).  Modeling and reasoning with
-        Bayesian networks.  Cambridge: Cambridge University Press.
-
-    ..  [2] Pearl, J. (2009). Causality. Cambridge: Cambridge University Press.
-
-    ..  [2] Shachter, R. D. (1998). Bayes-ball: rational pastime (for
-        determining irrelevance and requisite information in belief networks
-        and influence diagrams). In , Proceedings of the Fourteenth Conference
-        on Uncertainty in Artificial Intelligence (pp. 480–487). San
-        Francisco, CA, USA: Morgan Kaufmann Publishers Inc.
 
     """
 
