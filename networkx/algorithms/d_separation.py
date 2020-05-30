@@ -21,8 +21,7 @@ __all__ = ["d_separated"]
 def d_separated(G: nx.DiGraph, x: AbstractSet[Hashable],
                 y: AbstractSet[Hashable], z: AbstractSet[Hashable]) -> bool:
     """
-    Test whether two sets of nodes are d-separated in a DAG by a third
-    set of conditioning nodes.
+    Return whether node sets ``x`` and ``y` are separated by ``z``.
 
     Parameters
     ----------
@@ -30,17 +29,17 @@ def d_separated(G: nx.DiGraph, x: AbstractSet[Hashable],
         A NetworkX DAG.
 
     x : set
-        First set of nodes in `G`.
+        First set of nodes in ``G``.
 
     y : set
-        Second set of nodes in `G`.
+        Second set of nodes in ``G``.
 
     z : set
         Set of conditioning nodes in `G`.
 
     Returns
     -------
-    bool : True if `x` is d-separated from `y` given `z` in `G`.
+    bool : True if ``x`` is d-separated from ``y`` given ``z`` in ``G``.
 
     Raises
     ------
