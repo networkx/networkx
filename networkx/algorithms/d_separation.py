@@ -35,7 +35,7 @@ def d_separated(G: nx.DiGraph, x: AbstractSet[Hashable],
         Second set of nodes in ``G``.
 
     z : set
-        Set of conditioning nodes in `G`.
+        Set of conditioning nodes in ``G``. Can be empty set.
 
     Returns
     -------
