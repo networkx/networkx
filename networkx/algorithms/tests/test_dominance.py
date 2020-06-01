@@ -67,9 +67,8 @@ class TestImmediateDominators:
         assert (nx.immediate_dominators(G, 1) ==
                 {1: 1, 2: 1, 3: 2, 4: 2, 5: 2, 6: 2})
         # Test postdominance.
-        with nx.utils.reversed(G):
-            assert (nx.immediate_dominators(G, 6) ==
-                    {1: 2, 2: 6, 3: 5, 4: 5, 5: 2, 6: 6})
+        assert (nx.immediate_dominators(G.reverse(copy=False), 6) ==
+                {1: 2, 2: 6, 3: 5, 4: 5, 5: 2, 6: 6})
 
     def test_boost_example(self):
         # Graph taken from Figure 1 of
@@ -80,9 +79,8 @@ class TestImmediateDominators:
         assert (nx.immediate_dominators(G, 0) ==
                 {0: 0, 1: 0, 2: 1, 3: 1, 4: 3, 5: 4, 6: 4, 7: 1})
         # Test postdominance.
-        with nx.utils.reversed(G):
-            assert (nx.immediate_dominators(G, 7) ==
-                    {0: 1, 1: 7, 2: 7, 3: 4, 4: 5, 5: 7, 6: 4, 7: 7})
+        assert (nx.immediate_dominators(G.reverse(copy=False), 7) ==
+                {0: 1, 1: 7, 2: 7, 3: 4, 4: 5, 5: 7, 6: 4, 7: 7})
 
 
 class TestDominanceFrontiers:
@@ -153,10 +151,8 @@ class TestDominanceFrontiers:
                 {1: set(), 2: {2}, 3: {5}, 4: {5},
                  5: {2}, 6: set()})
         # Test postdominance.
-        with nx.utils.reversed(G):
-            assert (nx.dominance_frontiers(G, 6) ==
-                    {1: set(), 2: {2}, 3: {2}, 4: {2},
-                     5: {2}, 6: set()})
+        assert (nx.dominance_frontiers(G.reverse(copy=False), 6) ==
+                {1: set(), 2: {2}, 3: {2}, 4: {2}, 5: {2}, 6: set()})
 
     def test_boost_example(self):
         # Graph taken from Figure 1 of
@@ -168,9 +164,8 @@ class TestDominanceFrontiers:
                 {0: set(), 1: set(), 2: {7}, 3: {7},
                  4: {4, 7}, 5: {7}, 6: {4}, 7: set()})
         # Test postdominance.
-        with nx.utils.reversed(G):
-            assert (nx.dominance_frontiers(G, 7) ==
-                    {0: set(), 1: set(), 2: {1}, 3: {1},
+        assert (nx.dominance_frontiers(G.reverse(copy=False), 7) ==
+                {0: set(), 1: set(), 2: {1}, 3: {1},
                      4: {1, 4}, 5: {1}, 6: {4}, 7: set()})
 
     def test_discard_issue(self):
