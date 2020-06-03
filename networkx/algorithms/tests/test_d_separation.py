@@ -123,7 +123,7 @@ def test_asia_graph_dsep(asia_graph):
 def test_undirected_graphs_are_not_supported():
     """
     Test that undirected graphs are not supported.
-    
+
     d-separation does not apply in the case of undirected graphs.
     """
     with pytest.raises(nx.NetworkXNotImplemented):
@@ -134,7 +134,7 @@ def test_undirected_graphs_are_not_supported():
 def test_cyclic_graphs_raise_error():
     """
     Test that cycle graphs should cause erroring.
-    
+
     This is because PGMs assume a directed acyclic graph.
     """
     with pytest.raises(nx.NetworkXError):
