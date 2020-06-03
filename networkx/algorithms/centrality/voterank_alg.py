@@ -39,7 +39,7 @@ def voterank(G, number_of_nodes=None):
     if number_of_nodes is None or number_of_nodes > len(G):
         number_of_nodes = len(G)
     avgDegree = 0
-    if (G.is_directed()):
+    if G.is_directed():
         # For directed graphs compute average out-degree
         avgDegree = sum(deg for _, deg in G.out_degree()) / float(len(G))
     else:
@@ -57,7 +57,7 @@ def voterank(G, number_of_nodes=None):
         for n, nbr in G.edges():
             # In directed graphs nodes only vote for their in-neighbors
             G.nodes[n]['voterank'][0] += G.nodes[nbr]['voterank'][1]
-            if (not G.is_directed()):
+            if not G.is_directed():
                 G.nodes[nbr]['voterank'][0] += G.nodes[n]['voterank'][1]
         for n in voterank:
             G.nodes[n]['voterank'][0] = 0
