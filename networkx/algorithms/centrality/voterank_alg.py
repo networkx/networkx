@@ -1,4 +1,4 @@
-"""Algorithm to compute influential seeds in a graph using voterank."""
+"""Algorithm to select influential nodes in a graph using VoteRank."""
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['voterank']
@@ -6,12 +6,12 @@ __all__ = ['voterank']
 
 @not_implemented_for('multigraph')
 def voterank(G, number_of_nodes=None):
-    """Compute a list of seeds for the nodes in the graph using VoteRank
+    """Select a list of influential nodes in a graph using VoteRank algorithm
 
-    VoteRank [1]_ computes a ranking of the nodes in the graph G based on a voting
-    scheme. With VoteRank, all nodes vote for each neighbours and the node with
-    the highest score is elected iteratively. The voting ability of neighbors of
-    elected nodes will be decreased in subsequent turn.
+    VoteRank [1]_ computes a ranking of the nodes in a graph G based on a
+    voting scheme. With VoteRank, all nodes vote for each of its in-neighbours
+    and the node with the highest votes is elected iteratively. The voting
+    ability of out-neighbors of elected nodes is decreased in subsequent turns.
 
     Parameters
     ----------
