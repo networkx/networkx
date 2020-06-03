@@ -33,45 +33,45 @@ def voterank(G, number_of_nodes=None):
         Identifying a set of influential spreaders in complex networks.
         Sci. Rep. 6, 27823; doi: 10.1038/srep27823.
     """
-    voterank = []
+    influential_nodes = []
+    voterank = {}
     if len(G) == 0:
-        return voterank
+        return influential_nodes
     if number_of_nodes is None or number_of_nodes > len(G):
         number_of_nodes = len(G)
-    avgDegree = 0
     if G.is_directed():
         # For directed graphs compute average out-degree
-        avgDegree = sum(deg for _, deg in G.out_degree()) / float(len(G))
+        avgDegree = sum(deg for _, deg in G.out_degree()) / len(G)
     else:
         # For undirected graphs compute average degree
-        avgDegree = sum(deg for _, deg in G.degree()) / float(len(G))
+        avgDegree = sum(deg for _, deg in G.degree()) / len(G)
     # step 1 - initiate all nodes to (0,1) (score, voting ability)
-    for _, v in G.nodes(data=True):
-        v['voterank'] = [0, 1]
+    for n in G.nodes():
+        voterank[n] = [0, 1]
     # Repeat steps 1b to 4 until num_seeds are elected.
     for _ in range(number_of_nodes):
         # step 1b - reset rank
-        for _, v in G.nodes(data=True):
-            v['voterank'][0] = 0
+        for n in G.nodes():
+            voterank[n][0] = 0
         # step 2 - vote
         for n, nbr in G.edges():
             # In directed graphs nodes only vote for their in-neighbors
-            G.nodes[n]['voterank'][0] += G.nodes[nbr]['voterank'][1]
+            voterank[n][0] += voterank[nbr][1]
             if not G.is_directed():
-                G.nodes[nbr]['voterank'][0] += G.nodes[n]['voterank'][1]
-        for n in voterank:
-            G.nodes[n]['voterank'][0] = 0
+                voterank[nbr][0] += voterank[n][1]
+        for n in influential_nodes:
+            voterank[n][0] = 0
         # step 3 - select top node
-        n, value = max(G.nodes(data=True),
-                       key=lambda x: x[1]['voterank'][0])
-        if value['voterank'][0] == 0:
-            return voterank
-        voterank.append(n)
+        n = max(G.nodes,
+                key=lambda x: voterank[x][0])
+        if voterank[n][0] == 0:
+            return influential_nodes
+        influential_nodes.append(n)
         # weaken the selected node
-        G.nodes[n]['voterank'] = [0, 0]
+        voterank[n] = [0, 0]
         # step 4 - update voterank properties
         # Neighbors is same as successors for directed graphs
         for nbr in G.neighbors(n):
-            G.nodes[nbr]['voterank'][1] -= 1 / avgDegree
-            G.nodes[nbr]['voterank'][1] = max(G.nodes[nbr]['voterank'][1], 0)
-    return voterank
+            voterank[nbr][1] -= 1 / avgDegree
+            voterank[nbr][1] = max(voterank[nbr][1], 0)
+    return influential_nodes
