@@ -1,10 +1,8 @@
 """Algorithm to select influential nodes in a graph using VoteRank."""
-from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['voterank']
 
 
-@not_implemented_for('multigraph')
 def voterank(G, number_of_nodes=None):
     """Select a list of influential nodes in a graph using VoteRank algorithm
 
@@ -12,6 +10,8 @@ def voterank(G, number_of_nodes=None):
     voting scheme. With VoteRank, all nodes vote for each of its in-neighbours
     and the node with the highest votes is elected iteratively. The voting
     ability of out-neighbors of elected nodes is decreased in subsequent turns.
+
+    Note: We treat each edge independently in case of multigraphs.
 
     Parameters
     ----------
@@ -61,6 +61,7 @@ def voterank(G, number_of_nodes=None):
                 voterank[nbr][0] += voterank[n][1]
         for n in influential_nodes:
             voterank[n][0] = 0
+        print(voterank)
         # step 3 - select top node
         n = max(G.nodes,
                 key=lambda x: voterank[x][0])
@@ -70,8 +71,7 @@ def voterank(G, number_of_nodes=None):
         # weaken the selected node
         voterank[n] = [0, 0]
         # step 4 - update voterank properties
-        # Neighbors is same as successors for directed graphs
-        for nbr in G.neighbors(n):
+        for _, nbr in G.edges(n):
             voterank[nbr][1] -= 1 / avgDegree
             voterank[nbr][1] = max(voterank[nbr][1], 0)
     return influential_nodes
