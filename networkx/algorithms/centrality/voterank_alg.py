@@ -73,4 +73,5 @@ def voterank(G, number_of_nodes=None):
         # Neighbors is same as successors for directed graphs
         for nbr in G.neighbors(n):
             G.nodes[nbr]['voterank'][1] -= 1 / avgDegree
+            G.nodes[nbr]['voterank'][1] = max(G.nodes[nbr]['voterank'][1], 0)
     return voterank

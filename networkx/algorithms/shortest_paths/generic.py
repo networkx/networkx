@@ -131,18 +131,19 @@ def shortest_path(G, source=None, target=None, weight=None, method='dijkstra'):
                 paths = dict(nx.all_pairs_bellman_ford_path(G, weight=weight))
         else:
             # Find paths from all nodes co-accessible to the target.
-            with nx.utils.reversed(G):
-                if method == 'unweighted':
-                    paths = nx.single_source_shortest_path(G, target)
-                elif method == 'dijkstra':
-                    paths = nx.single_source_dijkstra_path(G, target,
+            if G.is_directed():
+                G = G.reverse(copy=False)
+            if method == 'unweighted':
+                paths = nx.single_source_shortest_path(G, target)
+            elif method == 'dijkstra':
+                paths = nx.single_source_dijkstra_path(G, target,
+                                                       weight=weight)
+            else:  # method == 'bellman-ford':
+                paths = nx.single_source_bellman_ford_path(G, target,
                                                            weight=weight)
-                else:  # method == 'bellman-ford':
-                    paths = nx.single_source_bellman_ford_path(G, target,
-                                                               weight=weight)
-                # Now flip the paths so they go from a source to the target.
-                for target in paths:
-                    paths[target] = list(reversed(paths[target]))
+            # Now flip the paths so they go from a source to the target.
+            for target in paths:
+                paths[target] = list(reversed(paths[target]))
     else:
         if target is None:
             # Find paths to all nodes accessible from the source.
@@ -273,18 +274,17 @@ def shortest_path_length(G,
                 paths = nx.all_pairs_bellman_ford_path_length(G, weight=weight)
         else:
             # Find paths from all nodes co-accessible to the target.
-            with nx.utils.reversed(G):
-                if method == 'unweighted':
-                    # We need to exhaust the iterator as Graph needs
-                    # to be reversed.
-                    path_length = nx.single_source_shortest_path_length
-                    paths = path_length(G, target)
-                elif method == 'dijkstra':
-                    path_length = nx.single_source_dijkstra_path_length
-                    paths = path_length(G, target, weight=weight)
-                else:  # method == 'bellman-ford':
-                    path_length = nx.single_source_bellman_ford_path_length
-                    paths = path_length(G, target, weight=weight)
+            if G.is_directed():
+                G = G.reverse(copy=False)
+            if method == 'unweighted':
+                path_length = nx.single_source_shortest_path_length
+                paths = path_length(G, target)
+            elif method == 'dijkstra':
+                path_length = nx.single_source_dijkstra_path_length
+                paths = path_length(G, target, weight=weight)
+            else:  # method == 'bellman-ford':
+                path_length = nx.single_source_bellman_ford_path_length
+                paths = path_length(G, target, weight=weight)
     else:
         if target is None:
             # Find paths to all nodes accessible from the source.
