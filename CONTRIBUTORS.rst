@@ -171,6 +171,7 @@ is partially historical, and now, mostly arbitrary.
 - Alessandro Luongo
 - Huston Hedinger
 - Oleguer Sagarra
+- Arun Nampally, GitHub `<https://github.com/arunwise>`_, LinkedIn `<https://www.linkedin.com/in/arun-nampally-b57845b7/>`_
 
 Support
 -------
