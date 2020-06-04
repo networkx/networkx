@@ -61,7 +61,6 @@ def voterank(G, number_of_nodes=None):
                 voterank[nbr][0] += voterank[n][1]
         for n in influential_nodes:
             voterank[n][0] = 0
-        print(voterank)
         # step 3 - select top node
         n = max(G.nodes,
                 key=lambda x: voterank[x][0])
