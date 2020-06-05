@@ -172,6 +172,7 @@ is partially historical, and now, mostly arbitrary.
 - Huston Hedinger
 - Oleguer Sagarra
 - Gaetano Pietro Paolo Carpinato, Github `<https://github.com/Carghaez>`_, LinkedIn `<https://linkedin.com/in/gaetanocarpinato/>`_
+- Arun Nampally, GitHub `<https://github.com/arunwise>`_, LinkedIn `<https://www.linkedin.com/in/arun-nampally-b57845b7/>`_
 - Ryan Duve
 
 Support
