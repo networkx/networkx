@@ -5,6 +5,7 @@ from itertools import count
 import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.utils import pairwise
+from networkx.algorithms.shortest_paths.weighted import _weight_function
 
 __all__ = [
     'all_simple_paths',
@@ -312,9 +313,17 @@ def shortest_simple_paths(G, source, target, weight=None):
     target : node
        Ending node for path
 
-    weight : string
-        Name of the edge attribute to be used as a weight. If None all
-        edges are considered to have unit weight. Default value None.
+    weight : string or function
+        If it is a string, it is the name of the edge attribute to be
+        used as a weight.
+
+        If it is a function, the weight of an edge is the value returned
+        by the function. The function must accept exactly three positional
+        arguments: the two endpoints of an edge and the dictionary of edge
+        attributes for that edge. The function must return a number.
+
+        If None all edges are considered to have unit weight. Default
+        value None.
 
     Returns
     -------
@@ -380,8 +389,9 @@ def shortest_simple_paths(G, source, target, weight=None):
         length_func = len
         shortest_path_func = _bidirectional_shortest_path
     else:
+        wt = _weight_function(G, weight)
         def length_func(path):
-            return sum(G.adj[u][v][weight] for (u, v) in zip(path, path[1:]))
+            return sum(wt(u, v, G.get_edge_data(u, v)) for (u, v) in zip(path, path[1:]))
         shortest_path_func = _bidirectional_dijkstra
 
     listA = list()
@@ -627,8 +637,8 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     target : node
        Ending node.
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight
+    weight: string, function, optional (default='weight')
+       Edge data key or weight function corresponding to the edge weight
 
     ignore_nodes : container of nodes
        nodes to ignore, optional
@@ -766,22 +776,15 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
             # we have now discovered the shortest path
             return (finaldist, finalpath)
 
+        wt = _weight_function(G, weight)
         for w in neighs[dir](v):
             if(dir == 0):  # forward
-                if G.is_multigraph():
-                    minweight = min((dd.get(weight, 1)
-                                     for k, dd in G[v][w].items()))
-                else:
-                    minweight = G[v][w].get(weight, 1)
-                vwLength = dists[dir][v] + minweight  # G[v][w].get(weight,1)
+                minweight = wt(v, w, G.get_edge_data(v, w))
+                vwLength = dists[dir][v] + minweight
             else:  # back, must remember to change v,w->w,v
-                if G.is_multigraph():
-                    minweight = min((dd.get(weight, 1)
-                                     for k, dd in G[w][v].items()))
-                else:
-                    minweight = G[w][v].get(weight, 1)
-                vwLength = dists[dir][v] + minweight  # G[w][v].get(weight,1)
-
+                minweight = wt(w, v, G.get_edge_data(w, v))
+                vwLength = dists[dir][v] + minweight
+                
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
                     raise ValueError(

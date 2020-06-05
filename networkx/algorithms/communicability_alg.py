@@ -15,7 +15,7 @@ def communicability(G):
     r"""Returns communicability between all pairs of nodes in G.
 
     The communicability between pairs of nodes in G is the sum of
-    closed walks of different lengths starting at node u and ending at node v.
+    walks of different lengths starting at node u and ending at node v.
 
     Parameters
     ----------
@@ -96,7 +96,7 @@ def communicability_exp(G):
     r"""Returns communicability between all pairs of nodes in G.
 
     Communicability between pair of node (u,v) of node in G is the sum of
-    closed walks of different lengths starting at node u and ending at node v.
+    walks of different lengths starting at node u and ending at node v.
 
     Parameters
     ----------
