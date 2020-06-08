@@ -1051,7 +1051,7 @@ class OutEdgeView(Set, Mapping):
     def _from_iterable(cls, it):
         return set(it)
 
-    dataview = OutEdgeDataView
+    dataview: type[OutEdgeDataView] = OutEdgeDataView
 
     def __init__(self, G):
         self._graph = G

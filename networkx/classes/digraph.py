@@ -1,11 +1,15 @@
 """Base class for directed graphs."""
+from __future__ import annotations
+
+from collections.abc import Iterable
 from copy import deepcopy
 from functools import cached_property
+from typing import Any, Generic
 
 import networkx as nx
 from networkx import convert
 from networkx.classes.coreviews import AdjacencyView
-from networkx.classes.graph import Graph
+from networkx.classes.graph import EdgePlus, Graph, Node
 from networkx.classes.reportviews import (
     DiDegreeView,
     InDegreeView,
@@ -67,7 +71,7 @@ class _CachedPropertyResetterPred:
             del od["pred"]
 
 
-class DiGraph(Graph):
+class DiGraph(Graph[Node], Generic[Node]):
     """
     Base class for directed graphs.
 
@@ -362,7 +366,7 @@ class DiGraph(Graph):
         self.graph.update(attr)
 
     @cached_property
-    def adj(self):
+    def adj(self) -> AdjacencyView:
         """Graph adjacency object holding the neighbors of each node.
 
         This object is a read-only dict-like structure with node keys
@@ -381,7 +385,7 @@ class DiGraph(Graph):
         return AdjacencyView(self._succ)
 
     @cached_property
-    def succ(self):
+    def succ(self) -> AdjacencyView:
         """Graph adjacency object holding the successors of each node.
 
         This object is a read-only dict-like structure with node keys
@@ -402,7 +406,7 @@ class DiGraph(Graph):
         return AdjacencyView(self._succ)
 
     @cached_property
-    def pred(self):
+    def pred(self) -> AdjacencyView:
         """Graph adjacency object holding the predecessors of each node.
 
         This object is a read-only dict-like structure with node keys
@@ -417,7 +421,7 @@ class DiGraph(Graph):
         """
         return AdjacencyView(self._pred)
 
-    def add_node(self, node_for_adding, **attr):
+    def add_node(self, node_for_adding: Node, **attr: Any) -> None:
         """Add a single node `node_for_adding` and update node attributes.
 
         Parameters
@@ -459,9 +463,11 @@ class DiGraph(Graph):
         if node_for_adding not in self._succ:
             if node_for_adding is None:
                 raise ValueError("None cannot be a node")
-            self._succ[node_for_adding] = self.adjlist_inner_dict_factory()
-            self._pred[node_for_adding] = self.adjlist_inner_dict_factory()
-            attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
+            self._succ[node_for_adding] = type(self).adjlist_inner_dict_factory()
+            self._pred[node_for_adding] = type(self).adjlist_inner_dict_factory()
+            attr_dict = self._node[node_for_adding] = type(
+                self
+            ).node_attr_dict_factory()
             attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
@@ -544,7 +550,7 @@ class DiGraph(Graph):
                 self._node[n] = self.node_attr_dict_factory()
             self._node[n].update(newdict)
 
-    def remove_node(self, n):
+    def remove_node(self, n: Node) -> None:
         """Remove node n.
 
         Removes the node n and all adjacent edges.
@@ -640,7 +646,7 @@ class DiGraph(Graph):
             except KeyError:
                 pass  # silent failure on remove
 
-    def add_edge(self, u_of_edge, v_of_edge, **attr):
+    def add_edge(self, u_of_edge: Node, v_of_edge: Node, **attr: Any) -> None:
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
@@ -695,22 +701,22 @@ class DiGraph(Graph):
         if u not in self._succ:
             if u is None:
                 raise ValueError("None cannot be a node")
-            self._succ[u] = self.adjlist_inner_dict_factory()
-            self._pred[u] = self.adjlist_inner_dict_factory()
-            self._node[u] = self.node_attr_dict_factory()
+            self._succ[u] = type(self).adjlist_inner_dict_factory()
+            self._pred[u] = type(self).adjlist_inner_dict_factory()
+            self._node[u] = type(self).node_attr_dict_factory()
         if v not in self._succ:
             if v is None:
                 raise ValueError("None cannot be a node")
-            self._succ[v] = self.adjlist_inner_dict_factory()
-            self._pred[v] = self.adjlist_inner_dict_factory()
-            self._node[v] = self.node_attr_dict_factory()
+            self._succ[v] = type(self).adjlist_inner_dict_factory()
+            self._pred[v] = type(self).adjlist_inner_dict_factory()
+            self._node[v] = type(self).node_attr_dict_factory()
         # add the edge
-        datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
+        datadict = self._adj[u].get(v, type(self).edge_attr_dict_factory())
         datadict.update(attr)
         self._succ[u][v] = datadict
         self._pred[v][u] = datadict
 
-    def add_edges_from(self, ebunch_to_add, **attr):
+    def add_edges_from(self, ebunch_to_add: Iterable[EdgePlus], **attr: Any) -> None:
         """Add all the edges in ebunch_to_add.
 
         Parameters
@@ -766,33 +772,29 @@ class DiGraph(Graph):
         >>> G.add_edges_from(list((5, n) for n in G.nodes))
         """
         for e in ebunch_to_add:
-            ne = len(e)
-            if ne == 3:
-                u, v, dd = e
-            elif ne == 2:
-                u, v = e
-                dd = {}
-            else:
+            if len(e) not in (2, 3):
                 raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
+            u, v, *extra = e
+            dd = extra[0] if extra else {}
             if u not in self._succ:
                 if u is None:
                     raise ValueError("None cannot be a node")
-                self._succ[u] = self.adjlist_inner_dict_factory()
-                self._pred[u] = self.adjlist_inner_dict_factory()
-                self._node[u] = self.node_attr_dict_factory()
+                self._succ[u] = type(self).adjlist_inner_dict_factory()
+                self._pred[u] = type(self).adjlist_inner_dict_factory()
+                self._node[u] = type(self).node_attr_dict_factory()
             if v not in self._succ:
                 if v is None:
                     raise ValueError("None cannot be a node")
-                self._succ[v] = self.adjlist_inner_dict_factory()
-                self._pred[v] = self.adjlist_inner_dict_factory()
-                self._node[v] = self.node_attr_dict_factory()
-            datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
+                self._succ[v] = type(self).adjlist_inner_dict_factory()
+                self._pred[v] = type(self).adjlist_inner_dict_factory()
+                self._node[v] = type(self).node_attr_dict_factory()
+            datadict = self._adj[u].get(v, type(self).edge_attr_dict_factory())
             datadict.update(attr)
             datadict.update(dd)
             self._succ[u][v] = datadict
             self._pred[v][u] = datadict
 
-    def remove_edge(self, u, v):
+    def remove_edge(self, u: Node, v: Node) -> None:
         """Remove the edge between u and v.
 
         Parameters
@@ -825,7 +827,7 @@ class DiGraph(Graph):
         except KeyError as err:
             raise NetworkXError(f"The edge {u}-{v} not in graph.") from err
 
-    def remove_edges_from(self, ebunch):
+    def remove_edges_from(self, ebunch: Iterable[EdgePlus]) -> None:
         """Remove all edges specified in ebunch.
 
         Parameters
@@ -857,21 +859,21 @@ class DiGraph(Graph):
                 del self._succ[u][v]
                 del self._pred[v][u]
 
-    def has_successor(self, u, v):
+    def has_successor(self, u: Node, v: Node) -> bool:
         """Returns True if node u has successor v.
 
         This is true if graph has the edge u->v.
         """
         return u in self._succ and v in self._succ[u]
 
-    def has_predecessor(self, u, v):
+    def has_predecessor(self, u: Node, v: Node) -> bool:
         """Returns True if node u has predecessor v.
 
         This is true if graph has the edge u<-v.
         """
         return u in self._pred and v in self._pred[u]
 
-    def successors(self, n):
+    def successors(self, n: Node) -> Iterable[Node]:
         """Returns an iterator over successor nodes of n.
 
         A successor of n is a node m such that there exists a directed
@@ -903,7 +905,7 @@ class DiGraph(Graph):
     # digraph definitions
     neighbors = successors
 
-    def predecessors(self, n):
+    def predecessors(self, n: Node) -> Iterable[Node]:
         """Returns an iterator over predecessor nodes of n.
 
         A predecessor of n is a node m such that there exists a directed
@@ -929,7 +931,7 @@ class DiGraph(Graph):
             raise NetworkXError(f"The node {n} is not in the digraph.") from err
 
     @cached_property
-    def edges(self):
+    def edges(self) -> OutEdgeView:
         """An OutEdgeView of the DiGraph as G.edges or G.edges().
 
         edges(self, nbunch=None, data=False, default=None)
@@ -999,7 +1001,7 @@ class DiGraph(Graph):
     out_edges.__doc__ = edges.__doc__
 
     @cached_property
-    def in_edges(self):
+    def in_edges(self) -> InEdgeView:
         """A view of the in edges of the graph as G.in_edges or G.in_edges().
 
         in_edges(self, nbunch=None, data=False, default=None):
@@ -1039,7 +1041,7 @@ class DiGraph(Graph):
         return InEdgeView(self)
 
     @cached_property
-    def degree(self):
+    def degree(self) -> DiDegreeView:
         """A DegreeView for the Graph as G.degree or G.degree().
 
         The node degree is the number of edges adjacent to the node.
@@ -1083,7 +1085,7 @@ class DiGraph(Graph):
         return DiDegreeView(self)
 
     @cached_property
-    def in_degree(self):
+    def in_degree(self) -> InDegreeView:
         """An InDegreeView for (node, in_degree) or in_degree for single node.
 
         The node in_degree is the number of edges pointing to the node.
@@ -1130,7 +1132,7 @@ class DiGraph(Graph):
         return InDegreeView(self)
 
     @cached_property
-    def out_degree(self):
+    def out_degree(self) -> OutDegreeView:
         """An OutDegreeView for (node, out_degree)
 
         The node out_degree is the number of edges pointing out of the node.
@@ -1176,7 +1178,7 @@ class DiGraph(Graph):
         """
         return OutDegreeView(self)
 
-    def clear(self):
+    def clear(self) -> None:
         """Remove all nodes and edges from the graph.
 
         This also removes the name, and all graph, node, and edge attributes.
@@ -1196,7 +1198,7 @@ class DiGraph(Graph):
         self._node.clear()
         self.graph.clear()
 
-    def clear_edges(self):
+    def clear_edges(self) -> None:
         """Remove all edges from the graph without altering nodes.
 
         Examples
@@ -1214,15 +1216,17 @@ class DiGraph(Graph):
         for successor_dict in self._succ.values():
             successor_dict.clear()
 
-    def is_multigraph(self):
+    def is_multigraph(self) -> bool:
         """Returns True if graph is a multigraph, False otherwise."""
         return False
 
-    def is_directed(self):
+    def is_directed(self) -> bool:
         """Returns True if graph is directed, False otherwise."""
         return True
 
-    def to_undirected(self, reciprocal=False, as_view=False):
+    def to_undirected(
+        self, as_view: bool = False, reciprocal: bool = False
+    ) -> Graph[Node]:
         """Returns an undirected representation of the digraph.
 
         Parameters
@@ -1301,7 +1305,7 @@ class DiGraph(Graph):
             )
         return G
 
-    def reverse(self, copy=True):
+    def reverse(self, copy: bool = True) -> DiGraph[Node]:
         """Returns the reverse of the graph.
 
         The reverse is a graph with the same nodes and edges

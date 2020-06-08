@@ -2,15 +2,15 @@ import bz2
 import collections
 import gzip
 import inspect
-import itertools
 import re
 import warnings
 from collections import defaultdict
-from contextlib import contextmanager
+from collections.abc import Callable
 from functools import wraps
 from inspect import Parameter, signature
 from os.path import splitext
 from pathlib import Path
+from typing import IO
 
 import networkx as nx
 from networkx.utils import create_py_random_state, create_random_state
@@ -101,7 +101,7 @@ fopeners = {
     ".gzip": gzip.open,
     ".bz2": bz2.BZ2File,
 }
-_dispatch_dict = defaultdict(lambda: open, **fopeners)
+_dispatch_dict = defaultdict[str, Callable[..., IO]](lambda: open, **fopeners)
 
 
 def open_file(path_arg, mode="r"):

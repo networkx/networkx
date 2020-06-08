@@ -1018,7 +1018,7 @@ class TestInMultiEdgeView(TestMultiEdgeView):
 # Degrees
 class TestDegreeView:
     GRAPH = nx.Graph
-    dview = nx.reportviews.DegreeView
+    dview: type[nx.reportviews.DegreeView] = nx.reportviews.DegreeView
 
     @classmethod
     def setup_class(cls):

@@ -7,16 +7,54 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 
 For directed graphs see DiGraph and MultiDiGraph.
 """
+from __future__ import annotations
+
+from collections.abc import (
+    Callable,
+    Collection,
+    Hashable,
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+)
 from copy import deepcopy
 from functools import cached_property
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Generic,
+    TypeAlias,
+    TypeVar,
+    cast,
+    overload,
+)
 
 import networkx as nx
 from networkx import convert
 from networkx.classes.coreviews import AdjacencyView
-from networkx.classes.reportviews import DegreeView, EdgeView, NodeView
+from networkx.classes.reportviews import (
+    DegreeView,
+    DiDegreeView,
+    EdgeView,
+    NodeView,
+    OutEdgeView,
+)
 from networkx.exception import NetworkXError
 
+if TYPE_CHECKING:
+    from networkx.convert import Data
+
 __all__ = ["Graph"]
+
+Node: TypeAlias = TypeVar("Node", bound=Hashable)
+NodeWithData: TypeAlias = tuple[Node, dict[str, Any]]
+NodePlus: TypeAlias = Node | NodeWithData
+Edge: TypeAlias = tuple[Node, Node]
+EdgeWithData: TypeAlias = tuple[Node, Node, dict[str, Any]]
+EdgePlus: TypeAlias = Edge | EdgeWithData
+MapFactory: TypeAlias = Callable[[], MutableMapping]
 
 
 class _CachedPropertyResetterAdj:
@@ -63,7 +101,7 @@ class _CachedPropertyResetterNode:
             del od["nodes"]
 
 
-class Graph:
+class Graph(Collection[Node], Generic[Node]):
     """
     Base class for undirected graphs.
 
@@ -306,30 +344,30 @@ class Graph:
     _adj = _CachedPropertyResetterAdj()
     _node = _CachedPropertyResetterNode()
 
-    node_dict_factory = dict
-    node_attr_dict_factory = dict
-    adjlist_outer_dict_factory = dict
-    adjlist_inner_dict_factory = dict
-    edge_attr_dict_factory = dict
-    graph_attr_dict_factory = dict
+    node_dict_factory: ClassVar[MapFactory] = dict
+    node_attr_dict_factory: ClassVar[MapFactory] = dict
+    adjlist_outer_dict_factory: ClassVar[MapFactory] = dict
+    adjlist_inner_dict_factory: ClassVar[MapFactory] = dict
+    edge_attr_dict_factory: ClassVar[MapFactory] = dict
+    graph_attr_dict_factory: ClassVar[MapFactory] = dict
 
-    def to_directed_class(self):
+    def to_directed_class(self) -> type[nx.DiGraph[Node]]:
         """Returns the class to use for empty directed copies.
 
         If you subclass the base classes, use this to designate
         what directed class to use for `to_directed()` copies.
         """
-        return nx.DiGraph
+        return nx.DiGraph[Node]
 
-    def to_undirected_class(self):
+    def to_undirected_class(self) -> type[nx.Graph[Node]]:
         """Returns the class to use for empty undirected copies.
 
         If you subclass the base classes, use this to designate
         what directed class to use for `to_directed()` copies.
         """
-        return Graph
+        return Graph[Node]
 
-    def __init__(self, incoming_graph_data=None, **attr):
+    def __init__(self, incoming_graph_data: Data | None = None, **attr: Any):
         """Initialize a graph with edges, name, or graph attributes.
 
         Parameters
@@ -372,7 +410,7 @@ class Graph:
         self.graph.update(attr)
 
     @cached_property
-    def adj(self):
+    def adj(self) -> AdjacencyView:
         """Graph adjacency object holding the neighbors of each node.
 
         This object is a read-only dict-like structure with node keys
@@ -391,7 +429,7 @@ class Graph:
         return AdjacencyView(self._adj)
 
     @property
-    def name(self):
+    def name(self) -> str:
         """String identifier of the graph.
 
         This graph attribute appears in the attribute dict G.graph
@@ -401,10 +439,10 @@ class Graph:
         return self.graph.get("name", "")
 
     @name.setter
-    def name(self, s):
+    def name(self, s: str) -> None:
         self.graph["name"] = s
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns a short summary of the graph.
 
         Returns
@@ -432,7 +470,7 @@ class Graph:
             ]
         )
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Node]:
         """Iterate over the nodes. Use: 'for n in G'.
 
         Returns
@@ -450,7 +488,7 @@ class Graph:
         """
         return iter(self._node)
 
-    def __contains__(self, n):
+    def __contains__(self, n: Any) -> bool:
         """Returns True if n is a node, False otherwise. Use: 'n in G'.
 
         Examples
@@ -464,7 +502,7 @@ class Graph:
         except TypeError:
             return False
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Returns the number of nodes in the graph. Use: 'len(G)'.
 
         Returns
@@ -486,7 +524,7 @@ class Graph:
         """
         return len(self._node)
 
-    def __getitem__(self, n):
+    def __getitem__(self, n: Node) -> MutableMapping[Hashable, Any]:
         """Returns a dict of neighbors of node n.  Use: 'G[n]'.
 
         Parameters
@@ -512,7 +550,7 @@ class Graph:
         """
         return self.adj[n]
 
-    def add_node(self, node_for_adding, **attr):
+    def add_node(self, node_for_adding: Node, **attr: Any) -> None:
         """Add a single node `node_for_adding` and update node attributes.
 
         Parameters
@@ -554,13 +592,15 @@ class Graph:
         if node_for_adding not in self._node:
             if node_for_adding is None:
                 raise ValueError("None cannot be a node")
-            self._adj[node_for_adding] = self.adjlist_inner_dict_factory()
-            attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
+            self._adj[node_for_adding] = type(self).adjlist_inner_dict_factory()
+            attr_dict = self._node[node_for_adding] = type(
+                self
+            ).node_attr_dict_factory()
             attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
 
-    def add_nodes_from(self, nodes_for_adding, **attr):
+    def add_nodes_from(self, nodes_for_adding: Iterable[NodePlus], **attr: Any) -> None:
         """Add multiple nodes.
 
         Parameters
@@ -633,11 +673,11 @@ class Graph:
             if newnode:
                 if n is None:
                     raise ValueError("None cannot be a node")
-                self._adj[n] = self.adjlist_inner_dict_factory()
-                self._node[n] = self.node_attr_dict_factory()
-            self._node[n].update(newdict)
+                node = cast(Node, n)
+                new_node_dict = attr
+            self.add_node(node, **new_node_dict)
 
-    def remove_node(self, n):
+    def remove_node(self, n: Node) -> None:
         """Remove node n.
 
         Removes the node n and all adjacent edges.
@@ -677,7 +717,7 @@ class Graph:
             del adj[u][n]  # remove all edges n-u in graph
         del adj[n]  # now remove node
 
-    def remove_nodes_from(self, nodes):
+    def remove_nodes_from(self, nodes: Iterable[Node]) -> None:
         """Remove multiple nodes.
 
         Parameters
@@ -730,7 +770,7 @@ class Graph:
                 pass
 
     @cached_property
-    def nodes(self):
+    def nodes(self) -> NodeView:
         """A NodeView of the Graph as G.nodes or G.nodes().
 
         Can be used as `G.nodes` for data lookup and for set-like operations.
@@ -822,7 +862,7 @@ class Graph:
         """
         return NodeView(self)
 
-    def number_of_nodes(self):
+    def number_of_nodes(self) -> int:
         """Returns the number of nodes in the graph.
 
         Returns
@@ -843,7 +883,7 @@ class Graph:
         """
         return len(self._node)
 
-    def order(self):
+    def order(self) -> int:
         """Returns the number of nodes in the graph.
 
         Returns
@@ -864,7 +904,7 @@ class Graph:
         """
         return len(self._node)
 
-    def has_node(self, n):
+    def has_node(self, n: Node) -> bool:
         """Returns True if the graph contains the node n.
 
         Identical to `n in G`
@@ -890,7 +930,7 @@ class Graph:
         except TypeError:
             return False
 
-    def add_edge(self, u_of_edge, v_of_edge, **attr):
+    def add_edge(self, u_of_edge: Node, v_of_edge: Node, **attr: Any) -> None:
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
@@ -945,20 +985,20 @@ class Graph:
         if u not in self._node:
             if u is None:
                 raise ValueError("None cannot be a node")
-            self._adj[u] = self.adjlist_inner_dict_factory()
-            self._node[u] = self.node_attr_dict_factory()
+            self._adj[u] = type(self).adjlist_inner_dict_factory()
+            self._node[u] = type(self).node_attr_dict_factory()
         if v not in self._node:
             if v is None:
                 raise ValueError("None cannot be a node")
-            self._adj[v] = self.adjlist_inner_dict_factory()
-            self._node[v] = self.node_attr_dict_factory()
+            self._adj[v] = type(self).adjlist_inner_dict_factory()
+            self._node[v] = type(self).node_attr_dict_factory()
         # add the edge
-        datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
+        datadict = self._adj[u].get(v, type(self).edge_attr_dict_factory())
         datadict.update(attr)
         self._adj[u][v] = datadict
         self._adj[v][u] = datadict
 
-    def add_edges_from(self, ebunch_to_add, **attr):
+    def add_edges_from(self, ebunch_to_add: Iterable[EdgePlus], **attr: Any) -> None:
         """Add all the edges in ebunch_to_add.
 
         Parameters
@@ -1014,31 +1054,32 @@ class Graph:
         >>> G.add_edges_from(list((5, n) for n in G.nodes))
         """
         for e in ebunch_to_add:
-            ne = len(e)
-            if ne == 3:
-                u, v, dd = e
-            elif ne == 2:
-                u, v = e
-                dd = {}  # doesn't need edge_attr_dict_factory
-            else:
+            if len(e) not in (2, 3):
                 raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
+            u, v, *extra = e
+            dd = extra[0] if extra else {}
             if u not in self._node:
                 if u is None:
                     raise ValueError("None cannot be a node")
-                self._adj[u] = self.adjlist_inner_dict_factory()
-                self._node[u] = self.node_attr_dict_factory()
+                self._adj[u] = type(self).adjlist_inner_dict_factory()
+                self._node[u] = type(self).node_attr_dict_factory()
             if v not in self._node:
                 if v is None:
                     raise ValueError("None cannot be a node")
-                self._adj[v] = self.adjlist_inner_dict_factory()
-                self._node[v] = self.node_attr_dict_factory()
-            datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
+                self._adj[v] = type(self).adjlist_inner_dict_factory()
+                self._node[v] = type(self).node_attr_dict_factory()
+            datadict = self._adj[u].get(v, type(self).edge_attr_dict_factory())
             datadict.update(attr)
             datadict.update(dd)
             self._adj[u][v] = datadict
             self._adj[v][u] = datadict
 
-    def add_weighted_edges_from(self, ebunch_to_add, weight="weight", **attr):
+    def add_weighted_edges_from(
+        self,
+        ebunch_to_add: Iterable[tuple[Node, Node, Any]],
+        weight: str = "weight",
+        **attr: Any,
+    ) -> None:
         """Add weighted edges in `ebunch_to_add` with specified weight attr
 
         Parameters
@@ -1088,7 +1129,7 @@ class Graph:
         """
         self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch_to_add), **attr)
 
-    def remove_edge(self, u, v):
+    def remove_edge(self, u: Node, v: Node) -> None:
         """Remove the edge between u and v.
 
         Parameters
@@ -1121,7 +1162,7 @@ class Graph:
         except KeyError as err:
             raise NetworkXError(f"The edge {u}-{v} is not in the graph") from err
 
-    def remove_edges_from(self, ebunch):
+    def remove_edges_from(self, ebunch: Iterable[EdgePlus]) -> None:
         """Remove all edges specified in ebunch.
 
         Parameters
@@ -1155,7 +1196,23 @@ class Graph:
                 if u != v:  # self loop needs only one entry removed
                     del adj[v][u]
 
-    def update(self, edges=None, nodes=None):
+    @overload
+    def update(self, edges: Graph[Node], nodes: None = None) -> None:
+        ...
+
+    @overload
+    def update(
+        self,
+        edges: Iterable[EdgePlus] | None = None,
+        nodes: Iterable[Node] | None = None,
+    ) -> None:
+        ...
+
+    def update(
+        self,
+        edges: Graph[Node] | Iterable[EdgePlus] | None = None,
+        nodes: Iterable[Node] | None = None,
+    ) -> None:
         """Update the graph using nodes/edges/graphs as input.
 
         Like dict.update, this method takes a graph as input, adding the
@@ -1253,25 +1310,20 @@ class Graph:
         if edges is not None:
             if nodes is not None:
                 self.add_nodes_from(nodes)
+                assert edges is not None and not isinstance(edges, Graph)
                 self.add_edges_from(edges)
+            elif isinstance(edges, Graph):
+                self.add_nodes_from(edges.nodes.data())
+                self.add_edges_from(edges.edges.data())
+                self.graph.update(edges.graph)
             else:
-                # check if edges is a Graph object
-                try:
-                    graph_nodes = edges.nodes
-                    graph_edges = edges.edges
-                except AttributeError:
-                    # edge not Graph-like
-                    self.add_edges_from(edges)
-                else:  # edges is Graph-like
-                    self.add_nodes_from(graph_nodes.data())
-                    self.add_edges_from(graph_edges.data())
-                    self.graph.update(edges.graph)
+                self.add_edges_from(edges)
         elif nodes is not None:
             self.add_nodes_from(nodes)
         else:
             raise NetworkXError("update needs nodes or edges input")
 
-    def has_edge(self, u, v):
+    def has_edge(self, u: Node, v: Node) -> bool:
         """Returns True if the edge (u, v) is in the graph.
 
         This is the same as `v in G[u]` without KeyError exceptions.
@@ -1312,7 +1364,7 @@ class Graph:
         except KeyError:
             return False
 
-    def neighbors(self, n):
+    def neighbors(self, n: Node) -> Iterable[Node]:
         """Returns an iterator over all neighbors of node n.
 
         This is identical to `iter(G[n])`
@@ -1356,7 +1408,7 @@ class Graph:
             raise NetworkXError(f"The node {n} is not in the graph.") from err
 
     @cached_property
-    def edges(self):
+    def edges(self) -> OutEdgeView:
         """An EdgeView of the Graph as G.edges or G.edges().
 
         edges(self, nbunch=None, data=False, default=None)
@@ -1412,7 +1464,7 @@ class Graph:
         """
         return EdgeView(self)
 
-    def get_edge_data(self, u, v, default=None):
+    def get_edge_data(self, u: Node, v: Node, default: Any = None) -> Any:
         """Returns the attribute dictionary associated with edge (u, v).
 
         This is identical to `G[u][v]` except the default is returned
@@ -1458,7 +1510,7 @@ class Graph:
         except KeyError:
             return default
 
-    def adjacency(self):
+    def adjacency(self) -> Iterable[tuple[Node, Mapping[Node, Mapping[str, Any]]]]:
         """Returns an iterator over (node, adjacency dict) tuples for all nodes.
 
         For directed graphs, only outgoing neighbors/adjacencies are included.
@@ -1479,7 +1531,7 @@ class Graph:
         return iter(self._adj.items())
 
     @cached_property
-    def degree(self):
+    def degree(self) -> DiDegreeView:
         """A DegreeView for the Graph as G.degree or G.degree().
 
         The node degree is the number of edges adjacent to the node.
@@ -1516,7 +1568,7 @@ class Graph:
         """
         return DegreeView(self)
 
-    def clear(self):
+    def clear(self) -> None:
         """Remove all nodes and edges from the graph.
 
         This also removes the name, and all graph, node, and edge attributes.
@@ -1535,7 +1587,7 @@ class Graph:
         self._node.clear()
         self.graph.clear()
 
-    def clear_edges(self):
+    def clear_edges(self) -> None:
         """Remove all edges from the graph without altering nodes.
 
         Examples
@@ -1550,15 +1602,17 @@ class Graph:
         for nbr_dict in self._adj.values():
             nbr_dict.clear()
 
-    def is_multigraph(self):
+    def is_multigraph(self) -> bool:
         """Returns True if graph is a multigraph, False otherwise."""
         return False
 
-    def is_directed(self):
+    def is_directed(self) -> bool:
         """Returns True if graph is directed, False otherwise."""
         return False
 
-    def copy(self, as_view=False):
+    _T = TypeVar("_T", bound="Graph[Node]")
+
+    def copy(self: _T, as_view: bool = False) -> _T:
         """Returns a copy of the graph.
 
         The copy method by default returns an independent shallow copy
@@ -1647,7 +1701,7 @@ class Graph:
         )
         return G
 
-    def to_directed(self, as_view=False):
+    def to_directed(self, as_view: bool = False) -> nx.DiGraph:
         """Returns a directed representation of the graph.
 
         Returns
@@ -1690,7 +1744,7 @@ class Graph:
         [(0, 1)]
         """
         graph_class = self.to_directed_class()
-        if as_view is True:
+        if as_view:
             return nx.graphviews.generic_graph_view(self, graph_class)
         # deepcopy when not a view
         G = graph_class()
@@ -1703,7 +1757,7 @@ class Graph:
         )
         return G
 
-    def to_undirected(self, as_view=False):
+    def to_undirected(self, as_view: bool = False) -> Graph[Node]:
         """Returns an undirected copy of the graph.
 
         Parameters
@@ -1760,7 +1814,7 @@ class Graph:
         )
         return G
 
-    def subgraph(self, nodes):
+    def subgraph(self, nodes: Iterable[Node]) -> Graph[Node]:
         """Returns a SubGraph view of the subgraph induced on `nodes`.
 
         The induced subgraph of the graph contains the nodes in `nodes`
@@ -1826,7 +1880,7 @@ class Graph:
             )
         return subgraph(self, filter_node=induced_nodes)
 
-    def edge_subgraph(self, edges):
+    def edge_subgraph(self, edges: Iterable[Edge]) -> Graph:
         """Returns the subgraph induced by the specified edges.
 
         The induced subgraph contains each edge in `edges` and each
@@ -1866,7 +1920,15 @@ class Graph:
         """
         return nx.edge_subgraph(self, edges)
 
-    def size(self, weight=None):
+    @overload
+    def size(self, weight: None = None) -> int:
+        ...
+
+    @overload
+    def size(self, weight: str) -> float:
+        ...
+
+    def size(self, weight: str | None = None) -> int | float:
         """Returns the number of edges or total of all edge weights.
 
         Parameters
@@ -1903,13 +1965,16 @@ class Graph:
         6.0
         """
         s = sum(d for v, d in self.degree(weight=weight))
+        if weight is None:
+            assert isinstance(s, int)
+            return s // 2
         # If `weight` is None, the sum of the degrees is guaranteed to be
         # even, so we can perform integer division and hence return an
         # integer. Otherwise, the sum of the weighted degrees is not
         # guaranteed to be an integer, so we perform "real" division.
-        return s // 2 if weight is None else s / 2
+        return s / 2
 
-    def number_of_edges(self, u=None, v=None):
+    def number_of_edges(self, u: Node | None = None, v: Node | None = None) -> int:
         """Returns the number of edges between two nodes.
 
         Parameters
@@ -1961,7 +2026,9 @@ class Graph:
             return 1
         return 0
 
-    def nbunch_iter(self, nbunch=None):
+    def nbunch_iter(
+        self, nbunch: None | Node | Iterable[Node] = None
+    ) -> Iterable[Node]:
         """Returns an iterator over nodes contained in nbunch that are
         also in the graph.
 
@@ -2004,27 +2071,19 @@ class Graph:
         if nbunch is None:  # include all nodes via iterator
             bunch = iter(self._adj)
         elif nbunch in self:  # if nbunch is a single node
-            bunch = iter([nbunch])
-        else:  # if nbunch is a sequence of nodes
-
-            def bunch_iter(nlist, adj):
+            yield cast(Node, nbunch)
+        elif isinstance(nbunch, Iterable):
+            for n in nbunch:
                 try:
-                    for n in nlist:
-                        if n in adj:
-                            yield n
+                    if n in self._adj:
+                        yield n
                 except TypeError as err:
-                    exc, message = err, err.args[0]
-                    # capture error for non-sequence/iterator nbunch.
-                    if "iter" in message:
-                        exc = NetworkXError(
-                            "nbunch is not a node or a sequence of nodes."
-                        )
                     # capture error for unhashable node.
-                    if "hashable" in message:
-                        exc = NetworkXError(
+                    if not isinstance(n, Hashable):
+                        raise NetworkXError(
                             f"Node {n} in sequence nbunch is not a valid node."
                         )
-                    raise exc
-
-            bunch = bunch_iter(nbunch, self._adj)
-        return bunch
+                    raise
+        else:
+            # Raise for non-iterable nbunch.
+            raise NetworkXError("nbunch is not a node or a sequence of nodes.")

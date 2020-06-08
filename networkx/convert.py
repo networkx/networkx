@@ -15,8 +15,17 @@ See Also
 --------
 nx_agraph, nx_pydot
 """
+from __future__ import annotations
+
 import warnings
-from collections.abc import Collection, Generator, Iterator
+from collections.abc import Callable, Collection, Generator, Iterable, Iterator
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    TypeAlias,
+    TypeVar,
+    Union,
+)
 
 import networkx as nx
 
@@ -31,7 +40,34 @@ __all__ = [
 ]
 
 
-def to_networkx_graph(data, create_using=None, multigraph_input=False):
+if TYPE_CHECKING:
+    from networkx.classes.graph import EdgePlus, Graph, Node
+
+    GraphFactory: TypeAlias = Callable[[], Graph]
+
+    G = TypeVar("G", bound=Graph)
+
+    from contextlib import suppress
+
+    with suppress(ImportError):
+        import numpy
+    with suppress(ImportError):
+        import scipy
+    Data = (
+        Graph
+        | dict[Node, dict[Node, dict[str, Any]]]
+        | dict[Node, Iterable[Node]]
+        | Iterable[EdgePlus]
+        | numpy.ndarray
+        | scipy.sparse.base.spmatrix
+    )
+
+
+def to_networkx_graph(
+    data: Data,
+    create_using: G | GraphFactory | None = None,
+    multigraph_input: bool = False,
+) -> G:
     """Make a NetworkX graph from a known data structure.
 
     The preferred way to call this is automatically
@@ -71,7 +107,9 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
 
     """
     # NX graph
-    if hasattr(data, "adj"):
+    from networkx.classes.graph import Graph
+
+    if isinstance(data, Graph):
         try:
             result = from_dict_of_dicts(
                 data.adj,
