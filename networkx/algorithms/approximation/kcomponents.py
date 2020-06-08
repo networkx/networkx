@@ -210,8 +210,9 @@ class _AntiGraph(nx.Graph):
 
     all_edge_dict = {"weight": 1}
 
-    def single_edge_dict(self):
-        return self.all_edge_dict
+    @staticmethod
+    def single_edge_dict():
+        return _AntiGraph.all_edge_dict
 
     edge_attr_dict_factory = single_edge_dict  # type: ignore
 

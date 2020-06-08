@@ -1,0 +1,11 @@
+[tool.mypy]
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ['scipy', 'scipy.sparse', 'scipy.optimize', 'scipy.linalg', 'scipy.sparse.linalg',
+       'pandas', 'osgeo', 'pygraphviz', 'pydot', 'ogr', 'lxml', 'lxml.etree', 'PIL',
+       'matplotlib', 'matplotlib.pyplot', 'matplotlib', 'matplotlib.collections',
+       'matplotlib.colors', 'matplotlib.patches', 'matplotlib.path', 'matplotlib.cm',
+       'scipy.stats', 'scipy.linalg.blas', 'scipy.spatial', 'scipy.special']
+ignore_missing_imports = true
