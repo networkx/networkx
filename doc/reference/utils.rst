@@ -65,11 +65,3 @@ Cuthill-Mckee Ordering
 
    cuthill_mckee_ordering
    reverse_cuthill_mckee_ordering
-
-Context Managers
-----------------
-.. automodule:: networkx.utils.contextmanagers
-.. autosummary::
-   :toctree: generated/
-
-   reversed
