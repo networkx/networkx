@@ -401,6 +401,9 @@ def find_cycle(G, source=None, orientation=None):
     >>> list(nx.find_cycle(G, orientation='ignore'))
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
+    See Also
+    --------
+    simple_cycles
     """
     if not G.is_directed() or orientation in (None, 'original'):
         def tailhead(edge):
