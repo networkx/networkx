@@ -86,7 +86,7 @@ def junction_tree(G):
     junction_tree = nx.maximum_spanning_tree(clique_graph)
 
     for edge in deepcopy(junction_tree.edges(data=True)):
-        junction_tree.add_node(edge[2]['sepset'])
+        junction_tree.add_node(edge[2]['sepset'], type='sepset')
         junction_tree.add_edge(edge[0], edge[2]['sepset'])
         junction_tree.add_edge(edge[1], edge[2]['sepset'])
         junction_tree.remove_edge(edge[0], edge[1])
