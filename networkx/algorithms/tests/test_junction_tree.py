@@ -1,4 +1,3 @@
-import pytest
 import networkx as nx
 from networkx.algorithms.junction_tree import junction_tree
 
@@ -66,4 +65,3 @@ def test_junction_tree_undirected():
                       (('C',), ('C', 'E'))])
 
     assert nx.is_isomorphic(G, J)
-
