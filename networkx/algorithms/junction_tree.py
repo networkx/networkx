@@ -97,8 +97,8 @@ def junction_tree(G):
 if __name__ == '__main__':
     B = nx.DiGraph()
     B.add_nodes_from(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
-    B.add_edges_from([('A', 'B'), ('A', 'F'), ('C', 'B'), 
-    				  ('B', 'D'), ('F', 'G'), ('E', 'G')])
+    B.add_edges_from([('A', 'B'), ('A', 'F'), ('C', 'B'),
+                     ('B', 'D'), ('F', 'G'), ('E', 'G')])
     bayes_pos = nx.spring_layout(B, k=3)
     plt.subplot(1, 2, 1)
     plt.title('Bayesian Network')
