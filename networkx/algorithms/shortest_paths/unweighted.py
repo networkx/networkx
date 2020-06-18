@@ -2,7 +2,7 @@
 Shortest path algorithms for unweighted graphs.
 """
 import networkx as nx
-from cython.parallel import prange
+from multiprocessing import Pool
 
 __all__ = ['bidirectional_shortest_path',
            'single_source_shortest_path',
@@ -179,9 +179,9 @@ def all_pairs_shortest_path_length(G, cutoff=None, parallel=False):
     """
     length = single_source_shortest_path_length
     if parallel:
-        nodes = G.nodes
-        for i in prange(len(nodes), nogil=True):
-            yield (nodes[i], length(G, nodes[i], cutoff=cutoff))
+        with Pool(processes=-1) as pool:
+            for n in G:
+                yield (n, pool.apply_async(length, (G, n, cutoff)))
     else:
         for n in G:
             yield (n, length(G, n, cutoff=cutoff))
@@ -427,7 +427,7 @@ def single_target_shortest_path(G, target, cutoff=None):
     return dict(_single_shortest_path(adj, nextlevel, paths, cutoff, join))
 
 
-def all_pairs_shortest_path(G, cutoff=None):
+def all_pairs_shortest_path(G, cutoff=None, parallel=False):
     """Compute shortest paths between all nodes.
 
     Parameters
@@ -455,9 +455,13 @@ def all_pairs_shortest_path(G, cutoff=None):
     floyd_warshall()
 
     """
-    # TODO This can be trivially parallelized.
-    for n in G:
-        yield (n, single_source_shortest_path(G, n, cutoff=cutoff))
+    if parallel:
+        with Pool(processes=-1) as pool:
+            for n in G:
+                yield (n, pool.apply_async(single_source_shortest_path, (G, n, cutoff)))
+    else:
+        for n in G:
+            yield (n,  single_source_shortest_path(G, n, cutoff=cutoff))
 
 
 def predecessor(G, source, target=None, cutoff=None, return_seen=None):
