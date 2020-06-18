@@ -179,7 +179,7 @@ def all_pairs_shortest_path_length(G, cutoff=None, parallel=False):
     """
     length = single_source_shortest_path_length
     if parallel:
-        with Pool(processes=-1) as pool:
+        with Pool() as pool:
             for n in G:
                 yield (n, pool.apply_async(length, (G, n, cutoff)))
     else:
@@ -456,7 +456,7 @@ def all_pairs_shortest_path(G, cutoff=None, parallel=False):
 
     """
     if parallel:
-        with Pool(processes=-1) as pool:
+        with Pool() as pool:
             for n in G:
                 yield (n, pool.apply_async(single_source_shortest_path, (G, n, cutoff)))
     else:
