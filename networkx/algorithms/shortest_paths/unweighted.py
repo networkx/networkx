@@ -2,6 +2,7 @@
 Shortest path algorithms for unweighted graphs.
 """
 import networkx as nx
+from cython.parallel import prange
 
 __all__ = ['bidirectional_shortest_path',
            'single_source_shortest_path',
@@ -138,7 +139,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     return _single_shortest_path_length(adj, nextlevel, cutoff)
 
 
-def all_pairs_shortest_path_length(G, cutoff=None):
+def all_pairs_shortest_path_length(G, cutoff=None, parallel=False):
     """Computes the shortest path lengths between all nodes in `G`.
 
     Parameters
@@ -177,9 +178,13 @@ def all_pairs_shortest_path_length(G, cutoff=None):
 
     """
     length = single_source_shortest_path_length
-    # TODO This can be trivially parallelized.
-    for n in G:
-        yield (n, length(G, n, cutoff=cutoff))
+    if parallel:
+        nodes = G.nodes
+        for i in prange(len(nodes), nogil=True):
+            yield (nodes[i], length(G, nodes[i], cutoff=cutoff))
+    else:
+        for n in G:
+            yield (n, length(G, n, cutoff=cutoff))
 
 
 def bidirectional_shortest_path(G, source, target):
