@@ -78,9 +78,10 @@ def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
     `True` if the node should be included in the subgraph, and `False` if it
     should not be included.
 
-    The `filter_edge` function takes two arguments --- the nodes describing an
-    edge --- and returns `True` if the edge should be included in the subgraph,
-    and `False` if it should not be included.
+    The `filter_edge` function takes two (or three arguments if `G` is a
+    multi-graph) --- the nodes describing an edge, plus the edge-key if
+    parallel edges are possible --- and returns `True` if the edge should be
+    included in the subgraph, and `False` if it should not be included.
 
     Both node and edge filter functions are called on graph elements as they
     are queried, meaning there is no up-front cost to creating the view.
@@ -95,8 +96,9 @@ def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
         should appear in the view.
 
     filter_edge : callable, optional
-        A function taking as input the two nodes describing an edge, which
-        returns `True` if the edge should appear in the view.
+        A function taking as input the two nodes describing an edge (plus the
+        edge-key if `G` is a multi-graph), which returns `True` if the edge
+        should appear in the view.
 
     Returns
     -------
