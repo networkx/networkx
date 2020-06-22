@@ -4,7 +4,7 @@ import itertools
 import pytest
 
 mpl = pytest.importorskip('matplotlib')
-mpl.use('PS', warn=False)
+mpl.use('PS')
 plt = pytest.importorskip('matplotlib.pyplot')
 plt.rcParams['text.usetex'] = False
 
