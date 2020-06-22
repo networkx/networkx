@@ -218,7 +218,7 @@ class GEXF:
             (np.float32, "float"),
             (np.float16, "float"),
             (np.float_, "float"),
-            (np.int, "int"),
+            (np.int_, "int"),
             (np.int8, "int"),
             (np.int16, "int"),
             (np.int32, "int"),

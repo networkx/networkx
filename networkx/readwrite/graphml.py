@@ -330,7 +330,7 @@ class GraphML:
         # prepend so that python types are created upon read (last entry wins)
         types = [(np.float64, "float"), (np.float32, "float"),
                  (np.float16, "float"), (np.float_, "float"),
-                 (np.int, "int"), (np.int8, "int"),
+                 (np.int_, "int"), (np.int8, "int"),
                  (np.int16, "int"), (np.int32, "int"),
                  (np.int64, "int"), (np.uint8, "int"),
                  (np.uint16, "int"), (np.uint32, "int"),
