@@ -18,7 +18,7 @@ __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
            'make_clique_bipartite', 'graph_clique_number',
            'graph_number_of_cliques', 'node_clique_number',
            'number_of_cliques', 'cliques_containing_node',
-           'enumerate_all_cliques']
+           'enumerate_all_cliques', 'max_weight_clique']
 
 
 @not_implemented_for('directed')
@@ -540,3 +540,159 @@ def cliques_containing_node(G, nodes=None, cliques=None):
         for v in nodes:
             vcliques[v] = [c for c in cliques if v in c]
     return vcliques
+
+
+class MaxWeightClique(object):
+    """A class for the maximum weight clique algorithm.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The undirected graph for which a maximum weight clique is sought
+    weight : string or None, optional (default='weight')
+        The edge attribute that holds the integer value used as a weight.
+        If None, then each edge has weight 1.
+
+    Attributes
+    ----------
+    G : NetworkX graph
+        The undirected graph for which a maximum weight clique is sought
+    vtx_weights: dict
+        The weight of each vertex
+    incumbent_vertices : list
+        The vertices of the incumbent clique (the best clique found so far)
+    incumbent_weight: int
+        The weight of the incumbent clique
+    """
+
+    def __init__(self, G, weight):
+        self.G = G
+        self.incumbent_vertices = []
+        self.incumbent_weight = 0
+
+        if weight is None:
+            self.vtx_weights = {v: 1 for v in G.nodes()}
+        else:
+            for v in G.nodes():
+                if weight not in G.nodes[v]:
+                    err = "Node {} does not have the requested weight field."
+                    raise KeyError(err.format(v))
+                if not isinstance(G.nodes[v][weight], int):
+                    err = "The '{}' field of node {} is not an integer."
+                    raise ValueError(err.format(weight, v))
+            self.vtx_weights = {v: G.nodes[v][weight] for v in G.nodes()}
+
+    def update_incumbent_if_improved(self, C, C_weight):
+        """Update the incumbent if the vertex set C has greater weight.
+
+        C is assumed to be a clique.
+        """
+        if C_weight > self.incumbent_weight:
+            self.incumbent_vertices = C[:]
+            self.incumbent_weight = C_weight
+
+    def greedily_find_independent_set(self, P):
+        """Greedily find an independent set of vertices from a set of
+        vertices P."""
+        independent_set = []
+        P = P[:]
+        while P:
+            v = P[0]
+            independent_set.append(v)
+            P = [w for w in P if v != w and not self.G.has_edge(v, w)]
+        return independent_set
+
+    def find_branching_vertices(self, P, target):
+        """Find a set of vertices to branch on."""
+        residual_wt = {v: self.vtx_weights[v] for v in P}
+        total_wt = 0
+        P = P[:]
+        while P:
+            independent_set = self.greedily_find_independent_set(P)
+            min_wt_in_class = min(residual_wt[v] for v in independent_set)
+            total_wt += min_wt_in_class
+            if total_wt > target:
+                break
+            for v in independent_set:
+                residual_wt[v] -= min_wt_in_class
+            P = [v for v in P if residual_wt[v] != 0]
+        return P
+
+    def expand(self, C, C_weight, P):
+        """Look for the best clique that contains all the vertices in C and zero or
+        more of the vertices in P, backtracking if it can be shown that no such
+        clique has greater weight than the incumbent.
+        """
+        self.update_incumbent_if_improved(C, C_weight)
+        branching_vertices = self.find_branching_vertices(
+                P, self.incumbent_weight - C_weight)
+        while branching_vertices:
+            v = branching_vertices.pop()
+            P.remove(v)
+            new_C = C + [v]
+            new_C_weight = C_weight + self.vtx_weights[v]
+            new_P = [w for w in P if self.G.has_edge(v, w)]
+            self.expand(new_C, new_C_weight, new_P)
+
+    def find_max_weight_clique(self):
+        """Find a maximum weight clique."""
+        # Sort vertices in reverse order of degree for speed
+        vertices = sorted(self.G.nodes(), key=lambda v: self.G.degree(v),
+                          reverse=True)
+        vertices = [v for v in vertices if self.vtx_weights[v] > 0]
+        self.expand([], 0, vertices)
+
+
+@not_implemented_for('directed')
+def max_weight_clique(G, weight='weight'):
+    """Find a maximum weight clique in G.
+
+    A _clique_ in a graph is a set of vertices such that every two distinct
+    vertices are adjacent.  The _weight_ of a clique is the sum of the weights
+    of its vertices.  A _maximum weight clique_ of graph G is a clique C in G
+    such that no clique in G has weight greater than the weight of C.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+    weight : string or None, optional (default='weight')
+        The edge attribute that holds the integer value used as a weight.
+        If None, then each edge has weight 1.
+
+    Returns
+    -------
+    clique : list
+        the vertices of a maximum weight clique
+    weight : int
+        the weight of a maximum weight clique
+
+    Notes
+    -----
+    The implementation is recursive, and therefore it may run into recursion
+    depth issues if G contains a clique whose number of vertices is close to
+    the recursion depth limit.
+
+    At each search node, the algorithm greedily constructs a weighted
+    independent set cover of part of the graph in order to find a small set
+    of vertices on which to branch.  The algorithm is very similar to the
+    algorithm of Tavares et al. [1]_, other than the fact that the NetworkX
+    version does not use bitsets.  This style of algorithm for maximum
+    weight clique (and maximum independent set, which is the same problem but
+    on the complement graph) has a decades-long history.  See Algorithm B of
+    Warren and Hicks [2]_ and the references in that paper.
+
+    References
+    ----------
+    [1] Tavares, W.A., Neto, M.B.C., Rodrigues, C.D., Michelon, P.: Um
+    algoritmo de branch and bound para o problema da clique máxima ponderada.
+    Proceedings of XLVII SBPO 1 (2015).
+
+    [2] Warrent, Jeffrey S, Hicks, Illya V.: Combinatorial Branch-and-Bound for
+    the Maximum Weight Independent Set Problem.  Technical Report, Texas A&M
+    University (2016).
+    """
+
+    mwc = MaxWeightClique(G, weight)
+    mwc.find_max_weight_clique()
+    return mwc.incumbent_vertices, mwc.incumbent_weight
