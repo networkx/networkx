@@ -50,8 +50,8 @@ def write_yaml(G_to_be_yaml, path_for_yaml_output, **kwds):
     """
     try:
         import yaml
-    except ImportError:
-        raise ImportError("write_yaml() requires PyYAML: http://pyyaml.org/")
+    except ImportError as e:
+        raise ImportError("write_yaml() requires PyYAML: http://pyyaml.org/") from e
     yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)
 
 
@@ -85,8 +85,8 @@ def read_yaml(path):
     """
     try:
         import yaml
-    except ImportError:
-        raise ImportError("read_yaml() requires PyYAML: http://pyyaml.org/")
+    except ImportError as e:
+        raise ImportError("read_yaml() requires PyYAML: http://pyyaml.org/") from e
 
     G = yaml.load(path, Loader=yaml.FullLoader)
     return G

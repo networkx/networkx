@@ -43,9 +43,9 @@ def trophic_levels(G, weight='weight'):
     """
     try:
         import numpy as np
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "trophic_levels() requires NumPy: http://scipy.org/")
+            "trophic_levels() requires NumPy: http://numpy.org/") from e
 
     # find adjacency matrix
     a = nx.adjacency_matrix(G, weight=weight).T.toarray()
@@ -148,10 +148,10 @@ def trophic_incoherence_parameter(G, weight='weight', cannibalism=False):
     """
     try:
         import numpy as np
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "trophic_incoherence_parameter() requires NumPy: " +
-            "http://scipy.org/")
+            "trophic_incoherence_parameter() requires NumPy: "
+            "http://scipy.org/") from e
 
     if cannibalism:
         diffs = trophic_differences(G, weight=weight)

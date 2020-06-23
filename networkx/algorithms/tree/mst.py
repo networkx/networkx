@@ -383,9 +383,9 @@ def minimum_spanning_edges(G, algorithm='kruskal', weight='weight',
     """
     try:
         algo = ALGORITHMS[algorithm]
-    except KeyError:
+    except KeyError as e:
         msg = f"{algorithm} is not a valid choice for an algorithm."
-        raise ValueError(msg)
+        raise ValueError(msg) from e
 
     return algo(G, minimum=True, weight=weight, keys=keys, data=data,
                 ignore_nan=ignore_nan)
@@ -474,9 +474,9 @@ def maximum_spanning_edges(G, algorithm='kruskal', weight='weight',
     """
     try:
         algo = ALGORITHMS[algorithm]
-    except KeyError:
+    except KeyError as e:
         msg = f"{algorithm} is not a valid choice for an algorithm."
-        raise ValueError(msg)
+        raise ValueError(msg) from e
 
     return algo(G, minimum=False, weight=weight, keys=keys, data=data,
                 ignore_nan=ignore_nan)

@@ -739,8 +739,8 @@ def complete_multipartite_graph(*subset_sizes):
     try:
         for (i, subset) in enumerate(subsets):
             G.add_nodes_from(subset, subset=i)
-    except TypeError:
-        raise NetworkXError("Arguments must be all ints or all iterables")
+    except TypeError as e:
+        raise NetworkXError("Arguments must be all ints or all iterables") from e
 
     # Across subsets, all vertices should be adjacent.
     # We can use itertools.combinations() because undirected.

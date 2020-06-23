@@ -233,7 +233,7 @@ class NodeDataView(Set):
         except TypeError as err:
             if "unhashable" in str(err):
                 msg = " : Could be b/c data=True or your values are unhashable"
-                raise TypeError(str(err) + msg)
+                raise TypeError(str(err) + msg) from err
             raise
 
     def __len__(self):

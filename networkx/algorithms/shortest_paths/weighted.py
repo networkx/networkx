@@ -230,8 +230,8 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     length = _dijkstra(G, source, weight, target=target)
     try:
         return length[target]
-    except KeyError:
-        raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
+    except KeyError as e:
+        raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}") from e
 
 
 def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
@@ -731,8 +731,8 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
         return (dist, paths)
     try:
         return (dist[target], paths[target])
-    except KeyError:
-        raise nx.NetworkXNoPath(f"No path to {target}.")
+    except KeyError as e:
+        raise nx.NetworkXNoPath(f"No path to {target}.") from e
 
 
 def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None,
@@ -1414,8 +1414,8 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
 
     try:
         return length[target]
-    except KeyError:
-        raise nx.NetworkXNoPath(f"node {target} not reachable from {source}")
+    except KeyError as e:
+        raise nx.NetworkXNoPath(f"node {target} not reachable from {source}") from e
 
 
 def single_source_bellman_ford_path(G, source, weight='weight'):
@@ -1589,9 +1589,9 @@ def single_source_bellman_ford(G, source, target=None, weight='weight'):
         return (dist, paths)
     try:
         return (dist[target], paths[target])
-    except KeyError:
+    except KeyError as e:
         msg = f"Node {target} not reachable from {source}"
-        raise nx.NetworkXNoPath(msg)
+        raise nx.NetworkXNoPath(msg) from e
 
 
 def all_pairs_bellman_ford_path_length(G, weight='weight'):

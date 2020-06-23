@@ -225,8 +225,8 @@ def all_simple_paths(G, source, target, cutoff=None):
     else:
         try:
             targets = set(target)
-        except TypeError:
-            raise nx.NodeNotFound(f"target node {target} not in graph")
+        except TypeError as e:
+            raise nx.NodeNotFound(f"target node {target} not in graph") from e
     if source in targets:
         return []
     if cutoff is None:
@@ -784,7 +784,7 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
             else:  # back, must remember to change v,w->w,v
                 minweight = wt(w, v, G.get_edge_data(w, v))
                 vwLength = dists[dir][v] + minweight
-                
+
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
                     raise ValueError(
