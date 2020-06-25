@@ -1,5 +1,7 @@
-Developer overview
-==================
+.. _contributor_guide:
+
+Contributor Guide
+=================
 
 1. If you are a first-time contributor:
 
@@ -92,6 +94,21 @@ For a more detailed discussion, read these :doc:`detailed documents
 .. note::
 
    If closing a bug, also add "Fixes #1480" where 1480 is the issue number.
+
+6. Document changes
+
+   If your change introduces any API modifications, please update
+   ``doc/release/release_dev.rst``.
+
+   If your change introduces a deprecation, add a reminder to ``TODO.txt``
+   for the team to remove the deprecated functionality in the future.
+
+.. note::
+
+   To reviewers: make sure the merge message has a brief description of the
+   change(s) and if the PR closes an issue add, for example, "Closes #123"
+   where 123 is the issue number.
+
 
 Divergence between ``upstream master`` and your feature branch
 --------------------------------------------------------------
@@ -266,11 +283,59 @@ you may be interested in more fundamental comments about design.
 When you think the pull request is ready to merge, change the title (using the
 *Edit* button) to remove the ``WIP:``.
 
-Developer Notes
----------------
+.. _deprecation_policy:
 
-For additional information about contributing to NetworkX, please see
-the `Developer Notes <https://github.com/networkx/networkx/wiki>`_.
+
+Deprecation policy
+------------------
+
+If the behavior of the library has to be changed, a deprecation cycle must be
+followed to warn users.
+
+A deprecation cycle is *not* necessary when:
+
+* adding a new function, or
+* adding a new keyword argument to the *end* of a function signature, or
+* fixing buggy behavior
+
+A deprecation cycle is necessary for *any breaking API change*, meaning a
+change where the function, invoked with the same arguments, would return a
+different result after the change. This includes:
+
+* changing the order of arguments or keyword arguments, or
+* adding arguments or keyword arguments to a function, or
+* changing the name of a function, class, method, etc., or
+* moving a function, class, etc. to a different module, or
+* changing the default value of a function's arguments.
+
+Usually, our policy is to put in place a deprecation cycle over two releases.
+
+Note that the 2-release deprecation cycle is not a strict rule and in some
+cases, the developers can agree on a different procedure upon justification
+(like when we can't detect the change, or it involves moving or deleting an
+entire function for example).
+
+Explicitly not supporting directed or multigraph in a function
+--------------------------------------------------------------
+
+Use the decorator ``not_implemented_for`` in ``networkx/utils/decorators.py``
+to designate that a function doesn't accept 'directed', 'undirected',
+'multigraph' or 'graph'.
+The first argument of the decorated function should be the graph
+object to be checked.
+
+.. code-block:: python
+
+    @nx.not_implemented_for('directed', 'multigraph')
+    def function_not_for_MultiDiGraph(G, others):
+        # function not for graphs that are directed *and* multigraph
+        pass
+
+    @nx.not_implemented_for('directed')
+    @nx.not_implemented_for('multigraph')
+    def function_only_for_Graph(G, others):
+        # function not for directed graphs *or* for multigraphs
+        pass
 
 Bugs
 ----
