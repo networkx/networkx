@@ -55,6 +55,7 @@ Algorithms
    planarity
    planar_drawing
    reciprocity
+   regular
    rich_club
    shortest_paths
    similarity
