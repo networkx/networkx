@@ -41,6 +41,7 @@ def graph_edit_distance(
     edge_del_cost=None,
     edge_ins_cost=None,
     upper_bound=None,
+    roots=None
 ):
     """Returns GED (graph edit distance) between graphs G1 and G2.
 
@@ -135,6 +136,11 @@ def graph_edit_distance(
         Maximum edit distance to consider.  Return None if no edit
         distance under or equal to upper_bound exists.
 
+    roots : tuple
+        Tuple where first element is a node in G1 and the second
+        is a node in G2.
+        These nodes are forced to be matched in the comparison to
+        allow comparison between rooted graphs.
     Examples
     --------
     >>> G1 = nx.cycle_graph(6)
@@ -173,6 +179,7 @@ def graph_edit_distance(
         edge_ins_cost,
         upper_bound,
         True,
+        roots,
     ):
         # assert bestcost is None or cost < bestcost
         bestcost = cost
@@ -504,6 +511,7 @@ def optimize_edit_paths(
     edge_ins_cost=None,
     upper_bound=None,
     strictly_decreasing=True,
+    roots=None
 ):
     """GED (graph edit distance) calculation: advanced interface.
 
@@ -1005,6 +1013,15 @@ def optimize_edit_paths(
     pending_u = list(G1.nodes)
     pending_v = list(G2.nodes)
 
+    initial_cost = 0
+    if not roots is None:
+        root_u, root_v = roots
+
+        #remove roots from pending
+        del pending_u[pending_u.index(root_u)]
+        del pending_v[pending_v.index(root_v)]
+
+
     # cost matrix of vertex mappings
     m = len(pending_u)
     n = len(pending_v)
@@ -1017,6 +1034,8 @@ def optimize_edit_paths(
                 for v in pending_v
             ]
         ).reshape(m, n)
+        if not roots is None:
+            initial_cost = node_subst_cost(G1.nodes[root_u], G2.nodes[root_v])
     elif node_match:
         C[0:m, 0:n] = np.array(
             [
@@ -1025,6 +1044,8 @@ def optimize_edit_paths(
                 for v in pending_v
             ]
         ).reshape(m, n)
+        if not roots is None:
+            initial_cost = 1 - node_match(G1.nodes[root_u], G2.nodes[root_v])
     else:
         # all zeroes
         pass
@@ -1118,8 +1139,10 @@ def optimize_edit_paths(
 
     # Now go!
 
+    done_uv = [] if roots is None else [roots]
+
     for vertex_path, edge_path, cost in get_edit_paths(
-        [], pending_u, pending_v, Cv, [], pending_g, pending_h, Ce, 0
+        done_uv, pending_u, pending_v, Cv, [], pending_g, pending_h, Ce,initial_cost 
     ):
         # assert sorted(G1.nodes) == sorted(u for u, v in vertex_path if u is not None)
         # assert sorted(G2.nodes) == sorted(v for u, v in vertex_path if v is not None)
@@ -1386,3 +1409,9 @@ def simrank_similarity_numpy(
     if source is not None:
         return newsim[source]
     return newsim
+
+if __name__ == "__main__":
+    G1 = nx.star_graph(6)
+    G2 = nx.star_graph(6)
+    d = graph_edit_distance(G1, G2, roots=(0,0))
+    print(d)
