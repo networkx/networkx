@@ -19,7 +19,7 @@ There are two different functions for computing a tree decomposition:
       computations I.Upper bounds". Inf. Comput. 208, 3 (March 2010),259-275.
       http://dx.doi.org/10.1016/j.ic.2009.03.008
 
-.. [2] Hand L. Bodlaender. "Discovering Treewidth". Institute of Information
+.. [2] Hans L. Bodlaender. "Discovering Treewidth". Institute of Information
       and Computing Sciences, Utrecht University.
       Technical Report UU-CS-2005-018.
       http://www.cs.uu.nl
