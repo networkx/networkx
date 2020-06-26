@@ -1014,10 +1014,10 @@ def optimize_edit_paths(
     pending_v = list(G2.nodes)
 
     initial_cost = 0
-    if not roots is None:
+    if roots:
         root_u, root_v = roots
 
-        #remove roots from pending
+        # remove roots from pending
         del pending_u[pending_u.index(root_u)]
         del pending_v[pending_v.index(root_v)]
 
@@ -1034,7 +1034,7 @@ def optimize_edit_paths(
                 for v in pending_v
             ]
         ).reshape(m, n)
-        if not roots is None:
+        if roots:
             initial_cost = node_subst_cost(G1.nodes[root_u], G2.nodes[root_v])
     elif node_match:
         C[0:m, 0:n] = np.array(
@@ -1044,7 +1044,7 @@ def optimize_edit_paths(
                 for v in pending_v
             ]
         ).reshape(m, n)
-        if not roots is None:
+        if roots:
             initial_cost = 1 - node_match(G1.nodes[root_u], G2.nodes[root_v])
     else:
         # all zeroes
@@ -1142,7 +1142,7 @@ def optimize_edit_paths(
     done_uv = [] if roots is None else [roots]
 
     for vertex_path, edge_path, cost in get_edit_paths(
-        done_uv, pending_u, pending_v, Cv, [], pending_g, pending_h, Ce,initial_cost 
+        done_uv, pending_u, pending_v, Cv, [], pending_g, pending_h, Ce, initial_cost
     ):
         # assert sorted(G1.nodes) == sorted(u for u, v in vertex_path if u is not None)
         # assert sorted(G2.nodes) == sorted(v for u, v in vertex_path if v is not None)
@@ -1409,9 +1409,3 @@ def simrank_similarity_numpy(
     if source is not None:
         return newsim[source]
     return newsim
-
-if __name__ == "__main__":
-    G1 = nx.star_graph(6)
-    G2 = nx.star_graph(6)
-    d = graph_edit_distance(G1, G2, roots=(0,0))
-    print(d)
