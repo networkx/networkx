@@ -14,7 +14,7 @@ __all__ = ['resource_allocation_index',
            'preferential_attachment',
            'cn_soundarajan_hopcroft',
            'ra_index_soundarajan_hopcroft',
-           'within_inter_cluster']
+           'within_inter_cluster','common_neighbor_centrality']
 
 
 def _apply_prediction(G, func, ebunch=None):
@@ -198,6 +198,66 @@ def adamic_adar_index(G, ebunch=None):
         return sum(1 / log(G.degree(w)) for w in nx.common_neighbors(G, u, v))
     return _apply_prediction(G, predict, ebunch)
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
+def common_neighbor_centrality(G, ebunch=None, alpha = 0.8):
+    r"""Compute the Common Neighbor and Centrality based Parameterized Algorithm(CCPA) score of all node pairs in ebunch.
+
+    CCPA score of `u` and `v` is defined as
+
+    .. math::
+
+        \alpha \cdot (|\Gamma (u){\cap }^{}\Gamma (v)|)+(1-\alpha )\cdot \frac{N}{{d}_{uv}}
+
+    where $\Gamma(u)$ denotes the set of neighbors of $u$ , $\Gamma(v)$ denotes the set of neighbors of $v$ , $\alpha$ is 
+    parameter varies between [0,1], $N$ denotes total number of nodes in the Graph and ${d}_{uv}$ denotes shortest distance 
+    between $u$ and $v$.
+
+    Parameters
+    ----------
+    G : graph
+        NetworkX undirected graph.
+
+    ebunch : iterable of node pairs, optional (default = None)
+        Preferential attachment score will be computed for each pair of
+        nodes given in the iterable. The pairs must be given as
+        2-tuples (u, v) where u and v are nodes in the graph. If ebunch
+        is None then all non-existent edges in the graph will be used.
+        Default value: None.
+    
+    alpha :  Parameter defined for participation of Common Neighbor 
+             and Centrality Algorithm share. Default value set to 0.8
+             because author found better performance at 0.8 for all the 
+             dataset.
+
+
+    Returns
+    -------
+    piter : iterator
+        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
+        pair of nodes and p is their preferential attachment score.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.complete_graph(5)
+    >>> preds = nx.common_neighbor_centrality(G, [(0, 1), (2, 3)])
+    >>> for u, v, p in preds:
+    ...     print(f'({u}, {v}) -> {p}')
+    (0, 1) -> 16
+    (2, 3) -> 16
+
+    References
+    ----------
+    .. [1] Ahmad, I., Akhtar, M.U., Noor, S. et al. 
+           Missing Link Prediction using Common Neighbor and Centrality based Parameterized Algorithm. 
+           Sci Rep 10, 364 (2020). 
+           https://doi.org/10.1038/s41598-019-57304-y
+    """
+    sortest_path = nx.shortest_path(G)
+    def predict(u, v):
+        return alpha*len(sorted(nx.common_neighbors(G, u , v))) + (1-alpha)*(G.number_of_nodes()/(len(sortest_path[u][v]) - 1))
+    return _apply_prediction(G, predict, ebunch)
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
