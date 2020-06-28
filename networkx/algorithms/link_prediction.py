@@ -201,7 +201,8 @@ def adamic_adar_index(G, ebunch=None):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def common_neighbor_centrality(G, ebunch=None, alpha = 0.8):
-    r"""Compute the Common Neighbor and Centrality based Parameterized Algorithm(CCPA) score of all node pairs in ebunch.
+    r"""Compute the Common Neighbor and Centrality based Parameterized Algorithm(CCPA)
+    score of all node pairs in ebunch.
 
     CCPA score of `u` and `v` is defined as
 
@@ -209,8 +210,9 @@ def common_neighbor_centrality(G, ebunch=None, alpha = 0.8):
 
         \alpha \cdot (|\Gamma (u){\cap }^{}\Gamma (v)|)+(1-\alpha )\cdot \frac{N}{{d}_{uv}}
 
-    where $\Gamma(u)$ denotes the set of neighbors of $u$ , $\Gamma(v)$ denotes the set of neighbors of $v$ , $\alpha$ is 
-    parameter varies between [0,1], $N$ denotes total number of nodes in the Graph and ${d}_{uv}$ denotes shortest distance 
+    where $\Gamma(u)$ denotes the set of neighbors of $u$, $\Gamma(v)$ denotes the 
+    set of neighbors of $v$, $\alpha$ is  parameter varies between [0,1], $N$ denotes
+    total number of nodes in the Graph and ${d}_{uv}$ denotes shortest distance
     between $u$ and $v$.
 
     Parameters
@@ -225,17 +227,19 @@ def common_neighbor_centrality(G, ebunch=None, alpha = 0.8):
         is None then all non-existent edges in the graph will be used.
         Default value: None.
     
-    alpha :  Parameter defined for participation of Common Neighbor 
-             and Centrality Algorithm share. Default value set to 0.8
-             because author found better performance at 0.8 for all the 
-             dataset.
+    alpha : Parameter defined for participation of Common Neighbor 
+            and Centrality Algorithm share. Default value set to 0.8
+            because author found better performance at 0.8 for all the 
+            dataset.
+            Default value: 0.8
 
 
     Returns
     -------
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
-        pair of nodes and p is their preferential attachment score.
+        pair of nodes and p is their Common Neighbor and Centrality based 
+        Parameterized Algorithm(CCPA) score.
 
     Examples
     --------
@@ -244,8 +248,8 @@ def common_neighbor_centrality(G, ebunch=None, alpha = 0.8):
     >>> preds = nx.common_neighbor_centrality(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
     ...     print(f'({u}, {v}) -> {p}')
-    (0, 1) -> 16
-    (2, 3) -> 16
+    (0, 1) -> 3.4000000000000004
+    (2, 3) -> 3.4000000000000004
 
     References
     ----------
