@@ -145,6 +145,7 @@ to add your name to the bottom of the list.
 - Philip Boalch
 - Matt Schwennesen, Github: `mjschwenne <https://github.com/mjschwenne>`_
 - Andrew Knyazev, Github: `lobpcg <https://github.com/lobpcg>`_, LinkedIn: `andrew-knyazev <https://www.linkedin.com/in/andrew-knyazev>`_
+- Luca Cappelletti, GitHub: `LucaCappelletti94 <https://github.com/LucaCappelletti94>`_
 
 A supplementary (but still incomplete) list of contributors is given by the
 list of names that have commits in ``networkx``'s

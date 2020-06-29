@@ -148,11 +148,12 @@ package_data = {
     "networkx.algorithms.tree": ["tests/*.py"],
     "networkx.classes": ["tests/*.py"],
     "networkx.generators": ["tests/*.py", "atlas.dat.gz"],
-    "networkx.drawing": ["tests/*.py", "tests/baseline/*png"],
+    "networkx.drawing": ["tests/*.py", "placeholders/*.tex", "tests/*.tex"],
     "networkx.linalg": ["tests/*.py"],
     "networkx.readwrite": ["tests/*.py"],
     "networkx.readwrite.json_graph": ["tests/*.py"],
-    "networkx.utils": ["tests/*.py"],
+    "networkx.testing": ["tests/*.py"],
+    "networkx.utils": ["tests/*.py"]
 }
 
 
