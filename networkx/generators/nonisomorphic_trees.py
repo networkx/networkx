@@ -6,14 +6,6 @@ lists in which the i-th element specifies the distance of vertex i to
 the root.
 
 """
-#    Copyright (C) 2013 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-__author__ = "\n".join(["Aric Hagberg (hagberg@lanl.gov)",
-                        "Mridul Seth (seth.mridul@gmail.com)"])
 
 __all__ = ['nonisomorphic_trees',
            'number_of_nonisomorphic_trees']

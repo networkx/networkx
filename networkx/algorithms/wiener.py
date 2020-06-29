@@ -1,13 +1,4 @@
-# wiener.py - functions related to the Wiener index of a graph
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions related to the Wiener index of a graph."""
-from __future__ import division
 
 from itertools import chain
 

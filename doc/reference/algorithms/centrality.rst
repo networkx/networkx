@@ -103,6 +103,13 @@ Harmonic Centrality
 
    harmonic_centrality
 
+Dispersion
+----------
+.. autosummary::
+   :toctree: generated/
+
+   dispersion
+
 Reaching
 --------
 .. autosummary::
@@ -124,6 +131,13 @@ Second Order Centrality
    :toctree: generated/
 
    second_order_centrality
+
+Trophic
+-------
+.. autosummary::
+   :toctree: generated/
+
+   trophic
 
 VoteRank
 -----------

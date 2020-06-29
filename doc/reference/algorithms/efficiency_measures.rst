@@ -2,7 +2,7 @@
 Efficiency
 **********
 
-.. automodule:: networkx.algorithms.efficiency
+.. automodule:: networkx.algorithms.efficiency_measures
 .. autosummary::
    :toctree: generated/
 

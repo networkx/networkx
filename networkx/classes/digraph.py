@@ -1,13 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:   Aric Hagberg <hagberg@lanl.gov>
-#            Dan Schult <dschult@colgate.edu>
-#            Pieter Swart <swart@lanl.gov>
 """Base class for directed graphs."""
 from copy import deepcopy
 
@@ -310,7 +300,7 @@ class DiGraph(Graph):
         self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # dictionary for node attr
         # We store two adjacency lists:
-        # the  predecessors of node n are stored in the dict self._pred
+        # the predecessors of node n are stored in the dict self._pred
         # the successors of node n are stored in the dict self._succ=self._adj
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         self._pred = self.adjlist_outer_dict_factory()  # predecessor
@@ -529,7 +519,7 @@ class DiGraph(Graph):
             nbrs = self._succ[n]
             del self._node[n]
         except KeyError:  # NetworkXError if n not in self
-            raise NetworkXError("The node %s is not in the digraph." % (n,))
+            raise NetworkXError(f"The node {n} is not in the digraph.")
         for u in nbrs:
             del self._pred[u][n]   # remove all edges n-u in digraph
         del self._succ[n]          # remove node from succ
@@ -686,8 +676,7 @@ class DiGraph(Graph):
                 u, v = e
                 dd = {}
             else:
-                raise NetworkXError(
-                    "Edge tuple %s must be a 2-tuple or 3-tuple." % (e,))
+                raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
             if u not in self._succ:
                 self._succ[u] = self.adjlist_inner_dict_factory()
                 self._pred[u] = self.adjlist_inner_dict_factory()
@@ -733,7 +722,7 @@ class DiGraph(Graph):
             del self._succ[u][v]
             del self._pred[v][u]
         except KeyError:
-            raise NetworkXError("The edge %s-%s not in graph." % (u, v))
+            raise NetworkXError(f"The edge {u}-{v} not in graph.")
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -808,7 +797,7 @@ class DiGraph(Graph):
         try:
             return iter(self._succ[n])
         except KeyError:
-            raise NetworkXError("The node %s is not in the digraph." % (n,))
+            raise NetworkXError(f"The node {n} is not in the digraph.")
 
     # digraph definitions
     neighbors = successors
@@ -836,7 +825,7 @@ class DiGraph(Graph):
         try:
             return iter(self._pred[n])
         except KeyError:
-            raise NetworkXError("The node %s is not in the digraph." % (n,))
+            raise NetworkXError(f"The node {n} is not in the digraph.")
 
     @property
     def edges(self):
@@ -1194,7 +1183,7 @@ class DiGraph(Graph):
         if copy:
             H = self.__class__()
             H.graph.update(deepcopy(self.graph))
-            H.add_nodes_from((n, deepcopy(d)) for n, d in self.node.items())
+            H.add_nodes_from((n, deepcopy(d)) for n, d in self.nodes.items())
             H.add_edges_from((v, u, deepcopy(d)) for u, v, d
                              in self.edges(data=True))
             return H

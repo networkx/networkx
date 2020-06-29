@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Maximum flow (and minimum cut) algorithms on capacitated graphs.
 """

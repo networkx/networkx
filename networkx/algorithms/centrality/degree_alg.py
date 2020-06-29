@@ -1,15 +1,4 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Pieter Swart (swart@lanl.gov)
-#          Sasha Gutfraind (ag362@cornell.edu)
 """Degree centrality measures."""
-import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ['degree_centrality',
@@ -73,7 +62,7 @@ def in_degree_centrality(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
 
     See Also
@@ -116,7 +105,7 @@ def out_degree_centrality(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
 
     See Also

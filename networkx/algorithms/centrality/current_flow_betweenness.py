@@ -1,14 +1,12 @@
-#    Copyright (C) 2010-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """Current-flow betweenness centrality measures."""
 import networkx as nx
-from networkx.algorithms.centrality.flow_matrix import *
+from networkx.algorithms.centrality.flow_matrix import (
+    CGInverseLaplacian,
+    flow_matrix_row,
+    FullInverseLaplacian,
+    laplacian_sparse_matrix,
+    SuperLUInverseLaplacian,
+)
 from networkx.utils import (not_implemented_for,
                             reverse_cuthill_mckee_ordering,
                             py_random_state)
@@ -48,7 +46,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
-    solver : string (default='lu')
+    solver : string (default='full')
        Type of linear solver to use for computing the flow matrix.
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).
@@ -90,15 +88,15 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     """
     try:
         import numpy as np
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://scipy.org/')
+    except ImportError as e:
+        raise ImportError('current_flow_betweenness_centrality requires NumPy '
+                          'http://scipy.org/') from e
     try:
         from scipy import sparse
         from scipy.sparse import linalg
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires SciPy ',
-                          'http://scipy.org/')
+    except ImportError as e:
+        raise ImportError('current_flow_betweenness_centrality requires SciPy '
+                          'http://scipy.org/') from e
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     solvername = {"full": FullInverseLaplacian,
@@ -118,7 +116,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     l = 1  # parameter in approximation, adjustable
     k = l * int(np.ceil((cstar / epsilon)**2 * np.log(n)))
     if k > kmax:
-        msg = 'Number random pairs k>kmax (%d>%d) ' % (k, kmax)
+        msg = f"Number random pairs k>kmax ({k}>{kmax}) "
         raise nx.NetworkXError(msg, 'Increase kmax or epsilon')
     cstar2k = cstar / (2 * k)
     for i in range(k):
@@ -138,7 +136,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     else:
         factor = nb / 2.0
     # remap to original node names and "unnormalize" if required
-    return dict((ordering[k], float(v * factor)) for k, v in betweenness.items())
+    return {ordering[k]: float(v * factor) for k, v in betweenness.items()}
 
 
 @not_implemented_for('directed')
@@ -170,7 +168,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
-    solver : string (default='lu')
+    solver : string (default='full')
        Type of linear solver to use for computing the flow matrix.
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).
@@ -214,14 +212,14 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
     """
     try:
         import numpy as np
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://scipy.org/')
+    except ImportError as e:
+        raise ImportError('current_flow_betweenness_centrality requires NumPy '
+                          'http://scipy.org/') from e
     try:
         import scipy
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires SciPy ',
-                          'http://scipy.org/')
+    except ImportError as e:
+        raise ImportError('current_flow_betweenness_centrality requires SciPy '
+                          'http://scipy.org/') from e
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()
@@ -242,7 +240,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
         nb = 2.0
     for v in H:
         betweenness[v] = float((betweenness[v] - v) * 2.0 / nb)
-    return dict((ordering[k], v) for k, v in betweenness.items())
+    return {ordering[k]: v for k, v in betweenness.items()}
 
 
 @not_implemented_for('directed')
@@ -275,7 +273,7 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
-    solver : string (default='lu')
+    solver : string (default='full')
        Type of linear solver to use for computing the flow matrix.
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).
@@ -326,14 +324,14 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
     from networkx.utils import reverse_cuthill_mckee_ordering
     try:
         import numpy as np
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://scipy.org/')
+    except ImportError as e:
+        raise ImportError('current_flow_betweenness_centrality requires NumPy '
+                          'http://scipy.org/') from e
     try:
         import scipy
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires SciPy ',
-                          'http://scipy.org/')
+    except ImportError as e:
+        raise ImportError('current_flow_betweenness_centrality requires SciPy '
+                          'http://scipy.org/') from e
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()
@@ -354,15 +352,5 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
             betweenness[e] += (i + 1 - pos[i]) * row[i]
             betweenness[e] += (n - i - pos[i]) * row[i]
         betweenness[e] /= nb
-    return dict(((ordering[s], ordering[t]), float(v))
-                for (s, t), v in betweenness.items())
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import scipy
-    except:
-        raise SkipTest("NumPy not available")
+    return {(ordering[s], ordering[t]): float(v)
+                for (s, t), v in betweenness.items()}

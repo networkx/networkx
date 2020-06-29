@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 ================
 Degree histogram
@@ -14,12 +13,11 @@ import networkx as nx
 G = nx.gnp_random_graph(100, 0.02)
 
 degree_sequence = sorted([d for n, d in G.degree()], reverse=True)  # degree sequence
-# print "Degree sequence", degree_sequence
 degreeCount = collections.Counter(degree_sequence)
 deg, cnt = zip(*degreeCount.items())
 
 fig, ax = plt.subplots()
-plt.bar(deg, cnt, width=0.80, color='b')
+plt.bar(deg, cnt, width=0.80, color="b")
 
 plt.title("Degree Histogram")
 plt.ylabel("Count")
@@ -29,10 +27,9 @@ ax.set_xticklabels(deg)
 
 # draw graph in inset
 plt.axes([0.4, 0.4, 0.5, 0.5])
-Gcc = sorted(nx.connected_component_subgraphs(G), key=len, reverse=True)[0]
+Gcc = G.subgraph(sorted(nx.connected_components(G), key=len, reverse=True)[0])
 pos = nx.spring_layout(G)
-plt.axis('off')
+plt.axis("off")
 nx.draw_networkx_nodes(G, pos, node_size=20)
 nx.draw_networkx_edges(G, pos, alpha=0.4)
-
 plt.show()

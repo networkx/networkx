@@ -1,5 +1,4 @@
 import networkx as nx
-from nose.tools import *
 
 
 def small_ego_G():
@@ -15,7 +14,7 @@ def small_ego_G():
     return G
 
 
-class TestDispersion(object):
+class TestDispersion:
 
     def test_article(self):
         """our algorithm matches article's"""

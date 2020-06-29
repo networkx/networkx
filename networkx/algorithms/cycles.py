@@ -1,14 +1,3 @@
-#    Copyright (C) 2010-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Jon Olav Vik <jonovik@gmail.com>
-#          Dan Schult <dschult@colgate.edu>
-#          Aric Hagberg <hagberg@lanl.gov>
-#          Debsankha Manik <dmanik@nld.ds.mpg.de>
 """
 ========================
 Cycle finding algorithms
@@ -16,7 +5,6 @@ Cycle finding algorithms
 """
 
 from collections import defaultdict
-from itertools import tee
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
@@ -87,7 +75,7 @@ def cycle_basis(G, root=None):
                 if nbr not in used:   # new node
                     pred[nbr] = z
                     stack.append(nbr)
-                    used[nbr] = set([z])
+                    used[nbr] = {z}
                 elif nbr == z:          # self loops
                     cycles.append([z])
                 elif nbr not in zused:  # found a cycle
@@ -167,7 +155,7 @@ def simple_cycles(G):
     cycle_basis
     """
     def _unblock(thisnode, blocked, B):
-        stack = set([thisnode])
+        stack = {thisnode}
         while stack:
             node = stack.pop()
             if node in blocked:
@@ -413,6 +401,9 @@ def find_cycle(G, source=None, orientation=None):
     >>> list(nx.find_cycle(G, orientation='ignore'))
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
+    See Also
+    --------
+    simple_cycles
     """
     if not G.is_directed() or orientation in (None, 'original'):
         def tailhead(edge):
@@ -524,8 +515,8 @@ def minimum_cycle_basis(G, weight=None):
     Examples
     --------
     >>> G=nx.Graph()
-    >>> G.add_cycle([0,1,2,3])
-    >>> G.add_cycle([0,3,4,5])
+    >>> nx.add_cycle(G, [0,1,2,3])
+    >>> nx.add_cycle(G, [0,3,4,5])
     >>> print([sorted(c) for c in nx.minimum_cycle_basis(G)])
     [[0, 1, 2, 3], [0, 3, 4, 5]]
 
@@ -541,8 +532,8 @@ def minimum_cycle_basis(G, weight=None):
     simple_cycles, cycle_basis
     """
     # We first split the graph in commected subgraphs
-    return sum((_min_cycle_basis(c, weight) for c in
-                nx.connected_component_subgraphs(G)), [])
+    return sum((_min_cycle_basis(G.subgraph(c), weight) for c in
+                nx.connected_components(G)), [])
 
 
 def _min_cycle_basis(comp, weight):
@@ -557,7 +548,7 @@ def _min_cycle_basis(comp, weight):
     N = len(edges_excl)
 
     # We maintain a set of vectors orthogonal to sofar found cycles
-    set_orth = [set([edge]) for edge in edges_excl]
+    set_orth = [{edge} for edge in edges_excl]
     for k in range(N):
         # kth cycle is "parallel" to kth vector in set_orth
         new_cycle = _min_cycle(comp, set_orth[k], weight=weight)

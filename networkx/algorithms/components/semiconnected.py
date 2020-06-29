@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: ysitu (ysitu@users.noreply.github.com)
 """Semiconnectedness."""
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
@@ -36,10 +27,10 @@ def is_semiconnected(G, topo_order=None):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is undirected.
 
-    NetworkXPointlessConcept :
+    NetworkXPointlessConcept
         If the graph is empty.
 
     Examples

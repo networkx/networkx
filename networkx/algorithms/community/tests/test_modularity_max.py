@@ -1,22 +1,17 @@
-from itertools import combinations
-
-from nose.tools import assert_equal
-from nose.tools import raises
-
 import networkx as nx
 from networkx.algorithms.community import (
     greedy_modularity_communities,
     _naive_greedy_modularity_communities)
 
 
-class TestCNM(object):
+class TestCNM:
 
     def setup(self):
         self.G = nx.karate_club_graph()
 
     def _check_communities(self, expected):
         communities = set(greedy_modularity_communities(self.G))
-        assert_equal(communities, expected)
+        assert communities == expected
 
     def test_karate_club(self):
         john_a = frozenset([
@@ -26,14 +21,14 @@ class TestCNM(object):
         self._check_communities({john_a, overlap, mr_hi})
 
 
-class TestNaive(object):
+class TestNaive:
 
     def setup(self):
         self.G = nx.karate_club_graph()
 
     def _check_communities(self, expected):
         communities = set(_naive_greedy_modularity_communities(self.G))
-        assert_equal(communities, expected)
+        assert communities == expected
 
     def test_karate_club(self):
         john_a = frozenset([

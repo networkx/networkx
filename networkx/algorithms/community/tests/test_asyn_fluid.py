@@ -1,17 +1,16 @@
-from nose.tools import assert_equal, assert_raises
+import pytest
 from networkx import Graph, NetworkXError
-from networkx.algorithms.community.asyn_fluid import *
-import random
+from networkx.algorithms.community.asyn_fluid import asyn_fluidc
 
 
 def test_exceptions():
     test = Graph()
     test.add_node('a')
-    assert_raises(NetworkXError, asyn_fluidc, test, 'hi')
-    assert_raises(NetworkXError, asyn_fluidc, test, -1)
-    assert_raises(NetworkXError, asyn_fluidc, test, 3)
+    pytest.raises(NetworkXError, asyn_fluidc, test, 'hi')
+    pytest.raises(NetworkXError, asyn_fluidc, test, -1)
+    pytest.raises(NetworkXError, asyn_fluidc, test, 3)
     test.add_node('b')
-    assert_raises(NetworkXError, asyn_fluidc, test, 1)
+    pytest.raises(NetworkXError, asyn_fluidc, test, 1)
 
 
 def test_single_node():
@@ -20,11 +19,11 @@ def test_single_node():
     test.add_node('a')
 
     # ground truth
-    ground_truth = set([frozenset(['a'])])
+    ground_truth = {frozenset(['a'])}
 
     communities = asyn_fluidc(test, 1)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth
 
 
 def test_two_nodes():
@@ -33,11 +32,11 @@ def test_two_nodes():
     test.add_edge('a', 'b')
 
     # ground truth
-    ground_truth = set([frozenset(['a']), frozenset(['b'])])
+    ground_truth = {frozenset(['a']), frozenset(['b'])}
 
     communities = asyn_fluidc(test, 2)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth
 
 
 def test_two_clique_communities():
@@ -57,18 +56,15 @@ def test_two_clique_communities():
     test.add_edge('f', 'e')
 
     # ground truth
-    ground_truth = set([frozenset(['a', 'c', 'b']),
-                        frozenset(['e', 'd', 'f'])])
+    ground_truth = {frozenset(['a', 'c', 'b']),
+                        frozenset(['e', 'd', 'f'])}
 
     communities = asyn_fluidc(test, 2, seed=7)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth
 
 
-def five_clique_ring():
-    """Not auto-tested (not named test_...) due to cross-version seed issues
-    python3.4 in particular gives different results.
-    """
+def test_five_clique_ring():
     test = Graph()
 
     # c1
@@ -119,12 +115,12 @@ def five_clique_ring():
     test.add_edge('5a', '1c')
 
     # ground truth
-    ground_truth = set([frozenset(['1a', '1b', '1c', '1d']),
+    ground_truth = {frozenset(['1a', '1b', '1c', '1d']),
                         frozenset(['2a', '2b', '2c', '2d']),
                         frozenset(['3a', '3b', '3c', '3d']),
                         frozenset(['4a', '4b', '4c', '4d']),
-                        frozenset(['5a', '5b', '5c', '5d'])])
+                        frozenset(['5a', '5b', '5c', '5d'])}
 
     communities = asyn_fluidc(test, 5, seed=9)
     result = {frozenset(c) for c in communities}
-    assert_equal(result, ground_truth)
+    assert result == ground_truth

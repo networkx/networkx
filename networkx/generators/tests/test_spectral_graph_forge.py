@@ -1,5 +1,4 @@
-from nose import SkipTest
-from nose.tools import assert_true, assert_raises, assert_false
+import pytest
 
 from networkx import is_isomorphic
 from networkx.exception import NetworkXError
@@ -9,17 +8,8 @@ from networkx.generators import karate_club_graph
 
 
 def test_spectral_graph_forge():
-    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
-    scipy = 1
-
-    try:
-        import numpy
-    except ImportError:
-        raise SkipTest('NumPy not available.')
-    try:
-        import scipy
-    except ImportError:
-        raise SkipTest("SciPy not available")
+    numpy = pytest.importorskip('numpy')
+    scipy = pytest.importorskip('scipy')
 
     G = karate_club_graph()
 
@@ -32,17 +22,17 @@ def test_spectral_graph_forge():
 
     I = spectral_graph_forge(G, 0.1, transformation='identity', seed=seed)
     assert_nodes_equal(G, H)
-    assert_true(is_isomorphic(I, H))
+    assert is_isomorphic(I, H)
 
     I = spectral_graph_forge(G, 0.1, transformation='modularity', seed=seed)
     assert_nodes_equal(G, I)
 
-    assert_false(is_isomorphic(I, H))
+    assert not is_isomorphic(I, H)
 
     # with all the eigenvectors, output graph is identical to the input one
     H = spectral_graph_forge(G, 1, transformation='modularity', seed=seed)
     assert_nodes_equal(G, H)
-    assert_true(is_isomorphic(G, H))
+    assert is_isomorphic(G, H)
 
     # invalid alpha input value, it is silently truncated in [0,1]
     H = spectral_graph_forge(G, -1, transformation='identity', seed=seed)
@@ -50,9 +40,9 @@ def test_spectral_graph_forge():
 
     H = spectral_graph_forge(G, 10, transformation='identity', seed=seed)
     assert_nodes_equal(G, H)
-    assert_true(is_isomorphic(G, H))
+    assert is_isomorphic(G, H)
 
     # invalid transformation mode, checking the error raising
-    assert_raises(NetworkXError,
+    pytest.raises(NetworkXError,
                   spectral_graph_forge, G, 0.1, transformation='unknown',
                   seed=seed)

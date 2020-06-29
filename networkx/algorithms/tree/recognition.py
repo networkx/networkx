@@ -1,4 +1,3 @@
-#-*- coding: utf-8 -*-
 """
 Recognition Tests
 =================
@@ -75,11 +74,6 @@ becomes a useful notion.
 """
 
 import networkx as nx
-
-__author__ = """\n""".join([
-    'Ferdinando Papale <ferdinando.papale@gmail.com>',
-    'chebee7i <chebee7i@gmail.com>',
-])
 
 
 __all__ = ['is_arborescence', 'is_branching', 'is_forest', 'is_tree']
@@ -177,11 +171,11 @@ def is_forest(G):
         raise nx.exception.NetworkXPointlessConcept('G has no nodes.')
 
     if G.is_directed():
-        components = nx.weakly_connected_component_subgraphs
+        components = (G.subgraph(c) for c in nx.weakly_connected_components(G))
     else:
-        components = nx.connected_component_subgraphs
+        components = (G.subgraph(c) for c in nx.connected_components(G))
 
-    return all(len(c) - 1 == c.number_of_edges() for c in components(G))
+    return all(len(c) - 1 == c.number_of_edges() for c in components)
 
 
 def is_tree(G):

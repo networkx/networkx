@@ -30,6 +30,14 @@ Modularity-based communities
    
    greedy_modularity_communities
 
+Tree partitioning
+-----------------
+.. automodule:: networkx.algorithms.community.lukes
+.. autosummary::
+   :toctree: generated/
+
+   lukes_partitioning
+
 Label propagation
 -----------------
 .. automodule:: networkx.algorithms.community.label_propagation
