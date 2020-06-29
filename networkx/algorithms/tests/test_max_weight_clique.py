@@ -11,7 +11,7 @@ class TestMaximumWeightClique:
         def check_basic_case(graph_func, expected_weight, weight_accessor):
             graph = graph_func()
             clique, weight = nx.algorithms.max_weight_clique(
-                    graph, weight_accessor)
+                graph, weight_accessor)
             assert verify_clique(graph, clique, weight, expected_weight,
                                  weight_accessor)
 

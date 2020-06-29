@@ -625,7 +625,7 @@ class MaxWeightClique(object):
         """
         self.update_incumbent_if_improved(C, C_weight)
         branching_vertices = self.find_branching_vertices(
-                P, self.incumbent_weight - C_weight)
+            P, self.incumbent_weight - C_weight)
         while branching_vertices:
             v = branching_vertices.pop()
             P.remove(v)
