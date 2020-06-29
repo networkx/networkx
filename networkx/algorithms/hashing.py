@@ -27,10 +27,10 @@ def wl_hash(G, edge_attr=None, node_attr=None, iterations=3, digest_size=16):
         The graph to be hashed.
         Can have node and/or edge attributes. Can also have no attributes.
     edge_attr: string
-        The key in edge attribute dictionary to be used for hashing. 
+        The key in edge attribute dictionary to be used for hashing.
         If None, edge labels are ignored.
     node_attr: string
-        The key in node attribute dictionary to be used for hashing. 
+        The key in node attribute dictionary to be used for hashing.
         If None, and no edge_attr given, use
         degree of node as label.
     iterations: int
@@ -38,7 +38,8 @@ def wl_hash(G, edge_attr=None, node_attr=None, iterations=3, digest_size=16):
     digest_size: int
         Size of blake2b hash digest to use for hashing node labels.
     In example below,
-    we have two triangle graphs with a tail node that are isomorphic except for edge labels.
+    we have two triangle graphs with a tail node that
+    are isomorphic except for edge labels.
     By specifying the edge_attr option, the graphs receive different hashes.
     Returns
     -------
