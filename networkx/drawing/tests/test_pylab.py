@@ -115,7 +115,7 @@ class TestPylab:
             # edge_color as numeric using vmin, vmax
             nx.draw_networkx_edges(G, pos, edgelist=[(7, 8), (8, 9)],
                                    edge_color=[0.2, 0.5],
-                                   edge_vmin=0.1, edge_max=0.6)
+                                   edge_vmin=0.1, edge_vmax=0.6)
 
             plt.show()
 
@@ -207,3 +207,7 @@ class TestPylab:
         alpha.append(1)
         plt.subplot(133)
         nx.draw_networkx_nodes(self.G, pos, alpha=alpha)
+
+    def test_error_invalid_kwds(self):
+        with pytest.raises(ValueError, match="Received invalid argument"):
+            nx.draw(self.G, foo='bar')

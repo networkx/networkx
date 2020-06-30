@@ -40,7 +40,6 @@ for n, d in G.degree():
 options = {
     "node_color": "black",
     "node_size": 50,
-    "line_color": "grey",
     "linewidths": 0,
     "width": 0.1,
 }
