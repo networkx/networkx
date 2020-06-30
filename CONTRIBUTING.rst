@@ -35,7 +35,18 @@ Developer overview
 
    * Commit locally as you progress (``git add`` and ``git commit``)
 
-3. To submit your contribution:
+3. Test your contribution:
+
+   * Run the test suite locally (see `Testing`_ for details)::
+
+      PYTHONPATH=. pytest networkx
+
+   * Running the tests locally *before* submitting a pull request helps catch
+     problems early and reduces the load on the continuous integration 
+     system. To ensure you have a properly-configured development environment
+     for running the tests, see `Build environment setup`_.
+
+4. To submit your contribution:
 
    * Push your changes back to your fork on GitHub::
 
@@ -52,7 +63,7 @@ For a more detailed discussion, read these :doc:`detailed documents
 <gitwash/index>` on how to use Git with ``networkx``
 (`<https://networkx.github.io/documentation/latest/developer/gitwash/index.html>`_).
 
-4. Review process:
+5. Review process:
 
     * Reviewers (the other developers and interested community members) will
       write inline and/or general comments on your Pull Request (PR) to help
