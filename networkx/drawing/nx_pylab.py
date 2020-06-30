@@ -283,15 +283,15 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
         invalid_args = ', '.join([k for k in kwds if k not in valid_kwds])
         raise ValueError(f"Received invalid argument(s): {invalid_args}")
 
-    node_kwds = {k:v for k,v in kwds.items() if k in valid_node_kwds}
-    edge_kwds = {k:v for k,v in kwds.items() if k in valid_edge_kwds}
-    label_kwds = {k:v for k,v in kwds.items() if k in valid_label_kwds}
+    node_kwds = {k: v for k, v in kwds.items() if k in valid_node_kwds}
+    edge_kwds = {k: v for k, v in kwds.items() if k in valid_edge_kwds}
+    label_kwds = {k: v for k, v in kwds.items() if k in valid_label_kwds}
 
     if pos is None:
         pos = nx.drawing.spring_layout(G)  # default to spring layout
 
-    node_collection = draw_networkx_nodes(G, pos, **node_kwds)
-    edge_collection = draw_networkx_edges(G, pos, arrows=arrows, **edge_kwds)
+    draw_networkx_nodes(G, pos, **node_kwds)
+    draw_networkx_edges(G, pos, arrows=arrows, **edge_kwds)
     if with_labels:
         draw_networkx_labels(G, pos, **label_kwds)
     plt.draw_if_interactive()
