@@ -54,15 +54,19 @@ def test_basic_adigraph():
 
     script_dir = os.path.dirname(os.path.realpath(__file__))
     testfile = "adigraph_result.tex"
-    expected_filename = f"{script_dir}/expected.tex"
     A.save(testfile, document=True)
     result = filecmp.cmp(f"{script_dir}/expected.tex", testfile)
-    with open(expected_filename, 'r') as f:
-        expected = f.readlines()
     with open(testfile, 'r') as f:
         fileresult = f.readlines()
+    os.remove(testfile)
+
+    expected_filename = f"{script_dir}/expected.tex"
+    with open(expected_filename, 'r') as f:
+        expected = f.readlines()
+
+    content_same = True
     for aa, bb in zip(expected, fileresult):
         if aa != bb:
+            content_same = False
             print(aa, '|||', bb, '|end|')
-    os.remove(testfile)
-    assert result
+    assert content_same
