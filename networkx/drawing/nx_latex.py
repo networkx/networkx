@@ -201,9 +201,8 @@ class Adigraph:
         """Return given nodes in adigraph syntax."""
         return "".join(
             [self._node(v, *layout[v], self._get(colors, v, default_color),
-                       self._get(widths, v), self._get(labels, v))
-            for v in nodes
-            ])
+                        self._get(widths, v), self._get(labels, v))
+             for v in nodes])
 
     def _edge(self, start: str, end: str, weight: float,
               color: str, width: float, label: str) -> str:
@@ -223,8 +222,7 @@ class Adigraph:
                 self._symmetric_get(colors, e, directed, default_color),
                 self._symmetric_get(widths, e, directed=directed),
                 self._symmetric_get(labels, e, directed=directed))
-            for e in edges
-            ])
+             for e in edges])
 
     def _adigraph(
         self,
@@ -316,11 +314,13 @@ class Adigraph:
             (weights, self._default_weights, self._weights),
             (style, self._default_style, self._styles),
             (directed, self._default_directed, self._directed),
-            (edges_color_fallback, self._default_edges_color_fallback, self._edges_color_fallbacks),
+            (edges_color_fallback, self._default_edges_color_fallback,
+                self._edges_color_fallbacks),
             (edges_color, self._default_edges_color, self._edges_color),
             (edges_width, self._default_edges_width, self._edges_width),
             (edges_label, self._default_edges_label, self._edges_label),
-            (nodes_color_fallback, self._default_nodes_color_fallback, self._nodes_color_fallbacks),
+            (nodes_color_fallback, self._default_nodes_color_fallback,
+                self._nodes_color_fallbacks),
             (nodes_color, self._default_nodes_color, self._nodes_color),
             (nodes_width, self._default_nodes_width, self._nodes_width),
             (nodes_label, self._default_nodes_label, self._nodes_label),
