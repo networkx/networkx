@@ -1,6 +1,6 @@
-sphinx==3.0.1
-sphinx_rtd_theme==0.4.3
-sphinx-gallery==0.6.1
-pillow>=7.1.1
+sphinx==3.1.1
+sphinx_rtd_theme==0.5.0
+sphinx-gallery==0.7.0
+pillow>=7.2.0
 nb2plots>=0.6
 texext>=0.6.6
