@@ -10,7 +10,7 @@ from networkx.utils import py_random_state
 
 # The same helpers for choosing random sequences from distributions
 # uses Python's random module
-# https://docs.python.org/2/library/random.html
+# https://docs.python.org/3/library/random.html
 
 @py_random_state(2)
 def powerlaw_sequence(n, exponent=2.0, seed=None):
