@@ -22,6 +22,8 @@ How to make a new release of ``networkx``
 
   7. Update ``doc/news.rst``.
 
+- Comment out ``dev_banner.html`` in ``doc/_templates/layout.html``.
+
 - Toggle ``dev = True`` to ``dev = False`` in ``networkx/release.py``.
 
 - Commit changes::
@@ -61,6 +63,7 @@ How to make a new release of ``networkx``
   - Copy the documentation built by Travis.
     Assuming you are at the top-level of the ``documentation`` repo::
 
+      # FIXME - use eol_banner.html
       cp -a latest networkx-<major>.<minor> 
       ln -sfn networkx-<major>.<minor> stable
       git add networkx-<major>.<minor> stable
@@ -74,6 +77,7 @@ How to make a new release of ``networkx``
 
  - Increase the version number
 
+  - Uncomment ``dev_banner.html`` in ``doc/_templates/layout.html``.
   - Toggle ``dev = False`` to ``dev = True`` in ``networkx/release.py``.
   - Update ``major`` and ``minor`` in ``networkx/release.py``.
 
