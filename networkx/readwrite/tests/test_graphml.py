@@ -1063,6 +1063,17 @@ class TestWriteGraphML(BaseGraphML):
         os.close(fd)
         os.unlink(fname)
 
+    def test_numpy_float64_inference(self):
+        np = pytest.importorskip('numpy')
+        G = self.attribute_numeric_type_graph
+        G.edges[('n1', 'n1')]['weight'] = np.float64(1.1)
+        fd, fname = tempfile.mkstemp()
+        self.writer(G, fname, infer_numeric_types=True)
+        H = nx.read_graphml(fname)
+        assert G._adj == H._adj
+        os.close(fd)
+        os.unlink(fname)
+
     def test_unicode_attributes(self):
         G = nx.Graph()
         name1 = chr(2344) + chr(123) + chr(6543)
