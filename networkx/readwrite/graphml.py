@@ -807,8 +807,8 @@ class GraphMLReader(GraphML):
             try:
                 data_name = graphml_keys[key]['name']
                 data_type = graphml_keys[key]['type']
-            except KeyError:
-                raise nx.NetworkXError(f"Bad GraphML data: no key {key}")
+            except KeyError as e:
+                raise nx.NetworkXError(f"Bad GraphML data: no key {key}") from e
             text = data_element.text
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element)) == 0:

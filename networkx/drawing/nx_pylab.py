@@ -93,8 +93,8 @@ def draw(G, pos=None, ax=None, **kwds):
     """
     try:
         import matplotlib.pyplot as plt
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
     except RuntimeError:
         print("Matplotlib unable to open display")
         raise
@@ -253,8 +253,8 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     """
     try:
         import matplotlib.pyplot as plt
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
     except RuntimeError:
         print("Matplotlib unable to open display")
         raise
@@ -370,8 +370,8 @@ def draw_networkx_nodes(G, pos,
         import matplotlib.pyplot as plt
         from matplotlib.collections import PathCollection
         import numpy as np
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
     except RuntimeError:
         print("Matplotlib unable to open display")
         raise
@@ -388,9 +388,9 @@ def draw_networkx_nodes(G, pos,
     try:
         xy = np.asarray([pos[v] for v in nodelist])
     except KeyError as e:
-        raise nx.NetworkXError(f"Node {e} has no position.")
-    except ValueError:
-        raise nx.NetworkXError('Bad value in node positions.')
+        raise nx.NetworkXError(f"Node {e} has no position.") from e
+    except ValueError as e:
+        raise nx.NetworkXError('Bad value in node positions.') from e
 
     if isinstance(alpha, Iterable):
         node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
@@ -555,8 +555,8 @@ def draw_networkx_edges(G, pos,
         from matplotlib.collections import LineCollection
         from matplotlib.patches import FancyArrowPatch
         import numpy as np
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
     except RuntimeError:
         print("Matplotlib unable to open display")
         raise
@@ -779,8 +779,8 @@ def draw_networkx_labels(G, pos,
     """
     try:
         import matplotlib.pyplot as plt
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
     except RuntimeError:
         print("Matplotlib unable to open display")
         raise
@@ -905,8 +905,8 @@ def draw_networkx_edge_labels(G, pos,
     try:
         import matplotlib.pyplot as plt
         import numpy as np
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
     except RuntimeError:
         print("Matplotlib unable to open display")
         raise
@@ -1143,8 +1143,8 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
         import numpy as np
         from matplotlib.colors import colorConverter
         import matplotlib.cm as cm
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
 
     # If we have been provided with a list of numbers as long as elem_list,
     # apply the color mapping.

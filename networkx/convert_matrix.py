@@ -199,10 +199,10 @@ def from_pandas_adjacency(df, create_using=None):
 
     try:
         df = df[df.index]
-    except Exception:
+    except Exception as e:
         missing = list(set(df.index).difference(set(df.columns)))
         msg = f"{missing} not in columns"
-        raise nx.NetworkXError("Columns must match Indices.", msg)
+        raise nx.NetworkXError("Columns must match Indices.", msg) from e
 
     A = df.values
     G = from_numpy_matrix(A, create_using=create_using)
@@ -362,9 +362,9 @@ def from_pandas_edgelist(df, source="source", target="target", edge_attr=None,
 
     try:
         eattrs = zip(*[df[col] for col in cols])
-    except (KeyError, TypeError):
+    except (KeyError, TypeError) as e:
         msg = f"Invalid edge_attr argument: {edge_attr}"
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError(msg) from e
     for s, t, attrs in zip(df[source], df[target], eattrs):
         if g.is_multigraph():
             key = g.add_edge(s, t)
@@ -596,8 +596,8 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     dt = A.dtype
     try:
         python_type = kind_to_python_type[dt.kind]
-    except Exception:
-        raise TypeError(f"Unknown numpy data type: {dt}")
+    except Exception as e:
+        raise TypeError(f"Unknown numpy data type: {dt}") from e
 
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n))
@@ -853,8 +853,8 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
         return M.asformat(format)
     # From Scipy 1.1.0, asformat will throw a ValueError instead of an
     # AttributeError if the format if not recognized.
-    except (AttributeError, ValueError):
-        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}")
+    except (AttributeError, ValueError) as e:
+        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from e
 
 
 def _csr_gen_triples(A):
@@ -1170,8 +1170,8 @@ def to_numpy_array(
         operator = {sum: np.nansum, min: np.nanmin, max: np.nanmax}
         try:
             op = operator[multigraph_weight]
-        except Exception:
-            raise ValueError("multigraph_weight must be sum, min, or max")
+        except Exception as e:
+            raise ValueError("multigraph_weight must be sum, min, or max") from e
 
         for u, v, attrs in G.edges(data=True):
             if (u in nodeset) and (v in nodeset):

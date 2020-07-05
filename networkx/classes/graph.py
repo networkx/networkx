@@ -609,8 +609,8 @@ class Graph:
         try:
             nbrs = list(adj[n])  # list handles self-loops (allows mutation)
             del self._node[n]
-        except KeyError:  # NetworkXError if n not in self
-            raise NetworkXError(f"The node {n} is not in the graph.")
+        except KeyError as e:  # NetworkXError if n not in self
+            raise NetworkXError(f"The node {n} is not in the graph.") from e
         for u in nbrs:
             del adj[u][n]   # remove all edges n-u in graph
         del adj[n]          # now remove node
@@ -1000,8 +1000,8 @@ class Graph:
             del self._adj[u][v]
             if u != v:  # self-loop needs only one entry removed
                 del self._adj[v][u]
-        except KeyError:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph")
+        except KeyError as e:
+            raise NetworkXError(f"The edge {u}-{v} is not in the graph") from e
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -1221,8 +1221,8 @@ class Graph:
         """
         try:
             return iter(self._adj[n])
-        except KeyError:
-            raise NetworkXError(f"The node {n} is not in the graph.")
+        except KeyError as e:
+            raise NetworkXError(f"The node {n} is not in the graph.") from e
 
     @property
     def edges(self):
@@ -1879,11 +1879,11 @@ class Graph:
                     # capture error for non-sequence/iterator nbunch.
                     if 'iter' in message:
                         msg = "nbunch is not a node or a sequence of nodes."
-                        raise NetworkXError(msg)
+                        raise NetworkXError(msg) from e
                     # capture error for unhashable node.
                     elif 'hashable' in message:
                         msg = f"Node {n} in sequence nbunch is not a valid node."
-                        raise NetworkXError(msg)
+                        raise NetworkXError(msg) from e
                     else:
                         raise
             bunch = bunch_iter(nbunch, self._adj)

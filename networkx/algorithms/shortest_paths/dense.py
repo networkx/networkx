@@ -38,9 +38,9 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
     """
     try:
         import numpy as np
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "to_numpy_matrix() requires numpy: http://scipy.org/ ")
+            "to_numpy_matrix() requires numpy: http://numpy.org/ ") from e
 
     # To handle cases when an edge has weight=0, we must make sure that
     # nonedges are not given the value 0 as well.
