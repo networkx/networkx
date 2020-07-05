@@ -1,5 +1,4 @@
 import networkx as nx
-#from networkx.generators.smax import li_smax_graph
 
 
 def s_metric(G, normalized=True):

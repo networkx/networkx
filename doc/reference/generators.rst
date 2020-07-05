@@ -52,7 +52,7 @@ Expanders
 
    margulis_gabber_galil_graph
    chordal_cycle_graph
-
+   paley_graph
 
 Lattice
 -------
@@ -217,6 +217,15 @@ Stochastic
    stochastic_graph
 
 
+AS graph
+--------
+.. automodule:: networkx.generators.internet_as_graphs
+.. autosummary::
+   :toctree: generated/
+
+   random_internet_as_graph
+
+
 Intersection
 ------------
 .. automodule:: networkx.generators.intersection
@@ -304,6 +313,8 @@ Joint Degree Sequence
 
    is_valid_joint_degree
    joint_degree_graph
+   is_valid_directed_joint_degree
+   directed_joint_degree_graph
 
 
 Mycielski
@@ -324,3 +335,19 @@ Harary Graph
 
    hnm_harary_graph
    hkn_harary_graph
+
+Cographs
+------------
+.. automodule:: networkx.generators.cographs
+.. autosummary::
+   :toctree: generated/
+
+   random_cograph
+
+Sudoku
+------
+.. automodule:: networkx.generators.sudoku
+.. autosummary::
+   :toctree: generated/
+
+   sudoku_graph

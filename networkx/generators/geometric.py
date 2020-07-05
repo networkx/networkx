@@ -1,24 +1,12 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Dan Schult (dschult@colgate.edu)
-#          Ben Edwards (BJEdwards@gmail.com)
-#          Arya McCarthy (admccarthy@smu.edu)
-#          Cole MacLean (maclean.cole@gmail.com)
-
 """Generators for geometric graphs.
 """
-from __future__ import division
 
 from bisect import bisect_left
-from itertools import combinations
-from itertools import product
+from itertools import (
+    accumulate,
+    combinations,
+    product
+)
 from math import sqrt
 import math
 try:
@@ -275,7 +263,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None,
     """
     n_name, nodes = n
     G = nx.Graph()
-    G.name = 'soft_random_geometric_graph({}, {}, {})'.format(n, radius, dim)
+    G.name = f'soft_random_geometric_graph({n}, {radius}, {dim})'
     G.add_nodes_from(nodes)
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.
@@ -414,16 +402,6 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None, weight=None,
 
     If node positions are not specified they are randomly assigned from the
     uniform distribution.
-
-    Starting in NetworkX 2.1 the parameter ``alpha`` is deprecated and replaced
-    with the customizable ``p_dist`` function parameter, which defaults to r^-2
-    if ``p_dist`` is not supplied. To reproduce networks of earlier NetworkX
-    versions, a custom function needs to be defined and passed as the
-    ``p_dist`` parameter. For example, if the parameter ``alpha`` = 2 was used
-    in NetworkX 2.0, the custom function def custom_dist(r): r**-2 can be
-    passed in versions >=2.1 as the parameter p_dist = custom_dist to
-    produce an equivalent network. Note the change in sign from +2 to -2 in
-    this parameter change.
 
     References
     ----------
@@ -655,7 +633,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
             if d <= p:
                 G.add_edge(p1, p2)
             probs.append(d**-r)
-        cdf = list(nx.utils.accumulate(probs))
+        cdf = list(accumulate(probs))
         for _ in range(q):
             target = nodes[bisect_left(cdf, seed.uniform(0, cdf[-1]))]
             G.add_edge(p1, target)
@@ -765,8 +743,7 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2,
 
     n_name, nodes = n
     G = nx.Graph()
-    namestr = 'thresholded_random_geometric_graph({}, {}, {}, {})'
-    G.name = namestr.format(n, radius, theta, dim)
+    G.name = f"thresholded_random_geometric_graph({n}, {radius}, {theta}, {dim})"
     G.add_nodes_from(nodes)
     # If no weights are provided, choose them from an exponential
     # distribution.

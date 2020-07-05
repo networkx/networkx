@@ -1,11 +1,3 @@
-# __init__.py - package containing heuristics for optimization problems
-#
-# Copyright 2016-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Approximations of graph properties and Heuristic functions for optimization
 problems.
 

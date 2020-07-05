@@ -1,8 +1,3 @@
-#    Copyright (C) 2017-2019 by
-#    Luca Baldesi
-#    BSD license.
-#
-# Author:  Luca Baldesi (luca.baldesi@unitn.it)
 """Generates graphs with a given eigenvector structure"""
 
 
@@ -169,8 +164,8 @@ def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
     level = int(round(n*alpha))
 
     if transformation not in available_transformations:
-        msg = '\'{0}\' is not a valid transformation. '.format(transformation)
-        msg += 'Transformations: {0}'.format(available_transformations)
+        msg = f'\'{transformation}\' is not a valid transformation. '
+        msg += f'Transformations: {available_transformations}'
         raise nx.NetworkXError(msg)
 
     K = np.ones((1, n)) * A
@@ -194,16 +189,3 @@ def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
     H = nx.from_numpy_matrix(B)
 
     return H
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

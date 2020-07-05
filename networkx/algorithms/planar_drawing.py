@@ -89,7 +89,7 @@ def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
         delta_x[wp1] += 1
         delta_x[wq] += 1
 
-        delta_x_wp_wq = sum((delta_x[x] for x in contour_neighbors[1:]))
+        delta_x_wp_wq = sum(delta_x[x] for x in contour_neighbors[1:])
 
         # Adjust offsets
         delta_x[vk] = (-y_coordinate[wp] + delta_x_wp_wq + y_coordinate[wq])//2

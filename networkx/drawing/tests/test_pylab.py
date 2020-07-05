@@ -1,26 +1,21 @@
 """Unit tests for matplotlib drawing functions."""
 import os
 import itertools
-from nose import SkipTest
+import pytest
+
+mpl = pytest.importorskip('matplotlib')
+mpl.use('PS')
+plt = pytest.importorskip('matplotlib.pyplot')
+plt.rcParams['text.usetex'] = False
+
 import networkx as nx
 
 
-class TestPylab(object):
-    @classmethod
-    def setupClass(cls):
-        global plt
-        try:
-            import matplotlib as mpl
-            mpl.use('PS', warn=False)
-            import matplotlib.pyplot as plt
-            plt.rcParams['text.usetex'] = False
-        except ImportError:
-            raise SkipTest('matplotlib not available.')
-        except RuntimeError:
-            raise SkipTest('matplotlib not available.')
+class TestPylab:
 
-    def setUp(self):
-        self.G = nx.barbell_graph(4, 6)
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.barbell_graph(4, 6)
 
     def test_draw(self):
         try:
@@ -40,6 +35,17 @@ class TestPylab(object):
                 function(self.G, **option)
                 plt.savefig('test.ps')
 
+        finally:
+            try:
+                os.unlink('test.ps')
+            except OSError:
+                pass
+
+    def test_draw_shell_nlist(self):
+        try:
+            nlist = [list(range(4)), list(range(4, 10)), list(range(10, 14))]
+            nx.draw_shell(self.G, nlist=nlist)
+            plt.savefig('test.ps')
         finally:
             try:
                 os.unlink('test.ps')
@@ -90,11 +96,11 @@ class TestPylab(object):
                                    edge_color=[(0.4, 1.0, 0.0)])
             # with rgba tuple and 4 edges - is interpretted with cmap
             nx.draw_networkx_edges(G, pos, edgelist=[(9, 10), (10, 11),
-                                   (10, 12), (10, 13)],
+                                                     (10, 12), (10, 13)],
                                    edge_color=(0.0, 1.0, 1.0, 0.5))
             # with rgba tuple in list
             nx.draw_networkx_edges(G, pos, edgelist=[(9, 10), (10, 11),
-                                   (10, 12), (10, 13)],
+                                                     (10, 12), (10, 13)],
                                    edge_color=[(0.0, 1.0, 1.0, 0.5)])
             # with color string and global alpha
             nx.draw_networkx_edges(G, pos, edgelist=[(11, 12), (11, 13)],
@@ -105,6 +111,11 @@ class TestPylab(object):
             # with single edge and hex color string
             nx.draw_networkx_edges(G, pos, edgelist=[(12, 13)],
                                    edge_color='#1f78b4f0')
+
+            # edge_color as numeric using vmin, vmax
+            nx.draw_networkx_edges(G, pos, edgelist=[(7, 8), (8, 9)],
+                                   edge_color=[0.2, 0.5],
+                                   edge_vmin=0.1, edge_max=0.6)
 
             plt.show()
 
@@ -130,6 +141,10 @@ class TestPylab(object):
         nx.draw_networkx_edges(G, pos,
                                edgelist=[(4, 5), (5, 6), (6, 7), (7, 4)],
                                width=8, alpha=0.5, edge_color='b')
+        nx.draw_networkx_edges(G, pos,
+                               edgelist=[(4, 5), (5, 6), (6, 7), (7, 4)],
+                               min_source_margin=0.5, min_target_margin=0.75,
+                               width=8, edge_color='b')
         # some math labels
         labels = {}
         labels[0] = r'$a$'
@@ -141,6 +156,8 @@ class TestPylab(object):
         labels[6] = r'$\gamma$'
         labels[7] = r'$\delta$'
         nx.draw_networkx_labels(G, pos, labels, font_size=16)
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=None, rotate=False)
+        nx.draw_networkx_edge_labels(G, pos, edge_labels={(4, 5): '4-5'})
         plt.show()
 
     def test_axes(self):
@@ -151,11 +168,29 @@ class TestPylab(object):
         G = nx.Graph()
         nx.draw(G)
 
+    def test_draw_empty_nodes_return_values(self):
+        # See Issue #3833
+        from matplotlib.collections import PathCollection, LineCollection
+        G = nx.Graph([(1, 2), (2, 3)])
+        DG = nx.DiGraph([(1, 2), (2, 3)])
+        pos = nx.circular_layout(G)
+        assert isinstance(nx.draw_networkx_nodes(G, pos, nodelist=[]), PathCollection)
+        assert isinstance(nx.draw_networkx_nodes(DG, pos, nodelist=[]), PathCollection)
+
+        # drawing empty edges either return an empty LineCollection or empty list.
+        assert isinstance(nx.draw_networkx_edges(G, pos, edgelist=[], arrows=True),
+                          LineCollection)
+        assert isinstance(nx.draw_networkx_edges(G, pos, edgelist=[], arrows=False),
+                          LineCollection)
+        assert isinstance(nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=False),
+                          LineCollection)
+        assert nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=True) == []
+
     def test_multigraph_edgelist_tuples(self):
         # See Issue #3295
         G = nx.path_graph(3, create_using=nx.MultiDiGraph)
         nx.draw_networkx(G, edgelist=[(0, 1, 0)])
-        nx.draw_networkx(G, edgelist=[(0, 1, 0)], node_size=[10, 20])
+        nx.draw_networkx(G, edgelist=[(0, 1, 0)], node_size=[10, 20, 0])
 
     def test_alpha_iter(self):
         pos = nx.random_layout(self.G)

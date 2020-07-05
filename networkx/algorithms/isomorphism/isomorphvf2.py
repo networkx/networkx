@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 *************
 VF2 Algorithm
@@ -101,8 +100,8 @@ If G'=(N',E') is a monomorphism, then:
     N' is a subset of N
     E' is a subset of the set of edges in E relating nodes in N'
 
-Note that if G' is a node-induced subgraph of G, then it is always a 
-subgraph monomorphism of G, but the opposite is not always true, as a 
+Note that if G' is a node-induced subgraph of G, then it is always a
+subgraph monomorphism of G, but the opposite is not always true, as a
 monomorphism can have fewer edges.
 
 References
@@ -121,7 +120,7 @@ References
 
 See Also
 --------
-syntactic_feasibliity(), semantic_feasibility()
+syntactic_feasibility(), semantic_feasibility()
 
 Notes
 -----
@@ -135,23 +134,18 @@ polynomial-time algorithm is known to exist).
 
 """
 
-#    Copyright (C) 2007-2009 by the NetworkX maintainers
-#    All rights reserved.
-#    BSD license.
-
-#    This work was originally coded by Christopher Ellison
-#    as part of the Computational Mechanics Python (CMPy) project.
-#    James P. Crutchfield, principal investigator.
-#    Complexity Sciences Center and Physics Department, UC Davis.
+# This work was originally coded by Christopher Ellison
+# as part of the Computational Mechanics Python (CMPy) project.
+# James P. Crutchfield, principal investigator.
+# Complexity Sciences Center and Physics Department, UC Davis.
 
 import sys
-import networkx as nx
 
 __all__ = ['GraphMatcher',
            'DiGraphMatcher']
 
 
-class GraphMatcher(object):
+class GraphMatcher:
     """Implementation of VF2 algorithm for matching undirected graphs.
 
     Suitable for Graph and MultiGraph instances.
@@ -298,8 +292,7 @@ class GraphMatcher(object):
         # Declare that we are looking for a graph-graph isomorphism.
         self.test = 'graph'
         self.initialize()
-        for mapping in self.match():
-            yield mapping
+        yield from self.match()
 
     def match(self):
         """Extends the isomorphism mapping.
@@ -321,8 +314,7 @@ class GraphMatcher(object):
                     if self.semantic_feasibility(G1_node, G2_node):
                         # Recursive call, adding the feasible state.
                         newstate = self.state.__class__(self, G1_node, G2_node)
-                        for mapping in self.match():
-                            yield mapping
+                        yield from self.match()
 
                         # restore data structures
                         newstate.restore()
@@ -390,16 +382,14 @@ class GraphMatcher(object):
         # Declare that we are looking for graph-subgraph isomorphism.
         self.test = 'subgraph'
         self.initialize()
-        for mapping in self.match():
-            yield mapping
+        yield from self.match()
 
     def subgraph_monomorphisms_iter(self):
         """Generator over monomorphisms between a subgraph of G1 and G2."""
         # Declare that we are looking for graph-subgraph monomorphism.
         self.test = 'mono'
         self.initialize()
-        for mapping in self.match():
-            yield mapping
+        yield from self.match()
 
 #    subgraph_isomorphisms_iter.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
 
@@ -408,7 +398,7 @@ class GraphMatcher(object):
 
         This function returns True if it is adding the candidate pair
         to the current partial isomorphism/monomorphism mapping is allowable.
-        The addition is allowable if the inclusion of the candidate pair does 
+        The addition is allowable if the inclusion of the candidate pair does
         not make it impossible for an isomorphism/monomorphism to be found.
         """
 
@@ -522,7 +512,6 @@ class DiGraphMatcher(GraphMatcher):
 
     Suitable for DiGraph and MultiDiGraph instances.
     """
-#    __doc__ += "Notes\n%s-----" % (indent,) + sources.replace('\n','\n'+indent)
 
     def __init__(self, G1, G2):
         """Initialize DiGraphMatcher.
@@ -538,7 +527,7 @@ class DiGraphMatcher(GraphMatcher):
         >>> G2 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
         >>> DiGM = isomorphism.DiGraphMatcher(G1,G2)
         """
-        super(DiGraphMatcher, self).__init__(G1, G2)
+        super().__init__(G1, G2)
 
     def candidate_pairs_iter(self):
         """Iterator over candidate pairs of nodes in G1 and G2."""
@@ -626,7 +615,7 @@ class DiGraphMatcher(GraphMatcher):
 
         This function returns True if it is adding the candidate pair
         to the current partial isomorphism/monomorphism mapping is allowable.
-        The addition is allowable if the inclusion of the candidate pair does 
+        The addition is allowable if the inclusion of the candidate pair does
         not make it impossible for an isomorphism/monomorphism to be found.
         """
 
@@ -829,7 +818,7 @@ class DiGraphMatcher(GraphMatcher):
         return True
 
 
-class GMState(object):
+class GMState:
     """Internal representation of state for the GraphMatcher class.
 
     This class is used internally by the GraphMatcher class.  It is used
@@ -882,7 +871,7 @@ class GMState(object):
             # Now we add every other node...
 
             # Updates for T_1^{inout}
-            new_nodes = set([])
+            new_nodes = set()
             for node in GM.core_1:
                 new_nodes.update([neighbor for neighbor in GM.G1[node] if neighbor not in GM.core_1])
             for node in new_nodes:
@@ -890,7 +879,7 @@ class GMState(object):
                     GM.inout_1[node] = self.depth
 
             # Updates for T_2^{inout}
-            new_nodes = set([])
+            new_nodes = set()
             for node in GM.core_2:
                 new_nodes.update([neighbor for neighbor in GM.G2[node] if neighbor not in GM.core_2])
             for node in new_nodes:
@@ -913,7 +902,7 @@ class GMState(object):
                     del vector[node]
 
 
-class DiGMState(object):
+class DiGMState:
     """Internal representation of state for the DiGraphMatcher class.
 
     This class is used internally by the DiGraphMatcher class.  It is used
@@ -971,7 +960,7 @@ class DiGMState(object):
             # Now we add every other node...
 
             # Updates for T_1^{in}
-            new_nodes = set([])
+            new_nodes = set()
             for node in GM.core_1:
                 new_nodes.update([predecessor for predecessor in GM.G1.predecessors(node)
                                   if predecessor not in GM.core_1])
@@ -980,7 +969,7 @@ class DiGMState(object):
                     GM.in_1[node] = self.depth
 
             # Updates for T_2^{in}
-            new_nodes = set([])
+            new_nodes = set()
             for node in GM.core_2:
                 new_nodes.update([predecessor for predecessor in GM.G2.predecessors(node)
                                   if predecessor not in GM.core_2])
@@ -989,7 +978,7 @@ class DiGMState(object):
                     GM.in_2[node] = self.depth
 
             # Updates for T_1^{out}
-            new_nodes = set([])
+            new_nodes = set()
             for node in GM.core_1:
                 new_nodes.update([successor for successor in GM.G1.successors(node) if successor not in GM.core_1])
             for node in new_nodes:
@@ -997,7 +986,7 @@ class DiGMState(object):
                     GM.out_1[node] = self.depth
 
             # Updates for T_2^{out}
-            new_nodes = set([])
+            new_nodes = set()
             for node in GM.core_2:
                 new_nodes.update([successor for successor in GM.G2.successors(node) if successor not in GM.core_2])
             for node in new_nodes:

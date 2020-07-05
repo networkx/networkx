@@ -1,9 +1,4 @@
-# Copyright (C) 2018
-# Robert Gmyr <robert@gmyr.net>
-# All rights reserved.
-# BSD license.
 """Functions for computing sparsifiers of graphs."""
-from __future__ import division
 import math
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state

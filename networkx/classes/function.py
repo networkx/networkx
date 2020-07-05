@@ -1,32 +1,20 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg <hagberg@lanl.gov>
-#          Pieter Swart <swart@lanl.gov>
-#          Dan Schult <dschult@colgate.edu>
 """Functional interface to graph methods and assorted utilities.
 """
-from __future__ import division
 
 from collections import Counter
 from itertools import chain
-try:
-    from itertools import zip_longest
-except ImportError:
-    from itertools import izip_longest as zip_longest
 
 import networkx as nx
 from networkx.utils import pairwise, not_implemented_for
 
+from networkx.classes.graphviews import subgraph_view, reverse_view
+
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
-           'is_directed', 'info', 'freeze', 'is_frozen', 'subgraph',
-           'induced_subgraph', 'edge_subgraph', 'restricted_view',
-           'reverse_view', 'to_directed', 'to_undirected',
+           'is_directed', 'info', 'freeze', 'is_frozen',
+           'subgraph', 'subgraph_view', 'induced_subgraph', 'reverse_view',
+           'edge_subgraph', 'restricted_view',
+           'to_directed', 'to_undirected',
            'add_star', 'add_path', 'add_cycle',
            'create_empty_copy', 'set_node_attributes',
            'get_node_attributes', 'set_edge_attributes',
@@ -493,15 +481,6 @@ def restricted_view(G, nodes, edges):
     return nx.graphviews.subgraph_view(G, hide_nodes, hide_edges)
 
 
-@not_implemented_for('undirected')
-def reverse_view(digraph):
-    """Provide a reverse view of the digraph with edges reversed.
-
-    Identical to digraph.reverse(copy=False)
-    """
-    return nx.graphviews.reverse_view(digraph)
-
-
 def to_directed(graph):
     """Returns a directed view of the graph `graph`.
 
@@ -509,7 +488,7 @@ def to_directed(graph):
     Note that graph.to_directed defaults to `as_view=False`
     while this function always provides a view.
     """
-    return graph.to_directed()
+    return graph.to_directed(as_view=True)
 
 
 def to_undirected(graph):
@@ -546,7 +525,10 @@ def create_empty_copy(G, with_data=True):
 
 
 def info(G, n=None):
-    """Print short summary of information for the graph G or the node n.
+    """Return a summary of information for the graph G or a single node n.
+ 
+    The summary includes the number of nodes and edges (or neighbours for a single
+    node), and their average degree.
 
     Parameters
     ----------
@@ -554,30 +536,40 @@ def info(G, n=None):
        A graph
     n : node (any hashable)
        A node in the graph G
+
+    Returns
+    -------
+    info : str
+        A string containing the short summary
+
+    Raises
+    ------
+    NetworkXError
+        If n is not in the graph G
+
     """
     info = ''  # append this all to a string
     if n is None:
-        info += "Name: %s\n" % G.name
+        info += f"Name: {G.name}\n"
         type_name = [type(G).__name__]
-        info += "Type: %s\n" % ",".join(type_name)
-        info += "Number of nodes: %d\n" % G.number_of_nodes()
-        info += "Number of edges: %d\n" % G.number_of_edges()
+        info += f"Type: {','.join(type_name)}\n"
+        info += f"Number of nodes: {G.number_of_nodes()}\n"
+        info += f"Number of edges: {G.number_of_edges()}\n"
         nnodes = G.number_of_nodes()
         if len(G) > 0:
             if G.is_directed():
                 deg = sum(d for n, d in G.in_degree()) / float(nnodes)
-                info += "Average in degree: %8.4f\n" % deg
+                info += f"Average in degree: {deg:8.4f}\n"
                 deg = sum(d for n, d in G.out_degree()) / float(nnodes)
-                info += "Average out degree: %8.4f" % deg
+                info += f"Average out degree: {deg:8.4f}"
             else:
                 s = sum(dict(G.degree()).values())
-                info += "Average degree: %8.4f" % (float(s) / float(nnodes))
-
+                info += f"Average degree: {(float(s) / float(nnodes)):8.4f}"
     else:
         if n not in G:
-            raise nx.NetworkXError("node %s not in graph" % (n,))
-        info += "Node % s has the following properties:\n" % n
-        info += "Degree: %d\n" % G.degree(n)
+            raise nx.NetworkXError(f"node {n} not in graph")
+        info += f"Node {n} has the following properties:\n"
+        info += f"Degree: {G.degree(n)}\n"
         info += "Neighbors: "
         info += ' '.join(str(nbr) for nbr in G.neighbors(n))
     return info
@@ -980,7 +972,7 @@ def is_weighted(G, edge=None, weight='weight'):
     if edge is not None:
         data = G.get_edge_data(*edge)
         if data is None:
-            msg = 'Edge {!r} does not exist.'.format(edge)
+            msg = f'Edge {edge!r} does not exist.'
             raise nx.NetworkXError(msg)
         return weight in data
 
@@ -1037,7 +1029,7 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
     if edge is not None:
         data = G.get_edge_data(*edge)
         if data is None:
-            msg = 'Edge {!r} does not exist.'.format(edge)
+            msg = f'Edge {edge!r} does not exist.'
             raise nx.NetworkXError(msg)
         return weight in data and data[weight] < 0
 

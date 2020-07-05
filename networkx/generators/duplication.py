@@ -1,15 +1,3 @@
-# duplication.py - functions for generating graphs by duplicating nodes
-#
-# Copyright 2016-2019 NetworkX developers.
-# Copyright (C) 2004-2019 by
-# Aric Hagberg <hagberg@lanl.gov>
-# Dan Schult <dschult@colgate.edu>
-# Pieter Swart <swart@lanl.gov>
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for generating graphs based on the "duplication" method.
 
 These graph generators start with a small initial graph then duplicate
@@ -80,21 +68,21 @@ def partial_duplication_graph(N, n, p, q, seed=None):
 
     G = nx.complete_graph(n)
     for new_node in range(n, N):
+        # Pick a random vertex, u, already in the graph.
+        src_node = seed.randint(0, new_node - 1)
+
         # Add a new vertex, v, to the graph.
         G.add_node(new_node)
-
-        # Pick a random vertex, u, already in the graph.
-        src_node = seed.randint(0, new_node)
-
-        # Join v and u with probability q.
-        if seed.random() < q:
-            G.add_edge(new_node, src_node)
 
         # For each neighbor of u...
         for neighbor_node in list(nx.all_neighbors(G, src_node)):
             # Add the neighbor to v with probability p.
             if seed.random() < p:
                 G.add_edge(new_node, neighbor_node)
+
+        # Join v and u with probability q.
+        if seed.random() < q:
+            G.add_edge(new_node, src_node)
     return G
 
 
@@ -141,7 +129,7 @@ def duplication_divergence_graph(n, p, seed=None):
 
     """
     if p > 1 or p < 0:
-        msg = "NetworkXError p={0} is not in [0,1].".format(p)
+        msg = f"NetworkXError p={p} is not in [0,1]."
         raise nx.NetworkXError(msg)
     if n < 2:
         msg = 'n must be greater than or equal to 2'

@@ -9,9 +9,6 @@ The reverse Cuthill-McKee algorithm gives a sparse matrix ordering that
 reduces the matrix bandwidth.
 """
 
-# Copyright (C) 2011-2019 by
-# Author:    Aric Hagberg <aric.hagberg@gmail.com>
-# BSD License
 import networkx as nx
 from networkx.utils import reverse_cuthill_mckee_ordering
 import numpy as np
@@ -24,15 +21,15 @@ print("ordering", rcm)
 print("unordered Laplacian matrix")
 A = nx.laplacian_matrix(G)
 x, y = np.nonzero(A)
-#print("lower bandwidth:",(y-x).max())
-#print("upper bandwidth:",(x-y).max())
-print("bandwidth: %d" % ((y - x).max() + (x - y).max() + 1))
+# print(f"lower bandwidth: {(y - x).max()}")
+# print(f"upper bandwidth: {(x - y).max()}")
+print(f"bandwidth: {(y - x).max() + (x - y).max() + 1}")
 print(A)
 
 B = nx.laplacian_matrix(G, nodelist=rcm)
 print("low-bandwidth Laplacian matrix")
 x, y = np.nonzero(B)
-#print("lower bandwidth:",(y-x).max())
-#print("upper bandwidth:",(x-y).max())
-print("bandwidth: %d" % ((y - x).max() + (x - y).max() + 1))
+# print(f"lower bandwidth: {(y - x).max()}")
+# print(f"upper bandwidth: {(x - y).max()}")
+print(f"bandwidth: {(y - x).max() + (x - y).max() + 1}")
 print(B)

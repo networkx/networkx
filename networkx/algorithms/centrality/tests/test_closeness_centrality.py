@@ -1,27 +1,33 @@
 """
-Tests for degree centrality.
+Tests for closeness centrality.
 """
-from nose.tools import *
+import pytest
 import networkx as nx
+from networkx.testing import almost_equal
 
 
 class TestClosenessCentrality:
-    def setUp(self):
-        self.K = nx.krackhardt_kite_graph()
-        self.P3 = nx.path_graph(3)
-        self.P4 = nx.path_graph(4)
-        self.K5 = nx.complete_graph(5)
+    @classmethod
+    def setup_class(cls):
+        cls.K = nx.krackhardt_kite_graph()
+        cls.P3 = nx.path_graph(3)
+        cls.P4 = nx.path_graph(4)
+        cls.K5 = nx.complete_graph(5)
 
-        self.C4 = nx.cycle_graph(4)
-        self.T = nx.balanced_tree(r=2, h=2)
-        self.Gb = nx.Graph()
-        self.Gb.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3),
-                                (2, 4), (4, 5), (3, 5)])
+        cls.C4 = nx.cycle_graph(4)
+        cls.T = nx.balanced_tree(r=2, h=2)
+        cls.Gb = nx.Graph()
+        cls.Gb.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3),
+                               (2, 4), (4, 5), (3, 5)])
 
         F = nx.florentine_families_graph()
-        self.F = F
+        cls.F = F
 
-        self.LM = nx.les_miserables_graph()
+        cls.LM = nx.les_miserables_graph()
+
+        # Create random undirected, unweighted graph for testing incremental version
+        cls.undirected_G = nx.fast_gnp_random_graph(n=100, p=0.6, seed=123)
+        cls.undirected_G_cc = nx.closeness_centrality(cls.undirected_G)
 
     def test_wf_improved(self):
         G = nx.union(self.P4, nx.path_graph([4, 5, 6]))
@@ -32,8 +38,8 @@ class TestClosenessCentrality:
         wf_res = {0: 0.5, 1: 0.75, 2: 0.75, 3: 0.5,
                   4: 0.667, 5: 1.0, 6: 0.667}
         for n in G:
-            assert_almost_equal(c[n], res[n], places=3)
-            assert_almost_equal(cwf[n], wf_res[n], places=3)
+            assert almost_equal(c[n], res[n], places=3)
+            assert almost_equal(cwf[n], wf_res[n], places=3)
 
     def test_digraph(self):
         G = nx.path_graph(3, create_using=nx.DiGraph())
@@ -42,8 +48,8 @@ class TestClosenessCentrality:
         d = {0: 0.0, 1: 0.500, 2: 0.667}
         dr = {0: 0.667, 1: 0.500, 2: 0.0}
         for n in sorted(self.P3):
-            assert_almost_equal(c[n], d[n], places=3)
-            assert_almost_equal(cr[n], dr[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
+            assert almost_equal(cr[n], dr[n], places=3)
 
     def test_k5_closeness(self):
         c = nx.closeness_centrality(self.K5)
@@ -53,7 +59,7 @@ class TestClosenessCentrality:
              3: 1.000,
              4: 1.000}
         for n in sorted(self.K5):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_p3_closeness(self):
         c = nx.closeness_centrality(self.P3)
@@ -61,7 +67,7 @@ class TestClosenessCentrality:
              1: 1.000,
              2: 0.667}
         for n in sorted(self.P3):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_krackhardt_closeness(self):
         c = nx.closeness_centrality(self.K)
@@ -76,7 +82,7 @@ class TestClosenessCentrality:
              8: 0.429,
              9: 0.310}
         for n in sorted(self.K):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_florentine_families_closeness(self):
         c = nx.closeness_centrality(self.F)
@@ -96,7 +102,7 @@ class TestClosenessCentrality:
              'Strozzi':       0.4375,
              'Tornabuoni':    0.483}
         for n in sorted(self.F):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_les_miserables_closeness(self):
         c = nx.closeness_centrality(self.LM)
@@ -178,7 +184,7 @@ class TestClosenessCentrality:
              'Brujon': 0.380,
              'MmeHucheloup': 0.353}
         for n in sorted(self.LM):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
 
     def test_weighted_closeness(self):
         edges = ([('s', 'u', 10), ('s', 'x', 5), ('u', 'v', 1),
@@ -193,4 +199,108 @@ class TestClosenessCentrality:
              'u': 0.235,
              'v': 0.200}
         for n in sorted(XG):
-            assert_almost_equal(c[n], d[n], places=3)
+            assert almost_equal(c[n], d[n], places=3)
+
+    #
+    # Tests for incremental closeness centrality.
+    #
+    @staticmethod
+    def pick_add_edge(g):
+        u = nx.utils.arbitrary_element(g)
+        possible_nodes = set(g.nodes())
+        neighbors = list(g.neighbors(u)) + [u]
+        possible_nodes.difference_update(neighbors)
+        v = nx.utils.arbitrary_element(possible_nodes)
+        return (u, v)
+
+    @staticmethod
+    def pick_remove_edge(g):
+        u = nx.utils.arbitrary_element(g)
+        possible_nodes = list(g.neighbors(u))
+        v = nx.utils.arbitrary_element(possible_nodes)
+        return (u, v)
+
+    def test_directed_raises(self):
+        with pytest.raises(nx.NetworkXNotImplemented):
+            dir_G = nx.gn_graph(n=5)
+            prev_cc = None
+            edge = self.pick_add_edge(dir_G)
+            insert = True
+            nx.incremental_closeness_centrality(dir_G, edge, prev_cc, insert)
+
+    def test_wrong_size_prev_cc_raises(self):
+        with pytest.raises(nx.NetworkXError):
+            G = self.undirected_G.copy()
+            edge = self.pick_add_edge(G)
+            insert = True
+            prev_cc = self.undirected_G_cc.copy()
+            prev_cc.pop(0)
+            nx.incremental_closeness_centrality(G, edge, prev_cc, insert)
+
+    def test_wrong_nodes_prev_cc_raises(self):
+        with pytest.raises(nx.NetworkXError):
+            G = self.undirected_G.copy()
+            edge = self.pick_add_edge(G)
+            insert = True
+            prev_cc = self.undirected_G_cc.copy()
+            num_nodes = len(prev_cc)
+            prev_cc.pop(0)
+            prev_cc[num_nodes] = 0.5
+            nx.incremental_closeness_centrality(G, edge, prev_cc, insert)
+
+    def test_zero_centrality(self):
+        G = nx.path_graph(3)
+        prev_cc = nx.closeness_centrality(G)
+        edge = self.pick_remove_edge(G)
+        test_cc = nx.incremental_closeness_centrality(
+            G, edge, prev_cc, insertion=False)
+        G.remove_edges_from([edge])
+        real_cc = nx.closeness_centrality(G)
+        shared_items = set(test_cc.items()) & set(real_cc.items())
+        assert len(shared_items) == len(real_cc)
+        assert 0 in test_cc.values()
+
+    def test_incremental(self):
+        # Check that incremental and regular give same output
+        G = self.undirected_G.copy()
+        prev_cc = None
+        for i in range(5):
+            if i % 2 == 0:
+                # Remove an edge
+                insert = False
+                edge = self.pick_remove_edge(G)
+            else:
+                # Add an edge
+                insert = True
+                edge = self.pick_add_edge(G)
+
+            # start = timeit.default_timer()
+            test_cc = nx.incremental_closeness_centrality(
+                G, edge, prev_cc, insert)
+            # inc_elapsed = (timeit.default_timer() - start)
+            # print(f"incremental time: {inc_elapsed}")
+
+            if insert:
+                G.add_edges_from([edge])
+            else:
+                G.remove_edges_from([edge])
+
+            # start = timeit.default_timer()
+            real_cc = nx.closeness_centrality(G)
+            # reg_elapsed = (timeit.default_timer() - start)
+            # print(f"regular time: {reg_elapsed}")
+            # Example output:
+            # incremental time: 0.208
+            # regular time: 0.276
+            # incremental time: 0.00683
+            # regular time: 0.260
+            # incremental time: 0.0224
+            # regular time: 0.278
+            # incremental time: 0.00804
+            # regular time: 0.208
+            # incremental time: 0.00947
+            # regular time: 0.188
+
+            assert set(test_cc.items()) == set(real_cc.items())
+
+            prev_cc = test_cc

@@ -1,15 +1,5 @@
-# test_wiener.py - unit tests for the wiener module
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.wiener` module."""
-from __future__ import division
 
-from nose.tools import eq_
 
 from networkx import complete_graph
 from networkx import DiGraph
@@ -18,7 +8,7 @@ from networkx import path_graph
 from networkx import wiener_index
 
 
-class TestWienerIndex(object):
+class TestWienerIndex:
     """Unit tests for computing the Wiener index of a graph."""
 
     def test_disconnected_graph(self):
@@ -26,7 +16,7 @@ class TestWienerIndex(object):
         positive infinity.
 
         """
-        eq_(wiener_index(empty_graph(2)), float('inf'))
+        assert wiener_index(empty_graph(2)) == float('inf')
 
     def test_directed(self):
         """Tests that each pair of nodes in the directed graph is
@@ -35,7 +25,7 @@ class TestWienerIndex(object):
         """
         G = complete_graph(3)
         H = DiGraph(G)
-        eq_(2 * wiener_index(G), wiener_index(H))
+        assert (2 * wiener_index(G)) == wiener_index(H)
 
     def test_complete_graph(self):
         """Tests that the Wiener index of the complete graph is simply
@@ -44,7 +34,7 @@ class TestWienerIndex(object):
         """
         n = 10
         G = complete_graph(n)
-        eq_(wiener_index(G), n * (n - 1) / 2)
+        assert wiener_index(G) == (n * (n - 1) / 2)
 
     def test_path_graph(self):
         """Tests that the Wiener index of the path graph is correctly
@@ -77,4 +67,4 @@ class TestWienerIndex(object):
         G = path_graph(n)
         expected = 2 * sum(i * (n - i) for i in range(1, (n // 2) + 1))
         actual = wiener_index(G)
-        eq_(expected, actual)
+        assert expected == actual

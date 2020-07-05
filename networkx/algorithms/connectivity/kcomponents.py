@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Moody and White algorithm for k-components
 """
@@ -11,8 +10,6 @@ from networkx.utils import not_implemented_for
 # Define the default maximum flow function.
 from networkx.algorithms.flow import edmonds_karp
 default_flow_func = edmonds_karp
-
-__author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
 __all__ = ['k_components']
 
@@ -47,7 +44,7 @@ def k_components(G, flow_func=None):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If the input graph is directed.
 
     Examples
@@ -116,7 +113,7 @@ def k_components(G, flow_func=None):
         comp = set(component)
         if len(comp) > 1:
             k_components[1].append(comp)
-    bicomponents = list(nx.biconnected_component_subgraphs(G))
+    bicomponents = [G.subgraph(c) for c in nx.biconnected_components(G)]
     for bicomponent in bicomponents:
         bicomp = set(bicomponent)
         # avoid considering dyads as bicomponents
@@ -127,7 +124,7 @@ def k_components(G, flow_func=None):
             continue
         k = nx.node_connectivity(B, flow_func=flow_func)
         if k > 2:
-            k_components[k].append(set(B.nodes()))
+            k_components[k].append(set(B))
         # Perform cuts in a DFS like order.
         cuts = list(nx.all_node_cuts(B, k=k, flow_func=flow_func))
         stack = [(k, _generate_partition(B, cuts, k))]
@@ -138,7 +135,7 @@ def k_components(G, flow_func=None):
                 C = B.subgraph(nodes)
                 this_k = nx.node_connectivity(C, flow_func=flow_func)
                 if this_k > parent_k and this_k > 2:
-                    k_components[this_k].append(set(C.nodes()))
+                    k_components[this_k].append(set(C))
                 cuts = list(nx.all_node_cuts(C, k=this_k, flow_func=flow_func))
                 if cuts:
                     stack.append((this_k, _generate_partition(C, cuts, this_k)))
@@ -194,8 +191,7 @@ def _generate_partition(G, cuts, k):
                     component.add(node)
         if len(component) < G.order():
             components.append(component)
-    for component in _consolidate(components, k + 1):
-        yield component
+    yield from _consolidate(components, k + 1)
 
 
 def _reconstruct_k_components(k_comps):

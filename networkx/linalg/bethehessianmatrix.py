@@ -1,22 +1,12 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Jean-Gabriel Young <jeangabriel.young@gmail.com>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Jean-Gabriel Young (jeangabriel.young@gmail.com)
 """Bethe Hessian or deformed Laplacian matrix of graphs."""
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['bethe_hessian_matrix']
+__all__ = ["bethe_hessian_matrix"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def bethe_hessian_matrix(G, r=None, nodelist=None):
     r"""Returns the Bethe Hessian matrix of G.
 
@@ -66,29 +56,23 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     References
     ----------
     .. [1] A. Saade, F. Krzakala and L. Zdeborová
-      "Spectral clustering of graphs with the bethe hessian",
+       "Spectral clustering of graphs with the bethe hessian",
        Advances in Neural Information Processing Systems. 2014.
     .. [2] C. M. Lee, E. Levina
-      "Estimating the number of communities in networks by spectral methods"
-      arXiv:1507.00827, 2015.
+       "Estimating the number of communities in networks by spectral methods"
+       arXiv:1507.00827, 2015.
     """
     import scipy.sparse
+
     if nodelist is None:
         nodelist = list(G)
     if r is None:
-        r = sum([d ** 2 for v, d in nx.degree(G)]) /\
-            sum([d for v, d in nx.degree(G)]) - 1
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format='csr')
+        r = (
+            sum([d ** 2 for v, d in nx.degree(G)]) / sum([d for v, d in nx.degree(G)]) - 1
+        )
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format="csr")
     n, m = A.shape
     diags = A.sum(axis=1)
-    D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format='csr')
-    I = scipy.sparse.eye(m, n, format='csr')
+    D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
+    I = scipy.sparse.eye(m, n, format="csr")
     return (r ** 2 - 1) * I - r * A + D
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")

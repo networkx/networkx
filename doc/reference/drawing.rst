@@ -87,4 +87,5 @@ Graph Layout
    shell_layout
    spring_layout
    spectral_layout
+   spiral_layout
 

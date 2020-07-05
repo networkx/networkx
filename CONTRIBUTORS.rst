@@ -122,9 +122,58 @@ is partially historical, and now, mostly arbitrary.
 - Robert Gmyr, Github: `gmyr <https://github.com/gmyr>`_
 - Mike Trenfield
 - Jon Crall, Github: `Erotemic <https://github.com/Erotemic>`_
-- Issa Moradnejad, `Github <https://github.com/Moradnejad>`_, `LinkedIn <https://linkedin.com/in/moradnejad/>`_
+- Issa Moradnejad, Github `<https://github.com/Moradnejad>`_, LinkedIn `<https://linkedin.com/in/moradnejad/>`_
+- Brian Kiefer, Github: `bkief <https://github.com/bkief>`_
 - Julien Klaus
+- Peter C. Kroon, Github: `pckroon <https://github.com/pckroon>`_
 - Weisheng Si, Github: `ws4u <https://github.com/ws4u>`_
+- Haakon H. Rød, Gitlab: `haakonhr <https://gitlab.com/haakonhr>`_, `<https://haakonhr.gitlab.io>`_ 
+- Efraim Rodrigues, GitHub `<https://github.com/efraimrodrigues>`_, LinkedIn `<https://linkedin.com/in/efraim-rodrigues/>`_
+- Erwan Le Merrer
+- Søren Fuglede Jørgensen, GitHub: `fuglede <https://github.com/fuglede>`_
+- Salim BELHADDAD, LinkedIn `<https://www.linkedin.com/in/salymdotme/>`_
+- ysitu 
+- Tomas Gavenciak
+- Luca Baldesi
+- Yuto Yamaguchi
+- James Clough
+- Minas Gjoka
+- Drew Conway
+- Alex Levenson
+- Haochen Wu 
+- Erwan  Le Merrer
+- Alex Roper
+- P C Kroon
+- Christopher Ellison   
+- D. Eppstein
+- Federico Rosato
+- Aitor Almeida
+- Ferran Parés
+- Christian Olsson
+- Fredrik Erlandsson
+- Nanda H Krishna
+- Nicholas Mancuso
+- Fred Morstatter
+- Ollie Glass       
+- Rodrigo Dorantes-Gilardi 
+- Pranay Kanwar
+- Balint Tillman
+- Diederik van Liere
+- Ferdinando Papale
+- Miguel Sozinho Ramalho
+- Brandon Liu
+- Nima Mohammadi
+- Jason Grout
+- Jan Aagaard Meier
+- Henrik Haugbølle
+- Piotr Brodka
+- Sasha Gutfraind
+- Alessandro Luongo
+- Huston Hedinger
+- Oleguer Sagarra
+- Gaetano Pietro Paolo Carpinato, Github `<https://github.com/Carghaez>`_, LinkedIn `<https://linkedin.com/in/gaetanocarpinato/>`_
+- Arun Nampally, GitHub `<https://github.com/arunwise>`_, LinkedIn `<https://www.linkedin.com/in/arun-nampally-b57845b7/>`_
+- Ryan Duve
 
 Support
 -------

@@ -1,10 +1,3 @@
-#    Copyright (C) 2011-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-
 """
 Read and write NetworkX graphs as JavaScript InfoVis Toolkit (JIT) format JSON.
 
@@ -60,6 +53,9 @@ def jit_graph(data, create_using=None):
         G = create_using
         G.clear()
 
+    if isinstance(data, str):
+        data = json.loads(data)
+
     for node in data:
         G.add_node(node['id'], **node['data'])
         if node.get('adjacencies') is not None:
@@ -69,7 +65,7 @@ def jit_graph(data, create_using=None):
 
 
 @not_implemented_for('multigraph')
-def jit_data(G, indent=None):
+def jit_data(G, indent=None, default=None):
     """Returns data in JIT JSON format.
 
     Parameters
@@ -77,10 +73,14 @@ def jit_data(G, indent=None):
     G : NetworkX Graph
 
     indent: optional, default=None
-        If indent is a non-negative integer, then JSON array elements and object
-        members will be pretty-printed with that indent level. An indent level
-        of 0, or negative, will only insert newlines. None (the default) selects
-        the most compact representation.
+        If indent is a non-negative integer, then JSON array elements and
+        object members will be pretty-printed with that indent level.
+        An indent level of 0, or negative, will only insert newlines.
+        None (the default) selects the most compact representation.
+
+    default: optional, default=None
+         It will pass the value to the json.dumps function in order to
+         be able to serialize custom objects used as nodes.
 
     Returns
     -------
@@ -105,4 +105,4 @@ def jit_data(G, indent=None):
                 adjacency["data"] = G.edges[node, neighbour]
                 json_node["adjacencies"].append(adjacency)
         json_graph.append(json_node)
-    return json.dumps(json_graph, indent=indent)
+    return json.dumps(json_graph, indent=indent, default=default)

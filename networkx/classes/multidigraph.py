@@ -1,18 +1,7 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:   Aric Hagberg <hagberg@lanl.gov>
-#            Dan Schult <dschult@colgate.edu>
-#            Pieter Swart <swart@lanl.gov>
 """Base class for MultiDiGraph."""
 from copy import deepcopy
 
 import networkx as nx
-from networkx.classes.graph import Graph  # for doctests
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
 from networkx.classes.coreviews import MultiAdjacencyView
@@ -504,8 +493,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         try:
             d = self._adj[u][v]
         except KeyError:
-            raise NetworkXError(
-                "The edge %s-%s is not in the graph." % (u, v))
+            raise NetworkXError(f"The edge {u}-{v} is not in the graph.")
         # remove the edge with specified data
         if key is None:
             d.popitem()
@@ -513,8 +501,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
             try:
                 del d[key]
             except KeyError:
-                msg = "The edge %s-%s with key %s is not in the graph."
-                raise NetworkXError(msg % (u, v, key))
+                msg = f"The edge {u}-{v} with key {key} is not in the graph."
+                raise NetworkXError(msg)
         if len(d) == 0:
             # remove the key entries if last edge
             del self._succ[u][v]
@@ -812,7 +800,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         returns a shallow copy of the data.
 
         See the Python copy module for more information on shallow
-        and deep copies, https://docs.python.org/2/library/copy.html.
+        and deep copies, https://docs.python.org/3/library/copy.html.
 
         Warning: If you have subclassed MultiDiGraph to use dict-like
         objects in the data structure, those changes do not transfer
