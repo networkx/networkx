@@ -8,7 +8,13 @@ __all__ = ["ramsey_R2"]
 
 
 def ramsey_R2(G):
-    r"""Approximately computes the Ramsey number `R(2;s,t)` for graph.
+    r"""Compute the largest clique and largest independent set in `G`.
+
+    This can be used to estimate bounds for the 2-color
+    Ramsey number `R(2;s,t)` for `G`.
+
+    This is a recursive implementation which could run into trouble
+    for large recursions. Note that self-loop edges are ignored.
 
     Parameters
     ----------
