@@ -1077,18 +1077,38 @@ class DiGraph(Graph):
         return OutDegreeView(self)
 
     def clear(self):
-        __doc__ = Graph.clear.__doc__
+        """Remove all nodes and edges from the graph.
 
-        super(DiGraph, self).clear()
+        This also removes the name, and all graph, node, and edge attributes.
+
+        Examples
+        --------
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.clear()
+        >>> list(G.nodes)
+        []
+        >>> list(G.edges)
+        []
+
+        """
         self._succ.clear()
         self._pred.clear()
         self._node.clear()
         self.graph.clear()
 
     def clear_edges(self):
-        __doc__ = Graph.clear_edges.__doc__
+        """Remove all edges from the graph without altering nodes.
 
-        super(DiGraph, self).clear_edges()
+        Examples
+        --------
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.clear_edges()
+        >>> list(G.nodes)
+        [0, 1, 2, 3]
+        >>> list(G.edges)
+        []
+
+        """
         for predecessor_dict in self._pred.values():
             predecessor_dict.clear()
         for successor_dict in self._succ.values():

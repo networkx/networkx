@@ -629,17 +629,18 @@ class TestGraph(BaseAttrGraphTester):
         G = self.K3
         G.graph['name'] = 'K3'
         G.clear()
-        assert_equal(list(G.nodes), [])
-        assert_equal(G.adj, {})
-        assert_equal(G.graph, {})
+        assert list(G.nodes) == []
+        assert G.adj == {}
+        assert G.graph == {}
 
     def test_clear_edges(self):
         G = self.K3
         nodes = list(G.nodes)
         G.clear_edges()
-        assert_equal(nodes, list(G.nodes))
-        assert_equal(G.adj, {0: {}, 1: {}, 2: {}})
-        assert_equal(list(G.edges), [])
+        assert list(G.nodes) == nodes
+        assert G.adj == {0: {}, 1: {}, 2: {}}
+        assert list(G.edges) == []
+        assert G.graph['name'] == 'K3'
 
     def test_edges_data(self):
         G = self.K3

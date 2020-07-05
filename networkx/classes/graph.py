@@ -1460,7 +1460,6 @@ class Graph(object):
         [0, 1, 2, 3]
         >>> list(G.edges)
         []
-
         """
         for neighbours_dict in self._adj.values():
             neighbours_dict.clear()
