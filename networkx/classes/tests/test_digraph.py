@@ -253,6 +253,7 @@ class TestDiGraph(BaseAttrDiGraphTester, _TestGraph):
 
     def test_clear_edges(self):
         G = self.K3
+        G.graph['name'] = 'K3'
         nodes = list(G.nodes)
         G.clear_edges()
         assert list(G.nodes) == nodes
