@@ -1564,8 +1564,8 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
 
     Returns
     -------
-    paths : list of lists
-        List of ``sample_size`` paths of length ``path_length``.
+    paths : generator of lists
+        Generator of ``sample_size`` paths each with length ``path_length``.
 
     Examples
     --------
@@ -1603,7 +1603,6 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
     node_map = np.array(G)
     num_nodes = G.number_of_nodes()
 
-    paths = []
     for path_index in range(sample_size):
         # Sample current vertex v = v_i uniformly at random
         node_index = np.random.randint(0, high=num_nodes)
@@ -1639,5 +1638,4 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
                 index_map.setdefault(neighbor_node, set())
                 index_map[neighbor_node].add(path_index)
 
-        paths.append(path)
-    return paths
+        yield path

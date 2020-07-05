@@ -568,7 +568,7 @@ class TestSimilarity:
             4: {1, 6},
         }
 
-        assert expected_paths == paths
+        assert expected_paths == list(paths)
         assert expected_map == index_map
 
     def test_generate_random_paths_weighted(self):
@@ -612,5 +612,5 @@ class TestSimilarity:
             'e': {1, 9, 7},
         }
 
-        assert expected_paths == paths
+        assert expected_paths == list(paths)
         assert expected_map == index_map
