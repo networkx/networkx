@@ -5,6 +5,7 @@ from itertools import count
 import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.utils import pairwise
+from networkx.utils import empty_generator
 from networkx.algorithms.shortest_paths.weighted import _weight_function
 
 __all__ = [
@@ -228,11 +229,11 @@ def all_simple_paths(G, source, target, cutoff=None):
         except TypeError as e:
             raise nx.NodeNotFound(f"target node {target} not in graph") from e
     if source in targets:
-        return []
+        return empty_generator()
     if cutoff is None:
         cutoff = len(G) - 1
     if cutoff < 1:
-        return []
+        return empty_generator()
     if G.is_multigraph():
         return _all_simple_paths_multigraph(G, source, targets, cutoff)
     else:
