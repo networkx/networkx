@@ -1451,8 +1451,9 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
         The number of most similar nodes to return
     path_length : int
         How long the randomly generated paths should be (``T`` in [1]_)
-    c : float
-        A universal positive constant. Defaults to 0.5 per [1]_
+    c : float (default = 0.5)
+        A universal positive constant used to scale the number
+        of sample random paths to generate.
     delta : float
         The probability that $S$ is not an epsilon-approximation to (R, phi)
     eps : float
