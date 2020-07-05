@@ -1435,8 +1435,9 @@ def n_choose_k(n, k):
         return reduce(mul, range(k + 1, n + 1)) // math.factorial(n - k)
 
 
-def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
+def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     """Returns the Panther similarity of nodes in the graph ``G`` to node ``v``.
+
     Panther is a similarity metric that says "two objects are considered
     to be similar if they frequently appear on the same paths." [1]_.
 
@@ -1444,7 +1445,7 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     ----------
     G : NetworkX graph
         A NetworkX graph
-    v : node
+    source : node
         Source node for whom to find the top ``k`` similar other nodes
     k : int
         The number of most similar nodes to return
@@ -1514,17 +1515,17 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     for path_index, path in enumerate(paths):
         path_set = set(path)
 
-        # Comparing ``v`` with ``node`` (v_j)
+        # Comparing ``source`` with ``node`` (v_j)
         for node in path_set:
             # Don't compare with self
-            if v == node:
+            if source == node:
                 continue
 
             node_index = inv_node_map[node]
 
             # Only sum if they are share the same path,
-            # i.e., ``v`` is also on the same path
-            if path_index in index_map[v]:
+            # i.e., ``source`` is also on the same path
+            if path_index in index_map[source]:
                 S[node_index] += 1 / sample_size
 
     # Retrieve top ``k`` similar
@@ -1538,7 +1539,7 @@ def panther_similarity(G, v, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     top_k_with_val = dict(zip(top_k_sorted_names, S[top_k_sorted]))
 
     # Remove the self-similarity
-    top_k_with_val.pop(v, None)
+    top_k_with_val.pop(source, None)
     return top_k_with_val
 
 
