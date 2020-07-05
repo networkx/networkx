@@ -99,7 +99,7 @@ pos = nx.spring_layout(G)
 options = {
     "node_color": "blue",
     "node_size": 20,
-    "line_color": "grey",
+    "edge_color": "grey",
     "linewidths": 0,
     "width": 0.1,
 }
