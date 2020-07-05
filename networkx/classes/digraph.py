@@ -1078,11 +1078,30 @@ class DiGraph(Graph):
         []
         >>> list(G.edges)
         []
+
         """
         self._succ.clear()
         self._pred.clear()
         self._node.clear()
         self.graph.clear()
+
+    def clear_edges(self):
+        """Remove all edges from the graph without altering nodes.
+
+        Examples
+        --------
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.clear_edges()
+        >>> list(G.nodes)
+        [0, 1, 2, 3]
+        >>> list(G.edges)
+        []
+
+        """
+        for predecessor_dict in self._pred.values():
+            predecessor_dict.clear()
+        for successor_dict in self._succ.values():
+            successor_dict.clear()
 
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""

@@ -1406,6 +1406,21 @@ class Graph:
         self._node.clear()
         self.graph.clear()
 
+    def clear_edges(self):
+        """Remove all edges from the graph without altering nodes.
+
+        Examples
+        --------
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.clear_edges()
+        >>> list(G.nodes)
+        [0, 1, 2, 3]
+        >>> list(G.edges)
+        []
+        """
+        for neighbours_dict in self._adj.values():
+            neighbours_dict.clear()
+
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""
         return False
