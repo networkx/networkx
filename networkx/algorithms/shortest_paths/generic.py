@@ -6,7 +6,6 @@ These algorithms work with undirected and directed graphs.
 """
 
 import networkx as nx
-from networkx.algorithms.components import connected_components
 
 __all__ = ['shortest_path', 'all_shortest_paths',
            'shortest_path_length', 'average_shortest_path_length',
@@ -360,7 +359,7 @@ def average_shortest_path_length(G, weight=None, method=None):
     length for each component
 
     >>> G = nx.Graph([(1, 2), (3, 4)])
-    >>> for C in (G.subgraph(c).copy() for c in connected_components(G)):
+    >>> for C in (G.subgraph(c).copy() for c in nx.connected_components(G)):
     ...     print(nx.average_shortest_path_length(C))
     1.0
     1.0

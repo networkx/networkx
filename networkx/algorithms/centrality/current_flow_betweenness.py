@@ -90,13 +90,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
         import numpy as np
     except ImportError:
         raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://scipy.org/')
-    try:
-        from scipy import sparse
-        from scipy.sparse import linalg
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires SciPy ',
-                          'http://scipy.org/')
+                          'http://numpy.org/')
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     solvername = {"full": FullInverseLaplacian,
@@ -210,16 +204,6 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://scipy.org/')
-    try:
-        import scipy
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires SciPy ',
-                          'http://scipy.org/')
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()
@@ -322,16 +306,6 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
     from networkx.utils import reverse_cuthill_mckee_ordering
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://scipy.org/')
-    try:
-        import scipy
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires SciPy ',
-                          'http://scipy.org/')
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()
