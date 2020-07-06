@@ -20,12 +20,9 @@ import pytest
 class TestIntervalGraph:
     """Unit tests for :func:`networkx.generators.interval_graph.interval_graph`"""
 
-    def test_none(self):
-        """ Tests for trivial case that a parameter is None or empty"""
-        intervals = None
-        assert interval_graph(intervals) is None
-        intervals = []
-        assert interval_graph(intervals) is None
+    def test_empty(self):
+        """ Tests for trivial case of empty input"""
+        assert len(interval_graph([])) == 0
 
     def test_interval_graph_check_invalid(self):
         """ Tests for conditions that raise Exceptions """
@@ -50,9 +47,8 @@ class TestIntervalGraph:
         intervals = [(1, 2), (1, 3)]
 
         expected_graph = nx.Graph()
-        expected_graph.add_nodes_from(intervals)
-        e = ((1, 2), (1, 3))
-        expected_graph.add_edge(*e)
+        expected_graph.add_edge(*intervals)
+
         actual_g = interval_graph(intervals)
 
         assert set(actual_g.nodes) == set(expected_graph.nodes)
@@ -69,11 +65,7 @@ class TestIntervalGraph:
         e4 = ((3, 4), (2, 3))
         e5 = ((1, 2), (2, 3))
 
-        expected_graph.add_edge(*e1)
-        expected_graph.add_edge(*e2)
-        expected_graph.add_edge(*e3)
-        expected_graph.add_edge(*e4)
-        expected_graph.add_edge(*e5)
+        expected_graph.add_edges_from([e1, e2, e3, e4, e5])
 
         actual_g = interval_graph(intervals)
 
@@ -100,9 +92,7 @@ class TestIntervalGraph:
         e2 = ((1, 4), (2.5, 4))
         e3 = ((3, 5), (2.5, 4))
 
-        expected_graph.add_edge(*e1)
-        expected_graph.add_edge(*e2)
-        expected_graph.add_edge(*e3)
+        expected_graph.add_edges_from([e1, e2, e3])
 
         actual_g = interval_graph(intervals)
 
@@ -111,15 +101,14 @@ class TestIntervalGraph:
 
     def test_interval_graph_4(self):
         """ this test is to see that an interval supports infinite number"""
-        intervals = {(-math.inf, 0), (-1, -1), (1, 1), (1, math.inf)}
+        intervals = {(-math.inf, 0), (-1, -1), (0.5, 0.5), (1, 1), (1, math.inf)}
 
         expected_graph = nx.Graph()
         expected_graph.add_nodes_from(intervals)
         e1 = ((-math.inf, 0), (-1, -1))
         e2 = ((1, 1), (1, math.inf))
 
-        expected_graph.add_edge(*e1)
-        expected_graph.add_edge(*e2)
+        expected_graph.add_edges_from([e1, e2])
         actual_g = interval_graph(intervals)
 
         assert set(actual_g.nodes) == set(expected_graph.nodes)

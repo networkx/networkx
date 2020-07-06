@@ -1,10 +1,3 @@
-#    Copyright(C) 2011-2019 by
-#    Jangwon Yie <kleinaberoho10@gmail.com>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:  Jangwon Yie (kleinaberoho10@gmail.com)
-
 """
 Generators for interval graph.
 """
@@ -18,8 +11,8 @@ def interval_graph(intervals):
     """ Generates an interval graph for a list of intervals given.
 
     In graph theory, an interval graph is an undirected graph formed from a set
-    of intervals on the real line, with a vertex for each interval and an edge
-    between vertices whose intervals intersect.
+    of closed intervals on the real line, with a vertex for each interval
+    and an edge between vertices whose intervals intersect.
     It is the intersection graph of the intervals.
 
     More information can be found at:
@@ -27,9 +20,8 @@ def interval_graph(intervals):
 
     Parameters
     ----------
-    intervals : a list of intervals, each element of which is a form of
-    collection.abc.Sequence, say (l, r) where l,r is a left end, right
-    end of an closed interval, respectively.
+    intervals : a sequence of intervals, say (l, r) where l is the left end, 
+    and r is the right end of the closed interval.
 
     Returns
     -------
@@ -44,24 +36,23 @@ def interval_graph(intervals):
         if `intervals` contains an interval such that min1 > max1
         where min1,max1 = interval
     """
-
-    if intervals is None or len(intervals) == 0:
-        return None
-
+    intervals = list(intervals)
     for interval in intervals:
-        if not __check_interval_type(interval):
-            raise TypeError('Each interval must be not None, an instance of '
-                            'collections.abc.Sequence and a 2-tuple.')
-        if not __check_interval_val(interval):
-            raise ValueError("Each interval must be a 2-tuple (min, max). "
-                             "Got {}".format(interval))
+        if not (isinstance(interval, Sequence) and len(interval) == 2):
+            raise TypeError("Each interval must have length 2, and be a "
+                            "collections.abc.Sequence such as tuple or list.")
+        if interval[0] > interval[1]:
+            raise ValueError(f"Interval must have lower value first. "
+                             f"Got {interval}")
 
     graph = nx.Graph()
+    if len(intervals) == 0:
+        return graph
+
     tupled_intervals = [tuple(interval) for interval in intervals]
     graph.add_nodes_from(tupled_intervals)
 
-    edges = list()
-    intervals = list(intervals)
+    edges = []
     for i in range(len(intervals)):
         min1, max1 = tupled_intervals[i]
         for j in range(i + 1, len(intervals)):
@@ -70,16 +61,4 @@ def interval_graph(intervals):
                 edges.append((tupled_intervals[i], tupled_intervals[j]))
 
     graph.add_edges_from(edges)
-
     return graph
-
-
-def __check_interval_type(interval):
-    if interval is None:
-        return False
-    return isinstance(interval, Sequence) and len(interval) == 2
-
-
-def __check_interval_val(interval):
-    min1, max1 = interval
-    return min1 <= max1
