@@ -176,11 +176,6 @@ def write_dot(G, path):
     path : filename
        Filename or file handle to write
     """
-    try:
-        import pygraphviz
-    except ImportError as e:
-        raise ImportError('requires pygraphviz '
-                          'http://pygraphviz.github.io/') from e
     A = to_agraph(G)
     A.write(path)
     A.clear()
@@ -334,8 +329,6 @@ def view_pygraphviz(G, edgelabel=None, prog='dot', args='',
     """
     if not len(G):
         raise nx.NetworkXException("An empty graph cannot be drawn.")
-
-    import pygraphviz
 
     # If we are providing default values for graphviz, these must be set
     # before any nodes or edges are added to the PyGraphviz graph object.

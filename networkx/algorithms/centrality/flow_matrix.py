@@ -6,8 +6,6 @@ import networkx as nx
 def flow_matrix_row(G, weight=None, dtype=float, solver='lu'):
     # Generate a row of the current-flow matrix
     import numpy as np
-    from scipy import sparse
-    from scipy.sparse import linalg
     solvername = {"full": FullInverseLaplacian,
                   "lu": SuperLUInverseLaplacian,
                   "cg": CGInverseLaplacian}

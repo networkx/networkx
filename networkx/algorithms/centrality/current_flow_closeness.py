@@ -67,8 +67,6 @@ def current_flow_closeness_centrality(G, weight=None,
        Social Networks 11(1):1-37, 1989.
        https://doi.org/10.1016/0378-8733(89)90016-6
     """
-    import numpy as np
-    import scipy
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     solvername = {"full": FullInverseLaplacian,

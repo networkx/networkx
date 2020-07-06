@@ -575,7 +575,7 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
         raise nx.NetworkXError(msg) from e
     try:
-        from scipy.sparse import spdiags, coo_matrix
+        from scipy.sparse import coo_matrix
     except ImportError as e:
         msg = "_sparse_fruchterman_reingold() scipy numpy: http://scipy.org/ "
         raise ImportError(msg) from e

@@ -91,12 +91,7 @@ def current_flow_betweenness_centrality_subset(G, sources, targets,
         import numpy as np
     except ImportError as e:
         raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://scipy.org/') from e
-    try:
-        import scipy
-    except ImportError as e:
-        raise ImportError('current_flow_betweenness_centrality requires SciPy ',
-                          'http://scipy.org/') from e
+                          'http://numpy.org/') from e
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()
@@ -206,12 +201,7 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
         import numpy as np
     except ImportError as e:
         raise ImportError('current_flow_betweenness_centrality requires NumPy '
-                          'http://scipy.org/') from e
-    try:
-        import scipy
-    except ImportError as e:
-        raise ImportError('current_flow_betweenness_centrality requires SciPy '
-                          'http://scipy.org/') from e
+                          'http://numpy.org/') from e
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()

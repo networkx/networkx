@@ -3,7 +3,6 @@ Utilities for generating random numbers, random sequences, and
 random selections.
 """
 
-import random
 import networkx as nx
 from networkx.utils import py_random_state
 

@@ -269,7 +269,6 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
     try:
-        import scipy.sparse
         import numpy as np
     except ImportError as e:
         raise ImportError("hits_scipy() requires SciPy and NumPy:"

@@ -569,7 +569,6 @@ def draw_networkx_edges(G, pos,
     draw_networkx_edge_labels()
     """
     try:
-        import matplotlib
         import matplotlib.pyplot as plt
         from matplotlib.colors import colorConverter, Colormap, Normalize
         from matplotlib.collections import LineCollection
