@@ -12,6 +12,7 @@ and/or `optimize_edit_paths`.
 At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
+import time
 from itertools import product
 import networkx as nx
 
@@ -40,8 +41,9 @@ def graph_edit_distance(
     edge_subst_cost=None,
     edge_del_cost=None,
     edge_ins_cost=None,
+    roots=None,
     upper_bound=None,
-    roots=None
+    timeout=None
 ):
     """Returns GED (graph edit distance) between graphs G1 and G2.
 
@@ -132,21 +134,33 @@ def graph_edit_distance(
         cost of 1 is used.  If edge_ins_cost is not specified then
         default edge insertion cost of 1 is used.
 
-    upper_bound : numeric
-        Maximum edit distance to consider.  Return None if no edit
-        distance under or equal to upper_bound exists.
-
     roots : tuple
         Tuple where first element is a node in G1 and the second
         is a node in G2.
         These nodes are forced to be matched in the comparison to
         allow comparison between rooted graphs.
+
+    upper_bound : numeric
+        Maximum edit distance to consider.  Return None if no edit
+        distance under or equal to upper_bound exists.
+
+    timeouet : numeric
+        Number of seconds to execute. After timeout is exceeded,
+        the current best GED is returned.
+
     Examples
     --------
     >>> G1 = nx.cycle_graph(6)
     >>> G2 = nx.wheel_graph(7)
     >>> nx.graph_edit_distance(G1, G2)
     7.0
+
+    >>> G1 = nx.star_graph(5)
+    >>> G2 = nx.star_graph(5)
+    >>> nx.graph_edit_distance(G1, G2, roots=(0,0))
+    0
+    >>> nx.graph_edit_distance(G1, G2, roots=(1, 0)
+    8.0
 
     See Also
     --------
@@ -180,6 +194,7 @@ def graph_edit_distance(
         upper_bound,
         True,
         roots,
+        timeout
     ):
         # assert bestcost is None or cost < bestcost
         bestcost = cost
@@ -511,7 +526,8 @@ def optimize_edit_paths(
     edge_ins_cost=None,
     upper_bound=None,
     strictly_decreasing=True,
-    roots=None
+    roots=None,
+    timeout=None
 ):
     """GED (graph edit distance) calculation: advanced interface.
 
@@ -1128,7 +1144,11 @@ def optimize_edit_paths(
 
     maxcost = MaxCost()
 
+    start = time.perf_counter()
     def prune(cost):
+        if timeout:
+            if time.perf_counter() - start > timeout:
+                return True
         if upper_bound is not None:
             if cost > upper_bound:
                 return True
