@@ -37,63 +37,65 @@ def check_eigenvector(A, l, x):
 
 
 class TestAlgebraicConnectivity:
-    def test_directed(self):
+    _methods = methods
+
+    @pytest.mark.parametrize('method', methods)
+    def test_directed(self, method):
         G = nx.DiGraph()
-        for method in self._methods:
-            pytest.raises(
-                nx.NetworkXNotImplemented, nx.algebraic_connectivity, G, method=method
-            )
-            pytest.raises(
-                nx.NetworkXNotImplemented, nx.fiedler_vector, G, method=method
-            )
+        pytest.raises(
+            nx.NetworkXNotImplemented, nx.algebraic_connectivity, G, method=method
+        )
+        pytest.raises(
+            nx.NetworkXNotImplemented, nx.fiedler_vector, G, method=method
+        )
 
-    def test_null_and_singleton(self):
+    @pytest.mark.parametrize('method', methods)
+    def test_null_and_singleton(self, method):
         G = nx.Graph()
-        for method in self._methods:
-            pytest.raises(nx.NetworkXError, nx.algebraic_connectivity, G, method=method)
-            pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
+        pytest.raises(nx.NetworkXError, nx.algebraic_connectivity, G, method=method)
+        pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
         G.add_edge(0, 0)
-        for method in self._methods:
-            pytest.raises(nx.NetworkXError, nx.algebraic_connectivity, G, method=method)
-            pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
+        pytest.raises(nx.NetworkXError, nx.algebraic_connectivity, G, method=method)
+        pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
 
-    def test_disconnected(self):
+    @pytest.mark.parametrize('method', methods)
+    def test_disconnected(self, method):
         G = nx.Graph()
         G.add_nodes_from(range(2))
-        for method in self._methods:
-            assert nx.algebraic_connectivity(G) == 0
-            pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
+        assert nx.algebraic_connectivity(G) == 0
+        pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
         G.add_edge(0, 1, weight=0)
-        for method in self._methods:
-            assert nx.algebraic_connectivity(G) == 0
-            pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
+        assert nx.algebraic_connectivity(G) == 0
+        pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
 
     def test_unrecognized_method(self):
         G = nx.path_graph(4)
         pytest.raises(nx.NetworkXError, nx.algebraic_connectivity, G, method="unknown")
         pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method="unknown")
 
-    def test_two_nodes(self):
+    @pytest.mark.parametrize('method', methods)
+    def test_two_nodes(self, method):
         G = nx.Graph()
         G.add_edge(0, 1, weight=1)
         A = nx.laplacian_matrix(G)
-        for method in self._methods:
-            assert almost_equal(
-                nx.algebraic_connectivity(G, tol=1e-12, method=method), 2
-            )
-            x = nx.fiedler_vector(G, tol=1e-12, method=method)
-            check_eigenvector(A, 2, x)
+        assert almost_equal(
+            nx.algebraic_connectivity(G, tol=1e-12, method=method), 2
+        )
+        x = nx.fiedler_vector(G, tol=1e-12, method=method)
+        check_eigenvector(A, 2, x)
+
+    @pytest.mark.parametrize('method', methods)
+    def test_two_nodes_multigraph(self, method):
         G = nx.MultiGraph()
         G.add_edge(0, 0, spam=1e8)
         G.add_edge(0, 1, spam=1)
         G.add_edge(0, 1, spam=-2)
         A = -3 * nx.laplacian_matrix(G, weight="spam")
-        for method in self._methods:
-            assert almost_equal(
-                nx.algebraic_connectivity(G, weight="spam", tol=1e-12, method=method), 6
-            )
-            x = nx.fiedler_vector(G, weight="spam", tol=1e-12, method=method)
-            check_eigenvector(A, 6, x)
+        assert almost_equal(
+            nx.algebraic_connectivity(G, weight="spam", tol=1e-12, method=method), 6
+        )
+        x = nx.fiedler_vector(G, weight="spam", tol=1e-12, method=method)
+        check_eigenvector(A, 6, x)
 
     def test_abbreviation_of_method(self):
         G = nx.path_graph(8)
@@ -104,46 +106,46 @@ class TestAlgebraicConnectivity:
         x = nx.fiedler_vector(G, tol=1e-12, method="tracemin")
         check_eigenvector(A, sigma, x)
 
-    def test_path(self):
+    @pytest.mark.parametrize('method', methods)
+    def test_path(self, method):
         G = nx.path_graph(8)
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2 + sqrt(2))
-        for method in self._methods:
-            ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
-            assert almost_equal(ac, sigma)
-            x = nx.fiedler_vector(G, tol=1e-12, method=method)
-            check_eigenvector(A, sigma, x)
+        ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
+        assert almost_equal(ac, sigma)
+        x = nx.fiedler_vector(G, tol=1e-12, method=method)
+        check_eigenvector(A, sigma, x)
 
-    def test_problematic_graph_issue_2381(self):
+    @pytest.mark.parametrize('method', methods)
+    def test_problematic_graph_issue_2381(self, method):
         G = nx.path_graph(4)
         G.add_edges_from([(4, 2), (5, 1)])
         A = nx.laplacian_matrix(G)
         sigma = 0.438447187191
-        for method in self._methods:
-            ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
-            assert almost_equal(ac, sigma)
-            x = nx.fiedler_vector(G, tol=1e-12, method=method)
-            check_eigenvector(A, sigma, x)
+        ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
+        assert almost_equal(ac, sigma)
+        x = nx.fiedler_vector(G, tol=1e-12, method=method)
+        check_eigenvector(A, sigma, x)
 
-    def test_cycle(self):
+    @pytest.mark.parametrize('method', methods)
+    def test_cycle(self, method):
         G = nx.cycle_graph(8)
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2)
-        for method in self._methods:
-            ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
-            assert almost_equal(ac, sigma)
-            x = nx.fiedler_vector(G, tol=1e-12, method=method)
-            check_eigenvector(A, sigma, x)
+        ac = nx.algebraic_connectivity(G, tol=1e-12, method=method)
+        assert almost_equal(ac, sigma)
+        x = nx.fiedler_vector(G, tol=1e-12, method=method)
+        check_eigenvector(A, sigma, x)
 
-    def test_seed_argument(self):
+    @pytest.mark.parametrize('method', methods)
+    def test_seed_argument(self, method):
         G = nx.cycle_graph(8)
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2)
-        for method in self._methods:
-            ac = nx.algebraic_connectivity(G, tol=1e-12, method=method, seed=1)
-            assert almost_equal(ac, sigma)
-            x = nx.fiedler_vector(G, tol=1e-12, method=method, seed=1)
-            check_eigenvector(A, sigma, x)
+        ac = nx.algebraic_connectivity(G, tol=1e-12, method=method, seed=1)
+        assert almost_equal(ac, sigma)
+        x = nx.fiedler_vector(G, tol=1e-12, method=method, seed=1)
+        check_eigenvector(A, sigma, x)
 
     def test_buckminsterfullerene(self):
         G = nx.Graph(
@@ -266,10 +268,11 @@ class TestAlgebraicConnectivity:
                     ):
                         raise
 
-    _methods = methods
 
 
 class TestSpectralOrdering:
+    _methods = methods
+
     def test_nullgraph(self):
         for graph in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
             G = graph()
@@ -372,4 +375,3 @@ class TestSpectralOrdering:
                             [8, 7, 6, 9, 5, 4, 0, 3, 2, 1],
                         ]
 
-    _methods = methods
