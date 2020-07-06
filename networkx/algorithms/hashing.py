@@ -105,3 +105,14 @@ def wl_hash(G, edge_attr=None, node_attr=None, iterations=3, digest_size=16):
     h.update(str(tuple(items)).encode('ascii'))
     h = h.hexdigest()
     return h
+
+if __name__ == "__main__":
+    import networkx as nx
+    G1 = nx.Graph()
+    G1.add_edges_from([(1, 2), (2, 3), (1, 3), (3, 4)])
+    G2 = nx.Graph()
+    G2.add_edges_from([(4, 5), (5, 6), (6, 4), (5, 7)])
+    print(wl_hash(G1))
+    print(wl_hash(G2))
+    G1.remove_edge(3, 1)
+    print(wl_hash(G1))
