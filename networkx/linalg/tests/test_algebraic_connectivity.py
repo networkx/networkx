@@ -147,7 +147,14 @@ class TestAlgebraicConnectivity:
         x = nx.fiedler_vector(G, tol=1e-12, method=method, seed=1)
         check_eigenvector(A, sigma, x)
 
-    def test_buckminsterfullerene(self):
+    @pytest.mark.parametrize(('normalized', 'sigma', 'laplacian_fn'), (
+        (False, 0.2434017461399311, nx.laplacian_matrix),
+        (True, 0.08113391537997749, nx.normalized_laplacian_matrix)
+    ))
+    @pytest.mark.parametrize('method', methods)
+    def test_buckminsterfullerene(
+        self, normalized, sigma, laplacian_fn, method
+    ):
         G = nx.Graph(
             [
                 (1, 10),
@@ -242,32 +249,24 @@ class TestAlgebraicConnectivity:
                 (48, 55),
             ]
         )
-        for normalized in (False, True):
-            if not normalized:
-                A = nx.laplacian_matrix(G)
-                sigma = 0.2434017461399311
-            else:
-                A = nx.normalized_laplacian_matrix(G)
-                sigma = 0.08113391537997749
-            for method in methods:
-                try:
-                    assert almost_equal(
-                        nx.algebraic_connectivity(
-                            G, normalized=normalized, tol=1e-12, method=method
-                        ),
-                        sigma,
-                    )
-                    x = nx.fiedler_vector(
-                        G, normalized=normalized, tol=1e-12, method=method
-                    )
-                    check_eigenvector(A, sigma, x)
-                except nx.NetworkXError as e:
-                    if e.args not in (
-                        ("Cholesky solver unavailable.",),
-                        ("LU solver unavailable.",),
-                    ):
-                        raise
-
+        A = laplacian_fn(G)
+        try:
+            assert almost_equal(
+                nx.algebraic_connectivity(
+                    G, normalized=normalized, tol=1e-12, method=method
+                ),
+                sigma,
+            )
+            x = nx.fiedler_vector(
+                G, normalized=normalized, tol=1e-12, method=method
+            )
+            check_eigenvector(A, sigma, x)
+        except nx.NetworkXError as e:
+            if e.args not in (
+                ("Cholesky solver unavailable.",),
+                ("LU solver unavailable.",),
+            ):
+                raise
 
 
 class TestSpectralOrdering:
