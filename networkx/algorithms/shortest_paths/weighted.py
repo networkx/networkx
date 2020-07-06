@@ -1101,7 +1101,8 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
 
 
 def bellman_ford_predecessor_and_distance(G, source, target=None,
-                                          weight='weight'):
+                                          weight='weight',
+                                          heuristic=False):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
 
@@ -1130,6 +1131,10 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
        positional arguments: the two endpoints of an edge and the
        dictionary of edge attributes for that edge. The function must
        return a number.
+
+    heuristic : bool
+        Determines whether to use a heuristic to early detect negative
+        cycles at a hopefully negligible cost.
 
     Returns
     -------
@@ -1201,12 +1206,13 @@ def bellman_ford_predecessor_and_distance(G, source, target=None,
     weight = _weight_function(G, weight)
 
     dist = _bellman_ford(G, [source], weight, pred=pred, dist=dist,
-                         target=target)
+                         target=target,
+                         heuristic=heuristic)
     return (pred, dist)
 
 
 def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
-                  target=None):
+                  target=None, heuristic=True):
     """Relaxation loop for Bellman–Ford algorithm.
 
     This is an implementation of the SPFA variant.
@@ -1243,6 +1249,10 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
         Ending node for path. Path lengths to other destinations may (and
         probably will) be incorrect.
 
+    heuristic : bool
+        Determines whether to use a heuristic to early detect negative
+        cycles at a hopefully negligible cost.
+
     Returns
     -------
     Returns a dict keyed by node to the distance from the source.
@@ -1269,6 +1279,11 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
     if dist is None:
         dist = {v: 0 for v in source}
 
+    # Heuristic Storage setup. Note: use None because nodes cannot be None
+    nonexistent_edge = (None, None)
+    pred_edge = {v: None for v in source}
+    recent_update = {v: nonexistent_edge for v in source}
+
     G_succ = G.succ if G.is_directed() else G.adj
     inf = float('inf')
     n = len(G)
@@ -1287,6 +1302,24 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                 dist_v = dist_u + weight(u, v, e)
 
                 if dist_v < dist.get(v, inf):
+                    # In this conditional branch we are updating the path with v.
+                    # If it happens that some earlier update also added node v
+                    # that implies the existence of a negative cycle since
+                    # after the update node v would lie on the update path twice.
+                    # The update path is stored up to one of the source nodes,
+                    # therefore u is always in the dict recent_update
+                    if heuristic:
+                        if v in recent_update[u]:
+                            raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+                        # Transfer the recent update info from u to v if the
+                        # same source node is the head of the update path.
+                        # If the source node is responsible for the cost update,
+                        # then clear the history and use it instead.
+                        if v in pred_edge and pred_edge[v] == u:
+                            recent_update[v] = recent_update[u]
+                        else:
+                            recent_update[v] = (u, v)
+
                     if v not in in_q:
                         q.append(v)
                         in_q.add(v)
@@ -1297,6 +1330,7 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                         count[v] = count_v
                     dist[v] = dist_v
                     pred[v] = [u]
+                    pred_edge[v] = u
 
                 elif dist.get(v) is not None and dist_v == dist.get(v):
                     pred[v].append(u)
@@ -1859,7 +1893,7 @@ def goldberg_radzik(G, source, weight='weight'):
     return pred, d
 
 
-def negative_edge_cycle(G, weight='weight'):
+def negative_edge_cycle(G, weight='weight', heuristic=True):
     """Returns True if there exists a negative edge cycle anywhere in G.
 
     Parameters
@@ -1878,6 +1912,11 @@ def negative_edge_cycle(G, weight='weight'):
        positional arguments: the two endpoints of an edge and the
        dictionary of edge attributes for that edge. The function must
        return a number.
+
+    heuristic : bool
+        Determines whether to use a heuristic to early detect negative
+        cycles at a negligible cost. In case of graphs with a negative cycle,
+        the performance of detection increases by at least an order of magnitude.
 
     Returns
     -------
@@ -1908,7 +1947,7 @@ def negative_edge_cycle(G, weight='weight'):
     G.add_edges_from([(newnode, n) for n in G])
 
     try:
-        bellman_ford_predecessor_and_distance(G, newnode, weight)
+        bellman_ford_predecessor_and_distance(G, newnode, weight, heuristic=heuristic)
     except nx.NetworkXUnbounded:
         return True
     finally:
