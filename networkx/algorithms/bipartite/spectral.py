@@ -1,15 +1,8 @@
-# -*- coding: utf-8 -*-
 """
 Spectral bipartivity measure.
 """
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
+
 __all__ = ['spectral_bipartivity']
 
 
@@ -56,9 +49,9 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
     """
     try:
         import scipy.linalg
-    except ImportError:
+    except ImportError as e:
         raise ImportError('spectral_bipartivity() requires SciPy: ',
-                          'http://scipy.org/')
+                          'http://scipy.org/') from e
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G, nodelist, weight=weight)
     expA = scipy.linalg.expm(A)

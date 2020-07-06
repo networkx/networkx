@@ -1,10 +1,9 @@
-
 import networkx as nx
 from networkx.generators.trees import NIL
 from networkx.utils import arbitrary_element
 
 
-class TestPrefixTree(object):
+class TestPrefixTree:
     """Unit tests for the prefix tree generator function."""
 
     def test_basic(self):

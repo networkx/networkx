@@ -14,15 +14,15 @@ def get_pair(dictionary, n1, n2):
         return dictionary[n2, n1]
 
 
-class TestTreeLCA(object):
+class TestTreeLCA:
     @classmethod
     def setup_class(cls):
         cls.DG = nx.DiGraph()
         edges = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]
         cls.DG.add_edges_from(edges)
         cls.ans = dict(tree_all_pairs_lca(cls.DG, 0))
-        gold = dict([((n, n), n) for n in cls.DG])
-        gold.update(dict(((0, i), 0) for i in range(1, 7)))
+        gold = {(n, n): n for n in cls.DG}
+        gold.update({(0, i): 0 for i in range(1, 7)})
         gold.update({(1, 2): 0,
                      (1, 3): 1,
                      (1, 4): 1,
@@ -81,8 +81,8 @@ class TestTreeLCA(object):
     def test_tree_all_pairs_lowest_common_ancestor6(self):
         """Works on subtrees."""
         ans = dict(tree_all_pairs_lca(self.DG, 1))
-        gold = dict((pair, lca) for (pair, lca) in self.gold.items()
-                    if all(n in (1, 3, 4) for n in pair))
+        gold = {pair: lca for (pair, lca) in self.gold.items()
+                    if all(n in (1, 3, 4) for n in pair)}
         self.assert_has_same_pairs(gold, ans)
 
     def test_tree_all_pairs_lowest_common_ancestor7(self):

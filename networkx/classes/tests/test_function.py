@@ -1,11 +1,10 @@
-#!/usr/bin/env python
 import random
 import pytest
 import networkx as nx
 from networkx.testing.utils import assert_edges_equal, assert_nodes_equal
 
 
-class TestFunction(object):
+class TestFunction:
     def setup_method(self):
         self.G = nx.Graph({0: [1, 2, 3], 1: [1, 2, 0], 4: []}, name='Test')
         self.Gdegree = {0: 3, 1: 2, 2: 2, 3: 1, 4: 0}
@@ -244,11 +243,15 @@ class TestFunction(object):
         assert info == expected_graph_info
 
         info = nx.info(G, n=1)
+        assert type(info) == str
         expected_node_info = '\n'.join(
             ['Node 1 has the following properties:',
              'Degree: 2',
              'Neighbors: 0 2'])
         assert info == expected_node_info
+
+        # must raise an error for a non-existent node
+        pytest.raises(nx.NetworkXError, nx.info, G, 1248)
 
     def test_info_digraph(self):
         G = nx.DiGraph(name='path_graph(5)')

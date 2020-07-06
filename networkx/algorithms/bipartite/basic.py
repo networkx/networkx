@@ -1,19 +1,11 @@
-# -*- coding: utf-8 -*-
 """
 ==========================
 Bipartite Graph Algorithms
 ==========================
 """
-#    Copyright (C) 2013-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
 from networkx.algorithms.components import connected_components
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
+
 __all__ = ['is_bipartite',
            'is_bipartite_node_set',
            'color',
@@ -34,11 +26,12 @@ def color(G):
     Returns
     -------
     color : dictionary
-       A dictionary keyed by node with a 1 or 0 as data for each node color.
+        A dictionary keyed by node with a 1 or 0 as data for each node color.
 
     Raises
     ------
-    exc:`NetworkXError` if the graph is not two-colorable.
+    NetworkXError
+        If the graph is not two-colorable.
 
     Examples
     --------

@@ -1,9 +1,8 @@
-#!/usr/bin/env python
 import networkx as nx
 from networkx.testing import almost_equal
 
 
-class TestAverageNeighbor(object):
+class TestAverageNeighbor:
 
     def test_degree_p4(self):
         G = nx.path_graph(4)

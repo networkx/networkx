@@ -1,11 +1,3 @@
-#    Copyright (C) 2008-2014 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
 """
 *****
 Pajek
@@ -52,7 +44,7 @@ def generate_pajek(G):
     # yield '*network %s'%name
 
     # write nodes with attributes
-    yield '*vertices %s' % (G.order())
+    yield f"*vertices {G.order()}"
     nodes = list(G)
     # make dictionary mapping nodes to integers
     nodenumber = dict(zip(nodes, range(1, len(nodes) + 1)))
@@ -62,19 +54,21 @@ def generate_pajek(G):
         na = G.nodes.get(n, {}).copy()
         x = na.pop('x', 0.0)
         y = na.pop('y', 0.0)
-        id = int(na.pop('id', nodenumber[n]))
+        try:
+            id = int(na.pop('id', nodenumber[n]))
+        except ValueError as e:
+            e.args += (("Pajek format requires 'id' to be an int()."
+                        " Refer to the 'Relabeling nodes' section."),)
+            raise
         nodenumber[n] = id
         shape = na.pop('shape', 'ellipse')
         s = ' '.join(map(make_qstr, (id, n, x, y, shape)))
         # only optional attributes are left in na.
         for k, v in na.items():
             if isinstance(v, str) and v.strip() != '':
-                s += ' %s %s' % (make_qstr(k), make_qstr(v))
+                s += f" {make_qstr(k)} {make_qstr(v)}"
             else:
-                warnings.warn('Node attribute %s is not processed. %s.' %
-                              (k,
-                               'Empty attribute' if isinstance(v, str) else
-                               'Non-string attribute'))
+                warnings.warn(f"Node attribute {k} is not processed. {('Empty attribute' if isinstance(v, str) else 'Non-string attribute')}.")
         yield s
 
     # write edges with attributes
@@ -88,12 +82,9 @@ def generate_pajek(G):
         s = ' '.join(map(make_qstr, (nodenumber[u], nodenumber[v], value)))
         for k, v in d.items():
             if isinstance(v, str) and v.strip() != '':
-                s += ' %s %s' % (make_qstr(k), make_qstr(v))
+                s += f" {make_qstr(k)} {make_qstr(v)}"
             else:
-                warnings.warn('Edge attribute %s is not processed. %s.' %
-                              (k,
-                               'Empty attribute' if isinstance(v, str) else
-                               'Non-string attribute'))
+                warnings.warn(f"Edge attribute {k} is not processed. {('Empty attribute' if isinstance(v, str) else 'Non-string attribute')}.")
         yield s
 
 
@@ -276,5 +267,5 @@ def make_qstr(t):
     if not isinstance(t, str):
         t = str(t)
     if " " in t:
-        t = r'"%s"' % t
+        t = f'"{t}"'
     return t

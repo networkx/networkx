@@ -1,17 +1,9 @@
-# test_stochastic.py - unit tests for the stochastic module
-#
-# Copyright 2010, 2011, 2012, 2013, 2014, 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.generators.stochastic` module."""
 import pytest
 import networkx as nx
 
 
-class TestStochasticGraph(object):
+class TestStochasticGraph:
     """Unit tests for the :func:`~networkx.stochastic_graph` function.
 
     """

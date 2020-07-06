@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 ========================
 Expected Degree Sequence
@@ -6,14 +5,6 @@ Expected Degree Sequence
 
 Random graph from given degree sequence.
 """
-# Author: Aric Hagberg (hagberg@lanl.gov)
-
-#    Copyright (C) 2006-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 import networkx as nx
 from networkx.generators.degree_seq import expected_degree_graph
@@ -27,4 +18,4 @@ print("Degree histogram")
 print("degree (#nodes) ****")
 dh = nx.degree_histogram(G)
 for i, d in enumerate(dh):
-    print("%2s (%2s) %s" % (i, d, '*'*d))
+    print(f"{i:2} ({d:2}) {'*'*d}")

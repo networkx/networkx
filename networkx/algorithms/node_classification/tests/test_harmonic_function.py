@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import pytest
 numpy = pytest.importorskip('numpy')
 scipy = pytest.importorskip('scipy')
@@ -71,7 +70,7 @@ class TestHarmonicFunction:
     def test_labeled_nodes_are_not_changed(self):
         G = nx.karate_club_graph()
         label_name = 'club'
-        label_removed = set([0, 1, 2, 3, 4, 5, 6, 7])
+        label_removed = {0, 1, 2, 3, 4, 5, 6, 7}
         for i in label_removed:
             del G.nodes[i][label_name]
         predicted = node_classification.harmonic_function(

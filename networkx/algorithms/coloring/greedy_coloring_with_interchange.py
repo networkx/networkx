@@ -3,7 +3,7 @@ import itertools
 __all__ = ['greedy_coloring_with_interchange']
 
 
-class Node(object):
+class Node:
 
     __slots__ = ['node_id', 'color', 'adj_list', 'adj_color']
 
@@ -14,9 +14,10 @@ class Node(object):
         self.adj_color = [None for _ in range(n)]
 
     def __repr__(self):
-        return "Node_id: {0}, Color: {1}, Adj_list: ({2}), \
-            adj_color: ({3})".format(
-            self.node_id, self.color, self.adj_list, self.adj_color)
+        return (
+            f"Node_id: {self.node_id}, Color: {self.color}, "
+            f"Adj_list: ({self.adj_list}), adj_color: ({self.adj_color})"
+        )
 
     def assign_color(self, adj_entry, color):
         adj_entry.col_prev = None
@@ -46,7 +47,7 @@ class Node(object):
             adj_color_node = adj_color_node.col_next
 
 
-class AdjEntry(object):
+class AdjEntry:
 
     __slots__ = ['node_id', 'next', 'mate', 'col_next', 'col_prev']
 
@@ -58,13 +59,12 @@ class AdjEntry(object):
         self.col_prev = None
 
     def __repr__(self):
-        return "Node_id: {0}, Next: ({1}), Mate: ({2}), \
-            col_next: ({3}), col_prev: ({4})".format(
-            self.node_id,
-            self.next,
-            self.mate.node_id,
-            None if self.col_next is None else self.col_next.node_id,
-            None if self.col_prev is None else self.col_prev.node_id
+        col_next = None if self.col_next is None else self.col_next.node_id
+        col_prev = None if self.col_prev is None else self.col_prev.node_id
+        return (
+            f"Node_id: {self.node_id}, Next: ({self.next}), "
+            f"Mate: ({self.mate.node_id}), "
+            f"col_next: ({col_next}), col_prev: ({col_prev})"
         )
 
 

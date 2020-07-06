@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Christopher Ellison
 """Attracting components."""
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
@@ -44,7 +35,7 @@ def attracting_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is undirected.
 
     See Also
@@ -76,7 +67,7 @@ def number_attracting_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is undirected.
 
     See Also
@@ -104,7 +95,7 @@ def is_attracting_component(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is undirected.
 
     See Also

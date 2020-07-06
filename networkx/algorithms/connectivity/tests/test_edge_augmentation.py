@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import random
 import networkx as nx
 import itertools as it
@@ -160,7 +159,7 @@ def test_tarjan():
     G = tarjan_bridge_graph()
 
     aug_edges = set(_augment_and_check(G, k=2)[0])
-    print('aug_edges = {!r}'.format(aug_edges))
+    print(f'aug_edges = {aug_edges!r}')
     # can't assert edge exactly equality due to non-determinant edge order
     # but we do know the size of the solution must be 3
     assert len(aug_edges) == 3
@@ -289,7 +288,7 @@ def _augment_and_check(G, k, avail=None, weight=None, verbose=False,
                 n_nodes = G.number_of_nodes()
                 assert n_nodes <= k, (
                     'unconstrained cases are only unfeasible if |V| <= k. '
-                    'Got |V|={} and k={}'.format(n_nodes, k)
+                    f'Got |V|={n_nodes} and k={k}'
                 )
             else:
                 if max_aug_k is None:
@@ -354,7 +353,7 @@ def _augment_and_check(G, k, avail=None, weight=None, verbose=False,
         # Do checks
         if not infeasible and orig_k < k:
             assert info['aug_k'] >= k, (
-                'connectivity should increase to k={} or more'.format(k))
+                f'connectivity should increase to k={k} or more')
 
         assert info['aug_k'] >= orig_k, (
             'augmenting should never reduce connectivity')
@@ -363,14 +362,14 @@ def _augment_and_check(G, k, avail=None, weight=None, verbose=False,
 
     except Exception:
         info['failed'] = True
-        print('edges = {}'.format(list(G.edges())))
-        print('nodes = {}'.format(list(G.nodes())))
-        print('aug_edges = {}'.format(list(aug_edges)))
-        print('info  = {}'.format(info))
+        print(f"edges = {list(G.edges())}")
+        print(f"nodes = {list(G.nodes())}")
+        print(f"aug_edges = {list(aug_edges)}")
+        print(f"info  = {info}")
         raise
     else:
         if verbose:
-            print('info  = {}'.format(info))
+            print(f'info  = {info}')
 
     if infeasible:
         aug_edges = None
@@ -404,17 +403,17 @@ def _check_augmentations(G, avail=None, max_k=None, weight=None,
 
     if verbose:
         print('\n=== CHECK_AUGMENTATION ===')
-        print('G.number_of_nodes = {!r}'.format(G.number_of_nodes()))
-        print('G.number_of_edges = {!r}'.format(G.number_of_edges()))
-        print('max_k = {!r}'.format(max_k))
-        print('max_aug_k = {!r}'.format(max_aug_k))
-        print('orig_k = {!r}'.format(orig_k))
+        print(f"G.number_of_nodes = {G.number_of_nodes()!r}")
+        print(f"G.number_of_edges = {G.number_of_edges()!r}")
+        print(f"max_k = {max_k!r}")
+        print(f"max_aug_k = {max_aug_k!r}")
+        print(f"orig_k = {orig_k!r}")
 
     # check augmentation for multiple values of k
     for k in range(1, max_k + 1):
         if verbose:
             print('---------------')
-            print('Checking k = {}'.format(k))
+            print(f'Checking k = {k}')
 
         # Check the unweighted version
         if verbose:

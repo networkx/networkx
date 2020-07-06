@@ -1,15 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Richard Penney <rwpenney@users.sourceforge.net>
-#    Michael Fedell <mfedell@jpl.nasa.gov>
-#    Valentino Constantinou <vconstan@jpl.nasa.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg <aric.hagberg@gmail.com>,
-#          Dan Schult <dschult@colgate.edu>
 """
 ******
 Layout
@@ -180,7 +168,7 @@ def circular_layout(G, scale=1, center=None, dim=2):
     return pos
 
 
-def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
+def shell_layout(G, nlist=None, rotate=None, scale=1, center=None, dim=2):
     """Position nodes in concentric circles.
 
     Parameters
@@ -190,6 +178,11 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
 
     nlist : list of lists
        List of node lists for each shell.
+
+    rotate : angle in radians (default=pi/len(nlist))
+       Angle by which to rotate the starting position of each shell
+       relative to the starting position of the previous shell.
+       To recreate behavior before v2.5 use rotate=0.
 
     scale : number (default: 1)
         Scale factor for positions.
@@ -239,25 +232,27 @@ def shell_layout(G, nlist=None, scale=1, center=None, dim=2):
         # draw the whole graph in one shell
         nlist = [list(G)]
 
+    radius_bump = scale / len(nlist)
+
     if len(nlist[0]) == 1:
         # single node at center
         radius = 0.0
     else:
         # else start at r=1
-        radius = 1.0
+        radius = radius_bump
 
+    if rotate is None:
+        rotate = np.pi / len(nlist)
+    first_theta = rotate
     npos = {}
     for nodes in nlist:
-        # Discard the extra angle since it matches 0 radians.
-        theta = np.linspace(0, 1, len(nodes) + 1)[:-1] * 2 * np.pi
-        theta = theta.astype(np.float32)
-        pos = np.column_stack([np.cos(theta), np.sin(theta)])
-        if len(pos) > 1:
-            pos = rescale_layout(pos, scale=scale * radius / len(nlist)) + center
-        else:
-            pos = np.array([(scale * radius + center[0], center[1])])
+        # Discard the last angle (endpoint=False) since 2*pi matches 0 radians
+        theta = np.linspace(0, 2 * np.pi, len(nodes),
+                            endpoint=False, dtype=np.float32) + first_theta
+        pos = radius * np.column_stack([np.cos(theta), np.sin(theta)]) + center
         npos.update(zip(nodes, pos))
-        radius += 1.0
+        radius += radius_bump
+        first_theta += rotate
 
     return npos
 
@@ -486,7 +481,7 @@ def fruchterman_reingold_layout(G,
         pos = _sparse_fruchterman_reingold(A, k, pos_arr, fixed,
                                            iterations, threshold,
                                            dim, seed)
-    except:
+    except ValueError:
         A = nx.to_numpy_array(G, weight=weight)
         if k is None and fixed is not None:
             # We must adjust k by domain size for layouts not near 1x1
@@ -512,9 +507,9 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
 
     try:
         nnodes, _ = A.shape
-    except AttributeError:
+    except AttributeError as e:
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError(msg) from e
 
     if pos is None:
         # random initial positions
@@ -576,18 +571,18 @@ def _sparse_fruchterman_reingold(A, k=None, pos=None, fixed=None,
 
     try:
         nnodes, _ = A.shape
-    except AttributeError:
+    except AttributeError as e:
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError(msg) from e
     try:
-        from scipy.sparse import spdiags, coo_matrix
-    except ImportError:
+        from scipy.sparse import coo_matrix
+    except ImportError as e:
         msg = "_sparse_fruchterman_reingold() scipy numpy: http://scipy.org/ "
-        raise ImportError(msg)
+        raise ImportError(msg) from e
     # make sure we have a LIst of Lists representation
     try:
         A = A.tolil()
-    except:
+    except AttributeError:
         A = (coo_matrix(A)).tolil()
 
     if pos is None:
@@ -692,6 +687,8 @@ def kamada_kawai_layout(G, dist=None,
 
     G, center = _process_params(G, center, dim)
     nNodes = len(G)
+    if nNodes == 0:
+        return {}
 
     if dist is None:
         dist = dict(nx.shortest_path_length(G, weight=weight))
@@ -706,7 +703,9 @@ def kamada_kawai_layout(G, dist=None,
             dist_mtx[row][col] = rdist[nc]
 
     if pos is None:
-        if dim >= 2:
+        if dim >= 3:
+            pos = random_layout(G, dim=dim)
+        elif dim == 2:
             pos = circular_layout(G, dim=dim)
         else:
             pos = {n: pt for n, pt in zip(G, np.linspace(0, 1, len(G)))}
@@ -848,9 +847,9 @@ def _spectral(A, dim=2):
 
     try:
         nnodes, _ = A.shape
-    except AttributeError:
+    except AttributeError as e:
         msg = "spectral() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError(msg) from e
 
     # form Laplacian matrix where D is diagonal of degrees
     D = np.identity(nnodes, dtype=A.dtype) * np.sum(A, axis=1)
@@ -872,9 +871,9 @@ def _sparse_spectral(A, dim=2):
 
     try:
         nnodes, _ = A.shape
-    except AttributeError:
+    except AttributeError as e:
         msg = "sparse_spectral() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError(msg) from e
 
     # form Laplacian matrix
     data = np.asarray(A.sum(axis=1).T)
@@ -921,7 +920,7 @@ def planar_layout(G, scale=1, center=None, dim=2):
 
     Raises
     ------
-    nx.NetworkXException
+    NetworkXException
         If G is not planar
 
     Examples
@@ -947,7 +946,7 @@ def planar_layout(G, scale=1, center=None, dim=2):
             raise nx.NetworkXException("G is not planar.")
     pos = nx.combinatorial_embedding_to_pos(embedding)
     node_list = list(embedding)
-    pos = np.row_stack((pos[x] for x in node_list))
+    pos = np.row_stack([pos[x] for x in node_list])
     pos = pos.astype(np.float64)
     pos = rescale_layout(pos, scale=scale) + center
     return dict(zip(node_list, pos))
@@ -981,6 +980,7 @@ def spiral_layout(G, scale=1, center=None, dim=2,
     -------
     ValueError
         If dim != 2
+
     Examples
     --------
     >>> G = nx.path_graph(4)

@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2017 NetworkX Developers
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Loïc Séguin-C. <loicseguin@gmail.com>
-#    All rights reserved.
-#    BSD license.
 """
 Algorithms for calculating min/max spanning trees/forests.
 
@@ -75,8 +67,8 @@ def boruvka_mst_edges(G, minimum=True, weight='weight',
             if isnan(wt):
                 if ignore_nan:
                     continue
-                msg = "NaN found as an edge weight. Edge %s"
-                raise ValueError(msg % (e,))
+                msg = f"NaN found as an edge weight. Edge {e}"
+                raise ValueError(msg)
             if wt < minwt:
                 minwt = wt
                 boundary = e
@@ -160,8 +152,8 @@ def kruskal_mst_edges(G, minimum, weight='weight',
                 if isnan(wt):
                     if ignore_nan:
                         continue
-                    msg = "NaN found as an edge weight. Edge %s"
-                    raise ValueError(msg % ((u, v, k, d),))
+                    msg = f"NaN found as an edge weight. Edge {(u, v, k, d)}"
+                    raise ValueError(msg)
                 yield wt, u, v, k, d
     else:
         edges = G.edges(data=True)
@@ -173,8 +165,8 @@ def kruskal_mst_edges(G, minimum, weight='weight',
                 if isnan(wt):
                     if ignore_nan:
                         continue
-                    msg = "NaN found as an edge weight. Edge %s"
-                    raise ValueError(msg % ((u, v, d),))
+                    msg = f"NaN found as an edge weight. Edge {(u, v, d)}"
+                    raise ValueError(msg)
                 yield wt, u, v, d
     edges = sorted(filter_nan_edges(), key=itemgetter(0))
     # Multigraphs need to handle edge keys in addition to edge data.
@@ -251,8 +243,8 @@ def prim_mst_edges(G, minimum, weight='weight',
                     if isnan(wt):
                         if ignore_nan:
                             continue
-                        msg = "NaN found as an edge weight. Edge %s"
-                        raise ValueError(msg % ((u, v, k, d),))
+                        msg = f"NaN found as an edge weight. Edge {(u, v, k, d)}"
+                        raise ValueError(msg)
                     push(frontier, (wt, next(c), u, v, k, d))
         else:
             for v, d in G.adj[u].items():
@@ -260,8 +252,8 @@ def prim_mst_edges(G, minimum, weight='weight',
                 if isnan(wt):
                     if ignore_nan:
                         continue
-                    msg = "NaN found as an edge weight. Edge %s"
-                    raise ValueError(msg % ((u, v, d),))
+                    msg = f"NaN found as an edge weight. Edge {(u, v, d)}"
+                    raise ValueError(msg)
                 push(frontier, (wt, next(c), u, v, d))
         while frontier:
             if is_multigraph:
@@ -301,7 +293,7 @@ def prim_mst_edges(G, minimum, weight='weight',
 
 ALGORITHMS = {
     'boruvka': boruvka_mst_edges,
-    u'borůvka': boruvka_mst_edges,
+    'borůvka': boruvka_mst_edges,
     'kruskal': kruskal_mst_edges,
     'prim': prim_mst_edges
 }
@@ -391,9 +383,9 @@ def minimum_spanning_edges(G, algorithm='kruskal', weight='weight',
     """
     try:
         algo = ALGORITHMS[algorithm]
-    except KeyError:
-        msg = '{} is not a valid choice for an algorithm.'.format(algorithm)
-        raise ValueError(msg)
+    except KeyError as e:
+        msg = f"{algorithm} is not a valid choice for an algorithm."
+        raise ValueError(msg) from e
 
     return algo(G, minimum=True, weight=weight, keys=keys, data=data,
                 ignore_nan=ignore_nan)
@@ -482,9 +474,9 @@ def maximum_spanning_edges(G, algorithm='kruskal', weight='weight',
     """
     try:
         algo = ALGORITHMS[algorithm]
-    except KeyError:
-        msg = '{} is not a valid choice for an algorithm.'.format(algorithm)
-        raise ValueError(msg)
+    except KeyError as e:
+        msg = f"{algorithm} is not a valid choice for an algorithm."
+        raise ValueError(msg) from e
 
     return algo(G, minimum=False, weight=weight, keys=keys, data=data,
                 ignore_nan=ignore_nan)

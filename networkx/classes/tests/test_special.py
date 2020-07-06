@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from collections import OrderedDict
 import networkx as nx
 from .test_graph import TestGraph as _TestGraph

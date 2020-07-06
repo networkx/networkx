@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-# gomory_hu.py - function for computing Gomory Hu trees
-#
-# Copyright 2017-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Author: Jordi Torrents <jordi.t21@gmail.com>
 """
 Gomory-Hu tree of undirected Graphs.
 """
@@ -70,10 +59,10 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
 
     Raises
     ------
-    NetworkXNotImplemented : Exception
+    NetworkXNotImplemented
         Raised if the input graph is directed.
 
-    NetworkXError: Exception
+    NetworkXError
         Raised if the input graph is an empty Graph.
 
     Examples

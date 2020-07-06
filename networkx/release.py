@@ -29,13 +29,6 @@ tar.gz file. This is why write_versionfile() includes an early escape.
 
 """
 
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-
 import os
 import sys
 import time
@@ -184,7 +177,6 @@ dev = True
 
 
 description = "Python package for creating and manipulating graphs and networks"
-license = 'BSD'
 authors = {'Hagberg': ('Aric Hagberg', 'hagberg@lanl.gov'),
            'Schult': ('Dan Schult', 'dschult@colgate.edu'),
            'Swart': ('Pieter Swart', 'swart@lanl.gov')}

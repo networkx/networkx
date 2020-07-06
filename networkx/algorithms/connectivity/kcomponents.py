@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Moody and White algorithm for k-components
 """
@@ -11,8 +10,6 @@ from networkx.utils import not_implemented_for
 # Define the default maximum flow function.
 from networkx.algorithms.flow import edmonds_karp
 default_flow_func = edmonds_karp
-
-__author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
 __all__ = ['k_components']
 
@@ -47,7 +44,7 @@ def k_components(G, flow_func=None):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If the input graph is directed.
 
     Examples
@@ -194,8 +191,7 @@ def _generate_partition(G, cuts, k):
                     component.add(node)
         if len(component) < G.order():
             components.append(component)
-    for component in _consolidate(components, k + 1):
-        yield component
+    yield from _consolidate(components, k + 1)
 
 
 def _reconstruct_k_components(k_comps):

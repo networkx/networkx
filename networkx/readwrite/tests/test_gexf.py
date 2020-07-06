@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import io
 import sys
 import time
@@ -7,7 +6,7 @@ import pytest
 import networkx as nx
 
 
-class TestGEXF(object):
+class TestGEXF:
     @classmethod
     def setup_class(cls):
         _ = pytest.importorskip("xml.etree.ElementTree")
@@ -299,12 +298,12 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
             G.nodes[i]['end'] = i + 1
 
         if sys.version_info < (3, 8):
-            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2\
+            expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/1.2\
 draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:\
 schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
 gexf.xsd">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
     <nodes>
@@ -319,14 +318,14 @@ gexf.xsd">
       <edge id="2" source="2" target="3" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
         else:
-            expected = """<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
+            expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=\
 "http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
 gexf.xsd" version="1.2">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
     <nodes>
@@ -341,7 +340,7 @@ gexf.xsd" version="1.2">
       <edge source="2" target="3" id="2" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
         obtained = '\n'.join(nx.generate_gexf(G))
         assert expected == obtained
 
@@ -350,12 +349,12 @@ gexf.xsd" version="1.2">
         G.add_edges_from([(0, 1, {'id': 0}), (1, 2, {'id': 2}), (2, 3)])
 
         if sys.version_info < (3, 8):
-            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/\
+            expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/\
 1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:\
 schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
 gexf.xsd">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
     <nodes>
@@ -370,13 +369,13 @@ gexf.xsd">
       <edge id="1" source="2" target="3" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
         else:
-            expected = """<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
+            expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.\
 gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
     <nodes>
@@ -391,7 +390,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
       <edge source="2" target="3" id="1" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
 
         obtained = '\n'.join(nx.generate_gexf(G))
         assert expected == obtained
@@ -405,11 +404,12 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         nx.set_node_attributes(G, {n: n for n in numpy.arange(4)}, 'number')
         G[0][1]['edge-number'] = numpy.float64(1.1)
 
-        expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft"\
+        if sys.version_info < (3, 8):
+            expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft"\
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation\
 ="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
     <attributes class="edge" mode="static">
@@ -450,7 +450,55 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
       <edge id="2" source="2" target="3" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
+        else:
+            expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft"\
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation\
+="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd"\
+ version="1.2">
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
+  </meta>
+  <graph defaultedgetype="undirected" mode="static" name="">
+    <attributes mode="static" class="edge">
+      <attribute id="1" title="edge-number" type="float" />
+    </attributes>
+    <attributes mode="static" class="node">
+      <attribute id="0" title="number" type="int" />
+    </attributes>
+    <nodes>
+      <node id="0" label="0">
+        <attvalues>
+          <attvalue for="0" value="0" />
+        </attvalues>
+      </node>
+      <node id="1" label="1">
+        <attvalues>
+          <attvalue for="0" value="1" />
+        </attvalues>
+      </node>
+      <node id="2" label="2">
+        <attvalues>
+          <attvalue for="0" value="2" />
+        </attvalues>
+      </node>
+      <node id="3" label="3">
+        <attvalues>
+          <attvalue for="0" value="3" />
+        </attvalues>
+      </node>
+    </nodes>
+    <edges>
+      <edge source="0" target="1" id="0">
+        <attvalues>
+          <attvalue for="1" value="1.1" />
+        </attvalues>
+      </edge>
+      <edge source="1" target="2" id="1" />
+      <edge source="2" target="3" id="2" />
+    </edges>
+  </graph>
+</gexf>"""
         obtained = '\n'.join(nx.generate_gexf(G))
         assert expected == obtained
 

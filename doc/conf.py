@@ -1,32 +1,11 @@
-# -*- coding: utf-8 -*-
-#
-# Sphinx documentation build configuration file, created by
-# sphinx-quickstart.py on Sat Mar  8 21:47:50 2008.
-#
-# This file is execfile()d with the current directory set to its containing dir.
-#
-# The contents of this file are pickled, so don't put values in the namespace
-# that aren't pickleable (module imports are okay, they're removed automatically).
-#
-# All configuration values have a default value; values that are commented out
-# serve to show the default value.
-from __future__ import print_function
-
-import sys
-import os
 from datetime import date
-
 from sphinx_gallery.sorting import ExplicitOrder
 import sphinx_rtd_theme
+from warnings import filterwarnings
 
-# Check Sphinx version
-import sphinx
-
-if sphinx.__version__ < "2.2":
-    raise RuntimeError("Sphinx 2.2 or newer required")
-
-# If your extensions are in another directory, add it here.
-# These locations are relative to conf.py
+filterwarnings(
+    "ignore", message="Matplotlib is currently using agg", category=UserWarning
+)
 
 # General configuration
 # ---------------------
@@ -76,7 +55,7 @@ sphinx_gallery_conf = {
 autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
-# templates_path = ['']
+templates_path = ['_templates']
 
 suppress_warnings = ["ref.citation", "ref.footnote"]
 
@@ -94,7 +73,7 @@ exclude_patterns = ["release/release_template.rst"]
 
 # General substitutions.
 project = "NetworkX"
-copyright = "2004-{}, NetworkX Developers".format(date.today().year)
+copyright = f"2004-{date.today().year}, NetworkX Developers"
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -143,10 +122,13 @@ napoleon_use_param = False
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
-# html_theme_options = {
-#    "rightsidebar": "true",
-#    "relbarbgcolor: "black"
-# }
+html_theme_options = {
+    "canonical_url": "https://networkx.github.io/documentation/stable/",
+    "navigation_depth": 3,
+    "logo_only": True,
+}
+
+html_logo = "_static/networkx_logo.svg"
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
@@ -210,8 +192,8 @@ latex_appendices = ["tutorial"]
 
 # Intersphinx mapping
 intersphinx_mapping = {
-    "https://docs.python.org/2/": None,
-    "https://docs.scipy.org/doc/numpy/": None,
+    "https://docs.python.org/3/": None,
+    "https://numpy.org/doc/stable/": None,
 }
 
 # The reST default role (used for this markup: `text`) to use for all
@@ -220,7 +202,7 @@ default_role = "obj"
 
 numpydoc_show_class_members = False
 
-# Add the 'copybutton' javascript, to hide/show the prompt in code
-# examples
+
+# Add the 'copybutton' javascript, to hide/show the prompt in code examples
 def setup(app):
-    app.add_javascript("copybutton.js")
+    app.add_js_file("copybutton.js")

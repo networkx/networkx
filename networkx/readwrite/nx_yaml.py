@@ -13,13 +13,6 @@ Format
 http://pyyaml.org/wiki/PyYAML
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 __all__ = ['read_yaml', 'write_yaml']
 
@@ -57,8 +50,8 @@ def write_yaml(G_to_be_yaml, path_for_yaml_output, **kwds):
     """
     try:
         import yaml
-    except ImportError:
-        raise ImportError("write_yaml() requires PyYAML: http://pyyaml.org/")
+    except ImportError as e:
+        raise ImportError("write_yaml() requires PyYAML: http://pyyaml.org/") from e
     yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)
 
 
@@ -92,8 +85,8 @@ def read_yaml(path):
     """
     try:
         import yaml
-    except ImportError:
-        raise ImportError("read_yaml() requires PyYAML: http://pyyaml.org/")
+    except ImportError as e:
+        raise ImportError("read_yaml() requires PyYAML: http://pyyaml.org/") from e
 
     G = yaml.load(path, Loader=yaml.FullLoader)
     return G

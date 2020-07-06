@@ -22,12 +22,6 @@ Arbitrary data::
 
 For each edge (u, v) the node u is assigned to part 0 and the node v to part 1.
 """
-#    Copyright (C) 2015 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 __all__ = ['generate_edgelist',
            'write_edgelist',
            'parse_edgelist',
@@ -139,8 +133,8 @@ def generate_edgelist(G, delimiter=' ', data=True):
     """
     try:
         part0 = [n for n, d in G.nodes.items() if d['bipartite'] == 0]
-    except:
-        raise AttributeError("Missing node attribute `bipartite`")
+    except BaseException as e:
+        raise AttributeError("Missing node attribute `bipartite`") from e
     if data is True or data is False:
         for n in part0:
             for e in G.edges(n, data=data):
@@ -242,9 +236,9 @@ def parse_edgelist(lines, comments='#', delimiter=None,
             try:
                 u = nodetype(u)
                 v = nodetype(v)
-            except:
-                raise TypeError("Failed to convert nodes %s,%s to type %s."
-                                % (u, v, nodetype))
+            except BaseException as e:
+                raise TypeError(f"Failed to convert nodes {u},{v} "
+                                f"to type {nodetype}.") from e
 
         if len(d) == 0 or data is False:
             # no data or data type specified
@@ -253,23 +247,20 @@ def parse_edgelist(lines, comments='#', delimiter=None,
             # no edge types specified
             try:  # try to evaluate as dictionary
                 edgedata = dict(literal_eval(' '.join(d)))
-            except:
-                raise TypeError(
-                    "Failed to convert edge data (%s) to dictionary." % (d))
+            except BaseException as e:
+                raise TypeError(f"Failed to convert edge data ({d})"
+                                f"to dictionary.") from e
         else:
             # convert edge data to dictionary with specified keys and type
             if len(d) != len(data):
-                raise IndexError(
-                    "Edge data %s and data_keys %s are not the same length" %
-                    (d, data))
+                raise IndexError(f"Edge data {d} and data_keys {data} are not the same length")
             edgedata = {}
             for (edge_key, edge_type), edge_value in zip(data, d):
                 try:
                     edge_value = edge_type(edge_value)
-                except:
-                    raise TypeError(
-                        "Failed to convert %s data %s to type %s."
-                        % (edge_key, edge_value, edge_type))
+                except BaseException as e:
+                    raise TypeError(f"Failed to convert {edge_key} data "
+                                    f"{edge_value} to type {edge_type}.") from e
                 edgedata.update({edge_key: edge_value})
         G.add_node(u, bipartite=0)
         G.add_node(v, bipartite=1)

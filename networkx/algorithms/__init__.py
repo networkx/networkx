@@ -14,6 +14,7 @@ from networkx.algorithms.core import *
 from networkx.algorithms.covering import *
 from networkx.algorithms.cycles import *
 from networkx.algorithms.cuts import *
+from networkx.algorithms.d_separation import *
 from networkx.algorithms.dag import *
 from networkx.algorithms.distance_measures import *
 from networkx.algorithms.distance_regular import *
@@ -31,11 +32,13 @@ from networkx.algorithms.isolate import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.minors import *
 from networkx.algorithms.mis import *
+from networkx.algorithms.moral import *
 from networkx.algorithms.non_randomness import *
 from networkx.algorithms.operators import *
 from networkx.algorithms.planarity import *
 from networkx.algorithms.planar_drawing import *
 from networkx.algorithms.reciprocity import *
+from networkx.algorithms.regular import *
 from networkx.algorithms.richclub import *
 from networkx.algorithms.shortest_paths import *
 from networkx.algorithms.similarity import *

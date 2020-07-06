@@ -1,11 +1,3 @@
-# tournament.py - functions for tournament graphs
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions concerning tournament graphs.
 
 A `tournament graph`_ is a complete oriented graph. In other words, it
@@ -62,8 +54,8 @@ def index_satisfying(iterable, condition):
     # exception.
     try:
         return i + 1
-    except NameError:
-        raise ValueError('iterable must be non-empty')
+    except NameError as e:
+        raise ValueError('iterable must be non-empty') from e
 
 
 @not_implemented_for('undirected')

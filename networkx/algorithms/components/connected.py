@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Eben Kenah
-#          Aric Hagberg (hagberg@lanl.gov)
-#          Christopher Ellison
 """Connected components."""
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
@@ -38,7 +27,7 @@ def connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is directed.
 
     Examples
@@ -56,7 +45,8 @@ def connected_components(G):
     >>> largest_cc = max(nx.connected_components(G), key=len)
 
     To create the induced subgraph of each component use:
-    >>> S = [G.subgraph(c).copy() for c in connected_components(G)]
+
+    >>> S = [G.subgraph(c).copy() for c in nx.connected_components(G)]
 
     See Also
     --------
@@ -71,9 +61,9 @@ def connected_components(G):
     seen = set()
     for v in G:
         if v not in seen:
-            c = set(_plain_bfs(G, v))
-            yield c
+            c = _plain_bfs(G, v)
             seen.update(c)
+            yield c
 
 
 def number_connected_components(G):
@@ -119,7 +109,7 @@ def is_connected(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is directed.
 
     Examples
@@ -166,7 +156,7 @@ def node_connected_component(G, n):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is directed.
 
     See Also
@@ -178,7 +168,7 @@ def node_connected_component(G, n):
     For undirected graphs only.
 
     """
-    return set(_plain_bfs(G, n))
+    return _plain_bfs(G, n)
 
 
 def _plain_bfs(G, source):
@@ -191,6 +181,6 @@ def _plain_bfs(G, source):
         nextlevel = set()
         for v in thislevel:
             if v not in seen:
-                yield v
                 seen.add(v)
                 nextlevel.update(G_adj[v])
+    return seen

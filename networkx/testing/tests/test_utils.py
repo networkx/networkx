@@ -8,7 +8,7 @@ from networkx.testing import (
 # thanks to numpy for this GenericTest class (numpy/testing/test_utils.py)
 
 
-class _GenericTest(object):
+class _GenericTest:
     @classmethod
     def _test_equal(cls, a, b):
         cls._assert_func(a, b)

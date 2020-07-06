@@ -4,14 +4,14 @@ import itertools
 import pytest
 
 mpl = pytest.importorskip('matplotlib')
-mpl.use('PS', warn=False)
+mpl.use('PS')
 plt = pytest.importorskip('matplotlib.pyplot')
 plt.rcParams['text.usetex'] = False
 
 import networkx as nx
 
 
-class TestPylab(object):
+class TestPylab:
 
     @classmethod
     def setup_class(cls):
@@ -115,7 +115,7 @@ class TestPylab(object):
             # edge_color as numeric using vmin, vmax
             nx.draw_networkx_edges(G, pos, edgelist=[(7, 8), (8, 9)],
                                    edge_color=[0.2, 0.5],
-                                   edge_vmin=0.1, edge_max=0.6)
+                                   edge_vmin=0.1, edge_vmax=0.6)
 
             plt.show()
 
@@ -168,6 +168,24 @@ class TestPylab(object):
         G = nx.Graph()
         nx.draw(G)
 
+    def test_draw_empty_nodes_return_values(self):
+        # See Issue #3833
+        from matplotlib.collections import PathCollection, LineCollection
+        G = nx.Graph([(1, 2), (2, 3)])
+        DG = nx.DiGraph([(1, 2), (2, 3)])
+        pos = nx.circular_layout(G)
+        assert isinstance(nx.draw_networkx_nodes(G, pos, nodelist=[]), PathCollection)
+        assert isinstance(nx.draw_networkx_nodes(DG, pos, nodelist=[]), PathCollection)
+
+        # drawing empty edges either return an empty LineCollection or empty list.
+        assert isinstance(nx.draw_networkx_edges(G, pos, edgelist=[], arrows=True),
+                          LineCollection)
+        assert isinstance(nx.draw_networkx_edges(G, pos, edgelist=[], arrows=False),
+                          LineCollection)
+        assert isinstance(nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=False),
+                          LineCollection)
+        assert nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=True) == []
+
     def test_multigraph_edgelist_tuples(self):
         # See Issue #3295
         G = nx.path_graph(3, create_using=nx.MultiDiGraph)
@@ -189,3 +207,7 @@ class TestPylab(object):
         alpha.append(1)
         plt.subplot(133)
         nx.draw_networkx_nodes(self.G, pos, alpha=alpha)
+
+    def test_error_invalid_kwds(self):
+        with pytest.raises(ValueError, match="Received invalid argument"):
+            nx.draw(self.G, foo='bar')

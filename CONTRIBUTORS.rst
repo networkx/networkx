@@ -133,6 +133,49 @@ is partially historical, and now, mostly arbitrary.
 - Søren Fuglede Jørgensen, GitHub: `fuglede <https://github.com/fuglede>`_
 - Salim BELHADDAD, LinkedIn `<https://www.linkedin.com/in/salymdotme/>`_
 - Jangwon Yie, GitHub `<https://github.com/jangwon-yie>`_, LinkedIn `<https://www.linkedin.com/in/jangwon-yie-a7960065/>`_
+- ysitu 
+- Tomas Gavenciak
+- Luca Baldesi
+- Yuto Yamaguchi
+- James Clough
+- Minas Gjoka
+- Drew Conway
+- Alex Levenson
+- Haochen Wu 
+- Erwan  Le Merrer
+- Alex Roper
+- P C Kroon
+- Christopher Ellison   
+- D. Eppstein
+- Federico Rosato
+- Aitor Almeida
+- Ferran Parés
+- Christian Olsson
+- Fredrik Erlandsson
+- Nanda H Krishna
+- Nicholas Mancuso
+- Fred Morstatter
+- Ollie Glass       
+- Rodrigo Dorantes-Gilardi 
+- Pranay Kanwar
+- Balint Tillman
+- Diederik van Liere
+- Ferdinando Papale
+- Miguel Sozinho Ramalho
+- Brandon Liu
+- Nima Mohammadi
+- Jason Grout
+- Jan Aagaard Meier
+- Henrik Haugbølle
+- Piotr Brodka
+- Sasha Gutfraind
+- Alessandro Luongo
+- Huston Hedinger
+- Oleguer Sagarra
+- Kazimierz Wojciechowski, GitHub `<https://github.com/kazimierz-256>`_, LinkedIn `<https://linkedin.com/in/wojciechowski-kazimierz/>`_
+- Gaetano Pietro Paolo Carpinato, Github `<https://github.com/Carghaez>`_, LinkedIn `<https://linkedin.com/in/gaetanocarpinato/>`_
+- Arun Nampally, GitHub `<https://github.com/arunwise>`_, LinkedIn `<https://www.linkedin.com/in/arun-nampally-b57845b7/>`_
+- Ryan Duve
 
 Support
 -------

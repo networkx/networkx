@@ -5,32 +5,32 @@ import pytest
 def test_random_partition_graph():
     G = nx.random_partition_graph([3, 3, 3], 1, 0, seed=42)
     C = G.graph['partition']
-    assert C == [set([0, 1, 2]), set([3, 4, 5]), set([6, 7, 8])]
+    assert C == [{0, 1, 2}, {3, 4, 5}, {6, 7, 8}]
     assert len(G) == 9
     assert len(list(G.edges())) == 9
 
     G = nx.random_partition_graph([3, 3, 3], 0, 1)
     C = G.graph['partition']
-    assert C == [set([0, 1, 2]), set([3, 4, 5]), set([6, 7, 8])]
+    assert C == [{0, 1, 2}, {3, 4, 5}, {6, 7, 8}]
     assert len(G) == 9
     assert len(list(G.edges())) == 27
 
     G = nx.random_partition_graph([3, 3, 3], 1, 0, directed=True)
     C = G.graph['partition']
-    assert C == [set([0, 1, 2]), set([3, 4, 5]), set([6, 7, 8])]
+    assert C == [{0, 1, 2}, {3, 4, 5}, {6, 7, 8}]
     assert len(G) == 9
     assert len(list(G.edges())) == 18
 
     G = nx.random_partition_graph([3, 3, 3], 0, 1, directed=True)
     C = G.graph['partition']
-    assert C == [set([0, 1, 2]), set([3, 4, 5]), set([6, 7, 8])]
+    assert C == [{0, 1, 2}, {3, 4, 5}, {6, 7, 8}]
     assert len(G) == 9
     assert len(list(G.edges())) == 54
 
     G = nx.random_partition_graph([1, 2, 3, 4, 5], 0.5, 0.1)
     C = G.graph['partition']
-    assert C == [set([0]), set([1, 2]), set([3, 4, 5]),
-                 set([6, 7, 8, 9]), set([10, 11, 12, 13, 14])]
+    assert C == [{0}, {1, 2}, {3, 4, 5},
+                 {6, 7, 8, 9}, {10, 11, 12, 13, 14}]
     assert len(G) == 15
 
     rpg = nx.random_partition_graph
@@ -102,6 +102,9 @@ def test_connected_caveman_graph():
     K5.remove_edge(3, 4)
     assert nx.is_isomorphic(G, K5)
 
+    # need at least 2 nodes in each clique
+    pytest.raises(nx.NetworkXError, nx.connected_caveman_graph, 4, 1)
+
 
 def test_caveman_graph():
     G = nx.caveman_graph(4, 3)
@@ -121,9 +124,11 @@ def test_gaussian_random_partition_graph():
     G = nx.gaussian_random_partition_graph(100, 10, 10, 0.3, 0.01,
                                            directed=False, seed=42)
     assert len(G) == 100
+    assert not isinstance(G, nx.DiGraph)
     G = nx.gaussian_random_partition_graph(100, 10, 10, 0.3, 0.01,
                                            directed=True, seed=42)
     assert len(G) == 100
+    assert isinstance(G, nx.DiGraph)
     pytest.raises(nx.NetworkXError,
                   nx.gaussian_random_partition_graph, 100, 101, 10, 1, 0)
 

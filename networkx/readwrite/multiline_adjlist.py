@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 *************************
 Multi-line Adjacency List
@@ -25,15 +24,6 @@ adjacency list (anything following the # in a line is a comment)::
      d 1
      e
 """
-__author__ = '\n'.join(['Aric Hagberg <hagberg@lanl.gov>',
-                        'Dan Schult <dschult@colgate.edu>',
-                        'Loïc Séguin-C. <loicseguin@gmail.com>'])
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 __all__ = ['generate_multiline_adjlist',
            'write_multiline_adjlist',
@@ -178,9 +168,9 @@ def write_multiline_adjlist(G, path, delimiter=' ',
     import time
 
     pargs = comments + " ".join(sys.argv)
-    header = ("{}\n".format(pargs)
-              + comments + " GMT {}\n".format(time.asctime(time.gmtime()))
-              + comments + " {}\n".format(G.name))
+    header = (f"{pargs}\n"
+              + comments + f" GMT {time.asctime(time.gmtime())}\n"
+              + comments + f" {G.name}\n")
     path.write(header.encode(encoding))
 
     for multiline in generate_multiline_adjlist(G, delimiter):
@@ -238,22 +228,22 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
         try:
             (u, deg) = line.strip().split(delimiter)
             deg = int(deg)
-        except:
-            raise TypeError("Failed to read node and degree on line ({})".format(line))
+        except BaseException as e:
+            raise TypeError(f"Failed to read node and degree on line ({line})") from e
         if nodetype is not None:
             try:
                 u = nodetype(u)
-            except:
-                raise TypeError("Failed to convert node ({}) to type {}"
-                                .format(u, nodetype))
+            except BaseException as e:
+                raise TypeError(f"Failed to convert node ({u}) to "
+                                f"type {nodetype}") from e
         G.add_node(u)
         for i in range(deg):
             while True:
                 try:
                     line = next(lines)
-                except StopIteration:
-                    msg = "Failed to find neighbor for node ({})".format(u)
-                    raise TypeError(msg)
+                except StopIteration as e:
+                    msg = f"Failed to find neighbor for node ({u})"
+                    raise TypeError(msg) from e
                 p = line.find(comments)
                 if p >= 0:
                     line = line[:p]
@@ -268,17 +258,15 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
             if nodetype is not None:
                 try:
                     v = nodetype(v)
-                except:
-                    raise TypeError(
-                        "Failed to convert node ({}) to type {}"
-                        .format(v, nodetype))
+                except BaseException as e:
+                    raise TypeError(f"Failed to convert node ({v}) "
+                                    f"to type {nodetype}") from e
             if edgetype is not None:
                 try:
                     edgedata = {'weight': edgetype(data)}
-                except:
-                    raise TypeError(
-                        "Failed to convert edge data ({}) to type {}"
-                        .format(data, edgetype))
+                except BaseException as e:
+                    raise TypeError(f"Failed to convert edge data ({data}) "
+                                    f"to type {edgetype}") from e
             else:
                 try:  # try to evaluate
                     edgedata = literal_eval(data)

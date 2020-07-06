@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import pytest
 np = pytest.importorskip('numpy')
 scipy = pytest.importorskip('scipy')
@@ -13,7 +12,7 @@ from networkx import edge_current_flow_betweenness_centrality_subset \
     as edge_current_flow_subset
 
 
-class TestFlowBetweennessCentrality(object):
+class TestFlowBetweennessCentrality:
 
     def test_K4_normalized(self):
         """Betweenness centrality: K4"""
@@ -100,7 +99,7 @@ class TestFlowBetweennessCentrality(object):
 #     pass
 
 
-class TestEdgeFlowBetweennessCentrality(object):
+class TestEdgeFlowBetweennessCentrality:
 
     def test_K4_normalized(self):
         """Betweenness centrality: K4"""

@@ -1,34 +1,19 @@
-# -*- coding: utf-8 -*-
-#
-# priorityq: An object-oriented priority queue with updatable priorities.
-#
-# Copyright 2018 Edward L. Platt
-#
-# This file is part of NetworkX
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Authors:
-#   Edward L. Platt <ed@elplatt.com>
-
-
 from networkx.utils.mapped_queue import MappedQueue
 
 
-class TestMappedQueue(object):
+class TestMappedQueue:
 
     def setup(self):
         pass
 
     def _check_map(self, q):
-        d = dict((elt, pos) for pos, elt in enumerate(q.h))
+        d = {elt: pos for pos, elt in enumerate(q.h)}
         assert d == q.d
 
     def _make_mapped_queue(self, h):
         q = MappedQueue()
         q.h = h
-        q.d = dict((elt, pos) for pos, elt in enumerate(h))
+        q.d = {elt: pos for pos, elt in enumerate(h)}
         return q
 
     def test_heapify(self):

@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2012 by
-#    Sergio Nery Simoes <sergionery@gmail.com>
-#    All rights reserved.
-#    BSD license.
 import collections
 from heapq import heappush, heappop
 from itertools import count
@@ -10,11 +5,8 @@ from itertools import count
 import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.utils import pairwise
-
-__author__ = """\n""".join(['Sérgio Nery Simões <sergionery@gmail.com>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Andrey Paramonov',
-                            'Jordi Torrents <jordi.t21@gmail.com>'])
+from networkx.utils import empty_generator
+from networkx.algorithms.shortest_paths.weighted import _weight_function
 
 __all__ = [
     'all_simple_paths',
@@ -228,20 +220,20 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     """
     if source not in G:
-        raise nx.NodeNotFound('source node %s not in graph' % source)
+        raise nx.NodeNotFound(f"source node {source} not in graph")
     if target in G:
         targets = {target}
     else:
         try:
             targets = set(target)
-        except TypeError:
-            raise nx.NodeNotFound('target node %s not in graph' % target)
+        except TypeError as e:
+            raise nx.NodeNotFound(f"target node {target} not in graph") from e
     if source in targets:
-        return []
+        return empty_generator()
     if cutoff is None:
         cutoff = len(G) - 1
     if cutoff < 1:
-        return []
+        return empty_generator()
     if G.is_multigraph():
         return _all_simple_paths_multigraph(G, source, targets, cutoff)
     else:
@@ -322,9 +314,17 @@ def shortest_simple_paths(G, source, target, weight=None):
     target : node
        Ending node for path
 
-    weight : string
-        Name of the edge attribute to be used as a weight. If None all
-        edges are considered to have unit weight. Default value None.
+    weight : string or function
+        If it is a string, it is the name of the edge attribute to be
+        used as a weight.
+
+        If it is a function, the weight of an edge is the value returned
+        by the function. The function must accept exactly three positional
+        arguments: the two endpoints of an edge and the dictionary of edge
+        attributes for that edge. The function must return a number.
+
+        If None all edges are considered to have unit weight. Default
+        value None.
 
     Returns
     -------
@@ -381,17 +381,18 @@ def shortest_simple_paths(G, source, target, weight=None):
 
     """
     if source not in G:
-        raise nx.NodeNotFound('source node %s not in graph' % source)
+        raise nx.NodeNotFound(f"source node {source} not in graph")
 
     if target not in G:
-        raise nx.NodeNotFound('target node %s not in graph' % target)
+        raise nx.NodeNotFound(f"target node {target} not in graph")
 
     if weight is None:
         length_func = len
         shortest_path_func = _bidirectional_shortest_path
     else:
+        wt = _weight_function(G, weight)
         def length_func(path):
-            return sum(G.adj[u][v][weight] for (u, v) in zip(path, path[1:]))
+            return sum(wt(u, v, G.get_edge_data(u, v)) for (u, v) in zip(path, path[1:]))
         shortest_path_func = _bidirectional_dijkstra
 
     listA = list()
@@ -430,7 +431,7 @@ def shortest_simple_paths(G, source, target, weight=None):
             break
 
 
-class PathBuffer(object):
+class PathBuffer:
 
     def __init__(self):
         self.paths = set()
@@ -525,7 +526,7 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
     """
     # does BFS from both source and target and meets in the middle
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
-        raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+        raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
     if target == source:
         return ({target: None}, {source: None}, source)
 
@@ -613,7 +614,7 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
                         # found path
                         return pred, succ, w
 
-    raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 
 def _bidirectional_dijkstra(G, source, target, weight='weight',
@@ -637,8 +638,8 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     target : node
        Ending node.
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight
+    weight: string, function, optional (default='weight')
+       Edge data key or weight function corresponding to the edge weight
 
     ignore_nodes : container of nodes
        nodes to ignore, optional
@@ -685,7 +686,7 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     shortest_path_length
     """
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
-        raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+        raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
     if source == target:
         return (0, [source])
 
@@ -776,21 +777,14 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
             # we have now discovered the shortest path
             return (finaldist, finalpath)
 
+        wt = _weight_function(G, weight)
         for w in neighs[dir](v):
             if(dir == 0):  # forward
-                if G.is_multigraph():
-                    minweight = min((dd.get(weight, 1)
-                                     for k, dd in G[v][w].items()))
-                else:
-                    minweight = G[v][w].get(weight, 1)
-                vwLength = dists[dir][v] + minweight  # G[v][w].get(weight,1)
+                minweight = wt(v, w, G.get_edge_data(v, w))
+                vwLength = dists[dir][v] + minweight
             else:  # back, must remember to change v,w->w,v
-                if G.is_multigraph():
-                    minweight = min((dd.get(weight, 1)
-                                     for k, dd in G[w][v].items()))
-                else:
-                    minweight = G[w][v].get(weight, 1)
-                vwLength = dists[dir][v] + minweight  # G[w][v].get(weight,1)
+                minweight = wt(w, v, G.get_edge_data(w, v))
+                vwLength = dists[dir][v] + minweight
 
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
@@ -810,4 +804,4 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
                         revpath = paths[1][w][:]
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
-    raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")

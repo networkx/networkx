@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# Author: Yuto Yamaguchi <yuto.ymgc@gmail.com>
 """Function for computing Harmonic function algorithm by Zhu et al.
 
 References
@@ -34,14 +31,15 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     label_name : string
         name of target labels to predict
 
-    Raises
-    ----------
-    `NetworkXError` if no nodes on `G` has `label_name`.
-
     Returns
     ----------
     predicted : array, shape = [n_samples]
         Array of predicted labels
+
+    Raises
+    ----------
+    NetworkXError
+        If no nodes on `G` has `label_name`.
 
     Examples
     --------
@@ -65,14 +63,14 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     """
     try:
         import numpy as np
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "harmonic_function() requires numpy: http://scipy.org/ ")
+            "harmonic_function() requires numpy: http://numpy.org/ ") from e
     try:
         from scipy import sparse
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "harmonic_function() requires scipy: http://scipy.org/ ")
+            "harmonic_function() requires scipy: http://scipy.org/ ") from e
 
     def _build_propagation_matrix(X, labels):
         """Build propagation matrix of Harmonic function

@@ -1,15 +1,5 @@
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Tomas Gavenciak <gavento@ucw.cz>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Tomas Gavenciak <gavento@ucw.cz>
-#          Aric Hagberg <aric.hagberg@lanl.gov>
 """Functions for reading and writing graphs in the *graph6* format.
 
 The *graph6* file format is suitable for small graphs or large dense
@@ -70,12 +60,12 @@ def _generate_graph6_bytes(G, nodes, header):
     yield b'\n'
 
 
-def from_graph6_bytes(string):
-    """Read a simple undirected graph in graph6 format from string.
+def from_graph6_bytes(bytes_in):
+    """Read a simple undirected graph in graph6 format from bytes.
 
     Parameters
     ----------
-    string : string
+    bytes_in : bytes
        Data in graph6 format, without a trailing newline.
 
     Returns
@@ -85,10 +75,10 @@ def from_graph6_bytes(string):
     Raises
     ------
     NetworkXError
-        If the string is unable to be parsed in graph6 format
+        If bytes_in is unable to be parsed in graph6 format
 
     ValueError
-        If any character ``c`` in the input string does not satisfy
+        If any character ``c`` in bytes_in does not satisfy
         ``63 <= ord(c) < 127``.
 
     Examples
@@ -114,10 +104,10 @@ def from_graph6_bytes(string):
             for i in [5, 4, 3, 2, 1, 0]:
                 yield (d >> i) & 1
 
-    if string.startswith(b'>>graph6<<'):
-        string = string[10:]
+    if bytes_in.startswith(b'>>graph6<<'):
+        bytes_in = bytes_in[10:]
 
-    data = [c - 63 for c in string]
+    data = [c - 63 for c in bytes_in]
     if any(c > 63 for c in data):
         raise ValueError('each input character must be in range(63, 127)')
 
@@ -125,7 +115,7 @@ def from_graph6_bytes(string):
     nd = (n * (n - 1) // 2 + 5) // 6
     if len(data) != nd:
         raise NetworkXError(
-            'Expected %d bits but got %d in graph6' % (n * (n - 1) // 2, len(data) * 6))
+            f'Expected {n * (n - 1) // 2} bits but got {len(data) * 6} in graph6')
 
     G = nx.Graph()
     G.add_nodes_from(range(n))

@@ -76,7 +76,7 @@ def test_weightkey():
     assert nx.is_isomorphic(g1, g2, edge_match=em)
 
 
-class TestNodeMatch_Graph(object):
+class TestNodeMatch_Graph:
     def setup_method(self):
         self.g1 = nx.Graph()
         self.g2 = nx.Graph()
@@ -127,7 +127,7 @@ class TestNodeMatch_Graph(object):
                                     node_match=self.nm, edge_match=self.em)
 
 
-class TestEdgeMatch_MultiGraph(object):
+class TestEdgeMatch_MultiGraph:
     def setup_method(self):
         self.g1 = nx.MultiGraph()
         self.g2 = nx.MultiGraph()

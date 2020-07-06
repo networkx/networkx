@@ -9,7 +9,7 @@ from networkx.algorithms.simple_paths import _bidirectional_shortest_path
 from networkx.utils import arbitrary_element
 
 
-class TestIsSimplePath(object):
+class TestIsSimplePath:
     """Unit tests for the
     :func:`networkx.algorithms.simple_paths.is_simple_path` function.
 
@@ -81,69 +81,69 @@ class TestIsSimplePath(object):
 def test_all_simple_paths():
     G = nx.path_graph(4)
     paths = nx.all_simple_paths(G, 0, 3)
-    assert set(tuple(p) for p in paths) == {(0, 1, 2, 3)}
+    assert {tuple(p) for p in paths} == {(0, 1, 2, 3)}
 
 
 def test_all_simple_paths_with_two_targets_emits_two_paths():
     G = nx.path_graph(4)
     G.add_edge(2, 4)
     paths = nx.all_simple_paths(G, 0, [3, 4])
-    assert set(tuple(p) for p in paths) == {(0, 1, 2, 3), (0, 1, 2, 4)}
+    assert {tuple(p) for p in paths} == {(0, 1, 2, 3), (0, 1, 2, 4)}
 
 
 def test_digraph_all_simple_paths_with_two_targets_emits_two_paths():
     G = nx.path_graph(4, create_using=nx.DiGraph())
     G.add_edge(2, 4)
     paths = nx.all_simple_paths(G, 0, [3, 4])
-    assert set(tuple(p) for p in paths) == {(0, 1, 2, 3), (0, 1, 2, 4)}
+    assert {tuple(p) for p in paths} == {(0, 1, 2, 3), (0, 1, 2, 4)}
 
 
 def test_all_simple_paths_with_two_targets_cutoff():
     G = nx.path_graph(4)
     G.add_edge(2, 4)
     paths = nx.all_simple_paths(G, 0, [3, 4], cutoff=3)
-    assert set(tuple(p) for p in paths) == {(0, 1, 2, 3), (0, 1, 2, 4)}
+    assert {tuple(p) for p in paths} == {(0, 1, 2, 3), (0, 1, 2, 4)}
 
 
 def test_digraph_all_simple_paths_with_two_targets_cutoff():
     G = nx.path_graph(4, create_using=nx.DiGraph())
     G.add_edge(2, 4)
     paths = nx.all_simple_paths(G, 0, [3, 4], cutoff=3)
-    assert set(tuple(p) for p in paths) == {(0, 1, 2, 3), (0, 1, 2, 4)}
+    assert {tuple(p) for p in paths} == {(0, 1, 2, 3), (0, 1, 2, 4)}
 
 
 def test_all_simple_paths_with_two_targets_in_line_emits_two_paths():
     G = nx.path_graph(4)
     paths = nx.all_simple_paths(G, 0, [2, 3])
-    assert set(tuple(p) for p in paths) == {(0, 1, 2), (0, 1, 2, 3)}
+    assert {tuple(p) for p in paths} == {(0, 1, 2), (0, 1, 2, 3)}
 
 
 def test_all_simple_paths_ignores_cycle():
     G = nx.cycle_graph(3, create_using=nx.DiGraph())
     G.add_edge(1, 3)
     paths = nx.all_simple_paths(G, 0, 3)
-    assert set(tuple(p) for p in paths) == {(0, 1, 3)}
+    assert {tuple(p) for p in paths} == {(0, 1, 3)}
 
 
 def test_all_simple_paths_with_two_targets_inside_cycle_emits_two_paths():
     G = nx.cycle_graph(3, create_using=nx.DiGraph())
     G.add_edge(1, 3)
     paths = nx.all_simple_paths(G, 0, [2, 3])
-    assert set(tuple(p) for p in paths) == {(0, 1, 2), (0, 1, 3)}
+    assert {tuple(p) for p in paths} == {(0, 1, 2), (0, 1, 3)}
 
 
 def test_all_simple_paths_source_target():
     G = nx.path_graph(4)
     paths = nx.all_simple_paths(G, 1, 1)
-    assert paths == []
+    assert list(paths) == []
 
 
 def test_all_simple_paths_cutoff():
     G = nx.complete_graph(4)
     paths = nx.all_simple_paths(G, 0, 1, cutoff=1)
-    assert set(tuple(p) for p in paths) == {(0, 1)}
+    assert {tuple(p) for p in paths} == {(0, 1)}
     paths = nx.all_simple_paths(G, 0, 1, cutoff=2)
-    assert set(tuple(p) for p in paths) == {(0, 1), (0, 2, 1), (0, 3, 1)}
+    assert {tuple(p) for p in paths} == {(0, 1), (0, 2, 1), (0, 3, 1)}
 
 
 def test_all_simple_paths_on_non_trivial_graph():
@@ -151,31 +151,31 @@ def test_all_simple_paths_on_non_trivial_graph():
     G = nx.path_graph(5, create_using=nx.DiGraph())
     G.add_edges_from([(0, 5), (1, 5), (1, 3), (5, 4), (4, 2), (4, 3)])
     paths = nx.all_simple_paths(G, 1, [2, 3])
-    assert set(tuple(p) for p in paths) == {
+    assert {tuple(p) for p in paths} == {
         (1, 2), (1, 3, 4, 2), (1, 5, 4, 2), (1, 3), (1, 2, 3), (1, 5, 4, 3),
         (1, 5, 4, 2, 3)}
     paths = nx.all_simple_paths(G, 1, [2, 3], cutoff=3)
-    assert set(tuple(p) for p in paths) == {
+    assert {tuple(p) for p in paths} == {
         (1, 2), (1, 3, 4, 2), (1, 5, 4, 2), (1, 3), (1, 2, 3), (1, 5, 4, 3)}
     paths = nx.all_simple_paths(G, 1, [2, 3], cutoff=2)
-    assert set(tuple(p) for p in paths) == {(1, 2), (1, 3), (1, 2, 3)}
+    assert {tuple(p) for p in paths} == {(1, 2), (1, 3), (1, 2, 3)}
 
 
 def test_all_simple_paths_multigraph():
     G = nx.MultiGraph([(1, 2), (1, 2)])
     paths = nx.all_simple_paths(G, 1, 1)
-    assert paths == []
+    assert list(paths) == []
     nx.add_path(G, [3, 1, 10, 2])
     paths = list(nx.all_simple_paths(G, 1, 2))
     assert len(paths) == 3
-    assert set(tuple(p) for p in paths) == {(1, 2), (1, 2), (1, 10, 2)}
+    assert {tuple(p) for p in paths} == {(1, 2), (1, 2), (1, 10, 2)}
 
 
 def test_all_simple_paths_multigraph_with_cutoff():
     G = nx.MultiGraph([(1, 2), (1, 2), (1, 10), (10, 2)])
     paths = list(nx.all_simple_paths(G, 1, 2, cutoff=1))
     assert len(paths) == 2
-    assert set(tuple(p) for p in paths) == {(1, 2), (1, 2)}
+    assert {tuple(p) for p in paths} == {(1, 2), (1, 2)}
 
 
 def test_all_simple_paths_directed():
@@ -183,7 +183,7 @@ def test_all_simple_paths_directed():
     nx.add_path(G, [1, 2, 3])
     nx.add_path(G, [3, 2, 1])
     paths = nx.all_simple_paths(G, 1, 3)
-    assert set(tuple(p) for p in paths) == {(1, 2, 3)}
+    assert {tuple(p) for p in paths} == {(1, 2, 3)}
 
 
 def test_all_simple_paths_empty():
@@ -200,7 +200,7 @@ def test_all_simple_paths_corner_cases():
 
 def hamiltonian_path(G, source):
     source = arbitrary_element(G)
-    neighbors = set(G[source]) - set([source])
+    neighbors = set(G[source]) - {source}
     n = len(G)
     for target in neighbors:
         for path in nx.all_simple_paths(G, source, target):
@@ -251,6 +251,25 @@ def test_shortest_simple_paths():
 def test_shortest_simple_paths_directed():
     G = nx.cycle_graph(7, create_using=nx.DiGraph())
     paths = nx.shortest_simple_paths(G, 0, 3)
+    assert [path for path in paths] == [[0, 1, 2, 3]]
+
+
+def test_shortest_simple_paths_directed_with_weight_fucntion():
+    def cost(u, v, x):
+        return 1
+    G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
+    paths = nx.shortest_simple_paths(G, 1, 12)
+    assert next(paths) == [1, 2, 3, 4, 8, 12]
+    assert next(paths) == [1, 5, 6, 7, 8, 12]
+    assert ([len(path) for path in nx.shortest_simple_paths(G, 1, 12, weight=cost)]
+            == sorted([len(path) for path in nx.all_simple_paths(G, 1, 12)]))
+
+
+def test_shortest_simple_paths_with_weight_fucntion():
+    def cost(u, v, x):
+        return 1
+    G = nx.cycle_graph(7, create_using=nx.DiGraph())
+    paths = nx.shortest_simple_paths(G, 0, 3, weight=cost)
     assert [path for path in paths] == [[0, 1, 2, 3]]
 
 

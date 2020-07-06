@@ -1,12 +1,3 @@
-# -*- encoding: utf-8 -*-
-# test_duplication.py - unit tests for the generators.duplication module
-#
-# Copyright 2010-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.generators.duplication` module.
 
 """
@@ -17,7 +8,7 @@ from networkx.generators.duplication import duplication_divergence_graph
 from networkx.generators.duplication import partial_duplication_graph
 
 
-class TestDuplicationDivergenceGraph(object):
+class TestDuplicationDivergenceGraph:
     """Unit tests for the
     :func:`networkx.generators.duplication.duplication_divergence_graph`
     function.
@@ -39,7 +30,7 @@ class TestDuplicationDivergenceGraph(object):
             duplication_divergence_graph(3, -1)
 
 
-class TestPartialDuplicationGraph(object):
+class TestPartialDuplicationGraph:
     """Unit tests for the
     :func:`networkx.generators.duplication.partial_duplication_graph`
     function.

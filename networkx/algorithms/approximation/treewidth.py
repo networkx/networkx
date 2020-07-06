@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions for computing treewidth decomposition.
 
 Treewidth of an undirected graph is a number associated with the graph.
@@ -20,7 +19,7 @@ There are two different functions for computing a tree decomposition:
       computations I.Upper bounds". Inf. Comput. 208, 3 (March 2010),259-275.
       http://dx.doi.org/10.1016/j.ic.2009.03.008
 
-.. [2] Hand L. Bodlaender. "Discovering Treewidth". Institute of Information
+.. [2] Hans L. Bodlaender. "Discovering Treewidth". Institute of Information
       and Computing Sciences, Utrecht University.
       Technical Report UU-CS-2005-018.
       http://www.cs.uu.nl
@@ -190,7 +189,7 @@ def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
     """
 
     # make dict-of-sets structure
-    graph = {n: set(G[n]) - set([n]) for n in G}
+    graph = {n: set(G[n]) - {n} for n in G}
 
     # stack containing nodes and neighbors in the order from the heuristic
     node_stack = []

@@ -42,7 +42,7 @@ def test_incidence_matrix_simple():
         nx.incidence_matrix(G, nodelist=[0, 1])
 
 
-class TestGraphMatrix(object):
+class TestGraphMatrix:
     @classmethod
     def setup_class(cls):
         deg = [3, 2, 2, 1, 0]

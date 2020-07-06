@@ -1,11 +1,3 @@
-# test_boundary.py - unit tests for the boundary module
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.boundary` module."""
 
 from itertools import combinations
@@ -15,7 +7,7 @@ from networkx.testing import almost_equal, assert_edges_equal
 from networkx import convert_node_labels_to_integers as cnlti
 
 
-class TestNodeBoundary(object):
+class TestNodeBoundary:
     """Unit tests for the :func:`~networkx.node_boundary` function."""
 
     def test_null_graph(self):
@@ -92,7 +84,7 @@ class TestNodeBoundary(object):
         assert boundary == expected
 
 
-class TestEdgeBoundary(object):
+class TestEdgeBoundary:
     """Unit tests for the :func:`~networkx.edge_boundary` function."""
 
     def test_null_graph(self):

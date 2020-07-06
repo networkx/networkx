@@ -1,14 +1,3 @@
-#    Copyright(C) 2011-2019 by
-#    Ben Edwards <bedwards@cs.unm.edu>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Konstantinos Karakatsanis <dinoskarakas@gmail.com>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:  Ben Edwards (bedwards@cs.unm.edu)
-#           Aric Hagberg (hagberg@lanl.gov)
-#           Konstantinos Karakatsanis (dinoskarakas@gmail.com)
-#           Jean-Gabriel Young (jean.gabriel.young@gmail.com)
 """Generators for classes of graphs used in studying social networks."""
 import itertools
 import math
@@ -105,12 +94,17 @@ def connected_caveman_graph(l, k):
     l : int
       number of cliques
     k : int
-      size of cliques
+      size of cliques (k at least 2 or NetworkXError is raised)
 
     Returns
     -------
     G : NetworkX Graph
       connected caveman graph
+
+    Raises
+    ------
+    NetworkXError
+        If the size of cliques `k` is smaller than 2.
 
     Notes
     -----
@@ -129,6 +123,10 @@ def connected_caveman_graph(l, k):
     .. [1] Watts, D. J. 'Networks, Dynamics, and the Small-World Phenomenon.'
        Amer. J. Soc. 105, 493-527, 1999.
     """
+    if k < 2:
+        raise nx.NetworkXError('The size of cliques in a connected caveman graph '
+                               'must be at least 2.')
+
     G = nx.caveman_graph(l, k)
     for start in range(0, l * k, k):
         G.remove_edge(start, start + 1)
@@ -162,7 +160,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
 
     Raises
     ------
-    NetworkXError:
+    NetworkXError
      If p is not in [0,1]
 
     Examples
@@ -291,7 +289,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
 
     Raises
     ------
-    NetworkXError:
+    NetworkXError
       If p_in,p_out are not in [0,1] or
 
     Examples
@@ -311,7 +309,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
     .. [2] Santo Fortunato 'Community Detection in Graphs' Physical Reports
        Volume 486, Issue 3-5 p. 75-174. https://arxiv.org/abs/0906.0612
     """
-    return random_partition_graph([k] * l, p_in, p_out, seed, directed)
+    return random_partition_graph([k] * l, p_in, p_out, seed=seed, directed=directed)
 
 
 @py_random_state(6)
@@ -388,7 +386,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
             break
         assigned += size
         sizes.append(size)
-    return random_partition_graph(sizes, p_in, p_out, directed, seed)
+    return random_partition_graph(sizes, p_in, p_out, seed=seed, directed=directed)
 
 
 def ring_of_cliques(num_cliques, clique_size):

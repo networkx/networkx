@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import networkx as nx
 from networkx.testing import almost_equal
 
@@ -18,7 +17,7 @@ def weighted_G():
     return G
 
 
-class TestBetweennessCentrality(object):
+class TestBetweennessCentrality:
     def test_K5(self):
         """Betweenness centrality: K5"""
         G = nx.complete_graph(5)
@@ -316,7 +315,7 @@ class TestBetweennessCentrality(object):
             assert almost_equal(b[n], b_answer[n])
 
 
-class TestWeightedBetweennessCentrality(object):
+class TestWeightedBetweennessCentrality:
     def test_K5(self):
         """Weighted betweenness centrality: K5"""
         G = nx.complete_graph(5)
@@ -534,7 +533,7 @@ class TestWeightedBetweennessCentrality(object):
             assert almost_equal(b[n], b_answer[n])
 
 
-class TestEdgeBetweennessCentrality(object):
+class TestEdgeBetweennessCentrality:
     def test_K5(self):
         """Edge betweenness centrality: K5"""
         G = nx.complete_graph(5)
@@ -585,7 +584,7 @@ class TestEdgeBetweennessCentrality(object):
             assert almost_equal(b[n], b_answer[n])
 
 
-class TestWeightedEdgeBetweennessCentrality(object):
+class TestWeightedEdgeBetweennessCentrality:
     def test_K5(self):
         """Edge betweenness centrality: K5"""
         G = nx.complete_graph(5)

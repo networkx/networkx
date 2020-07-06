@@ -1,17 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Dan Schult (dschult@colgate.edu)
-#          Ben Edwards (BJEdwards@gmail.com)
-#          Arya McCarthy (admccarthy@smu.edu)
-#          Cole MacLean (maclean.cole@gmail.com)
-
 """Generators for geometric graphs.
 """
 
@@ -277,7 +263,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None,
     """
     n_name, nodes = n
     G = nx.Graph()
-    G.name = 'soft_random_geometric_graph({}, {}, {})'.format(n, radius, dim)
+    G.name = f'soft_random_geometric_graph({n}, {radius}, {dim})'
     G.add_nodes_from(nodes)
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.
@@ -757,8 +743,7 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2,
 
     n_name, nodes = n
     G = nx.Graph()
-    namestr = 'thresholded_random_geometric_graph({}, {}, {}, {})'
-    G.name = namestr.format(n, radius, theta, dim)
+    G.name = f"thresholded_random_geometric_graph({n}, {radius}, {theta}, {dim})"
     G.add_nodes_from(nodes)
     # If no weights are provided, choose them from an exponential
     # distribution.

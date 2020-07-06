@@ -1,11 +1,3 @@
-# test_isolate.py - unit tests for the isolate module
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.isolates` module."""
 
 import networkx as nx

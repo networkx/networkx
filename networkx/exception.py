@@ -1,16 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Pieter Swart <swart@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Loïc Séguin-C. <loicseguin@gmail.com>
 """
 **********
 Exceptions
@@ -20,20 +7,20 @@ Base exceptions and errors for NetworkX.
 """
 
 __all__ = [
-    'HasACycle',
-    'NodeNotFound',
-    'PowerIterationFailedConvergence',
-    'ExceededMaxIterations',
-    'AmbiguousSolution',
-    'NetworkXAlgorithmError',
-    'NetworkXException',
-    'NetworkXError',
-    'NetworkXNoCycle',
-    'NetworkXNoPath',
-    'NetworkXNotImplemented',
-    'NetworkXPointlessConcept',
-    'NetworkXUnbounded',
-    'NetworkXUnfeasible',
+    "HasACycle",
+    "NodeNotFound",
+    "PowerIterationFailedConvergence",
+    "ExceededMaxIterations",
+    "AmbiguousSolution",
+    "NetworkXAlgorithmError",
+    "NetworkXException",
+    "NetworkXError",
+    "NetworkXNoCycle",
+    "NetworkXNoPath",
+    "NetworkXNotImplemented",
+    "NetworkXPointlessConcept",
+    "NetworkXUnbounded",
+    "NetworkXUnfeasible",
 ]
 
 
@@ -132,7 +119,7 @@ class PowerIterationFailedConvergence(ExceededMaxIterations):
     """
 
     def __init__(self, num_iterations, *args, **kw):
-        msg = 'power iteration failed to converge within {} iterations'
-        exception_message = msg.format(num_iterations)
-        superinit = super(PowerIterationFailedConvergence, self).__init__
+        msg = f"power iteration failed to converge within {num_iterations} iterations"
+        exception_message = msg
+        superinit = super().__init__
         superinit(self, exception_message, *args, **kw)

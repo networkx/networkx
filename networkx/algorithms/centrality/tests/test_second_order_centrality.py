@@ -10,7 +10,7 @@ import networkx as nx
 from networkx.testing import almost_equal
 
 
-class TestSecondOrderCentrality(object):
+class TestSecondOrderCentrality:
 
     def test_empty(self):
         with pytest.raises(nx.NetworkXException):

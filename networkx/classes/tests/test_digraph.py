@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import pytest
 
 import networkx as nx
@@ -123,7 +122,7 @@ class BaseDiGraphTester(BaseGraphTester):
             R.remove_edge(1, 0)
 
     def test_reverse_hashable(self):
-        class Foo(object):
+        class Foo:
             pass
         x = Foo()
         y = Foo()
@@ -243,6 +242,27 @@ class TestDiGraph(BaseAttrDiGraphTester, _TestGraph):
         assert G.pred == {0: {1: {}, 2: {}}, 1: {2: {}}, 2: {0: {}, 1: {}}}
         G.remove_edges_from([(0, 0)])  # silent fail
 
+    def test_clear(self):
+        G = self.K3
+        G.graph['name'] = 'K3'
+        G.clear()
+        assert list(G.nodes) == []
+        assert G.succ == {}
+        assert G.pred == {}
+        assert G.graph == {}
+
+    def test_clear_edges(self):
+        G = self.K3
+        G.graph['name'] = 'K3'
+        nodes = list(G.nodes)
+        G.clear_edges()
+        assert list(G.nodes) == nodes
+        expected = {0: {}, 1: {}, 2: {}}
+        assert G.succ == expected
+        assert G.pred == expected
+        assert list(G.edges) == []
+        assert G.graph['name'] == 'K3'
+
 
 class TestEdgeSubgraph(_TestGraphEdgeSubgraph):
     """Unit tests for the :meth:`DiGraph.edge_subgraph` method."""
@@ -252,7 +272,7 @@ class TestEdgeSubgraph(_TestGraphEdgeSubgraph):
         G = nx.DiGraph(nx.path_graph(5))
         # Add some node, edge, and graph attributes.
         for i in range(5):
-            G.nodes[i]['name'] = 'node{}'.format(i)
+            G.nodes[i]['name'] = f'node{i}'
         G.edges[0, 1]['name'] = 'edge01'
         G.edges[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'

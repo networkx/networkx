@@ -1,4 +1,3 @@
-# encoding: utf-8
 """
 Algorithms for finding optimum branchings and spanning arborescences.
 
@@ -45,7 +44,7 @@ __all__ = [
     'Edmonds'
 ]
 
-KINDS = set(['max', 'min'])
+KINDS = {'max', 'min'}
 
 STYLES = {
     'branching': 'branching',
@@ -176,14 +175,14 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
     """
 
     def __init__(self, incoming_graph_data=None, **attr):
-        cls = super(MultiDiGraph_EdgeKey, self)
+        cls = super()
         cls.__init__(incoming_graph_data=incoming_graph_data, **attr)
 
         self._cls = cls
         self.edge_index = {}
 
     def remove_node(self, n):
-        keys = set([])
+        keys = set()
         for keydict in self.pred[n].values():
             keys.update(keydict)
         for keydict in self.succ[n].values():
@@ -207,7 +206,7 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
         if key in self.edge_index:
             uu, vv, _ = self.edge_index[key]
             if (u != uu) or (v != vv):
-                raise Exception("Key {0!r} is already in use.".format(key))
+                raise Exception(f"Key {key!r} is already in use.")
 
         self._cls.add_edge(u, v, key, **attr)
         self.edge_index[key] = (u, v, self.succ[u][v][key])
@@ -219,8 +218,8 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
     def remove_edge_with_key(self, key):
         try:
             u, v, _ = self.edge_index[key]
-        except KeyError:
-            raise KeyError('Invalid edge key {0!r}'.format(key))
+        except KeyError as e:
+            raise KeyError(f'Invalid edge key {key!r}') from e
         else:
             del self.edge_index[key]
             self._cls.remove_edge(u, v, key)
@@ -252,7 +251,7 @@ def get_path(G, u, v):
     return nodes, edges
 
 
-class Edmonds(object):
+class Edmonds:
     """
     Edmonds algorithm for finding optimal branchings and spanning arborescences.
 
@@ -375,7 +374,7 @@ class Edmonds(object):
         # This enormous while loop could use some refactoring...
 
         G, B = self.G, self.B
-        D = set([])
+        D = set()
         nodes = iter(list(G.nodes()))
         attr = self._attr
         G_pred = G.pred
@@ -424,12 +423,12 @@ class Edmonds(object):
                     continue
 
             # Put v into bucket D^i.
-            # print("Adding node {0}".format(v))
+            # print(f"Adding node {v}")
             D.add(v)
             B.add_node(v)
 
             edge, weight = desired_edge(v)
-            # print("Max edge is {0!r}".format(edge))
+            # print(f"Max edge is {edge!r}")
             if edge is None:
                 # If there is no edge, continue with a new node at (I1).
                 continue
@@ -457,7 +456,7 @@ class Edmonds(object):
                 else:
                     acceptable = True
 
-                # print("Edge is acceptable: {0}".format(acceptable))
+                # print(f"Edge is acceptable: {acceptable}")
                 if acceptable:
                     dd = {attr: weight}
                     B.add_edge(u, v, edge[2], **dd)
@@ -549,7 +548,7 @@ class Edmonds(object):
             """
             if u not in G:
                 # print(G.nodes(), u)
-                raise Exception('{0!r} not in G'.format(u))
+                raise Exception(f'{u!r} not in G')
             for v in G.pred[u]:
                 for edgekey in G.pred[u][v]:
                     if edgekey in edgekeys:
@@ -607,7 +606,7 @@ class Edmonds(object):
                         break
                 else:
                     raise Exception("Couldn't find edge incoming to merged node.")
-                # print("not a root. removing {0}".format(edgekey))
+                # print(f"not a root. removing {edgekey}")
 
                 edges.remove(edgekey)
 

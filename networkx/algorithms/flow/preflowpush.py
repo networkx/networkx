@@ -1,12 +1,6 @@
-# -*- coding: utf-8 -*-
 """
 Highest-label preflow-push algorithm for maximum flow problems.
 """
-
-__author__ = """ysitu <ysitu@users.noreply.github.com>"""
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
 
 from collections import deque
 from itertools import islice
@@ -26,9 +20,9 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
     """Implementation of the highest-label preflow-push algorithm.
     """
     if s not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(s))
+        raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(t))
+        raise nx.NetworkXError(f"node {str(t)} not in graph")
     if s == t:
         raise nx.NetworkXError('source and sink are the same node')
 

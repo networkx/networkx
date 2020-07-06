@@ -1,12 +1,3 @@
-# -*- encoding: utf-8 -*-
-# test_coding.py - unit tests for the coding module
-#
-# Copyright 2015-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`~networkx.algorithms.tree.coding` module."""
 from itertools import product
 
@@ -16,7 +7,7 @@ from networkx.testing import assert_nodes_equal
 from networkx.testing import assert_edges_equal
 
 
-class TestPruferSequence(object):
+class TestPruferSequence:
     """Unit tests for the Prüfer sequence encoding and decoding
     functions.
 
@@ -81,7 +72,7 @@ class TestPruferSequence(object):
             assert list(seq) == seq2
 
 
-class TestNestedTuple(object):
+class TestNestedTuple:
     """Unit tests for the nested tuple encoding and decoding functions.
 
     """

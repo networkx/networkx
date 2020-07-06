@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Copyright (c) 2015 – Thomson Licensing, SAS
 
 Redistribution and use in source and binary forms, with or without
@@ -99,8 +98,8 @@ def second_order_centrality(G):
 
     try:
         import numpy as np
-    except ImportError:
-        raise ImportError('Requires NumPy: http://scipy.org/')
+    except ImportError as e:
+        raise ImportError('Requires NumPy: http://numpy.org/') from e
 
     n = len(G)
 
@@ -134,5 +133,5 @@ def second_order_centrality(G):
                                   np.ones([n, 1])[:, 0])  # eq 3
 
     return dict(zip(G.nodes,
-                    [np.sqrt((2*np.sum(M[:, i])-n*(n+1))) for i in range(n)]
+                    [np.sqrt(2*np.sum(M[:, i])-n*(n+1)) for i in range(n)]
                     ))  # eq 6

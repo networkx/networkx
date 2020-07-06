@@ -1,15 +1,13 @@
 """Unit tests for layout functions."""
+import networkx as nx
+from networkx.testing import almost_equal
+
 import pytest
 numpy = pytest.importorskip('numpy')
 test_smoke_empty_graphscipy = pytest.importorskip('scipy')
 
 
-import pytest
-import networkx as nx
-from networkx.testing import almost_equal
-
-
-class TestLayout(object):
+class TestLayout:
 
     @classmethod
     def setup_class(cls):
@@ -50,46 +48,48 @@ class TestLayout(object):
 
     def test_smoke_empty_graph(self):
         G = []
-        vpos = nx.random_layout(G)
-        vpos = nx.circular_layout(G)
-        vpos = nx.planar_layout(G)
-        vpos = nx.spring_layout(G)
-        vpos = nx.fruchterman_reingold_layout(G)
-        vpos = nx.spectral_layout(G)
-        vpos = nx.shell_layout(G)
-        vpos = nx.bipartite_layout(G, G)
-        vpos = nx.spiral_layout(G)
-        # FIXME vpos = nx.kamada_kawai_layout(G)
+        nx.random_layout(G)
+        nx.circular_layout(G)
+        nx.planar_layout(G)
+        nx.spring_layout(G)
+        nx.fruchterman_reingold_layout(G)
+        nx.spectral_layout(G)
+        nx.shell_layout(G)
+        nx.bipartite_layout(G, G)
+        nx.spiral_layout(G)
+        nx.kamada_kawai_layout(G)
 
     def test_smoke_int(self):
         G = self.Gi
-        vpos = nx.random_layout(G)
-        vpos = nx.circular_layout(G)
-        vpos = nx.planar_layout(G)
-        vpos = nx.spring_layout(G)
-        vpos = nx.fruchterman_reingold_layout(G)
-        vpos = nx.fruchterman_reingold_layout(self.bigG)
-        vpos = nx.spectral_layout(G)
-        vpos = nx.spectral_layout(G.to_directed())
-        vpos = nx.spectral_layout(self.bigG)
-        vpos = nx.spectral_layout(self.bigG.to_directed())
-        vpos = nx.shell_layout(G)
-        vpos = nx.spiral_layout(G)
-        vpos = nx.kamada_kawai_layout(G)
-        vpos = nx.kamada_kawai_layout(G, dim=1)
+        nx.random_layout(G)
+        nx.circular_layout(G)
+        nx.planar_layout(G)
+        nx.spring_layout(G)
+        nx.fruchterman_reingold_layout(G)
+        nx.fruchterman_reingold_layout(self.bigG)
+        nx.spectral_layout(G)
+        nx.spectral_layout(G.to_directed())
+        nx.spectral_layout(self.bigG)
+        nx.spectral_layout(self.bigG.to_directed())
+        nx.shell_layout(G)
+        nx.spiral_layout(G)
+        nx.kamada_kawai_layout(G)
+        nx.kamada_kawai_layout(G, dim=1)
+        nx.kamada_kawai_layout(G, dim=3)
 
     def test_smoke_string(self):
         G = self.Gs
-        vpos = nx.random_layout(G)
-        vpos = nx.circular_layout(G)
-        vpos = nx.planar_layout(G)
-        vpos = nx.spring_layout(G)
-        vpos = nx.fruchterman_reingold_layout(G)
-        vpos = nx.spectral_layout(G)
-        vpos = nx.shell_layout(G)
-        vpos = nx.spiral_layout(G)
-        vpos = nx.kamada_kawai_layout(G)
-        vpos = nx.kamada_kawai_layout(G, dim=1)
+        nx.random_layout(G)
+        nx.circular_layout(G)
+        nx.planar_layout(G)
+        nx.spring_layout(G)
+        nx.fruchterman_reingold_layout(G)
+        nx.spectral_layout(G)
+        nx.shell_layout(G)
+        nx.spiral_layout(G)
+        nx.kamada_kawai_layout(G)
+        nx.kamada_kawai_layout(G, dim=1)
+        nx.kamada_kawai_layout(G, dim=3)
 
     def check_scale_and_center(self, pos, scale, center):
         center = numpy.array(center)
@@ -115,6 +115,10 @@ class TestLayout(object):
         sc(nx.spiral_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.kamada_kawai_layout(G, scale=2, center=c), scale=2, center=c)
 
+        c = (2, 3, 5)
+        sc(nx.kamada_kawai_layout(G, dim=3, scale=2, center=c), scale=2, center=c)
+
+
     def test_planar_layout_non_planar_input(self):
         G = nx.complete_graph(9)
         pytest.raises(nx.NetworkXException, nx.planar_layout, G)
@@ -137,6 +141,10 @@ class TestLayout(object):
         sc(nx.spiral_layout(G), scale=1, center=c)
         sc(nx.kamada_kawai_layout(G), scale=1, center=c)
 
+        c = (0, 0, 0)
+        sc(nx.kamada_kawai_layout(G, dim=3), scale=1, center=c)
+
+
     def test_circular_planar_and_shell_dim_error(self):
         G = nx.path_graph(4)
         pytest.raises(ValueError, nx.circular_layout, G, dim=1)
@@ -151,6 +159,8 @@ class TestLayout(object):
         assert pos.shape == (6, 2)
         pos = nx.drawing.layout._fruchterman_reingold(A, dim=3)
         assert pos.shape == (6, 3)
+        pos = nx.drawing.layout._sparse_fruchterman_reingold(A)
+        assert pos.shape == (6, 2)
 
     def test_adjacency_interface_scipy(self):
         A = nx.to_scipy_sparse_matrix(self.Gs, dtype='d')
@@ -169,6 +179,9 @@ class TestLayout(object):
         vpos = nx.shell_layout(G, [[0], [1, 2], [3]])
         assert not vpos[0].any()
         assert vpos[3].any()  # ensure node 3 not at origin (#3188)
+        assert numpy.linalg.norm(vpos[3]) <= 1  # ensure node 3 fits (#3753)
+        vpos = nx.shell_layout(G, [[0], [1, 2], [3]], rotate=0)
+        assert numpy.linalg.norm(vpos[3]) <= 1  # ensure node 3 fits (#3753)
 
     def test_smoke_initial_pos_fruchterman_reingold(self):
         pos = nx.circular_layout(self.Gi)
@@ -187,7 +200,7 @@ class TestLayout(object):
 
     def test_center_parameter(self):
         G = nx.path_graph(1)
-        vpos = nx.random_layout(G, center=(1, 1))
+        nx.random_layout(G, center=(1, 1))
         vpos = nx.circular_layout(G, center=(1, 1))
         assert tuple(vpos[0]) == (1, 1)
         vpos = nx.planar_layout(G, center=(1, 1))
@@ -215,6 +228,7 @@ class TestLayout(object):
         pytest.raises(ValueError, nx.spectral_layout, G, dim=3, center=(1, 1))
         pytest.raises(ValueError, nx.shell_layout, G, center=(1, 1, 1))
         pytest.raises(ValueError, nx.spiral_layout, G, center=(1, 1, 1))
+        pytest.raises(ValueError, nx.kamada_kawai_layout, G, center=(1, 1, 1))
 
     def test_empty_graph(self):
         G = nx.empty_graph()
@@ -235,6 +249,8 @@ class TestLayout(object):
         vpos = nx.shell_layout(G, center=(1, 1))
         assert vpos == {}
         vpos = nx.spiral_layout(G, center=(1, 1))
+        assert vpos == {}
+        vpos = nx.kamada_kawai_layout(G, center=(1, 1))
         assert vpos == {}
 
     def test_bipartite_layout(self):
@@ -279,19 +295,11 @@ class TestLayout(object):
         assert almost_equal(grad[0], -0.5)
         assert almost_equal(grad[1], 0.5)
 
-    def test_kamada_kawai_costfn_2d(self):
+    def check_kamada_kawai_costfn(self, pos, invdist, meanwt, dim):
         costfn = nx.drawing.layout._kamada_kawai_costfn
 
-        pos = numpy.array([[1.3, -3.2],
-                           [2.7, -0.3],
-                           [5.1, 2.5]])
-        invdist = 1 / numpy.array([[0.1, 2.1, 1.7],
-                                   [2.1, 0.2, 0.6],
-                                   [1.7, 0.6, 0.3]])
-        meanwt = 0.3
-
         cost, grad = costfn(pos.ravel(), numpy, invdist,
-                            meanweight=meanwt, dim=2)
+                            meanweight=meanwt, dim=dim)
 
         expected_cost = 0.5 * meanwt * numpy.sum(numpy.sum(pos, axis=0) ** 2)
         for i in range(pos.shape[0]):
@@ -317,6 +325,27 @@ class TestLayout(object):
 
                 assert almost_equal(grad[idx], (cplus - cminus) / (2 * dx),
                                     places=5)
+
+    def test_kamada_kawai_costfn(self):
+        invdist = 1 / numpy.array([[0.1, 2.1, 1.7],
+                                   [2.1, 0.2, 0.6],
+                                   [1.7, 0.6, 0.3]])
+        meanwt = 0.3
+
+        # 2d
+        pos = numpy.array([[1.3, -3.2],
+                           [2.7, -0.3],
+                           [5.1, 2.5]])
+
+        self.check_kamada_kawai_costfn(pos, invdist, meanwt, 2)
+
+        # 3d
+        pos = numpy.array([[0.9, 8.6, -8.7],
+                           [-10, -0.5, -7.1],
+                           [9.1, -8.1, 1.6]])
+
+        self.check_kamada_kawai_costfn(pos, invdist, meanwt, 3)
+
 
     def test_spiral_layout(self):
 

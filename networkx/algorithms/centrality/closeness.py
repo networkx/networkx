@@ -1,15 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:  Aric Hagberg <aric.hagberg@gmail.com>
-#           Pieter Swart <swart@lanl.gov>
-#           Sasha Gutfraind <ag362@cornell.edu>
-#           Dan Schult <dschult@colgate.edu>
-#           Michael Lauria <michael.david.lauria@gmail.com>
 """
 Closeness centrality measures.
 """

@@ -52,7 +52,7 @@ Expanders
 
    margulis_gabber_galil_graph
    chordal_cycle_graph
-
+   paley_graph
 
 Lattice
 -------
@@ -351,3 +351,11 @@ Interval Graph
    :toctree: generated/
 
    interval_graph
+
+Sudoku
+------
+.. automodule:: networkx.generators.sudoku
+.. autosummary::
+   :toctree: generated/
+
+   sudoku_graph

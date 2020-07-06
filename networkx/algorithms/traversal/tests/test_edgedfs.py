@@ -18,7 +18,7 @@ REVERSE = nx.algorithms.edgedfs.REVERSE
 # this can fail, see TestEdgeDFS.test_multigraph.
 
 
-class TestEdgeDFS(object):
+class TestEdgeDFS:
     @classmethod
     def setup_class(cls):
         cls.nodes = [0, 1, 2, 3]

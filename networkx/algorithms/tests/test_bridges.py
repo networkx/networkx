@@ -1,11 +1,3 @@
-# test_bridges.py - unit tests for bridge-finding algorithms
-#
-# Copyright 2004-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for bridge-finding algorithms."""
 
 import networkx as nx

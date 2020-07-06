@@ -1,18 +1,3 @@
-# breadth_first_search.py - breadth-first traversal of a graph
-#
-# Copyright (C) 2004-2019 NetworkX Developers
-#   Aric Hagberg <hagberg@lanl.gov>
-#   Dan Schult <dschult@colgate.edu>
-#   Pieter Swart <swart@lanl.gov>
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Authors:
-#     Aric Hagberg <aric.hagberg@gmail.com>
-#
 """Basic algorithms for breadth-first searching the nodes of a graph."""
 import networkx as nx
 from collections import deque
@@ -134,12 +119,12 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
 
     Notes
     -----
-    The naming of this function is very similar to bfs_edges. The difference
+    The naming of this function is very similar to edge_bfs. The difference
     is that 'edge_bfs' yields edges even if they extend back to an already
     explored node while 'bfs_edges' yields the edges of the tree that results
     from a breadth-first-search (BFS) so no edges are reported if they extend
     to already explored nodes. That means 'edge_bfs' reports all edges while
-    'bfs_edges' only report those traversed by a node-based BFS. Yet another
+    'bfs_edges' only reports those traversed by a node-based BFS. Yet another
     description is that 'bfs_edges' reports the edges traversed during BFS
     while 'edge_bfs' reports all edges in the order they are explored.
 
@@ -352,7 +337,7 @@ def descendants_at_distance(G, source, distance):
         The descendants of `source` in `G` at the given `distance` from `source`
     """
     if not G.has_node(source):
-        raise nx.NetworkXError("The node %s is not in the graph." % source)
+        raise nx.NetworkXError(f"The node {source} is not in the graph.")
     current_distance = 0
     queue = {source}
     visited = {source}

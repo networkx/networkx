@@ -1,14 +1,3 @@
-# depth_first_search.py - depth-first traversals of a graph
-#
-# Copyright 2004-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Author:
-#   Aric Hagberg <aric.hagberg@gmail.com>
 """Basic algorithms for depth-first searching the nodes of a graph."""
 import networkx as nx
 from collections import defaultdict

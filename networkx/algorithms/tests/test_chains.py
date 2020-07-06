@@ -1,11 +1,3 @@
-# test_chains.py - unit tests for the chains module
-#
-# Copyright 2004-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the chain decomposition functions."""
 from itertools import cycle
 from itertools import islice

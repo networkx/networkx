@@ -1,12 +1,3 @@
-# -*- encoding: utf-8 -*-
-# test_mst.py - unit tests for minimum spanning tree functions
-#
-# Copyright 2016-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.tree.mst` module."""
 
 import pytest
@@ -20,7 +11,7 @@ def test_unknown_algorithm():
         nx.minimum_spanning_tree(nx.Graph(), algorithm='random')
 
 
-class MinimumSpanningTreeTestBase(object):
+class MinimumSpanningTreeTestBase:
     """Base class for test classes for minimum spanning tree algorithms.
 
     This class contains some common tests that will be inherited by
@@ -189,7 +180,7 @@ class TestBoruvka(MinimumSpanningTreeTestBase):
         Borůvka's algorithm.
 
         """
-        edges = nx.minimum_spanning_edges(self.G, algorithm=u'borůvka')
+        edges = nx.minimum_spanning_edges(self.G, algorithm='borůvka')
         # Edges from the spanning edges functions don't come in sorted
         # orientation, so we need to sort each edge individually.
         actual = sorted((min(u, v), max(u, v), d) for u, v, d in edges)

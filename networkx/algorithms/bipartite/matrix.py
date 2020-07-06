@@ -1,20 +1,12 @@
-# -*- coding: utf-8 -*-
 """
 ====================
 Biadjacency matrices
 ====================
 """
-#    Copyright (C) 2013-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import itertools
 from networkx.convert_matrix import _generate_weighted_edges
 import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
+
 __all__ = ['biadjacency_matrix', 'from_biadjacency_matrix']
 
 
@@ -109,8 +101,8 @@ def biadjacency_matrix(G, row_order, column_order=None,
         return M.asformat(format)
     # From Scipy 1.1.0, asformat will throw a ValueError instead of an
     # AttributeError if the format if not recognized.
-    except (AttributeError, ValueError):
-        raise nx.NetworkXError("Unknown sparse matrix format: %s" % format)
+    except (AttributeError, ValueError) as e:
+        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from e
 
 
 def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):

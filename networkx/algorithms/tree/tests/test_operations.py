@@ -1,11 +1,3 @@
-# test_operations.py - unit tests for the operations module
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.tree.operations` module.
 
 """
@@ -15,7 +7,7 @@ from networkx.testing import assert_nodes_equal
 from networkx.testing import assert_edges_equal
 
 
-class TestJoin(object):
+class TestJoin:
     """Unit tests for the :func:`networkx.tree.join` function."""
 
     def test_empty_sequence(self):

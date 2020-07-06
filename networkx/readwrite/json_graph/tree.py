@@ -1,12 +1,6 @@
-#    Copyright (C) 2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from itertools import chain
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov))"""
+
 __all__ = ['tree_data', 'tree_graph']
 
 _attrs = dict(id='id', children='children')
@@ -139,14 +133,14 @@ def tree_graph(data, attrs=_attrs):
             grandchildren = data.get(children, [])
             if grandchildren:
                 add_children(child, grandchildren)
-            nodedata = dict((str(k), v) for k, v in data.items()
-                            if k != id_ and k != children)
+            nodedata = {str(k): v for k, v in data.items()
+                            if k != id_ and k != children}
             graph.add_node(child, **nodedata)
 
     root = data[id_]
     children_ = data.get(children, [])
-    nodedata = dict((str(k), v) for k, v in data.items()
-                    if k != id_ and k != children)
+    nodedata = {str(k): v for k, v in data.items()
+                    if k != id_ and k != children}
     graph.add_node(root, **nodedata)
     add_children(root, children_)
     return graph

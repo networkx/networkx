@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# lukes.py - Lukes tree partitioning algorithm
-# Author: Federico Rosato <federico.rosato@supsi.ch>
 """Lukes Algorithm for exact optimal weighted tree partitioning."""
 
 from copy import deepcopy
@@ -113,8 +109,7 @@ def lukes_partitioning(G,
     for x in all_n_attr:
         if not isinstance(x, int):
             raise TypeError('lukes_partitioning needs integer '
-                            'values for node_weight ({})'
-                            .format(node_weight))
+                            f'values for node_weight ({node_weight})')
 
     # SUBROUTINES -----------------------
     # these functions are defined here for two reasons:

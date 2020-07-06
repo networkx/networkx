@@ -1,10 +1,9 @@
-#!/usr/bin/env python
 import pytest
 import networkx as nx
 from networkx import NetworkXNotImplemented
 
 
-class TestAttractingComponents(object):
+class TestAttractingComponents:
     @classmethod
     def setup_class(cls):
         cls.G1 = nx.DiGraph()

@@ -11,7 +11,7 @@ from networkx.testing.utils import (
 import pytest
 
 
-class BaseGraphTester(object):
+class BaseGraphTester:
     """ Tests for data-structure independent graph class features."""
 
     def test_contains(self):
@@ -606,8 +606,21 @@ class TestGraph(BaseAttrGraphTester):
 
     def test_clear(self):
         G = self.K3.copy()
+        G.graph['name'] = 'K3'
         G.clear()
+        assert list(G.nodes) == []
         assert G.adj == {}
+        assert G.graph == {}
+
+    def test_clear_edges(self):
+        G = self.K3.copy()
+        G.graph['name'] = 'K3'
+        nodes = list(G.nodes)
+        G.clear_edges()
+        assert list(G.nodes) == nodes
+        assert G.adj == {0: {}, 1: {}, 2: {}}
+        assert list(G.edges) == []
+        assert G.graph['name'] == 'K3'
 
     def test_edges_data(self):
         G = self.K3
@@ -666,7 +679,7 @@ class TestGraph(BaseAttrGraphTester):
         # update nodes only
         H = self.Graph()
         H.update(nodes=[3, 4])
-        assert H.nodes ^ {3, 4} == set([])
+        assert H.nodes ^ {3, 4} == set()
         assert H.size() == 0
 
         # update edges only
@@ -680,7 +693,7 @@ class TestGraph(BaseAttrGraphTester):
             nx.Graph().update()
 
 
-class TestEdgeSubgraph(object):
+class TestEdgeSubgraph:
     """Unit tests for the :meth:`Graph.edge_subgraph` method."""
 
     def setup_method(self):
@@ -688,7 +701,7 @@ class TestEdgeSubgraph(object):
         G = nx.path_graph(5)
         # Add some node, edge, and graph attributes.
         for i in range(5):
-            G.nodes[i]['name'] = 'node{}'.format(i)
+            G.nodes[i]['name'] = f'node{i}'
         G.edges[0, 1]['name'] = 'edge01'
         G.edges[3, 4]['name'] = 'edge34'
         G.graph['name'] = 'graph'

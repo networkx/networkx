@@ -1,17 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (aric.hagberg@gmail.com)
-#          Pieter Swart (swart@lanl.gov)
-#          Dan Schult (dschult@colgate.edu)
-#          Joel Miller (joel.c.miller.research@gmail.com)
-#          Nathan Lemons (nlemons@gmail.com)
-#          Brian Cloteaux (brian.cloteaux@nist.gov)
 """Generate graphs with a given degree sequence or expected degree sequence.
 """
 
@@ -750,10 +736,10 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
             return DSRG.generate()
         except nx.NetworkXUnfeasible:
             pass
-    raise nx.NetworkXError('failed to generate graph in %d tries' % tries)
+    raise nx.NetworkXError(f"failed to generate graph in {tries} tries")
 
 
-class DegreeSequenceRandomGraph(object):
+class DegreeSequenceRandomGraph:
     # class to generate random graphs with a given degree sequence
     # use random_degree_sequence_graph()
     def __init__(self, degree, rng):

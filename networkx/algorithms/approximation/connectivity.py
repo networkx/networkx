@@ -1,15 +1,9 @@
 """ Fast approximation for node connectivity
 """
-#    Copyright (C) 2015 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    All rights reserved.
-#    BSD license.
 import itertools
 from operator import itemgetter
 
 import networkx as nx
-
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>'])
 
 __all__ = ['local_node_connectivity',
            'node_connectivity',
@@ -182,9 +176,9 @@ def node_connectivity(G, s=None, t=None):
     # Local node connectivity
     if s is not None and t is not None:
         if s not in G:
-            raise nx.NetworkXError('node %s not in graph' % s)
+            raise nx.NetworkXError(f"node {s} not in graph")
         if t not in G:
-            raise nx.NetworkXError('node %s not in graph' % t)
+            raise nx.NetworkXError(f"node {t} not in graph")
         return local_node_connectivity(G, s, t)
 
     # Global node connectivity
@@ -208,7 +202,7 @@ def node_connectivity(G, s=None, t=None):
     K = minimum_degree
     # compute local node connectivity with all non-neighbors nodes
     # and store the minimum
-    for w in set(G) - set(neighbors(v)) - set([v]):
+    for w in set(G) - set(neighbors(v)) - {v}:
         K = min(K, local_node_connectivity(G, v, w, cutoff=K))
     # Same for non adjacent pairs of neighbors of v
     for x, y in iter_func(neighbors(v), 2):
@@ -307,7 +301,7 @@ def _bidirectional_shortest_path(G, source, target, exclude):
 
     Raises
     ------
-    NetworkXNoPath: exception
+    NetworkXNoPath
         If there is no path or if nodes are adjacent and have only one path
         between them
 
@@ -402,4 +396,4 @@ def _bidirectional_pred_succ(G, source, target, exclude):
                     if w in pred:
                         return pred, succ, w  # found path
 
-    raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")

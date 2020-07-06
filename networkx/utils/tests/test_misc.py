@@ -1,6 +1,6 @@
-# -*- encoding: utf-8 -*-
 import pytest
 import networkx as nx
+import random
 from networkx.utils import (
     create_py_random_state,
     create_random_state,
@@ -16,7 +16,6 @@ from networkx.utils import (
     pairwise,
     powerlaw_sequence,
     PythonRandomInterface,
-    random,
     to_tuple
 )
 
@@ -72,7 +71,7 @@ def test_make_str_with_unicode():
     assert len(y) == 7
 
 
-class TestNumpyArray(object):
+class TestNumpyArray:
     @classmethod
     def setup_class(cls):
         global numpy
@@ -185,7 +184,7 @@ def test_create_random_state():
     assert isinstance(create_random_state(rs(1)), rs)
     pytest.raises(ValueError, create_random_state, 'a')
 
-    assert np.all((rs(1).rand(10) == create_random_state(1).rand(10)))
+    assert np.all(rs(1).rand(10) == create_random_state(1).rand(10))
 
 
 def test_create_py_random_state():

@@ -23,7 +23,7 @@ def test_one_node():
     test.add_node('a')
 
     # The expected communities are:
-    ground_truth = set([frozenset(['a'])])
+    ground_truth = {frozenset(['a'])}
 
     communities = label_propagation_communities(test)
     result = {frozenset(c) for c in communities}
@@ -42,8 +42,8 @@ def test_unconnected_communities():
     test.add_edge('f', 'b')
 
     # The expected communities are:
-    ground_truth = set([frozenset(['a', 'c', 'd']),
-                        frozenset(['b', 'e', 'f'])])
+    ground_truth = {frozenset(['a', 'c', 'd']),
+                        frozenset(['b', 'e', 'f'])}
 
     communities = label_propagation_communities(test)
     result = {frozenset(c) for c in communities}
@@ -82,14 +82,14 @@ def test_connected_communities():
     test.add_node('z')
 
     # The expected communities are:
-    ground_truth1 = set([frozenset(['a', 'b', 'c', 'd', 'e']),
+    ground_truth1 = {frozenset(['a', 'b', 'c', 'd', 'e']),
                          frozenset(['1', '2', '3', '4', '5']),
                          frozenset(['x', 'y']),
-                         frozenset(['z'])])
-    ground_truth2 = set([frozenset(['a', 'b', 'c', 'd', 'e',
+                         frozenset(['z'])}
+    ground_truth2 = {frozenset(['a', 'b', 'c', 'd', 'e',
                                     '1', '2', '3', '4', '5']),
                          frozenset(['x', 'y']),
-                         frozenset(['z'])])
+                         frozenset(['z'])}
     ground_truth = (ground_truth1, ground_truth2)
 
     communities = label_propagation_communities(test)
@@ -107,7 +107,7 @@ def test_termination():
     asyn_lpa_communities(test2)
 
 
-class TestAsynLpaCommunities(object):
+class TestAsynLpaCommunities:
     def _check_communities(self, G, expected):
         """Checks that the communities computed from the given graph ``G``
         using the :func:`~networkx.asyn_lpa_communities` function match

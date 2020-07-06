@@ -1,11 +1,3 @@
-# beamsearch.py - breadth-first search with limited queueing
-#
-# Copyright 2016-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Basic algorithms for breadth-first searching the nodes of a graph."""
 
 from .breadth_first_search import generic_bfs_edges

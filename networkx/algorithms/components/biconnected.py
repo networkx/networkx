@@ -1,14 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2011-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Jordi Torrents (jtorrents@milnou.net)
-#          Dan Schult (dschult@colgate.edu)
-#          Aric Hagberg (aric.hagberg@gmail.com)
 """Biconnected components and articulation points."""
 from itertools import chain
 from networkx.utils.decorators import not_implemented_for
@@ -43,7 +32,7 @@ def is_biconnected(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is not undirected.
 
     Examples
@@ -119,7 +108,7 @@ def biconnected_component_edges(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is not undirected.
 
     Examples
@@ -163,8 +152,7 @@ def biconnected_component_edges(G):
            Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
 
     """
-    for comp in _biconnected_dfs(G, components=True):
-        yield comp
+    yield from _biconnected_dfs(G, components=True)
 
 
 @not_implemented_for('directed')
@@ -193,7 +181,7 @@ def biconnected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is not undirected.
 
     See Also
@@ -287,7 +275,7 @@ def articulation_points(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is not undirected.
 
     Examples

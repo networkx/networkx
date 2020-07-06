@@ -1,12 +1,6 @@
-# -*- coding: utf-8 -*-
 """Greedy coloring test suite.
 
 """
-
-__author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
-                        "Jan Aagaard Meier <jmei@itu.dk>",
-                        "Henrik Haugbølle <hhau@itu.dk>",
-                        "Jake VanderPlas <jakevdp@uw.edu>"])
 
 import networkx as nx
 import pytest

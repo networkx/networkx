@@ -1,18 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 Communicability.
 """
-#    Copyright (C) 2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Previously coded as communicability centrality
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
 from networkx.utils import not_implemented_for
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Franck Kalala (franckkalala@yahoo.fr'])
+
 __all__ = ['communicability',
            'communicability_exp',
            ]
@@ -24,7 +15,7 @@ def communicability(G):
     r"""Returns communicability between all pairs of nodes in G.
 
     The communicability between pairs of nodes in G is the sum of
-    closed walks of different lengths starting at node u and ending at node v.
+    walks of different lengths starting at node u and ending at node v.
 
     Parameters
     ----------
@@ -77,7 +68,6 @@ def communicability(G):
     >>> c = nx.communicability(G)
     """
     import numpy
-    import scipy.linalg
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
@@ -105,7 +95,7 @@ def communicability_exp(G):
     r"""Returns communicability between all pairs of nodes in G.
 
     Communicability between pair of node (u,v) of node in G is the sum of
-    closed walks of different lengths starting at node u and ending at node v.
+    walks of different lengths starting at node u and ending at node v.
 
     Parameters
     ----------

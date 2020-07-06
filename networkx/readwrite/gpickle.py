@@ -18,24 +18,14 @@ pickles to store the graph data can be used.
 
 Format
 ------
-See https://docs.python.org/2/library/pickle.html
+See https://docs.python.org/3/library/pickle.html
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 __all__ = ['read_gpickle', 'write_gpickle']
 
 from networkx.utils import open_file
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 
 
 @open_file(1, mode='wb')
@@ -64,7 +54,7 @@ def write_gpickle(G, path, protocol=pickle.HIGHEST_PROTOCOL):
 
     References
     ----------
-    .. [1] https://docs.python.org/2/library/pickle.html
+    .. [1] https://docs.python.org/3/library/pickle.html
     """
     pickle.dump(G, path, protocol)
 
@@ -95,6 +85,6 @@ def read_gpickle(path):
 
     References
     ----------
-    .. [1] https://docs.python.org/2/library/pickle.html
+    .. [1] https://docs.python.org/3/library/pickle.html
     """
     return pickle.load(path)

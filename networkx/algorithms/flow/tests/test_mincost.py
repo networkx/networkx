@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import networkx as nx
 import pytest
 import os

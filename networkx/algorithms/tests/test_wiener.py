@@ -1,11 +1,3 @@
-# test_wiener.py - unit tests for the wiener module
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.wiener` module."""
 
 
@@ -16,7 +8,7 @@ from networkx import path_graph
 from networkx import wiener_index
 
 
-class TestWienerIndex(object):
+class TestWienerIndex:
     """Unit tests for computing the Wiener index of a graph."""
 
     def test_disconnected_graph(self):

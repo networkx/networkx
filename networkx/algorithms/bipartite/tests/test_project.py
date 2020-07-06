@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import networkx as nx
 from networkx.algorithms import bipartite
 from networkx.testing import assert_edges_equal, assert_nodes_equal

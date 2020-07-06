@@ -1,19 +1,15 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2011 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
+"""Functions for computing clustering of pairs
+
+"""
+
 import itertools
 import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
+
 __all__ = ['clustering',
            'average_clustering',
            'latapy_clustering',
            'robins_alexander_clustering']
 
-# functions for computing clustering of pairs
 
 
 def cc_dot(nu, nv):
@@ -115,16 +111,16 @@ def latapy_clustering(G, nodes=None, mode='dot'):
 
     try:
         cc_func = modes[mode]
-    except KeyError:
+    except KeyError as e:
         raise nx.NetworkXError(
-            "Mode for bipartite clustering must be: dot, min or max")
+            "Mode for bipartite clustering must be: dot, min or max") from e
 
     if nodes is None:
         nodes = G
     ccs = {}
     for v in nodes:
         cc = 0.0
-        nbrs2 = set([u for nbr in G[v] for u in G[nbr]]) - set([v])
+        nbrs2 = {u for nbr in G[v] for u in G[nbr]} - {v}
         for u in nbrs2:
             cc += cc_func(set(G[u]), set(G[v]))
         if cc > 0.0:  # len(nbrs2)>0
@@ -265,7 +261,7 @@ def _four_cycles(G):
     cycles = 0
     for v in G:
         for u, w in itertools.combinations(G[v], 2):
-            cycles += len((set(G[u]) & set(G[w])) - set([v]))
+            cycles += len((set(G[u]) & set(G[w])) - {v})
     return cycles / 4
 
 
@@ -273,8 +269,8 @@ def _threepaths(G):
     paths = 0
     for v in G:
         for u in G[v]:
-            for w in set(G[u]) - set([v]):
-                paths += len(set(G[w]) - set([v, u]))
+            for w in set(G[u]) - {v}:
+                paths += len(set(G[w]) - {v, u})
     # Divide by two because we count each three path twice
     # one for each possible starting point
     return paths / 2

@@ -1,15 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# $Id: test_maximal_independent_set.py 577 2011-03-01 06:07:53Z lleeoo $
-#    Copyright (C) 2004-2019 by
-#    Leo Lopes <leo.lopes@monash.edu>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Leo Lopes <leo.lopes@monash.edu>
 """
 Tests for maximal (not maximum) independent sets.
 
@@ -20,7 +8,7 @@ import networkx as nx
 import random
 
 
-class TestMaximalIndependantSet(object):
+class TestMaximalIndependantSet:
     def setup(self):
         self.florentine = nx.Graph()
         self.florentine.add_edge('Acciaiuoli', 'Medici')

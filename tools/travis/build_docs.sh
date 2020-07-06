@@ -9,7 +9,7 @@ pip list
 export SPHINXCACHE=$HOME/.cache/sphinx
 cd doc
 make html
-make latexpdf
+make latexpdf LATEXMKOPTS="-silent"
 cd ..
 
 section_end "build_docs section"

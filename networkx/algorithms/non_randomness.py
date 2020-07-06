@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Erwan  Le Merrer (erwan.le-merrer@inria.fr)
-
 r""" Computation of graph non-randomness
 """
 
@@ -75,9 +65,9 @@ def non_randomness(G, k=None):
 
     try:
         import numpy as np
-    except ImportError:
-        msg = "non_randomness requires NumPy: http://scipy.org/"
-        raise ImportError(msg)
+    except ImportError as e:
+        msg = "non_randomness requires NumPy: http://numpy.org/"
+        raise ImportError(msg) from e
 
     # eq. 4.4
     nr = np.real(np.sum(np.linalg.eigvals(nx.to_numpy_matrix(G))[:k]))

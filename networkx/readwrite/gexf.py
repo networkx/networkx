@@ -1,11 +1,3 @@
-# Copyright (C) 2013-2019 by
-#
-# Authors: Aric Hagberg <hagberg@lanl.gov>
-#          Dan Schult <dschult@colgate.edu>
-#          Pieter Swart <swart@lanl.gov>
-# All rights reserved.
-# BSD license.
-# Based on GraphML NetworkX GraphML reader
 """Read and write graphs in GEXF format.
 
 GEXF (Graph Exchange XML Format) is a language for describing complex
@@ -131,8 +123,7 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
     """
     writer = GEXFWriter(encoding=encoding, prettyprint=prettyprint, version=version)
     writer.add_graph(G)
-    for line in str(writer).splitlines():
-        yield line
+    yield from str(writer).splitlines()
 
 
 @open_file(0, mode="rb")
@@ -145,8 +136,8 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     Parameters
     ----------
     path : file or string
-       File or file name to write.
-       File names ending in .gz or .bz2 will be compressed.
+       File or file name to read.
+       File names ending in .gz or .bz2 will be decompressed.
     node_type: Python type (default: None)
        Convert node ids to this type if not None.
     relabel : bool (default: False)
@@ -179,7 +170,7 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     return G
 
 
-class GEXF(object):
+class GEXF:
     versions = {}
     d = {
         "NS_GEXF": "http://www.gexf.net/1.1draft",
@@ -227,7 +218,7 @@ class GEXF(object):
             (np.float32, "float"),
             (np.float16, "float"),
             (np.float_, "float"),
-            (np.int, "int"),
+            (np.int_, "int"),
             (np.int8, "int"),
             (np.int16, "int"),
             (np.int32, "int"),
@@ -259,7 +250,7 @@ class GEXF(object):
     def set_version(self, version):
         d = self.versions.get(version)
         if d is None:
-            raise nx.NetworkXError("Unknown GEXF version %s." % version)
+            raise nx.NetworkXError(f"Unknown GEXF version {version}.")
         self.NS_GEXF = d["NS_GEXF"]
         self.NS_VIZ = d["NS_VIZ"]
         self.NS_XSI = d["NS_XSI"]
@@ -290,7 +281,7 @@ class GEXFWriter(GEXF):
         # Make meta element a non-graph element
         # Also add lastmodifieddate as attribute, not tag
         meta_element = Element("meta")
-        subelement_text = "NetworkX {}".format(nx.__version__)
+        subelement_text = f"NetworkX {nx.__version__}"
         SubElement(meta_element, "creator").text = subelement_text
         meta_element.set("lastmodifieddate", time.strftime("%Y-%m-%d"))
         self.xml.append(meta_element)
@@ -456,7 +447,7 @@ class GEXFWriter(GEXF):
                 k = "networkx_key"
             val_type = type(v)
             if val_type not in self.xml_type:
-                raise TypeError("attribute value type is not allowed: %s" % val_type)
+                raise TypeError(f"attribute value type is not allowed: {val_type}")
             if isinstance(v, list):
                 # dynamic data
                 for val, start, end in v:
@@ -549,14 +540,14 @@ class GEXFWriter(GEXF):
             if color is not None:
                 if self.VERSION == "1.1":
                     e = Element(
-                        "{%s}color" % self.NS_VIZ,
+                        f"{{{self.NS_VIZ}}}color",
                         r=str(color.get("r")),
                         g=str(color.get("g")),
                         b=str(color.get("b")),
                     )
                 else:
                     e = Element(
-                        "{%s}color" % self.NS_VIZ,
+                        f"{{{self.NS_VIZ}}}color",
                         r=str(color.get("r")),
                         g=str(color.get("g")),
                         b=str(color.get("b")),
@@ -566,28 +557,28 @@ class GEXFWriter(GEXF):
 
             size = viz.get("size")
             if size is not None:
-                e = Element("{%s}size" % self.NS_VIZ, value=str(size))
+                e = Element(f"{{{self.NS_VIZ}}}size", value=str(size))
                 element.append(e)
 
             thickness = viz.get("thickness")
             if thickness is not None:
-                e = Element("{%s}thickness" % self.NS_VIZ, value=str(thickness))
+                e = Element(f"{{{self.NS_VIZ}}}thickness", value=str(thickness))
                 element.append(e)
 
             shape = viz.get("shape")
             if shape is not None:
                 if shape.startswith("http"):
                     e = Element(
-                        "{%s}shape" % self.NS_VIZ, value="image", uri=str(shape)
+                        f"{{{self.NS_VIZ}}}shape", value="image", uri=str(shape)
                     )
                 else:
-                    e = Element("{%s}shape" % self.NS_VIZ, value=str(shape))
+                    e = Element(f"{{{self.NS_VIZ}}}shape", value=str(shape))
                 element.append(e)
 
             position = viz.get("position")
             if position is not None:
                 e = Element(
-                    "{%s}position" % self.NS_VIZ,
+                    f"{{{self.NS_VIZ}}}position",
                     x=str(position.get("x")),
                     y=str(position.get("y")),
                     z=str(position.get("z")),
@@ -685,13 +676,13 @@ class GEXFReader(GEXF):
 
     def __call__(self, stream):
         self.xml = ElementTree(file=stream)
-        g = self.xml.find("{%s}graph" % self.NS_GEXF)
+        g = self.xml.find(f"{{{self.NS_GEXF}}}graph")
         if g is not None:
             return self.make_graph(g)
         # try all the versions
         for version in self.versions:
             self.set_version(version)
-            g = self.xml.find("{%s}graph" % self.NS_GEXF)
+            g = self.xml.find(f"{{{self.NS_GEXF}}}graph")
             if g is not None:
                 return self.make_graph(g)
         raise nx.NetworkXError("No <graph> element in GEXF file.")
@@ -726,7 +717,7 @@ class GEXFReader(GEXF):
             self.timeformat = "string"
 
         # node and edge attributes
-        attributes_elements = graph_xml.findall("{%s}attributes" % self.NS_GEXF)
+        attributes_elements = graph_xml.findall(f"{{{self.NS_GEXF}}}attributes")
         # dictionaries to hold attributes and attribute defaults
         node_attr = {}
         node_default = {}
@@ -756,15 +747,15 @@ class GEXFReader(GEXF):
         G.graph["edge_default"] = edge_default
 
         # add nodes
-        nodes_element = graph_xml.find("{%s}nodes" % self.NS_GEXF)
+        nodes_element = graph_xml.find(f"{{{self.NS_GEXF}}}nodes")
         if nodes_element is not None:
-            for node_xml in nodes_element.findall("{%s}node" % self.NS_GEXF):
+            for node_xml in nodes_element.findall(f"{{{self.NS_GEXF}}}node"):
                 self.add_node(G, node_xml, node_attr)
 
         # add edges
-        edges_element = graph_xml.find("{%s}edges" % self.NS_GEXF)
+        edges_element = graph_xml.find(f"{{{self.NS_GEXF}}}edges")
         if edges_element is not None:
-            for edge_xml in edges_element.findall("{%s}edge" % self.NS_GEXF):
+            for edge_xml in edges_element.findall(f"{{{self.NS_GEXF}}}edge"):
                 self.add_edge(G, edge_xml, edge_attr)
 
         # switch to Graph or DiGraph if no parallel edges were found.
@@ -803,9 +794,9 @@ class GEXFReader(GEXF):
             data["pid"] = node_pid
 
         # check for subnodes, recursive
-        subnodes = node_xml.find("{%s}nodes" % self.NS_GEXF)
+        subnodes = node_xml.find(f"{{{self.NS_GEXF}}}nodes")
         if subnodes is not None:
-            for node_xml in subnodes.findall("{%s}node" % self.NS_GEXF):
+            for node_xml in subnodes.findall(f"{{{self.NS_GEXF}}}node"):
                 self.add_node(G, node_xml, node_attr, node_pid=node_id)
 
         G.add_node(node_id, **data)
@@ -824,7 +815,7 @@ class GEXFReader(GEXF):
     def add_viz(self, data, node_xml):
         # add viz element for node
         viz = {}
-        color = node_xml.find("{%s}color" % self.NS_VIZ)
+        color = node_xml.find(f"{{{self.NS_VIZ}}}color")
         if color is not None:
             if self.VERSION == "1.1":
                 viz["color"] = {
@@ -840,21 +831,21 @@ class GEXFReader(GEXF):
                     "a": float(color.get("a", 1)),
                 }
 
-        size = node_xml.find("{%s}size" % self.NS_VIZ)
+        size = node_xml.find(f"{{{self.NS_VIZ}}}size")
         if size is not None:
             viz["size"] = float(size.get("value"))
 
-        thickness = node_xml.find("{%s}thickness" % self.NS_VIZ)
+        thickness = node_xml.find(f"{{{self.NS_VIZ}}}thickness")
         if thickness is not None:
             viz["thickness"] = float(thickness.get("value"))
 
-        shape = node_xml.find("{%s}shape" % self.NS_VIZ)
+        shape = node_xml.find(f"{{{self.NS_VIZ}}}shape")
         if shape is not None:
             viz["shape"] = shape.get("shape")
             if viz["shape"] == "image":
                 viz["shape"] = shape.get("uri")
 
-        position = node_xml.find("{%s}position" % self.NS_VIZ)
+        position = node_xml.find(f"{{{self.NS_VIZ}}}position")
         if position is not None:
             viz["position"] = {
                 "x": float(position.get("x", 0)),
@@ -867,30 +858,30 @@ class GEXFReader(GEXF):
         return data
 
     def add_parents(self, data, node_xml):
-        parents_element = node_xml.find("{%s}parents" % self.NS_GEXF)
+        parents_element = node_xml.find(f"{{{self.NS_GEXF}}}parents")
         if parents_element is not None:
             data["parents"] = []
-            for p in parents_element.findall("{%s}parent" % self.NS_GEXF):
+            for p in parents_element.findall(f"{{{self.NS_GEXF}}}parent"):
                 parent = p.get("for")
                 data["parents"].append(parent)
         return data
 
     def add_slices(self, data, node_or_edge_xml):
-        slices_element = node_or_edge_xml.find("{%s}slices" % self.NS_GEXF)
+        slices_element = node_or_edge_xml.find(f"{{{self.NS_GEXF}}}slices")
         if slices_element is not None:
             data["slices"] = []
-            for s in slices_element.findall("{%s}slice" % self.NS_GEXF):
+            for s in slices_element.findall(f"{{{self.NS_GEXF}}}slice"):
                 start = s.get("start")
                 end = s.get("end")
                 data["slices"].append((start, end))
         return data
 
     def add_spells(self, data, node_or_edge_xml):
-        spells_element = node_or_edge_xml.find("{%s}spells" % self.NS_GEXF)
+        spells_element = node_or_edge_xml.find(f"{{{self.NS_GEXF}}}spells")
         if spells_element is not None:
             data["spells"] = []
             ttype = self.timeformat
-            for s in spells_element.findall("{%s}spell" % self.NS_GEXF):
+            for s in spells_element.findall(f"{{{self.NS_GEXF}}}spell"):
                 start = self.python_type[ttype](s.get("start"))
                 end = self.python_type[ttype](s.get("end"))
                 data["spells"].append((start, end))
@@ -952,15 +943,15 @@ class GEXFReader(GEXF):
         # Use the key information to decode the attr XML
         attr = {}
         # look for outer '<attvalues>' element
-        attr_element = obj_xml.find("{%s}attvalues" % self.NS_GEXF)
+        attr_element = obj_xml.find(f"{{{self.NS_GEXF}}}attvalues")
         if attr_element is not None:
             # loop over <attvalue> elements
-            for a in attr_element.findall("{%s}attvalue" % self.NS_GEXF):
+            for a in attr_element.findall(f"{{{self.NS_GEXF}}}attvalue"):
                 key = a.get("for")  # for is required
                 try:  # should be in our gexf_keys dictionary
                     title = gexf_keys[key]["title"]
-                except KeyError:
-                    raise nx.NetworkXError("No attribute defined for=%s." % key)
+                except KeyError as e:
+                    raise nx.NetworkXError(f"No attribute defined for={key}.") from e
                 atype = gexf_keys[key]["type"]
                 value = a.get("value")
                 if atype == "boolean":
@@ -987,13 +978,13 @@ class GEXFReader(GEXF):
         attrs = {}
         defaults = {}
         mode = attributes_element.get("mode")
-        for k in attributes_element.findall("{%s}attribute" % self.NS_GEXF):
+        for k in attributes_element.findall(f"{{{self.NS_GEXF}}}attribute"):
             attr_id = k.get("id")
             title = k.get("title")
             atype = k.get("type")
             attrs[attr_id] = {"title": title, "type": atype, "mode": mode}
             # check for the 'default' subelement of key element and add
-            default = k.find("{%s}default" % self.NS_GEXF)
+            default = k.find(f"{{{self.NS_GEXF}}}default")
             if default is not None:
                 if atype == "boolean":
                     value = self.convert_bool[default.text]
@@ -1030,12 +1021,10 @@ def relabel_gexf_graph(G):
     # build mapping of node labels, do some error checking
     try:
         mapping = [(u, G.nodes[u]["label"]) for u in G]
-    except KeyError:
+    except KeyError as e:
         raise nx.NetworkXError(
-            "Failed to relabel nodes: "
-            "missing node labels found. "
-            "Use relabel=False."
-        )
+            "Failed to relabel nodes: missing node labels found. Use relabel=False."
+        ) from e
     x, y = zip(*mapping)
     if len(set(y)) != len(G):
         raise nx.NetworkXError(

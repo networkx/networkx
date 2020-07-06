@@ -1,11 +1,3 @@
-# test_clique.py - unit tests for the approximation.clique module
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.approximation.clique`
 module.
 
@@ -41,7 +33,7 @@ def is_clique(G, nodes):
     return H.number_of_edges() == n * (n - 1) // 2
 
 
-class TestCliqueRemoval(object):
+class TestCliqueRemoval:
     """Unit tests for the
     :func:`~networkx.algorithms.approximation.clique_removal` function.
 
@@ -68,7 +60,7 @@ class TestCliqueRemoval(object):
         assert all(is_clique(G, clique) for clique in cliques)
 
 
-class TestMaxClique(object):
+class TestMaxClique:
     """Unit tests for the :func:`networkx.algorithms.approximation.max_clique`
     function.
 

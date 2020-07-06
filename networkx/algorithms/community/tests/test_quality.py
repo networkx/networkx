@@ -1,11 +1,3 @@
-# test_quality.py - unit tests for the quality module
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.algorithms.community.quality`
 module.
 
@@ -20,7 +12,7 @@ from networkx.algorithms.community.quality import inter_community_edges
 from networkx.testing import almost_equal
 
 
-class TestPerformance(object):
+class TestPerformance:
     """Unit tests for the :func:`performance` function."""
 
     def test_bad_partition(self):
@@ -38,7 +30,7 @@ class TestPerformance(object):
         assert almost_equal(14 / 15, performance(G, partition))
 
 
-class TestCoverage(object):
+class TestCoverage:
     """Unit tests for the :func:`coverage` function."""
 
     def test_bad_partition(self):

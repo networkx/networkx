@@ -1,28 +1,33 @@
-
 import pytest
 
 import networkx as nx
 from networkx.utils import pairwise
 
 
-def validate_path(G, s, t, soln_len, path):
+def validate_path(G, s, t, soln_len, path, weight='weight'):
     assert path[0] == s
     assert path[-1] == t
-    if not G.is_multigraph():
-        computed = sum(G[u][v].get('weight', 1) for u, v in pairwise(path))
-        assert soln_len == computed
+
+    if callable(weight):
+        weight_f = weight
     else:
-        computed = sum(min(e.get('weight', 1) for e in G[u][v].values())
-                       for u, v in pairwise(path))
-        assert soln_len == computed
+        if G.is_multigraph():
+            def weight_f(u, v, d):
+                return min(e.get(weight, 1) for e in d.values())
+        else:
+            def weight_f(u, v, d):
+                return d.get(weight, 1)
+
+    computed = sum(weight_f(u, v, G[u][v]) for u, v in pairwise(path))
+    assert soln_len == computed
 
 
-def validate_length_path(G, s, t, soln_len, length, path):
+def validate_length_path(G, s, t, soln_len, length, path, weight='weight'):
     assert soln_len == length
-    validate_path(G, s, t, length, path)
+    validate_path(G, s, t, length, path, weight=weight)
 
 
-class WeightedTestBase(object):
+class WeightedTestBase:
     """Base class for test classes that test functions for computing
     shortest paths in weighted graphs.
 
@@ -142,6 +147,52 @@ class TestWeightedPath(WeightedTestBase):
         # check absent source
         G = nx.path_graph(2)
         pytest.raises(nx.NodeNotFound, nx.bidirectional_dijkstra, G, 3, 0)
+
+    def test_weight_functions(self):
+        def heuristic(*z):
+            return hash(z)
+
+        def getpath(pred, v, s):
+            return [v] if v == s else getpath(pred, pred[v], s) + [v]
+
+        def goldberg_radzik(g, s, t, weight='weight'):
+            pred, dist = nx.goldberg_radzik(g, s, weight=weight)
+            dist = dist[t]
+            return dist, getpath(pred, t, s)
+
+        def astar(g, s, t, weight='weight'):
+            path = nx.astar_path(g, s, t, heuristic, weight=weight)
+            dist = nx.astar_path_length(g, s, t, heuristic, weight=weight)
+            return dist, path
+
+        def vlp(G, s, t, l, F, w):
+            res = F(G, s, t, weight=w)
+            validate_length_path(G, s, t, l, *res, weight=w)
+
+        G = self.cycle
+        s = 6
+        t = 4
+        path = [6] + list(range(t + 1))
+
+        def weight(u, v, _):
+            return 1 + v**2
+
+        length = sum(weight(u, v, None) for u, v in pairwise(path))
+        vlp(G, s, t, length, nx.bidirectional_dijkstra, weight)
+        vlp(G, s, t, length, nx.single_source_dijkstra, weight)
+        vlp(G, s, t, length, nx.single_source_bellman_ford, weight)
+        vlp(G, s, t, length, goldberg_radzik, weight)
+        vlp(G, s, t, length, astar, weight)
+
+        def weight(u, v, _):
+            return 2**(u * v)
+
+        length = sum(weight(u, v, None) for u, v in pairwise(path))
+        vlp(G, s, t, length, nx.bidirectional_dijkstra, weight)
+        vlp(G, s, t, length, nx.single_source_dijkstra, weight)
+        vlp(G, s, t, length, nx.single_source_bellman_ford, weight)
+        vlp(G, s, t, length, goldberg_radzik, weight)
+        vlp(G, s, t, length, astar, weight)
 
     def test_bidirectional_dijkstra_no_path(self):
         with pytest.raises(nx.NetworkXNoPath):
@@ -283,7 +334,7 @@ class TestWeightedPath(WeightedTestBase):
         assert out[0][1][3] == [0, 6, 5, 4, 3]
 
 
-class TestDijkstraPathLength(object):
+class TestDijkstraPathLength:
     """Unit tests for the :func:`networkx.dijkstra_path_length`
     function.
 
@@ -313,7 +364,7 @@ class TestDijkstraPathLength(object):
         assert length == 1 / 10
 
 
-class TestMultiSourceDijkstra(object):
+class TestMultiSourceDijkstra:
     """Unit tests for the multi-source dialect of Dijkstra's shortest
     path algorithms.
 
@@ -384,6 +435,34 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         with pytest.raises(nx.NodeNotFound):
             G = nx.path_graph(2)
             nx.goldberg_radzik(G, 3, 0)
+
+    def test_negative_weight_cycle_heuristic(self):
+        G = nx.DiGraph()
+        G.add_edge(0, 1, weight=-1)
+        G.add_edge(1, 2, weight=-1)
+        G.add_edge(2, 3, weight=-1)
+        G.add_edge(3, 0, weight=3)
+        assert not nx.negative_edge_cycle(G, heuristic=True)
+        G.add_edge(2, 0, weight=1.999)
+        assert nx.negative_edge_cycle(G, heuristic=True)
+        G.edges[2, 0]['weight'] = 2
+        assert not nx.negative_edge_cycle(G, heuristic=True)
+
+    def test_negative_weight_cycle_consistency(self):
+        import random
+        unif = random.uniform
+        for random_seed in range(2):  # range(20):
+            random.seed(random_seed)
+            for density in [.1, .9]:  # .3, .7, .9]:
+                for N in [1, 10, 20]:  # range(1, 60 - int(30 * density)):
+                    for max_cost in [1, 90]:  # [1, 10, 40, 90]:
+                        G = nx.binomial_graph(N, density, seed=4, directed=True)
+                        edges = ((u, v, unif(-1, max_cost)) for u, v in G.edges)
+                        G.add_weighted_edges_from(edges)
+
+                        no_heuristic = nx.negative_edge_cycle(G, heuristic=False)
+                        with_heuristic = nx.negative_edge_cycle(G, heuristic=True)
+                        assert no_heuristic == with_heuristic
 
     def test_negative_weight_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
@@ -563,6 +642,15 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
         assert nx.bellman_ford_path(G, 'a', 'd') == ['a', 'b', 'c', 'd']
         assert nx.bellman_ford_path_length(G, 'a', 'd') == -1
+
+    def test_zero_cycle_smoke(self):
+        D = nx.DiGraph()
+        D.add_weighted_edges_from([(0, 1, 1), (1, 2, 1), (2, 3, 1), (3, 1, -2)])
+
+        nx.bellman_ford_path(D, 1, 3)
+        nx.dijkstra_path(D, 1, 3)
+        nx.bidirectional_dijkstra(D, 1, 3)
+        # FIXME nx.goldberg_radzik(D, 1)
 
 
 class TestJohnsonAlgorithm(WeightedTestBase):
