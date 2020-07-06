@@ -1,5 +1,6 @@
 import pytest
 import networkx as nx
+import random
 from networkx.utils import (
     create_py_random_state,
     create_random_state,
@@ -15,7 +16,6 @@ from networkx.utils import (
     pairwise,
     powerlaw_sequence,
     PythonRandomInterface,
-    random,
     to_tuple
 )
 
