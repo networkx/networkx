@@ -269,41 +269,44 @@ class TestAlgebraicConnectivity:
 
 
 class TestSpectralOrdering:
-    _methods = methods
+    _graphs = (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
 
-    def test_nullgraph(self):
-        for graph in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
-            G = graph()
-            pytest.raises(nx.NetworkXError, nx.spectral_ordering, G)
+    @pytest.mark.parametrize('graph', _graphs)
+    def test_nullgraph(self, graph):
+        G = graph()
+        pytest.raises(nx.NetworkXError, nx.spectral_ordering, G)
 
-    def test_singleton(self):
-        for graph in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
-            G = graph()
-            G.add_node("x")
-            assert nx.spectral_ordering(G) == ["x"]
-            G.add_edge("x", "x", weight=33)
-            G.add_edge("x", "x", weight=33)
-            assert nx.spectral_ordering(G) == ["x"]
+    @pytest.mark.parametrize('graph', _graphs)
+    def test_singleton(self, graph):
+        G = graph()
+        G.add_node("x")
+        assert nx.spectral_ordering(G) == ["x"]
+        G.add_edge("x", "x", weight=33)
+        G.add_edge("x", "x", weight=33)
+        assert nx.spectral_ordering(G) == ["x"]
 
     def test_unrecognized_method(self):
         G = nx.path_graph(4)
         pytest.raises(nx.NetworkXError, nx.spectral_ordering, G, method="unknown")
 
-    def test_three_nodes(self):
+    @pytest.mark.parametrize('method', methods)
+    def test_three_nodes(self, method):
         G = nx.Graph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1)], weight="spam")
-        for method in self._methods:
-            order = nx.spectral_ordering(G, weight="spam", method=method)
-            assert set(order) == set(G)
-            assert {1, 3} in (set(order[:-1]), set(order[1:]))
+        order = nx.spectral_ordering(G, weight="spam", method=method)
+        assert set(order) == set(G)
+        assert {1, 3} in (set(order[:-1]), set(order[1:]))
+
+    @pytest.mark.parametrize('method', methods)
+    def test_three_nodes_multigraph(self, method):
         G = nx.MultiDiGraph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1), (2, 3, 2)])
-        for method in self._methods:
-            order = nx.spectral_ordering(G, method=method)
-            assert set(order) == set(G)
-            assert {2, 3} in (set(order[:-1]), set(order[1:]))
+        order = nx.spectral_ordering(G, method=method)
+        assert set(order) == set(G)
+        assert {2, 3} in (set(order[:-1]), set(order[1:]))
 
-    def test_path(self):
+    @pytest.mark.parametrize('method', methods)
+    def test_path(self, method):
         # based on setup_class numpy is installed if we get here
         from numpy.random import shuffle
 
@@ -311,11 +314,11 @@ class TestSpectralOrdering:
         shuffle(path)
         G = nx.Graph()
         nx.add_path(G, path)
-        for method in self._methods:
-            order = nx.spectral_ordering(G, method=method)
-            assert order in [path, list(reversed(path))]
+        order = nx.spectral_ordering(G, method=method)
+        assert order in [path, list(reversed(path))]
 
-    def test_seed_argument(self):
+    @pytest.mark.parametrize('method', methods)
+    def test_seed_argument(self, method):
         # based on setup_class numpy is installed if we get here
         from numpy.random import shuffle
 
@@ -323,53 +326,46 @@ class TestSpectralOrdering:
         shuffle(path)
         G = nx.Graph()
         nx.add_path(G, path)
-        for method in self._methods:
-            order = nx.spectral_ordering(G, method=method, seed=1)
-            assert order in [path, list(reversed(path))]
+        order = nx.spectral_ordering(G, method=method, seed=1)
+        assert order in [path, list(reversed(path))]
 
-    def test_disconnected(self):
+    @pytest.mark.parametrize('method', methods)
+    def test_disconnected(self, method):
         G = nx.Graph()
         nx.add_path(G, range(0, 10, 2))
         nx.add_path(G, range(1, 10, 2))
-        for method in self._methods:
-            order = nx.spectral_ordering(G, method=method)
-            assert set(order) == set(G)
-            seqs = [
-                list(range(0, 10, 2)),
-                list(range(8, -1, -2)),
-                list(range(1, 10, 2)),
-                list(range(9, -1, -2)),
-            ]
-            assert order[:5] in seqs
-            assert order[5:] in seqs
+        order = nx.spectral_ordering(G, method=method)
+        assert set(order) == set(G)
+        seqs = [
+            list(range(0, 10, 2)),
+            list(range(8, -1, -2)),
+            list(range(1, 10, 2)),
+            list(range(9, -1, -2)),
+        ]
+        assert order[:5] in seqs
+        assert order[5:] in seqs
 
-    def test_cycle(self):
+    @pytest.mark.parametrize(('normalized', 'expected_order'), (
+        (False, [[1, 2, 0, 3, 4, 5, 6, 9, 7, 8], [8, 7, 9, 6, 5, 4, 3, 0, 2, 1]]),
+        (True, [[1, 2, 3, 0, 4, 5, 9, 6, 7, 8], [8, 7, 6, 9, 5, 4, 0, 3, 2, 1]]),
+    ))
+    @pytest.mark.parametrize('method', methods)
+    def test_cycle(self, normalized, expected_order, method):
         path = list(range(10))
         G = nx.Graph()
         nx.add_path(G, path, weight=5)
         G.add_edge(path[-1], path[0], weight=1)
         A = nx.laplacian_matrix(G).todense()
-        for normalized in (False, True):
-            for method in methods:
-                try:
-                    order = nx.spectral_ordering(
-                        G, normalized=normalized, method=method
-                    )
-                except nx.NetworkXError as e:
-                    if e.args not in (
-                        ("Cholesky solver unavailable.",),
-                        ("LU solver unavailable.",),
-                    ):
-                        raise
-                else:
-                    if not normalized:
-                        assert order in [
-                            [1, 2, 0, 3, 4, 5, 6, 9, 7, 8],
-                            [8, 7, 9, 6, 5, 4, 3, 0, 2, 1],
-                        ]
-                    else:
-                        assert order in [
-                            [1, 2, 3, 0, 4, 5, 9, 6, 7, 8],
-                            [8, 7, 6, 9, 5, 4, 0, 3, 2, 1],
-                        ]
+        try:
+            order = nx.spectral_ordering(
+                G, normalized=normalized, method=method
+            )
+        except nx.NetworkXError as e:
+            if e.args not in (
+                ("Cholesky solver unavailable.",),
+                ("LU solver unavailable.",),
+            ):
+                raise
+        else:
+            assert order in expected_order
 
