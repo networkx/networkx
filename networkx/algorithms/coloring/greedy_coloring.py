@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2014 by
-#    Christian Olsson <chro@itu.dk>
-#    Jan Aagaard Meier <jmei@itu.dk>
-#    Henrik Haugbølle <hhau@itu.dk>
-#    Arya McCarthy <admccarthy@smu.edu>
-#    All rights reserved.
-#    BSD license.
 """
 Greedy graph coloring using various strategies.
 """
@@ -143,8 +135,7 @@ def strategy_independent_set(G, colors):
     while len(remaining_nodes) > 0:
         nodes = _maximal_independent_set(G.subgraph(remaining_nodes))
         remaining_nodes -= nodes
-        for v in nodes:
-            yield v
+        yield from nodes
 
 
 def strategy_connected_sequential_bfs(G, colors):
@@ -194,12 +185,12 @@ def strategy_connected_sequential(G, colors, traversal='bfs'):
     else:
         raise nx.NetworkXError("Please specify one of the strings 'bfs' or"
                                " 'dfs' for connected sequential ordering")
-    for component in nx.connected_component_subgraphs(G):
+    for component in nx.connected_components(G):
         source = arbitrary_element(component)
         # Yield the source node, then all the nodes in the specified
         # traversal order.
         yield source
-        for (_, end) in traverse(component, source):
+        for (_, end) in traverse(G.subgraph(component), source):
             yield end
 
 
@@ -335,7 +326,7 @@ def greedy_color(G, strategy='largest_first', interchange=False):
     strategy = STRATEGIES.get(strategy, strategy)
     if not callable(strategy):
         raise nx.NetworkXError('strategy must be callable or a valid string. '
-                               '{0} not valid.'.format(strategy))
+                               f'{strategy} not valid.')
     # Perform some validation on the arguments before executing any
     # strategy functions.
     if interchange:

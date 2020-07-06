@@ -1,11 +1,3 @@
-# -*- encoding: utf-8 -*-
-#    Copyright (C) 2015-2019 by
-#        Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>
-#        NetworkX developers
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:      Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com>
 """Functions for generating trees."""
 from collections import defaultdict
 
@@ -61,7 +53,8 @@ def prefix_tree(paths):
             >>> from networkx.generators.trees import NIL
             >>> paths = ['ab', 'abs', 'ad']
             >>> T, root = nx.prefix_tree(paths)
-            >>> T.predecessors(NIL)  # doctest: +SKIP
+            >>> T.predecessors(NIL)
+            <dict_keyiterator object at 0x...>
 
     root : string
         The randomly generated uuid of the root node.
@@ -91,7 +84,7 @@ def prefix_tree(paths):
         ...     s = ''
         ...     while v != root:
         ...         # Prepend the character `v` to the accumulator `s`.
-        ...         s = str(T.node[v]['source']) + s
+        ...         s = str(T.nodes[v]['source']) + s
         ...         # Each non-nil, non-root node has exactly one parent.
         ...         v = next(T.predecessors(v))
         ...     recovered.append(s)
@@ -124,8 +117,7 @@ def prefix_tree(paths):
             if not path:
                 B.add_edge(root, NIL)
                 continue
-            # TODO In Python 3, this should be `child, *rest = path`.
-            child, rest = path[0], path[1:]
+            child, *rest = path
             # `child` may exist as the head of more than one path in `paths`.
             children[child].append(rest)
         # Add a node for each child found above and add edges from the

@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# utils.py - helper functions for community-finding algorithms
-#
-# Copyright 2011 Ben Edwards <bedwards@cs.unm.edu>.
-# Copyright 2011 Aric Hagberg <hagberg@lanl.gov>.
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Helper functions for community-finding algorithms."""
 
 __all__ = ['is_partition']
@@ -34,6 +22,6 @@ def is_partition(G, communities):
     # return all(sum(1 if v in c else 0 for c in communities) == 1 for v in G)
     if not isinstance(communities, list):
         communities = list(communities)
-    nodes = set(n for c in communities for n in c if n in G)
+    nodes = {n for c in communities for n in c if n in G}
 
     return len(G) == len(nodes) == sum(len(c) for c in communities)

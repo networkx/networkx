@@ -1,10 +1,3 @@
-#    Copyright (C) 2015 by
-#    Alessandro Luongo
-#    BSD license.
-#
-# Authors:
-#    Alessandro Luongo <alessandro.luongo@studenti.unimi.it>
-#
 """Functions for computing the harmonic centrality of a graph."""
 from functools import partial
 

@@ -1,7 +1,7 @@
+import pytest
 import networkx as nx
 from networkx.algorithms.planar_drawing import triangulate_embedding
 import math
-from nose.tools import assert_true, assert_equals, raises
 
 
 def test_graph1():
@@ -65,12 +65,12 @@ def test_multiple_component_graph2():
     check_embedding_data(embedding_data)
 
 
-@raises(nx.NetworkXException)
 def test_invalid_half_edge():
-    embedding_data = {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]}
-    embedding = nx.PlanarEmbedding()
-    embedding.set_data(embedding_data)
-    nx.combinatorial_embedding_to_pos(embedding)
+    with pytest.raises(nx.NetworkXException):
+        embedding_data = {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]}
+        embedding = nx.PlanarEmbedding()
+        embedding.set_data(embedding_data)
+        nx.combinatorial_embedding_to_pos(embedding)
 
 
 def test_triangulate_embedding1():
@@ -89,11 +89,9 @@ def test_triangulate_embedding2():
 
 def check_triangulation(embedding, expected_embedding):
     res_embedding, _ = triangulate_embedding(embedding, True)
-    assert_equals(res_embedding.get_data(), expected_embedding,
-                  "Expected embedding incorrect")
+    assert res_embedding.get_data() == expected_embedding, "Expected embedding incorrect"
     res_embedding, _ = triangulate_embedding(embedding, False)
-    assert_equals(res_embedding.get_data(), expected_embedding,
-                  "Expected embedding incorrect")
+    assert res_embedding.get_data() == expected_embedding, "Expected embedding incorrect"
 
 
 def check_embedding_data(embedding_data):
@@ -103,15 +101,13 @@ def check_embedding_data(embedding_data):
     pos_fully = nx.combinatorial_embedding_to_pos(embedding, False)
     msg = "Planar drawing does not conform to the embedding (fully " \
           "triangulation)"
-    assert_true(planar_drawing_conforms_to_embedding(embedding, pos_fully),
-                msg)
+    assert planar_drawing_conforms_to_embedding(embedding, pos_fully), msg
     check_edge_intersections(embedding, pos_fully)
     pos_internally = nx.combinatorial_embedding_to_pos(embedding, True)
     msg = "Planar drawing does not conform to the embedding (internal " \
           "triangulation)"
-    assert_true(planar_drawing_conforms_to_embedding(embedding,
-                                                     pos_internally),
-                msg)
+    assert planar_drawing_conforms_to_embedding(embedding,
+                                                pos_internally), msg
     check_edge_intersections(embedding, pos_internally)
 
 
@@ -164,8 +160,7 @@ def check_edge_intersections(G, pos):
                     # Check if intersection lies between the points
                     if (point_in_between(pos[a], pos[b], (px, py)) and
                             point_in_between(pos[c], pos[d], (px, py))):
-                        msg = "There is an intersection at {},{}".format(px,
-                                                                         py)
+                        msg = f"There is an intersection at {px},{py}"
                         raise nx.NetworkXException(msg)
 
                 #  Check overlap
@@ -178,7 +173,7 @@ def check_edge_intersections(G, pos):
     # No edge intersection found
 
 
-class Vector(object):
+class Vector:
     """Compare vectors by their angle without loss of precision
 
     All vectors in direction [0, 1] are the smallest.

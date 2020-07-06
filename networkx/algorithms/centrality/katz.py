@@ -1,15 +1,3 @@
-# coding=utf8
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (aric.hagberg@gmail.com)
-#          Pieter Swart (swart@lanl.gov)
-#          Sasha Gutfraind (ag362@cornell.edu)
-#          Vincent Gauthier (vgauthier@luxbulb.org)
 """Katz centrality."""
 from math import sqrt
 
@@ -103,7 +91,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
     >>> phi = (1 + math.sqrt(5)) / 2.0  # largest eigenvalue of adj matrix
     >>> centrality = nx.katz_centrality(G, 1/phi - 0.01)
     >>> for n, c in sorted(centrality.items()):
-    ...    print("%d %0.2f" % (n, c))
+    ...    print(f"{n} {c:.2f}")
     0 0.37
     1 0.60
     2 0.60
@@ -154,17 +142,17 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
 
     if nstart is None:
         # choose starting vector with entries of 0
-        x = dict([(n, 0) for n in G])
+        x = {n: 0 for n in G}
     else:
         x = nstart
 
     try:
         b = dict.fromkeys(G, float(beta))
-    except (TypeError, ValueError, AttributeError):
+    except (TypeError, ValueError, AttributeError) as e:
         b = beta
         if set(beta) != set(G):
             raise nx.NetworkXError('beta dictionary '
-                                   'must have a value for every node')
+                                   'must have a value for every node') from e
 
     # make up to max_iter iterations
     for i in range(max_iter):
@@ -265,7 +253,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
     >>> phi = (1 + math.sqrt(5)) / 2.0  # largest eigenvalue of adj matrix
     >>> centrality = nx.katz_centrality_numpy(G, 1/phi)
     >>> for n, c in sorted(centrality.items()):
-    ...    print("%d %0.2f" % (n, c))
+    ...    print(f"{n} {c:.2f}")
     0 0.37
     1 0.60
     2 0.60
@@ -308,8 +296,8 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
     """
     try:
         import numpy as np
-    except ImportError:
-        raise ImportError('Requires NumPy: http://scipy.org/')
+    except ImportError as e:
+        raise ImportError('Requires NumPy: http://numpy.org/') from e
     if len(G) == 0:
         return {}
     try:
@@ -322,8 +310,8 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
         nodelist = list(G)
         try:
             b = np.ones((len(nodelist), 1)) * float(beta)
-        except (TypeError, ValueError, AttributeError):
-            raise nx.NetworkXError('beta must be a number')
+        except (TypeError, ValueError, AttributeError) as e:
+            raise nx.NetworkXError('beta must be a number') from e
 
     A = nx.adj_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = A.shape[0]
@@ -334,13 +322,3 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
         norm = 1.0
     centrality = dict(zip(nodelist, map(float, centrality / norm)))
     return centrality
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

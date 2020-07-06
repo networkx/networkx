@@ -1,14 +1,3 @@
-#    Copyright(C) 2011-2019 by
-#    Ben Edwards <bedwards@cs.unm.edu>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Konstantinos Karakatsanis <dinoskarakas@gmail.com>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:  Ben Edwards (bedwards@cs.unm.edu)
-#           Aric Hagberg (hagberg@lanl.gov)
-#           Konstantinos Karakatsanis (dinoskarakas@gmail.com)
-#           Jean-Gabriel Young (jean.gabriel.young@gmail.com)
 """Generators for classes of graphs used in studying social networks."""
 import itertools
 import math
@@ -162,7 +151,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
 
     Raises
     ------
-    NetworkXError:
+    NetworkXError
      If p is not in [0,1]
 
     Examples
@@ -291,7 +280,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
 
     Raises
     ------
-    NetworkXError:
+    NetworkXError
       If p_in,p_out are not in [0,1] or
 
     Examples
@@ -311,7 +300,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
     .. [2] Santo Fortunato 'Community Detection in Graphs' Physical Reports
        Volume 486, Issue 3-5 p. 75-174. https://arxiv.org/abs/0906.0612
     """
-    return random_partition_graph([k] * l, p_in, p_out, seed, directed)
+    return random_partition_graph([k] * l, p_in, p_out, seed=seed, directed=directed)
 
 
 @py_random_state(6)
@@ -388,7 +377,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
             break
         assigned += size
         sizes.append(size)
-    return random_partition_graph(sizes, p_in, p_out, directed, seed)
+    return random_partition_graph(sizes, p_in, p_out, seed=seed, directed=directed)
 
 
 def ring_of_cliques(num_cliques, clique_size):

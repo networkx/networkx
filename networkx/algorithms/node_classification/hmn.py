@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# Author: Yuto Yamaguchi <yuto.ymgc@gmail.com>
 """Function for computing Harmonic function algorithm by Zhu et al.
 
 References
@@ -34,21 +31,22 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     label_name : string
         name of target labels to predict
 
-    Raises
-    ----------
-    `NetworkXError` if no nodes on `G` has `label_name`.
-
     Returns
     ----------
     predicted : array, shape = [n_samples]
         Array of predicted labels
 
+    Raises
+    ----------
+    NetworkXError
+        If no nodes on `G` has `label_name`.
+
     Examples
     --------
     >>> from networkx.algorithms import node_classification
     >>> G = nx.path_graph(4)
-    >>> G.node[0]['label'] = 'A'
-    >>> G.node[3]['label'] = 'B'
+    >>> G.nodes[0]['label'] = 'A'
+    >>> G.nodes[3]['label'] = 'B'
     >>> G.nodes(data=True)
     NodeDataView({0: {'label': 'A'}, 1: {}, 2: {}, 3: {'label': 'B'}})
     >>> G.edges()
@@ -65,14 +63,14 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     """
     try:
         import numpy as np
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "harmonic_function() requires numpy: http://scipy.org/ ")
+            "harmonic_function() requires numpy: http://numpy.org/ ") from e
     try:
         from scipy import sparse
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "harmonic_function() requires scipy: http://scipy.org/ ")
+            "harmonic_function() requires scipy: http://scipy.org/ ") from e
 
     def _build_propagation_matrix(X, labels):
         """Build propagation matrix of Harmonic function
@@ -142,16 +140,3 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     predicted = _predict(F, label_dict)
 
     return predicted
-
-
-def setup_module(module):
-    """Fixture for nose tests."""
-    from nose import SkipTest
-    try:
-        import numpy
-    except ImportError:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except ImportError:
-        raise SkipTest("SciPy not available")

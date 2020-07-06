@@ -1,13 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov),
-#          Pieter Swart (swart@lanl.gov),
-#          Dan Schult(dschult@colgate.edu)
 """
 View Classes provide node, edge and degree "views" of a graph.
 
@@ -92,8 +82,7 @@ EdgeDataView
 
     The argument `nbunch` restricts edges to those incident to nodes in nbunch.
 """
-from collections.abc import Mapping, Set, Iterable
-import networkx as nx
+from collections.abc import Mapping, Set
 
 __all__ = ['NodeView', 'NodeDataView',
            'EdgeView', 'OutEdgeView', 'InEdgeView',
@@ -200,7 +189,7 @@ class NodeView(Mapping, Set):
         return str(list(self))
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, tuple(self))
+        return f"{self.__class__.__name__}({tuple(self)})"
 
 
 class NodeDataView(Set):
@@ -244,7 +233,7 @@ class NodeDataView(Set):
         except TypeError as err:
             if "unhashable" in str(err):
                 msg = " : Could be b/c data=True or your values are unhashable"
-                raise TypeError(str(err) + msg)
+                raise TypeError(str(err) + msg) from err
             raise
 
     def __len__(self):
@@ -284,16 +273,16 @@ class NodeDataView(Set):
         return str(list(self))
 
     def __repr__(self):
+        name = self.__class__.__name__
         if self._data is False:
-            return '%s(%r)' % (self.__class__.__name__, tuple(self))
+            return f"{name}({tuple(self)})"
         if self._data is True:
-            return '%s(%r)' % (self.__class__.__name__, dict(self))
-        return '%s(%r, data=%r)' % \
-               (self.__class__.__name__, dict(self), self._data)
+            return f"{name}({dict(self)})"
+        return f"{name}({dict(self)}, data={self._data!r})"
 
 
 # DegreeViews
-class DiDegreeView(object):
+class DiDegreeView:
     """A View class for degree of nodes in a NetworkX Graph
 
     The functionality is like dict.items() with (node, degree) pairs.
@@ -384,7 +373,7 @@ class DiDegreeView(object):
         return str(list(self))
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, dict(self))
+        return f"{self.__class__.__name__}({dict(self)})"
 
 
 class DegreeView(DiDegreeView):
@@ -625,7 +614,7 @@ class OutMultiDegreeView(DiDegreeView):
 
 
 # EdgeDataViews
-class OutEdgeDataView(object):
+class OutEdgeDataView:
     """EdgeDataView for outward edges of DiGraph; See EdgeDataView"""
     __slots__ = ('_viewer', '_nbunch', '_data', '_default',
                  '_adjdict', '_nodes_nbrs', '_report')
@@ -678,7 +667,7 @@ class OutEdgeDataView(object):
         return str(list(self))
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, list(self))
+        return f"{self.__class__.__name__}({list(self)})"
 
 
 class EdgeDataView(OutEdgeDataView):
@@ -945,7 +934,7 @@ class OutEdgeView(Set, Mapping):
         return str(list(self))
 
     def __repr__(self):
-        return "{0.__class__.__name__}({1!r})".format(self, list(self))
+        return f"{self.__class__.__name__}({list(self)})"
 
 
 class EdgeView(OutEdgeView):
@@ -991,7 +980,7 @@ class EdgeView(OutEdgeView):
     >>> EVdata = G.edges(data='color', default='aqua')
     >>> G.add_edge(2, 3, color='blue')
     >>> assert((2, 3, 'blue') in EVdata)
-    >>> for u, v, c in EVdata: print("({}, {}) has color: {}".format(u, v, c))
+    >>> for u, v, c in EVdata: print(f"({u}, {v}) has color: {c}")
     (0, 1) has color: aqua
     (1, 2) has color: aqua
     (2, 3) has color: blue

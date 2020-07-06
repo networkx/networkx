@@ -1,8 +1,3 @@
-#    Copyright (C) 2019 by
-#    Luca Baldesi
-#    BSD license.
-#
-# Author:  Luca Baldesi (baldo.plus@gmail.com)
 """Generates graphs resembling the Internet Autonomous System network"""
 
 import networkx as nx
@@ -72,7 +67,7 @@ def choose_pref_attach(degs, seed):
     return nodes[i]
 
 
-class AS_graph_generator(object):
+class AS_graph_generator:
     """ Generates random internet AS graphs.
     """
 
@@ -133,8 +128,8 @@ class AS_graph_generator(object):
             for j in self.G.nodes():
                 if i != j:
                     self.add_edge(i, j, 'peer')
-            self.customers[i] = set([])
-            self.providers[i] = set([])
+            self.customers[i] = set()
+            self.providers[i] = set()
         return self.G
 
     def add_edge(self, i, j, kind):
@@ -222,7 +217,7 @@ class AS_graph_generator(object):
         d = 0
         while d < edge_num and (len(t_options) > 0 or len(m_options) > 0):
             if len(m_options) == 0 or (len(t_options) > 0 and
-               self.seed.random() < t_edge_prob):  # add edge to a T node
+                                       self.seed.random() < t_edge_prob):  # add edge to a T node
                 j = self.choose_node_pref_attach(t_options)
                 t_options.remove(j)
             else:
@@ -379,7 +374,7 @@ class AS_graph_generator(object):
         self.graph_regions(5)
         self.customers = {}
         self.providers = {}
-        self.nodes = {'T': set([]), 'M': set([]), 'CP': set([]), 'C': set([])}
+        self.nodes = {'T': set(), 'M': set(), 'CP': set(), 'C': set()}
 
         self.t_graph()
         self.nodes['T'] = set(list(self.G.nodes()))
@@ -390,7 +385,7 @@ class AS_graph_generator(object):
             i += 1
         for _ in range(self.n_cp):
             self.nodes['CP'].add(self.add_node(i, 'CP', 0.05, self.d_cp,
-                                 self.t_cp))
+                                               self.t_cp))
             i += 1
         for _ in range(self.n_c):
             self.nodes['C'].add(self.add_node(i, 'C', 0, self.d_c, self.t_c))

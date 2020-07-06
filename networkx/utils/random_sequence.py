@@ -1,27 +1,15 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Dan Schult (dschult@colgate.edu)
-#          Ben Edwards (bedwards@cs.unm.edu)
 """
 Utilities for generating random numbers, random sequences, and
 random selections.
 """
 
-import random
-import sys
 import networkx as nx
 from networkx.utils import py_random_state
 
 
 # The same helpers for choosing random sequences from distributions
 # uses Python's random module
-# https://docs.python.org/2/library/random.html
+# https://docs.python.org/3/library/random.html
 
 @py_random_state(2)
 def powerlaw_sequence(n, exponent=2.0, seed=None):
@@ -72,7 +60,8 @@ def zipf_rv(alpha, xmin=1, seed=None):
 
     Examples
     --------
-    >>> nx.zipf_rv(alpha=2, xmin=3, seed=42)  # doctest: +SKIP
+    >>> nx.utils.zipf_rv(alpha=2, xmin=3, seed=42)
+    8
 
     References
     ----------

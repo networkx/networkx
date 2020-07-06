@@ -1,17 +1,7 @@
-# coding=utf8
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """Betweenness centrality measures."""
 from heapq import heappush, heappop
 from itertools import count
 
-import networkx as nx
 from networkx.utils import py_random_state
 from networkx.utils.decorators import not_implemented_for
 

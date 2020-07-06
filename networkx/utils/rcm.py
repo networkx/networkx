@@ -1,17 +1,12 @@
 """
 Cuthill-McKee ordering of graph nodes to produce sparse matrices
 """
-#    Copyright (C) 2011-2014 by
-#    Aric Hagberg <aric.hagberg@gmail.com>
-#    All rights reserved.
-#    BSD license.
 from collections import deque
 from operator import itemgetter
 
 import networkx as nx
 from ..utils import arbitrary_element
 
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['cuthill_mckee_ordering',
            'reverse_cuthill_mckee_ordering']
 
@@ -42,7 +37,7 @@ def cuthill_mckee_ordering(G, heuristic=None):
     >>> from networkx.utils import cuthill_mckee_ordering
     >>> G = nx.path_graph(4)
     >>> rcm = list(cuthill_mckee_ordering(G))
-    >>> A = nx.adjacency_matrix(G, nodelist=rcm) # doctest: +SKIP
+    >>> A = nx.adjacency_matrix(G, nodelist=rcm)
 
     Smallest degree node as heuristic function:
 
@@ -70,8 +65,7 @@ def cuthill_mckee_ordering(G, heuristic=None):
        Springer-Verlag New York, Inc., New York, NY, USA.
     """
     for c in nx.connected_components(G):
-        for n in connected_cuthill_mckee_ordering(G.subgraph(c), heuristic):
-            yield n
+        yield from connected_cuthill_mckee_ordering(G.subgraph(c), heuristic)
 
 
 def reverse_cuthill_mckee_ordering(G, heuristic=None):
@@ -101,7 +95,7 @@ def reverse_cuthill_mckee_ordering(G, heuristic=None):
     >>> from networkx.utils import reverse_cuthill_mckee_ordering
     >>> G = nx.path_graph(4)
     >>> rcm = list(reverse_cuthill_mckee_ordering(G))
-    >>> A = nx.adjacency_matrix(G, nodelist=rcm) # doctest: +SKIP
+    >>> A = nx.adjacency_matrix(G, nodelist=rcm)
 
     Smallest degree node as heuristic function:
 

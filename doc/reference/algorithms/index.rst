@@ -29,8 +29,8 @@ Algorithms
    covering
    cycles
    cuts
+   d_separation
    dag
-   dispersion
    distance_measures
    distance_regular
    dominance
@@ -56,6 +56,7 @@ Algorithms
    planarity
    planar_drawing
    reciprocity
+   regular
    rich_club
    shortest_paths
    similarity

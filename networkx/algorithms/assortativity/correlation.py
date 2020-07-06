@@ -1,13 +1,9 @@
-# -*- coding: utf-8 -*-
 """Node assortativity coefficients and correlation measures.
 """
-import networkx as nx
 from networkx.algorithms.assortativity.mixing import degree_mixing_matrix, \
     attribute_mixing_matrix, numeric_mixing_matrix
-from networkx.algorithms.assortativity.pairs import node_degree_xy, \
-    node_attribute_xy
-__author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                       'Oleguer Sagarra <oleguer.sagarra@gmail.com>'])
+from networkx.algorithms.assortativity.pairs import node_degree_xy
+
 __all__ = ['degree_pearson_correlation_coefficient',
            'degree_assortativity_coefficient',
            'attribute_assortativity_coefficient',
@@ -47,8 +43,8 @@ def degree_assortativity_coefficient(G, x='out', y='in', weight=None,
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> r=nx.degree_assortativity_coefficient(G)
+    >>> G = nx.path_graph(4)
+    >>> r = nx.degree_assortativity_coefficient(G)
     >>> print("%3.1f"%r)
     -0.5
 
@@ -114,8 +110,8 @@ def degree_pearson_correlation_coefficient(G, x='out', y='in',
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> r=nx.degree_pearson_correlation_coefficient(G)
+    >>> G = nx.path_graph(4)
+    >>> r = nx.degree_pearson_correlation_coefficient(G)
     >>> print("%3.1f"%r)
     -0.5
 
@@ -132,9 +128,9 @@ def degree_pearson_correlation_coefficient(G, x='out', y='in',
     """
     try:
         import scipy.stats as stats
-    except ImportError:
-        raise ImportError(
-            "Assortativity requires SciPy: http://scipy.org/ ")
+    except ImportError as e:
+        raise ImportError("Assortativity requires SciPy:"
+                          "http://scipy.org/ ") from e
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
     return stats.pearsonr(x, y)[0]
@@ -164,7 +160,7 @@ def attribute_assortativity_coefficient(G, attribute, nodes=None):
 
     Examples
     --------
-    >>> G=nx.Graph()
+    >>> G = nx.Graph()
     >>> G.add_nodes_from([0,1],color='red')
     >>> G.add_nodes_from([2,3],color='blue')
     >>> G.add_edges_from([(0,1),(2,3)])
@@ -212,7 +208,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
 
     Examples
     --------
-    >>> G=nx.Graph()
+    >>> G = nx.Graph()
     >>> G.add_nodes_from([0,1],size=2)
     >>> G.add_nodes_from([2,3],size=3)
     >>> G.add_edges_from([(0,1),(2,3)])
@@ -254,9 +250,9 @@ def attribute_ac(M):
     """
     try:
         import numpy
-    except ImportError:
-        raise ImportError(
-            "attribute_assortativity requires NumPy: http://scipy.org/ ")
+    except ImportError as e:
+        raise ImportError('attribute_assortativity requires '
+                          'NumPy: http://scipy.org/') from e
     if M.sum() != 1.0:
         M = M / float(M.sum())
     M = numpy.asmatrix(M)
@@ -271,9 +267,9 @@ def numeric_ac(M):
     # numeric assortativity coefficient, pearsonr
     try:
         import numpy
-    except ImportError:
-        raise ImportError('numeric_assortativity requires ',
-                          'NumPy: http://scipy.org/')
+    except ImportError as e:
+        raise ImportError('numeric_assortativity requires '
+                          'NumPy: http://scipy.org/') from e
     if M.sum() != 1.0:
         M = M / float(M.sum())
     nx, ny = M.shape  # nx=ny
@@ -286,16 +282,3 @@ def numeric_ac(M):
     xy = numpy.outer(x, y)
     ab = numpy.outer(a, b)
     return (xy * (M - ab)).sum() / numpy.sqrt(vara * varb)
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except ImportError:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except ImportError:
-        raise SkipTest("SciPy not available")

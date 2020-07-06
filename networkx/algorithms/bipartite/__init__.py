@@ -16,7 +16,7 @@ sure that there is no edge between nodes of the same set. The convention used
 in NetworkX is to use a node attribute named `bipartite` with values 0 or 1 to
 identify the sets each node belongs to. This convention is not enforced in
 the source code of bipartite functions, it's only a recommendation.
- 
+
 For example:
 
 >>> B = nx.Graph()
@@ -30,8 +30,8 @@ Many algorithms of the bipartite module of NetworkX require, as an argument, a
 container with all the nodes that belong to one set, in addition to the bipartite
 graph `B`. The functions in the bipartite package do not check that the node set
 is actually correct nor that the input graph is actually bipartite.
-If `B` is connected, you can find the two node sets using a two-coloring 
-algorithm: 
+If `B` is connected, you can find the two node sets using a two-coloring
+algorithm:
 
 >>> nx.is_connected(B)
 True
@@ -58,7 +58,7 @@ container with all nodes that belong to one node set:
 0.5
 >>> G = bipartite.projected_graph(B, top_nodes)
 
-All bipartite graph generators in NetworkX build bipartite graphs with the 
+All bipartite graph generators in NetworkX build bipartite graphs with the
 `bipartite` node attribute. Thus, you can use the same approach:
 
 >>> RB = bipartite.random_graph(5, 7, 0.2)

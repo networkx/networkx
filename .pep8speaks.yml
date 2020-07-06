@@ -1,0 +1,8 @@
+scanner:
+    linter: flake8
+
+flake8:
+    max-line-length: 88  # Default is 79 in PEP 8
+    ignore:  # Errors and warnings to ignore
+        - E402  # module level import not at top of file
+        - W503  # newline before binary operator

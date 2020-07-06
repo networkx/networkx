@@ -1,16 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-#    Copyright (C) 2010 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors:
-#   Nima Mohammadi <nima.irt@gmail.com>
-#   Aric Hagberg <hagberg@lanl.gov>
-#   Mike Trenfield <william.trenfield@utsouthwestern.edu>
 """
 Eulerian circuits and graphs.
 """
@@ -217,8 +204,7 @@ def eulerian_circuit(G, source=None, keys=False):
             else:
                 yield u, v
     else:
-        for u, v in _simplegraph_eulerian_circuit(G, source):
-            yield u, v
+        yield from _simplegraph_eulerian_circuit(G, source)
 
 
 def has_eulerian_path(G):
@@ -303,8 +289,7 @@ def eulerian_path(G, source=None, keys=False):
             else:
                 yield u, v
     else:
-        for u, v in _simplegraph_eulerian_circuit(G, source):
-            yield u, v
+        yield from _simplegraph_eulerian_circuit(G, source)
 
 
 @not_implemented_for('directed')

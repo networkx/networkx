@@ -1,12 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Pieter Swart (swart@lanl.gov)
 """Generators for some classic graphs.
 
 The typical graph generator is called as follows:
@@ -24,7 +15,7 @@ import itertools
 import networkx as nx
 from networkx.classes import Graph
 from networkx.exception import NetworkXError
-from networkx.utils import accumulate
+from itertools import accumulate
 from networkx.utils import nodes_or_number
 from networkx.utils import pairwise
 
@@ -195,11 +186,12 @@ def barbell_graph(m1, m2, create_using=None):
         G.add_edge(m1 + m2 - 1, m1 + m2)
     return G
 
+
 def binomial_tree(n):
     """Returns the Binomial Tree of order n.
-    
-    The binomial tree of order 0 consists of a single vertex. A binomial tree of order k 
-    is defined recursively by linking two binomial trees of order k-1: the root of one is 
+
+    The binomial tree of order 0 consists of a single vertex. A binomial tree of order k
+    is defined recursively by linking two binomial trees of order k-1: the root of one is
     the leftmost child of the root of the other.
 
     Parameters
@@ -216,11 +208,12 @@ def binomial_tree(n):
     G = nx.empty_graph(1)
     N = 1
     for i in range(n):
-        edges = [(u + N, v + N)  for (u, v) in G.edges]
+        edges = [(u + N, v + N) for (u, v) in G.edges]
         G.add_edges_from(edges)
-        G.add_edge(0,N)
+        G.add_edge(0, N)
         N *= 2
     return G
+
 
 @nodes_or_number(0)
 def complete_graph(n, create_using=None):
@@ -746,8 +739,8 @@ def complete_multipartite_graph(*subset_sizes):
     try:
         for (i, subset) in enumerate(subsets):
             G.add_nodes_from(subset, subset=i)
-    except TypeError:
-        raise NetworkXError("Arguments must be all ints or all iterables")
+    except TypeError as e:
+        raise NetworkXError("Arguments must be all ints or all iterables") from e
 
     # Across subsets, all vertices should be adjacent.
     # We can use itertools.combinations() because undirected.

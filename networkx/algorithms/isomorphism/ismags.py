@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """
 ****************
 ISMAGS Algorithm
@@ -114,7 +111,6 @@ References
     .. [2] https://en.wikipedia.org/wiki/Maximum_common_induced_subgraph
 """
 
-__author__ = 'P C Kroon (p.c.kroon@rug.nl)'
 __all__ = ['ISMAGS']
 
 from collections import defaultdict, Counter
@@ -186,7 +182,7 @@ def make_partitions(items, test):
                 partition.add(item)
                 break
         else:  # No break
-            partitions.append(set((item,)))
+            partitions.append({item})
     return partitions
 
 
@@ -287,7 +283,7 @@ class ISMAGS:
             `n1` and `n2` node property dicts. See also
             :func:`~networkx.algorithms.isomorphism.categorical_node_match` and
             friends.
-            If `None`, all nodes are considered equal. 
+            If `None`, all nodes are considered equal.
         edge_match: collections.abc.Callable or None
             Function used to determine whether two edges are equivalent. Its
             signature should look like ``f(e1: dict, e2: dict) -> bool``, with
@@ -437,9 +433,9 @@ class ISMAGS:
         return comparer
 
     def find_isomorphisms(self, symmetry=True):
-        """
-        Find all subgraph isomorphisms between :attr:`subgraph` <=
-        :attr:`graph`.
+        """Find all subgraph isomorphisms between subgraph and graph
+
+        Finds isomorphisms where :attr:`subgraph` <= :attr:`graph`.
 
         Parameters
         ----------
@@ -526,7 +522,7 @@ class ISMAGS:
                     pass
                 else:
                     new_sg_count[ge_color, gn_color] = count
-            
+
             for gn, g_count in g_counts.items():
                 if all(new_sg_count[x] <= g_count[x] for x in new_sg_count):
                     # Valid candidate
@@ -598,9 +594,9 @@ class ISMAGS:
         assert len(node_partitions) == 1
         node_partitions = node_partitions[0]
         permutations, cosets = self._process_ordered_pair_partitions(graph,
-                                                 node_partitions,
-                                                 node_partitions,
-                                                 edge_colors)
+                                                                     node_partitions,
+                                                                     node_partitions,
+                                                                     edge_colors)
         if self._symmetry_cache is not None:
             self._symmetry_cache[key] = permutations, cosets
         return permutations, cosets
@@ -635,18 +631,12 @@ class ISMAGS:
         """
         Does the same as :meth:`find_isomorphisms` if :attr:`graph` and
         :attr:`subgraph` have the same number of nodes.
-        
-        .. automethod:: find_isomorphisms
         """
         if len(self.graph) == len(self.subgraph):
             yield from self.subgraph_isomorphisms_iter(symmetry=symmetry)
 
     def subgraph_isomorphisms_iter(self, symmetry=True):
-        """
-        Alternative name for :meth:`find_isomorphisms`.
-
-        .. automethod:: find_isomorphisms
-        """
+        """Alternative name for :meth:`find_isomorphisms`."""
         return self.find_isomorphisms(symmetry)
 
     def _find_nodecolor_candidates(self):
@@ -801,7 +791,7 @@ class ISMAGS:
 
         # Note, we modify candidates here. Doesn't seem to affect results, but
         # remember this.
-        #candidates = candidates.copy()
+        # candidates = candidates.copy()
         sgn_candidates = intersect(candidates[sgn])
         candidates[sgn] = frozenset([sgn_candidates])
         for gn in sgn_candidates:
@@ -859,7 +849,7 @@ class ISMAGS:
                                        to_be_mapped=to_be_mapped)
             # Unmap sgn-gn. Strictly not necessary since it'd get overwritten
             # when making a new mapping for sgn.
-            #del mapping[sgn]
+            # del mapping[sgn]
 
     def _largest_common_subgraph(self, candidates, constraints,
                                  to_be_mapped=None):
@@ -958,8 +948,7 @@ class ISMAGS:
             # top and bot have only one element
             if len(top) != 1 or len(bot) != 1:
                 raise IndexError("Not all nodes are coupled. This is"
-                                 " impossible: {}, {}".format(top_partitions,
-                                                              bottom_partitions))
+                                 f" impossible: {top_partitions}, {bottom_partitions}")
             if top != bot:
                 permutations.add(frozenset((next(iter(top)), next(iter(bot)))))
         return permutations
@@ -1074,11 +1063,11 @@ class ISMAGS:
                 new_top_partitions, new_bottom_partitions = opp
 
                 new_perms, new_cosets = self._process_ordered_pair_partitions(graph,
-                                                          new_top_partitions,
-                                                          new_bottom_partitions,
-                                                          edge_colors,
-                                                          orbits,
-                                                          cosets)
+                                                                              new_top_partitions,
+                                                                              new_bottom_partitions,
+                                                                              edge_colors,
+                                                                              orbits,
+                                                                              cosets)
                 # COMBINATION
                 permutations += new_perms
                 cosets.update(new_cosets)

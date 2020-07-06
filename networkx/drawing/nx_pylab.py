@@ -1,11 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """
 **********
 Matplotlib
@@ -23,7 +15,6 @@ pygraphviz:     http://pygraphviz.github.io/
 """
 from numbers import Number
 import networkx as nx
-from networkx.utils import is_string_like
 from networkx.drawing.layout import shell_layout, \
     circular_layout, kamada_kawai_layout, spectral_layout, \
     spring_layout, random_layout, planar_layout
@@ -85,9 +76,7 @@ def draw(G, pos=None, ax=None, **kwds):
     Notes
     -----
     This function has the same name as pylab.draw and pyplot.draw
-    so beware when using
-
-    >>> from networkx import *
+    so beware when using `from networkx import *`
 
     since you might overwrite the pylab.draw function.
 
@@ -104,8 +93,8 @@ def draw(G, pos=None, ax=None, **kwds):
     """
     try:
         import matplotlib.pyplot as plt
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
     except RuntimeError:
         print("Matplotlib unable to open display")
         raise
@@ -235,7 +224,11 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
        Font family
 
     label : string, optional
-        Label for graph legend
+       Label for graph legend
+
+    kwds : optional keywords
+       See networkx.draw_networkx_nodes(), networkx.draw_networkx_edges(), and
+       networkx.draw_networkx_labels() for a description of optional keywords.
 
     Notes
     -----
@@ -264,19 +257,43 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     """
     try:
         import matplotlib.pyplot as plt
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
     except RuntimeError:
         print("Matplotlib unable to open display")
         raise
 
+    valid_node_kwds = ('nodelist', 'node_size', 'node_color', 'node_shape',
+                       'alpha', 'cmap', 'vmin', 'vmax', 'ax', 'linewidths',
+                       'edgecolors', 'label')
+
+    valid_edge_kwds = ('edgelist', 'width', 'edge_color', 'style', 'alpha',
+                       'arrowstyle', 'arrowsize', 'edge_cmap', 'edge_vmin',
+                       'edge_vmax', 'ax', 'label', 'node_size', 'nodelist',
+                       'node_shape', 'connectionstyle', 'min_source_margin',
+                       'min_target_margin')
+
+    valid_label_kwds = ('labels', 'font_size', 'font_color', 'font_family',
+                        'font_weight', 'alpha', 'bbox', 'ax',
+                        'horizontalalignment', 'verticalalignment')
+
+    valid_kwds = valid_node_kwds + valid_edge_kwds + valid_label_kwds
+
+    if any([k not in valid_kwds for k in kwds]):
+        invalid_args = ', '.join([k for k in kwds if k not in valid_kwds])
+        raise ValueError(f"Received invalid argument(s): {invalid_args}")
+
+    node_kwds = {k: v for k, v in kwds.items() if k in valid_node_kwds}
+    edge_kwds = {k: v for k, v in kwds.items() if k in valid_edge_kwds}
+    label_kwds = {k: v for k, v in kwds.items() if k in valid_label_kwds}
+
     if pos is None:
         pos = nx.drawing.spring_layout(G)  # default to spring layout
 
-    node_collection = draw_networkx_nodes(G, pos, **kwds)
-    edge_collection = draw_networkx_edges(G, pos, arrows=arrows, **kwds)
+    draw_networkx_nodes(G, pos, **node_kwds)
+    draw_networkx_edges(G, pos, arrows=arrows, **edge_kwds)
     if with_labels:
-        draw_networkx_labels(G, pos, **kwds)
+        draw_networkx_labels(G, pos, **label_kwds)
     plt.draw_if_interactive()
 
 
@@ -292,8 +309,7 @@ def draw_networkx_nodes(G, pos,
                         ax=None,
                         linewidths=None,
                         edgecolors=None,
-                        label=None,
-                        **kwds):
+                        label=None):
     """Draw the nodes of the graph G.
 
     This draws only the nodes of the graph G.
@@ -349,12 +365,6 @@ def draw_networkx_nodes(G, pos,
     label : [None| string]
        Label for legend
 
-    min_source_margin : int, optional (default=0)
-       The minimum margin (gap) at the begining of the edge at the source.
-
-    min_target_margin : int, optional (default=0)
-       The minimum margin (gap) at the end of the edge at the target.
-
     Returns
     -------
     matplotlib.collections.PathCollection
@@ -379,9 +389,10 @@ def draw_networkx_nodes(G, pos,
     from collections.abc import Iterable
     try:
         import matplotlib.pyplot as plt
+        from matplotlib.collections import PathCollection
         import numpy as np
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
     except RuntimeError:
         print("Matplotlib unable to open display")
         raise
@@ -393,14 +404,14 @@ def draw_networkx_nodes(G, pos,
         nodelist = list(G)
 
     if len(nodelist) == 0:  # empty nodelist, no drawing
-        return
+        return PathCollection(None)
 
     try:
         xy = np.asarray([pos[v] for v in nodelist])
     except KeyError as e:
-        raise nx.NetworkXError('Node %s has no position.' % e)
-    except ValueError:
-        raise nx.NetworkXError('Bad value in node positions.')
+        raise nx.NetworkXError(f"Node {e} has no position.") from e
+    except ValueError as e:
+        raise nx.NetworkXError('Bad value in node positions.') from e
 
     if isinstance(alpha, Iterable):
         node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
@@ -448,8 +459,7 @@ def draw_networkx_edges(G, pos,
                         node_shape="o",
                         connectionstyle=None,
                         min_source_margin=0,
-                        min_target_margin=0,
-                        **kwds):
+                        min_target_margin=0):
     """Draw the edges of the graph G.
 
     This draws only the edges of the graph G.
@@ -559,14 +569,13 @@ def draw_networkx_edges(G, pos,
     draw_networkx_edge_labels()
     """
     try:
-        import matplotlib
         import matplotlib.pyplot as plt
         from matplotlib.colors import colorConverter, Colormap, Normalize
         from matplotlib.collections import LineCollection
         from matplotlib.patches import FancyArrowPatch
         import numpy as np
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
     except RuntimeError:
         print("Matplotlib unable to open display")
         raise
@@ -578,7 +587,10 @@ def draw_networkx_edges(G, pos,
         edgelist = list(G.edges())
 
     if not edgelist or len(edgelist) == 0:  # no edges!
-        return None
+        if not G.is_directed() or not arrows:
+            return LineCollection(None)
+        else:
+            return []
 
     if nodelist is None:
         nodelist = list(G.nodes())
@@ -615,6 +627,9 @@ def draw_networkx_edges(G, pos,
                                          alpha=alpha
                                          )
 
+        edge_collection.set_cmap(edge_cmap)
+        edge_collection.set_clim(edge_vmin, edge_vmax)
+
         edge_collection.set_zorder(1)  # edges go behind nodes
         edge_collection.set_label(label)
         ax.add_collection(edge_collection)
@@ -646,12 +661,13 @@ def draw_networkx_edges(G, pos,
             shrink_source = 0  # space from source to tail
             shrink_target = 0  # space from  head to target
             if np.iterable(node_size):  # many node sizes
-                src_node, dst_node = edgelist[i][:2]
-                index_node = nodelist.index(dst_node)
-                marker_size = node_size[index_node]
-                shrink_target = to_marker_edge(marker_size, node_shape)
+                source, target = edgelist[i][:2]
+                source_node_size = node_size[nodelist.index(source)]
+                target_node_size = node_size[nodelist.index(target)]
+                shrink_source = to_marker_edge(source_node_size, node_shape)
+                shrink_target = to_marker_edge(target_node_size, node_shape)
             else:
-                shrink_target = to_marker_edge(node_size, node_shape)
+                shrink_source = shrink_target = to_marker_edge(node_size, node_shape)
 
             if shrink_source < min_source_margin:
                 shrink_source = min_source_margin
@@ -682,6 +698,7 @@ def draw_networkx_edges(G, pos,
                                     color=arrow_color,
                                     linewidth=line_width,
                                     connectionstyle=connectionstyle,
+                                    linestyle=style,
                                     zorder=1)  # arrows go behind nodes
 
             # There seems to be a bug in matplotlib to make collections of
@@ -722,8 +739,9 @@ def draw_networkx_labels(G, pos,
                          font_weight='normal',
                          alpha=None,
                          bbox=None,
-                         ax=None,
-                         **kwds):
+                         horizontalalignment='center',
+                         verticalalignment='center',
+                         ax=None):
     """Draw node labels on the graph G.
 
     Parameters
@@ -755,8 +773,15 @@ def draw_networkx_labels(G, pos,
     alpha : float or None
        The text transparency (default=None)
 
+    horizontalalignment : {'center', 'right', 'left'}
+       Horizontal alignment (default='center')
+
+    verticalalignment : {'center', 'top', 'bottom', 'baseline', 'center_baseline'}
+        Vertical alignment (default='center')
+
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.
+
 
     Returns
     -------
@@ -781,8 +806,8 @@ def draw_networkx_labels(G, pos,
     """
     try:
         import matplotlib.pyplot as plt
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
     except RuntimeError:
         print("Matplotlib unable to open display")
         raise
@@ -791,16 +816,12 @@ def draw_networkx_labels(G, pos,
         ax = plt.gca()
 
     if labels is None:
-        labels = dict((n, n) for n in G.nodes())
-
-    # set optional alignment
-    horizontalalignment = kwds.get('horizontalalignment', 'center')
-    verticalalignment = kwds.get('verticalalignment', 'center')
+        labels = {n: n for n in G.nodes()}
 
     text_items = {}  # there is no text collection so we'll fake one
     for n, label in labels.items():
         (x, y) = pos[n]
-        if not is_string_like(label):
+        if not isinstance(label, str):
             label = str(label)  # this makes "1" and 1 labeled the same
         t = ax.text(x, y,
                     label,
@@ -837,9 +858,10 @@ def draw_networkx_edge_labels(G, pos,
                               font_weight='normal',
                               alpha=None,
                               bbox=None,
+                              horizontalalignment='center',
+                              verticalalignment='center',
                               ax=None,
-                              rotate=True,
-                              **kwds):
+                              rotate=True):
     """Draw edge labels.
 
     Parameters
@@ -883,6 +905,15 @@ def draw_networkx_edge_labels(G, pos,
     clip_on : bool
        Turn on clipping at axis boundaries (default=True)
 
+    horizontalalignment : {'center', 'right', 'left'}
+       Horizontal alignment (default='center')
+
+    verticalalignment : {'center', 'top', 'bottom', 'baseline', 'center_baseline'}
+        Vertical alignment (default='center')
+
+    ax : Matplotlib Axes object, optional
+       Draw the graph in the specified Matplotlib axes.
+
     Returns
     -------
     dict
@@ -907,8 +938,8 @@ def draw_networkx_edge_labels(G, pos,
     try:
         import matplotlib.pyplot as plt
         import numpy as np
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
     except RuntimeError:
         print("Matplotlib unable to open display")
         raise
@@ -946,12 +977,8 @@ def draw_networkx_edge_labels(G, pos,
                         ec=(1.0, 1.0, 1.0),
                         fc=(1.0, 1.0, 1.0),
                         )
-        if not is_string_like(label):
+        if not isinstance(label, str):
             label = str(label)  # this makes "1" and 1 labeled the same
-
-        # set optional alignment
-        horizontalalignment = kwds.get('horizontalalignment', 'center')
-        verticalalignment = kwds.get('verticalalignment', 'center')
 
         t = ax.text(x, y,
                     label,
@@ -1032,7 +1059,7 @@ def draw_random(G, **kwargs):
 def draw_spectral(G, **kwargs):
     """Draw the graph G with a spectral 2D layout.
 
-    Using the unnormalized Laplacion, the layout shows possible clusters of
+    Using the unnormalized Laplacian, the layout shows possible clusters of
     nodes which are an approximation of the ratio cut. The positions are the
     entries of the second and third eigenvectors corresponding to the
     ascending eigenvalues starting from the second one.
@@ -1145,8 +1172,8 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
         import numpy as np
         from matplotlib.colors import colorConverter
         import matplotlib.cm as cm
-    except ImportError:
-        raise ImportError("Matplotlib required for draw()")
+    except ImportError as e:
+        raise ImportError("Matplotlib required for draw()") from e
 
     # If we have been provided with a list of numbers as long as elem_list,
     # apply the color mapping.
@@ -1178,15 +1205,3 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
     except TypeError:
         rgba_colors[:, -1] = alpha
     return rgba_colors
-
-# fixture for nose tests
-
-
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import matplotlib as mpl
-        mpl.use('PS', warn=False)
-        import matplotlib.pyplot as plt
-    except ImportError:
-        raise SkipTest("matplotlib not available")

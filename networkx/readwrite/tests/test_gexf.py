@@ -1,23 +1,17 @@
-#!/usr/bin/env python
 import io
 import sys
 import time
-from nose import SkipTest
-from nose.tools import *
+import pytest
 
 import networkx as nx
 
 
-class TestGEXF(object):
+class TestGEXF:
     @classmethod
-    def setupClass(cls):
-        try:
-            import xml.etree.ElementTree
-        except ImportError:
-            raise SkipTest('xml.etree.ElementTree not available.')
+    def setup_class(cls):
+        _ = pytest.importorskip("xml.etree.ElementTree")
 
-    def setUp(self):
-        self.simple_directed_data = """<?xml version="1.0" encoding="UTF-8"?>
+        cls.simple_directed_data = """<?xml version="1.0" encoding="UTF-8"?>
 <gexf xmlns="http://www.gexf.net/1.2draft" version="1.2">
     <graph mode="static" defaultedgetype="directed">
         <nodes>
@@ -30,15 +24,15 @@ class TestGEXF(object):
     </graph>
 </gexf>
 """
-        self.simple_directed_graph = nx.DiGraph()
-        self.simple_directed_graph.add_node('0', label='Hello')
-        self.simple_directed_graph.add_node('1', label='World')
-        self.simple_directed_graph.add_edge('0', '1', id='0')
+        cls.simple_directed_graph = nx.DiGraph()
+        cls.simple_directed_graph.add_node('0', label='Hello')
+        cls.simple_directed_graph.add_node('1', label='World')
+        cls.simple_directed_graph.add_edge('0', '1', id='0')
 
-        self.simple_directed_fh = \
-            io.BytesIO(self.simple_directed_data.encode('UTF-8'))
+        cls.simple_directed_fh = \
+            io.BytesIO(cls.simple_directed_data.encode('UTF-8'))
 
-        self.attribute_data = """<?xml version="1.0" encoding="UTF-8"?>\
+        cls.attribute_data = """<?xml version="1.0" encoding="UTF-8"?>\
 <gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.\
 org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
@@ -94,32 +88,32 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
   </graph>
 </gexf>
 """
-        self.attribute_graph = nx.DiGraph()
-        self.attribute_graph.graph['node_default'] = {'frog': True}
-        self.attribute_graph.add_node('0',
-                                      label='Gephi',
-                                      url='https://gephi.org',
-                                      indegree=1, frog=False)
-        self.attribute_graph.add_node('1',
-                                      label='Webatlas',
-                                      url='http://webatlas.fr',
-                                      indegree=2, frog=False)
-        self.attribute_graph.add_node('2',
-                                      label='RTGI',
-                                      url='http://rtgi.fr',
-                                      indegree=1, frog=True)
-        self.attribute_graph.add_node('3',
-                                      label='BarabasiLab',
-                                      url='http://barabasilab.com',
-                                      indegree=1, frog=True)
-        self.attribute_graph.add_edge('0', '1', id='0')
-        self.attribute_graph.add_edge('0', '2', id='1')
-        self.attribute_graph.add_edge('1', '0', id='2')
-        self.attribute_graph.add_edge('2', '1', id='3')
-        self.attribute_graph.add_edge('0', '3', id='4')
-        self.attribute_fh = io.BytesIO(self.attribute_data.encode('UTF-8'))
+        cls.attribute_graph = nx.DiGraph()
+        cls.attribute_graph.graph['node_default'] = {'frog': True}
+        cls.attribute_graph.add_node('0',
+                                     label='Gephi',
+                                     url='https://gephi.org',
+                                     indegree=1, frog=False)
+        cls.attribute_graph.add_node('1',
+                                     label='Webatlas',
+                                     url='http://webatlas.fr',
+                                     indegree=2, frog=False)
+        cls.attribute_graph.add_node('2',
+                                     label='RTGI',
+                                     url='http://rtgi.fr',
+                                     indegree=1, frog=True)
+        cls.attribute_graph.add_node('3',
+                                     label='BarabasiLab',
+                                     url='http://barabasilab.com',
+                                     indegree=1, frog=True)
+        cls.attribute_graph.add_edge('0', '1', id='0')
+        cls.attribute_graph.add_edge('0', '2', id='1')
+        cls.attribute_graph.add_edge('1', '0', id='2')
+        cls.attribute_graph.add_edge('2', '1', id='3')
+        cls.attribute_graph.add_edge('0', '3', id='4')
+        cls.attribute_fh = io.BytesIO(cls.attribute_data.encode('UTF-8'))
 
-        self.simple_undirected_data = """<?xml version="1.0" encoding="UTF-8"?>
+        cls.simple_undirected_data = """<?xml version="1.0" encoding="UTF-8"?>
 <gexf xmlns="http://www.gexf.net/1.2draft" version="1.2">
     <graph mode="static" defaultedgetype="undirected">
         <nodes>
@@ -132,21 +126,20 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
     </graph>
 </gexf>
 """
-        self.simple_undirected_graph = nx.Graph()
-        self.simple_undirected_graph.add_node('0', label='Hello')
-        self.simple_undirected_graph.add_node('1', label='World')
-        self.simple_undirected_graph.add_edge('0', '1', id='0')
+        cls.simple_undirected_graph = nx.Graph()
+        cls.simple_undirected_graph.add_node('0', label='Hello')
+        cls.simple_undirected_graph.add_node('1', label='World')
+        cls.simple_undirected_graph.add_edge('0', '1', id='0')
 
-        self.simple_undirected_fh = io.BytesIO(self.simple_undirected_data
-                                                   .encode('UTF-8'))
+        cls.simple_undirected_fh = io.BytesIO(cls.simple_undirected_data
+                                                 .encode('UTF-8'))
 
     def test_read_simple_directed_graphml(self):
         G = self.simple_directed_graph
         H = nx.read_gexf(self.simple_directed_fh)
-        assert_equal(sorted(G.nodes()), sorted(H.nodes()))
-        assert_equal(sorted(G.edges()), sorted(H.edges()))
-        assert_equal(sorted(G.edges(data=True)),
-                     sorted(H.edges(data=True)))
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert sorted(G.edges()) == sorted(H.edges())
+        assert sorted(G.edges(data=True)) == sorted(H.edges(data=True))
         self.simple_directed_fh.seek(0)
 
     def test_write_read_simple_directed_graphml(self):
@@ -155,29 +148,27 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         nx.write_gexf(G, fh)
         fh.seek(0)
         H = nx.read_gexf(fh)
-        assert_equal(sorted(G.nodes()), sorted(H.nodes()))
-        assert_equal(sorted(G.edges()), sorted(H.edges()))
-        assert_equal(sorted(G.edges(data=True)),
-                     sorted(H.edges(data=True)))
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert sorted(G.edges()) == sorted(H.edges())
+        assert sorted(G.edges(data=True)) == sorted(H.edges(data=True))
         self.simple_directed_fh.seek(0)
 
     def test_read_simple_undirected_graphml(self):
         G = self.simple_undirected_graph
         H = nx.read_gexf(self.simple_undirected_fh)
-        assert_equal(sorted(G.nodes()), sorted(H.nodes()))
-        assert_equal(
-            sorted(sorted(e) for e in G.edges()),
-            sorted(sorted(e) for e in H.edges()))
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
         self.simple_undirected_fh.seek(0)
 
     def test_read_attribute_graphml(self):
         G = self.attribute_graph
         H = nx.read_gexf(self.attribute_fh)
-        assert_equal(sorted(G.nodes(True)), sorted(H.nodes(data=True)))
+        assert sorted(G.nodes(True)) == sorted(H.nodes(data=True))
         ge = sorted(G.edges(data=True))
         he = sorted(H.edges(data=True))
         for a, b in zip(ge, he):
-            assert_equal(a, b)
+            assert a == b
         self.attribute_fh.seek(0)
 
     def test_directed_edge_in_undirected(self):
@@ -195,7 +186,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 </gexf>
 """
         fh = io.BytesIO(s.encode('UTF-8'))
-        assert_raises(nx.NetworkXError, nx.read_gexf, fh)
+        pytest.raises(nx.NetworkXError, nx.read_gexf, fh)
 
     def test_undirected_edge_in_directed(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
@@ -212,7 +203,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 </gexf>
 """
         fh = io.BytesIO(s.encode('UTF-8'))
-        assert_raises(nx.NetworkXError, nx.read_gexf, fh)
+        pytest.raises(nx.NetworkXError, nx.read_gexf, fh)
 
     def test_key_raises(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
@@ -233,7 +224,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 </gexf>
 """
         fh = io.BytesIO(s.encode('UTF-8'))
-        assert_raises(nx.NetworkXError, nx.read_gexf, fh)
+        pytest.raises(nx.NetworkXError, nx.read_gexf, fh)
 
     def test_relabel(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
@@ -251,7 +242,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 """
         fh = io.BytesIO(s.encode('UTF-8'))
         G = nx.read_gexf(fh, relabel=True)
-        assert_equal(sorted(G.nodes()), ["Hello", "Word"])
+        assert sorted(G.nodes()) == ["Hello", "Word"]
 
     def test_default_attribute(self):
         G = nx.Graph()
@@ -264,15 +255,14 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         nx.write_gexf(G, fh)
         fh.seek(0)
         H = nx.read_gexf(fh, node_type=int)
-        assert_equal(sorted(G.nodes()), sorted(H.nodes()))
-        assert_equal(
-            sorted(sorted(e) for e in G.edges()),
-            sorted(sorted(e) for e in H.edges()))
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
         # Reading a gexf graph always sets mode attribute to either
         # 'static' or 'dynamic'. Remove the mode attribute from the
         # read graph for the sake of comparing remaining attributes.
         del H.graph['mode']
-        assert_equal(G.graph, H.graph)
+        assert G.graph == H.graph
 
     def test_serialize_ints_to_strings(self):
         G = nx.Graph()
@@ -281,8 +271,8 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         nx.write_gexf(G, fh)
         fh.seek(0)
         H = nx.read_gexf(fh, node_type=int)
-        assert_equal(list(H), [7])
-        assert_equal(H.nodes[7]['label'], '77')
+        assert list(H) == [7]
+        assert H.nodes[7]['label'] == '77'
 
 # FIXME: We should test xml without caring about their order This is causing a
 # problem b/c of a change in Python 3.8
@@ -308,12 +298,12 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
             G.nodes[i]['end'] = i + 1
 
         if sys.version_info < (3, 8):
-            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2\
+            expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/1.2\
 draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:\
 schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
 gexf.xsd">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
     <nodes>
@@ -328,14 +318,14 @@ gexf.xsd">
       <edge id="2" source="2" target="3" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
         else:
-            expected = """<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
+            expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=\
 "http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
 gexf.xsd" version="1.2">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
     <nodes>
@@ -350,21 +340,21 @@ gexf.xsd" version="1.2">
       <edge source="2" target="3" id="2" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
         obtained = '\n'.join(nx.generate_gexf(G))
-        assert_equal(expected, obtained)
+        assert expected == obtained
 
     def test_edge_id_construct(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1, {'id': 0}), (1, 2, {'id': 2}), (2, 3)])
 
         if sys.version_info < (3, 8):
-            expected = """<gexf version="1.2" xmlns="http://www.gexf.net/\
+            expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/\
 1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:\
 schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
 gexf.xsd">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
     <nodes>
@@ -379,13 +369,13 @@ gexf.xsd">
       <edge id="1" source="2" target="3" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
         else:
-            expected = """<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
+            expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.\
 gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
     <nodes>
@@ -400,10 +390,10 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
       <edge source="2" target="3" id="1" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
 
         obtained = '\n'.join(nx.generate_gexf(G))
-        assert_equal(expected, obtained)
+        assert expected == obtained
 
     def test_numpy_type(self):
         G = nx.path_graph(4)
@@ -414,11 +404,12 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         nx.set_node_attributes(G, {n: n for n in numpy.arange(4)}, 'number')
         G[0][1]['edge-number'] = numpy.float64(1.1)
 
-        expected = """<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft"\
+        if sys.version_info < (3, 8):
+            expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft"\
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation\
 ="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
-  <meta lastmodifieddate="{}">
-    <creator>NetworkX {}</creator>
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
     <attributes class="edge" mode="static">
@@ -459,9 +450,57 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
       <edge id="2" source="2" target="3" />
     </edges>
   </graph>
-</gexf>""".format(time.strftime('%Y-%m-%d'), nx.__version__)
+</gexf>"""
+        else:
+            expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft"\
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation\
+="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd"\
+ version="1.2">
+  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+    <creator>NetworkX {nx.__version__}</creator>
+  </meta>
+  <graph defaultedgetype="undirected" mode="static" name="">
+    <attributes mode="static" class="edge">
+      <attribute id="1" title="edge-number" type="float" />
+    </attributes>
+    <attributes mode="static" class="node">
+      <attribute id="0" title="number" type="int" />
+    </attributes>
+    <nodes>
+      <node id="0" label="0">
+        <attvalues>
+          <attvalue for="0" value="0" />
+        </attvalues>
+      </node>
+      <node id="1" label="1">
+        <attvalues>
+          <attvalue for="0" value="1" />
+        </attvalues>
+      </node>
+      <node id="2" label="2">
+        <attvalues>
+          <attvalue for="0" value="2" />
+        </attvalues>
+      </node>
+      <node id="3" label="3">
+        <attvalues>
+          <attvalue for="0" value="3" />
+        </attvalues>
+      </node>
+    </nodes>
+    <edges>
+      <edge source="0" target="1" id="0">
+        <attvalues>
+          <attvalue for="1" value="1.1" />
+        </attvalues>
+      </edge>
+      <edge source="1" target="2" id="1" />
+      <edge source="2" target="3" id="2" />
+    </edges>
+  </graph>
+</gexf>"""
         obtained = '\n'.join(nx.generate_gexf(G))
-        assert_equal(expected, obtained)
+        assert expected == obtained
 
     def test_bool(self):
         G = nx.Graph()
@@ -470,22 +509,139 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         nx.write_gexf(G, fh)
         fh.seek(0)
         H = nx.read_gexf(fh, node_type=int)
-        assert_equal(H.nodes[1]['testattr'], True)
+        assert H.nodes[1]['testattr']
 
     # Test for NaN, INF and -INF
     def test_specials(self):
+        from math import isnan
+        inf, nan = float('inf'), float('nan')
         G = nx.Graph()
-        G.add_node(1, testattr=float('inf'))
-        G.add_node(2, testattr=float('nan'))
-        G.add_node(3, testattr=float('-inf'))
-        list_value = [(1, 2, 3), (2, 1, 2)]
-        G.add_node(4, key=list_value)
+        G.add_node(1, testattr=inf, strdata='inf', key='a')
+        G.add_node(2, testattr=nan, strdata='nan', key='b')
+        G.add_node(3, testattr=-inf, strdata='-inf', key='c')
+
         fh = io.BytesIO()
         nx.write_gexf(G, fh)
         fh.seek(0)
-        # float as inf,-inf and nan are all floats internally
-        H = nx.read_gexf(fh, node_type=float)
-        assert_equal(H.nodes[1]['testattr'], "INF")
-        assert_equal(H.nodes[2]['testattr'], "NaN")
-        assert_equal(H.nodes[3]['testattr'], "-INF")
-        assert_equals(H.nodes[4]['networkx_key'], list_value)
+        filetext = fh.read()
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+
+        assert b'INF' in filetext
+        assert b'NaN' in filetext
+        assert b'-INF' in filetext
+
+        assert H.nodes[1]['testattr'] == inf
+        assert isnan(H.nodes[2]['testattr'])
+        assert H.nodes[3]['testattr'] == -inf
+
+        assert H.nodes[1]['strdata'] == 'inf'
+        assert H.nodes[2]['strdata'] == 'nan'
+        assert H.nodes[3]['strdata'] == '-inf'
+
+        assert H.nodes[1]['networkx_key'] == 'a'
+        assert H.nodes[2]['networkx_key'] == 'b'
+        assert H.nodes[3]['networkx_key'] == 'c'
+
+    def test_simple_list(self):
+        G = nx.Graph()
+        list_value = [(1, 2, 3), (9, 1, 2)]
+        G.add_node(1, key=list_value)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert H.nodes[1]['networkx_key'] == list_value
+
+    def test_dynamic_mode(self):
+        G = nx.Graph()
+        G.add_node(1, label='1', color='green')
+        G.graph['mode'] = 'dynamic'
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
+
+    def test_multigraph_with_missing_attributes(self):
+        G = nx.MultiGraph()
+        G.add_node(0, label='1', color='green')
+        G.add_node(1, label='2', color='green')
+        G.add_edge(0, 1, id='0', weight=3, type='undirected', start=0, end=1)
+        G.add_edge(0, 1)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
+
+    def test_missing_viz_attributes(self):
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green')
+        G.nodes[0]['viz'] = {'size': 54}
+        G.nodes[0]['viz']['position'] = {'x': 0, 'y': 1, 'z': 0}
+        G.nodes[0]['viz']['color'] = {'r': 0, 'g': 0, 'b': 256}
+        G.nodes[0]['viz']['shape'] = 'http://random.url'
+        G.nodes[0]['viz']['thickness'] = 2
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh, version='1.1draft')
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
+
+        # Second graph for the other branch
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green')
+        G.nodes[0]['viz'] = {'size': 54}
+        G.nodes[0]['viz']['position'] = {'x': 0, 'y': 1, 'z': 0}
+        G.nodes[0]['viz']['color'] = {'r': 0, 'g': 0, 'b': 256, 'a': 0.5}
+        G.nodes[0]['viz']['shape'] = 'ftp://random.url'
+        G.nodes[0]['viz']['thickness'] = 2
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
+
+    def test_slice_and_spell(self):
+        # Test spell first, so version = 1.2
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green')
+        G.nodes[0]['spells'] = [(1, 2)]
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
+
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green')
+        G.nodes[0]['slices'] = [(1, 2)]
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh, version='1.1draft')
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))
+
+    def test_add_parent(self):
+        G = nx.Graph()
+        G.add_node(0, label='1', color='green', parents=[1, 2])
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert (sorted(sorted(e) for e in G.edges())
+                == sorted(sorted(e) for e in H.edges()))

@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-#   Copyright (C) 2011-2012 by
-#   Nicholas Mancuso <nick.mancuso@gmail.com>
-#   All rights reserved.
-#   BSD license.
-#
-# Author:
-#   Nicholas Mancuso <nick.mancuso@gmail.com>
 """Functions for computing an approximate minimum weight vertex cover.
 
 A |vertex cover|_ is a subset of nodes such that each edge in the graph

@@ -1,17 +1,8 @@
 """
 Operations on graphs including union, intersection, difference.
 """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-from networkx.utils import is_string_like
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Dan Schult(dschult@colgate.edu)'])
+
 __all__ = ['union', 'compose', 'disjoint_union', 'intersection',
            'difference', 'symmetric_difference', 'full_join']
 
@@ -65,7 +56,7 @@ def union(G, H, rename=(None, None), name=None):
             return graph
 
         def label(x):
-            if is_string_like(x):
+            if isinstance(x, str):
                 name = prefix + x
             else:
                 name = prefix + repr(x)
@@ -88,9 +79,9 @@ def union(G, H, rename=(None, None), name=None):
 
     # add nodes
     R.add_nodes_from(G)
-    R.add_edges_from(G_edges)
-    # add edges
     R.add_nodes_from(H)
+    # add edges
+    R.add_edges_from(G_edges)
     R.add_edges_from(H_edges)
     # add node attributes
     for n in G:
@@ -381,7 +372,7 @@ def full_join(G, H, rename=(None, None)):
             return graph
 
         def label(x):
-            if is_string_like(x):
+            if isinstance(x, str):
                 name = prefix + x
             else:
                 name = prefix + repr(x)

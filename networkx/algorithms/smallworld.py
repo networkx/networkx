@@ -1,9 +1,3 @@
-#    Copyright (C) 2017 by
-#    Romain Fontugne <romain@iij.ad.jp>
-#    All rights reserved.
-#    BSD license.
-#
-# Author:  Romain Fontugne (romain@iij.ad.jp)
 """Functions for estimating the small-world-ness of graphs.
 
 A small world network is characterized by a small average shortest path length,
@@ -75,7 +69,7 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
 
     G = G.copy()
     keys, degrees = zip(*G.degree())  # keys, degree
-    cdf = nx.utils.cumulative_distribution(degrees)  # cdf of degree
+    cdf = cumulative_distribution(degrees)  # cdf of degree
     nnodes = len(G)
     nedges = nx.number_of_edges(G)
     niter = niter*nedges

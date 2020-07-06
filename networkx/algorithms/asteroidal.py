@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Haakon H. Rød (haakonhr@gmail.com)
 """
 Algorithms for asteroidal triples and asteroidal numbers in graphs.
 
@@ -159,7 +150,7 @@ def create_component_structure(G):
     component_structure = {}
     for v in V:
         label = 0
-        closed_neighborhood = set(G[v]).union(set([v]))
+        closed_neighborhood = set(G[v]).union({v})
         row_dict = {}
         for u in closed_neighborhood:
             row_dict[u] = 0

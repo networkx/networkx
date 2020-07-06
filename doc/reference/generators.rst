@@ -52,7 +52,7 @@ Expanders
 
    margulis_gabber_galil_graph
    chordal_cycle_graph
-
+   paley_graph
 
 Lattice
 -------
@@ -343,3 +343,11 @@ Cographs
    :toctree: generated/
 
    random_cograph
+
+Sudoku
+------
+.. automodule:: networkx.generators.sudoku
+.. autosummary::
+   :toctree: generated/
+
+   sudoku_graph

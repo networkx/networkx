@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Jon Crall (erotemic@gmail.com)
 """
 Algorithms for finding k-edge-augmentations
 
@@ -22,7 +13,6 @@ See Also
 :mod:`connectivity` : algorithms for determening edge connectivity.
 """
 import math
-import sys
 import itertools as it
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
@@ -69,7 +59,7 @@ def is_k_edge_connected(G, k):
     False
     """
     if k < 1:
-        raise ValueError('k must be positive, not {}'.format(k))
+        raise ValueError(f'k must be positive, not {k}')
     # First try to quickly determine if G is not k-edge-connected
     if G.number_of_nodes() < k + 1:
         return False
@@ -128,7 +118,7 @@ def is_locally_k_edge_connected(G, s, t, k):
     True
     """
     if k < 1:
-        raise ValueError('k must be positive, not {}'.format(k))
+        raise ValueError(f'k must be positive, not {k}')
 
     # First try to quickly determine s, t is not k-locally-edge-connected in G
     if G.degree(s) < k or G.degree(t) < k:
@@ -198,10 +188,10 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
 
     Raises
     ------
-    NetworkXUnfeasible:
+    NetworkXUnfeasible
         If partial is False and no k-edge-augmentation exists.
 
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If the input graph is directed or a multigraph.
 
     ValueError:
@@ -258,10 +248,10 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     """
     try:
         if k <= 0:
-            raise ValueError('k must be a positive integer, not {}'.format(k))
+            raise ValueError(f'k must be a positive integer, not {k}')
         elif G.number_of_nodes() < k + 1:
-            msg = 'impossible to {} connect in graph with less than {} nodes'
-            raise nx.NetworkXUnfeasible(msg.format(k, k + 1))
+            msg = f"impossible to {k} connect in graph with less than {k + 1} nodes"
+            raise nx.NetworkXUnfeasible(msg)
         elif avail is not None and len(avail) == 0:
             if not nx.is_k_edge_connected(G, k):
                 raise nx.NetworkXUnfeasible('no available edges')
@@ -272,14 +262,12 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
         elif k == 2:
             aug_edges = bridge_augmentation(G, avail=avail, weight=weight)
         else:
-            # raise NotImplementedError(
-            #    'not implemented for k>2. k={}'.format(k))
+            # raise NotImplementedError(f'not implemented for k>2. k={k}')
             aug_edges = greedy_k_edge_augmentation(
                 G, k=k, avail=avail, weight=weight, seed=0)
         # Do eager evaulation so we can catch any exceptions
         # Before executing partial code.
-        for edge in list(aug_edges):
-            yield edge
+        yield from list(aug_edges)
     except nx.NetworkXUnfeasible:
         if partial:
             # Return all available edges
@@ -290,8 +278,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
                 # k-edge-connect as much as possible
                 aug_edges = partial_k_edge_augmentation(G, k=k, avail=avail,
                                                         weight=weight)
-            for edge in aug_edges:
-                yield edge
+            yield from aug_edges
         else:
             raise
 
@@ -381,8 +368,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
             C.remove_edges_from(sub_avail.keys())
             # Find a subset of these edges that makes the compoment
             # k-edge-connected and ignore the rest
-            for edge in nx.k_edge_augmentation(C, k=k, avail=sub_avail):
-                yield edge
+            yield from nx.k_edge_augmentation(C, k=k, avail=sub_avail)
 
     # Generate all edges between CCs that could not be k-edge-connected
     for cc1, cc2 in it.combinations(k_edge_subgraphs, 2):
@@ -425,7 +411,7 @@ def one_edge_augmentation(G, avail=None, weight=None, partial=False):
 
     Raises
     ------
-    NetworkXUnfeasible:
+    NetworkXUnfeasible
         If partial is False and no one-edge-augmentation exists.
 
     Notes
@@ -475,7 +461,7 @@ def bridge_augmentation(G, avail=None, weight=None):
 
     Raises
     ------
-    NetworkXUnfeasible:
+    NetworkXUnfeasible
         If no bridge-augmentation exists.
 
     Notes
@@ -919,8 +905,7 @@ def weighted_bridge_augmentation(G, avail, weight=None):
         connectors = list(one_edge_augmentation(H, avail=avail, weight=weight))
         H.add_edges_from(connectors)
 
-        for edge in connectors:
-            yield edge
+        yield from connectors
     else:
         connectors = []
         H = G
@@ -995,9 +980,9 @@ def weighted_bridge_augmentation(G, avail, weight=None):
         # Note the original edges must be directed towards to root for the
         # branching to give us a bridge-augmentation.
         A = _minimum_rooted_branching(D, root)
-    except nx.NetworkXException:
+    except nx.NetworkXException as e:
         # If there is no branching then augmentation is not possible
-        raise nx.NetworkXUnfeasible('no 2-edge-augmentation possible')
+        raise nx.NetworkXUnfeasible('no 2-edge-augmentation possible') from e
 
     # For each edge e, in the branching that did not belong to the directed
     # tree T, add the corresponding edge that **GENERATED** it (this is not
@@ -1012,8 +997,7 @@ def weighted_bridge_augmentation(G, avail, weight=None):
             edge = data['generator']
             bridge_connectors.add(edge)
 
-    for edge in bridge_connectors:
-        yield edge
+    yield from bridge_connectors
 
 
 def _minimum_rooted_branching(D, root):
@@ -1095,7 +1079,7 @@ def collapse(G, grouped_nodes):
         mapping.update((n, i) for n in group)
     # remaining nodes are in their own group
     for i, node in enumerate(remaining, start=i + 1):
-        group = set([node])
+        group = {node}
         members[i] = group
         mapping.update((n, i) for n in group)
     number_of_groups = i + 1
@@ -1145,32 +1129,9 @@ def complement_edges(G):
                 yield (u, v)
 
 
-if sys.version_info[0] == 2:
-    def _compat_shuffle(rng, input):
-        """
-        python2 workaround so shuffle works the same as python3
-
-        References
-        ----------
-        https://stackoverflow.com/questions/38943038/diff-shuffle-py2-py3
-        """
-        def _randbelow(n):
-            "Return a random int in the range [0,n). Raises ValueError if n==0."
-            getrandbits = rng.getrandbits
-            k = n.bit_length()  # don't use (n-1) here because n can be 1
-            r = getrandbits(k)  # 0 <= r < 2**k
-            while r >= n:
-                r = getrandbits(k)
-            return r
-
-        for i in range(len(input) - 1, 0, -1):
-            # pick an element in input[:i+1] with which to exchange input[i]
-            j = _randbelow(i + 1)
-            input[i], input[j] = input[j], input[i]
-else:
-    def _compat_shuffle(rng, input):
-        """wrapper around rng.shuffle for python 2 compatibility reasons"""
-        rng.shuffle(input)
+def _compat_shuffle(rng, input):
+    """wrapper around rng.shuffle for python 2 compatibility reasons"""
+    rng.shuffle(input)
 
 
 @py_random_state(4)
@@ -1284,5 +1245,4 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
             aug_edges.append((u, v))
 
     # Generate results
-    for edge in aug_edges:
-        yield edge
+    yield from aug_edges

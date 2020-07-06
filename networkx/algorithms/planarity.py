@@ -138,7 +138,7 @@ def get_counterexample_recursive(G):
     return subgraph
 
 
-class Interval(object):
+class Interval:
     """Represents a set of return edges.
 
     All return edges in an interval induce a same constraint on the contained
@@ -164,7 +164,7 @@ class Interval(object):
                 planarity_state.lowpt[self.high] > planarity_state.lowpt[b])
 
 
-class ConflictPair(object):
+class ConflictPair:
     """Represents a different constraint between two intervals.
 
     The edges in the left interval must have a different orientation than
@@ -198,7 +198,7 @@ def top_of_stack(l):
     return l[-1]
 
 
-class LRPlanarity(object):
+class LRPlanarity:
     """A class to maintain the state during planarity check."""
     __slots__ = [
         'G', 'roots', 'height', 'lowpt', 'lowpt2', 'nesting_depth',
@@ -849,7 +849,7 @@ class PlanarEmbedding(nx.DiGraph):
 
         Raises
         ------
-        nx.NetworkXException
+        NetworkXException
             This exception is raised with a short explanation if the
             PlanarEmbedding is invalid.
         """
@@ -857,10 +857,9 @@ class PlanarEmbedding(nx.DiGraph):
         for v in self:
             try:
                 sorted_nbrs = set(self.neighbors_cw_order(v))
-            except KeyError:
-                msg = "Bad embedding. " \
-                      "Missing orientation for a neighbor of {}".format(v)
-                raise nx.NetworkXException(msg)
+            except KeyError as e:
+                msg = f"Bad embedding. Missing orientation for a neighbor of {v}"
+                raise nx.NetworkXException(msg) from e
 
             unsorted_nbrs = set(self[v])
             if sorted_nbrs != unsorted_nbrs:
@@ -912,7 +911,7 @@ class PlanarEmbedding(nx.DiGraph):
 
         Raises
         ------
-        nx.NetworkXException
+        NetworkXException
             If the reference_neighbor does not exist.
 
         See Also
@@ -954,7 +953,7 @@ class PlanarEmbedding(nx.DiGraph):
 
         Raises
         ------
-        nx.NetworkXException
+        NetworkXException
             If the reference_neighbor does not exist.
 
         See Also
