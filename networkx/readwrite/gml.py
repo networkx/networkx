@@ -654,7 +654,7 @@ def generate_gml(G, stringizer=None):
       ]
     ]
     """
-    valid_keys = re.compile("^[A-Za-z][0-9A-Za-z]*$")
+    valid_keys = re.compile("^[A-Za-z][0-9A-Za-z_]*$")
 
     def stringize(key, value, ignored_keys, indent, in_list=False):
         if not isinstance(key, str):
