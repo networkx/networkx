@@ -7,6 +7,8 @@ from heapq import heappush, heappop
 from itertools import count
 import networkx as nx
 from networkx.utils import generate_unique_node
+from networkx.algorithms.shortest_paths.generic import (
+    _build_paths_from_predecessors)
 
 
 __all__ = ['dijkstra_path',
@@ -228,8 +230,8 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     length = _dijkstra(G, source, weight, target=target)
     try:
         return length[target]
-    except KeyError:
-        raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
+    except KeyError as e:
+        raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}") from e
 
 
 def single_source_dijkstra_path(G, source, cutoff=None, weight='weight'):
@@ -729,8 +731,8 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None,
         return (dist, paths)
     try:
         return (dist[target], paths[target])
-    except KeyError:
-        raise nx.NetworkXNoPath(f"No path to {target}.")
+    except KeyError as e:
+        raise nx.NetworkXNoPath(f"No path to {target}.") from e
 
 
 def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None,
@@ -828,9 +830,12 @@ def _dijkstra_multisource(G, sources, weight, pred=None, paths=None,
                 if vu_dist > cutoff:
                     continue
             if u in dist:
-                if vu_dist < dist[u]:
+                u_dist = dist[u]
+                if vu_dist < u_dist:
                     raise ValueError('Contradictory paths found:',
                                      'negative weights?')
+                elif pred is not None and vu_dist == u_dist:
+                    pred[u].append(v)
             elif u not in seen or vu_dist < seen[u]:
                 seen[u] = vu_dist
                 push(fringe, (vu_dist, next(c), u))
@@ -1331,18 +1336,11 @@ def _bellman_ford(G, source, weight, pred=None, paths=None, dist=None,
                     pred[v].append(u)
 
     if paths is not None:
+        sources = set(source)
         dsts = [target] if target is not None else pred
         for dst in dsts:
-
-            path = [dst]
-            cur = dst
-
-            while pred[cur]:
-                cur = pred[cur][0]
-                path.append(cur)
-
-            path.reverse()
-            paths[dst] = path
+            gen = _build_paths_from_predecessors(sources, dst, pred)
+            paths[dst] = next(gen)
 
     return dist
 
@@ -1450,8 +1448,8 @@ def bellman_ford_path_length(G, source, target, weight='weight'):
 
     try:
         return length[target]
-    except KeyError:
-        raise nx.NetworkXNoPath(f"node {target} not reachable from {source}")
+    except KeyError as e:
+        raise nx.NetworkXNoPath(f"node {target} not reachable from {source}") from e
 
 
 def single_source_bellman_ford_path(G, source, weight='weight'):
@@ -1625,9 +1623,9 @@ def single_source_bellman_ford(G, source, target=None, weight='weight'):
         return (dist, paths)
     try:
         return (dist[target], paths[target])
-    except KeyError:
+    except KeyError as e:
         msg = f"Node {target} not reachable from {source}"
-        raise nx.NetworkXNoPath(msg)
+        raise nx.NetworkXNoPath(msg) from e
 
 
 def all_pairs_bellman_ford_path_length(G, weight='weight'):

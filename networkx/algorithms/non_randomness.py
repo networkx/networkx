@@ -65,9 +65,9 @@ def non_randomness(G, k=None):
 
     try:
         import numpy as np
-    except ImportError:
-        msg = "non_randomness requires NumPy: http://scipy.org/"
-        raise ImportError(msg)
+    except ImportError as e:
+        msg = "non_randomness requires NumPy: http://numpy.org/"
+        raise ImportError(msg) from e
 
     # eq. 4.4
     nr = np.real(np.sum(np.linalg.eigvals(nx.to_numpy_matrix(G))[:k]))

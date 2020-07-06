@@ -123,9 +123,9 @@ def to_agraph(N):
     """
     try:
         import pygraphviz
-    except ImportError:
-        raise ImportError('requires pygraphviz ',
-                          'http://pygraphviz.github.io/')
+    except ImportError as e:
+        raise ImportError('requires pygraphviz '
+                          'http://pygraphviz.github.io/') from e
     directed = N.is_directed()
     strict = nx.number_of_selfloops(N) == 0 and not N.is_multigraph()
     A = pygraphviz.AGraph(name=N.name, strict=strict, directed=directed)
@@ -178,9 +178,9 @@ def write_dot(G, path):
     """
     try:
         import pygraphviz
-    except ImportError:
-        raise ImportError('requires pygraphviz ',
-                          'http://pygraphviz.github.io/')
+    except ImportError as e:
+        raise ImportError('requires pygraphviz '
+                          'http://pygraphviz.github.io/') from e
     A = to_agraph(G)
     A.write(path)
     A.clear()
@@ -197,9 +197,9 @@ def read_dot(path):
     """
     try:
         import pygraphviz
-    except ImportError:
-        raise ImportError('read_dot() requires pygraphviz ',
-                          'http://pygraphviz.github.io/')
+    except ImportError as e:
+        raise ImportError('read_dot() requires pygraphviz '
+                          'http://pygraphviz.github.io/') from e
     A = pygraphviz.AGraph(file=path)
     return from_agraph(A)
 
@@ -273,9 +273,9 @@ def pygraphviz_layout(G, prog='neato', root=None, args=''):
     """
     try:
         import pygraphviz
-    except ImportError:
-        raise ImportError('requires pygraphviz ',
-                          'http://pygraphviz.github.io/')
+    except ImportError as e:
+        raise ImportError('requires pygraphviz '
+                          'http://pygraphviz.github.io/') from e
     if root is not None:
         args += f"-Groot={root}"
     A = to_agraph(G)

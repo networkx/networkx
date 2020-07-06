@@ -49,9 +49,9 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
     """
     try:
         import scipy.linalg
-    except ImportError:
+    except ImportError as e:
         raise ImportError('spectral_bipartivity() requires SciPy: ',
-                          'http://scipy.org/')
+                          'http://scipy.org/') from e
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G, nodelist, weight=weight)
     expA = scipy.linalg.expm(A)

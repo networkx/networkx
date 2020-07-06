@@ -54,8 +54,8 @@ def index_satisfying(iterable, condition):
     # exception.
     try:
         return i + 1
-    except NameError:
-        raise ValueError('iterable must be non-empty')
+    except NameError as e:
+        raise ValueError('iterable must be non-empty') from e
 
 
 @not_implemented_for('undirected')

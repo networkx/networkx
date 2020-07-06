@@ -242,6 +242,27 @@ class TestDiGraph(BaseAttrDiGraphTester, _TestGraph):
         assert G.pred == {0: {1: {}, 2: {}}, 1: {2: {}}, 2: {0: {}, 1: {}}}
         G.remove_edges_from([(0, 0)])  # silent fail
 
+    def test_clear(self):
+        G = self.K3
+        G.graph['name'] = 'K3'
+        G.clear()
+        assert list(G.nodes) == []
+        assert G.succ == {}
+        assert G.pred == {}
+        assert G.graph == {}
+
+    def test_clear_edges(self):
+        G = self.K3
+        G.graph['name'] = 'K3'
+        nodes = list(G.nodes)
+        G.clear_edges()
+        assert list(G.nodes) == nodes
+        expected = {0: {}, 1: {}, 2: {}}
+        assert G.succ == expected
+        assert G.pred == expected
+        assert list(G.edges) == []
+        assert G.graph['name'] == 'K3'
+
 
 class TestEdgeSubgraph(_TestGraphEdgeSubgraph):
     """Unit tests for the :meth:`DiGraph.edge_subgraph` method."""

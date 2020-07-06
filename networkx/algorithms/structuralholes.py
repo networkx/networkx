@@ -98,7 +98,7 @@ def effective_size(G, nodes=None, weight=None):
     Returns
     -------
     dict
-        Dictionary with nodes as keys and the constraint on the node as values.
+        Dictionary with nodes as keys and the effective size of the node as values.
 
     Notes
     -----

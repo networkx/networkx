@@ -13,8 +13,8 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
     For a standard incidence matrix a 1 appears wherever a row's node is
     incident on the column's edge.  For an oriented incidence matrix each
     edge is assigned an orientation (arbitrarily for undirected and aligning to
-    direction for directed).  A -1 appears for the tail of an edge and 1
-    for the head of the edge.  The elements are zero otherwise.
+    direction for directed).  A -1 appears for the source (tail) of an edge and
+    1 for the destination (head) of the edge.  The elements are zero otherwise.
 
     Parameters
     ----------
@@ -74,8 +74,9 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
         try:
             ui = node_index[u]
             vi = node_index[v]
-        except KeyError:
-            raise nx.NetworkXError(f"node {u} or {v} in edgelist but not in nodelist")
+        except KeyError as e:
+            raise nx.NetworkXError(f"node {u} or {v} in edgelist "
+                                   f"but not in nodelist") from e
         if weight is None:
             wt = 1
         else:

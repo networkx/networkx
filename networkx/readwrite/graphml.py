@@ -61,7 +61,7 @@ __all__ = [
 
 @open_file(1, mode='wb')
 def write_graphml_xml(G, path, encoding='utf-8', prettyprint=True,
-                      infer_numeric_types=False):
+                      infer_numeric_types=False, named_key_ids=False):
     """Write G in GraphML XML format to path
 
     Parameters
@@ -79,6 +79,8 @@ def write_graphml_xml(G, path, encoding='utf-8', prettyprint=True,
        Determine if numeric types should be generalized.
        For example, if edges have both int and float 'weight' attributes,
        we infer in GraphML that both are floats.
+    named_key_ids : bool (optional)
+       If True use attr.name as value for key elements' id attribute.
 
     Examples
     --------
@@ -91,14 +93,15 @@ def write_graphml_xml(G, path, encoding='utf-8', prettyprint=True,
     and unidirected edges together) hyperedges, nested graphs, or ports.
     """
     writer = GraphMLWriter(encoding=encoding, prettyprint=prettyprint,
-                           infer_numeric_types=infer_numeric_types)
+                           infer_numeric_types=infer_numeric_types,
+                           named_key_ids=named_key_ids)
     writer.add_graph_element(G)
     writer.dump(path)
 
 
 @open_file(1, mode='wb')
 def write_graphml_lxml(G, path, encoding='utf-8', prettyprint=True,
-                       infer_numeric_types=False):
+                       infer_numeric_types=False, named_key_ids=False):
     """Write G in GraphML XML format to path
 
     This function uses the LXML framework and should be faster than
@@ -119,6 +122,8 @@ def write_graphml_lxml(G, path, encoding='utf-8', prettyprint=True,
        Determine if numeric types should be generalized.
        For example, if edges have both int and float 'weight' attributes,
        we infer in GraphML that both are floats.
+    named_key_ids : bool (optional)
+       If True use attr.name as value for key elements' id attribute.
 
     Examples
     --------
@@ -132,11 +137,13 @@ def write_graphml_lxml(G, path, encoding='utf-8', prettyprint=True,
     """
     writer = GraphMLWriterLxml(path, graph=G, encoding=encoding,
                                prettyprint=prettyprint,
-                               infer_numeric_types=infer_numeric_types)
+                               infer_numeric_types=infer_numeric_types,
+                               named_key_ids=named_key_ids)
     writer.dump()
 
 
-def generate_graphml(G, encoding='utf-8', prettyprint=True):
+def generate_graphml(G, encoding='utf-8', prettyprint=True,
+                     named_key_ids=False):
     """Generate GraphML lines for G
 
     Parameters
@@ -147,6 +154,8 @@ def generate_graphml(G, encoding='utf-8', prettyprint=True):
        Encoding for text data.
     prettyprint : bool (optional)
        If True use line breaks and indenting in output XML.
+    named_key_ids : bool (optional)
+       If True use attr.name as value for key elements' id attribute.
 
     Examples
     --------
@@ -161,7 +170,8 @@ def generate_graphml(G, encoding='utf-8', prettyprint=True):
     This implementation does not support mixed graphs (directed and unidirected
     edges together) hyperedges, nested graphs, or ports.
     """
-    writer = GraphMLWriter(encoding=encoding, prettyprint=prettyprint)
+    writer = GraphMLWriter(encoding=encoding, prettyprint=prettyprint,
+                           named_key_ids=named_key_ids)
     writer.add_graph_element(G)
     yield from str(writer).splitlines()
 
@@ -320,7 +330,7 @@ class GraphML:
         # prepend so that python types are created upon read (last entry wins)
         types = [(np.float64, "float"), (np.float32, "float"),
                  (np.float16, "float"), (np.float_, "float"),
-                 (np.int, "int"), (np.int8, "int"),
+                 (np.int_, "int"), (np.int8, "int"),
                  (np.int16, "int"), (np.int32, "int"),
                  (np.int64, "int"), (np.uint8, "int"),
                  (np.uint16, "int"), (np.uint32, "int"),
@@ -346,11 +356,12 @@ class GraphML:
 
 class GraphMLWriter(GraphML):
     def __init__(self, graph=None, encoding="utf-8", prettyprint=True,
-                 infer_numeric_types=False):
+                 infer_numeric_types=False, named_key_ids=False):
         self.myElement = Element
 
         self.infer_numeric_types = infer_numeric_types
         self.prettyprint = prettyprint
+        self.named_key_ids = named_key_ids
         self.encoding = encoding
         self.xml = self.myElement("graphml",
                                   {'xmlns': self.NS_GRAPHML,
@@ -382,9 +393,10 @@ class GraphMLWriter(GraphML):
             types = self.attribute_types[(name, scope)]
 
             if len(types) > 1:
-                if str in types:
+                types = set(self.xml_type[t] for t in types)
+                if "string" in types:
                     return str
-                elif float in types:
+                elif "float" in types or "double" in types:
                     return float
                 else:
                     return int
@@ -398,7 +410,11 @@ class GraphMLWriter(GraphML):
         try:
             return self.keys[keys_key]
         except KeyError:
-            new_id = f"d{len(list(self.keys))}"
+            if self.named_key_ids:
+                new_id = name
+            else:
+                new_id = f"d{len(list(self.keys))}"
+
             self.keys[keys_key] = new_id
             key_kwargs = {"id": new_id,
                           "for": scope,
@@ -540,11 +556,12 @@ class IncrementalElement:
 
 class GraphMLWriterLxml(GraphMLWriter):
     def __init__(self, path, graph=None, encoding='utf-8', prettyprint=True,
-                 infer_numeric_types=False):
+                 infer_numeric_types=False, named_key_ids=False):
         self.myElement = lxmletree.Element
 
         self._encoding = encoding
         self._prettyprint = prettyprint
+        self.named_key_ids = named_key_ids
         self.infer_numeric_types = infer_numeric_types
 
         self._xml_base = lxmletree.xmlfile(path, encoding=encoding)
@@ -791,8 +808,8 @@ class GraphMLReader(GraphML):
             try:
                 data_name = graphml_keys[key]['name']
                 data_type = graphml_keys[key]['type']
-            except KeyError:
-                raise nx.NetworkXError(f"Bad GraphML data: no key {key}")
+            except KeyError as e:
+                raise nx.NetworkXError(f"Bad GraphML data: no key {key}") from e
             text = data_element.text
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element)) == 0:
