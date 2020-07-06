@@ -300,7 +300,7 @@ class DiGraph(Graph):
         self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # dictionary for node attr
         # We store two adjacency lists:
-        # the  predecessors of node n are stored in the dict self._pred
+        # the predecessors of node n are stored in the dict self._pred
         # the successors of node n are stored in the dict self._succ=self._adj
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         self._pred = self.adjlist_outer_dict_factory()  # predecessor

@@ -243,11 +243,15 @@ class TestFunction:
         assert info == expected_graph_info
 
         info = nx.info(G, n=1)
+        assert type(info) == str
         expected_node_info = '\n'.join(
             ['Node 1 has the following properties:',
              'Degree: 2',
              'Neighbors: 0 2'])
         assert info == expected_node_info
+
+        # must raise an error for a non-existent node
+        pytest.raises(nx.NetworkXError, nx.info, G, 1248)
 
     def test_info_digraph(self):
         G = nx.DiGraph(name='path_graph(5)')

@@ -52,7 +52,7 @@ Expanders
 
    margulis_gabber_galil_graph
    chordal_cycle_graph
-
+   paley_graph
 
 Lattice
 -------

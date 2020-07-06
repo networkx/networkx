@@ -29,6 +29,7 @@ Algorithms
    covering
    cycles
    cuts
+   d_separation
    dag
    distance_measures
    distance_regular

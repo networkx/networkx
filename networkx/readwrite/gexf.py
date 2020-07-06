@@ -136,8 +136,8 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     Parameters
     ----------
     path : file or string
-       File or file name to write.
-       File names ending in .gz or .bz2 will be compressed.
+       File or file name to read.
+       File names ending in .gz or .bz2 will be decompressed.
     node_type: Python type (default: None)
        Convert node ids to this type if not None.
     relabel : bool (default: False)

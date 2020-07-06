@@ -116,6 +116,36 @@ class BaseGraphML:
         cls.attribute_graph.add_edge('n5', 'n4', id='e6', weight=1.1)
         cls.attribute_fh = io.BytesIO(cls.attribute_data.encode('UTF-8'))
 
+        cls.attribute_named_key_ids_data = """<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="edge_prop" for="edge" attr.name="edge_prop" attr.type="string"/>
+  <key id="prop2" for="node" attr.name="prop2" attr.type="string"/>
+  <key id="prop1" for="node" attr.name="prop1" attr.type="string"/>
+  <graph edgedefault="directed">
+    <node id="0">
+      <data key="prop1">val1</data>
+      <data key="prop2">val2</data>
+    </node>
+    <node id="1">
+      <data key="prop1">val_one</data>
+      <data key="prop2">val2</data>
+    </node>
+    <edge source="0" target="1">
+      <data key="edge_prop">edge_value</data>
+    </edge>
+  </graph>
+</graphml>
+"""
+        cls.attribute_named_key_ids_graph = nx.DiGraph()
+        cls.attribute_named_key_ids_graph.add_node("0", prop1="val1", prop2="val2")
+        cls.attribute_named_key_ids_graph.add_node("1", prop1="val_one", prop2="val2")
+        cls.attribute_named_key_ids_graph.add_edge("0", "1", edge_prop="edge_value")
+        fh = io.BytesIO(cls.attribute_named_key_ids_data.encode('UTF-8'))
+        cls.attribute_named_key_ids_fh = fh
+
         cls.attribute_numeric_type_data = """<?xml version='1.0' encoding='utf-8'?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -860,6 +890,51 @@ class TestWriteGraphML(BaseGraphML):
         assert sorted(G.edges()) == sorted(H.edges())
         assert sorted(G.edges(data=True)) == sorted(H.edges(data=True))
         self.simple_directed_fh.seek(0)
+
+    def test_write_read_attribute_named_key_ids_graphml(self):
+        from xml.etree.ElementTree import parse
+
+        G = self.attribute_named_key_ids_graph
+        fh = io.BytesIO()
+        self.writer(G, fh, named_key_ids=True)
+        fh.seek(0)
+        H = nx.read_graphml(fh)
+        fh.seek(0)
+
+        assert_nodes_equal(G.nodes(), H.nodes())
+        assert_edges_equal(G.edges(), H.edges())
+        assert_edges_equal(G.edges(data=True), H.edges(data=True))
+        self.attribute_named_key_ids_fh.seek(0)
+
+        xml = parse(fh)
+        # Children are the key elements, and the graph element
+        children = list(xml.getroot())
+        assert len(children) == 4
+
+        keys = [child.items() for child in children[:3]]
+
+        assert len(keys) == 3
+        assert ('id', 'edge_prop') in keys[0]
+        assert ('attr.name', 'edge_prop') in keys[0]
+        assert ('id', 'prop2') in keys[1]
+        assert ('attr.name', 'prop2') in keys[1]
+        assert ('id', 'prop1') in keys[2]
+        assert ('attr.name', 'prop1') in keys[2]
+
+        # Confirm the read graph nodes/edge are identical when compared to
+        # default writing behavior.
+        default_behavior_fh = io.BytesIO()
+        nx.write_graphml(G, default_behavior_fh)
+        default_behavior_fh.seek(0)
+        H = nx.read_graphml(default_behavior_fh)
+
+        named_key_ids_behavior_fh = io.BytesIO()
+        nx.write_graphml(G, named_key_ids_behavior_fh, named_key_ids=True)
+        named_key_ids_behavior_fh.seek(0)
+        J = nx.read_graphml(named_key_ids_behavior_fh)
+
+        assert(all(n1 == n2 for (n1, n2) in zip(H.nodes, J.nodes)))
+        assert(all(e1 == e2 for (e1, e2) in zip(H.edges, J.edges)))
 
     def test_write_read_attribute_numeric_type_graphml(self):
         from xml.etree.ElementTree import parse
