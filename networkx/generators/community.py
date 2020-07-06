@@ -94,7 +94,7 @@ def connected_caveman_graph(l, k):
     l : int
       number of cliques
     k : int
-      size of cliques
+      size of cliques (k at least 2 or NetworkXError is raised)
 
     Returns
     -------

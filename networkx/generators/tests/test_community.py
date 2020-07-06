@@ -102,6 +102,9 @@ def test_connected_caveman_graph():
     K5.remove_edge(3, 4)
     assert nx.is_isomorphic(G, K5)
 
+    # need at least 2 nodes in each clique
+    pytest.raises(nx.NetworkXError, nx.connected_caveman_graph, 4, 1)
+
 
 def test_caveman_graph():
     G = nx.caveman_graph(4, 3)
