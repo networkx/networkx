@@ -1003,7 +1003,7 @@ class EdgeView(OutEdgeView):
 
     >>> EVnbunch = G.edges(nbunch=2)
     >>> assert((2, 3) in EVnbunch)
-    >>> assert((0, 1) in EVnbunch)   #  nbunch is ignored in __contains__
+    >>> assert((0, 1) not in EVnbunch)
     >>> for u, v in EVnbunch: assert(u == 2 or v == 2)
 
     >>> MG = nx.path_graph(4, create_using=nx.MultiGraph)
