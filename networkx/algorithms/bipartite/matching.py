@@ -540,9 +540,9 @@ def minimum_weight_full_matching(G, top_nodes=None, weight='weight'):
     """
     try:
         import scipy.optimize
-    except ImportError:
+    except ImportError as e:
         raise ImportError('minimum_weight_full_matching requires SciPy: ' +
-                          'https://scipy.org/')
+                          'https://scipy.org/') from e
     left, right = nx.bipartite.sets(G, top_nodes)
     # Ensure that the graph is complete. This is currently a requirement in
     # the underlying  optimization algorithm from SciPy, but the constraint

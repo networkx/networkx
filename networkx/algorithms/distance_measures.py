@@ -222,8 +222,8 @@ def eccentricity(G, v=None, sp=None):
             try:
                 length = sp[n]
                 L = len(length)
-            except TypeError:
-                raise nx.NetworkXError('Format of "sp" is invalid.')
+            except TypeError as e:
+                raise nx.NetworkXError('Format of "sp" is invalid.') from e
         if L != order:
             if G.is_directed():
                 msg = ('Found infinite path length because the digraph is not'

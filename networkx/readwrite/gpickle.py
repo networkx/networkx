@@ -18,7 +18,7 @@ pickles to store the graph data can be used.
 
 Format
 ------
-See https://docs.python.org/2/library/pickle.html
+See https://docs.python.org/3/library/pickle.html
 """
 
 __all__ = ['read_gpickle', 'write_gpickle']
@@ -54,7 +54,7 @@ def write_gpickle(G, path, protocol=pickle.HIGHEST_PROTOCOL):
 
     References
     ----------
-    .. [1] https://docs.python.org/2/library/pickle.html
+    .. [1] https://docs.python.org/3/library/pickle.html
     """
     pickle.dump(G, path, protocol)
 
@@ -85,6 +85,6 @@ def read_gpickle(path):
 
     References
     ----------
-    .. [1] https://docs.python.org/2/library/pickle.html
+    .. [1] https://docs.python.org/3/library/pickle.html
     """
     return pickle.load(path)

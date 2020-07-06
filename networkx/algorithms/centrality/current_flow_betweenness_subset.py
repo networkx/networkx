@@ -89,9 +89,9 @@ def current_flow_betweenness_centrality_subset(G, sources, targets,
     from networkx.utils import reverse_cuthill_mckee_ordering
     try:
         import numpy as np
-    except ImportError:
+    except ImportError as e:
         raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://numpy.org/')
+                          'http://numpy.org/') from e
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()
@@ -199,9 +199,9 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
     """
     try:
         import numpy as np
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://numpy.org/')
+    except ImportError as e:
+        raise ImportError('current_flow_betweenness_centrality requires NumPy '
+                          'http://numpy.org/') from e
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()

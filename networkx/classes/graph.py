@@ -169,8 +169,8 @@ class Graph:
     Simple graph information is obtained using object-attributes and methods.
     Reporting typically provides views instead of containers to reduce memory
     usage. The views update as the graph is updated similarly to dict-views.
-    The objects `nodes, `edges` and `adj` provide access to data attributes
-    via lookup (e.g. `nodes[n], `edges[u, v]`, `adj[u][v]`) and iteration
+    The objects `nodes`, `edges` and `adj` provide access to data attributes
+    via lookup (e.g. `nodes[n]`, `edges[u, v]`, `adj[u][v]`) and iteration
     (e.g. `nodes.items()`, `nodes.data('color')`,
     `nodes.data('color', default='blue')` and similarly for `edges`)
     Views exist for `nodes`, `edges`, `neighbors()`/`adj` and `degree`.
@@ -609,8 +609,8 @@ class Graph:
         try:
             nbrs = list(adj[n])  # list handles self-loops (allows mutation)
             del self._node[n]
-        except KeyError:  # NetworkXError if n not in self
-            raise NetworkXError(f"The node {n} is not in the graph.")
+        except KeyError as e:  # NetworkXError if n not in self
+            raise NetworkXError(f"The node {n} is not in the graph.") from e
         for u in nbrs:
             del adj[u][n]   # remove all edges n-u in graph
         del adj[n]          # now remove node
@@ -1000,8 +1000,8 @@ class Graph:
             del self._adj[u][v]
             if u != v:  # self-loop needs only one entry removed
                 del self._adj[v][u]
-        except KeyError:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph")
+        except KeyError as e:
+            raise NetworkXError(f"The edge {u}-{v} is not in the graph") from e
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -1221,8 +1221,8 @@ class Graph:
         """
         try:
             return iter(self._adj[n])
-        except KeyError:
-            raise NetworkXError(f"The node {n} is not in the graph.")
+        except KeyError as e:
+            raise NetworkXError(f"The node {n} is not in the graph.") from e
 
     @property
     def edges(self):
@@ -1406,6 +1406,21 @@ class Graph:
         self._node.clear()
         self.graph.clear()
 
+    def clear_edges(self):
+        """Remove all edges from the graph without altering nodes.
+
+        Examples
+        --------
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.clear_edges()
+        >>> list(G.nodes)
+        [0, 1, 2, 3]
+        >>> list(G.edges)
+        []
+        """
+        for neighbours_dict in self._adj.values():
+            neighbours_dict.clear()
+
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""
         return False
@@ -1468,7 +1483,7 @@ class Graph:
         structure without requiring any memory for copying the information.
 
         See the Python copy module for more information on shallow
-        and deep copies, https://docs.python.org/2/library/copy.html.
+        and deep copies, https://docs.python.org/3/library/copy.html.
 
         Parameters
         ----------
@@ -1521,7 +1536,7 @@ class Graph:
         shallow copy of the data.
 
         See the Python copy module for more information on shallow
-        and deep copies, https://docs.python.org/2/library/copy.html.
+        and deep copies, https://docs.python.org/3/library/copy.html.
 
         Warning: If you have subclassed Graph to use dict-like objects
         in the data structure, those changes do not transfer to the
@@ -1582,7 +1597,7 @@ class Graph:
         shallow copy of the data.
 
         See the Python copy module for more information on shallow
-        and deep copies, https://docs.python.org/2/library/copy.html.
+        and deep copies, https://docs.python.org/3/library/copy.html.
 
         Warning: If you have subclassed DiGraph to use dict-like objects
         in the data structure, those changes do not transfer to the
@@ -1864,11 +1879,11 @@ class Graph:
                     # capture error for non-sequence/iterator nbunch.
                     if 'iter' in message:
                         msg = "nbunch is not a node or a sequence of nodes."
-                        raise NetworkXError(msg)
+                        raise NetworkXError(msg) from e
                     # capture error for unhashable node.
                     elif 'hashable' in message:
                         msg = f"Node {n} in sequence nbunch is not a valid node."
-                        raise NetworkXError(msg)
+                        raise NetworkXError(msg) from e
                     else:
                         raise
             bunch = bunch_iter(nbunch, self._adj)

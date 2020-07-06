@@ -65,7 +65,7 @@ def jit_graph(data, create_using=None):
 
 
 @not_implemented_for('multigraph')
-def jit_data(G, indent=None):
+def jit_data(G, indent=None, default=None):
     """Returns data in JIT JSON format.
 
     Parameters
@@ -77,6 +77,10 @@ def jit_data(G, indent=None):
         object members will be pretty-printed with that indent level.
         An indent level of 0, or negative, will only insert newlines.
         None (the default) selects the most compact representation.
+
+    default: optional, default=None
+         It will pass the value to the json.dumps function in order to
+         be able to serialize custom objects used as nodes.
 
     Returns
     -------
@@ -101,4 +105,4 @@ def jit_data(G, indent=None):
                 adjacency["data"] = G.edges[node, neighbour]
                 json_node["adjacencies"].append(adjacency)
         json_graph.append(json_node)
-    return json.dumps(json_graph, indent=indent)
+    return json.dumps(json_graph, indent=indent, default=default)

@@ -57,19 +57,18 @@ class TestImmediateDominators:
         edges = [(1, 2), (2, 1), (2, 3), (3, 2), (4, 2), (4, 3), (5, 1),
                  (6, 4), (6, 5)]
         G = nx.DiGraph(edges)
-        assert (nx.immediate_dominators(G, 6) ==
-                {i: 6 for i in range(1, 7)})
+        result = nx.immediate_dominators(G, 6)
+        assert (result == {i: 6 for i in range(1, 7)})
 
     def test_domrel_png(self):
         # Graph taken from https://commons.wikipedia.org/wiki/File:Domrel.png
         edges = [(1, 2), (2, 3), (2, 4), (2, 6), (3, 5), (4, 5), (5, 2)]
         G = nx.DiGraph(edges)
-        assert (nx.immediate_dominators(G, 1) ==
-                {1: 1, 2: 1, 3: 2, 4: 2, 5: 2, 6: 2})
+        result = nx.immediate_dominators(G, 1)
+        assert (result == {1: 1, 2: 1, 3: 2, 4: 2, 5: 2, 6: 2})
         # Test postdominance.
-        with nx.utils.reversed(G):
-            assert (nx.immediate_dominators(G, 6) ==
-                    {1: 2, 2: 6, 3: 5, 4: 5, 5: 2, 6: 6})
+        result = nx.immediate_dominators(G.reverse(copy=False), 6)
+        assert (result == {1: 2, 2: 6, 3: 5, 4: 5, 5: 2, 6: 6})
 
     def test_boost_example(self):
         # Graph taken from Figure 1 of
@@ -77,12 +76,11 @@ class TestImmediateDominators:
         edges = [(0, 1), (1, 2), (1, 3), (2, 7), (3, 4), (4, 5), (4, 6),
                  (5, 7), (6, 4)]
         G = nx.DiGraph(edges)
-        assert (nx.immediate_dominators(G, 0) ==
-                {0: 0, 1: 0, 2: 1, 3: 1, 4: 3, 5: 4, 6: 4, 7: 1})
+        result = nx.immediate_dominators(G, 0)
+        assert (result == {0: 0, 1: 0, 2: 1, 3: 1, 4: 3, 5: 4, 6: 4, 7: 1})
         # Test postdominance.
-        with nx.utils.reversed(G):
-            assert (nx.immediate_dominators(G, 7) ==
-                    {0: 1, 1: 7, 2: 7, 3: 4, 4: 5, 5: 7, 6: 4, 7: 7})
+        result = nx.immediate_dominators(G.reverse(copy=False), 7)
+        assert (result == {0: 1, 1: 7, 2: 7, 3: 4, 4: 5, 5: 7, 6: 4, 7: 7})
 
 
 class TestDominanceFrontiers:
@@ -150,13 +148,10 @@ class TestDominanceFrontiers:
         edges = [(1, 2), (2, 3), (2, 4), (2, 6), (3, 5), (4, 5), (5, 2)]
         G = nx.DiGraph(edges)
         assert (nx.dominance_frontiers(G, 1) ==
-                {1: set(), 2: {2}, 3: {5}, 4: {5},
-                 5: {2}, 6: set()})
+                {1: set(), 2: {2}, 3: {5}, 4: {5}, 5: {2}, 6: set()})
         # Test postdominance.
-        with nx.utils.reversed(G):
-            assert (nx.dominance_frontiers(G, 6) ==
-                    {1: set(), 2: {2}, 3: {2}, 4: {2},
-                     5: {2}, 6: set()})
+        result = nx.dominance_frontiers(G.reverse(copy=False), 6)
+        assert (result == {1: set(), 2: {2}, 3: {2}, 4: {2}, 5: {2}, 6: set()})
 
     def test_boost_example(self):
         # Graph taken from Figure 1 of
@@ -168,10 +163,10 @@ class TestDominanceFrontiers:
                 {0: set(), 1: set(), 2: {7}, 3: {7},
                  4: {4, 7}, 5: {7}, 6: {4}, 7: set()})
         # Test postdominance.
-        with nx.utils.reversed(G):
-            assert (nx.dominance_frontiers(G, 7) ==
-                    {0: set(), 1: set(), 2: {1}, 3: {1},
-                     4: {1, 4}, 5: {1}, 6: {4}, 7: set()})
+        result = nx.dominance_frontiers(G.reverse(copy=False), 7)
+        expected = {0: set(), 1: set(), 2: {1}, 3: {1},
+                    4: {1, 4}, 5: {1}, 6: {4}, 7: set()}
+        assert result == expected
 
     def test_discard_issue(self):
         # https://github.com/networkx/networkx/issues/2071

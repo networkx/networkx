@@ -101,8 +101,8 @@ def biadjacency_matrix(G, row_order, column_order=None,
         return M.asformat(format)
     # From Scipy 1.1.0, asformat will throw a ValueError instead of an
     # AttributeError if the format if not recognized.
-    except (AttributeError, ValueError):
-        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}")
+    except (AttributeError, ValueError) as e:
+        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from e
 
 
 def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):

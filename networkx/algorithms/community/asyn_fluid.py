@@ -17,7 +17,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
 
     The asynchronous fluid communities algorithm is described in
     [1]_. The algorithm is based on the simple idea of fluids interacting
-    in an environment, expanding and pushing each other. It's initialization is
+    in an environment, expanding and pushing each other. Its initialization is
     random, so found communities may vary on different executions.
 
     The algorithm proceeds as follows. First each of the initial k communities
