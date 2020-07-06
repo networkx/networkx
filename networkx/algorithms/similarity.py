@@ -1034,9 +1034,8 @@ def optimize_edit_paths(
         root_u, root_v = roots
 
         # remove roots from pending
-        del pending_u[pending_u.index(root_u)]
-        del pending_v[pending_v.index(root_v)]
-
+        pending_u.remove(root_u)
+        pending_v.remove(root_v)
 
     # cost matrix of vertex mappings
     m = len(pending_u)
