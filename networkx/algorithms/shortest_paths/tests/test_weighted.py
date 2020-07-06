@@ -1,7 +1,6 @@
 import pytest
 
 import networkx as nx
-import random
 from networkx.utils import pairwise
 
 
@@ -443,35 +442,27 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G.add_edge(1, 2, weight=-1)
         G.add_edge(2, 3, weight=-1)
         G.add_edge(3, 0, weight=3)
-        assert not nx.negative_edge_cycle(G, use_neg_cycle_heuristic=True)
+        assert not nx.negative_edge_cycle(G, heuristic=True)
         G.add_edge(2, 0, weight=1.999)
-        assert nx.negative_edge_cycle(G, use_neg_cycle_heuristic=True)
+        assert nx.negative_edge_cycle(G, heuristic=True)
         G.edges[2, 0]['weight'] = 2
-        assert not nx.negative_edge_cycle(G, use_neg_cycle_heuristic=True)
+        assert not nx.negative_edge_cycle(G, heuristic=True)
 
     def test_negative_weight_cycle_consistency(self):
-        for random_seed in range(2):
+        import random
+        unif = random.uniform
+        for random_seed in range(2):  # range(20):
             random.seed(random_seed)
-            for density in [.1, .3, .7, .9]:
-                for i in range(1, 60 - int(30 * density)):
-                    for max_cost in [1, 10, 40, 90]:
-                        G = nx.DiGraph()
-                        for k in range(1 + int(density * i * (i - 1))):
-                            a = random.randint(0, i)
-                            # Ensure there are no self-loops in the graph
-                            b = random.randint(0, i - 1)
-                            if b >= a:
-                                b += 1
-                            if not G.has_edge(a, b):
-                                G.add_edge(a, b, weight=random.uniform(-1, max_cost))
+            for density in [.1, .9]:  # .3, .7, .9]:
+                for N in [1, 10, 20]:  # range(1, 60 - int(30 * density)):
+                    for max_cost in [1, 90]:  # [1, 10, 40, 90]:
+                        G = nx.binomial_graph(N, density, seed=4, directed=True)
+                        edges = ((u, v, unif(-1, max_cost)) for u, v in G.edges)
+                        G.add_weighted_edges_from(edges)
 
-                        without_heuristic = nx.negative_edge_cycle(G,
-                            use_neg_cycle_heuristic=False)
-
-                        with_heuristic = nx.negative_edge_cycle(G,
-                            use_neg_cycle_heuristic=True)
-
-                        assert without_heuristic == with_heuristic
+                        no_heuristic = nx.negative_edge_cycle(G, heuristic=False)
+                        with_heuristic = nx.negative_edge_cycle(G, heuristic=True)
+                        assert no_heuristic == with_heuristic
 
     def test_negative_weight_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
