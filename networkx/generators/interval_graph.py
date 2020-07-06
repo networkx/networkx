@@ -27,6 +27,13 @@ def interval_graph(intervals):
     -------
     G : networkx graph
 
+    Examples
+    --------
+    >>> intervals = [(-2, 3), [1, 4], (2, 3), (4, 6)]
+    >>> G = nx.interval_graph(intervals)
+    >>> G.edges
+    EdgeView([((-2, 3), (1, 4)), ((-2, 3), (2, 3)), ((1, 4), (2, 3)), ((1, 4), (4, 6))])
+
     Raises
     --------
     :exc:`TypeError`
@@ -57,7 +64,7 @@ def interval_graph(intervals):
         min1, max1 = tupled_intervals[i]
         for j in range(i + 1, len(intervals)):
             min2, max2 = tupled_intervals[j]
-            if max1 >= min2 or max2 >= min1:
+            if max1 >= min2 and max2 >= min1:
                 edges.append((tupled_intervals[i], tupled_intervals[j]))
 
     graph.add_edges_from(edges)
