@@ -37,7 +37,6 @@ def check_eigenvector(A, l, x):
 
 
 class TestAlgebraicConnectivity:
-    _methods = methods
 
     @pytest.mark.parametrize('method', methods)
     def test_directed(self, method):
