@@ -234,8 +234,8 @@ def attribute_ac(M):
 
     Parameters
     ----------
-    M : numpy array or matrix
-        Attribute mixing matrix.
+    M : numpy.ndarray
+        2D ndarray representing the attribute mixing matrix.
 
     Notes
     -----
@@ -254,12 +254,11 @@ def attribute_ac(M):
         raise ImportError('attribute_assortativity requires '
                           'NumPy: http://scipy.org/') from e
     if M.sum() != 1.0:
-        M = M / float(M.sum())
-    M = numpy.asmatrix(M)
-    s = (M * M).sum()
+        M = M / M.sum()
+    s = (M @ M).sum()
     t = M.trace()
     r = (t - s) / (1 - s)
-    return float(r)
+    return r
 
 
 def numeric_ac(M):
