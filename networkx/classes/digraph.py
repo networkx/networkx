@@ -518,8 +518,8 @@ class DiGraph(Graph):
         try:
             nbrs = self._succ[n]
             del self._node[n]
-        except KeyError:  # NetworkXError if n not in self
-            raise NetworkXError(f"The node {n} is not in the digraph.")
+        except KeyError as e:  # NetworkXError if n not in self
+            raise NetworkXError(f"The node {n} is not in the digraph.") from e
         for u in nbrs:
             del self._pred[u][n]   # remove all edges n-u in digraph
         del self._succ[n]          # remove node from succ
@@ -721,8 +721,8 @@ class DiGraph(Graph):
         try:
             del self._succ[u][v]
             del self._pred[v][u]
-        except KeyError:
-            raise NetworkXError(f"The edge {u}-{v} not in graph.")
+        except KeyError as e:
+            raise NetworkXError(f"The edge {u}-{v} not in graph.") from e
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -796,8 +796,8 @@ class DiGraph(Graph):
         """
         try:
             return iter(self._succ[n])
-        except KeyError:
-            raise NetworkXError(f"The node {n} is not in the digraph.")
+        except KeyError as e:
+            raise NetworkXError(f"The node {n} is not in the digraph.") from e
 
     # digraph definitions
     neighbors = successors
@@ -824,8 +824,8 @@ class DiGraph(Graph):
         """
         try:
             return iter(self._pred[n])
-        except KeyError:
-            raise NetworkXError(f"The node {n} is not in the digraph.")
+        except KeyError as e:
+            raise NetworkXError(f"The node {n} is not in the digraph.") from e
 
     @property
     def edges(self):
@@ -1078,11 +1078,30 @@ class DiGraph(Graph):
         []
         >>> list(G.edges)
         []
+
         """
         self._succ.clear()
         self._pred.clear()
         self._node.clear()
         self.graph.clear()
+
+    def clear_edges(self):
+        """Remove all edges from the graph without altering nodes.
+
+        Examples
+        --------
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.clear_edges()
+        >>> list(G.nodes)
+        [0, 1, 2, 3]
+        >>> list(G.edges)
+        []
+
+        """
+        for predecessor_dict in self._pred.values():
+            predecessor_dict.clear()
+        for successor_dict in self._succ.values():
+            successor_dict.clear()
 
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""
@@ -1133,7 +1152,7 @@ class DiGraph(Graph):
         shallow copy of the data.
 
         See the Python copy module for more information on shallow
-        and deep copies, https://docs.python.org/2/library/copy.html.
+        and deep copies, https://docs.python.org/3/library/copy.html.
 
         Warning: If you have subclassed DiGraph to use dict-like objects
         in the data structure, those changes do not transfer to the

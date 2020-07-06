@@ -184,8 +184,8 @@ def topological_sort(G):
         for _, child in G.edges(node):
             try:
                 indegree_map[child] -= 1
-            except KeyError:
-                raise RuntimeError("Graph changed during iteration")
+            except KeyError as e:
+                raise RuntimeError("Graph changed during iteration") from e
             if indegree_map[child] == 0:
                 zero_indegree.append(child)
                 del indegree_map[child]
@@ -273,8 +273,8 @@ def lexicographical_topological_sort(G, key=None):
         for _, child in G.edges(node):
             try:
                 indegree_map[child] -= 1
-            except KeyError:
-                raise RuntimeError("Graph changed during iteration")
+            except KeyError as e:
+                raise RuntimeError("Graph changed during iteration") from e
             if indegree_map[child] == 0:
                 heapq.heappush(zero_indegree, create_tuple(child))
                 del indegree_map[child]

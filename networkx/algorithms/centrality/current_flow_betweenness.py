@@ -46,7 +46,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
-    solver : string (default='lu')
+    solver : string (default='full')
        Type of linear solver to use for computing the flow matrix.
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).
@@ -88,9 +88,9 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     """
     try:
         import numpy as np
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://numpy.org/')
+    except ImportError as e:
+        raise ImportError('current_flow_betweenness_centrality requires NumPy '
+                          'http://numpy.org/') from e
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     solvername = {"full": FullInverseLaplacian,
@@ -162,7 +162,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
-    solver : string (default='lu')
+    solver : string (default='full')
        Type of linear solver to use for computing the flow matrix.
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).
@@ -257,7 +257,7 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
-    solver : string (default='lu')
+    solver : string (default='full')
        Type of linear solver to use for computing the flow matrix.
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).

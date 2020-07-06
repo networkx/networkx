@@ -98,8 +98,8 @@ def second_order_centrality(G):
 
     try:
         import numpy as np
-    except ImportError:
-        raise ImportError('Requires NumPy: http://scipy.org/')
+    except ImportError as e:
+        raise ImportError('Requires NumPy: http://numpy.org/') from e
 
     n = len(G)
 

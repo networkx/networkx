@@ -149,8 +149,7 @@ def kosaraju_strongly_connected_components(G, source=None):
     Uses Kosaraju's algorithm.
 
     """
-    with nx.utils.reversed(G):
-        post = list(nx.dfs_postorder_nodes(G, source=source))
+    post = list(nx.dfs_postorder_nodes(G.reverse(copy=False), source=source))
 
     seen = set()
     while post:

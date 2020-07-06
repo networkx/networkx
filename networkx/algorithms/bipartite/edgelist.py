@@ -133,8 +133,8 @@ def generate_edgelist(G, delimiter=' ', data=True):
     """
     try:
         part0 = [n for n, d in G.nodes.items() if d['bipartite'] == 0]
-    except:
-        raise AttributeError("Missing node attribute `bipartite`")
+    except BaseException as e:
+        raise AttributeError("Missing node attribute `bipartite`") from e
     if data is True or data is False:
         for n in part0:
             for e in G.edges(n, data=data):
@@ -236,8 +236,9 @@ def parse_edgelist(lines, comments='#', delimiter=None,
             try:
                 u = nodetype(u)
                 v = nodetype(v)
-            except:
-                raise TypeError(f"Failed to convert nodes {u},{v} to type {nodetype}.")
+            except BaseException as e:
+                raise TypeError(f"Failed to convert nodes {u},{v} "
+                                f"to type {nodetype}.") from e
 
         if len(d) == 0 or data is False:
             # no data or data type specified
@@ -246,8 +247,9 @@ def parse_edgelist(lines, comments='#', delimiter=None,
             # no edge types specified
             try:  # try to evaluate as dictionary
                 edgedata = dict(literal_eval(' '.join(d)))
-            except:
-                raise TypeError(f"Failed to convert edge data ({d}) to dictionary.")
+            except BaseException as e:
+                raise TypeError(f"Failed to convert edge data ({d})"
+                                f"to dictionary.") from e
         else:
             # convert edge data to dictionary with specified keys and type
             if len(d) != len(data):
@@ -256,8 +258,9 @@ def parse_edgelist(lines, comments='#', delimiter=None,
             for (edge_key, edge_type), edge_value in zip(data, d):
                 try:
                     edge_value = edge_type(edge_value)
-                except:
-                    raise TypeError(f"Failed to convert {edge_key} data {edge_value} to type {edge_type}.")
+                except BaseException as e:
+                    raise TypeError(f"Failed to convert {edge_key} data "
+                                    f"{edge_value} to type {edge_type}.") from e
                 edgedata.update({edge_key: edge_value})
         G.add_node(u, bipartite=0)
         G.add_node(v, bipartite=1)

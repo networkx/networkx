@@ -121,7 +121,7 @@ nx.draw_networkx_edges(H, pos, alpha=0.3, width=edgewidth, edge_color="m")
 nodesize = [wins[v] * 50 for v in H]
 nx.draw_networkx_nodes(H, pos, node_size=nodesize, node_color="w", alpha=0.4)
 nx.draw_networkx_edges(H, pos, alpha=0.4, node_size=0, width=1, edge_color="k")
-nx.draw_networkx_labels(H, pos, fontsize=14)
+nx.draw_networkx_labels(H, pos, font_size=14)
 font = {"fontname": "Helvetica", "color": "k", "fontweight": "bold", "fontsize": 14}
 plt.title("World Chess Championship Games: 1886 - 1985", font)
 

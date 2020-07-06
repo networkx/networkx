@@ -135,7 +135,7 @@ def test_all_simple_paths_with_two_targets_inside_cycle_emits_two_paths():
 def test_all_simple_paths_source_target():
     G = nx.path_graph(4)
     paths = nx.all_simple_paths(G, 1, 1)
-    assert paths == []
+    assert list(paths) == []
 
 
 def test_all_simple_paths_cutoff():
@@ -164,7 +164,7 @@ def test_all_simple_paths_on_non_trivial_graph():
 def test_all_simple_paths_multigraph():
     G = nx.MultiGraph([(1, 2), (1, 2)])
     paths = nx.all_simple_paths(G, 1, 1)
-    assert paths == []
+    assert list(paths) == []
     nx.add_path(G, [3, 1, 10, 2])
     paths = list(nx.all_simple_paths(G, 1, 2))
     assert len(paths) == 3
@@ -251,6 +251,25 @@ def test_shortest_simple_paths():
 def test_shortest_simple_paths_directed():
     G = nx.cycle_graph(7, create_using=nx.DiGraph())
     paths = nx.shortest_simple_paths(G, 0, 3)
+    assert [path for path in paths] == [[0, 1, 2, 3]]
+
+
+def test_shortest_simple_paths_directed_with_weight_fucntion():
+    def cost(u, v, x):
+        return 1
+    G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
+    paths = nx.shortest_simple_paths(G, 1, 12)
+    assert next(paths) == [1, 2, 3, 4, 8, 12]
+    assert next(paths) == [1, 5, 6, 7, 8, 12]
+    assert ([len(path) for path in nx.shortest_simple_paths(G, 1, 12, weight=cost)]
+            == sorted([len(path) for path in nx.all_simple_paths(G, 1, 12)]))
+
+
+def test_shortest_simple_paths_with_weight_fucntion():
+    def cost(u, v, x):
+        return 1
+    G = nx.cycle_graph(7, create_using=nx.DiGraph())
+    paths = nx.shortest_simple_paths(G, 0, 3, weight=cost)
     assert [path for path in paths] == [[0, 1, 2, 3]]
 
 

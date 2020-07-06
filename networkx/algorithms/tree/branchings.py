@@ -218,8 +218,8 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
     def remove_edge_with_key(self, key):
         try:
             u, v, _ = self.edge_index[key]
-        except KeyError:
-            raise KeyError(f'Invalid edge key {key!r}')
+        except KeyError as e:
+            raise KeyError(f'Invalid edge key {key!r}') from e
         else:
             del self.edge_index[key]
             self._cls.remove_edge(u, v, key)

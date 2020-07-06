@@ -94,8 +94,8 @@ def parse_leda(lines):
     for i in range(m):
         try:
             s, t, reversal, label = next(lines).split()
-        except:
-            raise NetworkXError(f'Too few fields in LEDA.GRAPH edge {i+1}')
+        except BaseException as e:
+            raise NetworkXError(f'Too few fields in LEDA.GRAPH edge {i+1}') from e
         # BEWARE: no handling of reversal edges
         G.add_edge(node[int(s)], node[int(t)], label=label[2:-2])
     return G
