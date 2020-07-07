@@ -101,7 +101,7 @@ def literal_destringizer(rep):
     ValueError
         If `rep` is not a Python literal.
     """
-    msg = "literal_destringizer is deprecated and will be removed in 2.6."
+    msg = "literal_destringizer is deprecated and will be removed in 3.0."
     warnings.warn(msg, DeprecationWarning)
     if isinstance(rep, str):
         orig_rep = rep
@@ -496,7 +496,7 @@ def literal_stringizer(value):
     The original value can be recovered using the
     :func:`networkx.readwrite.gml.literal_destringizer` function.
     """
-    msg = "literal_stringizer is deprecated and will be removed in 2.6."
+    msg = "literal_stringizer is deprecated and will be removed in 3.0."
     warnings.warn(msg, DeprecationWarning)
 
     def stringize(value):

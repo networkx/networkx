@@ -27,7 +27,7 @@ import networkx as nx
 
 def is_string_like(obj):  # from John Hunter, types-free version
     """Check if obj is string."""
-    msg = "is_string_like is deprecated and will be removed in 2.6." \
+    msg = "is_string_like is deprecated and will be removed in 3.0." \
           "Use isinstance(obj, str) instead."
     warnings.warn(msg, DeprecationWarning)
     return isinstance(obj, str)
@@ -111,7 +111,7 @@ def is_list_of_ints(intlist):
 
 def make_str(x):
     """Returns the string representation of t."""
-    msg = "make_str is deprecated and will be removed in 2.6. Use str instead."
+    msg = "make_str is deprecated and will be removed in 3.0. Use str instead."
     warnings.warn(msg, DeprecationWarning)
     return str(x)
 
