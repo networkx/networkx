@@ -7,8 +7,8 @@ class TestGraphHashing:
         G1 = nx.empty_graph()
         G2 = nx.empty_graph()
 
-        h1 = weisfeiler_lehman_graph_hash(G1)
-        h2 = weisfeiler_lehman_graph_hash(G2)
+        h1 = nx.weisfeiler_lehman_graph_hash(G1)
+        h2 = nx.weisfeiler_lehman_graph_hash(G2)
 
         assert h1 == h2
 
@@ -20,11 +20,11 @@ class TestGraphHashing:
                            (3, 1, {'label': 'A'}),\
                            (1, 4, {'label': 'B'})])
         #do hashing
-        h_before = weisfeiler_lehman_graph_hash(G1, edge_attr='label')
+        h_before = nx.weisfeiler_lehman_graph_hash(G1, edge_attr='label')
 
         G2 = nx.relabel_nodes(G1, {u : -1 * u for u in G1.nodes()})
 
-        h_after = weisfeiler_lehman_graph_hash(G2, edge_attr='label')
+        h_after = nx.weisfeiler_lehman_graph_hash(G2, edge_attr='label')
 
         assert h_after == h_before
 
@@ -38,9 +38,9 @@ class TestGraphHashing:
             (1,5)
             ])
 
-        h_directed = weisfeiler_lehman_graph_hash(G1)
+        h_directed = nx.weisfeiler_lehman_graph_hash(G1)
 
         G2 = G1.to_undirected()
-        h_undirected = weisfeiler_lehman_graph_hash(G2)
+        h_undirected = nx.weisfeiler_lehman_graph_hash(G2)
 
         assert h_directed != h_undirected
