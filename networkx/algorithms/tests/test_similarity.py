@@ -43,6 +43,17 @@ class TestSimilarity:
         numpy = pytest.importorskip('numpy')
         scipy = pytest.importorskip('scipy')
 
+    def test_graph_edit_distance_roots_and_timeout(self):
+        G0 = nx.star_graph(5)
+        G1 = G0.copy()
+        assert graph_edit_distance(G0, G1, roots=(1, 2)) == 0
+        assert graph_edit_distance(G0, G1, roots=(0, 1)) == 8
+        assert graph_edit_distance(G0, G1, roots=(1, 2), timeout=5) == 0
+        assert graph_edit_distance(G0, G1, roots=(0, 1), timeout=5) == 8
+        assert graph_edit_distance(G0, G1, roots=(0, 1), timeout=0.0001) is None
+        # test raise on 0 timeout
+        pytest.raises(nx.NetworkXError, graph_edit_distance, G0, G1, timeout=0)
+
     def test_graph_edit_distance(self):
         G0 = nx.Graph()
         G1 = path_graph(6)

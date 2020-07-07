@@ -162,11 +162,6 @@ def graph_edit_distance(
     >>> nx.graph_edit_distance(G1, G2, roots=(1, 0))
     8.0
 
-    >>> G1 = nx.star_graph(13)
-    >>> G2 = nx.star_graph(11)
-    >>> nx.graph_edit_distance(G1, G2, timeout=.5)
-    26.0
-
     See Also
     --------
     optimal_edit_paths, optimize_graph_edit_distance,
@@ -1151,13 +1146,13 @@ def optimize_edit_paths(
 
     maxcost = MaxCost()
 
-    start = time.perf_counter()
-
-    if timeout:
-        assert timeout > 0, "Timeout value must be greater than 0."
+    if timeout is not None:
+        if timeout <= 0:
+            raise nx.NetworkXError("Timeout value must be greater than 0")
+        start = time.perf_counter()
 
     def prune(cost):
-        if timeout:
+        if timeout is not None:
             if time.perf_counter() - start > timeout:
                 return True
         if upper_bound is not None:
