@@ -1,46 +1,43 @@
-import pytest
 import networkx as nx
 
-class TestGraphHashing:
-    def test_empty_graph_hash(self):
-        #check that empty graph hashes match
-        G1 = nx.empty_graph()
-        G2 = nx.empty_graph()
 
-        h1 = nx.weisfeiler_lehman_graph_hash(G1)
-        h2 = nx.weisfeiler_lehman_graph_hash(G2)
+def test_empty_graph_hash():
+    G1 = nx.empty_graph()
+    G2 = nx.empty_graph()
 
-        assert h1 == h2
+    h1 = nx.weisfeiler_lehman_graph_hash(G1)
+    h2 = nx.weisfeiler_lehman_graph_hash(G2)
 
-    def test_relabel(self):
-        #make sure hash remains the same after relabeling
-        G1 = nx.Graph()
-        G1.add_edges_from([(1, 2, {'label': 'A'}),\
-                           (2, 3, {'label': 'A'}),\
-                           (3, 1, {'label': 'A'}),\
-                           (1, 4, {'label': 'B'})])
-        #do hashing
-        h_before = nx.weisfeiler_lehman_graph_hash(G1, edge_attr='label')
+    assert h1 == h2
 
-        G2 = nx.relabel_nodes(G1, {u : -1 * u for u in G1.nodes()})
 
-        h_after = nx.weisfeiler_lehman_graph_hash(G2, edge_attr='label')
+def test_relabel():
+    G1 = nx.Graph()
+    G1.add_edges_from([(1, 2, {'label': 'A'}),
+                       (2, 3, {'label': 'A'}),
+                       (3, 1, {'label': 'A'}),
+                       (1, 4, {'label': 'B'})])
+    h_before = nx.weisfeiler_lehman_graph_hash(G1, edge_attr='label')
 
-        assert h_after == h_before
+    G2 = nx.relabel_nodes(G1, {u: -1 * u for u in G1.nodes()})
 
-    def test_directed(self):
-        #check that edge direction affects hash.
-        G1 = nx.DiGraph()
-        G1.add_edges_from([
-            (1,2),
-            (2,3),
-            (3,1),
-            (1,5)
-            ])
+    h_after = nx.weisfeiler_lehman_graph_hash(G2, edge_attr='label')
 
-        h_directed = nx.weisfeiler_lehman_graph_hash(G1)
+    assert h_after == h_before
 
-        G2 = G1.to_undirected()
-        h_undirected = nx.weisfeiler_lehman_graph_hash(G2)
 
-        assert h_directed != h_undirected
+def test_directed():
+    G1 = nx.DiGraph()
+    G1.add_edges_from([
+        (1, 2),
+        (2, 3),
+        (3, 1),
+        (1, 5)
+        ])
+
+    h_directed = nx.weisfeiler_lehman_graph_hash(G1)
+
+    G2 = G1.to_undirected()
+    h_undirected = nx.weisfeiler_lehman_graph_hash(G2)
+
+    assert h_directed != h_undirected

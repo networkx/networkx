@@ -29,7 +29,7 @@ def weisfeiler_lehman_graph_hash(
     non-isomorphic graphs will get different hashes. See [1] for details.
 
     Note: Similarity between hashes does not imply similarity between graphs.
-    
+
     If no node or edge attributes are provided, the degree of each node
     is used as its initial label.
     Otherwise, node and/or edge labels are used to compute the hash.
@@ -47,7 +47,8 @@ def weisfeiler_lehman_graph_hash(
         If None, and no edge_attr given, use
         degree of node as label.
     iterations: int
-        Number of neighbor aggregations to perform. Should be larger for larger graphs.
+        Number of neighbor aggregations to perform.
+        Should be larger for larger graphs.
     digest_size: int
         Size of blake2b hash digest to use for hashing node labels.
 
@@ -96,16 +97,16 @@ def weisfeiler_lehman_graph_hash(
        http://www.jmlr.org/papers/volume12/shervashidze11a/shervashidze11a.pdf
     """
 
-    def neighborhood_aggregate(G, n, node_labels, edge_attr=None):
+    def neighborhood_aggregate(G, node, node_labels, edge_attr=None):
         """
             Compute new labels for given node by aggregating
             the labels of each node's neighbors.
         """
-        x = [node_labels[n]]
-        for nei in G.neighbors(n):
-            prefix = "" if not edge_attr else G[n][nei][edge_attr]
-            x.append(prefix + node_labels[nei])
-        return ''.join(sorted(x))
+        label_list = [node_labels[node]]
+        for nei in G.neighbors(node):
+            prefix = "" if not edge_attr else G[node][nei][edge_attr]
+            label_list.append(prefix + node_labels[nei])
+        return ''.join(sorted(label_list))
 
     def weisfeiler_lehman_step(G, labels, edge_attr=None, node_attr=None):
         """
@@ -114,35 +115,36 @@ def weisfeiler_lehman_graph_hash(
             Computes a dictionary with labels for each node.
         """
         new_labels = dict()
-        for n in G.nodes():
-            new_labels[n] = neighborhood_aggregate(G, n, labels, edge_attr=edge_attr)
+        for node in G.nodes():
+            new_labels[node] = neighborhood_aggregate(G, node, labels,
+                                                      edge_attr=edge_attr)
         return new_labels
 
     items = []
     node_labels = dict()
     # set initial node labels
-    for n in G.nodes():
+    for node in G.nodes():
         if (not node_attr) and (not edge_attr):
-            node_labels[n] = str(G.degree(n))
+            node_labels[node] = str(G.degree(node))
         elif node_attr:
-            node_labels[n] = str(G.nodes[n][node_attr])
+            node_labels[node] = str(G.nodes[node][node_attr])
         else:
-            node_labels[n] = ''
+            node_labels[node] = ''
 
     for k in range(iterations):
-        node_labels = weisfeiler_lehman_step(G, node_labels, edge_attr=edge_attr)
-        c = Counter()
+        node_labels = weisfeiler_lehman_step(G, node_labels,
+                                             edge_attr=edge_attr)
+        counter = Counter()
         # count node labels
         for node, d in node_labels.items():
             h = blake2b(digest_size=digest_size)
             h.update(d.encode('ascii'))
-            c.update([h.hexdigest()])
+            counter.update([h.hexdigest()])
         # sort the counter, extend total counts
-        items.extend(sorted(c.items(), key=lambda x: x[0]))
+        items.extend(sorted(counter.items(), key=lambda x: x[0]))
 
     # hash the final counter
     h = blake2b(digest_size=digest_size)
     h.update(str(tuple(items)).encode('ascii'))
     h = h.hexdigest()
     return h
-
