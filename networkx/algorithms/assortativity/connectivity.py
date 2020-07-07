@@ -1,19 +1,4 @@
-# -*- coding: utf-8 -*-
-#
-#    Copyright (C) 2011 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-#
-# Authors: Jordi Torrents <jtorrents@milnou.net>
-#          Aric Hagberg <hagberg@lanl.gov>
-from __future__ import division
-
 from collections import defaultdict
-
-import networkx as nx
 
 __all__ = ['average_degree_connectivity',
            'k_nearest_neighbors']

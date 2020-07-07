@@ -1,23 +1,18 @@
 """
 Eigenvalue spectrum of graphs.
 """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)',
-                        'Jean-Gabriel Young (jean.gabriel.young@gmail.com)'])
 
-__all__ = ['laplacian_spectrum', 'adjacency_spectrum', 'modularity_spectrum', 
-   'normalized_laplacian_spectrum']
+__all__ = [
+    "laplacian_spectrum",
+    "adjacency_spectrum",
+    "modularity_spectrum",
+    "normalized_laplacian_spectrum",
+    "bethe_hessian_spectrum",
+]
 
 
-def laplacian_spectrum(G, weight='weight'):
+def laplacian_spectrum(G, weight="weight"):
     """Returns eigenvalues of the Laplacian of G
 
     Parameters
@@ -44,10 +39,11 @@ def laplacian_spectrum(G, weight='weight'):
     laplacian_matrix
     """
     from scipy.linalg import eigvalsh
+
     return eigvalsh(nx.laplacian_matrix(G, weight=weight).todense())
 
 
-def normalized_laplacian_spectrum(G, weight='weight'):
+def normalized_laplacian_spectrum(G, weight="weight"):
     """Return eigenvalues of the normalized Laplacian of G
 
     Parameters
@@ -74,10 +70,11 @@ def normalized_laplacian_spectrum(G, weight='weight'):
     normalized_laplacian_matrix
     """
     from scipy.linalg import eigvalsh
+
     return eigvalsh(nx.normalized_laplacian_matrix(G, weight=weight).todense())
 
 
-def adjacency_spectrum(G, weight='weight'):
+def adjacency_spectrum(G, weight="weight"):
     """Returns eigenvalues of the adjacency matrix of G.
 
     Parameters
@@ -104,6 +101,7 @@ def adjacency_spectrum(G, weight='weight'):
     adjacency_matrix
     """
     from scipy.linalg import eigvals
+
     return eigvals(nx.adjacency_matrix(G, weight=weight).todense())
 
 
@@ -130,17 +128,39 @@ def modularity_spectrum(G):
        Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
     """
     from scipy.linalg import eigvals
+
     if G.is_directed():
         return eigvals(nx.directed_modularity_matrix(G))
     else:
         return eigvals(nx.modularity_matrix(G))
 
-# fixture for nose tests
 
+def bethe_hessian_spectrum(G, r=None):
+    """Returns eigenvalues of the Bethe Hessian matrix of G.
 
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import scipy.linalg
-    except:
-        raise SkipTest("scipy.linalg not available")
+    Parameters
+    ----------
+    G : Graph
+       A NetworkX Graph or DiGraph
+
+    r : float
+       Regularizer parameter
+
+    Returns
+    -------
+    evals : NumPy array
+      Eigenvalues
+
+    See Also
+    --------
+    bethe_hessian_matrix
+
+    References
+    ----------
+    .. [1] A. Saade, F. Krzakala and L. Zdeborová
+       "Spectral clustering of graphs with the bethe hessian",
+       Advances in Neural Information Processing Systems. 2014.
+    """
+    from scipy.linalg import eigvalsh
+
+    return eigvalsh(nx.bethe_hessian_matrix(G, r).todense())

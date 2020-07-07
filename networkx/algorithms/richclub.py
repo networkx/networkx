@@ -1,18 +1,7 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Ben Edwards (bedwards@cs.unm.edu)
-#          Aric Hagberg (hagberg@lanl.gov)
 """Functions for computing rich-club coefficients."""
-from __future__ import division
 
 import networkx as nx
-from networkx.utils import accumulate
+from itertools import accumulate
 from networkx.utils import not_implemented_for
 
 __all__ = ['rich_club_coefficient']
@@ -56,8 +45,8 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (1, 4), (4, 5)])
-    >>> rc = nx.rich_club_coefficient(G, normalized=False)
-    >>> rc[0] # doctest: +SKIP
+    >>> rc = nx.rich_club_coefficient(G, normalized=False, seed=42)
+    >>> rc[0]
     0.4
 
     Notes

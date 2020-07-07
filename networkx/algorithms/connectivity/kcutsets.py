@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Kanevsky all minimum node k cutsets algorithm.
 """
@@ -17,17 +16,15 @@ from networkx.algorithms.flow import (
 default_flow_func = edmonds_karp
 
 
-__author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
-
 __all__ = ['all_node_cuts']
 
 
 def all_node_cuts(G, k=None, flow_func=None):
-    r"""Returns all minimum k cutsets of an undirected graph G. 
+    r"""Returns all minimum k cutsets of an undirected graph G.
 
     This implementation is based on Kanevsky's algorithm [1]_ for finding all
-    minimum-size node cut-sets of an undirected graph G; ie the set (or sets) 
-    of nodes of cardinality equal to the node connectivity of G. Thus if 
+    minimum-size node cut-sets of an undirected graph G; ie the set (or sets)
+    of nodes of cardinality equal to the node connectivity of G. Thus if
     removed, would break G into two or more connected components.
 
     Parameters
@@ -36,7 +33,7 @@ def all_node_cuts(G, k=None, flow_func=None):
         Undirected graph
 
     k : Integer
-        Node connectivity of the input graph. If k is None, then it is 
+        Node connectivity of the input graph. If k is None, then it is
         computed. Default value: None.
 
     flow_func : function
@@ -68,10 +65,10 @@ def all_node_cuts(G, k=None, flow_func=None):
     -----
     This implementation is based on the sequential algorithm for finding all
     minimum-size separating vertex sets in a graph [1]_. The main idea is to
-    compute minimum cuts using local maximum flow computations among a set 
+    compute minimum cuts using local maximum flow computations among a set
     of nodes of highest degree and all other non-adjacent nodes in the Graph.
     Once we find a minimum cut, we add an edge between the high degree
-    node and the target node of the local maximum flow computation to make 
+    node and the target node of the local maximum flow computation to make
     sure that we will not find that minimum cut again.
 
     See also
@@ -82,7 +79,7 @@ def all_node_cuts(G, k=None, flow_func=None):
 
     References
     ----------
-    .. [1]  Kanevsky, A. (1993). Finding all minimum-size separating vertex 
+    .. [1]  Kanevsky, A. (1993). Finding all minimum-size separating vertex
             sets in a graph. Networks 23(6), 533--541.
             http://onlinelibrary.wiley.com/doi/10.1002/net.3230230604/abstract
 
@@ -102,7 +99,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     # Even-Tarjan reduction is what we call auxiliary digraph
     # for node connectivity.
     H = build_auxiliary_node_connectivity(G)
-    H_nodes = H.nodes # for speed
+    H_nodes = H.nodes  # for speed
     mapping = H.graph['mapping']
     # Keep a copy of original predecessors, H will be modified later.
     # Shallow copy is enough.
@@ -133,7 +130,7 @@ def all_node_cuts(G, k=None, flow_func=None):
         for v in non_adjacent:
             # step 4: compute maximum flow in an Even-Tarjan reduction H of G
             # and step 5: build the associated residual network R
-            R = flow_func(H, '%sB' % mapping[x], '%sA' % mapping[v], **kwargs)
+            R = flow_func(H, f'{mapping[x]}B', f'{mapping[v]}A', **kwargs)
             flow_value = R.graph['flow_value']
 
             if flow_value == k:
@@ -141,7 +138,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                 E1 = flowed_edges = [(u, w) for (u, w, d) in
                                      R.edges(data=True)
                                      if d['flow'] != 0]
-                VE1 = incident_nodes = set([n for edge in E1 for n in edge])
+                VE1 = incident_nodes = {n for edge in E1 for n in edge}
                 # Remove saturated edges form the residual network.
                 # Note that reversed edges are introduced with capacity 0
                 # in the residual graph and they need to be removed too.
@@ -159,7 +156,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                 for n, scc in cmap.items():
                     inv_cmap[scc].append(n)
                 # Find the incident nodes in the condensed graph.
-                VE1 = set([cmap[n] for n in VE1])
+                VE1 = {cmap[n] for n in VE1}
                 # step 7: Compute all antichains of L;
                 # they map to closed sets in H.
                 # Any edge in H that links a closed set is part of a cutset.
@@ -180,7 +177,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                     for n in S:
                         S_ancestors.update(R_closure._pred[n])
                     S.update(S_ancestors)
-                    if '%sB' % mapping[x] not in S or '%sA' % mapping[v] in S:
+                    if f'{mapping[x]}B' not in S or f'{mapping[v]}A' in S:
                         continue
                     # Find the cutset that links the node partition (S,~S) in H
                     cutset = set()
@@ -210,18 +207,18 @@ def all_node_cuts(G, k=None, flow_func=None):
                 # Add edges to the auxiliary digraph.
                 # See build_residual_network for convention we used
                 # in residual graphs.
-                H.add_edge('%sB' % mapping[x], '%sA' % mapping[v],
+                H.add_edge(f'{mapping[x]}B', f'{mapping[v]}A',
                            capacity=1)
-                H.add_edge('%sB' % mapping[v], '%sA' % mapping[x],
+                H.add_edge(f'{mapping[v]}B', f'{mapping[x]}A',
                            capacity=1)
                 # Add edges to the residual network.
-                R.add_edge('%sB' % mapping[x], '%sA' % mapping[v],
+                R.add_edge(f'{mapping[x]}B', f'{mapping[v]}A',
                            capacity=1)
-                R.add_edge('%sA' % mapping[v], '%sB' % mapping[x],
+                R.add_edge(f'{mapping[v]}A', f'{mapping[x]}B',
                            capacity=0)
-                R.add_edge('%sB' % mapping[v], '%sA' % mapping[x],
+                R.add_edge(f'{mapping[v]}B', f'{mapping[x]}A',
                            capacity=1)
-                R.add_edge('%sA' % mapping[x], '%sB' % mapping[v],
+                R.add_edge(f'{mapping[x]}A', f'{mapping[v]}B',
                            capacity=0)
 
                 # Add again the saturated edges to reuse the residual network

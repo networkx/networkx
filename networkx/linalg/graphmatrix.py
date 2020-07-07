@@ -1,32 +1,20 @@
 """
 Adjacency matrix and incidence matrix of graphs.
 """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)'])
 
-__all__ = ['incidence_matrix',
-           'adj_matrix', 'adjacency_matrix',
-           ]
+__all__ = ["incidence_matrix", "adj_matrix", "adjacency_matrix"]
 
 
-def incidence_matrix(G, nodelist=None, edgelist=None,
-                     oriented=False, weight=None):
+def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=None):
     """Returns incidence matrix of G.
 
     The incidence matrix assigns each row to a node and each column to an edge.
     For a standard incidence matrix a 1 appears wherever a row's node is
     incident on the column's edge.  For an oriented incidence matrix each
     edge is assigned an orientation (arbitrarily for undirected and aligning to
-    direction for directed).  A -1 appears for the tail of an edge and 1
-    for the head of the edge.  The elements are zero otherwise.
+    direction for directed).  A -1 appears for the source (tail) of an edge and
+    1 for the destination (head) of the edge.  The elements are zero otherwise.
 
     Parameters
     ----------
@@ -69,6 +57,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
        http://academicearth.org/lectures/network-applications-incidence-matrix
     """
     import scipy.sparse
+
     if nodelist is None:
         nodelist = list(G)
     if edgelist is None:
@@ -77,7 +66,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
         else:
             edgelist = list(G.edges())
     A = scipy.sparse.lil_matrix((len(nodelist), len(edgelist)))
-    node_index = dict((node, i) for i, node in enumerate(nodelist))
+    node_index = {node: i for i, node in enumerate(nodelist)}
     for ei, e in enumerate(edgelist):
         (u, v) = e[:2]
         if u == v:
@@ -85,9 +74,9 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
         try:
             ui = node_index[u]
             vi = node_index[v]
-        except KeyError:
-            raise nx.NetworkXError('node %s or %s in edgelist '
-                                   'but not in nodelist' % (u, v))
+        except KeyError as e:
+            raise nx.NetworkXError(f"node {u} or {v} in edgelist "
+                                   f"but not in nodelist") from e
         if weight is None:
             wt = 1
         else:
@@ -102,10 +91,10 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
         else:
             A[ui, ei] = wt
             A[vi, ei] = wt
-    return A.asformat('csc')
+    return A.asformat("csc")
 
 
-def adjacency_matrix(G, nodelist=None, weight='weight'):
+def adjacency_matrix(G, nodelist=None, weight="weight"):
     """Returns adjacency matrix of G.
 
     Parameters
@@ -158,18 +147,9 @@ def adjacency_matrix(G, nodelist=None, weight='weight'):
     to_numpy_matrix
     to_scipy_sparse_matrix
     to_dict_of_dicts
+    adjacency_spectrum
     """
     return nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight)
 
 
 adj_matrix = adjacency_matrix
-
-# fixture for nose tests
-
-
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

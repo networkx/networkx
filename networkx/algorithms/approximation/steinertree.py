@@ -1,4 +1,4 @@
-from itertools import combinations, chain
+from itertools import chain
 
 from networkx.utils import pairwise, not_implemented_for
 import networkx as nx

@@ -1,14 +1,3 @@
-# depth_first_search.py - depth-first traversals of a graph
-#
-# Copyright 2004-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Author:
-#   Aric Hagberg <aric.hagberg@gmail.com>
 """Basic algorithms for depth-first searching the nodes of a graph."""
 import networkx as nx
 from collections import defaultdict
@@ -68,6 +57,7 @@ def dfs_edges(G, source=None, depth_limit=None):
     dfs_postorder_nodes
     dfs_labeled_edges
     edge_dfs
+    bfs_edges
     """
     if source is None:
         # edges for all components
@@ -124,6 +114,13 @@ def dfs_tree(G, source=None, depth_limit=None):
     >>> list(T.edges())
     [(0, 1), (1, 2), (2, 3), (3, 4)]
 
+    See Also
+    --------
+    dfs_preorder_nodes
+    dfs_postorder_nodes
+    dfs_labeled_edges
+    edge_dfs
+    bfs_tree
     """
     T = nx.DiGraph()
     if source is None:
@@ -142,8 +139,7 @@ def dfs_predecessors(G, source=None, depth_limit=None):
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
-       the component reachable from source.
+       Specify starting node for depth-first search.
 
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
@@ -173,6 +169,14 @@ def dfs_predecessors(G, source=None, depth_limit=None):
 
     .. _PADS: http://www.ics.uci.edu/~eppstein/PADS
     .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
+
+    See Also
+    --------
+    dfs_preorder_nodes
+    dfs_postorder_nodes
+    dfs_labeled_edges
+    edge_dfs
+    bfs_tree
     """
     return {t: s for s, t in dfs_edges(G, source, depth_limit)}
 
@@ -185,8 +189,7 @@ def dfs_successors(G, source=None, depth_limit=None):
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
-       the component reachable from source.
+       Specify starting node for depth-first search.
 
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
@@ -216,6 +219,14 @@ def dfs_successors(G, source=None, depth_limit=None):
 
     .. _PADS: http://www.ics.uci.edu/~eppstein/PADS
     .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
+
+    See Also
+    --------
+    dfs_preorder_nodes
+    dfs_postorder_nodes
+    dfs_labeled_edges
+    edge_dfs
+    bfs_tree
     """
     d = defaultdict(list)
     for s, t in dfs_edges(G, source=source, depth_limit=depth_limit):
@@ -231,8 +242,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
-       the component reachable from source.
+       Specify starting node for depth-first search.
 
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
@@ -268,6 +278,8 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     dfs_edges
     dfs_preorder_nodes
     dfs_labeled_edges
+    edge_dfs
+    bfs_tree
     """
     edges = nx.dfs_labeled_edges(G, source=source, depth_limit=depth_limit)
     return (v for u, v, d in edges if d == 'reverse')
@@ -281,7 +293,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
+       Specify starting node for depth-first search and return nodes in
        the component reachable from source.
 
     depth_limit : int, optional (default=len(G))
@@ -318,6 +330,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     dfs_edges
     dfs_postorder_nodes
     dfs_labeled_edges
+    bfs_edges
     """
     edges = nx.dfs_labeled_edges(G, source=source, depth_limit=depth_limit)
     return (v for u, v, d in edges if d == 'forward')

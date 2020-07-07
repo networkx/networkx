@@ -26,13 +26,6 @@ Arbitrary data::
 
  1 2 7 green
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 __all__ = ['generate_edgelist',
            'write_edgelist',
@@ -41,7 +34,7 @@ __all__ = ['generate_edgelist',
            'read_weighted_edgelist',
            'write_weighted_edgelist']
 
-from networkx.utils import open_file, make_str
+from networkx.utils import open_file
 import networkx as nx
 
 
@@ -113,11 +106,11 @@ def generate_edgelist(G, delimiter=' ', data=True):
     if data is True:
         for u, v, d in G.edges(data=True):
             e = u, v, dict(d)
-            yield delimiter.join(map(make_str, e))
+            yield delimiter.join(map(str, e))
     elif data is False:
         for u, v in G.edges(data=False):
             e = u, v
-            yield delimiter.join(map(make_str, e))
+            yield delimiter.join(map(str, e))
     else:
         for u, v, d in G.edges(data=True):
             e = [u, v]
@@ -125,7 +118,7 @@ def generate_edgelist(G, delimiter=' ', data=True):
                 e.extend(d[k] for k in data)
             except KeyError:
                 pass  # missing data for this edge, should warn?
-            yield delimiter.join(map(make_str, e))
+            yield delimiter.join(map(str, e))
 
 
 @open_file(1, mode='wb')
@@ -170,8 +163,8 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
 
     See Also
     --------
-    write_edgelist()
-    write_weighted_edgelist()
+    read_edgelist
+    write_weighted_edgelist
     """
 
     for line in generate_edgelist(G, delimiter, data):
@@ -243,7 +236,6 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     See Also
     --------
     read_weighted_edgelist
-
     """
     from ast import literal_eval
     G = nx.empty_graph(0, create_using)
@@ -264,9 +256,9 @@ def parse_edgelist(lines, comments='#', delimiter=None,
             try:
                 u = nodetype(u)
                 v = nodetype(v)
-            except:
-                raise TypeError("Failed to convert nodes %s,%s to type %s."
-                                % (u, v, nodetype))
+            except BaseException as e:
+                raise TypeError(f"Failed to convert nodes {u},{v} "
+                                f"to type {nodetype}.") from e
 
         if len(d) == 0 or data is False:
             # no data or data type specified
@@ -275,23 +267,20 @@ def parse_edgelist(lines, comments='#', delimiter=None,
             # no edge types specified
             try:  # try to evaluate as dictionary
                 edgedata = dict(literal_eval(' '.join(d)))
-            except:
-                raise TypeError(
-                    "Failed to convert edge data (%s) to dictionary." % (d))
+            except BaseException as e:
+                raise TypeError(f"Failed to convert edge data ({d}) "
+                                f"to dictionary.") from e
         else:
             # convert edge data to dictionary with specified keys and type
             if len(d) != len(data):
-                raise IndexError(
-                    "Edge data %s and data_keys %s are not the same length" %
-                    (d, data))
+                raise IndexError(f"Edge data {d} and data_keys {data} are not the same length")
             edgedata = {}
             for (edge_key, edge_type), edge_value in zip(data, d):
                 try:
                     edge_value = edge_type(edge_value)
-                except:
-                    raise TypeError(
-                        "Failed to convert %s data %s to type %s."
-                        % (edge_key, edge_value, edge_type))
+                except BaseException as e:
+                    raise TypeError(f"Failed to convert {edge_key} data {edge_value} "
+                                    f"to type {edge_type}.") from e
                 edgedata.update({edge_key: edge_value})
         G.add_edge(u, v, **edgedata)
     return G
@@ -357,13 +346,14 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     See Also
     --------
     parse_edgelist
+    write_edgelist
 
     Notes
     -----
     Since nodes must be hashable, the function nodetype must return hashable
     types (e.g. int, float, str, frozenset - or tuples of those, etc.)
     """
-    lines = (line.decode(encoding) for line in path)
+    lines = (line if isinstance(line, str) else line.decode(encoding) for line in path)
     return parse_edgelist(lines, comments=comments, delimiter=delimiter,
                           create_using=create_using, nodetype=nodetype,
                           data=data)
@@ -396,10 +386,9 @@ def write_weighted_edgelist(G, path, comments="#",
 
     See Also
     --------
-    read_edgelist()
-    write_edgelist()
-    write_weighted_edgelist()
-
+    read_edgelist
+    write_edgelist
+    read_weighted_edgelist
     """
     write_edgelist(G, path, comments=comments, delimiter=delimiter,
                    data=('weight',), encoding=encoding)
@@ -446,6 +435,10 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
      a b 1
      a c 3.14159
      d e 42
+
+    See Also
+    --------
+    write_weighted_edgelist
     """
     return read_edgelist(path,
                          comments=comments,
@@ -455,12 +448,3 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
                          data=(('weight', float),),
                          encoding=encoding
                          )
-
-
-# fixture for nose tests
-def teardown_module(module):
-    import os
-    for fname in ['test.edgelist', 'test.edgelist.gz',
-                  'test.weighted.edgelist']:
-        if os.path.isfile(fname):
-            os.unlink(fname)

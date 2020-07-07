@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2017-2019
-#    All rights reserved.
-#    BSD license.
-#    Author: Ferran Parés <ferran.pares@bsc.es>
 """Asynchronous Fluid Communities algorithm for community detection."""
 
 from collections import Counter
@@ -22,7 +17,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
 
     The asynchronous fluid communities algorithm is described in
     [1]_. The algorithm is based on the simple idea of fluids interacting
-    in an environment, expanding and pushing each other. It's initialization is
+    in an environment, expanding and pushing each other. Its initialization is
     random, so found communities may vary on different executions.
 
     The algorithm proceeds as follows. First each of the initial k communities
@@ -48,7 +43,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
         The number of communities to be found.
 
     max_iter : integer
-        The number of maximum iterations allowed. By default 15.
+        The number of maximum iterations allowed. By default 100.
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.

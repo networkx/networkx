@@ -1,23 +1,13 @@
 """Modularity matrix of graphs.
 """
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-from __future__ import division
 import networkx as nx
 from networkx.utils import not_implemented_for
-__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)',
-                        'Jean-Gabriel Young (Jean.gabriel.young@gmail.com)'])
-__all__ = ['modularity_matrix', 'directed_modularity_matrix']
+
+__all__ = ["modularity_matrix", "directed_modularity_matrix"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def modularity_matrix(G, nodelist=None, weight=None):
     r"""Returns the modularity matrix of G.
 
@@ -63,8 +53,8 @@ def modularity_matrix(G, nodelist=None, weight=None):
     See Also
     --------
     to_numpy_matrix
+    modularity_spectrum
     adjacency_matrix
-    laplacian_matrix
     directed_modularity_matrix
 
     References
@@ -74,8 +64,7 @@ def modularity_matrix(G, nodelist=None, weight=None):
     """
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
-                                  format='csr')
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
     k = A.sum(axis=1)
     m = k.sum() * 0.5
     # Expected adjacency matrix
@@ -83,8 +72,8 @@ def modularity_matrix(G, nodelist=None, weight=None):
     return A - X
 
 
-@not_implemented_for('undirected')
-@not_implemented_for('multigraph')
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
 def directed_modularity_matrix(G, nodelist=None, weight=None):
     """Returns the directed modularity matrix of G.
 
@@ -138,8 +127,8 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
     See Also
     --------
     to_numpy_matrix
+    modularity_spectrum
     adjacency_matrix
-    laplacian_matrix
     modularity_matrix
 
     References
@@ -150,21 +139,10 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
     """
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
-                                  format='csr')
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
     k_in = A.sum(axis=0)
     k_out = A.sum(axis=1)
     m = k_in.sum()
     # Expected adjacency matrix
     X = k_out * k_in / m
     return A - X
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import scipy
-    except:
-        raise SkipTest("NumPy not available")

@@ -1,17 +1,12 @@
 """Unit tests for the :mod:`networkx.generators.harary_graph` module.
 """
 
-from nose.tools import assert_equal
-from nose.tools import assert_true
-from nose.tools import assert_raises
+import pytest
 
 import networkx as nx
-from networkx import *
 from networkx.generators.harary_graph import hnm_harary_graph
 from networkx.generators.harary_graph import hkn_harary_graph
 from networkx.algorithms.isomorphism.isomorph import is_isomorphic
-from networkx.testing import assert_edges_equal
-from networkx.testing import assert_nodes_equal
 
 
 class TestHararyGraph:
@@ -24,8 +19,8 @@ class TestHararyGraph:
         for (n, m) in [(5, 5), (6, 12), (7, 14)]:
             G1 = hnm_harary_graph(n, m)
             d = 2*m // n
-            G2 = circulant_graph(n, list(range(1, d//2 + 1)))
-            assert_true(is_isomorphic(G1, G2))
+            G2 = nx.circulant_graph(n, list(range(1, d//2 + 1)))
+            assert is_isomorphic(G1, G2)
 
         # When d is even and r > 0, the hnm_harary_graph(n,m) is
         # the circulant_graph(n, list(range(1,d/2+1)))
@@ -33,9 +28,9 @@ class TestHararyGraph:
         for (n, m) in [(5, 7), (6, 13), (7, 16)]:
             G1 = hnm_harary_graph(n, m)
             d = 2*m // n
-            G2 = circulant_graph(n, list(range(1, d//2 + 1)))
-            assert_true(set(G2.edges) < set(G1.edges))
-            assert_equal(G1.number_of_edges(), m)
+            G2 = nx.circulant_graph(n, list(range(1, d//2 + 1)))
+            assert set(G2.edges) < set(G1.edges)
+            assert G1.number_of_edges() == m
 
         # When d is odd and n is even and r = 0, the hnm_harary_graph(n,m)
         # is the circulant_graph(n, list(range(1,(d+1)/2) plus [n//2])
@@ -44,8 +39,8 @@ class TestHararyGraph:
             d = 2*m // n
             L = list(range(1, (d+1)//2))
             L.append(n//2)
-            G2 = circulant_graph(n, L)
-            assert_true(is_isomorphic(G1, G2))
+            G2 = nx.circulant_graph(n, L)
+            assert is_isomorphic(G1, G2)
 
         # When d is odd and n is even and r > 0, the hnm_harary_graph(n,m)
         # is the circulant_graph(n, list(range(1,(d+1)/2) plus [n//2])
@@ -55,9 +50,9 @@ class TestHararyGraph:
             d = 2*m // n
             L = list(range(1, (d+1)//2))
             L.append(n//2)
-            G2 = circulant_graph(n, L)
-            assert_true(set(G2.edges) < set(G1.edges))
-            assert_equal(G1.number_of_edges(), m)
+            G2 = nx.circulant_graph(n, L)
+            assert set(G2.edges) < set(G1.edges)
+            assert G1.number_of_edges() == m
 
         # When d is odd and n is odd, the hnm_harary_graph(n,m) is
         # the circulant_graph(n, list(range(1,(d+1)/2))
@@ -66,24 +61,24 @@ class TestHararyGraph:
             G1 = hnm_harary_graph(n, m)
             d = 2*m // n
             L = list(range(1, (d+1)//2))
-            G2 = circulant_graph(n, L)
-            assert_true(set(G2.edges) < set(G1.edges))
-            assert_equal(G1.number_of_edges(), m)
+            G2 = nx.circulant_graph(n, L)
+            assert set(G2.edges) < set(G1.edges)
+            assert G1.number_of_edges() == m
 
         # Raise NetworkXError if n<1
         n = 0
         m = 0
-        assert_raises(networkx.exception.NetworkXError, hnm_harary_graph, n, m)
+        pytest.raises(nx.NetworkXError, hnm_harary_graph, n, m)
 
         # Raise NetworkXError if m < n-1
         n = 6
         m = 4
-        assert_raises(networkx.exception.NetworkXError, hnm_harary_graph, n, m)
+        pytest.raises(nx.NetworkXError, hnm_harary_graph, n, m)
 
         # Raise NetworkXError if m > n(n-1)/2
         n = 6
         m = 16
-        assert_raises(networkx.exception.NetworkXError, hnm_harary_graph, n, m)
+        pytest.raises(nx.NetworkXError, hnm_harary_graph, n, m)
 
     """
         Suppose connectivity k, number of nodes n
@@ -93,15 +88,15 @@ class TestHararyGraph:
         # the path_graph(n)
         for (k, n) in [(1, 6), (1, 7)]:
             G1 = hkn_harary_graph(k, n)
-            G2 = path_graph(n)
-            assert_true(is_isomorphic(G1, G2))
+            G2 = nx.path_graph(n)
+            assert is_isomorphic(G1, G2)
 
         # When k is even, the hkn_harary_graph(k,n) is
         # the circulant_graph(n, list(range(1,k/2+1)))
         for (k, n) in [(2, 6), (2, 7), (4, 6), (4, 7)]:
             G1 = hkn_harary_graph(k, n)
-            G2 = circulant_graph(n, list(range(1, k//2 + 1)))
-            assert_true(is_isomorphic(G1, G2))
+            G2 = nx.circulant_graph(n, list(range(1, k//2 + 1)))
+            assert is_isomorphic(G1, G2)
 
         # When k is odd and n is even, the hkn_harary_graph(k,n) is
         # the circulant_graph(n, list(range(1,(k+1)/2)) plus [n/2])
@@ -109,15 +104,15 @@ class TestHararyGraph:
             G1 = hkn_harary_graph(k, n)
             L = list(range(1, (k+1)//2))
             L.append(n//2)
-            G2 = circulant_graph(n, L)
-            assert_true(is_isomorphic(G1, G2))
+            G2 = nx.circulant_graph(n, L)
+            assert is_isomorphic(G1, G2)
 
         # When k is odd and n is odd, the hkn_harary_graph(k,n) is
         # the circulant_graph(n, list(range(1,(k+1)/2))) with
         # n//2+1 edges added between node i and node i+n//2+1
         for (k, n) in [(3, 5), (5, 9), (7, 11)]:
             G1 = hkn_harary_graph(k, n)
-            G2 = circulant_graph(n, list(range(1, (k+1)//2)))
+            G2 = nx.circulant_graph(n, list(range(1, (k+1)//2)))
             eSet1 = set(G1.edges)
             eSet2 = set(G2.edges)
             eSet3 = set()
@@ -125,14 +120,14 @@ class TestHararyGraph:
             for i in range(0, half+1):
                 # add half+1 edges between i and i+half
                 eSet3.add((i, (i+half) % n))
-            assert_equal(eSet1, eSet2 | eSet3)
+            assert eSet1 == eSet2 | eSet3
 
         # Raise NetworkXError if k<1
         k = 0
         n = 0
-        assert_raises(networkx.exception.NetworkXError, hkn_harary_graph, k, n)
+        pytest.raises(nx.NetworkXError, hkn_harary_graph, k, n)
 
         # Raise NetworkXError if n<k+1
         k = 6
         n = 6
-        assert_raises(networkx.exception.NetworkXError, hkn_harary_graph, k, n)
+        pytest.raises(nx.NetworkXError, hkn_harary_graph, k, n)

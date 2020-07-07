@@ -1,11 +1,3 @@
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """
 ***************
 Graphviz AGraph
@@ -131,9 +123,9 @@ def to_agraph(N):
     """
     try:
         import pygraphviz
-    except ImportError:
-        raise ImportError('requires pygraphviz ',
-                          'http://pygraphviz.github.io/')
+    except ImportError as e:
+        raise ImportError('requires pygraphviz '
+                          'http://pygraphviz.github.io/') from e
     directed = N.is_directed()
     strict = nx.number_of_selfloops(N) == 0 and not N.is_multigraph()
     A = pygraphviz.AGraph(name=N.name, strict=strict, directed=directed)
@@ -184,11 +176,6 @@ def write_dot(G, path):
     path : filename
        Filename or file handle to write
     """
-    try:
-        import pygraphviz
-    except ImportError:
-        raise ImportError('requires pygraphviz ',
-                          'http://pygraphviz.github.io/')
     A = to_agraph(G)
     A.write(path)
     A.clear()
@@ -205,9 +192,9 @@ def read_dot(path):
     """
     try:
         import pygraphviz
-    except ImportError:
-        raise ImportError('read_dot() requires pygraphviz ',
-                          'http://pygraphviz.github.io/')
+    except ImportError as e:
+        raise ImportError('read_dot() requires pygraphviz '
+                          'http://pygraphviz.github.io/') from e
     A = pygraphviz.AGraph(file=path)
     return from_agraph(A)
 
@@ -281,19 +268,19 @@ def pygraphviz_layout(G, prog='neato', root=None, args=''):
     """
     try:
         import pygraphviz
-    except ImportError:
-        raise ImportError('requires pygraphviz ',
-                          'http://pygraphviz.github.io/')
+    except ImportError as e:
+        raise ImportError('requires pygraphviz '
+                          'http://pygraphviz.github.io/') from e
     if root is not None:
-        args += "-Groot=%s" % root
+        args += f"-Groot={root}"
     A = to_agraph(G)
     A.layout(prog=prog, args=args)
     node_pos = {}
     for n in G:
         node = pygraphviz.Node(A, n)
         try:
-            xx, yy = node.attr["pos"].split(',')
-            node_pos[n] = (float(xx), float(yy))
+            xs = node.attr["pos"].split(',')
+            node_pos[n] = tuple(float(x) for x in xs)
         except:
             print("no position for node", n)
             node_pos[n] = (0.0, 0.0)
@@ -342,8 +329,6 @@ def view_pygraphviz(G, edgelabel=None, prog='dot', args='',
     """
     if not len(G):
         raise nx.NetworkXException("An empty graph cannot be drawn.")
-
-    import pygraphviz
 
     # If we are providing default values for graphviz, these must be set
     # before any nodes or edges are added to the PyGraphviz graph object.
@@ -416,9 +401,9 @@ def view_pygraphviz(G, edgelabel=None, prog='dot', args='',
     if path is None:
         ext = 'png'
         if suffix:
-            suffix = '_%s.%s' % (suffix, ext)
+            suffix = f"_{suffix}.{ext}"
         else:
-            suffix = '.%s' % (ext,)
+            suffix = f".{ext}"
         path = tempfile.NamedTemporaryFile(suffix=suffix, delete=False)
     else:
         # Assume the decorator worked and it is a file-object.
@@ -465,12 +450,3 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=''):
     graph.draw(path, format, prog, args)
     path.close()
     nx.utils.default_opener(filename)
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import pygraphviz
-    except:
-        raise SkipTest("pygraphviz not available")

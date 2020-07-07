@@ -1,11 +1,9 @@
-.. -*- coding: utf-8 -*-
-
 Citing
 ======
 
 To cite NetworkX please use the following publication:
 
-Aric A. Hagberg, Daniel A. Schult and Pieter J. Swart, 
+Aric A. Hagberg, Daniel A. Schult and Pieter J. Swart,
 `"Exploring network structure, dynamics, and function using NetworkX"
 <http://conference.scipy.org/proceedings/SciPy2008/paper_2/>`_,
 in
@@ -16,5 +14,5 @@ USA), pp. 11--15, Aug 2008
 
 .. only:: html
 
-   `PDF <http://math.lanl.gov/~hagberg/Papers/hagberg-2008-exploring.pdf>`_
-   `BibTeX <http://math.lanl.gov/~hagberg/Publications/hagberg-2008-exploring.shtml>`_
+   `PDF <http://conference.scipy.org/proceedings/SciPy2008/paper_2/full_text.pdf>`_
+   `BibTeX <http://conference.scipy.org/proceedings/SciPy2008/paper_2/reference.bib>`_

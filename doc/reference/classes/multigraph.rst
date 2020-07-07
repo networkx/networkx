@@ -31,6 +31,7 @@ Adding and removing nodes and edges
    MultiGraph.remove_edges_from
    MultiGraph.update
    MultiGraph.clear
+   MultiGraph.clear_edges
 
 
 

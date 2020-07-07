@@ -1,29 +1,10 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2019 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (aric.hagberg@gmail.com)
-#          Pieter Swart (swart@lanl.gov)
-#          Dan Schult (dschult@colgate.edu)
-#          Joel Miller (joel.c.miller.research@gmail.com)
-#          Nathan Lemons (nlemons@gmail.com)
-#          Brian Cloteaux (brian.cloteaux@nist.gov)
 """Generate graphs with a given degree sequence or expected degree sequence.
 """
-from __future__ import division
 
 import heapq
 from itertools import chain
 from itertools import combinations
-# In Python 3, the function is `zip_longest`, in Python 2 `izip_longest`.
-try:
-    from itertools import zip_longest
-except ImportError:
-    from itertools import izip_longest as zip_longest
+from itertools import zip_longest
 import math
 from operator import itemgetter
 
@@ -581,8 +562,8 @@ def directed_havel_hakimi_graph(in_deg_sequence,
        Algorithms for Constructing Graphs and Digraphs with Given Valences
        and Factors Discrete Mathematics, 6(1), pp. 79-88 (1973)
     """
-    assert(nx.utils.is_list_of_ints(in_deg_sequence))
-    assert(nx.utils.is_list_of_ints(out_deg_sequence))
+    in_deg_sequence = nx.utils.make_list_of_ints(in_deg_sequence)
+    out_deg_sequence = nx.utils.make_list_of_ints(out_deg_sequence)
 
     # Process the sequences and form two heaps to store degree pairs with
     # either zero or nonzero out degrees
@@ -745,7 +726,7 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
     Examples
     --------
     >>> sequence = [1, 2, 2, 3]
-    >>> G = nx.random_degree_sequence_graph(sequence)
+    >>> G = nx.random_degree_sequence_graph(sequence, seed=42)
     >>> sorted(d for n, d in G.degree())
     [1, 2, 2, 3]
     """
@@ -755,10 +736,10 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
             return DSRG.generate()
         except nx.NetworkXUnfeasible:
             pass
-    raise nx.NetworkXError('failed to generate graph in %d tries' % tries)
+    raise nx.NetworkXError(f"failed to generate graph in {tries} tries")
 
 
-class DegreeSequenceRandomGraph(object):
+class DegreeSequenceRandomGraph:
     # class to generate random graphs with a given degree sequence
     # use random_degree_sequence_graph()
     def __init__(self, degree, rng):

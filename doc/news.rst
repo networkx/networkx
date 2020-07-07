@@ -1,8 +1,33 @@
-..  -*- coding: utf-8 -*-
 .. currentmodule:: networkx
 
 Release Log
 ===========
+
+NetworkX 2.4
+------------
+Release date: 16 October 2019
+
+Supports Python 3.5, 3.6, 3.7, and 3.8.
+This is the last release to support Python 3.5.
+
+Release notes
+~~~~~~~~~~~~~
+
+See :doc:`release/release_2.4`.
+
+
+NetworkX 2.3
+------------
+Release date: 11 April 2019
+
+Supports Python 3.5, 3.6 and 3.7.
+This is our first Python 3 only release.
+
+Release notes
+~~~~~~~~~~~~~
+
+See :doc:`release/release_2.3`.
+
 
 NetworkX 2.2
 ------------

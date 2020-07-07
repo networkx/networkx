@@ -16,9 +16,11 @@ Isomorphism
    fast_could_be_isomorphic
    faster_could_be_isomorphic
 
-Advanced Interface to VF2 Algorithm
------------------------------------
+Advanced Interfaces
+-------------------
 .. toctree::
    :maxdepth: 2
 
    isomorphism.vf2
+   isomorphism.ismags
+

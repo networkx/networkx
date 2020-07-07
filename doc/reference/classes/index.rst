@@ -15,14 +15,17 @@ graph you want to represent.
 Which graph class should I use?
 ===============================
 
-===================  ========================
-Graph Type           NetworkX Class
-===================  ========================
-Undirected Simple    Graph
-Directed Simple      DiGraph
-With Self-loops      Graph, DiGraph
-With Parallel edges  MultiGraph, MultiDiGraph
-===================  ========================
++----------------+------------+--------------------+------------------------+
+| Networkx Class | Type       | Self-loops allowed | Parallel edges allowed |
++================+============+====================+========================+
+| Graph          | undirected | Yes                | No                     |
++----------------+------------+--------------------+------------------------+
+| DiGraph        | directed   | Yes                | No                     |
++----------------+------------+--------------------+------------------------+
+| MultiGraph     | undirected | Yes                | Yes                    |
++----------------+------------+--------------------+------------------------+
+| MultiDiGraph   | directed   | Yes                | Yes                    |
++----------------+------------+--------------------+------------------------+
 
 Basic graph types
 =================
