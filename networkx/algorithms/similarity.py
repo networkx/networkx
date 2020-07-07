@@ -1151,6 +1151,10 @@ def optimize_edit_paths(
     maxcost = MaxCost()
 
     start = time.perf_counter()
+
+    if timeout:
+        assert timeout > 0, "Timeout value must be greater than 0."
+
     def prune(cost):
         if timeout:
             if time.perf_counter() - start > timeout:
