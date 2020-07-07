@@ -634,7 +634,8 @@ class OutEdgeDataView:
         if nbunch is None:
             self._nodes_nbrs = adjdict.items
         else:
-            nbunch = list(viewer._graph.nbunch_iter(nbunch))
+            # dict retains order of nodes but acts like a set
+            nbunch = dict.fromkeys(viewer._graph.nbunch_iter(nbunch))
             self._nodes_nbrs = lambda: [(n, adjdict[n]) for n in nbunch]
         self._nbunch = nbunch
         self._data = data
@@ -656,8 +657,10 @@ class OutEdgeDataView:
                 for nbr, dd in nbrs.items())
 
     def __contains__(self, e):
+        u, v = e[:2]
+        if self._nbunch is not None and u not in self._nbunch:
+            return False  # this edge doesn't start in nbunch
         try:
-            u, v = e[:2]
             ddict = self._adjdict[u][v]
         except KeyError:
             return False
@@ -713,14 +716,13 @@ class EdgeDataView(OutEdgeDataView):
         del seen
 
     def __contains__(self, e):
+        u, v = e[:2]
+        if self._nbunch is not None and u not in self._nbunch and v not in self._nbunch:
+            return False  # this edge doesn't start and it doesn't end in nbunch
         try:
-            u, v = e[:2]
             ddict = self._adjdict[u][v]
         except KeyError:
-            try:
-                ddict = self._adjdict[v][u]
-            except KeyError:
-                return False
+            return False
         return e == self._report(u, v, ddict)
 
 
@@ -733,12 +735,15 @@ class InEdgeDataView(OutEdgeDataView):
                 for nbr, dd in nbrs.items())
 
     def __contains__(self, e):
+        u, v = e[:2]
+        if self._nbunch is not None and v not in self._nbunch:
+            return False  # this edge doesn't end in nbunch
         try:
-            u, v = e[:2]
             ddict = self._adjdict[v][u]
         except KeyError:
             return False
         return e == self._report(u, v, ddict)
+
 
 
 class OutMultiEdgeDataView(OutEdgeDataView):
@@ -763,7 +768,8 @@ class OutMultiEdgeDataView(OutEdgeDataView):
         if nbunch is None:
             self._nodes_nbrs = adjdict.items
         else:
-            nbunch = list(viewer._graph.nbunch_iter(nbunch))
+            # dict retains order of nodes but acts like a set
+            nbunch = dict.fromkeys(viewer._graph.nbunch_iter(nbunch))
             self._nodes_nbrs = lambda: [(n, adjdict[n]) for n in nbunch]
         self._nbunch = nbunch
         self._data = data
@@ -796,6 +802,8 @@ class OutMultiEdgeDataView(OutEdgeDataView):
 
     def __contains__(self, e):
         u, v = e[:2]
+        if self._nbunch is not None and u not in self._nbunch:
+            return False  # this edge doesn't start in nbunch
         try:
             kdict = self._adjdict[u][v]
         except KeyError:
@@ -829,6 +837,8 @@ class MultiEdgeDataView(OutMultiEdgeDataView):
 
     def __contains__(self, e):
         u, v = e[:2]
+        if self._nbunch is not None and u not in self._nbunch and v not in self._nbunch:
+            return False  # this edge doesn't start and doesn't end in nbunch
         try:
             kdict = self._adjdict[u][v]
         except KeyError:
@@ -859,6 +869,8 @@ class InMultiEdgeDataView(OutMultiEdgeDataView):
 
     def __contains__(self, e):
         u, v = e[:2]
+        if self._nbunch is not None and v not in self._nbunch:
+            return False  # this edge doesn't end in nbunch
         try:
             kdict = self._adjdict[v][u]
         except KeyError:
@@ -987,7 +999,7 @@ class EdgeView(OutEdgeView):
 
     >>> EVnbunch = G.edges(nbunch=2)
     >>> assert((2, 3) in EVnbunch)
-    >>> assert((0, 1) in EVnbunch)   #  nbunch is ignored in __contains__
+    >>> assert((0, 1) not in EVnbunch)
     >>> for u, v in EVnbunch: assert(u == 2 or v == 2)
 
     >>> MG = nx.path_graph(4, create_using=nx.MultiGraph)
