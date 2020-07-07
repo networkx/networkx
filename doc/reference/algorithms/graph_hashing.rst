@@ -1,6 +1,6 @@
-*****
+*************
 Graph Hashing
-*****
+*************
 
 .. automodule:: networkx.algorithms.graph_hashing
 .. autosummary::
