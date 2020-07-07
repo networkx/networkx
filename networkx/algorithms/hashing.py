@@ -12,15 +12,29 @@ __all__ = [
 ]
 
 
-def wl_hash(G, edge_attr=None, node_attr=None, iterations=3, digest_size=16):
+def weisfeiler_lehman_graph_hash(
+    G,
+    edge_attr=None,
+    node_attr=None,
+    iterations=3,
+    digest_size=16
+):
     """
-    Returns WL hash of a graph.
-    We iteratively aggregate and hash neighbourhoods of each node.
+    Returns Weisfeiler Lehman (WL) graph hash.
+    The function iteratively aggregates and hashes neighbourhoods of each node.
     After each node's neighbors are hashed to obtain updated node labels,
-    we hash a histogram of resulting labels as the
-    final hash.
-    Implementation of
-    (http://jmlr.org/papers/volume12/shervashidze11a/shervashidze11a.pdf)
+    a hashed histogram of resulting labels is returned as the final hash.
+
+    Hashes are identical for isomorphic graphs and strong guarantees that
+    non-isomorphic graphs will get different hashes. See [1] for details.
+
+    Note: Similarity between hashes does not imply similarity between graphs.
+    
+    If no node or edge attributes are provided, the degree of each node
+    is used as its initial label.
+
+    Otherwise, node and/or edge labels are used to compute the hash.
+
     Parameters
     ----------
     G: graph
@@ -37,14 +51,17 @@ def wl_hash(G, edge_attr=None, node_attr=None, iterations=3, digest_size=16):
         Number of neighbor aggregations to perform. Should be larger for larger graphs.
     digest_size: int
         Size of blake2b hash digest to use for hashing node labels.
-    In example below,
-    we have two triangle graphs with a tail node that
-    are isomorphic except for edge labels.
-    By specifying the edge_attr option, the graphs receive different hashes.
+
     Returns
     -------
     h : string
         Hexadecimal string corresponding to hash of the input graph.
+
+    Examples
+    --------
+    Two graphs with edge attributes that are isomorphic, except for
+    differences in the edge labels.
+
     >>> import networkx as nx
     >>> G1 = nx.Graph()
     >>> G1.add_edges_from([(1, 2, {'label': 'A'}),\
@@ -56,26 +73,50 @@ def wl_hash(G, edge_attr=None, node_attr=None, iterations=3, digest_size=16):
                            (6,7, {'label': 'A'}),\
                            (7,5, {'label': 'A'}),\
                            (7,8, {'label': 'A'})])
-    >>> wl_hash(G1) == wl_hash(G2)
-    True
-    >>> wl_hash(G1, edge_attr='label') == wl_hash(G2, edge_attr='label')
-    False
+
+    Omitting the `edge_attr` option, results in identical hashes.
+
+    >>> weisfeiler_lehman_graph_hash(G1)
+    '0db442538bb6dc81d675bd94e6ebb7ca'
+    >>> weisfeiler_lehman_graph_hash(G2)
+    '0db442538bb6dc81d675bd94e6ebb7ca'
+
+    With edge labels, the graphs are no longer assigned
+    the same hash digest.
+
+    >>> weisfeiler_lehman_graph_hash(G1, edge_attr='label')
+    '408c18537e67d3e56eb7dc92c72cb79e'
+    >>> weisfeiler_lehman_graph_hash(G2, edge_attr='label')
+    'f9e9cb01c6d2f3b17f83ffeaa24e5986'
+
+    References
+    -------
+    .. [1] Shervashidze, Nino, Pascal Schweitzer, Erik Jan Van Leeuwen,
+       Kurt Mehlhorn, and Karsten M. Borgwardt. Weisfeiler Lehman
+       Graph Kernels. Journal of Machine Learning Research. 2011.
+       http://www.jmlr.org/papers/volume12/shervashidze11a/shervashidze11a.pdf
     """
 
-    def nei_agg(G, n, node_labels, edge_attr=None):
+    def neighborhood_aggregate(G, n, node_labels, edge_attr=None):
+        """
+            Compute new labels for given node by aggregating
+            the labels of each node's neighbors.
+        """
         x = [node_labels[n]]
         for nei in G.neighbors(n):
             prefix = "" if not edge_attr else G[n][nei][edge_attr]
             x.append(prefix + node_labels[nei])
         return ''.join(sorted(x))
 
-    def wl_step(G, labels, edge_attr=None, node_attr=None):
+    def weisfeiler_lehman_step(G, labels, edge_attr=None, node_attr=None):
         """
-            Aggregate neighbor labels and edge label.
+            Apply neighborhood aggregation to each node
+            in the graph.
+            Computes a dictionary with labels for each node.
         """
         new_labels = dict()
         for n in G.nodes():
-            new_labels[n] = nei_agg(G, n, labels, edge_attr=edge_attr)
+            new_labels[n] = neighborhood_aggregate(G, n, labels, edge_attr=edge_attr)
         return new_labels
 
     items = []
@@ -90,7 +131,7 @@ def wl_hash(G, edge_attr=None, node_attr=None, iterations=3, digest_size=16):
             node_labels[n] = ''
 
     for k in range(iterations):
-        node_labels = wl_step(G, node_labels, edge_attr=edge_attr)
+        node_labels = weisfeiler_lehman_step(G, node_labels, edge_attr=edge_attr)
         c = Counter()
         # count node labels
         for node, d in node_labels.items():
@@ -105,14 +146,3 @@ def wl_hash(G, edge_attr=None, node_attr=None, iterations=3, digest_size=16):
     h.update(str(tuple(items)).encode('ascii'))
     h = h.hexdigest()
     return h
-
-if __name__ == "__main__":
-    import networkx as nx
-    G1 = nx.Graph()
-    G1.add_edges_from([(1, 2), (2, 3), (1, 3), (3, 4)])
-    G2 = nx.Graph()
-    G2.add_edges_from([(4, 5), (5, 6), (6, 4), (5, 7)])
-    print(wl_hash(G1))
-    print(wl_hash(G2))
-    G1.remove_edge(3, 1)
-    print(wl_hash(G1))
