@@ -1031,10 +1031,9 @@ def optimize_edit_paths(
 
     initial_cost = 0
     if roots:
-        assert len(roots) == 2, "Roots must be a 2-tuple."
         root_u, root_v = roots
-        assert root_u in pending_u, "Root node not in graph."
-        assert root_v in pending_v, "Root node not in graph."
+        if (root_u not in pending_u or root_v not in pending_v):
+            raise nx.NodeNotFound("Root node not in graph.")
 
         # remove roots from pending
         pending_u.remove(root_u)
