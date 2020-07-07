@@ -1,20 +1,12 @@
-# -*- encoding: utf-8 -*-
-# test_interval_graph.py - unit tests for interval_graph generators
-#
-# Copyright 2010-2019 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Unit tests for the :mod:`networkx.generators.interval_graph` module.
 
 """
+import math
+import pytest
+
 import networkx as nx
 from networkx.generators.interval_graph import interval_graph
 from networkx.testing import assert_edges_equal
-import math
-import pytest
 
 
 class TestIntervalGraph:
@@ -99,7 +91,7 @@ class TestIntervalGraph:
         assert set(actual_g.nodes) == set(expected_graph.nodes)
         assert_edges_equal(expected_graph, actual_g)
 
-    def test_interval_graph_5(self):
+    def test_interval_graph_4(self):
         """ test all possible overlaps """
         intervals = [(0, 2), (-2, -1), (-2, 0), (-2, 1), (-2, 2), (-2, 3),
                      (0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3), (3, 4)]

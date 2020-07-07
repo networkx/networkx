@@ -20,7 +20,7 @@ def interval_graph(intervals):
 
     Parameters
     ----------
-    intervals : a sequence of intervals, say (l, r) where l is the left end, 
+    intervals : a sequence of intervals, say (l, r) where l is the left end,
     and r is the right end of the closed interval.
 
     Returns
