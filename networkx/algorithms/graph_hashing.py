@@ -110,9 +110,9 @@ def weisfeiler_lehman_graph_hash(
 
     def weisfeiler_lehman_step(G, labels, edge_attr=None, node_attr=None):
         """
-            Apply neighborhood aggregation to each node
-            in the graph.
-            Computes a dictionary with labels for each node.
+        Apply neighborhood aggregation to each node
+        in the graph.
+        Computes a dictionary with labels for each node.
         """
         new_labels = dict()
         for node in G.nodes():
