@@ -634,7 +634,8 @@ class OutEdgeDataView:
         if nbunch is None:
             self._nodes_nbrs = adjdict.items
         else:
-            nbunch = set(viewer._graph.nbunch_iter(nbunch))
+            # dict retains order of nodes but acts like a set
+            nbunch = dict.fromkeys(viewer._graph.nbunch_iter(nbunch))
             self._nodes_nbrs = lambda: [(n, adjdict[n]) for n in nbunch]
         self._nbunch = nbunch
         self._data = data
@@ -656,7 +657,6 @@ class OutEdgeDataView:
                 for nbr, dd in nbrs.items())
 
     def __contains__(self, e):
-
         u, v = e[:2]
         if self._nbunch is not None and u not in self._nbunch:
             return False  # this edge doesn't start in nbunch
@@ -716,7 +716,6 @@ class EdgeDataView(OutEdgeDataView):
         del seen
 
     def __contains__(self, e):
-
         u, v = e[:2]
         if self._nbunch is not None and u not in self._nbunch and v not in self._nbunch:
             return False  # this edge doesn't start and it doesn't end in nbunch
@@ -736,9 +735,8 @@ class InEdgeDataView(OutEdgeDataView):
                 for nbr, dd in nbrs.items())
 
     def __contains__(self, e):
-
         u, v = e[:2]
-        if v not in self._nbunch:
+        if self._nbunch is not None and v not in self._nbunch:
             return False  # this edge doesn't end in nbunch
         try:
             ddict = self._adjdict[v][u]
@@ -770,7 +768,8 @@ class OutMultiEdgeDataView(OutEdgeDataView):
         if nbunch is None:
             self._nodes_nbrs = adjdict.items
         else:
-            nbunch = set(viewer._graph.nbunch_iter(nbunch))
+            # dict retains order of nodes but acts like a set
+            nbunch = dict.fromkeys(viewer._graph.nbunch_iter(nbunch))
             self._nodes_nbrs = lambda: [(n, adjdict[n]) for n in nbunch]
         self._nbunch = nbunch
         self._data = data
@@ -802,7 +801,6 @@ class OutMultiEdgeDataView(OutEdgeDataView):
                 for nbr, kd in nbrs.items() for k, dd in kd.items())
 
     def __contains__(self, e):
-
         u, v = e[:2]
         if self._nbunch is not None and u not in self._nbunch:
             return False  # this edge doesn't start in nbunch
@@ -838,7 +836,6 @@ class MultiEdgeDataView(OutMultiEdgeDataView):
         del seen
 
     def __contains__(self, e):
-
         u, v = e[:2]
         if self._nbunch is not None and u not in self._nbunch and v not in self._nbunch:
             return False  # this edge doesn't start and doesn't end in nbunch
@@ -871,7 +868,6 @@ class InMultiEdgeDataView(OutMultiEdgeDataView):
                 for nbr, kd in nbrs.items() for k, dd in kd.items())
 
     def __contains__(self, e):
-
         u, v = e[:2]
         if self._nbunch is not None and v not in self._nbunch:
             return False  # this edge doesn't end in nbunch
