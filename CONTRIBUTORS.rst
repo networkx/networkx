@@ -132,7 +132,7 @@ is partially historical, and now, mostly arbitrary.
 - Erwan Le Merrer
 - Søren Fuglede Jørgensen, GitHub: `fuglede <https://github.com/fuglede>`_
 - Salim BELHADDAD, LinkedIn `<https://www.linkedin.com/in/salymdotme/>`_
-- ysitu 
+- ysitu
 - Tomas Gavenciak
 - Luca Baldesi
 - Yuto Yamaguchi
@@ -140,11 +140,11 @@ is partially historical, and now, mostly arbitrary.
 - Minas Gjoka
 - Drew Conway
 - Alex Levenson
-- Haochen Wu 
+- Haochen Wu
 - Erwan  Le Merrer
 - Alex Roper
 - P C Kroon
-- Christopher Ellison   
+- Christopher Ellison
 - D. Eppstein
 - Federico Rosato
 - Aitor Almeida
@@ -154,8 +154,8 @@ is partially historical, and now, mostly arbitrary.
 - Nanda H Krishna
 - Nicholas Mancuso
 - Fred Morstatter
-- Ollie Glass       
-- Rodrigo Dorantes-Gilardi 
+- Ollie Glass
+- Rodrigo Dorantes-Gilardi
 - Pranay Kanwar
 - Balint Tillman
 - Diederik van Liere
@@ -175,6 +175,7 @@ is partially historical, and now, mostly arbitrary.
 - Gaetano Pietro Paolo Carpinato, Github `<https://github.com/Carghaez>`_, LinkedIn `<https://linkedin.com/in/gaetanocarpinato/>`_
 - Arun Nampally, GitHub `<https://github.com/arunwise>`_, LinkedIn `<https://www.linkedin.com/in/arun-nampally-b57845b7/>`_
 - Ryan Duve
+- Luca Cappelletti, GitHub: `LucaCappelletti94 <https://github.com/LucaCappelletti94>`_
 
 Support
 -------
