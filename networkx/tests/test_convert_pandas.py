@@ -4,12 +4,13 @@ from networkx.testing import assert_nodes_equal
 from networkx.testing import assert_edges_equal
 from networkx.testing import assert_graphs_equal
 
+np = pytest.importorskip("numpy")
 pd = pytest.importorskip("pandas")
 
 
 class TestConvertPandas:
     def setup_method(self):
-        self.rng = pd.np.random.RandomState(seed=5)
+        self.rng = np.random.RandomState(seed=5)
         ints = self.rng.randint(1, 11, size=(3, 2))
         a = ["A", "B", "C"]
         b = ["D", "A", "E"]
