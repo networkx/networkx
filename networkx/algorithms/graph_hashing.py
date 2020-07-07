@@ -9,8 +9,6 @@ from hashlib import blake2b
 
 __all__ = [
     "weisfeiler_lehman_graph_hash",
-    "neighborhood_aggregate",
-    "weisfeiler_lehman_step"
 ]
 
 
