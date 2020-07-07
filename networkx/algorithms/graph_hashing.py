@@ -8,7 +8,9 @@ from collections import Counter
 from hashlib import blake2b
 
 __all__ = [
-    "wl_hash",
+    "weisfeiler_lehman_graph_hash",
+    "neighborhood_aggregate",
+    "weisfeiler_lehman_step"
 ]
 
 
@@ -32,7 +34,6 @@ def weisfeiler_lehman_graph_hash(
     
     If no node or edge attributes are provided, the degree of each node
     is used as its initial label.
-
     Otherwise, node and/or edge labels are used to compute the hash.
 
     Parameters
@@ -146,3 +147,4 @@ def weisfeiler_lehman_graph_hash(
     h.update(str(tuple(items)).encode('ascii'))
     h = h.hexdigest()
     return h
+
