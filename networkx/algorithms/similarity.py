@@ -134,7 +134,7 @@ def graph_edit_distance(
         cost of 1 is used.  If edge_ins_cost is not specified then
         default edge insertion cost of 1 is used.
 
-    roots : tuple
+    roots : 2-tuple
         Tuple where first element is a node in G1 and the second
         is a node in G2.
         These nodes are forced to be matched in the comparison to
@@ -145,8 +145,8 @@ def graph_edit_distance(
         distance under or equal to upper_bound exists.
 
     timeouet : numeric
-        Number of seconds to execute. After timeout is exceeded,
-        the current best GED is returned.
+        Maximum number of seconds to execute.
+        After timeout is met, the current best GED is returned.
 
     Examples
     --------
@@ -161,6 +161,10 @@ def graph_edit_distance(
     0.0
     >>> nx.graph_edit_distance(G1, G2, roots=(1, 0))
     8.0
+
+    >>> G1 = nx.star_graph(13)
+    >>> G2 = nx.star_graph(11)
+    >>> nx.graph_edit_distance(G1, G2, timeout=5)
 
     See Also
     --------
@@ -1031,7 +1035,10 @@ def optimize_edit_paths(
 
     initial_cost = 0
     if roots:
+        assert len(roots) == 2, "Roots must be a 2-tuple."
         root_u, root_v = roots
+        assert root_u in pending_u, "Root node not in graph."
+        assert root_v in pending_v, "Root node not in graph."
 
         # remove roots from pending
         pending_u.remove(root_u)
