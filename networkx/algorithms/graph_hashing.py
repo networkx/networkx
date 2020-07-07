@@ -1,7 +1,7 @@
 """
-    Functions for hashing graphs to strings.
-    Isomorphic graphs should be assigned identical hashes.
-    For now, only Weisfeiler-Lehman hashing is implemented.
+Functions for hashing graphs to strings.
+Isomorphic graphs should be assigned identical hashes.
+For now, only Weisfeiler-Lehman hashing is implemented.
 """
 
 from collections import Counter
