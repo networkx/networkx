@@ -38,6 +38,7 @@ Algorithms
    efficiency_measures
    euler
    flow
+   graph_hashing
    graphical
    hierarchy
    hybrid
