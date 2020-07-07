@@ -11,7 +11,6 @@ from networkx.testing import assert_edges_equal
 
 class TestIntervalGraph:
     """Unit tests for :func:`networkx.generators.interval_graph.interval_graph`"""
-
     def test_empty(self):
         """ Tests for trivial case of empty input"""
         assert len(interval_graph([])) == 0

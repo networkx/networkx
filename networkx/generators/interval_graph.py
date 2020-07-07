@@ -53,19 +53,13 @@ def interval_graph(intervals):
                              f"Got {interval}")
 
     graph = nx.Graph()
-    if len(intervals) == 0:
-        return graph
 
     tupled_intervals = [tuple(interval) for interval in intervals]
     graph.add_nodes_from(tupled_intervals)
 
-    edges = []
-    for i in range(len(intervals)):
-        min1, max1 = tupled_intervals[i]
-        for j in range(i + 1, len(intervals)):
-            min2, max2 = tupled_intervals[j]
+    while intervals:
+        min1, max1 = tupled_intervals.pop()
+        for min2, max2 in tupled_intervals:
             if max1 >= min2 and max2 >= min1:
-                edges.append((tupled_intervals[i], tupled_intervals[j]))
-
-    graph.add_edges_from(edges)
+                graph.add_edge(tupled_intervals[i], tupled_intervals[j])
     return graph
