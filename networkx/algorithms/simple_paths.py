@@ -17,8 +17,7 @@ __all__ = [
 
 
 def is_simple_path(G, nodes):
-    """Returns True if and only if the given nodes form a simple path in
-    `G`.
+    """Returns True if and only if `nodes` form a simple path in `G`.
 
     A *simple path* in a graph is a nonempty sequence of nodes in which
     no node appears more than once in the sequence, and each adjacent
@@ -32,12 +31,11 @@ def is_simple_path(G, nodes):
     Returns
     -------
     bool
-        Whether the given list of nodes represents a simple path in
-        `G`.
+        Whether the given list of nodes represents a simple path in `G`.
 
     Notes
     -----
-    A list of zero nodes is not a path and a list of one node is a
+    An empty list of nodes is not a path but a list of one node is a
     path. Here's an explanation why.
 
     This function operates on *node paths*. One could also consider
@@ -296,8 +294,7 @@ def _all_simple_paths_multigraph(G, source, targets, cutoff):
 
 
 def all_simple_edge_paths(G, source, target, cutoff=None):
-    """Generate lists of edges for all simple paths in the graph G from
-    source to target.
+    """Generate lists of edges for all simple paths in G from source to target.
 
     A simple path is a path with no repeated nodes.
 
@@ -328,30 +325,22 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
 
     Print the simple path edges of a Graph::
 
-        >>> import networkx as nx
-        >>> 
-        >>> g = nx.Graph()
-        >>> g.add_edge('1', '2')
-        >>> g.add_edge('2', '4')
-        >>> g.add_edge('1', '3')
-        >>> g.add_edge('3', '4')
-        >>> 
-        >>> for path in sorted(nx.all_simple_edge_paths(g, '1', '4')):
+        >>> g = nx.Graph([(1, 2), (2, 4), (1, 3), (3, 4)])
+        >>> for path in sorted(nx.all_simple_edge_paths(g, 1, 4)):
         ...     print(path)
-        [('1', '2'), ('2', '4')]
-        [('1', '3'), ('3', '4')]
+        [(1, 2), (2, 4)]
+        [(1, 3), (3, 4)]
 
     Print the simple path edges of a MultiGraph. Returned edges come with
     their associated keys::
 
         >>> mg = nx.MultiGraph()
-        >>> mg.add_edge(1,2,key='k0')
+        >>> mg.add_edge(1, 2, key='k0')
         'k0'
-        >>> mg.add_edge(1,2,key='k1')
+        >>> mg.add_edge(1, 2, key='k1')
         'k1'
-        >>> mg.add_edge(2,3,key='k0')
+        >>> mg.add_edge(2, 3, key='k0')
         'k0'
-        >>> 
         >>> for path in sorted(nx.all_simple_edge_paths(mg, 1, 3)):
         ...     print(path)
         [(1, 2, 'k0'), (2, 3, 'k0')]
@@ -417,11 +406,10 @@ def _all_simple_edge_paths_multigraph(G, source, targets, cutoff):
             elif child[1] not in [v[0] for v in visited[1:]]:
                 visited.append(child)
                 stack.append(iter(G.edges(child[1], keys=True)))
-        else: #len(visited) == cutoff:
-            for (u,v,k) in [child]+list(children):
+        else:  # len(visited) == cutoff:
+            for (u, v, k) in [child] + list(children):
                 if v in targets:
-                    yield visited[1:] + [(u,v,k)]
-
+                    yield visited[1:] + [(u, v, k)]
             stack.pop()
             visited.pop()
 
