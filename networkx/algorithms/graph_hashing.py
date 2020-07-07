@@ -99,8 +99,8 @@ def weisfeiler_lehman_graph_hash(
 
     def neighborhood_aggregate(G, node, node_labels, edge_attr=None):
         """
-            Compute new labels for given node by aggregating
-            the labels of each node's neighbors.
+        Compute new labels for given node by aggregating
+        the labels of each node's neighbors.
         """
         label_list = [node_labels[node]]
         for nei in G.neighbors(node):
