@@ -164,7 +164,8 @@ def graph_edit_distance(
 
     >>> G1 = nx.star_graph(13)
     >>> G2 = nx.star_graph(11)
-    >>> nx.graph_edit_distance(G1, G2, timeout=5)
+    >>> nx.graph_edit_distance(G1, G2, timeout=.5)
+    26.0
 
     See Also
     --------
