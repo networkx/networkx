@@ -144,7 +144,7 @@ def graph_edit_distance(
         Maximum edit distance to consider.  Return None if no edit
         distance under or equal to upper_bound exists.
 
-    timeouet : numeric
+    timeout : numeric
         Maximum number of seconds to execute.
         After timeout is met, the current best GED is returned.
 
