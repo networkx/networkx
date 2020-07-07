@@ -627,6 +627,16 @@ def optimize_edit_paths(
         decreasing cost.  Otherwise, return all edit paths of cost
         less than or equal to the previous minimum cost.
 
+    roots : 2-tuple
+        Tuple where first element is a node in G1 and the second
+        is a node in G2.
+        These nodes are forced to be matched in the comparison to
+        allow comparison between rooted graphs.
+
+    timeout : numeric
+        Maximum number of seconds to execute.
+        After timeout is met, the current best GED is returned.
+
     Returns
     -------
     Generator of tuples (node_edit_path, edge_edit_path, cost)
