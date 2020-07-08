@@ -14,7 +14,8 @@ __all__ = ['resource_allocation_index',
            'preferential_attachment',
            'cn_soundarajan_hopcroft',
            'ra_index_soundarajan_hopcroft',
-           'within_inter_cluster','common_neighbor_centrality']
+           'within_inter_cluster',
+           'common_neighbor_centrality']
 
 
 def _apply_prediction(G, func, ebunch=None):
@@ -201,7 +202,9 @@ def adamic_adar_index(G, ebunch=None):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def common_neighbor_centrality(G, ebunch=None, alpha = 0.8):
-    r"""Compute the Common Neighbor and Centrality based Parameterized Algorithm(CCPA)
+    r"""Return the CCPA score for each pair of nodes.
+    
+    Compute the Common Neighbor and Centrality based Parameterized Algorithm(CCPA)
     score of all node pairs in ebunch.
 
     CCPA score of `u` and `v` is defined as
@@ -210,10 +213,19 @@ def common_neighbor_centrality(G, ebunch=None, alpha = 0.8):
 
         \alpha \cdot (|\Gamma (u){\cap }^{}\Gamma (v)|)+(1-\alpha )\cdot \frac{N}{{d}_{uv}}
 
-    where $\Gamma(u)$ denotes the set of neighbors of $u$, $\Gamma(v)$ denotes the 
+    where $\Gamma(u)$ denotes the set of neighbors of $u$, $\Gamma(v)$ denotes the
     set of neighbors of $v$, $\alpha$ is  parameter varies between [0,1], $N$ denotes
     total number of nodes in the Graph and ${d}_{uv}$ denotes shortest distance
     between $u$ and $v$.
+
+    This algorithm is based on two vital properties of nodes, namely the number
+    of common neighbors and their centrality. Common neighbor refers to the common
+    nodes between two nodes. Centrality refers to the prestige that a node enjoys
+    in a network.
+
+    .. seealso::
+
+        :func:`common_neighbors`
 
     Parameters
     ----------
@@ -258,9 +270,10 @@ def common_neighbor_centrality(G, ebunch=None, alpha = 0.8):
            Sci Rep 10, 364 (2020). 
            https://doi.org/10.1038/s41598-019-57304-y
     """
-    sortest_path = nx.shortest_path(G)
+    shortest_path = nx.shortest_path(G)
     def predict(u, v):
-        return alpha*len(sorted(nx.common_neighbors(G, u , v))) + (1-alpha)*(G.number_of_nodes()/(len(sortest_path[u][v]) - 1))
+        return alpha*len(list(nx.common_neighbors(G, u , v))) \
+             + (1-alpha)*(G.number_of_nodes()/(len(shortest_path[u][v]) - 1))
     return _apply_prediction(G, predict, ebunch)
 
 @not_implemented_for('directed')
