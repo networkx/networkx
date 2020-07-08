@@ -132,6 +132,7 @@ is partially historical, and now, mostly arbitrary.
 - Erwan Le Merrer
 - Søren Fuglede Jørgensen, GitHub: `fuglede <https://github.com/fuglede>`_
 - Salim BELHADDAD, LinkedIn `<https://www.linkedin.com/in/salymdotme/>`_
+- Jangwon Yie, GitHub `<https://github.com/jangwon-yie>`_, LinkedIn `<https://www.linkedin.com/in/jangwon-yie-a7960065/>`_
 - ysitu 
 - Tomas Gavenciak
 - Luca Baldesi
