@@ -57,9 +57,10 @@ def interval_graph(intervals):
     tupled_intervals = [tuple(interval) for interval in intervals]
     graph.add_nodes_from(tupled_intervals)
 
-    while intervals:
-        min1, max1 = tupled_intervals.pop()
-        for min2, max2 in tupled_intervals:
+    while tupled_intervals:
+        min1, max1 = interval1 = tupled_intervals.pop()
+        for interval2 in tupled_intervals:
+            min2, max2 = interval2
             if max1 >= min2 and max2 >= min1:
-                graph.add_edge(tupled_intervals[i], tupled_intervals[j])
+                graph.add_edge(interval1, interval2)
     return graph
