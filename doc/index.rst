@@ -76,6 +76,7 @@ Documentation
 
    install
    tutorial
+   auto_examples/index
    reference/index
    developer/index
    news
@@ -83,7 +84,6 @@ Documentation
    credits
    citing
    bibliography
-   auto_examples/index
 
 Indices and tables
 ------------------
