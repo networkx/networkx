@@ -545,13 +545,16 @@ def cliques_containing_node(G, nodes=None, cliques=None):
 class MaxWeightClique(object):
     """A class for the maximum weight clique algorithm.
 
+    This class is a helper for the `max_weight_clique` function.  The class
+    should not normally be used directly.
+
     Parameters
     ----------
     G : NetworkX graph
         The undirected graph for which a maximum weight clique is sought
     weight : string or None, optional (default='weight')
-        The edge attribute that holds the integer value used as a weight.
-        If None, then each edge has weight 1.
+        The node attribute that holds the integer value used as a weight.
+        If None, then each node has weight 1.
 
     Attributes
     ----------
@@ -647,40 +650,40 @@ class MaxWeightClique(object):
 def max_weight_clique(G, weight='weight'):
     """Find a maximum weight clique in G.
 
-    A _clique_ in a graph is a set of vertices such that every two distinct
-    vertices are adjacent.  The _weight_ of a clique is the sum of the weights
-    of its vertices.  A _maximum weight clique_ of graph G is a clique C in G
-    such that no clique in G has weight greater than the weight of C.
+    A _clique_ in a graph is a set of nodes such that every two distinct nodes
+    are adjacent.  The _weight_ of a clique is the sum of the weights of its
+    nodes.  A _maximum weight clique_ of graph G is a clique C in G such that
+    no clique in G has weight greater than the weight of C.
 
     Parameters
     ----------
     G : NetworkX graph
         Undirected graph
     weight : string or None, optional (default='weight')
-        The edge attribute that holds the integer value used as a weight.
-        If None, then each edge has weight 1.
+        The node attribute that holds the integer value used as a weight.
+        If None, then each node has weight 1.
 
     Returns
     -------
     clique : list
-        the vertices of a maximum weight clique
+        the nodes of a maximum weight clique
     weight : int
         the weight of a maximum weight clique
 
     Notes
     -----
     The implementation is recursive, and therefore it may run into recursion
-    depth issues if G contains a clique whose number of vertices is close to
-    the recursion depth limit.
+    depth issues if G contains a clique whose number of nodes is close to the
+    recursion depth limit.
 
     At each search node, the algorithm greedily constructs a weighted
-    independent set cover of part of the graph in order to find a small set
-    of vertices on which to branch.  The algorithm is very similar to the
-    algorithm of Tavares et al. [1]_, other than the fact that the NetworkX
-    version does not use bitsets.  This style of algorithm for maximum
-    weight clique (and maximum independent set, which is the same problem but
-    on the complement graph) has a decades-long history.  See Algorithm B of
-    Warren and Hicks [2]_ and the references in that paper.
+    independent set cover of part of the graph in order to find a small set of
+    nodes on which to branch.  The algorithm is very similar to the algorithm
+    of Tavares et al. [1]_, other than the fact that the NetworkX version does
+    not use bitsets.  This style of algorithm for maximum weight clique (and
+    maximum independent set, which is the same problem but on the complement
+    graph) has a decades-long history.  See Algorithm B of Warren and Hicks
+    [2]_ and the references in that paper.
 
     References
     ----------
