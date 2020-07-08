@@ -31,8 +31,8 @@ def interval_graph(intervals):
     --------
     >>> intervals = [(-2, 3), [1, 4], (2, 3), (4, 6)]
     >>> G = nx.interval_graph(intervals)
-    >>> G.edges
-    EdgeView([((-2, 3), (1, 4)), ((-2, 3), (2, 3)), ((1, 4), (2, 3)), ((1, 4), (4, 6))])
+    >>> sorted(G.edges)
+    [((-2, 3), (1, 4)), ((-2, 3), (2, 3)), ((1, 4), (2, 3)), ((1, 4), (4, 6))]
 
     Raises
     --------
