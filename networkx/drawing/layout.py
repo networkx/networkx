@@ -1034,8 +1034,8 @@ def spiral_layout(G, scale=1, center=None, dim=2,
     return pos
 
 
-def multipartite_layout(G, subset_key='subset', align='vertical', scale=1,
-                        center=None, aspect_ratio=4/3):
+def multipartite_layout(G, subset_key='subset', align='vertical',
+                        scale=1, center=None):
     """Position nodes in layers of straight lines.
 
     Parameters
@@ -1055,9 +1055,6 @@ def multipartite_layout(G, subset_key='subset', align='vertical', scale=1,
     center : array-like or None
         Coordinate pair around which to center the layout.
 
-    aspect_ratio : number (default=4/3):
-        The ratio of the width to the height of the layout.
-
     Returns
     -------
     pos : dict
@@ -1073,16 +1070,15 @@ def multipartite_layout(G, subset_key='subset', align='vertical', scale=1,
     This algorithm currently only works in two dimensions and does not
     try to minimize edge crossings.
 
+    Network does not need to be a complete multipartite graph. As long as nodes
+    have subset_key data, they will be placed in the corresponding layers.
+
     """
     import numpy as np
 
     G, center = _process_params(G, center=center, dim=2)
     if len(G) == 0:
         return {}
-
-    height = 1
-    width = aspect_ratio * height
-    offset = (width/2, height/2)
 
     layers = {}
     for v, data in G.nodes(data=True):
@@ -1091,19 +1087,19 @@ def multipartite_layout(G, subset_key='subset', align='vertical', scale=1,
         except KeyError:
             msg = "all nodes must have subset_key (default='subset') as data"
             raise ValueError(msg)
-
         layers[layer] = [v] + layers.get(layer, [])
 
     pos = None
     nodes = []
+    max_layer = max(len(l) for l in layers.values())
     if align == 'vertical':
-        prev_size = height/2
+        width = len(layers)
         for i, layer in layers.items():
-            size = len(layer)
-            xs = np.repeat(i, size)
-            ys = np.arange(0, size)
+            height = len(layer)
+            xs = np.repeat(i, height)
+            ys = np.arange(0, height, dtype=float)
+            offset = ((width-1)/2, (height-1)/2)
             layer_pos = np.column_stack([xs, ys]) - offset
-            layer_pos += (0, (prev_size-size)/2)
             if pos is None:
                 pos = layer_pos
             else:
@@ -1111,15 +1107,16 @@ def multipartite_layout(G, subset_key='subset', align='vertical', scale=1,
             nodes.extend(layer)
         pos = rescale_layout(pos, scale=scale) + center
         pos = dict(zip(nodes, pos))
+        return pos
 
     if align == 'horizontal':
-        prev_size = width/2
+        height = len(layers)
         for i, layer in layers.items():
-            size = len(layer)
-            xs = np.arange(0, size)
-            ys = np.repeat(i, size)
+            width = len(layer)
+            xs = np.arange(0, width, dtype=float)
+            ys = np.repeat(i, width)
+            offset =  ((width-1)/2, (height-1)/2)
             layer_pos = np.column_stack([xs, ys]) - offset
-            layer_pos += ((prev_size-size)/2, 0)
             if pos is None:
                 pos = layer_pos
             else:
@@ -1127,9 +1124,10 @@ def multipartite_layout(G, subset_key='subset', align='vertical', scale=1,
             nodes.extend(layer)
         pos = rescale_layout(pos, scale=scale) + center
         pos = dict(zip(nodes, pos))
+        return pos
 
-    return pos
-
+    msg = 'align must be either vertical or horizontal.'
+    raise ValueError(msg)
 
 def rescale_layout(pos, scale=1):
     """Returns scaled position array to (-scale, scale) in all axes.
