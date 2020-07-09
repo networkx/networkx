@@ -1091,7 +1091,6 @@ def multipartite_layout(G, subset_key='subset', align='vertical',
 
     pos = None
     nodes = []
-    max_layer = max(len(l) for l in layers.values())
     if align == 'vertical':
         width = len(layers)
         for i, layer in layers.items():
