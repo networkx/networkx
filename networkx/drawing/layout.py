@@ -650,7 +650,7 @@ def kamada_kawai_layout(G, dist=None,
     G : NetworkX graph or list of nodes
         A position will be assigned to every node in G.
 
-    dist : float (default=None)
+    dist : dict (default=None)
         A two-level dictionary of optimal distances between nodes,
         indexed by source and destination node.
         If None, the distance is computed using shortest_path_length().
