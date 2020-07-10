@@ -27,41 +27,44 @@ def test_richclub_normalized():
 def test_richclub2():
     T = nx.balanced_tree(2, 10)
     rc = nx.richclub.rich_club_coefficient(T, normalized=False)
-    assert rc == {0: 4092 / (2047 * 2046.0),
-                  1: (2044.0 / (1023 * 1022)),
-                  2: (2040.0 / (1022 * 1021))}
+    assert rc == {
+        0: 4092 / (2047 * 2046.0),
+        1: (2044.0 / (1023 * 1022)),
+        2: (2040.0 / (1022 * 1021)),
+    }
 
 
 def test_richclub3():
     # tests edgecase
     G = nx.karate_club_graph()
     rc = nx.rich_club_coefficient(G, normalized=False)
-    assert rc == {0: 156.0 / 1122,
-                  1: 154.0 / 1056,
-                  2: 110.0 / 462,
-                  3: 78.0 / 240,
-                  4: 44.0 / 90,
-                  5: 22.0 / 42,
-                  6: 10.0 / 20,
-                  7: 10.0 / 20,
-                  8: 10.0 / 20,
-                  9: 6.0 / 12,
-                  10: 2.0 / 6,
-                  11: 2.0 / 6,
-                  12: 0.0,
-                  13: 0.0,
-                  14: 0.0,
-                  15: 0.0, }
+    assert rc == {
+        0: 156.0 / 1122,
+        1: 154.0 / 1056,
+        2: 110.0 / 462,
+        3: 78.0 / 240,
+        4: 44.0 / 90,
+        5: 22.0 / 42,
+        6: 10.0 / 20,
+        7: 10.0 / 20,
+        8: 10.0 / 20,
+        9: 6.0 / 12,
+        10: 2.0 / 6,
+        11: 2.0 / 6,
+        12: 0.0,
+        13: 0.0,
+        14: 0.0,
+        15: 0.0,
+    }
 
 
 def test_richclub4():
     G = nx.Graph()
-    G.add_edges_from([(0, 1), (0, 2), (0, 3), (0, 4), (4, 5), (5, 9), (6, 9), (7, 9), (8, 9)])
+    G.add_edges_from(
+        [(0, 1), (0, 2), (0, 3), (0, 4), (4, 5), (5, 9), (6, 9), (7, 9), (8, 9)]
+    )
     rc = nx.rich_club_coefficient(G, normalized=False)
-    assert rc == {0: 18 / 90.0,
-                  1: 6 / 12.0,
-                  2: 0.0,
-                  3: 0.0}
+    assert rc == {0: 18 / 90.0, 1: 6 / 12.0, 2: 0.0, 3: 0.0}
 
 
 def test_richclub_exception():

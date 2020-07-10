@@ -6,7 +6,7 @@ from heapq import heappop, heappush
 from itertools import count
 import networkx as nx
 
-__all__ = ['MinHeap', 'PairingHeap', 'BinaryHeap']
+__all__ = ["MinHeap", "PairingHeap", "BinaryHeap"]
 
 
 class MinHeap:
@@ -20,7 +20,8 @@ class MinHeap:
     class _Item:
         """Used by subclassess to represent a key-value pair.
         """
-        __slots__ = ('key', 'value')
+
+        __slots__ = ("key", "value")
 
         def __init__(self, key, value):
             self.key = key
@@ -135,9 +136,11 @@ class MinHeap:
 def _inherit_doc(cls):
     """Decorator for inheriting docstrings from base classes.
     """
+
     def func(fn):
         fn.__doc__ = cls.__dict__[fn.__name__].__doc__
         return fn
+
     return func
 
 
@@ -151,7 +154,8 @@ class PairingHeap(MinHeap):
         A tree in a pairing heap is stored using the left-child, right-sibling
         representation.
         """
-        __slots__ = ('left', 'next', 'prev', 'parent')
+
+        __slots__ = ("left", "next", "prev", "parent")
 
         def __init__(self, key, value):
             super(PairingHeap._Node, self).__init__(key, value)
@@ -173,13 +177,13 @@ class PairingHeap(MinHeap):
     @_inherit_doc(MinHeap)
     def min(self):
         if self._root is None:
-            raise nx.NetworkXError('heap is empty.')
+            raise nx.NetworkXError("heap is empty.")
         return (self._root.key, self._root.value)
 
     @_inherit_doc(MinHeap)
     def pop(self):
         if self._root is None:
-            raise nx.NetworkXError('heap is empty.')
+            raise nx.NetworkXError("heap is empty.")
         min_node = self._root
         self._root = self._merge_children(self._root)
         del self._dict[min_node.key]
@@ -311,7 +315,7 @@ class BinaryHeap(MinHeap):
     def min(self):
         dict = self._dict
         if not dict:
-            raise nx.NetworkXError('heap is empty')
+            raise nx.NetworkXError("heap is empty")
         heap = self._heap
         pop = heappop
         # Repeatedly remove stale key-value pairs until a up-to-date one is
@@ -327,7 +331,7 @@ class BinaryHeap(MinHeap):
     def pop(self):
         dict = self._dict
         if not dict:
-            raise nx.NetworkXError('heap is empty')
+            raise nx.NetworkXError("heap is empty")
         heap = self._heap
         pop = heappop
         # Repeatedly remove stale key-value pairs until a up-to-date one is

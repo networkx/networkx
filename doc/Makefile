@@ -113,7 +113,7 @@ latexpdf: latex
 
 docs: clean html latexpdf
 	cp build/latex/networkx_reference.pdf build/html/_downloads/.
-	
+
 gitwash-update:
 	python ../tools/gitwash_dumper.py developer networkx \
 	--project-url=http://networkx.github.io \

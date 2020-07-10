@@ -13,7 +13,7 @@ class TestSpectralBipartivity:
     @classmethod
     def setup_class(cls):
         global scipy
-        scipy = pytest.importorskip('scipy')
+        scipy = pytest.importorskip("scipy")
 
     def test_star_like(self):
         # star-like

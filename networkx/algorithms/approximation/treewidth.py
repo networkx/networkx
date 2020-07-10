@@ -39,8 +39,8 @@ import itertools
 __all__ = ["treewidth_min_degree", "treewidth_min_fill_in"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def treewidth_min_degree(G):
     """ Returns a treewidth decomposition using the Minimum Degree heuristic.
 
@@ -62,8 +62,8 @@ def treewidth_min_degree(G):
     return treewidth_decomp(G, lambda graph: deg_heuristic.best_node(graph))
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def treewidth_min_fill_in(G):
     """ Returns a treewidth decomposition using the Minimum Fill-in heuristic.
 
@@ -80,7 +80,7 @@ def treewidth_min_fill_in(G):
     Treewidth decomposition : (int, Graph) tuple
         2-tuple with treewidth and the corresponding decomposed tree.
     """
-    return treewidth_decomp(G,  min_fill_in_heuristic)
+    return treewidth_decomp(G, min_fill_in_heuristic)
 
 
 class MinDegreeHeuristic:
@@ -91,6 +91,7 @@ class MinDegreeHeuristic:
     chosen, then the graph is updated and the corresponding node is
     removed. Next, a new node with the lowest degree is chosen, and so on.
     """
+
     def __init__(self, graph):
         self._graph = graph
 

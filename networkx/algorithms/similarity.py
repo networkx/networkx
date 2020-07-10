@@ -43,7 +43,7 @@ def graph_edit_distance(
     edge_ins_cost=None,
     roots=None,
     upper_bound=None,
-    timeout=None
+    timeout=None,
 ):
     """Returns GED (graph edit distance) between graphs G1 and G2.
 
@@ -194,7 +194,7 @@ def graph_edit_distance(
         upper_bound,
         True,
         roots,
-        timeout
+        timeout,
     ):
         # assert bestcost is None or cost < bestcost
         bestcost = cost
@@ -527,7 +527,7 @@ def optimize_edit_paths(
     upper_bound=None,
     strictly_decreasing=True,
     roots=None,
-    timeout=None
+    timeout=None,
 ):
     """GED (graph edit distance) calculation: advanced interface.
 
@@ -1042,7 +1042,7 @@ def optimize_edit_paths(
     initial_cost = 0
     if roots:
         root_u, root_v = roots
-        if (root_u not in pending_u or root_v not in pending_v):
+        if root_u not in pending_u or root_v not in pending_v:
             raise nx.NodeNotFound("Root node not in graph.")
 
         # remove roots from pending

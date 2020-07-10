@@ -72,7 +72,7 @@ print(nx.number_connected_components(UG), "connected components")
 options = {
     "node_color": "black",
     "node_size": 1,
-    "edge_color": 'gray',
+    "edge_color": "gray",
     "linewidths": 0,
     "width": 0.1,
 }

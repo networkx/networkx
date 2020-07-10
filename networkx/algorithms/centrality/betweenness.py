@@ -5,14 +5,14 @@ from itertools import count
 from networkx.utils import py_random_state
 from networkx.utils.decorators import not_implemented_for
 
-__all__ = ['betweenness_centrality', 'edge_betweenness_centrality',
-           'edge_betweenness']
+__all__ = ["betweenness_centrality", "edge_betweenness_centrality", "edge_betweenness"]
 
 
 @py_random_state(5)
-@not_implemented_for('multigraph')
-def betweenness_centrality(G, k=None, normalized=True, weight=None,
-                           endpoints=False, seed=None):
+@not_implemented_for("multigraph")
+def betweenness_centrality(
+    G, k=None, normalized=True, weight=None, endpoints=False, seed=None
+):
     r"""Compute the shortest-path betweenness centrality for nodes.
 
     Betweenness centrality of a node $v$ is the sum of the
@@ -132,14 +132,19 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
         else:
             betweenness = _accumulate_basic(betweenness, S, P, sigma, s)
     # rescaling
-    betweenness = _rescale(betweenness, len(G), normalized=normalized,
-                           directed=G.is_directed(), k=k, endpoints=endpoints)
+    betweenness = _rescale(
+        betweenness,
+        len(G),
+        normalized=normalized,
+        directed=G.is_directed(),
+        k=k,
+        endpoints=endpoints,
+    )
     return betweenness
 
 
 @py_random_state(4)
-def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
-                                seed=None):
+def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=None):
     r"""Compute betweenness centrality for edges.
 
     Betweenness centrality of an edge $e$ is the sum of the
@@ -223,9 +228,11 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
     # rescaling
     for n in G:  # remove nodes to only return edges
         del betweenness[n]
-    betweenness = _rescale_e(betweenness, len(G), normalized=normalized,
-                             directed=G.is_directed())
+    betweenness = _rescale_e(
+        betweenness, len(G), normalized=normalized, directed=G.is_directed()
+    )
     return betweenness
+
 
 # obsolete name
 
@@ -236,17 +243,18 @@ def edge_betweenness(G, k=None, normalized=True, weight=None, seed=None):
 
 # helpers for betweenness centrality
 
+
 def _single_source_shortest_path_basic(G, s):
     S = []
     P = {}
     for v in G:
         P[v] = []
-    sigma = dict.fromkeys(G, 0.0)    # sigma[v]=0 for v in G
+    sigma = dict.fromkeys(G, 0.0)  # sigma[v]=0 for v in G
     D = {}
     sigma[s] = 1.0
     D[s] = 0
     Q = [s]
-    while Q:   # use BFS to find shortest paths
+    while Q:  # use BFS to find shortest paths
         v = Q.pop(0)
         S.append(v)
         Dv = D[v]
@@ -255,7 +263,7 @@ def _single_source_shortest_path_basic(G, s):
             if w not in D:
                 Q.append(w)
                 D[w] = Dv + 1
-            if D[w] == Dv + 1:   # this is a shortest path, count paths
+            if D[w] == Dv + 1:  # this is a shortest path, count paths
                 sigma[w] += sigmav
                 P[w].append(v)  # predecessors
     return S, P, sigma
@@ -267,14 +275,14 @@ def _single_source_dijkstra_path_basic(G, s, weight):
     P = {}
     for v in G:
         P[v] = []
-    sigma = dict.fromkeys(G, 0.0)    # sigma[v]=0 for v in G
+    sigma = dict.fromkeys(G, 0.0)  # sigma[v]=0 for v in G
     D = {}
     sigma[s] = 1.0
     push = heappush
     pop = heappop
     seen = {s: 0}
     c = count()
-    Q = []   # use Q as heap with (distance,node id) tuples
+    Q = []  # use Q as heap with (distance,node id) tuples
     push(Q, (0, next(c), s, s))
     while Q:
         (dist, _, pred, v) = pop(Q)
@@ -338,8 +346,7 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
     return betweenness
 
 
-def _rescale(betweenness, n, normalized,
-             directed=False, k=None, endpoints=False):
+def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False):
     if normalized:
         if endpoints:
             if n < 2:

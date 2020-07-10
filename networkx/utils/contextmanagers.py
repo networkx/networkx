@@ -2,7 +2,7 @@ from contextlib import contextmanager
 import warnings
 
 __all__ = [
-    'reversed',
+    "reversed",
 ]
 
 
@@ -24,8 +24,10 @@ def reversed(G):
     same graph without confusion while the context manager does not.
     This context manager is scheduled to be removed in version 3.0.
     """
-    msg = "context manager reversed is deprecated and to be removed in 3.0." \
-          "Use G.reverse(copy=False) if G.is_directed() else G instead."
+    msg = (
+        "context manager reversed is deprecated and to be removed in 3.0."
+        "Use G.reverse(copy=False) if G.is_directed() else G instead."
+    )
     warnings.warn(msg, DeprecationWarning)
 
     directed = G.is_directed()

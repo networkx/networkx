@@ -89,12 +89,10 @@ class UnionFind:
 
         yield from groups(self.parents).values()
 
-
     def union(self, *objects):
         """Find the sets containing the objects and merge them all."""
         # Find the heaviest root according to its weight.
-        roots = iter(sorted({self[x] for x in objects},
-                            key=lambda r: self.weights[r]))
+        roots = iter(sorted({self[x] for x in objects}, key=lambda r: self.weights[r]))
         try:
             root = next(roots)
         except StopIteration:

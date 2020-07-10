@@ -5,7 +5,7 @@ import networkx as nx
 from networkx.testing.utils import (
     assert_graphs_equal,
     assert_edges_equal,
-    assert_nodes_equal
+    assert_nodes_equal,
 )
 
 
@@ -13,15 +13,15 @@ class TestGpickle:
     @classmethod
     def setup_class(cls):
         G = nx.Graph(name="test")
-        e = [('a', 'b'), ('b', 'c'), ('c', 'd'), ('d', 'e'), ('e', 'f'), ('a', 'f')]
+        e = [("a", "b"), ("b", "c"), ("c", "d"), ("d", "e"), ("e", "f"), ("a", "f")]
         G.add_edges_from(e, width=10)
-        G.add_node('g', color='green')
-        G.graph['number'] = 1
+        G.add_node("g", color="green")
+        G.graph["number"] = 1
         DG = nx.DiGraph(G)
         MG = nx.MultiGraph(G)
-        MG.add_edge('a', 'a')
+        MG.add_edge("a", "a")
         MDG = nx.MultiDiGraph(G)
-        MDG.add_edge('a', 'a')
+        MDG.add_edge("a", "a")
         fG = G.copy()
         fDG = DG.copy()
         fMG = MG.copy()
@@ -40,28 +40,40 @@ class TestGpickle:
         cls.fMDG = fMDG
 
     def test_gpickle(self):
-        for G in [self.G, self.DG, self.MG, self.MDG,
-                  self.fG, self.fDG, self.fMG, self.fMDG]:
+        for G in [
+            self.G,
+            self.DG,
+            self.MG,
+            self.MDG,
+            self.fG,
+            self.fDG,
+            self.fMG,
+            self.fMDG,
+        ]:
             (fd, fname) = tempfile.mkstemp()
             nx.write_gpickle(G, fname)
             Gin = nx.read_gpickle(fname)
-            assert_nodes_equal(list(G.nodes(data=True)),
-                               list(Gin.nodes(data=True)))
-            assert_edges_equal(list(G.edges(data=True)),
-                               list(Gin.edges(data=True)))
+            assert_nodes_equal(list(G.nodes(data=True)), list(Gin.nodes(data=True)))
+            assert_edges_equal(list(G.edges(data=True)), list(Gin.edges(data=True)))
             assert_graphs_equal(G, Gin)
             os.close(fd)
             os.unlink(fname)
 
     def test_protocol(self):
-        for G in [self.G, self.DG, self.MG, self.MDG,
-                  self.fG, self.fDG, self.fMG, self.fMDG]:
+        for G in [
+            self.G,
+            self.DG,
+            self.MG,
+            self.MDG,
+            self.fG,
+            self.fDG,
+            self.fMG,
+            self.fMDG,
+        ]:
             with tempfile.TemporaryFile() as f:
                 nx.write_gpickle(G, f, 0)
                 f.seek(0)
                 Gin = nx.read_gpickle(f)
-                assert_nodes_equal(list(G.nodes(data=True)),
-                                   list(Gin.nodes(data=True)))
-                assert_edges_equal(list(G.edges(data=True)),
-                                   list(Gin.edges(data=True)))
+                assert_nodes_equal(list(G.nodes(data=True)), list(Gin.nodes(data=True)))
+                assert_edges_equal(list(G.edges(data=True)), list(Gin.edges(data=True)))
                 assert_graphs_equal(G, Gin)

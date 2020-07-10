@@ -1,13 +1,13 @@
 import pytest
-np = pytest.importorskip('numpy')
-scipy = pytest.importorskip('scipy')
+
+np = pytest.importorskip("numpy")
+scipy = pytest.importorskip("scipy")
 
 import networkx as nx
 from networkx.testing import almost_equal
 
 
 class TestFlowClosenessCentrality:
-
     def test_K4(self):
         """Closeness centrality: K4"""
         G = nx.complete_graph(4)
@@ -27,9 +27,9 @@ class TestFlowClosenessCentrality:
     def test_star(self):
         """Closeness centrality: star """
         G = nx.Graph()
-        nx.add_star(G, ['a', 'b', 'c', 'd'])
+        nx.add_star(G, ["a", "b", "c", "d"])
         b = nx.current_flow_closeness_centrality(G)
-        b_answer = {'a': 1.0 / 3, 'b': 0.6 / 3, 'c': 0.6 / 3, 'd': 0.6 / 3}
+        b_answer = {"a": 1.0 / 3, "b": 0.6 / 3, "c": 0.6 / 3, "d": 0.6 / 3}
         for n in sorted(G):
             assert almost_equal(b[n], b_answer[n])
 

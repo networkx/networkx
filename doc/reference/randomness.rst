@@ -7,18 +7,18 @@ Randomness
 Random Number Generators (RNGs) are often used when generating, drawing
 and computing properties or manipulating networks. NetworkX provides
 functions which use one of two standard RNGs: NumPy's package `numpy.random`
-or Python's built-in package `random`. They each provide the same 
+or Python's built-in package `random`. They each provide the same
 algorithm for generating numbers (Mersenne Twister). Their interfaces
-are similar (dangerously similar) and yet distinct. 
+are similar (dangerously similar) and yet distinct.
 They each provide a global default instance of their generator that
 is shared by all programs in a single session.
 For the most part you can use the RNGs as NetworkX has them set up and
 you'll get reasonable pseudorandom results (results that are statistically
-random, but created in a deterministic manner). 
+random, but created in a deterministic manner).
 
 Sometimes you want more control over how the numbers are generated.
 In particular, you need to set the `seed` of the generator to make
-your results reproducible -- either for scientific publication or 
+your results reproducible -- either for scientific publication or
 for debugging. Both RNG packages have easy functions to set the seed
 to any integer, thus determining the subsequent generated values.
 Since this package (and many others) use both RNGs you may need to
@@ -48,7 +48,7 @@ RNG package to use, and whether to use a global or local RNG.
     >>> pos = random_layout(G, seed=None)  # use (either) global default RNG
     >>> pos = random_layout(G, seed=42)  # local RNG just for this call
     >>> pos = random_layout(G, seed=numpy.random)  # use numpy global RNG
-    >>> random_state = numpy.random.RandomState(42) 
+    >>> random_state = numpy.random.RandomState(42)
     >>> pos = random_layout(G, seed=random_state)  # use/reuse your own RNG
 
 Each NetworkX function that uses an RNG was written with one RNG package
@@ -59,7 +59,7 @@ can use a `numpy.random` RNG even if the function is written for `random`.
 It works as follows.
 
 The default behavior (when `seed=None`) is to use the global RNG
-for the function's preferred package. 
+for the function's preferred package.
 If seed is set to an integer value,
 a local RNG is created with the indicated seed value and
 is used for the duration of that function (including any
@@ -69,20 +69,20 @@ the global numpy RNG is used whether the function expects it or not.
 Finally, you can provide a numpy RNG to be used by the function.
 The RNG is then available to use in other functions or even other
 package like sklearn.
-In this way you can use a single RNG for all random numbers 
+In this way you can use a single RNG for all random numbers
 in your project.
 
 While it is possible to assign `seed` a `random`-style RNG for
 NetworkX functions written for the `random` package API,
-the numpy RNG interface has too 
+the numpy RNG interface has too
 many nice features for us to ensure a `random`-style RNG will work in
 all functions. In practice, you can do most things using only `random`
 RNGs (useful if numpy is not available). But your experience will be
 richer if numpy is available.
 
 To summarize, you can easily ignore the `seed` argument and use the global
-RNGs. You can specify to use only the numpy global RNG with 
+RNGs. You can specify to use only the numpy global RNG with
 `seed=numpy.random`. You can use a local RNG by providing an integer
 seed value. And you can provide your own numpy RNG, reusing it for all
-functions. It is easier to use numpy RNGs if you want a single RNG for 
+functions. It is easier to use numpy RNGs if you want a single RNG for
 your computations.

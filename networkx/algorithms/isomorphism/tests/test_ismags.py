@@ -18,27 +18,35 @@ def _matches_to_sets(matches):
 class TestSelfIsomorphism:
     data = [
         (
-            [(0, dict(name='a')),
-             (1, dict(name='a')),
-             (2, dict(name='b')),
-             (3, dict(name='b')),
-             (4, dict(name='a')),
-             (5, dict(name='a'))],
-            [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5)]
+            [
+                (0, dict(name="a")),
+                (1, dict(name="a")),
+                (2, dict(name="b")),
+                (3, dict(name="b")),
+                (4, dict(name="a")),
+                (5, dict(name="a")),
+            ],
+            [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5)],
         ),
-        (
-            range(1, 5),
-            [(1, 2), (2, 4), (4, 3), (3, 1)]
-        ),
-        (
-            [],
-            [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 0), (0, 6), (6, 7),
-             (2, 8), (8, 9), (4, 10), (10, 11)]
-        ),
+        (range(1, 5), [(1, 2), (2, 4), (4, 3), (3, 1)]),
         (
             [],
-            [(0, 1), (1, 2), (1, 4), (2, 3), (3, 5), (3, 6)]
+            [
+                (0, 1),
+                (1, 2),
+                (2, 3),
+                (3, 4),
+                (4, 5),
+                (5, 0),
+                (0, 6),
+                (6, 7),
+                (2, 8),
+                (8, 9),
+                (4, 10),
+                (10, 11),
+            ],
         ),
+        ([], [(0, 1), (1, 2), (1, 4), (2, 3), (3, 5), (3, 6)]),
     ]
 
     def test_self_isomorphism(self):
@@ -51,11 +59,14 @@ class TestSelfIsomorphism:
             graph.add_nodes_from(node_data)
             graph.add_edges_from(edge_data)
 
-            ismags = iso.ISMAGS(graph, graph, node_match=iso.categorical_node_match('name', None))
+            ismags = iso.ISMAGS(
+                graph, graph, node_match=iso.categorical_node_match("name", None)
+            )
             assert ismags.is_isomorphic()
             assert ismags.subgraph_is_isomorphic()
-            assert (list(ismags.subgraph_isomorphisms_iter(symmetry=True)) ==
-                    [{n: n for n in graph.nodes}])
+            assert list(ismags.subgraph_isomorphisms_iter(symmetry=True)) == [
+                {n: n for n in graph.nodes}
+            ]
 
     def test_edgecase_self_isomorphism(self):
         """
@@ -87,11 +98,14 @@ class TestSelfIsomorphism:
             graph.add_nodes_from(node_data)
             graph.add_edges_from(edge_data)
 
-            ismags = iso.ISMAGS(graph, graph, node_match=iso.categorical_node_match('name', None))
+            ismags = iso.ISMAGS(
+                graph, graph, node_match=iso.categorical_node_match("name", None)
+            )
             assert ismags.is_isomorphic()
             assert ismags.subgraph_is_isomorphic()
-            assert (list(ismags.subgraph_isomorphisms_iter(symmetry=True)) ==
-                    [{n: n for n in graph.nodes}])
+            assert list(ismags.subgraph_isomorphisms_iter(symmetry=True)) == [
+                {n: n for n in graph.nodes}
+            ]
 
 
 class TestSubgraphIsomorphism:
@@ -103,8 +117,9 @@ class TestSubgraphIsomorphism:
         nx.add_cycle(g2, range(4))
         g2.add_edges_from([(n, m) for n, m in zip(g2, range(4, 8))])
         ismags = iso.ISMAGS(g2, g1)
-        assert (list(ismags.subgraph_isomorphisms_iter(symmetry=True)) ==
-                [{n: n for n in g1.nodes}])
+        assert list(ismags.subgraph_isomorphisms_iter(symmetry=True)) == [
+            {n: n for n in g1.nodes}
+        ]
 
     def test_isomorphism2(self):
         g1 = nx.Graph()
@@ -115,69 +130,94 @@ class TestSubgraphIsomorphism:
 
         ismags = iso.ISMAGS(g2, g1)
         matches = ismags.subgraph_isomorphisms_iter(symmetry=True)
-        expected_symmetric = [{0: 0, 1: 1, 2: 2},
-                              {0: 0, 1: 1, 3: 2},
-                              {2: 0, 1: 1, 3: 2}]
-        assert (_matches_to_sets(matches) ==
-                _matches_to_sets(expected_symmetric))
+        expected_symmetric = [
+            {0: 0, 1: 1, 2: 2},
+            {0: 0, 1: 1, 3: 2},
+            {2: 0, 1: 1, 3: 2},
+        ]
+        assert _matches_to_sets(matches) == _matches_to_sets(expected_symmetric)
 
         matches = ismags.subgraph_isomorphisms_iter(symmetry=False)
-        expected_asymmetric = [{0: 2, 1: 1, 2: 0},
-                               {0: 2, 1: 1, 3: 0},
-                               {2: 2, 1: 1, 3: 0}]
-        assert (_matches_to_sets(matches) ==
-                _matches_to_sets(expected_symmetric + expected_asymmetric))
+        expected_asymmetric = [
+            {0: 2, 1: 1, 2: 0},
+            {0: 2, 1: 1, 3: 0},
+            {2: 2, 1: 1, 3: 0},
+        ]
+        assert _matches_to_sets(matches) == _matches_to_sets(
+            expected_symmetric + expected_asymmetric
+        )
 
     def test_labeled_nodes(self):
         g1 = nx.Graph()
         nx.add_cycle(g1, range(3))
-        g1.nodes[1]['attr'] = True
+        g1.nodes[1]["attr"] = True
 
         g2 = g1.copy()
         g2.add_edge(1, 3)
         ismags = iso.ISMAGS(g2, g1, node_match=lambda x, y: x == y)
         matches = ismags.subgraph_isomorphisms_iter(symmetry=True)
         expected_symmetric = [{0: 0, 1: 1, 2: 2}]
-        assert (_matches_to_sets(matches) ==
-                _matches_to_sets(expected_symmetric))
+        assert _matches_to_sets(matches) == _matches_to_sets(expected_symmetric)
 
         matches = ismags.subgraph_isomorphisms_iter(symmetry=False)
         expected_asymmetric = [{0: 2, 1: 1, 2: 0}]
-        assert (_matches_to_sets(matches) ==
-                _matches_to_sets(expected_symmetric + expected_asymmetric))
+        assert _matches_to_sets(matches) == _matches_to_sets(
+            expected_symmetric + expected_asymmetric
+        )
 
     def test_labeled_edges(self):
         g1 = nx.Graph()
         nx.add_cycle(g1, range(3))
-        g1.edges[1, 2]['attr'] = True
+        g1.edges[1, 2]["attr"] = True
 
         g2 = g1.copy()
         g2.add_edge(1, 3)
         ismags = iso.ISMAGS(g2, g1, edge_match=lambda x, y: x == y)
         matches = ismags.subgraph_isomorphisms_iter(symmetry=True)
         expected_symmetric = [{0: 0, 1: 1, 2: 2}]
-        assert (_matches_to_sets(matches) ==
-                _matches_to_sets(expected_symmetric))
+        assert _matches_to_sets(matches) == _matches_to_sets(expected_symmetric)
 
         matches = ismags.subgraph_isomorphisms_iter(symmetry=False)
         expected_asymmetric = [{1: 2, 0: 0, 2: 1}]
-        assert (_matches_to_sets(matches) ==
-                _matches_to_sets(expected_symmetric + expected_asymmetric))
+        assert _matches_to_sets(matches) == _matches_to_sets(
+            expected_symmetric + expected_asymmetric
+        )
 
 
 class TestWikipediaExample:
     # Nodes 'a', 'b', 'c' and 'd' form a column.
     # Nodes 'g', 'h', 'i' and 'j' form a column.
-    g1edges = [['a', 'g'], ['a', 'h'], ['a', 'i'],
-               ['b', 'g'], ['b', 'h'], ['b', 'j'],
-               ['c', 'g'], ['c', 'i'], ['c', 'j'],
-               ['d', 'h'], ['d', 'i'], ['d', 'j']]
+    g1edges = [
+        ["a", "g"],
+        ["a", "h"],
+        ["a", "i"],
+        ["b", "g"],
+        ["b", "h"],
+        ["b", "j"],
+        ["c", "g"],
+        ["c", "i"],
+        ["c", "j"],
+        ["d", "h"],
+        ["d", "i"],
+        ["d", "j"],
+    ]
 
     # Nodes 1,2,3,4 form the clockwise corners of a large square.
     # Nodes 5,6,7,8 form the clockwise corners of a small square
-    g2edges = [[1, 2], [2, 3], [3, 4], [4, 1],
-               [5, 6], [6, 7], [7, 8], [8, 5],
-               [1, 5], [2, 6], [3, 7], [4, 8]]
+    g2edges = [
+        [1, 2],
+        [2, 3],
+        [3, 4],
+        [4, 1],
+        [5, 6],
+        [6, 7],
+        [7, 8],
+        [8, 5],
+        [1, 5],
+        [2, 6],
+        [3, 7],
+        [4, 8],
+    ]
 
     def test_graph(self):
         g1 = nx.Graph()
@@ -193,30 +233,37 @@ class TestLargestCommonSubgraph:
         # Example graphs from DOI: 10.1002/spe.588
         graph1 = nx.Graph()
         graph1.add_edges_from([(1, 2), (2, 3), (2, 4), (3, 4), (4, 5)])
-        graph1.nodes[1]['color'] = 0
+        graph1.nodes[1]["color"] = 0
 
         graph2 = nx.Graph()
-        graph2.add_edges_from([(1, 2), (2, 3), (2, 4), (3, 4), (3, 5),
-                               (5, 6), (5, 7), (6, 7)])
-        graph2.nodes[1]['color'] = 1
-        graph2.nodes[6]['color'] = 2
-        graph2.nodes[7]['color'] = 2
+        graph2.add_edges_from(
+            [(1, 2), (2, 3), (2, 4), (3, 4), (3, 5), (5, 6), (5, 7), (6, 7)]
+        )
+        graph2.nodes[1]["color"] = 1
+        graph2.nodes[6]["color"] = 2
+        graph2.nodes[7]["color"] = 2
 
-        ismags = iso.ISMAGS(graph1, graph2, node_match=iso.categorical_node_match('color', None))
+        ismags = iso.ISMAGS(
+            graph1, graph2, node_match=iso.categorical_node_match("color", None)
+        )
         assert list(ismags.subgraph_isomorphisms_iter(True)) == []
         assert list(ismags.subgraph_isomorphisms_iter(False)) == []
         found_mcis = _matches_to_sets(ismags.largest_common_subgraph())
-        expected = _matches_to_sets([{2: 2, 3: 4, 4: 3, 5: 5},
-                                     {2: 4, 3: 2, 4: 3, 5: 5}])
+        expected = _matches_to_sets(
+            [{2: 2, 3: 4, 4: 3, 5: 5}, {2: 4, 3: 2, 4: 3, 5: 5}]
+        )
         assert expected == found_mcis
 
-        ismags = iso.ISMAGS(graph2, graph1, node_match=iso.categorical_node_match('color', None))
+        ismags = iso.ISMAGS(
+            graph2, graph1, node_match=iso.categorical_node_match("color", None)
+        )
         assert list(ismags.subgraph_isomorphisms_iter(True)) == []
         assert list(ismags.subgraph_isomorphisms_iter(False)) == []
         found_mcis = _matches_to_sets(ismags.largest_common_subgraph())
         # Same answer, but reversed.
-        expected = _matches_to_sets([{2: 2, 3: 4, 4: 3, 5: 5},
-                                     {4: 2, 2: 3, 3: 4, 5: 5}])
+        expected = _matches_to_sets(
+            [{2: 2, 3: 4, 4: 3, 5: 5}, {4: 2, 2: 3, 3: 4, 5: 5}]
+        )
         assert expected == found_mcis
 
     def test_symmetry_mcis(self):
@@ -228,23 +275,30 @@ class TestLargestCommonSubgraph:
         graph2.add_edge(1, 3)
 
         # Only the symmetry of graph2 is taken into account here.
-        ismags1 = iso.ISMAGS(graph1, graph2, node_match=iso.categorical_node_match('color', None))
+        ismags1 = iso.ISMAGS(
+            graph1, graph2, node_match=iso.categorical_node_match("color", None)
+        )
         assert list(ismags1.subgraph_isomorphisms_iter(True)) == []
         found_mcis = _matches_to_sets(ismags1.largest_common_subgraph())
-        expected = _matches_to_sets([{0: 0, 1: 1, 2: 2},
-                                     {1: 0, 3: 2, 2: 1}])
+        expected = _matches_to_sets([{0: 0, 1: 1, 2: 2}, {1: 0, 3: 2, 2: 1}])
         assert expected == found_mcis
 
         # Only the symmetry of graph1 is taken into account here.
-        ismags2 = iso.ISMAGS(graph2, graph1, node_match=iso.categorical_node_match('color', None))
+        ismags2 = iso.ISMAGS(
+            graph2, graph1, node_match=iso.categorical_node_match("color", None)
+        )
         assert list(ismags2.subgraph_isomorphisms_iter(True)) == []
         found_mcis = _matches_to_sets(ismags2.largest_common_subgraph())
-        expected = _matches_to_sets([{3: 2, 0: 0, 1: 1},
-                                     {2: 0, 0: 2, 1: 1},
-                                     {3: 0, 0: 2, 1: 1},
-                                     {3: 0, 1: 1, 2: 2},
-                                     {0: 0, 1: 1, 2: 2},
-                                     {2: 0, 3: 2, 1: 1}])
+        expected = _matches_to_sets(
+            [
+                {3: 2, 0: 0, 1: 1},
+                {2: 0, 0: 2, 1: 1},
+                {3: 0, 0: 2, 1: 1},
+                {3: 0, 1: 1, 2: 2},
+                {0: 0, 1: 1, 2: 2},
+                {2: 0, 3: 2, 1: 1},
+            ]
+        )
 
         assert expected == found_mcis
 
@@ -253,17 +307,21 @@ class TestLargestCommonSubgraph:
         found_mcis2 = [{v: k for k, v in d.items()} for d in found_mcis2]
         found_mcis2 = _matches_to_sets(found_mcis2)
 
-        expected = _matches_to_sets([{3: 2, 1: 3, 2: 1},
-                                     {2: 0, 0: 2, 1: 1},
-                                     {1: 2, 3: 3, 2: 1},
-                                     {3: 0, 1: 3, 2: 1},
-                                     {0: 2, 2: 3, 1: 1},
-                                     {3: 0, 1: 2, 2: 1},
-                                     {2: 0, 0: 3, 1: 1},
-                                     {0: 0, 2: 3, 1: 1},
-                                     {1: 0, 3: 3, 2: 1},
-                                     {1: 0, 3: 2, 2: 1},
-                                     {0: 3, 1: 1, 2: 2},
-                                     {0: 0, 1: 1, 2: 2}])
+        expected = _matches_to_sets(
+            [
+                {3: 2, 1: 3, 2: 1},
+                {2: 0, 0: 2, 1: 1},
+                {1: 2, 3: 3, 2: 1},
+                {3: 0, 1: 3, 2: 1},
+                {0: 2, 2: 3, 1: 1},
+                {3: 0, 1: 2, 2: 1},
+                {2: 0, 0: 3, 1: 1},
+                {0: 0, 2: 3, 1: 1},
+                {1: 0, 3: 3, 2: 1},
+                {1: 0, 3: 2, 2: 1},
+                {0: 3, 1: 1, 2: 2},
+                {0: 0, 1: 1, 2: 2},
+            ]
+        )
         assert expected == found_mcis1
         assert expected == found_mcis2

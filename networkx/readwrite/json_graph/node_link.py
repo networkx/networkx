@@ -1,11 +1,11 @@
 from itertools import chain, count
 import networkx as nx
 from networkx.utils import to_tuple
-__all__ = ['node_link_data', 'node_link_graph']
+
+__all__ = ["node_link_data", "node_link_graph"]
 
 
-_attrs = dict(source='source', target='target', name='id',
-              key='key', link='links')
+_attrs = dict(source="source", target="target", name="id", key="key", link="links")
 
 
 def node_link_data(G, attrs=None):
@@ -69,26 +69,30 @@ def node_link_data(G, attrs=None):
         attrs = _attrs
     else:
         attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
-    name = attrs['name']
-    source = attrs['source']
-    target = attrs['target']
-    links = attrs['link']
+    name = attrs["name"]
+    source = attrs["source"]
+    target = attrs["target"]
+    links = attrs["link"]
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
-    key = None if not multigraph else attrs['key']
+    key = None if not multigraph else attrs["key"]
     if len({source, target, key}) < 3:
-        raise nx.NetworkXError('Attribute names are not unique.')
-    data = {'directed': G.is_directed(), 'multigraph': multigraph, 'graph': G.graph,
-            'nodes': [dict(chain(G.nodes[n].items(), [(name, n)])) for n in G]}
+        raise nx.NetworkXError("Attribute names are not unique.")
+    data = {
+        "directed": G.is_directed(),
+        "multigraph": multigraph,
+        "graph": G.graph,
+        "nodes": [dict(chain(G.nodes[n].items(), [(name, n)])) for n in G],
+    }
     if multigraph:
         data[links] = [
-            dict(chain(d.items(),
-                       [(source, u), (target, v), (key, k)]))
-            for u, v, k, d in G.edges(keys=True, data=True)]
+            dict(chain(d.items(), [(source, u), (target, v), (key, k)]))
+            for u, v, k, d in G.edges(keys=True, data=True)
+        ]
     else:
         data[links] = [
-            dict(chain(d.items(),
-                       [(source, u), (target, v)]))
-            for u, v, d in G.edges(data=True)]
+            dict(chain(d.items(), [(source, u), (target, v)]))
+            for u, v, d in G.edges(data=True)
+        ]
     return data
 
 
@@ -139,23 +143,23 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=None):
         attrs = _attrs
     else:
         attrs.update({k: v for k, v in _attrs.items() if k not in attrs})
-    multigraph = data.get('multigraph', multigraph)
-    directed = data.get('directed', directed)
+    multigraph = data.get("multigraph", multigraph)
+    directed = data.get("directed", directed)
     if multigraph:
         graph = nx.MultiGraph()
     else:
         graph = nx.Graph()
     if directed:
         graph = graph.to_directed()
-    name = attrs['name']
-    source = attrs['source']
-    target = attrs['target']
-    links = attrs['link']
+    name = attrs["name"]
+    source = attrs["source"]
+    target = attrs["target"]
+    links = attrs["link"]
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
-    key = None if not multigraph else attrs['key']
-    graph.graph = data.get('graph', {})
+    key = None if not multigraph else attrs["key"]
+    graph.graph = data.get("graph", {})
     c = count()
-    for d in data['nodes']:
+    for d in data["nodes"]:
         node = to_tuple(d.get(name, next(c)))
         nodedata = {str(k): v for k, v in d.items() if k != name}
         graph.add_node(node, **nodedata)
@@ -163,12 +167,14 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=None):
         src = tuple(d[source]) if isinstance(d[source], list) else d[source]
         tgt = tuple(d[target]) if isinstance(d[target], list) else d[target]
         if not multigraph:
-            edgedata = {str(k): v for k, v in d.items()
-                            if k != source and k != target}
+            edgedata = {str(k): v for k, v in d.items() if k != source and k != target}
             graph.add_edge(src, tgt, **edgedata)
         else:
             ky = d.get(key, None)
-            edgedata = {str(k): v for k, v in d.items()
-                            if k != source and k != target and k != key}
+            edgedata = {
+                str(k): v
+                for k, v in d.items()
+                if k != source and k != target and k != key
+            }
             graph.add_edge(src, tgt, ky, **edgedata)
     return graph

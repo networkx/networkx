@@ -127,13 +127,13 @@ is partially historical, and now, mostly arbitrary.
 - Julien Klaus
 - Peter C. Kroon, Github: `pckroon <https://github.com/pckroon>`_
 - Weisheng Si, Github: `ws4u <https://github.com/ws4u>`_
-- Haakon H. Rød, Gitlab: `haakonhr <https://gitlab.com/haakonhr>`_, `<https://haakonhr.gitlab.io>`_ 
+- Haakon H. Rød, Gitlab: `haakonhr <https://gitlab.com/haakonhr>`_, `<https://haakonhr.gitlab.io>`_
 - Efraim Rodrigues, GitHub `<https://github.com/efraimrodrigues>`_, LinkedIn `<https://linkedin.com/in/efraim-rodrigues/>`_
 - Erwan Le Merrer
 - Søren Fuglede Jørgensen, GitHub: `fuglede <https://github.com/fuglede>`_
 - Salim BELHADDAD, LinkedIn `<https://www.linkedin.com/in/salymdotme/>`_
 - Jangwon Yie, GitHub `<https://github.com/jangwon-yie>`_, LinkedIn `<https://www.linkedin.com/in/jangwon-yie-a7960065/>`_
-- ysitu 
+- ysitu
 - Tomas Gavenciak
 - Luca Baldesi
 - Yuto Yamaguchi
@@ -141,11 +141,11 @@ is partially historical, and now, mostly arbitrary.
 - Minas Gjoka
 - Drew Conway
 - Alex Levenson
-- Haochen Wu 
+- Haochen Wu
 - Erwan  Le Merrer
 - Alex Roper
 - P C Kroon
-- Christopher Ellison   
+- Christopher Ellison
 - D. Eppstein
 - Federico Rosato
 - Aitor Almeida
@@ -155,8 +155,8 @@ is partially historical, and now, mostly arbitrary.
 - Nanda H Krishna
 - Nicholas Mancuso
 - Fred Morstatter
-- Ollie Glass       
-- Rodrigo Dorantes-Gilardi 
+- Ollie Glass
+- Rodrigo Dorantes-Gilardi
 - Pranay Kanwar
 - Balint Tillman
 - Diederik van Liere

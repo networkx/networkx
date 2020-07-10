@@ -6,9 +6,14 @@ from itertools import combinations
 import networkx as nx
 from ..utils import arbitrary_element, not_implemented_for
 
-__all__ = ['is_eulerian', 'eulerian_circuit', 'eulerize',
-           'is_semieulerian', 'has_eulerian_path', 'eulerian_path',
-           ]
+__all__ = [
+    "is_eulerian",
+    "eulerian_circuit",
+    "eulerize",
+    "is_semieulerian",
+    "has_eulerian_path",
+    "eulerian_path",
+]
 
 
 def is_eulerian(G):
@@ -41,8 +46,9 @@ def is_eulerian(G):
     if G.is_directed():
         # Every node must have equal in degree and out degree and the
         # graph must be strongly connected
-        return (all(G.in_degree(n) == G.out_degree(n) for n in G) and
-                nx.is_strongly_connected(G))
+        return all(
+            G.in_degree(n) == G.out_degree(n) for n in G
+        ) and nx.is_strongly_connected(G)
     # An undirected Eulerian graph has no vertices of odd degree and
     # must be connected.
     return all(d % 2 == 0 for v, d in G.degree()) and nx.is_connected(G)
@@ -244,13 +250,14 @@ def has_eulerian_path(G):
         outs = G.out_degree
         semibalanced_ins = sum(ins(v) - outs(v) == 1 for v in G)
         semibalanced_outs = sum(outs(v) - ins(v) == 1 for v in G)
-        return (semibalanced_ins <= 1 and
-                semibalanced_outs <= 1 and
-                sum(G.in_degree(v) != G.out_degree(v) for v in G) <= 2 and
-                nx.is_weakly_connected(G))
+        return (
+            semibalanced_ins <= 1
+            and semibalanced_outs <= 1
+            and sum(G.in_degree(v) != G.out_degree(v) for v in G) <= 2
+            and nx.is_weakly_connected(G)
+        )
     else:
-        return (sum(d % 2 == 1 for v, d in G.degree()) in (0, 2)
-                and nx.is_connected(G))
+        return sum(d % 2 == 1 for v, d in G.degree()) in (0, 2) and nx.is_connected(G)
 
 
 def eulerian_path(G, source=None, keys=False):
@@ -292,7 +299,7 @@ def eulerian_path(G, source=None, keys=False):
         yield from _simplegraph_eulerian_circuit(G, source)
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def eulerize(G):
     """Transforms a graph into an Eulerian graph
 
@@ -341,10 +348,10 @@ def eulerize(G):
         return G
 
     # get all shortest paths between vertices of odd degree
-    odd_deg_pairs_paths = [(m,
-                            {n: nx.shortest_path(G, source=m, target=n)}
-                            )
-                           for m, n in combinations(odd_degree_nodes, 2)]
+    odd_deg_pairs_paths = [
+        (m, {n: nx.shortest_path(G, source=m, target=n)})
+        for m, n in combinations(odd_degree_nodes, 2)
+    ]
 
     # use inverse path lengths as edge-weights in a new graph
     # store the paths in the graph for easy indexing later
@@ -352,7 +359,7 @@ def eulerize(G):
     for n, Ps in odd_deg_pairs_paths:
         for m, P in Ps.items():
             if n != m:
-                Gp.add_edge(m, n, weight=1/len(P), path=P)
+                Gp.add_edge(m, n, weight=1 / len(P), path=P)
 
     # find the minimum weight matching of edges in the weighted graph
     best_matching = nx.Graph(list(nx.max_weight_matching(Gp)))

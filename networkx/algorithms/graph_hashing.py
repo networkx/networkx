@@ -13,11 +13,7 @@ __all__ = [
 
 
 def weisfeiler_lehman_graph_hash(
-    G,
-    edge_attr=None,
-    node_attr=None,
-    iterations=3,
-    digest_size=16
+    G, edge_attr=None, node_attr=None, iterations=3, digest_size=16
 ):
     """Return Weisfeiler Lehman (WL) graph hash.
 
@@ -106,7 +102,7 @@ def weisfeiler_lehman_graph_hash(
         for nei in G.neighbors(node):
             prefix = "" if not edge_attr else G[node][nei][edge_attr]
             label_list.append(prefix + node_labels[nei])
-        return ''.join(sorted(label_list))
+        return "".join(sorted(label_list))
 
     def weisfeiler_lehman_step(G, labels, edge_attr=None, node_attr=None):
         """
@@ -116,8 +112,9 @@ def weisfeiler_lehman_graph_hash(
         """
         new_labels = dict()
         for node in G.nodes():
-            new_labels[node] = neighborhood_aggregate(G, node, labels,
-                                                      edge_attr=edge_attr)
+            new_labels[node] = neighborhood_aggregate(
+                G, node, labels, edge_attr=edge_attr
+            )
         return new_labels
 
     items = []
@@ -129,22 +126,21 @@ def weisfeiler_lehman_graph_hash(
         elif node_attr:
             node_labels[node] = str(G.nodes[node][node_attr])
         else:
-            node_labels[node] = ''
+            node_labels[node] = ""
 
     for k in range(iterations):
-        node_labels = weisfeiler_lehman_step(G, node_labels,
-                                             edge_attr=edge_attr)
+        node_labels = weisfeiler_lehman_step(G, node_labels, edge_attr=edge_attr)
         counter = Counter()
         # count node labels
         for node, d in node_labels.items():
             h = blake2b(digest_size=digest_size)
-            h.update(d.encode('ascii'))
+            h.update(d.encode("ascii"))
             counter.update([h.hexdigest()])
         # sort the counter, extend total counts
         items.extend(sorted(counter.items(), key=lambda x: x[0]))
 
     # hash the final counter
     h = blake2b(digest_size=digest_size)
-    h.update(str(tuple(items)).encode('ascii'))
+    h.update(str(tuple(items)).encode("ascii"))
     h = h.hexdigest()
     return h

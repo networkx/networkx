@@ -3,16 +3,17 @@
 import heapq
 import networkx as nx
 
-__all__ = ['is_graphical',
-           'is_multigraphical',
-           'is_pseudographical',
-           'is_digraphical',
-           'is_valid_degree_sequence_erdos_gallai',
-           'is_valid_degree_sequence_havel_hakimi',
-           ]
+__all__ = [
+    "is_graphical",
+    "is_multigraphical",
+    "is_pseudographical",
+    "is_digraphical",
+    "is_valid_degree_sequence_erdos_gallai",
+    "is_valid_degree_sequence_havel_hakimi",
+]
 
 
-def is_graphical(sequence, method='eg'):
+def is_graphical(sequence, method="eg"):
     """Returns True if sequence is a valid degree sequence.
 
     A degree sequence is valid if some graph can realize it.
@@ -47,9 +48,9 @@ def is_graphical(sequence, method='eg'):
     Havel-Hakimi
         [havel1955]_, [hakimi1962]_, [CL1996]_
     """
-    if method == 'eg':
+    if method == "eg":
         valid = is_valid_degree_sequence_erdos_gallai(list(sequence))
-    elif method == 'hh':
+    elif method == "hh":
         valid = is_valid_degree_sequence_havel_hakimi(list(sequence))
     else:
         msg = "`method` must be 'eg' or 'hh'"
@@ -211,12 +212,12 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     # Perform the EG checks using the reformulation of Zverovich and Zverovich
     k, sum_deg, sum_nj, sum_jnj = 0, 0, 0, 0
     for dk in range(dmax, dmin - 1, -1):
-        if dk < k + 1:            # Check if already past Durfee index
+        if dk < k + 1:  # Check if already past Durfee index
             return True
         if num_degs[dk] > 0:
             run_size = num_degs[dk]  # Process a run of identical-valued degrees
-            if dk < k + run_size:     # Check if end of run is past Durfee index
-                run_size = dk - k     # Adjust back to Durfee index
+            if dk < k + run_size:  # Check if end of run is past Durfee index
+                run_size = dk - k  # Adjust back to Durfee index
             sum_deg += run_size * dk
             for v in range(run_size):
                 sum_nj += num_degs[k + v]

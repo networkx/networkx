@@ -8,10 +8,10 @@ Algorithms for a depth-first traversal of edges in a graph.
 """
 import networkx as nx
 
-FORWARD = 'forward'
-REVERSE = 'reverse'
+FORWARD = "forward"
+REVERSE = "reverse"
 
-__all__ = ['edge_dfs']
+__all__ = ["edge_dfs"]
 
 
 def edge_dfs(G, source=None, orientation=None):
@@ -96,43 +96,54 @@ def edge_dfs(G, source=None, orientation=None):
         return
 
     directed = G.is_directed()
-    kwds = {'data': False}
+    kwds = {"data": False}
     if G.is_multigraph() is True:
-        kwds['keys'] = True
+        kwds["keys"] = True
 
     # set up edge lookup
     if orientation is None:
+
         def edges_from(node):
             return iter(G.edges(node, **kwds))
-    elif not directed or orientation == 'original':
+
+    elif not directed or orientation == "original":
+
         def edges_from(node):
             for e in G.edges(node, **kwds):
                 yield e + (FORWARD,)
-    elif orientation == 'reverse':
+
+    elif orientation == "reverse":
+
         def edges_from(node):
             for e in G.in_edges(node, **kwds):
                 yield e + (REVERSE,)
-    elif orientation == 'ignore':
+
+    elif orientation == "ignore":
+
         def edges_from(node):
             for e in G.edges(node, **kwds):
                 yield e + (FORWARD,)
             for e in G.in_edges(node, **kwds):
                 yield e + (REVERSE,)
+
     else:
         raise nx.NetworkXError("invalid orientation argument.")
 
     # set up formation of edge_id to easily look up if edge already returned
     if directed:
+
         def edge_id(edge):
             # remove direction indicator
             return edge[:-1] if orientation is not None else edge
+
     else:
+
         def edge_id(edge):
             # single id for undirected requires frozenset on nodes
             return (frozenset(edge[:2]),) + edge[2:]
 
     # Basic setup
-    check_reverse = directed and orientation in ('reverse', 'ignore')
+    check_reverse = directed and orientation in ("reverse", "ignore")
 
     visited_edges = set()
     visited_nodes = set()

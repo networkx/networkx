@@ -434,8 +434,9 @@ def attr_sparse_matrix(
         import numpy as np
         from scipy import sparse
     except ImportError as e:
-        raise ImportError("attr_sparse_matrix() requires scipy: "
-                          "http://scipy.org/ ") from e
+        raise ImportError(
+            "attr_sparse_matrix() requires scipy: " "http://scipy.org/ "
+        ) from e
 
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)
