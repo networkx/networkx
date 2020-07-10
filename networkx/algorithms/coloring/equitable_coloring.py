@@ -5,7 +5,7 @@ Equitable coloring of graphs with bounded degree.
 import networkx as nx
 from collections import defaultdict
 
-__all__ = ['equitable_color']
+__all__ = ["equitable_color"]
 
 
 def is_coloring(G, coloring):
@@ -43,7 +43,7 @@ def is_equitable(G, coloring, num_colors=None):
     elif len(all_set_sizes) == 2:
         a, b = list(all_set_sizes)
         return abs(a - b) <= 1
-    else:   # len(all_set_sizes) > 2:
+    else:  # len(all_set_sizes) > 2:
         return False
 
 
@@ -58,13 +58,19 @@ def make_C_from_F(F):
 def make_N_from_L_C(L, C):
     nodes = L.keys()
     colors = C.keys()
-    return {(node, color): sum(1 for v in L[node] if v in C[color])
-            for node in nodes for color in colors}
+    return {
+        (node, color): sum(1 for v in L[node] if v in C[color])
+        for node in nodes
+        for color in colors
+    }
 
 
 def make_H_from_C_N(C, N):
-    return {(c1, c2): sum(1 for node in C[c1] if N[(node, c2)] == 0)
-            for c1 in C.keys() for c2 in C.keys()}
+    return {
+        (c1, c2): sum(1 for node in C[c1] if N[(node, c2)] == 0)
+        for c1 in C.keys()
+        for c2 in C.keys()
+    }
 
 
 def change_color(u, X, Y, N, H, F, C, L):
@@ -127,8 +133,7 @@ def pad_graph(G, num_colors):
         s += 1
 
         # Complete graph K_p between (imaginary) nodes [n_, ... , n_ + p]
-        K = nx.relabel_nodes(nx.complete_graph(p),
-                             {idx: idx + n_ for idx in range(p)})
+        K = nx.relabel_nodes(nx.complete_graph(p), {idx: idx + n_ for idx in range(p)})
         G.add_edges_from(K.edges)
 
     return s
@@ -161,10 +166,12 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
         # logarithmic factor.
         next_layer = []
         for k in C.keys():
-            if H[(k, pop)] > 0 and \
-                    k not in A_cal and \
-                    k not in excluded_colors and \
-                    k not in marked:
+            if (
+                H[(k, pop)] > 0
+                and k not in A_cal
+                and k not in excluded_colors
+                and k not in marked
+            ):
                 next_layer.append(k)
 
         for dst in next_layer:
@@ -175,7 +182,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
         reachable.extend(next_layer)
 
     # Variables for the algorithm
-    b = (len(C) - len(A_cal))
+    b = len(C) - len(A_cal)
 
     if V_plus in A_cal:
         # Easy case: V+ is in A_cal
@@ -212,8 +219,11 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                         w = v
 
                         # Finding the solo neighbor of w in X_prime
-                        y_candidates = [node for node in L[w]
-                                        if F[node] == X_prime and N[(node, W_1)] == 1]
+                        y_candidates = [
+                            node
+                            for node in L[w]
+                            if F[node] == X_prime and N[(node, W_1)] == 1
+                        ]
 
                         if len(y_candidates) > 0:
                             y = y_candidates[0]
@@ -224,16 +234,31 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
 
                             # Move witness from X to V_minus, making the coloring
                             # equitable.
-                            move_witnesses(src_color=X, dst_color=V_minus,
-                                           N=N, H=H, F=F, C=C, T_cal=T_cal, L=L)
+                            move_witnesses(
+                                src_color=X,
+                                dst_color=V_minus,
+                                N=N,
+                                H=H,
+                                F=F,
+                                C=C,
+                                T_cal=T_cal,
+                                L=L,
+                            )
 
                             # Move y from X_prime to W, making W the correct size.
                             change_color(y, X_prime, W, N=N, H=H, F=F, C=C, L=L)
 
                             # Then call the procedure on G[B - y]
-                            procedure_P(V_minus=X_prime, V_plus=V_plus,
-                                        N=N, H=H, C=C, F=F, L=L,
-                                        excluded_colors=excluded_colors.union(A_cal))
+                            procedure_P(
+                                V_minus=X_prime,
+                                V_plus=V_plus,
+                                N=N,
+                                H=H,
+                                C=C,
+                                F=F,
+                                L=L,
+                                excluded_colors=excluded_colors.union(A_cal),
+                            )
                             made_equitable = True
                             break
 
@@ -265,10 +290,11 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
 
                     # No need to check for excluded_colors here because
                     # they only exclude colors from A_cal
-                    next_layer = [k for k in C.keys()
-                                  if H[(pop, k)] > 0 and
-                                  k not in B_cal_prime and
-                                  k not in marked]
+                    next_layer = [
+                        k
+                        for k in C.keys()
+                        if H[(pop, k)] > 0 and k not in B_cal_prime and k not in marked
+                    ]
 
                     for dst in next_layer:
                         T_cal_prime[pop] = dst
@@ -306,34 +332,51 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                                 W = F[w]
 
                                 # shift nodes along W, V-
-                                move_witnesses(W, V_minus,
-                                               N=N, H=H, F=F, C=C,
-                                               T_cal=T_cal, L=L)
+                                move_witnesses(
+                                    W, V_minus, N=N, H=H, F=F, C=C, T_cal=T_cal, L=L
+                                )
 
                                 # shift nodes along V+ to Z
-                                move_witnesses(V_plus, Z,
-                                               N=N, H=H, F=F, C=C,
-                                               T_cal=T_cal_prime, L=L)
+                                move_witnesses(
+                                    V_plus,
+                                    Z,
+                                    N=N,
+                                    H=H,
+                                    F=F,
+                                    C=C,
+                                    T_cal=T_cal_prime,
+                                    L=L,
+                                )
 
                                 # change color of z_1 to W
-                                change_color(z_1, Z, W,
-                                             N=N, H=H, F=F, C=C, L=L)
+                                change_color(z_1, Z, W, N=N, H=H, F=F, C=C, L=L)
 
                                 # change color of w to some color in B_cal
-                                W_plus = [k for k in C.keys()
-                                          if N[(w, k)] == 0 and
-                                          k not in A_cal][0]
-                                change_color(w, W, W_plus,
-                                             N=N, H=H, F=F, C=C, L=L)
+                                W_plus = [
+                                    k
+                                    for k in C.keys()
+                                    if N[(w, k)] == 0 and k not in A_cal
+                                ][0]
+                                change_color(w, W, W_plus, N=N, H=H, F=F, C=C, L=L)
 
                                 # recurse with G[B \cup W*]
-                                excluded_colors.update([
-                                    k for k in C.keys()
-                                    if k != W and k not in B_cal_prime
-                                ])
-                                procedure_P(V_minus=W, V_plus=W_plus,
-                                            N=N, H=H, C=C, F=F, L=L,
-                                            excluded_colors=excluded_colors)
+                                excluded_colors.update(
+                                    [
+                                        k
+                                        for k in C.keys()
+                                        if k != W and k not in B_cal_prime
+                                    ]
+                                )
+                                procedure_P(
+                                    V_minus=W,
+                                    V_plus=W_plus,
+                                    N=N,
+                                    H=H,
+                                    C=C,
+                                    F=F,
+                                    L=L,
+                                    excluded_colors=excluded_colors,
+                                )
 
                                 made_equitable = True
                                 break
@@ -341,8 +384,10 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                     if made_equitable:
                         break
                 else:
-                    assert False, "Must find a w which is the solo neighbor " \
-                                  "of two vertices in B_cal_prime."
+                    assert False, (
+                        "Must find a w which is the solo neighbor "
+                        "of two vertices in B_cal_prime."
+                    )
 
             if made_equitable:
                 break
@@ -463,7 +508,6 @@ def equitable_color(G, num_colors):
             change_color(u, X, Y, N=N, H=H, F=F, C=C, L=L_)
 
             # Procedure P
-            procedure_P(V_minus=X, V_plus=Y,
-                        N=N, H=H, F=F, C=C, L=L_)
+            procedure_P(V_minus=X, V_plus=Y, N=N, H=H, F=F, C=C, L=L_)
 
     return {int_to_nodes[x]: F[x] for x in int_to_nodes}

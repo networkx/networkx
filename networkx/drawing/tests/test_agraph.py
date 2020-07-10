@@ -2,28 +2,27 @@
 import os
 import tempfile
 import pytest
-pygraphviz = pytest.importorskip('pygraphviz')
+
+pygraphviz = pytest.importorskip("pygraphviz")
 
 
-from networkx.testing import assert_edges_equal, assert_nodes_equal, \
-        assert_graphs_equal
+from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
 
 import networkx as nx
 
 
 class TestAGraph:
-
     def build_graph(self, G):
-        edges = [('A', 'B'), ('A', 'C'), ('A', 'C'), ('B', 'C'), ('A', 'D')]
+        edges = [("A", "B"), ("A", "C"), ("A", "C"), ("B", "C"), ("A", "D")]
         G.add_edges_from(edges)
-        G.add_node('E')
-        G.graph['metal'] = 'bronze'
+        G.add_node("E")
+        G.graph["metal"] = "bronze"
         return G
 
     def assert_equal(self, G1, G2):
         assert_nodes_equal(G1.nodes(), G2.nodes())
         assert_edges_equal(G1.edges(), G2.edges())
-        assert G1.graph['metal'] == G2.graph['metal']
+        assert G1.graph["metal"] == G2.graph["metal"]
 
     def agraph_checks(self, G):
         G = self.build_graph(G)
@@ -38,19 +37,19 @@ class TestAGraph:
         self.assert_equal(H, Hin)
 
         (fd, fname) = tempfile.mkstemp()
-        with open(fname, 'w') as fh:
+        with open(fname, "w") as fh:
             nx.drawing.nx_agraph.write_dot(H, fh)
 
-        with open(fname, 'r') as fh:
+        with open(fname) as fh:
             Hin = nx.nx_agraph.read_dot(fh)
         os.unlink(fname)
         self.assert_equal(H, Hin)
 
     def test_from_agraph_name(self):
-        G = nx.Graph(name='test')
+        G = nx.Graph(name="test")
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
-        assert G.name == 'test'
+        assert G.name == "test"
 
     def test_undirected(self):
         self.agraph_checks(nx.Graph())
@@ -74,7 +73,7 @@ class TestAGraph:
         G = nx.Graph()
         G.add_edge(1, 2, weight=7)
         G.add_edge(2, 3, weight=8)
-        nx.nx_agraph.view_pygraphviz(G, edgelabel='weight')
+        nx.nx_agraph.view_pygraphviz(G, edgelabel="weight")
 
     def test_graph_with_reserved_keywords(self):
         # test attribute/keyword clash case for #1582
@@ -82,9 +81,9 @@ class TestAGraph:
         # edges: u,v
         G = nx.Graph()
         G = self.build_graph(G)
-        G.nodes['E']['n'] = 'keyword'
-        G.edges[('A', 'B')]['u'] = 'keyword'
-        G.edges[('A', 'B')]['v'] = 'keyword'
+        G.nodes["E"]["n"] = "keyword"
+        G.edges[("A", "B")]["u"] = "keyword"
+        G.edges[("A", "B")]["v"] = "keyword"
         A = nx.nx_agraph.to_agraph(G)
 
     def test_round_trip(self):
@@ -95,16 +94,16 @@ class TestAGraph:
         AA = nx.nx_agraph.to_agraph(H)
         HH = nx.nx_agraph.from_agraph(AA)
         assert_graphs_equal(H, HH)
-        G.graph['graph'] = {}
-        G.graph['node'] = {}
-        G.graph['edge'] = {}
+        G.graph["graph"] = {}
+        G.graph["node"] = {}
+        G.graph["edge"] = {}
         assert_graphs_equal(G, HH)
 
     def test_2d_layout(self):
         G = nx.Graph()
         G = self.build_graph(G)
         G.graph["dimen"] = 2
-        pos = nx.nx_agraph.pygraphviz_layout(G, prog='neato')
+        pos = nx.nx_agraph.pygraphviz_layout(G, prog="neato")
         pos = list(pos.values())
         assert len(pos) == 5
         assert len(pos[0]) == 2
@@ -113,7 +112,7 @@ class TestAGraph:
         G = nx.Graph()
         G = self.build_graph(G)
         G.graph["dimen"] = 3
-        pos = nx.nx_agraph.pygraphviz_layout(G, prog='neato')
+        pos = nx.nx_agraph.pygraphviz_layout(G, prog="neato")
         pos = list(pos.values())
         assert len(pos) == 5
         assert len(pos[0]) == 3

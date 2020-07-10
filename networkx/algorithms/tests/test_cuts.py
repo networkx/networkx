@@ -41,8 +41,8 @@ class TestCutSize:
 
     def test_multigraph(self):
         """Tests that parallel edges are each counted for a cut."""
-        G = nx.MultiGraph(['ab', 'ab'])
-        assert nx.cut_size(G, {'a'}, {'b'}) == 2
+        G = nx.MultiGraph(["ab", "ab"])
+        assert nx.cut_size(G, {"a"}, {"b"}) == 2
 
 
 class TestVolume:

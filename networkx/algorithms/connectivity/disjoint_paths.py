@@ -1,11 +1,13 @@
 """Flow based node and edge disjoint paths."""
 import networkx as nx
 from networkx.exception import NetworkXNoPath
+
 # Define the default maximum flow function to use for the undelying
 # maximum flow computations
 from networkx.algorithms.flow import edmonds_karp
 from networkx.algorithms.flow import preflow_push
 from networkx.algorithms.flow import shortest_augmenting_path
+
 default_flow_func = edmonds_karp
 # Functions to build auxiliary data structures.
 from .utils import build_auxiliary_node_connectivity
@@ -14,13 +16,14 @@ from .utils import build_auxiliary_edge_connectivity
 from itertools import filterfalse as _filterfalse
 
 __all__ = [
-    'edge_disjoint_paths',
-    'node_disjoint_paths',
+    "edge_disjoint_paths",
+    "node_disjoint_paths",
 ]
 
 
-def edge_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
-                        residual=None):
+def edge_disjoint_paths(
+    G, s, t, flow_func=None, cutoff=None, auxiliary=None, residual=None
+):
     """Returns the edges disjoint paths between source and target.
 
     Edge disjoint paths are paths that do not share any edge. The
@@ -175,21 +178,25 @@ def edge_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
 
     # Compute maximum flow between source and target. Flow functions in
     # NetworkX return a residual network.
-    kwargs = dict(capacity='capacity', residual=residual, cutoff=cutoff,
-                  value_only=True)
+    kwargs = dict(
+        capacity="capacity", residual=residual, cutoff=cutoff, value_only=True
+    )
     if flow_func is preflow_push:
-        del kwargs['cutoff']
+        del kwargs["cutoff"]
     if flow_func is shortest_augmenting_path:
-        kwargs['two_phase'] = True
+        kwargs["two_phase"] = True
     R = flow_func(H, s, t, **kwargs)
 
-    if R.graph['flow_value'] == 0:
+    if R.graph["flow_value"] == 0:
         raise NetworkXNoPath
 
     # Saturated edges in the residual network form the edge disjoint paths
     # between source and target
-    cutset = [(u, v) for u, v, d in R.edges(data=True)
-              if d['capacity'] == d['flow'] and d['flow'] > 0]
+    cutset = [
+        (u, v)
+        for u, v, d in R.edges(data=True)
+        if d["capacity"] == d["flow"] and d["flow"] > 0
+    ]
     # This is equivalent of what flow.utils.build_flow_dict returns, but
     # only for the nodes with saturated edges and without reporting 0 flows.
     flow_dict = {n: {} for edge in cutset for n in edge}
@@ -221,8 +228,9 @@ def edge_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
             paths_found += 1
 
 
-def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
-                        residual=None):
+def node_disjoint_paths(
+    G, s, t, flow_func=None, cutoff=None, auxiliary=None, residual=None
+):
     r"""Computes node disjoint paths between source and target.
 
     Node disjoint paths are paths that only share their first and last
@@ -355,13 +363,12 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
     else:
         H = auxiliary
 
-    mapping = H.graph.get('mapping', None)
+    mapping = H.graph.get("mapping", None)
     if mapping is None:
-        raise nx.NetworkXError('Invalid auxiliary digraph.')
+        raise nx.NetworkXError("Invalid auxiliary digraph.")
 
     # Maximum possible edge disjoint paths
-    possible = min(H.out_degree(f'{mapping[s]}B'),
-                   H.in_degree(f'{mapping[t]}A'))
+    possible = min(H.out_degree(f"{mapping[s]}B"), H.in_degree(f"{mapping[t]}A"))
     if not possible:
         raise NetworkXNoPath
 
@@ -370,16 +377,14 @@ def node_disjoint_paths(G, s, t, flow_func=None, cutoff=None, auxiliary=None,
     else:
         cutoff = min(cutoff, possible)
 
-    kwargs = dict(flow_func=flow_func, residual=residual, auxiliary=H,
-                  cutoff=cutoff)
+    kwargs = dict(flow_func=flow_func, residual=residual, auxiliary=H, cutoff=cutoff)
 
     # The edge disjoint paths in the auxiliary digraph correspond to the node
     # disjoint paths in the original graph.
-    paths_edges = edge_disjoint_paths(H, f'{mapping[s]}B', f'{mapping[t]}A',
-                                      **kwargs)
+    paths_edges = edge_disjoint_paths(H, f"{mapping[s]}B", f"{mapping[t]}A", **kwargs)
     for path in paths_edges:
         # Each node in the original graph maps to two nodes in auxiliary graph
-        yield list(_unique_everseen(H.nodes[node]['id'] for node in path))
+        yield list(_unique_everseen(H.nodes[node]["id"] for node in path))
 
 
 def _unique_everseen(iterable):

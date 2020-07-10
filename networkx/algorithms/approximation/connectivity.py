@@ -5,11 +5,13 @@ from operator import itemgetter
 
 import networkx as nx
 
-__all__ = ['local_node_connectivity',
-           'node_connectivity',
-           'all_pairs_node_connectivity']
+__all__ = [
+    "local_node_connectivity",
+    "node_connectivity",
+    "all_pairs_node_connectivity",
+]
 
-INF = float('inf')
+INF = float("inf")
 
 
 def local_node_connectivity(G, source, target, cutoff=None):
@@ -171,7 +173,7 @@ def node_connectivity(G, s=None, t=None):
 
     """
     if (s is not None and t is None) or (s is None and t is not None):
-        raise nx.NetworkXError('Both source and target must be specified.')
+        raise nx.NetworkXError("Both source and target must be specified.")
 
     # Local node connectivity
     if s is not None and t is not None:
@@ -188,6 +190,7 @@ def node_connectivity(G, s=None, t=None):
 
         def neighbors(v):
             return itertools.chain(G.predecessors(v), G.successors(v))
+
     else:
         connected_func = nx.is_connected
         iter_func = itertools.combinations
@@ -344,7 +347,8 @@ def _bidirectional_pred_succ(G, source, target, exclude):
     # excludes nodes in the container "exclude" from the search
     if source is None or target is None:
         raise nx.NetworkXException(
-            "Bidirectional shortest path called without source or target")
+            "Bidirectional shortest path called without source or target"
+        )
     if target == source:
         return ({target: None}, {source: None}, source)
 

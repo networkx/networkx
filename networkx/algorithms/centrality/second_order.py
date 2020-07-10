@@ -1,4 +1,4 @@
-'''Copyright (c) 2015 – Thomson Licensing, SAS
+"""Copyright (c) 2015 – Thomson Licensing, SAS
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted (subject to the limitations in the
@@ -28,18 +28,18 @@ BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
 WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-'''
+"""
 
 import networkx as nx
 from networkx.utils import not_implemented_for
 
 # Authors: Erwan Le Merrer (erwan.lemerrer@technicolor.com)
-''' Second order centrality measure.'''
+""" Second order centrality measure."""
 
-__all__ = ['second_order_centrality']
+__all__ = ["second_order_centrality"]
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def second_order_centrality(G):
     """Compute the second order centrality for nodes of G.
 
@@ -99,7 +99,7 @@ def second_order_centrality(G):
     try:
         import numpy as np
     except ImportError as e:
-        raise ImportError('Requires NumPy: http://numpy.org/') from e
+        raise ImportError("Requires NumPy: http://numpy.org/") from e
 
     n = len(G)
 
@@ -107,16 +107,16 @@ def second_order_centrality(G):
         raise nx.NetworkXException("Empty graph.")
     if not nx.is_connected(G):
         raise nx.NetworkXException("Non connected graph.")
-    if any(d.get('weight', 0) < 0 for u, v, d in G.edges(data=True)):
+    if any(d.get("weight", 0) < 0 for u, v, d in G.edges(data=True)):
         raise nx.NetworkXException("Graph has negative edge weights.")
 
     # balancing G for Metropolis-Hastings random walks
     G = nx.DiGraph(G)
-    in_deg = dict(G.in_degree(weight='weight'))
+    in_deg = dict(G.in_degree(weight="weight"))
     d_max = max(in_deg.values())
     for i, deg in in_deg.items():
         if deg < d_max:
-            G.add_edge(i, i, weight=d_max-deg)
+            G.add_edge(i, i, weight=d_max - deg)
 
     P = nx.to_numpy_matrix(G)
     P = P / P.sum(axis=1)  # to transition probability matrix
@@ -129,9 +129,10 @@ def second_order_centrality(G):
     M = np.empty([n, n])
 
     for i in range(n):
-        M[:, i] = np.linalg.solve(np.identity(n) - _Qj(P, i),
-                                  np.ones([n, 1])[:, 0])  # eq 3
+        M[:, i] = np.linalg.solve(
+            np.identity(n) - _Qj(P, i), np.ones([n, 1])[:, 0]
+        )  # eq 3
 
-    return dict(zip(G.nodes,
-                    [np.sqrt(2*np.sum(M[:, i])-n*(n+1)) for i in range(n)]
-                    ))  # eq 6
+    return dict(
+        zip(G.nodes, [np.sqrt(2 * np.sum(M[:, i]) - n * (n + 1)) for i in range(n)])
+    )  # eq 6

@@ -2,10 +2,10 @@
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
 
-__all__ = ['is_semiconnected']
+__all__ = ["is_semiconnected"]
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def is_semiconnected(G, topo_order=None):
     """Returns True if the graph is semiconnected, False otherwise.
 
@@ -51,7 +51,8 @@ def is_semiconnected(G, topo_order=None):
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
-            'Connectivity is undefined for the null graph.')
+            "Connectivity is undefined for the null graph."
+        )
 
     if not nx.is_weakly_connected(G):
         return False

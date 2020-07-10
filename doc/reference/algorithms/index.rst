@@ -38,6 +38,7 @@ Algorithms
    efficiency_measures
    euler
    flow
+   graph_hashing
    graphical
    hierarchy
    hybrid
@@ -56,6 +57,7 @@ Algorithms
    planarity
    planar_drawing
    reciprocity
+   regular
    rich_club
    shortest_paths
    similarity

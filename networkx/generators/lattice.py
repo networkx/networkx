@@ -26,8 +26,13 @@ from networkx.generators.classic import empty_graph
 from networkx.generators.classic import path_graph
 from itertools import repeat
 
-__all__ = ['grid_2d_graph', 'grid_graph', 'hypercube_graph',
-           'triangular_lattice_graph', 'hexagonal_lattice_graph']
+__all__ = [
+    "grid_2d_graph",
+    "grid_graph",
+    "hypercube_graph",
+    "triangular_lattice_graph",
+    "hexagonal_lattice_graph",
+]
 
 
 @nodes_or_number([0, 1])
@@ -61,10 +66,8 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
     row_name, rows = m
     col_name, cols = n
     G.add_nodes_from((i, j) for i in rows for j in cols)
-    G.add_edges_from(((i, j), (pi, j))
-                     for pi, i in pairwise(rows) for j in cols)
-    G.add_edges_from(((i, j), (i, pj))
-                     for i in rows for pj, j in pairwise(cols))
+    G.add_edges_from(((i, j), (pi, j)) for pi, i in pairwise(rows) for j in cols)
+    G.add_edges_from(((i, j), (i, pj)) for i in rows for pj, j in pairwise(cols))
 
     if iterable(periodic):
         periodic_r, periodic_c = periodic
@@ -165,8 +168,9 @@ def hypercube_graph(n):
     return G
 
 
-def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
-                             create_using=None):
+def triangular_lattice_graph(
+    m, n, periodic=False, with_positions=True, create_using=None
+):
     r"""Returns the $m$ by $n$ triangular lattice graph.
 
     The `triangular lattice graph`_ is a two-dimensional `grid graph`_ in
@@ -235,10 +239,8 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
     H.add_edges_from(((i, j), (i + 1, j)) for j in rows for i in cols[:N])
     H.add_edges_from(((i, j), (i, j + 1)) for j in rows[:m] for i in cols)
     # add diagonals
-    H.add_edges_from(((i, j), (i + 1, j + 1))
-                     for j in rows[1:m:2] for i in cols[:N])
-    H.add_edges_from(((i + 1, j), (i, j + 1))
-                     for j in rows[:m:2] for i in cols[:N])
+    H.add_edges_from(((i, j), (i + 1, j + 1)) for j in rows[1:m:2] for i in cols[:N])
+    H.add_edges_from(((i + 1, j), (i, j + 1)) for j in rows[:m:2] for i in cols[:N])
     # identify boundary nodes if periodic
     if periodic is True:
         for i in cols:
@@ -256,17 +258,17 @@ def triangular_lattice_graph(m, n, periodic=False, with_positions=True,
         xx = (0.5 * (j % 2) + i for i in cols for j in rows)
         h = sqrt(3) / 2
         if periodic:
-            yy = (h * j + .01 * i * i for i in cols for j in rows)
+            yy = (h * j + 0.01 * i * i for i in cols for j in rows)
         else:
             yy = (h * j for i in cols for j in rows)
-        pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy)
-               if (i, j) in H}
-        set_node_attributes(H, pos, 'pos')
+        pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy) if (i, j) in H}
+        set_node_attributes(H, pos, "pos")
     return H
 
 
-def hexagonal_lattice_graph(m, n, periodic=False, with_positions=True,
-                            create_using=None):
+def hexagonal_lattice_graph(
+    m, n, periodic=False, with_positions=True, create_using=None
+):
     """Returns an `m` by `n` hexagonal lattice graph.
 
     The *hexagonal lattice graph* is a graph whose nodes and edges are
@@ -320,13 +322,12 @@ def hexagonal_lattice_graph(m, n, periodic=False, with_positions=True,
         msg = "periodic hexagonal lattice needs m > 1, n > 1 and even n"
         raise NetworkXError(msg)
 
-    M = 2 * m    # twice as many nodes as hexagons vertically
+    M = 2 * m  # twice as many nodes as hexagons vertically
     rows = range(M + 2)
     cols = range(n + 1)
     # make lattice
-    col_edges = (((i, j), (i, j + 1)) for i in cols for j in rows[:M + 1])
-    row_edges = (((i, j), (i + 1, j)) for i in cols[:n] for j in rows
-                 if i % 2 == j % 2)
+    col_edges = (((i, j), (i, j + 1)) for i in cols for j in rows[: M + 1])
+    row_edges = (((i, j), (i + 1, j)) for i in cols[:n] for j in rows if i % 2 == j % 2)
     G.add_edges_from(col_edges)
     G.add_edges_from(row_edges)
     # Remove corner nodes with one edge
@@ -346,14 +347,13 @@ def hexagonal_lattice_graph(m, n, periodic=False, with_positions=True,
     # calc position in embedded space
     ii = (i for i in cols for j in rows)
     jj = (j for i in cols for j in rows)
-    xx = (0.5 + i + i // 2 + (j % 2) * ((i % 2) - .5)
-          for i in cols for j in rows)
+    xx = (0.5 + i + i // 2 + (j % 2) * ((i % 2) - 0.5) for i in cols for j in rows)
     h = sqrt(3) / 2
     if periodic:
-        yy = (h * j + .01 * i * i for i in cols for j in rows)
+        yy = (h * j + 0.01 * i * i for i in cols for j in rows)
     else:
         yy = (h * j for i in cols for j in rows)
     # exclude nodes not in G
     pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy) if (i, j) in G}
-    set_node_attributes(G, pos, 'pos')
+    set_node_attributes(G, pos, "pos")
     return G

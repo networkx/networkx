@@ -2,7 +2,7 @@
 Functions for identifying isolate (degree zero) nodes.
 """
 
-__all__ = ['is_isolate', 'isolates', 'number_of_isolates']
+__all__ = ["is_isolate", "isolates", "number_of_isolates"]
 
 
 def is_isolate(G, n):

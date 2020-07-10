@@ -3,7 +3,7 @@
 
 import heapq
 
-__all__ = ['MappedQueue']
+__all__ = ["MappedQueue"]
 
 
 class MappedQueue:

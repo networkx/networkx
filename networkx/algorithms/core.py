@@ -32,11 +32,19 @@ import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
 
-__all__ = ['core_number', 'find_cores', 'k_core', 'k_shell',
-           'k_crust', 'k_corona', 'k_truss', 'onion_layers']
+__all__ = [
+    "core_number",
+    "find_cores",
+    "k_core",
+    "k_shell",
+    "k_crust",
+    "k_corona",
+    "k_truss",
+    "onion_layers",
+]
 
 
-@not_implemented_for('multigraph')
+@not_implemented_for("multigraph")
 def core_number(G):
     """Returns the core number for each vertex.
 
@@ -75,8 +83,10 @@ def core_number(G):
        https://arxiv.org/abs/cs.DS/0310049
     """
     if nx.number_of_selfloops(G) > 0:
-        msg = ('Input graph has self loops which is not permitted; '
-               'Consider using G.remove_edges_from(nx.selfloop_edges(G)).')
+        msg = (
+            "Input graph has self loops which is not permitted; "
+            "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
+        )
         raise NetworkXError(msg)
     degrees = dict(G.degree())
     # Sort nodes by degree.
@@ -180,8 +190,10 @@ def k_core(G, k=None, core_number=None):
        Vladimir Batagelj and Matjaz Zaversnik,  2003.
        https://arxiv.org/abs/cs.DS/0310049
     """
+
     def k_filter(v, k, c):
         return c[v] >= k
+
     return _core_subgraph(G, k_filter, k, core_number)
 
 
@@ -237,8 +249,10 @@ def k_shell(G, k=None, core_number=None):
        and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154
        http://www.pnas.org/content/104/27/11150.full
     """
+
     def k_filter(v, k, c):
         return c[v] == k
+
     return _core_subgraph(G, k_filter, k, core_number)
 
 
@@ -347,13 +361,15 @@ def k_corona(G, k, core_number=None):
        Phys. Rev. E 73, 056101 (2006)
        http://link.aps.org/doi/10.1103/PhysRevE.73.056101
     """
+
     def func(v, k, c):
         return c[v] == k and k == sum(1 for w in G[v] if c[w] >= k)
+
     return _core_subgraph(G, func, k, core_number)
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def k_truss(G, k):
     """Returns the k-truss of `G`.
 
@@ -412,7 +428,7 @@ def k_truss(G, k):
             seen.add(u)
             new_nbrs = [v for v in nbrs_u if v not in seen]
             for v in new_nbrs:
-                if (len(nbrs_u & set(H[v])) < (k - 2)):
+                if len(nbrs_u & set(H[v])) < (k - 2):
                     to_drop.append((u, v))
         H.remove_edges_from(to_drop)
         n_dropped = len(to_drop)
@@ -421,8 +437,8 @@ def k_truss(G, k):
     return H
 
 
-@not_implemented_for('multigraph')
-@not_implemented_for('directed')
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
 def onion_layers(G):
     """Returns the layer of each vertex in an onion decomposition of the graph.
 
@@ -470,8 +486,10 @@ def onion_layers(G):
        http://doi.org/10.1103/PhysRevX.9.011023
     """
     if nx.number_of_selfloops(G) > 0:
-        msg = ('Input graph contains self loops which is not permitted; '
-               'Consider using G.remove_edges_from(nx.selfloop_edges(G)).')
+        msg = (
+            "Input graph contains self loops which is not permitted; "
+            "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
+        )
         raise NetworkXError(msg)
     # Dictionaries to register the k-core/onion decompositions.
     od_layers = {}

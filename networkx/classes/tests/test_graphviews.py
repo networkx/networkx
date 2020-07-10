@@ -13,6 +13,7 @@ class TestReverseView:
 
     def test_pickle(self):
         import pickle
+
         rv = self.rv
         prv = pickle.loads(pickle.dumps(rv, -1))
         assert rv._node == prv._node
@@ -35,7 +36,6 @@ class TestReverseView:
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
-
             def my_method(self):
                 return "me"
 
@@ -61,6 +61,7 @@ class TestMultiReverseView:
 
     def test_pickle(self):
         import pickle
+
         rv = self.rv
         prv = pickle.loads(pickle.dumps(rv, -1))
         assert rv._node == prv._node
@@ -104,6 +105,7 @@ class TestToDirected:
 
     def test_pickle(self):
         import pickle
+
         dv = self.dv
         pdv = pickle.loads(pickle.dumps(dv, -1))
         assert dv._node == pdv._node
@@ -142,12 +144,13 @@ class TestToUndirected:
 
     def test_pickle(self):
         import pickle
+
         uv = self.uv
         puv = pickle.loads(pickle.dumps(uv, -1))
         assert uv._node == puv._node
         assert uv._adj == puv._adj
         assert uv.graph == puv.graph
-        assert hasattr(uv, '_graph')
+        assert hasattr(uv, "_graph")
 
     def test_contains(self):
         assert (2, 3) in self.DG.edges
@@ -173,14 +176,24 @@ class TestChainsOfViews:
         cls.MDGv = nx.to_directed(cls.MG)
         cls.Rv = cls.DG.reverse()
         cls.MRv = cls.MDG.reverse()
-        cls.graphs = [cls.G, cls.DG, cls.MG, cls.MDG,
-                      cls.Gv, cls.DGv, cls.MGv, cls.MDGv,
-                      cls.Rv, cls.MRv]
+        cls.graphs = [
+            cls.G,
+            cls.DG,
+            cls.MG,
+            cls.MDG,
+            cls.Gv,
+            cls.DGv,
+            cls.MGv,
+            cls.MDGv,
+            cls.Rv,
+            cls.MRv,
+        ]
         for G in cls.graphs:
             G.edges, G.nodes, G.degree
 
     def test_pickle(self):
         import pickle
+
         for G in self.graphs:
             H = pickle.loads(pickle.dumps(G, -1))
             assert_edges_equal(H.edges, G.edges)
@@ -278,42 +291,41 @@ class TestChainsOfViews:
         SG = G.subgraph([4, 5, 6])
         CSG = SG.copy(as_view=True)
         DCSG = SG.copy(as_view=False)
-        assert hasattr(CSG, '_graph')  # is a view
-        assert not hasattr(DCSG, '_graph')  # not a view
+        assert hasattr(CSG, "_graph")  # is a view
+        assert not hasattr(DCSG, "_graph")  # not a view
 
     def test_copy_disubgraph(self):
         G = self.DG.copy()
         SG = G.subgraph([4, 5, 6])
         CSG = SG.copy(as_view=True)
         DCSG = SG.copy(as_view=False)
-        assert hasattr(CSG, '_graph')  # is a view
-        assert not hasattr(DCSG, '_graph')  # not a view
+        assert hasattr(CSG, "_graph")  # is a view
+        assert not hasattr(DCSG, "_graph")  # not a view
 
     def test_copy_multidisubgraph(self):
         G = self.MDG.copy()
         SG = G.subgraph([4, 5, 6])
         CSG = SG.copy(as_view=True)
         DCSG = SG.copy(as_view=False)
-        assert hasattr(CSG, '_graph')  # is a view
-        assert not hasattr(DCSG, '_graph')  # not a view
+        assert hasattr(CSG, "_graph")  # is a view
+        assert not hasattr(DCSG, "_graph")  # not a view
 
     def test_copy_multisubgraph(self):
         G = self.MG.copy()
         SG = G.subgraph([4, 5, 6])
         CSG = SG.copy(as_view=True)
         DCSG = SG.copy(as_view=False)
-        assert hasattr(CSG, '_graph')  # is a view
-        assert not hasattr(DCSG, '_graph')  # not a view
+        assert hasattr(CSG, "_graph")  # is a view
+        assert not hasattr(DCSG, "_graph")  # not a view
 
     def test_copy_of_view(self):
         G = nx.OrderedMultiGraph(self.MGv)
-        assert G.__class__.__name__ == 'OrderedMultiGraph'
+        assert G.__class__.__name__ == "OrderedMultiGraph"
         G = G.copy(as_view=True)
-        assert G.__class__.__name__ == 'OrderedMultiGraph'
+        assert G.__class__.__name__ == "OrderedMultiGraph"
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
-
             def my_method(self):
                 return "me"
 

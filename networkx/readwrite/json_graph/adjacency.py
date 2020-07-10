@@ -1,9 +1,9 @@
 from itertools import chain
 import networkx as nx
 
-__all__ = ['adjacency_data', 'adjacency_graph']
+__all__ = ["adjacency_data", "adjacency_graph"]
 
-_attrs = dict(id='id', key='key')
+_attrs = dict(id="id", key="key")
 
 
 def adjacency_data(G, attrs=_attrs):
@@ -57,19 +57,19 @@ def adjacency_data(G, attrs=_attrs):
     adjacency_graph, node_link_data, tree_data
     """
     multigraph = G.is_multigraph()
-    id_ = attrs['id']
+    id_ = attrs["id"]
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
-    key = None if not multigraph else attrs['key']
+    key = None if not multigraph else attrs["key"]
     if id_ == key:
-        raise nx.NetworkXError('Attribute names are not unique.')
+        raise nx.NetworkXError("Attribute names are not unique.")
     data = {}
-    data['directed'] = G.is_directed()
-    data['multigraph'] = multigraph
-    data['graph'] = list(G.graph.items())
-    data['nodes'] = []
-    data['adjacency'] = []
+    data["directed"] = G.is_directed()
+    data["multigraph"] = multigraph
+    data["graph"] = list(G.graph.items())
+    data["nodes"] = []
+    data["adjacency"] = []
     for n, nbrdict in G.adjacency():
-        data['nodes'].append(dict(chain(G.nodes[n].items(), [(id_, n)])))
+        data["nodes"].append(dict(chain(G.nodes[n].items(), [(id_, n)])))
         adj = []
         if multigraph:
             for nbr, keys in nbrdict.items():
@@ -78,7 +78,7 @@ def adjacency_data(G, attrs=_attrs):
         else:
             for nbr, d in nbrdict.items():
                 adj.append(dict(chain(d.items(), [(id_, nbr)])))
-        data['adjacency'].append(adj)
+        data["adjacency"].append(adj)
     return data
 
 
@@ -122,26 +122,26 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
     --------
     adjacency_graph, node_link_data, tree_data
     """
-    multigraph = data.get('multigraph', multigraph)
-    directed = data.get('directed', directed)
+    multigraph = data.get("multigraph", multigraph)
+    directed = data.get("directed", directed)
     if multigraph:
         graph = nx.MultiGraph()
     else:
         graph = nx.Graph()
     if directed:
         graph = graph.to_directed()
-    id_ = attrs['id']
+    id_ = attrs["id"]
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
-    key = None if not multigraph else attrs['key']
-    graph.graph = dict(data.get('graph', []))
+    key = None if not multigraph else attrs["key"]
+    graph.graph = dict(data.get("graph", []))
     mapping = []
-    for d in data['nodes']:
+    for d in data["nodes"]:
         node_data = d.copy()
         node = node_data.pop(id_)
         mapping.append(node)
         graph.add_node(node)
         graph.nodes[node].update(node_data)
-    for i, d in enumerate(data['adjacency']):
+    for i, d in enumerate(data["adjacency"]):
         source = mapping[i]
         for tdata in d:
             target_data = tdata.copy()

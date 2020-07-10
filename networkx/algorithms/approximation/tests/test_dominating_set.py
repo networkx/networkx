@@ -4,7 +4,6 @@ from networkx.algorithms.approximation import min_edge_dominating_set
 
 
 class TestMinWeightDominatingSet:
-
     def test_min_weighted_dominating_set(self):
         graph = nx.Graph()
         graph.add_edge(1, 2)

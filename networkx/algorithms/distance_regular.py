@@ -8,8 +8,12 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 from .distance_measures import diameter
 
-__all__ = ['is_distance_regular', 'is_strongly_regular',
-           'intersection_array', 'global_parameters']
+__all__ = [
+    "is_distance_regular",
+    "is_strongly_regular",
+    "intersection_array",
+    "global_parameters",
+]
 
 
 def is_distance_regular(G):
@@ -103,7 +107,7 @@ def global_parameters(b, c):
     return ((y, b[0] - x - y, x) for x, y in zip(b + [0], [0] + c))
 
 
-@not_implemented_for('directed', 'multigraph')
+@not_implemented_for("directed", "multigraph")
 def intersection_array(G):
     """Returns the intersection array of a distance-regular graph.
 
@@ -144,7 +148,7 @@ def intersection_array(G):
     (_, k) = next(degree)
     for _, knext in degree:
         if knext != k:
-            raise nx.NetworkXError('Graph is not distance regular.')
+            raise nx.NetworkXError("Graph is not distance regular.")
         k = knext
     path_length = dict(nx.all_pairs_shortest_path_length(G))
     diameter = max([max(path_length[n].values()) for n in path_length])
@@ -154,23 +158,25 @@ def intersection_array(G):
         for v in G:
             try:
                 i = path_length[u][v]
-            except KeyError:  # graph must be connected
-                raise nx.NetworkXError('Graph is not distance regular.')
+            except KeyError as e:  # graph must be connected
+                raise nx.NetworkXError("Graph is not distance regular.") from e
             # number of neighbors of v at a distance of i-1 from u
             c = len([n for n in G[v] if path_length[n][u] == i - 1])
             # number of neighbors of v at a distance of i+1 from u
             b = len([n for n in G[v] if path_length[n][u] == i + 1])
             # b,c are independent of u and v
             if cint.get(i, c) != c or bint.get(i, b) != b:
-                raise nx.NetworkXError('Graph is not distance regular')
+                raise nx.NetworkXError("Graph is not distance regular")
             bint[i] = b
             cint[i] = c
-    return ([bint.get(j, 0) for j in range(diameter)],
-            [cint.get(j + 1, 0) for j in range(diameter)])
+    return (
+        [bint.get(j, 0) for j in range(diameter)],
+        [cint.get(j + 1, 0) for j in range(diameter)],
+    )
 
 
 # TODO There is a definition for directed strongly regular graphs.
-@not_implemented_for('directed', 'multigraph')
+@not_implemented_for("directed", "multigraph")
 def is_strongly_regular(G):
     """Returns True if and only if the given graph is strongly
     regular.

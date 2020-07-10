@@ -1,7 +1,10 @@
 import pytest
-from networkx.utils import powerlaw_sequence,\
-    zipf_rv, random_weighted_sample,\
-    weighted_choice
+from networkx.utils import (
+    powerlaw_sequence,
+    zipf_rv,
+    random_weighted_sample,
+    weighted_choice,
+)
 
 
 def test_degree_sequences():
@@ -20,7 +23,7 @@ def test_zipf_rv():
 
 
 def test_random_weighted_sample():
-    mapping = {'a': 10, 'b': 20}
+    mapping = {"a": 10, "b": 20}
     s = random_weighted_sample(mapping, 2, seed=1)
     s = random_weighted_sample(mapping, 2)
     assert sorted(s) == sorted(mapping.keys())
@@ -28,7 +31,7 @@ def test_random_weighted_sample():
 
 
 def test_random_weighted_choice():
-    mapping = {'a': 10, 'b': 0}
+    mapping = {"a": 10, "b": 0}
     c = weighted_choice(mapping, seed=1)
     c = weighted_choice(mapping)
-    assert c == 'a'
+    assert c == "a"

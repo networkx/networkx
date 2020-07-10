@@ -30,11 +30,32 @@ class TestConfigurationModel:
         """
         deg_seq = [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
         G = nx.configuration_model(deg_seq, seed=12345678)
-        assert (sorted((d for n, d in G.degree()), reverse=True) ==
-                [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1])
-        assert (sorted((d for n, d in G.degree(range(len(deg_seq)))),
-                       reverse=True) ==
-                [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1])
+        assert sorted((d for n, d in G.degree()), reverse=True) == [
+            5,
+            3,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            1,
+            1,
+            1,
+        ]
+        assert sorted((d for n, d in G.degree(range(len(deg_seq)))), reverse=True) == [
+            5,
+            3,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            1,
+            1,
+            1,
+        ]
 
     def test_random_seed(self):
         """Tests that each call with the same random seed generates the
@@ -139,8 +160,7 @@ def test_havel_hakimi_construction():
 
     G = nx.havel_hakimi_graph(z)
 
-    pytest.raises(nx.NetworkXError, nx.havel_hakimi_graph, z,
-                  create_using=nx.DiGraph())
+    pytest.raises(nx.NetworkXError, nx.havel_hakimi_graph, z, create_using=nx.DiGraph())
 
 
 def test_directed_havel_hakimi():
@@ -160,8 +180,7 @@ def test_directed_havel_hakimi():
     # Test non-graphical sequence
     dout = [1000, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
     din = [103, 102, 102, 102, 102, 102, 102, 102, 102, 102]
-    pytest.raises(nx.exception.NetworkXError,
-                  nx.directed_havel_hakimi_graph, din, dout)
+    pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
     # Test valid sequences
     dout = [1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
     din = [2, 2, 2, 2, 2, 2, 2, 2, 0, 2]
@@ -172,12 +191,10 @@ def test_directed_havel_hakimi():
     assert sorted(din) == sorted(din2)
     # Test unequal sums
     din = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-    pytest.raises(nx.exception.NetworkXError,
-                  nx.directed_havel_hakimi_graph, din, dout)
+    pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
     # Test for negative values
     din = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -2]
-    pytest.raises(nx.exception.NetworkXError,
-                  nx.directed_havel_hakimi_graph, din, dout)
+    pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
 
 
 def test_degree_sequence_tree():
@@ -186,8 +203,9 @@ def test_degree_sequence_tree():
     assert len(G) == len(z)
     assert len(list(G.edges())) == sum(z) / 2
 
-    pytest.raises(nx.NetworkXError, nx.degree_sequence_tree, z,
-                  create_using=nx.DiGraph())
+    pytest.raises(
+        nx.NetworkXError, nx.degree_sequence_tree, z, create_using=nx.DiGraph()
+    )
 
     z = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
     pytest.raises(nx.NetworkXError, nx.degree_sequence_tree, z)

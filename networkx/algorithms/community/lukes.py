@@ -7,13 +7,13 @@ from random import choice
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['lukes_partitioning']
+__all__ = ["lukes_partitioning"]
 
-D_EDGE_W = 'weight'
+D_EDGE_W = "weight"
 D_EDGE_VALUE = 1.0
-D_NODE_W = 'weight'
+D_NODE_W = "weight"
 D_NODE_VALUE = 1
-PKEY = 'partitions'
+PKEY = "partitions"
 CLUSTER_EVAL_CACHE_SIZE = 2048
 
 
@@ -25,10 +25,7 @@ def _split_n_from(n: int, min_size_of_first_part: int):
         yield p1, n - p1
 
 
-def lukes_partitioning(G,
-                       max_size: int,
-                       node_weight=None,
-                       edge_weight=None) -> list:
+def lukes_partitioning(G, max_size: int, node_weight=None, edge_weight=None) -> list:
 
     """Optimal partitioning of a weighted tree using the Lukes algorithm.
 
@@ -76,7 +73,7 @@ def lukes_partitioning(G,
     """
     # First sanity check and tree preparation
     if not nx.is_tree(G):
-        raise nx.NotATree('lukes_partitioning works only on trees')
+        raise nx.NotATree("lukes_partitioning works only on trees")
     else:
         if nx.is_directed(G):
             root = [n for n, d in G.in_degree() if d == 0]
@@ -108,22 +105,24 @@ def lukes_partitioning(G,
     all_n_attr = nx.get_node_attributes(safe_G, node_weight).values()
     for x in all_n_attr:
         if not isinstance(x, int):
-            raise TypeError('lukes_partitioning needs integer '
-                            f'values for node_weight ({node_weight})')
+            raise TypeError(
+                "lukes_partitioning needs integer "
+                f"values for node_weight ({node_weight})"
+            )
 
     # SUBROUTINES -----------------------
     # these functions are defined here for two reasons:
     # - brevity: we can leverage global "safe_G"
     # - caching: signatures are hashable
 
-    @not_implemented_for('undirected')
+    @not_implemented_for("undirected")
     # this is intended to be called only on t_G
     def _leaves(gr):
         for x in gr.nodes:
             if not nx.descendants(gr, x):
                 yield x
 
-    @not_implemented_for('undirected')
+    @not_implemented_for("undirected")
     def _a_parent_of_leaves_only(gr):
         tleaves = set(_leaves(gr))
         for n in set(gr.nodes) - tleaves:
@@ -132,8 +131,7 @@ def lukes_partitioning(G,
 
     @lru_cache(CLUSTER_EVAL_CACHE_SIZE)
     def _value_of_cluster(cluster: frozenset):
-        valid_edges = [e for e in safe_G.edges
-                       if e[0] in cluster and e[1] in cluster]
+        valid_edges = [e for e in safe_G.edges if e[0] in cluster and e[1] in cluster]
         return sum([safe_G.edges[e][edge_weight] for e in valid_edges])
 
     def _value_of_partition(partition: list):
@@ -148,8 +146,7 @@ def lukes_partitioning(G,
         assert len(ccx) == 1
         return ccx[0]
 
-    def _concatenate_or_merge(partition_1: list, partition_2: list,
-                              x, i, ref_weigth):
+    def _concatenate_or_merge(partition_1: list, partition_2: list, x, i, ref_weigth):
 
         ccx = _pivot(partition_1, x)
         cci = _pivot(partition_2, i)
@@ -191,15 +188,16 @@ def lukes_partitioning(G,
         for i_node in x_descendants:
             for j in range(weight_of_x, max_size + 1):
                 for a, b in _split_n_from(j, weight_of_x):
-                    if a not in t_G.nodes[x_node][PKEY].keys() \
-                            or b not in t_G.nodes[i_node][PKEY].keys():
+                    if (
+                        a not in t_G.nodes[x_node][PKEY].keys()
+                        or b not in t_G.nodes[i_node][PKEY].keys()
+                    ):
                         # it's not possible to form this particular weight sum
                         continue
 
                     part1 = t_G.nodes[x_node][PKEY][a]
                     part2 = t_G.nodes[i_node][PKEY][b]
-                    part, value = _concatenate_or_merge(part1, part2,
-                                                        x_node, i_node, j)
+                    part, value = _concatenate_or_merge(part1, part2, x_node, i_node, j)
 
                     if j not in bp_buffer.keys() or bp_buffer[j][1] < value:
                         # we annotate in the buffer the best partition for j

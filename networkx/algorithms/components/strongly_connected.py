@@ -2,15 +2,17 @@
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
-__all__ = ['number_strongly_connected_components',
-           'strongly_connected_components',
-           'is_strongly_connected',
-           'strongly_connected_components_recursive',
-           'kosaraju_strongly_connected_components',
-           'condensation']
+__all__ = [
+    "number_strongly_connected_components",
+    "strongly_connected_components",
+    "is_strongly_connected",
+    "strongly_connected_components_recursive",
+    "kosaraju_strongly_connected_components",
+    "condensation",
+]
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def strongly_connected_components(G):
     """Generate nodes in strongly connected components of graph.
 
@@ -70,7 +72,7 @@ def strongly_connected_components(G):
     lowlink = {}
     scc_found = set()
     scc_queue = []
-    i = 0     # Preorder counter
+    i = 0  # Preorder counter
     for source in G:
         if source not in scc_found:
             queue = [source]
@@ -105,7 +107,7 @@ def strongly_connected_components(G):
                         scc_queue.append(v)
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def kosaraju_strongly_connected_components(G, source=None):
     """Generate nodes in strongly connected components of graph.
 
@@ -162,7 +164,7 @@ def kosaraju_strongly_connected_components(G, source=None):
         seen.update(new)
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def strongly_connected_components_recursive(G):
     """Generate nodes in strongly connected components of graph.
 
@@ -220,6 +222,7 @@ def strongly_connected_components_recursive(G):
        Information Processing Letters 49(1): 9-14, (1994)..
 
     """
+
     def visit(v, cnt):
         root[v] = cnt
         visited[v] = cnt
@@ -250,7 +253,7 @@ def strongly_connected_components_recursive(G):
             yield from visit(source, cnt)
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def number_strongly_connected_components(G):
     """Returns number of strongly connected components in graph.
 
@@ -282,7 +285,7 @@ def number_strongly_connected_components(G):
     return sum(1 for scc in strongly_connected_components(G))
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def is_strongly_connected(G):
     """Test directed graph for strong connectivity.
 
@@ -318,12 +321,13 @@ def is_strongly_connected(G):
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
-            """Connectivity is undefined for the null graph.""")
+            """Connectivity is undefined for the null graph."""
+        )
 
     return len(list(strongly_connected_components(G))[0]) == len(G)
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def condensation(G, scc=None):
     """Returns the condensation of G.
 
@@ -368,7 +372,7 @@ def condensation(G, scc=None):
     members = {}
     C = nx.DiGraph()
     # Add mapping dict as graph attribute
-    C.graph['mapping'] = mapping
+    C.graph["mapping"] = mapping
     if len(G) == 0:
         return C
     for i, component in enumerate(scc):
@@ -376,8 +380,9 @@ def condensation(G, scc=None):
         mapping.update((n, i) for n in component)
     number_of_components = i + 1
     C.add_nodes_from(range(number_of_components))
-    C.add_edges_from((mapping[u], mapping[v]) for u, v in G.edges()
-                     if mapping[u] != mapping[v])
+    C.add_edges_from(
+        (mapping[u], mapping[v]) for u, v in G.edges() if mapping[u] != mapping[v]
+    )
     # Add a list of members (ie original nodes) to each node (ie scc) in C.
-    nx.set_node_attributes(C, members, 'members')
+    nx.set_node_attributes(C, members, "members")
     return C

@@ -1,7 +1,7 @@
 from collections import defaultdict
 import networkx as nx
 
-__all__ = ['k_clique_communities']
+__all__ = ["k_clique_communities"]
 
 
 def k_clique_communities(G, k, cliques=None):
@@ -66,7 +66,7 @@ def k_clique_communities(G, k, cliques=None):
     # Connected components of clique graph with perc edges
     # are the percolated cliques
     for component in nx.connected_components(perc_graph):
-        yield(frozenset.union(*component))
+        yield (frozenset.union(*component))
 
 
 def _get_adjacent_cliques(clique, membership_dict):

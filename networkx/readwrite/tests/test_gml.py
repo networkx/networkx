@@ -150,7 +150,9 @@ graph   [
         ]
 
         assert [e for e in sorted(G.edges(data=True))] == [
-            ("Node 1", "Node 2",
+            (
+                "Node 1",
+                "Node 2",
                 {
                     "color": {"line": "blue", "thickness": 3},
                     "label": "Edge from node 1 to node 2",
@@ -490,8 +492,8 @@ graph
         # Test export for numbers that barely fit or don't fit into 32 bits,
         # and 3 numbers in the middle
         numbers = {
-            "toosmall": (-2 ** 31) - 1,
-            "small": -2 ** 31,
+            "toosmall": (-(2 ** 31)) - 1,
+            "small": -(2 ** 31),
             "med1": -4,
             "med2": 0,
             "med3": 17,
@@ -530,7 +532,8 @@ class TestPropertyLists:
             nx.write_gml(g, f)
         result = f.read().decode()
 
-        assert result == dedent("""\
+        assert result == dedent(
+            """\
             graph [
               node [
                 id 0
@@ -543,7 +546,8 @@ class TestPropertyLists:
                 properties 0
               ]
             ]
-        """)
+        """
+        )
 
     def test_writing_graph_with_one_element_property_list(self):
         g = nx.Graph()
@@ -552,7 +556,8 @@ class TestPropertyLists:
             nx.write_gml(g, f)
         result = f.read().decode()
 
-        assert result == dedent("""\
+        assert result == dedent(
+            """\
             graph [
               node [
                 id 0
@@ -561,11 +566,14 @@ class TestPropertyLists:
                 properties "element"
               ]
             ]
-        """)
+        """
+        )
 
     def test_reading_graph_with_list_property(self):
         with byte_file() as f:
-            f.write(dedent("""
+            f.write(
+                dedent(
+                    """
               graph [
                 node [
                   id 0
@@ -576,21 +584,18 @@ class TestPropertyLists:
                   properties 2.5
                 ]
               ]
-            """).encode("ascii"))
+            """
+                ).encode("ascii")
+            )
             f.seek(0)
             graph = nx.read_gml(f)
-        assert graph.nodes(data=True)["n1"] == {
-            'properties': [
-                'element',
-                0,
-                1,
-                2.5,
-            ]
-        }
+        assert graph.nodes(data=True)["n1"] == {"properties": ["element", 0, 1, 2.5,]}
 
     def test_reading_graph_with_single_element_list_property(self):
         with byte_file() as f:
-            f.write(dedent("""
+            f.write(
+                dedent(
+                    """
               graph [
                 node [
                   id 0
@@ -599,11 +604,9 @@ class TestPropertyLists:
                   properties "element"
                 ]
               ]
-            """).encode("ascii"))
+            """
+                ).encode("ascii")
+            )
             f.seek(0)
             graph = nx.read_gml(f)
-        assert graph.nodes(data=True)["n1"] == {
-            'properties': [
-                'element',
-            ]
-        }
+        assert graph.nodes(data=True)["n1"] == {"properties": ["element",]}

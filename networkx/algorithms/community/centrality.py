@@ -2,7 +2,7 @@
 
 import networkx as nx
 
-__all__ = ['girvan_newman']
+__all__ = ["girvan_newman"]
 
 
 def girvan_newman(G, most_valuable_edge=None):
@@ -127,6 +127,7 @@ def girvan_newman(G, most_valuable_edge=None):
     # If no function is provided for computing the most valuable edge,
     # use the edge betweenness centrality.
     if most_valuable_edge is None:
+
         def most_valuable_edge(G):
             """Returns the edge with the highest betweenness centrality
             in the graph `G`.
@@ -136,6 +137,7 @@ def girvan_newman(G, most_valuable_edge=None):
             # dictionary will never be empty.
             betweenness = nx.edge_betweenness_centrality(G)
             return max(betweenness, key=betweenness.get)
+
     # The copy of G here must include the edge weight data.
     g = G.copy().to_undirected()
     # Self-loops must be removed because their removal has no effect on

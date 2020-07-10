@@ -3,9 +3,7 @@ import networkx as nx
 import itertools as it
 from networkx.utils import pairwise
 import pytest
-from networkx.algorithms.connectivity import (
-    k_edge_augmentation,
-)
+from networkx.algorithms.connectivity import k_edge_augmentation
 from networkx.algorithms.connectivity.edge_augmentation import (
     collapse,
     complement_edges,
@@ -25,8 +23,13 @@ def tarjan_bridge_graph():
     # Information Processing Letters, 1974 - Elsevier
     # doi:10.1016/0020-0190(74)90003-9.
     # define 2-connected components and bridges
-    ccs = [(1, 2, 4, 3, 1, 4), (5, 6, 7, 5), (8, 9, 10, 8),
-           (17, 18, 16, 15, 17), (11, 12, 14, 13, 11, 14)]
+    ccs = [
+        (1, 2, 4, 3, 1, 4),
+        (5, 6, 7, 5),
+        (8, 9, 10, 8),
+        (17, 18, 16, 15, 17),
+        (11, 12, 14, 13, 11, 14),
+    ]
     bridges = [(4, 8), (3, 5), (3, 17)]
     G = nx.Graph(it.chain(*(pairwise(path) for path in ccs + bridges)))
     return G
@@ -34,30 +37,24 @@ def tarjan_bridge_graph():
 
 def test_weight_key():
     G = nx.Graph()
-    G.add_nodes_from([
-        1, 2, 3, 4, 5, 6, 7, 8, 9])
+    G.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8, 9])
     G.add_edges_from([(3, 8), (1, 2), (2, 3)])
     impossible = {(3, 6), (3, 9)}
     rng = random.Random(0)
     avail_uv = list(set(complement_edges(G)) - impossible)
-    avail = [(u, v, {'cost': rng.random()}) for u, v in avail_uv]
+    avail = [(u, v, {"cost": rng.random()}) for u, v in avail_uv]
 
     _augment_and_check(G, k=1)
     _augment_and_check(G, k=1, avail=avail_uv)
-    _augment_and_check(G, k=1, avail=avail, weight='cost')
+    _augment_and_check(G, k=1, avail=avail, weight="cost")
 
-    _check_augmentations(G, avail, weight='cost')
+    _check_augmentations(G, avail, weight="cost")
 
 
 def test_is_locally_k_edge_connected_exceptions():
-    pytest.raises(nx.NetworkXNotImplemented,
-                  is_k_edge_connected,
-                  nx.DiGraph(), k=0)
-    pytest.raises(nx.NetworkXNotImplemented,
-                  is_k_edge_connected,
-                  nx.MultiGraph(), k=0)
-    pytest.raises(ValueError, is_k_edge_connected,
-                  nx.Graph(), k=0)
+    pytest.raises(nx.NetworkXNotImplemented, is_k_edge_connected, nx.DiGraph(), k=0)
+    pytest.raises(nx.NetworkXNotImplemented, is_k_edge_connected, nx.MultiGraph(), k=0)
+    pytest.raises(ValueError, is_k_edge_connected, nx.Graph(), k=0)
 
 
 def test_is_k_edge_connected():
@@ -78,15 +75,18 @@ def test_is_k_edge_connected():
 
 
 def test_is_k_edge_connected_exceptions():
-    pytest.raises(nx.NetworkXNotImplemented,
-                  is_locally_k_edge_connected,
-                  nx.DiGraph(), 1, 2, k=0)
-    pytest.raises(nx.NetworkXNotImplemented,
-                  is_locally_k_edge_connected,
-                  nx.MultiGraph(), 1, 2, k=0)
-    pytest.raises(ValueError,
-                  is_locally_k_edge_connected,
-                  nx.Graph(), 1, 2, k=0)
+    pytest.raises(
+        nx.NetworkXNotImplemented, is_locally_k_edge_connected, nx.DiGraph(), 1, 2, k=0
+    )
+    pytest.raises(
+        nx.NetworkXNotImplemented,
+        is_locally_k_edge_connected,
+        nx.MultiGraph(),
+        1,
+        2,
+        k=0,
+    )
+    pytest.raises(ValueError, is_locally_k_edge_connected, nx.Graph(), 1, 2, k=0)
 
 
 def test_is_locally_k_edge_connected():
@@ -137,14 +137,13 @@ def test_invalid_k():
 
 def test_unfeasible():
     G = tarjan_bridge_graph()
-    pytest.raises(nx.NetworkXUnfeasible, list,
-                  k_edge_augmentation(G, k=1, avail=[]))
+    pytest.raises(nx.NetworkXUnfeasible, list, k_edge_augmentation(G, k=1, avail=[]))
 
-    pytest.raises(nx.NetworkXUnfeasible, list,
-                  k_edge_augmentation(G, k=2, avail=[]))
+    pytest.raises(nx.NetworkXUnfeasible, list, k_edge_augmentation(G, k=2, avail=[]))
 
-    pytest.raises(nx.NetworkXUnfeasible, list,
-                  k_edge_augmentation(G, k=2, avail=[(7, 9)]))
+    pytest.raises(
+        nx.NetworkXUnfeasible, list, k_edge_augmentation(G, k=2, avail=[(7, 9)])
+    )
 
     # partial solutions should not error if real solutions are infeasible
     aug_edges = list(k_edge_augmentation(G, k=2, avail=[(7, 9)], partial=True))
@@ -159,13 +158,23 @@ def test_tarjan():
     G = tarjan_bridge_graph()
 
     aug_edges = set(_augment_and_check(G, k=2)[0])
-    print(f'aug_edges = {aug_edges!r}')
+    print(f"aug_edges = {aug_edges!r}")
     # can't assert edge exactly equality due to non-determinant edge order
     # but we do know the size of the solution must be 3
     assert len(aug_edges) == 3
 
-    avail = [(9, 7), (8, 5), (2, 10), (6, 13), (11, 18), (1, 17), (2, 3),
-             (16, 17), (18, 14), (15, 14)]
+    avail = [
+        (9, 7),
+        (8, 5),
+        (2, 10),
+        (6, 13),
+        (11, 18),
+        (1, 17),
+        (2, 3),
+        (16, 17),
+        (18, 14),
+        (15, 14),
+    ]
     aug_edges = set(_augment_and_check(G, avail=avail, k=2)[0])
 
     # Can't assert exact length since approximation depends on the order of a
@@ -233,28 +242,33 @@ def test_gnp_augmentation():
     rng = random.Random(0)
     G = nx.gnp_random_graph(30, 0.005, seed=0)
     # Randomly make edges available
-    avail = {(u, v): 1 + rng.random()
-             for u, v in complement_edges(G)
-             if rng.random() < .25}
+    avail = {
+        (u, v): 1 + rng.random() for u, v in complement_edges(G) if rng.random() < 0.25
+    }
     _check_augmentations(G, avail)
 
 
 def _assert_solution_properties(G, aug_edges, avail_dict=None):
     """ Checks that aug_edges are consistently formatted """
     if avail_dict is not None:
-        assert all(e in avail_dict for e in aug_edges), 'when avail is specified aug-edges should be in avail'
+        assert all(
+            e in avail_dict for e in aug_edges
+        ), "when avail is specified aug-edges should be in avail"
 
     unique_aug = set(map(tuple, map(sorted, aug_edges)))
     unique_aug = list(map(tuple, map(sorted, aug_edges)))
-    assert len(aug_edges) == len(unique_aug), 'edges should be unique'
+    assert len(aug_edges) == len(unique_aug), "edges should be unique"
 
-    assert not any(u == v for u, v in unique_aug), 'should be no self-edges'
+    assert not any(u == v for u, v in unique_aug), "should be no self-edges"
 
-    assert not any(G.has_edge(u, v) for u, v in unique_aug), 'aug edges and G.edges should be disjoint'
+    assert not any(
+        G.has_edge(u, v) for u, v in unique_aug
+    ), "aug edges and G.edges should be disjoint"
 
 
-def _augment_and_check(G, k, avail=None, weight=None, verbose=False,
-                       orig_k=None, max_aug_k=None):
+def _augment_and_check(
+    G, k, avail=None, weight=None, verbose=False, orig_k=None, max_aug_k=None
+):
     """
     Does one specific augmentation and checks for properties of the result
     """
@@ -267,28 +281,26 @@ def _augment_and_check(G, k, avail=None, weight=None, verbose=False,
     try:
         if avail is not None:
             # ensure avail is in dict form
-            avail_dict = dict(zip(*_unpack_available_edges(avail,
-                                                           weight=weight)))
+            avail_dict = dict(zip(*_unpack_available_edges(avail, weight=weight)))
         else:
             avail_dict = None
         try:
             # Find the augmentation if possible
-            generator = nx.k_edge_augmentation(G, k=k, weight=weight,
-                                               avail=avail)
-            assert not isinstance(generator, list), 'should always return an iter'
+            generator = nx.k_edge_augmentation(G, k=k, weight=weight, avail=avail)
+            assert not isinstance(generator, list), "should always return an iter"
             aug_edges = []
             for edge in generator:
                 aug_edges.append(edge)
         except nx.NetworkXUnfeasible:
             infeasible = True
-            info['infeasible'] = True
-            assert len(aug_edges) == 0, 'should not generate anything if unfeasible'
+            info["infeasible"] = True
+            assert len(aug_edges) == 0, "should not generate anything if unfeasible"
 
             if avail is None:
                 n_nodes = G.number_of_nodes()
                 assert n_nodes <= k, (
-                    'unconstrained cases are only unfeasible if |V| <= k. '
-                    f'Got |V|={n_nodes} and k={k}'
+                    "unconstrained cases are only unfeasible if |V| <= k. "
+                    f"Got |V|={n_nodes} and k={k}"
                 )
             else:
                 if max_aug_k is None:
@@ -300,18 +312,21 @@ def _augment_and_check(G, k, avail=None, weight=None, verbose=False,
                         max_aug_k = 0
 
                 assert max_aug_k < k, (
-                    'avail should only be unfeasible if using all edges '
-                    'does not achieve k-edge-connectivity')
+                    "avail should only be unfeasible if using all edges "
+                    "does not achieve k-edge-connectivity"
+                )
 
             # Test for a partial solution
-            partial_edges = list(nx.k_edge_augmentation(
-                G, k=k, weight=weight, partial=True, avail=avail))
+            partial_edges = list(
+                nx.k_edge_augmentation(G, k=k, weight=weight, partial=True, avail=avail)
+            )
 
-            info['n_partial_edges'] = len(partial_edges)
+            info["n_partial_edges"] = len(partial_edges)
 
             if avail_dict is None:
-                assert set(partial_edges) == set(complement_edges(G)), (
-                    'unweighted partial solutions should be the complement')
+                assert set(partial_edges) == set(
+                    complement_edges(G)
+                ), "unweighted partial solutions should be the complement"
             elif len(avail_dict) > 0:
                 H = G.copy()
 
@@ -324,7 +339,9 @@ def _augment_and_check(G, k, avail=None, weight=None, verbose=False,
 
                 # Full connectivity should be no better than our partial
                 # solution.
-                assert partial_conn == full_conn, 'adding more edges should not increase k-conn'
+                assert (
+                    partial_conn == full_conn
+                ), "adding more edges should not increase k-conn"
 
             # Find the new edge-connectivity after adding the augmenting edges
             aug_edges = partial_edges
@@ -338,8 +355,8 @@ def _augment_and_check(G, k, avail=None, weight=None, verbose=False,
         else:
             total_weight = num_edges
 
-        info['total_weight'] = total_weight
-        info['num_edges'] = num_edges
+        info["total_weight"] = total_weight
+        info["num_edges"] = num_edges
 
         # Find the new edge-connectivity after adding the augmenting edges
         G_aug = G.copy()
@@ -348,20 +365,18 @@ def _augment_and_check(G, k, avail=None, weight=None, verbose=False,
             aug_k = nx.edge_connectivity(G_aug)
         except nx.NetworkXPointlessConcept:
             aug_k = 0
-        info['aug_k'] = aug_k
+        info["aug_k"] = aug_k
 
         # Do checks
         if not infeasible and orig_k < k:
-            assert info['aug_k'] >= k, (
-                f'connectivity should increase to k={k} or more')
+            assert info["aug_k"] >= k, f"connectivity should increase to k={k} or more"
 
-        assert info['aug_k'] >= orig_k, (
-            'augmenting should never reduce connectivity')
+        assert info["aug_k"] >= orig_k, "augmenting should never reduce connectivity"
 
         _assert_solution_properties(G, aug_edges, avail_dict)
 
     except Exception:
-        info['failed'] = True
+        info["failed"] = True
         print(f"edges = {list(G.edges())}")
         print(f"nodes = {list(G.nodes())}")
         print(f"aug_edges = {list(aug_edges)}")
@@ -369,15 +384,14 @@ def _augment_and_check(G, k, avail=None, weight=None, verbose=False,
         raise
     else:
         if verbose:
-            print(f'info  = {info}')
+            print(f"info  = {info}")
 
     if infeasible:
         aug_edges = None
     return aug_edges, info
 
 
-def _check_augmentations(G, avail=None, max_k=None, weight=None,
-                         verbose=False):
+def _check_augmentations(G, avail=None, max_k=None, weight=None, verbose=False):
     """ Helper to check weighted/unweighted cases with multiple values of k """
     # Using all available edges, find the maximum edge-connectivity
     try:
@@ -402,7 +416,7 @@ def _check_augmentations(G, avail=None, max_k=None, weight=None,
     avail_uniform = {e: 1 for e in complement_edges(G)}
 
     if verbose:
-        print('\n=== CHECK_AUGMENTATION ===')
+        print("\n=== CHECK_AUGMENTATION ===")
         print(f"G.number_of_nodes = {G.number_of_nodes()!r}")
         print(f"G.number_of_edges = {G.number_of_edges()!r}")
         print(f"max_k = {max_k!r}")
@@ -412,53 +426,61 @@ def _check_augmentations(G, avail=None, max_k=None, weight=None,
     # check augmentation for multiple values of k
     for k in range(1, max_k + 1):
         if verbose:
-            print('---------------')
-            print(f'Checking k = {k}')
+            print("---------------")
+            print(f"Checking k = {k}")
 
         # Check the unweighted version
         if verbose:
-            print('unweighted case')
-        aug_edges1, info1 = _augment_and_check(
-            G, k=k,  verbose=verbose, orig_k=orig_k)
+            print("unweighted case")
+        aug_edges1, info1 = _augment_and_check(G, k=k, verbose=verbose, orig_k=orig_k)
 
         # Check that the weighted version with all available edges and uniform
         # weights gives a similar solution to the unweighted case.
         if verbose:
-            print('weighted uniform case')
+            print("weighted uniform case")
         aug_edges2, info2 = _augment_and_check(
-            G, k=k, avail=avail_uniform, verbose=verbose,
+            G,
+            k=k,
+            avail=avail_uniform,
+            verbose=verbose,
             orig_k=orig_k,
-            max_aug_k=G.number_of_nodes() - 1)
+            max_aug_k=G.number_of_nodes() - 1,
+        )
 
         # Check the weighted version
         if avail is not None:
             if verbose:
-                print('weighted case')
+                print("weighted case")
             aug_edges3, info3 = _augment_and_check(
-                G, k=k, avail=avail, weight=weight, verbose=verbose,
-                max_aug_k=max_aug_k, orig_k=orig_k)
+                G,
+                k=k,
+                avail=avail,
+                weight=weight,
+                verbose=verbose,
+                max_aug_k=max_aug_k,
+                orig_k=orig_k,
+            )
 
         if aug_edges1 is not None:
             # Check approximation ratios
             if k == 1:
                 # when k=1, both solutions should be optimal
-                assert info2['total_weight'] == info1['total_weight']
+                assert info2["total_weight"] == info1["total_weight"]
             if k == 2:
                 # when k=2, the weighted version is an approximation
                 if orig_k == 0:
                     # the approximation ratio is 3 if G is not connected
-                    assert (info2['total_weight'] <=
-                            info1['total_weight'] * 3)
+                    assert info2["total_weight"] <= info1["total_weight"] * 3
                 else:
                     # the approximation ratio is 2 if G is was connected
-                    assert (info2['total_weight'] <=
-                            info1['total_weight'] * 2)
+                    assert info2["total_weight"] <= info1["total_weight"] * 2
                 _check_unconstrained_bridge_property(G, info1)
 
 
 def _check_unconstrained_bridge_property(G, info1):
     # Check Theorem 5 from Eswaran and Tarjan. (1975) Augmentation problems
     import math
+
     bridge_ccs = list(nx.connectivity.bridge_components(G))
     # condense G into an forest C
     C = collapse(G, bridge_ccs)
@@ -467,6 +489,7 @@ def _check_unconstrained_bridge_property(G, info1):
     q = len([n for n, d in C.degree() if d == 0])  # isolated
     if p + q > 1:
         size_target = int(math.ceil(p / 2.0)) + q
-        size_aug = info1['num_edges']
-        assert size_aug == size_target, (
-            'augmentation size is different from what theory predicts')
+        size_aug = info1["num_edges"]
+        assert (
+            size_aug == size_target
+        ), "augmentation size is different from what theory predicts"

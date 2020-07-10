@@ -1,6 +1,6 @@
 """Algorithm to select influential nodes in a graph using VoteRank."""
 
-__all__ = ['voterank']
+__all__ = ["voterank"]
 
 
 def voterank(G, number_of_nodes=None):
@@ -62,8 +62,7 @@ def voterank(G, number_of_nodes=None):
         for n in influential_nodes:
             voterank[n][0] = 0
         # step 3 - select top node
-        n = max(G.nodes,
-                key=lambda x: voterank[x][0])
+        n = max(G.nodes, key=lambda x: voterank[x][0])
         if voterank[n][0] == 0:
             return influential_nodes
         influential_nodes.append(n)

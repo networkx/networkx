@@ -28,27 +28,29 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def set_warnings():
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning,
+        "ignore",
+        category=DeprecationWarning,
         message="literal_stringizer is deprecated*",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning,
+        "ignore",
+        category=DeprecationWarning,
         message="literal_destringizer is deprecated*",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning,
-        message="is_string_like is deprecated*"
+        "ignore", category=DeprecationWarning, message="is_string_like is deprecated*"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning,
-        message="make_str is deprecated*"
+        "ignore", category=DeprecationWarning, message="make_str is deprecated*"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning,
-        message="context_manager reversed is deprecated*"
+        "ignore",
+        category=DeprecationWarning,
+        message="context_manager reversed is deprecated*",
     )
     warnings.filterwarnings(
-        "ignore", category=PendingDeprecationWarning,
+        "ignore",
+        category=PendingDeprecationWarning,
         message="the matrix subclass is not the recommended way*",
     )
 

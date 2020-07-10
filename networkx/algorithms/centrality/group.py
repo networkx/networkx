@@ -6,11 +6,13 @@ import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
 
-__all__ = ['group_betweenness_centrality',
-           'group_closeness_centrality',
-           'group_degree_centrality',
-           'group_in_degree_centrality',
-           'group_out_degree_centrality']
+__all__ = [
+    "group_betweenness_centrality",
+    "group_closeness_centrality",
+    "group_degree_centrality",
+    "group_in_degree_centrality",
+    "group_out_degree_centrality",
+]
 
 
 def group_betweenness_centrality(G, C, normalized=True, weight=None):
@@ -96,16 +98,18 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
     V = set(G)  # set of nodes in G
     C = set(C)  # set of nodes in C (group)
     if len(C - V) != 0:  # element(s) of C not in V
-        raise nx.NodeNotFound('The node(s) ' + str(list(C - V)) + ' are not '
-                              'in the graph.')
+        raise nx.NodeNotFound(
+            "The node(s) " + str(list(C - V)) + " are not " "in the graph."
+        )
     V_C = V - C  # set of nodes in V but not in C
     # accumulation
     for pair in combinations(V_C, 2):  # (s, t) pairs of V_C
         try:
             paths = 0
             paths_through_C = 0
-            for path in nx.all_shortest_paths(G, source=pair[0],
-                                              target=pair[1], weight=weight):
+            for path in nx.all_shortest_paths(
+                G, source=pair[0], target=pair[1], weight=weight
+            ):
                 if set(path) & C:
                     paths_through_C += 1
                 paths += 1
@@ -206,8 +210,7 @@ def group_closeness_centrality(G, S, weight=None):
     V = set(G)  # set of nodes in G
     S = set(S)  # set of nodes in group S
     V_S = V - S  # set of nodes in V but not S
-    shortest_path_lengths = nx.multi_source_dijkstra_path_length(G, S,
-                                                                 weight=weight)
+    shortest_path_lengths = nx.multi_source_dijkstra_path_length(G, S, weight=weight)
     # accumulation
     for v in V_S:
         try:
@@ -266,13 +269,12 @@ def group_degree_centrality(G, S):
        Journal of Mathematical Sociology. 23(3): 181-201. 1999.
        http://www.analytictech.com/borgatti/group_centrality.htm
     """
-    centrality = len(set().union(*list(set(G.neighbors(i))
-                                       for i in S)) - set(S))
-    centrality /= (len(G.nodes()) - len(S))
+    centrality = len(set().union(*list(set(G.neighbors(i)) for i in S)) - set(S))
+    centrality /= len(G.nodes()) - len(S)
     return centrality
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def group_in_degree_centrality(G, S):
     """Compute the group in-degree centrality for a group of nodes.
 
@@ -318,7 +320,7 @@ def group_in_degree_centrality(G, S):
     return group_degree_centrality(G.reverse(), S)
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def group_out_degree_centrality(G, S):
     """Compute the group out-degree centrality for a group of nodes.
 

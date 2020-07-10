@@ -1,5 +1,6 @@
 import pytest
 import networkx as nx
+import random
 from networkx.utils import (
     create_py_random_state,
     create_random_state,
@@ -15,8 +16,7 @@ from networkx.utils import (
     pairwise,
     powerlaw_sequence,
     PythonRandomInterface,
-    random,
-    to_tuple
+    to_tuple,
 )
 
 
@@ -43,7 +43,7 @@ def test_graph_iterable():
 
 
 def test_make_list_of_ints():
-    mylist = [1, 2, 3., 42, -2]
+    mylist = [1, 2, 3.0, 42, -2]
     assert make_list_of_ints(mylist) is mylist
     assert make_list_of_ints(mylist) == mylist
     assert type(make_list_of_ints(mylist)[2]) is int
@@ -81,7 +81,7 @@ class TestNumpyArray:
 
     def test_numpy_to_list_of_ints(self):
         a = numpy.array([1, 2, 3], dtype=numpy.int64)
-        b = numpy.array([1., 2, 3])
+        b = numpy.array([1.0, 2, 3])
         c = numpy.array([1.1, 2, 3])
         assert type(make_list_of_ints(a)) == list
         assert make_list_of_ints(b) == list(b)
@@ -90,20 +90,19 @@ class TestNumpyArray:
         pytest.raises(nx.NetworkXError, make_list_of_ints, c)
 
     def test_dict_to_numpy_array1(self):
-        d = {'a': 1, 'b': 2}
-        a = dict_to_numpy_array1(d, mapping={'a': 0, 'b': 1})
+        d = {"a": 1, "b": 2}
+        a = dict_to_numpy_array1(d, mapping={"a": 0, "b": 1})
         assert_allclose(a, numpy.array([1, 2]))
-        a = dict_to_numpy_array1(d, mapping={'b': 0, 'a': 1})
+        a = dict_to_numpy_array1(d, mapping={"b": 0, "a": 1})
         assert_allclose(a, numpy.array([2, 1]))
 
         a = dict_to_numpy_array1(d)
         assert_allclose(a.sum(), 3)
 
     def test_dict_to_numpy_array2(self):
-        d = {'a': {'a': 1, 'b': 2},
-             'b': {'a': 10, 'b': 20}}
+        d = {"a": {"a": 1, "b": 2}, "b": {"a": 10, "b": 20}}
 
-        mapping = {'a': 1, 'b': 0}
+        mapping = {"a": 1, "b": 0}
         a = dict_to_numpy_array2(d, mapping=mapping)
         assert_allclose(a, numpy.array([[20, 10], [2, 1]]))
 
@@ -111,14 +110,13 @@ class TestNumpyArray:
         assert_allclose(a.sum(), 33)
 
     def test_dict_to_numpy_array_a(self):
-        d = {'a': {'a': 1, 'b': 2},
-             'b': {'a': 10, 'b': 20}}
+        d = {"a": {"a": 1, "b": 2}, "b": {"a": 10, "b": 20}}
 
-        mapping = {'a': 0, 'b': 1}
+        mapping = {"a": 0, "b": 1}
         a = dict_to_numpy_array(d, mapping=mapping)
         assert_allclose(a, numpy.array([[1, 2], [10, 20]]))
 
-        mapping = {'a': 1, 'b': 0}
+        mapping = {"a": 1, "b": 0}
         a = dict_to_numpy_array(d, mapping=mapping)
         assert_allclose(a, numpy.array([[20, 10], [2, 1]]))
 
@@ -126,9 +124,9 @@ class TestNumpyArray:
         assert_allclose(a.sum(), 33)
 
     def test_dict_to_numpy_array_b(self):
-        d = {'a': 1, 'b': 2}
+        d = {"a": 1, "b": 2}
 
-        mapping = {'a': 0, 'b': 1}
+        mapping = {"a": 0, "b": 1}
         a = dict_to_numpy_array(d, mapping=mapping)
         assert_allclose(a, numpy.array([1, 2]))
 
@@ -150,9 +148,9 @@ def test_pairwise():
 
 
 def test_groups():
-    many_to_one = dict(zip('abcde', [0, 0, 1, 1, 2]))
+    many_to_one = dict(zip("abcde", [0, 0, 1, 1, 2]))
     actual = groups(many_to_one)
-    expected = {0: {'a', 'b'}, 1: {'c', 'd'}, 2: {'e'}}
+    expected = {0: {"a", "b"}, 1: {"c", "d"}, 2: {"e"}}
     assert actual == expected
     assert {} == groups({})
 
@@ -175,14 +173,14 @@ def test_to_tuple():
 
 
 def test_create_random_state():
-    np = pytest.importorskip('numpy')
+    np = pytest.importorskip("numpy")
     rs = np.random.RandomState
 
     assert isinstance(create_random_state(1), rs)
     assert isinstance(create_random_state(None), rs)
     assert isinstance(create_random_state(np.random), rs)
     assert isinstance(create_random_state(rs(1)), rs)
-    pytest.raises(ValueError, create_random_state, 'a')
+    pytest.raises(ValueError, create_random_state, "a")
 
     assert np.all(rs(1).rand(10) == create_random_state(1).rand(10))
 
@@ -193,9 +191,9 @@ def test_create_py_random_state():
     assert isinstance(create_py_random_state(1), pyrs)
     assert isinstance(create_py_random_state(None), pyrs)
     assert isinstance(create_py_random_state(pyrs(1)), pyrs)
-    pytest.raises(ValueError, create_py_random_state, 'a')
+    pytest.raises(ValueError, create_py_random_state, "a")
 
-    np = pytest.importorskip('numpy')
+    np = pytest.importorskip("numpy")
 
     rs = np.random.RandomState
     nprs = PythonRandomInterface
@@ -206,7 +204,7 @@ def test_create_py_random_state():
 
 
 def test_PythonRandomInterface():
-    np = pytest.importorskip('numpy')
+    np = pytest.importorskip("numpy")
     rs = np.random.RandomState
     rng = PythonRandomInterface(rs(42))
     rs42 = rs(42)
@@ -215,9 +213,10 @@ def test_PythonRandomInterface():
     assert rng.randrange(3, 5) == rs42.randint(3, 5)
     assert np.all(rng.choice([1, 2, 3]) == rs42.choice([1, 2, 3]))
     assert rng.gauss(0, 1) == rs42.normal(0, 1)
-    assert rng.expovariate(1.5) == rs42.exponential(1/1.5)
+    assert rng.expovariate(1.5) == rs42.exponential(1 / 1.5)
     assert np.all(rng.shuffle([1, 2, 3]) == rs42.shuffle([1, 2, 3]))
-    assert np.all(rng.sample([1, 2, 3], 2) ==
-                  rs42.choice([1, 2, 3], (2,), replace=False))
+    assert np.all(
+        rng.sample([1, 2, 3], 2) == rs42.choice([1, 2, 3], (2,), replace=False)
+    )
     assert rng.randint(3, 5) == rs42.randint(3, 6)
     assert rng.random() == rs42.random_sample()

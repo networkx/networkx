@@ -88,4 +88,5 @@ Graph Layout
    spring_layout
    spectral_layout
    spiral_layout
-
+   multipartite_layout
+   

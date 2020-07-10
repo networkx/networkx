@@ -16,13 +16,13 @@ Examples
 --------
 
 >>> import networkx as nx
->>> 
+>>>
 >>> # HMM graph with five states and observation nodes
 ... g= nx.DiGraph()
 >>> g.add_edges_from([('S1', 'S2'), ('S2', 'S3'), ('S3', 'S4'), ('S4', 'S5'),
 ...                   ('S1', 'O1'), ('S2', 'O2'), ('S3', 'O3'), ('S4', 'O4'),
 ...                   ('S5', 'O5')])
->>> 
+>>>
 >>> # states/obs before 'S3' are d-separated from states/obs after 'S3'
 ... nx.d_separated(g, {'S1', 'S2', 'O1', 'O2'}, {'S4', 'S5', 'O4', 'O5'}, {'S3'})
 True
@@ -51,8 +51,7 @@ __all__ = ["d_separated"]
 
 
 @not_implemented_for("undirected")
-def d_separated(G: nx.DiGraph, x: AbstractSet, y: AbstractSet,
-                z: AbstractSet) -> bool:
+def d_separated(G: nx.DiGraph, x: AbstractSet, y: AbstractSet, z: AbstractSet) -> bool:
     """
     Return whether node sets ``x`` and ``y`` are d-separated by ``z``.
 
@@ -93,9 +92,8 @@ def d_separated(G: nx.DiGraph, x: AbstractSet, y: AbstractSet,
 
     union_xyz = x.union(y).union(z)
 
-    if any((n not in G.nodes for n in union_xyz)):
-        raise nx.NodeNotFound(
-            "one or more specified nodes not found in the graph")
+    if any(n not in G.nodes for n in union_xyz):
+        raise nx.NodeNotFound("one or more specified nodes not found in the graph")
 
     G_copy = G.copy()
 
