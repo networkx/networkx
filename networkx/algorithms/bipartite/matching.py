@@ -486,18 +486,18 @@ maximum_matching = hopcroft_karp_matching
 
 
 def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
-    r"""Returns the minimum weight full matching of the bipartite graph `G`.
+    r"""Returns a minimum weight full matching of the bipartite graph `G`.
 
-    Let :math:`G = ((U, V), E)` be a complete weighted bipartite graph with
-    real weights :math:`w : E \to \mathbb{R}`. This function then produces
-    a maximum matching :math:`M \subseteq E` which, since the graph is
-    assumed to be complete, has cardinality
+    Let :math:`G = ((U, V), E)` be a weighted bipartite graph with real weights
+    :math:`w : E \to \mathbb{R}`. This function then produces a matching
+    :math:`M \subseteq E` with cardinality
 
     .. math::
        \lvert M \rvert = \min(\lvert U \rvert, \lvert V \rvert),
 
-    and which minimizes the sum of the weights of the edges included in the
-    matching, :math:`\sum_{e \in M} w(e)`.
+    which minimizes the sum of the weights of the edges included in the
+    matching, :math:`\sum_{e \in M} w(e)`, or raises an error if no such
+    matching exists.
 
     When :math:`\lvert U \rvert = \lvert V \rvert`, this is commonly
     referred to as a perfect matching; here, since we allow
@@ -530,7 +530,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     Raises
     ------
     ValueError
-      Raised if the input bipartite graph is not complete.
+      Raised if no full matching exists.
 
     ImportError
       Raised if SciPy is not available.
