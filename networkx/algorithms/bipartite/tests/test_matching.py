@@ -198,6 +198,16 @@ class TestMinimumWeightFullMatching:
         global scipy
         scipy = pytest.importorskip('scipy')
 
+    def test_minimum_weight_full_matching_incomplete_graph(self):
+        B = nx.Graph()
+        B.add_nodes_from([1, 2], bipartite=0)
+        B.add_nodes_from([3, 4], bipartite=1)
+        B.add_edge(1, 4, weight=100)
+        B.add_edge(2, 3, weight=100)
+        B.add_edge(2, 4, weight=50)
+        matching = minimum_weight_full_matching(B)
+        assert matching == {1: 4, 2: 3, 4: 1, 3: 2}
+
     def test_minimum_weight_full_matching_square(self):
         G = nx.complete_bipartite_graph(3, 3)
         G.add_edge(0, 3, weight=400)
@@ -280,12 +290,3 @@ class TestMinimumWeightFullMatching:
         G.add_edge(1, 3, mass=2)
         matching = minimum_weight_full_matching(G, weight='mass')
         assert matching == {0: 3, 1: 2, 2: 1, 3: 0}
-
-    def test_minimum_weight_full_matching_requires_complete_input(self):
-        with pytest.raises(ValueError):
-            G = nx.Graph()
-            G.add_nodes_from([1, 2, 3, 4], bipartite=0)
-            G.add_nodes_from(['a', 'b', 'c'], bipartite=1)
-            G.add_edges_from([(1, 'a'), (1, 'b'), (2, 'b'),
-                              (2, 'c'), (3, 'c'), (4, 'a')])
-            minimum_weight_full_matching(G)
