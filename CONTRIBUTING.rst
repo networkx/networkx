@@ -44,7 +44,7 @@ Contributor Guide
       PYTHONPATH=. pytest networkx
 
    * Running the tests locally *before* submitting a pull request helps catch
-     problems early and reduces the load on the continuous integration 
+     problems early and reduces the load on the continuous integration
      system. To ensure you have a properly-configured development environment
      for running the tests, see `Build environment setup`_.
 

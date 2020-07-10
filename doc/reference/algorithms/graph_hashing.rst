@@ -6,4 +6,4 @@ Graph Hashing
 .. autosummary::
    :toctree: generated/
 
-   weisfeiler_lehman_graph_hash 
+   weisfeiler_lehman_graph_hash

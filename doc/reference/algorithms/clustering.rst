@@ -9,6 +9,6 @@ Clustering
    triangles
    transitivity
    clustering
-   average_clustering   
+   average_clustering
    square_clustering
    generalized_degree

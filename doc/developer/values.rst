@@ -34,7 +34,7 @@ Our values
   (especially dicts) due to their consistent, intuitive interface and amazing
   performance capabilities. We include interfaces to other data structures,
   especially NumPy arrays and SciPy sparse matrices for algorithms that more
-  naturally use arrays and matrices or where time or space requirements are 
+  naturally use arrays and matrices or where time or space requirements are
   significantly lower. Sometimes we provide two algorithms for the same result,
   one using each data structure, when pedagogy or space/time trade-offs justify
   such multiplicity.

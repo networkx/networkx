@@ -16,13 +16,13 @@ Examples
 --------
 
 >>> import networkx as nx
->>> 
+>>>
 >>> # HMM graph with five states and observation nodes
 ... g= nx.DiGraph()
 >>> g.add_edges_from([('S1', 'S2'), ('S2', 'S3'), ('S3', 'S4'), ('S4', 'S5'),
 ...                   ('S1', 'O1'), ('S2', 'O2'), ('S3', 'O3'), ('S4', 'O4'),
 ...                   ('S5', 'O5')])
->>> 
+>>>
 >>> # states/obs before 'S3' are d-separated from states/obs after 'S3'
 ... nx.d_separated(g, {'S1', 'S2', 'O1', 'O2'}, {'S4', 'S5', 'O4', 'O5'}, {'S3'})
 True

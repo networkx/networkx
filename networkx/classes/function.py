@@ -526,7 +526,7 @@ def create_empty_copy(G, with_data=True):
 
 def info(G, n=None):
     """Return a summary of information for the graph G or a single node n.
- 
+
     The summary includes the number of nodes and edges (or neighbours for a single
     node), and their average degree.
 
