@@ -4,7 +4,7 @@ import networkx as nx
 
 from networkx.utils import pairwise
 
-__all__ = ['global_reaching_centrality', 'local_reaching_centrality']
+__all__ = ["global_reaching_centrality", "local_reaching_centrality"]
 
 
 def _average_weight(G, path, weight=None):
@@ -86,10 +86,10 @@ def global_reaching_centrality(G, weight=None, normalized=True):
            https://doi.org/10.1371/journal.pone.0033799
     """
     if nx.is_negatively_weighted(G, weight=weight):
-        raise nx.NetworkXError('edge weights must be positive')
+        raise nx.NetworkXError("edge weights must be positive")
     total_weight = G.size(weight=weight)
     if total_weight <= 0:
-        raise nx.NetworkXError('Size of G must be positive')
+        raise nx.NetworkXError("Size of G must be positive")
 
     # If provided, weights must be interpreted as connection strength
     # (so higher weights are more likely to be chosen). However, the
@@ -101,16 +101,20 @@ def global_reaching_centrality(G, weight=None, normalized=True):
     # If weight is None, we leave it as-is so that the shortest path
     # algorithm can use a faster, unweighted algorithm.
     if weight is not None:
-        def as_distance(u, v, d): return total_weight / d.get(weight, 1)
+
+        def as_distance(u, v, d):
+            return total_weight / d.get(weight, 1)
+
         shortest_paths = nx.shortest_path(G, weight=as_distance)
     else:
         shortest_paths = nx.shortest_path(G)
 
     centrality = local_reaching_centrality
     # TODO This can be trivially parallelized.
-    lrc = [centrality(G, node, paths=paths, weight=weight,
-                      normalized=normalized)
-           for node, paths in shortest_paths.items()]
+    lrc = [
+        centrality(G, node, paths=paths, weight=weight, normalized=normalized)
+        for node, paths in shortest_paths.items()
+    ]
 
     max_lrc = max(lrc)
     return sum(max_lrc - c for c in lrc) / (len(G) - 1)
@@ -177,13 +181,15 @@ def local_reaching_centrality(G, v, paths=None, weight=None, normalized=True):
     """
     if paths is None:
         if nx.is_negatively_weighted(G, weight=weight):
-            raise nx.NetworkXError('edge weights must be positive')
+            raise nx.NetworkXError("edge weights must be positive")
         total_weight = G.size(weight=weight)
         if total_weight <= 0:
-            raise nx.NetworkXError('Size of G must be positive')
+            raise nx.NetworkXError("Size of G must be positive")
         if weight is not None:
             # Interpret weights as lengths.
-            def as_distance(u, v, d): return total_weight / d.get(weight, 1)
+            def as_distance(u, v, d):
+                return total_weight / d.get(weight, 1)
+
             paths = nx.shortest_path(G, source=v, weight=as_distance)
         else:
             paths = nx.shortest_path(G, source=v)

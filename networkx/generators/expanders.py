@@ -4,7 +4,7 @@
 import itertools
 import networkx as nx
 
-__all__ = ['margulis_gabber_galil_graph', 'chordal_cycle_graph', 'paley_graph']
+__all__ = ["margulis_gabber_galil_graph", "chordal_cycle_graph", "paley_graph"]
 
 
 # Other discrete torus expanders can be constructed by using the following edge
@@ -70,10 +70,14 @@ def margulis_gabber_galil_graph(n, create_using=None):
         raise nx.NetworkXError(msg)
 
     for (x, y) in itertools.product(range(n), repeat=2):
-        for (u, v) in (((x + 2 * y) % n, y), ((x + (2 * y + 1)) % n, y),
-                       (x, (y + 2 * x) % n), (x, (y + (2 * x + 1)) % n)):
+        for (u, v) in (
+            ((x + 2 * y) % n, y),
+            ((x + (2 * y + 1)) % n, y),
+            (x, (y + 2 * x) % n),
+            (x, (y + (2 * x + 1)) % n),
+        ):
             G.add_edge((x, y), (u, v))
-    G.graph['name'] = f"margulis_gabber_galil_graph({n})"
+    G.graph["name"] = f"margulis_gabber_galil_graph({n})"
     return G
 
 
@@ -136,7 +140,7 @@ def chordal_cycle_graph(p, create_using=None):
         chord = pow(x, p - 2, p) if x > 0 else 0
         for y in (left, right, chord):
             G.add_edge(x, y)
-    G.graph['name'] = f"chordal_cycle_graph({p})"
+    G.graph["name"] = f"chordal_cycle_graph({p})"
     return G
 
 
@@ -194,5 +198,5 @@ def paley_graph(p, create_using=None):
     for x in range(p):
         for x2 in square_set:
             G.add_edge(x, (x + x2) % p)
-    G.graph['name'] = f"paley({p})"
+    G.graph["name"] = f"paley({p})"
     return G

@@ -3,7 +3,6 @@ import networkx as nx
 
 
 class TestBFS:
-
     @classmethod
     def setup_class(cls):
         # simple graph
@@ -12,12 +11,10 @@ class TestBFS:
         cls.G = G
 
     def test_successor(self):
-        assert (dict(nx.bfs_successors(self.G, source=0)) ==
-                {0: [1], 1: [2, 3], 2: [4]})
+        assert dict(nx.bfs_successors(self.G, source=0)) == {0: [1], 1: [2, 3], 2: [4]}
 
     def test_predecessor(self):
-        assert (dict(nx.bfs_predecessors(self.G, source=0)) ==
-                {1: 0, 2: 1, 3: 1, 4: 2})
+        assert dict(nx.bfs_predecessors(self.G, source=0)) == {1: 0, 2: 1, 3: 1, 4: 2}
 
     def test_bfs_tree(self):
         T = nx.bfs_tree(self.G, source=0)
@@ -53,7 +50,6 @@ class TestBFS:
 
 
 class TestBreadthLimitedSearch:
-
     @classmethod
     def setup_class(cls):
         # a tree
@@ -68,19 +64,32 @@ class TestBreadthLimitedSearch:
         cls.D = D
 
     def test_limited_bfs_successor(self):
-        assert (dict(nx.bfs_successors(self.G, source=1, depth_limit=3)) ==
-                {1: [0, 2], 2: [3, 7], 3: [4], 7: [8]})
-        result = {n: sorted(s) for n, s in nx.bfs_successors(self.D, source=7,
-                                                             depth_limit=2)}
+        assert dict(nx.bfs_successors(self.G, source=1, depth_limit=3)) == {
+            1: [0, 2],
+            2: [3, 7],
+            3: [4],
+            7: [8],
+        }
+        result = {
+            n: sorted(s) for n, s in nx.bfs_successors(self.D, source=7, depth_limit=2)
+        }
         assert result == {8: [9], 2: [3], 7: [2, 8]}
 
     def test_limited_bfs_predecessor(self):
-        assert (dict(nx.bfs_predecessors(self.G, source=1,
-                                         depth_limit=3)) ==
-                {0: 1, 2: 1, 3: 2, 4: 3, 7: 2, 8: 7})
-        assert (dict(nx.bfs_predecessors(self.D, source=7,
-                                         depth_limit=2)) ==
-                {2: 7, 3: 2, 8: 7, 9: 8})
+        assert dict(nx.bfs_predecessors(self.G, source=1, depth_limit=3)) == {
+            0: 1,
+            2: 1,
+            3: 2,
+            4: 3,
+            7: 2,
+            8: 7,
+        }
+        assert dict(nx.bfs_predecessors(self.D, source=7, depth_limit=2)) == {
+            2: 7,
+            3: 2,
+            8: 7,
+            9: 8,
+        }
 
     def test_limited_bfs_tree(self):
         T = nx.bfs_tree(self.G, source=3, depth_limit=1)
@@ -88,6 +97,4 @@ class TestBreadthLimitedSearch:
 
     def test_limited_bfs_edges(self):
         edges = nx.bfs_edges(self.G, source=9, depth_limit=4)
-        assert list(edges) == [(9, 8), (9, 10), (8, 7),
-                               (7, 2), (2, 1), (2, 3)]
-
+        assert list(edges) == [(9, 8), (9, 10), (8, 7), (7, 2), (2, 1), (2, 3)]

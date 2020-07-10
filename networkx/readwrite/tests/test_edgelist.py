@@ -7,18 +7,16 @@ import tempfile
 import os
 
 import networkx as nx
-from networkx.testing import (assert_edges_equal, assert_nodes_equal,
-                              assert_graphs_equal)
+from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
 
 
 class TestEdgelist:
-
     @classmethod
     def setup_class(cls):
         cls.G = nx.Graph(name="test")
-        e = [('a', 'b'), ('b', 'c'), ('c', 'd'), ('d', 'e'), ('e', 'f'), ('a', 'f')]
+        e = [("a", "b"), ("b", "c"), ("c", "d"), ("d", "e"), ("e", "f"), ("a", "f")]
         cls.G.add_edges_from(e)
-        cls.G.add_node('g')
+        cls.G.add_node("g")
         cls.DG = nx.DiGraph(cls.G)
         cls.XG = nx.MultiGraph()
         cls.XG.add_weighted_edges_from([(1, 2, 5), (1, 2, 5), (1, 2, 1), (3, 3, 42)])
@@ -48,8 +46,9 @@ class TestEdgelist:
 
         bytesIO = io.BytesIO(s)
         G = nx.read_weighted_edgelist(bytesIO, nodetype=int)
-        assert_edges_equal(G.edges(data=True),
-                           [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
+        assert_edges_equal(
+            G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
+        )
 
     def test_read_edgelist_3(self):
         s = b"""\
@@ -64,8 +63,9 @@ class TestEdgelist:
 
         bytesIO = io.BytesIO(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=True)
-        assert_edges_equal(G.edges(data=True),
-                           [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
+        assert_edges_equal(
+            G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
+        )
 
     def test_read_edgelist_4(self):
         s = b"""\
@@ -80,8 +80,9 @@ class TestEdgelist:
 
         bytesIO = io.BytesIO(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=True)
-        assert_edges_equal(G.edges(data=True),
-                           [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
+        assert_edges_equal(
+            G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
+        )
 
         s = """\
 # comment line
@@ -95,8 +96,9 @@ class TestEdgelist:
 
         StringIO = io.StringIO(s)
         G = nx.read_edgelist(StringIO, nodetype=int, data=True)
-        assert_edges_equal(G.edges(data=True),
-                           [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
+        assert_edges_equal(
+            G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
+        )
 
     def test_write_edgelist_1(self):
         fh = io.BytesIO()
@@ -128,7 +130,7 @@ class TestEdgelist:
         G = nx.OrderedGraph()
         G.add_edge(1, 2, weight=2.0)
         G.add_edge(2, 3, weight=3.0)
-        nx.write_edgelist(G, fh, data=[('weight')])
+        nx.write_edgelist(G, fh, data=[("weight")])
         fh.seek(0)
         assert fh.read() == b"1 2 2.0\n2 3 3.0\n"
 
@@ -136,7 +138,7 @@ class TestEdgelist:
         G = nx.Graph()
         name1 = chr(2344) + chr(123) + chr(6543)
         name2 = chr(5543) + chr(1543) + chr(324)
-        G.add_edge(name1, 'Radiohead', **{name2: 3})
+        G.add_edge(name1, "Radiohead", **{name2: 3})
         fd, fname = tempfile.mkstemp()
         nx.write_edgelist(G, fname)
         H = nx.read_edgelist(fname)
@@ -148,22 +150,22 @@ class TestEdgelist:
         G = nx.Graph()
         name1 = chr(2344) + chr(123) + chr(6543)
         name2 = chr(5543) + chr(1543) + chr(324)
-        G.add_edge(name1, 'Radiohead', **{name2: 3})
+        G.add_edge(name1, "Radiohead", **{name2: 3})
         fd, fname = tempfile.mkstemp()
-        pytest.raises(UnicodeEncodeError,
-                      nx.write_edgelist,
-                      G, fname, encoding='latin-1')
+        pytest.raises(
+            UnicodeEncodeError, nx.write_edgelist, G, fname, encoding="latin-1"
+        )
         os.close(fd)
         os.unlink(fname)
 
     def test_latin1(self):
         G = nx.Graph()
-        name1 = 'Bj' + chr(246) + 'rk'
-        name2 = chr(220) + 'ber'
-        G.add_edge(name1, 'Radiohead', **{name2: 3})
+        name1 = "Bj" + chr(246) + "rk"
+        name2 = chr(220) + "ber"
+        G.add_edge(name1, "Radiohead", **{name2: 3})
         fd, fname = tempfile.mkstemp()
-        nx.write_edgelist(G, fname, encoding='latin-1')
-        H = nx.read_edgelist(fname, encoding='latin-1')
+        nx.write_edgelist(G, fname, encoding="latin-1")
+        H = nx.read_edgelist(fname, encoding="latin-1")
         assert_graphs_equal(G, H)
         os.close(fd)
         os.unlink(fname)
@@ -175,7 +177,7 @@ class TestEdgelist:
         H = nx.read_edgelist(fname)
         H2 = nx.read_edgelist(fname)
         assert H != H2  # they should be different graphs
-        G.remove_node('g')  # isolated nodes are not written in edgelist
+        G.remove_node("g")  # isolated nodes are not written in edgelist
         assert_nodes_equal(list(H), list(G))
         assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
@@ -188,7 +190,7 @@ class TestEdgelist:
         H = nx.read_edgelist(fname, create_using=nx.DiGraph())
         H2 = nx.read_edgelist(fname, create_using=nx.DiGraph())
         assert H != H2  # they should be different graphs
-        G.remove_node('g')  # isolated nodes are not written in edgelist
+        G.remove_node("g")  # isolated nodes are not written in edgelist
         assert_nodes_equal(list(H), list(G))
         assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)

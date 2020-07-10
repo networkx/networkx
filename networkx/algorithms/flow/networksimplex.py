@@ -2,7 +2,7 @@
 Minimum cost flow algorithms on directed connected graphs.
 """
 
-__all__ = ['network_simplex']
+__all__ = ["network_simplex"]
 
 from itertools import chain, islice, repeat
 from math import ceil, sqrt
@@ -10,8 +10,8 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 
 
-@not_implemented_for('undirected')
-def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
+@not_implemented_for("undirected")
+def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     r"""Find a minimum cost flow satisfying all demands in digraph G.
 
     This is a primal network simplex algorithm that uses the leaving
@@ -170,19 +170,19 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     ###########################################################################
 
     if len(G) == 0:
-        raise nx.NetworkXError('graph has no nodes')
+        raise nx.NetworkXError("graph has no nodes")
 
     # Number all nodes and edges and hereafter reference them using ONLY their
     # numbers
 
-    N = list(G)                                # nodes
-    I = {u: i for i, u in enumerate(N)}        # node indices
+    N = list(G)  # nodes
+    I = {u: i for i, u in enumerate(N)}  # node indices
     D = [G.nodes[u].get(demand, 0) for u in N]  # node demands
 
-    inf = float('inf')
+    inf = float("inf")
     for p, b in zip(N, D):
         if abs(b) == inf:
-            raise nx.NetworkXError(f'node {p!r} has infinite demand')
+            raise nx.NetworkXError(f"node {p!r} has infinite demand")
 
     multigraph = G.is_multigraph()
     S = []  # edge sources
@@ -197,8 +197,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         edges = G.edges(data=True)
     else:
         edges = G.edges(data=True, keys=True)
-    edges = (e for e in edges
-             if e[0] != e[1] and e[-1].get(capacity, inf) != 0)
+    edges = (e for e in edges if e[0] != e[1] and e[-1].get(capacity, inf) != 0)
     for i, e in enumerate(edges):
         S.append(I[e[0]])
         T.append(I[e[1]])
@@ -210,31 +209,31 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
 
     for e, c in zip(E, C):
         if abs(c) == inf:
-            raise nx.NetworkXError(f'edge {e!r} has infinite weight')
+            raise nx.NetworkXError(f"edge {e!r} has infinite weight")
     if not multigraph:
         edges = nx.selfloop_edges(G, data=True)
     else:
         edges = nx.selfloop_edges(G, data=True, keys=True)
     for e in edges:
         if abs(e[-1].get(weight, 0)) == inf:
-            raise nx.NetworkXError(f'edge {e[:-1]!r} has infinite weight')
+            raise nx.NetworkXError(f"edge {e[:-1]!r} has infinite weight")
 
     ###########################################################################
     # Quick infeasibility detection
     ###########################################################################
 
     if sum(D) != 0:
-        raise nx.NetworkXUnfeasible('total node demand is not zero')
+        raise nx.NetworkXUnfeasible("total node demand is not zero")
     for e, u in zip(E, U):
         if u < 0:
-            raise nx.NetworkXUnfeasible(f'edge {e!r} has negative capacity')
+            raise nx.NetworkXUnfeasible(f"edge {e!r} has negative capacity")
     if not multigraph:
         edges = nx.selfloop_edges(G, data=True)
     else:
         edges = nx.selfloop_edges(G, data=True, keys=True)
     for e in edges:
         if e[-1].get(capacity, inf) < 0:
-            raise nx.NetworkXUnfeasible(f'edge {e[:-1]!r} has negative capacity')
+            raise nx.NetworkXUnfeasible(f"edge {e[:-1]!r} has negative capacity")
 
     ###########################################################################
     # Initialization
@@ -256,22 +255,29 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         else:
             S.append(p)
             T.append(-1)
-    faux_inf = 3 * max(chain([sum(u for u in U if u < inf),
-                              sum(abs(c) for c in C)],
-                             (abs(d) for d in D))) or 1
+    faux_inf = (
+        3
+        * max(
+            chain(
+                [sum(u for u in U if u < inf), sum(abs(c) for c in C)],
+                (abs(d) for d in D),
+            )
+        )
+        or 1
+    )
     C.extend(repeat(faux_inf, n))
     U.extend(repeat(faux_inf, n))
 
     # Construct the initial spanning tree.
-    e = len(E)                                           # number of edges
-    x = list(chain(repeat(0, e), (abs(d) for d in D)))   # edge flows
+    e = len(E)  # number of edges
+    x = list(chain(repeat(0, e), (abs(d) for d in D)))  # edge flows
     pi = [faux_inf if d <= 0 else -faux_inf for d in D]  # node potentials
     parent = list(chain(repeat(-1, n), [None]))  # parent nodes
-    edge = list(range(e, e + n))                 # edges to parents
-    size = list(chain(repeat(1, n), [n + 1]))    # subtree sizes
-    next = list(chain(range(1, n), [-1, 0]))     # next nodes in depth-first thread
-    prev = list(range(-1, n))                    # previous nodes in depth-first thread
-    last = list(chain(range(n), [n - 1]))        # last descendants in depth-first thread
+    edge = list(range(e, e + n))  # edges to parents
+    size = list(chain(repeat(1, n), [n + 1]))  # subtree sizes
+    next = list(chain(range(1, n), [-1, 0]))  # next nodes in depth-first thread
+    prev = list(range(-1, n))  # previous nodes in depth-first thread
+    last = list(chain(range(n), [n - 1]))  # last descendants in depth-first thread
 
     ###########################################################################
     # Pivot loop
@@ -294,10 +300,10 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         # each block, Dantzig's rule is applied to find an entering edge. The
         # blocks to search is determined following Bland's rule.
         B = int(ceil(sqrt(e)))  # pivot block size
-        M = (e + B - 1) // B    # number of blocks needed to cover all edges
-        m = 0                   # number of consecutive blocks without eligible
+        M = (e + B - 1) // B  # number of blocks needed to cover all edges
+        m = 0  # number of consecutive blocks without eligible
         # entering edges
-        f = 0                   # first edge in block
+        f = 0  # first edge in block
         while m < M:
             # Determine the next block of edges.
             l = f + B
@@ -387,8 +393,9 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     def find_leaving_edge(Wn, We):
         """Returns the leaving edge in a cycle represented by Wn and We.
         """
-        j, s = min(zip(reversed(We), reversed(Wn)),
-                   key=lambda i_p: residual_capacity(*i_p))
+        j, s = min(
+            zip(reversed(We), reversed(Wn)), key=lambda i_p: residual_capacity(*i_p)
+        )
         t = T[j] if S[j] == s else S[j]
         return j, s, t
 
@@ -528,13 +535,13 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     ###########################################################################
 
     if any(x[i] != 0 for i in range(-n, 0)):
-        raise nx.NetworkXUnfeasible('no flow satisfies all node demands')
+        raise nx.NetworkXUnfeasible("no flow satisfies all node demands")
 
-    if (any(x[i] * 2 >= faux_inf for i in range(e)) or
-        any(e[-1].get(capacity, inf) == inf and e[-1].get(weight, 0) < 0
-            for e in nx.selfloop_edges(G, data=True))):
-        raise nx.NetworkXUnbounded(
-            'negative cycle with infinite capacity found')
+    if any(x[i] * 2 >= faux_inf for i in range(e)) or any(
+        e[-1].get(capacity, inf) == inf and e[-1].get(weight, 0) < 0
+        for e in nx.selfloop_edges(G, data=True)
+    ):
+        raise nx.NetworkXUnbounded("negative cycle with infinite capacity found")
 
     ###########################################################################
     # Flow cost calculation and flow dict construction

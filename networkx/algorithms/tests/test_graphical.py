@@ -4,12 +4,12 @@ import networkx as nx
 
 def test_valid_degree_sequence1():
     n = 100
-    p = .3
+    p = 0.3
     for i in range(10):
         G = nx.erdos_renyi_graph(n, p)
         deg = (d for n, d in G.degree())
-        assert nx.is_graphical(deg, method='eg')
-        assert nx.is_graphical(deg, method='hh')
+        assert nx.is_graphical(deg, method="eg")
+        assert nx.is_graphical(deg, method="hh")
 
 
 def test_valid_degree_sequence2():
@@ -17,33 +17,33 @@ def test_valid_degree_sequence2():
     for i in range(10):
         G = nx.barabasi_albert_graph(n, 1)
         deg = (d for n, d in G.degree())
-        assert nx.is_graphical(deg, method='eg')
-        assert nx.is_graphical(deg, method='hh')
+        assert nx.is_graphical(deg, method="eg")
+        assert nx.is_graphical(deg, method="hh")
 
 
 def test_string_input():
-    pytest.raises(nx.NetworkXException, nx.is_graphical, [], 'foo')
-    pytest.raises(nx.NetworkXException, nx.is_graphical, ['red'], 'hh')
-    pytest.raises(nx.NetworkXException, nx.is_graphical, ['red'], 'eg')
+    pytest.raises(nx.NetworkXException, nx.is_graphical, [], "foo")
+    pytest.raises(nx.NetworkXException, nx.is_graphical, ["red"], "hh")
+    pytest.raises(nx.NetworkXException, nx.is_graphical, ["red"], "eg")
 
 
 def test_non_integer_input():
-    pytest.raises(nx.NetworkXException, nx.is_graphical, [72.5], 'eg')
-    pytest.raises(nx.NetworkXException, nx.is_graphical, [72.5], 'hh')
+    pytest.raises(nx.NetworkXException, nx.is_graphical, [72.5], "eg")
+    pytest.raises(nx.NetworkXException, nx.is_graphical, [72.5], "hh")
 
 
 def test_negative_input():
-    assert not nx.is_graphical([-1], 'hh')
-    assert not nx.is_graphical([-1], 'eg')
+    assert not nx.is_graphical([-1], "hh")
+    assert not nx.is_graphical([-1], "eg")
 
 
 class TestAtlas:
     @classmethod
     def setup_class(cls):
         global atlas
-#        import platform
-#        if platform.python_implementation() == 'Jython':
-#            raise SkipTest('graph atlas not available under Jython.')
+        #        import platform
+        #        if platform.python_implementation() == 'Jython':
+        #            raise SkipTest('graph atlas not available under Jython.')
         import networkx.generators.atlas as atlas
 
         cls.GAG = atlas.graph_atlas_g()
@@ -51,32 +51,32 @@ class TestAtlas:
     def test_atlas(self):
         for graph in self.GAG:
             deg = (d for n, d in graph.degree())
-            assert nx.is_graphical(deg, method='eg')
-            assert nx.is_graphical(deg, method='hh')
+            assert nx.is_graphical(deg, method="eg")
+            assert nx.is_graphical(deg, method="hh")
 
 
 def test_small_graph_true():
     z = [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
-    assert nx.is_graphical(z, method='hh')
-    assert nx.is_graphical(z, method='eg')
+    assert nx.is_graphical(z, method="hh")
+    assert nx.is_graphical(z, method="eg")
     z = [10, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2]
-    assert nx.is_graphical(z, method='hh')
-    assert nx.is_graphical(z, method='eg')
+    assert nx.is_graphical(z, method="hh")
+    assert nx.is_graphical(z, method="eg")
     z = [1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
-    assert nx.is_graphical(z, method='hh')
-    assert nx.is_graphical(z, method='eg')
+    assert nx.is_graphical(z, method="hh")
+    assert nx.is_graphical(z, method="eg")
 
 
 def test_small_graph_false():
     z = [1000, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
-    assert not nx.is_graphical(z, method='hh')
-    assert not nx.is_graphical(z, method='eg')
+    assert not nx.is_graphical(z, method="hh")
+    assert not nx.is_graphical(z, method="eg")
     z = [6, 5, 4, 4, 2, 1, 1, 1]
-    assert not nx.is_graphical(z, method='hh')
-    assert not nx.is_graphical(z, method='eg')
+    assert not nx.is_graphical(z, method="hh")
+    assert not nx.is_graphical(z, method="eg")
     z = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
-    assert not nx.is_graphical(z, method='hh')
-    assert not nx.is_graphical(z, method='eg')
+    assert not nx.is_graphical(z, method="hh")
+    assert not nx.is_graphical(z, method="eg")
 
 
 def test_directed_degree_sequence():
@@ -153,13 +153,13 @@ def test_pseudo_sequence():
 
 
 def test_numpy_degree_sequence():
-    numpy = pytest.importorskip('numpy')
+    numpy = pytest.importorskip("numpy")
     ds = numpy.array([1, 2, 2, 2, 1], dtype=numpy.int64)
-    assert nx.is_graphical(ds, 'eg')
-    assert nx.is_graphical(ds, 'hh')
+    assert nx.is_graphical(ds, "eg")
+    assert nx.is_graphical(ds, "hh")
     ds = numpy.array([1, 2, 2, 2, 1], dtype=numpy.float64)
-    assert nx.is_graphical(ds, 'eg')
-    assert nx.is_graphical(ds, 'hh')
+    assert nx.is_graphical(ds, "eg")
+    assert nx.is_graphical(ds, "hh")
     ds = numpy.array([1.1, 2, 2, 2, 1], dtype=numpy.float64)
-    pytest.raises(nx.NetworkXException, nx.is_graphical, ds, 'eg')
-    pytest.raises(nx.NetworkXException, nx.is_graphical, ds, 'hh')
+    pytest.raises(nx.NetworkXException, nx.is_graphical, ds, "eg")
+    pytest.raises(nx.NetworkXException, nx.is_graphical, ds, "hh")

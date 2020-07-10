@@ -49,8 +49,9 @@ def _get_label_info(G, label_name):
                 lid += 1
             labels.append([i, label_to_id[label]])
     labels = np.array(labels)
-    label_dict = np.array([label for label, _ in sorted(
-        label_to_id.items(), key=lambda x:x[1])])
+    label_dict = np.array(
+        [label for label, _ in sorted(label_to_id.items(), key=lambda x: x[1])]
+    )
     return (labels, label_dict)
 
 

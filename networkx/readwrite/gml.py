@@ -261,6 +261,7 @@ def parse_gml(lines, label="label", destringizer=None):
 
 class Pattern(Enum):
     """ encodes the index of each token-matching pattern in `tokenize`. """
+
     KEYS = 0
     REALS = 1
     INTS = 2
@@ -283,6 +284,7 @@ LIST_START_VALUE = "_networkx_list_start"
 def parse_gml_lines(lines, label, destringizer):
     """Parse GML `lines` into a graph.
     """
+
     def tokenize():
         patterns = [
             r"[A-Za-z][0-9A-Za-z_]*\b",  # keys
@@ -315,7 +317,7 @@ def parse_gml_lines(lines, label, destringizer):
                             value = int(group)
                         else:
                             value = group
-                        if i != 6:    # comments and whitespaces
+                        if i != 6:  # comments and whitespaces
                             yield Token(Pattern(i), value, lineno + 1, pos + 1)
                         pos += len(group)
                         break
@@ -673,7 +675,7 @@ def generate_gml(G, stringizer=None):
                 elif value is False:
                     yield indent + key + " 0"
                 # GML only supports signed 32-bit integers
-                elif value < -2 ** 31 or value >= 2 ** 31:
+                elif value < -(2 ** 31) or value >= 2 ** 31:
                     yield indent + key + ' "' + str(value) + '"'
                 else:
                     yield indent + key + " " + str(value)
@@ -694,11 +696,15 @@ def generate_gml(G, stringizer=None):
                 next_indent = indent + "  "
                 for key, value in value.items():
                     yield from stringize(key, value, (), next_indent)
-                yield indent + ']'
-            elif isinstance(value, (list, tuple)) and key != 'label' \
-                    and value and not in_list:
+                yield indent + "]"
+            elif (
+                isinstance(value, (list, tuple))
+                and key != "label"
+                and value
+                and not in_list
+            ):
                 if len(value) == 1:
-                    yield indent + key + ' ' + f'"{LIST_START_VALUE}"'
+                    yield indent + key + " " + f'"{LIST_START_VALUE}"'
                 for val in value:
                     yield from stringize(key, val, (), indent, True)
             else:

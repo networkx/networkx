@@ -13,7 +13,7 @@ See https://en.wikipedia.org/wiki/Shapefile for additional information.
 """
 import networkx as nx
 
-__all__ = ['read_shp', 'write_shp']
+__all__ = ["read_shp", "write_shp"]
 
 
 def read_shp(path, simplify=True, geom_attrs=True, strict=True):
@@ -102,17 +102,16 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
             # Note:  Using layer level geometry type
             if g.GetGeometryType() == ogr.wkbPoint:
                 net.add_node((g.GetPoint_2D(0)), **attributes)
-            elif g.GetGeometryType() in (ogr.wkbLineString,
-                                         ogr.wkbMultiLineString):
-                for edge in edges_from_line(g, attributes, simplify,
-                                            geom_attrs):
+            elif g.GetGeometryType() in (ogr.wkbLineString, ogr.wkbMultiLineString):
+                for edge in edges_from_line(g, attributes, simplify, geom_attrs):
                     e1, e2, attr = edge
                     net.add_edge(e1, e2)
                     net[e1][e2].update(attr)
             else:
                 if strict:
-                    raise nx.NetworkXError("GeometryType {} not supported".
-                                           format(g.GetGeometryType()))
+                    raise nx.NetworkXError(
+                        "GeometryType {} not supported".format(g.GetGeometryType())
+                    )
 
     return net
 
@@ -148,8 +147,9 @@ def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
     try:
         from osgeo import ogr
     except ImportError as e:
-        raise ImportError("edges_from_line requires OGR: "
-                          "http://www.gdal.org/") from e
+        raise ImportError(
+            "edges_from_line requires OGR: " "http://www.gdal.org/"
+        ) from e
 
     if geom.GetGeometryType() == ogr.wkbLineString:
         if simplify:
@@ -215,11 +215,11 @@ def write_shp(G, outdir):
     ogr.UseExceptions()
 
     def netgeometry(key, data):
-        if 'Wkb' in data:
-            geom = ogr.CreateGeometryFromWkb(data['Wkb'])
-        elif 'Wkt' in data:
-            geom = ogr.CreateGeometryFromWkt(data['Wkt'])
-        elif type(key[0]).__name__ == 'tuple':  # edge keys are packed tuples
+        if "Wkb" in data:
+            geom = ogr.CreateGeometryFromWkb(data["Wkb"])
+        elif "Wkt" in data:
+            geom = ogr.CreateGeometryFromWkt(data["Wkt"])
+        elif type(key[0]).__name__ == "tuple":  # edge keys are packed tuples
             geom = ogr.Geometry(ogr.wkbLineString)
             _from, _to = key[0], key[1]
             try:
@@ -284,8 +284,7 @@ def write_shp(G, outdir):
         attributes = {}  # storage for attribute data (indexed by field names)
         for key, value in data.items():
             # Reject spatial data not required for attribute table
-            if (key != 'Json' and key != 'Wkt' and key != 'Wkb'
-                    and key != 'ShpName'):
+            if key != "Json" and key != "Wkt" and key != "Wkb" and key != "ShpName":
                 # Check/add field and data type to fields dict
                 if key not in fields:
                     add_fields_to_layer(key, value, fields, layer)
@@ -306,7 +305,7 @@ def write_shp(G, outdir):
     edges = shpdir.CreateLayer("edges", None, ogr.wkbLineString)
 
     # New edge attribute write support merged into edge loop
-    edge_fields = {}      # storage for field names and their data types
+    edge_fields = {}  # storage for field names and their data types
 
     for e in G.edges(data=True):
         data = G.get_edge_data(*e)

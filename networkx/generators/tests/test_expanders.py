@@ -67,7 +67,5 @@ def test_paley_graph():
 
 
 def test_margulis_gabber_galil_graph_badinput():
-    pytest.raises(nx.NetworkXError, margulis_gabber_galil_graph, 3,
-                  nx.DiGraph())
-    pytest.raises(nx.NetworkXError, margulis_gabber_galil_graph, 3,
-                  nx.Graph())
+    pytest.raises(nx.NetworkXError, margulis_gabber_galil_graph, 3, nx.DiGraph())
+    pytest.raises(nx.NetworkXError, margulis_gabber_galil_graph, 3, nx.Graph())

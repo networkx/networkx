@@ -5,11 +5,11 @@ import math
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['non_randomness']
+__all__ = ["non_randomness"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def non_randomness(G, k=None):
     """Compute the non-randomness of graph G.
 
@@ -58,7 +58,7 @@ def non_randomness(G, k=None):
     if not nx.is_connected(G):
         raise nx.NetworkXException("Non connected graph.")
     if len(list(nx.selfloop_edges(G))) > 0:
-        raise nx.NetworkXError('Graph must not contain self-loops')
+        raise nx.NetworkXError("Graph must not contain self-loops")
 
     if k is None:
         k = len(tuple(nx.community.label_propagation_communities(G)))

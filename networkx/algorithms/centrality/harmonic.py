@@ -3,7 +3,7 @@ from functools import partial
 
 import networkx as nx
 
-__all__ = ['harmonic_centrality']
+__all__ = ["harmonic_centrality"]
 
 
 def harmonic_centrality(G, nbunch=None, distance=None):
@@ -57,5 +57,7 @@ def harmonic_centrality(G, nbunch=None, distance=None):
     if G.is_directed():
         G = G.reverse()
     spl = partial(nx.shortest_path_length, G, weight=distance)
-    return {u: sum(1 / d if d > 0 else 0 for v, d in spl(source=u).items())
-            for u in G.nbunch_iter(nbunch)}
+    return {
+        u: sum(1 / d if d > 0 else 0 for v, d in spl(source=u).items())
+        for u in G.nbunch_iter(nbunch)
+    }

@@ -1,4 +1,5 @@
 import pytest
+
 np = pytest.importorskip("numpy")
 npt = pytest.importorskip("numpy.testing")
 scipy = pytest.importorskip("scipy")
@@ -8,7 +9,6 @@ from networkx.generators.degree_seq import havel_hakimi_graph
 
 
 class TestModularity:
-
     @classmethod
     def setup_class(cls):
         deg = [3, 2, 2, 1, 0]

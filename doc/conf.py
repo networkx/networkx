@@ -55,7 +55,7 @@ sphinx_gallery_conf = {
 autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 suppress_warnings = ["ref.citation", "ref.footnote"]
 

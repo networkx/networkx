@@ -51,8 +51,7 @@ __all__ = ["d_separated"]
 
 
 @not_implemented_for("undirected")
-def d_separated(G: nx.DiGraph, x: AbstractSet, y: AbstractSet,
-                z: AbstractSet) -> bool:
+def d_separated(G: nx.DiGraph, x: AbstractSet, y: AbstractSet, z: AbstractSet) -> bool:
     """
     Return whether node sets ``x`` and ``y`` are d-separated by ``z``.
 
@@ -94,8 +93,7 @@ def d_separated(G: nx.DiGraph, x: AbstractSet, y: AbstractSet,
     union_xyz = x.union(y).union(z)
 
     if any(n not in G.nodes for n in union_xyz):
-        raise nx.NodeNotFound(
-            "one or more specified nodes not found in the graph")
+        raise nx.NodeNotFound("one or more specified nodes not found in the graph")
 
     G_copy = G.copy()
 

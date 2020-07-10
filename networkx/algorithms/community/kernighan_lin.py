@@ -5,7 +5,7 @@ from itertools import count
 from networkx.utils import not_implemented_for, py_random_state, BinaryHeap
 from networkx.algorithms.community.community_utils import is_partition
 
-__all__ = ['kernighan_lin_bisection']
+__all__ = ["kernighan_lin_bisection"]
 
 
 def _kernighan_lin_sweep(edges, side):
@@ -38,9 +38,8 @@ def _kernighan_lin_sweep(edges, side):
 
 
 @py_random_state(4)
-@not_implemented_for('directed')
-def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
-                            seed=None):
+@not_implemented_for("directed")
+def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", seed=None):
     """Partition a graph into two blocks using the Kernighan–Lin
     algorithm.
 
@@ -100,19 +99,25 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
         try:
             A, B = partition
         except (TypeError, ValueError) as e:
-            raise nx.NetworkXError('partition must be two sets') from e
+            raise nx.NetworkXError("partition must be two sets") from e
         if not is_partition(G, (A, B)):
-            raise nx.NetworkXError('partition invalid')
+            raise nx.NetworkXError("partition invalid")
         side = [0] * n
         for a in A:
             side[a] = 1
 
     if G.is_multigraph():
-        edges = [[(index[u], sum(e.get(weight, 1) for e in d.values()))
-                  for u, d in G[v].items()] for v in labels]
+        edges = [
+            [
+                (index[u], sum(e.get(weight, 1) for e in d.values()))
+                for u, d in G[v].items()
+            ]
+            for v in labels
+        ]
     else:
-        edges = [[(index[u], e.get(weight, 1)) for u, e in G[v].items()]
-                 for v in labels]
+        edges = [
+            [(index[u], e.get(weight, 1)) for u, e in G[v].items()] for v in labels
+        ]
 
     for i in range(max_iter):
         costs = list(_kernighan_lin_sweep(edges, side))
@@ -120,7 +125,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
         if min_cost >= 0:
             break
 
-        for _, _, (u, v) in costs[:min_i + 1]:
+        for _, _, (u, v) in costs[: min_i + 1]:
             side[u] = 1
             side[v] = 0
 

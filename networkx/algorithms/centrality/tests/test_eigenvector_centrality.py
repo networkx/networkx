@@ -1,7 +1,8 @@
 import math
 import pytest
-np = pytest.importorskip('numpy')
-scipy = pytest.importorskip('scipy')
+
+np = pytest.importorskip("numpy")
+scipy = pytest.importorskip("scipy")
 
 
 import networkx as nx
@@ -9,7 +10,6 @@ from networkx.testing import almost_equal
 
 
 class TestEigenvectorCentrality:
-
     def test_K5(self):
         """Eigenvector centrality: K5"""
         G = nx.complete_graph(5)
@@ -53,30 +53,77 @@ class TestEigenvectorCentrality:
 
 
 class TestEigenvectorCentralityDirected:
-
     @classmethod
     def setup_class(cls):
         G = nx.DiGraph()
 
-        edges = [(1, 2), (1, 3), (2, 4), (3, 2), (3, 5), (4, 2), (4, 5), (4, 6),
-                 (5, 6), (5, 7), (5, 8), (6, 8), (7, 1), (7, 5),
-                 (7, 8), (8, 6), (8, 7)]
+        edges = [
+            (1, 2),
+            (1, 3),
+            (2, 4),
+            (3, 2),
+            (3, 5),
+            (4, 2),
+            (4, 5),
+            (4, 6),
+            (5, 6),
+            (5, 7),
+            (5, 8),
+            (6, 8),
+            (7, 1),
+            (7, 5),
+            (7, 8),
+            (8, 6),
+            (8, 7),
+        ]
 
         G.add_edges_from(edges, weight=2.0)
         cls.G = G.reverse()
-        cls.G.evc = [0.25368793,  0.19576478,  0.32817092,  0.40430835,
-                     0.48199885, 0.15724483,  0.51346196,  0.32475403]
+        cls.G.evc = [
+            0.25368793,
+            0.19576478,
+            0.32817092,
+            0.40430835,
+            0.48199885,
+            0.15724483,
+            0.51346196,
+            0.32475403,
+        ]
 
         H = nx.DiGraph()
 
-        edges = [(1, 2), (1, 3), (2, 4), (3, 2), (3, 5), (4, 2), (4, 5), (4, 6),
-                 (5, 6), (5, 7), (5, 8), (6, 8), (7, 1), (7, 5),
-                 (7, 8), (8, 6), (8, 7)]
+        edges = [
+            (1, 2),
+            (1, 3),
+            (2, 4),
+            (3, 2),
+            (3, 5),
+            (4, 2),
+            (4, 5),
+            (4, 6),
+            (5, 6),
+            (5, 7),
+            (5, 8),
+            (6, 8),
+            (7, 1),
+            (7, 5),
+            (7, 8),
+            (8, 6),
+            (8, 7),
+        ]
 
         G.add_edges_from(edges)
         cls.H = G.reverse()
-        cls.H.evc = [0.25368793,  0.19576478,  0.32817092,  0.40430835,
-                     0.48199885, 0.15724483,  0.51346196,  0.32475403]
+        cls.H.evc = [
+            0.25368793,
+            0.19576478,
+            0.32817092,
+            0.40430835,
+            0.48199885,
+            0.15724483,
+            0.51346196,
+            0.32475403,
+        ]
 
     def test_eigenvector_centrality_weighted(self):
         G = self.G
@@ -104,7 +151,6 @@ class TestEigenvectorCentralityDirected:
 
 
 class TestEigenvectorCentralityExceptions:
-
     def test_multigraph(self):
         with pytest.raises(nx.NetworkXException):
             e = nx.eigenvector_centrality(nx.MultiGraph())

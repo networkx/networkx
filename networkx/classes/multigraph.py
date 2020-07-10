@@ -252,6 +252,7 @@ class MultiGraph(Graph):
     creating graph subclasses by overwriting the base class `dict` with
     a dictionary-like object.
     """
+
     # node_dict_factory = dict    # already assigned in Graph
     # adjlist_outer_dict_factory = dict
     # adjlist_inner_dict_factory = dict
@@ -956,10 +957,12 @@ class MultiGraph(Graph):
         G = self.__class__()
         G.graph.update(self.graph)
         G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
-        G.add_edges_from((u, v, key, datadict.copy())
-                         for u, nbrs in self._adj.items()
-                         for v, keydict in nbrs.items()
-                         for key, datadict in keydict.items())
+        G.add_edges_from(
+            (u, v, key, datadict.copy())
+            for u, nbrs in self._adj.items()
+            for v, keydict in nbrs.items()
+            for key, datadict in keydict.items()
+        )
         return G
 
     def to_directed(self, as_view=False):
@@ -1011,10 +1014,12 @@ class MultiGraph(Graph):
         G = graph_class()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
-        G.add_edges_from((u, v, key, deepcopy(datadict))
-                         for u, nbrs in self.adj.items()
-                         for v, keydict in nbrs.items()
-                         for key, datadict in keydict.items())
+        G.add_edges_from(
+            (u, v, key, deepcopy(datadict))
+            for u, nbrs in self.adj.items()
+            for v, keydict in nbrs.items()
+            for key, datadict in keydict.items()
+        )
         return G
 
     def to_undirected(self, as_view=False):
@@ -1062,10 +1067,12 @@ class MultiGraph(Graph):
         G = graph_class()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
-        G.add_edges_from((u, v, key, deepcopy(datadict))
-                         for u, nbrs in self._adj.items()
-                         for v, keydict in nbrs.items()
-                         for key, datadict in keydict.items())
+        G.add_edges_from(
+            (u, v, key, deepcopy(datadict))
+            for u, nbrs in self._adj.items()
+            for v, keydict in nbrs.items()
+            for key, datadict in keydict.items()
+        )
         return G
 
     def number_of_edges(self, u=None, v=None):

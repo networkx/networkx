@@ -10,7 +10,6 @@ from networkx.generators.expanders import margulis_gabber_galil_graph
 
 
 class TestLaplacian:
-
     @classmethod
     def setup_class(cls):
         deg = [3, 2, 2, 1, 0]
@@ -41,7 +40,7 @@ class TestLaplacian:
         npt.assert_equal(nx.laplacian_matrix(self.MG).todense(), NL)
         npt.assert_equal(
             nx.laplacian_matrix(self.G, nodelist=[0, 1]).todense(),
-            np.array([[1, -1], [-1, 1]])
+            np.array([[1, -1], [-1, 1]]),
         )
         npt.assert_equal(nx.laplacian_matrix(self.WG).todense(), WL)
         npt.assert_equal(nx.laplacian_matrix(self.WG, weight=None).todense(), NL)
@@ -68,7 +67,9 @@ class TestLaplacian:
         # fmt: on
 
         npt.assert_almost_equal(
-            nx.normalized_laplacian_matrix(self.G, nodelist=range(5)).todense(), G, decimal=3
+            nx.normalized_laplacian_matrix(self.G, nodelist=range(5)).todense(),
+            G,
+            decimal=3,
         )
         npt.assert_almost_equal(
             nx.normalized_laplacian_matrix(self.G).todense(), GL, decimal=3
@@ -80,7 +81,9 @@ class TestLaplacian:
             nx.normalized_laplacian_matrix(self.WG).todense(), GL, decimal=3
         )
         npt.assert_almost_equal(
-            nx.normalized_laplacian_matrix(self.WG, weight="other").todense(), GL, decimal=3
+            nx.normalized_laplacian_matrix(self.WG, weight="other").todense(),
+            GL,
+            decimal=3,
         )
         npt.assert_almost_equal(
             nx.normalized_laplacian_matrix(self.Gsl).todense(), Lsl, decimal=3
@@ -127,7 +130,9 @@ class TestLaplacian:
                        [0., -0.3162, -0.0913, -0.5,  1., -0.25],
                        [-0.3227,  0.,  0., -0.5, -0.25,  1.]])
         # fmt: on
-        L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G), walk_type="random")
+        L = nx.directed_laplacian_matrix(
+            G, alpha=0.9, nodelist=sorted(G), walk_type="random"
+        )
         npt.assert_almost_equal(L, GL, decimal=3)
 
         # fmt: off
@@ -138,7 +143,9 @@ class TestLaplacian:
                        [0., -0.1581, -0.0456, -0.25,  0.5, -0.125],
                        [-0.1614,  0.,  0., -0.25, -0.125,  0.5]])
         # fmt: on
-        L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G), walk_type="lazy")
+        L = nx.directed_laplacian_matrix(
+            G, alpha=0.9, nodelist=sorted(G), walk_type="lazy"
+        )
         npt.assert_almost_equal(L, GL, decimal=3)
 
     def test_directed_combinatorial_laplacian(self):

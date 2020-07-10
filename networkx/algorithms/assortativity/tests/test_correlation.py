@@ -1,7 +1,8 @@
 import pytest
-np = pytest.importorskip('numpy')
-npt = pytest.importorskip('numpy.testing')
-scipy = pytest.importorskip('scipy')
+
+np = pytest.importorskip("numpy")
+npt = pytest.importorskip("numpy.testing")
+scipy = pytest.importorskip("scipy")
 
 
 import networkx as nx
@@ -10,7 +11,6 @@ from networkx.algorithms.assortativity.correlation import attribute_ac
 
 
 class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
-
     def test_degree_assortativity_undirected(self):
         r = nx.degree_assortativity_coefficient(self.P4)
         npt.assert_almost_equal(r, -1.0 / 2, decimal=4)
@@ -37,17 +37,16 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
 
 
 class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
-
     def test_attribute_assortativity_undirected(self):
-        r = nx.attribute_assortativity_coefficient(self.G, 'fish')
+        r = nx.attribute_assortativity_coefficient(self.G, "fish")
         assert r == 6.0 / 22.0
 
     def test_attribute_assortativity_directed(self):
-        r = nx.attribute_assortativity_coefficient(self.D, 'fish')
+        r = nx.attribute_assortativity_coefficient(self.D, "fish")
         assert r == 1.0 / 3.0
 
     def test_attribute_assortativity_multigraph(self):
-        r = nx.attribute_assortativity_coefficient(self.M, 'fish')
+        r = nx.attribute_assortativity_coefficient(self.M, "fish")
         assert r == 1.0
 
     def test_attribute_assortativity_coefficient(self):

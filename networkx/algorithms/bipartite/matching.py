@@ -44,10 +44,15 @@ from networkx.algorithms.bipartite.matrix import biadjacency_matrix
 from networkx.algorithms.bipartite import sets as bipartite_sets
 import networkx as nx
 
-__all__ = ['maximum_matching', 'hopcroft_karp_matching', 'eppstein_matching',
-           'to_vertex_cover', 'minimum_weight_full_matching']
+__all__ = [
+    "maximum_matching",
+    "hopcroft_karp_matching",
+    "eppstein_matching",
+    "to_vertex_cover",
+    "minimum_weight_full_matching",
+]
 
-INFINITY = float('inf')
+INFINITY = float("inf")
 
 
 def hopcroft_karp_matching(G, top_nodes=None):
@@ -299,8 +304,7 @@ def eppstein_matching(G, top_nodes=None):
             recurse(v)
 
 
-def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges,
-                                      targets):
+def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges, targets):
     """Returns True if and only if the vertex `v` is connected to one of
     the target vertices by an alternating path in `G`.
 
@@ -322,6 +326,7 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges,
     `targets` is a set of vertices.
 
     """
+
     def _alternating_dfs(u, along_matched=True):
         """Returns True if and only if `u` is connected to one of the
         targets by an alternating path.
@@ -344,8 +349,7 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges,
             try:
                 child = next(children)
                 if child not in visited:
-                    if ((parent, child) in valid_edges
-                            or (child, parent) in valid_edges):
+                    if (parent, child) in valid_edges or (child, parent) in valid_edges:
                         if child in targets:
                             return True
                         visited.add(child)
@@ -357,8 +361,9 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges,
     # Check for alternating paths starting with edges in the matching, then
     # check for alternating paths starting with edges not in the
     # matching.
-    return (_alternating_dfs(v, along_matched=True) or
-            _alternating_dfs(v, along_matched=False))
+    return _alternating_dfs(v, along_matched=True) or _alternating_dfs(
+        v, along_matched=False
+    )
 
 
 def _connected_by_alternating_paths(G, matching, targets):
@@ -385,12 +390,18 @@ def _connected_by_alternating_paths(G, matching, targets):
     # require nodes to be orderable.
     edge_sets = {frozenset((u, v)) for u, v in matching.items()}
     matched_edges = {tuple(edge) for edge in edge_sets}
-    unmatched_edges = {(u, v) for (u, v) in G.edges()
-                       if frozenset((u, v)) not in edge_sets}
+    unmatched_edges = {
+        (u, v) for (u, v) in G.edges() if frozenset((u, v)) not in edge_sets
+    }
 
-    return {v for v in G if v in targets or
-            _is_connected_by_alternating_path(G, v, matched_edges,
-                                              unmatched_edges, targets)}
+    return {
+        v
+        for v in G
+        if v in targets
+        or _is_connected_by_alternating_path(
+            G, v, matched_edges, unmatched_edges, targets
+        )
+    }
 
 
 def to_vertex_cover(G, matching, top_nodes=None):
@@ -474,7 +485,7 @@ def to_vertex_cover(G, matching, top_nodes=None):
 maximum_matching = hopcroft_karp_matching
 
 
-def minimum_weight_full_matching(G, top_nodes=None, weight='weight'):
+def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     r"""Returns the minimum weight full matching of the bipartite graph `G`.
 
     Let :math:`G = ((U, V), E)` be a complete weighted bipartite graph with
@@ -542,17 +553,18 @@ def minimum_weight_full_matching(G, top_nodes=None, weight='weight'):
         import numpy as np
         import scipy.optimize
     except ImportError as e:
-        raise ImportError('minimum_weight_full_matching requires SciPy: ' +
-                          'https://scipy.org/') from e
+        raise ImportError(
+            "minimum_weight_full_matching requires SciPy: " + "https://scipy.org/"
+        ) from e
     left, right = nx.bipartite.sets(G, top_nodes)
     U = list(left)
     V = list(right)
     # We explicitly create the biadjancency matrix having infinities
     # where edges are missing (as opposed to zeros, which is what one would
     # get by using toarray on the sparse matrix).
-    weights_sparse = biadjacency_matrix(G, row_order=U,
-                                        column_order=V, weight=weight,
-                                        format='coo')
+    weights_sparse = biadjacency_matrix(
+        G, row_order=U, column_order=V, weight=weight, format="coo"
+    )
     weights = np.full(weights_sparse.shape, np.inf)
     weights[weights_sparse.row, weights_sparse.col] = weights_sparse.data
     left_matches = scipy.optimize.linear_sum_assignment(weights)

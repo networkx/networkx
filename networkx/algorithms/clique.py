@@ -14,14 +14,21 @@ from itertools import islice
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
-           'make_clique_bipartite', 'graph_clique_number',
-           'graph_number_of_cliques', 'node_clique_number',
-           'number_of_cliques', 'cliques_containing_node',
-           'enumerate_all_cliques']
+__all__ = [
+    "find_cliques",
+    "find_cliques_recursive",
+    "make_max_clique_graph",
+    "make_clique_bipartite",
+    "graph_clique_number",
+    "graph_number_of_cliques",
+    "node_clique_number",
+    "number_of_cliques",
+    "cliques_containing_node",
+    "enumerate_all_cliques",
+]
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def enumerate_all_cliques(G):
     """Returns all cliques in an undirected graph.
 
@@ -84,12 +91,15 @@ def enumerate_all_cliques(G):
         yield base
         for i, u in enumerate(cnbrs):
             # Use generators to reduce memory consumption.
-            queue.append((chain(base, [u]),
-                          filter(nbrs[u].__contains__,
-                                 islice(cnbrs, i + 1, None))))
+            queue.append(
+                (
+                    chain(base, [u]),
+                    filter(nbrs[u].__contains__, islice(cnbrs, i + 1, None)),
+                )
+            )
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def find_cliques(G):
     """Returns all maximal cliques in an undirected graph.
 
@@ -468,9 +478,9 @@ def node_clique_number(G, nodes=None, cliques=None):
         cliques = list(find_cliques(G))
 
     if nodes is None:
-        nodes = list(G.nodes())   # none, get entire graph
+        nodes = list(G.nodes())  # none, get entire graph
 
-    if not isinstance(nodes, list):   # check for a list
+    if not isinstance(nodes, list):  # check for a list
         v = nodes
         # assume it is a single value
         d = max([len(c) for c in cliques if v in c])
@@ -506,9 +516,9 @@ def number_of_cliques(G, nodes=None, cliques=None):
         cliques = list(find_cliques(G))
 
     if nodes is None:
-        nodes = list(G.nodes())   # none, get entire graph
+        nodes = list(G.nodes())  # none, get entire graph
 
-    if not isinstance(nodes, list):   # check for a list
+    if not isinstance(nodes, list):  # check for a list
         v = nodes
         # assume it is a single value
         numcliq = len([1 for c in cliques if v in c])
@@ -529,9 +539,9 @@ def cliques_containing_node(G, nodes=None, cliques=None):
         cliques = list(find_cliques(G))
 
     if nodes is None:
-        nodes = list(G.nodes())   # none, get entire graph
+        nodes = list(G.nodes())  # none, get entire graph
 
-    if not isinstance(nodes, list):   # check for a list
+    if not isinstance(nodes, list):  # check for a list
         v = nodes
         # assume it is a single value
         vcliques = [c for c in cliques if v in c]

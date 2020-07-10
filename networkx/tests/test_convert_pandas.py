@@ -19,8 +19,7 @@ class TestConvertPandas:
         df["b"] = b  # Column label 'b' (str)
         self.df = df
 
-        mdf = pd.DataFrame([[4, 16, "A", "D"]],
-                           columns=["weight", "cost", 0, "b"])
+        mdf = pd.DataFrame([[4, 16, "A", "D"]], columns=["weight", "cost", 0, "b"])
         self.mdf = df.append(mdf)
 
     def test_exceptions(self):
@@ -28,8 +27,7 @@ class TestConvertPandas:
         pytest.raises(nx.NetworkXError, nx.to_networkx_graph, G)
         G = pd.DataFrame(["a", 0.0])  # elist
         pytest.raises(nx.NetworkXError, nx.to_networkx_graph, G)
-        df = pd.DataFrame([[1, 1], [1, 0]],
-                          dtype=int, index=[1, 2], columns=["a", "b"])
+        df = pd.DataFrame([[1, 1], [1, 0]], dtype=int, index=[1, 2], columns=["a", "b"])
         pytest.raises(nx.NetworkXError, nx.from_pandas_adjacency, df)
 
     def test_from_edgelist_all_attr(self):
@@ -91,14 +89,18 @@ class TestConvertPandas:
             "St": ["X1", "X2", "X3", "X4", "Y1", "Y2", "X2", "Y3", "Z1", "X3"],
             "Co": ["zA", "zB", "zB", "zB", "zC", "zC", "zC", "zC", "zD", "zD"],
             "Mi": [0, 54, 49, 44, 0, 34, 29, 24, 0, 14],
-            }
+        }
         df = pd.DataFrame.from_dict(data)
-        G1 = nx.from_pandas_edgelist(df, source="O", target="D",
-                                     edge_attr=True,
-                                     create_using=nx.MultiDiGraph)
-        G2 = nx.from_pandas_edgelist(df, source="O", target="D",
-                                     edge_attr=["St", "Co", "Mi"],
-                                     create_using=nx.MultiDiGraph)
+        G1 = nx.from_pandas_edgelist(
+            df, source="O", target="D", edge_attr=True, create_using=nx.MultiDiGraph
+        )
+        G2 = nx.from_pandas_edgelist(
+            df,
+            source="O",
+            target="D",
+            edge_attr=["St", "Co", "Mi"],
+            create_using=nx.MultiDiGraph,
+        )
         assert_graphs_equal(G1, Gtrue)
         assert_graphs_equal(G2, Gtrue)
 
@@ -122,18 +124,26 @@ class TestConvertPandas:
         assert_graphs_equal(G, Gtrue)
 
     def test_from_edgelist_invalid_attr(self):
-        pytest.raises(nx.NetworkXError, nx.from_pandas_edgelist,
-                      self.df, 0, "b", "misspell")
-        pytest.raises(nx.NetworkXError, nx.from_pandas_edgelist,
-                      self.df, 0, "b", 1)
+        pytest.raises(
+            nx.NetworkXError, nx.from_pandas_edgelist, self.df, 0, "b", "misspell"
+        )
+        pytest.raises(nx.NetworkXError, nx.from_pandas_edgelist, self.df, 0, "b", 1)
         # see Issue #3562
         edgeframe = pd.DataFrame([[0, 1], [1, 2], [2, 0]], columns=["s", "t"])
-        pytest.raises(nx.NetworkXError, nx.from_pandas_edgelist,
-                      edgeframe, "s", "t", True)
-        pytest.raises(nx.NetworkXError, nx.from_pandas_edgelist,
-                      edgeframe, "s", "t", "weight")
-        pytest.raises(nx.NetworkXError, nx.from_pandas_edgelist,
-                      edgeframe, "s", "t", ["weight", "size"])
+        pytest.raises(
+            nx.NetworkXError, nx.from_pandas_edgelist, edgeframe, "s", "t", True
+        )
+        pytest.raises(
+            nx.NetworkXError, nx.from_pandas_edgelist, edgeframe, "s", "t", "weight"
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            nx.from_pandas_edgelist,
+            edgeframe,
+            "s",
+            "t",
+            ["weight", "size"],
+        )
 
     def test_from_edgelist_no_attr(self):
         Gtrue = nx.Graph([("E", "C", {}), ("B", "A", {}), ("A", "D", {})])
@@ -149,8 +159,7 @@ class TestConvertPandas:
         source = [s for s, t, d in edgelist]
         target = [t for s, t, d in edgelist]
         weight = [d["weight"] for s, t, d in edgelist]
-        edges = pd.DataFrame({"source": source, "target": target,
-                              "weight": weight})
+        edges = pd.DataFrame({"source": source, "target": target, "weight": weight})
 
         GG = nx.from_pandas_edgelist(edges, edge_attr="weight")
         assert_nodes_equal(G.nodes(), GG.nodes())
@@ -178,16 +187,18 @@ class TestConvertPandas:
         G = nx.path_graph(10)
         G.add_weighted_edges_from((u, v, u) for u, v in list(G.edges))
         nx.set_edge_attributes(G, 0, name="source_col_name")
-        pytest.raises(nx.NetworkXError,
-                      nx.to_pandas_edgelist, G, source="source_col_name")
+        pytest.raises(
+            nx.NetworkXError, nx.to_pandas_edgelist, G, source="source_col_name"
+        )
 
         # drop source column to test an exception raised for the target column
         for u, v, d in G.edges(data=True):
             d.pop("source_col_name", None)
 
         nx.set_edge_attributes(G, 0, name="target_col_name")
-        pytest.raises(nx.NetworkXError,
-                      nx.to_pandas_edgelist, G, target="target_col_name")
+        pytest.raises(
+            nx.NetworkXError, nx.to_pandas_edgelist, G, target="target_col_name"
+        )
 
     def test_from_adjacency(self):
         nodelist = [1, 2]

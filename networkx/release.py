@@ -39,7 +39,7 @@ basedir = os.path.abspath(os.path.split(__file__)[0])
 
 def write_versionfile():
     """Creates a static file containing version information."""
-    versionfile = os.path.join(basedir, 'version.py')
+    versionfile = os.path.join(basedir, "version.py")
 
     text = '''"""
 Version information for NetworkX, created during installation.
@@ -72,19 +72,19 @@ vcs_info = %(vcs_info)r
     date, date_info, version, version_info, vcs_info = get_info(dynamic=True)
 
     def writefile():
-        fh = open(versionfile, 'w')
+        fh = open(versionfile, "w")
         subs = {
-            'dev': dev,
-            'version': version,
-            'version_info': version_info,
-            'date': date,
-            'date_info': date_info,
-            'vcs_info': vcs_info
+            "dev": dev,
+            "version": version,
+            "version_info": version_info,
+            "date": date,
+            "date_info": date_info,
+            "vcs_info": vcs_info,
         }
         fh.write(text % subs)
         fh.close()
 
-    if vcs_info[0] == 'mercurial':
+    if vcs_info[0] == "mercurial":
         # Then, we want to update version.py.
         writefile()
     else:
@@ -94,6 +94,7 @@ vcs_info = %(vcs_info)r
             # Grab the version so that setup can use it.
             # sys.path.insert(0, basedir)
             from version import version
+
             # del sys.path[0]
         else:
             # This is *bad*.  It means the user might have a tarball that
@@ -113,10 +114,10 @@ def get_revision():
     """Returns revision and vcs information, dynamically obtained."""
     vcs, revision, tag = None, None, None
 
-    gitdir = os.path.join(basedir, '..', '.git')
+    gitdir = os.path.join(basedir, "..", ".git")
 
     if os.path.isdir(gitdir):
-        vcs = 'git'
+        vcs = "git"
         # For now, we are not bothering with revision and tag.
 
     vcs_info = (vcs, (revision, tag))
@@ -126,7 +127,9 @@ def get_revision():
 
 def get_info(dynamic=True):
     # Date information
-    date_info = datetime.datetime.utcfromtimestamp(int(os.environ.get('SOURCE_DATE_EPOCH', time.time())))
+    date_info = datetime.datetime.utcfromtimestamp(
+        int(os.environ.get("SOURCE_DATE_EPOCH", time.time()))
+    )
     date = time.asctime(date_info.timetuple())
 
     revision, version, version_info, vcs_info = None, None, None, None
@@ -157,16 +160,16 @@ def get_info(dynamic=True):
         # We are here if:
         #   we failed to determine static versioning info, or
         #   we successfully obtained dynamic revision info
-        version = ''.join([str(major), '.', str(minor)])
+        version = "".join([str(major), ".", str(minor)])
         if dev:
-            version += '.dev_' + date_info.strftime("%Y%m%d%H%M%S")
+            version += ".dev_" + date_info.strftime("%Y%m%d%H%M%S")
         version_info = (name, major, minor, revision)
 
     return date, date_info, version, version_info, vcs_info
 
 
 # Version information
-name = 'networkx'
+name = "networkx"
 major = "2"
 minor = "5rc1"
 
@@ -177,39 +180,49 @@ dev = True
 
 
 description = "Python package for creating and manipulating graphs and networks"
-authors = {'Hagberg': ('Aric Hagberg', 'hagberg@lanl.gov'),
-           'Schult': ('Dan Schult', 'dschult@colgate.edu'),
-           'Swart': ('Pieter Swart', 'swart@lanl.gov')}
+authors = {
+    "Hagberg": ("Aric Hagberg", "hagberg@lanl.gov"),
+    "Schult": ("Dan Schult", "dschult@colgate.edu"),
+    "Swart": ("Pieter Swart", "swart@lanl.gov"),
+}
 maintainer = "NetworkX Developers"
 maintainer_email = "networkx-discuss@googlegroups.com"
-url = 'http://networkx.github.io/'
+url = "http://networkx.github.io/"
 project_urls = {
     "Bug Tracker": "https://github.com/networkx/networkx/issues",
     "Documentation": "https://networkx.github.io/documentation/stable/",
     "Source Code": "https://github.com/networkx/networkx",
 }
-platforms = ['Linux', 'Mac OSX', 'Windows', 'Unix']
-keywords = ['Networks', 'Graph Theory', 'Mathematics',
-            'network', 'graph', 'discrete mathematics', 'math']
+platforms = ["Linux", "Mac OSX", "Windows", "Unix"]
+keywords = [
+    "Networks",
+    "Graph Theory",
+    "Mathematics",
+    "network",
+    "graph",
+    "discrete mathematics",
+    "math",
+]
 classifiers = [
-    'Development Status :: 5 - Production/Stable',
-    'Intended Audience :: Developers',
-    'Intended Audience :: Science/Research',
-    'License :: OSI Approved :: BSD License',
-    'Operating System :: OS Independent',
-    'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.6',
-    'Programming Language :: Python :: 3.7',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3 :: Only',
-    'Topic :: Software Development :: Libraries :: Python Modules',
-    'Topic :: Scientific/Engineering :: Bio-Informatics',
-    'Topic :: Scientific/Engineering :: Information Analysis',
-    'Topic :: Scientific/Engineering :: Mathematics',
-    'Topic :: Scientific/Engineering :: Physics']
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics",
+]
 
 date, date_info, version, version_info, vcs_info = get_info()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Write versionfile for nightly snapshots.
     write_versionfile()

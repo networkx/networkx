@@ -25,20 +25,21 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
 
     def test_adjacency(self):
         G = self.K3
-        assert (dict(G.adjacency()) ==
-                {0: {1: {0: {}}, 2: {0: {}}},
-                 1: {0: {0: {}}, 2: {0: {}}},
-                 2: {0: {0: {}}, 1: {0: {}}}})
+        assert dict(G.adjacency()) == {
+            0: {1: {0: {}}, 2: {0: {}}},
+            1: {0: {0: {}}, 2: {0: {}}},
+            2: {0: {0: {}}, 1: {0: {}}},
+        }
 
     def deepcopy_edge_attr(self, H, G):
-        assert G[1][2][0]['foo'] == H[1][2][0]['foo']
-        G[1][2][0]['foo'].append(1)
-        assert G[1][2][0]['foo'] != H[1][2][0]['foo']
+        assert G[1][2][0]["foo"] == H[1][2][0]["foo"]
+        G[1][2][0]["foo"].append(1)
+        assert G[1][2][0]["foo"] != H[1][2][0]["foo"]
 
     def shallow_copy_edge_attr(self, H, G):
-        assert G[1][2][0]['foo'] == H[1][2][0]['foo']
-        G[1][2][0]['foo'].append(1)
-        assert G[1][2][0]['foo'] == H[1][2][0]['foo']
+        assert G[1][2][0]["foo"] == H[1][2][0]["foo"]
+        G[1][2][0]["foo"].append(1)
+        assert G[1][2][0]["foo"] == H[1][2][0]["foo"]
 
     def graphs_equal(self, H, G):
         assert G._adj == H._adj
@@ -62,30 +63,30 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
 
     def same_attrdict(self, H, G):
         # same attrdict in the edgedata
-        old_foo = H[1][2][0]['foo']
-        H.adj[1][2][0]['foo'] = 'baz'
+        old_foo = H[1][2][0]["foo"]
+        H.adj[1][2][0]["foo"] = "baz"
         assert G._adj == H._adj
-        H.adj[1][2][0]['foo'] = old_foo
+        H.adj[1][2][0]["foo"] = old_foo
         assert G._adj == H._adj
 
-        old_foo = H.nodes[0]['foo']
-        H.nodes[0]['foo'] = 'baz'
+        old_foo = H.nodes[0]["foo"]
+        H.nodes[0]["foo"] = "baz"
         assert G._node == H._node
-        H.nodes[0]['foo'] = old_foo
+        H.nodes[0]["foo"] = old_foo
         assert G._node == H._node
 
     def different_attrdict(self, H, G):
         # used by graph_equal_but_different
-        old_foo = H[1][2][0]['foo']
-        H.adj[1][2][0]['foo'] = 'baz'
+        old_foo = H[1][2][0]["foo"]
+        H.adj[1][2][0]["foo"] = "baz"
         assert G._adj != H._adj
-        H.adj[1][2][0]['foo'] = old_foo
+        H.adj[1][2][0]["foo"] = old_foo
         assert G._adj == H._adj
 
-        old_foo = H.nodes[0]['foo']
-        H.nodes[0]['foo'] = 'baz'
+        old_foo = H.nodes[0]["foo"]
+        H.nodes[0]["foo"] = "baz"
         assert G._node != H._node
-        H.nodes[0]['foo'] = old_foo
+        H.nodes[0]["foo"] = old_foo
         assert G._node == H._node
 
     def test_to_undirected(self):
@@ -108,39 +109,56 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         G = self.K3
         G.add_edge(0, 0)
         G.add_edge(0, 0)
-        G.add_edge(0, 0, key='parallel edge')
-        G.remove_edge(0, 0, key='parallel edge')
+        G.add_edge(0, 0, key="parallel edge")
+        G.remove_edge(0, 0, key="parallel edge")
         assert G.number_of_edges(0, 0) == 2
         G.remove_edge(0, 0)
         assert G.number_of_edges(0, 0) == 1
 
     def test_edge_lookup(self):
         G = self.Graph()
-        G.add_edge(1, 2, foo='bar')
-        G.add_edge(1, 2, 'key', foo='biz')
-        assert_edges_equal(G.edges[1, 2, 0], {'foo': 'bar'})
-        assert_edges_equal(G.edges[1, 2, 'key'], {'foo': 'biz'})
+        G.add_edge(1, 2, foo="bar")
+        G.add_edge(1, 2, "key", foo="biz")
+        assert_edges_equal(G.edges[1, 2, 0], {"foo": "bar"})
+        assert_edges_equal(G.edges[1, 2, "key"], {"foo": "biz"})
 
     def test_edge_attr4(self):
         G = self.Graph()
-        G.add_edge(1, 2, key=0, data=7, spam='bar', bar='foo')
-        assert_edges_equal(G.edges(data=True),
-                           [(1, 2, {'data': 7, 'spam': 'bar', 'bar': 'foo'})])
-        G[1][2][0]['data'] = 10  # OK to set data like this
-        assert_edges_equal(G.edges(data=True),
-                           [(1, 2, {'data': 10, 'spam': 'bar', 'bar': 'foo'})])
+        G.add_edge(1, 2, key=0, data=7, spam="bar", bar="foo")
+        assert_edges_equal(
+            G.edges(data=True), [(1, 2, {"data": 7, "spam": "bar", "bar": "foo"})]
+        )
+        G[1][2][0]["data"] = 10  # OK to set data like this
+        assert_edges_equal(
+            G.edges(data=True), [(1, 2, {"data": 10, "spam": "bar", "bar": "foo"})]
+        )
 
-        G.adj[1][2][0]['data'] = 20
-        assert_edges_equal(G.edges(data=True),
-                           [(1, 2, {'data': 20, 'spam': 'bar', 'bar': 'foo'})])
-        G.edges[1, 2, 0]['data'] = 21  # another spelling, "edge"
-        assert_edges_equal(G.edges(data=True),
-                           [(1, 2, {'data': 21, 'spam': 'bar', 'bar': 'foo'})])
-        G.adj[1][2][0]['listdata'] = [20, 200]
-        G.adj[1][2][0]['weight'] = 20
-        assert_edges_equal(G.edges(data=True),
-                           [(1, 2, {'data': 21, 'spam': 'bar', 'bar': 'foo',
-                                    'listdata': [20, 200], 'weight':20})])
+        G.adj[1][2][0]["data"] = 20
+        assert_edges_equal(
+            G.edges(data=True), [(1, 2, {"data": 20, "spam": "bar", "bar": "foo"})]
+        )
+        G.edges[1, 2, 0]["data"] = 21  # another spelling, "edge"
+        assert_edges_equal(
+            G.edges(data=True), [(1, 2, {"data": 21, "spam": "bar", "bar": "foo"})]
+        )
+        G.adj[1][2][0]["listdata"] = [20, 200]
+        G.adj[1][2][0]["weight"] = 20
+        assert_edges_equal(
+            G.edges(data=True),
+            [
+                (
+                    1,
+                    2,
+                    {
+                        "data": 21,
+                        "spam": "bar",
+                        "bar": "foo",
+                        "listdata": [20, 200],
+                        "weight": 20,
+                    },
+                )
+            ],
+        )
 
 
 class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
@@ -148,9 +166,7 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
         self.Graph = nx.MultiGraph
         # build K3
         ed1, ed2, ed3 = ({0: {}}, {0: {}}, {0: {}})
-        self.k3adj = {0: {1: ed1, 2: ed2},
-                      1: {0: ed1, 2: ed3},
-                      2: {0: ed2, 1: ed3}}
+        self.k3adj = {0: {1: ed1, 2: ed2}, 1: {0: ed1, 2: ed3}, 2: {0: ed2, 1: ed3}}
         self.k3edges = [(0, 1), (0, 2), (1, 2)]
         self.k3nodes = [0, 1, 2]
         self.K3 = self.Graph()
@@ -170,9 +186,9 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
         G = self.K3
         assert G[0] == {1: {0: {}}, 2: {0: {}}}
         with pytest.raises(KeyError):
-            G.__getitem__('j')
+            G.__getitem__("j")
         with pytest.raises(TypeError):
-            G.__getitem__(['A'])
+            G.__getitem__(["A"])
 
     def test_remove_node(self):
         G = self.K3
@@ -201,19 +217,25 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
 
     def test_add_edges_from(self):
         G = self.Graph()
-        G.add_edges_from([(0, 1), (0, 1, {'weight': 3})])
-        assert G.adj == {0: {1: {0: {}, 1: {'weight': 3}}},
-                         1: {0: {0: {}, 1: {'weight': 3}}}}
-        G.add_edges_from([(0, 1), (0, 1, {'weight': 3})], weight=2)
-        assert G.adj == {0: {1: {0: {}, 1: {'weight': 3},
-                                 2: {'weight': 2}, 3: {'weight': 3}}},
-                         1: {0: {0: {}, 1: {'weight': 3},
-                                 2: {'weight': 2}, 3: {'weight': 3}}}}
+        G.add_edges_from([(0, 1), (0, 1, {"weight": 3})])
+        assert G.adj == {
+            0: {1: {0: {}, 1: {"weight": 3}}},
+            1: {0: {0: {}, 1: {"weight": 3}}},
+        }
+        G.add_edges_from([(0, 1), (0, 1, {"weight": 3})], weight=2)
+        assert G.adj == {
+            0: {1: {0: {}, 1: {"weight": 3}, 2: {"weight": 2}, 3: {"weight": 3}}},
+            1: {0: {0: {}, 1: {"weight": 3}, 2: {"weight": 2}, 3: {"weight": 3}}},
+        }
         G = self.Graph()
-        edges = [(0, 1, {'weight': 3}), (0, 1, (('weight', 2),)),
-                 (0, 1, 5), (0, 1, 's')]
+        edges = [
+            (0, 1, {"weight": 3}),
+            (0, 1, (("weight", 2),)),
+            (0, 1, 5),
+            (0, 1, "s"),
+        ]
         G.add_edges_from(edges)
-        keydict = {0: {'weight': 3}, 1: {'weight': 2}, 5: {}, 's': {}}
+        keydict = {0: {"weight": 3}, 1: {"weight": 2}, 5: {}, "s": {}}
         assert G._adj == {0: {1: keydict}, 1: {0: keydict}}
 
         # too few in tuple
@@ -229,10 +251,7 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
     def test_remove_edge(self):
         G = self.K3
         G.remove_edge(0, 1)
-        assert G.adj == {0: {2: {0: {}}},
-                         1: {2: {0: {}}},
-                         2: {0: {0: {}},
-                             1: {0: {}}}}
+        assert G.adj == {0: {2: {0: {}}}, 1: {2: {0: {}}}, 2: {0: {0: {}}, 1: {0: {}}}}
 
         with pytest.raises(nx.NetworkXError):
             G.remove_edge(-1, 0)
@@ -261,11 +280,13 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
 
     def test_remove_multiedge(self):
         G = self.K3
-        G.add_edge(0, 1, key='parallel edge')
-        G.remove_edge(0, 1, key='parallel edge')
-        assert G.adj == {0: {1: {0: {}}, 2: {0: {}}},
-                         1: {0: {0: {}}, 2: {0: {}}},
-                         2: {0: {0: {}}, 1: {0: {}}}}
+        G.add_edge(0, 1, key="parallel edge")
+        G.remove_edge(0, 1, key="parallel edge")
+        assert G.adj == {
+            0: {1: {0: {}}, 2: {0: {}}},
+            1: {0: {0: {}}, 2: {0: {}}},
+            2: {0: {0: {}}, 1: {0: {}}},
+        }
         G.remove_edge(0, 1)
         kd = {0: {}}
         assert G.adj == {0: {2: kd}, 1: {2: kd}, 2: {0: kd, 1: kd}}
@@ -283,12 +304,12 @@ class TestEdgeSubgraph:
         nx.add_path(G, range(5))
         # Add some node, edge, and graph attributes.
         for i in range(5):
-            G.nodes[i]['name'] = f'node{i}'
-        G.adj[0][1][0]['name'] = 'edge010'
-        G.adj[0][1][1]['name'] = 'edge011'
-        G.adj[3][4][0]['name'] = 'edge340'
-        G.adj[3][4][1]['name'] = 'edge341'
-        G.graph['name'] = 'graph'
+            G.nodes[i]["name"] = f"node{i}"
+        G.adj[0][1][0]["name"] = "edge010"
+        G.adj[0][1][1]["name"] = "edge011"
+        G.adj[3][4][0]["name"] = "edge340"
+        G.adj[3][4][1]["name"] = "edge341"
+        G.graph["name"] = "graph"
         # Get the subgraph induced by one of the first edges and one of
         # the last edges.
         self.G = G
@@ -300,8 +321,9 @@ class TestEdgeSubgraph:
 
     def test_correct_edges(self):
         """Tests that the subgraph has the correct edges."""
-        assert ([(0, 1, 0, 'edge010'), (3, 4, 1, 'edge341')] ==
-                sorted(self.H.edges(keys=True, data='name')))
+        assert [(0, 1, 0, "edge010"), (3, 4, 1, "edge341")] == sorted(
+            self.H.edges(keys=True, data="name")
+        )
 
     def test_add_node(self):
         """Tests that adding a node to the original graph does not
@@ -327,9 +349,9 @@ class TestEdgeSubgraph:
         for v in self.H:
             assert self.G.nodes[v] == self.H.nodes[v]
         # Making a change to G should make a change in H and vice versa.
-        self.G.nodes[0]['name'] = 'foo'
+        self.G.nodes[0]["name"] = "foo"
         assert self.G.nodes[0] == self.H.nodes[0]
-        self.H.nodes[1]['name'] = 'bar'
+        self.H.nodes[1]["name"] = "bar"
         assert self.G.nodes[1] == self.H.nodes[1]
 
     def test_edge_attr_dict(self):
@@ -340,12 +362,10 @@ class TestEdgeSubgraph:
         for u, v, k in self.H.edges(keys=True):
             assert self.G._adj[u][v][k] == self.H._adj[u][v][k]
         # Making a change to G should make a change in H and vice versa.
-        self.G._adj[0][1][0]['name'] = 'foo'
-        assert (self.G._adj[0][1][0]['name'] ==
-                self.H._adj[0][1][0]['name'])
-        self.H._adj[3][4][1]['name'] = 'bar'
-        assert (self.G._adj[3][4][1]['name'] ==
-                self.H._adj[3][4][1]['name'])
+        self.G._adj[0][1][0]["name"] = "foo"
+        assert self.G._adj[0][1][0]["name"] == self.H._adj[0][1][0]["name"]
+        self.H._adj[3][4][1]["name"] = "bar"
+        assert self.G._adj[3][4][1]["name"] == self.H._adj[3][4][1]["name"]
 
     def test_graph_attr_dict(self):
         """Tests that the graph attribute dictionary of the two graphs
