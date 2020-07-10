@@ -41,7 +41,7 @@ class TestMaximumWeightClique:
         clique, weight = nx.algorithms.max_weight_clique(graph, 'weight')
         assert verify_clique(graph, clique, weight, 20, 'weight')
 
-    def test_30_vertex_prob(self):
+    def test_30_node_prob(self):
         G = nx.Graph()
         G.add_nodes_from(range(1, 31))
         for i in range(1, 31):

@@ -560,21 +560,21 @@ class MaxWeightClique(object):
     ----------
     G : NetworkX graph
         The undirected graph for which a maximum weight clique is sought
-    vtx_weights: dict
-        The weight of each vertex
-    incumbent_vertices : list
-        The vertices of the incumbent clique (the best clique found so far)
+    node_weights: dict
+        The weight of each node
+    incumbent_nodes : list
+        The nodes of the incumbent clique (the best clique found so far)
     incumbent_weight: int
         The weight of the incumbent clique
     """
 
     def __init__(self, G, weight):
         self.G = G
-        self.incumbent_vertices = []
+        self.incumbent_nodes = []
         self.incumbent_weight = 0
 
         if weight is None:
-            self.vtx_weights = {v: 1 for v in G.nodes()}
+            self.node_weights = {v: 1 for v in G.nodes()}
         else:
             for v in G.nodes():
                 if weight not in G.nodes[v]:
@@ -583,20 +583,20 @@ class MaxWeightClique(object):
                 if not isinstance(G.nodes[v][weight], int):
                     err = "The '{}' field of node {} is not an integer."
                     raise ValueError(err.format(weight, v))
-            self.vtx_weights = {v: G.nodes[v][weight] for v in G.nodes()}
+            self.node_weights = {v: G.nodes[v][weight] for v in G.nodes()}
 
     def update_incumbent_if_improved(self, C, C_weight):
-        """Update the incumbent if the vertex set C has greater weight.
+        """Update the incumbent if the node set C has greater weight.
 
         C is assumed to be a clique.
         """
         if C_weight > self.incumbent_weight:
-            self.incumbent_vertices = C[:]
+            self.incumbent_nodes = C[:]
             self.incumbent_weight = C_weight
 
     def greedily_find_independent_set(self, P):
-        """Greedily find an independent set of vertices from a set of
-        vertices P."""
+        """Greedily find an independent set of nodes from a set of
+        nodes P."""
         independent_set = []
         P = P[:]
         while P:
@@ -605,9 +605,9 @@ class MaxWeightClique(object):
             P = [w for w in P if v != w and not self.G.has_edge(v, w)]
         return independent_set
 
-    def find_branching_vertices(self, P, target):
-        """Find a set of vertices to branch on."""
-        residual_wt = {v: self.vtx_weights[v] for v in P}
+    def find_branching_nodes(self, P, target):
+        """Find a set of nodes to branch on."""
+        residual_wt = {v: self.node_weights[v] for v in P}
         total_wt = 0
         P = P[:]
         while P:
@@ -622,28 +622,28 @@ class MaxWeightClique(object):
         return P
 
     def expand(self, C, C_weight, P):
-        """Look for the best clique that contains all the vertices in C and zero or
-        more of the vertices in P, backtracking if it can be shown that no such
+        """Look for the best clique that contains all the nodes in C and zero or
+        more of the nodes in P, backtracking if it can be shown that no such
         clique has greater weight than the incumbent.
         """
         self.update_incumbent_if_improved(C, C_weight)
-        branching_vertices = self.find_branching_vertices(
+        branching_nodes = self.find_branching_nodes(
             P, self.incumbent_weight - C_weight)
-        while branching_vertices:
-            v = branching_vertices.pop()
+        while branching_nodes:
+            v = branching_nodes.pop()
             P.remove(v)
             new_C = C + [v]
-            new_C_weight = C_weight + self.vtx_weights[v]
+            new_C_weight = C_weight + self.node_weights[v]
             new_P = [w for w in P if self.G.has_edge(v, w)]
             self.expand(new_C, new_C_weight, new_P)
 
     def find_max_weight_clique(self):
         """Find a maximum weight clique."""
-        # Sort vertices in reverse order of degree for speed
-        vertices = sorted(self.G.nodes(), key=lambda v: self.G.degree(v),
-                          reverse=True)
-        vertices = [v for v in vertices if self.vtx_weights[v] > 0]
-        self.expand([], 0, vertices)
+        # Sort nodes in reverse order of degree for speed
+        nodes = sorted(self.G.nodes(), key=lambda v: self.G.degree(v),
+                       reverse=True)
+        nodes = [v for v in nodes if self.node_weights[v] > 0]
+        self.expand([], 0, nodes)
 
 
 @not_implemented_for('directed')
@@ -698,4 +698,4 @@ def max_weight_clique(G, weight='weight'):
 
     mwc = MaxWeightClique(G, weight)
     mwc.find_max_weight_clique()
-    return mwc.incumbent_vertices, mwc.incumbent_weight
+    return mwc.incumbent_nodes, mwc.incumbent_weight
