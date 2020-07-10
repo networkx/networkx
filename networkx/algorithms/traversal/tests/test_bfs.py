@@ -1,3 +1,4 @@
+from functools import partial
 import networkx as nx
 
 
@@ -32,6 +33,15 @@ class TestBFS:
         D.add_edges_from([(0, 1), (1, 2), (1, 3), (2, 4), (3, 4)])
         edges = nx.bfs_edges(D, source=4, reverse=True)
         assert list(edges) == [(4, 2), (4, 3), (2, 1), (1, 0)]
+
+    def test_bfs_edges_sorting(self):
+        D = nx.DiGraph()
+        D.add_edges_from([(0, 1), (0, 2), (1, 4), (1, 3), (2, 5)])
+        sort_desc = partial(sorted, reverse=True)
+        edges_asc = nx.bfs_edges(D, source=0, sort_neighbors=sorted)
+        edges_desc = nx.bfs_edges(D, source=0, sort_neighbors=sort_desc)
+        assert list(edges_asc) == [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5)]
+        assert list(edges_desc) == [(0, 2), (0, 1), (2, 5), (1, 4), (1, 3)]
 
     def test_bfs_tree_isolates(self):
         G = nx.Graph()
@@ -80,3 +90,4 @@ class TestBreadthLimitedSearch:
         edges = nx.bfs_edges(self.G, source=9, depth_limit=4)
         assert list(edges) == [(9, 8), (9, 10), (8, 7),
                                (7, 2), (2, 1), (2, 3)]
+
