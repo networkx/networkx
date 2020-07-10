@@ -43,12 +43,14 @@ def test_trophic_levels_levine():
     # find adjacency matrix
     q = nx.linalg.graphmatrix.adjacency_matrix(S).T
 
+    # fmt: off
     expected_q = np.array([
         [0, 0, 0., 0],
         [0.2, 0, 0.6, 0],
         [0, 0, 0, 0.2],
         [0.3, 0, 0.7, 0]
     ])
+    # fmt: on
     assert np.array_equal(q.todense(), expected_q)
 
     # must be square, size of number of nodes
@@ -89,24 +91,28 @@ def test_trophic_levels_simple():
 
 
 def test_trophic_levels_more_complex():
+    # fmt: off
     matrix = np.array([
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, 0, 0, 1],
         [0, 0, 0, 0]
     ])
+    # fmt: on
     G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph)
     d = nx.trophic_levels(G)
     expected_result = [1, 2, 3, 4]
     for ind in range(4):
         assert almost_equal(d[ind], expected_result[ind])
 
+    # fmt: off
     matrix = np.array([
         [0, 1, 1, 0],
         [0, 0, 1, 1],
         [0, 0, 0, 1],
         [0, 0, 0, 0]
     ])
+    # fmt: on
     G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph)
     d = nx.trophic_levels(G)
 
@@ -119,6 +125,7 @@ def test_trophic_levels_more_complex():
 
 
 def test_trophic_levels_even_more_complex():
+    # fmt: off
     # Another, bigger matrix
     matrix = np.array([
         [0, 0, 0, 0, 0],
@@ -127,7 +134,6 @@ def test_trophic_levels_even_more_complex():
         [0, 1, 0, 0, 0],
         [0, 0, 0, 1, 0]
     ])
-
     # Generated this linear system using pen and paper:
     K = np.array([
         [1, 0, -1, 0, 0],
@@ -136,6 +142,7 @@ def test_trophic_levels_even_more_complex():
         [0, -0.5, 0, 1, -0.5],
         [0, 0, 0, 0, 1],
     ])
+    # fmt: on
     result_1 = np.ravel(np.matmul(np.linalg.inv(K), np.ones(5)))
     G = nx.from_numpy_matrix(matrix, create_using=nx.DiGraph)
     result_2 = nx.trophic_levels(G)
@@ -199,12 +206,14 @@ def test_trophic_differences():
     diffs = nx.trophic_differences(G)
     assert almost_equal(diffs[(0, 1)], 1)
 
+    # fmt: off
     matrix_b = np.array([
         [0, 1, 1, 0],
         [0, 0, 1, 1],
         [0, 0, 0, 1],
         [0, 0, 0, 0]
     ])
+    # fmt: on
     G = nx.from_numpy_matrix(matrix_b, create_using=nx.DiGraph)
     diffs = nx.trophic_differences(G)
 
@@ -221,34 +230,40 @@ def test_trophic_incoherence_parameter_no_cannibalism():
     q = nx.trophic_incoherence_parameter(G, cannibalism=False)
     assert almost_equal(q, 0)
 
+    # fmt: off
     matrix_b = np.array([
         [0, 1, 1, 0],
         [0, 0, 1, 1],
         [0, 0, 0, 1],
         [0, 0, 0, 0]
     ])
+    # fmt: on
     G = nx.from_numpy_matrix(matrix_b, create_using=nx.DiGraph)
     q = nx.trophic_incoherence_parameter(G, cannibalism=False)
     assert almost_equal(q, np.std([1, 1.5, 0.5, 0.75, 1.25]))
 
+    # fmt: off
     matrix_c = np.array([
         [0, 1, 1, 0],
         [0, 1, 1, 1],
         [0, 0, 0, 1],
         [0, 0, 0, 1]
     ])
+    # fmt: on
     G = nx.from_numpy_matrix(matrix_c, create_using=nx.DiGraph)
     q = nx.trophic_incoherence_parameter(G, cannibalism=False)
     # Ignore the -link
     assert almost_equal(q, np.std([1, 1.5, 0.5, 0.75, 1.25]))
 
     # no self-loops case
+    # fmt: off
     matrix_d = np.array([
         [0, 1, 1, 0],
         [0, 0, 1, 1],
         [0, 0, 0, 1],
         [0, 0, 0, 0]
     ])
+    # fmt: on
     G = nx.from_numpy_matrix(matrix_d, create_using=nx.DiGraph)
     q = nx.trophic_incoherence_parameter(G, cannibalism=False)
     # Ignore the -link
@@ -262,6 +277,7 @@ def test_trophic_incoherence_parameter_cannibalism():
     q = nx.trophic_incoherence_parameter(G, cannibalism=True)
     assert almost_equal(q, 0)
 
+    # fmt: off
     matrix_b = np.array([
         [0, 0, 0, 0, 0],
         [0, 1, 0, 1, 0],
@@ -269,16 +285,19 @@ def test_trophic_incoherence_parameter_cannibalism():
         [0, 1, 0, 0, 0],
         [0, 0, 0, 1, 0]
     ])
+    # fmt: on
     G = nx.from_numpy_matrix(matrix_b, create_using=nx.DiGraph)
     q = nx.trophic_incoherence_parameter(G, cannibalism=True)
     assert almost_equal(q, 2)
 
+    # fmt: off
     matrix_c = np.array([
         [0, 1, 1, 0],
         [0, 0, 1, 1],
         [0, 0, 0, 1],
         [0, 0, 0, 0]
     ])
+    # fmt: on
     G = nx.from_numpy_matrix(matrix_c, create_using=nx.DiGraph)
     q = nx.trophic_incoherence_parameter(G, cannibalism=True)
     # Ignore the -link

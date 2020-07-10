@@ -17,9 +17,11 @@ class TestBetheHessian:
 
     def test_bethe_hessian(self):
         "Bethe Hessian matrix"
+        # fmt: off
         H = np.array([[4, -2, 0],
                       [-2, 5, -2],
                       [0, -2, 4]])
+        # fmt: on
         permutation = [2, 0, 1]
         # Bethe Hessian gives expected form
         npt.assert_equal(nx.bethe_hessian_matrix(self.P, r=2).todense(), H)

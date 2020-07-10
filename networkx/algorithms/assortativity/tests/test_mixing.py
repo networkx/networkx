@@ -43,42 +43,50 @@ class TestDegreeMixingDict(BaseTestDegreeMixing):
 class TestDegreeMixingMatrix(BaseTestDegreeMixing):
 
     def test_degree_mixing_matrix_undirected(self):
+        # fmt: off
         a_result = np.array([[0, 0, 0],
                              [0, 0, 2],
                              [0, 2, 2]]
                             )
+        # fmt: on
         a = nx.degree_mixing_matrix(self.P4, normalized=False)
         npt.assert_equal(a, a_result)
         a = nx.degree_mixing_matrix(self.P4)
         npt.assert_equal(a, a_result / float(a_result.sum()))
 
     def test_degree_mixing_matrix_directed(self):
+        # fmt: off
         a_result = np.array([[0, 0, 0, 0],
                              [0, 0, 0, 2],
                              [0, 1, 0, 1],
                              [0, 0, 0, 0]]
                             )
+        # fmt: on
         a = nx.degree_mixing_matrix(self.D, normalized=False)
         npt.assert_equal(a, a_result)
         a = nx.degree_mixing_matrix(self.D)
         npt.assert_equal(a, a_result / float(a_result.sum()))
 
     def test_degree_mixing_matrix_multigraph(self):
+        # fmt: off
         a_result = np.array([[0, 0, 0, 0],
                              [0, 0, 1, 0],
                              [0, 1, 0, 3],
                              [0, 0, 3, 0]]
                             )
+        # fmt: on
         a = nx.degree_mixing_matrix(self.M, normalized=False)
         npt.assert_equal(a, a_result)
         a = nx.degree_mixing_matrix(self.M)
         npt.assert_equal(a, a_result / float(a_result.sum()))
 
     def test_degree_mixing_matrix_selfloop(self):
+        # fmt: off
         a_result = np.array([[0, 0, 0],
                              [0, 0, 0],
                              [0, 0, 2]]
                             )
+        # fmt: on
         a = nx.degree_mixing_matrix(self.S, normalized=False)
         npt.assert_equal(a, a_result)
         a = nx.degree_mixing_matrix(self.S)

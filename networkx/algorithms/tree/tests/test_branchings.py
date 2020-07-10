@@ -13,6 +13,7 @@ from networkx.algorithms.tree import recognition
 
 # Used in Figures A-F.
 #
+# fmt: off
 G_array = np.array([
     # 0   1   2   3   4   5   6   7   8
     [0,  0, 12,  0, 12,  0,  0,  0,  0],  # 0
@@ -25,6 +26,7 @@ G_array = np.array([
     [0,  0,  0, 19,  0,  0, 15,  0,  0],  # 7
     [0,  0,  0,  0,  0,  0,  0, 18,  0],  # 8
 ], dtype=int)
+# fmt: on
 
 # We convert to MultiDiGraph after using from_numpy_matrix
 # https://github.com/networkx/networkx/pull/1305
