@@ -41,7 +41,7 @@ class TestAGraph:
         with open(fname, 'w') as fh:
             nx.drawing.nx_agraph.write_dot(H, fh)
 
-        with open(fname, 'r') as fh:
+        with open(fname) as fh:
             Hin = nx.nx_agraph.read_dot(fh)
         os.unlink(fname)
         self.assert_equal(H, Hin)

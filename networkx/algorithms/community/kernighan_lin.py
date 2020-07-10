@@ -124,6 +124,6 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
             side[u] = 1
             side[v] = 0
 
-    A = set(u for u, s in zip(labels, side) if s == 0)
-    B = set(u for u, s in zip(labels, side) if s == 1)
+    A = {u for u, s in zip(labels, side) if s == 0}
+    B = {u for u, s in zip(labels, side) if s == 1}
     return A, B

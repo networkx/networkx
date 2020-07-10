@@ -393,7 +393,7 @@ class GraphMLWriter(GraphML):
             types = self.attribute_types[(name, scope)]
 
             if len(types) > 1:
-                types = set(self.xml_type[t] for t in types)
+                types = {self.xml_type[t] for t in types}
                 if "string" in types:
                     return str
                 elif "float" in types or "double" in types:

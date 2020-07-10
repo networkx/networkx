@@ -54,8 +54,8 @@ def test_paley_graph():
         # G has p nodes
         assert len(G) == p
         # G is (p-1)/2-regular
-        in_degrees = set([G.in_degree(node) for node in G.nodes])
-        out_degrees = set([G.out_degree(node) for node in G.nodes])
+        in_degrees = {G.in_degree(node) for node in G.nodes}
+        out_degrees = {G.out_degree(node) for node in G.nodes}
         assert len(in_degrees) == 1 and in_degrees.pop() == (p - 1) // 2
         assert len(out_degrees) == 1 and out_degrees.pop() == (p - 1) // 2
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 ''' Checkout gitwash repo into directory and do search replace on name '''
 
-from __future__ import (absolute_import, division, print_function)
 
 import os
 from os.path import join as pjoin
@@ -21,7 +20,7 @@ def clone_repo(url, branch):
     cwd = os.getcwd()
     tmpdir = tempfile.mkdtemp()
     try:
-        cmd = 'git clone %s %s' % (url, tmpdir)
+        cmd = f'git clone {url} {tmpdir}'
         call(cmd, shell=True)
         os.chdir(tmpdir)
         cmd = 'git checkout %s' % branch
@@ -56,7 +55,7 @@ def filename_search_replace(sr_pairs, filename, backup=False):
     ''' Search and replace for expressions in files
 
     '''
-    with open(filename, 'rt') as in_fh:
+    with open(filename) as in_fh:
         in_txt = in_fh.read(-1)
     out_txt = in_txt[:]
     for in_exp, out_exp in sr_pairs:
@@ -119,7 +118,7 @@ def make_link_targets(proj_name,
     .. _`proj_name`: url
     .. _`proj_name` mailing list: url
     """
-    with open(known_link_fname, 'rt') as link_fh:
+    with open(known_link_fname) as link_fh:
         link_contents = link_fh.readlines()
     have_url = not url is None
     have_ml_url = not ml_url is None
@@ -142,12 +141,12 @@ def make_link_targets(proj_name,
                            'and / or mailing list URLs')
     lines = []
     if not url is None:
-        lines.append('.. _`%s`: %s\n' % (proj_name, url))
+        lines.append(f'.. _`{proj_name}`: {url}\n')
     if not have_gh_url:
-        gh_url = 'https://github.com/%s/%s\n' % (user_name, repo_name)
-        lines.append('.. _`%s github`: %s\n' % (proj_name, gh_url))
+        gh_url = f'https://github.com/{user_name}/{repo_name}\n'
+        lines.append(f'.. _`{proj_name} github`: {gh_url}\n')
     if not ml_url is None:
-        lines.append('.. _`%s mailing list`: %s\n' % (proj_name, ml_url))
+        lines.append(f'.. _`{proj_name} mailing list`: {ml_url}\n')
     if len(lines) == 0:
         # Nothing to do
         return
@@ -219,7 +218,7 @@ def main():
                      out_path,
                      cp_globs=(pjoin('gitwash', '*'),),
                      rep_globs=('*.rst',),
-                     renames=(('\.rst$', options.source_suffix),))
+                     renames=((r'\.rst$', options.source_suffix),))
         make_link_targets(project_name,
                           options.main_gh_user,
                           options.repo_name,

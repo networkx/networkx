@@ -93,7 +93,7 @@ def d_separated(G: nx.DiGraph, x: AbstractSet, y: AbstractSet,
 
     union_xyz = x.union(y).union(z)
 
-    if any((n not in G.nodes for n in union_xyz)):
+    if any(n not in G.nodes for n in union_xyz):
         raise nx.NodeNotFound(
             "one or more specified nodes not found in the graph")
 

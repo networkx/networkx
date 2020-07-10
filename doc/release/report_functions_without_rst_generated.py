@@ -7,7 +7,7 @@ funcs = inspect.getmembers(nx, inspect.isfunction)
 
 for n,f in funcs:
     #print(n + ": "+str(f))
-    cmd = "find . -name *\."+n+".rst -print"
+    cmd = r"find . -name *\."+n+".rst -print"
     #print(cmd)
     result=os.popen(cmd).read()
     #print(result)
