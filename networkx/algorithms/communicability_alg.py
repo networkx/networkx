@@ -4,13 +4,14 @@ Communicability.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['communicability',
-           'communicability_exp',
-           ]
+__all__ = [
+    "communicability",
+    "communicability_exp",
+]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def communicability(G):
     r"""Returns communicability between all pairs of nodes in G.
 
@@ -68,6 +69,7 @@ def communicability(G):
     >>> c = nx.communicability(G)
     """
     import numpy
+
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
@@ -89,8 +91,8 @@ def communicability(G):
     return c
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def communicability_exp(G):
     r"""Returns communicability between all pairs of nodes in G.
 
@@ -145,6 +147,7 @@ def communicability_exp(G):
     >>> c = nx.communicability_exp(G)
     """
     import scipy.linalg
+
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix

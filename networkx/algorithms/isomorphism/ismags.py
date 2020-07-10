@@ -111,7 +111,7 @@ References
     .. [2] https://en.wikipedia.org/wiki/Maximum_common_induced_subgraph
 """
 
-__all__ = ['ISMAGS']
+__all__ = ["ISMAGS"]
 
 from collections import defaultdict, Counter
 from functools import reduce, wraps
@@ -140,7 +140,7 @@ def are_all_equal(iterable):
         pass
     else:
         if len(shape) > 1:
-            message = 'The function does not works on multidimension arrays.'
+            message = "The function does not works on multidimension arrays."
             raise NotImplementedError(message) from None
 
     iterator = iter(iterable)
@@ -270,8 +270,8 @@ class ISMAGS:
        Enumeration", PLoS One 9(5): e97896, 2014.
        https://doi.org/10.1371/journal.pone.0097896
     """
-    def __init__(self, graph, subgraph, node_match=None, edge_match=None,
-                 cache=None):
+
+    def __init__(self, graph, subgraph, node_match=None, edge_match=None, cache=None):
         """
         Parameters
         ----------
@@ -339,32 +339,40 @@ class ISMAGS:
     @property
     def _sgn_partitions(self):
         if self._sgn_partitions_ is None:
+
             def nodematch(node1, node2):
                 return self.node_equality(self.subgraph, node1, self.subgraph, node2)
+
             self._sgn_partitions_ = make_partitions(self.subgraph.nodes, nodematch)
         return self._sgn_partitions_
 
     @property
     def _sge_partitions(self):
         if self._sge_partitions_ is None:
+
             def edgematch(edge1, edge2):
                 return self.edge_equality(self.subgraph, edge1, self.subgraph, edge2)
+
             self._sge_partitions_ = make_partitions(self.subgraph.edges, edgematch)
         return self._sge_partitions_
 
     @property
     def _gn_partitions(self):
         if self._gn_partitions_ is None:
+
             def nodematch(node1, node2):
                 return self.node_equality(self.graph, node1, self.graph, node2)
+
             self._gn_partitions_ = make_partitions(self.graph.nodes, nodematch)
         return self._gn_partitions_
 
     @property
     def _ge_partitions(self):
         if self._ge_partitions_ is None:
+
             def edgematch(edge1, edge2):
                 return self.edge_equality(self.graph, edge1, self.graph, edge2)
+
             self._ge_partitions_ = make_partitions(self.graph.edges, edgematch)
         return self._ge_partitions_
 
@@ -397,8 +405,9 @@ class ISMAGS:
         if self._node_compat_ is not None:
             return self._node_compat_
         self._node_compat_ = {}
-        for sgn_part_color, gn_part_color in itertools.product(range(len(self._sgn_partitions)),
-                                                               range(len(self._gn_partitions))):
+        for sgn_part_color, gn_part_color in itertools.product(
+            range(len(self._sgn_partitions)), range(len(self._gn_partitions))
+        ):
             sgn = next(iter(self._sgn_partitions[sgn_part_color]))
             gn = next(iter(self._gn_partitions[gn_part_color]))
             if self.node_equality(self.subgraph, sgn, self.graph, gn):
@@ -410,8 +419,9 @@ class ISMAGS:
         if self._edge_compat_ is not None:
             return self._edge_compat_
         self._edge_compat_ = {}
-        for sge_part_color, ge_part_color in itertools.product(range(len(self._sge_partitions)),
-                                                               range(len(self._ge_partitions))):
+        for sge_part_color, ge_part_color in itertools.product(
+            range(len(self._sge_partitions)), range(len(self._ge_partitions))
+        ):
             sge = next(iter(self._sge_partitions[sge_part_color]))
             ge = next(iter(self._ge_partitions[ge_part_color]))
             if self.edge_equality(self.subgraph, sge, self.graph, ge):
@@ -423,6 +433,7 @@ class ISMAGS:
         @wraps(cmp)
         def comparer(graph1, node1, graph2, node2):
             return cmp(graph1.nodes[node1], graph2.nodes[node2])
+
         return comparer
 
     @staticmethod
@@ -430,6 +441,7 @@ class ISMAGS:
         @wraps(cmp)
         def comparer(graph1, edge1, graph2, edge2):
             return cmp(graph1.edges[edge1], graph2.edges[edge2])
+
         return comparer
 
     def find_isomorphisms(self, symmetry=True):
@@ -459,9 +471,9 @@ class ISMAGS:
             return
 
         if symmetry:
-            _, cosets = self.analyze_symmetry(self.subgraph,
-                                              self._sgn_partitions,
-                                              self._sge_colors)
+            _, cosets = self.analyze_symmetry(
+                self.subgraph, self._sgn_partitions, self._sge_colors
+            )
             constraints = self._make_constraints(cosets)
         else:
             constraints = []
@@ -505,14 +517,14 @@ class ISMAGS:
         """
         g_counts = {}
         for gn in self.graph:
-            g_counts[gn] = self._find_neighbor_color_count(self.graph, gn,
-                                                           self._gn_colors,
-                                                           self._ge_colors)
+            g_counts[gn] = self._find_neighbor_color_count(
+                self.graph, gn, self._gn_colors, self._ge_colors
+            )
         candidates = defaultdict(set)
         for sgn in self.subgraph:
-            sg_count = self._find_neighbor_color_count(self.subgraph, sgn,
-                                                       self._sgn_colors,
-                                                       self._sge_colors)
+            sg_count = self._find_neighbor_color_count(
+                self.subgraph, sgn, self._sgn_colors, self._sge_colors
+            )
             new_sg_count = Counter()
             for (sge_color, sgn_color), count in sg_count.items():
                 try:
@@ -554,9 +566,9 @@ class ISMAGS:
             return
 
         if symmetry:
-            _, cosets = self.analyze_symmetry(self.subgraph,
-                                              self._sgn_partitions,
-                                              self._sge_colors)
+            _, cosets = self.analyze_symmetry(
+                self.subgraph, self._sgn_partitions, self._sge_colors
+            )
             constraints = self._make_constraints(cosets)
         else:
             constraints = []
@@ -584,19 +596,24 @@ class ISMAGS:
             can be interchanged without changing nodes less than `key`.
         """
         if self._symmetry_cache is not None:
-            key = hash((tuple(graph.nodes), tuple(graph.edges),
-                        tuple(map(tuple, node_partitions)), tuple(edge_colors.items())))
+            key = hash(
+                (
+                    tuple(graph.nodes),
+                    tuple(graph.edges),
+                    tuple(map(tuple, node_partitions)),
+                    tuple(edge_colors.items()),
+                )
+            )
             if key in self._symmetry_cache:
                 return self._symmetry_cache[key]
-        node_partitions = list(self._refine_node_partitions(graph,
-                                                            node_partitions,
-                                                            edge_colors))
+        node_partitions = list(
+            self._refine_node_partitions(graph, node_partitions, edge_colors)
+        )
         assert len(node_partitions) == 1
         node_partitions = node_partitions[0]
-        permutations, cosets = self._process_ordered_pair_partitions(graph,
-                                                                     node_partitions,
-                                                                     node_partitions,
-                                                                     edge_colors)
+        permutations, cosets = self._process_ordered_pair_partitions(
+            graph, node_partitions, node_partitions, edge_colors
+        )
         if self._symmetry_cache is not None:
             self._symmetry_cache[key] = permutations, cosets
         return permutations, cosets
@@ -610,7 +627,9 @@ class ISMAGS:
         -------
         bool
         """
-        return len(self.subgraph) == len(self.graph) and self.subgraph_is_isomorphic(symmetry)
+        return len(self.subgraph) == len(self.graph) and self.subgraph_is_isomorphic(
+            symmetry
+        )
 
     def subgraph_is_isomorphic(self, symmetry=False):
         """
@@ -714,7 +733,9 @@ class ISMAGS:
         for item in items:
             by_len[len(item)].append(item)
 
-        yield from itertools.product(*(itertools.permutations(by_len[l]) for l in sorted(by_len)))
+        yield from itertools.product(
+            *(itertools.permutations(by_len[l]) for l in sorted(by_len))
+        )
 
     @classmethod
     def _refine_node_partitions(cls, graph, node_partitions, edge_colors, branch=False):
@@ -723,14 +744,17 @@ class ISMAGS:
         that all nodes in a partition have 1) the same color, and 2) the same
         number of edges to specific other partitions.
         """
+
         def equal_color(node1, node2):
             return node_edge_colors[node1] == node_edge_colors[node2]
 
         node_partitions = list(node_partitions)
         node_colors = partition_to_color(node_partitions)
         node_edge_colors = cls._find_node_edge_color(graph, node_colors, edge_colors)
-        if all(are_all_equal(node_edge_colors[node] for node in partition)
-               for partition in node_partitions):
+        if all(
+            are_all_equal(node_edge_colors[node] for node in partition)
+            for partition in node_partitions
+        ):
             yield node_partitions
             return
 
@@ -739,8 +763,11 @@ class ISMAGS:
         for partition in node_partitions:
             if not are_all_equal(node_edge_colors[node] for node in partition):
                 refined = make_partitions(partition, equal_color)
-                if (branch and len(refined) != 1 and
-                        len({len(r) for r in refined}) != len([len(r) for r in refined])):
+                if (
+                    branch
+                    and len(refined) != 1
+                    and len({len(r) for r in refined}) != len([len(r) for r in refined])
+                ):
                     # This is where it breaks. There are multiple new cells
                     # in refined with the same length, and their order
                     # matters.
@@ -827,7 +854,9 @@ class ISMAGS:
                 # is a dict of frozensets of frozensets of node indices it's
                 # a bit clunky. We can't do .add, and + also doesn't work. We
                 # could do |, but I deem union to be clearer.
-                new_candidates[sgn2] = new_candidates[sgn2].union([frozenset(gn2_options)])
+                new_candidates[sgn2] = new_candidates[sgn2].union(
+                    [frozenset(gn2_options)]
+                )
 
                 if (sgn, sgn2) in constraints:
                     gn2_options = {gn2 for gn2 in self.graph if gn2 > gn}
@@ -835,24 +864,28 @@ class ISMAGS:
                     gn2_options = {gn2 for gn2 in self.graph if gn2 < gn}
                 else:
                     continue  # pragma: no cover
-                new_candidates[sgn2] = new_candidates[sgn2].union([frozenset(gn2_options)])
+                new_candidates[sgn2] = new_candidates[sgn2].union(
+                    [frozenset(gn2_options)]
+                )
 
             # The next node is the one that is unmapped and has fewest
             # candidates
             # Pylint disables because it's a one-shot function.
-            next_sgn = min(left_to_map,
-                           key=lambda n: min(new_candidates[n], key=len))  # pylint: disable=cell-var-from-loop
-            yield from self._map_nodes(next_sgn,
-                                       new_candidates,
-                                       constraints,
-                                       mapping=mapping,
-                                       to_be_mapped=to_be_mapped)
+            next_sgn = min(
+                left_to_map, key=lambda n: min(new_candidates[n], key=len)
+            )  # pylint: disable=cell-var-from-loop
+            yield from self._map_nodes(
+                next_sgn,
+                new_candidates,
+                constraints,
+                mapping=mapping,
+                to_be_mapped=to_be_mapped,
+            )
             # Unmap sgn-gn. Strictly not necessary since it'd get overwritten
             # when making a new mapping for sgn.
             # del mapping[sgn]
 
-    def _largest_common_subgraph(self, candidates, constraints,
-                                 to_be_mapped=None):
+    def _largest_common_subgraph(self, candidates, constraints, to_be_mapped=None):
         """
         Find all largest common subgraphs honoring constraints.
         """
@@ -865,7 +898,9 @@ class ISMAGS:
         # smaller every iteration.
 
         # pylint disable becuase it's guarded against by default value
-        current_size = len(next(iter(to_be_mapped), []))  # pylint: disable=stop-iteration-return
+        current_size = len(
+            next(iter(to_be_mapped), [])
+        )  # pylint: disable=stop-iteration-return
 
         found_iso = False
         if current_size <= len(self.graph):
@@ -879,8 +914,9 @@ class ISMAGS:
             for nodes in sorted(to_be_mapped, key=sorted):
                 # Find the isomorphism between subgraph[to_be_mapped] <= graph
                 next_sgn = min(nodes, key=lambda n: min(candidates[n], key=len))
-                isomorphs = self._map_nodes(next_sgn, candidates, constraints,
-                                            to_be_mapped=nodes)
+                isomorphs = self._map_nodes(
+                    next_sgn, candidates, constraints, to_be_mapped=nodes
+                )
 
                 # This is effectively `yield from isomorphs`, except that we look
                 # whether an item was yielded.
@@ -915,8 +951,9 @@ class ISMAGS:
                 new_nodes = self._remove_node(sgn, nodes, constraints)
                 left_to_be_mapped.add(new_nodes)
         # COMBINATION
-        yield from self._largest_common_subgraph(candidates, constraints,
-                                                 to_be_mapped=left_to_be_mapped)
+        yield from self._largest_common_subgraph(
+            candidates, constraints, to_be_mapped=left_to_be_mapped
+        )
 
     @staticmethod
     def _remove_node(node, nodes, constraints):
@@ -947,8 +984,10 @@ class ISMAGS:
         for top, bot in zip(top_partitions, bottom_partitions):
             # top and bot have only one element
             if len(top) != 1 or len(bot) != 1:
-                raise IndexError("Not all nodes are coupled. This is"
-                                 f" impossible: {top_partitions}, {bottom_partitions}")
+                raise IndexError(
+                    "Not all nodes are coupled. This is"
+                    f" impossible: {top_partitions}, {bottom_partitions}"
+                )
             if top != bot:
                 permutations.add(frozenset((next(iter(top)), next(iter(bot)))))
         return permutations
@@ -976,8 +1015,16 @@ class ISMAGS:
                 orbits[first].update(orbits[second])
                 del orbits[second]
 
-    def _couple_nodes(self, top_partitions, bottom_partitions, pair_idx,
-                      t_node, b_node, graph, edge_colors):
+    def _couple_nodes(
+        self,
+        top_partitions,
+        bottom_partitions,
+        pair_idx,
+        t_node,
+        b_node,
+        graph,
+        edge_colors,
+    ):
         """
         Generate new partitions from top and bottom_partitions where t_node is
         coupled to b_node. pair_idx is the index of the partitions where t_ and
@@ -997,21 +1044,27 @@ class ISMAGS:
         new_top_partitions[pair_idx:pair_idx] = new_t_groups
         new_bottom_partitions[pair_idx:pair_idx] = new_b_groups
 
-        new_top_partitions = self._refine_node_partitions(graph,
-                                                          new_top_partitions,
-                                                          edge_colors)
-        new_bottom_partitions = self._refine_node_partitions(graph,
-                                                             new_bottom_partitions,
-                                                             edge_colors, branch=True)
+        new_top_partitions = self._refine_node_partitions(
+            graph, new_top_partitions, edge_colors
+        )
+        new_bottom_partitions = self._refine_node_partitions(
+            graph, new_bottom_partitions, edge_colors, branch=True
+        )
         new_top_partitions = list(new_top_partitions)
         assert len(new_top_partitions) == 1
         new_top_partitions = new_top_partitions[0]
         for bot in new_bottom_partitions:
             yield list(new_top_partitions), bot
 
-    def _process_ordered_pair_partitions(self, graph, top_partitions,
-                                         bottom_partitions, edge_colors,
-                                         orbits=None, cosets=None):
+    def _process_ordered_pair_partitions(
+        self,
+        graph,
+        top_partitions,
+        bottom_partitions,
+        edge_colors,
+        orbits=None,
+        cosets=None,
+    ):
         """
         Processes ordered pair partitions as per the reference paper. Finds and
         returns all permutations and cosets that leave the graph unchanged.
@@ -1028,7 +1081,9 @@ class ISMAGS:
         else:
             cosets = cosets.copy()
 
-        assert all(len(t_p) == len(b_p) for t_p, b_p in zip(top_partitions, bottom_partitions))
+        assert all(
+            len(t_p) == len(b_p) for t_p, b_p in zip(top_partitions, bottom_partitions)
+        )
 
         # BASECASE
         if all(len(top) == 1 for top in top_partitions):
@@ -1041,9 +1096,12 @@ class ISMAGS:
                 return [], cosets
 
         permutations = []
-        unmapped_nodes = {(node, idx)
-                          for idx, t_partition in enumerate(top_partitions)
-                          for node in t_partition if len(t_partition) > 1}
+        unmapped_nodes = {
+            (node, idx)
+            for idx, t_partition in enumerate(top_partitions)
+            for node in t_partition
+            if len(t_partition) > 1
+        }
         node, pair_idx = min(unmapped_nodes)
         b_partition = bottom_partitions[pair_idx]
 
@@ -1051,29 +1109,43 @@ class ISMAGS:
             if len(b_partition) == 1:
                 # Can never result in symmetry
                 continue
-            if node != node2 and any(node in orbit and node2 in orbit for orbit in orbits):
+            if node != node2 and any(
+                node in orbit and node2 in orbit for orbit in orbits
+            ):
                 # Orbit prune branch
                 continue
             # REDUCTION
             # Couple node to node2
-            partitions = self._couple_nodes(top_partitions, bottom_partitions,
-                                            pair_idx, node, node2, graph,
-                                            edge_colors)
+            partitions = self._couple_nodes(
+                top_partitions,
+                bottom_partitions,
+                pair_idx,
+                node,
+                node2,
+                graph,
+                edge_colors,
+            )
             for opp in partitions:
                 new_top_partitions, new_bottom_partitions = opp
 
-                new_perms, new_cosets = self._process_ordered_pair_partitions(graph,
-                                                                              new_top_partitions,
-                                                                              new_bottom_partitions,
-                                                                              edge_colors,
-                                                                              orbits,
-                                                                              cosets)
+                new_perms, new_cosets = self._process_ordered_pair_partitions(
+                    graph,
+                    new_top_partitions,
+                    new_bottom_partitions,
+                    edge_colors,
+                    orbits,
+                    cosets,
+                )
                 # COMBINATION
                 permutations += new_perms
                 cosets.update(new_cosets)
 
-        mapped = {k for top, bottom in zip(top_partitions, bottom_partitions)
-                  for k in top if len(top) == 1 and top == bottom}
+        mapped = {
+            k
+            for top, bottom in zip(top_partitions, bottom_partitions)
+            for k in top
+            if len(top) == 1 and top == bottom
+        }
         ks = {k for k in graph.nodes if k < node}
         # Have all nodes with ID < node been mapped?
         find_coset = ks <= mapped and node not in cosets

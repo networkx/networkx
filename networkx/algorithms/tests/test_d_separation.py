@@ -38,52 +38,56 @@ def naive_bayes_graph():
 def asia_graph():
     """Return the 'Asia' PGM graph."""
     G = nx.DiGraph(name="asia")
-    G.add_edges_from([('asia', 'tuberculosis'), ('smoking', 'cancer'),
-                      ('smoking', 'bronchitis'), ('tuberculosis', 'either'),
-                      ('cancer', 'either'), ('either', 'xray'),
-                      ('either', 'dyspnea'), ('bronchitis', 'dyspnea')])
+    G.add_edges_from(
+        [
+            ("asia", "tuberculosis"),
+            ("smoking", "cancer"),
+            ("smoking", "bronchitis"),
+            ("tuberculosis", "either"),
+            ("cancer", "either"),
+            ("either", "xray"),
+            ("either", "dyspnea"),
+            ("bronchitis", "dyspnea"),
+        ]
+    )
     nx.freeze(G)
     return G
 
 
-@pytest.fixture(name='path_graph')
+@pytest.fixture(name="path_graph")
 def path_graph_fixture():
     return path_graph()
 
 
-@pytest.fixture(name='fork_graph')
+@pytest.fixture(name="fork_graph")
 def fork_graph_fixture():
     return fork_graph()
 
 
-@pytest.fixture(name='collider_graph')
+@pytest.fixture(name="collider_graph")
 def collider_graph_fixture():
     return collider_graph()
 
 
-@pytest.fixture(name='naive_bayes_graph')
+@pytest.fixture(name="naive_bayes_graph")
 def naive_bayes_graph_fixture():
     return naive_bayes_graph()
 
 
-@pytest.fixture(name='asia_graph')
+@pytest.fixture(name="asia_graph")
 def asia_graph_fixture():
     return asia_graph()
 
 
-@pytest.mark.parametrize("graph", [
-    path_graph(),
-    fork_graph(),
-    collider_graph(),
-    naive_bayes_graph(),
-    asia_graph(),
-])
+@pytest.mark.parametrize(
+    "graph",
+    [path_graph(), fork_graph(), collider_graph(), naive_bayes_graph(), asia_graph(),],
+)
 def test_markov_condition(graph):
     """Test that the Markov condition holds for each PGM graph."""
     for node in graph.nodes:
         parents = set(graph.predecessors(node))
-        non_descendants = graph.nodes - nx.descendants(graph,
-                                                       node) - {node} - parents
+        non_descendants = graph.nodes - nx.descendants(graph, node) - {node} - parents
         assert nx.d_separated(graph, {node}, non_descendants, parents)
 
 
@@ -114,10 +118,12 @@ def test_naive_bayes_dsep(naive_bayes_graph):
 
 def test_asia_graph_dsep(asia_graph):
     """Example-based test of d-separation for asia_graph."""
-    assert nx.d_separated(asia_graph, {'asia', 'smoking'}, {'dyspnea', 'xray'},
-                          {'bronchitis', 'either'})
-    assert nx.d_separated(asia_graph, {'tuberculosis', 'cancer'},
-                          {'bronchitis'}, {'smoking', 'xray'})
+    assert nx.d_separated(
+        asia_graph, {"asia", "smoking"}, {"dyspnea", "xray"}, {"bronchitis", "either"}
+    )
+    assert nx.d_separated(
+        asia_graph, {"tuberculosis", "cancer"}, {"bronchitis"}, {"smoking", "xray"}
+    )
 
 
 def test_undirected_graphs_are_not_supported():

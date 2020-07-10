@@ -9,11 +9,11 @@ from .utils import build_residual_network
 
 default_flow_func = edmonds_karp
 
-__all__ = ['gomory_hu_tree']
+__all__ = ["gomory_hu_tree"]
 
 
-@not_implemented_for('directed')
-def gomory_hu_tree(G, capacity='capacity', flow_func=None):
+@not_implemented_for("directed")
+def gomory_hu_tree(G, capacity="capacity", flow_func=None):
     r"""Returns the Gomory-Hu tree of an undirected graph G.
 
     A Gomory-Hu tree of an undirected graph with capacities is a
@@ -133,7 +133,7 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
         flow_func = default_flow_func
 
     if len(G) == 0:  # empty graph
-        msg = 'Empty Graph does not have a Gomory-Hu tree representation'
+        msg = "Empty Graph does not have a Gomory-Hu tree representation"
         raise nx.NetworkXError(msg)
 
     # Start the tree as a star graph with an arbitrary node at the center
@@ -152,10 +152,9 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
         # Find neighbor in the tree
         target = tree[source]
         # compute minimum cut
-        cut_value, partition = nx.minimum_cut(G, source, target,
-                                              capacity=capacity,
-                                              flow_func=flow_func,
-                                              residual=R)
+        cut_value, partition = nx.minimum_cut(
+            G, source, target, capacity=capacity, flow_func=flow_func, residual=R
+        )
         labels[(source, target)] = cut_value
         # Update the tree
         # Source will always be in partition[0] and target in partition[1]

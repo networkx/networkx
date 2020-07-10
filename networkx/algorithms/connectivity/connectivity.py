@@ -29,7 +29,9 @@ __all__ = [
 ]
 
 
-def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None):
+def local_node_connectivity(
+    G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None
+):
     r"""Computes local node connectivity for nodes s and t.
 
     Local node connectivity for two non adjacent nodes s and t is the
@@ -483,7 +485,9 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     return all_pairs
 
 
-def local_edge_connectivity(G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None):
+def local_edge_connectivity(
+    G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None
+):
     r"""Returns local edge connectivity for nodes s and t in G.
 
     Local edge connectivity for two nodes s and t is the minimum number

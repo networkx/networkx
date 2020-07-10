@@ -4,7 +4,7 @@ Generators for interval graph.
 from collections.abc import Sequence
 import networkx as nx
 
-__all__ = ['interval_graph']
+__all__ = ["interval_graph"]
 
 
 def interval_graph(intervals):
@@ -46,11 +46,14 @@ def interval_graph(intervals):
     intervals = list(intervals)
     for interval in intervals:
         if not (isinstance(interval, Sequence) and len(interval) == 2):
-            raise TypeError("Each interval must have length 2, and be a "
-                            "collections.abc.Sequence such as tuple or list.")
+            raise TypeError(
+                "Each interval must have length 2, and be a "
+                "collections.abc.Sequence such as tuple or list."
+            )
         if interval[0] > interval[1]:
-            raise ValueError(f"Interval must have lower value first. "
-                             f"Got {interval}")
+            raise ValueError(
+                f"Interval must have lower value first. " f"Got {interval}"
+            )
 
     graph = nx.Graph()
 

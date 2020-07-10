@@ -3,11 +3,11 @@ from itertools import chain
 from networkx.utils import pairwise, not_implemented_for
 import networkx as nx
 
-__all__ = ['metric_closure', 'steiner_tree']
+__all__ = ["metric_closure", "steiner_tree"]
 
 
-@not_implemented_for('directed')
-def metric_closure(G, weight='weight'):
+@not_implemented_for("directed")
+def metric_closure(G, weight="weight"):
     """  Return the metric closure of a graph.
 
     The metric closure of a graph *G* is the complete graph in which each edge
@@ -46,9 +46,9 @@ def metric_closure(G, weight='weight'):
     return M
 
 
-@not_implemented_for('multigraph')
-@not_implemented_for('directed')
-def steiner_tree(G, terminal_nodes, weight='weight'):
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
+def steiner_tree(G, terminal_nodes, weight="weight"):
     """ Return an approximation to the minimum Steiner tree of a graph.
 
     Parameters
@@ -83,8 +83,8 @@ def steiner_tree(G, terminal_nodes, weight='weight'):
     # Use the 'distance' attribute of each edge provided by the metric closure
     # graph.
     H = M.subgraph(terminal_nodes)
-    mst_edges = nx.minimum_spanning_edges(H, weight='distance', data=True)
+    mst_edges = nx.minimum_spanning_edges(H, weight="distance", data=True)
     # Create an iterator over each edge in each shortest path; repeats are okay
-    edges = chain.from_iterable(pairwise(d['path']) for u, v, d in mst_edges)
+    edges = chain.from_iterable(pairwise(d["path"]) for u, v, d in mst_edges)
     T = G.edge_subgraph(edges)
     return T

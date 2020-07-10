@@ -4,8 +4,13 @@ from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph
 from networkx.classes.coreviews import AdjacencyView
-from networkx.classes.reportviews import OutEdgeView, InEdgeView, \
-    DiDegreeView, InDegreeView, OutDegreeView
+from networkx.classes.reportviews import (
+    OutEdgeView,
+    InEdgeView,
+    DiDegreeView,
+    InDegreeView,
+    OutDegreeView,
+)
 from networkx.exception import NetworkXError
 import networkx.convert as convert
 
@@ -521,11 +526,11 @@ class DiGraph(Graph):
         except KeyError as e:  # NetworkXError if n not in self
             raise NetworkXError(f"The node {n} is not in the digraph.") from e
         for u in nbrs:
-            del self._pred[u][n]   # remove all edges n-u in digraph
-        del self._succ[n]          # remove node from succ
+            del self._pred[u][n]  # remove all edges n-u in digraph
+        del self._succ[n]  # remove node from succ
         for u in self._pred[n]:
-            del self._succ[u][n]   # remove all edges n-u in digraph
-        del self._pred[n]          # remove node from pred
+            del self._succ[u][n]  # remove all edges n-u in digraph
+        del self._pred[n]  # remove node from pred
 
     def remove_nodes_from(self, nodes):
         """Remove multiple nodes.
@@ -556,11 +561,11 @@ class DiGraph(Graph):
                 succs = self._succ[n]
                 del self._node[n]
                 for u in succs:
-                    del self._pred[u][n]   # remove all edges n-u in digraph
-                del self._succ[n]          # now remove node
+                    del self._pred[u][n]  # remove all edges n-u in digraph
+                del self._succ[n]  # now remove node
                 for u in self._pred[n]:
-                    del self._succ[u][n]   # remove all edges n-u in digraph
-                del self._pred[n]          # now remove node
+                    del self._succ[u][n]  # remove all edges n-u in digraph
+                del self._pred[n]  # now remove node
             except KeyError:
                 pass  # silent failure on remove
 
@@ -761,14 +766,14 @@ class DiGraph(Graph):
 
         This is true if graph has the edge u->v.
         """
-        return (u in self._succ and v in self._succ[u])
+        return u in self._succ and v in self._succ[u]
 
     def has_predecessor(self, u, v):
         """Returns True if node u has predecessor v.
 
         This is true if graph has the edge u<-v.
         """
-        return (u in self._pred and v in self._pred[u])
+        return u in self._pred and v in self._pred[u]
 
     def successors(self, n):
         """Returns an iterator over successor nodes of n.
@@ -1176,14 +1181,18 @@ class DiGraph(Graph):
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         if reciprocal is True:
-            G.add_edges_from((u, v, deepcopy(d))
-                             for u, nbrs in self._adj.items()
-                             for v, d in nbrs.items()
-                             if v in self._pred[u])
+            G.add_edges_from(
+                (u, v, deepcopy(d))
+                for u, nbrs in self._adj.items()
+                for v, d in nbrs.items()
+                if v in self._pred[u]
+            )
         else:
-            G.add_edges_from((u, v, deepcopy(d))
-                             for u, nbrs in self._adj.items()
-                             for v, d in nbrs.items())
+            G.add_edges_from(
+                (u, v, deepcopy(d))
+                for u, nbrs in self._adj.items()
+                for v, d in nbrs.items()
+            )
         return G
 
     def reverse(self, copy=True):
@@ -1203,7 +1212,6 @@ class DiGraph(Graph):
             H = self.__class__()
             H.graph.update(deepcopy(self.graph))
             H.add_nodes_from((n, deepcopy(d)) for n, d in self.nodes.items())
-            H.add_edges_from((v, u, deepcopy(d)) for u, v, d
-                             in self.edges(data=True))
+            H.add_edges_from((v, u, deepcopy(d)) for u, v, d in self.edges(data=True))
             return H
         return nx.graphviews.reverse_view(self)

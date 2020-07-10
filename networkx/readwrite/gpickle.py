@@ -21,14 +21,14 @@ Format
 See https://docs.python.org/3/library/pickle.html
 """
 
-__all__ = ['read_gpickle', 'write_gpickle']
+__all__ = ["read_gpickle", "write_gpickle"]
 
 from networkx.utils import open_file
 
 import pickle
 
 
-@open_file(1, mode='wb')
+@open_file(1, mode="wb")
 def write_gpickle(G, path, protocol=pickle.HIGHEST_PROTOCOL):
     """Write graph in Python pickle format.
 
@@ -59,7 +59,7 @@ def write_gpickle(G, path, protocol=pickle.HIGHEST_PROTOCOL):
     pickle.dump(G, path, protocol)
 
 
-@open_file(0, mode='rb')
+@open_file(0, mode="rb")
 def read_gpickle(path):
     """Read graph object in Python pickle format.
 

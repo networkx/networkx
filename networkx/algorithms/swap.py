@@ -6,8 +6,7 @@ from networkx.utils import py_random_state
 
 import networkx as nx
 
-__all__ = ['double_edge_swap',
-           'connected_double_edge_swap']
+__all__ = ["double_edge_swap", "connected_double_edge_swap"]
 
 
 @py_random_state(3)
@@ -51,8 +50,7 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     The graph G is modified in place.
     """
     if G.is_directed():
-        raise nx.NetworkXError(
-            "double_edge_swap() not defined for directed graphs.")
+        raise nx.NetworkXError("double_edge_swap() not defined for directed graphs.")
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
@@ -86,8 +84,10 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
             G.remove_edge(x, y)
             swapcount += 1
         if n >= max_tries:
-            e = (f'Maximum number of swap attempts ({n}) exceeded '
-                 f'before desired swaps achieved ({nswap}).')
+            e = (
+                f"Maximum number of swap attempts ({n}) exceeded "
+                f"before desired swaps achieved ({nswap})."
+            )
             raise nx.NetworkXAlgorithmError(e)
         n += 1
     return G

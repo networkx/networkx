@@ -66,7 +66,7 @@ class TestAtlasGraphG:
         # There are three exceptions to this rule in the order given in
         # the "Atlas of Graphs" book, so we need to manually exclude
         # those.
-        exceptions = [('G55', 'G56'), ('G1007', 'G1008'), ('G1012', 'G1013')]
+        exceptions = [("G55", "G56"), ("G1007", "G1008"), ("G1012", "G1013")]
         for n, group in groupby(self.GAG, key=nx.number_of_nodes):
             for m, group in groupby(group, key=nx.number_of_edges):
                 for G1, G2 in pairwise(group):
