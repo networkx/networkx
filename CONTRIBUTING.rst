@@ -48,7 +48,11 @@ Contributor Guide
      system. To ensure you have a properly-configured development environment
      for running the tests, see `Build environment setup`_.
 
-4. To submit your contribution:
+4. Format your code:
+
+   * We use psf/black to format Python code.
+
+5. To submit your contribution:
 
    * Push your changes back to your fork on GitHub::
 
@@ -65,7 +69,7 @@ For a more detailed discussion, read these :doc:`detailed documents
 <gitwash/index>` on how to use Git with ``networkx``
 (`<https://networkx.github.io/documentation/latest/developer/gitwash/index.html>`_).
 
-5. Review process:
+6. Review process:
 
     * Reviewers (the other developers and interested community members) will
       write inline and/or general comments on your Pull Request (PR) to help
@@ -95,7 +99,7 @@ For a more detailed discussion, read these :doc:`detailed documents
 
    If closing a bug, also add "Fixes #1480" where 1480 is the issue number.
 
-6. Document changes
+7. Document changes
 
    If your change introduces any API modifications, please update
    ``doc/release/release_dev.rst``.
