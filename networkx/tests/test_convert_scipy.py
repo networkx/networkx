@@ -192,10 +192,18 @@ class TestConvertNumpy:
         M = nx.to_scipy_sparse_matrix(G)
         np_assert_equal(M.todense(), np.matrix([[1]]))
 
+        G.add_edges_from([(2, 3), (3, 4)])
+        M = nx.to_scipy_sparse_matrix(G, nodelist=[2, 3, 4])
+        np_assert_equal(M.todense(), np.matrix([[0, 1, 0], [1, 0, 1], [0, 1, 0]]))
+
     def test_selfloop_digraph(self):
         G = nx.DiGraph([(1, 1)])
         M = nx.to_scipy_sparse_matrix(G)
         np_assert_equal(M.todense(), np.matrix([[1]]))
+
+        G.add_edges_from([(2, 3), (3, 4)])
+        M = nx.to_scipy_sparse_matrix(G, nodelist=[2, 3, 4])
+        np_assert_equal(M.todense(), np.matrix([[0, 1, 0], [0, 0, 1], [0, 0, 0]]))
 
     def test_from_scipy_sparse_matrix_parallel_edges(self):
         """Tests that the :func:`networkx.from_scipy_sparse_matrix` function
