@@ -85,7 +85,8 @@ class TestRelabel:
     def test_convert_to_integers_raise(self):
         with pytest.raises(nx.NetworkXError):
             G = nx.Graph()
-            H = nx.convert_node_labels_to_integers(G, ordering="increasing age")
+            H = nx.convert_node_labels_to_integers(
+                G, ordering="increasing age")
 
     def test_relabel_nodes_copy(self):
         G = nx.empty_graph()
@@ -130,14 +131,16 @@ class TestRelabel:
         mapping = {"a": "aardvark", "b": "bear"}
         G = nx.relabel_nodes(G, mapping, copy=False)
         assert_nodes_equal(G.nodes(), ["aardvark", "bear"])
-        assert_edges_equal(G.edges(), [("aardvark", "bear"), ("aardvark", "bear")])
+        assert_edges_equal(
+            G.edges(), [("aardvark", "bear"), ("aardvark", "bear")])
 
     def test_relabel_nodes_multidigraph(self):
         G = nx.MultiDiGraph([("a", "b"), ("a", "b")])
         mapping = {"a": "aardvark", "b": "bear"}
         G = nx.relabel_nodes(G, mapping, copy=False)
         assert_nodes_equal(G.nodes(), ["aardvark", "bear"])
-        assert_edges_equal(G.edges(), [("aardvark", "bear"), ("aardvark", "bear")])
+        assert_edges_equal(
+            G.edges(), [("aardvark", "bear"), ("aardvark", "bear")])
 
     def test_relabel_isolated_nodes_to_same(self):
         G = nx.Graph()
@@ -183,3 +186,71 @@ class TestRelabel:
         G = nx.MultiDiGraph([(1, 1)])
         G = nx.relabel_nodes(G, {1: 0}, copy=False)
         assert_nodes_equal(G.nodes(), [0])
+
+    def test_relabel_multigraph_merge_inplace(self):
+        G = nx.MultiGraph([(0, 1), (0, 2), (0, 3)])
+        G[0][1][0]["value"] = "a"
+        G[0][2][0]["value"] = "b"
+        G[0][3][0]["value"] = "c"
+        mapping = {1: 4, 2: 4, 3: 4}
+        nx.relabel_nodes(G, mapping, copy=False)
+        # No ordering on keys enforced
+        assert {"value": "a"} in G[0][4].values()
+        assert {"value": "b"} in G[0][4].values()
+        assert {"value": "c"} in G[0][4].values()
+
+    def test_relabel_multidigraph_merge_inplace(self):
+        G = nx.MultiDiGraph([(0, 1), (0, 2), (0, 3)])
+        G[0][1][0]["value"] = "a"
+        G[0][2][0]["value"] = "b"
+        G[0][3][0]["value"] = "c"
+        mapping = {1: 4, 2: 4, 3: 4}
+        nx.relabel_nodes(G, mapping, copy=False)
+        # No ordering on keys enforced
+        assert {"value": "a"} in G[0][4].values()
+        assert {"value": "b"} in G[0][4].values()
+        assert {"value": "c"} in G[0][4].values()
+
+    def test_relabel_multigraph_merge_copy(self):
+        G = nx.MultiGraph([(0, 1), (0, 2), (0, 3)])
+        G[0][1][0]["value"] = "a"
+        G[0][2][0]["value"] = "b"
+        G[0][3][0]["value"] = "c"
+        mapping = {1: 4, 2: 4, 3: 4}
+        H = nx.relabel_nodes(G, mapping, copy=True)
+        assert {"value": "a"} in H[0][4].values()
+        assert {"value": "b"} in H[0][4].values()
+        assert {"value": "c"} in H[0][4].values()
+
+    def test_relabel_multidigraph_merge_copy(self):
+        G = nx.MultiDiGraph([(0, 1), (0, 2), (0, 3)])
+        G[0][1][0]["value"] = "a"
+        G[0][2][0]["value"] = "b"
+        G[0][3][0]["value"] = "c"
+        mapping = {1: 4, 2: 4, 3: 4}
+        H = nx.relabel_nodes(G, mapping, copy=True)
+        assert {"value": "a"} in H[0][4].values()
+        assert {"value": "b"} in H[0][4].values()
+        assert {"value": "c"} in H[0][4].values()
+
+    def test_relabel_multigraph_nonnumeric_key_inplace(self):
+        G = nx.MultiGraph()
+        G.add_edge(0, 1, key="I", value="a")
+        G.add_edge(0, 2, key="II", value="b")
+        G.add_edge(0, 3, key="II", value="c")
+        mapping = {1: 4, 2: 4, 3: 4}
+        nx.relabel_nodes(G, mapping, copy=False)
+        assert {"value": "a"} in G[0][4].values()
+        assert {"value": "b"} in G[0][4].values()
+        assert {"value": "c"} in G[0][4].values()
+
+    def test_relabel_multigraph_nonnumeric_key_copy(self):
+        G = nx.MultiGraph()
+        G.add_edge(0, 1, key="I", value="a")
+        G.add_edge(0, 2, key="II", value="b")
+        G.add_edge(0, 3, key="II", value="c")
+        mapping = {1: 4, 2: 4, 3: 4}
+        H = nx.relabel_nodes(G, mapping, copy=True)
+        assert {"value": "a"} in H[0][4].values()
+        assert {"value": "b"} in H[0][4].values()
+        assert {"value": "c"} in H[0][4].values()
