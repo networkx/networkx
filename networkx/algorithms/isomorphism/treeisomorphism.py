@@ -1,6 +1,6 @@
 """
-An algorithm for finding if two undirected trees are isomorphic, and if so
-returns this isomrphism mapping the two sets of nodes.
+An algorithm for finding if two undirected trees are isomorphic,
+and if so returns an isomorphic mapping the two sets of nodes.
 
 This algorithm uses a routine to tell if two rooted trees (trees with a
 specificed root node) are isomomorphic, which may be independently useful.
