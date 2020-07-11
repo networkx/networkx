@@ -198,13 +198,13 @@ def test_positive(maxk=13):
 
     print("positive test")
 
-    for k in range(2, maxk+1):
+    for k in range(2, maxk + 1):
         start_time = time.time()
         trial = 0
         for t in nx.nonisomorphic_trees(k):
             positive_single_tree(t)
             trial += 1
-        print(k, trial, time.time()-start_time)
+        print(k, trial, time.time() - start_time)
 
 
 # test the trivial case of a single node in each tree
@@ -266,12 +266,12 @@ def test_negative(maxk=11):
 
     print("negative test")
 
-    for k in range(4, maxk+1):
+    for k in range(4, maxk + 1):
         test_trees = list(nx.nonisomorphic_trees(k))
         start_time = time.time()
         trial = 0
-        for i in range(len(test_trees)-1):
-            for j in range(i+1, len(test_trees)):
+        for i in range(len(test_trees) - 1):
+            for j in range(i + 1, len(test_trees)):
                 trial += 1
                 assert tree_isomorphism(test_trees[i], test_trees[j]) == []
-        print(k, trial, time.time()-start_time)
+        print(k, trial, time.time() - start_time)

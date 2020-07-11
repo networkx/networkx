@@ -35,8 +35,8 @@ def root_trees(t1, root1, t2, root2):
 
     dT = nx.DiGraph()
 
-    newroot1 = 1                         # left root will be 1
-    newroot2 = nx.number_of_nodes(t1)+1  # right will be n+1
+    newroot1 = 1                           # left root will be 1
+    newroot2 = nx.number_of_nodes(t1) + 1  # right will be n+1
 
     # may be overlap in node names here so need separate maps
     # given the old name, what is the new
@@ -125,7 +125,7 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
 
     # nothing to do on last level so start on h-1
     # also nothing to do for our fake level 0, so skip that
-    for i in range(h-1, 0, -1):
+    for i in range(h - 1, 0, -1):
         # update the ordered_labels and ordered_childen
         # for any children
         for v in L[i]:
@@ -148,7 +148,7 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
         current = 0
         for i, (ol, v) in enumerate(forlabel):
             # advance to next label if not 0, and different from previous
-            if (i != 0) and (ol != forlabel[i-1][0]):
+            if (i != 0) and (ol != forlabel[i - 1][0]):
                 current += 1
             label[v] = current
 
