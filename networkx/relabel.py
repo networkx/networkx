@@ -67,11 +67,14 @@ def relabel_nodes(G, mapping, copy=True):
     In a multigraph, relabeling two or more nodes that share predecessors
     into the same new label will preserve all edges, but will change the
     edge keys in the process:
-    
+
     >>> G = nx.MultiGraph()
-    >>> G.add_edge(0, 1, value="a")
+    >>> G.add_edge(0, 1, value="a")  # returns the key for this edge
+    0
     >>> G.add_edge(0, 2, value="b")
+    0
     >>> G.add_edge(0, 3, value="c")
+    0
     >>> mapping = {1: 4, 2: 4, 3: 4}
     >>> H = nx.relabel_nodes(G, mapping, copy=True)
     >>> print(H[0])
@@ -79,7 +82,7 @@ def relabel_nodes(G, mapping, copy=True):
 
     This works for in-place relabeling too:
 
-    >>> nx.relabel_nodes(G, mapping, copy=False)
+    >>> G = nx.relabel_nodes(G, mapping, copy=False)
     >>> print(G[0])
     {4: {0: {'value': 'a'}, 1: {'value': 'b'}, 2: {'value': 'c'}}}
 
@@ -100,7 +103,7 @@ def relabel_nodes(G, mapping, copy=True):
     edges to have the same head, tail and key, relabel_nodes will
     resolve this by finding the lowest non-negative integer values
     for all the other edges such that they all have different keys.
-    This way, edges will not be lost when two nodes are merged into 
+    This way, edges will not be lost when two nodes are merged into
     one, but the edge keys may be changed. In particular, non-numeric
     keys may be replaced by numeric ones.
 
