@@ -98,6 +98,24 @@ class TestEdgelist:
         assert_edges_equal(G.edges(data=True),
                            [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
 
+    def test_read_edgelist_5(self):
+        s = """\
+# number of nodes, number of edges
+3 2
+# comment line
+1 2 {'weight':2.0}
+# comment line
+2 3 {'weight':3.0}
+"""
+        StringIO = io.StringIO(s)
+        G = nx.read_edgelist(StringIO, nodetype=int, data=False, check_information_line=True)
+        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
+
+        StringIO = io.StringIO(s)
+        G = nx.read_edgelist(StringIO, nodetype=int, data=True, check_information_line=True)
+        assert_edges_equal(G.edges(data=True),
+                           [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
+
     def test_write_edgelist_1(self):
         fh = io.BytesIO()
         G = nx.OrderedGraph()
