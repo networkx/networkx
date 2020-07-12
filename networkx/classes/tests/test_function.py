@@ -663,21 +663,22 @@ def test_selfloops():
         assert_edges_equal(
             nx.selfloop_edges(G, data="weight"), [(0, 0, None), (1, 1, 2)]
         )
-def test_pathweight():
-    valid_test_path = [1,2,3]
-    invalid_test_path = [1,3,2]
-    
-    G = nx.Graph()
-    edges =[(1,2,dict(cost=1,dist=2)), (2,3,dict(cost=3,dist=4))]
-    G.add_edges_from(edges)
-    assert nx.path_weight(G,valid_test_path,'cost') == 4
-    assert nx.path_weight(G,valid_test_path,'dist') == 6
-    pytest.raises(nx.NetworkXNoPath, nx.path_weight, G, invalid_test_path, 'cost')
-    
-    G_multi = nx.MultiGraph()
-    multi_edges = [(1,2,dict(cost=1,dist=2)),(1,2,dict(cost=5,dist=6)),(2,3,dict(cost=3,dist=4))]
-    G_multi.add_edges_from(multi_edges)
-    assert nx.path_weight(G_multi,valid_test_path,'cost') == 4
-    assert nx.path_weight(G_multi,valid_test_path,'dist') == 6
-    pytest.raises(nx.NetworkXNoPath, nx.path_weight, G_multi, invalid_test_path, 'cost')
 
+
+def test_pathweight():
+    valid_path = [1, 2, 3]
+    invalid_path = [1, 3, 2]
+    G = nx.Graph()
+    edges = [(1, 2, dict(cost=1, dist=2)), (2, 3, dict(cost=3, dist=4))]
+    G.add_edges_from(edges)
+    assert nx.path_weight(G, valid_path, 'cost') == 4
+    assert nx.path_weight(G, valid_path, 'dist') == 6
+    pytest.raises(nx.NetworkXNoPath, nx.path_weight, G, invalid_path, 'cost')
+    G_m = nx.MultiGraph()
+    multi_edges = [(1, 2, dict(cost=1, dist=2)),
+                   (1, 2, dict(cost=5, dist=6)),
+                   (2, 3, dict(cost=3, dist=4))]
+    G_m.add_edges_from(multi_edges)
+    assert nx.path_weight(G_m, valid_path, 'cost') == 4
+    assert nx.path_weight(G_m, valid_path, 'dist') == 6
+    pytest.raises(nx.NetworkXNoPath, nx.path_weight, G_m, invalid_path, 'cost')
