@@ -1237,7 +1237,7 @@ def number_of_selfloops(G):
     return sum(1 for _ in nx.selfloop_edges(G))
 
 
-def path_weight(G, path, feature):
+def path_weight(G, path, weight):
     """Returns total cost associated with specified path and feature
 
     Parameters
@@ -1262,13 +1262,11 @@ def path_weight(G, path, feature):
     NetworkXNoPath
         If the specified edge does not exist.
     """
-    isMulti = G.is_multigraph()
+    multigraph = G.is_multigraph()
     cost = 0
+    weight_func = _weight_function(G,weight)
     for node, nbr in nx.utils.pairwise(path):
-        if nbr not in G.neighbors(node):
+        if nbr not in G[node]:
             raise nx.NetworkXNoPath(f"edge ({node},{nbr}) does not exist")
-        if isMulti:
-            cost += min([v[feature] for v in G[node][nbr].values()])
-        else:
-            cost += G[node][nbr][feature]
+        cost += get_weight(node,nbr,weight)
     return cost
