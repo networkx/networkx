@@ -351,29 +351,14 @@ def from_pandas_edgelist(
         g.add_edges_from(zip(df[source], df[target]))
         return g
     
-    reserved_columns = [source,target,edge_key]
-    attribute_headers, attributes_by_row = extract_attributes(df,reserved_columns,edge_attr)
+    reserved_columns = [source,target]
+    attribute_data = extract_attributes(df,reserved_columns,edge_attr)
 
-    # feature for multigraphs
-    # => append the edge keys from the df to the bundled data
-    if edge_key is not None:
-        multigraph_edge_keys = df[edge_key]
-        attributes_by_row = zip(attributes_by_row,multigraph_edge_keys)
+    if g.is_multigraph():
+        handle_multigraph_pandas_conversion(g,attribute_data,df,source,target,edge_key)
+    else:
+        handle_base_pandas_conversion(g,attribute_data,df,source,target)
     
-    for s, t, attrs in zip(df[source], df[target], attributes_by_row):
-        if g.is_multigraph():
-            basic_attributes, multigraph_edge_key = attrs
-            key = g.add_edge(s, t, key=multigraph_edge_key)
-            g[s][t][key].update(zip(attribute_headers, basic_attributes))
-        else:
-            # in case user accidentally puts multigraph edge key 
-            # without using a multiedge graph
-            if edge_key is not None: 
-                basic_attributes, multigraph_edge_key = attrs
-                attrs = (*basic_attributes,multigraph_edge_key)
-            g.add_edge(s, t)
-            g[s][t].update(zip(attribute_headers, attrs))
-
     return g
 
 def extract_attributes(df, reserved_columns, edge_attr):
@@ -395,6 +380,31 @@ def extract_attributes(df, reserved_columns, edge_attr):
         raise nx.NetworkXError(msg) from e
     
     return attr_col_headings, attribute_data
+
+def handle_multigraph_pandas_conversion(g,attribute_data,df,source,target,edge_key):
+    attribute_headers, attributes_by_row = attribute_data
+
+    # => append the edge keys from the df to the bundled data
+    if edge_key is not None:
+        multigraph_edge_keys = df[edge_key]
+        attributes_by_row = zip(attributes_by_row,multigraph_edge_keys)
+    
+    for s, t, attrs in zip(df[source], df[target], attributes_by_row):
+        key = -1
+        if edge_key is not None:
+            attrs, multigraph_edge_key = attrs
+            key = g.add_edge(s, t, key=multigraph_edge_key)
+        else:
+            key = g.add_edge(s, t)
+            basic_attributes = attrs
+
+        g[s][t][key].update(zip(attribute_headers, attrs))
+
+def handle_base_pandas_conversion(g,attribute_data,df,source,target):
+    attribute_headers, attributes_by_row = attribute_data
+    for s, t, attrs in zip(df[source], df[target], attributes_by_row):
+        g.add_edge(s, t)
+        g[s][t].update(zip(attribute_headers, attrs))
 
 def to_numpy_matrix(
     G,
