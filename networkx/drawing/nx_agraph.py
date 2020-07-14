@@ -200,7 +200,9 @@ def read_dot(path):
             "read_dot() requires pygraphviz " "http://pygraphviz.github.io/"
         ) from e
     A = pygraphviz.AGraph(file=path)
-    return from_agraph(A)
+    gr = from_agraph(A)
+    A.clear()
+    return gr
 
 
 def graphviz_layout(G, prog="neato", root=None, args=""):
