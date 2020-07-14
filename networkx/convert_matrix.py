@@ -378,7 +378,8 @@ def extract_attributes(df, reserved_columns, edge_attr):
     else:
         attr_col_headings = [edge_attr]
     if len(attr_col_headings) == 0:
-        msg = f"Invalid edge_attr argument. No columns found with name: {attr_col_headings}"
+        msg = f"""Invalid edge_attr argument. 
+                No columns found with name: {attr_col_headings}"""
         raise nx.NetworkXError(msg)
 
     try:
@@ -411,7 +412,6 @@ def handle_multigraph_pandas_conversion(
             key = g.add_edge(s, t, key=multigraph_edge_key)
         else:
             key = g.add_edge(s, t)
-            basic_attributes = attrs
 
         g[s][t][key].update(zip(attribute_headers, attrs))
 
