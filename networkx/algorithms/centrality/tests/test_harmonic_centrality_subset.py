@@ -8,7 +8,7 @@ from networkx.testing import almost_equal
 
 
 class TestHarmonicCentralitySubset:
-    
+
     @classmethod
     def setup_class(cls):
         cls.P3 = nx.path_graph(3)
@@ -100,4 +100,3 @@ class TestHarmonicCentralitySubset:
         c = harmonic_centrality_subset(G, distance='weight')
         d = {0: 0}
         assert c == d
-

@@ -5,11 +5,12 @@ __all__ = ['harmonic_centrality_subset']
 
 
 def harmonic_centrality_subset(G, nbunch_u=None, nbunch_v=None, distance=None):
-    """Compute harmonic centrality for a set of nodes u with respect to a subset of nodes v.
+    """Compute harmonic centrality for a set of nodes u with respect to a subset
+     of nodes v.
 
     Harmonic centrality [1]_ of a node `u` is the sum of the reciprocal
-    of the shortest path distances from all other nodes (adapted in this function to only 
-    consider nodes in nbunch_v) to `u`
+    of the shortest path distances from all other nodes (adapted in this
+    function to only consider nodes in nbunch_v) to `u`
 
     .. math::
 
@@ -17,7 +18,8 @@ def harmonic_centrality_subset(G, nbunch_u=None, nbunch_v=None, distance=None):
 
     where `d(v, u)` is the shortest-path distance between `v` and `u`.
 
-    Harmonic_centrality_subset calculates the harmonic centrality for u in nbunch_u and v in nbunch_v.
+    Harmonic_centrality_subset calculates the harmonic centrality for u in
+    nbunch_u and v in nbunch_v.
 
     Notice that higher values indicate higher centrality.
 
@@ -26,12 +28,12 @@ def harmonic_centrality_subset(G, nbunch_u=None, nbunch_v=None, distance=None):
     G : NetworkX graph
 
     nbunch_u : container
-      Container of nodes. If provided harmonic centrality will be computed only over the
-      nodes in nbunch_u.
+      Container of nodes. If provided harmonic centrality will be computed only
+      over the nodes in nbunch_u.
 
     nbunch_v : container
-      Container of nodes. If provided, harmonic centrality will be computed only for paths
-      starting at nodes v in nbunch_v.
+      Container of nodes. If provided, harmonic centrality will be computed
+      only for paths starting at nodes v in nbunch_v.
 
     distance : edge attribute key, optional (default=None)
       Use the specified edge attribute as the edge weight in shortest
@@ -65,6 +67,3 @@ def harmonic_centrality_subset(G, nbunch_u=None, nbunch_v=None, distance=None):
         harmonic_centrality[u] = sum_of_inverse_spl
 
     return harmonic_centrality
-
-
-
