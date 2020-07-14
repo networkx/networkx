@@ -254,9 +254,9 @@ def parse_edgelist(lines, comments='#', delimiter=None,
         # split line, should have 2 or more
         s = line.strip().split(delimiter)
         if check_information_line and not first_line_found:
-            first_line_items = s
+            first_line_items = list(s)
             first_line_found = True
-            continue
+            if len(s) == 2: continue
         if len(s) < 2:
             continue
         u = s.pop(0)
@@ -417,7 +417,7 @@ def write_weighted_edgelist(G, path, comments="#",
 
 
 def read_weighted_edgelist(path, comments="#", delimiter=None,
-                           create_using=None, nodetype=None, encoding='utf-8'):
+                           create_using=None, nodetype=None, encoding='utf-8', check_information_line=False):
     """Read a graph as list of edges with numeric weights.
 
     Parameters
@@ -436,6 +436,10 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
        Convert node data from strings to specified type
     encoding: string, optional
        Specify which encoding to use when reading file.
+    check_information_line : bool, optional
+       If True checks first line of input for number of nodes
+       and number of edges, and prints a warning if they don't match
+       the rest of the lines.
 
     Returns
     -------
@@ -468,5 +472,6 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
                          create_using=create_using,
                          nodetype=nodetype,
                          data=(('weight', float),),
-                         encoding=encoding
+                         encoding=encoding,
+                         check_information_line=check_information_line
                          )

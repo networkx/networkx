@@ -234,9 +234,9 @@ def parse_edgelist(lines, comments='#', delimiter=None,
         # split line, should have 2 or more
         s = line.strip().split(delimiter)
         if check_information_line and not first_line_found:
-            first_line_items = s
+            first_line_items = list(s)
             first_line_found = True
-            continue
+            if len(s) == 2: continue
         if len(s) < 2:
             continue
         u = s.pop(0)
