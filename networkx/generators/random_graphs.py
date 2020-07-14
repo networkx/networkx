@@ -117,8 +117,8 @@ def gnp_random_graph(n, p, seed=None, directed=False):
 
     The $G_{n,p}$ model chooses each of the possible edges with probability $p$.
 
-    The functions :func:`binomial_graph` and :func:`erdos_renyi_graph` are
-    aliases of this function.
+    The functions :func:`gnp_random_graph`, :func:`binomial_graph` and :func:`erdos_renyi_graph` are
+    aliases of each other.
 
     Parameters
     ----------
