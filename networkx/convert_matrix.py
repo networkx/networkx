@@ -386,8 +386,12 @@ def handle_multigraph_pandas_conversion(g,attribute_data,df,source,target,edge_k
 
     # => append the edge keys from the df to the bundled data
     if edge_key is not None:
-        multigraph_edge_keys = df[edge_key]
-        attributes_by_row = zip(attributes_by_row,multigraph_edge_keys)
+        try:
+            multigraph_edge_keys = df[edge_key]
+            attributes_by_row = zip(attributes_by_row,multigraph_edge_keys)
+        except (KeyError, TypeError) as e:
+            msg = f"Invalid edge_key argument: {edge_key}"
+            raise nx.NetworkXError(msg) from e
     
     for s, t, attrs in zip(df[source], df[target], attributes_by_row):
         key = -1
