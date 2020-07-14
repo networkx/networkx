@@ -272,7 +272,7 @@ def to_pandas_edgelist(
 
 
 def from_pandas_edgelist(
-    df, source="source", target="target", edge_attr=None, create_using=None
+    df, source="source", target="target", edge_attr=None, create_using=None,edge_key=None
 ):
     """Returns a graph from Pandas DataFrame containing an edge list.
 
@@ -350,33 +350,51 @@ def from_pandas_edgelist(
     if edge_attr is None:
         g.add_edges_from(zip(df[source], df[target]))
         return g
+    
+    reserved_columns = [source,target,edge_key]
+    attribute_headers, attributes_by_row = extract_attributes(df,reserved_columns,edge_attr)
 
-    # Additional columns requested
-    if edge_attr is True:
-        cols = [c for c in df.columns if c is not source and c is not target]
-    elif isinstance(edge_attr, (list, tuple)):
-        cols = edge_attr
-    else:
-        cols = [edge_attr]
-    if len(cols) == 0:
-        msg = f"Invalid edge_attr argument. No columns found with name: {cols}"
-        raise nx.NetworkXError(msg)
-
-    try:
-        eattrs = zip(*[df[col] for col in cols])
-    except (KeyError, TypeError) as e:
-        msg = f"Invalid edge_attr argument: {edge_attr}"
-        raise nx.NetworkXError(msg) from e
-    for s, t, attrs in zip(df[source], df[target], eattrs):
+    # feature for multigraphs
+    # => append the edge keys from the df to the bundled data
+    if edge_key is not None:
+        multigraph_edge_keys = df[edge_key]
+        attributes_by_row = zip(attributes_by_row,multigraph_edge_keys)
+    
+    for s, t, attrs in zip(df[source], df[target], attributes_by_row):
         if g.is_multigraph():
-            key = g.add_edge(s, t)
-            g[s][t][key].update(zip(cols, attrs))
+            basic_attributes, multigraph_edge_key = attrs
+            key = g.add_edge(s, t, key=multigraph_edge_key)
+            g[s][t][key].update(zip(attribute_headers, basic_attributes))
         else:
+            # in case user accidentally puts multigraph edge key 
+            # without using a multiedge graph
+            if edge_key is not None: 
+                basic_attributes, multigraph_edge_key = attrs
+                attrs = (*basic_attributes,multigraph_edge_key)
             g.add_edge(s, t)
-            g[s][t].update(zip(cols, attrs))
+            g[s][t].update(zip(attribute_headers, attrs))
 
     return g
 
+def extract_attributes(df, reserved_columns, edge_attr):
+        # Additional columns requested
+    if edge_attr is True:
+        attr_col_headings = [c for c in df.columns if c not in reserved_columns]
+    elif isinstance(edge_attr, (list, tuple)):
+        attr_col_headings = edge_attr
+    else:
+        attr_col_headings = [edge_attr]
+    if len(attr_col_headings) == 0:
+        msg = f"Invalid edge_attr argument. No columns found with name: {attr_col_headings}"
+        raise nx.NetworkXError(msg)
+
+    try:
+        attribute_data = zip(*[df[col] for col in attr_col_headings])
+    except (KeyError, TypeError) as e:
+        msg = f"Invalid edge_attr argument: {edge_attr}"
+        raise nx.NetworkXError(msg) from e
+    
+    return attr_col_headings, attribute_data
 
 def to_numpy_matrix(
     G,

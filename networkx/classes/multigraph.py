@@ -94,7 +94,7 @@ class MultiGraph(Graph):
 
     >>> keys = G.add_edges_from([(4,5,{'route':28}), (4,5,{'route':37})])
     >>> G[4]
-    AdjacencyView({3: {0: {}}, 5: {0: {}, 1: {'route': 28}, 2: {'route': 37}}})
+    AdjacencyView({5: {0: {}, 1: {'route': 28}, 2: {'route': 37}}})
 
     **Attributes:**
 
