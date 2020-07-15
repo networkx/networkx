@@ -117,9 +117,6 @@ def gnp_random_graph(n, p, seed=None, directed=False):
 
     The $G_{n,p}$ model chooses each of the possible edges with probability $p$.
 
-    The functions :func:`gnp_random_graph`, :func:`binomial_graph` and :func:`erdos_renyi_graph` are
-    aliases of each other.
-
     Parameters
     ----------
     n : int
@@ -164,9 +161,20 @@ def gnp_random_graph(n, p, seed=None, directed=False):
     return G
 
 
-# add some aliases to common names
-binomial_graph = gnp_random_graph
-erdos_renyi_graph = gnp_random_graph
+def binomial_graph(n, p, seed=None, directed=False):
+    """Returns a binomial graph.
+    This is an alias for ``gnp_random_graph``.  See the ``gnp_random_graph``
+    docstring for more details.
+    """
+    return gnp_random_graph(n, p, seed, directed)
+
+
+def erdos_renyi_graph(n, p, seed=None, directed=False):
+    """Returns an Erdos-Renyi $G_{n,p}$ random graph.
+    This is an alias for ``gnp_random_graph``.  See the ``gnp_random_graph``
+    docstring for more details.
+    """
+    return gnp_random_graph(n, p, seed, directed)
 
 
 @py_random_state(2)
