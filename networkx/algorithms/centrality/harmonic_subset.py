@@ -1,7 +1,7 @@
 from functools import partial
 import networkx as nx
 
-__all__ = ['harmonic_centrality_subset']
+__all__ = ["harmonic_centrality_subset"]
 
 
 def harmonic_centrality_subset(G, nbunch_u=None, nbunch_v=None, distance=None):
@@ -62,7 +62,7 @@ def harmonic_centrality_subset(G, nbunch_u=None, nbunch_v=None, distance=None):
             except nx.NetworkXNoPath:
                 continue
             if shortest_path_length_uv > 0:
-                sum_of_inverse_spl += 1/shortest_path_length_uv
+                sum_of_inverse_spl += 1 / shortest_path_length_uv
 
         harmonic_centrality[u] = sum_of_inverse_spl
 
