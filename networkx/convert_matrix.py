@@ -353,7 +353,7 @@ def from_pandas_edgelist(
 
     >>> edges = pd.DataFrame({'source': [0, 1, 2],
     ...                       'target': [2, 2, 3],
-                              'key': ['A', 'B', 'C'],
+    ...                       'key': ['A', 'B', 'C'],
     ...                       'weight': [3, 4, 5],
     ...                       'color': ['red', 'blue', 'blue']})
     >>> G = nx.from_pandas_edgelist(edges, 
