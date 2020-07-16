@@ -361,7 +361,7 @@ def from_pandas_edgelist(
                                     edge_attr=['weight', 'color'], \
                                     create_using=nx.MultiGraph())
     >>> G[0][2]
-    {'A': {'weight': 3, 'color': 'red'}}
+    AtlasView({'A': {'weight': 3, 'color': 'red'}})
 
     """
     g = nx.empty_graph(0, create_using)
