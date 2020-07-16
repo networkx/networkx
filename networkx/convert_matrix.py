@@ -383,8 +383,8 @@ def from_pandas_edgelist(
     else:
         attr_col_headings = [edge_attr]
     if len(attr_col_headings) == 0:
-        msg = f"""Invalid edge_attr argument. 
-                No columns found with name: {attr_col_headings}"""
+        msg = ("Invalid edge_attr argument:"
+               f"No columns found with name: {attr_col_headings}")
         raise nx.NetworkXError(msg)
 
     try:
@@ -404,7 +404,6 @@ def from_pandas_edgelist(
                 raise nx.NetworkXError(msg) from e
 
         for s, t, attrs in zip(df[source], df[target], attribute_data):
-            key = -1
             if edge_key is not None:
                 attrs, multigraph_edge_key = attrs
                 key = g.add_edge(s, t, key=multigraph_edge_key)
