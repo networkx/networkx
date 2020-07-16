@@ -383,9 +383,9 @@ def from_pandas_edgelist(
     else:
         attr_col_headings = [edge_attr]
     if len(attr_col_headings) == 0:
-        msg = ("Invalid edge_attr argument:"
-               f"No columns found with name: {attr_col_headings}")
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError(
+            f"Invalid edge_attr argument: No columns found with name: {attr_col_headings}"
+        )
 
     try:
         attribute_data = zip(*[df[col] for col in attr_col_headings])
