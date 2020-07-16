@@ -1257,7 +1257,7 @@ def is_path(G, path):
     return all([True if nbr in G[node] else False for node, nbr in nx.utils.pairwise(path)])
 
 
-def path_weight(G, path, feature):
+def path_weight(G, path, weight):
     """Returns total cost associated with specified path and feature
 
     Parameters
@@ -1288,7 +1288,7 @@ def path_weight(G, path, feature):
         raise nx.NetworkXNoPath("path does not exist")
     for node, nbr in nx.utils.pairwise(path):
         if multigraph:
-            cost += min([v[feature] for v in G[node][nbr].values()])
+            cost += min([v[weight] for v in G[node][nbr].values()])
         else:
-            cost += G[node][nbr][feature]
+            cost += G[node][nbr][weight]
     return cost

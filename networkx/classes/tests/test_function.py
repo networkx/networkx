@@ -681,12 +681,11 @@ def test_pathweight():
 
 
 def test_ispath():
-    valid_path = [1,2,3,4]
-    invalid_path = [1,2,4,3]
+    valid_path = [1, 2, 3, 4]
+    invalid_path = [1, 2, 4, 3]
     graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
-    edges = [(1, 2), (2, 3), (1, 2), (3,4)]
+    edges = [(1, 2), (2, 3), (1, 2), (3, 4)]
     for graph in graphs:
         graph.add_edges_from(edges)
-        assert nx.is_path(graph, valid_path) == True
-        assert nx.is_path(graph, invalid_path) == False
-
+        assert nx.is_path(graph, valid_path)
+        assert not nx.is_path(graph, invalid_path)
