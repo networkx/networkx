@@ -6,7 +6,6 @@ from itertools import chain
 
 import networkx as nx
 from networkx.utils import pairwise, not_implemented_for
-
 from networkx.classes.graphviews import subgraph_view, reverse_view
 
 __all__ = [
@@ -48,7 +47,8 @@ __all__ = [
     "selfloop_edges",
     "nodes_with_selfloops",
     "number_of_selfloops",
-    "path_weight"
+    "path_weight",
+    "is_path"
 ]
 
 
@@ -1237,7 +1237,27 @@ def number_of_selfloops(G):
     return sum(1 for _ in nx.selfloop_edges(G))
 
 
-def path_weight(G, path, weight):
+def is_path(G, path):
+    """Returns whether or not the specified path exists
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph.
+
+    path: list
+        A list of node labels which defines the path to traverse
+
+    Returns
+    -------
+    isPath: bool
+        A boolean representing whether or not the path exists
+
+    """
+    return all([True if nbr in G[node] else False for node, nbr in nx.utils.pairwise(path)])
+
+
+def path_weight(G, path, feature):
     """Returns total cost associated with specified path and feature
 
     Parameters
@@ -1264,9 +1284,11 @@ def path_weight(G, path, weight):
     """
     multigraph = G.is_multigraph()
     cost = 0
-    weight_func = _weight_function(G,weight)
+    if not nx.is_path(G, path):
+        raise nx.NetworkXNoPath("path does not exist")
     for node, nbr in nx.utils.pairwise(path):
-        if nbr not in G[node]:
-            raise nx.NetworkXNoPath(f"edge ({node},{nbr}) does not exist")
-        cost += get_weight(node,nbr,weight)
+        if multigraph:
+            cost += min([v[feature] for v in G[node][nbr].values()])
+        else:
+            cost += G[node][nbr][feature]
     return cost
