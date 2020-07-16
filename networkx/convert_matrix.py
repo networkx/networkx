@@ -363,6 +363,7 @@ def from_pandas_edgelist(
     >>> G[0][2]
     AtlasView({'A': {'weight': 3, 'color': 'red'}})
 
+
     """
     g = nx.empty_graph(0, create_using)
 
