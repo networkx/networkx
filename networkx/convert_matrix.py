@@ -356,9 +356,9 @@ def from_pandas_edgelist(
     ...                       'key': ['A', 'B', 'C'],
     ...                       'weight': [3, 4, 5],
     ...                       'color': ['red', 'blue', 'blue']})
-    >>> G = nx.from_pandas_edgelist(edges, 
-                                    edge_key='key', 
-                                    edge_attr=['weight', 'color'], 
+    >>> G = nx.from_pandas_edgelist(edges, \
+                                    edge_key='key', \
+                                    edge_attr=['weight', 'color'], \
                                     create_using=nx.MultiGraph())
     >>> G[0][2]
     {'A': {'weight': 3, 'color': 'red'}}
