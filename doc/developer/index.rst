@@ -6,10 +6,12 @@ Developer Guide
 .. toctree::
    :maxdepth: 2
 
+   code_of_conduct
    values
    contribute
    core_developer
-   code_of_conduct
    roadmap
    nxeps/index
    gitwash/index
+   release
+   deprecations
