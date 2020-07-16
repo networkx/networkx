@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -ex
 
+section "Linux install section"
+
 # create new empty venv
 virtualenv -p python ~/venv
 source ~/venv/bin/activate
@@ -24,5 +26,7 @@ EOF
   chmod +x $FILE
 
 fi
+
+section_end "Linux install section"
 
 set +ex
