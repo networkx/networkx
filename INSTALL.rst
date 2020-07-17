@@ -80,7 +80,7 @@ Optional packages
 -----------------
 
 .. note::
-   Some optional packages (e.g., `scipy`, `gdal`) may require compiling
+   Some optional packages (e.g., `gdal`) may require compiling
    C or C++ code.  If you have difficulty installing these packages
    with `pip`, please review the instructions for installing
    the full `scientific Python stack <https://scipy.org/install.html>`_.
