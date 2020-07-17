@@ -181,6 +181,8 @@ class NodeView(Mapping, Set):
         return iter(self._nodes)
 
     def __getitem__(self, n):
+        if isinstance(n, slice):
+            return list(self._nodes).__getitem__(n)
         return self._nodes[n]
 
     # Set methods
@@ -281,10 +283,15 @@ class NodeDataView(Set):
         return n in self._nodes and self[n] == d
 
     def __getitem__(self, n):
-        ddict = self._nodes[n]
         data = self._data
         if data is False or data is True:
-            return ddict
+            if isinstance(n, slice):
+                return list(self._nodes.items()).__getitem__(n)
+            return self._nodes[n]
+        if isinstance(n, slice):
+            return [(n, dd.get(data, self._default)) for n, dd in
+                    list(self._nodes.items()).__getitem__(n)]
+        ddict = self._nodes[n]
         return ddict[data] if data in ddict else self._default
 
     def __str__(self):
