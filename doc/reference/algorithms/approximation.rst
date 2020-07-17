@@ -90,6 +90,16 @@ Steiner Tree
    steiner_tree
 
 
+Travelling Salesman Problem
+---------------------------
+.. automodule:: networkx.algorithms.approximation.tsp
+.. autosummary::
+   :toctree: generated/
+
+   greedy_tsp
+   simulated_annealing_tsp
+
+
 Treewidth
 ---------
 .. automodule:: networkx.algorithms.approximation.treewidth

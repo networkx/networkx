@@ -30,10 +30,10 @@ import math
 from random import choice, randint, random
 import networkx as nx
 
-__all__ = ['greedy_tsp', 'simulated_annealing_tsp', 'threshold_accepting_tsp']
+__all__ = ["greedy_tsp", "simulated_annealing_tsp", "threshold_accepting_tsp"]
 
 
-def greedy_tsp(G, source, weight='weight'):
+def greedy_tsp(G, source, weight="weight"):
     """Finds the route that salesman has to visit in order
     to minimize total distance and total distance using a
     simple greedy algorithm.
@@ -96,15 +96,17 @@ def greedy_tsp(G, source, weight='weight'):
     It has a running time 0(|E||V|^2)
     """
     if not all(G.has_edge(u, v) for u, v in itertools.permutations(G, 2)):
-        raise nx.NetworkXError('Given graph is not completed.')
+        raise nx.NetworkXError("Given graph is not completed.")
 
     if G.number_of_nodes() == 2:
         neighbor = G.neighbors(source)[0]
-        return [source, neighbor, source], \
-            G.edge[source][neighbor][weight] + G.edge[neighbor][source][weight]
+        return (
+            [source, neighbor, source],
+            G.edge[source][neighbor][weight] + G.edge[neighbor][source][weight],
+        )
 
     if not nx.is_weighted(G, weight=weight):
-        raise nx.NetworkXError('Given graph is not weighted.')
+        raise nx.NetworkXError("Given graph is not weighted.")
     nodeset = set(G)
     nodeset.remove(source)
     cycle = [source]
@@ -120,8 +122,17 @@ def greedy_tsp(G, source, weight='weight'):
     return cycle, cost
 
 
-def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
-                            iterations=100, a=0.01, cycle=None, weight='weight'):
+def simulated_annealing_tsp(
+    G,
+    source,
+    temp=100,
+    move="1-1",
+    tolerance=10,
+    iterations=100,
+    a=0.01,
+    cycle=None,
+    weight="weight",
+):
     """Finds the route that salesman has to visit in order
     to minimize total distance and total distance using a
     simulated annealing algorithm.
@@ -248,15 +259,17 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
     else:
         # Calculate the cost of initial solution and make the essential checks for graph.
         if not all(G.has_edge(u, v) for u, v in itertools.permutations(G, 2)):
-            raise nx.NetworkXError('Given graph is not completed.')
+            raise nx.NetworkXError("Given graph is not completed.")
 
         if G.number_of_nodes() == 2:
             neighbor = G.neighbors(source)[0]
-            return ([source, neighbor, source],
-                G.edge[source][neighbor][weight] + G.edge[neighbor][source][weight])
+            return (
+                [source, neighbor, source],
+                G.edge[source][neighbor][weight] + G.edge[neighbor][source][weight],
+            )
 
         if not nx.is_weighted(G, weight=weight):
-            raise nx.NetworkXError('Given graph is not weighted.')
+            raise nx.NetworkXError("Given graph is not weighted.")
         cost = sum(G.edge[u][v][weight] for u, v in zip(cycle, cycle[1:]))
 
     count = 0
@@ -266,8 +279,7 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
         count += 1
         for i in range(iterations):
             adj_sol = _apply_move(cycle, move)
-            adj_cost = sum(G.edge[u][v][weight] for u, v in zip(cycle,
-                                                                cycle[1:]))
+            adj_cost = sum(G.edge[u][v][weight] for u, v in zip(cycle, cycle[1:]))
             delta = adj_cost - cost
             if delta <= 0:
 
@@ -282,7 +294,7 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
             else:
 
                 # Accept even a worse solution with probability p.
-                p = math.exp(- (delta / temp))
+                p = math.exp(-(delta / temp))
                 if p >= random():
                     cycle = list(adj_sol)
                     cost = adj_cost
@@ -292,8 +304,17 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
     return best_cycle, best_cost
 
 
-def threshold_accepting_tsp(G, source, t=1, move='1-1', tolerance=10,
-                            iterations=100, a=0.1, cycle=None, weight='weight'):
+def threshold_accepting_tsp(
+    G,
+    source,
+    t=1,
+    move="1-1",
+    tolerance=10,
+    iterations=100,
+    a=0.1,
+    cycle=None,
+    weight="weight",
+):
     """Finds the route that salesman has to visit in order
     to minimize total distance and total distance using a
     threshold accepting algorithm.
@@ -427,15 +448,17 @@ def threshold_accepting_tsp(G, source, t=1, move='1-1', tolerance=10,
     else:
         # Calculate the cost of initial solution and make the essential checks for graph.
         if not all(G.has_edge(u, v) for u, v in itertools.permutations(G, 2)):
-            raise nx.NetworkXError('Given graph is not completed.')
+            raise nx.NetworkXError("Given graph is not completed.")
 
         if G.number_of_nodes() == 2:
             neighbor = G.neighbors(source)[0]
-            return ([source, neighbor, source],
-                G.edge[source][neighbor][weight] + G.edge[neighbor][source][weight])
+            return (
+                [source, neighbor, source],
+                G.edge[source][neighbor][weight] + G.edge[neighbor][source][weight],
+            )
 
         if not nx.is_weighted(G, weight=weight):
-            raise nx.NetworkXError('Given graph is not weighted.')
+            raise nx.NetworkXError("Given graph is not weighted.")
         cost = sum(G.edge[u][v][weight] for u, v in zip(cycle, cycle[1:]))
 
     count = 0
@@ -446,8 +469,7 @@ def threshold_accepting_tsp(G, source, t=1, move='1-1', tolerance=10,
         accepted = False
         for i in range(iterations):
             adj_sol = _apply_move(cycle, move)
-            adj_cost = sum(G.edge[u][v][weight] for u, v in zip(cycle,
-                                                                cycle[1:]))
+            adj_cost = sum(G.edge[u][v][weight] for u, v in zip(cycle, cycle[1:]))
             delta = adj_cost - cost
             if delta <= t:
                 accepted = True
@@ -477,8 +499,8 @@ def _apply_move(sol, move):
     a = randint(1, len(sol) - 2)
     listb = list(range(1, a)) + list(range(a + 1, len(sol) - 2))
     b = choice(listb)
-    if move == '1-1':
+    if move == "1-1":
         sol[a], sol[b] = sol[b], sol[a]
-    elif move == '1-0':
+    elif move == "1-0":
         sol.insert(b, sol.pop(a))
     return sol

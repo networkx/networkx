@@ -1,5 +1,4 @@
-"""Approximations of graph properties and Heuristic functions for optimization
-problems.
+"""Approximations of graph properties and Heuristic functions for optimization problems.
 
     .. warning:: The approximation submodule is not imported in the top-level
         ``networkx``.
@@ -20,3 +19,4 @@ from networkx.algorithms.approximation.ramsey import *
 from networkx.algorithms.approximation.steinertree import *
 from networkx.algorithms.approximation.vertex_cover import *
 from networkx.algorithms.approximation.treewidth import *
+from networkx.algorithms.approximation.tsp import *

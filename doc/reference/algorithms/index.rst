@@ -71,7 +71,6 @@ Algorithms
    traversal
    tree
    triads
-   tsp
    vitality
    voronoi
    wiener
