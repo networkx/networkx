@@ -80,24 +80,26 @@ Optional packages
 -----------------
 
 .. note::
-   Some optional packages (e.g., `scipy`, `gdal`) may require compiling
+   Some optional packages (e.g., `gdal`) may require compiling
    C or C++ code.  If you have difficulty installing these packages
    with `pip`, please review the instructions for installing
    the full `scientific Python stack <https://scipy.org/install.html>`_.
 
-The following optional packages provide additional functionality.
+The following optional packages provide additional functionality. See the
+files in the ``requirements/`` directory for information about specific
+version requirements.
 
-- `NumPy <http://www.numpy.org/>`_ (>= 1.15.4) provides matrix representation of
+- `NumPy <http://www.numpy.org/>`_ provides matrix representation of
   graphs and is used in some graph algorithms for high-performance matrix
   computations.
-- `SciPy <http://scipy.org/>`_ (>= 1.1.0) provides sparse matrix representation
+- `SciPy <http://scipy.org/>`_ provides sparse matrix representation
   of graphs and many numerical scientific tools.
-- `pandas <http://pandas.pydata.org/>`_ (>= 0.23.3) provides a DataFrame, which
+- `pandas <http://pandas.pydata.org/>`_ provides a DataFrame, which
   is a tabular data structure with labeled axes.
-- `Matplotlib <http://matplotlib.org/>`_ (>= 3.0.2) provides flexible drawing of
+- `Matplotlib <http://matplotlib.org/>`_ provides flexible drawing of
   graphs.
-- `PyGraphviz <http://pygraphviz.github.io/>`_ (>= 1.5) and
-  `pydot <https://github.com/erocarrera/pydot>`_ (>= 1.2.4) provide graph drawing
+- `PyGraphviz <http://pygraphviz.github.io/>`_ and
+  `pydot <https://github.com/erocarrera/pydot>`_ provide graph drawing
   and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
 - `PyYAML <http://pyyaml.org/>`_ provides YAML format reading and writing.
 - `gdal <http://www.gdal.org/>`_ provides shapefile format reading and writing.
