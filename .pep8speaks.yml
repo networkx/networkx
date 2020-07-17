@@ -6,3 +6,14 @@ flake8:
     ignore:  # Errors and warnings to ignore
         - E402  # module level import not at top of file
         - W503  # newline before binary operator
+
+message:  # Customize the comment made by the bot
+    opened:  # Messages when a new PR is submitted
+        header: "Hello @{name}! Thanks for opening this PR. "
+                # The keyword {name} is converted into the author's username
+        footer: "Please install and run [psf/black](https://github.com/psf/black)."
+                # The messages can be written as they would over GitHub
+    updated:  # Messages when new commits are added to the PR
+        header: "Hello @{name}! Thanks for updating this PR. "
+        footer: "Please install and run [psf/black](https://github.com/psf/black)."
+    no_errors: "There are currently no PEP 8 issues detected in this Pull Request. Cheers!"
