@@ -8,6 +8,7 @@ import networkx as nx
 from networkx.utils import pairwise, not_implemented_for
 from networkx.classes.graphviews import subgraph_view, reverse_view
 
+
 __all__ = [
     "nodes",
     "edges",
@@ -1254,7 +1255,10 @@ def is_path(G, path):
         A boolean representing whether or not the path exists
 
     """
-    return all([True if nbr in G[node] else False for node, nbr in nx.utils.pairwise(path)])
+    for node, nbr in nx.utils.pairwise(path):
+        if nbr not in G[node]:
+            return False
+    return True
 
 
 def path_weight(G, path, weight):
@@ -1275,7 +1279,7 @@ def path_weight(G, path, weight):
     -------
     cost: int
         A integer representing the total cost with respect to the
-        specified feature of the specified path
+        specified weight of the specified path
 
     Raises
     ------
@@ -1284,6 +1288,7 @@ def path_weight(G, path, weight):
     """
     multigraph = G.is_multigraph()
     cost = 0
+
     if not nx.is_path(G, path):
         raise nx.NetworkXNoPath("path does not exist")
     for node, nbr in nx.utils.pairwise(path):
