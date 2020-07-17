@@ -230,7 +230,8 @@ def simulated_annealing_tsp(
     ['D', 'C', 'B', 'A', 'D']
     >>> cost
     31
-    >>> cycle, cost = approx.simulated_annealing_tsp(G, 'D', cycle=['D', 'B', 'A', 'C', 'D'])
+    >>> incycle = ['D', 'B', 'A', 'C', 'D']
+    >>> cycle, cost = approx.simulated_annealing_tsp(G, 'D', cycle=incycle)
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
     >>> cost
@@ -270,7 +271,7 @@ def simulated_annealing_tsp(
         if G.number_of_nodes() == 2:
             return cycle, cost
     else:
-        # Calculate the cost of initial solution and make the essential checks for graph.
+        # Find the cost of initial solution and make the essential checks for graph.
         if any(v not in G[u] for u in G for v in G if u != v):
             raise nx.NetworkXError(
                 "Not a complete graph. All node pairs must have edges."
@@ -470,7 +471,7 @@ def threshold_accepting_tsp(
         if G.number_of_nodes() == 2:
             return cycle, cost
     else:
-        # Calculate the cost of initial solution and make the essential checks for graph.
+        # Find the cost of initial solution and make the essential checks for graph.
         if any(v not in G[u] for u in G for v in G if u != v):
             raise nx.NetworkXError(
                 "Not a complete graph. All node pairs must have edges."
@@ -522,7 +523,7 @@ def _apply_move(soln, move, seed):
     ----------
     soln : list of nodes
         Current solution (list of nodes)
-    
+
     move : string
         Move to be applied
 
