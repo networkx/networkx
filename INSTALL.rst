@@ -86,8 +86,8 @@ Optional packages
    the full `scientific Python stack <https://scipy.org/install.html>`_.
 
 The following optional packages provide additional functionality. See the
-`requirements files <https://github.com/networkx/networkx/tree/master/requirements>`_
-for information about specific version requirements.
+files in the ``requirements/`` directory for information about specific
+version requirements.
 
 - `NumPy <http://www.numpy.org/>`_ provides matrix representation of
   graphs and is used in some graph algorithms for high-performance matrix
