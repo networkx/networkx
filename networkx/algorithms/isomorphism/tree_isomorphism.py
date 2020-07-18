@@ -20,6 +20,11 @@ http://crypto.cs.mcgill.ca/~crepeau/CS250/2004/HW5+.pdf
 
 import networkx as nx
 
+__all__ = [
+    "rooted_tree_isomorphism",
+    "tree_isomorphism",
+]
+
 
 def root_trees(t1, root1, t2, root2):
 
@@ -99,6 +104,47 @@ def generate_isomorphism(v, w, M, ordered_children):
 
 
 def rooted_tree_isomorphism(t1, root1, t2, root2):
+
+    """
+    Given two rooted trees `t1` and `t2`,
+    with roots `root1` and `root2` respectivly
+    this routine will determine if they are isomorphic.
+
+    These trees may be either directed or undirected,
+    but if they are directed, all edges should flow from the root.
+
+    It returns the isomorphism, a mapping of the nodes of `t1` onto the nodes
+    of `t2`, such that two trees are then identical.
+
+    Note that two trees may have more than one isomorphism, and this
+    routine just returns one valid mapping.
+
+    Parameters
+    ----------
+    `t1` :  NetworkX graph
+        One of the trees being compared
+
+    `root1` : a node of `t1` which is the root of the tree
+
+    `t2` : undirected NetworkX graph
+        The other tree being compared
+
+    `root2` : a node of `t2` which is the root of the tree
+
+    This is a subroutine used to implement `tree_isomorphism`, but will
+    be somewhat faster if you already have rooted trees.
+
+    Returns
+    -------
+    isomorphism : list
+        A list of pairs in which the left element is a node in `t1`
+        and the right element is a node in `t2`.  The pairs are in
+        arbitrary order.  If the nodes in one tree is mapped to the names in
+        the other, then trees will be identical. Note that an isomorphism
+        will not necessarily be unique.
+
+        If `t1` and `t2` are not isomorphic, then it returns the empty list.
+    """
 
     assert nx.is_tree(t1)
     assert nx.is_tree(t2)
