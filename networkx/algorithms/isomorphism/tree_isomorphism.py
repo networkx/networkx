@@ -19,6 +19,7 @@ http://crypto.cs.mcgill.ca/~crepeau/CS250/2004/HW5+.pdf
 """
 
 import networkx as nx
+from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
     "rooted_tree_isomorphism",
@@ -210,7 +211,7 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
     return isomorphism
 
 
-@nx.not_implemented_for("directed", "multigraph")
+@not_implemented_for("directed", "multigraph")
 def tree_isomorphism(t1, t2):
     """
     Given two undirected (or free) trees `t1` and `t2`,

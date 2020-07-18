@@ -3,7 +3,7 @@ import random
 import time
 from networkx.classes.function import is_directed
 
-from networkx.algorithms.isomorphism.treeisomorphism import (
+from networkx.algorithms.isomorphism.tree_isomorphism import (
     rooted_tree_isomorphism,
     tree_isomorphism,
 )
