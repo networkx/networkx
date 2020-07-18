@@ -1262,7 +1262,7 @@ def is_path(G, path):
 
 
 def path_weight(G, path, weight):
-    """Returns total cost associated with specified path and feature
+    """Returns total cost associated with specified path and weight
 
     Parameters
     ----------
@@ -1272,7 +1272,7 @@ def path_weight(G, path, weight):
     path: list
         A list of node labels which defines the path to traverse
 
-    feature: string
+    weight: string
         A string indicating which edge attribute to use for path cost
 
     Returns
