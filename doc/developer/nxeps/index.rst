@@ -1,9 +1,9 @@
 .. _nxep_list:
 
-Enhancement Proposals (NXEPS)
-*****************************
+NXEPs
+*****
 
-NXEPs document any major changes or proposals to the NetworkX project.
+NetworkX Enhancement Proposals (NXEPs) document major changes or proposals.
 
 .. toctree::
    :maxdepth: 1
