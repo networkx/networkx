@@ -3,8 +3,10 @@ import random
 import time
 from networkx.classes.function import is_directed
 
-from networkx.algorithms.isomorphism.treeisomorphism \
-    import rooted_tree_isomorphism, tree_isomorphism
+from networkx.algorithms.isomorphism.treeisomorphism import (
+    rooted_tree_isomorphism,
+    tree_isomorphism,
+)
 
 
 # have this work for graph
@@ -55,67 +57,71 @@ def test_hardcoded():
     print("hardcoded test")
 
     # define a test problem
-    edges_1 = [("a", "b"),
-               ("a", "c"),
-               ("a", "d"),
-               ("b", "e"),
-               ("b", "f"),
-               ("e", "j"),
-               ("e", "k"),
-               ("c", "g"),
-               ("c", "h"),
-               ("g", "m"),
-               ("d", "i"),
-               ("f", "l"),
-               ]
+    edges_1 = [
+        ("a", "b"),
+        ("a", "c"),
+        ("a", "d"),
+        ("b", "e"),
+        ("b", "f"),
+        ("e", "j"),
+        ("e", "k"),
+        ("c", "g"),
+        ("c", "h"),
+        ("g", "m"),
+        ("d", "i"),
+        ("f", "l"),
+    ]
 
-    edges_2 = [("v", "y"),
-               ("v", "z"),
-               ("u", "x"),
-               ("q", "u"),
-               ("q", "v"),
-               ("p", "t"),
-               ("n", "p"),
-               ("n", "q"),
-               ("n", "o"),
-               ("o", "r"),
-               ("o", "s"),
-               ("s", "w"),
-               ]
+    edges_2 = [
+        ("v", "y"),
+        ("v", "z"),
+        ("u", "x"),
+        ("q", "u"),
+        ("q", "v"),
+        ("p", "t"),
+        ("n", "p"),
+        ("n", "q"),
+        ("n", "o"),
+        ("o", "r"),
+        ("o", "s"),
+        ("s", "w"),
+    ]
 
     # there are two possible correct isomorphisms
     # it currently returns isomorphism1
     # but the second is also correct
-    isomorphism1 = [('a', 'n'),
-                    ('b', 'q'),
-                    ('c', 'o'),
-                    ('d', 'p'),
-                    ('e', 'v'),
-                    ('f', 'u'),
-                    ('g', 's'),
-                    ('h', 'r'),
-                    ('i', 't'),
-                    ('j', 'y'),
-                    ('k', 'z'),
-                    ('l', 'x'),
-                    ('m', 'w'),
-                    ]
+    isomorphism1 = [
+        ("a", "n"),
+        ("b", "q"),
+        ("c", "o"),
+        ("d", "p"),
+        ("e", "v"),
+        ("f", "u"),
+        ("g", "s"),
+        ("h", "r"),
+        ("i", "t"),
+        ("j", "y"),
+        ("k", "z"),
+        ("l", "x"),
+        ("m", "w"),
+    ]
 
     # could swap y and z
-    isomorphism2 = [('a', 'n'),
-                    ('b', 'q'),
-                    ('c', 'o'),
-                    ('d', 'p'),
-                    ('e', 'v'),
-                    ('f', 'u'),
-                    ('g', 's'),
-                    ('h', 'r'),
-                    ('i', 't'),
-                    ('j', 'z'),
-                    ('k', 'y'),
-                    ('l', 'x'),
-                    ('m', 'w'),
-                    ]
+    isomorphism2 = [
+        ("a", "n"),
+        ("b", "q"),
+        ("c", "o"),
+        ("d", "p"),
+        ("e", "v"),
+        ("f", "u"),
+        ("g", "s"),
+        ("h", "r"),
+        ("i", "t"),
+        ("j", "z"),
+        ("k", "y"),
+        ("l", "x"),
+        ("m", "w"),
+    ]
 
     t1 = nx.Graph()
     t1.add_edges_from(edges_1)
@@ -224,7 +230,7 @@ def test_trivial():
 
     isomorphism = rooted_tree_isomorphism(t1, root1, t2, root2)
 
-    assert isomorphism == [('a', 'n')]
+    assert isomorphism == [("a", "n")]
 
     assert check_isomorphism(t1, t2, isomorphism)
 
@@ -235,12 +241,14 @@ def test_trivial_2():
 
     print("trivial test 2")
 
-    edges_1 = [("a", "b"),
-               ("a", "c"),
-               ]
+    edges_1 = [
+        ("a", "b"),
+        ("a", "c"),
+    ]
 
-    edges_2 = [("v", "y"),
-               ]
+    edges_2 = [
+        ("v", "y"),
+    ]
 
     t1 = nx.Graph()
     t1.add_edges_from(edges_1)

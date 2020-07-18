@@ -35,7 +35,7 @@ def root_trees(t1, root1, t2, root2):
 
     dT = nx.DiGraph()
 
-    newroot1 = 1                           # left root will be 1
+    newroot1 = 1  # left root will be 1
     newroot2 = nx.number_of_nodes(t1) + 1  # right will be n+1
 
     # may be overlap in node names here so need separate maps
@@ -164,7 +164,7 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
     return isomorphism
 
 
-@nx.not_implemented_for('directed', 'multigraph')
+@nx.not_implemented_for("directed", "multigraph")
 def tree_isomorphism(t1, t2):
     """
     Given two undirected (or free) trees `t1` and `t2`,
