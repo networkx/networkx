@@ -1,3 +1,6 @@
+Deprecations
+============
+
 Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 
 Version 3.0

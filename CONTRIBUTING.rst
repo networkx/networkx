@@ -104,8 +104,9 @@ For a more detailed discussion, read these :doc:`detailed documents
    If your change introduces any API modifications, please update
    ``doc/release/release_dev.rst``.
 
-   If your change introduces a deprecation, add a reminder to ``TODO.txt``
-   for the team to remove the deprecated functionality in the future.
+   If your change introduces a deprecation, add a reminder to
+   ``doc/developer/deprecations.rst`` for the team to remove the
+   deprecated functionality in the future.
 
 .. note::
 
