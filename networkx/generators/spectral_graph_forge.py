@@ -12,7 +12,7 @@ def _mat_spect_approx(A, level, sorteigs=True, reverse=False, absolute=True):
 
     Parameters
     ----------
-    A : numpy matrix
+    A : 2D numpy array
     level : integer
         It represents the fixed rank for the output approximation matrix
     sorteigs : boolean
@@ -27,7 +27,7 @@ def _mat_spect_approx(A, level, sorteigs=True, reverse=False, absolute=True):
 
     Returns
     -------
-    B : numpy matrix
+    B : 2D numpy array
         low-rank approximation of A
 
     Notes
@@ -61,11 +61,11 @@ def _mat_spect_approx(A, level, sorteigs=True, reverse=False, absolute=True):
     if not reverse:
         k = np.flipud(k)
 
-    z = np.zeros((n, 1))
+    z = np.zeros(n)
     for i in range(level, n):
         V[:, k[i]] = z
 
-    B = V * np.diag(d) * np.transpose(V)
+    B = V @ np.diag(d) @ V.T
     return B
 
 
@@ -148,7 +148,7 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
 
     available_transformations = ["identity", "modularity"]
     alpha = np.clip(alpha, 0, 1)
-    A = nx.to_numpy_matrix(G)
+    A = nx.to_numpy_array(G)
     n = A.shape[1]
     level = int(round(n * alpha))
 
@@ -157,24 +157,24 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
         msg += f"Transformations: {available_transformations}"
         raise nx.NetworkXError(msg)
 
-    K = np.ones((1, n)) * A
+    K = np.ones((1, n)) @ A
 
     B = A
     if transformation == "modularity":
-        B -= np.transpose(K) * K / float(sum(np.ravel(K)))
+        B -= K.T @ K / K.sum()
 
     B = _mat_spect_approx(B, level, sorteigs=True, absolute=True)
 
     if transformation == "modularity":
-        B += np.transpose(K) * K / float(sum(np.ravel(K)))
+        B += K.T @ K / K.sum()
 
     B = np.clip(B, 0, 1)
-    np.fill_diagonal(B, np.zeros((1, n)))
+    np.fill_diagonal(B, 0)
 
     for i in range(n - 1):
         B[i, i + 1 :] = stats.bernoulli.rvs(B[i, i + 1 :], random_state=seed)
         B[i + 1 :, i] = np.transpose(B[i, i + 1 :])
 
-    H = nx.from_numpy_matrix(B)
+    H = nx.from_numpy_array(B)
 
     return H

@@ -41,17 +41,18 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     try:
         import numpy as np
     except ImportError as e:
-        raise ImportError("to_numpy_matrix() requires numpy: http://numpy.org/ ") from e
+        raise ImportError("to_numpy_array() requires numpy: http://numpy.org/ ") from e
 
     # To handle cases when an edge has weight=0, we must make sure that
     # nonedges are not given the value 0 as well.
-    A = nx.to_numpy_matrix(
+    A = nx.to_numpy_array(
         G, nodelist=nodelist, multigraph_weight=min, weight=weight, nonedge=np.inf
     )
     n, m = A.shape
-    A[np.identity(n) == 1] = 0  # diagonal elements should be zero
+    np.fill_diagonal(A, 0)  # diagonal elements should be zero
     for i in range(n):
-        A = np.minimum(A, A[i, :] + A[:, i])
+        # The second term has the same shape as A due to broadcasting
+        A = np.minimum(A, A[i, :][np.newaxis, :] + A[:, i][:, np.newaxis])
     return A
 
 

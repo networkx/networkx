@@ -121,14 +121,14 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
 
 def authority_matrix(G, nodelist=None):
     """Returns the HITS authority matrix."""
-    M = nx.to_numpy_matrix(G, nodelist=nodelist)
-    return M.T * M
+    M = nx.to_numpy_array(G, nodelist=nodelist)
+    return M.T @ M
 
 
 def hub_matrix(G, nodelist=None):
     """Returns the HITS hub matrix."""
-    M = nx.to_numpy_matrix(G, nodelist=nodelist)
-    return M * M.T
+    M = nx.to_numpy_array(G, nodelist=nodelist)
+    return M @ M.T
 
 
 def hits_numpy(G, normalized=True):

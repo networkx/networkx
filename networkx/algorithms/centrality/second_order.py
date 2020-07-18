@@ -118,8 +118,8 @@ def second_order_centrality(G):
         if deg < d_max:
             G.add_edge(i, i, weight=d_max - deg)
 
-    P = nx.to_numpy_matrix(G)
-    P = P / P.sum(axis=1)  # to transition probability matrix
+    P = nx.to_numpy_array(G)
+    P /= P.sum(axis=1)[:, np.newaxis]  # to transition probability matrix
 
     def _Qj(P, j):
         P = P.copy()

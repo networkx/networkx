@@ -206,7 +206,7 @@ def from_pandas_adjacency(df, create_using=None):
         raise nx.NetworkXError("Columns must match Indices.", msg) from e
 
     A = df.values
-    G = from_numpy_matrix(A, create_using=create_using)
+    G = from_numpy_array(A, create_using=create_using)
 
     nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=False)
     return G
