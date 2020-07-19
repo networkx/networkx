@@ -89,9 +89,9 @@ The following optional packages provide additional functionality. See the
 files in the ``requirements/`` directory for information about specific
 version requirements.
 
-- `NumPy <http://www.numpy.org/>`_ provides matrix representation of
-  graphs and is used in some graph algorithms for high-performance matrix
-  computations.
+- `NumPy <http://www.numpy.org/>`_ provides array-based dense 
+  matrix representations of graphs and high-performance array math and linear
+  algebra which is used in some graph algorithms.
 - `SciPy <http://scipy.org/>`_ provides sparse matrix representation
   of graphs and many numerical scientific tools.
 - `pandas <http://pandas.pydata.org/>`_ provides a DataFrame, which

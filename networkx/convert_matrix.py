@@ -1,4 +1,5 @@
-"""Functions to convert NetworkX graphs to and from numpy/scipy matrices.
+"""Functions to convert NetworkX graphs to and from common data containers
+like numpy arrays, scipy sparse matrices, and pandas DataFrames.
 
 The preferred way of converting data to a NetworkX graph is through the
 graph constructor.  The constructor calls the to_networkx_graph() function
@@ -6,7 +7,7 @@ which attempts to guess the input type and convert it automatically.
 
 Examples
 --------
-Create a 10 node random graph from a numpy matrix
+Create a 10 node random graph from a numpy array
 
 >>> import numpy as np
 >>> a = np.random.randint(0, 2, size=(10, 10))
@@ -164,10 +165,10 @@ def from_pandas_adjacency(df, create_using=None):
     For directed graphs, explicitly mention create_using=nx.DiGraph,
     and entry i,j of df corresponds to an edge from i to j.
 
-    If the numpy matrix has a single data type for each matrix entry it
-    will be converted to an appropriate Python data type.
+    If `df` has a single data type for each entry it will be converted to an
+    appropriate Python data type.
 
-    If the numpy matrix has a user-specified compound data type the names
+    If `df` has a user-specified compound data type the names
     of the data fields will be used as attribute keys in the resulting
     NetworkX graph.
 
@@ -703,7 +704,7 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     Parameters
     ----------
     G : graph
-        The NetworkX graph used to construct the NumPy matrix.
+        The NetworkX graph used to construct the NumPy recarray.
 
     nodelist : list, optional
        The rows and columns are ordered according to the nodes in `nodelist`.
@@ -726,8 +727,9 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
 
     Notes
     -----
-    When `nodelist` does not contain every node in `G`, the matrix is built
-    from the subgraph of `G` that is induced by the nodes in `nodelist`.
+    When `nodelist` does not contain every node in `G`, the adjacency
+    matrix is built from the subgraph of `G` that is induced by the nodes in
+    `nodelist`.
 
     Examples
     --------
@@ -775,7 +777,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
     Parameters
     ----------
     G : graph
-        The NetworkX graph used to construct the NumPy matrix.
+        The NetworkX graph used to construct the sparse matrix.
 
     nodelist : list, optional
        The rows and columns are ordered according to the nodes in `nodelist`.
@@ -809,11 +811,9 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
 
     For multiple edges the matrix values are the sums of the edge weights.
 
-    When `nodelist` does not contain every node in `G`, the matrix is built
-    from the subgraph of `G` that is induced by the nodes in `nodelist`.
-
-    Uses coo_matrix format. To convert to other formats specify the
-    format= keyword.
+    When `nodelist` does not contain every node in `G`, the adjacency matrix
+    is built from the subgraph of `G` that is induced by the nodes in
+    `nodelist`.
 
     The convention used for self-loop edges in graphs is to assign the
     diagonal matrix entry value to the weight attribute of the edge

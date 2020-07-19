@@ -49,7 +49,7 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     See Also
     --------
     bethe_hessian_spectrum
-    to_numpy_matrix
+    to_numpy_array
     adjacency_matrix
     laplacian_matrix
 
