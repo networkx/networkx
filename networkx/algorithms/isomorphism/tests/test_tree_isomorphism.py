@@ -156,6 +156,13 @@ def test_hardcoded():
     # check algorithmically
     assert check_isomorphism(t1, t2, isomorphism)
 
+# randomly swap a tuple (a,b)
+def random_swap(t):
+    (a,b) = t
+    if random.randint(0,1) == 1:
+        return (a,b)
+    else:
+        return (b,a)
 
 # given a tree t1, create a new tree t2
 # that is isomorphic to t1, with a known isomorphism
@@ -177,7 +184,7 @@ def positive_single_tree(t1):
     map1to2 = {u: v for (u, v) in someisomorphism}
 
     # get the edges with the transformed names
-    edges2 = [(map1to2[u], map1to2[v]) for (u, v) in t1.edges()]
+    edges2 = [random_swap((map1to2[u], map1to2[v])) for (u, v) in t1.edges()]
     # randomly permute, to ensure we're not relying on edge order somehow
     random.shuffle(edges2)
 
@@ -200,7 +207,7 @@ def positive_single_tree(t1):
 # k = 13 takes about 2.86 seconds to run on my laptop
 # larger values run slow down significantly
 # as the number of trees grows rapidly
-def test_positive(maxk=13):
+def test_positive(maxk=14):
 
     print("positive test")
 
