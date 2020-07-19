@@ -156,13 +156,15 @@ def test_hardcoded():
     # check algorithmically
     assert check_isomorphism(t1, t2, isomorphism)
 
+
 # randomly swap a tuple (a,b)
 def random_swap(t):
-    (a,b) = t
-    if random.randint(0,1) == 1:
-        return (a,b)
+    (a, b) = t
+    if random.randint(0, 1) == 1:
+        return (a, b)
     else:
-        return (b,a)
+        return (b, a)
+
 
 # given a tree t1, create a new tree t2
 # that is isomorphic to t1, with a known isomorphism
