@@ -243,7 +243,7 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     if isinstance(cutoff, int):
         if cutoff < 1:
-            return []
+            return empty_generator()
 
         if G.is_multigraph():
             return _all_simple_paths_multigraph(G, source, targets, cutoff)
