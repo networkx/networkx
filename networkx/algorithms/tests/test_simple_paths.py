@@ -113,65 +113,6 @@ def test_digraph_all_simple_paths_with_two_targets_cutoff():
     assert {tuple(p) for p in paths} == {(0, 1, 2, 3), (0, 1, 2, 4)}
 
 
-def test_all_simple_paths_invalid_cutoff():
-    edges = [(1, 2), (2, 10), (1, 5), (5, 4), (4, 3), (3, 10)]
-    G = nx.Graph(edges)
-    with pytest.raises(TypeError):
-        paths = list(nx.all_simple_paths(G, 1, 10, cutoff=2.0))
-
-
-def test_all_simple_paths_none_in_cutoff():
-    G = nx.cycle_graph(10, create_using=nx.DiGraph)
-    paths = list(nx.all_simple_paths(G, 1, 9, cutoff={None: 2}))
-    assert len(paths) == 0
-
-
-def test_all_simple_paths_weighted_graph_with_weight_cutoff():
-    n = 5
-    G = nx.complete_graph(n, create_using=nx.Graph)
-    distances = list(range(1, (n ** 2) + 1))
-    d = {e: {'Distance': dist} for e, dist in zip(G.edges(), distances)}
-    nx.set_edge_attributes(G, d)
-    paths = list(nx.all_simple_paths(G, 0, 4, cutoff={'Distance': 10}))
-    assert len(paths) == 2
-    assert paths[0] == [0, 1, 4]
-    assert paths[1] == [0, 4]
-
-
-def test_all_simple_paths_weighted_multigraph_with_weight_cutoff():
-    n = 5
-    G = nx.complete_graph(n, create_using=nx.MultiGraph)
-    distances = list(range(1, (n ** 2) + 1))
-    edges = G.edges(keys=True)
-    d = {e: {'Distance': dist} for e, dist in zip(edges, distances)}
-    nx.set_edge_attributes(G, d)
-
-    # Add a by-pass link
-    G.add_edge(0, 4, 1)
-    G[0][4][1]['Distance'] = 1
-
-    paths = list(nx.all_simple_paths(G, 0, 4, cutoff={'Distance': 3}))
-    assert len(paths) == 1
-    assert paths[0] == [0, 4]
-
-
-def test_all_simple_paths_weighted_multigraph_with_multiple_cutoffs():
-    n = 5
-    G = nx.complete_graph(n, create_using=nx.MultiGraph)
-    distances = list(range(1, (n ** 2) + 1))
-    edges = G.edges(keys=True)
-
-    d = {e: {'Distance': dist} for e, dist in zip(edges, distances)}
-    nx.set_edge_attributes(G, d)
-
-    paths = list(nx.all_simple_paths(G, 0, 4, cutoff={None: 3, 'Distance': 20}))
-
-    assert len(paths) == 4
-    assert paths[0] == [0, 1, 4]
-    assert paths[-1] == [0, 4]
-    assert max([len(p) for p in paths]) == 3
-
-
 def test_all_simple_paths_with_two_targets_in_line_emits_two_paths():
     G = nx.path_graph(4)
     paths = nx.all_simple_paths(G, 0, [2, 3])
@@ -243,7 +184,7 @@ def test_all_simple_paths_multigraph():
     assert {tuple(p) for p in paths} == {(1, 2), (1, 2), (1, 10, 2)}
 
 
-def test_all_simple_paths_multigraph_with_int_cutoff():
+def test_all_simple_paths_multigraph_with_cutoff():
     G = nx.MultiGraph([(1, 2), (1, 2), (1, 10), (10, 2)])
     paths = list(nx.all_simple_paths(G, 1, 2, cutoff=1))
     assert len(paths) == 2

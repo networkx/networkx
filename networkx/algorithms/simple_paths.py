@@ -660,6 +660,8 @@ def shortest_simple_paths(G, source, target, weight=None):
         length_func = len
         shortest_path_func = _bidirectional_shortest_path
     else:
+        wt = _weight_function(G, weight)
+
         def length_func(path):
             return sum(
                 wt(u, v, G.get_edge_data(u, v)) for (u, v) in zip(path, path[1:])
