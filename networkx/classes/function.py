@@ -1205,7 +1205,7 @@ def selfloop_edges(G, data=False, keys=False, default=None):
                     (n, n)
                     for n, nbrs in G.adj.items()
                     if n in nbrs
-                    for d in nbrs[n].values()
+                    for i in range(len(nbrs[n]))  # for easy edge removal (#4068)
                 )
         else:
             return ((n, n) for n, nbrs in G.adj.items() if n in nbrs)

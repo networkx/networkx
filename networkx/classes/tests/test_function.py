@@ -664,3 +664,28 @@ def test_selfloops():
         assert_edges_equal(
             nx.selfloop_edges(G, data="weight"), [(0, 0, None), (1, 1, 2)]
         )
+        # test removing selfloops behavior vis-a-vis altering a dict while iterating
+        G.add_edge(0, 0)
+        G.remove_edges_from(nx.selfloop_edges(G))
+        if G.is_multigraph():
+            G.add_edge(0, 0)
+            pytest.raises(
+                RuntimeError, G.remove_edges_from, nx.selfloop_edges(G, keys=True)
+            )
+            G.add_edge(0, 0)
+            pytest.raises(
+                TypeError, G.remove_edges_from, nx.selfloop_edges(G, data=True)
+            )
+            G.add_edge(0, 0)
+            pytest.raises(
+                RuntimeError,
+                G.remove_edges_from,
+                nx.selfloop_edges(G, data=True, keys=True),
+            )
+        else:
+            G.add_edge(0, 0)
+            G.remove_edges_from(nx.selfloop_edges(G, keys=True))
+            G.add_edge(0, 0)
+            G.remove_edges_from(nx.selfloop_edges(G, data=True))
+            G.add_edge(0, 0)
+            G.remove_edges_from(nx.selfloop_edges(G, keys=True, data=True))
