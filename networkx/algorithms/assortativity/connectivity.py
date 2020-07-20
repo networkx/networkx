@@ -1,11 +1,11 @@
 from collections import defaultdict
 
-__all__ = ['average_degree_connectivity',
-           'k_nearest_neighbors']
+__all__ = ["average_degree_connectivity", "k_nearest_neighbors"]
 
 
-def average_degree_connectivity(G, source="in+out", target="in+out",
-                                nodes=None, weight=None):
+def average_degree_connectivity(
+    G, source="in+out", target="in+out", nodes=None, weight=None
+):
     r"""Compute the average degree connectivity of graph.
 
     The average degree connectivity is the average nearest neighbor degree of
@@ -76,22 +76,22 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     """
     # First, determine the type of neighbors and the type of degree to use.
     if G.is_directed():
-        if source not in ('in', 'out', 'in+out'):
+        if source not in ("in", "out", "in+out"):
             raise ValueError('source must be one of "in", "out", or "in+out"')
-        if target not in ('in', 'out', 'in+out'):
+        if target not in ("in", "out", "in+out"):
             raise ValueError('target must be one of "in", "out", or "in+out"')
-        direction = {'out': G.out_degree,
-                     'in': G.in_degree,
-                     'in+out': G.degree}
-        neighbor_funcs = {'out': G.successors,
-                          'in': G.predecessors,
-                          'in+out': G.neighbors}
+        direction = {"out": G.out_degree, "in": G.in_degree, "in+out": G.degree}
+        neighbor_funcs = {
+            "out": G.successors,
+            "in": G.predecessors,
+            "in+out": G.neighbors,
+        }
         source_degree = direction[source]
         target_degree = direction[target]
         neighbors = neighbor_funcs[source]
         # `reverse` indicates whether to look at the in-edge when
         # computing the weight of an edge.
-        reverse = (source == 'in')
+        reverse = source == "in"
     else:
         source_degree = G.degree
         target_degree = G.degree

@@ -4,10 +4,12 @@ Graph isomorphism functions.
 import networkx as nx
 from networkx.exception import NetworkXError
 
-__all__ = ['could_be_isomorphic',
-           'fast_could_be_isomorphic',
-           'faster_could_be_isomorphic',
-           'is_isomorphic']
+__all__ = [
+    "could_be_isomorphic",
+    "fast_could_be_isomorphic",
+    "faster_could_be_isomorphic",
+    "is_isomorphic",
+]
 
 
 def could_be_isomorphic(G1, G2):

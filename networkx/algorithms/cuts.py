@@ -6,12 +6,20 @@ from itertools import chain
 
 import networkx as nx
 
-__all__ = ['boundary_expansion', 'conductance', 'cut_size', 'edge_expansion',
-           'mixing_expansion', 'node_expansion', 'normalized_cut_size',
-           'volume']
+__all__ = [
+    "boundary_expansion",
+    "conductance",
+    "cut_size",
+    "edge_expansion",
+    "mixing_expansion",
+    "node_expansion",
+    "normalized_cut_size",
+    "volume",
+]
 
 
 # TODO STILL NEED TO UPDATE ALL THE DOCUMENTATION!
+
 
 def cut_size(G, S, T=None, weight=None):
     """Returns the size of the cut between two sets of nodes.

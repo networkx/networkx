@@ -4,13 +4,12 @@ from heapq import heappush, heappop
 from itertools import count
 
 import networkx as nx
-from networkx.utils import not_implemented_for
 from networkx.algorithms.shortest_paths.weighted import _weight_function
 
-__all__ = ['astar_path', 'astar_path_length']
+__all__ = ["astar_path", "astar_path_length"]
 
 
-def astar_path(G, source, target, heuristic=None, weight='weight'):
+def astar_path(G, source, target, heuristic=None, weight="weight"):
     """Returns a list of nodes in a shortest path between source and target
     using the A* ("A-star") algorithm.
 
@@ -31,8 +30,17 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
        from the a node to the target.  The function takes
        two nodes arguments and must return a number.
 
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight.
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
 
     Raises
     ------
@@ -130,7 +138,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
     raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
 
-def astar_path_length(G, source, target, heuristic=None, weight='weight'):
+def astar_path_length(G, source, target, heuristic=None, weight="weight"):
     """Returns the length of the shortest path between source and target using
     the A* ("A-star") algorithm.
 

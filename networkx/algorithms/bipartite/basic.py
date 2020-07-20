@@ -6,12 +6,14 @@ Bipartite Graph Algorithms
 import networkx as nx
 from networkx.algorithms.components import connected_components
 
-__all__ = ['is_bipartite',
-           'is_bipartite_node_set',
-           'color',
-           'sets',
-           'density',
-           'degrees']
+__all__ = [
+    "is_bipartite",
+    "is_bipartite_node_set",
+    "color",
+    "sets",
+    "density",
+    "degrees",
+]
 
 
 def color(G):
@@ -53,8 +55,8 @@ def color(G):
         import itertools
 
         def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors(v),
-                                                  G.successors(v)])
+            return itertools.chain.from_iterable([G.predecessors(v), G.successors(v)])
+
     else:
         neighbors = G.neighbors
 
@@ -130,8 +132,9 @@ def is_bipartite_node_set(G, nodes):
     S = set(nodes)
     for CC in (G.subgraph(c).copy() for c in connected_components(G)):
         X, Y = sets(CC)
-        if not ((X.issubset(S) and Y.isdisjoint(S)) or
-                (Y.issubset(S) and X.isdisjoint(S))):
+        if not (
+            (X.issubset(S) and Y.isdisjoint(S)) or (Y.issubset(S) and X.isdisjoint(S))
+        ):
             return False
     return True
 
@@ -194,7 +197,7 @@ def sets(G, top_nodes=None):
         Y = set(G) - X
     else:
         if not is_connected(G):
-            msg = 'Disconnected graph: Ambiguous solution for bipartite sets.'
+            msg = "Disconnected graph: Ambiguous solution for bipartite sets."
             raise nx.AmbiguousSolution(msg)
         c = color(G)
         X = {n for n, is_top in c.items() if is_top}

@@ -16,8 +16,7 @@ import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file, not_implemented_for
 
-__all__ = ['from_graph6_bytes', 'read_graph6', 'to_graph6_bytes',
-           'write_graph6']
+__all__ = ["from_graph6_bytes", "read_graph6", "to_graph6_bytes", "write_graph6"]
 
 
 def _generate_graph6_bytes(G, nodes, header):
@@ -43,10 +42,11 @@ def _generate_graph6_bytes(G, nodes, header):
     """
     n = len(G)
     if n >= 2 ** 36:
-        raise ValueError('graph6 is only defined if number of nodes is less '
-                         'than 2 ** 36')
+        raise ValueError(
+            "graph6 is only defined if number of nodes is less " "than 2 ** 36"
+        )
     if header:
-        yield b'>>graph6<<'
+        yield b">>graph6<<"
     for d in n_to_data(n):
         yield str.encode(chr(d + 63))
     # This generates the same as `(v in G[u] for u, v in combinations(G, 2))`,
@@ -57,15 +57,15 @@ def _generate_graph6_bytes(G, nodes, header):
         d = sum(b << 5 - i for i, b in enumerate(chunk))
         yield str.encode(chr(d + 63))
         chunk = list(islice(bits, 6))
-    yield b'\n'
+    yield b"\n"
 
 
-def from_graph6_bytes(string):
-    """Read a simple undirected graph in graph6 format from string.
+def from_graph6_bytes(bytes_in):
+    """Read a simple undirected graph in graph6 format from bytes.
 
     Parameters
     ----------
-    string : string
+    bytes_in : bytes
        Data in graph6 format, without a trailing newline.
 
     Returns
@@ -75,10 +75,10 @@ def from_graph6_bytes(string):
     Raises
     ------
     NetworkXError
-        If the string is unable to be parsed in graph6 format
+        If bytes_in is unable to be parsed in graph6 format
 
     ValueError
-        If any character ``c`` in the input string does not satisfy
+        If any character ``c`` in bytes_in does not satisfy
         ``63 <= ord(c) < 127``.
 
     Examples
@@ -97,6 +97,7 @@ def from_graph6_bytes(string):
            <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
 
     """
+
     def bits():
         """Returns sequence of individual bits from 6-bit-per-value
         list of data values."""
@@ -104,18 +105,19 @@ def from_graph6_bytes(string):
             for i in [5, 4, 3, 2, 1, 0]:
                 yield (d >> i) & 1
 
-    if string.startswith(b'>>graph6<<'):
-        string = string[10:]
+    if bytes_in.startswith(b">>graph6<<"):
+        bytes_in = bytes_in[10:]
 
-    data = [c - 63 for c in string]
+    data = [c - 63 for c in bytes_in]
     if any(c > 63 for c in data):
-        raise ValueError('each input character must be in range(63, 127)')
+        raise ValueError("each input character must be in range(63, 127)")
 
     n, data = data_to_n(data)
     nd = (n * (n - 1) // 2 + 5) // 6
     if len(data) != nd:
         raise NetworkXError(
-            f'Expected {n * (n - 1) // 2} bits but got {len(data) * 6} in graph6')
+            f"Expected {n * (n - 1) // 2} bits but got {len(data) * 6} in graph6"
+        )
 
     G = nx.Graph()
     G.add_nodes_from(range(n))
@@ -175,10 +177,10 @@ def to_graph6_bytes(G, nodes=None, header=True):
         G = G.subgraph(nodes)
     H = nx.convert_node_labels_to_integers(G)
     nodes = sorted(H.nodes())
-    return b''.join(_generate_graph6_bytes(H, nodes, header))
+    return b"".join(_generate_graph6_bytes(H, nodes, header))
 
 
-@open_file(0, mode='rb')
+@open_file(0, mode="rb")
 def read_graph6(path):
     """Read simple undirected graphs in graph6 format from path.
 
@@ -241,9 +243,9 @@ def read_graph6(path):
         return glist
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
-@open_file(1, mode='wb')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@open_file(1, mode="wb")
 def write_graph6(G, path, nodes=None, header=True):
     """Write a simple undirected graph to a path in graph6 format.
 
@@ -302,8 +304,8 @@ def write_graph6(G, path, nodes=None, header=True):
     return write_graph6_file(G, path, nodes=nodes, header=header)
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def write_graph6_file(G, f, nodes=None, header=True):
     """Write a simple undirected graph to a file-like object in graph6 format.
 
@@ -376,8 +378,15 @@ def data_to_n(data):
         return data[0], data[1:]
     if data[1] <= 62:
         return (data[1] << 12) + (data[2] << 6) + data[3], data[4:]
-    return ((data[2] << 30) + (data[3] << 24) + (data[4] << 18) +
-            (data[5] << 12) + (data[6] << 6) + data[7], data[8:])
+    return (
+        (data[2] << 30)
+        + (data[3] << 24)
+        + (data[4] << 18)
+        + (data[5] << 12)
+        + (data[6] << 6)
+        + data[7],
+        data[8:],
+    )
 
 
 def n_to_data(n):
@@ -389,8 +398,15 @@ def n_to_data(n):
     if n <= 62:
         return [n]
     elif n <= 258047:
-        return [63, (n >> 12) & 0x3f, (n >> 6) & 0x3f, n & 0x3f]
+        return [63, (n >> 12) & 0x3F, (n >> 6) & 0x3F, n & 0x3F]
     else:  # if n <= 68719476735:
-        return [63, 63,
-                (n >> 30) & 0x3f, (n >> 24) & 0x3f, (n >> 18) & 0x3f,
-                (n >> 12) & 0x3f, (n >> 6) & 0x3f, n & 0x3f]
+        return [
+            63,
+            63,
+            (n >> 30) & 0x3F,
+            (n >> 24) & 0x3F,
+            (n >> 18) & 0x3F,
+            (n >> 12) & 0x3F,
+            (n >> 6) & 0x3F,
+            n & 0x3F,
+        ]

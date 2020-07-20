@@ -1,4 +1,5 @@
 import pytest
+
 np = pytest.importorskip("numpy")
 npt = pytest.importorskip("numpy.testing")
 scipy = pytest.importorskip("scipy")
@@ -8,7 +9,6 @@ from networkx.generators.degree_seq import havel_hakimi_graph
 
 
 class TestModularity:
-
     @classmethod
     def setup_class(cls):
         deg = [3, 2, 2, 1, 0]
@@ -33,11 +33,13 @@ class TestModularity:
 
     def test_modularity(self):
         "Modularity matrix"
+        # fmt: off
         B = np.array([[-1.125,  0.25,  0.25,  0.625,  0.],
                       [0.25, -0.5,  0.5, -0.25,  0.],
                       [0.25,  0.5, -0.5, -0.25,  0.],
                       [0.625, -0.25, -0.25, -0.125,  0.],
                       [0.,  0.,  0.,  0.,  0.]])
+        # fmt: on
 
         permutation = [4, 0, 1, 2, 3]
         npt.assert_equal(nx.modularity_matrix(self.G), B)
@@ -48,11 +50,13 @@ class TestModularity:
 
     def test_modularity_weight(self):
         "Modularity matrix with weights"
+        # fmt: off
         B = np.array([[-1.125,  0.25,  0.25,  0.625,  0.],
                       [0.25, -0.5,  0.5, -0.25,  0.],
                       [0.25,  0.5, -0.5, -0.25,  0.],
                       [0.625, -0.25, -0.25, -0.125,  0.],
                       [0.,  0.,  0.,  0.,  0.]])
+        # fmt: on
 
         G_weighted = self.G.copy()
         for n1, n2 in G_weighted.edges():
@@ -64,12 +68,14 @@ class TestModularity:
 
     def test_directed_modularity(self):
         "Directed Modularity matrix"
+        # fmt: off
         B = np.array([[-0.2,  0.6,  0.8, -0.4, -0.4, -0.4],
                       [0.,  0.,  0.,  0.,  0.,  0.],
                       [0.7,  0.4, -0.3, -0.6,  0.4, -0.6],
                       [-0.2, -0.4, -0.2, -0.4,  0.6,  0.6],
                       [-0.2, -0.4, -0.2,  0.6, -0.4,  0.6],
                       [-0.1, -0.2, -0.1,  0.8, -0.2, -0.2]])
+        # fmt: on
         node_permutation = [5, 1, 2, 3, 4, 6]
         idx_permutation = [4, 0, 1, 2, 3, 5]
         mm = nx.directed_modularity_matrix(self.DG, nodelist=sorted(self.DG))

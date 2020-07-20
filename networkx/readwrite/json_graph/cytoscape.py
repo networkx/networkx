@@ -1,8 +1,8 @@
 import networkx as nx
 
-__all__ = ['cytoscape_data', 'cytoscape_graph']
+__all__ = ["cytoscape_data", "cytoscape_graph"]
 
-_attrs = dict(name='name', ident='id')
+_attrs = dict(name="name", ident="id")
 
 
 def cytoscape_data(G, attrs=None):
@@ -31,11 +31,11 @@ def cytoscape_data(G, attrs=None):
     ident = attrs["ident"]
 
     if len({name, ident}) < 2:
-        raise nx.NetworkXError('Attribute names are not unique.')
+        raise nx.NetworkXError("Attribute names are not unique.")
 
     jsondata = {"data": list(G.graph.items())}
-    jsondata['directed'] = G.is_directed()
-    jsondata['multigraph'] = G.is_multigraph()
+    jsondata["directed"] = G.is_directed()
+    jsondata["multigraph"] = G.is_multigraph()
     jsondata["elements"] = {"nodes": [], "edges": []}
     nodes = jsondata["elements"]["nodes"]
     edges = jsondata["elements"]["edges"]
@@ -73,17 +73,17 @@ def cytoscape_graph(data, attrs=None):
     ident = attrs["ident"]
 
     if len({ident, name}) < 2:
-        raise nx.NetworkXError('Attribute names are not unique.')
+        raise nx.NetworkXError("Attribute names are not unique.")
 
-    multigraph = data.get('multigraph')
-    directed = data.get('directed')
+    multigraph = data.get("multigraph")
+    directed = data.get("directed")
     if multigraph:
         graph = nx.MultiGraph()
     else:
         graph = nx.Graph()
     if directed:
         graph = graph.to_directed()
-    graph.graph = dict(data.get('data'))
+    graph.graph = dict(data.get("data"))
     for d in data["elements"]["nodes"]:
         node_data = d["data"].copy()
         node = d["data"]["value"]

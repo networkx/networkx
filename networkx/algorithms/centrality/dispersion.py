@@ -1,6 +1,6 @@
 from itertools import combinations
 
-__all__ = ['dispersion']
+__all__ = ["dispersion"]
 
 
 def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
@@ -66,9 +66,9 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
 
         if normalized:
             if embededness + c != 0:
-                norm_disp = ((total + b)**alpha) / (embededness + c)
+                norm_disp = ((total + b) ** alpha) / (embededness + c)
             else:
-                norm_disp = (total + b)**alpha
+                norm_disp = (total + b) ** alpha
             dispersion = norm_disp
 
         else:

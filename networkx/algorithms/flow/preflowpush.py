@@ -12,11 +12,10 @@ from .utils import detect_unboundedness
 from .utils import GlobalRelabelThreshold
 from .utils import Level
 
-__all__ = ['preflow_push']
+__all__ = ["preflow_push"]
 
 
-def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
-                      value_only):
+def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_only):
     """Implementation of the highest-label preflow-push algorithm.
     """
     if s not in G:
@@ -24,12 +23,12 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
     if t not in G:
         raise nx.NetworkXError(f"node {str(t)} not in graph")
     if s == t:
-        raise nx.NetworkXError('source and sink are the same node')
+        raise nx.NetworkXError("source and sink are the same node")
 
     if global_relabel_freq is None:
         global_relabel_freq = 0
     if global_relabel_freq < 0:
-        raise nx.NetworkXError('global_relabel_freq must be nonnegative.')
+        raise nx.NetworkXError("global_relabel_freq must be nonnegative.")
 
     if residual is None:
         R = build_residual_network(G, capacity)
@@ -44,9 +43,9 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
 
     # Initialize/reset the residual network.
     for u in R:
-        R_nodes[u]['excess'] = 0
+        R_nodes[u]["excess"] = 0
         for e in R_succ[u].values():
-            e['flow'] = 0
+            e["flow"] = 0
 
     def reverse_bfs(src):
         """Perform a reverse breadth-first search from src in the residual
@@ -58,7 +57,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
             u, height = q.popleft()
             height += 1
             for v, attr in R_pred[u].items():
-                if v not in heights and attr['flow'] < attr['capacity']:
+                if v not in heights and attr["flow"] < attr["capacity"]:
                     heights[v] = height
                     q.append((v, height))
         return heights
@@ -69,7 +68,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
     if s not in heights:
         # t is not reachable from s in the residual network. The maximum flow
         # must be zero.
-        R.graph['flow_value'] = 0
+        R.graph["flow_value"] = 0
         return R
 
     n = len(R)
@@ -82,21 +81,21 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
 
     # Initialize heights and 'current edge' data structures of the nodes.
     for u in R:
-        R_nodes[u]['height'] = heights[u] if u in heights else n + 1
-        R_nodes[u]['curr_edge'] = CurrentEdge(R_succ[u])
+        R_nodes[u]["height"] = heights[u] if u in heights else n + 1
+        R_nodes[u]["curr_edge"] = CurrentEdge(R_succ[u])
 
     def push(u, v, flow):
         """Push flow units of flow from u to v.
         """
-        R_succ[u][v]['flow'] += flow
-        R_succ[v][u]['flow'] -= flow
-        R_nodes[u]['excess'] -= flow
-        R_nodes[v]['excess'] += flow
+        R_succ[u][v]["flow"] += flow
+        R_succ[v][u]["flow"] -= flow
+        R_nodes[u]["excess"] -= flow
+        R_nodes[v]["excess"] += flow
 
     # The maximum flow must be nonzero now. Initialize the preflow by
     # saturating all edges emanating from s.
     for u, attr in R_succ[s].items():
-        flow = attr['capacity']
+        flow = attr["capacity"]
         if flow > 0:
             push(s, u, flow)
 
@@ -104,8 +103,8 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
     levels = [Level() for i in range(2 * n)]
     for u in R:
         if u != s and u != t:
-            level = levels[R_nodes[u]['height']]
-            if R_nodes[u]['excess'] > 0:
+            level = levels[R_nodes[u]["height"]]
+            if R_nodes[u]["excess"] > 0:
                 level.active.add(u)
             else:
                 level.inactive.add(u)
@@ -114,7 +113,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
         """Move a node from the inactive set to the active set of its level.
         """
         if v != s and v != t:
-            level = levels[R_nodes[v]['height']]
+            level = levels[R_nodes[v]["height"]]
             if v in level.inactive:
                 level.inactive.remove(v)
                 level.active.add(v)
@@ -123,29 +122,33 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
         """Relabel a node to create an admissible edge.
         """
         grt.add_work(len(R_succ[u]))
-        return min(R_nodes[v]['height'] for v, attr in R_succ[u].items()
-                   if attr['flow'] < attr['capacity']) + 1
+        return (
+            min(
+                R_nodes[v]["height"]
+                for v, attr in R_succ[u].items()
+                if attr["flow"] < attr["capacity"]
+            )
+            + 1
+        )
 
     def discharge(u, is_phase1):
         """Discharge a node until it becomes inactive or, during phase 1 (see
         below), its height reaches at least n. The node is known to have the
         largest height among active nodes.
         """
-        height = R_nodes[u]['height']
-        curr_edge = R_nodes[u]['curr_edge']
+        height = R_nodes[u]["height"]
+        curr_edge = R_nodes[u]["curr_edge"]
         # next_height represents the next height to examine after discharging
         # the current node. During phase 1, it is capped to below n.
         next_height = height
         levels[height].active.remove(u)
         while True:
             v, attr = curr_edge.get()
-            if (height == R_nodes[v]['height'] + 1 and
-                    attr['flow'] < attr['capacity']):
-                flow = min(R_nodes[u]['excess'],
-                           attr['capacity'] - attr['flow'])
+            if height == R_nodes[v]["height"] + 1 and attr["flow"] < attr["capacity"]:
+                flow = min(R_nodes[u]["excess"], attr["capacity"] - attr["flow"])
                 push(u, v, flow)
                 activate(v)
-                if R_nodes[u]['excess'] == 0:
+                if R_nodes[u]["excess"] == 0:
                     # The node has become inactive.
                     levels[height].inactive.add(u)
                     break
@@ -166,7 +169,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
                 # structure is not rewound. Use height instead of (height - 1)
                 # in case other active nodes at the same level are missed.
                 next_height = height
-        R_nodes[u]['height'] = height
+        R_nodes[u]["height"] = height
         return next_height
 
     def gap_heuristic(height):
@@ -175,9 +178,9 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
         # Move all nodes at levels (height + 1) to max_height to level n + 1.
         for level in islice(levels, height + 1, max_height + 1):
             for u in level.active:
-                R_nodes[u]['height'] = n + 1
+                R_nodes[u]["height"] = n + 1
             for u in level.inactive:
-                R_nodes[u]['height'] = n + 1
+                R_nodes[u]["height"] = n + 1
             levels[n + 1].active.update(level.active)
             level.active.clear()
             levels[n + 1].inactive.update(level.inactive)
@@ -196,7 +199,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
             # Also mark nodes from which t is unreachable for relabeling. This
             # serves the same purpose as the gap heuristic.
             for u in R:
-                if u not in heights and R_nodes[u]['height'] < n:
+                if u not in heights and R_nodes[u]["height"] < n:
                     heights[u] = n + 1
         else:
             # Shift the computed heights because the height of s is n.
@@ -205,7 +208,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
             max_height += n
         del heights[src]
         for u, new_height in heights.items():
-            old_height = R_nodes[u]['height']
+            old_height = R_nodes[u]["height"]
             if new_height != old_height:
                 if u in levels[old_height].active:
                     levels[old_height].active.remove(u)
@@ -213,7 +216,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
                 else:
                     levels[old_height].inactive.remove(u)
                     levels[new_height].inactive.add(u)
-                R_nodes[u]['height'] = new_height
+                R_nodes[u]["height"] = new_height
         return max_height
 
     # Phase 1: Find the maximum preflow by pushing as much flow as possible to
@@ -256,7 +259,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
     # A maximum preflow has been found. The excess at t is the maximum flow
     # value.
     if value_only:
-        R.graph['flow_value'] = R_nodes[t]['excess']
+        R.graph["flow_value"] = R_nodes[t]["excess"]
         return R
 
     # Phase 2: Convert the maximum preflow into a maximum flow by returning the
@@ -283,12 +286,13 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
                 height = global_relabel(False)
                 grt.clear_work()
 
-    R.graph['flow_value'] = R_nodes[t]['excess']
+    R.graph["flow_value"] = R_nodes[t]["excess"]
     return R
 
 
-def preflow_push(G, s, t, capacity='capacity', residual=None,
-                 global_relabel_freq=1, value_only=False):
+def preflow_push(
+    G, s, t, capacity="capacity", residual=None, global_relabel_freq=1, value_only=False
+):
     r"""Find a maximum single-commodity flow using the highest-label
     preflow-push algorithm.
 
@@ -417,7 +421,6 @@ def preflow_push(G, s, t, capacity='capacity', residual=None,
     True
 
     """
-    R = preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
-                          value_only)
-    R.graph['algorithm'] = 'preflow_push'
+    R = preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_only)
+    R.graph["algorithm"] = "preflow_push"
     return R

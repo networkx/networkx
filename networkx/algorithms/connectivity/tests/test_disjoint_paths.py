@@ -46,22 +46,37 @@ def are_node_disjoint_paths(G, paths):
 
 def test_graph_from_pr_2053():
     G = nx.Graph()
-    G.add_edges_from([
-        ('A', 'B'), ('A', 'D'), ('A', 'F'), ('A', 'G'),
-        ('B', 'C'), ('B', 'D'), ('B', 'G'), ('C', 'D'),
-        ('C', 'E'), ('C', 'Z'), ('D', 'E'), ('D', 'F'),
-        ('E', 'F'), ('E', 'Z'), ('F', 'Z'), ('G', 'Z')])
+    G.add_edges_from(
+        [
+            ("A", "B"),
+            ("A", "D"),
+            ("A", "F"),
+            ("A", "G"),
+            ("B", "C"),
+            ("B", "D"),
+            ("B", "G"),
+            ("C", "D"),
+            ("C", "E"),
+            ("C", "Z"),
+            ("D", "E"),
+            ("D", "F"),
+            ("E", "F"),
+            ("E", "Z"),
+            ("F", "Z"),
+            ("G", "Z"),
+        ]
+    )
     for flow_func in flow_funcs:
         kwargs = dict(flow_func=flow_func)
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         # edge disjoint paths
-        edge_paths = list(nx.edge_disjoint_paths(G, 'A', 'Z', **kwargs))
+        edge_paths = list(nx.edge_disjoint_paths(G, "A", "Z", **kwargs))
         assert are_edge_disjoint_paths(G, edge_paths), errmsg
-        assert nx.edge_connectivity(G, 'A', 'Z') == len(edge_paths), errmsg
+        assert nx.edge_connectivity(G, "A", "Z") == len(edge_paths), errmsg
         # node disjoint paths
-        node_paths = list(nx.node_disjoint_paths(G, 'A', 'Z', **kwargs))
+        node_paths = list(nx.node_disjoint_paths(G, "A", "Z", **kwargs))
         assert are_node_disjoint_paths(G, node_paths), errmsg
-        assert nx.node_connectivity(G, 'A', 'Z') == len(node_paths), errmsg
+        assert nx.node_connectivity(G, "A", "Z") == len(node_paths), errmsg
 
 
 def test_florentine_families():
@@ -70,13 +85,13 @@ def test_florentine_families():
         kwargs = dict(flow_func=flow_func)
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         # edge disjoint paths
-        edge_dpaths = list(nx.edge_disjoint_paths(G, 'Medici', 'Strozzi', **kwargs))
+        edge_dpaths = list(nx.edge_disjoint_paths(G, "Medici", "Strozzi", **kwargs))
         assert are_edge_disjoint_paths(G, edge_dpaths), errmsg
-        assert nx.edge_connectivity(G, 'Medici', 'Strozzi') == len(edge_dpaths), errmsg
+        assert nx.edge_connectivity(G, "Medici", "Strozzi") == len(edge_dpaths), errmsg
         # node disjoint paths
-        node_dpaths = list(nx.node_disjoint_paths(G, 'Medici', 'Strozzi', **kwargs))
+        node_dpaths = list(nx.node_disjoint_paths(G, "Medici", "Strozzi", **kwargs))
         assert are_node_disjoint_paths(G, node_dpaths), errmsg
-        assert nx.node_connectivity(G, 'Medici', 'Strozzi') == len(node_dpaths), errmsg
+        assert nx.node_connectivity(G, "Medici", "Strozzi") == len(node_dpaths), errmsg
 
 
 def test_karate():
@@ -145,7 +160,7 @@ def test_cutoff_disjoint_paths():
         kwargs = dict(flow_func=flow_func)
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         for cutoff in [2, 4]:
-            kwargs['cutoff'] = cutoff
+            kwargs["cutoff"] = cutoff
             # edge disjoint paths
             edge_dpaths = list(nx.edge_disjoint_paths(G, 0, 6, **kwargs))
             assert are_edge_disjoint_paths(G, edge_dpaths), errmsg

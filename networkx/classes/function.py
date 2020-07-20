@@ -9,20 +9,46 @@ from networkx.utils import pairwise, not_implemented_for
 
 from networkx.classes.graphviews import subgraph_view, reverse_view
 
-__all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
-           'number_of_nodes', 'number_of_edges', 'density',
-           'is_directed', 'info', 'freeze', 'is_frozen',
-           'subgraph', 'subgraph_view', 'induced_subgraph', 'reverse_view',
-           'edge_subgraph', 'restricted_view',
-           'to_directed', 'to_undirected',
-           'add_star', 'add_path', 'add_cycle',
-           'create_empty_copy', 'set_node_attributes',
-           'get_node_attributes', 'set_edge_attributes',
-           'get_edge_attributes', 'all_neighbors', 'non_neighbors',
-           'non_edges', 'common_neighbors', 'is_weighted',
-           'is_negatively_weighted', 'is_empty',
-           'selfloop_edges', 'nodes_with_selfloops', 'number_of_selfloops',
-           ]
+__all__ = [
+    "nodes",
+    "edges",
+    "degree",
+    "degree_histogram",
+    "neighbors",
+    "number_of_nodes",
+    "number_of_edges",
+    "density",
+    "is_directed",
+    "info",
+    "freeze",
+    "is_frozen",
+    "subgraph",
+    "subgraph_view",
+    "induced_subgraph",
+    "reverse_view",
+    "edge_subgraph",
+    "restricted_view",
+    "to_directed",
+    "to_undirected",
+    "add_star",
+    "add_path",
+    "add_cycle",
+    "create_empty_copy",
+    "set_node_attributes",
+    "get_node_attributes",
+    "set_edge_attributes",
+    "get_edge_attributes",
+    "all_neighbors",
+    "non_neighbors",
+    "non_edges",
+    "common_neighbors",
+    "is_weighted",
+    "is_negatively_weighted",
+    "is_empty",
+    "selfloop_edges",
+    "nodes_with_selfloops",
+    "number_of_selfloops",
+]
 
 
 def nodes(G):
@@ -293,7 +319,9 @@ def add_cycle(G_to_add_to, nodes_for_cycle, **attr):
     except StopIteration:
         return
     G_to_add_to.add_node(first_node)
-    G_to_add_to.add_edges_from(pairwise(chain((first_node,), nlist), cyclic=True), **attr)
+    G_to_add_to.add_edges_from(
+        pairwise(chain((first_node,), nlist), cyclic=True), **attr
+    )
 
 
 def subgraph(G, nbunch):
@@ -525,7 +553,10 @@ def create_empty_copy(G, with_data=True):
 
 
 def info(G, n=None):
-    """Print short summary of information for the graph G or the node n.
+    """Return a summary of information for the graph G or a single node n.
+
+    The summary includes the number of nodes and edges (or neighbours for a single
+    node), and their average degree.
 
     Parameters
     ----------
@@ -533,8 +564,19 @@ def info(G, n=None):
        A graph
     n : node (any hashable)
        A node in the graph G
+
+    Returns
+    -------
+    info : str
+        A string containing the short summary
+
+    Raises
+    ------
+    NetworkXError
+        If n is not in the graph G
+
     """
-    info = ''  # append this all to a string
+    info = ""  # append this all to a string
     if n is None:
         info += f"Name: {G.name}\n"
         type_name = [type(G).__name__]
@@ -557,7 +599,7 @@ def info(G, n=None):
         info += f"Node {n} has the following properties:\n"
         info += f"Degree: {G.degree(n)}\n"
         info += "Neighbors: "
-        info += ' '.join(str(nbr) for nbr in G.neighbors(n))
+        info += " ".join(str(nbr) for nbr in G.neighbors(n))
     return info
 
 
@@ -878,7 +920,7 @@ def non_edges(graph):
                 yield (u, v)
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def common_neighbors(G, u, v):
     """Returns the common neighbors of two nodes in a graph.
 
@@ -907,16 +949,16 @@ def common_neighbors(G, u, v):
     [2, 3, 4]
     """
     if u not in G:
-        raise nx.NetworkXError('u is not in the graph.')
+        raise nx.NetworkXError("u is not in the graph.")
     if v not in G:
-        raise nx.NetworkXError('v is not in the graph.')
+        raise nx.NetworkXError("v is not in the graph.")
 
     # Return a generator explicitly instead of yielding so that the above
     # checks are executed eagerly.
     return (w for w in G[u] if w in G[v] and w not in (u, v))
 
 
-def is_weighted(G, edge=None, weight='weight'):
+def is_weighted(G, edge=None, weight="weight"):
     """Returns True if `G` has weighted edges.
 
     Parameters
@@ -958,7 +1000,7 @@ def is_weighted(G, edge=None, weight='weight'):
     if edge is not None:
         data = G.get_edge_data(*edge)
         if data is None:
-            msg = f'Edge {edge!r} does not exist.'
+            msg = f"Edge {edge!r} does not exist."
             raise nx.NetworkXError(msg)
         return weight in data
 
@@ -969,7 +1011,7 @@ def is_weighted(G, edge=None, weight='weight'):
     return all(weight in data for u, v, data in G.edges(data=True))
 
 
-def is_negatively_weighted(G, edge=None, weight='weight'):
+def is_negatively_weighted(G, edge=None, weight="weight"):
     """Returns True if `G` has negatively weighted edges.
 
     Parameters
@@ -1015,12 +1057,11 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
     if edge is not None:
         data = G.get_edge_data(*edge)
         if data is None:
-            msg = f'Edge {edge!r} does not exist.'
+            msg = f"Edge {edge!r} does not exist."
             raise nx.NetworkXError(msg)
         return weight in data and data[weight] < 0
 
-    return any(weight in data and data[weight] < 0
-               for u, v, data in G.edges(data=True))
+    return any(weight in data and data[weight] < 0 for u, v, data in G.edges(data=True))
 
 
 def is_empty(G):
@@ -1116,38 +1157,56 @@ def selfloop_edges(G, data=False, keys=False, default=None):
     if data is True:
         if G.is_multigraph():
             if keys is True:
-                return ((n, n, k, d)
-                        for n, nbrs in G.adj.items()
-                        if n in nbrs for k, d in nbrs[n].items())
+                return (
+                    (n, n, k, d)
+                    for n, nbrs in G.adj.items()
+                    if n in nbrs
+                    for k, d in nbrs[n].items()
+                )
             else:
-                return ((n, n, d)
-                        for n, nbrs in G.adj.items()
-                        if n in nbrs for d in nbrs[n].values())
+                return (
+                    (n, n, d)
+                    for n, nbrs in G.adj.items()
+                    if n in nbrs
+                    for d in nbrs[n].values()
+                )
         else:
             return ((n, n, nbrs[n]) for n, nbrs in G.adj.items() if n in nbrs)
     elif data is not False:
         if G.is_multigraph():
             if keys is True:
-                return ((n, n, k, d.get(data, default))
-                        for n, nbrs in G.adj.items()
-                        if n in nbrs for k, d in nbrs[n].items())
+                return (
+                    (n, n, k, d.get(data, default))
+                    for n, nbrs in G.adj.items()
+                    if n in nbrs
+                    for k, d in nbrs[n].items()
+                )
             else:
-                return ((n, n, d.get(data, default))
-                        for n, nbrs in G.adj.items()
-                        if n in nbrs for d in nbrs[n].values())
+                return (
+                    (n, n, d.get(data, default))
+                    for n, nbrs in G.adj.items()
+                    if n in nbrs
+                    for d in nbrs[n].values()
+                )
         else:
-            return ((n, n, nbrs[n].get(data, default))
-                    for n, nbrs in G.adj.items() if n in nbrs)
+            return (
+                (n, n, nbrs[n].get(data, default))
+                for n, nbrs in G.adj.items()
+                if n in nbrs
+            )
     else:
         if G.is_multigraph():
             if keys is True:
-                return ((n, n, k)
-                        for n, nbrs in G.adj.items()
-                        if n in nbrs for k in nbrs[n])
+                return (
+                    (n, n, k) for n, nbrs in G.adj.items() if n in nbrs for k in nbrs[n]
+                )
             else:
-                return ((n, n)
-                        for n, nbrs in G.adj.items()
-                        if n in nbrs for d in nbrs[n].values())
+                return (
+                    (n, n)
+                    for n, nbrs in G.adj.items()
+                    if n in nbrs
+                    for i in range(len(nbrs[n]))  # for easy edge removal (#4068)
+                )
         else:
             return ((n, n) for n, nbrs in G.adj.items() if n in nbrs)
 

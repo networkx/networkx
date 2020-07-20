@@ -12,12 +12,14 @@ from networkx.algorithms.components import connected_components
 from networkx.utils import arbitrary_element, not_implemented_for
 
 
-__all__ = ['is_chordal',
-           'find_induced_nodes',
-           'chordal_graph_cliques',
-           'chordal_graph_treewidth',
-           'NetworkXTreewidthBoundExceeded',
-           'complete_to_chordal_graph']
+__all__ = [
+    "is_chordal",
+    "find_induced_nodes",
+    "chordal_graph_cliques",
+    "chordal_graph_treewidth",
+    "NetworkXTreewidthBoundExceeded",
+    "complete_to_chordal_graph",
+]
 
 
 class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
@@ -70,9 +72,9 @@ def is_chordal(G):
        pp. 566–579.
     """
     if G.is_directed():
-        raise nx.NetworkXError('Directed graphs not supported')
+        raise nx.NetworkXError("Directed graphs not supported")
     if G.is_multigraph():
-        raise nx.NetworkXError('Multiply connected graphs not supported.')
+        raise nx.NetworkXError("Multiply connected graphs not supported.")
     if len(_find_chordality_breaker(G)) == 0:
         return True
     else:
@@ -251,7 +253,7 @@ def _is_complete_graph(G):
     if n < 2:
         return True
     e = G.number_of_edges()
-    max_edges = ((n * (n - 1)) / 2)
+    max_edges = (n * (n - 1)) / 2
     return e == max_edges
 
 
@@ -302,7 +304,9 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
             # The graph seems to be chordal by now. We update the treewidth
             current_treewidth = max(current_treewidth, len(clique_wanna_be))
             if current_treewidth > treewidth_bound:
-                raise nx.NetworkXTreewidthBoundExceeded(f"treewidth_bound exceeded: {current_treewidth}")
+                raise nx.NetworkXTreewidthBoundExceeded(
+                    f"treewidth_bound exceeded: {current_treewidth}"
+                )
         else:
             # sg is not a clique,
             # look for an edge that is not included in sg
@@ -340,7 +344,7 @@ def _connected_chordal_graph_cliques(G):
         return cliques
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def complete_to_chordal_graph(G):
     """Return a copy of G completed to a chordal graph
 
@@ -401,8 +405,9 @@ def complete_to_chordal_graph(G):
             else:
                 # y_weight will be bigger than node weights between y and z
                 y_weight = weight[y]
-                lower_nodes = [node for node in unnumbered_nodes
-                               if weight[node] < y_weight]
+                lower_nodes = [
+                    node for node in unnumbered_nodes if weight[node] < y_weight
+                ]
                 if nx.has_path(H.subgraph(lower_nodes + [z, y]), y, z):
                     update_nodes.append(y)
                     chords.add((z, y))

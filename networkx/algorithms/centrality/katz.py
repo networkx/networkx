@@ -4,12 +4,20 @@ from math import sqrt
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['katz_centrality', 'katz_centrality_numpy']
+__all__ = ["katz_centrality", "katz_centrality_numpy"]
 
 
-@not_implemented_for('multigraph')
-def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
-                    nstart=None, normalized=True, weight=None):
+@not_implemented_for("multigraph")
+def katz_centrality(
+    G,
+    alpha=0.1,
+    beta=1.0,
+    max_iter=1000,
+    tol=1.0e-6,
+    nstart=None,
+    normalized=True,
+    weight=None,
+):
     r"""Compute the Katz centrality for the nodes of the graph G.
 
     Katz centrality computes the centrality for a node based on the centrality
@@ -148,11 +156,12 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
 
     try:
         b = dict.fromkeys(G, float(beta))
-    except (TypeError, ValueError, AttributeError):
+    except (TypeError, ValueError, AttributeError) as e:
         b = beta
         if set(beta) != set(G):
-            raise nx.NetworkXError('beta dictionary '
-                                   'must have a value for every node')
+            raise nx.NetworkXError(
+                "beta dictionary " "must have a value for every node"
+            ) from e
 
     # make up to max_iter iterations
     for i in range(max_iter):
@@ -171,7 +180,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
             if normalized:
                 # normalize vector
                 try:
-                    s = 1.0 / sqrt(sum(v**2 for v in x.values()))
+                    s = 1.0 / sqrt(sum(v ** 2 for v in x.values()))
                 # this should never be zero?
                 except ZeroDivisionError:
                     s = 1.0
@@ -183,9 +192,8 @@ def katz_centrality(G, alpha=0.1, beta=1.0, max_iter=1000, tol=1.0e-6,
     raise nx.PowerIterationFailedConvergence(max_iter)
 
 
-@not_implemented_for('multigraph')
-def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
-                          weight=None):
+@not_implemented_for("multigraph")
+def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     r"""Compute the Katz centrality for the graph G.
 
     Katz centrality computes the centrality for a node based on the centrality
@@ -296,22 +304,23 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
     """
     try:
         import numpy as np
-    except ImportError:
-        raise ImportError('Requires NumPy: http://scipy.org/')
+    except ImportError as e:
+        raise ImportError("Requires NumPy: http://numpy.org/") from e
     if len(G) == 0:
         return {}
     try:
         nodelist = beta.keys()
         if set(nodelist) != set(G):
-            raise nx.NetworkXError('beta dictionary '
-                                   'must have a value for every node')
+            raise nx.NetworkXError(
+                "beta dictionary " "must have a value for every node"
+            )
         b = np.array(list(beta.values()), dtype=float)
     except AttributeError:
         nodelist = list(G)
         try:
             b = np.ones((len(nodelist), 1)) * float(beta)
-        except (TypeError, ValueError, AttributeError):
-            raise nx.NetworkXError('beta must be a number')
+        except (TypeError, ValueError, AttributeError) as e:
+            raise nx.NetworkXError("beta must be a number") from e
 
     A = nx.adj_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = A.shape[0]

@@ -13,13 +13,14 @@ class TestHararyGraph:
     """
         Suppose n nodes, m >= n-1 edges, d = 2m // n, r = 2m % n
     """
+
     def test_hnm_harary_graph(self):
         # When d is even and r = 0, the hnm_harary_graph(n,m) is
         # the circulant_graph(n, list(range(1,d/2+1)))
         for (n, m) in [(5, 5), (6, 12), (7, 14)]:
             G1 = hnm_harary_graph(n, m)
-            d = 2*m // n
-            G2 = nx.circulant_graph(n, list(range(1, d//2 + 1)))
+            d = 2 * m // n
+            G2 = nx.circulant_graph(n, list(range(1, d // 2 + 1)))
             assert is_isomorphic(G1, G2)
 
         # When d is even and r > 0, the hnm_harary_graph(n,m) is
@@ -27,8 +28,8 @@ class TestHararyGraph:
         # with r edges added arbitrarily
         for (n, m) in [(5, 7), (6, 13), (7, 16)]:
             G1 = hnm_harary_graph(n, m)
-            d = 2*m // n
-            G2 = nx.circulant_graph(n, list(range(1, d//2 + 1)))
+            d = 2 * m // n
+            G2 = nx.circulant_graph(n, list(range(1, d // 2 + 1)))
             assert set(G2.edges) < set(G1.edges)
             assert G1.number_of_edges() == m
 
@@ -36,9 +37,9 @@ class TestHararyGraph:
         # is the circulant_graph(n, list(range(1,(d+1)/2) plus [n//2])
         for (n, m) in [(6, 9), (8, 12), (10, 15)]:
             G1 = hnm_harary_graph(n, m)
-            d = 2*m // n
-            L = list(range(1, (d+1)//2))
-            L.append(n//2)
+            d = 2 * m // n
+            L = list(range(1, (d + 1) // 2))
+            L.append(n // 2)
             G2 = nx.circulant_graph(n, L)
             assert is_isomorphic(G1, G2)
 
@@ -47,9 +48,9 @@ class TestHararyGraph:
         # with r edges added arbitrarily
         for (n, m) in [(6, 10), (8, 13), (10, 17)]:
             G1 = hnm_harary_graph(n, m)
-            d = 2*m // n
-            L = list(range(1, (d+1)//2))
-            L.append(n//2)
+            d = 2 * m // n
+            L = list(range(1, (d + 1) // 2))
+            L.append(n // 2)
             G2 = nx.circulant_graph(n, L)
             assert set(G2.edges) < set(G1.edges)
             assert G1.number_of_edges() == m
@@ -59,8 +60,8 @@ class TestHararyGraph:
         # with m - n*(d-1)/2 edges added arbitrarily
         for (n, m) in [(5, 4), (7, 12), (9, 14)]:
             G1 = hnm_harary_graph(n, m)
-            d = 2*m // n
-            L = list(range(1, (d+1)//2))
+            d = 2 * m // n
+            L = list(range(1, (d + 1) // 2))
             G2 = nx.circulant_graph(n, L)
             assert set(G2.edges) < set(G1.edges)
             assert G1.number_of_edges() == m
@@ -83,6 +84,7 @@ class TestHararyGraph:
     """
         Suppose connectivity k, number of nodes n
     """
+
     def test_hkn_harary_graph(self):
         # When k == 1, the hkn_harary_graph(k,n) is
         # the path_graph(n)
@@ -95,15 +97,15 @@ class TestHararyGraph:
         # the circulant_graph(n, list(range(1,k/2+1)))
         for (k, n) in [(2, 6), (2, 7), (4, 6), (4, 7)]:
             G1 = hkn_harary_graph(k, n)
-            G2 = nx.circulant_graph(n, list(range(1, k//2 + 1)))
+            G2 = nx.circulant_graph(n, list(range(1, k // 2 + 1)))
             assert is_isomorphic(G1, G2)
 
         # When k is odd and n is even, the hkn_harary_graph(k,n) is
         # the circulant_graph(n, list(range(1,(k+1)/2)) plus [n/2])
         for (k, n) in [(3, 6), (5, 8), (7, 10)]:
             G1 = hkn_harary_graph(k, n)
-            L = list(range(1, (k+1)//2))
-            L.append(n//2)
+            L = list(range(1, (k + 1) // 2))
+            L.append(n // 2)
             G2 = nx.circulant_graph(n, L)
             assert is_isomorphic(G1, G2)
 
@@ -112,14 +114,14 @@ class TestHararyGraph:
         # n//2+1 edges added between node i and node i+n//2+1
         for (k, n) in [(3, 5), (5, 9), (7, 11)]:
             G1 = hkn_harary_graph(k, n)
-            G2 = nx.circulant_graph(n, list(range(1, (k+1)//2)))
+            G2 = nx.circulant_graph(n, list(range(1, (k + 1) // 2)))
             eSet1 = set(G1.edges)
             eSet2 = set(G2.edges)
             eSet3 = set()
             half = n // 2
-            for i in range(0, half+1):
+            for i in range(0, half + 1):
                 # add half+1 edges between i and i+half
-                eSet3.add((i, (i+half) % n))
+                eSet3.add((i, (i + half) % n))
             assert eSet1 == eSet2 | eSet3
 
         # Raise NetworkXError if k<1

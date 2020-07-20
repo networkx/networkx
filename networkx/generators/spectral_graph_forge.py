@@ -4,7 +4,7 @@
 import networkx as nx
 from networkx.utils import np_random_state
 
-__all__ = ['spectral_graph_forge']
+__all__ = ["spectral_graph_forge"]
 
 
 def _truncate(x):
@@ -76,12 +76,12 @@ def _mat_spect_approx(A, level, sorteigs=True, reverse=False, absolute=True):
     for i in range(level, n):
         V[:, k[i]] = z
 
-    B = V*np.diag(d)*np.transpose(V)
+    B = V * np.diag(d) * np.transpose(V)
     return B
 
 
 @np_random_state(3)
-def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
+def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     """Returns a random simple graph with spectrum resembling that of `G`
 
     This algorithm, called Spectral Graph Forge (SGF), computes the
@@ -157,34 +157,34 @@ def spectral_graph_forge(G, alpha, transformation='identity', seed=None):
     import numpy as np
     import scipy.stats as stats
 
-    available_transformations = ['identity', 'modularity']
+    available_transformations = ["identity", "modularity"]
     alpha = _truncate(alpha)
     A = nx.to_numpy_matrix(G)
     n = A.shape[1]
-    level = int(round(n*alpha))
+    level = int(round(n * alpha))
 
     if transformation not in available_transformations:
-        msg = f'\'{transformation}\' is not a valid transformation. '
-        msg += f'Transformations: {available_transformations}'
+        msg = f"'{transformation}' is not a valid transformation. "
+        msg += f"Transformations: {available_transformations}"
         raise nx.NetworkXError(msg)
 
     K = np.ones((1, n)) * A
 
     B = A
-    if (transformation == 'modularity'):
+    if transformation == "modularity":
         B -= np.transpose(K) * K / float(sum(np.ravel(K)))
 
     B = _mat_spect_approx(B, level, sorteigs=True, absolute=True)
 
-    if (transformation == 'modularity'):
+    if transformation == "modularity":
         B += np.transpose(K) * K / float(sum(np.ravel(K)))
 
     B = np.vectorize(_truncate, otypes=[np.float])(B)
     np.fill_diagonal(B, np.zeros((1, n)))
 
-    for i in range(n-1):
-        B[i, i+1:] = stats.bernoulli.rvs(B[i, i+1:], random_state=seed)
-        B[i+1:, i] = np.transpose(B[i, i+1:])
+    for i in range(n - 1):
+        B[i, i + 1 :] = stats.bernoulli.rvs(B[i, i + 1 :], random_state=seed)
+        B[i + 1 :, i] = np.transpose(B[i, i + 1 :])
 
     H = nx.from_numpy_matrix(B)
 

@@ -12,6 +12,7 @@ and/or `optimize_edit_paths`.
 At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
+import time
 from itertools import product
 import networkx as nx
 
@@ -40,7 +41,9 @@ def graph_edit_distance(
     edge_subst_cost=None,
     edge_del_cost=None,
     edge_ins_cost=None,
+    roots=None,
     upper_bound=None,
+    timeout=None,
 ):
     """Returns GED (graph edit distance) between graphs G1 and G2.
 
@@ -131,9 +134,19 @@ def graph_edit_distance(
         cost of 1 is used.  If edge_ins_cost is not specified then
         default edge insertion cost of 1 is used.
 
+    roots : 2-tuple
+        Tuple where first element is a node in G1 and the second
+        is a node in G2.
+        These nodes are forced to be matched in the comparison to
+        allow comparison between rooted graphs.
+
     upper_bound : numeric
         Maximum edit distance to consider.  Return None if no edit
         distance under or equal to upper_bound exists.
+
+    timeout : numeric
+        Maximum number of seconds to execute.
+        After timeout is met, the current best GED is returned.
 
     Examples
     --------
@@ -141,6 +154,13 @@ def graph_edit_distance(
     >>> G2 = nx.wheel_graph(7)
     >>> nx.graph_edit_distance(G1, G2)
     7.0
+
+    >>> G1 = nx.star_graph(5)
+    >>> G2 = nx.star_graph(5)
+    >>> nx.graph_edit_distance(G1, G2, roots=(0,0))
+    0.0
+    >>> nx.graph_edit_distance(G1, G2, roots=(1, 0))
+    8.0
 
     See Also
     --------
@@ -173,6 +193,8 @@ def graph_edit_distance(
         edge_ins_cost,
         upper_bound,
         True,
+        roots,
+        timeout,
     ):
         # assert bestcost is None or cost < bestcost
         bestcost = cost
@@ -504,6 +526,8 @@ def optimize_edit_paths(
     edge_ins_cost=None,
     upper_bound=None,
     strictly_decreasing=True,
+    roots=None,
+    timeout=None,
 ):
     """GED (graph edit distance) calculation: advanced interface.
 
@@ -602,6 +626,16 @@ def optimize_edit_paths(
         If True, return consecutive approximations of strictly
         decreasing cost.  Otherwise, return all edit paths of cost
         less than or equal to the previous minimum cost.
+
+    roots : 2-tuple
+        Tuple where first element is a node in G1 and the second
+        is a node in G2.
+        These nodes are forced to be matched in the comparison to
+        allow comparison between rooted graphs.
+
+    timeout : numeric
+        Maximum number of seconds to execute.
+        After timeout is met, the current best GED is returned.
 
     Returns
     -------
@@ -1005,6 +1039,16 @@ def optimize_edit_paths(
     pending_u = list(G1.nodes)
     pending_v = list(G2.nodes)
 
+    initial_cost = 0
+    if roots:
+        root_u, root_v = roots
+        if root_u not in pending_u or root_v not in pending_v:
+            raise nx.NodeNotFound("Root node not in graph.")
+
+        # remove roots from pending
+        pending_u.remove(root_u)
+        pending_v.remove(root_v)
+
     # cost matrix of vertex mappings
     m = len(pending_u)
     n = len(pending_v)
@@ -1017,6 +1061,8 @@ def optimize_edit_paths(
                 for v in pending_v
             ]
         ).reshape(m, n)
+        if roots:
+            initial_cost = node_subst_cost(G1.nodes[root_u], G2.nodes[root_v])
     elif node_match:
         C[0:m, 0:n] = np.array(
             [
@@ -1025,6 +1071,8 @@ def optimize_edit_paths(
                 for v in pending_v
             ]
         ).reshape(m, n)
+        if roots:
+            initial_cost = 1 - node_match(G1.nodes[root_u], G2.nodes[root_v])
     else:
         # all zeroes
         pass
@@ -1107,7 +1155,15 @@ def optimize_edit_paths(
 
     maxcost = MaxCost()
 
+    if timeout is not None:
+        if timeout <= 0:
+            raise nx.NetworkXError("Timeout value must be greater than 0")
+        start = time.perf_counter()
+
     def prune(cost):
+        if timeout is not None:
+            if time.perf_counter() - start > timeout:
+                return True
         if upper_bound is not None:
             if cost > upper_bound:
                 return True
@@ -1118,8 +1174,10 @@ def optimize_edit_paths(
 
     # Now go!
 
+    done_uv = [] if roots is None else [roots]
+
     for vertex_path, edge_path, cost in get_edit_paths(
-        [], pending_u, pending_v, Cv, [], pending_g, pending_h, Ce, 0
+        done_uv, pending_u, pending_v, Cv, [], pending_g, pending_h, Ce, initial_cost
     ):
         # assert sorted(G1.nodes) == sorted(u for u, v in vertex_path if u is not None)
         # assert sorted(G2.nodes) == sorted(v for u, v in vertex_path if v is not None)
@@ -1270,7 +1328,8 @@ def simrank_similarity(
         return sum(newsim[w][x] for (w, x) in s) / len(s) if s else 0.0
 
     def sim(u, v):
-        return importance_factor * avg_sim(list(product(G[u], G[v])))
+        Gadj = G.pred if G.is_directed() else G.adj
+        return importance_factor * avg_sim(list(product(Gadj[u], Gadj[v])))
 
     for _ in range(max_iterations):
         if prevsim and _is_close(prevsim, newsim, tolerance):
@@ -1330,13 +1389,12 @@ def simrank_similarity_numpy(
 
     Returns
     -------
-    similarity : dictionary or float
+    similarity : numpy matrix, numpy array or float
         If ``source`` and ``target`` are both ``None``, this returns a
-        dictionary of dictionaries, where keys are node pairs and value
-        are similarity of the pair of nodes.
+        Matrix containing SimRank scores of the nodes.
 
-        If ``source`` is not ``None`` but ``target`` is, this returns a
-        dictionary mapping node to the similarity of ``source`` and that
+        If ``source`` is not ``None`` but ``target`` is, this returns an
+        Array containing SimRank scores of ``source`` and that
         node.
 
         If neither ``source`` nor ``target`` is ``None``, this returns

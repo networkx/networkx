@@ -1,5 +1,6 @@
 import pytest
-numpy = pytest.importorskip('numpy')
+
+numpy = pytest.importorskip("numpy")
 
 import random
 

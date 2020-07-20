@@ -1,3 +1,5 @@
+.. _code_of_conduct:
+
 Code of Conduct
 ===============
 
@@ -99,25 +101,21 @@ people may have a bad day, or be unaware of some of the guidelines in this Code
 of Conduct. Please keep this in mind when deciding on how to respond to a
 breach of this Code.
 
-For clearly intentional breaches, report those to the Code of Conduct committee
+For clearly intentional breaches, report those to the NetworkX Steering Council
 (see below). For possibly unintentional breaches, you may reply to the person
 and point out this code of conduct (either in public or in private, whatever is
 most appropriate). If you would prefer not to do that, please feel free to
-report to the Code of Conduct Committee directly, or ask the Committee for
+report to the NetworkX Steering Council directly, or ask the Council for
 advice, in confidence.
 
-You can report issues to the NetworkX Code of Conduct committee, at
-networkx-conduct@groups.io.
-Currently, the committee consists of:
+You can report issues to the
+`NetworkX Steering Council <https://github.com/orgs/networkx/teams/steering-council/members>`__,
+at networkx-conduct@groups.io.
 
-- Jarrod Millman @jarrodmillman
-- Dan Schult @dschult
-- Stéfan van der Walt @stefanv
-
-If your report involves any members of the committee, or if they feel they have
+If your report involves any members of the Council, or if they feel they have
 a conflict of interest in handling it, then they will recuse themselves from
 considering your report. Alternatively, if for any reason you feel
-uncomfortable making a report to the committee, then you can also contact:
+uncomfortable making a report to the Council, then you can also contact:
 
 - Senior `NumFOCUS staff <https://numfocus.org/code-of-conduct#persons-responsible>`__: conduct@numfocus.org.
 
@@ -125,8 +123,8 @@ uncomfortable making a report to the committee, then you can also contact:
 Incident reporting resolution & Code of Conduct enforcement
 -----------------------------------------------------------
 
-We will investigate and respond to all complaints. The NetworkX Code of Conduct
-Committee will protect the identity of the reporter, and treat the content of
+We will investigate and respond to all complaints. The NetworkX Steering Council
+will protect the identity of the reporter, and treat the content of
 complaints as confidential (unless the reporter agrees otherwise).
 
 In case of severe and obvious breaches, e.g., personal threat or violent, sexist
@@ -140,9 +138,9 @@ report will be:
 1. acknowledge report is received
 2. reasonable discussion/feedback
 3. mediation (if feedback didn't help, and only if both reporter and reportee agree to this)
-4. enforcement via transparent decision by the Code of Conduct Committee
+4. enforcement via transparent decision by the NetworkX Steering Council
 
-The committee will respond to any report as soon as possible, and at most
+The Council will respond to any report as soon as possible, and at most
 within 72 hours.
 
 

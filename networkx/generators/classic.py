@@ -19,30 +19,33 @@ from itertools import accumulate
 from networkx.utils import nodes_or_number
 from networkx.utils import pairwise
 
-__all__ = ['balanced_tree',
-           'barbell_graph',
-           'binomial_tree',
-           'complete_graph',
-           'complete_multipartite_graph',
-           'circular_ladder_graph',
-           'circulant_graph',
-           'cycle_graph',
-           'dorogovtsev_goltsev_mendes_graph',
-           'empty_graph',
-           'full_rary_tree',
-           'ladder_graph',
-           'lollipop_graph',
-           'null_graph',
-           'path_graph',
-           'star_graph',
-           'trivial_graph',
-           'turan_graph',
-           'wheel_graph']
+__all__ = [
+    "balanced_tree",
+    "barbell_graph",
+    "binomial_tree",
+    "complete_graph",
+    "complete_multipartite_graph",
+    "circular_ladder_graph",
+    "circulant_graph",
+    "cycle_graph",
+    "dorogovtsev_goltsev_mendes_graph",
+    "empty_graph",
+    "full_rary_tree",
+    "ladder_graph",
+    "lollipop_graph",
+    "null_graph",
+    "path_graph",
+    "star_graph",
+    "trivial_graph",
+    "turan_graph",
+    "wheel_graph",
+]
 
 
 # -------------------------------------------------------------------
 #   Some Classic Graphs
 # -------------------------------------------------------------------
+
 
 def _tree_edges(n, r):
     if n == 0:
@@ -162,11 +165,9 @@ def barbell_graph(m1, m2, create_using=None):
 
     """
     if m1 < 2:
-        raise NetworkXError(
-            "Invalid graph description, m1 should be >=2")
+        raise NetworkXError("Invalid graph description, m1 should be >=2")
     if m2 < 0:
-        raise NetworkXError(
-            "Invalid graph description, m2 should be >=0")
+        raise NetworkXError("Invalid graph description, m2 should be >=0")
 
     # left barbell
     G = complete_graph(m1, create_using)
@@ -178,8 +179,9 @@ def barbell_graph(m1, m2, create_using=None):
     if m2 > 1:
         G.add_edges_from(pairwise(range(m1, m1 + m2)))
     # right barbell
-    G.add_edges_from((u, v) for u in range(m1 + m2, 2 * m1 + m2)
-                     for v in range(u + 1, 2 * m1 + m2))
+    G.add_edges_from(
+        (u, v) for u in range(m1 + m2, 2 * m1 + m2) for v in range(u + 1, 2 * m1 + m2)
+    )
     # connect it up
     G.add_edge(m1 - 1, m1)
     if m2 > 0:
@@ -363,7 +365,7 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     G.add_edge(0, 1)
     if n == 0:
         return G
-    new_node = 2         # next node to be added
+    new_node = 2  # next node to be added
     for i in range(1, n + 1):  # iterate over number of generations.
         last_generation_edges = list(G.edges())
         number_of_edges_in_last_generation = len(last_generation_edges)
@@ -454,7 +456,7 @@ def empty_graph(n=0, create_using=None, default=nx.Graph):
     """
     if create_using is None:
         G = default()
-    elif hasattr(create_using, '_adj'):
+    elif hasattr(create_using, "_adj"):
         # create_using is a NetworkX style Graph
         create_using.clear()
         G = create_using
@@ -518,11 +520,9 @@ def lollipop_graph(m, n, create_using=None):
     if isinstance(m, int):
         n_nodes = [len(m_nodes) + i for i in n_nodes]
     if M < 2:
-        raise NetworkXError(
-            "Invalid graph description, m should be >=2")
+        raise NetworkXError("Invalid graph description, m should be >=2")
     if N < 0:
-        raise NetworkXError(
-            "Invalid graph description, n should be >=0")
+        raise NetworkXError("Invalid graph description, n should be >=0")
 
     # the ball
     G = complete_graph(m_nodes, create_using)
@@ -739,8 +739,8 @@ def complete_multipartite_graph(*subset_sizes):
     try:
         for (i, subset) in enumerate(subsets):
             G.add_nodes_from(subset, subset=i)
-    except TypeError:
-        raise NetworkXError("Arguments must be all ints or all iterables")
+    except TypeError as e:
+        raise NetworkXError("Arguments must be all ints or all iterables") from e
 
     # Across subsets, all vertices should be adjacent.
     # We can use itertools.combinations() because undirected.

@@ -30,7 +30,7 @@ import json
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
-__all__ = ['jit_graph', 'jit_data']
+__all__ = ["jit_graph", "jit_data"]
 
 
 def jit_graph(data, create_using=None):
@@ -57,15 +57,15 @@ def jit_graph(data, create_using=None):
         data = json.loads(data)
 
     for node in data:
-        G.add_node(node['id'], **node['data'])
-        if node.get('adjacencies') is not None:
-            for adj in node['adjacencies']:
-                G.add_edge(node['id'], adj['nodeTo'], **adj['data'])
+        G.add_node(node["id"], **node["data"])
+        if node.get("adjacencies") is not None:
+            for adj in node["adjacencies"]:
+                G.add_edge(node["id"], adj["nodeTo"], **adj["data"])
     return G
 
 
-@not_implemented_for('multigraph')
-def jit_data(G, indent=None):
+@not_implemented_for("multigraph")
+def jit_data(G, indent=None, default=None):
     """Returns data in JIT JSON format.
 
     Parameters
@@ -78,16 +78,17 @@ def jit_data(G, indent=None):
         An indent level of 0, or negative, will only insert newlines.
         None (the default) selects the most compact representation.
 
+    default: optional, default=None
+         It will pass the value to the json.dumps function in order to
+         be able to serialize custom objects used as nodes.
+
     Returns
     -------
     data: JIT JSON string
     """
     json_graph = []
     for node in G.nodes():
-        json_node = {
-            "id": node,
-            "name": node
-        }
+        json_node = {"id": node, "name": node}
         # node data
         json_node["data"] = G.nodes[node]
         # adjacencies
@@ -101,4 +102,4 @@ def jit_data(G, indent=None):
                 adjacency["data"] = G.edges[node, neighbour]
                 json_node["adjacencies"].append(adjacency)
         json_graph.append(json_node)
-    return json.dumps(json_graph, indent=indent)
+    return json.dumps(json_graph, indent=indent, default=default)

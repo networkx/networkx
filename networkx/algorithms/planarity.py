@@ -160,8 +160,10 @@ class Interval:
 
     def conflicting(self, b, planarity_state):
         """Returns True if interval I conflicts with edge b"""
-        return (not self.empty() and
-                planarity_state.lowpt[self.high] > planarity_state.lowpt[b])
+        return (
+            not self.empty()
+            and planarity_state.lowpt[self.high] > planarity_state.lowpt[b]
+        )
 
 
 class ConflictPair:
@@ -187,8 +189,9 @@ class ConflictPair:
             return planarity_state.lowpt[self.right.low]
         if self.right.empty():
             return planarity_state.lowpt[self.left.low]
-        return min(planarity_state.lowpt[self.left.low],
-                   planarity_state.lowpt[self.right.low])
+        return min(
+            planarity_state.lowpt[self.left.low], planarity_state.lowpt[self.right.low]
+        )
 
 
 def top_of_stack(l):
@@ -200,10 +203,26 @@ def top_of_stack(l):
 
 class LRPlanarity:
     """A class to maintain the state during planarity check."""
+
     __slots__ = [
-        'G', 'roots', 'height', 'lowpt', 'lowpt2', 'nesting_depth',
-        'parent_edge', 'DG', 'adjs', 'ordered_adjs', 'ref', 'side', 'S',
-        'stack_bottom', 'lowpt_edge', 'left_ref', 'right_ref', 'embedding'
+        "G",
+        "roots",
+        "height",
+        "lowpt",
+        "lowpt2",
+        "nesting_depth",
+        "parent_edge",
+        "DG",
+        "adjs",
+        "ordered_adjs",
+        "ref",
+        "side",
+        "S",
+        "stack_bottom",
+        "lowpt_edge",
+        "left_ref",
+        "right_ref",
+        "embedding",
     ]
 
     def __init__(self, G):
@@ -278,7 +297,8 @@ class LRPlanarity:
         for v in self.DG:  # sort the adjacency lists by nesting depth
             # note: this sorting leads to non linear time
             self.ordered_adjs[v] = sorted(
-                self.DG[v], key=lambda x: self.nesting_depth[(v, x)])
+                self.DG[v], key=lambda x: self.nesting_depth[(v, x)]
+            )
         for v in self.roots:
             if not self.dfs_testing(v):
                 return None
@@ -297,7 +317,8 @@ class LRPlanarity:
         for v in self.DG:
             # sort the adjacency lists again
             self.ordered_adjs[v] = sorted(
-                self.DG[v], key=lambda x: self.nesting_depth[(v, x)])
+                self.DG[v], key=lambda x: self.nesting_depth[(v, x)]
+            )
             # initialize the embedding
             previous_node = None
             for w in self.ordered_adjs[v]:
@@ -343,20 +364,21 @@ class LRPlanarity:
         for v in self.DG:  # sort the adjacency lists by nesting depth
             # note: this sorting leads to non linear time
             self.ordered_adjs[v] = sorted(
-                self.DG[v], key=lambda x: self.nesting_depth[(v, x)])
+                self.DG[v], key=lambda x: self.nesting_depth[(v, x)]
+            )
         for v in self.roots:
             if not self.dfs_testing_recursive(v):
                 return None
 
         for e in self.DG.edges:
-            self.nesting_depth[e] = (self.sign_recursive(e) *
-                                     self.nesting_depth[e])
+            self.nesting_depth[e] = self.sign_recursive(e) * self.nesting_depth[e]
 
         self.embedding.add_nodes_from(self.DG.nodes)
         for v in self.DG:
             # sort the adjacency lists again
             self.ordered_adjs[v] = sorted(
-                self.DG[v], key=lambda x: self.nesting_depth[(v, x)])
+                self.DG[v], key=lambda x: self.nesting_depth[(v, x)]
+            )
             # initialize the embedding
             previous_node = None
             for w in self.ordered_adjs[v]:
@@ -383,7 +405,7 @@ class LRPlanarity:
             v = dfs_stack.pop()
             e = self.parent_edge[v]
 
-            for w in self.adjs[v][ind[v]:]:
+            for w in self.adjs[v][ind[v] :]:
                 vw = (v, w)
 
                 if not skip_init[vw]:
@@ -471,7 +493,7 @@ class LRPlanarity:
             # to indicate whether to skip the final block after the for loop
             skip_final = False
 
-            for w in self.ordered_adjs[v][ind[v]:]:
+            for w in self.ordered_adjs[v][ind[v] :]:
                 ei = (v, w)
 
                 if not skip_init[ei]:
@@ -553,8 +575,9 @@ class LRPlanarity:
             if top_of_stack(self.S) == self.stack_bottom[ei]:
                 break
         # merge conflicting return edges of e_1,...,e_i-1 into P.L
-        while (top_of_stack(self.S).left.conflicting(ei, self) or
-               top_of_stack(self.S).right.conflicting(ei, self)):
+        while top_of_stack(self.S).left.conflicting(ei, self) or top_of_stack(
+            self.S
+        ).right.conflicting(ei, self):
             Q = self.S.pop()
             if Q.right.conflicting(ei, self):
                 Q.swap()
@@ -609,8 +632,7 @@ class LRPlanarity:
             hl = top_of_stack(self.S).left.high
             hr = top_of_stack(self.S).right.high
 
-            if hl is not None and (
-                            hr is None or self.lowpt[hl] > self.lowpt[hr]):
+            if hl is not None and (hr is None or self.lowpt[hl] > self.lowpt[hr]):
                 self.ref[e] = hl
             else:
                 self.ref[e] = hr
@@ -625,7 +647,7 @@ class LRPlanarity:
         while dfs_stack:
             v = dfs_stack.pop()
 
-            for w in self.ordered_adjs[v][ind[v]:]:
+            for w in self.ordered_adjs[v][ind[v] :]:
                 ind[v] += 1
                 ei = (v, w)
 
@@ -639,11 +661,9 @@ class LRPlanarity:
                     break  # handle next node in dfs_stack (i.e. w)
                 else:  # back edge
                     if self.side[ei] == 1:
-                        self.embedding.add_half_edge_cw(w, v,
-                                                        self.right_ref[w])
+                        self.embedding.add_half_edge_cw(w, v, self.right_ref[w])
                     else:
-                        self.embedding.add_half_edge_ccw(w, v,
-                                                         self.left_ref[w])
+                        self.embedding.add_half_edge_ccw(w, v, self.left_ref[w])
                         self.left_ref[w] = v
 
     def dfs_embedding_recursive(self, v):
@@ -828,12 +848,12 @@ class PlanarEmbedding(nx.DiGraph):
         if len(self[v]) == 0:
             # v has no neighbors
             return
-        start_node = self.nodes[v]['first_nbr']
+        start_node = self.nodes[v]["first_nbr"]
         yield start_node
-        current_node = self[v][start_node]['cw']
+        current_node = self[v][start_node]["cw"]
         while start_node != current_node:
             yield current_node
-            current_node = self[v][current_node]['cw']
+            current_node = self[v][current_node]["cw"]
 
     def check_structure(self):
         """Runs without exceptions if this object is valid.
@@ -857,9 +877,9 @@ class PlanarEmbedding(nx.DiGraph):
         for v in self:
             try:
                 sorted_nbrs = set(self.neighbors_cw_order(v))
-            except KeyError:
+            except KeyError as e:
                 msg = f"Bad embedding. Missing orientation for a neighbor of {v}"
-                raise nx.NetworkXException(msg)
+                raise nx.NetworkXException(msg) from e
 
             unsorted_nbrs = set(self[v])
             if sorted_nbrs != unsorted_nbrs:
@@ -924,17 +944,16 @@ class PlanarEmbedding(nx.DiGraph):
         if reference_neighbor is None:
             # The start node has no neighbors
             self.add_edge(start_node, end_node)  # Add edge to graph
-            self[start_node][end_node]['cw'] = end_node
-            self[start_node][end_node]['ccw'] = end_node
-            self.nodes[start_node]['first_nbr'] = end_node
+            self[start_node][end_node]["cw"] = end_node
+            self[start_node][end_node]["ccw"] = end_node
+            self.nodes[start_node]["first_nbr"] = end_node
         else:
-            ccw_reference = self[start_node][reference_neighbor]['ccw']
+            ccw_reference = self[start_node][reference_neighbor]["ccw"]
             self.add_half_edge_cw(start_node, end_node, ccw_reference)
 
-            if reference_neighbor == self.nodes[start_node].get('first_nbr',
-                                                                None):
+            if reference_neighbor == self.nodes[start_node].get("first_nbr", None):
                 # Update first neighbor
-                self.nodes[start_node]['first_nbr'] = end_node
+                self.nodes[start_node]["first_nbr"] = end_node
 
     def add_half_edge_cw(self, start_node, end_node, reference_neighbor):
         """Adds a half-edge from start_node to end_node.
@@ -966,22 +985,23 @@ class PlanarEmbedding(nx.DiGraph):
 
         if reference_neighbor is None:
             # The start node has no neighbors
-            self[start_node][end_node]['cw'] = end_node
-            self[start_node][end_node]['ccw'] = end_node
-            self.nodes[start_node]['first_nbr'] = end_node
+            self[start_node][end_node]["cw"] = end_node
+            self[start_node][end_node]["ccw"] = end_node
+            self.nodes[start_node]["first_nbr"] = end_node
             return
 
         if reference_neighbor not in self[start_node]:
             raise nx.NetworkXException(
-                "Cannot add edge. Reference neighbor does not exist")
+                "Cannot add edge. Reference neighbor does not exist"
+            )
 
         # Get half-edge at the other side
-        cw_reference = self[start_node][reference_neighbor]['cw']
+        cw_reference = self[start_node][reference_neighbor]["cw"]
         # Alter half-edge data structures
-        self[start_node][reference_neighbor]['cw'] = end_node
-        self[start_node][end_node]['cw'] = cw_reference
-        self[start_node][cw_reference]['ccw'] = end_node
-        self[start_node][end_node]['ccw'] = reference_neighbor
+        self[start_node][reference_neighbor]["cw"] = end_node
+        self[start_node][end_node]["cw"] = cw_reference
+        self[start_node][cw_reference]["ccw"] = end_node
+        self[start_node][end_node]["ccw"] = reference_neighbor
 
     def connect_components(self, v, w):
         """Adds half-edges for (v, w) and (w, v) at some position.
@@ -1021,8 +1041,8 @@ class PlanarEmbedding(nx.DiGraph):
         add_half_edge_cw
         connect_components
         """
-        if start_node in self and 'first_nbr' in self.nodes[start_node]:
-            reference = self.nodes[start_node]['first_nbr']
+        if start_node in self and "first_nbr" in self.nodes[start_node]:
+            reference = self.nodes[start_node]["first_nbr"]
         else:
             reference = None
         self.add_half_edge_ccw(start_node, end_node, reference)
@@ -1039,7 +1059,7 @@ class PlanarEmbedding(nx.DiGraph):
         -------
         half-edge : tuple
         """
-        new_node = self[w][v]['ccw']
+        new_node = self[w][v]["ccw"]
         return w, new_node
 
     def traverse_face(self, v, w, mark_half_edges=None):
@@ -1074,14 +1094,13 @@ class PlanarEmbedding(nx.DiGraph):
         prev_node = v
         cur_node = w
         # Last half-edge is (incoming_node, v)
-        incoming_node = self[v][w]['cw']
+        incoming_node = self[v][w]["cw"]
 
         while cur_node != v or prev_node != incoming_node:
             face_nodes.append(cur_node)
             prev_node, cur_node = self.next_face_half_edge(prev_node, cur_node)
             if (prev_node, cur_node) in mark_half_edges:
-                raise nx.NetworkXException(
-                    "Bad planar embedding. Impossible face.")
+                raise nx.NetworkXException("Bad planar embedding. Impossible face.")
             mark_half_edges.add((prev_node, cur_node))
 
         return face_nodes

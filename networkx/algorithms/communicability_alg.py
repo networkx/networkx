@@ -4,18 +4,19 @@ Communicability.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['communicability',
-           'communicability_exp',
-           ]
+__all__ = [
+    "communicability",
+    "communicability_exp",
+]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def communicability(G):
     r"""Returns communicability between all pairs of nodes in G.
 
     The communicability between pairs of nodes in G is the sum of
-    closed walks of different lengths starting at node u and ending at node v.
+    walks of different lengths starting at node u and ending at node v.
 
     Parameters
     ----------
@@ -68,7 +69,7 @@ def communicability(G):
     >>> c = nx.communicability(G)
     """
     import numpy
-    import scipy.linalg
+
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
@@ -90,13 +91,13 @@ def communicability(G):
     return c
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def communicability_exp(G):
     r"""Returns communicability between all pairs of nodes in G.
 
     Communicability between pair of node (u,v) of node in G is the sum of
-    closed walks of different lengths starting at node u and ending at node v.
+    walks of different lengths starting at node u and ending at node v.
 
     Parameters
     ----------
@@ -146,6 +147,7 @@ def communicability_exp(G):
     >>> c = nx.communicability_exp(G)
     """
     import scipy.linalg
+
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix

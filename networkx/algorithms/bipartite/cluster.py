@@ -5,11 +5,12 @@
 import itertools
 import networkx as nx
 
-__all__ = ['clustering',
-           'average_clustering',
-           'latapy_clustering',
-           'robins_alexander_clustering']
-
+__all__ = [
+    "clustering",
+    "average_clustering",
+    "latapy_clustering",
+    "robins_alexander_clustering",
+]
 
 
 def cc_dot(nu, nv):
@@ -24,12 +25,10 @@ def cc_min(nu, nv):
     return float(len(nu & nv)) / min(len(nu), len(nv))
 
 
-modes = {'dot': cc_dot,
-         'min': cc_min,
-         'max': cc_max}
+modes = {"dot": cc_dot, "min": cc_min, "max": cc_max}
 
 
-def latapy_clustering(G, nodes=None, mode='dot'):
+def latapy_clustering(G, nodes=None, mode="dot"):
     r"""Compute a bipartite clustering coefficient for nodes.
 
     The bipartie clustering coefficient is a measure of local density
@@ -111,9 +110,10 @@ def latapy_clustering(G, nodes=None, mode='dot'):
 
     try:
         cc_func = modes[mode]
-    except KeyError:
+    except KeyError as e:
         raise nx.NetworkXError(
-            "Mode for bipartite clustering must be: dot, min or max")
+            "Mode for bipartite clustering must be: dot, min or max"
+        ) from e
 
     if nodes is None:
         nodes = G
@@ -132,7 +132,7 @@ def latapy_clustering(G, nodes=None, mode='dot'):
 clustering = latapy_clustering
 
 
-def average_clustering(G, nodes=None, mode='dot'):
+def average_clustering(G, nodes=None, mode="dot"):
     r"""Compute the average bipartite clustering coefficient.
 
     A clustering coefficient for the whole graph is the average,
@@ -254,7 +254,7 @@ def robins_alexander_clustering(G):
     if L_3 == 0:
         return 0
     C_4 = _four_cycles(G)
-    return (4. * C_4) / L_3
+    return (4.0 * C_4) / L_3
 
 
 def _four_cycles(G):

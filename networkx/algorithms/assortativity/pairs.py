@@ -1,6 +1,5 @@
 """Generators of  x-y pairs of node data."""
-__all__ = ['node_attribute_xy',
-           'node_degree_xy']
+__all__ = ["node_attribute_xy", "node_degree_xy"]
 
 
 def node_attribute_xy(G, attribute, nodes=None):
@@ -57,7 +56,7 @@ def node_attribute_xy(G, attribute, nodes=None):
                 yield (uattr, vattr)
 
 
-def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
+def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
     """Generate node degree-degree pairs for edges in G.
 
     Parameters
@@ -107,8 +106,7 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
     xdeg = G.degree
     ydeg = G.degree
     if G.is_directed():
-        direction = {'out': G.out_degree,
-                     'in': G.in_degree}
+        direction = {"out": G.out_degree, "in": G.in_degree}
         xdeg = direction[x]
         ydeg = direction[y]
 

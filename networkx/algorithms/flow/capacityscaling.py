@@ -2,7 +2,7 @@
 Capacity scaling minimum cost flow algorithm.
 """
 
-__all__ = ['capacity_scaling']
+__all__ = ["capacity_scaling"]
 
 from itertools import chain
 from math import log
@@ -21,26 +21,27 @@ def _detect_unboundedness(R):
     G.add_nodes_from(R)
 
     # Value simulating infinity.
-    inf = R.graph['inf']
+    inf = R.graph["inf"]
     # True infinity.
-    f_inf = float('inf')
+    f_inf = float("inf")
     for u in R:
         for v, e in R[u].items():
             # Compute the minimum weight of infinite-capacity (u, v) edges.
             w = f_inf
             for k, e in e.items():
-                if e['capacity'] == inf:
-                    w = min(w, e['weight'])
+                if e["capacity"] == inf:
+                    w = min(w, e["weight"])
             if w != f_inf:
                 G.add_edge(u, v, weight=w)
 
     if nx.negative_edge_cycle(G):
         raise nx.NetworkXUnbounded(
-            'Negative cost cycle of infinite capacity found. '
-            'Min cost flow may be unbounded below.')
+            "Negative cost cycle of infinite capacity found. "
+            "Min cost flow may be unbounded below."
+        )
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def _build_residual_network(G, demand, capacity, weight):
     """Build a residual network and initialize a zero flow.
     """
@@ -48,33 +49,49 @@ def _build_residual_network(G, demand, capacity, weight):
         raise nx.NetworkXUnfeasible("Sum of the demands should be 0.")
 
     R = nx.MultiDiGraph()
-    R.add_nodes_from((u, {'excess': -G.nodes[u].get(demand, 0),
-                          'potential': 0}) for u in G)
+    R.add_nodes_from(
+        (u, {"excess": -G.nodes[u].get(demand, 0), "potential": 0}) for u in G
+    )
 
-    inf = float('inf')
+    inf = float("inf")
     # Detect selfloops with infinite capacities and negative weights.
     for u, v, e in nx.selfloop_edges(G, data=True):
         if e.get(weight, 0) < 0 and e.get(capacity, inf) == inf:
             raise nx.NetworkXUnbounded(
-                'Negative cost cycle of infinite capacity found. '
-                'Min cost flow may be unbounded below.')
+                "Negative cost cycle of infinite capacity found. "
+                "Min cost flow may be unbounded below."
+            )
 
     # Extract edges with positive capacities. Self loops excluded.
     if G.is_multigraph():
-        edge_list = [(u, v, k, e)
-                     for u, v, k, e in G.edges(data=True, keys=True)
-                     if u != v and e.get(capacity, inf) > 0]
+        edge_list = [
+            (u, v, k, e)
+            for u, v, k, e in G.edges(data=True, keys=True)
+            if u != v and e.get(capacity, inf) > 0
+        ]
     else:
-        edge_list = [(u, v, 0, e) for u, v, e in G.edges(data=True)
-                     if u != v and e.get(capacity, inf) > 0]
+        edge_list = [
+            (u, v, 0, e)
+            for u, v, e in G.edges(data=True)
+            if u != v and e.get(capacity, inf) > 0
+        ]
     # Simulate infinity with the larger of the sum of absolute node imbalances
     # the sum of finite edge capacities or any positive value if both sums are
     # zero. This allows the infinite-capacity edges to be distinguished for
     # unboundedness detection and directly participate in residual capacity
     # calculation.
-    inf = max(sum(abs(R.nodes[u]['excess']) for u in R),
-              2 * sum(e[capacity] for u, v, k, e in edge_list
-                      if capacity in e and e[capacity] != inf)) or 1
+    inf = (
+        max(
+            sum(abs(R.nodes[u]["excess"]) for u in R),
+            2
+            * sum(
+                e[capacity]
+                for u, v, k, e in edge_list
+                if capacity in e and e[capacity] != inf
+            ),
+        )
+        or 1
+    )
     for u, v, k, e in edge_list:
         r = min(e.get(capacity, inf), inf)
         w = e.get(weight, 0)
@@ -85,7 +102,7 @@ def _build_residual_network(G, demand, capacity, weight):
         R.add_edge(v, u, key=(k, False), capacity=0, weight=-w, flow=0)
 
     # Record the value simulating infinity.
-    R.graph['inf'] = inf
+    R.graph["inf"] = inf
 
     _detect_unboundedness(R)
 
@@ -95,7 +112,7 @@ def _build_residual_network(G, demand, capacity, weight):
 def _build_flow_dict(G, R, capacity, weight):
     """Build a flow dictionary from a residual network.
     """
-    inf = float('inf')
+    inf = float("inf")
     flow_dict = {}
     if G.is_multigraph():
         for u in G:
@@ -103,28 +120,43 @@ def _build_flow_dict(G, R, capacity, weight):
             for v, es in G[u].items():
                 flow_dict[u][v] = {
                     # Always saturate negative selfloops.
-                    k: (0 if (u != v or e.get(capacity, inf) <= 0 or
-                               e.get(weight, 0) >= 0) else e[capacity])
-                    for k, e in es.items()}
+                    k: (
+                        0
+                        if (
+                            u != v or e.get(capacity, inf) <= 0 or e.get(weight, 0) >= 0
+                        )
+                        else e[capacity]
+                    )
+                    for k, e in es.items()
+                }
             for v, es in R[u].items():
                 if v in flow_dict[u]:
-                    flow_dict[u][v].update((k[0], e['flow'])
-                                           for k, e in es.items()
-                                           if e['flow'] > 0)
+                    flow_dict[u][v].update(
+                        (k[0], e["flow"]) for k, e in es.items() if e["flow"] > 0
+                    )
     else:
         for u in G:
             flow_dict[u] = {
                 # Always saturate negative selfloops.
-                v: (0 if (u != v or e.get(capacity, inf) <= 0 or
-                           e.get(weight, 0) >= 0) else e[capacity])
-                for v, e in G[u].items()}
-            flow_dict[u].update((v, e['flow']) for v, es in R[u].items()
-                                for e in es.values() if e['flow'] > 0)
+                v: (
+                    0
+                    if (u != v or e.get(capacity, inf) <= 0 or e.get(weight, 0) >= 0)
+                    else e[capacity]
+                )
+                for v, e in G[u].items()
+            }
+            flow_dict[u].update(
+                (v, e["flow"])
+                for v, es in R[u].items()
+                for e in es.values()
+                if e["flow"] > 0
+            )
     return flow_dict
 
 
-def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
-                     heap=BinaryHeap):
+def capacity_scaling(
+    G, demand="demand", capacity="capacity", weight="weight", heap=BinaryHeap
+):
     r"""Find a minimum cost flow satisfying all demands in digraph G.
 
     This is a capacity scaling successive shortest augmenting path algorithm.
@@ -255,16 +287,17 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
     """
     R = _build_residual_network(G, demand, capacity, weight)
 
-    inf = float('inf')
+    inf = float("inf")
     # Account cost of negative selfloops.
     flow_cost = sum(
-        0 if e.get(capacity, inf) <= 0 or e.get(weight, 0) >= 0
+        0
+        if e.get(capacity, inf) <= 0 or e.get(weight, 0) >= 0
         else e[capacity] * e[weight]
-        for u, v, e in nx.selfloop_edges(G, data=True))
+        for u, v, e in nx.selfloop_edges(G, data=True)
+    )
 
     # Determine the maxmimum edge capacity.
-    wmax = max(chain([-inf],
-                     (e['capacity'] for u, v, e in R.edges(data=True))))
+    wmax = max(chain([-inf], (e["capacity"] for u, v, e in R.edges(data=True))))
     if wmax == -inf:
         # Residual network has no edges.
         return flow_cost, _build_flow_dict(G, R, capacity, weight)
@@ -277,17 +310,17 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
         # Saturate Δ-residual edges with negative reduced costs to achieve
         # Δ-optimality.
         for u in R:
-            p_u = R_nodes[u]['potential']
+            p_u = R_nodes[u]["potential"]
             for v, es in R_succ[u].items():
                 for k, e in es.items():
-                    flow = e['capacity'] - e['flow']
-                    if e['weight'] - p_u + R_nodes[v]['potential'] < 0:
-                        flow = e['capacity'] - e['flow']
+                    flow = e["capacity"] - e["flow"]
+                    if e["weight"] - p_u + R_nodes[v]["potential"] < 0:
+                        flow = e["capacity"] - e["flow"]
                         if flow >= delta:
-                            e['flow'] += flow
-                            R_succ[v][u][(k[0], not k[1])]['flow'] -= flow
-                            R_nodes[u]['excess'] -= flow
-                            R_nodes[v]['excess'] += flow
+                            e["flow"] += flow
+                            R_succ[v][u][(k[0], not k[1])]["flow"] -= flow
+                            R_nodes[u]["excess"] -= flow
+                            R_nodes[v]["excess"] += flow
         # Determine the Δ-active nodes.
         S = set()
         T = set()
@@ -296,7 +329,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
         T_add = T.add
         T_remove = T.remove
         for u in R:
-            excess = R_nodes[u]['excess']
+            excess = R_nodes[u]["excess"]
             if excess >= delta:
                 S_add(u)
             elif excess <= -delta:
@@ -321,15 +354,15 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
                     # Path found.
                     t = u
                     break
-                p_u = R_nodes[u]['potential']
+                p_u = R_nodes[u]["potential"]
                 for v, es in R_succ[u].items():
                     if v in d:
                         continue
                     wmin = inf
                     # Find the minimum-weighted (u, v) Δ-residual edge.
                     for k, e in es.items():
-                        if e['capacity'] - e['flow'] >= delta:
-                            w = e['weight']
+                        if e["capacity"] - e["flow"] >= delta:
+                            w = e["weight"]
                             if w < wmin:
                                 wmin = w
                                 kmin = k
@@ -337,7 +370,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
                     if wmin == inf:
                         continue
                     # Update the distance label of v.
-                    d_v = d_u + wmin - p_u + R_nodes[v]['potential']
+                    d_v = d_u + wmin - p_u + R_nodes[v]["potential"]
                     if h_insert(v, d_v):
                         pred[v] = (u, kmin, emin)
             if t is not None:
@@ -345,33 +378,33 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
                 while u != s:
                     v = u
                     u, k, e = pred[v]
-                    e['flow'] += delta
-                    R_succ[v][u][(k[0], not k[1])]['flow'] -= delta
+                    e["flow"] += delta
+                    R_succ[v][u][(k[0], not k[1])]["flow"] -= delta
                 # Account node excess and deficit.
-                R_nodes[s]['excess'] -= delta
-                R_nodes[t]['excess'] += delta
-                if R_nodes[s]['excess'] < delta:
+                R_nodes[s]["excess"] -= delta
+                R_nodes[t]["excess"] += delta
+                if R_nodes[s]["excess"] < delta:
                     S_remove(s)
-                if R_nodes[t]['excess'] > -delta:
+                if R_nodes[t]["excess"] > -delta:
                     T_remove(t)
                 # Update node potentials.
                 d_t = d[t]
                 for u, d_u in d.items():
-                    R_nodes[u]['potential'] -= d_u - d_t
+                    R_nodes[u]["potential"] -= d_u - d_t
             else:
                 # Path not found.
                 S_remove(s)
         delta //= 2
 
-    if any(R.nodes[u]['excess'] != 0 for u in R):
-        raise nx.NetworkXUnfeasible('No flow satisfying all demands.')
+    if any(R.nodes[u]["excess"] != 0 for u in R):
+        raise nx.NetworkXUnfeasible("No flow satisfying all demands.")
 
     # Calculate the flow cost.
     for u in R:
         for v, es in R_succ[u].items():
             for e in es.values():
-                flow = e['flow']
+                flow = e["flow"]
                 if flow > 0:
-                    flow_cost += flow * e['weight']
+                    flow_cost += flow * e["weight"]
 
     return flow_cost, _build_flow_dict(G, R, capacity, weight)

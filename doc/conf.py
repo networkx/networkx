@@ -55,7 +55,7 @@ sphinx_gallery_conf = {
 autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
-# templates_path = ['']
+templates_path = ["_templates"]
 
 suppress_warnings = ["ref.citation", "ref.footnote"]
 
@@ -125,8 +125,10 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_theme_options = {
     "canonical_url": "https://networkx.github.io/documentation/stable/",
     "navigation_depth": 3,
+    "logo_only": True,
 }
 
+html_logo = "_static/networkx_logo.svg"
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
@@ -190,8 +192,8 @@ latex_appendices = ["tutorial"]
 
 # Intersphinx mapping
 intersphinx_mapping = {
-    "https://docs.python.org/2/": None,
-    "https://docs.scipy.org/doc/numpy/": None,
+    "https://docs.python.org/3/": None,
+    "https://numpy.org/doc/stable/": None,
 }
 
 # The reST default role (used for this markup: `text`) to use for all
@@ -203,4 +205,4 @@ numpydoc_show_class_members = False
 
 # Add the 'copybutton' javascript, to hide/show the prompt in code examples
 def setup(app):
-    app.add_javascript("copybutton.js")
+    app.add_js_file("copybutton.js")

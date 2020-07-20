@@ -45,6 +45,11 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore",
+        category=DeprecationWarning,
+        message="context_manager reversed is deprecated*",
+    )
+    warnings.filterwarnings(
+        "ignore",
         category=PendingDeprecationWarning,
         message="the matrix subclass is not the recommended way*",
     )

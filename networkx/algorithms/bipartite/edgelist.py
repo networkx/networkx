@@ -22,18 +22,14 @@ Arbitrary data::
 
 For each edge (u, v) the node u is assigned to part 0 and the node v to part 1.
 """
-__all__ = ['generate_edgelist',
-           'write_edgelist',
-           'parse_edgelist',
-           'read_edgelist']
+__all__ = ["generate_edgelist", "write_edgelist", "parse_edgelist", "read_edgelist"]
 
 import networkx as nx
 from networkx.utils import open_file, not_implemented_for
 
 
-@open_file(1, mode='wb')
-def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
-                   encoding='utf-8'):
+@open_file(1, mode="wb")
+def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="utf-8"):
     """Write a bipartite graph as a list of edges.
 
     Parameters
@@ -78,12 +74,12 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
     generate_edgelist()
     """
     for line in generate_edgelist(G, delimiter, data):
-        line += '\n'
+        line += "\n"
         path.write(line.encode(encoding))
 
 
-@not_implemented_for('directed')
-def generate_edgelist(G, delimiter=' ', data=True):
+@not_implemented_for("directed")
+def generate_edgelist(G, delimiter=" ", data=True):
     """Generate a single line of the bipartite graph G in edge list format.
 
     Parameters
@@ -132,9 +128,9 @@ def generate_edgelist(G, delimiter=' ', data=True):
     2 3
     """
     try:
-        part0 = [n for n, d in G.nodes.items() if d['bipartite'] == 0]
-    except:
-        raise AttributeError("Missing node attribute `bipartite`")
+        part0 = [n for n, d in G.nodes.items() if d["bipartite"] == 0]
+    except BaseException as e:
+        raise AttributeError("Missing node attribute `bipartite`") from e
     if data is True or data is False:
         for n in part0:
             for e in G.edges(n, data=data):
@@ -150,8 +146,9 @@ def generate_edgelist(G, delimiter=' ', data=True):
                 yield delimiter.join(map(str, e))
 
 
-def parse_edgelist(lines, comments='#', delimiter=None,
-                   create_using=None, nodetype=None, data=True):
+def parse_edgelist(
+    lines, comments="#", delimiter=None, create_using=None, nodetype=None, data=True
+):
     """Parse lines of an edge list representation of a bipartite graph.
 
     Parameters
@@ -218,6 +215,7 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     --------
     """
     from ast import literal_eval
+
     G = nx.empty_graph(0, create_using)
     for line in lines:
         p = line.find(comments)
@@ -236,8 +234,10 @@ def parse_edgelist(lines, comments='#', delimiter=None,
             try:
                 u = nodetype(u)
                 v = nodetype(v)
-            except:
-                raise TypeError(f"Failed to convert nodes {u},{v} to type {nodetype}.")
+            except BaseException as e:
+                raise TypeError(
+                    f"Failed to convert nodes {u},{v} " f"to type {nodetype}."
+                ) from e
 
         if len(d) == 0 or data is False:
             # no data or data type specified
@@ -245,19 +245,26 @@ def parse_edgelist(lines, comments='#', delimiter=None,
         elif data is True:
             # no edge types specified
             try:  # try to evaluate as dictionary
-                edgedata = dict(literal_eval(' '.join(d)))
-            except:
-                raise TypeError(f"Failed to convert edge data ({d}) to dictionary.")
+                edgedata = dict(literal_eval(" ".join(d)))
+            except BaseException as e:
+                raise TypeError(
+                    f"Failed to convert edge data ({d})" f"to dictionary."
+                ) from e
         else:
             # convert edge data to dictionary with specified keys and type
             if len(d) != len(data):
-                raise IndexError(f"Edge data {d} and data_keys {data} are not the same length")
+                raise IndexError(
+                    f"Edge data {d} and data_keys {data} are not the same length"
+                )
             edgedata = {}
             for (edge_key, edge_type), edge_value in zip(data, d):
                 try:
                     edge_value = edge_type(edge_value)
-                except:
-                    raise TypeError(f"Failed to convert {edge_key} data {edge_value} to type {edge_type}.")
+                except BaseException as e:
+                    raise TypeError(
+                        f"Failed to convert {edge_key} data "
+                        f"{edge_value} to type {edge_type}."
+                    ) from e
                 edgedata.update({edge_key: edge_value})
         G.add_node(u, bipartite=0)
         G.add_node(v, bipartite=1)
@@ -265,11 +272,17 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     return G
 
 
-@open_file(0, mode='rb')
-def read_edgelist(path, comments="#",
-                  delimiter=None, create_using=None,
-                  nodetype=None, data=True, edgetype=None,
-                  encoding='utf-8'):
+@open_file(0, mode="rb")
+def read_edgelist(
+    path,
+    comments="#",
+    delimiter=None,
+    create_using=None,
+    nodetype=None,
+    data=True,
+    edgetype=None,
+    encoding="utf-8",
+):
     """Read a bipartite graph from a list of edges.
 
     Parameters
@@ -338,8 +351,11 @@ def read_edgelist(path, comments="#",
     types (e.g. int, float, str, frozenset - or tuples of those, etc.)
     """
     lines = (line.decode(encoding) for line in path)
-    return parse_edgelist(lines, comments=comments,
-                          delimiter=delimiter,
-                          create_using=create_using,
-                          nodetype=nodetype,
-                          data=data)
+    return parse_edgelist(
+        lines,
+        comments=comments,
+        delimiter=delimiter,
+        create_using=create_using,
+        nodetype=nodetype,
+        data=data,
+    )

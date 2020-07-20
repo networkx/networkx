@@ -7,17 +7,17 @@ from networkx.utils import groups
 from networkx.utils import not_implemented_for
 from networkx.utils import py_random_state
 
-__all__ = ['asyn_fluidc']
+__all__ = ["asyn_fluidc"]
 
 
 @py_random_state(3)
-@not_implemented_for('directed', 'multigraph')
+@not_implemented_for("directed", "multigraph")
 def asyn_fluidc(G, k, max_iter=100, seed=None):
     """Returns communities in `G` as detected by Fluid Communities algorithm.
 
     The asynchronous fluid communities algorithm is described in
     [1]_. The algorithm is based on the simple idea of fluids interacting
-    in an environment, expanding and pushing each other. It's initialization is
+    in an environment, expanding and pushing each other. Its initialization is
     random, so found communities may vary on different executions.
 
     The algorithm proceeds as follows. First each of the initial k communities
@@ -97,23 +97,24 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
             com_counter = Counter()
             # Take into account self vertex community
             try:
-                com_counter.update({communities[vertex]:
-                                    density[communities[vertex]]})
+                com_counter.update({communities[vertex]: density[communities[vertex]]})
             except KeyError:
                 pass
             # Gather neighbour vertex communities
             for v in G[vertex]:
                 try:
-                    com_counter.update({communities[v]:
-                                        density[communities[v]]})
+                    com_counter.update({communities[v]: density[communities[v]]})
                 except KeyError:
                     continue
             # Check which is the community with highest density
             new_com = -1
             if len(com_counter.keys()) > 0:
                 max_freq = max(com_counter.values())
-                best_communities = [com for com, freq in com_counter.items()
-                                    if (max_freq - freq) < 0.0001]
+                best_communities = [
+                    com
+                    for com, freq in com_counter.items()
+                    if (max_freq - freq) < 0.0001
+                ]
                 # If actual vertex com in best communities, it is preserved
                 try:
                     if communities[vertex] in best_communities:
@@ -129,15 +130,17 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
                     # Update previous community status
                     try:
                         com_to_numvertices[communities[vertex]] -= 1
-                        density[communities[vertex]] = max_density / \
-                            com_to_numvertices[communities[vertex]]
+                        density[communities[vertex]] = (
+                            max_density / com_to_numvertices[communities[vertex]]
+                        )
                     except KeyError:
                         pass
                     # Update new community status
                     communities[vertex] = new_com
                     com_to_numvertices[communities[vertex]] += 1
-                    density[communities[vertex]] = max_density / \
-                        com_to_numvertices[communities[vertex]]
+                    density[communities[vertex]] = (
+                        max_density / com_to_numvertices[communities[vertex]]
+                    )
         # If maximum iterations reached --> output actual results
         if iter_count > max_iter:
             break

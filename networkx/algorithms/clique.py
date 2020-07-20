@@ -14,14 +14,23 @@ from itertools import islice
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
-           'make_clique_bipartite', 'graph_clique_number',
-           'graph_number_of_cliques', 'node_clique_number',
-           'number_of_cliques', 'cliques_containing_node',
-           'enumerate_all_cliques']
+
+__all__ = [
+    "find_cliques",
+    "find_cliques_recursive",
+    "make_max_clique_graph",
+    "make_clique_bipartite",
+    "graph_clique_number",
+    "graph_number_of_cliques",
+    "node_clique_number",
+    "number_of_cliques",
+    "cliques_containing_node",
+    "enumerate_all_cliques",
+    "max_weight_clique",
+]
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def enumerate_all_cliques(G):
     """Returns all cliques in an undirected graph.
 
@@ -84,12 +93,15 @@ def enumerate_all_cliques(G):
         yield base
         for i, u in enumerate(cnbrs):
             # Use generators to reduce memory consumption.
-            queue.append((chain(base, [u]),
-                          filter(nbrs[u].__contains__,
-                                 islice(cnbrs, i + 1, None))))
+            queue.append(
+                (
+                    chain(base, [u]),
+                    filter(nbrs[u].__contains__, islice(cnbrs, i + 1, None)),
+                )
+            )
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def find_cliques(G):
     """Returns all maximal cliques in an undirected graph.
 
@@ -468,9 +480,9 @@ def node_clique_number(G, nodes=None, cliques=None):
         cliques = list(find_cliques(G))
 
     if nodes is None:
-        nodes = list(G.nodes())   # none, get entire graph
+        nodes = list(G.nodes())  # none, get entire graph
 
-    if not isinstance(nodes, list):   # check for a list
+    if not isinstance(nodes, list):  # check for a list
         v = nodes
         # assume it is a single value
         d = max([len(c) for c in cliques if v in c])
@@ -506,9 +518,9 @@ def number_of_cliques(G, nodes=None, cliques=None):
         cliques = list(find_cliques(G))
 
     if nodes is None:
-        nodes = list(G.nodes())   # none, get entire graph
+        nodes = list(G.nodes())  # none, get entire graph
 
-    if not isinstance(nodes, list):   # check for a list
+    if not isinstance(nodes, list):  # check for a list
         v = nodes
         # assume it is a single value
         numcliq = len([1 for c in cliques if v in c])
@@ -529,9 +541,9 @@ def cliques_containing_node(G, nodes=None, cliques=None):
         cliques = list(find_cliques(G))
 
     if nodes is None:
-        nodes = list(G.nodes())   # none, get entire graph
+        nodes = list(G.nodes())  # none, get entire graph
 
-    if not isinstance(nodes, list):   # check for a list
+    if not isinstance(nodes, list):  # check for a list
         v = nodes
         # assume it is a single value
         vcliques = [c for c in cliques if v in c]
@@ -540,3 +552,162 @@ def cliques_containing_node(G, nodes=None, cliques=None):
         for v in nodes:
             vcliques[v] = [c for c in cliques if v in c]
     return vcliques
+
+
+class MaxWeightClique(object):
+    """A class for the maximum weight clique algorithm.
+
+    This class is a helper for the `max_weight_clique` function.  The class
+    should not normally be used directly.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The undirected graph for which a maximum weight clique is sought
+    weight : string or None, optional (default='weight')
+        The node attribute that holds the integer value used as a weight.
+        If None, then each node has weight 1.
+
+    Attributes
+    ----------
+    G : NetworkX graph
+        The undirected graph for which a maximum weight clique is sought
+    node_weights: dict
+        The weight of each node
+    incumbent_nodes : list
+        The nodes of the incumbent clique (the best clique found so far)
+    incumbent_weight: int
+        The weight of the incumbent clique
+    """
+
+    def __init__(self, G, weight):
+        self.G = G
+        self.incumbent_nodes = []
+        self.incumbent_weight = 0
+
+        if weight is None:
+            self.node_weights = {v: 1 for v in G.nodes()}
+        else:
+            for v in G.nodes():
+                if weight not in G.nodes[v]:
+                    err = "Node {} does not have the requested weight field."
+                    raise KeyError(err.format(v))
+                if not isinstance(G.nodes[v][weight], int):
+                    err = "The '{}' field of node {} is not an integer."
+                    raise ValueError(err.format(weight, v))
+            self.node_weights = {v: G.nodes[v][weight] for v in G.nodes()}
+
+    def update_incumbent_if_improved(self, C, C_weight):
+        """Update the incumbent if the node set C has greater weight.
+
+        C is assumed to be a clique.
+        """
+        if C_weight > self.incumbent_weight:
+            self.incumbent_nodes = C[:]
+            self.incumbent_weight = C_weight
+
+    def greedily_find_independent_set(self, P):
+        """Greedily find an independent set of nodes from a set of
+        nodes P."""
+        independent_set = []
+        P = P[:]
+        while P:
+            v = P[0]
+            independent_set.append(v)
+            P = [w for w in P if v != w and not self.G.has_edge(v, w)]
+        return independent_set
+
+    def find_branching_nodes(self, P, target):
+        """Find a set of nodes to branch on."""
+        residual_wt = {v: self.node_weights[v] for v in P}
+        total_wt = 0
+        P = P[:]
+        while P:
+            independent_set = self.greedily_find_independent_set(P)
+            min_wt_in_class = min(residual_wt[v] for v in independent_set)
+            total_wt += min_wt_in_class
+            if total_wt > target:
+                break
+            for v in independent_set:
+                residual_wt[v] -= min_wt_in_class
+            P = [v for v in P if residual_wt[v] != 0]
+        return P
+
+    def expand(self, C, C_weight, P):
+        """Look for the best clique that contains all the nodes in C and zero or
+        more of the nodes in P, backtracking if it can be shown that no such
+        clique has greater weight than the incumbent.
+        """
+        self.update_incumbent_if_improved(C, C_weight)
+        branching_nodes = self.find_branching_nodes(
+            P, self.incumbent_weight - C_weight)
+        while branching_nodes:
+            v = branching_nodes.pop()
+            P.remove(v)
+            new_C = C + [v]
+            new_C_weight = C_weight + self.node_weights[v]
+            new_P = [w for w in P if self.G.has_edge(v, w)]
+            self.expand(new_C, new_C_weight, new_P)
+
+    def find_max_weight_clique(self):
+        """Find a maximum weight clique."""
+        # Sort nodes in reverse order of degree for speed
+        nodes = sorted(self.G.nodes(), key=lambda v: self.G.degree(v),
+                       reverse=True)
+        nodes = [v for v in nodes if self.node_weights[v] > 0]
+        self.expand([], 0, nodes)
+
+
+@not_implemented_for('directed')
+def max_weight_clique(G, weight='weight'):
+    """Find a maximum weight clique in G.
+
+    A _clique_ in a graph is a set of nodes such that every two distinct nodes
+    are adjacent.  The _weight_ of a clique is the sum of the weights of its
+    nodes.  A _maximum weight clique_ of graph G is a clique C in G such that
+    no clique in G has weight greater than the weight of C.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+    weight : string or None, optional (default='weight')
+        The node attribute that holds the integer value used as a weight.
+        If None, then each node has weight 1.
+
+    Returns
+    -------
+    clique : list
+        the nodes of a maximum weight clique
+    weight : int
+        the weight of a maximum weight clique
+
+    Notes
+    -----
+    The implementation is recursive, and therefore it may run into recursion
+    depth issues if G contains a clique whose number of nodes is close to the
+    recursion depth limit.
+
+    At each search node, the algorithm greedily constructs a weighted
+    independent set cover of part of the graph in order to find a small set of
+    nodes on which to branch.  The algorithm is very similar to the algorithm
+    of Tavares et al. [1]_, other than the fact that the NetworkX version does
+    not use bitsets.  This style of algorithm for maximum weight clique (and
+    maximum independent set, which is the same problem but on the complement
+    graph) has a decades-long history.  See Algorithm B of Warren and Hicks
+    [2]_ and the references in that paper.
+
+    References
+    ----------
+    [1] Tavares, W.A., Neto, M.B.C., Rodrigues, C.D., Michelon, P.: Um
+    algoritmo de branch and bound para o problema da clique máxima ponderada.
+    Proceedings of XLVII SBPO 1 (2015).
+
+    [2] Warrent, Jeffrey S, Hicks, Illya V.: Combinatorial Branch-and-Bound for
+    the Maximum Weight Independent Set Problem.  Technical Report, Texas A&M
+    University (2016).
+    """
+
+    mwc = MaxWeightClique(G, weight)
+    mwc.find_max_weight_clique()
+    return mwc.incumbent_nodes, mwc.incumbent_weight

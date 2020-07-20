@@ -23,21 +23,25 @@ class TestTreeLCA:
         cls.ans = dict(tree_all_pairs_lca(cls.DG, 0))
         gold = {(n, n): n for n in cls.DG}
         gold.update({(0, i): 0 for i in range(1, 7)})
-        gold.update({(1, 2): 0,
-                     (1, 3): 1,
-                     (1, 4): 1,
-                     (1, 5): 0,
-                     (1, 6): 0,
-                     (2, 3): 0,
-                     (2, 4): 0,
-                     (2, 5): 2,
-                     (2, 6): 2,
-                     (3, 4): 1,
-                     (3, 5): 0,
-                     (3, 6): 0,
-                     (4, 5): 0,
-                     (4, 6): 0,
-                     (5, 6): 2})
+        gold.update(
+            {
+                (1, 2): 0,
+                (1, 3): 1,
+                (1, 4): 1,
+                (1, 5): 0,
+                (1, 6): 0,
+                (2, 3): 0,
+                (2, 4): 0,
+                (2, 5): 2,
+                (2, 6): 2,
+                (3, 4): 1,
+                (3, 5): 0,
+                (3, 6): 0,
+                (4, 5): 0,
+                (4, 6): 0,
+                (5, 6): 2,
+            }
+        )
 
         cls.gold = gold
 
@@ -59,8 +63,7 @@ class TestTreeLCA:
 
     def test_tree_all_pairs_lowest_common_ancestor3(self):
         """Specifying no pairs same as specifying all."""
-        all_pairs = chain(combinations(self.DG, 2),
-                          ((node, node) for node in self.DG))
+        all_pairs = chain(combinations(self.DG, 2), ((node, node) for node in self.DG))
 
         ans = dict(tree_all_pairs_lca(self.DG, 0, all_pairs))
         self.assert_has_same_pairs(ans, self.ans)
@@ -81,8 +84,11 @@ class TestTreeLCA:
     def test_tree_all_pairs_lowest_common_ancestor6(self):
         """Works on subtrees."""
         ans = dict(tree_all_pairs_lca(self.DG, 1))
-        gold = {pair: lca for (pair, lca) in self.gold.items()
-                    if all(n in (1, 3, 4) for n in pair)}
+        gold = {
+            pair: lca
+            for (pair, lca) in self.gold.items()
+            if all(n in (1, 3, 4) for n in pair)
+        }
         self.assert_has_same_pairs(gold, ans)
 
     def test_tree_all_pairs_lowest_common_ancestor7(self):
@@ -122,8 +128,9 @@ class TestTreeLCA:
         """Test that None as a node in the graph raises an error."""
         G = nx.DiGraph([(None, 3)])
         pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
-        pytest.raises(nx.NodeNotFound, list,
-                      tree_all_pairs_lca(self.DG, pairs=G.edges()))
+        pytest.raises(
+            nx.NodeNotFound, list, tree_all_pairs_lca(self.DG, pairs=G.edges())
+        )
 
     def test_tree_all_pairs_lowest_common_ancestor12(self):
         """Test that tree routine bails on DAGs."""
@@ -166,42 +173,44 @@ class TestDAGLCA:
 
         cls.root_distance = nx.shortest_path_length(cls.DG, source=0)
 
-        cls.gold = {(1, 1): 1,
-                    (1, 2): 1,
-                    (1, 3): 1,
-                    (1, 4): 0,
-                    (1, 5): 0,
-                    (1, 6): 0,
-                    (1, 7): 0,
-                    (1, 8): 0,
-                    (2, 2): 2,
-                    (2, 3): 2,
-                    (2, 4): 0,
-                    (2, 5): 5,
-                    (2, 6): 6,
-                    (2, 7): 7,
-                    (2, 8): 7,
-                    (3, 3): 8,
-                    (3, 4): 4,
-                    (3, 5): 5,
-                    (3, 6): 6,
-                    (3, 7): 7,
-                    (3, 8): 8,
-                    (4, 4): 4,
-                    (4, 5): 0,
-                    (4, 6): 0,
-                    (4, 7): 0,
-                    (4, 8): 0,
-                    (5, 5): 5,
-                    (5, 6): 5,
-                    (5, 7): 5,
-                    (5, 8): 5,
-                    (6, 6): 6,
-                    (6, 7): 5,
-                    (6, 8): 6,
-                    (7, 7): 7,
-                    (7, 8): 7,
-                    (8, 8): 8}
+        cls.gold = {
+            (1, 1): 1,
+            (1, 2): 1,
+            (1, 3): 1,
+            (1, 4): 0,
+            (1, 5): 0,
+            (1, 6): 0,
+            (1, 7): 0,
+            (1, 8): 0,
+            (2, 2): 2,
+            (2, 3): 2,
+            (2, 4): 0,
+            (2, 5): 5,
+            (2, 6): 6,
+            (2, 7): 7,
+            (2, 8): 7,
+            (3, 3): 8,
+            (3, 4): 4,
+            (3, 5): 5,
+            (3, 6): 6,
+            (3, 7): 7,
+            (3, 8): 8,
+            (4, 4): 4,
+            (4, 5): 0,
+            (4, 6): 0,
+            (4, 7): 0,
+            (4, 8): 0,
+            (5, 5): 5,
+            (5, 6): 5,
+            (5, 7): 5,
+            (5, 8): 5,
+            (6, 6): 6,
+            (6, 7): 5,
+            (6, 8): 6,
+            (7, 7): 7,
+            (7, 8): 7,
+            (8, 8): 8,
+        }
         cls.gold.update(((0, n), 0) for n in cls.DG)
 
     def assert_lca_dicts_same(self, d1, d2, G=None):
@@ -213,12 +222,13 @@ class TestDAGLCA:
             root_distance = self.root_distance
         else:
             roots = [n for n, deg in G.in_degree if deg == 0]
-            assert(len(roots) == 1)
+            assert len(roots) == 1
             root_distance = nx.shortest_path_length(G, source=roots[0])
 
         for a, b in ((min(pair), max(pair)) for pair in chain(d1, d2)):
-            assert (root_distance[get_pair(d1, a, b)] ==
-                    root_distance[get_pair(d2, a, b)])
+            assert (
+                root_distance[get_pair(d1, a, b)] == root_distance[get_pair(d2, a, b)]
+            )
 
     def test_all_pairs_lowest_common_ancestor1(self):
         """Produces the correct results."""
@@ -269,14 +279,11 @@ class TestDAGLCA:
 
     def test_all_pairs_lowest_common_ancestor7(self):
         """Test that LCA on null graph bails."""
-        pytest.raises(nx.NetworkXPointlessConcept,
-                      all_pairs_lca,
-                      nx.DiGraph())
+        pytest.raises(nx.NetworkXPointlessConcept, all_pairs_lca, nx.DiGraph())
 
     def test_all_pairs_lowest_common_ancestor8(self):
         """Test that LCA on non-dags bails."""
-        pytest.raises(nx.NetworkXError, all_pairs_lca,
-                      nx.DiGraph([(3, 4), (4, 3)]))
+        pytest.raises(nx.NetworkXError, all_pairs_lca, nx.DiGraph([(3, 4), (4, 3)]))
 
     def test_all_pairs_lowest_common_ancestor9(self):
         """Test that it works on non-empty graphs with no LCAs."""
@@ -289,15 +296,13 @@ class TestDAGLCA:
         """Test that it bails on None as a node."""
         G = nx.DiGraph([(None, 3)])
         pytest.raises(nx.NetworkXError, all_pairs_lca, G)
-        pytest.raises(nx.NodeNotFound, all_pairs_lca,
-                      self.DG, pairs=G.edges())
+        pytest.raises(nx.NodeNotFound, all_pairs_lca, self.DG, pairs=G.edges())
 
     def test_lowest_common_ancestor1(self):
         """Test that the one-pair function works on default."""
         G = nx.DiGraph([(0, 1), (2, 1)])
         sentinel = object()
-        assert (nx.lowest_common_ancestor(G, 0, 2, default=sentinel) is
-                sentinel)
+        assert nx.lowest_common_ancestor(G, 0, 2, default=sentinel) is sentinel
 
     def test_lowest_common_ancestor2(self):
         """Test that the one-pair function works on identity."""

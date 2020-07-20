@@ -120,7 +120,7 @@ References
 
 See Also
 --------
-syntactic_feasibliity(), semantic_feasibility()
+syntactic_feasibility(), semantic_feasibility()
 
 Notes
 -----
@@ -141,8 +141,7 @@ polynomial-time algorithm is known to exist).
 
 import sys
 
-__all__ = ['GraphMatcher',
-           'DiGraphMatcher']
+__all__ = ["GraphMatcher", "DiGraphMatcher"]
 
 
 class GraphMatcher:
@@ -182,7 +181,7 @@ class GraphMatcher:
             sys.setrecursionlimit(int(1.5 * expected_max_recursion_level))
 
         # Declare that we will be searching for a graph-graph isomorphism.
-        self.test = 'graph'
+        self.test = "graph"
 
         # Initialize state
         self.initialize()
@@ -224,7 +223,7 @@ class GraphMatcher:
             # If T1_inout and T2_inout were both empty....
             # P(s) = (N_1 - M_1) x {min (N_2 - M_2)}
             # if not (T1_inout or T2_inout):  # as suggested by  [2], incorrect
-            if 1:                             # as inferred from [1], correct
+            if 1:  # as inferred from [1], correct
                 # First we determine the candidate node for G2
                 other_node = min(G2_nodes - set(self.core_2), key=min_key)
                 for node in self.G1:
@@ -290,7 +289,7 @@ class GraphMatcher:
     def isomorphisms_iter(self):
         """Generator over isomorphisms between G1 and G2."""
         # Declare that we are looking for a graph-graph isomorphism.
-        self.test = 'graph'
+        self.test = "graph"
         self.initialize()
         yield from self.match()
 
@@ -375,23 +374,23 @@ class GraphMatcher:
         except StopIteration:
             return False
 
-#    subgraph_is_isomorphic.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
+    #    subgraph_is_isomorphic.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
 
     def subgraph_isomorphisms_iter(self):
         """Generator over isomorphisms between a subgraph of G1 and G2."""
         # Declare that we are looking for graph-subgraph isomorphism.
-        self.test = 'subgraph'
+        self.test = "subgraph"
         self.initialize()
         yield from self.match()
 
     def subgraph_monomorphisms_iter(self):
         """Generator over monomorphisms between a subgraph of G1 and G2."""
         # Declare that we are looking for graph-subgraph monomorphism.
-        self.test = 'mono'
+        self.test = "mono"
         self.initialize()
         yield from self.match()
 
-#    subgraph_isomorphisms_iter.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
+    #    subgraph_isomorphisms_iter.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
 
     def syntactic_feasibility(self, G1_node, G2_node):
         """Returns True if adding (G1_node, G2_node) is syntactically feasible.
@@ -429,11 +428,15 @@ class GraphMatcher:
         # R_neighbor at the next recursion level. But it is good to prune the
         # search tree now.
 
-        if self.test == 'mono':
-            if self.G1.number_of_edges(G1_node, G1_node) < self.G2.number_of_edges(G2_node, G2_node):
+        if self.test == "mono":
+            if self.G1.number_of_edges(G1_node, G1_node) < self.G2.number_of_edges(
+                G2_node, G2_node
+            ):
                 return False
         else:
-            if self.G1.number_of_edges(G1_node, G1_node) != self.G2.number_of_edges(G2_node, G2_node):
+            if self.G1.number_of_edges(G1_node, G1_node) != self.G2.number_of_edges(
+                G2_node, G2_node
+            ):
                 return False
 
         # R_neighbor
@@ -441,26 +444,32 @@ class GraphMatcher:
         # For each neighbor n' of n in the partial mapping, the corresponding
         # node m' is a neighbor of m, and vice versa. Also, the number of
         # edges must be equal.
-        if self.test != 'mono':
+        if self.test != "mono":
             for neighbor in self.G1[G1_node]:
                 if neighbor in self.core_1:
                     if not (self.core_1[neighbor] in self.G2[G2_node]):
                         return False
-                    elif self.G1.number_of_edges(neighbor, G1_node) != self.G2.number_of_edges(self.core_1[neighbor], G2_node):
+                    elif self.G1.number_of_edges(
+                        neighbor, G1_node
+                    ) != self.G2.number_of_edges(self.core_1[neighbor], G2_node):
                         return False
 
         for neighbor in self.G2[G2_node]:
             if neighbor in self.core_2:
                 if not (self.core_2[neighbor] in self.G1[G1_node]):
                     return False
-                elif self.test == 'mono':
-                    if self.G1.number_of_edges(self.core_2[neighbor], G1_node) < self.G2.number_of_edges(neighbor, G2_node):
+                elif self.test == "mono":
+                    if self.G1.number_of_edges(
+                        self.core_2[neighbor], G1_node
+                    ) < self.G2.number_of_edges(neighbor, G2_node):
                         return False
                 else:
-                    if self.G1.number_of_edges(self.core_2[neighbor], G1_node) != self.G2.number_of_edges(neighbor, G2_node):
+                    if self.G1.number_of_edges(
+                        self.core_2[neighbor], G1_node
+                    ) != self.G2.number_of_edges(neighbor, G2_node):
                         return False
 
-        if self.test != 'mono':
+        if self.test != "mono":
             # Look ahead 1
 
             # R_terminout
@@ -474,7 +483,7 @@ class GraphMatcher:
             for neighbor in self.G2[G2_node]:
                 if (neighbor in self.inout_2) and (neighbor not in self.core_2):
                     num2 += 1
-            if self.test == 'graph':
+            if self.test == "graph":
                 if not (num1 == num2):
                     return False
             else:  # self.test == 'subgraph'
@@ -496,7 +505,7 @@ class GraphMatcher:
             for neighbor in self.G2[G2_node]:
                 if neighbor not in self.inout_2:
                     num2 += 1
-            if self.test == 'graph':
+            if self.test == "graph":
                 if not (num1 == num2):
                     return False
             else:  # self.test == 'subgraph'
@@ -553,7 +562,7 @@ class DiGraphMatcher(GraphMatcher):
         # We compute the in-terminal sets.
 
         # elif not (T1_out or T2_out):   # as suggested by [2], incorrect
-        else:                            # as suggested by [1], correct
+        else:  # as suggested by [1], correct
             T1_in = [node for node in self.in_1 if node not in self.core_1]
             T2_in = [node for node in self.in_2 if node not in self.core_2]
 
@@ -568,7 +577,7 @@ class DiGraphMatcher(GraphMatcher):
             # P(s) = (N_1 - M_1) x {min (N_2 - M_2)}
 
             # elif not (T1_in or T2_in):   # as suggested by  [2], incorrect
-            else:                          # as inferred from [1], correct
+            else:  # as inferred from [1], correct
                 node_2 = min(G2_nodes - set(self.core_2), key=min_key)
                 for node_1 in G1_nodes:
                     if node_1 not in self.core_1:
@@ -644,11 +653,15 @@ class DiGraphMatcher(GraphMatcher):
         # The number of selfloops for G1_node must equal the number of
         # self-loops for G2_node. Without this check, we would fail on R_pred
         # at the next recursion level. This should prune the tree even further.
-        if self.test == 'mono':
-            if self.G1.number_of_edges(G1_node, G1_node) < self.G2.number_of_edges(G2_node, G2_node):
+        if self.test == "mono":
+            if self.G1.number_of_edges(G1_node, G1_node) < self.G2.number_of_edges(
+                G2_node, G2_node
+            ):
                 return False
         else:
-            if self.G1.number_of_edges(G1_node, G1_node) != self.G2.number_of_edges(G2_node, G2_node):
+            if self.G1.number_of_edges(G1_node, G1_node) != self.G2.number_of_edges(
+                G2_node, G2_node
+            ):
                 return False
 
         # R_pred
@@ -656,23 +669,29 @@ class DiGraphMatcher(GraphMatcher):
         # For each predecessor n' of n in the partial mapping, the
         # corresponding node m' is a predecessor of m, and vice versa. Also,
         # the number of edges must be equal
-        if self.test != 'mono':
+        if self.test != "mono":
             for predecessor in self.G1.pred[G1_node]:
                 if predecessor in self.core_1:
                     if not (self.core_1[predecessor] in self.G2.pred[G2_node]):
                         return False
-                    elif self.G1.number_of_edges(predecessor, G1_node) != self.G2.number_of_edges(self.core_1[predecessor], G2_node):
+                    elif self.G1.number_of_edges(
+                        predecessor, G1_node
+                    ) != self.G2.number_of_edges(self.core_1[predecessor], G2_node):
                         return False
 
         for predecessor in self.G2.pred[G2_node]:
             if predecessor in self.core_2:
                 if not (self.core_2[predecessor] in self.G1.pred[G1_node]):
                     return False
-                elif self.test == 'mono':
-                    if self.G1.number_of_edges(self.core_2[predecessor], G1_node) < self.G2.number_of_edges(predecessor, G2_node):
+                elif self.test == "mono":
+                    if self.G1.number_of_edges(
+                        self.core_2[predecessor], G1_node
+                    ) < self.G2.number_of_edges(predecessor, G2_node):
                         return False
                 else:
-                    if self.G1.number_of_edges(self.core_2[predecessor], G1_node) != self.G2.number_of_edges(predecessor, G2_node):
+                    if self.G1.number_of_edges(
+                        self.core_2[predecessor], G1_node
+                    ) != self.G2.number_of_edges(predecessor, G2_node):
                         return False
 
         # R_succ
@@ -680,26 +699,32 @@ class DiGraphMatcher(GraphMatcher):
         # For each successor n' of n in the partial mapping, the corresponding
         # node m' is a successor of m, and vice versa. Also, the number of
         # edges must be equal.
-        if self.test != 'mono':
+        if self.test != "mono":
             for successor in self.G1[G1_node]:
                 if successor in self.core_1:
                     if not (self.core_1[successor] in self.G2[G2_node]):
                         return False
-                    elif self.G1.number_of_edges(G1_node, successor) != self.G2.number_of_edges(G2_node, self.core_1[successor]):
+                    elif self.G1.number_of_edges(
+                        G1_node, successor
+                    ) != self.G2.number_of_edges(G2_node, self.core_1[successor]):
                         return False
 
         for successor in self.G2[G2_node]:
             if successor in self.core_2:
                 if not (self.core_2[successor] in self.G1[G1_node]):
                     return False
-                elif self.test == 'mono':
-                    if self.G1.number_of_edges(G1_node, self.core_2[successor]) < self.G2.number_of_edges(G2_node, successor):
+                elif self.test == "mono":
+                    if self.G1.number_of_edges(
+                        G1_node, self.core_2[successor]
+                    ) < self.G2.number_of_edges(G2_node, successor):
                         return False
                 else:
-                    if self.G1.number_of_edges(G1_node, self.core_2[successor]) != self.G2.number_of_edges(G2_node, successor):
+                    if self.G1.number_of_edges(
+                        G1_node, self.core_2[successor]
+                    ) != self.G2.number_of_edges(G2_node, successor):
                         return False
 
-        if self.test != 'mono':
+        if self.test != "mono":
 
             # Look ahead 1
 
@@ -714,7 +739,7 @@ class DiGraphMatcher(GraphMatcher):
             for predecessor in self.G2.pred[G2_node]:
                 if (predecessor in self.in_2) and (predecessor not in self.core_2):
                     num2 += 1
-            if self.test == 'graph':
+            if self.test == "graph":
                 if not (num1 == num2):
                     return False
             else:  # self.test == 'subgraph'
@@ -731,7 +756,7 @@ class DiGraphMatcher(GraphMatcher):
             for successor in self.G2[G2_node]:
                 if (successor in self.in_2) and (successor not in self.core_2):
                     num2 += 1
-            if self.test == 'graph':
+            if self.test == "graph":
                 if not (num1 == num2):
                     return False
             else:  # self.test == 'subgraph'
@@ -750,7 +775,7 @@ class DiGraphMatcher(GraphMatcher):
             for predecessor in self.G2.pred[G2_node]:
                 if (predecessor in self.out_2) and (predecessor not in self.core_2):
                     num2 += 1
-            if self.test == 'graph':
+            if self.test == "graph":
                 if not (num1 == num2):
                     return False
             else:  # self.test == 'subgraph'
@@ -767,7 +792,7 @@ class DiGraphMatcher(GraphMatcher):
             for successor in self.G2[G2_node]:
                 if (successor in self.out_2) and (successor not in self.core_2):
                     num2 += 1
-            if self.test == 'graph':
+            if self.test == "graph":
                 if not (num1 == num2):
                     return False
             else:  # self.test == 'subgraph'
@@ -789,7 +814,7 @@ class DiGraphMatcher(GraphMatcher):
             for predecessor in self.G2.pred[G2_node]:
                 if (predecessor not in self.in_2) and (predecessor not in self.out_2):
                     num2 += 1
-            if self.test == 'graph':
+            if self.test == "graph":
                 if not (num1 == num2):
                     return False
             else:  # self.test == 'subgraph'
@@ -807,7 +832,7 @@ class DiGraphMatcher(GraphMatcher):
             for successor in self.G2[G2_node]:
                 if (successor not in self.in_2) and (successor not in self.out_2):
                     num2 += 1
-            if self.test == 'graph':
+            if self.test == "graph":
                 if not (num1 == num2):
                     return False
             else:  # self.test == 'subgraph'
@@ -873,7 +898,9 @@ class GMState:
             # Updates for T_1^{inout}
             new_nodes = set()
             for node in GM.core_1:
-                new_nodes.update([neighbor for neighbor in GM.G1[node] if neighbor not in GM.core_1])
+                new_nodes.update(
+                    [neighbor for neighbor in GM.G1[node] if neighbor not in GM.core_1]
+                )
             for node in new_nodes:
                 if node not in GM.inout_1:
                     GM.inout_1[node] = self.depth
@@ -881,7 +908,9 @@ class GMState:
             # Updates for T_2^{inout}
             new_nodes = set()
             for node in GM.core_2:
-                new_nodes.update([neighbor for neighbor in GM.G2[node] if neighbor not in GM.core_2])
+                new_nodes.update(
+                    [neighbor for neighbor in GM.G2[node] if neighbor not in GM.core_2]
+                )
             for node in new_nodes:
                 if node not in GM.inout_2:
                     GM.inout_2[node] = self.depth
@@ -962,8 +991,13 @@ class DiGMState:
             # Updates for T_1^{in}
             new_nodes = set()
             for node in GM.core_1:
-                new_nodes.update([predecessor for predecessor in GM.G1.predecessors(node)
-                                  if predecessor not in GM.core_1])
+                new_nodes.update(
+                    [
+                        predecessor
+                        for predecessor in GM.G1.predecessors(node)
+                        if predecessor not in GM.core_1
+                    ]
+                )
             for node in new_nodes:
                 if node not in GM.in_1:
                     GM.in_1[node] = self.depth
@@ -971,8 +1005,13 @@ class DiGMState:
             # Updates for T_2^{in}
             new_nodes = set()
             for node in GM.core_2:
-                new_nodes.update([predecessor for predecessor in GM.G2.predecessors(node)
-                                  if predecessor not in GM.core_2])
+                new_nodes.update(
+                    [
+                        predecessor
+                        for predecessor in GM.G2.predecessors(node)
+                        if predecessor not in GM.core_2
+                    ]
+                )
             for node in new_nodes:
                 if node not in GM.in_2:
                     GM.in_2[node] = self.depth
@@ -980,7 +1019,13 @@ class DiGMState:
             # Updates for T_1^{out}
             new_nodes = set()
             for node in GM.core_1:
-                new_nodes.update([successor for successor in GM.G1.successors(node) if successor not in GM.core_1])
+                new_nodes.update(
+                    [
+                        successor
+                        for successor in GM.G1.successors(node)
+                        if successor not in GM.core_1
+                    ]
+                )
             for node in new_nodes:
                 if node not in GM.out_1:
                     GM.out_1[node] = self.depth
@@ -988,7 +1033,13 @@ class DiGMState:
             # Updates for T_2^{out}
             new_nodes = set()
             for node in GM.core_2:
-                new_nodes.update([successor for successor in GM.G2.successors(node) if successor not in GM.core_2])
+                new_nodes.update(
+                    [
+                        successor
+                        for successor in GM.G2.successors(node)
+                        if successor not in GM.core_2
+                    ]
+                )
             for node in new_nodes:
                 if node not in GM.out_2:
                     GM.out_2[node] = self.depth

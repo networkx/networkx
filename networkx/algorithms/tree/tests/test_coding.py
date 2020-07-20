@@ -28,7 +28,7 @@ class TestPruferSequence:
 
     def test_bad_integer_labels(self):
         with pytest.raises(KeyError):
-            T = nx.Graph(nx.utils.pairwise('abc'))
+            T = nx.Graph(nx.utils.pairwise("abc"))
             nx.to_prufer_sequence(T)
 
     def test_encoding(self):
@@ -85,7 +85,7 @@ class TestNestedTuple:
     def test_unknown_root(self):
         with pytest.raises(nx.NodeNotFound):
             G = nx.path_graph(2)
-            nx.to_nested_tuple(G, 'bogus')
+            nx.to_nested_tuple(G, "bogus")
 
     def test_encoding(self):
         T = nx.full_rary_tree(2, 2 ** 3 - 1)

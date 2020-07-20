@@ -11,10 +11,10 @@ from networkx.utils import not_implemented_for
 from networkx.algorithms.approximation import local_node_connectivity
 
 
-__all__ = ['k_components']
+__all__ = ["k_components"]
 
 
-not_implemented_for('directed')
+not_implemented_for("directed")
 
 
 def k_components(G, min_density=0.95):
@@ -163,9 +163,9 @@ def _cliques_heuristic(G, H, k, min_density):
         if i == 0:
             overlap = False
         else:
-            overlap = set.intersection(*[
-                {x for x in H[n] if x not in cands}
-                for n in cands])
+            overlap = set.intersection(
+                *[{x for x in H[n] if x not in cands} for n in cands]
+            )
         if overlap and len(overlap) < k:
             SH = H.subgraph(cands | overlap)
         else:
@@ -207,10 +207,11 @@ class _AntiGraph(nx.Graph):
     case we only use k-core, connected_components, and biconnected_components.
     """
 
-    all_edge_dict = {'weight': 1}
+    all_edge_dict = {"weight": 1}
 
     def single_edge_dict(self):
         return self.all_edge_dict
+
     edge_attr_dict_factory = single_edge_dict
 
     def __getitem__(self, n):
@@ -228,8 +229,9 @@ class _AntiGraph(nx.Graph):
 
         """
         all_edge_dict = self.all_edge_dict
-        return {node: all_edge_dict for node in
-                set(self._adj) - set(self._adj[n]) - {n}}
+        return {
+            node: all_edge_dict for node in set(self._adj) - set(self._adj[n]) - {n}
+        }
 
     def neighbors(self, n):
         """Returns an iterator over all neighbors of node n in the
@@ -237,8 +239,8 @@ class _AntiGraph(nx.Graph):
         """
         try:
             return iter(set(self._adj) - set(self._adj[n]) - {n})
-        except KeyError:
-            raise NetworkXError(f"The node {n} is not in the graph.")
+        except KeyError as e:
+            raise NetworkXError(f"The node {n} is not in the graph.") from e
 
     class AntiAtlasView(Mapping):
         """An adjacency inner dict for AntiGraph"""

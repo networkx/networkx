@@ -1,17 +1,21 @@
 """Node assortativity coefficients and correlation measures.
 """
-from networkx.algorithms.assortativity.mixing import degree_mixing_matrix, \
-    attribute_mixing_matrix, numeric_mixing_matrix
+from networkx.algorithms.assortativity.mixing import (
+    degree_mixing_matrix,
+    attribute_mixing_matrix,
+    numeric_mixing_matrix,
+)
 from networkx.algorithms.assortativity.pairs import node_degree_xy
 
-__all__ = ['degree_pearson_correlation_coefficient',
-           'degree_assortativity_coefficient',
-           'attribute_assortativity_coefficient',
-           'numeric_assortativity_coefficient']
+__all__ = [
+    "degree_pearson_correlation_coefficient",
+    "degree_assortativity_coefficient",
+    "attribute_assortativity_coefficient",
+    "numeric_assortativity_coefficient",
+]
 
 
-def degree_assortativity_coefficient(G, x='out', y='in', weight=None,
-                                     nodes=None):
+def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None):
     """Compute degree assortativity of graph.
 
     Assortativity measures the similarity of connections
@@ -74,8 +78,7 @@ def degree_assortativity_coefficient(G, x='out', y='in', weight=None,
     return numeric_ac(M)
 
 
-def degree_pearson_correlation_coefficient(G, x='out', y='in',
-                                           weight=None, nodes=None):
+def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, nodes=None):
     """Compute degree assortativity of graph.
 
     Assortativity measures the similarity of connections
@@ -128,9 +131,8 @@ def degree_pearson_correlation_coefficient(G, x='out', y='in',
     """
     try:
         import scipy.stats as stats
-    except ImportError:
-        raise ImportError(
-            "Assortativity requires SciPy: http://scipy.org/ ")
+    except ImportError as e:
+        raise ImportError("Assortativity requires SciPy:" "http://scipy.org/ ") from e
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
     return stats.pearsonr(x, y)[0]
@@ -234,8 +236,8 @@ def attribute_ac(M):
 
     Parameters
     ----------
-    M : numpy array or matrix
-        Attribute mixing matrix.
+    M : numpy.ndarray
+        2D ndarray representing the attribute mixing matrix.
 
     Notes
     -----
@@ -250,16 +252,16 @@ def attribute_ac(M):
     """
     try:
         import numpy
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "attribute_assortativity requires NumPy: http://scipy.org/ ")
+            "attribute_assortativity requires " "NumPy: http://scipy.org/"
+        ) from e
     if M.sum() != 1.0:
-        M = M / float(M.sum())
-    M = numpy.asmatrix(M)
-    s = (M * M).sum()
+        M = M / M.sum()
+    s = (M @ M).sum()
     t = M.trace()
     r = (t - s) / (1 - s)
-    return float(r)
+    return r
 
 
 def numeric_ac(M):
@@ -267,9 +269,10 @@ def numeric_ac(M):
     # numeric assortativity coefficient, pearsonr
     try:
         import numpy
-    except ImportError:
-        raise ImportError('numeric_assortativity requires ',
-                          'NumPy: http://scipy.org/')
+    except ImportError as e:
+        raise ImportError(
+            "numeric_assortativity requires " "NumPy: http://scipy.org/"
+        ) from e
     if M.sum() != 1.0:
         M = M / float(M.sum())
     nx, ny = M.shape  # nx=ny
@@ -277,8 +280,8 @@ def numeric_ac(M):
     y = numpy.arange(ny)
     a = M.sum(axis=0)
     b = M.sum(axis=1)
-    vara = (a * x**2).sum() - ((a * x).sum())**2
-    varb = (b * x**2).sum() - ((b * x).sum())**2
+    vara = (a * x ** 2).sum() - ((a * x).sum()) ** 2
+    varb = (b * x ** 2).sum() - ((b * x).sum()) ** 2
     xy = numpy.outer(x, y)
     ab = numpy.outer(a, b)
     return (xy * (M - ab)).sum() / numpy.sqrt(vara * varb)
