@@ -908,12 +908,6 @@ def planar_layout(G, scale=1, center=None, dim=2):
     ----------
     G : NetworkX graph or list of nodes
         A position will be assigned to every node in G. If G is of type
-        PlanarEmbedding, the positions are selected accordingly.
-
-    Parameters
-    ----------
-    G : NetworkX graph or list of nodes
-        A position will be assigned to every node in G. If G is of type
         nx.PlanarEmbedding, the positions are selected accordingly.
 
     scale : number (default: 1)
