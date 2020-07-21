@@ -7,17 +7,6 @@ from networkx.utils import np_random_state
 __all__ = ["spectral_graph_forge"]
 
 
-def _truncate(x):
-    """ Returns the truncated value of x in the interval [0,1]
-    """
-
-    if x < 0:
-        return 0
-    if x > 1:
-        return 1
-    return x
-
-
 def _mat_spect_approx(A, level, sorteigs=True, reverse=False, absolute=True):
     """ Returns the low-rank approximation of the given matrix A
 
@@ -158,7 +147,7 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     import scipy.stats as stats
 
     available_transformations = ["identity", "modularity"]
-    alpha = _truncate(alpha)
+    alpha = np.clip(alpha, 0, 1)
     A = nx.to_numpy_matrix(G)
     n = A.shape[1]
     level = int(round(n * alpha))
@@ -179,7 +168,7 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     if transformation == "modularity":
         B += np.transpose(K) * K / float(sum(np.ravel(K)))
 
-    B = np.vectorize(_truncate, otypes=[np.float])(B)
+    B = np.clip(B, 0, 1)
     np.fill_diagonal(B, np.zeros((1, n)))
 
     for i in range(n - 1):
