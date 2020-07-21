@@ -21,6 +21,23 @@ __all__ = ['junction_tree']
 def junction_tree(G):
     r"""Returns a junction tree of a given graph.
 
+    Notes
+    -----
+    A junction tree (or clique tree) is a tree T generated from a (un)directed graph G.
+    The tree's nodes consist of cliques and connecting sepsets of the original graph 
+    respectively. The sepset of two cliques is the intersection ot the variables 
+    of these cliques, e.g. the sepset of (A,B,C) and (A,C,E,F) is (A,C). 
+    The junction tree algorithm consists of five steps:
+
+    1. Moralize graph
+    2. Triangulate graph
+    3. Find maximum cliques
+    4. Build graph from cliques, connecting cliques with shared
+       variables, set edge-weight to number of shared variables.
+    5. Find maximum spanning tree
+
+    https://en.wikipedia.org/wiki/Junction_tree_algorithm
+
     Parameters
     ----------
     G : NetworkX graph
@@ -37,21 +54,6 @@ def junction_tree(G):
         The algorithm does not support Graph, MultiGraph and MultiDiGraph.
         If the input graph is an instance of one of these classes, a
         :exc:`NetworkXNotImplemented` is raised.
-
-    Notes
-    -----
-    A junction tree (or clique tree) is a tree T generated from a (un)directed graph G.
-    Its nodes consist of cliques and connecting sepsets respectively.
-    The junction tree algorithm consists of five steps:
-
-    1. Moralize graph
-    2. Triangulate graph
-    3. Find maximum cliques
-    4. Build graph from cliques, connecting cliques with shared
-       variables, set edge-weight to number of shared variables.
-    5. Find maximum spanning tree
-
-    https://en.wikipedia.org/wiki/Junction_tree_algorithm
 
     References
     ----------
