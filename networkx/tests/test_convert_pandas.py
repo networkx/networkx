@@ -234,3 +234,53 @@ class TestConvertPandas:
         G = nx.from_pandas_adjacency(df, create_using=nx.DiGraph())
         df = nx.to_pandas_adjacency(G, dtype=np.intp)
         pd.testing.assert_frame_equal(df, dftrue)
+
+    def test_edgekey_with_multigraph(self):
+        df = pd.DataFrame(
+            {
+                "attr1": {"A": "F1", "B": "F2", "C": "F3"},
+                "attr2": {"A": 1, "B": 0, "C": 0},
+                "attr3": {"A": 0, "B": 1, "C": 0},
+                "source": {"A": "N1", "B": "N2", "C": "N1"},
+                "target": {"A": "N2", "B": "N3", "C": "N1"},
+            }
+        )
+        Gtrue = nx.Graph(
+            [
+                ("N1", "N2", {"F1": {"attr2": 1, "attr3": 0}}),
+                ("N2", "N3", {"F2": {"attr2": 0, "attr3": 1}}),
+                ("N1", "N1", {"F3": {"attr2": 0, "attr3": 0}}),
+            ]
+        )
+        # example from issue #4065
+        G = nx.from_pandas_edgelist(
+            df,
+            source="source",
+            target="target",
+            edge_attr=["attr2", "attr3"],
+            edge_key="attr1",
+            create_using=nx.MultiGraph(),
+        )
+        assert_graphs_equal(G, Gtrue)
+        
+    def test_edgekey_with_normal_graph_no_action(self):
+        Gtrue = nx.Graph(
+            [
+                ("E", "C", {"cost": 9, "weight": 10}),
+                ("B", "A", {"cost": 1, "weight": 7}),
+                ("A", "D", {"cost": 7, "weight": 4}),
+            ]
+        )
+        G = nx.from_pandas_edgelist(self.df, 0, "b", True, edge_key="weight")
+        assert_graphs_equal(G, Gtrue)
+
+    def test_nonexisting_edgekey_raises(self):
+        with pytest.raises(nx.exception.NetworkXError):
+            nx.from_pandas_edgelist(
+                self.df,
+                source="source",
+                target="target",
+                edge_key="Not_real",
+                edge_attr=True,
+                create_using=nx.MultiGraph(),
+            )
