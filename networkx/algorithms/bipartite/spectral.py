@@ -54,7 +54,7 @@ def spectral_bipartivity(G, nodes=None, weight="weight"):
             "spectral_bipartivity() requires SciPy: ", "http://scipy.org/"
         ) from e
     nodelist = list(G)  # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G, nodelist, weight=weight)
+    A = nx.to_numpy_array(G, nodelist, weight=weight)
     expA = scipy.linalg.expm(A)
     expmA = scipy.linalg.expm(-A)
     coshA = 0.5 * (expA + expmA)
