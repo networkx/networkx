@@ -1,5 +1,5 @@
 import networkx as nx
-from networkx.algorithms.junction_tree import junction_tree
+from networkx.algorithms.tree.junction_tree_algorithm import junction_tree
 
 
 def test_junction_tree_directed_confounders():

@@ -14,7 +14,6 @@ from networkx.utils import not_implemented_for
 from networkx.algorithms import moral, complete_to_chordal_graph, chordal_graph_cliques
 import matplotlib.pyplot as plt
 from itertools import combinations
-from copy import deepcopy
 
 __all__ = ['junction_tree']
 
