@@ -24,9 +24,9 @@ def junction_tree(G):
     Notes
     -----
     A junction tree (or clique tree) is a tree T generated from a (un)directed graph G.
-    The tree's nodes consist of cliques and connecting sepsets of the original graph 
-    respectively. The sepset of two cliques is the intersection ot the variables 
-    of these cliques, e.g. the sepset of (A,B,C) and (A,C,E,F) is (A,C). 
+    The tree's nodes consist of cliques and connecting sepsets of the original graph
+    respectively. The sepset of two cliques is the intersection ot the variables
+    of these cliques, e.g. the sepset of (A,B,C) and (A,C,E,F) is (A,C).
     The junction tree algorithm consists of five steps:
 
     1. Moralize graph
