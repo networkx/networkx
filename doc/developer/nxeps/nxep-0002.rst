@@ -28,7 +28,8 @@ by users. For graphs with a lot of nodes and edges, ``G.nodes`` and ``G.edges`` 
 when the users try to slice the resulting view (the first instinct) it will error out. Users definitely need to go through
 a couple of documentation links before they realise that they need to first cast this NodeDataView to a list and then create
 a slice. In this NXEP we propose to move the ``list(G.nodes(data=True))[0:10]`` part of code inside ``__getitem__`` so that users
-can get the small subset of nodes by creating a slice ``G.nodes(data=True)[0:10]``.
+can get the small subset of nodes by creating a slice ``G.nodes(data=True)[0:10]`` or a new slicing method like ``G.nodes(data=True).slice(0, 10)``
+to make the API less ambigious.
 
 Usage and Impact
 ----------------
@@ -39,7 +40,11 @@ ambiguity for users. As for example `G.nodes[x]` will return an attribute dict
 but `G.nodes[0:5]` will return a list of first five nodes. This will be more ambigious with
 EdgeView as ``G.edges[0, 1]`` will return an attribute dictionary of the edge between 0 and
 1 and ``G.edges[0:1]`` will return the first edge.
-We need to find a way to counter this. 
+We need to find a way to counter this.
+
+For a historical context, in pre 2.0 NetworkX slicing was native behavior as G.nodes() and G.edges()
+were lists and list of tuples respectively. With this NXEP we would like to bring the intuitiveness
+of slicing behavior back to G.edges and G.nodes.
 
 On the computational front by creating slices we will create new objects and thus will take
 up some extra memory, but this is something user would have anyway done with something like 
@@ -64,6 +69,15 @@ The following code will be valid::
   
 Prelimanary impelementation work is available at https://github.com/networkx/networkx/pull/4086
 
+To get rid of the ambiguity in slicing API with respect to the dict views we can implement a new
+``slice`` method which leads to a less ambigious API.::
+
+  >>> G.nodes(data=True).slice(10)
+  >>> G.nodes.slice(10, 30)
+  >>> G.edges.slice(10, 40)
+  >>> G.edges(data=True).slice(5)
+
+
 Related Work
 ------------
 
@@ -78,12 +92,14 @@ and Edge(Data)View to allow users to access a subset of nodes and edges without 
 first to a list. We will do this by adding a check of ``slice`` in the getitem dunder method of
 Node(Data)View and Edge(Data)View and casting it to a list and returning the sliced the list.
 
+We can also move the check for ``slice`` to an independent ``slice`` method for nodes and edges to
+implement this NXEP.
+
 Alternatives
 ------------
 
 - Explicit documentation about casting to list
-- To get rid of the API ambigiouity w.r.t ``__getitem__`` we can impelment a new method, something like ``G.nodes.head(x)`` (insipired by pandas) which return the first x
-  nodes. 
+- To get rid of the API ambigiouity w.r.t ``__getitem__`` we can impelment a new method, something like ``G.nodes.head(x)`` (insipired by pandas) which return the first x nodes. [After discussion, this has been updated to using a ``slice`` object directly but interfacing it with an independent ``slice`` method of G.nodes and G.edges instead of implementing it in getitem dunder method]
 
 Discussion
 ----------
@@ -91,16 +107,3 @@ Discussion
 - https://github.com/networkx/networkx/pull/4086
 
 
-References and Footnotes
-------------------------
-
-.. [1] Each NXEP must either be explicitly labeled as placed in the public domain (see
-   this NXEP as an example) or licensed under the `Open Publication License`_.
-
-.. _Open Publication License: https://www.opencontent.org/openpub/
-
-
-Copyright
----------
-
-This document has been placed in the public domain. [1]_
