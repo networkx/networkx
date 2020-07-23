@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-#   Copyright (C) 2020 by
-#   Matthias Bruhns <matthias.bruhns@uni-jena.de>
-#   All rights reserved.
-#   BSD license.
-#   Copyright 2016-2020 NetworkX developers.
-#   NetworkX is distributed under a BSD license
-#
-# Authors: Matthias Bruhns <matthias.bruhns@uni-jena.de>
 r"""Function for computing a junction tree of a graph."""
 
 import networkx as nx
@@ -14,10 +5,10 @@ from networkx.utils import not_implemented_for
 from networkx.algorithms import moral, complete_to_chordal_graph, chordal_graph_cliques
 from itertools import combinations
 
-__all__ = ['junction_tree']
+__all__ = ["junction_tree"]
 
 
-@not_implemented_for('multigraph', 'MultiDiGraph')
+@not_implemented_for("multigraph", "MultiDiGraph")
 def junction_tree(G):
     r"""Returns a junction tree of a given graph.
 
@@ -71,22 +62,21 @@ def junction_tree(G):
         chordal_graph, _ = complete_to_chordal_graph(G)
 
     cliques = [tuple(sorted(i)) for i in chordal_graph_cliques(chordal_graph)]
-    clique_graph.add_nodes_from(cliques, type='clique')
+    clique_graph.add_nodes_from(cliques, type="clique")
 
     for edge in combinations(cliques, 2):
         set_edge_0 = set(edge[0])
         set_edge_1 = set(edge[1])
         if not set_edge_0.isdisjoint(set_edge_1):
             sepset = tuple(sorted(set_edge_0.intersection(set_edge_1)))
-            clique_graph.add_edge(
-                edge[0], edge[1], weight=len(sepset), sepset=sepset)
+            clique_graph.add_edge(edge[0], edge[1], weight=len(sepset), sepset=sepset)
 
     junction_tree = nx.maximum_spanning_tree(clique_graph)
 
     for edge in list(junction_tree.edges(data=True)):
-        junction_tree.add_node(edge[2]['sepset'], type='sepset')
-        junction_tree.add_edge(edge[0], edge[2]['sepset'])
-        junction_tree.add_edge(edge[1], edge[2]['sepset'])
+        junction_tree.add_node(edge[2]["sepset"], type="sepset")
+        junction_tree.add_edge(edge[0], edge[2]["sepset"])
+        junction_tree.add_edge(edge[1], edge[2]["sepset"])
         junction_tree.remove_edge(edge[0], edge[1])
 
     return junction_tree
