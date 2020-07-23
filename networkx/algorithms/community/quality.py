@@ -254,6 +254,17 @@ def modularity(G, communities, weight="weight"):
     `G`, $k_i$ is the degree of $i$ and $\delta(c_i, c_j)$
     is 1 if $i$ and $j$ are in the same community and 0 otherwise.
 
+    According to [2]_ this can be reduced to
+
+    .. math:: Q = \sum_{c=1}^{n} =
+    \left[ \frac{L_c}{m} - \left( \frac{k_c}{2m} \right) ^2 \right]
+
+    where the sum iterates over all communities $c$, $m$ is the number of edges,
+    $L_c$ is the number of intra-community links for community $c$,
+    $k_c$ is the sum of degrees of the nodes in community $c$.
+
+    The second formula is the one actually used in calculation of the modularity.
+
     Parameters
     ----------
     G : NetworkX Graph
@@ -276,45 +287,43 @@ def modularity(G, communities, weight="weight"):
     >>> import networkx.algorithms.community as nx_comm
     >>> G = nx.barbell_graph(3, 0)
     >>> nx_comm.modularity(G, [{0, 1, 2}, {3, 4, 5}])
-    0.35714285714285704
+    0.35714285714285715
     >>> nx_comm.modularity(G, nx_comm.label_propagation_communities(G))
-    0.35714285714285704
+    0.35714285714285715
 
     References
     ----------
     .. [1] M. E. J. Newman *Networks: An Introduction*, page 224.
        Oxford University Press, 2011.
-
+    .. [2] Clauset, Aaron, Mark EJ Newman, and Cristopher Moore.
+    "Finding community structure in very large networks."
+    Physical review E 70.6 (2004). <https://arxiv.org/abs/cond-mat/0408187>
     """
     if not isinstance(communities, list):
         communities = list(communities)
     if not is_partition(G, communities):
         raise NotAPartition(G, communities)
 
-    multigraph = G.is_multigraph()
     directed = G.is_directed()
     m = G.size(weight=weight)
-    if directed:
-        out_degree = dict(G.out_degree(weight=weight))
-        in_degree = dict(G.in_degree(weight=weight))
-        norm = 1 / m
-    else:
-        out_degree = dict(G.degree(weight=weight))
-        in_degree = out_degree
-        norm = 1 / (2 * m)
 
-    def val(u, v):
-        try:
-            if multigraph:
-                w = sum(d.get(weight, 1) for k, d in G[u][v].items())
-            else:
-                w = G[u][v].get(weight, 1)
-        except KeyError:
-            w = 0
-        # Double count self-loops if the graph is undirected.
-        if u == v and not directed:
-            w *= 2
-        return w - in_degree[u] * out_degree[v] * norm
+    def degree_sum(degree_view):
+        return sum(map(lambda node_degree: node_degree[1], degree_view))
 
-    Q = sum(val(u, v) for c in communities for u, v in product(c, repeat=2))
-    return Q * norm
+    def community_contribution(community):
+        subgraph = nx.subgraph(G, community)
+        intra_community_link_weight = subgraph.size(weight=weight)
+
+        if directed:
+            out_degree_sum = degree_sum(G.out_degree(community, weight=weight))
+            in_degree_sum = degree_sum(G.in_degree(community, weight=weight))
+            norm = 1 / m
+        else:
+            out_degree_sum = degree_sum(G.degree(community, weight=weight))
+            in_degree_sum = out_degree_sum
+            norm = 1 / (2 * m)
+
+        return intra_community_link_weight / m \
+            - (out_degree_sum * in_degree_sum * norm ** 2)
+
+    return sum(map(community_contribution, communities))
