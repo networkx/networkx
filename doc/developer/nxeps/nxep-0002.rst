@@ -1,0 +1,106 @@
+==================================
+NXEP 2 — API design of view slices
+==================================
+
+:Author: Mridul Seth
+:Status: Draft
+:Type: Standards Track
+:Created: 2020-07-23
+
+
+Abstract
+--------
+
+The core API of base classes in NetworkX uses (dict) views to expose
+data about the graph objects. In this NXEP we propose to add slicing to Node(Data)View
+and Edge(Data)View.
+
+Motivation and Scope
+--------------------
+
+While accessing Graph data with G.nodes and G.edges, the only way of slicing the data
+is by casting the view to a list manually and then calling a slice on it.
+
+``G.nodes(data=True)`` returns a NodeDataView of all the nodes, ``G.nodes(data=True)[x]`` returns an attribute dictionary for the node x.
+The current way of getting a slice out of the underlying dict view is to cast it to list and then
+slice it ``list(G.nodes(data=True))[0:10]``. This bit of code is something that is written a lot of times
+by users. For graphs with a lot of nodes and edges, ``G.nodes`` and ``G.edges`` will take a lot of screen space and
+when the users try to slice the resulting view (the first instinct) it will error out. Users definitely need to go through
+a couple of documentation links before they realise that they need to first cast this NodeDataView to a list and then create
+a slice. In this NXEP we propose to move the ``list(G.nodes(data=True))[0:10]`` part of code inside ``__getitem__`` so that users
+can get the small subset of nodes by creating a slice ``G.nodes(data=True)[0:10]``.
+
+Usage and Impact
+----------------
+
+The main impact and the decision that needs to be taken in this NXEP is with
+respect to the user facing API. By implemeting this NXEP we may end up adding some
+ambiguity for users. As for example `G.nodes[x]` will return an attribute dict
+but `G.nodes[0:5]` will return a list of first five nodes. This will be more ambigious with
+EdgeView as ``G.edges[0, 1]`` will return an attribute dictionary of the edge between 0 and
+1 and ``G.edges[0:1]`` will return the first edge.
+We need to find a way to counter this. 
+
+On the computational front by creating slices we will create new objects and thus will take
+up some extra memory, but this is something user would have anyway done with something like 
+``list(G.nodes(data=True))[0:10]``.
+
+Backward compatibility
+----------------------
+
+N/A
+
+Detailed description
+--------------------
+
+The new implementation will let users slice Node(Data)View and Edge(Data)View.
+
+The following code will be valid::
+  
+  >>> G.nodes(data=True)[0:10]
+  >>> G.nodes[3:10]
+  >>> G.edges[1:10]
+  >>> G.edges(data=True)[4:6]
+  
+Prelimanary impelementation work is available at https://github.com/networkx/networkx/pull/4086
+
+Related Work
+------------
+
+N/A
+
+
+Implementation
+--------------
+
+The core of this NXEP is to implement ``slicing`` to Node(Data)View
+and Edge(Data)View to allow users to access a subset of nodes and edges without casting them
+first to a list. We will do this by adding a check of ``slice`` in the getitem dunder method of
+Node(Data)View and Edge(Data)View and casting it to a list and returning the sliced the list.
+
+Alternatives
+------------
+
+- Explicit documentation about casting to list
+- To get rid of the API ambigiouity w.r.t ``__getitem__`` we can impelment a new method, something like ``G.nodes.head(x)`` (insipired by pandas) which return the first x
+  nodes. 
+
+Discussion
+----------
+
+- https://github.com/networkx/networkx/pull/4086
+
+
+References and Footnotes
+------------------------
+
+.. [1] Each NXEP must either be explicitly labeled as placed in the public domain (see
+   this NXEP as an example) or licensed under the `Open Publication License`_.
+
+.. _Open Publication License: https://www.opencontent.org/openpub/
+
+
+Copyright
+---------
+
+This document has been placed in the public domain. [1]_
