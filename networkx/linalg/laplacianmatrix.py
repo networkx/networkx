@@ -42,7 +42,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     See Also
     --------
-    to_numpy_matrix
+    to_numpy_array
     normalized_laplacian_matrix
     laplacian_spectrum
     """
@@ -85,13 +85,13 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
     Returns
     -------
-    N : NumPy matrix
+    N : Scipy sparse matrix
       The normalized Laplacian matrix of G.
 
     Notes
     -----
     For MultiGraph/MultiDiGraph, the edges weights are summed.
-    See to_numpy_matrix for other options.
+    See to_numpy_array for other options.
 
     If the Graph contains selfloops, D is defined as diag(sum(A,1)), where A is
     the adjacency matrix [2]_.
@@ -175,7 +175,7 @@ def directed_laplacian_matrix(
 
     Returns
     -------
-    L : NumPy array
+    L : NumPy matrix
       Normalized Laplacian of G.
 
     Notes
@@ -253,7 +253,7 @@ def directed_combinatorial_laplacian_matrix(
 
     Returns
     -------
-    L : NumPy array
+    L : NumPy matrix
       Combinatorial Laplacian of G.
 
     Notes
@@ -318,7 +318,7 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
 
     Returns
     -------
-    P : NumPy array
+    P : NumPy matrix
       transition matrix of G.
 
     Raises

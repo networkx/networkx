@@ -62,6 +62,7 @@ Measuring partitions
    :toctree: generated/
 
    coverage
+   modularity
    performance
 
 Partitions via centrality measures

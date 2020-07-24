@@ -140,7 +140,7 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
     See Also
     --------
     biadjacency_matrix
-    from_numpy_matrix
+    from_numpy_array
 
     References
     ----------

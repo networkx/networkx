@@ -126,7 +126,7 @@ def adjacency_matrix(G, nodelist=None, weight="weight"):
     sparse matrix.
 
     For MultiGraph/MultiDiGraph with parallel edges the weights are summed.
-    See to_numpy_matrix for other options.
+    See `to_numpy_array` for other options.
 
     The convention used for self-loop edges in graphs is to assign the
     diagonal matrix entry value to the edge weight attribute
@@ -145,7 +145,7 @@ def adjacency_matrix(G, nodelist=None, weight="weight"):
 
     See Also
     --------
-    to_numpy_matrix
+    to_numpy_array
     to_scipy_sparse_matrix
     to_dict_of_dicts
     adjacency_spectrum

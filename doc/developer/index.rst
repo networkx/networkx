@@ -10,8 +10,8 @@ Developer Guide
    values
    contribute
    core_developer
-   roadmap
-   nxeps/index
    gitwash/index
    release
    deprecations
+   roadmap
+   nxeps/index

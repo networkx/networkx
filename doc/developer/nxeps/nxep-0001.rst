@@ -151,9 +151,8 @@ The workflow of a NXEP is detailed in :ref:`nxep0`.
 
 A list of all existing NXEPs is available :ref:`here <nxep_list>`.
 
-Copyright
-=========
+Acknowledgments
+===============
 
 This document is based on the `scikit-image governance document
-<https://scikit-image.org/docs/stable/skips/1-governance.html>`_ and is placed
-in the public domain.
+<https://scikit-image.org/docs/stable/skips/1-governance.html>`_.

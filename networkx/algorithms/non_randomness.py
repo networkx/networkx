@@ -70,7 +70,7 @@ def non_randomness(G, k=None):
         raise ImportError(msg) from e
 
     # eq. 4.4
-    nr = np.real(np.sum(np.linalg.eigvals(nx.to_numpy_matrix(G))[:k]))
+    nr = np.real(np.sum(np.linalg.eigvals(nx.to_numpy_array(G))[:k]))
 
     n = G.number_of_nodes()
     m = G.number_of_edges()
