@@ -32,6 +32,7 @@ __all__ = [
     "from_pandas_adjacency",
     "to_pandas_adjacency",
     "from_pandas_edgelist",
+    "from_geopandas_edgelist",
     "to_pandas_edgelist",
     "to_numpy_recarray",
     "from_scipy_sparse_matrix",
@@ -419,6 +420,64 @@ def from_pandas_edgelist(
 
     return g
 
+
+def from_geopandas_edgelist(
+    gdf,
+    geometry="geometry",
+    edge_attr=None,
+    create_using=None,
+    edge_key=None,
+    precision=4,
+):
+
+    """
+    Create a graph from a geopandas edgelist containing lines
+    :param gdf: geopandas GeoDataFrame object with rows representing edges
+    :param geometry: Name of the column containing LineString geometries representing edges
+    :param edge_attr: Attributes from the GeoDataFrame which should be copied into the Graph
+    :param create_using: nx.Graph or nx.Digraph, depending on if you want a directed or undirected graph, respectively
+    :param edge_key: Something to do with multigraphs?
+    :param precision: Number of decimal points to use for comparing X and Y coordinates of the edge endpoints to determine connectivity
+    :return: nx.Graph or nx.DiGraph
+    """
+
+    try:
+        from shapely.geometry import Point
+    except ImportError:
+        # A bit unintuitive - we need to import shapely but it is a core dependency of geopandas, the library of specific interest to the user
+        raise ImportError("Creating a graph from a GeoDataFrame requires geopandas to be installed.")
+
+    # Find all unique start & end points and assign them an id
+    gdf["_nx_source_coords"] = gdf[geometry].apply(lambda i: (round(i.coords[0][0], precision), round(i.coords[0][1], precision)))
+    gdf["_nx_target_coords"] = gdf[geometry].apply(lambda i: (round(i.coords[-1][0], precision), round(i.coords[-1][1], precision)))
+    node_ids = {}
+    i = 0
+    for index, row in gdf.iterrows():
+        node_1 = row["_nx_source_coords"]
+        node_2 = row["_nx_target_coords"]
+        if node_1 not in node_ids:
+            node_ids[node_1] = i
+            i += 1
+        if node_2 not in node_ids:
+            node_ids[node_2] = i
+            i += 1
+
+    # Assign the unique id to each
+    gdf["_nx_source"] = gdf["_nx_source_coords"].apply(lambda x: node_ids[x])
+    gdf["_nx_target"] = gdf["_nx_target_coords"].apply(lambda x: node_ids[x])
+
+    # Make the graph
+    if edge_attr is True:
+        edge_attr = [attr for attr in gdf.columns if attr[:4] != "_nx_"]
+    graph = from_pandas_edgelist(gdf, source="_nx_source", target="_nx_target", edge_attr=edge_attr, create_using=create_using, edge_key=edge_key)
+
+    node_geoms = {node_ids[k]: Point(k) for k in node_ids}
+    for n in node_geoms:
+        graph.nodes[n].update(geometry=node_geoms[n])
+
+    gdf.drop(["_nx_source_coords", "_nx_target_coords", "_nx_source", "_nx_target"], axis="columns", inplace=True)
+
+    return graph
 
 def to_numpy_matrix(
     G,
