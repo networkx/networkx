@@ -34,6 +34,7 @@ __all__ = [
     "from_pandas_edgelist",
     "from_geopandas_edgelist",
     "to_pandas_edgelist",
+    "to_geopandas_edgelist",
     "to_numpy_recarray",
     "from_scipy_sparse_matrix",
     "to_scipy_sparse_matrix",
@@ -483,6 +484,43 @@ def from_geopandas_edgelist(
     gdf.drop(["_nx_source_coords", "_nx_target_coords", "_nx_source", "_nx_target"], axis="columns", inplace=True)
 
     return graph
+
+
+def to_geopandas_edgelist(
+    G,
+    source="source",
+    target="target",
+    geometry="geometry",
+    crs=None,
+    nodelist=None,
+):
+
+    try:
+        import geopandas as gpd
+    except ImportError:
+        raise ImportError("Geopandas must be installed in order to export to a GeoDataFrame.")
+
+    if nodelist is None:
+        edgelist = G.edges(data=True)
+    else:
+        edgelist = G.edges(nodelist, data=True)
+    source_nodes = [s for s, t, d in edgelist]
+    target_nodes = [t for s, t, d in edgelist]
+
+    all_keys = set().union(*(d.keys() for s, t, d in edgelist))
+    if source in all_keys:
+        raise nx.NetworkXError(f"Source name '{source}' is an edge attr name")
+    if target in all_keys:
+        raise nx.NetworkXError(f"Target name '{target}' is an edge attr name")
+
+    nan = float("nan")
+    edge_attr = {k: [d.get(k, nan) for s, t, d in edgelist] for k in all_keys}
+
+    edgelistdict = {source: source_nodes, target: target_nodes}
+    edgelistdict.update(edge_attr)
+
+    return gpd.GeoDataFrame(edgelistdict, geometry=geometry, crs=crs)
+
 
 def to_numpy_matrix(
     G,
