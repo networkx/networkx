@@ -49,7 +49,7 @@ __all__ = [
     "nodes_with_selfloops",
     "number_of_selfloops",
     "path_weight",
-    "is_path"
+    "is_path",
 ]
 
 
