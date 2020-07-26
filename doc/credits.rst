@@ -177,6 +177,7 @@ is partially historical, and now, mostly arbitrary.
 - Arun Nampally, GitHub `<https://github.com/arunwise>`_, LinkedIn `<https://www.linkedin.com/in/arun-nampally-b57845b7/>`_
 - Ryan Duve
 - Shashi Prakash Tripathi, Github `<https://github.com/itsshavar>`_,LinkedIn `<https://www.linkedin.com/in/itsshashitripathi/>`_
+- Danny Niquette
 
 Support
 -------
