@@ -312,7 +312,12 @@ def from_pandas_edgelist(
         If `None`, no edge attributes are added to the graph.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
-       Graph type to create. If graph instance, then cleared before populated.
+        Graph type to create. If graph instance, then cleared before populated.
+
+    edge_key : str or None, optional (default=None)
+        A valid column name for the edge keys (for a MultiGraph). The values in
+        this column are used for the edge keys when adding edges if create_using
+        is a multigraph.
 
     See Also
     --------
@@ -352,17 +357,17 @@ def from_pandas_edgelist(
 
     Build multigraph with custom keys:
 
-    >>> edges = pd.DataFrame({'source': [0, 1, 2],
-    ...                       'target': [2, 2, 3],
-    ...                       'key': ['A', 'B', 'C'],
-    ...                       'weight': [3, 4, 5],
-    ...                       'color': ['red', 'blue', 'blue']})
+    >>> edges = pd.DataFrame({'source': [0, 1, 2, 0],
+    ...                       'target': [2, 2, 3, 2],
+    ...                       'my_edge_key': ['A', 'B', 'C', 'D'],
+    ...                       'weight': [3, 4, 5, 6],
+    ...                       'color': ['red', 'blue', 'blue', 'blue']})
     >>> G = nx.from_pandas_edgelist(edges, \
-                                    edge_key='key', \
+                                    edge_key='my_edge_key', \
                                     edge_attr=['weight', 'color'], \
                                     create_using=nx.MultiGraph())
     >>> G[0][2]
-    AtlasView({'A': {'weight': 3, 'color': 'red'}})
+    AtlasView({'A': {'weight': 3, 'color': 'red'}, 'D': {'weight': 6, 'color': 'blue'}})
 
 
     """
