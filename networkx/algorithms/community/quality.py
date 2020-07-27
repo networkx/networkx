@@ -305,25 +305,23 @@ def modularity(G, communities, weight="weight"):
         raise NotAPartition(G, communities)
 
     directed = G.is_directed()
-    m = G.size(weight=weight)
-
-    def degree_sum(degree_view):
-        return sum(map(lambda node_degree: node_degree[1], degree_view))
+    if directed:
+        out_degree = dict(G.out_degree(weight=weight))
+        in_degree = dict(G.in_degree(weight=weight))
+        m = sum(out_degree.values())
+        norm = 1 / m ** 2
+    else:
+        out_degree = in_degree = dict(G.degree(weight=weight))
+        m = sum(out_degree.values()) / 2
+        norm = 1 / (2 * m) ** 2
 
     def community_contribution(community):
-        subgraph = nx.subgraph(G, community)
-        intra_community_link_weight = subgraph.size(weight=weight)
+        comm = set(community)
+        L_c = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm)
 
-        if directed:
-            out_degree_sum = degree_sum(G.out_degree(community, weight=weight))
-            in_degree_sum = degree_sum(G.in_degree(community, weight=weight))
-            norm = 1 / m
-        else:
-            out_degree_sum = degree_sum(G.degree(community, weight=weight))
-            in_degree_sum = out_degree_sum
-            norm = 1 / (2 * m)
+        out_degree_sum = sum(out_degree[u] for u in comm)
+        in_degree_sum = sum(in_degree[u] for u in comm) if directed else out_degree_sum
 
-        return intra_community_link_weight / m \
-            - (out_degree_sum * in_degree_sum * norm ** 2)
+        return L_c / m - out_degree_sum * in_degree_sum * norm
 
     return sum(map(community_contribution, communities))
