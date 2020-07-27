@@ -272,6 +272,11 @@ def modularity(G, communities, weight="weight"):
     communities : list or iterable of set of nodes
         These node sets must represent a partition of G's nodes.
 
+    weight : string or None, optional (default="weight")
+            The edge attribute that holds the numerical value used
+            as a weight. If None or an edge does not have that attribute,
+            then that edge has weight 1.
+
     Returns
     -------
     Q : float
