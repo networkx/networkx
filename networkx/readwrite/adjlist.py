@@ -24,11 +24,12 @@ adjacency list (anything following the # in a line is a comment)::
 
 __all__ = ["generate_adjlist", "write_adjlist", "parse_adjlist", "read_adjlist"]
 
+import cython
 from networkx.utils import open_file
 import networkx as nx
 
 
-def generate_adjlist(G, delimiter=" "):
+def generate_adjlist(G, delimiter: str = " "):
     """Generate a single line of the graph G in adjacency list format.
 
     Parameters
@@ -61,10 +62,10 @@ def generate_adjlist(G, delimiter=" "):
     write_adjlist, read_adjlist
 
     """
-    directed = G.is_directed()
+    directed: cython.bint = G.is_directed()
     seen = set()
     for s, nbrs in G.adjacency():
-        line = str(s) + delimiter
+        line: str = str(s) + delimiter
         for t, data in nbrs.items():
             if not directed and t in seen:
                 continue
@@ -79,7 +80,9 @@ def generate_adjlist(G, delimiter=" "):
 
 
 @open_file(1, mode="wb")
-def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
+def write_adjlist(
+    G, path, comments: str = "#", delimiter: str = " ", encoding: str = "utf-8"
+):
     """Write graph G in single-line adjacency-list format to path.
 
 
@@ -122,6 +125,7 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
     import sys
     import time
 
+    vlist: list
     pargs = comments + " ".join(sys.argv) + "\n"
     header = (
         pargs
@@ -132,13 +136,14 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
     )
     path.write(header.encode(encoding))
 
+    line: str
     for line in generate_adjlist(G, delimiter):
         line += "\n"
         path.write(line.encode(encoding))
 
 
 def parse_adjlist(
-    lines, comments="#", delimiter=None, create_using=None, nodetype=None
+    lines, comments: str = "#", delimiter=None, create_using=None, nodetype=None
 ):
     """Parse lines of a graph adjacency list representation.
 
@@ -185,13 +190,14 @@ def parse_adjlist(
 
     """
     G = nx.empty_graph(0, create_using)
+    line: str
     for line in lines:
-        p = line.find(comments)
+        p: cython.int = line.find(comments)
         if p >= 0:
             line = line[:p]
         if not len(line):
             continue
-        vlist = line.strip().split(delimiter)
+        vlist: list = line.strip().split(delimiter)
         u = vlist.pop(0)
         # convert types
         if nodetype is not None:
@@ -217,11 +223,11 @@ def parse_adjlist(
 @open_file(0, mode="rb")
 def read_adjlist(
     path,
-    comments="#",
+    comments: str = "#",
     delimiter=None,
     create_using=None,
     nodetype=None,
-    encoding="utf-8",
+    encoding: str = "utf-8",
 ):
     """Read graph in adjacency list format from path.
 

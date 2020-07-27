@@ -1,4 +1,5 @@
 """Biconnected components and articulation points."""
+import cython
 from itertools import chain
 from networkx.utils.decorators import not_implemented_for
 
@@ -328,7 +329,7 @@ def articulation_points(G):
 
 
 @not_implemented_for("directed")
-def _biconnected_dfs(G, components=True):
+def _biconnected_dfs(G, components: cython.bint = True):
     # depth-first search algorithm to generate articulation points
     # and biconnected components
     visited = set()
@@ -337,7 +338,7 @@ def _biconnected_dfs(G, components=True):
             continue
         discovery = {start: 0}  # time of first discovery of node during search
         low = {start: 0}
-        root_children = 0
+        root_children: cython.int = 0
         visited.add(start)
         edge_stack = []
         stack = [(start, start, iter(G[start]))]
@@ -363,7 +364,7 @@ def _biconnected_dfs(G, components=True):
                 if len(stack) > 1:
                     if low[parent] >= discovery[grandparent]:
                         if components:
-                            ind = edge_stack.index((grandparent, parent))
+                            ind: cython.size_t = edge_stack.index((grandparent, parent))
                             yield edge_stack[ind:]
                             edge_stack = edge_stack[:ind]
                         else:

@@ -34,6 +34,26 @@ import release
 version = release.write_versionfile()
 sys.path.pop(0)
 
+if os.environ.get("NETWORKX_ENABLE_SPEEDUPS"):
+    ext_modules = []
+
+    try:
+        from Cython.Build import cythonize
+    except ImportError:
+        print("Cython is not installed")
+        exit(1)
+    ext_modules = cythonize(
+        [
+            "networkx/classes/*.py",
+            "networkx/readwrite/adjlist.py",
+            "networkx/readwrite/edgelist.py",
+            "networkx/algorithms/components/biconnected.py",
+        ],
+        compiler_directives={"language_level": 3},
+    )
+else:
+    ext_modules = []
+
 packages = [
     "networkx",
     "networkx.algorithms",
@@ -124,7 +144,7 @@ package_data = {
     "networkx.utils": ["tests/*.py"],
 }
 
-install_requires = ["decorator>=4.3.0"]
+install_requires = []
 extras_require = {
     "all": [
         "numpy",
@@ -176,4 +196,5 @@ if __name__ == "__main__":
         extras_require=extras_require,
         python_requires=">=3.6",
         zip_safe=False,
+        ext_modules=ext_modules,
     )

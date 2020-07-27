@@ -1,10 +1,10 @@
+import functools
 from collections import defaultdict
 from os.path import splitext
 from contextlib import contextmanager
 from pathlib import Path
 
 import networkx as nx
-from decorator import decorator
 from networkx.utils import create_random_state, create_py_random_state
 
 __all__ = [
@@ -54,28 +54,31 @@ def not_implemented_for(*graph_types):
            pass
     """
 
-    @decorator
-    def _not_implemented_for(not_implement_for_func, *args, **kwargs):
-        graph = args[0]
-        terms = {
-            "directed": graph.is_directed(),
-            "undirected": not graph.is_directed(),
-            "multigraph": graph.is_multigraph(),
-            "graph": not graph.is_multigraph(),
-        }
-        match = True
-        try:
-            for t in graph_types:
-                match = match and terms[t]
-        except KeyError as e:
-            raise KeyError(
-                "use one or more of " "directed, undirected, multigraph, graph"
-            ) from e
-        if match:
-            msg = f"not implemented for {' '.join(graph_types)} type"
-            raise nx.NetworkXNotImplemented(msg)
-        else:
-            return not_implement_for_func(*args, **kwargs)
+    def _not_implemented_for(not_implement_for_func):
+        @functools.wraps(not_implement_for_func)
+        def wrapper(*args, **kwargs):
+            graph = args[0]
+            terms = {
+                "directed": graph.is_directed(),
+                "undirected": not graph.is_directed(),
+                "multigraph": graph.is_multigraph(),
+                "graph": not graph.is_multigraph(),
+            }
+            match = True
+            try:
+                for t in graph_types:
+                    match = match and terms[t]
+            except KeyError as e:
+                raise KeyError(
+                    "use one or more of " "directed, undirected, multigraph, graph"
+                ) from e
+            if match:
+                msg = f"not implemented for {' '.join(graph_types)} type"
+                raise nx.NetworkXNotImplemented(msg)
+            else:
+                return not_implement_for_func(*args, **kwargs)
+
+        return wrapper
 
     return _not_implemented_for
 
@@ -167,81 +170,84 @@ def open_file(path_arg, mode="r"):
     # you use a try block, as shown above. When we exit the function, fobj will
     # be closed, if it should be, by the decorator.
 
-    @decorator
-    def _open_file(func_to_be_decorated, *args, **kwargs):
+    def _open_file(func_to_be_decorated):
+        @functools.wraps(func_to_be_decorated)
+        def wrapper(*args, **kwargs):
 
-        # Note that since we have used @decorator, *args, and **kwargs have
-        # already been resolved to match the function signature of func. This
-        # means default values have been propagated. For example,  the function
-        # func(x, y, a=1, b=2, **kwargs) if called as func(0,1,b=5,c=10) would
-        # have args=(0,1,1,5) and kwargs={'c':10}.
+            # Note that since we have used @decorator, *args, and **kwargs have
+            # already been resolved to match the function signature of func. This
+            # means default values have been propagated. For example,  the function
+            # func(x, y, a=1, b=2, **kwargs) if called as func(0,1,b=5,c=10) would
+            # have args=(0,1,1,5) and kwargs={'c':10}.
 
-        # First we parse the arguments of the decorator. The path_arg could
-        # be an positional argument or a keyword argument.  Even if it is
-        try:
-            # path_arg is a required positional argument
-            # This works precisely because we are using @decorator
-            path = args[path_arg]
-        except TypeError:
-            # path_arg is a keyword argument. It is "required" in the sense
-            # that it must exist, according to the decorator specification,
-            # It can exist in `kwargs` by a developer specified default value
-            # or it could have been explicitly set by the user.
+            # First we parse the arguments of the decorator. The path_arg could
+            # be an positional argument or a keyword argument.  Even if it is
             try:
-                path = kwargs[path_arg]
-            except KeyError as e:
-                # Could not find the keyword. Thus, no default was specified
-                # in the function signature and the user did not provide it.
-                msg = f"Missing required keyword argument: {path_arg}"
+                # path_arg is a required positional argument
+                # This works precisely because we are using @decorator
+                path = args[path_arg]
+            except TypeError:
+                # path_arg is a keyword argument. It is "required" in the sense
+                # that it must exist, according to the decorator specification,
+                # It can exist in `kwargs` by a developer specified default value
+                # or it could have been explicitly set by the user.
+                try:
+                    path = kwargs[path_arg]
+                except KeyError as e:
+                    # Could not find the keyword. Thus, no default was specified
+                    # in the function signature and the user did not provide it.
+                    msg = f"Missing required keyword argument: {path_arg}"
+                    raise nx.NetworkXError(msg) from e
+                else:
+                    is_kwarg = True
+            except IndexError as e:
+                # A "required" argument was missing. This can only happen if
+                # the decorator of the function was incorrectly specified.
+                # So this probably is not a user error, but a developer error.
+                msg = "path_arg of open_file decorator is incorrect"
                 raise nx.NetworkXError(msg) from e
             else:
-                is_kwarg = True
-        except IndexError as e:
-            # A "required" argument was missing. This can only happen if
-            # the decorator of the function was incorrectly specified.
-            # So this probably is not a user error, but a developer error.
-            msg = "path_arg of open_file decorator is incorrect"
-            raise nx.NetworkXError(msg) from e
-        else:
-            is_kwarg = False
+                is_kwarg = False
 
-        # Now we have the path_arg. There are two types of input to consider:
-        #   1) string representing a path that should be opened
-        #   2) an already opened file object
-        if isinstance(path, str):
-            ext = splitext(path)[1]
-            fobj = _dispatch_dict[ext](path, mode=mode)
-            close_fobj = True
-        elif hasattr(path, "read"):
-            # path is already a file-like object
-            fobj = path
-            close_fobj = False
-        elif isinstance(path, Path):
-            # path is a pathlib reference to a filename
-            fobj = _dispatch_dict[path.suffix](str(path), mode=mode)
-            close_fobj = True
-        else:
-            # could be None, in which case the algorithm will deal with it
-            fobj = path
-            close_fobj = False
+            # Now we have the path_arg. There are two types of input to consider:
+            #   1) string representing a path that should be opened
+            #   2) an already opened file object
+            if isinstance(path, str):
+                ext = splitext(path)[1]
+                fobj = _dispatch_dict[ext](path, mode=mode)
+                close_fobj = True
+            elif hasattr(path, "read"):
+                # path is already a file-like object
+                fobj = path
+                close_fobj = False
+            elif isinstance(path, Path):
+                # path is a pathlib reference to a filename
+                fobj = _dispatch_dict[path.suffix](str(path), mode=mode)
+                close_fobj = True
+            else:
+                # could be None, in which case the algorithm will deal with it
+                fobj = path
+                close_fobj = False
 
-        # Insert file object into args or kwargs.
-        if is_kwarg:
-            new_args = args
-            kwargs[path_arg] = fobj
-        else:
-            # args is a tuple, so we must convert to list before modifying it.
-            new_args = list(args)
-            new_args[path_arg] = fobj
+            # Insert file object into args or kwargs.
+            if is_kwarg:
+                new_args = args
+                kwargs[path_arg] = fobj
+            else:
+                # args is a tuple, so we must convert to list before modifying it.
+                new_args = list(args)
+                new_args[path_arg] = fobj
 
-        # Finally, we call the original function, making sure to close the fobj
-        try:
-            result = func_to_be_decorated(*new_args, **kwargs)
-        finally:
-            if close_fobj:
-                fobj.close()
+            # Finally, we call the original function, making sure to close the fobj
+            try:
+                result = func_to_be_decorated(*new_args, **kwargs)
+            finally:
+                if close_fobj:
+                    fobj.close()
 
-        return result
+            return result
+
+        return wrapper
 
     return _open_file
 
@@ -280,27 +286,30 @@ def nodes_or_number(which_args):
            pass
     """
 
-    @decorator
-    def _nodes_or_number(func_to_be_decorated, *args, **kw):
-        # form tuple of arg positions to be converted.
-        try:
-            iter_wa = iter(which_args)
-        except TypeError:
-            iter_wa = (which_args,)
-        # change each argument in turn
-        new_args = list(args)
-        for i in iter_wa:
-            n = args[i]
+    def _nodes_or_number(func_to_be_decorated):
+        @functools.wraps(func_to_be_decorated)
+        def wrapper(*args, **kw):
+            # form tuple of arg positions to be converted.
             try:
-                nodes = list(range(n))
+                iter_wa = iter(which_args)
             except TypeError:
-                nodes = tuple(n)
-            else:
-                if n < 0:
-                    msg = "Negative number of nodes not valid: {n}"
-                    raise nx.NetworkXError(msg)
-            new_args[i] = (n, nodes)
-        return func_to_be_decorated(*new_args, **kw)
+                iter_wa = (which_args,)
+            # change each argument in turn
+            new_args = list(args)
+            for i in iter_wa:
+                n = args[i]
+                try:
+                    nodes = list(range(n))
+                except TypeError:
+                    nodes = tuple(n)
+                else:
+                    if n < 0:
+                        msg = "Negative number of nodes not valid: {n}"
+                        raise nx.NetworkXError(msg)
+                new_args[i] = (n, nodes)
+            return func_to_be_decorated(*new_args, **kw)
+
+        return wrapper
 
     return _nodes_or_number
 
@@ -342,6 +351,7 @@ def preserve_random_state(func):
             finally:
                 set_state(state)
 
+        @functools.wraps(func)
         def wrapper(*args, **kwargs):
             with save_random_state():
                 seed(1234567890)
@@ -389,23 +399,24 @@ def random_state(random_state_index):
     py_random_state
     """
 
-    @decorator
-    def _random_state(func, *args, **kwargs):
-        # Parse the decorator arguments.
-        try:
-            random_state_arg = args[random_state_index]
-        except TypeError as e:
-            raise nx.NetworkXError("random_state_index must be an integer") from e
-        except IndexError as e:
-            raise nx.NetworkXError("random_state_index is incorrect") from e
+    def _random_state(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            # Parse the decorator arguments.
+            try:
+                random_state_arg = args[random_state_index]
+            except TypeError as e:
+                raise nx.NetworkXError("random_state_index must be an integer") from e
+            except IndexError as e:
+                raise nx.NetworkXError("random_state_index is incorrect") from e
 
-        # Create a numpy.random.RandomState instance
-        random_state = create_random_state(random_state_arg)
+            # Create a numpy.random.RandomState instance
+            random_state = create_random_state(random_state_arg)
 
-        # args is a tuple, so we must convert to list before modifying it.
-        new_args = list(args)
-        new_args[random_state_index] = random_state
-        return func(*new_args, **kwargs)
+            # args is a tuple, so we must convert to list before modifying it.
+            new_args = list(args)
+            new_args[random_state_index] = random_state
+            return func(*new_args, **kwargs)
 
     return _random_state
 
@@ -450,22 +461,23 @@ def py_random_state(random_state_index):
     np_random_state
     """
 
-    @decorator
-    def _random_state(func, *args, **kwargs):
-        # Parse the decorator arguments.
-        try:
-            random_state_arg = args[random_state_index]
-        except TypeError as e:
-            raise nx.NetworkXError("random_state_index must be an integer") from e
-        except IndexError as e:
-            raise nx.NetworkXError("random_state_index is incorrect") from e
+    def _random_state(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            # Parse the decorator arguments.
+            try:
+                random_state_arg = args[random_state_index]
+            except TypeError as e:
+                raise nx.NetworkXError("random_state_index must be an integer") from e
+            except IndexError as e:
+                raise nx.NetworkXError("random_state_index is incorrect") from e
 
-        # Create a numpy.random.RandomState instance
-        random_state = create_py_random_state(random_state_arg)
+            # Create a numpy.random.RandomState instance
+            random_state = create_py_random_state(random_state_arg)
 
-        # args is a tuple, so we must convert to list before modifying it.
-        new_args = list(args)
-        new_args[random_state_index] = random_state
-        return func(*new_args, **kwargs)
+            # args is a tuple, so we must convert to list before modifying it.
+            new_args = list(args)
+            new_args[random_state_index] = random_state
+            return func(*new_args, **kwargs)
 
     return _random_state

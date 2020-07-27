@@ -36,6 +36,7 @@ __all__ = [
     "write_weighted_edgelist",
 ]
 
+import cython
 from networkx.utils import open_file
 import networkx as nx
 
@@ -124,7 +125,14 @@ def generate_edgelist(G, delimiter=" ", data=True):
 
 
 @open_file(1, mode="wb")
-def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="utf-8"):
+def write_edgelist(
+    G,
+    path,
+    comments: str = "#",
+    delimiter: str = " ",
+    data=True,
+    encoding: str = "utf-8",
+):
     """Write graph as a list of edges.
 
     Parameters
@@ -167,14 +175,19 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
     read_edgelist
     write_weighted_edgelist
     """
-
+    line: str
     for line in generate_edgelist(G, delimiter, data):
         line += "\n"
         path.write(line.encode(encoding))
 
 
 def parse_edgelist(
-    lines, comments="#", delimiter=None, create_using=None, nodetype=None, data=True
+    lines,
+    comments: str = "#",
+    delimiter=None,
+    create_using=None,
+    nodetype=None,
+    data=True,
 ):
     """Parse lines of an edge list representation of a graph.
 
@@ -242,19 +255,20 @@ def parse_edgelist(
     from ast import literal_eval
 
     G = nx.empty_graph(0, create_using)
+    line: str
     for line in lines:
-        p = line.find(comments)
+        p: cython.int = line.find(comments)
         if p >= 0:
-            line = line[:p]
+            line: str = line[:p]
         if not len(line):
             continue
         # split line, should have 2 or more
-        s = line.strip().split(delimiter)
+        s: list = line.strip().split(delimiter)
         if len(s) < 2:
             continue
         u = s.pop(0)
         v = s.pop(0)
-        d = s
+        d: list = s
         if nodetype is not None:
             try:
                 u = nodetype(u)
