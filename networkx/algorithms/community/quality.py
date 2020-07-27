@@ -254,9 +254,9 @@ def modularity(G, communities, weight="weight"):
     `G`, $k_i$ is the degree of $i$ and $\delta(c_i, c_j)$
     is 1 if $i$ and $j$ are in the same community and 0 otherwise.
 
-    According to [2]_ this can be reduced to
+    According to [2]_ (and verified by some algebra) this can be reduced to
 
-    .. math:: Q = \sum_{c=1}^{n} =
+    .. math:: Q = \sum_{c=1}^{n}  
     \left[ \frac{L_c}{m} - \left( \frac{k_c}{2m} \right) ^2 \right]
 
     where the sum iterates over all communities $c$, $m$ is the number of edges,
