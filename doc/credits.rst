@@ -178,6 +178,7 @@ is partially historical, and now, mostly arbitrary.
 - Ryan Duve
 - Shashi Prakash Tripathi, Github `<https://github.com/itsshavar>`_,LinkedIn `<https://www.linkedin.com/in/itsshashitripathi/>`_
 - Danny Niquette
+- James Trimble, Github: `jamestrimble <https://github.com/jamestrimble>`_
 
 Support
 -------
