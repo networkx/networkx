@@ -25,12 +25,16 @@ different result after the change. This includes:
 * moving a function, class, etc. to a different module, or
 * changing the default value of a function's arguments.
 
-Usually, our policy is to put in place a deprecation cycle over two releases.
+Usually, our policy is to put in place a deprecation cycle over two minor
+releases (e.g., if a deprecation warning appears in 2.3, then the functionality
+should be removed in 2.5).  For major releases we usually require that all
+deprecations have at least a 1-release deprecation cycle (e.g., if 3.0 occurs
+after 2.5, then all removed functionality in 3.0 should be deprecated in 2.5).
 
-Note that the 2-release deprecation cycle is not a strict rule and in some
-cases, the developers can agree on a different procedure upon justification
-(like when we can't detect the change, or it involves moving or deleting an
-entire function for example).
+Note that these 1- and 2-release deprecation cycles for major and minor
+releases is not a strict rule and in some cases, the developers can agree on a
+different procedure upon justification (like when we can't detect the change,
+or it involves moving or deleting an entire function for example).
 
 Todo
 ----
