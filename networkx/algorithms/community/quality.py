@@ -256,8 +256,9 @@ def modularity(G, communities, weight="weight"):
 
     According to [2]_ (and verified by some algebra) this can be reduced to
 
-    .. math:: Q = \sum_{c=1}^{n}  
-    \left[ \frac{L_c}{m} - \left( \frac{k_c}{2m} \right) ^2 \right]
+    .. math:: 
+       Q = \sum_{c=1}^{n}  
+       \left[ \frac{L_c}{m} - \left( \frac{k_c}{2m} \right) ^2 \right]
 
     where the sum iterates over all communities $c$, $m$ is the number of edges,
     $L_c$ is the number of intra-community links for community $c$,
@@ -301,8 +302,8 @@ def modularity(G, communities, weight="weight"):
     .. [1] M. E. J. Newman *Networks: An Introduction*, page 224.
        Oxford University Press, 2011.
     .. [2] Clauset, Aaron, Mark EJ Newman, and Cristopher Moore.
-    "Finding community structure in very large networks."
-    Physical review E 70.6 (2004). <https://arxiv.org/abs/cond-mat/0408187>
+       "Finding community structure in very large networks."
+       Physical review E 70.6 (2004). <https://arxiv.org/abs/cond-mat/0408187>
     """
     if not isinstance(communities, list):
         communities = list(communities)
