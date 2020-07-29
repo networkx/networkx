@@ -1,7 +1,9 @@
+from inspect import signature
 from collections import defaultdict
 from os.path import splitext
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Callable
 
 import networkx as nx
 from decorator import decorator
@@ -138,6 +140,7 @@ def open_file(path_arg, mode="r"):
            path = kwargs['path']
            pass
     """
+
     # Note that this decorator solves the problem when a path argument is
     # specified as a string, but it does not handle the situation when the
     # function wants to accept a default of None (and then handle it).
@@ -469,3 +472,72 @@ def py_random_state(random_state_index):
         return func(*new_args, **kwargs)
 
     return _random_state
+
+
+def wrap_attr(G, attribute, default=1, multi_graph_attr_reducer: Callable = min):
+    """Returns a function that returns a computed attribute for an edge.
+
+    The returned function is specifically suitable for input to
+    functions :func:`_dijkstra` and :func:`_bellman_ford_relaxation`.
+
+    Parameters
+    ----------
+    G : NetworkX graph.
+
+    attribute : string or function
+        If it is callable, `attribute` itself is returned. If it is a string,
+        it is assumed to be the name of the edge attribute. In that case,
+        a function is returned that gets the edge specified attribute.
+
+    default: default value to use in case attribute did not exist.
+
+    multi_graph_attr_reducer: a function used to reduce the values of `attribute` in case `G` is `MultiGraph`.
+
+    Returns
+    -------
+    function
+        This function returns a callable that accepts exactly four inputs: a graph,
+        a node, an node adjacent to the first one, and the edge attribute dictionary
+        for the edge joining those nodes. That function returns a number representing
+        the weight of an edge.
+
+    If `G` is a multigraph, and `attribute` is not callable, `multi_graph_attr_reducer`
+    is called over all parallel edges and the result is returned. If any edge does not
+    have the specified `attribute`, it is assumed to have the passed `default`.
+
+    """
+    if callable(attribute):
+        return attribute
+    # If the weight keyword argument is not callable, we assume it is a
+    # string representing an edge attribute containing
+    if G.is_multigraph():
+        return lambda G, u, v, data: multi_graph_attr_reducer(attr.get(attribute, default) for attr in data.values())
+    return lambda G, u, v, data: data.get(attribute, default)
+
+
+@decorator
+def computed_attrs(func, attrs=(), *args, **kwargs):
+    """
+    modify the `kwargs` of func, such that all `kwargs` that are listed in attrs are wrapped by `wrap_attr`.
+    This decorator assumes that the first value in `args` is a Graph object.
+
+    Parameters
+    ----------
+    func: function that uses attrs in its `kwargs`.
+    attrs: an iterable of the form `((name, [default, multi_graph_attr_reducer]),...)`,
+    that hold the attribute's name that need to be wrapped with an optional: default value,
+    and a function to reduce the attribute's values in case of a MultiGraph.
+
+    Returns
+    -------
+    :returns func(*args, **kwargs)
+    """
+    all_args = signature(func).bind(*args, **kwargs).arguments
+
+    if any((attr not in all_args for attr, *_ in attrs)):
+        raise KeyError("attrs is not a subset of the kwargs's keys set")
+
+    for attr, *extra_params in attrs:
+        all_args[attr] = wrap_attr(args[0], all_args[attr], *extra_params)
+
+    return func(**all_args)

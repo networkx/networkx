@@ -3,8 +3,11 @@ from itertools import chain
 
 import networkx as nx
 from networkx.utils import not_implemented_for
+from networkx.utils.decorators import computed_attrs
 
 __all__ = ["bridges", "has_bridges", "local_bridges"]
+
+
 
 
 @not_implemented_for("multigraph")
@@ -122,6 +125,7 @@ def has_bridges(G, root=None):
         return True
 
 
+@computed_attrs(attrs=(("weight",),))
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
 def local_bridges(G, with_span=True, weight=None):
@@ -164,14 +168,13 @@ def local_bridges(G, with_span=True, weight=None):
             if not (set(G[u]) & set(G[v])):
                 yield u, v
     else:
-        wt = nx.weighted._weight_function(G, weight)
         for u, v in G.edges:
             if not (set(G[u]) & set(G[v])):
                 enodes = {u, v}
 
-                def hide_edge(n, nbr, d):
+                def hide_edge(G, n, nbr, d):
                     if n not in enodes or nbr not in enodes:
-                        return wt(n, nbr, d)
+                        return weight(G, n, nbr, d)
                     return None
 
                 try:
