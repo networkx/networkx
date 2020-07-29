@@ -256,8 +256,8 @@ def modularity(G, communities, weight="weight"):
 
     According to [2]_ (and verified by some algebra) this can be reduced to
 
-    .. math:: 
-       Q = \sum_{c=1}^{n}  
+    .. math::
+       Q = \sum_{c=1}^{n}
        \left[ \frac{L_c}{m} - \left( \frac{k_c}{2m} \right) ^2 \right]
 
     where the sum iterates over all communities $c$, $m$ is the number of edges,
@@ -318,8 +318,9 @@ def modularity(G, communities, weight="weight"):
         norm = 1 / m ** 2
     else:
         out_degree = in_degree = dict(G.degree(weight=weight))
-        m = sum(out_degree.values()) / 2
-        norm = 1 / (2 * m) ** 2
+        deg_sum = sum(out_degree.values())
+        m = deg_sum / 2
+        norm = 1 / deg_sum ** 2
 
     def community_contribution(community):
         comm = set(community)
