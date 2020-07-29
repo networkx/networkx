@@ -1,0 +1,26 @@
+.team-member {
+    display: inline-block;
+    padding: 1rem;
+    margin: 0.25rem;
+    width: 7rem;
+    text-align: center;
+    vertical-align: top;
+}
+
+.team-member-photo {
+}
+
+.team-member-photo img {
+    width: 60px;
+    border-radius: 50%;
+}
+
+.team-member-name {
+    display: block;
+    margin-top: 0.5rem;
+    font-weight: bold;
+}
+
+.team-member-handle {
+    display: none;
+}
