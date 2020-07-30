@@ -529,10 +529,6 @@ First import Matplotlib's plot interface (pylab works too)
 
     >>> import matplotlib.pyplot as plt
 
-You may find it useful to interactively test code using ``ipython -pylab``,
-which combines the power of ipython and matplotlib and provides a convenient
-interactive mode.
-
 To test if the import of ``networkx.drawing`` was successful draw ``G`` using one of
 
 .. nbplot::
