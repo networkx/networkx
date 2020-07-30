@@ -272,7 +272,8 @@ Convenient access to all edges is achieved with the edges property.
 .. nbplot::
 
     >>> for (u, v, wt) in FG.edges.data('weight'):
-    ...     if wt < 0.5: print(f"({u}, {v}, {wt:.3})")
+    ...     if wt < 0.5:
+    ...         print(f"({u}, {v}, {wt:.3})")
     (1, 2, 0.125)
     (3, 4, 0.375)
 
