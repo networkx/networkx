@@ -219,7 +219,7 @@ Data Bank, and ``x`` could refer to an XML record of publications detailing
 experimental observations of their interaction.
 
 We have found this power quite useful, but its abuse
-can lead to unexpected surprises unless one is familiar with Python.
+can lead to surprising behavior unless one is familiar with Python.
 If in doubt, consider using :func:`~relabel.convert_node_labels_to_integers` to obtain
 a more traditional graph with integer labels.
 
