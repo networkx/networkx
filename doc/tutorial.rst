@@ -157,8 +157,9 @@ better in other contexts.
     2
 
 One can specify to report the edges and degree from a subset of all nodes
-using an *nbunch*. An *nbunch* is any of: ``None`` (meaning all nodes), a node,
-or an iterable container of nodes that is not itself a node in the graph.
+using an :term:`nbunch`. An *nbunch* is any of: ``None`` (meaning all nodes),
+a node, or an iterable container of nodes that is not itself a node in the
+graph.
 
 .. nbplot::
 
