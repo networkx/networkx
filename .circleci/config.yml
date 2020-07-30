@@ -1,21 +1,35 @@
-version: 2.1
+# See: https://circleci.com/docs/2.0/language-python/
 
-orbs:
-  python: circleci/python@0.2.1
-
+version: 2
 jobs:
-  build-and-test:
-    executor: python/default
+  build:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/python:3.8.2
+
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
-      - run:
-          command: ./manage.py test
-          name: Test
 
-workflows:
-  main:
-    jobs:
-      - build-and-test
+      - run:
+          name: install_graphviz
+          command: |
+            sudo apt-get install graphviz
+
+      - run:
+          name: install_dependencies
+          command: |
+            python3 -m venv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+            pip install -r requirements/doc.txt
+            pip install -r requirements/optional.txt
+            pip install pydot pygraphviz
+
+      - run:
+          name: build_docs
+          command: |
+            source venv/bin/activate
+            make -C doc/ html
+
+      - store_artifacts:
+          path: _build/html
