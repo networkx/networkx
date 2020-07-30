@@ -38,4 +38,4 @@ jobs:
             make -C doc/ html
 
       - store_artifacts:
-          path: _build/html
+          path: doc/build/html
