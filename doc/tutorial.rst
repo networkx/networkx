@@ -226,7 +226,7 @@ a more traditional graph with integer labels.
 Accessing edges and neighbors
 -----------------------------
 
-In addition to the views :meth:`Graph.edges`, and :meth:`Graph.adj`,
+In addition to the views :attr:`Graph.edges`, and :attr:`Graph.adj`,
 access to edges and neighbors is possible using subscript notation.
 
 .. nbplot::
@@ -344,9 +344,9 @@ algorithms requiring weighted edges.
 Directed graphs
 ---------------
 
-The :class:`DiGraph` class provides additional properties specific to
-directed edges, e.g.,
-:meth:`DiGraph.out_edges`, :meth:`DiGraph.in_degree`,
+The :class:`DiGraph` class provides additional methods and properties specific
+to directed edges, e.g.,
+:attr:`DiGraph.out_edges`, :attr:`DiGraph.in_degree`,
 :meth:`DiGraph.predecessors`, :meth:`DiGraph.successors` etc.
 To allow algorithms to work with both classes easily, the directed versions of
 ``neighbors()`` is equivalent to ``successors()`` while ``degree`` reports
