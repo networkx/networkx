@@ -35,22 +35,31 @@ at a time,
 
     >>> G.add_node(1)
 
-add a list of nodes,
+or add nodes from any :py:term:`iterable` container, such as a list
 
 .. nbplot::
 
     >>> G.add_nodes_from([2, 3])
 
-or add any iterable container of nodes. You can also add nodes along with node
-attributes if your container yields 2-tuples (node, node_attribute_dict).
-Node attributes are discussed further below.
+You can also add nodes along with node
+attributes if your container yields 2-tuples of the form 
+``(node, node_attribute_dict)``::
+
+    >>> G.add_nodes_from([
+    ...     (4, {"color": "red"}),
+    ...     (5, {"color": "green"}),
+    ... ])
+
+Node attributes are discussed further :ref:`below <attributes>`.
+
+Nodes from one graph can be incorporated into another:
 
 .. nbplot::
 
     >>> H = nx.path_graph(10)
     >>> G.add_nodes_from(H)
 
-Note that ``G`` now contains the nodes of ``H`` as nodes of ``G``.
+``G`` now contains the nodes of ``H`` as nodes of ``G``.
 In contrast, you could use the graph ``H`` as a node in ``G``.
 
 .. nbplot::
@@ -87,7 +96,8 @@ by adding a list of edges,
 or by adding any :term:`ebunch` of edges.  An *ebunch* is any iterable
 container of edge-tuples.  An edge-tuple can be a 2-tuple of nodes or a 3-tuple
 with 2 nodes followed by an edge attribute dictionary, e.g.,
-``(2, 3, {'weight': 3.1415})``.  Edge attributes are discussed further below
+``(2, 3, {'weight': 3.1415})``.  Edge attributes are discussed further
+:ref:`below <attributes>`.
 
 .. nbplot::
 
@@ -249,6 +259,8 @@ Convenient access to all edges is achieved with the edges property.
     ...     if wt < 0.5: print(f"({u}, {v}, {wt:.3})")
     (1, 2, 0.125)
     (3, 4, 0.375)
+
+.. _attributes:
 
 Adding attributes to graphs, nodes, and edges
 ---------------------------------------------
