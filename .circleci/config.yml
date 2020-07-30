@@ -13,7 +13,7 @@ jobs:
       - run:
           name: install_graphviz
           command: |
-            sudo apt-get install graphviz
+            sudo apt-get install graphviz libgraphviz-dev
 
       - run:
           name: install_dependencies
