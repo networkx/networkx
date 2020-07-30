@@ -231,12 +231,13 @@ access to edges and neighbors is possible using subscript notation.
 
 .. nbplot::
 
+    >>> G = nx.Graph([(1, 2, {"color": "yellow"})])
     >>> G[1]  # same as G.adj[1]
-    AtlasView({2: {}})
+    AtlasView({2: {'color': 'yellow'}})
     >>> G[1][2]
-    {}
+    {'color': 'yellow'}
     >>> G.edges[1, 2]
-    {}
+    {'color': 'yellow'}
 
 You can get/set the attributes of an edge using subscript notation
 if the edge already exists.
@@ -246,6 +247,8 @@ if the edge already exists.
     >>> G.add_edge(1, 3)
     >>> G[1][3]['color'] = "blue"
     >>> G.edges[1, 2]['color'] = "red"
+    >>> G.edges[1, 2]
+    {'color': 'red'}
 
 Fast examination of all (node, adjacency) pairs is achieved using
 ``G.adjacency()``, or ``G.adj.items()``.
