@@ -26,6 +26,12 @@ jobs:
             pip install pydot pygraphviz
 
       - run:
+          name: install
+          command: |
+            source venv/bin/activate
+            pip install -e .
+
+      - run:
           name: build_docs
           command: |
             source venv/bin/activate
