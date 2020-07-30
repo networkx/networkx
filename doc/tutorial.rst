@@ -131,6 +131,9 @@ At this stage the graph ``G`` consists of 8 nodes and 3 edges, as can be seen by
     >>> G.number_of_edges()
     3
 
+Examining elements of a graph
+-----------------------------
+
 We can examine the nodes and edges. Four basic graph properties facilitate
 reporting: ``G.nodes``, ``G.edges``, ``G.adj`` and ``G.degree``.  These
 are set-like views of the nodes, edges, neighbors (adjacencies), and degrees
@@ -164,6 +167,9 @@ or an iterable container of nodes that is not itself a node in the graph.
     >>> G.degree([2, 3])
     DegreeView({2: 1, 3: 2})
 
+Removing elements from a graph
+------------------------------
+
 One can remove nodes and edges from the graph in a similar fashion to adding.
 Use methods
 :meth:`Graph.remove_node`,
@@ -180,6 +186,12 @@ and
     [1, 3, 'spam']
     >>> G.remove_edge(1, 3)
 
+Using the graph constructors
+----------------------------
+
+Graph objects do not have to be built up incrementally - data specifying
+graph structure can be passed directly to the constructors of the various
+graph classes.
 When creating a graph structure by instantiating one of the graph
 classes you can specify data in several formats.
 
