@@ -378,7 +378,7 @@ convert it using :meth:`Graph.to_undirected` or with
 
 .. nbplot::
 
-    >>> H = nx.Graph(G)  # convert G to undirected graph
+    >>> H = nx.Graph(G)  # create an undirected graph H from a directed graph G
 
 Multigraphs
 -----------
