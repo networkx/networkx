@@ -1,58 +1,20 @@
-Credits
-=======
+About Us
+========
 
 NetworkX was originally written by Aric Hagberg, Dan Schult, and Pieter Swart,
 and has been developed with the help of many others. Thanks to everyone who has
 improved NetworkX by contributing code, bug reports (and fixes), documentation,
 and input on design, features, and the future of NetworkX.
 
-Contributions
--------------
-
-This section aims to provide a list of people and projects that have
-contributed to ``networkx``. It is intended to be an *inclusive* list, and
-anyone who has contributed and wishes to make that contribution known is
-welcome to add an entry into this file.  Generally, no name should be added to
-this list without the approval of the person associated with that name.
-
-Creating a comprehensive list of contributors can be difficult, and the list
-within this file is almost certainly incomplete.  Contributors include
-testers, bug reporters, contributors who wish to remain anonymous, funding
-sources, academic advisors, end users, and even build/integration systems (such
-as `TravisCI <https://travis-ci.org>`_).
-
-Do you want to make your contribution known? If you have commit access, edit
-this file and add your name. If you do not have commit access, feel free to
-open an `issue <https://github.com/networkx/networkx/issues/new>`_, submit a
-`pull request <https://github.com/networkx/networkx/compare/>`_, or get in
-contact with one of the official team
-`members <https://github.com/networkx?tab=members>`_.
-
-A supplementary (but still incomplete) list of contributors is given by the
-list of names that have commits in ``networkx``'s
-`git <http://git-scm.com>`_ repository. This can be obtained via::
-
-    git log --raw | grep "^Author: " | sort | uniq
-
-A historical, partial listing of contributors and their contributions to some
-of the earlier versions of NetworkX can be found
-`here <https://github.com/networkx/networkx/blob/886e790437bcf30e9f58368829d483efef7a2acc/doc/source/reference/credits_old.rst>`_.
-
-
-Original Authors
-^^^^^^^^^^^^^^^^
-
-| Aric Hagberg
-| Dan Schult
-| Pieter Swart
-|
-
+.. include:: team.rst 
 
 Contributors
-^^^^^^^^^^^^
+------------
 
-Optionally, add your desired name and include a few relevant links. The order
-is partially historical, and now, mostly arbitrary.
+If you are a NetworkX contributor, please feel free to
+open an `issue <https://github.com/networkx/networkx/issues/new>`_ or
+submit a `pull request <https://github.com/networkx/networkx/compare/>`_
+to add your name to the bottom of the list.
 
 - Aric Hagberg, GitHub: `hagberg <https://github.com/hagberg>`_
 - Dan Schult, GitHub: `dschult <https://github.com/dschult>`_
@@ -180,19 +142,21 @@ is partially historical, and now, mostly arbitrary.
 - Danny Niquette
 - James Trimble, Github: `jamestrimble <https://github.com/jamestrimble>`_
 
+A supplementary (but still incomplete) list of contributors is given by the
+list of names that have commits in ``networkx``'s
+`git <http://git-scm.com>`_ repository. This can be obtained via::
+
+    git log --raw | grep "^Author: " | sort | uniq
+
+A historical, partial listing of contributors and their contributions to some
+of the earlier versions of NetworkX can be found
+`here <https://github.com/networkx/networkx/blob/886e790437bcf30e9f58368829d483efef7a2acc/doc/source/reference/credits_old.rst>`_.
+
+
 Support
 -------
 
-``networkx`` and those who have contributed to ``networkx`` have received
-support throughout the years from a variety of sources.  We list them below.
-If you have provided support to ``networkx`` and a support acknowledgment does
-not appear below, please help us remedy the situation, and similarly, please
-let us know if you'd like something modified or corrected.
-
-Research Groups
-^^^^^^^^^^^^^^^
-
-``networkx`` acknowledges support from the following:
+NetworkX acknowledges support from the following research groups:
 
 - `Center for Nonlinear Studies <http://cnls.lanl.gov>`_, Los Alamos National
   Laboratory, PI: Aric Hagberg
@@ -207,10 +171,7 @@ Research Groups
   Wisconsin Institute for Discovery, University of Wisconsin-Madison,
   PIs: Jessica C. Flack and David C. Krakauer
 
-Funding
-^^^^^^^
-
-``networkx`` acknowledges support from the following:
+NetworkX acknowledges the following financial support:
 
 - Google Summer of Code via Python Software Foundation
 
