@@ -451,11 +451,17 @@ def from_geopandas_edgelist(
         from shapely.geometry import Point
     except ImportError:
         # A bit unintuitive - we need to import shapely but it is a core dependency of geopandas, the library of specific interest to the user
-        raise ImportError("Creating a graph from a GeoDataFrame requires geopandas to be installed.")
+        raise ImportError(
+            "Creating a graph from a GeoDataFrame requires geopandas to be installed."
+        )
 
     # Find all unique start & end points and assign them an id
-    gdf["_nx_source_coords"] = gdf[geometry].apply(lambda i: (round(i.coords[0][0], precision), round(i.coords[0][1], precision)))
-    gdf["_nx_target_coords"] = gdf[geometry].apply(lambda i: (round(i.coords[-1][0], precision), round(i.coords[-1][1], precision)))
+    gdf["_nx_source_coords"] = gdf[geometry].apply(
+        lambda i: (round(i.coords[0][0], precision), round(i.coords[0][1], precision))
+    )
+    gdf["_nx_target_coords"] = gdf[geometry].apply(
+        lambda i: (round(i.coords[-1][0], precision), round(i.coords[-1][1], precision))
+    )
     node_ids = {}
     i = 0
     for index, row in gdf.iterrows():
@@ -475,30 +481,38 @@ def from_geopandas_edgelist(
     # Make the graph
     if edge_attr is True:
         edge_attr = [attr for attr in gdf.columns if attr[:4] != "_nx_"]
-    graph = from_pandas_edgelist(gdf, source="_nx_source", target="_nx_target", edge_attr=edge_attr, create_using=create_using, edge_key=edge_key)
+    graph = from_pandas_edgelist(
+        gdf,
+        source="_nx_source",
+        target="_nx_target",
+        edge_attr=edge_attr,
+        create_using=create_using,
+        edge_key=edge_key,
+    )
 
     node_geoms = {node_ids[k]: Point(k) for k in node_ids}
     for n in node_geoms:
         graph.nodes[n].update(geometry=node_geoms[n])
 
-    gdf.drop(["_nx_source_coords", "_nx_target_coords", "_nx_source", "_nx_target"], axis="columns", inplace=True)
+    gdf.drop(
+        ["_nx_source_coords", "_nx_target_coords", "_nx_source", "_nx_target"],
+        axis="columns",
+        inplace=True,
+    )
 
     return graph
 
 
 def to_geopandas_edgelist(
-    G,
-    source="source",
-    target="target",
-    geometry="geometry",
-    crs=None,
-    nodelist=None,
+    G, source="source", target="target", geometry="geometry", crs=None, nodelist=None,
 ):
 
     try:
         import geopandas as gpd
     except ImportError:
-        raise ImportError("Geopandas must be installed in order to export to a GeoDataFrame.")
+        raise ImportError(
+            "Geopandas must be installed in order to export to a GeoDataFrame."
+        )
 
     if nodelist is None:
         edgelist = G.edges(data=True)
