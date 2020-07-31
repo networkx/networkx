@@ -1,28 +1,29 @@
+import os
 import pytest
+import networkx as nx
 
 gpd = pytest.importorskip("geopandas")
 
-import geopandas as gpd
-import networkx as nx
+dirname = os.path.dirname(__file__)
 
 
 def test_from_geopandas_edgelist_undirected():
 
-    gdf = gpd.GeoDataFrame.from_file("geospatial_data/shp/test_shp.shp")
+    gdf = gpd.GeoDataFrame.from_file(os.path.join(dirname, "test_shp.shp"))
     graph_from_shp = nx.from_geopandas_edgelist(gdf, create_using=nx.Graph)
     assert isinstance(graph_from_shp, nx.Graph)
 
 
 def test_from_geopandas_edgelist_directed():
 
-    gdf = gpd.GeoDataFrame.from_file("geospatial_data/shp/test_shp.shp")
+    gdf = gpd.GeoDataFrame.from_file(os.path.join(dirname, "test_shp.shp"))
     graph_from_shp = nx.from_geopandas_edgelist(gdf, create_using=nx.DiGraph)
     assert isinstance(graph_from_shp, nx.DiGraph)
 
 
 def test_from_geopandas_edgelist_undirected_with_attrs():
 
-    gdf = gpd.GeoDataFrame.from_file("geospatial_data/shp/test_shp.shp")
+    gdf = gpd.GeoDataFrame.from_file(os.path.join(dirname, "test_shp.shp"))
     graph_from_shp = nx.from_geopandas_edgelist(
         gdf, create_using=nx.Graph, edge_attr=gdf.columns.to_list()
     )
@@ -36,7 +37,7 @@ def test_from_geopandas_edgelist_undirected_with_attrs():
 
 def test_from_geopandas_edgelist_directed_with_attrs():
 
-    gdf = gpd.GeoDataFrame.from_file("geospatial_data/shp/test_shp.shp")
+    gdf = gpd.GeoDataFrame.from_file(os.path.join(dirname, "test_shp.shp"))
     graph_from_shp = nx.from_geopandas_edgelist(
         gdf, create_using=nx.DiGraph, edge_attr=gdf.columns.to_list()
     )
@@ -50,7 +51,7 @@ def test_from_geopandas_edgelist_directed_with_attrs():
 
 def test_to_geopandas_edgelist():
 
-    gdf = gpd.GeoDataFrame.from_file("geospatial_data/shp/test_shp.shp")
+    gdf = gpd.GeoDataFrame.from_file(os.path.join(dirname, "test_shp.shp"))
     graph_from_shp = nx.from_geopandas_edgelist(
         gdf, create_using=nx.DiGraph, edge_attr=gdf.columns.to_list()
     )
@@ -68,5 +69,3 @@ def test_to_geopandas_edgelist():
             failed = True
             break
     assert not failed
-
-    print()
