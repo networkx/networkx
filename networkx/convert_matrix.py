@@ -433,19 +433,57 @@ def from_geopandas_edgelist(
     edge_attr=None,
     create_using=None,
     edge_key=None,
-    precision=4,
+    precision=5,
 ):
 
-    """
-    Create a graph from a geopandas edgelist containing lines
-    :param gdf: geopandas GeoDataFrame object with rows representing edges
-    :param geometry: Name of the column containing LineString geometries representing edges
-    :param edge_attr: Attributes from the GeoDataFrame which should be copied into the Graph
-    :param create_using: nx.Graph or nx.Digraph, depending on if you want a directed or undirected graph, respectively
-    :param edge_key: Something to do with multigraphs?
-    :param precision: Number of decimal points to use for comparing X and Y coordinates of the edge endpoints to determine connectivity
-    :return: nx.Graph or nx.DiGraph
-    """
+    """Returns a graph from Geopandas GeoDataFrame containing edge lines.
+
+        The GeoPandas GeoDataFrame should contain a geometry column with LineString geometries and
+        zero or more columns of edge attributes. Each row will be processed as one
+        edge instance.
+
+        Parameters
+        ----------
+        gdf : GeoPandas GeoDataFrame
+            A geospatial representation of a graph.
+
+        geoemtry : str
+            A valid column name for the geometry.
+
+        edge_attr : str or int, iterable, True, or None
+            A valid column name (str or int) or iterable of column names that are
+            used to retrieve items and add them to the graph as edge attributes.
+            If `True`, all of the remaining columns will be added.
+            If `None`, no edge attributes are added to the graph.
+
+        create_using : NetworkX graph constructor, optional (default=nx.Graph)
+            Graph type to create. If graph instance, then cleared before populated.
+
+        edge_key : str or None, optional (default=None)
+            A valid column name for the edge keys (for a MultiGraph). The values in
+            this column are used for the edge keys when adding edges if create_using
+            is a multigraph.
+
+        See Also
+        --------
+        to_geopandas_edgelist
+
+        Examples
+        --------
+        Simple edges with geometries:
+
+        >>> import geopandas as gpd
+        >>> from shapely.geometry import LineString
+        >>> names = ['A', 'B', 'C']
+        >>> lines = [LineString([(0, 0), (1, 1)]), LineString([(1, 1), (3, 3)]), LineString([(3, 3), (6, 6)])]
+        >>> gdf = gpd.GeoDataFrame(zip(names, lines), columns=["name", "geometry"], geometry="geometry")
+        >>> G = nx.from_geopandas_edgelist(gdf, "geometry", edge_attr=list(gdf.columns))
+        >>> G[0][1]["name"]
+        'A'
+        >>> G[1][2]["geometry"].length
+        2.8284271247461903
+
+        """
 
     try:
         from shapely.geometry import Point
@@ -490,10 +528,12 @@ def from_geopandas_edgelist(
         edge_key=edge_key,
     )
 
+    # Assign new point geometries to the nodes
     node_geoms = {node_ids[k]: Point(k) for k in node_ids}
     for n in node_geoms:
         graph.nodes[n].update(geometry=node_geoms[n])
 
+    # Drop these intermediate columns
     gdf.drop(
         ["nx_source_coords", "nx_target_coords", "nx_source", "nx_target"],
         axis="columns",
@@ -506,6 +546,41 @@ def from_geopandas_edgelist(
 def to_geopandas_edgelist(
     G, source="source", target="target", geometry="geometry", crs=None, nodelist=None,
 ):
+    """Returns the graph edge list as a Geopandas GeoDataFrame.
+
+        Parameters
+        ----------
+        G : graph
+            The NetworkX graph used to construct the Geopandas GeoDataFrame.
+
+        source : str or int, optional
+            A valid column name (string or integer) for the source nodes (for the
+            directed case).
+
+        target : str or int, optional
+            A valid column name (string or integer) for the target nodes (for the
+            directed case).
+
+        nodelist : list, optional
+           Use only nodes specified in nodelist
+
+        Returns
+        -------
+        gdf : Geopandas GeoDataFrame
+           Graph edge list
+
+        Examples
+        --------
+        >>> from shapely.geometry import LineString
+        >>> G = nx.Graph([('A', 'B', {'geometry': LineString([(0, 0), (1, 1)])}),
+        ...               ('C', 'E', {'geometry': LineString([(1, 1), (3, 3)])})])
+        >>> df = nx.to_geopandas_edgelist(G, nodelist=['A', 'C'])
+        >>> df[['source', 'target', 'geometry']]
+          source target                                       geometry
+        0      A      B  LINESTRING (0.00000 0.00000, 1.00000 1.00000)
+        1      C      E  LINESTRING (1.00000 1.00000, 3.00000 3.00000)
+
+        """
 
     try:
         import geopandas as gpd
