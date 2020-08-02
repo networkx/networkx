@@ -24,26 +24,8 @@ Glossary
       assigning to the `G.edges[u][v]` attribute dictionary for the
       specified edge *u*-*v*.
 
-   hashable
-      An object is hashable if it has a hash value which never changes
-      during its lifetime (it needs a :meth:`__hash__` method), and can be
-      compared to other objects (it needs an :meth:`__eq__` or :meth:`__cmp__`
-      method). Hashable objects which compare equal must have the same
-      hash value.
-
-      Hashability makes an object usable as a dictionary key and a set
-      member, because these data structures use the hash value internally.
-
-      All of Python's immutable built-in objects are hashable, while no
-      mutable containers (such as lists or dictionaries) are. Objects
-      which are instances of user-defined classes are hashable by
-      default; they all compare unequal, and their hash value is their
-      :func:`id`.
-
-      Definition from https://docs.python.org/2/glossary.html
-
    nbunch
-      An nbunch is a single node, container of nodes or None (representing
+      An nbunch is a single node, container of nodes or `None` (representing
       all nodes). It can be a list, set, graph, etc.. To filter an nbunch
       so that only nodes actually in `G` appear, use `G.nbunch_iter(nbunch)`.
 
