@@ -59,8 +59,9 @@ matrix:
     - python: 3.6
     - python: 3.7
     - python: 3.8
+    - python: 3.9-dev
       env:
-      - PIP_FLAGS="--pre"
+      - MIN_DEPS=1
     - python: pypy3.6-7.1.1
       env:
       - MIN_DEPS=1
