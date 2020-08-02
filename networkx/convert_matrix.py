@@ -456,17 +456,17 @@ def from_geopandas_edgelist(
         )
 
     # Find all unique start & end points and assign them an id
-    gdf["_nx_source_coords"] = gdf[geometry].apply(
+    gdf["nx_source_coords"] = gdf[geometry].apply(
         lambda i: (round(i.coords[0][0], precision), round(i.coords[0][1], precision))
     )
-    gdf["_nx_target_coords"] = gdf[geometry].apply(
+    gdf["nx_target_coords"] = gdf[geometry].apply(
         lambda i: (round(i.coords[-1][0], precision), round(i.coords[-1][1], precision))
     )
     node_ids = {}
     i = 0
-    for index, row in gdf.iterrows():
-        node_1 = row["_nx_source_coords"]
-        node_2 = row["_nx_target_coords"]
+    for row in gdf.itertuples(index=False):
+        node_1 = row.nx_source_coords
+        node_2 = row.nx_target_coords
         if node_1 not in node_ids:
             node_ids[node_1] = i
             i += 1
@@ -475,16 +475,16 @@ def from_geopandas_edgelist(
             i += 1
 
     # Assign the unique id to each
-    gdf["_nx_source"] = gdf["_nx_source_coords"].apply(lambda x: node_ids[x])
-    gdf["_nx_target"] = gdf["_nx_target_coords"].apply(lambda x: node_ids[x])
+    gdf["nx_source"] = gdf["nx_source_coords"].apply(lambda x: node_ids[x])
+    gdf["nx_target"] = gdf["nx_target_coords"].apply(lambda x: node_ids[x])
 
     # Make the graph
     if edge_attr is True:
-        edge_attr = [attr for attr in gdf.columns if attr[:4] != "_nx_"]
-    graph = from_pandas_edgelist(
+        edge_attr = [attr for attr in gdf.columns if attr[:3] != "nx_"]
+    graph = nx.from_pandas_edgelist(
         gdf,
-        source="_nx_source",
-        target="_nx_target",
+        source="nx_source",
+        target="nx_target",
         edge_attr=edge_attr,
         create_using=create_using,
         edge_key=edge_key,
@@ -495,7 +495,7 @@ def from_geopandas_edgelist(
         graph.nodes[n].update(geometry=node_geoms[n])
 
     gdf.drop(
-        ["_nx_source_coords", "_nx_target_coords", "_nx_source", "_nx_target"],
+        ["nx_source_coords", "nx_target_coords", "nx_source", "nx_target"],
         axis="columns",
         inplace=True,
     )

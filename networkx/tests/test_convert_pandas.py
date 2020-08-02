@@ -262,7 +262,7 @@ class TestConvertPandas:
             create_using=nx.MultiGraph(),
         )
         assert_graphs_equal(G, Gtrue)
-        
+
     def test_edgekey_with_normal_graph_no_action(self):
         Gtrue = nx.Graph(
             [
