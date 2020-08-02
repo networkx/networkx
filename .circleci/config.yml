@@ -1,0 +1,41 @@
+# See: https://circleci.com/docs/2.0/language-python/
+
+version: 2
+jobs:
+  build:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/python:3.8.2
+
+    steps:
+      - checkout
+
+      - run:
+          name: install_graphviz
+          command: |
+            sudo apt-get install graphviz libgraphviz-dev
+
+      - run:
+          name: install_dependencies
+          command: |
+            python3 -m venv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+            pip install -r requirements/doc.txt
+            pip install -r requirements/optional.txt
+            pip install pydot pygraphviz
+
+      - run:
+          name: install
+          command: |
+            source venv/bin/activate
+            pip install -e .
+
+      - run:
+          name: build_docs
+          command: |
+            source venv/bin/activate
+            make -C doc/ html
+
+      - store_artifacts:
+          path: doc/build/html

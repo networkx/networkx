@@ -60,3 +60,12 @@ Pandas
    from_pandas_adjacency
    to_pandas_edgelist
    from_pandas_edgelist
+
+GeoPandas
+---------
+.. autosummary::
+   :toctree: generated/
+
+   to_geopandas_edgelist
+   from_geopandas_edgelist
+
