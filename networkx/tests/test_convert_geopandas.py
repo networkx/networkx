@@ -69,3 +69,17 @@ def test_to_geopandas_edgelist():
             failed = True
             break
     assert not failed
+
+
+def test_from_empty_geodataframe():
+
+    gdf = gpd.GeoDataFrame(columns=["geometry"], geometry="geometry")
+    graph = nx.from_geopandas_edgelist(gdf)
+    assert len(graph.edges) == 0 and len(graph.nodes) == 0
+
+
+def test_to_empty_geodataframe():
+
+    graph = nx.empty_graph(0, nx.Graph())
+    gdf = nx.to_geopandas_edgelist(graph)
+    assert gdf.empty

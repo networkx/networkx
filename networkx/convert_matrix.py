@@ -493,12 +493,21 @@ def from_geopandas_edgelist(
             "Creating a graph from a GeoDataFrame requires geopandas to be installed."
         )
 
+    # If the geodataframe is empty, just return an empty graph/digraph
+    if gdf.empty:
+        return nx.empty_graph(0, create_using)
+
+    # Determine number of dimensions of geometry by checking the first row (i.e. 2D or 3D lines?)
+    dims = range(len(gdf[geometry][0].coords[0]))
+
     # Find all unique start & end points and assign them an id
     gdf["nx_source_coords"] = gdf[geometry].apply(
-        lambda i: (round(i.coords[0][0], precision), round(i.coords[0][1], precision))
+        # lambda i: (round(i.coords[0][0], precision), round(i.coords[0][1], precision), round(i.coords[0][2], precision))
+        lambda geom: tuple(round(geom.coords[0][i], precision) for i in dims)
     )
     gdf["nx_target_coords"] = gdf[geometry].apply(
-        lambda i: (round(i.coords[-1][0], precision), round(i.coords[-1][1], precision))
+        # lambda i: (round(i.coords[-1][0], precision), round(i.coords[-1][1], precision), round(i.coords[-1][2], precision))
+        lambda geom: tuple(round(geom.coords[-1][i], precision) for i in dims)
     )
     node_ids = {}
     i = 0
@@ -607,6 +616,10 @@ def to_geopandas_edgelist(
 
     edgelistdict = {source: source_nodes, target: target_nodes}
     edgelistdict.update(edge_attr)
+
+    # If the graph is empty, then the geometry key will be missing, so add it
+    if not edgelist:
+        edgelistdict[geometry] = []
 
     return gpd.GeoDataFrame(edgelistdict, geometry=geometry, crs=crs)
 
