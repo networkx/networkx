@@ -12,6 +12,7 @@ interoperability among Esri and other software products."
 See https://en.wikipedia.org/wiki/Shapefile for additional information.
 """
 import networkx as nx
+import warnings
 
 __all__ = ["read_shp", "write_shp"]
 
@@ -79,6 +80,11 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
         from osgeo import ogr
     except ImportError as e:
         raise ImportError("read_shp requires OGR: http://www.gdal.org/") from e
+
+    warnings.warn(
+        "networkx.read_shp() will be removed in version 3.0. The preferred method of reading shapefiles (and other geographic data) is now to load the data into a Geopandas GeoDataFrame and then pass it to networkx.from_geopandas_edgelist()",
+        DeprecationWarning,
+    )
 
     if not isinstance(path, str):
         return

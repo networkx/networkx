@@ -216,6 +216,11 @@ class TestShp:
     def teardown_method(self):
         self.deletetmp(self.drv, self.testdir, self.shppath)
 
+    def test_deprecation(self):
+
+        with pytest.warns(DeprecationWarning):
+            G = nx.read_shp(self.shppath)
+
 
 def test_read_shp_nofile():
     with pytest.raises(RuntimeError):
