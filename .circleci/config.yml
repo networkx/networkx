@@ -16,10 +16,16 @@ jobs:
             sudo apt-get install graphviz libgraphviz-dev
 
       - run:
+          name: install_tex
+          command: |
+            sudo apt-get install texlive texlive-latex-extra latexmk
+
+      - run:
           name: install_dependencies
           command: |
             python3 -m venv venv
             source venv/bin/activate
+            pip install --upgrade pip
             pip install -r requirements.txt
             pip install -r requirements/doc.txt
             pip install -r requirements/optional.txt
@@ -36,6 +42,8 @@ jobs:
           command: |
             source venv/bin/activate
             make -C doc/ html
+            make -C doc/ latexpdf LATEXOPTS="-file-line-error -halt-on-error"
+            cp -a doc/build/latex/networkx_reference.pdf doc/build/html/_downloads/.
 
       - store_artifacts:
           path: doc/build/html
