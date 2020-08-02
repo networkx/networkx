@@ -447,7 +447,7 @@ def from_geopandas_edgelist(
         gdf : GeoPandas GeoDataFrame
             A geospatial representation of a graph.
 
-        geoemtry : str
+        geometry : str
             A valid column name for the geometry.
 
         edge_attr : str or int, iterable, True, or None
@@ -574,8 +574,8 @@ def to_geopandas_edgelist(
         >>> from shapely.geometry import LineString
         >>> G = nx.Graph([('A', 'B', {'geometry': LineString([(0, 0), (1, 1)])}),
         ...               ('C', 'E', {'geometry': LineString([(1, 1), (3, 3)])})])
-        >>> df = nx.to_geopandas_edgelist(G, nodelist=['A', 'C'])
-        >>> df[['source', 'target', 'geometry']]
+        >>> gdf = nx.to_geopandas_edgelist(G, nodelist=['A', 'C'])
+        >>> gdf[['source', 'target', 'geometry']]
           source target                                       geometry
         0      A      B  LINESTRING (0.00000 0.00000, 1.00000 1.00000)
         1      C      E  LINESTRING (1.00000 1.00000, 3.00000 3.00000)
