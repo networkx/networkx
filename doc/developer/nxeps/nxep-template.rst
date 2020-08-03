@@ -88,18 +88,3 @@ This section may just be a bullet list including links to any discussions
 regarding the NXEP:
 
 - This includes links to mailing list threads or relevant GitHub issues.
-
-
-References and Footnotes
-------------------------
-
-.. [1] Each NXEP must either be explicitly labeled as placed in the public domain (see
-   this NXEP as an example) or licensed under the `Open Publication License`_.
-
-.. _Open Publication License: https://www.opencontent.org/openpub/
-
-
-Copyright
----------
-
-This document has been placed in the public domain. [1]_

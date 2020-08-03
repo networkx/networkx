@@ -117,9 +117,6 @@ def gnp_random_graph(n, p, seed=None, directed=False):
 
     The $G_{n,p}$ model chooses each of the possible edges with probability $p$.
 
-    The functions :func:`binomial_graph` and :func:`erdos_renyi_graph` are
-    aliases of this function.
-
     Parameters
     ----------
     n : int
@@ -140,6 +137,14 @@ def gnp_random_graph(n, p, seed=None, directed=False):
     -----
     This algorithm [2]_ runs in $O(n^2)$ time.  For sparse graphs (that is, for
     small values of $p$), :func:`fast_gnp_random_graph` is a faster algorithm.
+
+    :func:`binomial_graph` and :func:`erdos_renyi_graph` are
+    aliases for :func:`gnp_random_graph`.
+
+    >>> nx.binomial_graph is nx.gnp_random_graph
+    True
+    >>> nx.erdos_renyi_graph is nx.gnp_random_graph
+    True
 
     References
     ----------

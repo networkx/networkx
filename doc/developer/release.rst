@@ -1,5 +1,5 @@
-How to make a new release of ``networkx``
-=========================================
+Release Process
+===============
 
 - Update the release notes:
 
@@ -28,8 +28,8 @@ How to make a new release of ``networkx``
 
 - Commit changes::
 
-  git add networkx/release.py
-  git commit -m "Designate X.X release"
+   git add networkx/release.py
+   git commit -m "Designate X.X release"
 
 - Add the version number as a tag in git::
 
@@ -47,7 +47,7 @@ How to make a new release of ``networkx``
 
 - Review the github release page::
 
-  https://github.com/networkx/networkx/releases
+   https://github.com/networkx/networkx/releases
 
 - Publish on PyPi::
 
@@ -83,9 +83,9 @@ How to make a new release of ``networkx``
 
  - Commit and push changes::
 
-   git add networkx/release.py
-   git commit -m "Bump release version"
-   git push upstream master
+    git add networkx/release.py
+    git commit -m "Bump release version"
+    git push upstream master
 
 - Update the web frontpage:
   The webpage is kept in a separate repo: networkx/website

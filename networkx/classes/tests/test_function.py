@@ -664,3 +664,55 @@ def test_selfloops():
         assert_edges_equal(
             nx.selfloop_edges(G, data="weight"), [(0, 0, None), (1, 1, 2)]
         )
+        # test removing selfloops behavior vis-a-vis altering a dict while iterating
+        G.add_edge(0, 0)
+        G.remove_edges_from(nx.selfloop_edges(G))
+        if G.is_multigraph():
+            G.add_edge(0, 0)
+            pytest.raises(
+                RuntimeError, G.remove_edges_from, nx.selfloop_edges(G, keys=True)
+            )
+            G.add_edge(0, 0)
+            pytest.raises(
+                TypeError, G.remove_edges_from, nx.selfloop_edges(G, data=True)
+            )
+            G.add_edge(0, 0)
+            pytest.raises(
+                RuntimeError,
+                G.remove_edges_from,
+                nx.selfloop_edges(G, data=True, keys=True),
+            )
+        else:
+            G.add_edge(0, 0)
+            G.remove_edges_from(nx.selfloop_edges(G, keys=True))
+            G.add_edge(0, 0)
+            G.remove_edges_from(nx.selfloop_edges(G, data=True))
+            G.add_edge(0, 0)
+            G.remove_edges_from(nx.selfloop_edges(G, keys=True, data=True))
+
+
+def test_pathweight():
+    valid_path = [1, 2, 3]
+    invalid_path = [1, 3, 2]
+    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
+    edges = [
+        (1, 2, dict(cost=5, dist=6)),
+        (2, 3, dict(cost=3, dist=4)),
+        (1, 2, dict(cost=1, dist=2)),
+    ]
+    for graph in graphs:
+        graph.add_edges_from(edges)
+        assert nx.path_weight(graph, valid_path, "cost") == 4
+        assert nx.path_weight(graph, valid_path, "dist") == 6
+        pytest.raises(nx.NetworkXNoPath, nx.path_weight, graph, invalid_path, "cost")
+
+
+def test_ispath():
+    valid_path = [1, 2, 3, 4]
+    invalid_path = [1, 2, 4, 3]
+    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
+    edges = [(1, 2), (2, 3), (1, 2), (3, 4)]
+    for graph in graphs:
+        graph.add_edges_from(edges)
+        assert nx.is_path(graph, valid_path)
+        assert not nx.is_path(graph, invalid_path)

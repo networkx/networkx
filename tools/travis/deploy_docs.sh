@@ -43,7 +43,6 @@ then
     # Overwrite previous commit
     git rm -r latest
     cp -a ../build/html latest
-    cp -a ../build/latex/networkx_reference.pdf latest/_downloads/.
     git add latest
     git commit -m "Deploy GitHub Pages"
 
