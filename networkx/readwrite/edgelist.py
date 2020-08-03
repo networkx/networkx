@@ -257,7 +257,8 @@ def parse_edgelist(lines, comments='#', delimiter=None,
         if check_information_line and not information_line_found:
             information_line_items = list(s)
             information_line_found = True
-            if len(s) == 2: continue
+            if len(s) == 2:
+                continue
         if len(s) < 2:
             continue
         u = s.pop(0)
