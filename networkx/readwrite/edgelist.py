@@ -245,7 +245,7 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     """
     from ast import literal_eval
     G = nx.empty_graph(0, create_using)
-    first_line_found = False
+    information_line_found = False
     for line in lines:
         p = line.find(comments)
         if p >= 0:
@@ -254,9 +254,9 @@ def parse_edgelist(lines, comments='#', delimiter=None,
             continue
         # split line, should have 2 or more
         s = line.strip().split(delimiter)
-        if check_information_line and not first_line_found:
-            first_line_items = list(s)
-            first_line_found = True
+        if check_information_line and not information_line_found:
+            information_line_items = list(s)
+            information_line_found = True
             if len(s) == 2: continue
         if len(s) < 2:
             continue
@@ -296,8 +296,8 @@ def parse_edgelist(lines, comments='#', delimiter=None,
         G.add_edge(u, v, **edgedata)
 
     if check_information_line:
-        if len(first_line_items) == 2:
-            expected_nodes, expected_edges = map(int, first_line_items)
+        if len(information_line_items) == 2:
+            expected_nodes, expected_edges = map(int, information_line_items)
             if len(G.edges()) != expected_edges or len(G.nodes()) != expected_nodes:
                 warnings.warn("Information line doesn't match graph data.")
         else:
