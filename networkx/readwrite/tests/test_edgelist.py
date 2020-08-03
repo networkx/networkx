@@ -114,11 +114,14 @@ class TestEdgelist:
         bytesIO = io.BytesIO(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=True)
         assert_edges_equal(
-                G.edges(data=True), [(1, 2, {"weight": 2.0, "color":"green"}),
-                    (2, 3, {"weight": 3.0, "color":"red"})]
+            G.edges(data=True),
+            [
+                (1, 2, {"weight": 2.0, "color": "green"}),
+                (2, 3, {"weight": 3.0, "color": "red"}),
+            ],
         )
 
-    def test_read_edgelist_5(self):
+    def test_read_edgelist_6(self):
         s = b"""\
 # comment line
 1, 2, {'weight':2.0, 'color':'green'}
@@ -132,8 +135,11 @@ class TestEdgelist:
         bytesIO = io.BytesIO(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=True, delimiter=",")
         assert_edges_equal(
-                G.edges(data=True), [(1, 2, {"weight": 2.0, "color":"green"}),
-                    (2, 3, {"weight": 3.0, "color":"red"})]
+            G.edges(data=True),
+            [
+                (1, 2, {"weight": 2.0, "color": "green"}),
+                (2, 3, {"weight": 3.0, "color": "red"}),
+            ],
         )
 
     def test_write_edgelist_1(self):
