@@ -227,12 +227,13 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     >>> list(G.edges(data=True))
     [(1, 2, {'weight': 3}), (2, 3, {'weight': 27}), (3, 4, {'weight': 3.0})]
 
-    Edgelist with data in a list:
+    Edgelist with data in a list and information line:
 
-    >>> lines = ["1 2 3",
+    >>> lines = ["4,3",
+    ...          "1 2 3",
     ...          "2 3 27",
     ...          "3 4 3.0"]
-    >>> G = nx.parse_edgelist(lines, nodetype = int, data=(('weight',float),))
+    >>> G = nx.parse_edgelist(lines, nodetype = int, data=(('weight',float),), check_information_line=True)
     >>> list(G)
     [1, 2, 3, 4]
     >>> list(G.edges(data=True))
