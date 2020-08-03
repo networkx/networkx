@@ -28,7 +28,6 @@ __all__ = [
 
 
 def root_trees(t1, root1, t2, root2):
-
     """ Create a single digraph dT of free trees t1 and t2
     #   with roots root1 and root2 respectively
     # rename the nodes with consecutive integers
@@ -105,7 +104,6 @@ def generate_isomorphism(v, w, M, ordered_children):
 
 
 def rooted_tree_isomorphism(t1, root1, t2, root2):
-
     """
     Given two rooted trees `t1` and `t2`,
     with roots `root1` and `root2` respectivly
