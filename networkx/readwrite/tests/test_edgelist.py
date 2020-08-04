@@ -100,6 +100,48 @@ class TestEdgelist:
             G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
         )
 
+    def test_read_edgelist_5(self):
+        s = b"""\
+# comment line
+1 2 {'weight':2.0, 'color':'green'}
+# comment line
+2 3 {'weight':3.0, 'color':'red'}
+"""
+        bytesIO = io.BytesIO(s)
+        G = nx.read_edgelist(bytesIO, nodetype=int, data=False)
+        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
+
+        bytesIO = io.BytesIO(s)
+        G = nx.read_edgelist(bytesIO, nodetype=int, data=True)
+        assert_edges_equal(
+            G.edges(data=True),
+            [
+                (1, 2, {"weight": 2.0, "color": "green"}),
+                (2, 3, {"weight": 3.0, "color": "red"}),
+            ],
+        )
+
+    def test_read_edgelist_6(self):
+        s = b"""\
+# comment line
+1, 2, {'weight':2.0, 'color':'green'}
+# comment line
+2, 3, {'weight':3.0, 'color':'red'}
+"""
+        bytesIO = io.BytesIO(s)
+        G = nx.read_edgelist(bytesIO, nodetype=int, data=False, delimiter=",")
+        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
+
+        bytesIO = io.BytesIO(s)
+        G = nx.read_edgelist(bytesIO, nodetype=int, data=True, delimiter=",")
+        assert_edges_equal(
+            G.edges(data=True),
+            [
+                (1, 2, {"weight": 2.0, "color": "green"}),
+                (2, 3, {"weight": 3.0, "color": "red"}),
+            ],
+        )
+
     def test_write_edgelist_1(self):
         fh = io.BytesIO()
         G = nx.OrderedGraph()
