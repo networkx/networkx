@@ -491,7 +491,8 @@ def wrap_attr(G, attribute, default=1, multi_graph_attr_reducer: Callable = min)
 
     default: default value to use in case attribute did not exist.
 
-    multi_graph_attr_reducer: a function used to reduce the values of `attribute` in case `G` is `MultiGraph`.
+    multi_graph_attr_reducer: a function used to reduce the values of `attribute`
+    in case `G` is `MultiGraph`.
 
     Returns
     -------
@@ -511,22 +512,24 @@ def wrap_attr(G, attribute, default=1, multi_graph_attr_reducer: Callable = min)
     # If the weight keyword argument is not callable, we assume it is a
     # string representing an edge attribute containing
     if G.is_multigraph():
-        return lambda u, v, data: multi_graph_attr_reducer(attr.get(attribute, default) for attr in data.values())
+        return lambda u, v, data: multi_graph_attr_reducer(
+            attr.get(attribute, default) for attr in data.values())
     return lambda u, v, data: data.get(attribute, default)
 
 
 @decorator
 def computed_attrs(func, attrs=(), *args, **kwargs):
     """
-    modify the `kwargs` of func, such that all `kwargs` that are listed in attrs are wrapped by `wrap_attr`.
-    This decorator assumes that the first value in `args` is a Graph object.
+    modify the `kwargs` of func, such that all `kwargs` that are listed in attrs
+    are wrapped by `wrap_attr`. This decorator assumes that the first value in
+    `args` is a Graph object.
 
     Parameters
     ----------
     func: function that uses attrs in its `kwargs`.
     attrs: an iterable of the form `((name, [default, multi_graph_attr_reducer]),...)`,
-    that hold the attribute's name that need to be wrapped with an optional: default value,
-    and a function to reduce the attribute's values in case of a MultiGraph.
+    that hold the attribute's name that need to be wrapped with an optional: default
+    value, and a function to reduce the attribute's values in case of a MultiGraph.
 
     Returns
     -------
