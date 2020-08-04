@@ -460,7 +460,7 @@ def test_shortest_simple_paths_directed():
 
 
 def test_shortest_simple_paths_directed_with_weight_fucntion():
-    def cost(G, u, v, x):
+    def cost(u, v, x):
         return 1
 
     G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
@@ -473,7 +473,7 @@ def test_shortest_simple_paths_directed_with_weight_fucntion():
 
 
 def test_shortest_simple_paths_with_weight_fucntion():
-    def cost(G, u, v, x):
+    def cost(u, v, x):
         return 1
 
     G = nx.cycle_graph(7, create_using=nx.DiGraph())

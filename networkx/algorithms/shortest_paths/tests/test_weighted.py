@@ -222,20 +222,20 @@ class TestWeightedPath(WeightedTestBase):
         t = 4
         path = [6] + list(range(t + 1))
 
-        def weight(G, u, v, __):
+        def weight(u, v, _):
             return 1 + v ** 2
 
-        length = sum(weight(G, u, v, None) for u, v in pairwise(path))
+        length = sum(weight(u, v, None) for u, v in pairwise(path))
         vlp(G, s, t, length, nx.bidirectional_dijkstra, weight)
         vlp(G, s, t, length, nx.single_source_dijkstra, weight)
         vlp(G, s, t, length, nx.single_source_bellman_ford, weight)
         vlp(G, s, t, length, goldberg_radzik, weight)
         vlp(G, s, t, length, astar, weight)
 
-        def weight(G, u, v, _):
+        def weight(u, v, _):
             return 2 ** (u * v)
 
-        length = sum(weight(G, u, v, None) for u, v in pairwise(path))
+        length = sum(weight(u, v, None) for u, v in pairwise(path))
         vlp(G, s, t, length, nx.bidirectional_dijkstra, weight)
         vlp(G, s, t, length, nx.single_source_dijkstra, weight)
         vlp(G, s, t, length, nx.single_source_bellman_ford, weight)
@@ -353,7 +353,7 @@ class TestWeightedPath(WeightedTestBase):
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
 
-        def weight(G, u, v, d):
+        def weight(u, v, d):
             return 1 / d["weight"]
 
         # The shortest path from 0 to 2 using the actual weights on the
@@ -418,7 +418,7 @@ class TestDijkstraPathLength:
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
 
-        def weight(G, u, v, d):
+        def weight(u, v, d):
             return 1 / d["weight"]
 
         # The shortest path from 0 to 2 using the actual weights on the
