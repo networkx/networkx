@@ -474,7 +474,8 @@ def py_random_state(random_state_index):
     return _random_state
 
 
-def wrap_attr(G, attribute, accept_none, default=1, multi_graph_attr_reducer: Callable = min):
+def wrap_attr(G, attribute, accept_none, default=1,
+              multi_graph_attr_reducer: Callable = min):
     """Returns a function that returns a computed attribute for an edge.
 
     The returned function is specifically suitable for input to
