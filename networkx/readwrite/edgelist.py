@@ -183,15 +183,16 @@ def parse_edgelist(
     lines : list or iterator of strings
         Input data in edgelist format
     comments : string, optional
-       Marker for comment lines
+       Marker for comment lines. Default is `'#'`
     delimiter : string, optional
-       Separator for node labels
+       Separator for node labels. Default is `None`, meaning any whitespace.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
     nodetype : Python type, optional
-       Convert nodes to this type.
+       Convert nodes to this type. Default is `None`, meaning no conversion is
+       performed.
     data : bool or list of (label,type) tuples
-       If False generate no edge data or if True use a dictionary
+       If `False` generate no edge data or if `True` use a dictionary
        representation of edge data or a list tuples specifying dictionary
        key names and types for edge data.
 
@@ -207,7 +208,7 @@ def parse_edgelist(
     >>> lines = ["1 2",
     ...          "2 3",
     ...          "3 4"]
-    >>> G = nx.parse_edgelist(lines, nodetype = int)
+    >>> G = nx.parse_edgelist(lines, nodetype=int)
     >>> list(G)
     [1, 2, 3, 4]
     >>> list(G.edges())
@@ -215,10 +216,10 @@ def parse_edgelist(
 
     Edgelist with data in Python dictionary representation:
 
-    >>> lines = ["1 2 {'weight':3}",
-    ...          "2 3 {'weight':27}",
-    ...          "3 4 {'weight':3.0}"]
-    >>> G = nx.parse_edgelist(lines, nodetype = int)
+    >>> lines = ["1 2 {'weight': 3}",
+    ...          "2 3 {'weight': 27}",
+    ...          "3 4 {'weight': 3.0}"]
+    >>> G = nx.parse_edgelist(lines, nodetype=int)
     >>> list(G)
     [1, 2, 3, 4]
     >>> list(G.edges(data=True))
@@ -229,7 +230,7 @@ def parse_edgelist(
     >>> lines = ["1 2 3",
     ...          "2 3 27",
     ...          "3 4 3.0"]
-    >>> G = nx.parse_edgelist(lines, nodetype = int, data=(('weight',float),))
+    >>> G = nx.parse_edgelist(lines, nodetype=int, data=(('weight',float),))
     >>> list(G)
     [1, 2, 3, 4]
     >>> list(G.edges(data=True))
@@ -246,7 +247,7 @@ def parse_edgelist(
         p = line.find(comments)
         if p >= 0:
             line = line[:p]
-        if not len(line):
+        if not line:
             continue
         # split line, should have 2 or more
         s = line.strip().split(delimiter)
@@ -259,9 +260,9 @@ def parse_edgelist(
             try:
                 u = nodetype(u)
                 v = nodetype(v)
-            except BaseException as e:
+            except Exception as e:
                 raise TypeError(
-                    f"Failed to convert nodes {u},{v} " f"to type {nodetype}."
+                    f"Failed to convert nodes {u},{v} to type {nodetype}."
                 ) from e
 
         if len(d) == 0 or data is False:
@@ -275,9 +276,9 @@ def parse_edgelist(
                 else:
                     edgedata_str = " ".join(d)
                 edgedata = dict(literal_eval(edgedata_str.strip()))
-            except BaseException as e:
+            except Exception as e:
                 raise TypeError(
-                    f"Failed to convert edge data ({d}) " f"to dictionary."
+                    f"Failed to convert edge data ({d}) to dictionary."
                 ) from e
         else:
             # convert edge data to dictionary with specified keys and type
@@ -289,7 +290,7 @@ def parse_edgelist(
             for (edge_key, edge_type), edge_value in zip(data, d):
                 try:
                     edge_value = edge_type(edge_value)
-                except BaseException as e:
+                except Exception as e:
                     raise TypeError(
                         f"Failed to convert {edge_key} data {edge_value} "
                         f"to type {edge_type}."
