@@ -474,7 +474,7 @@ def py_random_state(random_state_index):
     return _random_state
 
 
-def wrap_attr(G, attribute, default=1, multi_graph_attr_reducer: Callable = min):
+def wrap_attr(G, attribute, accept_none, default=1, multi_graph_attr_reducer: Callable = min):
     """Returns a function that returns a computed attribute for an edge.
 
     The returned function is specifically suitable for input to
@@ -488,6 +488,10 @@ def wrap_attr(G, attribute, default=1, multi_graph_attr_reducer: Callable = min)
         If it is callable, `attribute` itself is returned. If it is a string,
         it is assumed to be the name of the edge attribute. In that case,
         a function is returned that gets the edge specified attribute.
+
+    accept_none: Boolean, which indicate if it is acceptable to return None, if
+    False and `attribute` is None, then a function that always evaluate to `default`
+    is returned.
 
     default: default value to use in case attribute did not exist.
 
@@ -509,6 +513,8 @@ def wrap_attr(G, attribute, default=1, multi_graph_attr_reducer: Callable = min)
     """
     if callable(attribute):
         return attribute
+    if attribute is None and accept_none:
+        return None
     # If the weight keyword argument is not callable, we assume it is a
     # string representing an edge attribute containing
     if G.is_multigraph():
@@ -535,12 +541,14 @@ def computed_attrs(func, attrs=(), *args, **kwargs):
     -------
     :returns func(*args, **kwargs)
     """
-    all_args = signature(func).bind(*args, **kwargs).arguments
+    sign = signature(func)
+    all_args = sign.bind(*args, **kwargs).arguments
 
     if any((attr not in all_args for attr, *_ in attrs)):
         raise KeyError("attrs is not a subset of the kwargs's keys set")
 
     for attr, *extra_params in attrs:
-        all_args[attr] = wrap_attr(args[0], all_args[attr], *extra_params)
+        accept_none = sign.parameters[attr].default is None
+        all_args[attr] = wrap_attr(args[0], all_args[attr], accept_none, *extra_params)
 
     return func(**all_args)

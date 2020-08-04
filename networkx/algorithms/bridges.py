@@ -128,7 +128,7 @@ def has_bridges(G, root=None):
 @computed_attrs(attrs=(("weight",),))
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
-def local_bridges(G, with_span=True, weight=None):
+def local_bridges(G, with_span=True, weight='weight'):
     """Iterate over local bridges of `G` optionally computing the span
 
     A *local bridge* is an edge whose endpoints have no common neighbors.
