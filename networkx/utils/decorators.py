@@ -511,8 +511,8 @@ def wrap_attr(G, attribute, default=1, multi_graph_attr_reducer: Callable = min)
     # If the weight keyword argument is not callable, we assume it is a
     # string representing an edge attribute containing
     if G.is_multigraph():
-        return lambda G, u, v, data: multi_graph_attr_reducer(attr.get(attribute, default) for attr in data.values())
-    return lambda G, u, v, data: data.get(attribute, default)
+        return lambda u, v, data: multi_graph_attr_reducer(attr.get(attribute, default) for attr in data.values())
+    return lambda u, v, data: data.get(attribute, default)
 
 
 @decorator

@@ -174,7 +174,7 @@ def local_bridges(G, with_span=True, weight=None):
 
                 def hide_edge(G, n, nbr, d):
                     if n not in enodes or nbr not in enodes:
-                        return weight(G, n, nbr, d)
+                        return weight(n, nbr, d)
                     return None
 
                 try:

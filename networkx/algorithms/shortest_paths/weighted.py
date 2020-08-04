@@ -120,7 +120,6 @@ def dijkstra_path(G, source, target, weight="weight"):
     return path
 
 
-@computed_attrs(attrs=(("weight",),))
 def dijkstra_path_length(G, source, target, weight="weight"):
     """Returns the shortest weighted path length in G from source to target.
 
@@ -500,7 +499,6 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight="weight"):
     return path
 
 
-@computed_attrs(attrs=(("weight",),))
 def multi_source_dijkstra_path_length(G, sources, cutoff=None, weight="weight"):
     """Find shortest weighted path lengths in G from a given set of
     source nodes.
@@ -577,7 +575,6 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None, weight="weight"):
     return _dijkstra_multisource(G, sources, weight, cutoff=cutoff)
 
 
-@computed_attrs(attrs=(("weight",),))
 def multi_source_dijkstra(G, sources, target=None, cutoff=None, weight="weight"):
     """Find shortest weighted paths and lengths from a given set of
     source nodes.
@@ -706,6 +703,7 @@ def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None, target=None
     )
 
 
+@computed_attrs(attrs=(("weight",),))
 def _dijkstra_multisource(
         G, sources, weight, pred=None, paths=None, cutoff=None, target=None
 ):
@@ -780,7 +778,7 @@ def _dijkstra_multisource(
         if v == target:
             break
         for u, e in G_succ[v].items():
-            cost = weight(G, v, u, e)
+            cost = weight(v, u, e)
             if cost is None:
                 continue
             vu_dist = dist[v] + cost
@@ -809,7 +807,6 @@ def _dijkstra_multisource(
     return dist
 
 
-@computed_attrs(attrs=(("weight",),))
 def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
     """Compute weighted shortest path length and predecessors.
 
@@ -1152,7 +1149,7 @@ def bellman_ford_predecessor_and_distance(
     if source not in G:
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
 
-    if any(weight(G, u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
+    if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
 
     dist = {source: 0}
@@ -1167,6 +1164,7 @@ def bellman_ford_predecessor_and_distance(
     return (pred, dist)
 
 
+@computed_attrs(attrs=(("weight",),))
 def _bellman_ford(
         G, source, weight, pred=None, paths=None, dist=None, target=None, heuristic=True
 ):
@@ -1256,7 +1254,7 @@ def _bellman_ford(
         if all(pred_u not in in_q for pred_u in pred[u]):
             dist_u = dist[u]
             for v, e in G_succ[u].items():
-                dist_v = dist_u + weight(G, u, v, e)
+                dist_v = dist_u + weight(u, v, e)
 
                 if dist_v < dist.get(v, inf):
                     # In this conditional branch we are updating the path with v.
@@ -1349,7 +1347,6 @@ def bellman_ford_path(G, source, target, weight="weight"):
     return path
 
 
-@computed_attrs(attrs=(("weight",),))
 def bellman_ford_path_length(G, source, target, weight="weight"):
     """Returns the shortest path length from source to target
     in a weighted graph.
@@ -1451,7 +1448,6 @@ def single_source_bellman_ford_path(G, source, weight="weight"):
     return path
 
 
-@computed_attrs(attrs=(("weight",),))
 def single_source_bellman_ford_path_length(G, source, weight="weight"):
     """Compute the shortest path length between source and all other
     reachable nodes for a weighted graph.
@@ -1503,7 +1499,6 @@ def single_source_bellman_ford_path_length(G, source, weight="weight"):
     return _bellman_ford(G, [source], weight)
 
 
-@computed_attrs(attrs=(("weight",),))
 def single_source_bellman_ford(G, source, target=None, weight="weight"):
     """Compute shortest paths and lengths in a weighted graph G.
 
@@ -1743,7 +1738,7 @@ def goldberg_radzik(G, source, weight="weight"):
     if source not in G:
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
 
-    if any(weight(G, u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
+    if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
 
     if len(G) == 1:
@@ -1779,7 +1774,7 @@ def goldberg_radzik(G, source, weight="weight"):
                 continue
             d_u = d[u]
             # Skip nodes without out-edges of negative reduced costs.
-            if all(d_u + weight(G, u, v, e) >= d[v] for v, e in G_succ[u].items()):
+            if all(d_u + weight(u, v, e) >= d[v] for v, e in G_succ[u].items()):
                 continue
             # Nonrecursive DFS that inserts nodes reachable from u via edges of
             # nonpositive reduced costs into to_scan in (reverse) topological
@@ -1796,7 +1791,7 @@ def goldberg_radzik(G, source, weight="weight"):
                     stack.pop()
                     in_stack.remove(u)
                     continue
-                t = d[u] + weight(G, u, v, e)
+                t = d[u] + weight(u, v, e)
                 d_v = d[v]
                 if t <= d_v:
                     is_neg = t < d_v
@@ -1824,7 +1819,7 @@ def goldberg_radzik(G, source, weight="weight"):
         for u in to_scan:
             d_u = d[u]
             for v, e in G_succ[u].items():
-                w_e = weight(G, u, v, e)
+                w_e = weight(u, v, e)
                 if d_u + w_e < d[v]:
                     d[v] = d_u + w_e
                     pred[v] = u
@@ -2024,9 +2019,9 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
 
         for w, d in neighs[dir][v].items():
             if dir == 0:  # forward
-                vwLength = dists[dir][v] + weight(G, v, w, d)
+                vwLength = dists[dir][v] + weight(v, w, d)
             else:  # back, must remember to change v,w->w,v
-                vwLength = dists[dir][v] + weight(G, w, v, d)
+                vwLength = dists[dir][v] + weight(w, v, d)
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
                     raise ValueError("Contradictory paths found: negative weights?")
@@ -2126,8 +2121,8 @@ def johnson(G, weight="weight"):
 
     # Update the weight function to take into account the Bellman--Ford
     # relaxation distances.
-    def new_weight(G, u, v, d):
-        return weight(G, u, v, d) + dist_bellman[u] - dist_bellman[v]
+    def new_weight(u, v, d):
+        return weight(u, v, d) + dist_bellman[u] - dist_bellman[v]
 
     def dist_path(v):
         paths = {v: [v]}

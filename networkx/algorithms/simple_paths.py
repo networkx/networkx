@@ -511,7 +511,7 @@ def shortest_simple_paths(G, source, target, weight=None):
     else:
         def length_func(path):
             return sum(
-                weight(G, u, v, G.get_edge_data(u, v)) for (u, v) in zip(path, path[1:])
+                weight(u, v, G.get_edge_data(u, v)) for (u, v) in zip(path, path[1:])
             )
 
         shortest_path_func = _bidirectional_dijkstra
@@ -916,10 +916,10 @@ def _bidirectional_dijkstra(
 
         for w in neighs[dir](v):
             if dir == 0:  # forward
-                minweight = weight(G, v, w, G.get_edge_data(v, w))
+                minweight = weight(v, w, G.get_edge_data(v, w))
                 vwLength = dists[dir][v] + minweight
             else:  # back, must remember to change v,w->w,v
-                minweight = weight(G, w, v, G.get_edge_data(w, v))
+                minweight = weight(w, v, G.get_edge_data(w, v))
                 vwLength = dists[dir][v] + minweight
 
             if w in dists[dir]:

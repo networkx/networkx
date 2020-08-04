@@ -120,7 +120,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
         explored[curnode] = parent
 
         for neighbor, w in G[curnode].items():
-            ncost = dist + weight(G, curnode, neighbor, w)
+            ncost = dist + weight(curnode, neighbor, w)
             if neighbor in enqueued:
                 qcost, h = enqueued[neighbor]
                 # if qcost <= ncost, a less costly path from the
@@ -172,4 +172,4 @@ def astar_path_length(G, source, target, heuristic=None, weight="weight"):
         raise nx.NodeNotFound(msg)
 
     path = astar_path(G, source, target, heuristic, weight)
-    return sum(weight(G, u, v, G[u][v]) for u, v in zip(path[:-1], path[1:]))
+    return sum(weight(u, v, G[u][v]) for u, v in zip(path[:-1], path[1:]))
