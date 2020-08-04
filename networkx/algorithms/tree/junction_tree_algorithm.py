@@ -12,13 +12,28 @@ __all__ = ["junction_tree"]
 def junction_tree(G):
     r"""Returns a junction tree of a given graph.
 
+    Parameters
+    ----------
+    G : networkx.Graph
+        Directed graph
+
+    Returns
+    -------
+    junction_tree : networkx.Graph
+        The corresponding junction tree of `G`.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        Raised if `G` is an instance of `MultiGraph` or `MultiDiGraph`.
+
     Notes
     -----
-    A junction tree (or clique tree) is a tree T generated from a (un)directed graph G.
+    A junction tree (or clique tree) is a tree generated from a (un)directed graph G.
     The tree's nodes consist of cliques and connecting sepsets of the moralized and
     triangulated version of G respectively. The sepset of two cliques is the intersection
     of the variables of these cliques, e.g. the sepset of (A,B,C) and (A,C,E,F) is (A,C).
-    The junction tree algorithm consists of five steps:
+    The junction tree algorithm consists of five steps [1]_:
 
     1. Moralize graph
     2. Triangulate graph
@@ -27,31 +42,15 @@ def junction_tree(G):
        variables, set edge-weight to number of shared variables
     5. Find maximum spanning tree
 
-    https://en.wikipedia.org/wiki/Junction_tree_algorithm
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        Directed graph
-
-    Returns
-    -------
-    junction_tree : NetworkX graph
-                    The corresponding junction tree of G.
-
-    Raises
-    ------
-    NetworkXNotImplemented
-        The algorithm does not support MultiGraph and MultiDiGraph.
-        If the input graph is an instance of one of these classes, a
-        :exc:`NetworkXNotImplemented` is raised.
-
     References
     ----------
-    .. [1] Finn V. Jensen and Frank Jensen. 1994. Optimal
-          junction trees. In Proceedings of the Tenth international
-          conference on Uncertainty in artificial intelligence (UAI’94).
-          Morgan Kaufmann Publishers Inc., San Francisco, CA, USA, 360–366.
+    .. [1] Junction tree algorithm:
+       https://en.wikipedia.org/wiki/Junction_tree_algorithm
+
+    .. [2] Finn V. Jensen and Frank Jensen. 1994. Optimal
+       junction trees. In Proceedings of the Tenth international
+       conference on Uncertainty in artificial intelligence (UAI’94).
+       Morgan Kaufmann Publishers Inc., San Francisco, CA, USA, 360–366.
     """
 
     clique_graph = nx.Graph()
