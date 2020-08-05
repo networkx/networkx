@@ -250,3 +250,8 @@ class TestPylab:
     def test_error_invalid_kwds(self):
         with pytest.raises(ValueError, match="Received invalid argument"):
             nx.draw(self.G, foo="bar")
+
+    def test_np_edgelist(self):
+        # see issue #4129
+        np = pytest.importorskip("numpy")
+        nx.draw_networkx(self.G, edgelist=np.array([(0, 2), (0, 3)]))
