@@ -1,6 +1,7 @@
 """Unit tests for matplotlib drawing functions."""
 import os
 import itertools
+import numpy as np
 import pytest
 
 mpl = pytest.importorskip("matplotlib")
@@ -250,3 +251,7 @@ class TestPylab:
     def test_error_invalid_kwds(self):
         with pytest.raises(ValueError, match="Received invalid argument"):
             nx.draw(self.G, foo="bar")
+
+    def test_np_edgelist(self):
+        # see issue #4129
+        nx.draw_networkx(self.G, edgelist=np.array([(0, 2), (0, 3)]))
