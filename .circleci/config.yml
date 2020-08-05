@@ -47,3 +47,51 @@ jobs:
 
       - store_artifacts:
           path: doc/build/html
+
+      - persist_to_workspace:
+          root: doc/build
+          paths:
+            - html
+
+  deploy:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/python:3.8.3-buster
+    steps:
+
+      - attach_workspace:
+        at: /tmp/build
+
+      - add_ssh_keys:
+          fingerprints:
+            - "e5:04:e6:c4:d6:c3:34:b9:02:e6:9f:25:1c:01:9e:e9"
+
+      - run:
+        name: install_dependencies
+        command: |
+          pip install --user ghp-import
+
+      - run:
+        name: upload_devdocs
+        command: |
+          set -e
+          git clone git@github.com:networkx/documentation.git
+          cd documentation/latest
+          cp -R /tmp/build/html/. .
+          git config --global user.email "networkx-circleci-bot@nomail"
+          git config --global user.name "networkx-circleci-bot"
+          git config --global push.default simple;
+          git commit -am "Docs built from $CIRCLE_SHA1"
+          ghp-import -n -f -p --remote=origin --branch=gh-pages .
+
+workflows:
+  version: 2
+  default:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
