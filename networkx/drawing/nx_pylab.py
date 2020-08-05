@@ -640,7 +640,7 @@ def draw_networkx_edges(
     if edgelist is None:
         edgelist = list(G.edges())
 
-    if not edgelist or len(edgelist) == 0:  # no edges!
+    if len(edgelist) == 0:  # no edges!
         if not G.is_directed() or not arrows:
             return LineCollection(None)
         else:
