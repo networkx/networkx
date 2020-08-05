@@ -251,9 +251,7 @@ class TestPylab:
         with pytest.raises(ValueError, match="Received invalid argument"):
             nx.draw(self.G, foo="bar")
 
-    @pytest.mark.skipif(os.environ.get("OPTIONAL_DEPS") != "1",
-                        reason="Numpy required")
     def test_np_edgelist(self):
         # see issue #4129
-        import numpy as np
+        np = pytest.importorskip("numpy")
         nx.draw_networkx(self.G, edgelist=np.array([(0, 2), (0, 3)]))
