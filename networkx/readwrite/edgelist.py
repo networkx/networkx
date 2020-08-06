@@ -270,7 +270,11 @@ def parse_edgelist(
         elif data is True:
             # no edge types specified
             try:  # try to evaluate as dictionary
-                edgedata = dict(literal_eval(" ".join(d)))
+                if delimiter == ",":
+                    edgedata_str = ",".join(d)
+                else:
+                    edgedata_str = " ".join(d)
+                edgedata = dict(literal_eval(edgedata_str.strip()))
             except BaseException as e:
                 raise TypeError(
                     f"Failed to convert edge data ({d}) " f"to dictionary."

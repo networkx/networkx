@@ -203,6 +203,6 @@ default_role = "obj"
 numpydoc_show_class_members = False
 
 
-# Add the 'copybutton' javascript, to hide/show the prompt in code examples
 def setup(app):
+    app.add_css_file("custom.css")
     app.add_js_file("copybutton.js")

@@ -6,17 +6,6 @@ have a Python environment configured on your computer, please see the
 instructions for installing the full `scientific Python stack
 <https://scipy.org/install.html>`_.
 
-.. note::
-   If you are on Windows and want to install optional packages (e.g., `scipy`),
-   then you will need to install a Python distribution such as
-   `Anaconda <https://www.anaconda.com/download/>`_,
-   `Enthought Canopy <https://www.enthought.com/product/canopy>`_,
-   `Python(x,y) <http://python-xy.github.io/>`_,
-   `WinPython <https://winpython.github.io/>`_, or
-   `Pyzo <http://www.pyzo.org/>`_.
-   If you use one of these Python distribution, please refer to their online
-   documentation.
-
 Below we assume you have the default Python environment already configured on
 your computer and you intend to install ``networkx`` inside of it.  If you want
 to create and work with Python virtual environments, please follow instructions
