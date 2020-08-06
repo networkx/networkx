@@ -74,7 +74,6 @@ jobs:
             cd documentation
             rm -rf latest
             cp -R /tmp/build/html latest
-            touch latest/.nojekyll
             git config --global user.email "networkx-circleci-bot@nomail"
             git config --global user.name "networkx-circleci-bot"
             git config --global push.default simple;
