@@ -51,7 +51,9 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
          any NetworkX graph
          dict-of-dicts
          dict-of-lists
-         container (ie set, list, tuple, iterator) of edges
+         container (e.g. set, list, tuple) of edges
+         iterator (e.g. itertools.chain) that produces edges
+         generator of edges
          Pandas DataFrame (row per edge)
          numpy matrix
          numpy ndarray
