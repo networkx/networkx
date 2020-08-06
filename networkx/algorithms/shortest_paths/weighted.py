@@ -8,7 +8,7 @@ from itertools import count
 import networkx as nx
 from networkx.utils import generate_unique_node
 from networkx.algorithms.shortest_paths.generic import _build_paths_from_predecessors
-from networkx.utils.decorators import computed_attrs
+from networkx.utils.decorators import edge_attribute
 
 __all__ = [
     "dijkstra_path",
@@ -703,7 +703,7 @@ def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None, target=None
     )
 
 
-@computed_attrs(attrs=(("weight",),))
+@edge_attribute("weight")
 def _dijkstra_multisource(
         G, sources, weight, pred=None, paths=None, cutoff=None, target=None
 ):
@@ -1054,7 +1054,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
         yield (n, path(G, n, cutoff=cutoff, weight=weight))
 
 
-@computed_attrs(attrs=(("weight",),))
+@edge_attribute("weight")
 def bellman_ford_predecessor_and_distance(
         G, source, target=None, weight="weight", heuristic=False
 ):
@@ -1164,7 +1164,7 @@ def bellman_ford_predecessor_and_distance(
     return (pred, dist)
 
 
-@computed_attrs(attrs=(("weight",),))
+@edge_attribute("weight")
 def _bellman_ford(
         G, source, weight, pred=None, paths=None, dist=None, target=None, heuristic=True
 ):
@@ -1657,7 +1657,7 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
         yield (n, path(G, n, weight=weight))
 
 
-@computed_attrs(attrs=(("weight",),))
+@edge_attribute("weight")
 def goldberg_radzik(G, source, weight="weight"):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
@@ -1900,7 +1900,7 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
     return False
 
 
-@computed_attrs(attrs=(("weight",),))
+@edge_attribute("weight")
 def bidirectional_dijkstra(G, source, target, weight="weight"):
     r"""Dijkstra's algorithm for shortest paths using bidirectional search.
 
@@ -2042,7 +2042,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 
-@computed_attrs(attrs=(("weight",),))
+@edge_attribute("weight")
 def johnson(G, weight="weight"):
     r"""Uses Johnson's Algorithm to compute shortest paths.
 

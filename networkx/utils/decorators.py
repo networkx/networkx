@@ -474,8 +474,8 @@ def py_random_state(random_state_index):
     return _random_state
 
 
-def wrap_attr(G, attribute, accept_none, default=1,
-              multi_graph_attr_reducer: Callable = min):
+def wrap_edge_attribute(G, attribute, accept_none, default=1,
+                        multi_graph_attr_reducer: Callable = min):
     """Returns a function that returns a computed attribute for an edge.
 
     The returned function is specifically suitable for input to
@@ -524,8 +524,7 @@ def wrap_attr(G, attribute, accept_none, default=1,
     return lambda u, v, data: data.get(attribute, default)
 
 
-@decorator
-def computed_attrs(func, attrs=(), *args, **kwargs):
+def edge_attribute(attribute, default=1, reducer=min):
     """
     modify the `kwargs` of func, such that all `kwargs` that are listed in attrs
     are wrapped by `wrap_attr`. This decorator assumes that the first value in
@@ -534,22 +533,23 @@ def computed_attrs(func, attrs=(), *args, **kwargs):
     Parameters
     ----------
     func: function that uses attrs in its `kwargs`.
-    attrs: an iterable of the form `((name, [default, multi_graph_attr_reducer]),...)`,
-    that hold the attribute's name that need to be wrapped with an optional: default
-    value, and a function to reduce the attribute's values in case of a MultiGraph.
+    attribute: attribute to be wrapped
 
     Returns
     -------
     :returns func(*args, **kwargs)
     """
-    sign = signature(func)
-    all_args = sign.bind(*args, **kwargs).arguments
 
-    if any((attr not in all_args for attr, *_ in attrs)):
-        raise KeyError("attrs is not a subset of the kwargs's keys set")
+    def wrap(func, *args, **kwargs):
+        sign = signature(func)
+        all_args = sign.bind(*args, **kwargs).arguments
 
-    for attr, *extra_params in attrs:
-        accept_none = sign.parameters[attr].default is None
-        all_args[attr] = wrap_attr(args[0], all_args[attr], accept_none, *extra_params)
+        if attribute not in all_args:
+            raise KeyError(f"attribute {attribute} is not a valid argument for {func.__name__}")
 
-    return func(**all_args)
+        accept_none = sign.parameters[attribute].default is None
+        all_args[attribute] = wrap_edge_attribute(args[0], all_args[attribute], accept_none, default, reducer)
+
+        return func(**all_args)
+
+    return decorator(wrap)

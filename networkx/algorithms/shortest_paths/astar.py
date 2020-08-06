@@ -3,12 +3,12 @@
 from heapq import heappush, heappop
 from itertools import count
 import networkx as nx
-from networkx.utils.decorators import computed_attrs
+from networkx.utils.decorators import edge_attribute
 
 __all__ = ["astar_path", "astar_path_length"]
 
 
-@computed_attrs(attrs=(("weight",),))
+@edge_attribute("weight")
 def astar_path(G, source, target, heuristic=None, weight="weight"):
     """Returns a list of nodes in a shortest path between source and target
     using the A* ("A-star") algorithm.
@@ -137,7 +137,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
     raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
 
-@computed_attrs(attrs=(("weight",),))
+@edge_attribute("weight")
 def astar_path_length(G, source, target, heuristic=None, weight="weight"):
     """Returns the length of the shortest path between source and target using
     the A* ("A-star") algorithm.

@@ -6,7 +6,7 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.utils import pairwise
 from networkx.utils import empty_generator
-from networkx.utils.decorators import computed_attrs
+from networkx.utils.decorators import edge_attribute
 
 __all__ = [
     "all_simple_paths",
@@ -412,7 +412,7 @@ def _all_simple_edge_paths_multigraph(G, source, targets, cutoff):
             visited.pop()
 
 
-@computed_attrs(attrs=(("weight",),))
+@edge_attribute("weight")
 @not_implemented_for("multigraph")
 def shortest_simple_paths(G, source, target, weight=None):
     """Generate all simple paths in the graph G from source to target,
@@ -746,7 +746,7 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
     raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 
-@computed_attrs(attrs=(("weight",),))
+@edge_attribute("weight")
 def _bidirectional_dijkstra(
         G, source, target, weight="weight", ignore_nodes=None, ignore_edges=None
 ):

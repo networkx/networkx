@@ -3,7 +3,7 @@ from itertools import chain
 
 import networkx as nx
 from networkx.utils import not_implemented_for
-from networkx.utils.decorators import computed_attrs
+from networkx.utils.decorators import edge_attribute
 
 __all__ = ["bridges", "has_bridges", "local_bridges"]
 
@@ -125,7 +125,7 @@ def has_bridges(G, root=None):
         return True
 
 
-@computed_attrs(attrs=(("weight",),))
+@edge_attribute("weight")
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
 def local_bridges(G, with_span=True, weight='weight'):
