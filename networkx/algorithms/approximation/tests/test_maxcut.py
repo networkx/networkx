@@ -10,7 +10,7 @@ def _is_valid_cut(G, set1, set2):
 
 def test_random_partitioning():
     G = nx.generators.complete_graph(5)
-    _, (set1, set2) = nx.algorithms.maxcut.randomized_partitioning(G)
+    _, (set1, set2) = nx.algorithms.approximation.maxcut.randomized_partitioning(G)
     _is_valid_cut(G, set1, set2)
 
 
@@ -20,7 +20,7 @@ def test_one_exchange():
         w['weight'] = np.random.random_sample() * 2 - 1
 
     initial_cut = np.random.choice(G.nodes(), 5)
-    cut_size, (set1, set2) = nx.algorithms.maxcut.one_exchange(G, initial_cut, weight='weight')
+    cut_size, (set1, set2) = nx.algorithms.approximation.maxcut.one_exchange(G, initial_cut, weight='weight')
 
     # make sure it is a valid cut
     _is_valid_cut(G, set1, set2)
