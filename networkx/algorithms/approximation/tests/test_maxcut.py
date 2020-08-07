@@ -1,5 +1,7 @@
-import networkx as nx
 import numpy as np
+
+import networkx as nx
+import networkx.algorithms.approximation as a
 
 
 def _is_valid_cut(G, set1, set2):
@@ -11,19 +13,20 @@ def _is_valid_cut(G, set1, set2):
 def _cut_is_locally_optimal(G, cut_size, set1):
     # test if cut can be locally improved
     for i, node in enumerate(set1):
-        cut_size_without_node = nx.algorithms.cut_size(G, set1 - {node}, weight='weight')
+        cut_size_without_node = nx.algorithms.cut_size(G, set1 - {node},
+                                                       weight='weight')
         assert cut_size_without_node <= cut_size
 
 
 def test_random_partitioning():
     G = nx.generators.complete_graph(5)
-    _, (set1, set2) = nx.algorithms.approximation.maxcut.randomized_partitioning(G)
+    _, (set1, set2) = a.maxcut.randomized_partitioning(G)
     _is_valid_cut(G, set1, set2)
 
 
 def test_random_partitioning_all_to_one():
     G = nx.generators.complete_graph(5)
-    _, (set1, set2) = nx.algorithms.approximation.maxcut.randomized_partitioning(G, p=1)
+    _, (set1, set2) = a.maxcut.randomized_partitioning(G, p=1)
     _is_valid_cut(G, set1, set2)
     assert len(set1) == G.number_of_nodes()
     assert len(set2) == 0
@@ -35,7 +38,7 @@ def test_one_exchange_basic():
         w['weight'] = np.random.random_sample() * 2 - 1
 
     initial_cut = np.random.choice(G.nodes(), 5)
-    cut_size, (set1, set2) = nx.algorithms.approximation.maxcut.one_exchange(G, initial_cut, weight='weight')
+    cut_size, (set1, set2) = a.maxcut.one_exchange(G, initial_cut, weight='weight')
 
     # make sure it is a valid cut
     _is_valid_cut(G, set1, set2)
@@ -52,7 +55,7 @@ def test_one_exchange_optimal():
     G.add_edge(1, 5, weight=3)
     G.add_edge(2, 3, weight=5)
 
-    cut_size, (set1, set2) = nx.algorithms.approximation.maxcut.one_exchange(G, weight='weight')
+    cut_size, (set1, set2) = a.maxcut.one_exchange(G, weight='weight')
 
     # make sure it is a valid cut
     _is_valid_cut(G, set1, set2)
