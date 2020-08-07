@@ -195,8 +195,8 @@ def parse_edgelist(lines, comments='#', delimiter=None,
        key names and types for edge data.
     check_information_line : bool, optional
        If True checks first line of input for number of nodes
-       and number of edges, and prints a warning if they don't match
-       the rest of the lines.
+       and number of edges (rudy format), throws an error if it can't find it and
+       prints a warning if they don't match the rest of the lines.
 
     Returns
     -------
@@ -302,7 +302,7 @@ def parse_edgelist(lines, comments='#', delimiter=None,
             if len(G.edges()) != expected_edges or len(G.nodes()) != expected_nodes:
                 warnings.warn("Information line doesn't match graph data.")
         else:
-            warnings.warn("Information line doesn't fit the expected form.")
+            nx.NetworkXError("Information line doesn't fit the expected form.")
     return G
 
 
