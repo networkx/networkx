@@ -4,23 +4,24 @@ edge_match functions to use during isomorphism checks.
 from itertools import permutations
 import types
 
-__all__ = ['categorical_node_match',
-           'categorical_edge_match',
-           'categorical_multiedge_match',
-           'numerical_node_match',
-           'numerical_edge_match',
-           'numerical_multiedge_match',
-           'generic_node_match',
-           'generic_edge_match',
-           'generic_multiedge_match',
-           ]
+__all__ = [
+    "categorical_node_match",
+    "categorical_edge_match",
+    "categorical_multiedge_match",
+    "numerical_node_match",
+    "numerical_edge_match",
+    "numerical_multiedge_match",
+    "generic_node_match",
+    "generic_edge_match",
+    "generic_multiedge_match",
+]
 
 
 def copyfunc(f, name=None):
     """Returns a deepcopy of a function."""
-    return types.FunctionType(f.__code__, f.__globals__,
-                              name or f.__name__, f.__defaults__,
-                              f.__closure__)
+    return types.FunctionType(
+        f.__code__, f.__globals__, name or f.__name__, f.__defaults__, f.__closure__
+    )
 
 
 def allclose(x, y, rtol=1.0000000000000001e-05, atol=1e-08):
@@ -88,18 +89,21 @@ Examples
 
 def categorical_node_match(attr, default):
     if isinstance(attr, str):
+
         def match(data1, data2):
             return data1.get(attr, default) == data2.get(attr, default)
+
     else:
         attrs = list(zip(attr, default))  # Python 3
 
         def match(data1, data2):
             return all(data1.get(attr, d) == data2.get(attr, d) for attr, d in attrs)
+
     return match
 
 
 try:
-    categorical_edge_match = copyfunc(categorical_node_match, 'categorical_edge_match')
+    categorical_edge_match = copyfunc(categorical_node_match, "categorical_edge_match")
 except NotImplementedError:
     # IronPython lacks support for types.FunctionType.
     # https://github.com/networkx/networkx/issues/949
@@ -110,10 +114,12 @@ except NotImplementedError:
 
 def categorical_multiedge_match(attr, default):
     if isinstance(attr, str):
+
         def match(datasets1, datasets2):
             values1 = {data.get(attr, default) for data in datasets1.values()}
             values2 = {data.get(attr, default) for data in datasets2.values()}
             return values1 == values2
+
     else:
         attrs = list(zip(attr, default))  # Python 3
 
@@ -127,14 +133,15 @@ def categorical_multiedge_match(attr, default):
                 x = tuple(data2.get(attr, d) for attr, d in attrs)
                 values2.add(x)
             return values1 == values2
+
     return match
 
 
 # Docstrings for categorical functions.
 categorical_node_match.__doc__ = categorical_doc
-categorical_edge_match.__doc__ = categorical_doc.replace('node', 'edge')
-tmpdoc = categorical_doc.replace('node', 'edge')
-tmpdoc = tmpdoc.replace('categorical_edge_match', 'categorical_multiedge_match')
+categorical_edge_match.__doc__ = categorical_doc.replace("node", "edge")
+tmpdoc = categorical_doc.replace("node", "edge")
+tmpdoc = tmpdoc.replace("categorical_edge_match", "categorical_multiedge_match")
 categorical_multiedge_match.__doc__ = tmpdoc
 
 
@@ -174,10 +181,12 @@ Examples
 
 def numerical_node_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08):
     if isinstance(attr, str):
+
         def match(data1, data2):
-            return close(data1.get(attr, default),
-                         data2.get(attr, default),
-                         rtol=rtol, atol=atol)
+            return close(
+                data1.get(attr, default), data2.get(attr, default), rtol=rtol, atol=atol
+            )
+
     else:
         attrs = list(zip(attr, default))  # Python 3
 
@@ -185,11 +194,12 @@ def numerical_node_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08)
             values1 = [data1.get(attr, d) for attr, d in attrs]
             values2 = [data2.get(attr, d) for attr, d in attrs]
             return allclose(values1, values2, rtol=rtol, atol=atol)
+
     return match
 
 
 try:
-    numerical_edge_match = copyfunc(numerical_node_match, 'numerical_edge_match')
+    numerical_edge_match = copyfunc(numerical_node_match, "numerical_edge_match")
 except NotImplementedError:
     # IronPython lacks support for types.FunctionType.
     # https://github.com/networkx/networkx/issues/949
@@ -200,10 +210,12 @@ except NotImplementedError:
 
 def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08):
     if isinstance(attr, str):
+
         def match(datasets1, datasets2):
             values1 = sorted([data.get(attr, default) for data in datasets1.values()])
             values2 = sorted([data.get(attr, default) for data in datasets2.values()])
             return allclose(values1, values2, rtol=rtol, atol=atol)
+
     else:
         attrs = list(zip(attr, default))  # Python 3
 
@@ -223,14 +235,15 @@ def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1
                     return False
             else:
                 return True
+
     return match
 
 
 # Docstrings for numerical functions.
 numerical_node_match.__doc__ = numerical_doc
-numerical_edge_match.__doc__ = numerical_doc.replace('node', 'edge')
-tmpdoc = numerical_doc.replace('node', 'edge')
-tmpdoc = tmpdoc.replace('numerical_edge_match', 'numerical_multiedge_match')
+numerical_edge_match.__doc__ = numerical_doc.replace("node", "edge")
+tmpdoc = numerical_doc.replace("node", "edge")
+tmpdoc = tmpdoc.replace("numerical_edge_match", "numerical_multiedge_match")
 numerical_multiedge_match.__doc__ = tmpdoc
 
 
@@ -272,8 +285,10 @@ Examples
 
 def generic_node_match(attr, default, op):
     if isinstance(attr, str):
+
         def match(data1, data2):
             return op(data1.get(attr, default), data2.get(attr, default))
+
     else:
         attrs = list(zip(attr, default, op))  # Python 3
 
@@ -283,11 +298,12 @@ def generic_node_match(attr, default, op):
                     return False
             else:
                 return True
+
     return match
 
 
 try:
-    generic_edge_match = copyfunc(generic_node_match, 'generic_edge_match')
+    generic_edge_match = copyfunc(generic_node_match, "generic_edge_match")
 except NotImplementedError:
     # IronPython lacks support for types.FunctionType.
     # https://github.com/networkx/networkx/issues/949
@@ -364,9 +380,10 @@ def generic_multiedge_match(attr, default, op):
         else:
             # Then there are no isomorphisms between the multiedges.
             return False
+
     return match
 
 
 # Docstrings for numerical functions.
 generic_node_match.__doc__ = generic_doc
-generic_edge_match.__doc__ = generic_doc.replace('node', 'edge')
+generic_edge_match.__doc__ = generic_doc.replace("node", "edge")

@@ -281,9 +281,3 @@ References and Footnotes
 .. _reStructuredTextPrimer: http://www.sphinx-doc.org/en/stable/rest.html
 
 .. _Sphinx: http://www.sphinx-doc.org/en/stable/
-
-
-Copyright
----------
-
-This document has been placed in the public domain.

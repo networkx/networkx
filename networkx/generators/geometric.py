@@ -2,13 +2,10 @@
 """
 
 from bisect import bisect_left
-from itertools import (
-    accumulate,
-    combinations,
-    product
-)
+from itertools import accumulate, combinations, product
 from math import sqrt
 import math
+
 try:
     from scipy.spatial import cKDTree as KDTree
 except ImportError:
@@ -19,9 +16,14 @@ else:
 import networkx as nx
 from networkx.utils import nodes_or_number, py_random_state
 
-__all__ = ['geographical_threshold_graph', 'waxman_graph',
-           'navigable_small_world_graph', 'random_geometric_graph',
-           'soft_random_geometric_graph', 'thresholded_random_geometric_graph']
+__all__ = [
+    "geographical_threshold_graph",
+    "waxman_graph",
+    "navigable_small_world_graph",
+    "random_geometric_graph",
+    "soft_random_geometric_graph",
+    "thresholded_random_geometric_graph",
+]
 
 
 def euclidean(x, y):
@@ -40,7 +42,7 @@ def _fast_edges(G, radius, p):
 
     Requires scipy to be installed.
     """
-    pos = nx.get_node_attributes(G, 'pos')
+    pos = nx.get_node_attributes(G, "pos")
     nodes, coords = list(zip(*pos.items()))
     kdtree = KDTree(coords)  # Cannot provide generator.
     edge_indexes = kdtree.query_pairs(radius, p)
@@ -56,7 +58,7 @@ def _slow_edges(G, radius, p):
     """
     # TODO This can be parallelized.
     edges = []
-    for (u, pu), (v, pv) in combinations(G.nodes(data='pos'), 2):
+    for (u, pu), (v, pv) in combinations(G.nodes(data="pos"), 2):
         if sum(abs(a - b) ** p for a, b in zip(pu, pv)) <= radius ** p:
             edges.append((u, v))
     return edges
@@ -148,7 +150,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
     # Euclidean space of the specified dimension.
     if pos is None:
         pos = {v: [seed.random() for i in range(dim)] for v in nodes}
-    nx.set_node_attributes(G, pos, 'pos')
+    nx.set_node_attributes(G, pos, "pos")
 
     if _is_scipy_available:
         edges = _fast_edges(G, radius, p)
@@ -161,8 +163,9 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
 
 @py_random_state(6)
 @nodes_or_number(0)
-def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None,
-                                seed=None):
+def soft_random_geometric_graph(
+    n, radius, dim=2, pos=None, p=2, p_dist=None, seed=None
+):
     r"""Returns a soft random geometric graph in the unit cube.
 
     The soft random geometric graph [1] model places `n` nodes uniformly at
@@ -263,13 +266,13 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None,
     """
     n_name, nodes = n
     G = nx.Graph()
-    G.name = f'soft_random_geometric_graph({n}, {radius}, {dim})'
+    G.name = f"soft_random_geometric_graph({n}, {radius}, {dim})"
     G.add_nodes_from(nodes)
     # If no positions are provided, choose uniformly random vectors in
     # Euclidean space of the specified dimension.
     if pos is None:
         pos = {v: [seed.random() for i in range(dim)] for v in nodes}
-    nx.set_node_attributes(G, pos, 'pos')
+    nx.set_node_attributes(G, pos, "pos")
 
     # if p_dist function not supplied the default function is an exponential
     # distribution with rate parameter :math:`\lambda=1`.
@@ -281,7 +284,7 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None,
     def should_join(pair):
         u, v = pair
         u_pos, v_pos = pos[u], pos[v]
-        dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos)))**(1 / p)
+        dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos))) ** (1 / p)
         # Check if dist <= radius parameter. This check is redundant if scipy
         # is available and _fast_edges routine is used, but provides the
         # check in case scipy is not available and all edge combinations
@@ -302,8 +305,9 @@ def soft_random_geometric_graph(n, radius, dim=2, pos=None, p=2, p_dist=None,
 
 @py_random_state(7)
 @nodes_or_number(0)
-def geographical_threshold_graph(n, theta, dim=2, pos=None, weight=None,
-                                 metric=None, p_dist=None, seed=None):
+def geographical_threshold_graph(
+    n, theta, dim=2, pos=None, weight=None, metric=None, p_dist=None, seed=None
+):
     r"""Returns a geographical threshold graph.
 
     The geographical threshold graph model places $n$ nodes uniformly at
@@ -428,13 +432,14 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None, weight=None,
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
         metric = euclidean
-    nx.set_node_attributes(G, weight, 'weight')
-    nx.set_node_attributes(G, pos, 'pos')
+    nx.set_node_attributes(G, weight, "weight")
+    nx.set_node_attributes(G, pos, "pos")
 
     # if p_dist is not supplied, use default r^-2
     if p_dist is None:
+
         def p_dist(r):
-            return r**-2
+            return r ** -2
 
     # Returns ``True`` if and only if the nodes whose attributes are
     # ``du`` and ``dv`` should be joined, according to the threshold
@@ -451,8 +456,9 @@ def geographical_threshold_graph(n, theta, dim=2, pos=None, weight=None,
 
 @py_random_state(6)
 @nodes_or_number(0)
-def waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1),
-                 metric=None, seed=None):
+def waxman_graph(
+    n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1), metric=None, seed=None
+):
     r"""Returns a Waxman random graph.
 
     The Waxman random graph model places `n` nodes uniformly at random
@@ -543,7 +549,7 @@ def waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1),
     (xmin, ymin, xmax, ymax) = domain
     # Each node gets a uniformly random position in the given rectangle.
     pos = {v: (seed.uniform(xmin, xmax), seed.uniform(ymin, ymax)) for v in G}
-    nx.set_node_attributes(G, pos, 'pos')
+    nx.set_node_attributes(G, pos, "pos")
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
         metric = euclidean
@@ -556,9 +562,13 @@ def waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1),
     if L is None:
         L = max(metric(x, y) for x, y in combinations(pos.values(), 2))
 
-        def dist(u, v): return metric(pos[u], pos[v])
+        def dist(u, v):
+            return metric(pos[u], pos[v])
+
     else:
-        def dist(u, v): return seed.random() * L
+
+        def dist(u, v):
+            return seed.random() * L
 
     # `pair` is the pair of nodes to decide whether to join.
     def should_join(pair):
@@ -615,11 +625,11 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
     .. [1] J. Kleinberg. The small-world phenomenon: An algorithmic
        perspective. Proc. 32nd ACM Symposium on Theory of Computing, 2000.
     """
-    if (p < 1):
+    if p < 1:
         raise nx.NetworkXException("p must be >= 1")
-    if (q < 0):
+    if q < 0:
         raise nx.NetworkXException("q must be >= 0")
-    if (r < 0):
+    if r < 0:
         raise nx.NetworkXException("r must be >= 1")
 
     G = nx.DiGraph()
@@ -632,7 +642,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
             d = sum((abs(b - a) for a, b in zip(p1, p2)))
             if d <= p:
                 G.add_edge(p1, p2)
-            probs.append(d**-r)
+            probs.append(d ** -r)
         cdf = list(accumulate(probs))
         for _ in range(q):
             target = nodes[bisect_left(cdf, seed.uniform(0, cdf[-1]))]
@@ -642,8 +652,9 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
 
 @py_random_state(7)
 @nodes_or_number(0)
-def thresholded_random_geometric_graph(n, radius, theta, dim=2,
-                                       pos=None, weight=None, p=2, seed=None):
+def thresholded_random_geometric_graph(
+    n, radius, theta, dim=2, pos=None, weight=None, p=2, seed=None
+):
     r"""Returns a thresholded random geometric graph in the unit cube.
 
     The thresholded random geometric graph [1] model places `n` nodes
@@ -755,8 +766,8 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2,
         pos = {v: [seed.random() for i in range(dim)] for v in nodes}
     # If no distance metric is provided, use Euclidean distance.
 
-    nx.set_node_attributes(G, weight, 'weight')
-    nx.set_node_attributes(G, pos, 'pos')
+    nx.set_node_attributes(G, weight, "weight")
+    nx.set_node_attributes(G, pos, "pos")
 
     # Returns ``True`` if and only if the nodes whose attributes are
     # ``du`` and ``dv`` should be joined, according to the threshold
@@ -766,7 +777,7 @@ def thresholded_random_geometric_graph(n, radius, theta, dim=2,
         u, v = pair
         u_weight, v_weight = weight[u], weight[v]
         u_pos, v_pos = pos[u], pos[v]
-        dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos)))**(1 / p)
+        dist = (sum(abs(a - b) ** p for a, b in zip(u_pos, v_pos))) ** (1 / p)
         # Check if dist is <= radius parameter. This check is redundant if
         # scipy is available and _fast_edges routine is used, but provides
         # the check in case scipy is not available and all edge combinations

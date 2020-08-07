@@ -27,19 +27,21 @@ Arbitrary data::
  1 2 7 green
 """
 
-__all__ = ['generate_edgelist',
-           'write_edgelist',
-           'parse_edgelist',
-           'read_edgelist',
-           'read_weighted_edgelist',
-           'write_weighted_edgelist']
+__all__ = [
+    "generate_edgelist",
+    "write_edgelist",
+    "parse_edgelist",
+    "read_edgelist",
+    "read_weighted_edgelist",
+    "write_weighted_edgelist",
+]
 
 import warnings
 from networkx.utils import open_file
 import networkx as nx
 
 
-def generate_edgelist(G, delimiter=' ', data=True):
+def generate_edgelist(G, delimiter=" ", data=True):
     """Generate a single line of the graph G in edge list format.
 
     Parameters
@@ -122,9 +124,8 @@ def generate_edgelist(G, delimiter=' ', data=True):
             yield delimiter.join(map(str, e))
 
 
-@open_file(1, mode='wb')
-def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
-                   encoding='utf-8'):
+@open_file(1, mode="wb")
+def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="utf-8"):
     """Write graph as a list of edges.
 
     Parameters
@@ -169,7 +170,7 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
     """
 
     for line in generate_edgelist(G, delimiter, data):
-        line += '\n'
+        line += "\n"
         path.write(line.encode(encoding))
 
 
@@ -244,6 +245,7 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     read_weighted_edgelist
     """
     from ast import literal_eval
+
     G = nx.empty_graph(0, create_using)
     information_line_found = False
     for line in lines:
@@ -269,8 +271,9 @@ def parse_edgelist(lines, comments='#', delimiter=None,
                 u = nodetype(u)
                 v = nodetype(v)
             except BaseException as e:
-                raise TypeError(f"Failed to convert nodes {u},{v} "
-                                f"to type {nodetype}.") from e
+                raise TypeError(
+                    f"Failed to convert nodes {u},{v} " f"to type {nodetype}."
+                ) from e
 
         if len(d) == 0 or data is False:
             # no data or data type specified
@@ -278,21 +281,30 @@ def parse_edgelist(lines, comments='#', delimiter=None,
         elif data is True:
             # no edge types specified
             try:  # try to evaluate as dictionary
-                edgedata = dict(literal_eval(' '.join(d)))
+                if delimiter == ",":
+                    edgedata_str = ",".join(d)
+                else:
+                    edgedata_str = " ".join(d)
+                edgedata = dict(literal_eval(edgedata_str.strip()))
             except BaseException as e:
-                raise TypeError(f"Failed to convert edge data ({d}) "
-                                f"to dictionary.") from e
+                raise TypeError(
+                    f"Failed to convert edge data ({d}) " f"to dictionary."
+                ) from e
         else:
             # convert edge data to dictionary with specified keys and type
             if len(d) != len(data):
-                raise IndexError(f"Edge data {d} and data_keys {data} are not the same length")
+                raise IndexError(
+                    f"Edge data {d} and data_keys {data} are not the same length"
+                )
             edgedata = {}
             for (edge_key, edge_type), edge_value in zip(data, d):
                 try:
                     edge_value = edge_type(edge_value)
                 except BaseException as e:
-                    raise TypeError(f"Failed to convert {edge_key} data {edge_value} "
-                                    f"to type {edge_type}.") from e
+                    raise TypeError(
+                        f"Failed to convert {edge_key} data {edge_value} "
+                        f"to type {edge_type}."
+                    ) from e
                 edgedata.update({edge_key: edge_value})
         G.add_edge(u, v, **edgedata)
 
@@ -308,7 +320,7 @@ def parse_edgelist(lines, comments='#', delimiter=None,
 
 @open_file(0, mode='rb')
 def read_edgelist(path, comments="#", delimiter=None, create_using=None,
-                  nodetype=None, data=True, edgetype=None, encoding='utf-8', check_information_line=False):
+                  nodetype=None, data=True, edgetype=None, encoding='utf-8'):
     """Read a graph from a list of edges.
 
     Parameters
@@ -380,11 +392,10 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     lines = (line if isinstance(line, str) else line.decode(encoding) for line in path)
     return parse_edgelist(lines, comments=comments, delimiter=delimiter,
                           create_using=create_using, nodetype=nodetype,
-                          data=data, check_information_line=check_information_line)
+                          data=data)
 
 
-def write_weighted_edgelist(G, path, comments="#",
-                            delimiter=' ', encoding='utf-8'):
+def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
     """Write graph G as a list of edges with numeric weights.
 
     Parameters
@@ -414,8 +425,14 @@ def write_weighted_edgelist(G, path, comments="#",
     write_edgelist
     read_weighted_edgelist
     """
-    write_edgelist(G, path, comments=comments, delimiter=delimiter,
-                   data=('weight',), encoding=encoding)
+    write_edgelist(
+        G,
+        path,
+        comments=comments,
+        delimiter=delimiter,
+        data=("weight",),
+        encoding=encoding,
+    )
 
 
 def read_weighted_edgelist(path, comments="#", delimiter=None,
@@ -468,12 +485,12 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
     --------
     write_weighted_edgelist
     """
-    return read_edgelist(path,
-                         comments=comments,
-                         delimiter=delimiter,
-                         create_using=create_using,
-                         nodetype=nodetype,
-                         data=(('weight', float),),
-                         encoding=encoding,
-                         check_information_line=check_information_line
-                         )
+    return read_edgelist(
+        path,
+        comments=comments,
+        delimiter=delimiter,
+        create_using=create_using,
+        nodetype=nodetype,
+        data=(("weight", float),),
+        encoding=encoding,
+    )

@@ -93,8 +93,8 @@ def clique_removal(G):
     return maxiset, cliques
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def large_clique_size(G):
     """Find the size of a large clique in a graph.
 

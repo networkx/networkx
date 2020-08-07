@@ -3,7 +3,7 @@
 import networkx as nx
 from networkx.utils import py_random_state
 
-__all__ = ['random_clustered_graph']
+__all__ = ["random_clustered_graph"]
 
 
 @py_random_state(2)
@@ -102,7 +102,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
             tlist.append(n)
 
     if len(ilist) % 2 != 0 or len(tlist) % 3 != 0:
-        raise nx.NetworkXError('Invalid degree sequence')
+        raise nx.NetworkXError("Invalid degree sequence")
 
     seed.shuffle(ilist)
     seed.shuffle(tlist)

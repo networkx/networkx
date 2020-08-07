@@ -27,7 +27,7 @@ Modularity-based communities
 .. automodule:: networkx.algorithms.community.modularity_max
 .. autosummary::
    :toctree: generated/
-   
+
    greedy_modularity_communities
 
 Tree partitioning
@@ -62,6 +62,7 @@ Measuring partitions
    :toctree: generated/
 
    coverage
+   modularity
    performance
 
 Partitions via centrality measures

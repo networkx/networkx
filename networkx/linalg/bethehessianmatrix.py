@@ -49,7 +49,7 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     See Also
     --------
     bethe_hessian_spectrum
-    to_numpy_matrix
+    to_numpy_array
     adjacency_matrix
     laplacian_matrix
 
@@ -68,7 +68,8 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
         nodelist = list(G)
     if r is None:
         r = (
-            sum([d ** 2 for v, d in nx.degree(G)]) / sum([d for v, d in nx.degree(G)]) - 1
+            sum([d ** 2 for v, d in nx.degree(G)]) / sum([d for v, d in nx.degree(G)])
+            - 1
         )
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format="csr")
     n, m = A.shape

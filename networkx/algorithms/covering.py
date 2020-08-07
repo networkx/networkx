@@ -6,11 +6,11 @@ from functools import partial
 from itertools import chain
 
 
-__all__ = ['min_edge_cover', 'is_edge_cover']
+__all__ = ["min_edge_cover", "is_edge_cover"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def min_edge_cover(G, matching_algorithm=None):
     """Returns a set of edges which constitutes
     the minimum edge cover of the graph.
@@ -59,15 +59,16 @@ def min_edge_cover(G, matching_algorithm=None):
     if nx.number_of_isolates(G) > 0:
         # ``min_cover`` does not exist as there is an isolated node
         raise nx.NetworkXException(
-            "Graph has a node with no edge incident on it, "
-            "so no edge cover exists.")
+            "Graph has a node with no edge incident on it, " "so no edge cover exists."
+        )
     if matching_algorithm is None:
-        matching_algorithm = partial(nx.max_weight_matching,
-                                     maxcardinality=True)
+        matching_algorithm = partial(nx.max_weight_matching, maxcardinality=True)
     maximum_matching = matching_algorithm(G)
     # ``min_cover`` is superset of ``maximum_matching``
     try:
-        min_cover = set(maximum_matching.items())  # bipartite matching case returns dict
+        min_cover = set(
+            maximum_matching.items()
+        )  # bipartite matching case returns dict
     except AttributeError:
         min_cover = maximum_matching
     # iterate for uncovered nodes
@@ -85,7 +86,7 @@ def min_edge_cover(G, matching_algorithm=None):
     return min_cover
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def is_edge_cover(G, cover):
     """Decides whether a set of edges is a valid edge cover of the graph.
 

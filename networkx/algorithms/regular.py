@@ -2,7 +2,7 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['is_regular', 'is_k_regular', 'k_factor']
+__all__ = ["is_regular", "is_k_regular", "k_factor"]
 
 
 def is_regular(G):
@@ -34,7 +34,7 @@ def is_regular(G):
         return in_regular and out_regular
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def is_k_regular(G, k):
     """Determines whether the graph ``G`` is a k-regular graph.
 
@@ -53,9 +53,9 @@ def is_k_regular(G, k):
     return all(d == k for n, d in G.degree)
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
-def k_factor(G, k, matching_weight='weight'):
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+def k_factor(G, k, matching_weight="weight"):
     """Compute a k-factor of G
 
     A k-factor of a graph is a spanning k-regular subgraph.
@@ -96,15 +96,15 @@ def k_factor(G, k, matching_weight='weight'):
             self.degree = degree
 
             self.outer_vertices = [(node, x) for x in range(degree)]
-            self.core_vertices = [(node, x + degree)
-                                  for x in range(degree - k)]
+            self.core_vertices = [(node, x + degree) for x in range(degree - k)]
 
         def replace_node(self):
             adj_view = self.g[self.original]
             neighbors = list(adj_view.keys())
             edge_attrs = list(adj_view.values())
-            for (outer, neighbor, edge_attrs) in \
-                    zip(self.outer_vertices, neighbors, edge_attrs):
+            for (outer, neighbor, edge_attrs) in zip(
+                self.outer_vertices, neighbors, edge_attrs
+            ):
                 self.g.add_edge(outer, neighbor, **edge_attrs)
             for core in self.core_vertices:
                 for outer in self.outer_vertices:
@@ -135,11 +135,9 @@ def k_factor(G, k, matching_weight='weight'):
 
         def replace_node(self):
             adj_view = self.g[self.original]
-            for (outer, inner, (neighbor, edge_attrs)) in \
-                    zip(
-                        self.outer_vertices,
-                        self.inner_vertices,
-                        list(adj_view.items())):
+            for (outer, inner, (neighbor, edge_attrs)) in zip(
+                self.outer_vertices, self.inner_vertices, list(adj_view.items())
+            ):
                 self.g.add_edge(outer, inner)
                 self.g.add_edge(outer, neighbor, **edge_attrs)
             for core in self.core_vertices:
@@ -161,14 +159,13 @@ def k_factor(G, k, matching_weight='weight'):
 
     # Step 1
     if any(d < k for _, d in G.degree):
-        raise nx.NetworkXUnfeasible(
-            "Graph contains a vertex with degree less than k")
+        raise nx.NetworkXUnfeasible("Graph contains a vertex with degree less than k")
     g = G.copy()
 
     # Step 2
     gadgets = []
     for node, degree in list(g.degree):
-        if k < degree / 2.:
+        if k < degree / 2.0:
             gadget = SmallKGadget(k, degree, node, g)
         else:
             gadget = LargeKGadget(k, degree, node, g)
@@ -176,13 +173,13 @@ def k_factor(G, k, matching_weight='weight'):
         gadgets.append(gadget)
 
     # Step 3
-    matching = max_weight_matching(
-        g, maxcardinality=True, weight=matching_weight)
+    matching = max_weight_matching(g, maxcardinality=True, weight=matching_weight)
 
     # Step 4
     if not is_perfect_matching(g, matching):
         raise nx.NetworkXUnfeasible(
-            "Cannot find k-factor because no perfect matching exists")
+            "Cannot find k-factor because no perfect matching exists"
+        )
 
     for edge in g.edges():
         if edge not in matching and (edge[1], edge[0]) not in matching:

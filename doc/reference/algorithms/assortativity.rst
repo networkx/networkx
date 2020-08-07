@@ -7,7 +7,7 @@ Assortativity
    :toctree: generated/
 
 Assortativity
--------------   
+-------------
 .. autosummary::
    :toctree: generated/
 
@@ -17,7 +17,7 @@ Assortativity
    degree_pearson_correlation_coefficient
 
 Average neighbor degree
------------------------   
+-----------------------
 .. autosummary::
    :toctree: generated/
 

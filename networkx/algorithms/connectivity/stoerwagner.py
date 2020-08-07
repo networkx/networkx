@@ -8,12 +8,12 @@ from ...utils import BinaryHeap
 from ...utils import not_implemented_for
 from ...utils import arbitrary_element
 
-__all__ = ['stoer_wagner']
+__all__ = ["stoer_wagner"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
-def stoer_wagner(G, weight='weight', heap=BinaryHeap):
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+def stoer_wagner(G, weight="weight", heap=BinaryHeap):
     r"""Returns the weighted minimum edge cut using the Stoer-Wagner algorithm.
 
     Determine the minimum edge cut of a connected graph using the
@@ -86,19 +86,20 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
     """
     n = len(G)
     if n < 2:
-        raise nx.NetworkXError('graph has less than two nodes.')
+        raise nx.NetworkXError("graph has less than two nodes.")
     if not nx.is_connected(G):
-        raise nx.NetworkXError('graph is not connected.')
+        raise nx.NetworkXError("graph is not connected.")
 
     # Make a copy of the graph for internal use.
-    G = nx.Graph((u, v, {'weight': e.get(weight, 1)})
-                 for u, v, e in G.edges(data=True) if u != v)
+    G = nx.Graph(
+        (u, v, {"weight": e.get(weight, 1)}) for u, v, e in G.edges(data=True) if u != v
+    )
 
     for u, v, e, in G.edges(data=True):
-        if e['weight'] < 0:
-            raise nx.NetworkXError('graph has a negative-weighted edge.')
+        if e["weight"] < 0:
+            raise nx.NetworkXError("graph has a negative-weighted edge.")
 
-    cut_value = float('inf')
+    cut_value = float("inf")
     nodes = set(G)
     contractions = []  # contracted node pairs
 
@@ -112,14 +113,14 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
         # of edges connecting it to nodes in A.
         h = heap()  # min-heap emulating a max-heap
         for v, e in G[u].items():
-            h.insert(v, -e['weight'])
+            h.insert(v, -e["weight"])
         # Repeat until all but one node has been added to A.
         for j in range(n - i - 2):
             u = h.pop()[0]
             A.add(u)
             for v, e, in G[u].items():
                 if v not in A:
-                    h.insert(v, h.get(v, 0) - e['weight'])
+                    h.insert(v, h.get(v, 0) - e["weight"])
         # A and the remaining node v define a "cut of the phase". There is a
         # minimum cut of the original graph that is also a cut of the phase.
         # Due to contractions in earlier phases, v may in fact represent
@@ -134,9 +135,9 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
         for w, e in G[v].items():
             if w != u:
                 if w not in G[u]:
-                    G.add_edge(u, w, weight=e['weight'])
+                    G.add_edge(u, w, weight=e["weight"])
                 else:
-                    G[u][w]['weight'] += e['weight']
+                    G[u][w]["weight"] += e["weight"]
         G.remove_node(v)
 
     # Recover the optimal partitioning from the contractions.

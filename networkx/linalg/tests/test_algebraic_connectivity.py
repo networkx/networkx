@@ -37,18 +37,15 @@ def check_eigenvector(A, l, x):
 
 
 class TestAlgebraicConnectivity:
-
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_directed(self, method):
         G = nx.DiGraph()
         pytest.raises(
             nx.NetworkXNotImplemented, nx.algebraic_connectivity, G, method=method
         )
-        pytest.raises(
-            nx.NetworkXNotImplemented, nx.fiedler_vector, G, method=method
-        )
+        pytest.raises(nx.NetworkXNotImplemented, nx.fiedler_vector, G, method=method)
 
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_null_and_singleton(self, method):
         G = nx.Graph()
         pytest.raises(nx.NetworkXError, nx.algebraic_connectivity, G, method=method)
@@ -57,7 +54,7 @@ class TestAlgebraicConnectivity:
         pytest.raises(nx.NetworkXError, nx.algebraic_connectivity, G, method=method)
         pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
 
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_disconnected(self, method):
         G = nx.Graph()
         G.add_nodes_from(range(2))
@@ -72,18 +69,16 @@ class TestAlgebraicConnectivity:
         pytest.raises(nx.NetworkXError, nx.algebraic_connectivity, G, method="unknown")
         pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method="unknown")
 
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_two_nodes(self, method):
         G = nx.Graph()
         G.add_edge(0, 1, weight=1)
         A = nx.laplacian_matrix(G)
-        assert almost_equal(
-            nx.algebraic_connectivity(G, tol=1e-12, method=method), 2
-        )
+        assert almost_equal(nx.algebraic_connectivity(G, tol=1e-12, method=method), 2)
         x = nx.fiedler_vector(G, tol=1e-12, method=method)
         check_eigenvector(A, 2, x)
 
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_two_nodes_multigraph(self, method):
         G = nx.MultiGraph()
         G.add_edge(0, 0, spam=1e8)
@@ -105,7 +100,7 @@ class TestAlgebraicConnectivity:
         x = nx.fiedler_vector(G, tol=1e-12, method="tracemin")
         check_eigenvector(A, sigma, x)
 
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_path(self, method):
         G = nx.path_graph(8)
         A = nx.laplacian_matrix(G)
@@ -115,7 +110,7 @@ class TestAlgebraicConnectivity:
         x = nx.fiedler_vector(G, tol=1e-12, method=method)
         check_eigenvector(A, sigma, x)
 
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_problematic_graph_issue_2381(self, method):
         G = nx.path_graph(4)
         G.add_edges_from([(4, 2), (5, 1)])
@@ -126,7 +121,7 @@ class TestAlgebraicConnectivity:
         x = nx.fiedler_vector(G, tol=1e-12, method=method)
         check_eigenvector(A, sigma, x)
 
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_cycle(self, method):
         G = nx.cycle_graph(8)
         A = nx.laplacian_matrix(G)
@@ -136,7 +131,7 @@ class TestAlgebraicConnectivity:
         x = nx.fiedler_vector(G, tol=1e-12, method=method)
         check_eigenvector(A, sigma, x)
 
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_seed_argument(self, method):
         G = nx.cycle_graph(8)
         A = nx.laplacian_matrix(G)
@@ -146,14 +141,15 @@ class TestAlgebraicConnectivity:
         x = nx.fiedler_vector(G, tol=1e-12, method=method, seed=1)
         check_eigenvector(A, sigma, x)
 
-    @pytest.mark.parametrize(('normalized', 'sigma', 'laplacian_fn'), (
-        (False, 0.2434017461399311, nx.laplacian_matrix),
-        (True, 0.08113391537997749, nx.normalized_laplacian_matrix)
-    ))
-    @pytest.mark.parametrize('method', methods)
-    def test_buckminsterfullerene(
-        self, normalized, sigma, laplacian_fn, method
-    ):
+    @pytest.mark.parametrize(
+        ("normalized", "sigma", "laplacian_fn"),
+        (
+            (False, 0.2434017461399311, nx.laplacian_matrix),
+            (True, 0.08113391537997749, nx.normalized_laplacian_matrix),
+        ),
+    )
+    @pytest.mark.parametrize("method", methods)
+    def test_buckminsterfullerene(self, normalized, sigma, laplacian_fn, method):
         G = nx.Graph(
             [
                 (1, 10),
@@ -256,9 +252,7 @@ class TestAlgebraicConnectivity:
                 ),
                 sigma,
             )
-            x = nx.fiedler_vector(
-                G, normalized=normalized, tol=1e-12, method=method
-            )
+            x = nx.fiedler_vector(G, normalized=normalized, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
         except nx.NetworkXError as e:
             if e.args not in (
@@ -271,12 +265,12 @@ class TestAlgebraicConnectivity:
 class TestSpectralOrdering:
     _graphs = (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
 
-    @pytest.mark.parametrize('graph', _graphs)
+    @pytest.mark.parametrize("graph", _graphs)
     def test_nullgraph(self, graph):
         G = graph()
         pytest.raises(nx.NetworkXError, nx.spectral_ordering, G)
 
-    @pytest.mark.parametrize('graph', _graphs)
+    @pytest.mark.parametrize("graph", _graphs)
     def test_singleton(self, graph):
         G = graph()
         G.add_node("x")
@@ -289,7 +283,7 @@ class TestSpectralOrdering:
         G = nx.path_graph(4)
         pytest.raises(nx.NetworkXError, nx.spectral_ordering, G, method="unknown")
 
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_three_nodes(self, method):
         G = nx.Graph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1)], weight="spam")
@@ -297,7 +291,7 @@ class TestSpectralOrdering:
         assert set(order) == set(G)
         assert {1, 3} in (set(order[:-1]), set(order[1:]))
 
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_three_nodes_multigraph(self, method):
         G = nx.MultiDiGraph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1), (2, 3, 2)])
@@ -305,7 +299,7 @@ class TestSpectralOrdering:
         assert set(order) == set(G)
         assert {2, 3} in (set(order[:-1]), set(order[1:]))
 
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_path(self, method):
         # based on setup_class numpy is installed if we get here
         from numpy.random import shuffle
@@ -317,7 +311,7 @@ class TestSpectralOrdering:
         order = nx.spectral_ordering(G, method=method)
         assert order in [path, list(reversed(path))]
 
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_seed_argument(self, method):
         # based on setup_class numpy is installed if we get here
         from numpy.random import shuffle
@@ -329,7 +323,7 @@ class TestSpectralOrdering:
         order = nx.spectral_ordering(G, method=method, seed=1)
         assert order in [path, list(reversed(path))]
 
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize("method", methods)
     def test_disconnected(self, method):
         G = nx.Graph()
         nx.add_path(G, range(0, 10, 2))
@@ -345,11 +339,14 @@ class TestSpectralOrdering:
         assert order[:5] in seqs
         assert order[5:] in seqs
 
-    @pytest.mark.parametrize(('normalized', 'expected_order'), (
-        (False, [[1, 2, 0, 3, 4, 5, 6, 9, 7, 8], [8, 7, 9, 6, 5, 4, 3, 0, 2, 1]]),
-        (True, [[1, 2, 3, 0, 4, 5, 9, 6, 7, 8], [8, 7, 6, 9, 5, 4, 0, 3, 2, 1]]),
-    ))
-    @pytest.mark.parametrize('method', methods)
+    @pytest.mark.parametrize(
+        ("normalized", "expected_order"),
+        (
+            (False, [[1, 2, 0, 3, 4, 5, 6, 9, 7, 8], [8, 7, 9, 6, 5, 4, 3, 0, 2, 1]]),
+            (True, [[1, 2, 3, 0, 4, 5, 9, 6, 7, 8], [8, 7, 6, 9, 5, 4, 0, 3, 2, 1]]),
+        ),
+    )
+    @pytest.mark.parametrize("method", methods)
     def test_cycle(self, normalized, expected_order, method):
         path = list(range(10))
         G = nx.Graph()
@@ -357,9 +354,7 @@ class TestSpectralOrdering:
         G.add_edge(path[-1], path[0], weight=1)
         A = nx.laplacian_matrix(G).todense()
         try:
-            order = nx.spectral_ordering(
-                G, normalized=normalized, method=method
-            )
+            order = nx.spectral_ordering(G, normalized=normalized, method=method)
         except nx.NetworkXError as e:
             if e.args not in (
                 ("Cholesky solver unavailable.",),
@@ -368,4 +363,3 @@ class TestSpectralOrdering:
                 raise
         else:
             assert order in expected_order
-

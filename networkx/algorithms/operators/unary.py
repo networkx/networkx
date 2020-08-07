@@ -1,7 +1,7 @@
 """Unary operations on graphs"""
 import networkx as nx
 
-__all__ = ['complement', 'reverse']
+__all__ = ["complement", "reverse"]
 
 
 def complement(G):
@@ -25,10 +25,9 @@ def complement(G):
     """
     R = G.__class__()
     R.add_nodes_from(G)
-    R.add_edges_from(((n, n2)
-                      for n, nbrs in G.adjacency()
-                      for n2 in G if n2 not in nbrs
-                      if n != n2))
+    R.add_edges_from(
+        ((n, n2) for n, nbrs in G.adjacency() for n2 in G if n2 not in nbrs if n != n2)
+    )
     return R
 
 

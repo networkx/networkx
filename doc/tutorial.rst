@@ -17,8 +17,8 @@ Create an empty graph with no nodes and no edges.
 
 By definition, a :class:`Graph` is a collection of nodes (vertices) along with
 identified pairs of nodes (called edges, links, etc).  In NetworkX, nodes can
-be any hashable object e.g., a text string, an image, an XML object, another
-Graph, a customized node object, etc.
+be any :py:term:`hashable` object e.g., a text string, an image, an XML object,
+another Graph, a customized node object, etc.
 
 .. note:: Python's ``None`` object should not be used as a node as it determines
    whether optional function arguments have been assigned in many functions.
@@ -35,22 +35,31 @@ at a time,
 
     >>> G.add_node(1)
 
-add a list of nodes,
+or add nodes from any :py:term:`iterable` container, such as a list
 
 .. nbplot::
 
     >>> G.add_nodes_from([2, 3])
 
-or add any iterable container of nodes. You can also add nodes along with node
-attributes if your container yields 2-tuples (node, node_attribute_dict).
-Node attributes are discussed further below.
+You can also add nodes along with node
+attributes if your container yields 2-tuples of the form 
+``(node, node_attribute_dict)``::
+
+    >>> G.add_nodes_from([
+    ...     (4, {"color": "red"}),
+    ...     (5, {"color": "green"}),
+    ... ])
+
+Node attributes are discussed further :ref:`below <attributes>`.
+
+Nodes from one graph can be incorporated into another:
 
 .. nbplot::
 
     >>> H = nx.path_graph(10)
     >>> G.add_nodes_from(H)
 
-Note that ``G`` now contains the nodes of ``H`` as nodes of ``G``.
+``G`` now contains the nodes of ``H`` as nodes of ``G``.
 In contrast, you could use the graph ``H`` as a node in ``G``.
 
 .. nbplot::
@@ -87,7 +96,8 @@ by adding a list of edges,
 or by adding any :term:`ebunch` of edges.  An *ebunch* is any iterable
 container of edge-tuples.  An edge-tuple can be a 2-tuple of nodes or a 3-tuple
 with 2 nodes followed by an edge attribute dictionary, e.g.,
-``(2, 3, {'weight': 3.1415})``.  Edge attributes are discussed further below
+``(2, 3, {'weight': 3.1415})``.  Edge attributes are discussed further
+:ref:`below <attributes>`.
 
 .. nbplot::
 
@@ -121,6 +131,9 @@ At this stage the graph ``G`` consists of 8 nodes and 3 edges, as can be seen by
     >>> G.number_of_edges()
     3
 
+Examining elements of a graph
+-----------------------------
+
 We can examine the nodes and edges. Four basic graph properties facilitate
 reporting: ``G.nodes``, ``G.edges``, ``G.adj`` and ``G.degree``.  These
 are set-like views of the nodes, edges, neighbors (adjacencies), and degrees
@@ -144,8 +157,9 @@ better in other contexts.
     2
 
 One can specify to report the edges and degree from a subset of all nodes
-using an *nbunch*. An *nbunch* is any of: ``None`` (meaning all nodes), a node,
-or an iterable container of nodes that is not itself a node in the graph.
+using an :term:`nbunch`. An *nbunch* is any of: ``None`` (meaning all nodes),
+a node, or an iterable container of nodes that is not itself a node in the
+graph.
 
 .. nbplot::
 
@@ -153,6 +167,9 @@ or an iterable container of nodes that is not itself a node in the graph.
     EdgeDataView([(2, 1), ('m', 3)])
     >>> G.degree([2, 3])
     DegreeView({2: 1, 3: 2})
+
+Removing elements from a graph
+------------------------------
 
 One can remove nodes and edges from the graph in a similar fashion to adding.
 Use methods
@@ -170,6 +187,12 @@ and
     [1, 3, 'spam']
     >>> G.remove_edge(1, 3)
 
+Using the graph constructors
+----------------------------
+
+Graph objects do not have to be built up incrementally - data specifying
+graph structure can be passed directly to the constructors of the various
+graph classes.
 When creating a graph structure by instantiating one of the graph
 classes you can specify data in several formats.
 
@@ -196,24 +219,25 @@ Data Bank, and ``x`` could refer to an XML record of publications detailing
 experimental observations of their interaction.
 
 We have found this power quite useful, but its abuse
-can lead to unexpected surprises unless one is familiar with Python.
+can lead to surprising behavior unless one is familiar with Python.
 If in doubt, consider using :func:`~relabel.convert_node_labels_to_integers` to obtain
 a more traditional graph with integer labels.
 
 Accessing edges and neighbors
 -----------------------------
 
-In addition to the views :meth:`Graph.edges`, and :meth:`Graph.adj`,
+In addition to the views :attr:`Graph.edges`, and :attr:`Graph.adj`,
 access to edges and neighbors is possible using subscript notation.
 
 .. nbplot::
 
+    >>> G = nx.Graph([(1, 2, {"color": "yellow"})])
     >>> G[1]  # same as G.adj[1]
-    AtlasView({2: {}})
+    AtlasView({2: {'color': 'yellow'}})
     >>> G[1][2]
-    {}
+    {'color': 'yellow'}
     >>> G.edges[1, 2]
-    {}
+    {'color': 'yellow'}
 
 You can get/set the attributes of an edge using subscript notation
 if the edge already exists.
@@ -223,6 +247,8 @@ if the edge already exists.
     >>> G.add_edge(1, 3)
     >>> G[1][3]['color'] = "blue"
     >>> G.edges[1, 2]['color'] = "red"
+    >>> G.edges[1, 2]
+    {'color': 'red'}
 
 Fast examination of all (node, adjacency) pairs is achieved using
 ``G.adjacency()``, or ``G.adj.items()``.
@@ -246,9 +272,12 @@ Convenient access to all edges is achieved with the edges property.
 .. nbplot::
 
     >>> for (u, v, wt) in FG.edges.data('weight'):
-    ...     if wt < 0.5: print(f"({u}, {v}, {wt:.3})")
+    ...     if wt < 0.5:
+    ...         print(f"({u}, {v}, {wt:.3})")
     (1, 2, 0.125)
     (3, 4, 0.375)
+
+.. _attributes:
 
 Adding attributes to graphs, nodes, and edges
 ---------------------------------------------
@@ -319,9 +348,9 @@ algorithms requiring weighted edges.
 Directed graphs
 ---------------
 
-The :class:`DiGraph` class provides additional properties specific to
-directed edges, e.g.,
-:meth:`DiGraph.out_edges`, :meth:`DiGraph.in_degree`,
+The :class:`DiGraph` class provides additional methods and properties specific
+to directed edges, e.g.,
+:attr:`DiGraph.out_edges`, :attr:`DiGraph.in_degree`,
 :meth:`DiGraph.predecessors`, :meth:`DiGraph.successors` etc.
 To allow algorithms to work with both classes easily, the directed versions of
 ``neighbors()`` is equivalent to ``successors()`` while ``degree`` reports
@@ -349,7 +378,7 @@ convert it using :meth:`Graph.to_undirected` or with
 
 .. nbplot::
 
-    >>> H = nx.Graph(G)  # convert G to undirected graph
+    >>> H = nx.Graph(G)  # create an undirected graph H from a directed graph G
 
 Multigraphs
 -----------
@@ -386,28 +415,39 @@ Graph generators and graph operations
 In addition to constructing graphs node-by-node or edge-by-edge, they
 can also be generated by
 
-1. Applying classic graph operations, such as::
+1. Applying classic graph operations, such as:
 
-    subgraph(G, nbunch)      - induced subgraph view of G on nodes in nbunch
-    union(G1,G2)             - graph union
-    disjoint_union(G1,G2)    - graph union assuming all nodes are different
-    cartesian_product(G1,G2) - return Cartesian product graph
-    compose(G1,G2)           - combine graphs identifying nodes common to both
-    complement(G)            - graph complement
-    create_empty_copy(G)     - return an empty copy of the same graph class
-    to_undirected(G) - return an undirected representation of G
-    to_directed(G)   - return a directed representation of G
+.. autosummary::
+
+    subgraph          - induced subgraph view of G on nodes in nbunch
+    union             - graph union
+    disjoint_union    - graph union assuming all nodes are different
+    cartesian_product - return Cartesian product graph
+    compose           - combine graphs identifying nodes common to both
+    complement        - graph complement
+    create_empty_copy - return an empty copy of the same graph class
+    to_undirected     - return an undirected representation of G
+    to_directed       - return a directed representation of G
 
 2. Using a call to one of the classic small graphs, e.g.,
 
-.. nbplot::
+.. autosummary::
 
-    >>> petersen = nx.petersen_graph()
-    >>> tutte = nx.tutte_graph()
-    >>> maze = nx.sedgewick_maze_graph()
-    >>> tet = nx.tetrahedral_graph()
+    petersen_graph
+    tutte_graph
+    sedgewick_maze_graph
+    tetrahedral_graph
 
 3. Using a (constructive) generator for a classic graph, e.g.,
+
+.. autosummary::
+
+    complete_graph
+    complete_bipartite_graph
+    barbell_graph
+    lollipop_graph
+
+like so:
 
 .. nbplot::
 
@@ -416,7 +456,16 @@ can also be generated by
     >>> barbell = nx.barbell_graph(10, 10)
     >>> lollipop = nx.lollipop_graph(10, 20)
 
-4. Using a stochastic graph generator, e.g.,
+4. Using a stochastic graph generator, e.g,
+
+.. autosummary::
+
+    erdos_renyi_graph
+    watts_strogatz_graph
+    barabasi_albert_graph
+    random_lobster
+
+like so:
 
 .. nbplot::
 
@@ -479,10 +528,6 @@ First import Matplotlib's plot interface (pylab works too)
 .. nbplot::
 
     >>> import matplotlib.pyplot as plt
-
-You may find it useful to interactively test code using ``ipython -pylab``,
-which combines the power of ipython and matplotlib and provides a convenient
-interactive mode.
 
 To test if the import of ``networkx.drawing`` was successful draw ``G`` using one of
 

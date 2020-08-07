@@ -52,7 +52,7 @@ def modularity_matrix(G, nodelist=None, weight=None):
 
     See Also
     --------
-    to_numpy_matrix
+    to_numpy_array
     modularity_spectrum
     adjacency_matrix
     directed_modularity_matrix
@@ -126,7 +126,7 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
 
     See Also
     --------
-    to_numpy_matrix
+    to_numpy_array
     modularity_spectrum
     adjacency_matrix
     modularity_matrix

@@ -2,13 +2,19 @@
 
 These filters return the function used when creating `SubGraph`.
 """
-__all__ = ['no_filter', 'hide_nodes',
-           'hide_edges', 'hide_multiedges',
-           'hide_diedges', 'hide_multidiedges',
-           'show_nodes',
-           'show_edges', 'show_multiedges',
-           'show_diedges', 'show_multidiedges',
-           ]
+__all__ = [
+    "no_filter",
+    "hide_nodes",
+    "hide_edges",
+    "hide_multiedges",
+    "hide_diedges",
+    "hide_multidiedges",
+    "show_nodes",
+    "show_edges",
+    "show_multiedges",
+    "show_diedges",
+    "show_multidiedges",
+]
 
 
 def no_filter(*items):

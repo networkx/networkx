@@ -174,10 +174,10 @@ def subgraph_centrality(G):
     import numpy.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G, nodelist)
+    A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
-    A[A != 0.0] = 1
-    w, v = numpy.linalg.eigh(A.A)
+    A[np.nonzero(A)] = 1
+    w, v = numpy.linalg.eigh(A)
     vsquare = np.array(v) ** 2
     expw = np.exp(w)
     xg = np.dot(vsquare, expw)
@@ -269,10 +269,10 @@ def communicability_betweenness_centrality(G, normalized=True):
 
     nodelist = list(G)  # ordering of nodes in matrix
     n = len(nodelist)
-    A = nx.to_numpy_matrix(G, nodelist)
+    A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
-    A[A != 0.0] = 1
-    expA = scipy.linalg.expm(A.A)
+    A[np.nonzero(A)] = 1
+    expA = scipy.linalg.expm(A)
     mapping = dict(zip(nodelist, range(n)))
     cbc = {}
     for v in G:
@@ -282,7 +282,7 @@ def communicability_betweenness_centrality(G, normalized=True):
         col = A[:, i].copy()
         A[i, :] = 0
         A[:, i] = 0
-        B = (expA - scipy.linalg.expm(A.A)) / expA
+        B = (expA - scipy.linalg.expm(A)) / expA
         # sum with row/col of node v and diag set to zero
         B[i, :] = 0
         B[:, i] = 0

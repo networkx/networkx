@@ -8,9 +8,7 @@ from networkx.utils import reverse_cuthill_mckee_ordering
 from networkx.utils import random_state
 
 try:
-    from numpy import (
-        array, asarray, dot, ndarray, ones, sqrt, zeros, atleast_2d
-    )
+    from numpy import array, asarray, dot, ndarray, ones, sqrt, zeros, atleast_2d
     from numpy.linalg import norm, qr
     from scipy.linalg import eigh, inv
     from scipy.sparse import csc_matrix, spdiags

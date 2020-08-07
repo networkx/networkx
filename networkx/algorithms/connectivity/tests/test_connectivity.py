@@ -71,9 +71,29 @@ def test_brandes_erlebach():
     # Figure 1 chapter 7: Connectivity
     # http://www.informatik.uni-augsburg.de/thi/personen/kammer/Graph_Connectivity.pdf
     G = nx.Graph()
-    G.add_edges_from([(1, 2), (1, 3), (1, 4), (1, 5), (2, 3), (2, 6), (3, 4),
-                      (3, 6), (4, 6), (4, 7), (5, 7), (6, 8), (6, 9), (7, 8),
-                      (7, 10), (8, 11), (9, 10), (9, 11), (10, 11)])
+    G.add_edges_from(
+        [
+            (1, 2),
+            (1, 3),
+            (1, 4),
+            (1, 5),
+            (2, 3),
+            (2, 6),
+            (3, 4),
+            (3, 6),
+            (4, 6),
+            (4, 7),
+            (5, 7),
+            (6, 8),
+            (6, 9),
+            (7, 8),
+            (7, 10),
+            (8, 11),
+            (9, 10),
+            (9, 11),
+            (10, 11),
+        ]
+    )
     for flow_func in flow_funcs:
         kwargs = dict(flow_func=flow_func)
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
@@ -127,11 +147,13 @@ def test_complete_graphs():
             G = nx.complete_graph(n)
             errmsg = f"Assertion failed in function: {flow_func.__name__}"
             assert n - 1 == nx.node_connectivity(G, flow_func=flow_func), errmsg
-            assert n - 1 == nx.node_connectivity(G.to_directed(),
-                                                 flow_func=flow_func), errmsg
+            assert n - 1 == nx.node_connectivity(
+                G.to_directed(), flow_func=flow_func
+            ), errmsg
             assert n - 1 == nx.edge_connectivity(G, flow_func=flow_func), errmsg
-            assert n - 1 == nx.edge_connectivity(G.to_directed(),
-                                                 flow_func=flow_func), errmsg
+            assert n - 1 == nx.edge_connectivity(
+                G.to_directed(), flow_func=flow_func
+            ), errmsg
 
 
 def test_empty_graphs():
@@ -186,29 +208,33 @@ def test_icosahedral():
 def test_missing_source():
     G = nx.path_graph(4)
     for flow_func in flow_funcs:
-        pytest.raises(nx.NetworkXError, nx.node_connectivity, G, 10, 1,
-                      flow_func=flow_func)
+        pytest.raises(
+            nx.NetworkXError, nx.node_connectivity, G, 10, 1, flow_func=flow_func
+        )
 
 
 def test_missing_target():
     G = nx.path_graph(4)
     for flow_func in flow_funcs:
-        pytest.raises(nx.NetworkXError, nx.node_connectivity, G, 1, 10,
-                      flow_func=flow_func)
+        pytest.raises(
+            nx.NetworkXError, nx.node_connectivity, G, 1, 10, flow_func=flow_func
+        )
 
 
 def test_edge_missing_source():
     G = nx.path_graph(4)
     for flow_func in flow_funcs:
-        pytest.raises(nx.NetworkXError, nx.edge_connectivity, G, 10, 1,
-                      flow_func=flow_func)
+        pytest.raises(
+            nx.NetworkXError, nx.edge_connectivity, G, 10, 1, flow_func=flow_func
+        )
 
 
 def test_edge_missing_target():
     G = nx.path_graph(4)
     for flow_func in flow_funcs:
-        pytest.raises(nx.NetworkXError, nx.edge_connectivity, G, 1, 10,
-                      flow_func=flow_func)
+        pytest.raises(
+            nx.NetworkXError, nx.edge_connectivity, G, 1, 10, flow_func=flow_func
+        )
 
 
 def test_not_weakly_connected():
@@ -258,8 +284,7 @@ def test_cutoff():
 
 def test_invalid_auxiliary():
     G = nx.complete_graph(5)
-    pytest.raises(nx.NetworkXError, local_node_connectivity, G, 0, 3,
-                  auxiliary=G)
+    pytest.raises(nx.NetworkXError, local_node_connectivity, G, 0, 3, auxiliary=G)
 
 
 def test_interface_only_source():
@@ -286,7 +311,6 @@ def test_edge_connectivity_flow_vs_stoer_wagner():
 
 
 class TestAllPairsNodeConnectivity:
-
     @classmethod
     def setup_class(cls):
         cls.path = nx.path_graph(7)
@@ -298,9 +322,17 @@ class TestAllPairsNodeConnectivity:
         cls.K20 = nx.complete_graph(20)
         cls.K10 = nx.complete_graph(10)
         cls.K5 = nx.complete_graph(5)
-        cls.G_list = [cls.path, cls.directed_path, cls.cycle,
-                      cls.directed_cycle, cls.gnp, cls.directed_gnp,
-                      cls.K10, cls.K5, cls.K20]
+        cls.G_list = [
+            cls.path,
+            cls.directed_path,
+            cls.cycle,
+            cls.directed_cycle,
+            cls.gnp,
+            cls.directed_gnp,
+            cls.K10,
+            cls.K5,
+            cls.K20,
+        ]
 
     def test_cycles(self):
         K_undir = nx.all_pairs_node_connectivity(self.cycle)
@@ -351,8 +383,9 @@ class TestAllPairsNodeConnectivity:
         for u, v in itertools.combinations(nodes, 2):
             A[u][v] = A[v][u] = nx.node_connectivity(G, u, v)
         C = nx.all_pairs_node_connectivity(G)
-        assert (sorted((k, sorted(v)) for k, v in A.items()) ==
-                sorted((k, sorted(v)) for k, v in C.items()))
+        assert sorted((k, sorted(v)) for k, v in A.items()) == sorted(
+            (k, sorted(v)) for k, v in C.items()
+        )
 
     def test_all_pairs_connectivity_directed(self):
         G = nx.DiGraph()
@@ -362,8 +395,9 @@ class TestAllPairsNodeConnectivity:
         for u, v in itertools.permutations(nodes, 2):
             A[u][v] = nx.node_connectivity(G, u, v)
         C = nx.all_pairs_node_connectivity(G)
-        assert (sorted((k, sorted(v)) for k, v in A.items()) ==
-                sorted((k, sorted(v)) for k, v in C.items()))
+        assert sorted((k, sorted(v)) for k, v in A.items()) == sorted(
+            (k, sorted(v)) for k, v in C.items()
+        )
 
     def test_all_pairs_connectivity_nbunch_combinations(self):
         G = nx.complete_graph(5)
@@ -372,8 +406,9 @@ class TestAllPairsNodeConnectivity:
         for u, v in itertools.combinations(nbunch, 2):
             A[u][v] = A[v][u] = nx.node_connectivity(G, u, v)
         C = nx.all_pairs_node_connectivity(G, nbunch=nbunch)
-        assert (sorted((k, sorted(v)) for k, v in A.items()) ==
-                sorted((k, sorted(v)) for k, v in C.items()))
+        assert sorted((k, sorted(v)) for k, v in A.items()) == sorted(
+            (k, sorted(v)) for k, v in C.items()
+        )
 
     def test_all_pairs_connectivity_nbunch_iter(self):
         G = nx.complete_graph(5)
@@ -382,5 +417,6 @@ class TestAllPairsNodeConnectivity:
         for u, v in itertools.combinations(nbunch, 2):
             A[u][v] = A[v][u] = nx.node_connectivity(G, u, v)
         C = nx.all_pairs_node_connectivity(G, nbunch=iter(nbunch))
-        assert (sorted((k, sorted(v)) for k, v in A.items()) ==
-                sorted((k, sorted(v)) for k, v in C.items()))
+        assert sorted((k, sorted(v)) for k, v in A.items()) == sorted(
+            (k, sorted(v)) for k, v in C.items()
+        )

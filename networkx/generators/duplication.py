@@ -9,7 +9,7 @@ import networkx as nx
 from networkx.utils import py_random_state
 from networkx.exception import NetworkXError
 
-__all__ = ['partial_duplication_graph', 'duplication_divergence_graph']
+__all__ = ["partial_duplication_graph", "duplication_divergence_graph"]
 
 
 @py_random_state(4)
@@ -132,7 +132,7 @@ def duplication_divergence_graph(n, p, seed=None):
         msg = f"NetworkXError p={p} is not in [0,1]."
         raise nx.NetworkXError(msg)
     if n < 2:
-        msg = 'n must be greater than or equal to 2'
+        msg = "n must be greater than or equal to 2"
         raise nx.NetworkXError(msg)
 
     G = nx.Graph()
