@@ -1,14 +1,12 @@
-import numpy as np
 import networkx as nx
-from networkx.utils.decorators import preserve_random_state
-from networkx.algorithms import cut_size
+from networkx.utils.decorators import py_random_state
 
 __all__ = ["randomized_partitioning", "one_exchange"]
 
 
 @nx.not_implemented_for('directed', 'multigraph')
-@preserve_random_state
-def randomized_partitioning(G, seed=0, p=0.5, weight=None):
+@py_random_state(1)
+def randomized_partitioning(G, seed=None, p=0.5, weight=None):
     """Compute a random partitioning of the graphs nodes and the
     corresponding cut value.
 
@@ -16,8 +14,9 @@ def randomized_partitioning(G, seed=0, p=0.5, weight=None):
     ----------
     G: NetworkX graph
 
-    seed: int
-        Seed to control randomization.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     p: double@nx.not_implemented_for('directed', 'multigraph')
         Probability for each node to be part of the first partition.
@@ -35,10 +34,9 @@ def randomized_partitioning(G, seed=0, p=0.5, weight=None):
     partition : pair of node sets
         A partitioning of the nodes that defines a minimum cut.
     """
-    np.random.seed(seed)
     cut = set()
     for node in G.nodes():
-        if np.random.random_sample() < p:
+        if seed.random() < p:
             cut.add(node)
     cut_size = nx.algorithms.cut_size(G, cut, weight=weight)
     partition = (cut, set(G.nodes) - cut)
@@ -54,8 +52,8 @@ def _swap_node_partition(cut, node):
 
 
 @nx.not_implemented_for('directed', 'multigraph')
-@preserve_random_state
-def one_exchange(G, initial_cut=None, seed=0, weight=None):
+@py_random_state(2)
+def one_exchange(G, initial_cut=None, seed=None, weight=None):
     """Compute a partitioning of the graphs nodes and the corresponding cut value.
     Use a greedy one exchange strategy to find a locally maximal cut.
 
@@ -63,11 +61,15 @@ def one_exchange(G, initial_cut=None, seed=0, weight=None):
     ----------
     G: networkx Graph
         Graph to find a maximum cut for.
+
     initial_cut: set
         Cut to use as a starting point. If not supplied the algorithm
         starts with an empty cut.
-    seed: int
-        Seed to control randomization
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
     weight : object
         Edge attribute key to use as weight. If not specified, edges
         have weight one.
@@ -82,14 +84,14 @@ def one_exchange(G, initial_cut=None, seed=0, weight=None):
     """
     if initial_cut is None:
         initial_cut = set()
-    np.random.seed(seed)
     cut = set(initial_cut)
     current_cut_size = nx.algorithms.cut_size(G, cut, weight=weight)
     while True:
         nodes = list(G.nodes())
-        np.random.shuffle(nodes)
+        seed.shuffle(nodes)
         best_node_to_swap = max(nodes,
-                                key=lambda v: cut_size(G, _swap_node_partition(
+                                key=lambda v:
+                                nx.algorithms.cut_size(G, _swap_node_partition(
                                     cut, v), weight=weight), default=None)
         potential_cut = _swap_node_partition(cut, best_node_to_swap)
         potential_cut_size = nx.algorithms.cut_size(G, potential_cut, weight=weight)
