@@ -49,3 +49,6 @@ Version 3.0
 * In ``networkx/utils/misc.py`` remove ``is_string_like`` and related tests.
 * In ``networkx/utils/misc.py`` remove ``make_str`` and related tests.
 * Remove ``networkx/utils/contextmanagers.py`` and related tests.
+* In ``networkx/linalg/laplacianmatrix.py`` convert return sparse matrix
+instead of numpy matrix (directed_combinatorial_laplacian fn).
+  * see implementation in PR #4141.

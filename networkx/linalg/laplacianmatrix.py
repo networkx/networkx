@@ -1,5 +1,6 @@
 """Laplacian matrix of graphs.
 """
+import warnings
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -271,6 +272,10 @@ def directed_combinatorial_laplacian_matrix(
        Annals of Combinatorics, 9(1), 2005
     """
     from scipy.sparse import spdiags, linalg
+
+    warnings.warn(
+        "return type is changing in v3.0 to SciPy Sparse Matrix", FutureWarning
+    )
 
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
