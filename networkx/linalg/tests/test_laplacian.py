@@ -177,7 +177,9 @@ class TestLaplacian:
                        [-0.0027, -0.0069, -0.0027, -0.2187, -0.0505, 0.2815]])
         # fmt: on
 
-        L = nx.directed_combinatorial_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G)).toarray()
+        L = nx.directed_combinatorial_laplacian_matrix(
+            G, alpha=0.9, nodelist=sorted(G)
+        ).toarray()
         npt.assert_almost_equal(L, GL, decimal=3)
 
         # Make the graph strongly connected, so we can use a random and lazy walk

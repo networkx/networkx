@@ -272,8 +272,9 @@ def directed_combinatorial_laplacian_matrix(
     """
     from scipy.sparse import spdiags, linalg
 
-    P = _transition_matrix(G, nodelist=nodelist, weight=weight,
-                           walk_type=walk_type, alpha=alpha)
+    P = _transition_matrix(
+        G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
+    )
 
     n, m = P.shape
 
@@ -348,7 +349,7 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
 
     elif walk_type == "pagerank":
         if not (0 < alpha < 1):
-            raise nx.NetworkXError('alpha must be between 0 and 1')
+            raise nx.NetworkXError("alpha must be between 0 and 1")
         # add constant to dangling nodes' row
         dangling = sp.where(M.sum(axis=1) == 0)
         for d in dangling[0]:
