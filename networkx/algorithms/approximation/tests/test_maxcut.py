@@ -37,7 +37,7 @@ def test_one_exchange_basic():
     for (u, v, w) in G.edges(data=True):
         w['weight'] = random.randrange(-100, 100, 1)/10
 
-    initial_cut = set(random.choices(G.nodes(), k=5))
+    initial_cut = set(random.sample(G.nodes(), k=5))
     cut_size, (set1, set2) = a.maxcut.one_exchange(G, initial_cut, weight='weight')
 
     # make sure it is a valid cut
