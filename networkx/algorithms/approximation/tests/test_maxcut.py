@@ -1,4 +1,4 @@
-import numpy as np
+import random
 
 import networkx as nx
 import networkx.algorithms.approximation as a
@@ -35,9 +35,9 @@ def test_random_partitioning_all_to_one():
 def test_one_exchange_basic():
     G = nx.generators.complete_graph(5)
     for (u, v, w) in G.edges(data=True):
-        w['weight'] = np.random.random_sample() * 2 - 1
+        w['weight'] = random.randrange(-100, 100, 1)/10
 
-    initial_cut = np.random.choice(G.nodes(), 5)
+    initial_cut = set(random.choices(G.nodes(), k=5))
     cut_size, (set1, set2) = a.maxcut.one_exchange(G, initial_cut, weight='weight')
 
     # make sure it is a valid cut
