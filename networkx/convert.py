@@ -17,6 +17,7 @@ nx_agraph, nx_pydot
 """
 import warnings
 import networkx as nx
+from collections.abc import Collection, Generator, Iterator
 
 __all__ = [
     "to_networkx_graph",
@@ -50,7 +51,9 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
          any NetworkX graph
          dict-of-dicts
          dict-of-lists
-         container (ie set, list, tuple, iterator) of edges
+         container (e.g. set, list, tuple) of edges
+         iterator (e.g. itertools.chain) that produces edges
+         generator of edges
          Pandas DataFrame (row per edge)
          numpy matrix
          numpy ndarray
@@ -106,16 +109,6 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             except Exception as e:
                 raise TypeError("Input is not known type.") from e
 
-    # list or generator of edges
-
-    if isinstance(data, (list, tuple, set)) or any(
-        hasattr(data, attr) for attr in ["_adjdict", "next", "__next__"]
-    ):
-        try:
-            return from_edgelist(data, create_using=create_using)
-        except Exception as e:
-            raise nx.NetworkXError("Input is not a valid edge list") from e
-
     # Pandas DataFrame
     try:
         import pandas as pd
@@ -166,6 +159,16 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                 ) from e
     except ImportError:
         warnings.warn("scipy not found, skipping conversion test.", ImportWarning)
+
+    # Note: most general check - should remain last in order of execution
+    # Includes containers (e.g. list, set, dict, etc.), generators, and
+    # iterators (e.g. itertools.chain) of edges
+
+    if isinstance(data, (Collection, Generator, Iterator)):
+        try:
+            return from_edgelist(data, create_using=create_using)
+        except Exception as e:
+            raise nx.NetworkXError("Input is not a valid edge list") from e
 
     raise nx.NetworkXError("Input is not a known data type for conversion.")
 
