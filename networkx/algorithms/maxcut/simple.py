@@ -4,16 +4,20 @@ from networkx.utils.decorators import preserve_random_state
 
 
 @preserve_random_state
-def randomized_2_approx(G, seed=0, weight=None):
-    """
-    Implementation of a 2 approximation algorithm for MaxCut
+def randomized_partitioning(G, seed=0, p=0.5, weight=None):
+    """Compute a random partitioning of the graphs nodes and the
+    corresponding cut value.
 
     Parameters
     ----------
     G: NetworkX graph
 
     seed: int
-        To control randomization
+        Seed to control randomization.
+
+    p: double
+        Probability for each node to be part of the first partition.
+        Should be in [0,1]
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -30,14 +34,14 @@ def randomized_2_approx(G, seed=0, weight=None):
     np.random.seed(seed)
     cut = set()
     for node in G.nodes():
-        if np.random.random_sample() < 0.5:
+        if np.random.random_sample() < p:
             cut.add(node)
     cut_size = nx.algorithms.cut_size(G, cut, weight=weight)
     partition = (cut, set(G.nodes) - cut)
     return cut_size, partition
 
 
-def _swap_node_parition(cut, node):
+def _swap_node_partition(cut, node):
     if node in cut:
         new_cut = cut - {node}
     else:
@@ -47,15 +51,17 @@ def _swap_node_parition(cut, node):
 
 @preserve_random_state
 def one_exchange(G, initial_cut=None, seed=0, weight=None):
-    """
+    """Compute a partitioning of the graphs nodes and the
+    corresponding cut value. Use a greedy one exchange strategy to find a locally maximal cut.
+
     Parameters
     ----------
     G: networkx Graph
-        Graph to find a maximum cut for
+        Graph to find a maximum cut for.
     initial_cut: set
-        Cut to use as a starting point
+        Cut to use as a starting point. If not supplied the algorithm starts with an empty cut.
     seed: int
-        To control randomization
+        Seed to control randomization
     weight : object
         Edge attribute key to use as weight. If not specified, edges
         have weight one.
@@ -77,9 +83,9 @@ def one_exchange(G, initial_cut=None, seed=0, weight=None):
         nodes = list(G.nodes())
         np.random.shuffle(nodes)
         best_node_to_swap = max(nodes,
-                                key=lambda v: nx.algorithms.cut_size(G, _swap_node_parition(cut, v), weight=weight),
+                                key=lambda v: nx.algorithms.cut_size(G, _swap_node_partition(cut, v), weight=weight),
                                 default=None)
-        potential_cut = _swap_node_parition(cut, best_node_to_swap)
+        potential_cut = _swap_node_partition(cut, best_node_to_swap)
         potential_cut_size = nx.algorithms.cut_size(G, potential_cut, weight=weight)
 
         if potential_cut_size > current_cut_size:

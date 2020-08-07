@@ -2,9 +2,9 @@ import networkx as nx
 import numpy as np
 
 
-def test_randomized_2_approx():
+def test_random_partitioning():
     G = nx.generators.complete_graph(5)
-    _, (cut, _) = nx.algorithms.maxcut.randomized_2_approx(G)
+    _, (cut, _) = nx.algorithms.maxcut.randomized_partitioning(G)
     for node in cut:
         assert node in G.nodes()
 
