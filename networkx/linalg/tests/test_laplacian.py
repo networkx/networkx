@@ -177,7 +177,7 @@ class TestLaplacian:
                        [-0.0027, -0.0069, -0.0027, -0.2187, -0.0505, 0.2815]])
         # fmt: on
 
-        L = nx.directed_combinatorial_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G))
+        L = nx.directed_combinatorial_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G)).toarray()
         npt.assert_almost_equal(L, GL, decimal=3)
 
         # Make the graph strongly connected, so we can use a random and lazy walk
@@ -194,7 +194,7 @@ class TestLaplacian:
 
         L = nx.directed_combinatorial_laplacian_matrix(
             G, alpha=0.9, nodelist=sorted(G), walk_type="random"
-        )
+        ).toarray()
         npt.assert_almost_equal(L, GL, decimal=3)
 
         # fmt: off
@@ -208,11 +208,11 @@ class TestLaplacian:
 
         L = nx.directed_combinatorial_laplacian_matrix(
             G, alpha=0.9, nodelist=sorted(G), walk_type="lazy"
-        )
+        ).toarray()
         npt.assert_almost_equal(L, GL, decimal=3)
 
         E = nx.DiGraph(margulis_gabber_galil_graph(2))
-        L = nx.directed_combinatorial_laplacian_matrix(E)
+        L = nx.directed_combinatorial_laplacian_matrix(E).toarray()
         # fmt: off
         expected = np.array(
             [[ 0.16666667, -0.08333333, -0.08333333,  0.        ],

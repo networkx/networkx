@@ -253,7 +253,7 @@ def directed_combinatorial_laplacian_matrix(
 
     Returns
     -------
-    L : NumPy matrix
+    L : SciPy Sparse Matrix
       Combinatorial Laplacian of G.
 
     Notes
@@ -272,9 +272,8 @@ def directed_combinatorial_laplacian_matrix(
     """
     from scipy.sparse import spdiags, linalg
 
-    P = _transition_matrix(
-        G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
-    )
+    P = _transition_matrix(G, nodelist=nodelist, weight=weight,
+                           walk_type=walk_type, alpha=alpha)
 
     n, m = P.shape
 
@@ -283,9 +282,7 @@ def directed_combinatorial_laplacian_matrix(
     p = v / v.sum()
     Phi = spdiags(p, [0], n, n)
 
-    Phi = Phi.todense()
-
-    return Phi - (Phi * P + P.T * Phi) / 2.0
+    return Phi - (Phi @ P + P.T @ Phi) / 2.0
 
 
 def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=0.95):
@@ -318,7 +315,7 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
 
     Returns
     -------
-    P : NumPy matrix
+    P : SciPy Sparse Matrix
       transition matrix of G.
 
     Raises
@@ -327,6 +324,7 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
         If walk_type not specified or alpha not in valid range
     """
     import numpy as np
+    import scipy as sp
     from scipy.sparse import identity, spdiags
 
     if walk_type is None:
@@ -341,26 +339,25 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
     M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
     n, m = M.shape
     if walk_type in ["random", "lazy"]:
-        DI = spdiags(1.0 / np.array(M.sum(axis=1).flat), [0], n, n)
+        DI = spdiags(1.0 / sp.array(M.sum(axis=1).flat), [0], n, n)
         if walk_type == "random":
-            P = DI * M
+            P = DI @ M
         else:
             I = identity(n)
-            P = (I + DI * M) / 2.0
+            P = (I + DI @ M) / 2.0
 
     elif walk_type == "pagerank":
         if not (0 < alpha < 1):
-            raise nx.NetworkXError("alpha must be between 0 and 1")
-        # this is using a dense representation
-        M = M.todense()
+            raise nx.NetworkXError('alpha must be between 0 and 1')
         # add constant to dangling nodes' row
-        dangling = np.where(M.sum(axis=1) == 0)
+        dangling = sp.where(M.sum(axis=1) == 0)
         for d in dangling[0]:
             M[d] = 1.0 / n
         # normalize
-        M = M / M.sum(axis=1)
+        M = M / sp.array(M.sum(axis=1))
         P = alpha * M + (1 - alpha) / n
+
     else:
         raise nx.NetworkXError("walk_type must be random, lazy, or pagerank")
 
-    return P
+    return sp.sparse.csr_matrix(P)
