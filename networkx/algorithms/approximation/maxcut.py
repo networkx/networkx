@@ -3,6 +3,7 @@ import networkx as nx
 from networkx.utils.decorators import preserve_random_state
 
 
+@nx.not_implemented_for('directed', 'multigraph')
 @preserve_random_state
 def randomized_partitioning(G, seed=0, p=0.5, weight=None):
     """Compute a random partitioning of the graphs nodes and the
@@ -15,7 +16,7 @@ def randomized_partitioning(G, seed=0, p=0.5, weight=None):
     seed: int
         Seed to control randomization.
 
-    p: double
+    p: double@nx.not_implemented_for('directed', 'multigraph')
         Probability for each node to be part of the first partition.
         Should be in [0,1]
 
@@ -49,6 +50,7 @@ def _swap_node_partition(cut, node):
     return new_cut
 
 
+@nx.not_implemented_for('directed', 'multigraph')
 @preserve_random_state
 def one_exchange(G, initial_cut=None, seed=0, weight=None):
     """Compute a partitioning of the graphs nodes and the
