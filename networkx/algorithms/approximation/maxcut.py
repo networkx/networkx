@@ -3,6 +3,8 @@ import networkx as nx
 from networkx.utils.decorators import preserve_random_state
 from networkx.algorithms import cut_size
 
+__all__ = ["randomized_partitioning", "one_exchange"]
+
 
 @nx.not_implemented_for('directed', 'multigraph')
 @preserve_random_state
