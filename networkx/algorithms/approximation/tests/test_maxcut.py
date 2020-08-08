@@ -20,7 +20,7 @@ def _cut_is_locally_optimal(G, cut_size, set1):
 
 def test_random_partitioning():
     G = nx.generators.complete_graph(5)
-    _, (set1, set2) = a.maxcut.randomized_partitioning(G)
+    _, (set1, set2) = a.maxcut.randomized_partitioning(G, seed=5)
     _is_valid_cut(G, set1, set2)
 
 
@@ -34,11 +34,12 @@ def test_random_partitioning_all_to_one():
 
 def test_one_exchange_basic():
     G = nx.generators.complete_graph(5)
+    random.seed(5)
     for (u, v, w) in G.edges(data=True):
         w['weight'] = random.randrange(-100, 100, 1)/10
 
     initial_cut = set(random.sample(G.nodes(), k=5))
-    cut_size, (set1, set2) = a.maxcut.one_exchange(G, initial_cut, weight='weight')
+    cut_size, (set1, set2) = a.maxcut.one_exchange(G, initial_cut, weight='weight', seed=5)
 
     # make sure it is a valid cut
     _is_valid_cut(G, set1, set2)
@@ -55,7 +56,7 @@ def test_one_exchange_optimal():
     G.add_edge(1, 5, weight=3)
     G.add_edge(2, 3, weight=5)
 
-    cut_size, (set1, set2) = a.maxcut.one_exchange(G, weight='weight')
+    cut_size, (set1, set2) = a.maxcut.one_exchange(G, weight='weight', seed=5)
 
     # make sure it is a valid cut
     _is_valid_cut(G, set1, set2)
