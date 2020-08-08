@@ -36,7 +36,7 @@ def test_one_exchange_basic():
     G = nx.generators.complete_graph(5)
     random.seed(5)
     for (u, v, w) in G.edges(data=True):
-        w['weight'] = random.randrange(-100, 100, 1)/10
+        w['weight'] = random.randrange(-100, 100, 1) / 10
 
     initial_cut = set(random.sample(G.nodes(), k=5))
     cut_size, (set1, set2) = a.maxcut.one_exchange(G, initial_cut, weight='weight', seed=5)
@@ -64,3 +64,20 @@ def test_one_exchange_optimal():
     _cut_is_locally_optimal(G, cut_size, set1)
     # check global optimality
     assert cut_size == 14
+
+
+def test_negative_weights():
+    G = nx.generators.complete_graph(5)
+    random.seed(5)
+    for (u, v, w) in G.edges(data=True):
+        w['weight'] = -1 * random.random()
+
+    initial_cut = set(random.sample(G.nodes(), k=5))
+    cut_size, (set1, set2) = a.maxcut.one_exchange(G, initial_cut, weight='weight')
+
+    # make sure it is a valid cut
+    _is_valid_cut(G, set1, set2)
+    # check local optimality
+    _cut_is_locally_optimal(G, cut_size, set1)
+    # test that all nodes are in the same partition
+    assert len(set1) == len(G.nodes) or len(set2) == len(G.nodes)
