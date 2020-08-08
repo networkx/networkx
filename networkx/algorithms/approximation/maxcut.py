@@ -39,7 +39,7 @@ def randomized_partitioning(G, seed=None, p=0.5, weight=None):
         if seed.random() < p:
             cut.add(node)
     cut_size = nx.algorithms.cut_size(G, cut, weight=weight)
-    partition = (cut, set(G.nodes) - cut)
+    partition = (cut, G.nodes - cut)
     return cut_size, partition
 
 
@@ -102,5 +102,5 @@ def one_exchange(G, initial_cut=None, seed=None, weight=None):
         else:
             break
 
-    partition = (cut, set(G.nodes) - cut)
+    partition = (cut, G.nodes - cut)
     return current_cut_size, partition
