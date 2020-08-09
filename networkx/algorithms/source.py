@@ -68,7 +68,7 @@ def sources(G):
         >>> G.add_edge(1, 2)
         >>> G.add_node(3)
         >>> list(nx.sources(G))
-        [1, 2]
+        [1, 3]
 
     To remove all sources in the graph, first create a list of the
     sources, then use :meth:`Graph.remove_nodes_from`::
