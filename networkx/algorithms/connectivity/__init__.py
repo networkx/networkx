@@ -8,6 +8,7 @@ from .disjoint_paths import *
 from .kcomponents import *
 from .kcutsets import *
 from .stoerwagner import *
+from .strong_connectivity_augmentation import *
 from .utils import *
 
 __all__ = sum(
@@ -20,6 +21,7 @@ __all__ = sum(
         kcomponents.__all__,
         kcutsets.__all__,
         stoerwagner.__all__,
+        strong_connectivity_augmentation.__all__,
         utils.__all__,
     ],
     [],
