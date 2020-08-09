@@ -75,7 +75,7 @@ def sources(G):
 
         >>> G.remove_nodes_from(list(nx.sources(G)))
         >>> list(G)
-        [3]
+        [2]
     """
     return (n for n, d in G.in_degree() if d == 0)
 
