@@ -311,8 +311,10 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     if check_information_line:
         if len(information_line_items) == 2:
             expected_nodes, expected_edges = map(int, information_line_items)
-            if len(G.edges()) != expected_edges or len(G.nodes()) != expected_nodes:
-                warnings.warn("Information line doesn't match graph data.")
+            if G.number_of_edges() != expected_edges or G.number_of_nodes() != expected_nodes:
+                warnings.warn("Information line doesn't match graph data." +
+                              f"G has {G.number_of_nodes()} expected {expected_nodes} and" +
+                              f" {G.number_of_edges()} expected {expected_edges}.")
         else:
             nx.NetworkXError("Information line doesn't fit the expected form.")
     return G
