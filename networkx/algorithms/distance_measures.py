@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-def extrema_bounding(G, compute="diameter"):
+def extrema_bounding(G, compute="diameter", accept_disconnected=False):
     """Compute requested extreme distance metric of undirected graph G
 
     Computation is based on smart lower and upper bounds, and in practice
@@ -90,7 +90,7 @@ def extrema_bounding(G, compute="diameter"):
 
         # get distances from/to current node and derive eccentricity
         dist = dict(nx.single_source_shortest_path_length(G, current))
-        if len(dist) != N:
+        if not accept_disconnected and len(dist) != N:
             msg = "Cannot compute metric because graph is not connected."
             raise nx.NetworkXError(msg)
         current_ecc = max(dist.values())
@@ -212,7 +212,7 @@ def extrema_bounding(G, compute="diameter"):
     return None
 
 
-def eccentricity(G, v=None, sp=None):
+def eccentricity(G, v=None, sp=None, accept_disconnected=False):
     """Returns the eccentricity of nodes in G.
 
     The eccentricity of a node v is the maximum distance from v to
@@ -253,7 +253,7 @@ def eccentricity(G, v=None, sp=None):
                 L = len(length)
             except TypeError as e:
                 raise nx.NetworkXError('Format of "sp" is invalid.') from e
-        if L != order:
+        if not accept_disconnected and L != order:
             if G.is_directed():
                 msg = (
                     "Found infinite path length because the digraph is not"
@@ -271,7 +271,7 @@ def eccentricity(G, v=None, sp=None):
         return e
 
 
-def diameter(G, e=None, usebounds=False):
+def diameter(G, e=None, usebounds=False, accept_disconnected=False):
     """Returns the diameter of the graph G.
 
     The diameter is the maximum eccentricity.
@@ -294,9 +294,9 @@ def diameter(G, e=None, usebounds=False):
     eccentricity
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="diameter")
+        return extrema_bounding(G, compute="diameter", accept_disconnected=accept_disconnected)
     if e is None:
-        e = eccentricity(G)
+        e = eccentricity(G, accept_disconnected=accept_disconnected)
     return max(e.values())
 
 
@@ -332,7 +332,7 @@ def periphery(G, e=None, usebounds=False):
     return p
 
 
-def radius(G, e=None, usebounds=False):
+def radius(G, e=None, usebounds=False, accept_disconnected=False):
     """Returns the radius of the graph G.
 
     The radius is the minimum eccentricity.
@@ -351,9 +351,9 @@ def radius(G, e=None, usebounds=False):
        Radius of graph
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="radius")
+        return extrema_bounding(G, compute="radius", accept_disconnected=accept_disconnected)
     if e is None:
-        e = eccentricity(G)
+        e = eccentricity(G, accept_disconnected=accept_disconnected)
     return min(e.values())
 
 
