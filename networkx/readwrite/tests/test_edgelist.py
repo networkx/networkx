@@ -8,6 +8,7 @@ import os
 
 import networkx as nx
 from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
+import warnings
 
 
 class TestEdgelist:
@@ -142,7 +143,7 @@ class TestEdgelist:
             ],
         )
 
-    def test_read_edgelist_5(self):
+    def test_read_edgelist_7(self):
         s = """\
 # number of nodes, number of edges
 3 2
@@ -157,6 +158,44 @@ class TestEdgelist:
 
         StringIO = io.StringIO(s)
         G = nx.read_edgelist(StringIO, nodetype=int, data=True, check_information_line=True)
+        assert_edges_equal(G.edges(data=True),
+                           [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
+
+    def test_read_edgelist_8(self):
+        s = """\
+# comment line
+1 2 {'weight':2.0}
+# comment line
+2 3 {'weight':3.0}
+"""
+        with pytest.raises(nx.NetworkXError):
+            StringIO = io.StringIO(s)
+            G = nx.read_edgelist(StringIO, nodetype=int, data=False, check_information_line=True)
+            assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
+
+        with pytest.raises(nx.NetworkXError):
+            StringIO = io.StringIO(s)
+            G = nx.read_edgelist(StringIO, nodetype=int, data=True, check_information_line=True)
+            assert_edges_equal(G.edges(data=True),
+                               [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
+
+    def test_read_edgelist_9(self):
+        s = """\
+# number of nodes, number of edges
+2 2
+# comment line
+1 2 {'weight':2.0}
+# comment line
+2 3 {'weight':3.0}
+"""
+        StringIO = io.StringIO(s)
+        with pytest.warns(UserWarning):
+            G = nx.read_edgelist(StringIO, nodetype=int, data=False, check_information_line=True)
+        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
+
+        StringIO = io.StringIO(s)
+        with pytest.warns(UserWarning):
+            G = nx.read_edgelist(StringIO, nodetype=int, data=True, check_information_line=True)
         assert_edges_equal(G.edges(data=True),
                            [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
 

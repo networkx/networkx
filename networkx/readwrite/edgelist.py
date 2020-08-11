@@ -314,13 +314,13 @@ def parse_edgelist(lines, comments='#', delimiter=None,
             if len(G.edges()) != expected_edges or len(G.nodes()) != expected_nodes:
                 warnings.warn("Information line doesn't match graph data.")
         else:
-            nx.NetworkXError("Information line doesn't fit the expected form.")
+            raise nx.NetworkXError("Information line doesn't fit the expected form.")
     return G
 
 
 @open_file(0, mode='rb')
 def read_edgelist(path, comments="#", delimiter=None, create_using=None,
-                  nodetype=None, data=True, edgetype=None, encoding='utf-8'):
+                  nodetype=None, data=True, edgetype=None, encoding='utf-8', check_information_line=False):
     """Read a graph from a list of edges.
 
     Parameters
@@ -392,7 +392,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     lines = (line if isinstance(line, str) else line.decode(encoding) for line in path)
     return parse_edgelist(lines, comments=comments, delimiter=delimiter,
                           create_using=create_using, nodetype=nodetype,
-                          data=data)
+                          data=data, check_information_line=check_information_line)
 
 
 def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
@@ -493,4 +493,5 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
         nodetype=nodetype,
         data=(("weight", float),),
         encoding=encoding,
+        check_information_line=check_information_line
     )
