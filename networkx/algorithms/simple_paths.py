@@ -1,4 +1,3 @@
-import collections
 from heapq import heappush, heappop
 from itertools import count
 
@@ -239,7 +238,7 @@ def all_simple_paths(G, source, target, cutoff=None):
 
 
 def _all_simple_paths_graph(G, source, targets, cutoff):
-    visited = collections.OrderedDict.fromkeys([source])
+    visited = dict.fromkeys([source])
     stack = [iter(G[source])]
     while stack:
         children = stack[-1]
@@ -265,7 +264,7 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
 
 
 def _all_simple_paths_multigraph(G, source, targets, cutoff):
-    visited = collections.OrderedDict.fromkeys([source])
+    visited = dict.fromkeys([source])
     stack = [(v for u, v in G.edges(source))]
     while stack:
         children = stack[-1]
