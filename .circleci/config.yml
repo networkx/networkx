@@ -5,23 +5,28 @@ jobs:
   build:
     working_directory: ~/repo
     docker:
-      - image: circleci/python:3.8.3-buster
+      - image: circleci/python:3.8.5-buster
 
     steps:
       - checkout
 
       - run:
-          name: install_graphviz
+          name: Update apt-get
+          command: |
+            sudo apt-get update
+
+      - run:
+          name: Install Graphviz
           command: |
             sudo apt-get install graphviz libgraphviz-dev
 
       - run:
-          name: install_tex
+          name: Install TeX
           command: |
             sudo apt-get install texlive texlive-latex-extra latexmk
 
       - run:
-          name: install_dependencies
+          name: Install Python dependencies
           command: |
             python3 -m venv venv
             source venv/bin/activate
@@ -32,13 +37,13 @@ jobs:
             pip install pydot pygraphviz
 
       - run:
-          name: install
+          name: Install
           command: |
             source venv/bin/activate
             pip install -e .
 
       - run:
-          name: build_docs
+          name: Build docs
           command: |
             source venv/bin/activate
             make -C doc/ html
