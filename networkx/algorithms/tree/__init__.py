@@ -3,4 +3,4 @@ from .coding import *
 from .mst import *
 from .recognition import *
 from .operations import *
-from .junction_tree_algorithm import *
+from .decomposition import *
