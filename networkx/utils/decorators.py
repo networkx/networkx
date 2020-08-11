@@ -474,8 +474,8 @@ def py_random_state(random_state_index):
     return _random_state
 
 
-def wrap_edge_attribute(G, attribute, accept_none, default=1,
-                        multi_graph_attr_reducer: Callable = min):
+def wrap_edge_attribute(G, attribute, accept_none, default,
+                        multi_graph_attr_reducer: Callable):
     """Returns a function that returns a computed attribute for an edge.
 
     The returned function is specifically suitable for input to
@@ -502,10 +502,9 @@ def wrap_edge_attribute(G, attribute, accept_none, default=1,
     Returns
     -------
     function
-        This function returns a callable that accepts exactly four inputs: a graph,
-        a node, an node adjacent to the first one, and the edge attribute dictionary
-        for the edge joining those nodes. That function returns a number representing
-        the weight of an edge.
+        This function returns a callable that accepts exactly three inputs: two adjacent nodes,
+        and the edge attribute dictionary for the edge joining those nodes. That function returns
+        a number representing the weight of an edge.
 
     If `G` is a multigraph, and `attribute` is not callable, `multi_graph_attr_reducer`
     is called over all parallel edges and the result is returned. If any edge does not
@@ -526,13 +525,12 @@ def wrap_edge_attribute(G, attribute, accept_none, default=1,
 
 def edge_attribute(attribute, default=1, reducer=min):
     """
-    modify the `kwargs` of func, such that all `kwargs` that are listed in attrs
-    are wrapped by `wrap_attr`. This decorator assumes that the first value in
-    `args` is a Graph object.
+    modify the `kwargs` of func, such that kwarg `attribute` is wrapped by `wrap_edge_attribute`.
+    This decorator assumes that the first value in the func's arguments list is a Graph object.
 
     Parameters
     ----------
-    func: function that uses attrs in its `kwargs`.
+    func: function that uses `attribute` in its `kwargs`.
     attribute: attribute to be wrapped
 
     Returns
