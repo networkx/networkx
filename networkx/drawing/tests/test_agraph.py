@@ -51,6 +51,15 @@ class TestAGraph:
         H = nx.nx_agraph.from_agraph(A)
         assert G.name == "test"
 
+    @pytest.mark.parametrize(
+        "graph_class", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph,)
+    )
+    def test_from_agraph_create_using(self, graph_class):
+        G = nx.path_graph(3)
+        A = nx.nx_agraph.to_agraph(G)
+        H = nx.nx_agraph.from_agraph(A, create_using=graph_class)
+        assert type(H) == graph_class
+
     def test_undirected(self):
         self.agraph_checks(nx.Graph())
 
