@@ -45,8 +45,8 @@ def asyn_lpa_communities(G, weight=None, seed=None, max_iter=float("inf")):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-        
-    max_iter: integer or float('inf') (default).  Maximum number of iteration 
+
+    max_iter: integer or float('inf') (default).  Maximum number of iteration
         to go through before the algorithm exits.
 
     Returns
