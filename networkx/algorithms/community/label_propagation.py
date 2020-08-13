@@ -12,7 +12,7 @@ __all__ = ["label_propagation_communities", "asyn_lpa_communities"]
 
 
 @py_random_state(2)
-def asyn_lpa_communities(G, weight=None, seed=None, max_iter=float('inf')):
+def asyn_lpa_communities(G, weight=None, seed=None, max_iter=float("inf")):
     """Returns communities in `G` as detected by asynchronous label
     propagation.
 
@@ -66,9 +66,9 @@ def asyn_lpa_communities(G, weight=None, seed=None, max_iter=float('inf')):
     """
     labels = {n: i for i, n in enumerate(G)}
     cont = True
-    c=0
-    while cont and c<max_iter:
-        c+=1
+    c = 0
+    while cont and c < max_iter:
+        c += 1
         cont = False
         nodes = list(G)
         seed.shuffle(nodes)
