@@ -72,6 +72,19 @@ class TestAGraph:
     def test_multi_directed(self):
         self.agraph_checks(nx.MultiDiGraph())
 
+    def test_to_agraph_with_nodedata(self):
+        G = nx.Graph()
+        G.add_node(1, color="red")
+        A = nx.nx_agraph.to_agraph(G)
+        assert dict(A.nodes()[0].attr) == {"color": "red"}
+
+    def test_to_agraph_with_edgedata(self):
+        G = nx.Graph()
+        G.add_nodes_from([0, 1])
+        G.add_edge(0, 1, color="yellow")
+        A = nx.nx_agraph.to_agraph(G)
+        assert dict(A.edges()[0].attr) == {"color": "yellow"}
+
     def test_view_pygraphviz(self):
         G = nx.Graph()  # "An empty graph cannot be drawn."
         pytest.raises(nx.NetworkXException, nx.nx_agraph.view_pygraphviz, G)
