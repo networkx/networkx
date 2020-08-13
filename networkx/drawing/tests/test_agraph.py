@@ -78,7 +78,7 @@ class TestAGraph:
         G = nx.barbell_graph(4, 6)
         nx.nx_agraph.view_pygraphviz(G)
 
-    def test_view_pygraphviz_edgelable(self):
+    def test_view_pygraphviz_edgelabel(self):
         G = nx.Graph()
         G.add_edge(1, 2, weight=7)
         G.add_edge(2, 3, weight=8)
