@@ -38,8 +38,9 @@ def from_agraph(A, create_using=None):
     A : PyGraphviz AGraph
       A graph created with PyGraphviz
 
-    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+    create_using : NetworkX graph constructor, optional (default=None)
        Graph type to create. If graph instance, then cleared before populated.
+       If `None`, then the appropriate Graph type is inferred from `A`.
 
     Examples
     --------
