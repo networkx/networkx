@@ -95,7 +95,7 @@ class TestAGraph:
         G.edges[("A", "B")]["v"] = "keyword"
         A = nx.nx_agraph.to_agraph(G)
 
-    def test_round_trip(self):
+    def test_round_trip_empty_graph(self):
         G = nx.Graph()
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
@@ -107,6 +107,13 @@ class TestAGraph:
         G.graph["node"] = {}
         G.graph["edge"] = {}
         assert_graphs_equal(G, HH)
+
+    @pytest.mark.xfail(reason="integer->string node conversion in round trip")
+    def test_round_trip_integer_nodes(self):
+        G = nx.complete_graph(3)
+        A = nx.nx_agraph.to_agraph(G)
+        H = nx.nx_agraph.from_agraph(A)
+        assert_graphs_equal(G, H)
 
     def test_2d_layout(self):
         G = nx.Graph()
