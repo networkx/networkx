@@ -98,6 +98,16 @@ class TestAGraph:
         A = nx.nx_agraph.to_agraph(G)
         assert dict(A.edges()[0].attr) == {"color": "yellow"}
 
+    def test_view_pygraphviz_path(self, tmp_path):
+        G = nx.complete_graph(3)
+        input_path = str(tmp_path / "graph.png")
+        out_path, A = nx.nx_agraph.view_pygraphviz(G, path=input_path)
+        assert out_path == input_path
+        # Ensure file is not empty
+        with open(input_path, "rb") as fh:
+            data = fh.read()
+        assert len(data) > 0
+
     def test_view_pygraphviz(self):
         G = nx.Graph()  # "An empty graph cannot be drawn."
         pytest.raises(nx.NetworkXException, nx.nx_agraph.view_pygraphviz, G)
