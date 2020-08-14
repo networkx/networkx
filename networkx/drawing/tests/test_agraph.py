@@ -108,6 +108,11 @@ class TestAGraph:
             data = fh.read()
         assert len(data) > 0
 
+    def test_view_pygraphviz_file_suffix(self, tmp_path):
+        G = nx.complete_graph(3)
+        path, A = nx.nx_agraph.view_pygraphviz(G, suffix=1)
+        assert path[-6:] == "_1.png"
+
     def test_view_pygraphviz(self):
         G = nx.Graph()  # "An empty graph cannot be drawn."
         pytest.raises(nx.NetworkXException, nx.nx_agraph.view_pygraphviz, G)
