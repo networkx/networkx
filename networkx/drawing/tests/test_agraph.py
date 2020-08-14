@@ -121,6 +121,20 @@ class TestAGraph:
         G.edges[("A", "B")]["v"] = "keyword"
         A = nx.nx_agraph.to_agraph(G)
 
+    def test_view_pygraphviz_no_added_attrs_to_input(self):
+        G = nx.complete_graph(2)
+        path, A = nx.nx_agraph.view_pygraphviz(G)
+        assert G.graph == {}
+
+    @pytest.mark.xfail(reason="known bug in clean_attrs")
+    def test_view_pygraphviz_leaves_input_graph_unmodified(self):
+        G = nx.complete_graph(2)
+        # Add entries to graph dict that to_agraph handles specially
+        G.graph["node"] = {"width": "0.80"}
+        G.graph["edge"] = {"fontsize": "14"}
+        path, A = nx.nx_agraph.view_pygraphviz(G)
+        assert G.graph == {"node": {"width": "0.80"}, "edge": {"fontsize": "14"}}
+
     def test_graph_with_AGraph_attrs(self):
         G = nx.complete_graph(2)
         # Add entries to graph dict that to_agraph handles specially
