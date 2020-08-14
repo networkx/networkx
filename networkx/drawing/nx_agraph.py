@@ -296,7 +296,9 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
 
 
 @nx.utils.open_file(5, "w+b")
-def view_pygraphviz(G, edgelabel=None, prog="dot", args="", suffix="", path=None):
+def view_pygraphviz(
+    G, edgelabel=None, prog="dot", args="", suffix="", path=None, draw=True
+):
     """Views the graph G using the specified layout algorithm.
 
     Parameters
@@ -319,6 +321,10 @@ def view_pygraphviz(G, edgelabel=None, prog="dot", args="", suffix="", path=None
     path : str, None
         The filename used to save the image.  If None, save to a temporary
         file.  File formats are the same as those from pygraphviz.agraph.draw.
+    draw : bool, default = True
+        Whether to display the graph with `networkx.utils.default_opener`,
+        default is `True`. If `False`, the rendered graph is still available
+        at `path`.
 
     Returns
     -------
@@ -420,7 +426,10 @@ def view_pygraphviz(G, edgelabel=None, prog="dot", args="", suffix="", path=None
         # Assume the decorator worked and it is a file-object.
         pass
 
-    display_pygraphviz(A, path=path, prog=prog, args=args)
+    if draw:
+        display_pygraphviz(A, path=path, prog=prog, args=args)
+    else:
+        path.close()
 
     return path.name, A
 

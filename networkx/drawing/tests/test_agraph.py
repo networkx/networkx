@@ -117,13 +117,13 @@ class TestAGraph:
         G = nx.Graph()  # "An empty graph cannot be drawn."
         pytest.raises(nx.NetworkXException, nx.nx_agraph.view_pygraphviz, G)
         G = nx.barbell_graph(4, 6)
-        nx.nx_agraph.view_pygraphviz(G)
+        nx.nx_agraph.view_pygraphviz(G, draw=False)
 
     def test_view_pygraphviz_edgelabel(self):
         G = nx.Graph()
         G.add_edge(1, 2, weight=7)
         G.add_edge(2, 3, weight=8)
-        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel="weight")
+        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel="weight", show=False)
         for edge in A.edges():
             assert edge.attr["weight"] in ("7", "8")
 
@@ -133,7 +133,7 @@ class TestAGraph:
         def foo_label(data):
             return "foo"
 
-        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel=foo_label)
+        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel=foo_label, show=False)
         for edge in A.edges():
             assert edge.attr["label"] == "foo"
 
@@ -141,7 +141,7 @@ class TestAGraph:
         G = nx.MultiGraph()
         G.add_edge(0, 1, key=0, name="left_fork")
         G.add_edge(0, 1, key=1, name="right_fork")
-        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel="name")
+        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel="name", show=False)
         edges = A.edges()
         assert len(edges) == 2
         for edge in edges:
