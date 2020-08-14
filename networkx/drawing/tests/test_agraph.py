@@ -141,6 +141,12 @@ class TestAGraph:
         H = nx.nx_agraph.from_agraph(A)
         assert_graphs_equal(G, H)
 
+    def test_graphviz_alias(self):
+        G = self.build_graph(nx.Graph())
+        pos_graphviz = nx.nx_agraph.graphviz_layout(G)
+        pos_pygraphviz = nx.nx_agraph.pygraphviz_layout(G)
+        assert pos_graphviz == pos_pygraphviz
+
     def test_2d_layout(self):
         G = nx.Graph()
         G = self.build_graph(G)
