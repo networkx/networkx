@@ -251,7 +251,9 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
     args : string, optional
       Extra arguments to Graphviz layout program
 
-    Returns : dictionary
+    Returns
+    -------
+    node_pos : dict
       Dictionary of x, y, positions keyed by node.
 
     Examples
@@ -266,11 +268,11 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
     representation and GraphViz could treat them as the same node.
     The layout may assign both nodes a single location. See Issue #1568
     If this occurs in your case, consider relabeling the nodes just
-    for the layout computation using something similar to:
+    for the layout computation using something similar to::
 
-        H = nx.convert_node_labels_to_integers(G, label_attribute='node_label')
-        H_layout = nx.nx_agraph.pygraphviz_layout(G, prog='dot')
-        G_layout = {H.nodes[n]['node_label']: p for n, p in H_layout.items()}
+        >>> H = nx.convert_node_labels_to_integers(G, label_attribute='node_label')
+        >>> H_layout = nx.nx_agraph.pygraphviz_layout(G, prog='dot')
+        >>> G_layout = {H.nodes[n]['node_label']: p for n, p in H_layout.items()}
 
     """
     try:
