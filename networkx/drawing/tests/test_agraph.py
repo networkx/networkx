@@ -121,6 +121,16 @@ class TestAGraph:
         G.edges[("A", "B")]["v"] = "keyword"
         A = nx.nx_agraph.to_agraph(G)
 
+    def test_graph_with_AGraph_attrs(self):
+        G = nx.complete_graph(2)
+        # Add entries to graph dict that to_agraph handles specially
+        G.graph["node"] = {"width": "0.80"}
+        G.graph["edge"] = {"fontsize": "14"}
+        path, A = nx.nx_agraph.view_pygraphviz(G)
+        # Ensure user-specified values are not lost
+        assert dict(A.node_attr)["width"] == "0.80"
+        assert dict(A.edge_attr)["fontsize"] == "14"
+
     def test_round_trip_empty_graph(self):
         G = nx.Graph()
         A = nx.nx_agraph.to_agraph(G)
