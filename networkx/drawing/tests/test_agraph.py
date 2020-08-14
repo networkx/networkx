@@ -147,6 +147,19 @@ class TestAGraph:
         pos_pygraphviz = nx.nx_agraph.pygraphviz_layout(G)
         assert pos_graphviz == pos_pygraphviz
 
+    @pytest.mark.parametrize("root", range(5))
+    def test_pygraphviz_layout_root(self, root):
+        # NOTE: test depends on layout prog being deterministic
+        G = nx.complete_graph(5)
+        A = nx.nx_agraph.to_agraph(G)
+        # Get layout with root arg is not None
+        pygv_layout = nx.nx_agraph.pygraphviz_layout(G, prog="circo", root=root)
+        # Equivalent layout directly on AGraph
+        A.layout(args=f"-Groot={root}", prog="circo")
+        # Parse AGraph layout
+        a1_pos = tuple(float(v) for v in dict(A.get_node("1").attr)["pos"].split(","))
+        assert pygv_layout[1] == a1_pos
+
     def test_2d_layout(self):
         G = nx.Graph()
         G = self.build_graph(G)
