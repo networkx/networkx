@@ -110,6 +110,16 @@ class TestAGraph:
         G.add_edge(2, 3, weight=8)
         nx.nx_agraph.view_pygraphviz(G, edgelabel="weight")
 
+    def test_view_pygraphviz_callable_edgelabel(self):
+        G = nx.complete_graph(3)
+
+        def foo_label(data):
+            return "foo"
+
+        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel=foo_label)
+        for edge in A.edges():
+            assert edge.attr["label"] == "foo"
+
     def test_graph_with_reserved_keywords(self):
         # test attribute/keyword clash case for #1582
         # node: n
