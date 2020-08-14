@@ -58,7 +58,19 @@ class TestAGraph:
         G = nx.path_graph(3)
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A, create_using=graph_class)
-        assert type(H) == graph_class
+        assert isinstance(H, graph_class)
+
+    def test_from_agraph_named_edges(self):
+        # Create an AGraph from an existing (non-multi) Graph
+        G = nx.Graph()
+        G.add_nodes_from([0, 1])
+        A = nx.nx_agraph.to_agraph(G)
+        # Add edge (+ name, given by key) to the AGraph
+        A.add_edge(0, 1, key="foo")
+        # Verify a.name roundtrips out to 'key' in from_agraph
+        H = nx.nx_agraph.from_agraph(A)
+        assert isinstance(H, nx.Graph)
+        assert ("0", "1", {"key": "foo"}) in H.edges(data=True)
 
     def test_undirected(self):
         self.agraph_checks(nx.Graph())
