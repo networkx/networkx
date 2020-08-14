@@ -1,3 +1,3 @@
-pygraphviz>=1.5
-pydot>=1.2.4
+pygraphviz>=1.5, <2.0
+pydot>=1.4.1
 gdal==1.10.0
