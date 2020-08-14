@@ -108,7 +108,9 @@ class TestAGraph:
         G = nx.Graph()
         G.add_edge(1, 2, weight=7)
         G.add_edge(2, 3, weight=8)
-        nx.nx_agraph.view_pygraphviz(G, edgelabel="weight")
+        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel="weight")
+        for edge in A.edges():
+            assert edge.attr["weight"] in ("7", "8")
 
     def test_view_pygraphviz_callable_edgelabel(self):
         G = nx.complete_graph(3)
