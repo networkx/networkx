@@ -134,7 +134,6 @@ extras_require = {
         "pygraphviz",
         "pydot",
         "pyyaml",
-        "gdal",
         "lxml",
         "pytest",
     ],
