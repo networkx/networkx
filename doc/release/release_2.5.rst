@@ -86,6 +86,7 @@ API Changes
 - remove completeness condition from minimum weight full matching
 - option to sort neighbors in bfs traversal
 - draw_networkx accepts numpy array for edgelist
+- relabel_nodes with 2 nodes mapped to same node can now create multiedge
 
 Deprecations
 ------------
