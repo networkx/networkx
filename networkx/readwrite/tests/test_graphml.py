@@ -223,11 +223,11 @@ class BaseGraphML:
   </graph>
 </graphml>"""
         cls.undirected_multigraph = nx.MultiGraph()
-        cls.undirected_multigraph.add_node('n10')
-        cls.undirected_multigraph.add_edge('n0', 'n2', id='e0')
-        cls.undirected_multigraph.add_edge('n1', 'n2', id='e1')
-        cls.undirected_multigraph.add_edge('n2', 'n1', id='e2')
-        fh = io.BytesIO(cls.undirected_multigraph_data.encode('UTF-8'))
+        cls.undirected_multigraph.add_node("n10")
+        cls.undirected_multigraph.add_edge("n0", "n2", id="e0")
+        cls.undirected_multigraph.add_edge("n1", "n2", id="e1")
+        cls.undirected_multigraph.add_edge("n2", "n1", id="e2")
+        fh = io.BytesIO(cls.undirected_multigraph_data.encode("UTF-8"))
         cls.undirected_multigraph_fh = fh
 
         cls.undirected_multigraph_no_multiedge_data = """<?xml version="1.0" encoding="UTF-8"?>
@@ -246,11 +246,11 @@ class BaseGraphML:
   </graph>
 </graphml>"""
         cls.undirected_multigraph_no_multiedge = nx.MultiGraph()
-        cls.undirected_multigraph_no_multiedge.add_node('n10')
-        cls.undirected_multigraph_no_multiedge.add_edge('n0', 'n2', id='e0')
-        cls.undirected_multigraph_no_multiedge.add_edge('n1', 'n2', id='e1')
-        cls.undirected_multigraph_no_multiedge.add_edge('n2', 'n3', id='e2')
-        fh = io.BytesIO(cls.undirected_multigraph_no_multiedge_data.encode('UTF-8'))
+        cls.undirected_multigraph_no_multiedge.add_node("n10")
+        cls.undirected_multigraph_no_multiedge.add_edge("n0", "n2", id="e0")
+        cls.undirected_multigraph_no_multiedge.add_edge("n1", "n2", id="e1")
+        cls.undirected_multigraph_no_multiedge.add_edge("n2", "n3", id="e2")
+        fh = io.BytesIO(cls.undirected_multigraph_no_multiedge_data.encode("UTF-8"))
         cls.undirected_multigraph_no_multiedge_fh = fh
 
         cls.multigraph_only_ids_for_multiedges_data = """<?xml version="1.0" encoding="UTF-8"?>
@@ -269,12 +269,13 @@ class BaseGraphML:
   </graph>
 </graphml>"""
         cls.multigraph_only_ids_for_multiedges = nx.MultiGraph()
-        cls.multigraph_only_ids_for_multiedges.add_node('n10')
-        cls.multigraph_only_ids_for_multiedges.add_edge('n0', 'n2')
-        cls.multigraph_only_ids_for_multiedges.add_edge('n1', 'n2', id='e1')
-        cls.multigraph_only_ids_for_multiedges.add_edge('n2', 'n1', id='e2')
-        fh = io.BytesIO(cls.multigraph_only_ids_for_multiedges_data.encode('UTF-8'))
+        cls.multigraph_only_ids_for_multiedges.add_node("n10")
+        cls.multigraph_only_ids_for_multiedges.add_edge("n0", "n2")
+        cls.multigraph_only_ids_for_multiedges.add_edge("n1", "n2", id="e1")
+        cls.multigraph_only_ids_for_multiedges.add_edge("n2", "n1", id="e2")
+        fh = io.BytesIO(cls.multigraph_only_ids_for_multiedges_data.encode("UTF-8"))
         cls.multigraph_only_ids_for_multiedges_fh = fh
+
 
 class TestReadGraphML(BaseGraphML):
     def test_read_simple_directed_graphml(self):
@@ -566,13 +567,13 @@ class TestReadGraphML(BaseGraphML):
 </graphml>
 """
         fh = io.BytesIO(data.encode("UTF-8"))
-        G = nx.read_graphml(fh)
+        G = nx.read_graphml(fh, force_multigraph=True)
         assert list(G.edges()) == [("n0", "n1")]
         assert G.has_edge("n0", "n1", key="e0")
         assert G.nodes["n0"]["label"] == "1"
         assert G.nodes["n1"]["label"] == "2"
 
-        H = nx.parse_graphml(data)
+        H = nx.parse_graphml(data, force_multigraph=True)
         assert list(H.edges()) == [("n0", "n1")]
         assert H.has_edge("n0", "n1", key="e0")
         assert H.nodes["n0"]["label"] == "1"
