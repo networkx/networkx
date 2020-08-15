@@ -1,4 +1,5 @@
 """Betweenness centrality measures for subsets of nodes."""
+import warnings
 
 from networkx.algorithms.centrality.betweenness import (
     _single_source_dijkstra_path_basic as dijkstra,
@@ -9,7 +10,6 @@ from networkx.algorithms.centrality.betweenness import (
 
 __all__ = [
     "betweenness_centrality_subset",
-    "betweenness_centrality_source",
     "edge_betweenness_centrality_subset",
 ]
 
@@ -193,6 +193,8 @@ def edge_betweenness_centrality_subset(
 
 # obsolete name
 def betweenness_centrality_source(G, normalized=True, weight=None, sources=None):
+    msg = "betweenness_centrality_source should be changed to betweenness_centrality_subset"
+    warnings.warn(msg, DeprecationWarning)
     if sources is None:
         sources = G.nodes()
     targets = list(G)

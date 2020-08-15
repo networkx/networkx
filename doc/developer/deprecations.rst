@@ -49,3 +49,5 @@ Version 3.0
 * In ``networkx/utils/misc.py`` remove ``is_string_like`` and related tests.
 * In ``networkx/utils/misc.py`` remove ``make_str`` and related tests.
 * Remove ``networkx/utils/contextmanagers.py`` and related tests.
+* In ``networkx/algorithms/centrality/betweenness_centrality_subset.py`` remove ``betweenness_centrality_source``.
+* In ``networkx/algorithms/centrality/betweenness.py`` remove ``edge_betweeness``.
