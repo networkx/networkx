@@ -87,6 +87,7 @@ API Changes
 - option to sort neighbors in bfs traversal
 - draw_networkx accepts numpy array for edgelist
 - relabel_nodes with 2 nodes mapped to same node can now create multiedge
+- steiner_tree works with MultiGraph
 
 Deprecations
 ------------
