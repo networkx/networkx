@@ -18,6 +18,18 @@ Basic functions
    density
    degrees
 
+Edgelist
+--------
+.. automodule:: networkx.algorithms.bipartite.edgelist
+.. autosummary::
+   :toctree: generated/
+
+   generate_edgelist
+   write_edgelist
+   parse_edgelist
+   read_edgelist
+
+
 Matching
 --------
 .. automodule:: networkx.algorithms.bipartite.matching
