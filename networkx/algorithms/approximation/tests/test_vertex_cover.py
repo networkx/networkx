@@ -6,7 +6,7 @@ def is_cover(G, node_cover):
     return all({u, v} & node_cover for u, v in G.edges())
 
 
-class TestMWVC(object):
+class TestMWVC:
     """Unit tests for the approximate minimum weighted vertex cover
     function,
     :func:`~networkx.algorithms.approximation.vertex_cover.min_weighted_vertex_cover`.

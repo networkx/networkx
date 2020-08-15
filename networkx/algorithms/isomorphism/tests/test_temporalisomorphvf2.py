@@ -63,7 +63,7 @@ def put_time_config_2(G, att_name):
     return G
 
 
-class TestTimeRespectingGraphMatcher(object):
+class TestTimeRespectingGraphMatcher:
     """
         A test class for the undirected temporal graph matcher.
     """
@@ -80,7 +80,7 @@ class TestTimeRespectingGraphMatcher(object):
 
     def test_timdelta_zero_timeRespecting_returnsTrue(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_same_time(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
@@ -89,7 +89,7 @@ class TestTimeRespectingGraphMatcher(object):
 
     def test_timdelta_zero_datetime_timeRespecting_returnsTrue(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_same_datetime(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
@@ -98,7 +98,7 @@ class TestTimeRespectingGraphMatcher(object):
 
     def test_attNameStrange_timdelta_zero_timeRespecting_returnsTrue(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'strange_name'
+        temporal_name = "strange_name"
         G1 = put_same_time(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
@@ -107,7 +107,7 @@ class TestTimeRespectingGraphMatcher(object):
 
     def test_notTimeRespecting_returnsFalse(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_sequence_time(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
@@ -116,7 +116,7 @@ class TestTimeRespectingGraphMatcher(object):
 
     def test_timdelta_one_config0_returns_no_embeddings(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_time_config_0(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
@@ -126,7 +126,7 @@ class TestTimeRespectingGraphMatcher(object):
 
     def test_timdelta_one_config1_returns_four_embedding(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_time_config_1(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
@@ -136,7 +136,7 @@ class TestTimeRespectingGraphMatcher(object):
 
     def test_timdelta_one_config2_returns_ten_embeddings(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_time_config_2(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
@@ -146,7 +146,7 @@ class TestTimeRespectingGraphMatcher(object):
         assert count_match == 10
 
 
-class TestDiTimeRespectingGraphMatcher(object):
+class TestDiTimeRespectingGraphMatcher:
     """
         A test class for the directed time-respecting graph matcher.
     """
@@ -163,7 +163,7 @@ class TestDiTimeRespectingGraphMatcher(object):
 
     def test_timdelta_zero_same_dates_returns_true(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_same_time(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
@@ -172,7 +172,7 @@ class TestDiTimeRespectingGraphMatcher(object):
 
     def test_attNameStrange_timdelta_zero_same_dates_returns_true(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'strange'
+        temporal_name = "strange"
         G1 = put_same_time(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
@@ -181,7 +181,7 @@ class TestDiTimeRespectingGraphMatcher(object):
 
     def test_timdelta_one_config0_returns_no_embeddings(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_time_config_0(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
@@ -191,7 +191,7 @@ class TestDiTimeRespectingGraphMatcher(object):
 
     def test_timdelta_one_config1_returns_one_embedding(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_time_config_1(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
@@ -201,7 +201,7 @@ class TestDiTimeRespectingGraphMatcher(object):
 
     def test_timdelta_one_config2_returns_two_embeddings(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_time_config_2(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)

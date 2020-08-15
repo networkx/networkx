@@ -14,6 +14,7 @@ from networkx.generators.expanders import *
 from networkx.generators.geometric import *
 from networkx.generators.internet_as_graphs import *
 from networkx.generators.intersection import *
+from networkx.generators.interval_graph import *
 from networkx.generators.joint_degree_seq import *
 from networkx.generators.lattice import *
 from networkx.generators.line import *

@@ -12,13 +12,13 @@ def _average_nbr_deg(G, source_degree, target_degree, nodes=None, weight=None):
         if weight is None:
             avg[n] = sum(d for n, d in nbrdeg) / float(deg)
         else:
-            avg[n] = sum((G[n][nbr].get(weight, 1) * d
-                          for nbr, d in nbrdeg)) / float(deg)
+            avg[n] = sum((G[n][nbr].get(weight, 1) * d for nbr, d in nbrdeg)) / float(
+                deg
+            )
     return avg
 
 
-def average_neighbor_degree(G, source='out', target='out',
-                            nodes=None, weight=None):
+def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=None):
     r"""Returns the average degree of the neighborhood of each node.
 
     The average neighborhood degree of a node `i` is
@@ -102,12 +102,11 @@ def average_neighbor_degree(G, source='out', target='out',
     source_degree = G.degree
     target_degree = G.degree
     if G.is_directed():
-        direction = {'out': G.out_degree,
-                     'in': G.in_degree}
+        direction = {"out": G.out_degree, "in": G.in_degree}
         source_degree = direction[source]
         target_degree = direction[target]
-    return _average_nbr_deg(G, source_degree, target_degree,
-                            nodes=nodes, weight=weight)
+    return _average_nbr_deg(G, source_degree, target_degree, nodes=nodes, weight=weight)
+
 
 # obsolete
 # def average_neighbor_in_degree(G, nodes=None, weight=None):

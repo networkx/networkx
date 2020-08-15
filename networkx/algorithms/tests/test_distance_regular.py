@@ -1,10 +1,8 @@
-
 import networkx as nx
 from networkx import is_strongly_regular
 
 
-class TestDistanceRegular(object):
-
+class TestDistanceRegular:
     def test_is_distance_regular(self):
         assert nx.is_distance_regular(nx.icosahedral_graph())
         assert nx.is_distance_regular(nx.petersen_graph())
@@ -43,7 +41,7 @@ class TestDistanceRegular(object):
         assert c == [1, 2, 5]
 
 
-class TestStronglyRegular(object):
+class TestStronglyRegular:
     """Unit tests for the :func:`~networkx.is_strongly_regular`
     function.
 

@@ -12,14 +12,14 @@ Graph Classes
 
 The degree* methods in the graph classes (Graph, DiGraph, MultiGraph,
 MultiDiGraph) now take an optional weight= keyword that allows computing
-weighted degree with arbitrary (numerical) edge attributes.  Setting 
+weighted degree with arbitrary (numerical) edge attributes.  Setting
 weight=None is equivalent to the previous weighted=False.
 
 
 Weighted graph algorithms
 -------------------------
 
-Many 'weighted' graph algorithms now take optional parameter to 
+Many 'weighted' graph algorithms now take optional parameter to
 specify which edge attribute should be used for the weight
 (default='weight') (ticket https://networkx.lanl.gov/trac/ticket/573)
 
@@ -30,11 +30,11 @@ how to specify which edge attribute will be used in the algorithms:
 
 - Use weight='weight' to use the 'weight' edge attribute
 
-- Use weight='other' to use the 'other' edge attribute 
+- Use weight='other' to use the 'other' edge attribute
 
 Algorithms affected are:
 
-to_scipy_sparse_matrix, 
+to_scipy_sparse_matrix,
 clustering,
 average_clustering,
 bipartite.degree,
@@ -95,13 +95,13 @@ Other
 
 * condensation
 
-  The condensation algorithm now takes a second argument (scc) and returns a   
+  The condensation algorithm now takes a second argument (scc) and returns a
   graph with nodes labeled as integers instead of node tuples.
 
 * degree connectivity
 
-  average_in_degree_connectivity and average_out_degree_connectivity have 
-  have been replaced with 
+  average_in_degree_connectivity and average_out_degree_connectivity have
+  have been replaced with
 
   average_degree_connectivity(G, source='in', target='in')
 
@@ -111,8 +111,8 @@ Other
 
 * neighbor degree
 
-  average_neighbor_in_degree and  average_neighbor_out_degreey have 
-  have been replaced with 
+  average_neighbor_in_degree and  average_neighbor_out_degreey have
+  have been replaced with
 
   average_neighbor_degree(G, source='in', target='in')
 

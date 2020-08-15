@@ -12,10 +12,10 @@ def run(verbosity=1, doctest=False):
 
     import pytest
 
-    pytest_args = ['-l']
+    pytest_args = ["-l"]
 
     if verbosity and int(verbosity) > 1:
-        pytest_args += ["-" + "v"*(int(verbosity)-1)]
+        pytest_args += ["-" + "v" * (int(verbosity) - 1)]
 
     if doctest:
         pytest_args += ["--doctest-modules"]
@@ -27,7 +27,7 @@ def run(verbosity=1, doctest=False):
     except SystemExit as exc:
         code = exc.code
 
-    return (code == 0)
+    return code == 0
 
 
 if __name__ == "__main__":

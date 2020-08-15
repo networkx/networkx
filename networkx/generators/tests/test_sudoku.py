@@ -9,7 +9,7 @@ def test_sudoku_negative():
     pytest.raises(nx.NetworkXError, nx.sudoku_graph, n=-1)
 
 
-@pytest.mark.parametrize('n', [0, 1, 2, 3, 4])
+@pytest.mark.parametrize("n", [0, 1, 2, 3, 4])
 def test_sudoku_generator(n):
     """Generate Sudoku graphs of various sizes and verify their properties."""
     G = nx.sudoku_graph(n)
@@ -26,12 +26,66 @@ def test_sudoku_generator(n):
         assert sorted(G.neighbors(6)) == [2, 3, 4, 5, 7, 10, 14]
     elif n == 3:
         assert sorted(G.neighbors(42)) == [
-            6, 15, 24, 33, 34, 35, 36, 37, 38, 39,
-            40, 41, 43, 44, 51, 52, 53, 60, 69, 78
+            6,
+            15,
+            24,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            43,
+            44,
+            51,
+            52,
+            53,
+            60,
+            69,
+            78,
         ]
     elif n == 4:
         assert sorted(G.neighbors(0)) == [
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-            16, 17, 18, 19, 32, 33, 34, 35, 48, 49, 50, 51,
-            64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224, 240
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            32,
+            33,
+            34,
+            35,
+            48,
+            49,
+            50,
+            51,
+            64,
+            80,
+            96,
+            112,
+            128,
+            144,
+            160,
+            176,
+            192,
+            208,
+            224,
+            240,
         ]

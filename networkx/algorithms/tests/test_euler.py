@@ -96,7 +96,9 @@ class TestEulerianCircuit:
         nodes = [u for u, v, k in edges]
         assert nodes == [0, 3, 2, 1, 2, 1]
         assert edges[:2] == [(0, 3, 0), (3, 2, 0)]
-        assert collections.Counter(edges[2:5]) == collections.Counter([(2, 1, 0), (1, 2, 1), (2, 1, 2)])
+        assert collections.Counter(edges[2:5]) == collections.Counter(
+            [(2, 1, 0), (1, 2, 1), (2, 1, 2)]
+        )
         assert edges[5:] == [(1, 0, 0)]
 
     def test_not_eulerian(self):

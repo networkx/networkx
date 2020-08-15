@@ -3,17 +3,19 @@
 import networkx as nx
 
 
-def flow_matrix_row(G, weight=None, dtype=float, solver='lu'):
+def flow_matrix_row(G, weight=None, dtype=float, solver="lu"):
     # Generate a row of the current-flow matrix
     import numpy as np
-    from scipy import sparse
-    from scipy.sparse import linalg
-    solvername = {"full": FullInverseLaplacian,
-                  "lu": SuperLUInverseLaplacian,
-                  "cg": CGInverseLaplacian}
+
+    solvername = {
+        "full": FullInverseLaplacian,
+        "lu": SuperLUInverseLaplacian,
+        "cg": CGInverseLaplacian,
+    }
     n = G.number_of_nodes()
-    L = laplacian_sparse_matrix(G, nodelist=range(n), weight=weight,
-                                dtype=dtype, format='csc')
+    L = laplacian_sparse_matrix(
+        G, nodelist=range(n), weight=weight, dtype=dtype, format="csc"
+    )
     C = solvername[solver](L, dtype=dtype)  # initialize solver
     w = C.w  # w is the Laplacian matrix width
     # row-by-row flow matrix
@@ -31,10 +33,11 @@ def flow_matrix_row(G, weight=None, dtype=float, solver='lu'):
 # Class to compute the inverse laplacian only for specified rows
 # Allows computation of the current-flow matrix without storing entire
 # inverse laplacian matrix
-class InverseLaplacian(object):
+class InverseLaplacian:
     def __init__(self, L, width=None, dtype=None):
         global np
         import numpy as np
+
         (n, n) = L.shape
         self.dtype = dtype
         self.n = n
@@ -93,6 +96,7 @@ class FullInverseLaplacian(InverseLaplacian):
 class SuperLUInverseLaplacian(InverseLaplacian):
     def init_solver(self, L):
         from scipy.sparse import linalg
+
         self.lusolve = linalg.factorized(self.L1.tocsc())
 
     def solve_inverse(self, r):
@@ -110,6 +114,7 @@ class CGInverseLaplacian(InverseLaplacian):
     def init_solver(self, L):
         global linalg
         from scipy.sparse import linalg
+
         ilu = linalg.spilu(self.L1.tocsc())
         n = self.n - 1
         self.M = linalg.LinearOperator(shape=(n, n), matvec=ilu.solve)
@@ -126,12 +131,13 @@ class CGInverseLaplacian(InverseLaplacian):
 
 
 # graph laplacian, sparse version, will move to linalg/laplacianmatrix.py
-def laplacian_sparse_matrix(G, nodelist=None, weight=None, dtype=None,
-                            format='csr'):
+def laplacian_sparse_matrix(G, nodelist=None, weight=None, dtype=None, format="csr"):
     import numpy as np
     import scipy.sparse
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
-                                  dtype=dtype, format=format)
+
+    A = nx.to_scipy_sparse_matrix(
+        G, nodelist=nodelist, weight=weight, dtype=dtype, format=format
+    )
     (n, n) = A.shape
     data = np.asarray(A.sum(axis=1).T)
     D = scipy.sparse.spdiags(data, 0, n, n, format=format)

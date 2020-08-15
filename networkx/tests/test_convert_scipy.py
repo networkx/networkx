@@ -5,12 +5,12 @@ from networkx.testing import assert_graphs_equal
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
 
 
-class TestConvertNumpy(object):
+class TestConvertNumpy:
     @classmethod
     def setup_class(cls):
         global np, sp, sparse, np_assert_equal
-        np = pytest.importorskip('numpy')
-        sp = pytest.importorskip('scipy')
+        np = pytest.importorskip("numpy")
+        sp = pytest.importorskip("scipy")
         sparse = sp.sparse
         np_assert_equal = np.testing.assert_equal
 
@@ -22,7 +22,7 @@ class TestConvertNumpy(object):
         self.G4 = self.create_weighted(nx.DiGraph())
 
     def test_exceptions(self):
-        class G(object):
+        class G:
             format = None
 
         pytest.raises(nx.NetworkXError, nx.to_networkx_graph, G)
@@ -106,62 +106,68 @@ class TestConvertNumpy(object):
 
         # Make nodelist ambiguous by containing duplicates.
         nodelist += [nodelist[0]]
-        pytest.raises(nx.NetworkXError, nx.to_numpy_matrix, P3,
-                      nodelist=nodelist)
+        pytest.raises(nx.NetworkXError, nx.to_numpy_matrix, P3, nodelist=nodelist)
 
     def test_weight_keyword(self):
         WP4 = nx.Graph()
-        WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3))
-                           for n in range(3))
+        WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_scipy_sparse_matrix(P4)
-        np_assert_equal(A.todense(),
-                        nx.to_scipy_sparse_matrix(WP4, weight=None).todense())
-        np_assert_equal(0.5 * A.todense(),
-                        nx.to_scipy_sparse_matrix(WP4).todense())
-        np_assert_equal(0.3 * A.todense(),
-                        nx.to_scipy_sparse_matrix(WP4, weight='other').todense())
+        np_assert_equal(
+            A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
+        )
+        np_assert_equal(0.5 * A.todense(), nx.to_scipy_sparse_matrix(WP4).todense())
+        np_assert_equal(
+            0.3 * A.todense(), nx.to_scipy_sparse_matrix(WP4, weight="other").todense()
+        )
 
     def test_format_keyword(self):
         WP4 = nx.Graph()
-        WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3))
-                           for n in range(3))
+        WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
         P4 = path_graph(4)
-        A = nx.to_scipy_sparse_matrix(P4, format='csr')
-        np_assert_equal(A.todense(),
-                        nx.to_scipy_sparse_matrix(WP4, weight=None).todense())
+        A = nx.to_scipy_sparse_matrix(P4, format="csr")
+        np_assert_equal(
+            A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
+        )
 
-        A = nx.to_scipy_sparse_matrix(P4, format='csc')
-        np_assert_equal(A.todense(),
-                        nx.to_scipy_sparse_matrix(WP4, weight=None).todense())
+        A = nx.to_scipy_sparse_matrix(P4, format="csc")
+        np_assert_equal(
+            A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
+        )
 
-        A = nx.to_scipy_sparse_matrix(P4, format='coo')
-        np_assert_equal(A.todense(),
-                        nx.to_scipy_sparse_matrix(WP4, weight=None).todense())
+        A = nx.to_scipy_sparse_matrix(P4, format="coo")
+        np_assert_equal(
+            A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
+        )
 
-        A = nx.to_scipy_sparse_matrix(P4, format='bsr')
-        np_assert_equal(A.todense(),
-                        nx.to_scipy_sparse_matrix(WP4, weight=None).todense())
+        A = nx.to_scipy_sparse_matrix(P4, format="bsr")
+        np_assert_equal(
+            A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
+        )
 
-        A = nx.to_scipy_sparse_matrix(P4, format='lil')
-        np_assert_equal(A.todense(),
-                        nx.to_scipy_sparse_matrix(WP4, weight=None).todense())
+        A = nx.to_scipy_sparse_matrix(P4, format="lil")
+        np_assert_equal(
+            A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
+        )
 
-        A = nx.to_scipy_sparse_matrix(P4, format='dia')
-        np_assert_equal(A.todense(),
-                        nx.to_scipy_sparse_matrix(WP4, weight=None).todense())
+        A = nx.to_scipy_sparse_matrix(P4, format="dia")
+        np_assert_equal(
+            A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
+        )
 
-        A = nx.to_scipy_sparse_matrix(P4, format='dok')
-        np_assert_equal(A.todense(),
-                        nx.to_scipy_sparse_matrix(WP4, weight=None).todense())
+        A = nx.to_scipy_sparse_matrix(P4, format="dok")
+        np_assert_equal(
+            A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
+        )
 
     def test_format_keyword_raise(self):
         with pytest.raises(nx.NetworkXError):
             WP4 = nx.Graph()
-            WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3))
-                               for n in range(3))
+            WP4.add_edges_from(
+                (n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3)
+            )
             P4 = path_graph(4)
-            nx.to_scipy_sparse_matrix(P4, format='any_other')
+            nx.to_scipy_sparse_matrix(P4, format="any_other")
 
     def test_null_raise(self):
         with pytest.raises(nx.NetworkXError):
@@ -186,10 +192,18 @@ class TestConvertNumpy(object):
         M = nx.to_scipy_sparse_matrix(G)
         np_assert_equal(M.todense(), np.matrix([[1]]))
 
+        G.add_edges_from([(2, 3), (3, 4)])
+        M = nx.to_scipy_sparse_matrix(G, nodelist=[2, 3, 4])
+        np_assert_equal(M.todense(), np.matrix([[0, 1, 0], [1, 0, 1], [0, 1, 0]]))
+
     def test_selfloop_digraph(self):
         G = nx.DiGraph([(1, 1)])
         M = nx.to_scipy_sparse_matrix(G)
         np_assert_equal(M.todense(), np.matrix([[1]]))
+
+        G.add_edges_from([(2, 3), (3, 4)])
+        M = nx.to_scipy_sparse_matrix(G, nodelist=[2, 3, 4])
+        np_assert_equal(M.todense(), np.matrix([[0, 1, 0], [0, 0, 1], [0, 0, 0]]))
 
     def test_from_scipy_sparse_matrix_parallel_edges(self):
         """Tests that the :func:`networkx.from_scipy_sparse_matrix` function
@@ -204,11 +218,13 @@ class TestConvertNumpy(object):
         edges = [(0, 0), (0, 1), (1, 0)]
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         expected.add_edge(1, 1, weight=2)
-        actual = nx.from_scipy_sparse_matrix(A, parallel_edges=True,
-                                             create_using=nx.DiGraph)
+        actual = nx.from_scipy_sparse_matrix(
+            A, parallel_edges=True, create_using=nx.DiGraph
+        )
         assert_graphs_equal(actual, expected)
-        actual = nx.from_scipy_sparse_matrix(A, parallel_edges=False,
-                                             create_using=nx.DiGraph)
+        actual = nx.from_scipy_sparse_matrix(
+            A, parallel_edges=False, create_using=nx.DiGraph
+        )
         assert_graphs_equal(actual, expected)
         # Now each integer entry in the adjacency matrix is interpreted as the
         # number of parallel edges in the graph if the appropriate keyword
@@ -216,15 +232,17 @@ class TestConvertNumpy(object):
         edges = [(0, 0), (0, 1), (1, 0), (1, 1), (1, 1)]
         expected = nx.MultiDiGraph()
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
-        actual = nx.from_scipy_sparse_matrix(A, parallel_edges=True,
-                                             create_using=nx.MultiDiGraph)
+        actual = nx.from_scipy_sparse_matrix(
+            A, parallel_edges=True, create_using=nx.MultiDiGraph
+        )
         assert_graphs_equal(actual, expected)
         expected = nx.MultiDiGraph()
         expected.add_edges_from(set(edges), weight=1)
         # The sole self-loop (edge 0) on vertex 1 should have weight 2.
-        expected[1][1][0]['weight'] = 2
-        actual = nx.from_scipy_sparse_matrix(A, parallel_edges=False,
-                                             create_using=nx.MultiDiGraph)
+        expected[1][1][0]["weight"] = 2
+        actual = nx.from_scipy_sparse_matrix(
+            A, parallel_edges=False, create_using=nx.MultiDiGraph
+        )
         assert_graphs_equal(actual, expected)
 
     def test_symmetric(self):

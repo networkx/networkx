@@ -2,15 +2,16 @@
 Mixing matrices for node attributes and degree.
 """
 from networkx.utils import dict_to_numpy_array
-from networkx.algorithms.assortativity.pairs import node_degree_xy, \
-    node_attribute_xy
+from networkx.algorithms.assortativity.pairs import node_degree_xy, node_attribute_xy
 
-__all__ = ['attribute_mixing_matrix',
-           'attribute_mixing_dict',
-           'degree_mixing_matrix',
-           'degree_mixing_dict',
-           'numeric_mixing_matrix',
-           'mixing_dict']
+__all__ = [
+    "attribute_mixing_matrix",
+    "attribute_mixing_dict",
+    "degree_mixing_matrix",
+    "degree_mixing_dict",
+    "numeric_mixing_matrix",
+    "mixing_dict",
+]
 
 
 def attribute_mixing_dict(G, attribute, nodes=None, normalized=False):
@@ -51,8 +52,7 @@ def attribute_mixing_dict(G, attribute, nodes=None, normalized=False):
     return mixing_dict(xy_iter, normalized=normalized)
 
 
-def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None,
-                            normalized=True):
+def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=True):
     """Returns mixing matrix for attribute.
 
     Parameters
@@ -86,8 +86,7 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None,
     return a
 
 
-def degree_mixing_dict(G, x='out', y='in', weight=None,
-                       nodes=None, normalized=False):
+def degree_mixing_dict(G, x="out", y="in", weight=None, nodes=None, normalized=False):
     """Returns dictionary representation of mixing matrix for degree.
 
     Parameters
@@ -118,8 +117,7 @@ def degree_mixing_dict(G, x='out', y='in', weight=None,
     return mixing_dict(xy_iter, normalized=normalized)
 
 
-def degree_mixing_matrix(G, x='out', y='in', weight=None,
-                         nodes=None, normalized=True):
+def degree_mixing_matrix(G, x="out", y="in", weight=None, nodes=None, normalized=True):
     """Returns mixing matrix for attribute.
 
     Parameters

@@ -9,11 +9,11 @@ from networkx.testing import almost_equal
 # bipartivity in complex networks", PhysRev E 72, 046105 (2005)
 
 
-class TestSpectralBipartivity(object):
+class TestSpectralBipartivity:
     @classmethod
     def setup_class(cls):
         global scipy
-        scipy = pytest.importorskip('scipy')
+        scipy = pytest.importorskip("scipy")
 
     def test_star_like(self):
         # star-like

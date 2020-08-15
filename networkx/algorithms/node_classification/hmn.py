@@ -16,11 +16,11 @@ from networkx.algorithms.node_classification.utils import (
     _predict,
 )
 
-__all__ = ['harmonic_function']
+__all__ = ["harmonic_function"]
 
 
-@not_implemented_for('directed')
-def harmonic_function(G, max_iter=30, label_name='label'):
+@not_implemented_for("directed")
+def harmonic_function(G, max_iter=30, label_name="label"):
     """Node classification by Harmonic function
 
     Parameters
@@ -63,14 +63,16 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     """
     try:
         import numpy as np
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "harmonic_function() requires numpy: http://scipy.org/ ")
+            "harmonic_function() requires numpy: http://numpy.org/ "
+        ) from e
     try:
         from scipy import sparse
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "harmonic_function() requires scipy: http://scipy.org/ ")
+            "harmonic_function() requires scipy: http://scipy.org/ "
+        ) from e
 
     def _build_propagation_matrix(X, labels):
         """Build propagation matrix of Harmonic function
@@ -122,7 +124,8 @@ def harmonic_function(G, max_iter=30, label_name='label'):
 
     if labels.shape[0] == 0:
         raise nx.NetworkXError(
-            "No node on the input graph is labeled by '" + label_name + "'.")
+            "No node on the input graph is labeled by '" + label_name + "'."
+        )
 
     n_samples = X.shape[0]
     n_classes = label_dict.shape[0]

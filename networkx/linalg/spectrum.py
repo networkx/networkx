@@ -3,11 +3,16 @@ Eigenvalue spectrum of graphs.
 """
 import networkx as nx
 
-__all__ = ['laplacian_spectrum', 'adjacency_spectrum', 'modularity_spectrum',
-           'normalized_laplacian_spectrum', 'bethe_hessian_spectrum']
+__all__ = [
+    "laplacian_spectrum",
+    "adjacency_spectrum",
+    "modularity_spectrum",
+    "normalized_laplacian_spectrum",
+    "bethe_hessian_spectrum",
+]
 
 
-def laplacian_spectrum(G, weight='weight'):
+def laplacian_spectrum(G, weight="weight"):
     """Returns eigenvalues of the Laplacian of G
 
     Parameters
@@ -27,17 +32,18 @@ def laplacian_spectrum(G, weight='weight'):
     Notes
     -----
     For MultiGraph/MultiDiGraph, the edges weights are summed.
-    See to_numpy_matrix for other options.
+    See to_numpy_array for other options.
 
     See Also
     --------
     laplacian_matrix
     """
     from scipy.linalg import eigvalsh
+
     return eigvalsh(nx.laplacian_matrix(G, weight=weight).todense())
 
 
-def normalized_laplacian_spectrum(G, weight='weight'):
+def normalized_laplacian_spectrum(G, weight="weight"):
     """Return eigenvalues of the normalized Laplacian of G
 
     Parameters
@@ -57,17 +63,18 @@ def normalized_laplacian_spectrum(G, weight='weight'):
     Notes
     -----
     For MultiGraph/MultiDiGraph, the edges weights are summed.
-    See to_numpy_matrix for other options.
+    See to_numpy_array for other options.
 
     See Also
     --------
     normalized_laplacian_matrix
     """
     from scipy.linalg import eigvalsh
+
     return eigvalsh(nx.normalized_laplacian_matrix(G, weight=weight).todense())
 
 
-def adjacency_spectrum(G, weight='weight'):
+def adjacency_spectrum(G, weight="weight"):
     """Returns eigenvalues of the adjacency matrix of G.
 
     Parameters
@@ -87,13 +94,14 @@ def adjacency_spectrum(G, weight='weight'):
     Notes
     -----
     For MultiGraph/MultiDiGraph, the edges weights are summed.
-    See to_numpy_matrix for other options.
+    See to_numpy_array for other options.
 
     See Also
     --------
     adjacency_matrix
     """
     from scipy.linalg import eigvals
+
     return eigvals(nx.adjacency_matrix(G, weight=weight).todense())
 
 
@@ -120,6 +128,7 @@ def modularity_spectrum(G):
        Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
     """
     from scipy.linalg import eigvals
+
     if G.is_directed():
         return eigvals(nx.directed_modularity_matrix(G))
     else:
@@ -153,4 +162,5 @@ def bethe_hessian_spectrum(G, r=None):
        Advances in Neural Information Processing Systems. 2014.
     """
     from scipy.linalg import eigvalsh
+
     return eigvalsh(nx.bethe_hessian_matrix(G, r).todense())

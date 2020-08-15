@@ -3,33 +3,40 @@ Various small and named graphs, together with some compact generators.
 
 """
 
-__all__ = ['make_small_graph',
-           'LCF_graph',
-           'bull_graph',
-           'chvatal_graph',
-           'cubical_graph',
-           'desargues_graph',
-           'diamond_graph',
-           'dodecahedral_graph',
-           'frucht_graph',
-           'heawood_graph',
-           'hoffman_singleton_graph',
-           'house_graph',
-           'house_x_graph',
-           'icosahedral_graph',
-           'krackhardt_kite_graph',
-           'moebius_kantor_graph',
-           'octahedral_graph',
-           'pappus_graph',
-           'petersen_graph',
-           'sedgewick_maze_graph',
-           'tetrahedral_graph',
-           'truncated_cube_graph',
-           'truncated_tetrahedron_graph',
-           'tutte_graph']
+__all__ = [
+    "make_small_graph",
+    "LCF_graph",
+    "bull_graph",
+    "chvatal_graph",
+    "cubical_graph",
+    "desargues_graph",
+    "diamond_graph",
+    "dodecahedral_graph",
+    "frucht_graph",
+    "heawood_graph",
+    "hoffman_singleton_graph",
+    "house_graph",
+    "house_x_graph",
+    "icosahedral_graph",
+    "krackhardt_kite_graph",
+    "moebius_kantor_graph",
+    "octahedral_graph",
+    "pappus_graph",
+    "petersen_graph",
+    "sedgewick_maze_graph",
+    "tetrahedral_graph",
+    "truncated_cube_graph",
+    "truncated_tetrahedron_graph",
+    "tutte_graph",
+]
 
 import networkx as nx
-from networkx.generators.classic import empty_graph, cycle_graph, path_graph, complete_graph
+from networkx.generators.classic import (
+    empty_graph,
+    cycle_graph,
+    path_graph,
+    complete_graph,
+)
 from networkx.exception import NetworkXError
 
 
@@ -158,7 +165,7 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
 
     for i in range(n_extra_edges):
         shift = shift_list[i % len(shift_list)]  # cycle through shift_list
-        v1 = nodes[i % n]                    # cycle repeatedly through nodes
+        v1 = nodes[i % n]  # cycle repeatedly through nodes
         v2 = nodes[(i + shift) % n]
         G.add_edge(v1, v2)
     return G
@@ -168,13 +175,14 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
 #   Various small and named graphs
 # -------------------------------------------------------------------------------
 
+
 def bull_graph(create_using=None):
     """Returns the Bull graph. """
     description = [
         "adjacencylist",
         "Bull Graph",
         5,
-        [[2, 3], [1, 3, 4], [1, 2, 5], [2], [3]]
+        [[2, 3], [1, 3, 4], [1, 2, 5], [2], [3]],
     ]
     G = make_small_undirected_graph(description, create_using)
     return G
@@ -186,9 +194,20 @@ def chvatal_graph(create_using=None):
         "adjacencylist",
         "Chvatal Graph",
         12,
-        [[2, 5, 7, 10], [3, 6, 8], [4, 7, 9], [5, 8, 10],
-         [6, 9], [11, 12], [11, 12], [9, 12],
-         [11], [11, 12], [], []]
+        [
+            [2, 5, 7, 10],
+            [3, 6, 8],
+            [4, 7, 9],
+            [5, 8, 10],
+            [6, 9],
+            [11, 12],
+            [11, 12],
+            [9, 12],
+            [11],
+            [11, 12],
+            [],
+            [],
+        ],
     ]
     G = make_small_undirected_graph(description, create_using)
     return G
@@ -200,8 +219,16 @@ def cubical_graph(create_using=None):
         "adjacencylist",
         "Platonic Cubical Graph",
         8,
-        [[2, 4, 5], [1, 3, 8], [2, 4, 7], [1, 3, 6],
-         [1, 6, 8], [4, 5, 7], [3, 6, 8], [2, 5, 7]]
+        [
+            [2, 4, 5],
+            [1, 3, 8],
+            [2, 4, 7],
+            [1, 3, 6],
+            [1, 6, 8],
+            [4, 5, 7],
+            [3, 6, 8],
+            [2, 5, 7],
+        ],
     ]
     G = make_small_undirected_graph(description, create_using)
     return G
@@ -220,7 +247,7 @@ def diamond_graph(create_using=None):
         "adjacencylist",
         "Diamond Graph",
         4,
-        [[2, 3], [1, 3, 4], [1, 2, 4], [2, 3]]
+        [[2, 3], [1, 3, 4], [1, 2, 4], [2, 3]],
     ]
     G = make_small_undirected_graph(description, create_using)
     return G
@@ -241,8 +268,21 @@ def frucht_graph(create_using=None):
 
     """
     G = cycle_graph(7, create_using)
-    G.add_edges_from([[0, 7], [1, 7], [2, 8], [3, 9], [4, 9], [5, 10], [6, 10],
-                      [7, 11], [8, 11], [8, 9], [10, 11]])
+    G.add_edges_from(
+        [
+            [0, 7],
+            [1, 7],
+            [2, 8],
+            [3, 9],
+            [4, 9],
+            [5, 10],
+            [6, 10],
+            [7, 11],
+            [8, 11],
+            [8, 9],
+            [10, 11],
+        ]
+    )
 
     G.name = "Frucht Graph"
     return G
@@ -256,19 +296,18 @@ def heawood_graph(create_using=None):
 
 
 def hoffman_singleton_graph():
-    '''Return the Hoffman-Singleton Graph.'''
+    """Return the Hoffman-Singleton Graph."""
     G = nx.Graph()
     for i in range(5):
         for j in range(5):
-            G.add_edge(('pentagon', i, j), ('pentagon', i, (j - 1) % 5))
-            G.add_edge(('pentagon', i, j), ('pentagon', i, (j + 1) % 5))
-            G.add_edge(('pentagram', i, j), ('pentagram', i, (j - 2) % 5))
-            G.add_edge(('pentagram', i, j), ('pentagram', i, (j + 2) % 5))
+            G.add_edge(("pentagon", i, j), ("pentagon", i, (j - 1) % 5))
+            G.add_edge(("pentagon", i, j), ("pentagon", i, (j + 1) % 5))
+            G.add_edge(("pentagram", i, j), ("pentagram", i, (j - 2) % 5))
+            G.add_edge(("pentagram", i, j), ("pentagram", i, (j + 2) % 5))
             for k in range(5):
-                G.add_edge(('pentagon', i, j),
-                           ('pentagram', k, (i * k + j) % 5))
+                G.add_edge(("pentagon", i, j), ("pentagram", k, (i * k + j) % 5))
     G = nx.convert_node_labels_to_integers(G)
-    G.name = 'Hoffman-Singleton Graph'
+    G.name = "Hoffman-Singleton Graph"
     return G
 
 
@@ -278,7 +317,7 @@ def house_graph(create_using=None):
         "adjacencylist",
         "House Graph",
         5,
-        [[2, 3], [1, 4], [1, 4, 5], [2, 3, 5], [3, 4]]
+        [[2, 3], [1, 4], [1, 4, 5], [2, 3, 5], [3, 4]],
     ]
     G = make_small_undirected_graph(description, create_using)
     return G
@@ -290,7 +329,7 @@ def house_x_graph(create_using=None):
         "adjacencylist",
         "House-with-X-inside Graph",
         5,
-        [[2, 3, 4], [1, 3, 4], [1, 2, 4, 5], [1, 2, 3, 5], [3, 4]]
+        [[2, 3, 4], [1, 3, 4], [1, 2, 4, 5], [1, 2, 3, 5], [3, 4]],
     ]
     G = make_small_undirected_graph(description, create_using)
     return G
@@ -302,9 +341,20 @@ def icosahedral_graph(create_using=None):
         "adjacencylist",
         "Platonic Icosahedral Graph",
         12,
-        [[2, 6, 8, 9, 12], [3, 6, 7, 9], [4, 7, 9, 10], [5, 7, 10, 11],
-         [6, 7, 11, 12], [7, 12], [], [9, 10, 11, 12],
-         [10], [11], [12], []]
+        [
+            [2, 6, 8, 9, 12],
+            [3, 6, 7, 9],
+            [4, 7, 9, 10],
+            [5, 7, 10, 11],
+            [6, 7, 11, 12],
+            [7, 12],
+            [],
+            [9, 10, 11, 12],
+            [10],
+            [11],
+            [12],
+            [],
+        ],
     ]
     G = make_small_undirected_graph(description, create_using)
     return G
@@ -325,8 +375,18 @@ def krackhardt_kite_graph(create_using=None):
         "adjacencylist",
         "Krackhardt Kite Social Network",
         10,
-        [[2, 3, 4, 6], [1, 4, 5, 7], [1, 4, 6], [1, 2, 3, 5, 6, 7], [2, 4, 7],
-         [1, 3, 4, 7, 8], [2, 4, 5, 6, 8], [6, 7, 9], [8, 10], [9]]
+        [
+            [2, 3, 4, 6],
+            [1, 4, 5, 7],
+            [1, 4, 6],
+            [1, 2, 3, 5, 6, 7],
+            [2, 4, 7],
+            [1, 3, 4, 7, 8],
+            [2, 4, 5, 6, 8],
+            [6, 7, 9],
+            [8, 10],
+            [9],
+        ],
     ]
     G = make_small_undirected_graph(description, create_using)
     return G
@@ -345,7 +405,7 @@ def octahedral_graph(create_using=None):
         "adjacencylist",
         "Platonic Octahedral Graph",
         6,
-        [[2, 3, 4, 5], [3, 4, 6], [5, 6], [5, 6], [6], []]
+        [[2, 3, 4, 5], [3, 4, 6], [5, 6], [5, 6], [6], []],
     ]
     G = make_small_undirected_graph(description, create_using)
     return G
@@ -364,8 +424,18 @@ def petersen_graph(create_using=None):
         "adjacencylist",
         "Petersen Graph",
         10,
-        [[2, 5, 6], [1, 3, 7], [2, 4, 8], [3, 5, 9], [4, 1, 10], [1, 8, 9], [2, 9, 10],
-         [3, 6, 10], [4, 6, 7], [5, 7, 8]]
+        [
+            [2, 5, 6],
+            [1, 3, 7],
+            [2, 4, 8],
+            [3, 5, 9],
+            [4, 1, 10],
+            [1, 8, 9],
+            [2, 9, 10],
+            [3, 6, 10],
+            [4, 6, 7],
+            [5, 7, 8],
+        ],
     ]
     G = make_small_undirected_graph(description, create_using)
     return G
@@ -402,12 +472,32 @@ def truncated_cube_graph(create_using=None):
         "adjacencylist",
         "Truncated Cube Graph",
         24,
-        [[2, 3, 5], [12, 15], [4, 5], [7, 9],
-         [6], [17, 19], [8, 9], [11, 13],
-         [10], [18, 21], [12, 13], [15],
-         [14], [22, 23], [16], [20, 24],
-         [18, 19], [21], [20], [24],
-         [22], [23], [24], []]
+        [
+            [2, 3, 5],
+            [12, 15],
+            [4, 5],
+            [7, 9],
+            [6],
+            [17, 19],
+            [8, 9],
+            [11, 13],
+            [10],
+            [18, 21],
+            [12, 13],
+            [15],
+            [14],
+            [22, 23],
+            [16],
+            [20, 24],
+            [18, 19],
+            [21],
+            [20],
+            [24],
+            [22],
+            [23],
+            [24],
+            [],
+        ],
     ]
     G = make_small_undirected_graph(description, create_using)
     return G
@@ -416,7 +506,7 @@ def truncated_cube_graph(create_using=None):
 def truncated_tetrahedron_graph(create_using=None):
     """Returns the skeleton of the truncated Platonic tetrahedron."""
     G = path_graph(12, create_using)
-#    G.add_edges_from([(1,3),(1,10),(2,7),(4,12),(5,12),(6,8),(9,11)])
+    #    G.add_edges_from([(1,3),(1,10),(2,7),(4,12),(5,12),(6,8),(9,11)])
     G.add_edges_from([(0, 2), (0, 9), (1, 6), (3, 11), (4, 11), (5, 7), (8, 10)])
     G.name = "Truncated Tetrahedron Graph"
     return G
@@ -428,15 +518,54 @@ def tutte_graph(create_using=None):
         "adjacencylist",
         "Tutte's Graph",
         46,
-        [[2, 3, 4], [5, 27], [11, 12], [19, 20], [6, 34],
-         [7, 30], [8, 28], [9, 15], [10, 39], [11, 38],
-         [40], [13, 40], [14, 36], [15, 16], [35],
-         [17, 23], [18, 45], [19, 44], [46], [21, 46],
-         [22, 42], [23, 24], [41], [25, 28], [26, 33],
-         [27, 32], [34], [29], [30, 33], [31],
-         [32, 34], [33], [], [], [36, 39],
-         [37], [38, 40], [39], [], [],
-         [42, 45], [43], [44, 46], [45], [], []]
+        [
+            [2, 3, 4],
+            [5, 27],
+            [11, 12],
+            [19, 20],
+            [6, 34],
+            [7, 30],
+            [8, 28],
+            [9, 15],
+            [10, 39],
+            [11, 38],
+            [40],
+            [13, 40],
+            [14, 36],
+            [15, 16],
+            [35],
+            [17, 23],
+            [18, 45],
+            [19, 44],
+            [46],
+            [21, 46],
+            [22, 42],
+            [23, 24],
+            [41],
+            [25, 28],
+            [26, 33],
+            [27, 32],
+            [34],
+            [29],
+            [30, 33],
+            [31],
+            [32, 34],
+            [33],
+            [],
+            [],
+            [36, 39],
+            [37],
+            [38, 40],
+            [39],
+            [],
+            [],
+            [42, 45],
+            [43],
+            [44, 46],
+            [45],
+            [],
+            [],
+        ],
     ]
     G = make_small_undirected_graph(description, create_using)
     return G

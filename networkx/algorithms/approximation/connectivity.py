@@ -5,11 +5,13 @@ from operator import itemgetter
 
 import networkx as nx
 
-__all__ = ['local_node_connectivity',
-           'node_connectivity',
-           'all_pairs_node_connectivity']
+__all__ = [
+    "local_node_connectivity",
+    "node_connectivity",
+    "all_pairs_node_connectivity",
+]
 
-INF = float('inf')
+INF = float("inf")
 
 
 def local_node_connectivity(G, source, target, cutoff=None):
@@ -171,14 +173,14 @@ def node_connectivity(G, s=None, t=None):
 
     """
     if (s is not None and t is None) or (s is None and t is not None):
-        raise nx.NetworkXError('Both source and target must be specified.')
+        raise nx.NetworkXError("Both source and target must be specified.")
 
     # Local node connectivity
     if s is not None and t is not None:
         if s not in G:
-            raise nx.NetworkXError('node %s not in graph' % s)
+            raise nx.NetworkXError(f"node {s} not in graph")
         if t not in G:
-            raise nx.NetworkXError('node %s not in graph' % t)
+            raise nx.NetworkXError(f"node {t} not in graph")
         return local_node_connectivity(G, s, t)
 
     # Global node connectivity
@@ -188,6 +190,7 @@ def node_connectivity(G, s=None, t=None):
 
         def neighbors(v):
             return itertools.chain(G.predecessors(v), G.successors(v))
+
     else:
         connected_func = nx.is_connected
         iter_func = itertools.combinations
@@ -202,7 +205,7 @@ def node_connectivity(G, s=None, t=None):
     K = minimum_degree
     # compute local node connectivity with all non-neighbors nodes
     # and store the minimum
-    for w in set(G) - set(neighbors(v)) - set([v]):
+    for w in set(G) - set(neighbors(v)) - {v}:
         K = min(K, local_node_connectivity(G, v, w, cutoff=K))
     # Same for non adjacent pairs of neighbors of v
     for x, y in iter_func(neighbors(v), 2):
@@ -344,7 +347,8 @@ def _bidirectional_pred_succ(G, source, target, exclude):
     # excludes nodes in the container "exclude" from the search
     if source is None or target is None:
         raise nx.NetworkXException(
-            "Bidirectional shortest path called without source or target")
+            "Bidirectional shortest path called without source or target"
+        )
     if target == source:
         return ({target: None}, {source: None}, source)
 
@@ -396,4 +400,4 @@ def _bidirectional_pred_succ(G, source, target, exclude):
                     if w in pred:
                         return pred, succ, w  # found path
 
-    raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")

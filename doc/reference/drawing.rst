@@ -84,8 +84,10 @@ Graph Layout
    planar_layout
    random_layout
    rescale_layout
+   rescale_layout_dict
    shell_layout
    spring_layout
    spectral_layout
    spiral_layout
-
+   multipartite_layout
+   

@@ -4,15 +4,15 @@ import networkx as nx
 from networkx.readwrite.json_graph import jit_data, jit_graph
 
 
-class TestJIT(object):
+class TestJIT:
     def test_jit(self):
         G = nx.Graph()
-        G.add_node('Node1', node_data='foobar')
-        G.add_node('Node3', node_data='bar')
-        G.add_node('Node4')
-        G.add_edge('Node1', 'Node2', weight=9, something='isSomething')
-        G.add_edge('Node2', 'Node3', weight=4, something='isNotSomething')
-        G.add_edge('Node1', 'Node2')
+        G.add_node("Node1", node_data="foobar")
+        G.add_node("Node3", node_data="bar")
+        G.add_node("Node4")
+        G.add_edge("Node1", "Node2", weight=9, something="isSomething")
+        G.add_edge("Node2", "Node3", weight=4, something="isNotSomething")
+        G.add_edge("Node1", "Node2")
         d = jit_data(G)
         K = jit_graph(json.loads(d))
         assert nx.is_isomorphic(G, K)

@@ -35,8 +35,9 @@ def is_tree_decomp(graph, decomp):
         assert nx.is_connected(sub_graph)
 
 
-class TestTreewidthMinDegree(object):
+class TestTreewidthMinDegree:
     """Unit tests for the min_degree function"""
+
     @classmethod
     def setup_class(cls):
         """Setup for different kinds of trees"""
@@ -135,15 +136,16 @@ class TestTreewidthMinDegree(object):
 
     def test_heuristic_first_steps(self):
         """Test first steps of min_degree heuristic"""
-        graph = {n: set(self.deterministic_graph[n]) - set([n])
-                 for n in self.deterministic_graph}
+        graph = {
+            n: set(self.deterministic_graph[n]) - {n} for n in self.deterministic_graph
+        }
         deg_heuristic = MinDegreeHeuristic(graph)
         elim_node = deg_heuristic.best_node(graph)
-        print("Graph {}:".format(graph))
+        print(f"Graph {graph}:")
         steps = []
 
         while elim_node is not None:
-            print("Removing {}:".format(elim_node))
+            print(f"Removing {elim_node}:")
             steps.append(elim_node)
             nbrs = graph[elim_node]
 
@@ -156,15 +158,16 @@ class TestTreewidthMinDegree(object):
                     graph[u].remove(elim_node)
 
             del graph[elim_node]
-            print("Graph {}:".format(graph))
+            print(f"Graph {graph}:")
             elim_node = deg_heuristic.best_node(graph)
 
         # check only the first 5 elements for equality
         assert steps[:5] == [0, 1, 2, 3, 4]
 
 
-class TestTreewidthMinFillIn(object):
+class TestTreewidthMinFillIn:
     """Unit tests for the treewidth_min_fill_in function."""
+
     @classmethod
     def setup_class(cls):
         """Setup for different kinds of trees"""
@@ -238,14 +241,15 @@ class TestTreewidthMinFillIn(object):
 
     def test_heuristic_first_steps(self):
         """Test first steps of min_fill_in heuristic"""
-        graph = {n: set(self.deterministic_graph[n]) - set([n])
-                 for n in self.deterministic_graph}
-        print("Graph {}:".format(graph))
+        graph = {
+            n: set(self.deterministic_graph[n]) - {n} for n in self.deterministic_graph
+        }
+        print(f"Graph {graph}:")
         elim_node = min_fill_in_heuristic(graph)
         steps = []
 
         while elim_node is not None:
-            print("Removing {}:".format(elim_node))
+            print(f"Removing {elim_node}:")
             steps.append(elim_node)
             nbrs = graph[elim_node]
 
@@ -258,7 +262,7 @@ class TestTreewidthMinFillIn(object):
                     graph[u].remove(elim_node)
 
             del graph[elim_node]
-            print("Graph {}:".format(graph))
+            print(f"Graph {graph}:")
             elim_node = min_fill_in_heuristic(graph)
 
         # check only the first 2 elements for equality

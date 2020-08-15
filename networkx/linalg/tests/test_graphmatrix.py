@@ -16,6 +16,7 @@ def test_incidence_matrix_simple():
     MG = nx.random_clustered_graph(deg, seed=42)
 
     I = nx.incidence_matrix(G).todense().astype(int)
+    # fmt: off
     expected = np.array(
         [[1, 1, 1, 0],
          [0, 1, 0, 1],
@@ -23,9 +24,11 @@ def test_incidence_matrix_simple():
          [0, 0, 1, 0],
          [0, 0, 0, 0]]
     )
+    # fmt: on
     npt.assert_equal(I, expected)
 
     I = nx.incidence_matrix(MG).todense().astype(int)
+    # fmt: off
     expected = np.array(
         [[1, 0, 0, 0, 0, 0, 0],
          [1, 0, 0, 0, 0, 0, 0],
@@ -36,17 +39,19 @@ def test_incidence_matrix_simple():
          [0, 0, 0, 0, 0, 1, 1],
          [0, 0, 0, 0, 1, 0, 1]]
     )
+    # fmt: on
     npt.assert_equal(I, expected)
 
     with pytest.raises(NetworkXError):
         nx.incidence_matrix(G, nodelist=[0, 1])
 
 
-class TestGraphMatrix(object):
+class TestGraphMatrix:
     @classmethod
     def setup_class(cls):
         deg = [3, 2, 2, 1, 0]
         cls.G = havel_hakimi_graph(deg)
+        # fmt: off
         cls.OI = np.array(
             [[-1, -1, -1, 0],
              [1, 0, 0, -1],
@@ -61,10 +66,12 @@ class TestGraphMatrix(object):
              [1, 0, 0, 0, 0],
              [0, 0, 0, 0, 0]]
         )
+        # fmt: on
         cls.WG = havel_hakimi_graph(deg)
         cls.WG.add_edges_from(
             (u, v, {"weight": 0.5, "other": 0.3}) for (u, v) in cls.G.edges()
         )
+        # fmt: off
         cls.WA = np.array(
             [[0, 0.5, 0.5, 0.5, 0],
              [0.5, 0, 0.5, 0, 0],
@@ -72,9 +79,11 @@ class TestGraphMatrix(object):
              [0.5, 0, 0, 0, 0],
              [0, 0, 0, 0, 0]]
         )
+        # fmt: on
         cls.MG = nx.MultiGraph(cls.G)
         cls.MG2 = cls.MG.copy()
         cls.MG2.add_edge(0, 1)
+        # fmt: off
         cls.MG2A = np.array(
             [[0, 2, 1, 1, 0],
              [2, 0, 1, 0, 0],
@@ -89,6 +98,7 @@ class TestGraphMatrix(object):
              [0, 0, 0, 1, 0],
              [0, 0, 0, 0, 0]]
         )
+        # fmt: on
         cls.no_edges_G = nx.Graph([(1, 2), (3, 2, {"weight": 8})])
         cls.no_edges_A = np.array([[0, 0], [0, 0]])
 

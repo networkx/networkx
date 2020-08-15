@@ -16,13 +16,11 @@ from networkx.algorithms.node_classification.utils import (
     _predict,
 )
 
-__all__ = ['local_and_global_consistency']
+__all__ = ["local_and_global_consistency"]
 
 
-@not_implemented_for('directed')
-def local_and_global_consistency(G, alpha=0.99,
-                                 max_iter=30,
-                                 label_name='label'):
+@not_implemented_for("directed")
+def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label"):
     """Node classification by Local and Global Consistency
 
     Parameters
@@ -68,16 +66,16 @@ def local_and_global_consistency(G, alpha=0.99,
     """
     try:
         import numpy as np
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "local_and_global_consistency() requires numpy: ",
-            "http://scipy.org/ ")
+            "local_and_global_consistency() requires numpy: ", "http://numpy.org/ "
+        ) from e
     try:
         from scipy import sparse
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "local_and_global_consistensy() requires scipy: ",
-            "http://scipy.org/ ")
+            "local_and_global_consistensy() requires scipy: ", "http://scipy.org/ "
+        ) from e
 
     def _build_propagation_matrix(X, labels, alpha):
         """Build propagation matrix of Local and global consistency
@@ -133,7 +131,8 @@ def local_and_global_consistency(G, alpha=0.99,
 
     if labels.shape[0] == 0:
         raise nx.NetworkXError(
-            "No node on the input graph is labeled by '" + label_name + "'.")
+            "No node on the input graph is labeled by '" + label_name + "'."
+        )
 
     n_samples = X.shape[0]
     n_classes = label_dict.shape[0]

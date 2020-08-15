@@ -47,7 +47,7 @@ def test_sorted_edge():
     assert (1, 2) == line._sorted_edge(2, 1)
 
 
-class TestGeneratorLine():
+class TestGeneratorLine:
     def test_star(self):
         G = nx.star_graph(5)
         L = nx.line_graph(G)
@@ -89,28 +89,47 @@ class TestGeneratorLine():
         assert_edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
 
 
-class TestGeneratorInverseLine():
+class TestGeneratorInverseLine:
     def test_example(self):
         G = nx.Graph()
-        G_edges = [[1, 2], [1, 3], [1, 4], [1, 5], [2, 3], [2, 5], [2, 6],
-                   [2, 7], [3, 4], [3, 5], [6, 7], [6, 8], [7, 8]]
+        G_edges = [
+            [1, 2],
+            [1, 3],
+            [1, 4],
+            [1, 5],
+            [2, 3],
+            [2, 5],
+            [2, 6],
+            [2, 7],
+            [3, 4],
+            [3, 5],
+            [6, 7],
+            [6, 8],
+            [7, 8],
+        ]
         G.add_edges_from(G_edges)
         H = nx.inverse_line_graph(G)
         solution = nx.Graph()
-        solution_edges = [('a', 'b'), ('a', 'c'), ('a', 'd'), ('a', 'e'),
-                          ('c', 'd'), ('e', 'f'), ('e', 'g'), ('f', 'g')]
+        solution_edges = [
+            ("a", "b"),
+            ("a", "c"),
+            ("a", "d"),
+            ("a", "e"),
+            ("c", "d"),
+            ("e", "f"),
+            ("e", "g"),
+            ("f", "g"),
+        ]
         solution.add_edges_from(solution_edges)
         assert nx.is_isomorphic(H, solution)
 
     def test_example_2(self):
         G = nx.Graph()
-        G_edges = [[1, 2], [1, 3], [2, 3],
-                   [3, 4], [3, 5], [4, 5]]
+        G_edges = [[1, 2], [1, 3], [2, 3], [3, 4], [3, 5], [4, 5]]
         G.add_edges_from(G_edges)
         H = nx.inverse_line_graph(G)
         solution = nx.Graph()
-        solution_edges = [('a', 'c'), ('b', 'c'), ('c', 'd'),
-                          ('d', 'e'), ('d', 'f')]
+        solution_edges = [("a", "c"), ("b", "c"), ("c", "d"), ("d", "e"), ("d", "f")]
         solution.add_edges_from(solution_edges)
         assert nx.is_isomorphic(H, solution)
 
@@ -133,8 +152,7 @@ class TestGeneratorInverseLine():
         alternative_solution.add_edges_from([[0, 1], [0, 2], [0, 3]])
         # there are two alternative inverse line graphs for this case
         # so long as we get one of them the test should pass
-        assert (nx.is_isomorphic(H, G) or
-                nx.is_isomorphic(H, alternative_solution))
+        assert nx.is_isomorphic(H, G) or nx.is_isomorphic(H, alternative_solution)
 
     def test_cycle(self):
         G = nx.cycle_graph(5)
@@ -164,8 +182,18 @@ class TestGeneratorInverseLine():
 
         # wheel graph with 6 nodes
         G = nx.Graph()
-        G_edges = [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [1, 2],
-                   [2, 3], [3, 4], [4, 5], [5, 1]]
+        G_edges = [
+            [0, 1],
+            [0, 2],
+            [0, 3],
+            [0, 4],
+            [0, 5],
+            [1, 2],
+            [2, 3],
+            [3, 4],
+            [4, 5],
+            [5, 1],
+        ]
         G.add_edges_from(G_edges)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
 
@@ -173,8 +201,17 @@ class TestGeneratorInverseLine():
         #  / \ / \ /
         # 0---1---2
         G = nx.Graph()
-        G_edges = [[0, 1], [1, 2], [3, 4], [4, 5], [0, 3], [1, 3],
-                   [1, 4], [2, 4], [2, 5]]
+        G_edges = [
+            [0, 1],
+            [1, 2],
+            [3, 4],
+            [4, 5],
+            [0, 3],
+            [1, 3],
+            [1, 4],
+            [2, 4],
+            [2, 5],
+        ]
         G.add_edges_from(G_edges)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
 

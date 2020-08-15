@@ -4,13 +4,26 @@ from networkx import NetworkXNotImplemented
 
 
 class TestWeaklyConnected:
-
     @classmethod
     def setup_class(cls):
         cls.gc = []
         G = nx.DiGraph()
-        G.add_edges_from([(1, 2), (2, 3), (2, 8), (3, 4), (3, 7), (4, 5),
-                          (5, 3), (5, 6), (7, 4), (7, 6), (8, 1), (8, 7)])
+        G.add_edges_from(
+            [
+                (1, 2),
+                (2, 3),
+                (2, 8),
+                (3, 4),
+                (3, 7),
+                (4, 5),
+                (5, 3),
+                (5, 6),
+                (7, 4),
+                (7, 6),
+                (8, 1),
+                (8, 7),
+            ]
+        )
         C = [[3, 4, 5, 7], [1, 2, 8], [6]]
         cls.gc.append((G, C))
 

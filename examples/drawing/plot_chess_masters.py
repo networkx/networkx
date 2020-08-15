@@ -79,7 +79,7 @@ if len(Gcc) > 1:
     print(Gcc[1].nodes())
 
 # find all games with B97 opening (as described in ECO)
-openings = set([game_info["ECO"] for (white, black, game_info) in G.edges(data=True)])
+openings = {game_info["ECO"] for (white, black, game_info) in G.edges(data=True)}
 print(f"\nFrom a total of {len(openings)} different openings,")
 print("the following games used the Sicilian opening")
 print('with the Najdorff 7...Qb6 "Poisoned Pawn" variation.\n')
@@ -121,7 +121,7 @@ nx.draw_networkx_edges(H, pos, alpha=0.3, width=edgewidth, edge_color="m")
 nodesize = [wins[v] * 50 for v in H]
 nx.draw_networkx_nodes(H, pos, node_size=nodesize, node_color="w", alpha=0.4)
 nx.draw_networkx_edges(H, pos, alpha=0.4, node_size=0, width=1, edge_color="k")
-nx.draw_networkx_labels(H, pos, fontsize=14)
+nx.draw_networkx_labels(H, pos, font_size=14)
 font = {"fontname": "Helvetica", "color": "k", "fontweight": "bold", "fontsize": 14}
 plt.title("World Chess Championship Games: 1886 - 1985", font)
 

@@ -8,13 +8,16 @@ from math import log
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['resource_allocation_index',
-           'jaccard_coefficient',
-           'adamic_adar_index',
-           'preferential_attachment',
-           'cn_soundarajan_hopcroft',
-           'ra_index_soundarajan_hopcroft',
-           'within_inter_cluster']
+__all__ = [
+    "resource_allocation_index",
+    "jaccard_coefficient",
+    "adamic_adar_index",
+    "preferential_attachment",
+    "cn_soundarajan_hopcroft",
+    "ra_index_soundarajan_hopcroft",
+    "within_inter_cluster",
+    "common_neighbor_centrality",
+]
 
 
 def _apply_prediction(G, func, ebunch=None):
@@ -37,8 +40,8 @@ def _apply_prediction(G, func, ebunch=None):
     return ((u, v, func(u, v)) for u, v in ebunch)
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def resource_allocation_index(G, ebunch=None):
     r"""Compute the resource allocation index of all node pairs in ebunch.
 
@@ -74,10 +77,9 @@ def resource_allocation_index(G, ebunch=None):
     >>> G = nx.complete_graph(5)
     >>> preds = nx.resource_allocation_index(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %.8f' % (u, v, p)
-    ...
-    '(0, 1) -> 0.75000000'
-    '(2, 3) -> 0.75000000'
+    ...     print(f'({u}, {v}) -> {p:.8f}')
+    (0, 1) -> 0.75000000
+    (2, 3) -> 0.75000000
 
     References
     ----------
@@ -86,13 +88,15 @@ def resource_allocation_index(G, ebunch=None):
        Eur. Phys. J. B 71 (2009) 623.
        https://arxiv.org/pdf/0901.0553.pdf
     """
+
     def predict(u, v):
         return sum(1 / G.degree(w) for w in nx.common_neighbors(G, u, v))
+
     return _apply_prediction(G, predict, ebunch)
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def jaccard_coefficient(G, ebunch=None):
     r"""Compute the Jaccard coefficient of all node pairs in ebunch.
 
@@ -128,10 +132,9 @@ def jaccard_coefficient(G, ebunch=None):
     >>> G = nx.complete_graph(5)
     >>> preds = nx.jaccard_coefficient(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %.8f' % (u, v, p)
-    ...
-    '(0, 1) -> 0.60000000'
-    '(2, 3) -> 0.60000000'
+    ...     print(f'({u}, {v}) -> {p:.8f}')
+    (0, 1) -> 0.60000000
+    (2, 3) -> 0.60000000
 
     References
     ----------
@@ -139,16 +142,18 @@ def jaccard_coefficient(G, ebunch=None):
            The Link Prediction Problem for Social Networks (2004).
            http://www.cs.cornell.edu/home/kleinber/link-pred.pdf
     """
+
     def predict(u, v):
         union_size = len(set(G[u]) | set(G[v]))
         if union_size == 0:
             return 0
         return len(list(nx.common_neighbors(G, u, v))) / union_size
+
     return _apply_prediction(G, predict, ebunch)
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def adamic_adar_index(G, ebunch=None):
     r"""Compute the Adamic-Adar index of all node pairs in ebunch.
 
@@ -186,10 +191,9 @@ def adamic_adar_index(G, ebunch=None):
     >>> G = nx.complete_graph(5)
     >>> preds = nx.adamic_adar_index(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %.8f' % (u, v, p)
-    ...
-    '(0, 1) -> 2.16404256'
-    '(2, 3) -> 2.16404256'
+    ...     print(f'({u}, {v}) -> {p:.8f}')
+    (0, 1) -> 2.16404256
+    (2, 3) -> 2.16404256
 
     References
     ----------
@@ -197,13 +201,96 @@ def adamic_adar_index(G, ebunch=None):
            The Link Prediction Problem for Social Networks (2004).
            http://www.cs.cornell.edu/home/kleinber/link-pred.pdf
     """
+
     def predict(u, v):
         return sum(1 / log(G.degree(w)) for w in nx.common_neighbors(G, u, v))
+
     return _apply_prediction(G, predict, ebunch)
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
+    r"""Return the CCPA score for each pair of nodes.
+    
+    Compute the Common Neighbor and Centrality based Parameterized Algorithm(CCPA)
+    score of all node pairs in ebunch.
+
+    CCPA score of `u` and `v` is defined as
+
+    .. math::
+
+        \alpha \cdot (|\Gamma (u){\cap }^{}\Gamma (v)|)+(1-\alpha )\cdot \frac{N}{{d}_{uv}}
+
+    where $\Gamma(u)$ denotes the set of neighbors of $u$, $\Gamma(v)$ denotes the
+    set of neighbors of $v$, $\alpha$ is  parameter varies between [0,1], $N$ denotes
+    total number of nodes in the Graph and ${d}_{uv}$ denotes shortest distance
+    between $u$ and $v$.
+
+    This algorithm is based on two vital properties of nodes, namely the number
+    of common neighbors and their centrality. Common neighbor refers to the common
+    nodes between two nodes. Centrality refers to the prestige that a node enjoys
+    in a network.
+
+    .. seealso::
+
+        :func:`common_neighbors`
+
+    Parameters
+    ----------
+    G : graph
+        NetworkX undirected graph.
+
+    ebunch : iterable of node pairs, optional (default = None)
+        Preferential attachment score will be computed for each pair of
+        nodes given in the iterable. The pairs must be given as
+        2-tuples (u, v) where u and v are nodes in the graph. If ebunch
+        is None then all non-existent edges in the graph will be used.
+        Default value: None.
+    
+    alpha : Parameter defined for participation of Common Neighbor 
+            and Centrality Algorithm share. Default value set to 0.8
+            because author found better performance at 0.8 for all the 
+            dataset.
+            Default value: 0.8
+
+
+    Returns
+    -------
+    piter : iterator
+        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
+        pair of nodes and p is their Common Neighbor and Centrality based 
+        Parameterized Algorithm(CCPA) score.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.complete_graph(5)
+    >>> preds = nx.common_neighbor_centrality(G, [(0, 1), (2, 3)])
+    >>> for u, v, p in preds:
+    ...     print(f'({u}, {v}) -> {p}')
+    (0, 1) -> 3.4000000000000004
+    (2, 3) -> 3.4000000000000004
+
+    References
+    ----------
+    .. [1] Ahmad, I., Akhtar, M.U., Noor, S. et al. 
+           Missing Link Prediction using Common Neighbor and Centrality based Parameterized Algorithm. 
+           Sci Rep 10, 364 (2020). 
+           https://doi.org/10.1038/s41598-019-57304-y
+    """
+    shortest_path = nx.shortest_path(G)
+
+    def predict(u, v):
+        return alpha * len(list(nx.common_neighbors(G, u, v))) + (1 - alpha) * (
+            G.number_of_nodes() / (len(shortest_path[u][v]) - 1)
+        )
+
+    return _apply_prediction(G, predict, ebunch)
+
+
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def preferential_attachment(G, ebunch=None):
     r"""Compute the preferential attachment score of all node pairs in ebunch.
 
@@ -239,10 +326,9 @@ def preferential_attachment(G, ebunch=None):
     >>> G = nx.complete_graph(5)
     >>> preds = nx.preferential_attachment(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %d' % (u, v, p)
-    ...
-    '(0, 1) -> 16'
-    '(2, 3) -> 16'
+    ...     print(f'({u}, {v}) -> {p}')
+    (0, 1) -> 16
+    (2, 3) -> 16
 
     References
     ----------
@@ -250,14 +336,16 @@ def preferential_attachment(G, ebunch=None):
            The Link Prediction Problem for Social Networks (2004).
            http://www.cs.cornell.edu/home/kleinber/link-pred.pdf
     """
+
     def predict(u, v):
         return G.degree(u) * G.degree(v)
+
     return _apply_prediction(G, predict, ebunch)
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
-def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
     r"""Count the number of common neighbors of all node pairs in ebunch
         using community information.
 
@@ -305,8 +393,8 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
     >>> G.nodes[2]['community'] = 0
     >>> preds = nx.cn_soundarajan_hopcroft(G, [(0, 2)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %d' % (u, v, p)
-    '(0, 2) -> 2'
+    ...     print(f'({u}, {v}) -> {p}')
+    (0, 2) -> 2
 
     References
     ----------
@@ -317,19 +405,22 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
        World Wide Web (WWW '12 Companion). ACM, New York, NY, USA, 607-608.
        http://doi.acm.org/10.1145/2187980.2188150
     """
+
     def predict(u, v):
         Cu = _community(G, u, community)
         Cv = _community(G, v, community)
         cnbors = list(nx.common_neighbors(G, u, v))
-        neighbors = (sum(_community(G, w, community) == Cu for w in cnbors)
-                     if Cu == Cv else 0)
+        neighbors = (
+            sum(_community(G, w, community) == Cu for w in cnbors) if Cu == Cv else 0
+        )
         return len(cnbors) + neighbors
+
     return _apply_prediction(G, predict, ebunch)
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
-def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
     r"""Compute the resource allocation index of all node pairs in
     ebunch using community information.
 
@@ -379,8 +470,8 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
     >>> G.nodes[3]['community'] = 0
     >>> preds = nx.ra_index_soundarajan_hopcroft(G, [(0, 3)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %.8f' % (u, v, p)
-    '(0, 3) -> 0.50000000'
+    ...     print(f'({u}, {v}) -> {p:.8f}')
+    (0, 3) -> 0.50000000
 
     References
     ----------
@@ -391,20 +482,21 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
        World Wide Web (WWW '12 Companion). ACM, New York, NY, USA, 607-608.
        http://doi.acm.org/10.1145/2187980.2188150
     """
+
     def predict(u, v):
         Cu = _community(G, u, community)
         Cv = _community(G, v, community)
         if Cu != Cv:
             return 0
         cnbors = nx.common_neighbors(G, u, v)
-        return sum(1 / G.degree(w) for w in cnbors
-                   if _community(G, w, community) == Cu)
+        return sum(1 / G.degree(w) for w in cnbors if _community(G, w, community) == Cu)
+
     return _apply_prediction(G, predict, ebunch)
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
-def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
     """Compute the ratio of within- and inter-cluster common neighbors
     of all node pairs in ebunch.
 
@@ -455,14 +547,12 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
     >>> G.nodes[4]['community'] = 0
     >>> preds = nx.within_inter_cluster(G, [(0, 4)])
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %.8f' % (u, v, p)
-    ...
-    '(0, 4) -> 1.99800200'
+    ...     print(f'({u}, {v}) -> {p:.8f}')
+    (0, 4) -> 1.99800200
     >>> preds = nx.within_inter_cluster(G, [(0, 4)], delta=0.5)
     >>> for u, v, p in preds:
-    ...     '(%d, %d) -> %.8f' % (u, v, p)
-    ...
-    '(0, 4) -> 1.33333333'
+    ...     print(f'({u}, {v}) -> {p:.8f}')
+    (0, 4) -> 1.33333333
 
     References
     ----------
@@ -473,7 +563,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
        https://doi.org/10.1007/978-3-642-34459-6_10
     """
     if delta <= 0:
-        raise nx.NetworkXAlgorithmError('Delta must be greater than zero')
+        raise nx.NetworkXAlgorithmError("Delta must be greater than zero")
 
     def predict(u, v):
         Cu = _community(G, u, community)
@@ -481,8 +571,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
         if Cu != Cv:
             return 0
         cnbors = set(nx.common_neighbors(G, u, v))
-        within = set(w for w in cnbors
-                     if _community(G, w, community) == Cu)
+        within = {w for w in cnbors if _community(G, w, community) == Cu}
         inter = cnbors - within
         return len(within) / (len(inter) + delta)
 
@@ -494,5 +583,5 @@ def _community(G, u, community):
     node_u = G.nodes[u]
     try:
         return node_u[community]
-    except KeyError:
-        raise nx.NetworkXAlgorithmError('No community information')
+    except KeyError as e:
+        raise nx.NetworkXAlgorithmError("No community information") from e

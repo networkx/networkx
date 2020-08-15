@@ -61,7 +61,7 @@ Release date: 20 September 2017
 Support for Python 3.6 added, drop support for Python 3.3.
 
 See :doc:`release/migration_guide_from_1.x_to_2.0`.
-   
+
 Release notes
 ~~~~~~~~~~~~~
 
@@ -104,7 +104,7 @@ Highlights
 - pyparsing dependence removed from GML reader/parser
 - improve flow algorithms
 - new generators related to expander graphs.
-- new generators for multipartite graphs, nonisomorphic trees, 
+- new generators for multipartite graphs, nonisomorphic trees,
   circulant graphs
 - allow graph subclasses to use dict-like objects in place of dicts
 - added ordered graph subclasses
@@ -197,7 +197,7 @@ Highlights
 ~~~~~~~~~~
 
 - New functions for k-clique community finding, flow hierarchy,
-  union, disjoint union, compose, and intersection operators that work on 
+  union, disjoint union, compose, and intersection operators that work on
   lists of graphs, and creating the biadjacency matrix of a bipartite graph.
 
 - New approximation algorithms for dominating set, edge dominating set,
@@ -252,7 +252,7 @@ Highlights
 
 New features
 ~~~~~~~~~~~~
- - Algorithms for :mod:`generating <networkx.generators.bipartite>` 
+ - Algorithms for :mod:`generating <networkx.generators.bipartite>`
    and :mod:`analyzing <networkx.algorithms.bipartite>` bipartite graphs
  - :mod:`Maximal independent set <networkx.algorithms.mis>` algorithm
  - :mod:`Erdős-Gallai graphical degree sequence test <networkx.generators.degree_seq>`
@@ -260,10 +260,10 @@ New features
  - More memory efficient :mod:`Dijkstra path length <networkx.algorithms.shortest_paths.weighted>` with cutoff parameter
  - :mod:`Weighted clustering coefficient <networkx.algorithms.cluster>`
  - Read and write version 1.2 of :mod:`GEXF reader <networkx.readwrite.gexf>` format
- - :mod:`Neighbor degree correlation <networkx.algorithms.neighbor_degree>` 
+ - :mod:`Neighbor degree correlation <networkx.algorithms.neighbor_degree>`
    that handle subsets of nodes
- - :mod:`In-place node relabeling <networkx.relabel>` 
- - Many 'weighted' graph algorithms now take optional parameter to use 
+ - :mod:`In-place node relabeling <networkx.relabel>`
+ - Many 'weighted' graph algorithms now take optional parameter to use
    specified edge attribute (default='weight')
    (ticket https://networkx.lanl.gov/trac/ticket/509)
 
@@ -335,10 +335,10 @@ New features
 
 API changes
 ~~~~~~~~~~~
- - :mod:`gnp_random_graph() <networkx.generators.random_graphs>` now takes a 
-   directed=True|False keyword instead of create_using 
- - :mod:`gnm_random_graph() <networkx.generators.random_graphs>` now takes a 
-   directed=True|False keyword instead of create_using 
+ - :mod:`gnp_random_graph() <networkx.generators.random_graphs>` now takes a
+   directed=True|False keyword instead of create_using
+ - :mod:`gnm_random_graph() <networkx.generators.random_graphs>` now takes a
+   directed=True|False keyword instead of create_using
 
 Bug fixes
 ~~~~~~~~~
@@ -358,14 +358,14 @@ New features
  - Works with Python versions 2.6, 2.7, 3.1, and 3.2 (but not 2.4 and 2.5).
  - :mod:`Minimum cost flow algorithms <networkx.algorithms.flow>`
  - :mod:`Bellman-Ford shortest paths <networkx.algorithms.shortest_paths.weighted>`
- - :mod:`GraphML reader and writer <networkx.readwrite.graphml>` 
- - :mod:`More exception/error types <networkx.exception>` 
+ - :mod:`GraphML reader and writer <networkx.readwrite.graphml>`
+ - :mod:`More exception/error types <networkx.exception>`
  - Updated many tests to unittest style.  Run with: "import networkx; networkx.test()" (requires nose testing package)
  - and more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.3
 
 API changes
 ~~~~~~~~~~~
- - :mod:`minimum_spanning_tree() now returns a NetworkX Graph (a tree or forest) <networkx.algorithms.mst>` 
+ - :mod:`minimum_spanning_tree() now returns a NetworkX Graph (a tree or forest) <networkx.algorithms.mst>`
 
 Bug fixes
 ~~~~~~~~~
@@ -381,11 +381,11 @@ See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
- - :mod:`Ford-Fulkerson max flow and min cut <networkx.algorithms.flow>` 
- - :mod:`Closeness vitality <networkx.algorithms.vitality>` 
- - :mod:`Eulerian circuits <networkx.algorithms.euler>` 
- - :mod:`Functions for isolates <networkx.algorithms.isolates>` 
- - :mod:`Simpler s_max generator <networkx.generators.degree_seq>` 
+ - :mod:`Ford-Fulkerson max flow and min cut <networkx.algorithms.flow>`
+ - :mod:`Closeness vitality <networkx.algorithms.vitality>`
+ - :mod:`Eulerian circuits <networkx.algorithms.euler>`
+ - :mod:`Functions for isolates <networkx.algorithms.isolates>`
+ - :mod:`Simpler s_max generator <networkx.generators.degree_seq>`
  - Compatible with IronPython-2.6
  - Improved testing functionality: import networkx; networkx.test() tests
    entire package and skips tests with missing optional packages
@@ -402,21 +402,21 @@ See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
- - :mod:`Algorithm for finding a basis for graph cycles <networkx.algorithms.cycles>` 
- - :mod:`Blockmodeling <networkx.algorithms.block>` 
- - :mod:`Assortativity and mixing matrices <networkx.algorithms.mixing>` 
- - :mod:`in-degree and out-degree centrality <networkx.algorithms.centrality.degree>` 
- - :mod:`Attracting components <networkx.algorithms.components.attracting>` 
+ - :mod:`Algorithm for finding a basis for graph cycles <networkx.algorithms.cycles>`
+ - :mod:`Blockmodeling <networkx.algorithms.block>`
+ - :mod:`Assortativity and mixing matrices <networkx.algorithms.mixing>`
+ - :mod:`in-degree and out-degree centrality <networkx.algorithms.centrality.degree>`
+ - :mod:`Attracting components <networkx.algorithms.components.attracting>`
    and  :mod:`condensation <networkx.algorithms.components.strongly_connected>`.
  - :mod:`Weakly connected components <networkx.algorithms.components.weakly_connected>`
- - :mod:`Simpler interface to shortest path algorithms <networkx.algorithms.shortest_paths.generic>` 
- - :mod:`Edgelist format to read and write data with attributes <networkx.readwrite.edgelist>` 
- - :mod:`Attribute matrices <networkx.linalg.spectrum>` 
- - :mod:`GML reader for nested attributes <networkx.readwrite.gml>` 
- - Current-flow (random walk) 
-   :mod:`betweenness <networkx.algorithms.centrality.current_flow_betweenness>` 
-   and 
-   :mod:`closeness <networkx.algorithms.centrality.current_flow_closeness>`. 
+ - :mod:`Simpler interface to shortest path algorithms <networkx.algorithms.shortest_paths.generic>`
+ - :mod:`Edgelist format to read and write data with attributes <networkx.readwrite.edgelist>`
+ - :mod:`Attribute matrices <networkx.linalg.spectrum>`
+ - :mod:`GML reader for nested attributes <networkx.readwrite.gml>`
+ - Current-flow (random walk)
+   :mod:`betweenness <networkx.algorithms.centrality.current_flow_betweenness>`
+   and
+   :mod:`closeness <networkx.algorithms.centrality.current_flow_closeness>`.
  - :mod:`Directed configuration model <networkx.generators.degree_seq>`,
    and  :mod:`directed random graph model <networkx.generators.random_graphs>`.
  - Improved documentation of drawing, shortest paths, and other algorithms
@@ -430,35 +430,35 @@ Returning dictionaries
 Several of the algorithms and the degree() method now return dictionaries
 keyed by node instead of lists.  In some cases there was a with_labels
 keyword which is no longer necessary.  For example,
- 
+
 >>> G=nx.Graph()
 >>> G.add_edge('a','b')
 >>> G.degree()  # doctest: +SKIP
 {'a': 1, 'b': 1}
- 
+
 Asking for the degree of a single node still returns a single number
- 
+
 >>> G.degree('a')
 1
 
 The following now return dictionaries by default (instead of lists)
 and the with_labels keyword has been removed:
- 
- - :meth:`Graph.degree`, 
+
+ - :meth:`Graph.degree`,
    :meth:`MultiGraph.degree`,
-   :meth:`DiGraph.degree`, 
-   :meth:`DiGraph.in_degree`, 
+   :meth:`DiGraph.degree`,
+   :meth:`DiGraph.in_degree`,
    :meth:`DiGraph.out_degree`,
-   :meth:`MultiDiGraph.degree`, 
-   :meth:`MultiDiGraph.in_degree`, 
+   :meth:`MultiDiGraph.degree`,
+   :meth:`MultiDiGraph.in_degree`,
    :meth:`MultiDiGraph.out_degree`.
- - :func:`clustering`, 
+ - :func:`clustering`,
    :func:`triangles`
- - :func:`node_clique_number`, 
-   :func:`number_of_cliques`, 
+ - :func:`node_clique_number`,
+   :func:`number_of_cliques`,
    :func:`cliques_containing_node`
  - :func:`eccentricity`
-   
+
 
 The following now return dictionaries by default (instead of lists)
 
@@ -483,11 +483,11 @@ Examples
 Bug fixes
 ~~~~~~~~~
  - Support graph attributes with union, intersection, and other graph operations
- - Improve subgraph speed (and related algorithms such as 
+ - Improve subgraph speed (and related algorithms such as
    connected_components_subgraphs())
- - Handle multigraphs in more operators (e.g. union)   
+ - Handle multigraphs in more operators (e.g. union)
  - Handle double-quoted labels with pydot
- - Normalize betweenness_centrality for undirected graphs correctly 
+ - Normalize betweenness_centrality for undirected graphs correctly
  - Normalize eigenvector_centrality by l2 norm
  - :func:`read_gml` now returns multigraphs
 
@@ -515,7 +515,7 @@ to allow graph, node, and edge attributes.
 See http://networkx.lanl.gov/reference/api_changes.html
 
  - Update Graph, DiGraph, and MultiGraph classes to allow attributes.
- - Default edge data is now an empty dictionary (was the integer 1)   
+ - Default edge data is now an empty dictionary (was the integer 1)
  - Difference and intersection operators
  - Average shortest path
  - A* (A-Star) algorithm
@@ -558,7 +558,7 @@ See http://networkx.lanl.gov/reference/api_changes.html
 
 Bug fixes
 ~~~~~~~~~
- - handle root= option to draw_graphviz correctly 
+ - handle root= option to draw_graphviz correctly
 
 Examples
 ~~~~~~~~
@@ -589,20 +589,20 @@ New features
 
 Bug fixes
 ~~~~~~~~~
- - Better edge data handling with GML writer 
+ - Better edge data handling with GML writer
  - Edge betweenness fix for XGraph with default data of None
  - Handle Matplotlib version strings (allow "pre")
  - Interface to PyGraphviz (to_agraph()) now handles parallel edges
  - Fix bug in copy from XGraph to XGraph with multiedges
- - Use SciPy sparse lil matrix format instead of coo format 
+ - Use SciPy sparse lil matrix format instead of coo format
  - Clear up ambiguous cases for Barabasi-Albert model
  - Better care of color maps with Matplotlib when drawing colored nodes
-   and edges 
+   and edges
  - Fix error handling in layout.py
 
 Examples
 ~~~~~~~~
- - Ubigraph examples showing 3D drawing 
+ - Ubigraph examples showing 3D drawing
 
 
 NetworkX 0.36
@@ -615,15 +615,15 @@ See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
-  - GML format graph reader, tests, and example (football.py)	
+  - GML format graph reader, tests, and example (football.py)
   - edge_betweenness() and load_betweenness()
 
 Bug fixes
 ~~~~~~~~~
-  - remove obsolete parts of pygraphviz interface 
+  - remove obsolete parts of pygraphviz interface
   - improve handling of Matplotlib version strings
   - write_dot() now writes parallel edges and self loops
-  - is_bipartite() and bipartite_color() fixes 
+  - is_bipartite() and bipartite_color() fixes
   - configuration model speedup using random.shuffle()
   - convert with specified nodelist now works correctly
   - vf2 isomorphism checker updates
@@ -649,7 +649,7 @@ See: https://networkx.lanl.gov/trac/timeline
 New features
 ~~~~~~~~~~~~
   - algorithms for strongly connected components.
-  - Brandes betweenness centrality algorithm (weighted and unweighted versions) 
+  - Brandes betweenness centrality algorithm (weighted and unweighted versions)
   - closeness centrality for weighted graphs
   - dfs_preorder, dfs_postorder, dfs_tree, dfs_successor, dfs_predecessor
   - readers for GraphML, LEDA, sparse6, and graph6 formats.
@@ -673,7 +673,7 @@ See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
-  - benchmarks for graph classes	
+  - benchmarks for graph classes
   - Brandes betweenness centrality algorithm
   - Dijkstra predecessor and distance algorithm
   - xslt to convert DIA graphs to NetworkX
@@ -684,9 +684,9 @@ New features
 
 Bug fixes
 ~~~~~~~~~
-  - speedups of neighbors() 	
+  - speedups of neighbors()
   - simplified Dijkstra's algorithm code
-  - better exception handling for shortest paths   
+  - better exception handling for shortest paths
   - get_edge(u,v) returns None (instead of exception) if no edge u-v
   - floyd_warshall_array fixes for negative weights
   - bad G467, docs, and unittest fixes for graph atlas
@@ -695,8 +695,8 @@ Bug fixes
   - remove extra kwds arguments in many places
   - no multi counting edges in conversion to dict of lists for multigraphs
   - allow passing tuple to get_edge()
-  - bad parameter order in node/edge betweenness 
-  - edge betweenness doesn't fail with XGraph 
+  - bad parameter order in node/edge betweenness
+  - edge betweenness doesn't fail with XGraph
   - don't throw exceptions for nodes not in graph (silently ignore instead)
     in edges_* and degree_*
 
@@ -716,13 +716,13 @@ New features
   - include documentation in source package (doc)
   - tests can now be run with
      >>> import networkx
-     >>> networkx.test()    
+     >>> networkx.test()
 
 Bug fixes
 ~~~~~~~~~
   - read_gpickle now works correctly with Windows
   - refactored large modules into smaller code files
-  - degree(nbunch) now returns degrees in same order as nbunch 
+  - degree(nbunch) now returns degrees in same order as nbunch
   - degree() now works for multiedges=True
   - update node_boundary and edge_boundary for efficiency
   - edited documentation for graph classes, now mostly in info.py
@@ -747,12 +747,12 @@ New features
   - Generators and functions for bipartite graphs
   - Experimental classes for trees and forests
   - Support for new pygraphviz update (in nx_agraph.py) , see
-    http://networkx.lanl.gov/pygraphviz/ for pygraphviz details 
+    http://networkx.lanl.gov/pygraphviz/ for pygraphviz details
 
 Bug fixes
 ~~~~~~~~~
   - Handle special cases correctly in triangles function
-  - Typos in documentation  
+  - Typos in documentation
   - Handle special cases in shortest_path and shortest_path_length,
     allow cutoff parameter for maximum depth to search
   - Update examples: erdos_renyi.py, miles.py, roget,py, eigenvalues.py
@@ -780,7 +780,7 @@ New features
 Bug fixes
 ~~~~~~~~~
    - Allow drawing graphs with no edges using pylab
-   - Use faster heapq in dijkstra 
+   - Use faster heapq in dijkstra
    - Don't complain if X windows is not available
 
 Examples
@@ -798,10 +798,10 @@ See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
-   - update to work with Python 2.5 
-   - bidirectional version of shortest_path and Dijkstra 
+   - update to work with Python 2.5
+   - bidirectional version of shortest_path and Dijkstra
    - single_source_shortest_path and all_pairs_shortest_path
-   - s-metric and experimental code to generate  maximal s-metric graph 
+   - s-metric and experimental code to generate  maximal s-metric graph
    - double_edge_swap and connected_double_edge_swap
    - Floyd's algorithm for all pairs shortest path
    - read and write unicode graph data to text files
@@ -817,13 +817,13 @@ Bug fixes
    - function name changes in shortest_path routines
    - saner internal handling of nbunch (node bunches), raise an
      exception if an nbunch isn't a node or iterable
-   - better keyword handling in io.py allows reading multiple graphs 
+   - better keyword handling in io.py allows reading multiple graphs
    - don't mix Numeric and numpy arrays in graph layouts and drawing
    - avoid automatically rescaling matplotlib axes when redrawing graph layout
 
 Examples
 ~~~~~~~~
-   - unicode node labels 
+   - unicode node labels
 
 
 NetworkX 0.29
@@ -836,14 +836,14 @@ See: https://networkx.lanl.gov/trac/timeline
 New features
 ~~~~~~~~~~~~
    - Algorithms for betweenness, eigenvalues, eigenvectors, and
-     spectral projection for threshold graphs  
+     spectral projection for threshold graphs
    - Use numpy when available
    - dense_gnm_random_graph generator
    - Generators for some directed graphs: GN, GNR, and GNC by Krapivsky
-     and Redner 
+     and Redner
    - Grid graph generators now label by index tuples.  Helper
      functions for manipulating labels.
-   - relabel_nodes_with_function 
+   - relabel_nodes_with_function
 
 
 Bug fixes
@@ -867,9 +867,9 @@ See: https://networkx.lanl.gov/trac/timeline
 New features
 ~~~~~~~~~~~~
   - Option to construct Laplacian with rows and columns in specified order
-  - Option in convert_node_labels_to_integers to use sorted order   
+  - Option in convert_node_labels_to_integers to use sorted order
   - predecessor(G,n) function that returns dictionary of
-    nodes with predecessors from breadth-first search of G 
+    nodes with predecessors from breadth-first search of G
     starting at node n.
     https://networkx.lanl.gov/trac/ticket/26
 
@@ -878,24 +878,24 @@ Examples
   - Formation of giant component in binomial_graph:
   - Chess masters matches:
   - Gallery https://networkx.github.io/documentation/latest/auto_examples/index.html
-  
+
 Bug fixes
 ~~~~~~~~~
   - Adjusted names for random graphs.
-     + erdos_renyi_graph=binomial_graph=gnp_graph: n nodes with 
+     + erdos_renyi_graph=binomial_graph=gnp_graph: n nodes with
        edge probability p
      + gnm_graph: n nodes and m edges
-     + fast_gnp_random_graph: gnp for sparse graphs (small p)   
+     + fast_gnp_random_graph: gnp for sparse graphs (small p)
   - Documentation contains correct spelling of Barabási, Bollobás,
     Erdős, and Rényi in UTF-8 encoding
   - Increased speed of connected_components and related functions
     by using faster BFS algorithm in networkx.paths
-    https://networkx.lanl.gov/trac/ticket/27     
+    https://networkx.lanl.gov/trac/ticket/27
   - XGraph and XDiGraph with multiedges=True produced error on delete_edge
   - Cleaned up docstring errors
   - Normalize names of some graphs to produce strings that represent
     calling sequence
-  
+
 NetworkX 0.27
 -------------
 
@@ -917,7 +917,7 @@ New features
     See https://networkx.lanl.gov/trac/ticket/24
   - Addition of out_edges, in_edges and corresponding out_neighbors
     and in_neighbors for digraphs.  For digraphs edges=out_edges.
-   
+
 Examples
 ~~~~~~~~
   - Minard's data for Napoleon's Russian campaign
@@ -925,7 +925,7 @@ Examples
 Bug fixes
 ~~~~~~~~~
    - XGraph(multiedges=True) returns a copy of the list of edges
-     for get_edge() 
+     for get_edge()
 
 NetworkX 0.26
 -------------
@@ -941,7 +941,7 @@ New features
     rows/columns in matrix
   - optional pygraphviz and pydot interface to graphviz is now callable as
     "graphviz" with pygraphviz preferred.  Use draw_graphviz(G).
-   
+
 Examples
 ~~~~~~~~
   - Several new examples showing how draw to graphs with various
@@ -981,9 +981,9 @@ Bug fixes
 ~~~~~~~~~
    - use create_using= instead of result= keywords for graph types
      in all cases
-   - missing weights for degree 0 and 1 nodes in clustering     
+   - missing weights for degree 0 and 1 nodes in clustering
    - configuration model now uses XGraph, returns graph with identical
-     degree sequence as input sequence	   
+     degree sequence as input sequence
    - fixed Dijkstra priority queue
    - fixed non-recursive toposort and is_directed_acyclic graph
 
@@ -999,7 +999,7 @@ Bug fixes
    - Changed to list comprehension in DiGraph.reverse() for python2.3
      compatibility
    - Barabasi-Albert graph generator fixed
-   - Attempt to add self loop should add node even if parallel edges not 
+   - Attempt to add self loop should add node even if parallel edges not
      allowed
 
 NetworkX 0.23
@@ -1042,7 +1042,7 @@ Documentation
 
 Bug fixes
 ~~~~~~~~~
-   - Fixed logic in io.py for reading DiGraphs.  
+   - Fixed logic in io.py for reading DiGraphs.
    - Path based centrality measures (betweenness, closeness)
      modified so they work on graphs that are not connected and
      produce the same result as if each connected component were
@@ -1068,20 +1068,20 @@ Examples
   - Kevin Bacon movie actor graph: Examples/kevin_bacon.py
   - Compute eigenvalues of graph Laplacian: Examples/eigenvalues.py
   - Atlas of small graphs: Examples/atlas.py
-  
+
 Documentation
 ~~~~~~~~~~~~~
   - Rewrite of setup scripts to install documentation and
-    tests in documentation directory specified 
+    tests in documentation directory specified
 
 Bug fixes
 ~~~~~~~~~
    - Handle calls to edges() with non-node, non-iterable items.
    - truncated_tetrahedral_graph was just plain wrong
    - Speedup of betweenness_centrality code
-   - bfs_path_length now returns correct lengths 
+   - bfs_path_length now returns correct lengths
    - Catch error if target of search not in connected component of source
    - Code cleanup to label internal functions with _name
    - Changed import statement lines to always use "import NX" to
-     protect name-spaces   
+     protect name-spaces
    - Other minor bug-fixes and testing added

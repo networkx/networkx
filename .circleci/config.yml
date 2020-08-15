@@ -1,0 +1,54 @@
+# See: https://circleci.com/docs/2.0/language-python/
+
+version: 2
+jobs:
+  build:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/python:3.8.5-buster
+
+    steps:
+      - checkout
+
+      - run:
+          name: Update apt-get
+          command: |
+            sudo apt-get update
+
+      - run:
+          name: Install Graphviz
+          command: |
+            sudo apt-get install graphviz libgraphviz-dev
+
+      - run:
+          name: Install TeX
+          command: |
+            sudo apt-get install texlive texlive-latex-extra latexmk
+
+      - run:
+          name: Install Python dependencies
+          command: |
+            python3 -m venv venv
+            source venv/bin/activate
+            pip install --upgrade pip
+            pip install -r requirements.txt
+            pip install -r requirements/doc.txt
+            pip install -r requirements/optional.txt
+            pip install pydot pygraphviz
+
+      - run:
+          name: Install
+          command: |
+            source venv/bin/activate
+            pip install -e .
+
+      - run:
+          name: Build docs
+          command: |
+            source venv/bin/activate
+            make -C doc/ html
+            make -C doc/ latexpdf LATEXOPTS="-file-line-error -halt-on-error"
+            cp -a doc/build/latex/networkx_reference.pdf doc/build/html/_downloads/.
+
+      - store_artifacts:
+          path: doc/build/html

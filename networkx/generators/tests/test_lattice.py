@@ -4,6 +4,7 @@ import pytest
 
 import networkx as nx
 from networkx.testing import assert_edges_equal
+from itertools import product
 
 
 class TestGrid2DGraph:
@@ -37,14 +38,24 @@ class TestGrid2DGraph:
         G = nx.grid_2d_graph(0, 0, periodic=True)
         assert dict(G.degree()) == {}
 
-        for m, n, H in [(2, 2, nx.cycle_graph(4)), (1, 7, nx.cycle_graph(7)),
-                        (7, 1, nx.cycle_graph(7)),
-                        (2, 5, nx.circular_ladder_graph(5)),
-                        (5, 2, nx.circular_ladder_graph(5)),
-                        (2, 4, nx.cubical_graph()),
-                        (4, 2, nx.cubical_graph())]:
+        for m, n, H in [
+            (2, 2, nx.cycle_graph(4)),
+            (1, 7, nx.cycle_graph(7)),
+            (7, 1, nx.cycle_graph(7)),
+            (2, 5, nx.circular_ladder_graph(5)),
+            (5, 2, nx.circular_ladder_graph(5)),
+            (2, 4, nx.cubical_graph()),
+            (4, 2, nx.cubical_graph()),
+        ]:
             G = nx.grid_2d_graph(m, n, periodic=True)
             assert nx.could_be_isomorphic(G, H)
+
+    def test_periodic_iterable(self):
+        m, n = 3, 7
+        for a, b in product([0, 1], [0, 1]):
+            G = nx.grid_2d_graph(m, n, periodic=(a, b))
+            assert G.number_of_nodes() == m * n
+            assert G.number_of_edges() == (m + a - 1) * n + (n + b - 1) * m
 
     def test_periodic_directed(self):
         G = nx.grid_2d_graph(4, 2, periodic=True)
@@ -81,8 +92,13 @@ class TestGridGraph:
             dim = [n, m]
             g = nx.grid_graph(dim)
             assert len(g) == n * m
-            assert nx.degree_histogram(g) == [0, 0, 4, 2 * (n + m) - 8,
-                                              (n - 2) * (m - 2)]
+            assert nx.degree_histogram(g) == [
+                0,
+                0,
+                4,
+                2 * (n + m) - 8,
+                (n - 2) * (m - 2),
+            ]
 
         for n, m in [(1, 5), (5, 1)]:
             dim = [n, m]
@@ -90,21 +106,33 @@ class TestGridGraph:
             assert len(g) == n * m
             assert nx.is_isomorphic(g, nx.path_graph(5))
 
-#        mg = nx.grid_graph([n,m], create_using=MultiGraph())
-#        assert_equal(mg.edges(), g.edges())
+    #        mg = nx.grid_graph([n,m], create_using=MultiGraph())
+    #        assert_equal(mg.edges(), g.edges())
 
     def test_node_input(self):
         G = nx.grid_graph([range(7, 9), range(3, 6)])
         assert len(G) == 2 * 3
         assert nx.is_isomorphic(G, nx.grid_graph([2, 3]))
 
+    def test_periodic_iterable(self):
+        m, n, k = 3, 7, 5
+        for a, b, c in product([0, 1], [0, 1], [0, 1]):
+            G = nx.grid_graph([m, n, k], periodic=(a, b, c))
+            num_e = (m + a - 1) * n * k + (n + b - 1) * m * k + (k + c - 1) * m * n
+            assert G.number_of_nodes() == m * n * k
+            assert G.number_of_edges() == num_e
+
 
 class TestHypercubeGraph:
     """Unit tests for :func:`networkx.generators.lattice.hypercube_graph`"""
 
     def test_special_cases(self):
-        for n, H in [(0, nx.null_graph()), (1, nx.path_graph(2)),
-                     (2, nx.cycle_graph(4)), (3, nx.cubical_graph())]:
+        for n, H in [
+            (0, nx.null_graph()),
+            (1, nx.path_graph(2)),
+            (2, nx.cycle_graph(4)),
+            (3, nx.cubical_graph()),
+        ]:
             G = nx.hypercube_graph(n)
             assert nx.could_be_isomorphic(G, H)
 
@@ -186,7 +214,7 @@ class TestHexagonalLatticeGraph:
         G = nx.hexagonal_lattice_graph(3, 5, create_using=nx.Graph())
         H = nx.hexagonal_lattice_graph(3, 5, create_using=nx.DiGraph())
         assert H.is_directed()
-        pos = nx.get_node_attributes(H, 'pos')
+        pos = nx.get_node_attributes(H, "pos")
         for u, v in H.edges():
             assert pos[v][1] >= pos[u][1]
             if pos[v][1] == pos[u][1]:

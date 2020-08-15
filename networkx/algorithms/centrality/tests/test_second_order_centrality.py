@@ -3,15 +3,15 @@ Tests for second order centrality.
 """
 
 import pytest
-np = pytest.importorskip('numpy')
-scipy = pytest.importorskip('scipy')
+
+np = pytest.importorskip("numpy")
+scipy = pytest.importorskip("scipy")
 
 import networkx as nx
 from networkx.testing import almost_equal
 
 
-class TestSecondOrderCentrality(object):
-
+class TestSecondOrderCentrality:
     def test_empty(self):
         with pytest.raises(nx.NetworkXException):
             G = nx.empty_graph()
@@ -60,8 +60,7 @@ class TestSecondOrderCentrality(object):
     def test_ring_graph(self):
         """Second order centrality: ring graph, as defined in paper"""
         G = nx.cycle_graph(5)
-        b_answer = {0: 4.472, 1: 4.472, 2: 4.472,
-                    3: 4.472, 4: 4.472}
+        b_answer = {0: 4.472, 1: 4.472, 2: 4.472, 3: 4.472, 4: 4.472}
 
         b = nx.second_order_centrality(G)
 

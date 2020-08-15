@@ -6,7 +6,7 @@ import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils.decorators import not_implemented_for
 
-__all__ = ['closeness_centrality', 'incremental_closeness_centrality']
+__all__ = ["closeness_centrality", "incremental_closeness_centrality"]
 
 
 def closeness_centrality(G, u=None, distance=None, wf_improved=True):
@@ -99,7 +99,8 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     if distance is not None:
         # use Dijkstra's algorithm with specified attribute as edge weight
         path_length = functools.partial(
-            nx.single_source_dijkstra_path_length, weight=distance)
+            nx.single_source_dijkstra_path_length, weight=distance
+        )
     else:
         path_length = nx.single_source_shortest_path_length
 
@@ -126,12 +127,10 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
         return closeness_centrality
 
 
-@not_implemented_for('directed')
-def incremental_closeness_centrality(G,
-                                     edge,
-                                     prev_cc=None,
-                                     insertion=True,
-                                     wf_improved=True):
+@not_implemented_for("directed")
+def incremental_closeness_centrality(
+    G, edge, prev_cc=None, insertion=True, wf_improved=True
+):
     r"""Incremental closeness centrality for nodes.
 
     Compute closeness centrality for nodes using level-based work filtering
@@ -223,7 +222,7 @@ def incremental_closeness_centrality(G,
        http://sariyuce.com/papers/bigdata13.pdf
     """
     if prev_cc is not None and set(prev_cc.keys()) != set(G.nodes()):
-        raise NetworkXError('prev_cc and G do not have the same nodes')
+        raise NetworkXError("prev_cc and G do not have the same nodes")
 
     # Unpack edge
     (u, v) = edge
@@ -248,7 +247,7 @@ def incremental_closeness_centrality(G,
     nodes = G.nodes()
     closeness_centrality = {}
     for n in nodes:
-        if (n in du and n in dv and abs(du[n] - dv[n]) <= 1):
+        if n in du and n in dv and abs(du[n] - dv[n]) <= 1:
             closeness_centrality[n] = prev_cc[n]
         else:
             sp = path_length(G, n)

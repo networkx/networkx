@@ -89,12 +89,11 @@ def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
         delta_x[wp1] += 1
         delta_x[wq] += 1
 
-        delta_x_wp_wq = sum((delta_x[x] for x in contour_neighbors[1:]))
+        delta_x_wp_wq = sum(delta_x[x] for x in contour_neighbors[1:])
 
         # Adjust offsets
-        delta_x[vk] = (-y_coordinate[wp] + delta_x_wp_wq + y_coordinate[wq])//2
-        y_coordinate[vk] = (y_coordinate[wp] + delta_x_wp_wq +
-                            y_coordinate[wq]) // 2
+        delta_x[vk] = (-y_coordinate[wp] + delta_x_wp_wq + y_coordinate[wq]) // 2
+        y_coordinate[vk] = (y_coordinate[wp] + delta_x_wp_wq + y_coordinate[wq]) // 2
         delta_x[wq] = delta_x_wp_wq - delta_x[vk]
         if adds_mult_tri:
             delta_x[wp1] -= delta_x[vk]
@@ -116,11 +115,13 @@ def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
         parent_node = remaining_nodes.pop()
 
         # Calculate position for left child
-        set_position(parent_node, left_t_child,
-                     remaining_nodes, delta_x, y_coordinate, pos)
+        set_position(
+            parent_node, left_t_child, remaining_nodes, delta_x, y_coordinate, pos
+        )
         # Calculate position for right child
-        set_position(parent_node, right_t_child,
-                     remaining_nodes, delta_x, y_coordinate, pos)
+        set_position(
+            parent_node, right_t_child, remaining_nodes, delta_x, y_coordinate, pos
+        )
     return pos
 
 
@@ -200,7 +201,7 @@ def get_canonical_ordering(embedding, outer_face):
     # Initialize outer_face_cw_nbr (do not include v2 -> v1)
     outer_face_cw_nbr = {}
     prev_nbr = v1
-    for idx in range(len(outer_face)-1, 0, -1):
+    for idx in range(len(outer_face) - 1, 0, -1):
         outer_face_cw_nbr[prev_nbr] = outer_face[idx]
         prev_nbr = outer_face[idx]
 
@@ -212,8 +213,7 @@ def get_canonical_ordering(embedding, outer_face):
         return outer_face_ccw_nbr[x] == y or outer_face_cw_nbr[x] == y
 
     def is_on_outer_face(x):
-        return x not in marked_nodes and (x in outer_face_ccw_nbr.keys() or
-                                          x == v1)
+        return x not in marked_nodes and (x in outer_face_ccw_nbr.keys() or x == v1)
 
     # Initialize number of chords
     for v in outer_face:
@@ -229,7 +229,7 @@ def get_canonical_ordering(embedding, outer_face):
     ready_to_pick.discard(v1)
     ready_to_pick.discard(v2)
 
-    for k in range(len(embedding.nodes())-1, 1, -1):
+    for k in range(len(embedding.nodes()) - 1, 1, -1):
         # 1. Pick v from ready_to_pick
         v = ready_to_pick.pop()
         marked_nodes.add(v)
@@ -266,7 +266,7 @@ def get_canonical_ordering(embedding, outer_face):
         nbr = wp
         while nbr != wq:
             # Get next next neighbor (clockwise on the outer face)
-            next_nbr = embedding[v][nbr]['ccw']
+            next_nbr = embedding[v][nbr]["ccw"]
             wp_wq.append(next_nbr)
             # Update outer face
             outer_face_cw_nbr[nbr] = next_nbr
@@ -365,13 +365,12 @@ def triangulate_embedding(embedding, fully_triangulate=True):
     embedding = nx.PlanarEmbedding(embedding)
 
     # Get a list with a node for each connected component
-    component_nodes = [next(iter(x)) for x in
-                       nx.connected_components(embedding)]
+    component_nodes = [next(iter(x)) for x in nx.connected_components(embedding)]
 
     # 1. Make graph a single component (add edge between components)
-    for i in range(len(component_nodes)-1):
+    for i in range(len(component_nodes) - 1):
         v1 = component_nodes[i]
-        v2 = component_nodes[i+1]
+        v2 = component_nodes[i + 1]
         embedding.connect_components(v1, v2)
 
     # 2. Calculate faces, ensure 2-connectedness and determine outer face
@@ -397,7 +396,7 @@ def triangulate_embedding(embedding, fully_triangulate=True):
     if fully_triangulate:
         v1 = outer_face[0]
         v2 = outer_face[1]
-        v3 = embedding[v2][v1]['ccw']
+        v3 = embedding[v2][v1]["ccw"]
         outer_face = [v1, v2, v3]
 
     return embedding, outer_face

@@ -1,19 +1,19 @@
-
 import networkx as nx
 from networkx.generators.trees import NIL
 from networkx.utils import arbitrary_element
 
 
-class TestPrefixTree(object):
+class TestPrefixTree:
     """Unit tests for the prefix tree generator function."""
 
     def test_basic(self):
         # This example is from the Wikipedia article "Trie"
         # <https://en.wikipedia.org/wiki/Trie>.
-        strings = ['a', 'to', 'tea', 'ted', 'ten', 'i', 'in', 'inn']
+        strings = ["a", "to", "tea", "ted", "ten", "i", "in", "inn"]
         T, root = nx.prefix_tree(strings)
 
-        def source_label(v): return T.nodes[v]['source']
+        def source_label(v):
+            return T.nodes[v]["source"]
 
         # First, we check that the tree has the expected
         # structure. Recall that each node that corresponds to one of
@@ -55,16 +55,16 @@ class TestPrefixTree(object):
         # rightmost letter in the string corresponding to the path to
         # that node.
         assert source_label(root) is None
-        assert source_label(a) == 'a'
-        assert source_label(i) == 'i'
-        assert source_label(t) == 't'
-        assert source_label(in_) == 'n'
-        assert source_label(inn) == 'n'
-        assert source_label(to) == 'o'
-        assert source_label(te) == 'e'
-        assert source_label(tea) == 'a'
-        assert source_label(ted) == 'd'
-        assert source_label(ten) == 'n'
+        assert source_label(a) == "a"
+        assert source_label(i) == "i"
+        assert source_label(t) == "t"
+        assert source_label(in_) == "n"
+        assert source_label(inn) == "n"
+        assert source_label(to) == "o"
+        assert source_label(te) == "e"
+        assert source_label(tea) == "a"
+        assert source_label(ted) == "d"
+        assert source_label(ten) == "n"
         assert source_label(NIL) == NIL
 
 

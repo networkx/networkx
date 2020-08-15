@@ -85,8 +85,8 @@ def test_tensor_product_classic_result():
 
 
 def test_tensor_product_random():
-    G = nx.erdos_renyi_graph(10, 2 / 10.)
-    H = nx.erdos_renyi_graph(10, 2 / 10.)
+    G = nx.erdos_renyi_graph(10, 2 / 10.0)
+    H = nx.erdos_renyi_graph(10, 2 / 10.0)
     GH = nx.tensor_product(G, H)
 
     for (u_G, u_H) in GH.nodes():
@@ -106,12 +106,19 @@ def test_cartesian_product_multigraph():
     H.add_edge(3, 4, key=1)
     GH = nx.cartesian_product(G, H)
     assert set(GH) == {(1, 3), (2, 3), (2, 4), (1, 4)}
-    assert ({(frozenset([u, v]), k) for u, v, k in GH.edges(keys=True)} ==
-            {(frozenset([u, v]), k) for u, v, k in
-             [((1, 3), (2, 3), 0), ((1, 3), (2, 3), 1),
-              ((1, 3), (1, 4), 0), ((1, 3), (1, 4), 1),
-              ((2, 3), (2, 4), 0), ((2, 3), (2, 4), 1),
-              ((2, 4), (1, 4), 0), ((2, 4), (1, 4), 1)]})
+    assert {(frozenset([u, v]), k) for u, v, k in GH.edges(keys=True)} == {
+        (frozenset([u, v]), k)
+        for u, v, k in [
+            ((1, 3), (2, 3), 0),
+            ((1, 3), (2, 3), 1),
+            ((1, 3), (1, 4), 0),
+            ((1, 3), (1, 4), 1),
+            ((2, 3), (2, 4), 0),
+            ((2, 3), (2, 4), 1),
+            ((2, 4), (1, 4), 0),
+            ((2, 4), (1, 4), 1),
+        ]
+    }
 
 
 def test_cartesian_product_raises():
@@ -159,14 +166,14 @@ def test_cartesian_product_size():
     K3 = nx.complete_graph(3)
     G = nx.cartesian_product(P5, K3)
     assert nx.number_of_nodes(G) == 5 * 3
-    assert (nx.number_of_edges(G) ==
-            nx.number_of_edges(P5) * nx.number_of_nodes(K3) +
-            nx.number_of_edges(K3) * nx.number_of_nodes(P5))
+    assert nx.number_of_edges(G) == nx.number_of_edges(P5) * nx.number_of_nodes(
+        K3
+    ) + nx.number_of_edges(K3) * nx.number_of_nodes(P5)
     G = nx.cartesian_product(K3, K5)
     assert nx.number_of_nodes(G) == 3 * 5
-    assert (nx.number_of_edges(G) ==
-            nx.number_of_edges(K5) * nx.number_of_nodes(K3) +
-            nx.number_of_edges(K3) * nx.number_of_nodes(K5))
+    assert nx.number_of_edges(G) == nx.number_of_edges(K5) * nx.number_of_nodes(
+        K3
+    ) + nx.number_of_edges(K3) * nx.number_of_nodes(K5)
 
 
 def test_cartesian_product_classic():
@@ -184,14 +191,15 @@ def test_cartesian_product_classic():
 
 
 def test_cartesian_product_random():
-    G = nx.erdos_renyi_graph(10, 2 / 10.)
-    H = nx.erdos_renyi_graph(10, 2 / 10.)
+    G = nx.erdos_renyi_graph(10, 2 / 10.0)
+    H = nx.erdos_renyi_graph(10, 2 / 10.0)
     GH = nx.cartesian_product(G, H)
 
     for (u_G, u_H) in GH.nodes():
         for (v_G, v_H) in GH.nodes():
-            if (u_G == v_G and H.has_edge(u_H, v_H)) or \
-               (u_H == v_H and G.has_edge(u_G, v_G)):
+            if (u_G == v_G and H.has_edge(u_H, v_H)) or (
+                u_H == v_H and G.has_edge(u_G, v_G)
+            ):
                 assert GH.has_edge((u_G, u_H), (v_G, v_H))
             else:
                 assert not GH.has_edge((u_G, u_H), (v_G, v_H))
@@ -261,8 +269,8 @@ def test_lexicographic_product_combinations():
 
 
 def test_lexicographic_product_random():
-    G = nx.erdos_renyi_graph(10, 2 / 10.)
-    H = nx.erdos_renyi_graph(10, 2 / 10.)
+    G = nx.erdos_renyi_graph(10, 2 / 10.0)
+    H = nx.erdos_renyi_graph(10, 2 / 10.0)
     GH = nx.lexicographic_product(G, H)
 
     for (u_G, u_H) in GH.nodes():
@@ -337,15 +345,17 @@ def test_strong_product_combinations():
 
 
 def test_strong_product_random():
-    G = nx.erdos_renyi_graph(10, 2 / 10.)
-    H = nx.erdos_renyi_graph(10, 2 / 10.)
+    G = nx.erdos_renyi_graph(10, 2 / 10.0)
+    H = nx.erdos_renyi_graph(10, 2 / 10.0)
     GH = nx.strong_product(G, H)
 
     for (u_G, u_H) in GH.nodes():
         for (v_G, v_H) in GH.nodes():
-            if (u_G == v_G and H.has_edge(u_H, v_H)) or \
-               (u_H == v_H and G.has_edge(u_G, v_G)) or \
-               (G.has_edge(u_G, v_G) and H.has_edge(u_H, v_H)):
+            if (
+                (u_G == v_G and H.has_edge(u_H, v_H))
+                or (u_H == v_H and G.has_edge(u_G, v_G))
+                or (G.has_edge(u_G, v_G) and H.has_edge(u_H, v_H))
+            ):
                 assert GH.has_edge((u_G, u_H), (v_G, v_H))
             else:
                 assert not GH.has_edge((u_G, u_H), (v_G, v_H))
@@ -365,12 +375,36 @@ def test_graph_power():
     G.add_edge(9, 2)
     H = nx.power(G, 2)
 
-    assert_edges_equal(list(H.edges()),
-                       [(0, 1), (0, 2), (0, 5), (0, 6), (0, 7), (1, 9),
-                        (1, 2), (1, 3), (1, 6), (2, 3), (2, 4), (2, 8),
-                        (2, 9), (3, 4), (3, 5), (3, 9), (4, 5), (4, 6),
-                        (5, 6), (5, 7), (6, 7), (6, 8), (7, 8), (7, 9),
-                        (8, 9)])
+    assert_edges_equal(
+        list(H.edges()),
+        [
+            (0, 1),
+            (0, 2),
+            (0, 5),
+            (0, 6),
+            (0, 7),
+            (1, 9),
+            (1, 2),
+            (1, 3),
+            (1, 6),
+            (2, 3),
+            (2, 4),
+            (2, 8),
+            (2, 9),
+            (3, 4),
+            (3, 5),
+            (3, 9),
+            (4, 5),
+            (4, 6),
+            (5, 6),
+            (5, 7),
+            (6, 7),
+            (6, 8),
+            (7, 8),
+            (7, 9),
+            (8, 9),
+        ],
+    )
 
 
 def test_graph_power_negative():
@@ -386,7 +420,7 @@ def test_rooted_product_raises():
 def test_rooted_product():
     G = nx.cycle_graph(5)
     H = nx.Graph()
-    H.add_edges_from([('a', 'b'), ('b', 'c'), ('b', 'd')])
-    R = nx.rooted_product(G, H, 'a')
+    H.add_edges_from([("a", "b"), ("b", "c"), ("b", "d")])
+    R = nx.rooted_product(G, H, "a")
     assert len(R) == len(G) * len(H)
     assert R.size() == G.size() + len(G) * H.size()

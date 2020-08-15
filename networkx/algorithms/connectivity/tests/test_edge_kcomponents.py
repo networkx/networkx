@@ -6,14 +6,13 @@ from networkx.algorithms.connectivity import (
     bridge_components,
     EdgeComponentAuxGraph,
 )
-from networkx.algorithms.connectivity.edge_kcomponents import (
-    general_k_edge_subgraphs,
-)
+from networkx.algorithms.connectivity.edge_kcomponents import general_k_edge_subgraphs
 
 
 # ----------------
 # Helper functions
 # ----------------
+
 
 def fset(list_of_sets):
     """ allows == to be used for list of sets """
@@ -98,30 +97,33 @@ def _check_edge_connectivity(G):
         _assert_subgraph_edge_connectivity(G, ccs_subgraph, k)
 
         if k == 1 or k == 2 and not G.is_directed():
-            assert ccs_local == ccs_subgraph, 'Subgraphs and components should be the same when k == 1 or (k == 2 and not G.directed())'
+            assert (
+                ccs_local == ccs_subgraph
+            ), "Subgraphs and components should be the same when k == 1 or (k == 2 and not G.directed())"
 
         if G.is_directed():
             # Test special case methods are the same as the aux graph
             if k == 1:
                 alt_sccs = fset(nx.strongly_connected_components(G))
-                assert alt_sccs == ccs_local, 'k=1 failed alt'
-                assert alt_sccs == ccs_subgraph, 'k=1 failed alt'
+                assert alt_sccs == ccs_local, "k=1 failed alt"
+                assert alt_sccs == ccs_subgraph, "k=1 failed alt"
         else:
             # Test special case methods are the same as the aux graph
             if k == 1:
                 alt_ccs = fset(nx.connected_components(G))
-                assert alt_ccs == ccs_local, 'k=1 failed alt'
-                assert alt_ccs == ccs_subgraph, 'k=1 failed alt'
+                assert alt_ccs == ccs_local, "k=1 failed alt"
+                assert alt_ccs == ccs_subgraph, "k=1 failed alt"
             elif k == 2:
                 alt_bridge_ccs = fset(bridge_components(G))
-                assert alt_bridge_ccs == ccs_local, 'k=2 failed alt'
-                assert alt_bridge_ccs == ccs_subgraph, 'k=2 failed alt'
+                assert alt_bridge_ccs == ccs_local, "k=2 failed alt"
+                assert alt_bridge_ccs == ccs_subgraph, "k=2 failed alt"
             # if new methods for k == 3 or k == 4 are implemented add them here
 
         # Check the general subgraph method works by itself
-        alt_subgraph_ccs = fset([set(C.nodes()) for C in
-                                 general_k_edge_subgraphs(G, k=k)])
-        assert alt_subgraph_ccs == ccs_subgraph, 'alt subgraph method failed'
+        alt_subgraph_ccs = fset(
+            [set(C.nodes()) for C in general_k_edge_subgraphs(G, k=k)]
+        )
+        assert alt_subgraph_ccs == ccs_subgraph, "alt subgraph method failed"
 
         # Stop once k is larger than all special case methods
         # and we cannot break down ccs any further.
@@ -132,6 +134,7 @@ def _check_edge_connectivity(G):
 # ----------------
 # Misc tests
 # ----------------
+
 
 def test_zero_k_exception():
     G = nx.Graph()
@@ -186,6 +189,7 @@ def test_general_k_edge_subgraph_quick_return():
 # Undirected tests
 # ----------------
 
+
 def test_random_gnp():
     # seeds = [1550709854, 1309423156, 4208992358, 2785630813, 1915069929]
     seeds = [12, 13]
@@ -225,8 +229,13 @@ def test_tarjan_bridge():
     # Information Processing Letters, 1974 - Elsevier
     # doi:10.1016/0020-0190(74)90003-9.
     # define 2-connected components and bridges
-    ccs = [(1, 2, 4, 3, 1, 4), (5, 6, 7, 5), (8, 9, 10, 8),
-           (17, 18, 16, 15, 17), (11, 12, 14, 13, 11, 14)]
+    ccs = [
+        (1, 2, 4, 3, 1, 4),
+        (5, 6, 7, 5),
+        (8, 9, 10, 8),
+        (17, 18, 16, 15, 17),
+        (11, 12, 14, 13, 11, 14),
+    ]
     bridges = [(4, 8), (3, 5), (3, 17)]
     G = nx.Graph(it.chain(*(pairwise(path) for path in ccs + bridges)))
     _check_edge_connectivity(G)
@@ -238,10 +247,9 @@ def test_bridge_cc():
     bridges = [(4, 8), (3, 5), (20, 21), (22, 23, 24)]
     G = nx.Graph(it.chain(*(pairwise(path) for path in cc2 + bridges)))
     bridge_ccs = fset(bridge_components(G))
-    target_ccs = fset([
-        {1, 2, 3, 4}, {5}, {8, 9, 10}, {11, 12, 13}, {20},
-        {21}, {22}, {23}, {24}
-    ])
+    target_ccs = fset(
+        [{1, 2, 3, 4}, {5}, {8, 9, 10}, {11, 12, 13}, {20}, {21}, {22}, {23}, {24}]
+    )
     assert bridge_ccs == target_ccs
     _check_edge_connectivity(G)
 
@@ -249,14 +257,14 @@ def test_bridge_cc():
 def test_undirected_aux_graph():
     # Graph similar to the one in
     # http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0136264
-    a, b, c, d, e, f, g, h, i = 'abcdefghi'
+    a, b, c, d, e, f, g, h, i = "abcdefghi"
     paths = [
         (a, d, b, f, c),
         (a, e, b),
         (a, e, b, c, g, b, a),
         (c, b),
         (f, g, f),
-        (h, i)
+        (h, i),
     ]
     G = nx.Graph(it.chain(*[pairwise(path) for path in paths]))
     aux_graph = EdgeComponentAuxGraph.construct(G)
@@ -303,15 +311,15 @@ def test_local_subgraph_difference():
 
     # Each clique is returned separately in k-edge-subgraphs
     subgraph_ccs = fset(aux_graph.k_edge_subgraphs(3))
-    subgraph_target = fset([{101}, {102}, {103}, {104},
-                            {21, 22, 23, 24}, {11, 12, 13, 14}])
+    subgraph_target = fset(
+        [{101}, {102}, {103}, {104}, {21, 22, 23, 24}, {11, 12, 13, 14}]
+    )
     assert subgraph_ccs == subgraph_target
 
     # But in k-edge-ccs they are returned together
     # because they are locally 3-edge-connected
     local_ccs = fset(aux_graph.k_edge_components(3))
-    local_target = fset([{101}, {102}, {103}, {104},
-                         {11, 12, 13, 14, 21, 22, 23, 24}])
+    local_target = fset([{101}, {102}, {103}, {104}, {11, 12, 13, 14, 21, 22, 23, 24}])
     assert local_ccs == local_target
 
 
@@ -322,20 +330,14 @@ def test_local_subgraph_difference_directed():
     ]
     G = nx.DiGraph(it.chain(*[pairwise(path) for path in dipaths]))
 
-    assert (
-        fset(nx.k_edge_components(G, k=1)) ==
-        fset(nx.k_edge_subgraphs(G, k=1)))
+    assert fset(nx.k_edge_components(G, k=1)) == fset(nx.k_edge_subgraphs(G, k=1))
 
     # Unlike undirected graphs, when k=2, for directed graphs there is a case
     # where the k-edge-ccs are not the same as the k-edge-subgraphs.
     # (in directed graphs ccs and subgraphs are the same when k=2)
-    assert (
-        fset(nx.k_edge_components(G, k=2)) !=
-        fset(nx.k_edge_subgraphs(G, k=2)))
+    assert fset(nx.k_edge_components(G, k=2)) != fset(nx.k_edge_subgraphs(G, k=2))
 
-    assert (
-        fset(nx.k_edge_components(G, k=3)) ==
-        fset(nx.k_edge_subgraphs(G, k=3)))
+    assert fset(nx.k_edge_components(G, k=3)) == fset(nx.k_edge_subgraphs(G, k=3))
 
     _check_edge_connectivity(G)
 
@@ -349,17 +351,11 @@ def test_triangles():
     G = nx.Graph(it.chain(*[pairwise(path) for path in paths]))
 
     # subgraph and ccs are the same in all cases here
-    assert (
-        fset(nx.k_edge_components(G, k=1)) ==
-        fset(nx.k_edge_subgraphs(G, k=1)))
+    assert fset(nx.k_edge_components(G, k=1)) == fset(nx.k_edge_subgraphs(G, k=1))
 
-    assert (
-        fset(nx.k_edge_components(G, k=2)) ==
-        fset(nx.k_edge_subgraphs(G, k=2)))
+    assert fset(nx.k_edge_components(G, k=2)) == fset(nx.k_edge_subgraphs(G, k=2))
 
-    assert (
-        fset(nx.k_edge_components(G, k=3)) ==
-        fset(nx.k_edge_subgraphs(G, k=3)))
+    assert fset(nx.k_edge_components(G, k=3)) == fset(nx.k_edge_subgraphs(G, k=3))
 
     _check_edge_connectivity(G)
 
@@ -403,31 +399,26 @@ def test_five_clique():
     G = nx.disjoint_union(nx.complete_graph(5), nx.complete_graph(5))
     paths = [
         # add aux-connections
-        (1, 100, 6), (2, 100, 7), (3, 200, 8), (4, 200, 100),
+        (1, 100, 6),
+        (2, 100, 7),
+        (3, 200, 8),
+        (4, 200, 100),
     ]
     G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))
     assert min(dict(nx.degree(G)).values()) == 4
 
     # For k=3 they are the same
-    assert (
-        fset(nx.k_edge_components(G, k=3)) ==
-        fset(nx.k_edge_subgraphs(G, k=3)))
+    assert fset(nx.k_edge_components(G, k=3)) == fset(nx.k_edge_subgraphs(G, k=3))
 
     # For k=4 they are the different
     # the aux nodes are in the same CC as clique 1 but no the same subgraph
-    assert (
-        fset(nx.k_edge_components(G, k=4)) !=
-        fset(nx.k_edge_subgraphs(G, k=4)))
+    assert fset(nx.k_edge_components(G, k=4)) != fset(nx.k_edge_subgraphs(G, k=4))
 
     # For k=5 they are not the same
-    assert (
-        fset(nx.k_edge_components(G, k=5)) !=
-        fset(nx.k_edge_subgraphs(G, k=5)))
+    assert fset(nx.k_edge_components(G, k=5)) != fset(nx.k_edge_subgraphs(G, k=5))
 
     # For k=6 they are the same
-    assert (
-        fset(nx.k_edge_components(G, k=6)) ==
-        fset(nx.k_edge_subgraphs(G, k=6)))
+    assert fset(nx.k_edge_components(G, k=6)) == fset(nx.k_edge_subgraphs(G, k=6))
     _check_edge_connectivity(G)
 
 
@@ -435,17 +426,18 @@ def test_five_clique():
 # Undirected tests
 # ----------------
 
+
 def test_directed_aux_graph():
     # Graph similar to the one in
     # http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0136264
-    a, b, c, d, e, f, g, h, i = 'abcdefghi'
+    a, b, c, d, e, f, g, h, i = "abcdefghi"
     dipaths = [
         (a, d, b, f, c),
         (a, e, b),
         (a, e, b, c, g, b, a),
         (c, b),
         (f, g, f),
-        (h, i)
+        (h, i),
     ]
     G = nx.DiGraph(it.chain(*[pairwise(path) for path in dipaths]))
     aux_graph = EdgeComponentAuxGraph.construct(G)

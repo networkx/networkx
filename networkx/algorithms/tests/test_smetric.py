@@ -11,6 +11,8 @@ def test_smetric():
     g.add_edge(1, 4)
     sm = nx.s_metric(g, normalized=False)
     assert sm == 19.0
+
+
 #    smNorm = nx.s_metric(g,normalized=True)
 #    assert_equal(smNorm, 0.95)
 

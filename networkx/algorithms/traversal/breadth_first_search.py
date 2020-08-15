@@ -3,12 +3,15 @@ import networkx as nx
 from collections import deque
 
 __all__ = [
-    'bfs_edges', 'bfs_tree', 'bfs_predecessors', 'bfs_successors',
-    'descendants_at_distance'
+    "bfs_edges",
+    "bfs_tree",
+    "bfs_predecessors",
+    "bfs_successors",
+    "descendants_at_distance",
 ]
 
 
-def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
+def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbors=None):
     """Iterate over edges in a breadth-first search.
 
     The breadth-first search begins at `source` and enqueues the
@@ -35,6 +38,10 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth
 
+    sort_neighbors : function
+        A function that takes the list of neighbors of given node as input, and
+        returns an *iterator* over these neighbors but with custom ordering.
+
     Yields
     ------
     edge
@@ -58,6 +65,10 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
     .. _PADS: http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
+    if callable(sort_neighbors):
+        _neighbors = neighbors
+        neighbors = lambda node: iter(sort_neighbors(_neighbors(node)))
+
     visited = {source}
     if depth_limit is None:
         depth_limit = len(G)
@@ -75,7 +86,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
             queue.popleft()
 
 
-def bfs_edges(G, source, reverse=False, depth_limit=None):
+def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     """Iterate over edges in a breadth-first-search starting at source.
 
     Parameters
@@ -92,6 +103,10 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
 
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth
+
+    sort_neighbors : function
+        A function that takes the list of neighbors of given node as input, and
+        returns an *iterator* over these neighbors but with custom ordering.
 
     Returns
     -------
@@ -119,12 +134,12 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
 
     Notes
     -----
-    The naming of this function is very similar to bfs_edges. The difference
+    The naming of this function is very similar to edge_bfs. The difference
     is that 'edge_bfs' yields edges even if they extend back to an already
     explored node while 'bfs_edges' yields the edges of the tree that results
     from a breadth-first-search (BFS) so no edges are reported if they extend
     to already explored nodes. That means 'edge_bfs' reports all edges while
-    'bfs_edges' only report those traversed by a node-based BFS. Yet another
+    'bfs_edges' only reports those traversed by a node-based BFS. Yet another
     description is that 'bfs_edges' reports the edges traversed during BFS
     while 'edge_bfs' reports all edges in the order they are explored.
 
@@ -146,10 +161,10 @@ def bfs_edges(G, source, reverse=False, depth_limit=None):
         successors = G.predecessors
     else:
         successors = G.neighbors
-    yield from generic_bfs_edges(G, source, successors, depth_limit)
+    yield from generic_bfs_edges(G, source, successors, depth_limit, sort_neighbors)
 
 
-def bfs_tree(G, source, reverse=False, depth_limit=None):
+def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     """Returns an oriented tree constructed from of a breadth-first-search
     starting at source.
 
@@ -165,6 +180,10 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
 
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth
+
+    sort_neighbors : function
+        A function that takes the list of neighbors of given node as input, and
+        returns an *iterator* over these neighbors but with custom ordering.
 
     Returns
     -------
@@ -200,12 +219,18 @@ def bfs_tree(G, source, reverse=False, depth_limit=None):
     """
     T = nx.DiGraph()
     T.add_node(source)
-    edges_gen = bfs_edges(G, source, reverse=reverse, depth_limit=depth_limit)
+    edges_gen = bfs_edges(
+        G,
+        source,
+        reverse=reverse,
+        depth_limit=depth_limit,
+        sort_neighbors=sort_neighbors,
+    )
     T.add_edges_from(edges_gen)
     return T
 
 
-def bfs_predecessors(G, source, depth_limit=None):
+def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of predecessors in breadth-first-search from source.
 
     Parameters
@@ -217,6 +242,10 @@ def bfs_predecessors(G, source, depth_limit=None):
 
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth
+
+    sort_neighbors : function
+        A function that takes the list of neighbors of given node as input, and
+        returns an *iterator* over these neighbors but with custom ordering.
 
     Returns
     -------
@@ -255,11 +284,13 @@ def bfs_predecessors(G, source, depth_limit=None):
     bfs_edges
     edge_bfs
     """
-    for s, t in bfs_edges(G, source, depth_limit=depth_limit):
+    for s, t in bfs_edges(
+        G, source, depth_limit=depth_limit, sort_neighbors=sort_neighbors
+    ):
         yield (t, s)
 
 
-def bfs_successors(G, source, depth_limit=None):
+def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of successors in breadth-first-search from source.
 
     Parameters
@@ -271,6 +302,10 @@ def bfs_successors(G, source, depth_limit=None):
 
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth
+
+    sort_neighbors : function
+        A function that takes the list of neighbors of given node as input, and
+        returns an *iterator* over these neighbors but with custom ordering.
 
     Returns
     -------
@@ -311,7 +346,9 @@ def bfs_successors(G, source, depth_limit=None):
     """
     parent = source
     children = []
-    for p, c in bfs_edges(G, source, depth_limit=depth_limit):
+    for p, c in bfs_edges(
+        G, source, depth_limit=depth_limit, sort_neighbors=sort_neighbors
+    ):
         if p == parent:
             children.append(c)
             continue
@@ -337,7 +374,7 @@ def descendants_at_distance(G, source, distance):
         The descendants of `source` in `G` at the given `distance` from `source`
     """
     if not G.has_node(source):
-        raise nx.NetworkXError("The node %s is not in the graph." % source)
+        raise nx.NetworkXError(f"The node {source} is not in the graph.")
     current_distance = 0
     queue = {source}
     visited = {source}

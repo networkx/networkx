@@ -101,16 +101,16 @@ def literal_destringizer(rep):
     ValueError
         If `rep` is not a Python literal.
     """
-    msg = "literal_destringizer is deprecated and will be removed in 2.6."
+    msg = "literal_destringizer is deprecated and will be removed in 3.0."
     warnings.warn(msg, DeprecationWarning)
     if isinstance(rep, str):
         orig_rep = rep
         try:
             return literal_eval(rep)
-        except SyntaxError:
-            raise ValueError("%r is not a valid Python literal" % (orig_rep,))
+        except SyntaxError as e:
+            raise ValueError(f"{orig_rep!r} is not a valid Python literal") from e
     else:
-        raise ValueError("%r is not a string" % (rep,))
+        raise ValueError(f"{rep!r} is not a string")
 
 
 @open_file(0, mode="rb")
@@ -170,8 +170,8 @@ def read_gml(path, label="label", destringizer=None):
         for line in lines:
             try:
                 line = line.decode("ascii")
-            except UnicodeDecodeError:
-                raise NetworkXError("input is not ASCII-encoded")
+            except UnicodeDecodeError as e:
+                raise NetworkXError("input is not ASCII-encoded") from e
             if not isinstance(line, str):
                 lines = str(lines)
             if line and line[-1] == "\n":
@@ -235,8 +235,8 @@ def parse_gml(lines, label="label", destringizer=None):
         if isinstance(line, bytes):
             try:
                 line.decode("ascii")
-            except UnicodeDecodeError:
-                raise NetworkXError("input is not ASCII-encoded")
+            except UnicodeDecodeError as e:
+                raise NetworkXError("input is not ASCII-encoded") from e
         if not isinstance(line, str):
             line = str(line)
         return line
@@ -245,8 +245,7 @@ def parse_gml(lines, label="label", destringizer=None):
         if isinstance(lines, str):
             lines = decode_line(lines)
             lines = lines.splitlines()
-            for line in lines:
-                yield line
+            yield from lines
         else:
             for line in lines:
                 line = decode_line(line)
@@ -262,6 +261,7 @@ def parse_gml(lines, label="label", destringizer=None):
 
 class Pattern(Enum):
     """ encodes the index of each token-matching pattern in `tokenize`. """
+
     KEYS = 0
     REALS = 1
     INTS = 2
@@ -284,6 +284,7 @@ LIST_START_VALUE = "_networkx_list_start"
 def parse_gml_lines(lines, label, destringizer):
     """Parse GML `lines` into a graph.
     """
+
     def tokenize():
         patterns = [
             r"[A-Za-z][0-9A-Za-z_]*\b",  # keys
@@ -303,8 +304,8 @@ def parse_gml_lines(lines, label, destringizer):
             while pos < length:
                 match = tokens.match(line, pos)
                 if match is None:
-                    m = "cannot tokenize %r at (%d, %d)"
-                    raise NetworkXError(m % (line[pos:], lineno + 1, pos + 1))
+                    m = f"cannot tokenize {line[pos:]} at ({lineno + 1}, {pos + 1})"
+                    raise NetworkXError(m)
                 for i in range(len(patterns)):
                     group = match.group(i + 1)
                     if group is not None:
@@ -316,7 +317,7 @@ def parse_gml_lines(lines, label, destringizer):
                             value = int(group)
                         else:
                             value = group
-                        if i != 6:    # comments and whitespaces
+                        if i != 6:  # comments and whitespaces
                             yield Token(Pattern(i), value, lineno + 1, pos + 1)
                         pos += len(group)
                         break
@@ -326,8 +327,7 @@ def parse_gml_lines(lines, label, destringizer):
     def unexpected(curr_token, expected):
         category, value, lineno, pos = curr_token
         value = repr(value) if value is not None else "EOF"
-        msg = "expected %s, found %s at (%d, %d)"
-        raise NetworkXError(msg % (expected, value, lineno, pos))
+        raise NetworkXError(f"expected {expected}, found {value} at ({lineno}, {pos})")
 
     def consume(curr_token, category, expected):
         if curr_token.category == category:
@@ -422,9 +422,8 @@ def parse_gml_lines(lines, label, destringizer):
     def pop_attr(dct, category, attr, i):
         try:
             return dct.pop(attr)
-        except KeyError:
-            outputs = (category, i, attr)
-            raise NetworkXError("%s #%d has no '%s' attribute" % outputs)
+        except KeyError as e:
+            raise NetworkXError(f"{category} #{i} has no '{attr}' attribute") from e
 
     nodes = graph.get("node", [])
     mapping = {}
@@ -432,7 +431,7 @@ def parse_gml_lines(lines, label, destringizer):
     for i, node in enumerate(nodes if isinstance(nodes, list) else [nodes]):
         id = pop_attr(node, "node", "id", i)
         if id in G:
-            raise NetworkXError("node id %r is duplicated" % (id,))
+            raise NetworkXError(f"node id {id!r} is duplicated")
         if label is not None and label != "id":
             node_label = pop_attr(node, "node", label, i)
             if node_label in node_labels:
@@ -499,7 +498,7 @@ def literal_stringizer(value):
     The original value can be recovered using the
     :func:`networkx.readwrite.gml.literal_destringizer` function.
     """
-    msg = "literal_stringizer is deprecated and will be removed in 2.6."
+    msg = "literal_stringizer is deprecated and will be removed in 3.0."
     warnings.warn(msg, DeprecationWarning)
 
     def stringize(value):
@@ -657,13 +656,13 @@ def generate_gml(G, stringizer=None):
       ]
     ]
     """
-    valid_keys = re.compile("^[A-Za-z][0-9A-Za-z]*$")
+    valid_keys = re.compile("^[A-Za-z][0-9A-Za-z_]*$")
 
     def stringize(key, value, ignored_keys, indent, in_list=False):
         if not isinstance(key, str):
-            raise NetworkXError("%r is not a string" % (key,))
+            raise NetworkXError(f"{key!r} is not a string")
         if not valid_keys.match(key):
-            raise NetworkXError("%r is not a valid key" % (key,))
+            raise NetworkXError(f"{key!r} is not a valid key")
         if not isinstance(key, str):
             key = str(key)
         if key not in ignored_keys:
@@ -676,7 +675,7 @@ def generate_gml(G, stringizer=None):
                 elif value is False:
                     yield indent + key + " 0"
                 # GML only supports signed 32-bit integers
-                elif value < -2 ** 31 or value >= 2 ** 31:
+                elif value < -(2 ** 31) or value >= 2 ** 31:
                     yield indent + key + ' "' + str(value) + '"'
                 else:
                     yield indent + key + " " + str(value)
@@ -696,26 +695,28 @@ def generate_gml(G, stringizer=None):
                 yield indent + key + " ["
                 next_indent = indent + "  "
                 for key, value in value.items():
-                    for line in stringize(key, value, (), next_indent):
-                        yield line
-                yield indent + ']'
-            elif isinstance(value, (list, tuple)) and key != 'label' \
-                    and value and not in_list:
+                    yield from stringize(key, value, (), next_indent)
+                yield indent + "]"
+            elif (
+                isinstance(value, (list, tuple))
+                and key != "label"
+                and value
+                and not in_list
+            ):
                 if len(value) == 1:
-                    yield indent + key + ' ' + '"{}"'.format(LIST_START_VALUE)
+                    yield indent + key + " " + f'"{LIST_START_VALUE}"'
                 for val in value:
-                    for line in stringize(key, val, (), indent, True):
-                        yield line
+                    yield from stringize(key, val, (), indent, True)
             else:
                 if stringizer:
                     try:
                         value = stringizer(value)
-                    except ValueError:
+                    except ValueError as e:
                         raise NetworkXError(
-                            "%r cannot be converted into a string" % (value,)
-                        )
+                            f"{value!r} cannot be converted into a string"
+                        ) from e
                 if not isinstance(value, str):
-                    raise NetworkXError("%r is not a string" % (value,))
+                    raise NetworkXError(f"{value!r} is not a string")
                 yield indent + key + ' "' + escape(value) + '"'
 
     multigraph = G.is_multigraph()
@@ -728,8 +729,7 @@ def generate_gml(G, stringizer=None):
         yield "  multigraph 1"
     ignored_keys = {"directed", "multigraph", "node", "edge"}
     for attr, value in G.graph.items():
-        for line in stringize(attr, value, ignored_keys, "  "):
-            yield line
+        yield from stringize(attr, value, ignored_keys, "  ")
 
     # Output node data
     node_id = dict(zip(G, range(len(G))))
@@ -737,11 +737,9 @@ def generate_gml(G, stringizer=None):
     for node, attrs in G.nodes.items():
         yield "  node ["
         yield "    id " + str(node_id[node])
-        for line in stringize("label", node, (), "    "):
-            yield line
+        yield from stringize("label", node, (), "    ")
         for attr, value in attrs.items():
-            for line in stringize(attr, value, ignored_keys, "    "):
-                yield line
+            yield from stringize(attr, value, ignored_keys, "    ")
         yield "  ]"
 
     # Output edge data
@@ -755,11 +753,9 @@ def generate_gml(G, stringizer=None):
         yield "    source " + str(node_id[e[0]])
         yield "    target " + str(node_id[e[1]])
         if multigraph:
-            for line in stringize("key", e[2], (), "    "):
-                yield line
+            yield from stringize("key", e[2], (), "    ")
         for attr, value in e[-1].items():
-            for line in stringize(attr, value, ignored_keys, "    "):
-                yield line
+            yield from stringize(attr, value, ignored_keys, "    ")
         yield "  ]"
     yield "]"
 

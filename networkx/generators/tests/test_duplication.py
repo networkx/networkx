@@ -8,7 +8,7 @@ from networkx.generators.duplication import duplication_divergence_graph
 from networkx.generators.duplication import partial_duplication_graph
 
 
-class TestDuplicationDivergenceGraph(object):
+class TestDuplicationDivergenceGraph:
     """Unit tests for the
     :func:`networkx.generators.duplication.duplication_divergence_graph`
     function.
@@ -30,7 +30,7 @@ class TestDuplicationDivergenceGraph(object):
             duplication_divergence_graph(3, -1)
 
 
-class TestPartialDuplicationGraph(object):
+class TestPartialDuplicationGraph:
     """Unit tests for the
     :func:`networkx.generators.duplication.partial_duplication_graph`
     function.

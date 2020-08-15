@@ -7,7 +7,7 @@ from networkx.testing import assert_nodes_equal
 from networkx.testing import assert_edges_equal
 
 
-class TestPruferSequence(object):
+class TestPruferSequence:
     """Unit tests for the Prüfer sequence encoding and decoding
     functions.
 
@@ -28,7 +28,7 @@ class TestPruferSequence(object):
 
     def test_bad_integer_labels(self):
         with pytest.raises(KeyError):
-            T = nx.Graph(nx.utils.pairwise('abc'))
+            T = nx.Graph(nx.utils.pairwise("abc"))
             nx.to_prufer_sequence(T)
 
     def test_encoding(self):
@@ -72,7 +72,7 @@ class TestPruferSequence(object):
             assert list(seq) == seq2
 
 
-class TestNestedTuple(object):
+class TestNestedTuple:
     """Unit tests for the nested tuple encoding and decoding functions.
 
     """
@@ -85,7 +85,7 @@ class TestNestedTuple(object):
     def test_unknown_root(self):
         with pytest.raises(nx.NodeNotFound):
             G = nx.path_graph(2)
-            nx.to_nested_tuple(G, 'bogus')
+            nx.to_nested_tuple(G, "bogus")
 
     def test_encoding(self):
         T = nx.full_rary_tree(2, 2 ** 3 - 1)

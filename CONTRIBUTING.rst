@@ -1,5 +1,10 @@
-Developer overview
-==================
+.. _contributor_guide:
+
+Contributor Guide
+=================
+
+Development Workflow
+--------------------
 
 1. If you are a first-time contributor:
 
@@ -11,14 +16,65 @@ Developer overview
 
       git clone git@github.com:your-username/networkx.git
 
-   * Add the upstream repository::
+   * Navigate to the folder networkx and add the upstream repository::
 
       git remote add upstream git@github.com:networkx/networkx.git
 
    * Now, you have remote repositories named:
 
-      - ``upstream``, which refers to the ``networkx`` repository
-      - ``origin``, which refers to your personal fork
+     - ``upstream``, which refers to the ``networkx`` repository
+     - ``origin``, which refers to your personal fork
+
+   * Next, you need to set up your build environment.
+     Here are instructions for two popular environment managers:
+   
+     * ``venv`` (pip based)
+     
+       ::
+     
+         # Create a virtualenv named ``networkx-dev`` that lives in the directory of
+         # the same name
+         python -m venv networkx-dev
+         # Activate it
+         source networkx-dev/bin/activate
+         # Install main development and runtime dependencies of networkx
+         pip install -r <(cat requirements/{default,developer,doc,optional,test}.txt)
+         #
+         # (Optional) Install pygraphviz, pydot, and gdal packages
+         # These packages require that you have your system properly configured
+         # and what that involves differs on various systems.
+         # pip install -r requirements/extras.txt
+         #
+         # Build and install networkx from source
+         pip install -e .
+         # Test your installation
+         PYTHONPATH=. pytest networkx
+     
+     * ``conda`` (Anaconda or Miniconda)
+    
+       ::
+ 
+         # Create a conda environment named ``networkx-dev``
+         conda create --name networkx-dev
+         # Activate it
+         conda activate networkx-dev
+         # Install main development and runtime dependencies of networkx
+         conda install -c conda-forge `for i in requirements/{default,developer,doc,optional,test}.txt; do echo -n " --file $i "; done`
+         #
+         # (Optional) Install pygraphviz, pydot, and gdal packages
+         # These packages require that you have your system properly configured
+         # and what that involves differs on various systems.
+         # pip install -r requirements/extras.txt
+         #
+         # Install networkx from source
+         pip install -e . --no-deps
+         # Test your installation
+         PYTHONPATH=. pytest networkx
+
+   * Finally, we recommend you use a pre-commit hook, which runs black when
+     you type ``git commit``::
+
+       pre-commit install
 
 2. Develop your contribution:
 
@@ -35,7 +91,18 @@ Developer overview
 
    * Commit locally as you progress (``git add`` and ``git commit``)
 
-3. To submit your contribution:
+3. Test your contribution:
+
+   * Run the test suite locally (see `Testing`_ for details)::
+
+      PYTHONPATH=. pytest networkx
+
+   * Running the tests locally *before* submitting a pull request helps catch
+     problems early and reduces the load on the continuous integration
+     system.
+
+
+4. Submit your contribution:
 
    * Push your changes back to your fork on GitHub::
 
@@ -52,107 +119,103 @@ For a more detailed discussion, read these :doc:`detailed documents
 <gitwash/index>` on how to use Git with ``networkx``
 (`<https://networkx.github.io/documentation/latest/developer/gitwash/index.html>`_).
 
-4. Review process:
+5. Review process:
 
-    * Reviewers (the other developers and interested community members) will
-      write inline and/or general comments on your Pull Request (PR) to help
-      you improve its implementation, documentation, and style.  Every single
-      developer working on the project has their code reviewed, and we've come
-      to see it as friendly conversation from which we all learn and the
-      overall code quality benefits.  Therefore, please don't let the review
-      discourage you from contributing: its only aim is to improve the quality
-      of project, not to criticize (we are, after all, very grateful for the
-      time you're donating!).
+   * Reviewers (the other developers and interested community members) will
+     write inline and/or general comments on your Pull Request (PR) to help
+     you improve its implementation, documentation, and style.  Every single
+     developer working on the project has their code reviewed, and we've come
+     to see it as friendly conversation from which we all learn and the
+     overall code quality benefits.  Therefore, please don't let the review
+     discourage you from contributing: its only aim is to improve the quality
+     of project, not to criticize (we are, after all, very grateful for the
+     time you're donating!).
 
-    * To update your pull request, make your changes on your local repository
-      and commit. As soon as those changes are pushed up (to the same branch as
-      before) the pull request will update automatically.
+   * To update your pull request, make your changes on your local repository
+     and commit. As soon as those changes are pushed up (to the same branch as
+     before) the pull request will update automatically.
 
-    * `Travis-CI <https://travis-ci.org/>`_, a continuous integration service,
-      is triggered after each Pull Request update to build the code and run unit
-      tests of your branch. The Travis tests must pass before your PR can be merged.
-      If Travis fails, you can find out why by clicking on the "failed" icon (red
-      cross) and inspecting the build and test log.
+   * `Travis-CI <https://travis-ci.org/>`_, a continuous integration service,
+     is triggered after each Pull Request update to build the code and run unit
+     tests of your branch. The Travis tests must pass before your PR can be merged.
+     If Travis fails, you can find out why by clicking on the "failed" icon (red
+     cross) and inspecting the build and test log.
 
-    * `AppVeyor <http://ci.appveyor.com>`_, is another continuous integration
-      service, which we use.  You will also need to make sure that the AppVeyor
-      tests pass.
+   * `AppVeyor <http://ci.appveyor.com>`_, is another continuous integration
+     service that we use.  You will also need to make sure that the AppVeyor
+     tests pass.
+
+   .. note::
+
+      If the PR closes an issue, make sure that GitHub knows to automatically
+      close the issue when the PR is merged.  For example, if the PR closes
+      issue number 1480, you could use the phrase "Fixes #1480" in the PR
+      description or commit message.
+
+6. Document changes
+
+   If your change introduces any API modifications, please update
+   ``doc/release/release_dev.rst``.
+
+   If your change introduces a deprecation, add a reminder to
+   ``doc/developer/deprecations.rst`` for the team to remove the
+   deprecated functionality in the future.
+
+   .. note::
+   
+      To reviewers: make sure the merge message has a brief description of the
+      change(s) and if the PR closes an issue add, for example, "Closes #123"
+      where 123 is the issue number.
+
+
+Divergence from ``upstream master``
+-----------------------------------
+
+If GitHub indicates that the branch of your Pull Request can no longer
+be merged automatically, merge the master branch into yours::
+
+   git fetch upstream master
+   git merge upstream/master
+
+If any conflicts occur, they need to be fixed before continuing.  See
+which files are in conflict using::
+
+   git status
+
+Which displays a message like::
+
+   Unmerged paths:
+     (use "git add <file>..." to mark resolution)
+
+     both modified:   file_with_conflict.txt
+
+Inside the conflicted file, you'll find sections like these::
+
+   <<<<<<< HEAD
+   The way the text looks in your branch
+   =======
+   The way the text looks in the master branch
+   >>>>>>> master
+
+Choose one version of the text that should be kept, and delete the
+rest::
+
+   The way the text looks in your branch
+
+Now, add the fixed file::
+
+
+   git add file_with_conflict.txt
+
+Once you've fixed all merge conflicts, do::
+
+   git commit
 
 .. note::
 
-   If closing a bug, also add "Fixes #1480" where 1480 is the issue number.
-
-Divergence between ``upstream master`` and your feature branch
---------------------------------------------------------------
-
-Never merge the main branch into yours. If GitHub indicates that the
-branch of your Pull Request can no longer be merged automatically, rebase
-onto master::
-
-   git checkout master
-   git pull upstream master
-   git checkout bugfix-for-issue-1480
-   git rebase master
-
-If any conflicts occur, fix the according files and continue::
-
-   git add conflict-file1 conflict-file2
-   git rebase --continue
-
-However, you should only rebase your own branches and must generally not
-rebase any branch which you collaborate on with someone else.
-
-Finally, you must push your rebased branch::
-
-   git push --force origin bugfix-for-issue-1480
-
-(If you are curious, here's a further discussion on the
-`dangers of rebasing <http://tinyurl.com/lll385>`_.
-Also see this `LWN article <http://tinyurl.com/nqcbkj>`_.)
-
-Build environment setup
------------------------
-
-Once you've cloned your fork of the networkx repository,
-you should set up a Python development environment tailored for networkx.
-You may choose the environment manager of your choice.
-Here we provide instructions for two popular environment managers:
-``venv`` (pip based) and ``conda`` (Anaconda or Miniconda).
-
-venv
-^^^^
-When using ``venv``, you may find the following bash commands useful::
-
-  # Create a virtualenv named ``networkx-dev`` that lives in the directory of
-  # the same name
-  python -m venv networkx-dev
-  # Activate it
-  source networkx-dev/bin/activate
-  # Install all development and runtime dependencies of networkx
-  pip install -r <(cat requirements/*.txt)
-  # Build and install networkx from source
-  pip install -e .
-  # Test your installation
-  PYTHONPATH=. pytest networkx
-
-conda
-^^^^^
-
-When using conda, you may find the following bash commands useful::
-
-  # Create a conda environment named ``networkx-dev``
-  conda create --name networkx-dev
-  # Activate it
-  conda activate networkx-dev
-  # Install major development and runtime dependencies of networkx
-  # (the rest can be installed from conda-forge or pip, if needed)
-  conda install `for i in requirements/{default,test,doc,extras}.txt; do echo -n " --file $i "; done`
-  # Install minimal testing dependencies
-  conda install pytest
-  # Install networkx from source
-  pip install -e . --no-deps
-  # Test your installation
-  PYTHONPATH=. pytest networkx
+   Advanced Git users are encouraged to `rebase instead of merge
+   <https://networkx.github.io/documentation/stable/developer/gitwash/development_workflow.html#rebase-on-trunk>`__,
+   but we squash and merge most PRs either way.
 
 
 Guidelines
@@ -165,14 +228,6 @@ Guidelines
 * All changes are reviewed.  Ask on the
   `mailing list <http://groups.google.com/group/networkx-discuss>`_ if
   you get no response to your pull request.
-
-Stylistic Guidelines
---------------------
-
-* Set up your editor to remove trailing whitespace.
-  Follow `PEP08 <www.python.org/dev/peps/pep-0008/>`_.
-  Check code with `pyflakes` / `flake8`.
-
 * Use the following import conventions::
 
    import numpy as np
@@ -181,7 +236,24 @@ Stylistic Guidelines
    import matplotlib.pyplot as plt
    import networkx as nx
 
-   cimport numpy as cnp # in Cython code
+* Use the decorator ``not_implemented_for`` in ``networkx/utils/decorators.py``
+  to designate that a function doesn't accept 'directed', 'undirected',
+  'multigraph' or 'graph'.  The first argument of the decorated function should
+  be the graph object to be checked.
+
+  .. code-block:: python
+  
+      @nx.not_implemented_for('directed', 'multigraph')
+      def function_not_for_MultiDiGraph(G, others):
+          # function not for graphs that are directed *and* multigraph
+          pass
+  
+      @nx.not_implemented_for('directed')
+      @nx.not_implemented_for('multigraph')
+      def function_only_for_Graph(G, others):
+          # function not for directed graphs *or* for multigraphs
+          pass
+
 
 Testing
 -------
@@ -190,16 +262,11 @@ Testing
 execution on your system.  The test suite has to pass before a pull
 request can be merged, and tests should be added to cover any
 modifications to the code base.
-
 We make use of the `pytest <https://docs.pytest.org/en/latest/>`__
 testing framework, with tests located in the various
 ``networkx/submodule/tests`` folders.
 
-To use ``pytest``, ensure that the library is installed in development mode::
-
-    $ pip install -e .
-
-Now, run all tests using::
+To run all tests::
 
     $ PYTHONPATH=. pytest networkx
 
@@ -220,15 +287,10 @@ For example, run all tests and all doctests using::
 
     $ PYTHONPATH=. pytest --doctest-modules networkx
 
-Test coverage
--------------
-
 Tests for a module should ideally cover all code in that module,
 i.e., statement coverage should be at 100%.
 
-To measure the test coverage, install
-`pytest-cov <https://pytest-cov.readthedocs.io/en/latest/>`__
-(using ``pip install pytest-cov``) and then run::
+To measure the test coverage, run::
 
   $ PYTHONPATH=. pytest --cov=networkx networkx
 
@@ -243,23 +305,6 @@ detailing the test coverage::
   networkx/algorithms/approximation/clique.py         42      1     18      1    97%
   ...
 
-Pull request codes
-------------------
-
-When you submit a pull request to GitHub, GitHub will ask you for a summary.  If
-your code is not ready to merge, but you want to get feedback, please consider
-using ``WIP: experimental optimization`` or similar for the title of your pull
-request. That way we will all know that it's not yet ready to merge and that
-you may be interested in more fundamental comments about design.
-
-When you think the pull request is ready to merge, change the title (using the
-*Edit* button) to remove the ``WIP:``.
-
-Developer Notes
----------------
-
-For additional information about contributing to NetworkX, please see
-the `Developer Notes <https://github.com/networkx/networkx/wiki>`_.
 
 Bugs
 ----

@@ -10,7 +10,10 @@ try:
 
     def zeta(x, q, tolerance):
         return _zeta(x, q)
+
+
 except ImportError:
+
     def zeta(x, q, tolerance):
         """The Hurwitz zeta function, or the Riemann zeta function of two
         arguments.
@@ -21,7 +24,7 @@ except ImportError:
         convergence, as decided by ``tolerance``.
         """
         z = 0
-        z_prev = -float('inf')
+        z_prev = -float("inf")
         k = 0
         while abs(z - z_prev) > tolerance:
             z_prev = z
@@ -29,11 +32,19 @@ except ImportError:
             k += 1
         return z
 
-__all__ = ['caveman_graph', 'connected_caveman_graph',
-           'relaxed_caveman_graph', 'random_partition_graph',
-           'planted_partition_graph', 'gaussian_random_partition_graph',
-           'ring_of_cliques', 'windmill_graph', 'stochastic_block_model',
-           'LFR_benchmark_graph']
+
+__all__ = [
+    "caveman_graph",
+    "connected_caveman_graph",
+    "relaxed_caveman_graph",
+    "random_partition_graph",
+    "planted_partition_graph",
+    "gaussian_random_partition_graph",
+    "ring_of_cliques",
+    "windmill_graph",
+    "stochastic_block_model",
+    "LFR_benchmark_graph",
+]
 
 
 def caveman_graph(l, k):
@@ -94,12 +105,17 @@ def connected_caveman_graph(l, k):
     l : int
       number of cliques
     k : int
-      size of cliques
+      size of cliques (k at least 2 or NetworkXError is raised)
 
     Returns
     -------
     G : NetworkX Graph
       connected caveman graph
+
+    Raises
+    ------
+    NetworkXError
+        If the size of cliques `k` is smaller than 2.
 
     Notes
     -----
@@ -118,6 +134,11 @@ def connected_caveman_graph(l, k):
     .. [1] Watts, D. J. 'Networks, Dynamics, and the Small-World Phenomenon.'
        Amer. J. Soc. 105, 493-527, 1999.
     """
+    if k < 2:
+        raise nx.NetworkXError(
+            "The size of cliques in a connected caveman graph " "must be at least 2."
+        )
+
     G = nx.caveman_graph(l, k)
     for start in range(0, l * k, k):
         G.remove_edge(start, start + 1)
@@ -243,9 +264,15 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     for r in range(num_blocks):
         p[r][r] = p_in
 
-    return stochastic_block_model(sizes, p, nodelist=None, seed=seed,
-                                  directed=directed, selfloops=False,
-                                  sparse=True)
+    return stochastic_block_model(
+        sizes,
+        p,
+        nodelist=None,
+        seed=seed,
+        directed=directed,
+        selfloops=False,
+        sparse=True,
+    )
 
 
 @py_random_state(4)
@@ -300,12 +327,11 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
     .. [2] Santo Fortunato 'Community Detection in Graphs' Physical Reports
        Volume 486, Issue 3-5 p. 75-174. https://arxiv.org/abs/0906.0612
     """
-    return random_partition_graph([k] * l, p_in, p_out, seed, directed)
+    return random_partition_graph([k] * l, p_in, p_out, seed=seed, directed=directed)
 
 
 @py_random_state(6)
-def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
-                                    seed=None):
+def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=None):
     """Generate a Gaussian random partition graph.
 
     A Gaussian random partition graph is created by creating k partitions
@@ -377,7 +403,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
             break
         assigned += size
         sizes.append(size)
-    return random_partition_graph(sizes, p_in, p_out, directed, seed)
+    return random_partition_graph(sizes, p_in, p_out, seed=seed, directed=directed)
 
 
 def ring_of_cliques(num_cliques, clique_size):
@@ -419,18 +445,19 @@ def ring_of_cliques(num_cliques, clique_size):
     simply adds the link without removing any link from the cliques.
     """
     if num_cliques < 2:
-        raise nx.NetworkXError('A ring of cliques must have at least '
-                               'two cliques')
+        raise nx.NetworkXError("A ring of cliques must have at least " "two cliques")
     if clique_size < 2:
-        raise nx.NetworkXError('The cliques must have at least two nodes')
+        raise nx.NetworkXError("The cliques must have at least two nodes")
 
     G = nx.Graph()
     for i in range(num_cliques):
-        edges = itertools.combinations(range(i * clique_size, i * clique_size +
-                                             clique_size), 2)
+        edges = itertools.combinations(
+            range(i * clique_size, i * clique_size + clique_size), 2
+        )
         G.add_edges_from(edges)
-        G.add_edge(i * clique_size + 1, (i + 1) * clique_size %
-                   (num_cliques * clique_size))
+        G.add_edge(
+            i * clique_size + 1, (i + 1) * clique_size % (num_cliques * clique_size)
+        )
     return G
 
 
@@ -472,21 +499,24 @@ def windmill_graph(n, k):
     are in the opposite order as the parameters of this method.
     """
     if n < 2:
-        msg = 'A windmill graph must have at least two cliques'
+        msg = "A windmill graph must have at least two cliques"
         raise nx.NetworkXError(msg)
     if k < 2:
-        raise nx.NetworkXError('The cliques must have at least two nodes')
+        raise nx.NetworkXError("The cliques must have at least two nodes")
 
-    G = nx.disjoint_union_all(itertools.chain([nx.complete_graph(k)],
-                                              (nx.complete_graph(k - 1)
-                                               for _ in range(n - 1))))
+    G = nx.disjoint_union_all(
+        itertools.chain(
+            [nx.complete_graph(k)], (nx.complete_graph(k - 1) for _ in range(n - 1))
+        )
+    )
     G.add_edges_from((0, i) for i in range(k, G.number_of_nodes()))
     return G
 
 
 @py_random_state(3)
-def stochastic_block_model(sizes, p, nodelist=None, seed=None,
-                           directed=False, selfloops=False, sparse=True):
+def stochastic_block_model(
+    sizes, p, nodelist=None, seed=None, directed=False, selfloops=False, sparse=True
+):
     """Returns a stochastic block model graph.
 
     This model partitions the nodes in blocks of arbitrary sizes, and places
@@ -603,17 +633,19 @@ def stochastic_block_model(sizes, p, nodelist=None, seed=None,
         block_iter = itertools.combinations_with_replacement(block_range, 2)
     # Split nodelist in a partition (list of sets).
     size_cumsum = [sum(sizes[0:x]) for x in range(0, len(sizes) + 1)]
-    g.graph['partition'] = [set(nodelist[size_cumsum[x]:size_cumsum[x + 1]])
-                            for x in range(0, len(size_cumsum) - 1)]
+    g.graph["partition"] = [
+        set(nodelist[size_cumsum[x] : size_cumsum[x + 1]])
+        for x in range(0, len(size_cumsum) - 1)
+    ]
     # Setup nodes and graph name
-    for block_id, nodes in enumerate(g.graph['partition']):
+    for block_id, nodes in enumerate(g.graph["partition"]):
         for node in nodes:
             g.add_node(node, block=block_id)
 
     g.name = "stochastic_block_model"
 
     # Test for edge existence
-    parts = g.graph['partition']
+    parts = g.graph["partition"]
     for i, j in block_iter:
         if i == j:
             if directed:
@@ -696,8 +728,7 @@ def _powerlaw_sequence(gamma, low, high, condition, length, max_iters, seed):
 
 
 # TODO Needs documentation.
-def _generate_min_degree(gamma, average_degree, max_degree, tolerance,
-                         max_iters):
+def _generate_min_degree(gamma, average_degree, max_degree, tolerance, max_iters):
     """Returns a minimum degree from the given average degree."""
     min_deg_top = max_degree
     min_deg_bot = 1
@@ -709,8 +740,7 @@ def _generate_min_degree(gamma, average_degree, max_degree, tolerance,
             raise nx.ExceededMaxIterations("Could not match average_degree")
         mid_avg_deg = 0
         for x in range(int(min_deg_mid), max_degree + 1):
-            mid_avg_deg += (x ** (-gamma + 1)) / zeta(gamma, min_deg_mid,
-                                                      tolerance)
+            mid_avg_deg += (x ** (-gamma + 1)) / zeta(gamma, min_deg_mid, tolerance)
         if mid_avg_deg > average_degree:
             min_deg_top = min_deg_mid
             min_deg_mid = (min_deg_top - min_deg_bot) / 2 + min_deg_bot
@@ -769,15 +799,25 @@ def _generate_communities(degree_seq, community_sizes, mu, max_iters, seed):
             free.append(result[c].pop())
         if not free:
             return result
-    msg = 'Could not assign communities; try increasing min_community'
+    msg = "Could not assign communities; try increasing min_community"
     raise nx.ExceededMaxIterations(msg)
 
 
 @py_random_state(11)
-def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
-                        min_degree=None, max_degree=None, min_community=None,
-                        max_community=None, tol=1.0e-7, max_iters=500,
-                        seed=None):
+def LFR_benchmark_graph(
+    n,
+    tau1,
+    tau2,
+    mu,
+    average_degree=None,
+    min_degree=None,
+    max_degree=None,
+    min_community=None,
+    max_community=None,
+    tol=1.0e-7,
+    max_iters=500,
+    seed=None,
+):
     r"""Returns the LFR benchmark graph.
 
     This algorithm proceeds as follows:
@@ -959,20 +999,24 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
     elif not 0 < max_degree <= n:
         raise nx.NetworkXError("max_degree must be in the interval (0, n]")
     if not ((min_degree is None) ^ (average_degree is None)):
-        raise nx.NetworkXError("Must assign exactly one of min_degree and"
-                               " average_degree")
+        raise nx.NetworkXError(
+            "Must assign exactly one of min_degree and" " average_degree"
+        )
     if min_degree is None:
-        min_degree = _generate_min_degree(tau1, average_degree, max_degree,
-                                          tol, max_iters)
+        min_degree = _generate_min_degree(
+            tau1, average_degree, max_degree, tol, max_iters
+        )
 
     # Generate a degree sequence with a power law distribution.
     low, high = min_degree, max_degree
 
-    def condition(seq): return sum(seq) % 2 == 0
+    def condition(seq):
+        return sum(seq) % 2 == 0
 
-    def length(seq): return len(seq) >= n
-    deg_seq = _powerlaw_sequence(tau1, low, high, condition,
-                                 length, max_iters, seed)
+    def length(seq):
+        return len(seq) >= n
+
+    deg_seq = _powerlaw_sequence(tau1, low, high, condition, length, max_iters, seed)
 
     # Validate parameters for generating the community size sequence.
     if min_community is None:
@@ -990,11 +1034,13 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
     # generate a valid community size sequence.
     low, high = min_community, max_community
 
-    def condition(seq): return sum(seq) == n
+    def condition(seq):
+        return sum(seq) == n
 
-    def length(seq): return sum(seq) >= n
-    comms = _powerlaw_sequence(tau2, low, high, condition,
-                               length, max_iters, seed)
+    def length(seq):
+        return sum(seq) >= n
+
+    comms = _powerlaw_sequence(tau2, low, high, condition, length, max_iters, seed)
 
     # Generate the communities based on the given degree sequence and
     # community sizes.
@@ -1015,5 +1061,5 @@ def LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=None,
                 v = seed.choice(range(n))
                 if v not in c:
                     G.add_edge(u, v)
-            G.nodes[u]['community'] = c
+            G.nodes[u]["community"] = c
     return G

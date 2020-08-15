@@ -1,11 +1,11 @@
 from networkx.utils import not_implemented_for
 from networkx.utils import py_random_state
 
-__all__ = ['average_clustering']
+__all__ = ["average_clustering"]
 
 
 @py_random_state(2)
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def average_clustering(G, trials=1000, seed=None):
     r"""Estimates the average clustering coefficient of G.
 
