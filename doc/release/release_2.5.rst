@@ -54,6 +54,7 @@ Improvements
 - Initiate an NX Enhancement Proposal (NXEP) system
 - optimize single_source_shortest_path
 - improved consistent "weight" specification in shortest_path routines
+- Reduce numpy.matrix usage which is discouraged by numpy.
 - improved line color
 - better search engine treatment of docs
 - lattice and grid_graph and grid_2d_graph can use dim=tuple
@@ -101,9 +102,6 @@ Deprecations
 
 - [`#3983 <https://github.com/networkx/networkx/pull/3983>`_]
   Deprecate `reversed` context manager in favor of `reviersed_view`
-
-- [`#4045 <https://github.com/networkx/networkx/pull/4045>`_]
-  Reduce numpy.matrix usage which is discouraged in numpy.
 
 
 Pull requests merged in this release
