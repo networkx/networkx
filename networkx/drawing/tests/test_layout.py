@@ -386,3 +386,21 @@ class TestLayout:
             assert almost_equal(
                 distances_equidistant[d], distances_equidistant[d + 1], 2
             )
+
+    def test_rescale_layout_dict(self):
+        G = nx.empty_graph()
+        vpos = nx.random_layout(G, center=(1, 1))
+        assert nx.rescale_layout_dict(vpos) == {}
+
+        G = nx.empty_graph(2)
+        vpos = {0: (0.0, 0.0), 1: (1.0, 1.0)}
+        s_vpos = nx.rescale_layout_dict(vpos)
+        norm = numpy.linalg.norm
+        assert norm([sum(x) for x in zip(*s_vpos.values())]) < 1e-6
+
+        G = nx.empty_graph(3)
+        vpos = {0: (0, 0), 1: (1, 1), 2: (0.5, 0.5)}
+        s_vpos = nx.rescale_layout_dict(vpos)
+        assert s_vpos == {0: (-1, -1), 1: (1, 1), 2: (0, 0)}
+        s_vpos = nx.rescale_layout_dict(vpos, scale=2)
+        assert s_vpos == {0: (-2, -2), 1: (2, 2), 2: (0, 0)}
