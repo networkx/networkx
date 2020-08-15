@@ -51,6 +51,10 @@ def metric_closure(G, weight="weight"):
 def steiner_tree(G, terminal_nodes, weight="weight"):
     """ Return an approximation to the minimum Steiner tree of a graph.
 
+    The minimum Steiner tree of `G` w.r.t a set of `terminal_nodes`
+    is a tree within `G` that spans those nodes and has minimum size
+    (sum of edge weights) among all such trees.
+
     Parameters
     ----------
     G : NetworkX graph
@@ -76,6 +80,10 @@ def steiner_tree(G, terminal_nodes, weight="weight"):
     factor of the weight of the optimal Steiner tree where *t* is number of
     terminal nodes.
 
+    References
+    ----------
+    .. [1] Steiner_tree_problem on Wikipedia.
+       https://en.wikipedia.org/wiki/Steiner_tree_problem
     """
     # M is the subgraph of the metric closure induced by the terminal nodes of
     # G.
