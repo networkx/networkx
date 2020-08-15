@@ -12,6 +12,7 @@ if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
   # needed to build Python binding for GDAL
   export CPLUS_INCLUDE_PATH=/usr/include/gdal
   export C_INCLUDE_PATH=/usr/include/gdal
+  pip install gdal==1.10.0
 
   # needed for view_graphviz and default_opener
   DIR=~/.local/bin
