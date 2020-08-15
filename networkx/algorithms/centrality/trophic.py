@@ -14,7 +14,7 @@ def trophic_levels(G, weight="weight"):
 
     .. math::
 
-        s_i = 1 + \frac{1}{k_^{in}_i \sum_{j} a_{ij} s_j
+        s_i = 1 + \frac{1}{k_^{in}_i} \sum_{j} a_{ij} s_j
 
     where $k_^{in}_i$ is the in-degree of i
 
