@@ -34,6 +34,7 @@ New Functions:
 - common_neighbor_centrality (CCPA link prediction)
 - max_weight_clique
 - path_weight and is_path
+- rescale_layout_dict
 
 New generators:
 
