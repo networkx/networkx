@@ -426,15 +426,12 @@ def view_pygraphviz(
         # Assume the decorator worked and it is a file-object.
         pass
 
-    if show:
-        display_pygraphviz(A, path=path, prog=prog, args=args)
-    else:
-        path.close()
+    display_pygraphviz(A, path=path, prog=prog, args=args, show=show)
 
     return path.name, A
 
 
-def display_pygraphviz(graph, path, format=None, prog=None, args=""):
+def display_pygraphviz(graph, path, format=None, prog=None, args="", show=True):
     """Internal function to display a graph in OS dependent manner.
 
     Parameters
@@ -450,6 +447,10 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=""):
         Name of Graphviz layout program.
     args : str
         Additional arguments to pass to the Graphviz layout program.
+    show : bool, default = True
+        Whether to display the graph with `networkx.utils.default_opener`,
+        default is `True`. If `False`, the rendered graph is still available
+        at `path`.
 
     Notes
     -----
@@ -469,4 +470,5 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=""):
     # We must close the file before viewing it.
     graph.draw(path, format, prog, args)
     path.close()
-    nx.utils.default_opener(filename)
+    if show:
+        nx.utils.default_opener(filename)
