@@ -1,7 +1,7 @@
 """
-**********
+********************
 Bipartite Edge Lists
-**********
+********************
 Read and write NetworkX graphs as bipartite edge lists.
 
 Format

@@ -143,7 +143,7 @@ Trophic
    trophic_incoherence_parameter
 
 VoteRank
------------
+--------
 .. autosummary::
    :toctree: generated/
 

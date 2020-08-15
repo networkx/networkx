@@ -39,6 +39,7 @@ Matching
    eppstein_matching
    hopcroft_karp_matching
    to_vertex_cover
+   maximum_matching
    minimum_weight_full_matching
 
 

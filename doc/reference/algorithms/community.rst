@@ -28,7 +28,6 @@ Modularity-based communities
 .. autosummary::
    :toctree: generated/
 
-   maximum_matching
    greedy_modularity_communities
    _naive_greedy_modularity_communities
 
