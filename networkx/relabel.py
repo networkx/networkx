@@ -13,7 +13,7 @@ def relabel_nodes(G, mapping, copy=True):
 
     mapping : dictionary
        A dictionary with the old labels as keys and new labels as values.
-       A partial mapping is allowed.
+       A partial mapping is allowed. Mapping 2 nodes to a single node is allowed.
 
     copy : bool (optional, default=True)
        If True return a copy, or if False relabel the nodes in place.
@@ -64,9 +64,8 @@ def relabel_nodes(G, mapping, copy=True):
     >>> list(H)
     [0, 1, 4]
 
-    In a multigraph, relabeling two or more nodes that share predecessors
-    into the same new label will preserve all edges, but will change the
-    edge keys in the process:
+    In a multigraph, relabeling two or more nodes to the same new node
+    will retain all edges, but may change the edge keys in the process:
 
     >>> G = nx.MultiGraph()
     >>> G.add_edge(0, 1, value="a")  # returns the key for this edge
@@ -100,12 +99,11 @@ def relabel_nodes(G, mapping, copy=True):
     In that case, use copy=True.
 
     If a relabel operation on a multigraph would cause two or more
-    edges to have the same head, tail and key, relabel_nodes will
-    resolve this by finding the lowest non-negative integer values
-    for all the other edges such that they all have different keys.
-    This way, edges will not be lost when two nodes are merged into
-    one, but the edge keys may be changed. In particular, non-numeric
-    keys may be replaced by numeric ones.
+    edges to have the same source, target and key, the second edge must
+    be assigned a new key to retain all edges. The new key is set
+    to the lowest non-negative integer not already used as a key
+    for edges between these two nodes. Note that this means non-numeric
+    keys may be replaced by numeric keys.
 
     See Also
     --------
@@ -167,13 +165,14 @@ def _relabel_inplace(G, mapping):
                     for (source, _, key, data) in G.in_edges(old, data=True, keys=True)
                 ]
             # Ensure new edges won't overwrite existing ones
-            for i, (tail, head, key, data) in enumerate(new_edges):
-                if head in G[tail] and key in G[tail][head]:
-                    new_key = 0
-                    current_keys = G[tail][head]
-                    while new_key in current_keys:
+            seen = set()
+            for i, (source, target, key, data) in enumerate(new_edges):
+                if (target in G[source] and key in G[source][target]):
+                    new_key = 0 if not isinstance(key, (int, float)) else key
+                    while (new_key in G[source][target] or (target, new_key) in seen):
                         new_key += 1
-                    new_edges[i] = (tail, head, new_key, data)
+                    new_edges[i] = (source, target, new_key, data)
+                    seen.add((target, new_key))
         else:
             new_edges = [
                 (new, new if old == target else target, data)
@@ -200,14 +199,17 @@ def _relabel_copy(G, mapping):
         ]
 
         # check for conflicting edge-keys
+        undirected = not G.is_directed()
         seen_edges = set()
-        for i, (tail, head, key, data) in enumerate(new_edges):
-            while (tail, head, key) in seen_edges:
+        for i, (source, target, key, data) in enumerate(new_edges):
+            while (source, target, key) in seen_edges:
                 if not isinstance(key, (int, float)):
                     key = 0
                 key += 1
-            seen_edges.add((tail, head, key))
-            new_edges[i] = (tail, head, key, data)
+            seen_edges.add((source, target, key))
+            if undirected:
+                seen_edges.add((target, source, key))
+            new_edges[i] = (source, target, key, data)
 
         H.add_edges_from(new_edges)
     else:
