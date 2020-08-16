@@ -101,7 +101,7 @@ class TestAGraph:
     def test_view_pygraphviz_path(self, tmp_path):
         G = nx.complete_graph(3)
         input_path = str(tmp_path / "graph.png")
-        out_path, A = nx.nx_agraph.view_pygraphviz(G, path=input_path)
+        out_path, A = nx.nx_agraph.view_pygraphviz(G, path=input_path, show=False)
         assert out_path == input_path
         # Ensure file is not empty
         with open(input_path, "rb") as fh:
@@ -110,20 +110,20 @@ class TestAGraph:
 
     def test_view_pygraphviz_file_suffix(self, tmp_path):
         G = nx.complete_graph(3)
-        path, A = nx.nx_agraph.view_pygraphviz(G, suffix=1)
+        path, A = nx.nx_agraph.view_pygraphviz(G, suffix=1, show=False)
         assert path[-6:] == "_1.png"
 
     def test_view_pygraphviz(self):
         G = nx.Graph()  # "An empty graph cannot be drawn."
         pytest.raises(nx.NetworkXException, nx.nx_agraph.view_pygraphviz, G)
         G = nx.barbell_graph(4, 6)
-        nx.nx_agraph.view_pygraphviz(G)
+        nx.nx_agraph.view_pygraphviz(G, show=False)
 
     def test_view_pygraphviz_edgelabel(self):
         G = nx.Graph()
         G.add_edge(1, 2, weight=7)
         G.add_edge(2, 3, weight=8)
-        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel="weight")
+        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel="weight", show=False)
         for edge in A.edges():
             assert edge.attr["weight"] in ("7", "8")
 
@@ -133,7 +133,7 @@ class TestAGraph:
         def foo_label(data):
             return "foo"
 
-        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel=foo_label)
+        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel=foo_label, show=False)
         for edge in A.edges():
             assert edge.attr["label"] == "foo"
 
@@ -141,7 +141,7 @@ class TestAGraph:
         G = nx.MultiGraph()
         G.add_edge(0, 1, key=0, name="left_fork")
         G.add_edge(0, 1, key=1, name="right_fork")
-        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel="name")
+        path, A = nx.nx_agraph.view_pygraphviz(G, edgelabel="name", show=False)
         edges = A.edges()
         assert len(edges) == 2
         for edge in edges:
@@ -160,7 +160,7 @@ class TestAGraph:
 
     def test_view_pygraphviz_no_added_attrs_to_input(self):
         G = nx.complete_graph(2)
-        path, A = nx.nx_agraph.view_pygraphviz(G)
+        path, A = nx.nx_agraph.view_pygraphviz(G, show=False)
         assert G.graph == {}
 
     @pytest.mark.xfail(reason="known bug in clean_attrs")
@@ -169,7 +169,7 @@ class TestAGraph:
         # Add entries to graph dict that to_agraph handles specially
         G.graph["node"] = {"width": "0.80"}
         G.graph["edge"] = {"fontsize": "14"}
-        path, A = nx.nx_agraph.view_pygraphviz(G)
+        path, A = nx.nx_agraph.view_pygraphviz(G, show=False)
         assert G.graph == {"node": {"width": "0.80"}, "edge": {"fontsize": "14"}}
 
     def test_graph_with_AGraph_attrs(self):
@@ -177,7 +177,7 @@ class TestAGraph:
         # Add entries to graph dict that to_agraph handles specially
         G.graph["node"] = {"width": "0.80"}
         G.graph["edge"] = {"fontsize": "14"}
-        path, A = nx.nx_agraph.view_pygraphviz(G)
+        path, A = nx.nx_agraph.view_pygraphviz(G, show=False)
         # Ensure user-specified values are not lost
         assert dict(A.node_attr)["width"] == "0.80"
         assert dict(A.edge_attr)["fontsize"] == "14"
@@ -238,3 +238,12 @@ class TestAGraph:
         pos = list(pos.values())
         assert len(pos) == 5
         assert len(pos[0]) == 3
+
+    def test_display_pygraphviz_deprecation_warning(self):
+        G = nx.complete_graph(2)
+        path_name, A = nx.nx_agraph.view_pygraphviz(G, show=False)
+        # Monkeypatch default_opener to prevent window opening
+        nx.utils.default_opener = lambda x: None
+        with pytest.warns(DeprecationWarning, match="display_pygraphviz is deprecated"):
+            with open(path_name, "wb") as fh:
+                nx.nx_agraph.display_pygraphviz(A, fh, prog="dot")
