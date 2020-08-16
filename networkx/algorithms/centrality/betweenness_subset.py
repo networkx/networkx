@@ -194,7 +194,7 @@ def edge_betweenness_centrality_subset(
 
 # obsolete name
 def betweenness_centrality_source(G, normalized=True, weight=None, sources=None):
-    msg = "betweenness_centrality_source should be changed to betweenness_centrality_subset"
+    msg = "betweenness_centrality_source --> betweenness_centrality_subset"
     warnings.warn(msg, DeprecationWarning)
     if sources is None:
         sources = G.nodes()
