@@ -281,7 +281,7 @@ computed with a layout function. The edges are lines between those dots.
    >>> nx.draw(G)   # default spring_layout
    >>> plt.subplot(122)
    <matplotlib.axes._subplots.AxesSubplot object at ...>
-   >>> nx.draw(G, pos=nx.circular_layout(G), nodecolor='r', edge_color='b')
+   >>> nx.draw(G, pos=nx.circular_layout(G), node_color='r', edge_color='b')
 
 See the :doc:`examples </auto_examples/index>` for more ideas.
 

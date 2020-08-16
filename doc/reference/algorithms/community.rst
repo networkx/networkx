@@ -14,16 +14,6 @@ Bipartitions
 
    kernighan_lin_bisection
 
-
-Generators
-----------
-.. automodule:: networkx.algorithms.community.community_generators
-.. autosummary::
-   :toctree: generated/
-
-   LFR_benchmark_graph
-
-
 K-Clique
 --------
 .. automodule:: networkx.algorithms.community.kclique
@@ -37,8 +27,17 @@ Modularity-based communities
 .. automodule:: networkx.algorithms.community.modularity_max
 .. autosummary::
    :toctree: generated/
-   
+
    greedy_modularity_communities
+   _naive_greedy_modularity_communities
+
+Tree partitioning
+-----------------
+.. automodule:: networkx.algorithms.community.lukes
+.. autosummary::
+   :toctree: generated/
+
+   lukes_partitioning
 
 Label propagation
 -----------------
@@ -64,6 +63,7 @@ Measuring partitions
    :toctree: generated/
 
    coverage
+   modularity
    performance
 
 Partitions via centrality measures

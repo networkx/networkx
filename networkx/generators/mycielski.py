@@ -1,10 +1,3 @@
-#    Copyright (C) 2010-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-
 """Functions related to the Mycielski Operation and the Mycielskian family
 of graphs.
 
@@ -13,11 +6,11 @@ of graphs.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['mycielskian', 'mycielski_graph']
+__all__ = ["mycielskian", "mycielski_graph"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def mycielskian(G, iterations=1):
     r"""Returns the Mycielskian of a simple, undirected graph G
 

@@ -20,6 +20,7 @@ Operators
    intersection
    difference
    symmetric_difference
+   full_join
 
 
 .. automodule:: networkx.algorithms.operators.all

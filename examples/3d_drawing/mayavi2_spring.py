@@ -3,15 +3,11 @@
 Mayavi2
 =======
 
-This is
 """
 
-# needs mayavi2
-# run with ipython -wthread
 import networkx as nx
 import numpy as np
 from mayavi import mlab
-mlab.options.offscreen = True
 
 # some graphs to try
 # H=nx.krackhardt_kite_graph()
@@ -28,19 +24,18 @@ xyz = np.array([pos[v] for v in sorted(G)])
 # scalar colors
 scalars = np.array(list(G.nodes())) + 5
 
-mlab.figure(1, bgcolor=(0, 0, 0))
-mlab.clf()
-
-pts = mlab.points3d(xyz[:, 0], xyz[:, 1], xyz[:, 2],
-                    scalars,
-                    scale_factor=0.1,
-                    scale_mode='none',
-                    colormap='Blues',
-                    resolution=20)
+pts = mlab.points3d(
+    xyz[:, 0],
+    xyz[:, 1],
+    xyz[:, 2],
+    scalars,
+    scale_factor=0.1,
+    scale_mode="none",
+    colormap="Blues",
+    resolution=20,
+)
 
 pts.mlab_source.dataset.lines = np.array(list(G.edges()))
 tube = mlab.pipeline.tube(pts, tube_radius=0.01)
 mlab.pipeline.surface(tube, color=(0.8, 0.8, 0.8))
-
-mlab.savefig('mayavi2_spring.png')
-# mlab.show() # interactive window
+mlab.show()

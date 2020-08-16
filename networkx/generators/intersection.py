@@ -1,24 +1,15 @@
-# -*- coding: utf-8 -*-
 """
 Generators for random intersection graphs.
 """
-#    Copyright (C) 2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-import random
 import networkx as nx
 from networkx.algorithms import bipartite
 from networkx.utils import py_random_state
 
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)'])
-
-__all__ = ['uniform_random_intersection_graph',
-           'k_random_intersection_graph',
-           'general_random_intersection_graph',
-           ]
+__all__ = [
+    "uniform_random_intersection_graph",
+    "k_random_intersection_graph",
+    "general_random_intersection_graph",
+]
 
 
 @py_random_state(3)

@@ -1,26 +1,12 @@
-# -*- coding: utf-8 -*-
-#
-# priorityq: An object-oriented priority queue with updatable priorities.
-#
-# Copyright 2018 Edward L. Platt
-#
-# This file is part of NetworkX
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Authors:
-#   Edward L. Platt <ed@elplatt.com>
-#
 """Priority queue class with updatable priorities.
 """
 
 import heapq
 
-__all__ = ['MappedQueue']
+__all__ = ["MappedQueue"]
 
 
-class MappedQueue(object):
+class MappedQueue:
     """The MappedQueue class implements an efficient minimum heap. The
     smallest element can be popped in O(1) time, new elements can be pushed
     in O(log n) time, and any element can be removed or updated in O(log n)
@@ -75,7 +61,7 @@ class MappedQueue(object):
     def _heapify(self):
         """Restore heap invariant and recalculate map."""
         heapq.heapify(self.h)
-        self.d = dict([(elt, pos) for pos, elt in enumerate(self.h)])
+        self.d = {elt: pos for pos, elt in enumerate(self.h)}
         if len(self.h) != len(self.d):
             raise AssertionError("Heap contains duplicate elements")
 

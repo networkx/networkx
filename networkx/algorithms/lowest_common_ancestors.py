@@ -1,26 +1,21 @@
-# Copyright (C) 2013 by
-#   Alex Roper <aroper@umich.edu>
-# Copyright (C) 2017 by
-#   Aric Hagberg <hagberg@lanl.gov>
-#   Dan Schult <dschult@colgate.edu>
-#   Pieter Swart <swart@lanl.gov>
-#
-#   All rights reserved.
-#   BSD license.
-#
-# Author:  Alex Roper <aroper@umich.edu>
 """Algorithms for finding the lowest common ancestor of trees and DAGs."""
 from collections import defaultdict
 from collections.abc import Mapping, Set
 from itertools import chain, count
 
 import networkx as nx
-from networkx.utils import arbitrary_element, not_implemented_for, \
-    UnionFind, generate_unique_node
+from networkx.utils import (
+    arbitrary_element,
+    not_implemented_for,
+    UnionFind,
+    generate_unique_node,
+)
 
-__all__ = ["all_pairs_lowest_common_ancestor",
-           "tree_all_pairs_lowest_common_ancestor",
-           "lowest_common_ancestor"]
+__all__ = [
+    "all_pairs_lowest_common_ancestor",
+    "tree_all_pairs_lowest_common_ancestor",
+    "lowest_common_ancestor",
+]
 
 
 @not_implemented_for("undirected")
@@ -75,7 +70,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
         for u, v in pairs:
             for n in (u, v):
                 if n not in G:
-                    msg = "The node %s is not in the digraph." % str(n)
+                    msg = f"The node {str(n)} is not in the digraph."
                     raise nx.NodeNotFound(msg)
             pair_dict[u].add(v)
             pair_dict[v].add(u)
@@ -107,7 +102,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     colors = defaultdict(bool)
     for node in nx.dfs_postorder_nodes(G, root):
         colors[node] = True
-        for v in (pair_dict[node] if pairs is not None else G):
+        for v in pair_dict[node] if pairs is not None else G:
             if colors[v]:
                 # If the user requested both directions of a pair, give it.
                 # Otherwise, just give one.
@@ -211,7 +206,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
     # This will always produce correct results and avoid unnecessary
     # copies in many common cases.
     #
-    if (not isinstance(pairs, (Mapping, Set)) and pairs is not None):
+    if not isinstance(pairs, (Mapping, Set)) and pairs is not None:
         pairs = set(pairs)
 
     # Convert G into a dag with a single root by adding a node with edges to
@@ -230,8 +225,11 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
     # We will then use the tree lca algorithm on the spanning tree, and use
     # the DAG to figure out the set of tree queries necessary.
     spanning_tree = nx.dfs_tree(G, root)
-    dag = nx.DiGraph((u, v) for u, v in G.edges
-                     if u not in spanning_tree or v not in spanning_tree[u])
+    dag = nx.DiGraph(
+        (u, v)
+        for u, v in G.edges
+        if u not in spanning_tree or v not in spanning_tree[u]
+    )
 
     # Ensure that both the dag and the spanning tree contains all nodes in G,
     # even nodes that are disconnected in the dag.
@@ -262,7 +260,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
 
     for n in pairset:
         if n not in G:
-            msg = "The node %s is not in the digraph." % str(n)
+            msg = f"The node {str(n)} is not in the digraph."
             raise nx.NodeNotFound(msg)
 
     # Generate the transitive closure over the dag (not G) of all nodes, and
@@ -296,15 +294,16 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
                 Index can be 0 or 1 (or None if exhausted).
                 """
                 index1, index2 = indices
-                if (index1 >= len(ancestors[node1]) and
-                        index2 >= len(ancestors[node2])):
+                if index1 >= len(ancestors[node1]) and index2 >= len(ancestors[node2]):
                     return None
                 elif index1 >= len(ancestors[node1]):
                     return 1
                 elif index2 >= len(ancestors[node2]):
                     return 0
-                elif (euler_tour_pos[ancestors[node1][index1]] <
-                      euler_tour_pos[ancestors[node2][index2]]):
+                elif (
+                    euler_tour_pos[ancestors[node1][index1]]
+                    < euler_tour_pos[ancestors[node2][index2]]
+                ):
                     return 0
                 else:
                     return 1
@@ -332,8 +331,9 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
                             ans = tree_lca[tree_node1, tree_node2]
                         else:
                             ans = tree_lca[tree_node2, tree_node1]
-                        if not dry_run and (best is None or
-                                            root_distance[ans] > best_root_distance):
+                        if not dry_run and (
+                            best is None or root_distance[ans] > best_root_distance
+                        ):
                             best_root_distance = root_distance[ans]
                             best = ans
 
@@ -346,8 +346,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
     # tree lca.
     if pairs is None:
         # We want all pairs so we'll need the entire tree.
-        tree_lca = dict(tree_all_pairs_lowest_common_ancestor(spanning_tree,
-                                                              root))
+        tree_lca = dict(tree_all_pairs_lowest_common_ancestor(spanning_tree, root))
     else:
         # We only need the merged adjacent pairs by seeing which queries the
         # algorithm needs then generating them in a single pass.
@@ -356,9 +355,9 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
             pass
 
         # Replace the bogus default tree values with the real ones.
-        for (pair, lca) in tree_all_pairs_lowest_common_ancestor(spanning_tree,
-                                                                 root,
-                                                                 tree_lca):
+        for (pair, lca) in tree_all_pairs_lowest_common_ancestor(
+            spanning_tree, root, tree_lca
+        ):
             tree_lca[pair] = lca
 
     # All precomputations complete. Now we just need to give the user the pairs

@@ -1,25 +1,26 @@
-# -*- coding: utf-8 -*-
 """
 Utility classes and functions for network flow algorithms.
 """
 
-__author__ = """ysitu <ysitu@users.noreply.github.com>"""
-# Copyright (C) 2014 ysitu <ysitu@users.noreply.github.com>
-# All rights reserved.
-# BSD license.
-
 from collections import deque
 import networkx as nx
 
-__all__ = ['CurrentEdge', 'Level', 'GlobalRelabelThreshold',
-           'build_residual_network', 'detect_unboundedness', 'build_flow_dict']
+__all__ = [
+    "CurrentEdge",
+    "Level",
+    "GlobalRelabelThreshold",
+    "build_residual_network",
+    "detect_unboundedness",
+    "build_flow_dict",
+]
 
 
-class CurrentEdge(object):
+class CurrentEdge:
     """Mechanism for iterating over out-edges incident to a node in a circular
     manner. StopIteration exception is raised when wraparound occurs.
     """
-    __slots__ = ('_edges', '_it', '_curr')
+
+    __slots__ = ("_edges", "_it", "_curr")
 
     def __init__(self, edges):
         self._edges = edges
@@ -41,23 +42,24 @@ class CurrentEdge(object):
         self._curr = next(self._it)
 
 
-class Level(object):
+class Level:
     """Active and inactive nodes in a level.
     """
-    __slots__ = ('active', 'inactive')
+
+    __slots__ = ("active", "inactive")
 
     def __init__(self):
         self.active = set()
         self.inactive = set()
 
 
-class GlobalRelabelThreshold(object):
+class GlobalRelabelThreshold:
     """Measurement of work before the global relabeling heuristic should be
     applied.
     """
 
     def __init__(self, n, m, freq):
-        self._threshold = (n + m) / freq if freq else float('inf')
+        self._threshold = (n + m) / freq if freq else float("inf")
         self._work = 0
 
     def add_work(self, work):
@@ -96,16 +98,18 @@ def build_residual_network(G, capacity):
 
     """
     if G.is_multigraph():
-        raise nx.NetworkXError(
-            'MultiGraph and MultiDiGraph not supported (yet).')
+        raise nx.NetworkXError("MultiGraph and MultiDiGraph not supported (yet).")
 
     R = nx.DiGraph()
     R.add_nodes_from(G)
 
-    inf = float('inf')
+    inf = float("inf")
     # Extract edges with positive capacities. Self loops excluded.
-    edge_list = [(u, v, attr) for u, v, attr in G.edges(data=True)
-                 if u != v and attr.get(capacity, inf) > 0]
+    edge_list = [
+        (u, v, attr)
+        for u, v, attr in G.edges(data=True)
+        if u != v and attr.get(capacity, inf) > 0
+    ]
     # Simulate infinity with three times the sum of the finite edge capacities
     # or any positive value if the sum is zero. This allows the
     # infinite-capacity edges to be distinguished for unboundedness detection
@@ -116,8 +120,15 @@ def build_residual_network(G, capacity):
     # finite-capacity edge is at most 1/3 of inf, if an operation moves more
     # than 1/3 of inf units of flow to t, there must be an infinite-capacity
     # s-t path in G.
-    inf = 3 * sum(attr[capacity] for u, v, attr in edge_list
-                  if capacity in attr and attr[capacity] != inf) or 1
+    inf = (
+        3
+        * sum(
+            attr[capacity]
+            for u, v, attr in edge_list
+            if capacity in attr and attr[capacity] != inf
+        )
+        or 1
+    )
     if G.is_directed():
         for u, v, attr in edge_list:
             r = min(attr.get(capacity, inf), inf)
@@ -128,7 +139,7 @@ def build_residual_network(G, capacity):
                 R.add_edge(v, u, capacity=0)
             else:
                 # The edge (u, v) was added when (v, u) was visited.
-                R[u][v]['capacity'] = r
+                R[u][v]["capacity"] = r
     else:
         for u, v, attr in edge_list:
             # Add a pair of edges with equal residual capacities.
@@ -137,7 +148,7 @@ def build_residual_network(G, capacity):
             R.add_edge(v, u, capacity=r)
 
     # Record the value simulating infinity.
-    R.graph['inf'] = inf
+    R.graph["inf"] = inf
 
     return R
 
@@ -146,15 +157,16 @@ def detect_unboundedness(R, s, t):
     """Detect an infinite-capacity s-t path in R.
     """
     q = deque([s])
-    seen = set([s])
-    inf = R.graph['inf']
+    seen = {s}
+    inf = R.graph["inf"]
     while q:
         u = q.popleft()
         for v, attr in R[u].items():
-            if attr['capacity'] == inf and v not in seen:
+            if attr["capacity"] == inf and v not in seen:
                 if v == t:
                     raise nx.NetworkXUnbounded(
-                        'Infinite capacity path, flow unbounded above.')
+                        "Infinite capacity path, flow unbounded above."
+                    )
                 seen.add(v)
                 q.append(v)
 
@@ -165,6 +177,7 @@ def build_flow_dict(G, R):
     flow_dict = {}
     for u in G:
         flow_dict[u] = {v: 0 for v in G[u]}
-        flow_dict[u].update((v, attr['flow']) for v, attr in R[u].items()
-                            if attr['flow'] > 0)
+        flow_dict[u].update(
+            (v, attr["flow"]) for v, attr in R[u].items() if attr["flow"] > 0
+        )
     return flow_dict

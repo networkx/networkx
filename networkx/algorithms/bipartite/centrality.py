@@ -1,15 +1,6 @@
-#-*- coding: utf-8 -*-
-#    Copyright (C) 2011 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
-__all__ = ['degree_centrality',
-           'betweenness_centrality',
-           'closeness_centrality']
+
+__all__ = ["degree_centrality", "betweenness_centrality", "closeness_centrality"]
 
 
 def degree_centrality(G, nodes):
@@ -73,9 +64,9 @@ def degree_centrality(G, nodes):
     top = set(nodes)
     bottom = set(G) - top
     s = 1.0 / len(bottom)
-    centrality = dict((n, d * s) for n, d in G.degree(top))
+    centrality = {n: d * s for n, d in G.degree(top)}
     s = 1.0 / len(top)
-    centrality.update(dict((n, d * s) for n, d in G.degree(bottom)))
+    centrality.update({n: d * s for n, d in G.degree(bottom)})
     return centrality
 
 
@@ -157,16 +148,19 @@ def betweenness_centrality(G, nodes):
     m = float(len(bottom))
     s = (n - 1) // m
     t = (n - 1) % m
-    bet_max_top = (((m**2) * ((s + 1)**2)) +
-                   (m * (s + 1) * (2 * t - s - 1)) -
-                   (t * ((2 * s) - t + 3))) / 2.0
+    bet_max_top = (
+        ((m ** 2) * ((s + 1) ** 2))
+        + (m * (s + 1) * (2 * t - s - 1))
+        - (t * ((2 * s) - t + 3))
+    ) / 2.0
     p = (m - 1) // n
     r = (m - 1) % n
-    bet_max_bot = (((n**2) * ((p + 1)**2)) +
-                   (n * (p + 1) * (2 * r - p - 1)) -
-                   (r * ((2 * p) - r + 3))) / 2.0
-    betweenness = nx.betweenness_centrality(G, normalized=False,
-                                            weight=None)
+    bet_max_bot = (
+        ((n ** 2) * ((p + 1) ** 2))
+        + (n * (p + 1) * (2 * r - p - 1))
+        - (r * ((2 * p) - r + 3))
+    ) / 2.0
+    betweenness = nx.betweenness_centrality(G, normalized=False, weight=None)
     for node in top:
         betweenness[node] /= bet_max_top
     for node in bottom:

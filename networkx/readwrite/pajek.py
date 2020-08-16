@@ -1,11 +1,3 @@
-#    Copyright (C) 2008-2014 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
 """
 *****
 Pajek
@@ -25,9 +17,9 @@ for format information.
 import warnings
 
 import networkx as nx
-from networkx.utils import is_string_like, open_file, make_str
+from networkx.utils import open_file
 
-__all__ = ['read_pajek', 'parse_pajek', 'generate_pajek', 'write_pajek']
+__all__ = ["read_pajek", "parse_pajek", "generate_pajek", "write_pajek"]
 
 
 def generate_pajek(G):
@@ -43,8 +35,8 @@ def generate_pajek(G):
     See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
     for format information.
     """
-    if G.name == '':
-        name = 'NetworkX'
+    if G.name == "":
+        name = "NetworkX"
     else:
         name = G.name
     # Apparently many Pajek format readers can't process this line
@@ -52,7 +44,7 @@ def generate_pajek(G):
     # yield '*network %s'%name
 
     # write nodes with attributes
-    yield '*vertices %s' % (G.order())
+    yield f"*vertices {G.order()}"
     nodes = list(G)
     # make dictionary mapping nodes to integers
     nodenumber = dict(zip(nodes, range(1, len(nodes) + 1)))
@@ -60,45 +52,52 @@ def generate_pajek(G):
         # copy node attributes and pop mandatory attributes
         # to avoid duplication.
         na = G.nodes.get(n, {}).copy()
-        x = na.pop('x', 0.0)
-        y = na.pop('y', 0.0)
-        id = int(na.pop('id', nodenumber[n]))
+        x = na.pop("x", 0.0)
+        y = na.pop("y", 0.0)
+        try:
+            id = int(na.pop("id", nodenumber[n]))
+        except ValueError as e:
+            e.args += (
+                (
+                    "Pajek format requires 'id' to be an int()."
+                    " Refer to the 'Relabeling nodes' section."
+                ),
+            )
+            raise
         nodenumber[n] = id
-        shape = na.pop('shape', 'ellipse')
-        s = ' '.join(map(make_qstr, (id, n, x, y, shape)))
+        shape = na.pop("shape", "ellipse")
+        s = " ".join(map(make_qstr, (id, n, x, y, shape)))
         # only optional attributes are left in na.
         for k, v in na.items():
-            if is_string_like(v) and v.strip() != '':
-                s += ' %s %s' % (make_qstr(k), make_qstr(v))
+            if isinstance(v, str) and v.strip() != "":
+                s += f" {make_qstr(k)} {make_qstr(v)}"
             else:
-                warnings.warn('Node attribute %s is not processed. %s.' %
-                              (k,
-                               'Empty attribute' if is_string_like(v) else
-                               'Non-string attribute'))
+                warnings.warn(
+                    f"Node attribute {k} is not processed. {('Empty attribute' if isinstance(v, str) else 'Non-string attribute')}."
+                )
         yield s
 
     # write edges with attributes
     if G.is_directed():
-        yield '*arcs'
+        yield "*arcs"
     else:
-        yield '*edges'
+        yield "*edges"
     for u, v, edgedata in G.edges(data=True):
         d = edgedata.copy()
-        value = d.pop('weight', 1.0)  # use 1 as default edge value
-        s = ' '.join(map(make_qstr, (nodenumber[u], nodenumber[v], value)))
+        value = d.pop("weight", 1.0)  # use 1 as default edge value
+        s = " ".join(map(make_qstr, (nodenumber[u], nodenumber[v], value)))
         for k, v in d.items():
-            if is_string_like(v) and v.strip() != '':
-                s += ' %s %s' % (make_qstr(k), make_qstr(v))
+            if isinstance(v, str) and v.strip() != "":
+                s += f" {make_qstr(k)} {make_qstr(v)}"
             else:
-                warnings.warn('Edge attribute %s is not processed. %s.' %
-                              (k,
-                               'Empty attribute' if is_string_like(v) else
-                               'Non-string attribute'))
+                warnings.warn(
+                    f"Edge attribute {k} is not processed. {('Empty attribute' if isinstance(v, str) else 'Non-string attribute')}."
+                )
         yield s
 
 
-@open_file(1, mode='wb')
-def write_pajek(G, path, encoding='UTF-8'):
+@open_file(1, mode="wb")
+def write_pajek(G, path, encoding="UTF-8"):
     """Write graph in Pajek format to path.
 
     Parameters
@@ -111,7 +110,7 @@ def write_pajek(G, path, encoding='UTF-8'):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G = nx.path_graph(4)
     >>> nx.write_pajek(G, "test.net")
 
     Warnings
@@ -126,12 +125,12 @@ def write_pajek(G, path, encoding='UTF-8'):
     for format information.
     """
     for line in generate_pajek(G):
-        line += '\n'
+        line += "\n"
         path.write(line.encode(encoding))
 
 
-@open_file(0, mode='rb')
-def read_pajek(path, encoding='UTF-8'):
+@open_file(0, mode="rb")
+def read_pajek(path, encoding="UTF-8"):
     """Read graph in Pajek format from path.
 
     Parameters
@@ -146,13 +145,13 @@ def read_pajek(path, encoding='UTF-8'):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G = nx.path_graph(4)
     >>> nx.write_pajek(G, "test.net")
-    >>> G=nx.read_pajek("test.net")
+    >>> G = nx.read_pajek("test.net")
 
     To create a Graph instead of a MultiGraph use
 
-    >>> G1=nx.Graph(G)
+    >>> G1 = nx.Graph(G)
 
     References
     ----------
@@ -181,10 +180,11 @@ def parse_pajek(lines):
 
     """
     import shlex
+
     # multigraph=False
-    if is_string_like(lines):
-        lines = iter(lines.split('\n'))
-    lines = iter([line.rstrip('\n') for line in lines])
+    if isinstance(lines, str):
+        lines = iter(lines.split("\n"))
+    lines = iter([line.rstrip("\n") for line in lines])
     G = nx.MultiDiGraph()  # are multiedges allowed in Pajek? assume yes
     labels = []  # in the order of the file, needed for matrix
     while lines:
@@ -199,27 +199,28 @@ def parse_pajek(lines):
                 # Line was not of the form:  *network NAME
                 pass
             else:
-                G.graph['name'] = name
+                G.graph["name"] = name
         elif l.lower().startswith("*vertices"):
             nodelabels = {}
             l, nnodes = l.split()
             for i in range(int(nnodes)):
                 l = next(lines)
                 try:
-                    splitline = [x.decode('utf-8') for x in
-                                 shlex.split(make_str(l).encode('utf-8'))]
+                    splitline = [
+                        x.decode("utf-8") for x in shlex.split(str(l).encode("utf-8"))
+                    ]
                 except AttributeError:
                     splitline = shlex.split(str(l))
                 id, label = splitline[0:2]
                 labels.append(label)
                 G.add_node(label)
                 nodelabels[id] = label
-                G.nodes[label]['id'] = id
+                G.nodes[label]["id"] = id
                 try:
                     x, y, shape = splitline[2:5]
-                    G.nodes[label].update({'x': float(x),
-                                           'y': float(y),
-                                           'shape': shape})
+                    G.nodes[label].update(
+                        {"x": float(x), "y": float(y), "shape": shape}
+                    )
                 except:
                     pass
                 extra_attr = zip(splitline[5::2], splitline[6::2])
@@ -233,8 +234,9 @@ def parse_pajek(lines):
                 G = G.to_directed()
             for l in lines:
                 try:
-                    splitline = [x.decode('utf-8') for x in
-                                 shlex.split(make_str(l).encode('utf-8'))]
+                    splitline = [
+                        x.decode("utf-8") for x in shlex.split(str(l).encode("utf-8"))
+                    ]
                 except AttributeError:
                     splitline = shlex.split(str(l))
 
@@ -248,11 +250,11 @@ def parse_pajek(lines):
                 try:
                     # there should always be a single value on the edge?
                     w = splitline[2:3]
-                    edge_data.update({'weight': float(w[0])})
+                    edge_data.update({"weight": float(w[0])})
                 except:
                     pass
                     # if there isn't, just assign a 1
-#                    edge_data.update({'value':1})
+                #                    edge_data.update({'value':1})
                 extra_attr = zip(splitline[3::2], splitline[4::2])
                 edge_data.update(extra_attr)
                 # if G.has_edge(u,v):
@@ -260,10 +262,12 @@ def parse_pajek(lines):
                 G.add_edge(u, v, **edge_data)
         elif l.lower().startswith("*matrix"):
             G = nx.DiGraph(G)
-            adj_list = ((labels[row], labels[col], {'weight': int(data)})
-                        for (row, line) in enumerate(lines)
-                        for (col, data) in enumerate(line.split())
-                        if int(data) != 0)
+            adj_list = (
+                (labels[row], labels[col], {"weight": int(data)})
+                for (row, line) in enumerate(lines)
+                for (col, data) in enumerate(line.split())
+                if int(data) != 0
+            )
             G.add_edges_from(adj_list)
 
     return G
@@ -273,14 +277,8 @@ def make_qstr(t):
     """Returns the string representation of t.
     Add outer double-quotes if the string has a space.
     """
-    if not is_string_like(t):
+    if not isinstance(t, str):
         t = str(t)
     if " " in t:
-        t = r'"%s"' % t
+        t = f'"{t}"'
     return t
-
-
-# fixture for nose tests
-def teardown_module(module):
-    import os
-    os.unlink('test.net')

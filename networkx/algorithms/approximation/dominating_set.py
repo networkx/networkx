@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-#   Copyright (C) 2011-2012 by
-#   Nicholas Mancuso <nick.mancuso@gmail.com>
-#   All rights reserved.
-#   BSD license.
 """Functions for finding node and edge dominating sets.
 
 A `dominating set`_ for an undirected graph *G* with vertex set *V*
@@ -15,19 +10,15 @@ incident to an endpoint of at least one edge in *F*.
 .. _edge dominating set: https://en.wikipedia.org/wiki/Edge_dominating_set
 
 """
-from __future__ import division
 
 from ..matching import maximal_matching
 from ...utils import not_implemented_for
 
-__all__ = ["min_weighted_dominating_set",
-           "min_edge_dominating_set"]
-
-__author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
+__all__ = ["min_weighted_dominating_set", "min_edge_dominating_set"]
 
 
 # TODO Why doesn't this algorithm work for directed graphs?
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def min_weighted_dominating_set(G, weight=None):
     r"""Returns a dominating set that approximates the minimum weight node
     dominating set.

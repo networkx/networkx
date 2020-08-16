@@ -1,13 +1,10 @@
-#!/usr/bin/env python
 """
 =============
 Node Colormap
 =============
 
 Draw a graph with matplotlib, color by degree.
-You must have matplotlib for this to work.
 """
-# Author: Aric Hagberg (hagberg@lanl.gov)
 
 import matplotlib.pyplot as plt
 import networkx as nx

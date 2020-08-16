@@ -1,6 +1,6 @@
-*******************
-Similarity Measures
-*******************
+***********
+Small-world
+***********
 
 .. automodule:: networkx.algorithms.smallworld
 .. autosummary::

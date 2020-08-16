@@ -1,7 +1,6 @@
 """
     Tests for the temporal aspect of the Temporal VF2 isomorphism algorithm.
 """
-from nose.tools import assert_true, assert_false
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
 from datetime import date, datetime, timedelta
@@ -64,7 +63,7 @@ def put_time_config_2(G, att_name):
     return G
 
 
-class TestTimeRespectingGraphMatcher(object):
+class TestTimeRespectingGraphMatcher:
     """
         A test class for the undirected temporal graph matcher.
     """
@@ -81,73 +80,73 @@ class TestTimeRespectingGraphMatcher(object):
 
     def test_timdelta_zero_timeRespecting_returnsTrue(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_same_time(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
         gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
-        assert_true(gm.subgraph_is_isomorphic())
+        assert gm.subgraph_is_isomorphic()
 
     def test_timdelta_zero_datetime_timeRespecting_returnsTrue(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_same_datetime(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
         gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
-        assert_true(gm.subgraph_is_isomorphic())
+        assert gm.subgraph_is_isomorphic()
 
     def test_attNameStrange_timdelta_zero_timeRespecting_returnsTrue(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'strange_name'
+        temporal_name = "strange_name"
         G1 = put_same_time(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
         gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
-        assert_true(gm.subgraph_is_isomorphic())
+        assert gm.subgraph_is_isomorphic()
 
     def test_notTimeRespecting_returnsFalse(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_sequence_time(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
         gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
-        assert_false(gm.subgraph_is_isomorphic())
+        assert not gm.subgraph_is_isomorphic()
 
     def test_timdelta_one_config0_returns_no_embeddings(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_time_config_0(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
         gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
-        assert_true(count_match == 0)
+        assert count_match == 0
 
     def test_timdelta_one_config1_returns_four_embedding(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_time_config_1(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
         gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
-        assert_true(count_match == 4)
+        assert count_match == 4
 
     def test_timdelta_one_config2_returns_ten_embeddings(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_time_config_2(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
         gm = iso.TimeRespectingGraphMatcher(G1, G2, temporal_name, d)
         L = list(gm.subgraph_isomorphisms_iter())
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
-        assert_true(count_match == 10)
+        assert count_match == 10
 
 
-class TestDiTimeRespectingGraphMatcher(object):
+class TestDiTimeRespectingGraphMatcher:
     """
         A test class for the directed time-respecting graph matcher.
     """
@@ -164,48 +163,48 @@ class TestDiTimeRespectingGraphMatcher(object):
 
     def test_timdelta_zero_same_dates_returns_true(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_same_time(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
         gm = iso.TimeRespectingDiGraphMatcher(G1, G2, temporal_name, d)
-        assert_true(gm.subgraph_is_isomorphic())
+        assert gm.subgraph_is_isomorphic()
 
     def test_attNameStrange_timdelta_zero_same_dates_returns_true(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'strange'
+        temporal_name = "strange"
         G1 = put_same_time(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta()
         gm = iso.TimeRespectingDiGraphMatcher(G1, G2, temporal_name, d)
-        assert_true(gm.subgraph_is_isomorphic())
+        assert gm.subgraph_is_isomorphic()
 
     def test_timdelta_one_config0_returns_no_embeddings(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_time_config_0(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
         gm = iso.TimeRespectingDiGraphMatcher(G1, G2, temporal_name, d)
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
-        assert_true(count_match == 0)
+        assert count_match == 0
 
     def test_timdelta_one_config1_returns_one_embedding(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_time_config_1(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
         gm = iso.TimeRespectingDiGraphMatcher(G1, G2, temporal_name, d)
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
-        assert_true(count_match == 1)
+        assert count_match == 1
 
     def test_timdelta_one_config2_returns_two_embeddings(self):
         G1 = self.provide_g1_topology()
-        temporal_name = 'date'
+        temporal_name = "date"
         G1 = put_time_config_2(G1, temporal_name)
         G2 = self.provide_g2_path_3edges()
         d = timedelta(days=1)
         gm = iso.TimeRespectingDiGraphMatcher(G1, G2, temporal_name, d)
         count_match = len(list(gm.subgraph_isomorphisms_iter()))
-        assert_true(count_match == 2)
+        assert count_match == 2

@@ -11,16 +11,9 @@ and regulated by Esri as a (mostly) open specification for data
 interoperability among Esri and other software products."
 See https://en.wikipedia.org/wiki/Shapefile for additional information.
 """
-#    Copyright (C) 2004-2018 by
-#    Ben Reilly <benwreilly@gmail.com>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-__author__ = """Ben Reilly (benwreilly@gmail.com)"""
-__all__ = ['read_shp', 'write_shp']
+
+__all__ = ["read_shp", "write_shp"]
 
 
 def read_shp(path, simplify=True, geom_attrs=True, strict=True):
@@ -76,7 +69,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
 
     Examples
     --------
-    >>> G=nx.read_shp('test.shp') # doctest: +SKIP
+    >>> G = nx.read_shp('test.shp') # doctest: +SKIP
 
     References
     ----------
@@ -84,8 +77,8 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
     """
     try:
         from osgeo import ogr
-    except ImportError:
-        raise ImportError("read_shp requires OGR: http://www.gdal.org/")
+    except ImportError as e:
+        raise ImportError("read_shp requires OGR: http://www.gdal.org/") from e
 
     if not isinstance(path, str):
         return
@@ -93,7 +86,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
     net = nx.DiGraph()
     shp = ogr.Open(path)
     if shp is None:
-        raise RuntimeError("Unable to open {}".format(path))
+        raise RuntimeError(f"Unable to open {path}")
     for lyr in shp:
         fields = [x.GetName() for x in lyr.schema]
         for f in lyr:
@@ -109,17 +102,16 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
             # Note:  Using layer level geometry type
             if g.GetGeometryType() == ogr.wkbPoint:
                 net.add_node((g.GetPoint_2D(0)), **attributes)
-            elif g.GetGeometryType() in (ogr.wkbLineString,
-                                         ogr.wkbMultiLineString):
-                for edge in edges_from_line(g, attributes, simplify,
-                                            geom_attrs):
+            elif g.GetGeometryType() in (ogr.wkbLineString, ogr.wkbMultiLineString):
+                for edge in edges_from_line(g, attributes, simplify, geom_attrs):
                     e1, e2, attr = edge
                     net.add_edge(e1, e2)
                     net[e1][e2].update(attr)
             else:
                 if strict:
-                    raise nx.NetworkXError("GeometryType {} not supported".
-                                           format(g.GetGeometryType()))
+                    raise nx.NetworkXError(
+                        "GeometryType {} not supported".format(g.GetGeometryType())
+                    )
 
     return net
 
@@ -154,8 +146,10 @@ def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
     """
     try:
         from osgeo import ogr
-    except ImportError:
-        raise ImportError("edges_from_line requires OGR: http://www.gdal.org/")
+    except ImportError as e:
+        raise ImportError(
+            "edges_from_line requires OGR: " "http://www.gdal.org/"
+        ) from e
 
     if geom.GetGeometryType() == ogr.wkbLineString:
         if simplify:
@@ -184,8 +178,7 @@ def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
     elif geom.GetGeometryType() == ogr.wkbMultiLineString:
         for i in range(geom.GetGeometryCount()):
             geom_i = geom.GetGeometryRef(i)
-            for edge in edges_from_line(geom_i, attrs, simplify, geom_attrs):
-                yield edge
+            yield from edges_from_line(geom_i, attrs, simplify, geom_attrs)
 
 
 def write_shp(G, outdir):
@@ -216,17 +209,17 @@ def write_shp(G, outdir):
     """
     try:
         from osgeo import ogr
-    except ImportError:
-        raise ImportError("write_shp requires OGR: http://www.gdal.org/")
+    except ImportError as e:
+        raise ImportError("write_shp requires OGR: http://www.gdal.org/") from e
     # easier to debug in python if ogr throws exceptions
     ogr.UseExceptions()
 
     def netgeometry(key, data):
-        if 'Wkb' in data:
-            geom = ogr.CreateGeometryFromWkb(data['Wkb'])
-        elif 'Wkt' in data:
-            geom = ogr.CreateGeometryFromWkt(data['Wkt'])
-        elif type(key[0]).__name__ == 'tuple':  # edge keys are packed tuples
+        if "Wkb" in data:
+            geom = ogr.CreateGeometryFromWkb(data["Wkb"])
+        elif "Wkt" in data:
+            geom = ogr.CreateGeometryFromWkt(data["Wkt"])
+        elif type(key[0]).__name__ == "tuple":  # edge keys are packed tuples
             geom = ogr.Geometry(ogr.wkbLineString)
             _from, _to = key[0], key[1]
             try:
@@ -275,7 +268,6 @@ def write_shp(G, outdir):
         newfield = ogr.FieldDefn(key, fields[key])
         layer.CreateField(newfield)
 
-
     drv = ogr.GetDriverByName("ESRI Shapefile")
     shpdir = drv.CreateDataSource(outdir)
     # delete pre-existing output first otherwise ogr chokes
@@ -292,8 +284,7 @@ def write_shp(G, outdir):
         attributes = {}  # storage for attribute data (indexed by field names)
         for key, value in data.items():
             # Reject spatial data not required for attribute table
-            if (key != 'Json' and key != 'Wkt' and key != 'Wkb'
-                    and key != 'ShpName'):
+            if key != "Json" and key != "Wkt" and key != "Wkb" and key != "ShpName":
                 # Check/add field and data type to fields dict
                 if key not in fields:
                     add_fields_to_layer(key, value, fields, layer)
@@ -314,7 +305,7 @@ def write_shp(G, outdir):
     edges = shpdir.CreateLayer("edges", None, ogr.wkbLineString)
 
     # New edge attribute write support merged into edge loop
-    edge_fields = {}      # storage for field names and their data types
+    edge_fields = {}  # storage for field names and their data types
 
     for e in G.edges(data=True):
         data = G.get_edge_data(*e)
@@ -323,12 +314,3 @@ def write_shp(G, outdir):
         create_feature(g, edges, attributes)
 
     nodes, edges = None, None
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import ogr
-    except:
-        raise SkipTest("OGR not available")

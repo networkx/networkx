@@ -1,19 +1,11 @@
-# voronoi.py - functions for computing the Voronoi partition of a graph
-#
-# Copyright 2016-2018 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for computing the Voronoi cells of a graph."""
 import networkx as nx
 from networkx.utils import groups
 
-__all__ = ['voronoi_cells']
+__all__ = ["voronoi_cells"]
 
 
-def voronoi_cells(G, center_nodes, weight='weight'):
+def voronoi_cells(G, center_nodes, weight="weight"):
     """Returns the Voronoi cells centered at `center_nodes` with respect
     to the shortest-path distance metric.
 
@@ -89,5 +81,5 @@ def voronoi_cells(G, center_nodes, weight='weight'):
     # We collect all unreachable nodes under a special key, if there are any.
     unreachable = set(G) - set(nearest)
     if unreachable:
-        cells['unreachable'] = unreachable
+        cells["unreachable"] = unreachable
     return cells

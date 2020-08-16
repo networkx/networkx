@@ -4,35 +4,30 @@
 
 import os
 import tempfile
-from nose import SkipTest
-from nose.tools import assert_equal
+import pytest
+
+yaml = pytest.importorskip("yaml")
 
 import networkx as nx
 from networkx.testing import assert_edges_equal, assert_nodes_equal
 
 
-class TestYaml(object):
+class TestYaml:
     @classmethod
-    def setupClass(cls):
-        global yaml
-        try:
-            import yaml
-        except ImportError:
-            raise SkipTest('yaml not available.')
+    def setup_class(cls):
+        cls.build_graphs()
 
-    def setUp(self):
-        self.build_graphs()
+    @classmethod
+    def build_graphs(cls):
+        cls.G = nx.Graph(name="test")
+        e = [("a", "b"), ("b", "c"), ("c", "d"), ("d", "e"), ("e", "f"), ("a", "f")]
+        cls.G.add_edges_from(e)
+        cls.G.add_node("g")
 
-    def build_graphs(self):
-        self.G = nx.Graph(name="test")
-        e = [('a', 'b'), ('b', 'c'), ('c', 'd'), ('d', 'e'), ('e', 'f'), ('a', 'f')]
-        self.G.add_edges_from(e)
-        self.G.add_node('g')
+        cls.DG = nx.DiGraph(cls.G)
 
-        self.DG = nx.DiGraph(self.G)
-
-        self.MG = nx.MultiGraph()
-        self.MG.add_weighted_edges_from([(1, 2, 5), (1, 2, 5), (1, 2, 1), (3, 3, 42)])
+        cls.MG = nx.MultiGraph()
+        cls.MG.add_weighted_edges_from([(1, 2, 5), (1, 2, 5), (1, 2, 1), (3, 3, 42)])
 
     def assert_equal(self, G, data=False):
         (fd, fname) = tempfile.mkstemp()

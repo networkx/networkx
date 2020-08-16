@@ -31,14 +31,14 @@
     it must determine if there is an isomorphism between the two sets of edges.
 """
 
-import networkx as nx
 from . import isomorphvf2 as vf2
 
-__all__ = ['GraphMatcher',
-           'DiGraphMatcher',
-           'MultiGraphMatcher',
-           'MultiDiGraphMatcher',
-           ]
+__all__ = [
+    "GraphMatcher",
+    "DiGraphMatcher",
+    "MultiGraphMatcher",
+    "MultiDiGraphMatcher",
+]
 
 
 def _semantic_feasibility(self, G1_node, G2_node):
@@ -54,20 +54,23 @@ def _semantic_feasibility(self, G1_node, G2_node):
     if self.edge_match is not None:
 
         # Cached lookups
-        G1_adj = self.G1_adj
-        G2_adj = self.G2_adj
+        G1nbrs = self.G1_adj[G1_node]
+        G2nbrs = self.G2_adj[G2_node]
         core_1 = self.core_1
         edge_match = self.edge_match
 
-        for neighbor in G1_adj[G1_node]:
+        for neighbor in G1nbrs:
             # G1_node is not in core_1, so we must handle R_self separately
             if neighbor == G1_node:
-                if not edge_match(G1_adj[G1_node][G1_node],
-                                  G2_adj[G2_node][G2_node]):
+                if G2_node in G2nbrs and not edge_match(
+                    G1nbrs[G1_node], G2nbrs[G2_node]
+                ):
                     return False
             elif neighbor in core_1:
-                if not edge_match(G1_adj[G1_node][neighbor],
-                                  G2_adj[G2_node][core_1[neighbor]]):
+                G2_nbr = core_1[neighbor]
+                if G2_nbr in G2nbrs and not edge_match(
+                    G1nbrs[neighbor], G2nbrs[G2_nbr]
+                ):
                     return False
         # syntactic check has already verified that neighbors are symmetric
 
@@ -184,6 +187,7 @@ class DiGraphMatcher(vf2.DiGraphMatcher):
 
         return feasible
 
+
 # The "semantics" of edge_match are different for multi(di)graphs, but
 # the implementation is the same.  So, technically we do not need to
 # provide "multi" versions, but we do so to match NetworkX's base classes.
@@ -191,9 +195,11 @@ class DiGraphMatcher(vf2.DiGraphMatcher):
 
 class MultiGraphMatcher(GraphMatcher):
     """VF2 isomorphism checker for undirected multigraphs. """
+
     pass
 
 
 class MultiDiGraphMatcher(DiGraphMatcher):
     """VF2 isomorphism checker for directed multigraphs. """
+
     pass

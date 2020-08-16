@@ -1,27 +1,19 @@
-# coding=utf8
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """Betweenness centrality measures."""
-from __future__ import division
 from heapq import heappush, heappop
 from itertools import count
+import warnings
 
-import networkx as nx
 from networkx.utils import py_random_state
+from networkx.utils.decorators import not_implemented_for
 
-__all__ = ['betweenness_centrality', 'edge_betweenness_centrality',
-           'edge_betweenness']
+__all__ = ["betweenness_centrality", "edge_betweenness_centrality", "edge_betweenness"]
 
 
 @py_random_state(5)
-def betweenness_centrality(G, k=None, normalized=True, weight=None,
-                           endpoints=False, seed=None):
+@not_implemented_for("multigraph")
+def betweenness_centrality(
+    G, k=None, normalized=True, weight=None, endpoints=False, seed=None
+):
     r"""Compute the shortest-path betweenness centrality for nodes.
 
     Betweenness centrality of a node $v$ is the sum of the
@@ -88,6 +80,22 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
     Zero edge weights can produce an infinite number of equal length
     paths between pairs of nodes.
 
+    The total number of paths between source and target is counted
+    differently for directed and undirected graphs. Directed paths
+    are easy to count. Undirected paths are tricky: should a path
+    from "u" to "v" count as 1 undirected path or as 2 directed paths?
+
+    For betweenness_centrality we report the number of undirected
+    paths when G is undirected.
+
+    For betweenness_centrality_subset the reporting is different.
+    If the source and target subsets are the same, then we want
+    to count undirected paths. But if the source and target subsets
+    differ -- for example, if sources is {0} and targets is {1},
+    then we are only counting the paths in one direction. They are
+    undirected paths but we are counting them in a directed way.
+    To count them as undirected paths, each should count as half a path.
+
     References
     ----------
     .. [1] Ulrik Brandes:
@@ -125,14 +133,19 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
         else:
             betweenness = _accumulate_basic(betweenness, S, P, sigma, s)
     # rescaling
-    betweenness = _rescale(betweenness, len(G), normalized=normalized,
-                           directed=G.is_directed(), k=k, endpoints=endpoints)
+    betweenness = _rescale(
+        betweenness,
+        len(G),
+        normalized=normalized,
+        directed=G.is_directed(),
+        k=k,
+        endpoints=endpoints,
+    )
     return betweenness
 
 
 @py_random_state(4)
-def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
-                                seed=None):
+def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=None):
     r"""Compute betweenness centrality for edges.
 
     Betweenness centrality of an edge $e$ is the sum of the
@@ -216,30 +229,34 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
     # rescaling
     for n in G:  # remove nodes to only return edges
         del betweenness[n]
-    betweenness = _rescale_e(betweenness, len(G), normalized=normalized,
-                             directed=G.is_directed())
+    betweenness = _rescale_e(
+        betweenness, len(G), normalized=normalized, directed=G.is_directed()
+    )
     return betweenness
 
+
 # obsolete name
-
-
 def edge_betweenness(G, k=None, normalized=True, weight=None, seed=None):
+    warnings.warn(
+        "edge_betweeness is replaced by edge_betweenness_centrality", DeprecationWarning
+    )
     return edge_betweenness_centrality(G, k, normalized, weight, seed)
 
 
 # helpers for betweenness centrality
+
 
 def _single_source_shortest_path_basic(G, s):
     S = []
     P = {}
     for v in G:
         P[v] = []
-    sigma = dict.fromkeys(G, 0.0)    # sigma[v]=0 for v in G
+    sigma = dict.fromkeys(G, 0.0)  # sigma[v]=0 for v in G
     D = {}
     sigma[s] = 1.0
     D[s] = 0
     Q = [s]
-    while Q:   # use BFS to find shortest paths
+    while Q:  # use BFS to find shortest paths
         v = Q.pop(0)
         S.append(v)
         Dv = D[v]
@@ -248,7 +265,7 @@ def _single_source_shortest_path_basic(G, s):
             if w not in D:
                 Q.append(w)
                 D[w] = Dv + 1
-            if D[w] == Dv + 1:   # this is a shortest path, count paths
+            if D[w] == Dv + 1:  # this is a shortest path, count paths
                 sigma[w] += sigmav
                 P[w].append(v)  # predecessors
     return S, P, sigma
@@ -260,14 +277,14 @@ def _single_source_dijkstra_path_basic(G, s, weight):
     P = {}
     for v in G:
         P[v] = []
-    sigma = dict.fromkeys(G, 0.0)    # sigma[v]=0 for v in G
+    sigma = dict.fromkeys(G, 0.0)  # sigma[v]=0 for v in G
     D = {}
     sigma[s] = 1.0
     push = heappush
     pop = heappop
     seen = {s: 0}
     c = count()
-    Q = []   # use Q as heap with (distance,node id) tuples
+    Q = []  # use Q as heap with (distance,node id) tuples
     push(Q, (0, next(c), s, s))
     while Q:
         (dist, _, pred, v) = pop(Q)
@@ -331,8 +348,7 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
     return betweenness
 
 
-def _rescale(betweenness, n, normalized,
-             directed=False, k=None, endpoints=False):
+def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False):
     if normalized:
         if endpoints:
             if n < 2:

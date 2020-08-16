@@ -18,28 +18,17 @@ pickles to store the graph data can be used.
 
 Format
 ------
-See https://docs.python.org/2/library/pickle.html
+See https://docs.python.org/3/library/pickle.html
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
-__all__ = ['read_gpickle', 'write_gpickle']
+__all__ = ["read_gpickle", "write_gpickle"]
 
-import networkx as nx
 from networkx.utils import open_file
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 
 
-@open_file(1, mode='wb')
+@open_file(1, mode="wb")
 def write_gpickle(G, path, protocol=pickle.HIGHEST_PROTOCOL):
     """Write graph in Python pickle format.
 
@@ -65,12 +54,12 @@ def write_gpickle(G, path, protocol=pickle.HIGHEST_PROTOCOL):
 
     References
     ----------
-    .. [1] https://docs.python.org/2/library/pickle.html
+    .. [1] https://docs.python.org/3/library/pickle.html
     """
     pickle.dump(G, path, protocol)
 
 
-@open_file(0, mode='rb')
+@open_file(0, mode="rb")
 def read_gpickle(path):
     """Read graph object in Python pickle format.
 
@@ -96,13 +85,6 @@ def read_gpickle(path):
 
     References
     ----------
-    .. [1] https://docs.python.org/2/library/pickle.html
+    .. [1] https://docs.python.org/3/library/pickle.html
     """
     return pickle.load(path)
-
-# fixture for nose tests
-
-
-def teardown_module(module):
-    import os
-    os.unlink('test.gpickle')

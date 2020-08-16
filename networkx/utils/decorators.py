@@ -1,28 +1,20 @@
-import sys
-from warnings import warn
-
 from collections import defaultdict
 from os.path import splitext
 from contextlib import contextmanager
-try:
-    from pathlib import Path
-except ImportError:
-    # Use Path to indicate if pathlib exists (like numpy does)
-    Path = None
+from pathlib import Path
 
 import networkx as nx
 from decorator import decorator
-from networkx.utils import is_string_like, create_random_state, \
-                           create_py_random_state
+from networkx.utils import create_random_state, create_py_random_state
 
 __all__ = [
-    'not_implemented_for',
-    'open_file',
-    'nodes_or_number',
-    'preserve_random_state',
-    'random_state',
-    'np_random_state',
-    'py_random_state',
+    "not_implemented_for",
+    "open_file",
+    "nodes_or_number",
+    "preserve_random_state",
+    "random_state",
+    "np_random_state",
+    "py_random_state",
 ]
 
 
@@ -61,47 +53,54 @@ def not_implemented_for(*graph_types):
        def sp_np_function(G):
            pass
     """
+
     @decorator
     def _not_implemented_for(not_implement_for_func, *args, **kwargs):
         graph = args[0]
-        terms = {'directed': graph.is_directed(),
-                 'undirected': not graph.is_directed(),
-                 'multigraph': graph.is_multigraph(),
-                 'graph': not graph.is_multigraph()}
+        terms = {
+            "directed": graph.is_directed(),
+            "undirected": not graph.is_directed(),
+            "multigraph": graph.is_multigraph(),
+            "graph": not graph.is_multigraph(),
+        }
         match = True
         try:
             for t in graph_types:
                 match = match and terms[t]
-        except KeyError:
-            raise KeyError('use one or more of ',
-                           'directed, undirected, multigraph, graph')
+        except KeyError as e:
+            raise KeyError(
+                "use one or more of " "directed, undirected, multigraph, graph"
+            ) from e
         if match:
-            msg = 'not implemented for %s type' % ' '.join(graph_types)
+            msg = f"not implemented for {' '.join(graph_types)} type"
             raise nx.NetworkXNotImplemented(msg)
         else:
             return not_implement_for_func(*args, **kwargs)
+
     return _not_implemented_for
 
 
 def _open_gz(path, mode):
     import gzip
+
     return gzip.open(path, mode=mode)
 
 
 def _open_bz2(path, mode):
     import bz2
+
     return bz2.BZ2File(path, mode=mode)
 
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
 # Then add the extension to _dispatch_dict.
 _dispatch_dict = defaultdict(lambda: open)
-_dispatch_dict['.gz'] = _open_gz
-_dispatch_dict['.bz2'] = _open_bz2
-_dispatch_dict['.gzip'] = _open_gz
+_dispatch_dict[".gz"] = _open_gz
+_dispatch_dict[".bz2"] = _open_bz2
+_dispatch_dict[".gzip"] = _open_gz
 
 
-def open_file(path_arg, mode='r'):
+def open_file(path_arg, mode="r"):
     """Decorator to ensure clean opening and closing of files.
 
     Parameters
@@ -190,34 +189,34 @@ def open_file(path_arg, mode='r'):
             # or it could have been explicitly set by the user.
             try:
                 path = kwargs[path_arg]
-            except KeyError:
+            except KeyError as e:
                 # Could not find the keyword. Thus, no default was specified
                 # in the function signature and the user did not provide it.
-                msg = 'Missing required keyword argument: {0}'
-                raise nx.NetworkXError(msg.format(path_arg))
+                msg = f"Missing required keyword argument: {path_arg}"
+                raise nx.NetworkXError(msg) from e
             else:
                 is_kwarg = True
-        except IndexError:
+        except IndexError as e:
             # A "required" argument was missing. This can only happen if
             # the decorator of the function was incorrectly specified.
             # So this probably is not a user error, but a developer error.
             msg = "path_arg of open_file decorator is incorrect"
-            raise nx.NetworkXError(msg)
+            raise nx.NetworkXError(msg) from e
         else:
             is_kwarg = False
 
         # Now we have the path_arg. There are two types of input to consider:
         #   1) string representing a path that should be opened
         #   2) an already opened file object
-        if is_string_like(path):
+        if isinstance(path, str):
             ext = splitext(path)[1]
             fobj = _dispatch_dict[ext](path, mode=mode)
             close_fobj = True
-        elif hasattr(path, 'read'):
+        elif hasattr(path, "read"):
             # path is already a file-like object
             fobj = path
             close_fobj = False
-        elif Path is not None and isinstance(path, Path):
+        elif isinstance(path, Path):
             # path is a pathlib reference to a filename
             fobj = _dispatch_dict[path.suffix](str(path), mode=mode)
             close_fobj = True
@@ -280,6 +279,7 @@ def nodes_or_number(which_args):
            # r is a number. n can be a number of a list of nodes
            pass
     """
+
     @decorator
     def _nodes_or_number(func_to_be_decorated, *args, **kw):
         # form tuple of arg positions to be converted.
@@ -297,10 +297,11 @@ def nodes_or_number(which_args):
                 nodes = tuple(n)
             else:
                 if n < 0:
-                    msg = "Negative number of nodes not valid: %i" % n
+                    msg = "Negative number of nodes not valid: {n}"
                     raise nx.NetworkXError(msg)
             new_args[i] = (n, nodes)
         return func_to_be_decorated(*new_args, **kw)
+
     return _nodes_or_number
 
 
@@ -345,6 +346,7 @@ def preserve_random_state(func):
             with save_random_state():
                 seed(1234567890)
                 return func(*args, **kwargs)
+
         wrapper.__name__ = func.__name__
         return wrapper
     except ImportError:
@@ -386,15 +388,16 @@ def random_state(random_state_index):
     --------
     py_random_state
     """
+
     @decorator
     def _random_state(func, *args, **kwargs):
         # Parse the decorator arguments.
         try:
             random_state_arg = args[random_state_index]
-        except TypeError:
-            raise nx.NetworkXError("random_state_index must be an integer")
-        except IndexError:
-            raise nx.NetworkXError("random_state_index is incorrect")
+        except TypeError as e:
+            raise nx.NetworkXError("random_state_index must be an integer") from e
+        except IndexError as e:
+            raise nx.NetworkXError("random_state_index is incorrect") from e
 
         # Create a numpy.random.RandomState instance
         random_state = create_random_state(random_state_arg)
@@ -403,6 +406,7 @@ def random_state(random_state_index):
         new_args = list(args)
         new_args[random_state_index] = random_state
         return func(*new_args, **kwargs)
+
     return _random_state
 
 
@@ -445,15 +449,16 @@ def py_random_state(random_state_index):
     --------
     np_random_state
     """
+
     @decorator
     def _random_state(func, *args, **kwargs):
         # Parse the decorator arguments.
         try:
             random_state_arg = args[random_state_index]
-        except TypeError:
-            raise nx.NetworkXError("random_state_index must be an integer")
-        except IndexError:
-            raise nx.NetworkXError("random_state_index is incorrect")
+        except TypeError as e:
+            raise nx.NetworkXError("random_state_index must be an integer") from e
+        except IndexError as e:
+            raise nx.NetworkXError("random_state_index is incorrect") from e
 
         # Create a numpy.random.RandomState instance
         random_state = create_py_random_state(random_state_arg)
@@ -462,4 +467,5 @@ def py_random_state(random_state_index):
         new_args = list(args)
         new_args[random_state_index] = random_state
         return func(*new_args, **kwargs)
+
     return _random_state

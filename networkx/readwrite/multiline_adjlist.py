@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 *************************
 Multi-line Adjacency List
@@ -25,26 +24,19 @@ adjacency list (anything following the # in a line is a comment)::
      d 1
      e
 """
-__author__ = '\n'.join(['Aric Hagberg <hagberg@lanl.gov>',
-                        'Dan Schult <dschult@colgate.edu>',
-                        'Loïc Séguin-C. <loicseguin@gmail.com>'])
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
-__all__ = ['generate_multiline_adjlist',
-           'write_multiline_adjlist',
-           'parse_multiline_adjlist',
-           'read_multiline_adjlist']
+__all__ = [
+    "generate_multiline_adjlist",
+    "write_multiline_adjlist",
+    "parse_multiline_adjlist",
+    "read_multiline_adjlist",
+]
 
-from networkx.utils import make_str, open_file
+from networkx.utils import open_file
 import networkx as nx
 
 
-def generate_multiline_adjlist(G, delimiter=' '):
+def generate_multiline_adjlist(G, delimiter=" "):
     """Generate a single line of the graph G in multiline adjacency list format.
 
     Parameters
@@ -88,58 +80,61 @@ def generate_multiline_adjlist(G, delimiter=' '):
     if G.is_directed():
         if G.is_multigraph():
             for s, nbrs in G.adjacency():
-                nbr_edges = [(u, data)
-                             for u, datadict in nbrs.items()
-                             for key, data in datadict.items()]
+                nbr_edges = [
+                    (u, data)
+                    for u, datadict in nbrs.items()
+                    for key, data in datadict.items()
+                ]
                 deg = len(nbr_edges)
-                yield make_str(s) + delimiter + str(deg)
+                yield str(s) + delimiter + str(deg)
                 for u, d in nbr_edges:
                     if d is None:
-                        yield make_str(u)
+                        yield str(u)
                     else:
-                        yield make_str(u) + delimiter + make_str(d)
+                        yield str(u) + delimiter + str(d)
         else:  # directed single edges
             for s, nbrs in G.adjacency():
                 deg = len(nbrs)
-                yield make_str(s) + delimiter + str(deg)
+                yield str(s) + delimiter + str(deg)
                 for u, d in nbrs.items():
                     if d is None:
-                        yield make_str(u)
+                        yield str(u)
                     else:
-                        yield make_str(u) + delimiter + make_str(d)
+                        yield str(u) + delimiter + str(d)
     else:  # undirected
         if G.is_multigraph():
             seen = set()  # helper dict used to avoid duplicate edges
             for s, nbrs in G.adjacency():
-                nbr_edges = [(u, data)
-                             for u, datadict in nbrs.items()
-                             if u not in seen
-                             for key, data in datadict.items()]
+                nbr_edges = [
+                    (u, data)
+                    for u, datadict in nbrs.items()
+                    if u not in seen
+                    for key, data in datadict.items()
+                ]
                 deg = len(nbr_edges)
-                yield make_str(s) + delimiter + str(deg)
+                yield str(s) + delimiter + str(deg)
                 for u, d in nbr_edges:
                     if d is None:
-                        yield make_str(u)
+                        yield str(u)
                     else:
-                        yield make_str(u) + delimiter + make_str(d)
+                        yield str(u) + delimiter + str(d)
                 seen.add(s)
         else:  # undirected single edges
             seen = set()  # helper dict used to avoid duplicate edges
             for s, nbrs in G.adjacency():
                 nbr_edges = [(u, d) for u, d in nbrs.items() if u not in seen]
                 deg = len(nbr_edges)
-                yield make_str(s) + delimiter + str(deg)
+                yield str(s) + delimiter + str(deg)
                 for u, d in nbr_edges:
                     if d is None:
-                        yield make_str(u)
+                        yield str(u)
                     else:
-                        yield make_str(u) + delimiter + make_str(d)
+                        yield str(u) + delimiter + str(d)
                 seen.add(s)
 
 
-@open_file(1, mode='wb')
-def write_multiline_adjlist(G, path, delimiter=' ',
-                            comments='#', encoding='utf-8'):
+@open_file(1, mode="wb")
+def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-8"):
     """ Write the graph G in multiline adjacency list format to path
 
     Parameters
@@ -178,19 +173,23 @@ def write_multiline_adjlist(G, path, delimiter=' ',
     import time
 
     pargs = comments + " ".join(sys.argv)
-    header = ("{}\n".format(pargs)
-              + comments + " GMT {}\n".format(time.asctime(time.gmtime()))
-              + comments + " {}\n".format(G.name))
+    header = (
+        f"{pargs}\n"
+        + comments
+        + f" GMT {time.asctime(time.gmtime())}\n"
+        + comments
+        + f" {G.name}\n"
+    )
     path.write(header.encode(encoding))
 
     for multiline in generate_multiline_adjlist(G, delimiter):
-        multiline += '\n'
+        multiline += "\n"
         path.write(multiline.encode(encoding))
 
 
-def parse_multiline_adjlist(lines, comments='#', delimiter=None,
-                            create_using=None, nodetype=None,
-                            edgetype=None):
+def parse_multiline_adjlist(
+    lines, comments="#", delimiter=None, create_using=None, nodetype=None, edgetype=None
+):
     """Parse lines of a multiline adjacency list representation of a graph.
 
     Parameters
@@ -228,6 +227,7 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
 
     """
     from ast import literal_eval
+
     G = nx.empty_graph(0, create_using)
     for line in lines:
         p = line.find(comments)
@@ -238,22 +238,23 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
         try:
             (u, deg) = line.strip().split(delimiter)
             deg = int(deg)
-        except:
-            raise TypeError("Failed to read node and degree on line ({})".format(line))
+        except BaseException as e:
+            raise TypeError(f"Failed to read node and degree on line ({line})") from e
         if nodetype is not None:
             try:
                 u = nodetype(u)
-            except:
-                raise TypeError("Failed to convert node ({}) to type {}"
-                                .format(u, nodetype))
+            except BaseException as e:
+                raise TypeError(
+                    f"Failed to convert node ({u}) to " f"type {nodetype}"
+                ) from e
         G.add_node(u)
         for i in range(deg):
             while True:
                 try:
                     line = next(lines)
-                except StopIteration:
-                    msg = "Failed to find neighbor for node ({})".format(u)
-                    raise TypeError(msg)
+                except StopIteration as e:
+                    msg = f"Failed to find neighbor for node ({u})"
+                    raise TypeError(msg) from e
                 p = line.find(comments)
                 if p >= 0:
                     line = line[:p]
@@ -264,21 +265,21 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
             if numb < 1:
                 continue  # isolated node
             v = vlist.pop(0)
-            data = ''.join(vlist)
+            data = "".join(vlist)
             if nodetype is not None:
                 try:
                     v = nodetype(v)
-                except:
+                except BaseException as e:
                     raise TypeError(
-                        "Failed to convert node ({}) to type {}"
-                        .format(v, nodetype))
+                        f"Failed to convert node ({v}) " f"to type {nodetype}"
+                    ) from e
             if edgetype is not None:
                 try:
-                    edgedata = {'weight': edgetype(data)}
-                except:
+                    edgedata = {"weight": edgetype(data)}
+                except BaseException as e:
                     raise TypeError(
-                        "Failed to convert edge data ({}) to type {}"
-                        .format(data, edgetype))
+                        f"Failed to convert edge data ({data}) " f"to type {edgetype}"
+                    ) from e
             else:
                 try:  # try to evaluate
                     edgedata = literal_eval(data)
@@ -289,11 +290,16 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
     return G
 
 
-@open_file(0, mode='rb')
-def read_multiline_adjlist(path, comments="#", delimiter=None,
-                           create_using=None,
-                           nodetype=None, edgetype=None,
-                           encoding='utf-8'):
+@open_file(0, mode="rb")
+def read_multiline_adjlist(
+    path,
+    comments="#",
+    delimiter=None,
+    create_using=None,
+    nodetype=None,
+    edgetype=None,
+    encoding="utf-8",
+):
     """Read graph in multi-line adjacency list format from path.
 
     Parameters
@@ -366,17 +372,11 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
     write_multiline_adjlist
     """
     lines = (line.decode(encoding) for line in path)
-    return parse_multiline_adjlist(lines,
-                                   comments=comments,
-                                   delimiter=delimiter,
-                                   create_using=create_using,
-                                   nodetype=nodetype,
-                                   edgetype=edgetype)
-
-
-# fixture for nose tests
-def teardown_module(module):
-    import os
-    for fname in ['test.adjlist', 'test.adjlist.gz']:
-        if os.path.isfile(fname):
-            os.unlink(fname)
+    return parse_multiline_adjlist(
+        lines,
+        comments=comments,
+        delimiter=delimiter,
+        create_using=create_using,
+        nodetype=nodetype,
+        edgetype=edgetype,
+    )

@@ -1,25 +1,17 @@
-#    Copyright (C) 2010-2013 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """Functions for generating stochastic graphs from a given weighted directed
 graph.
 
 """
-from __future__ import division
 
 from networkx.classes import DiGraph
 from networkx.classes import MultiDiGraph
 from networkx.utils import not_implemented_for
 
-__author__ = "Aric Hagberg <aric.hagberg@gmail.com>"
-__all__ = ['stochastic_graph']
+__all__ = ["stochastic_graph"]
 
 
-@not_implemented_for('undirected')
-def stochastic_graph(G, copy=True, weight='weight'):
+@not_implemented_for("undirected")
+def stochastic_graph(G, copy=True, weight="weight"):
     """Returns a right-stochastic representation of directed graph `G`.
 
     A right-stochastic graph is a weighted digraph in which for each

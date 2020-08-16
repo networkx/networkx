@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Jon Crall (erotemic@gmail.com)
 """
 Algorithms for finding k-edge-connected components and subgraphs.
 
@@ -25,14 +16,14 @@ from functools import partial
 import itertools as it
 
 __all__ = [
-    'k_edge_components',
-    'k_edge_subgraphs',
-    'bridge_components',
-    'EdgeComponentAuxGraph',
+    "k_edge_components",
+    "k_edge_subgraphs",
+    "bridge_components",
+    "EdgeComponentAuxGraph",
 ]
 
 
-@not_implemented_for('multigraph')
+@not_implemented_for("multigraph")
 def k_edge_components(G, k):
     """Generates nodes in each maximal k-edge-connected component in G.
 
@@ -58,7 +49,7 @@ def k_edge_components(G, k):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If the input graph is a multigraph.
 
     ValueError:
@@ -97,7 +88,7 @@ def k_edge_components(G, k):
     """
     # Compute k-edge-ccs using the most efficient algorithms available.
     if k < 1:
-        raise ValueError('k cannot be less than 1')
+        raise ValueError("k cannot be less than 1")
     if G.is_directed():
         if k == 1:
             return nx.strongly_connected_components(G)
@@ -115,7 +106,7 @@ def k_edge_components(G, k):
             return aux_graph.k_edge_components(k)
 
 
-@not_implemented_for('multigraph')
+@not_implemented_for("multigraph")
 def k_edge_subgraphs(G, k):
     """Generates nodes in each maximal k-edge-connected subgraph in G.
 
@@ -141,7 +132,7 @@ def k_edge_subgraphs(G, k):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If the input graph is a multigraph.
 
     ValueError:
@@ -176,7 +167,7 @@ def k_edge_subgraphs(G, k):
         https://openproceedings.org/2012/conf/edbt/ZhouLYLCL12.pdf
     """
     if k < 1:
-        raise ValueError('k cannot be less than 1')
+        raise ValueError("k cannot be less than 1")
     if G.is_directed():
         if k <= 1:
             # For directed graphs ,
@@ -202,8 +193,8 @@ def _k_edge_subgraphs_nodes(G, k):
         yield set(C.nodes())
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def bridge_components(G):
     """Finds all bridge-connected components G.
 
@@ -225,7 +216,7 @@ def bridge_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If the input graph is directed or a multigraph.
 
     Notes
@@ -242,11 +233,10 @@ def bridge_components(G):
     """
     H = G.copy()
     H.remove_edges_from(bridges(G))
-    for cc in nx.connected_components(H):
-        yield cc
+    yield from nx.connected_components(H)
 
 
-class EdgeComponentAuxGraph(object):
+class EdgeComponentAuxGraph:
     r"""A simple algorithm to find all k-edge-connected components in a graph.
 
     Constructing the AuxillaryGraph (which may take some time) allows for the
@@ -342,7 +332,7 @@ class EdgeComponentAuxGraph(object):
         G : NetworkX graph
         """
         # workaround for classmethod decorator
-        not_implemented_for('multigraph')(lambda G: G)(G)
+        not_implemented_for("multigraph")(lambda G: G)(G)
 
         def _recursive_build(H, A, source, avail):
             # Terminate once the flow has been compute to every node.
@@ -408,19 +398,18 @@ class EdgeComponentAuxGraph(object):
         k-edge-ccs in the original graph.
         """
         if k < 1:
-            raise ValueError('k cannot be less than 1')
+            raise ValueError("k cannot be less than 1")
         A = self.A
         # "traverse the auxiliary graph A and delete all edges with weights less
         # than k"
-        aux_weights = nx.get_edge_attributes(A, 'weight')
+        aux_weights = nx.get_edge_attributes(A, "weight")
         # Create a relevant graph with the auxiliary edges with weights >= k
         R = nx.Graph()
         R.add_nodes_from(A.nodes())
         R.add_edges_from(e for e, w in aux_weights.items() if w >= k)
 
         # Return the nodes that are k-edge-connected in the original graph
-        for cc in nx.connected_components(R):
-            yield cc
+        yield from nx.connected_components(R)
 
     def k_edge_subgraphs(self, k):
         """Queries the auxiliary graph for k-edge-connected subgraphs.
@@ -444,12 +433,12 @@ class EdgeComponentAuxGraph(object):
         then use this method.
         """
         if k < 1:
-            raise ValueError('k cannot be less than 1')
+            raise ValueError("k cannot be less than 1")
         H = self.H
         A = self.A
         # "traverse the auxiliary graph A and delete all edges with weights less
         # than k"
-        aux_weights = nx.get_edge_attributes(A, 'weight')
+        aux_weights = nx.get_edge_attributes(A, "weight")
         # Create a relevant graph with the auxiliary edges with weights >= k
         R = nx.Graph()
         R.add_nodes_from(A.nodes())
@@ -464,8 +453,7 @@ class EdgeComponentAuxGraph(object):
             else:
                 # Call subgraph solution to refine the results
                 C = H.subgraph(cc)
-                for sub_cc in k_edge_subgraphs(C, k):
-                    yield sub_cc
+                yield from k_edge_subgraphs(C, k)
 
 
 def _low_degree_nodes(G, k, nbunch=None):
@@ -509,11 +497,9 @@ def _high_degree_components(G, k):
 
     # Note: remaining connected components may not be k-edge-connected
     if G.is_directed():
-        for cc in nx.strongly_connected_components(H):
-            yield cc
+        yield from nx.strongly_connected_components(H)
     else:
-        for cc in nx.connected_components(H):
-            yield cc
+        yield from nx.connected_components(H)
 
 
 def general_k_edge_subgraphs(G, k):
@@ -563,7 +549,7 @@ def general_k_edge_subgraphs(G, k):
     [1, 1, 1, 4, 4]
     """
     if k < 1:
-        raise ValueError('k cannot be less than 1')
+        raise ValueError("k cannot be less than 1")
 
     # Node pruning optimization (incorporates early return)
     # find_ccs is either connected_components/strongly_connected_components

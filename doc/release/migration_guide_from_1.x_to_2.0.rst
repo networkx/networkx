@@ -131,7 +131,12 @@ for ``out_degree`` and ``degree``
     >>> [deg[n] for n in [1, 3]]   # using lookup for only some nodes
     [1, 0]
 
-    >>> dict(DG.in_degree([1, 3])).values()    # works for nx-1 and nx-2
+    >>> for node, in_deg in dict(DG.in_degree).items():  # works for nx1 and nx2
+    ...     print(node, in_deg)
+    1 1
+    2 1
+    3 0
+    >>> dict(DG.in_degree([1, 3])).values()    # works for nx1 and nx2
     dict_values([1, 0])
     >>> # DG.in_degree(nlist) creates a restricted view for only nodes in nlist.
     >>> # but see the fourth option above for using lookup instead.

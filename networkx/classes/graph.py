@@ -1,13 +1,3 @@
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author:  Aric Hagberg (hagberg@lanl.gov),
-#          Pieter Swart (swart@lanl.gov),
-#          Dan Schult(dschult@colgate.edu)
 """Base class for undirected graphs.
 
 The Graph class allows any hashable object as a node
@@ -17,20 +7,16 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 
 For directed graphs see DiGraph and MultiDiGraph.
 """
-from __future__ import division
-import warnings
 from copy import deepcopy
-from collections.abc import Mapping
 
 import networkx as nx
-from networkx.classes.coreviews import AtlasView, AdjacencyView
+from networkx.classes.coreviews import AdjacencyView
 from networkx.classes.reportviews import NodeView, EdgeView, DegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
-from networkx.utils import pairwise
 
 
-class Graph(object):
+class Graph:
     """
     Base class for undirected graphs.
 
@@ -183,8 +169,8 @@ class Graph(object):
     Simple graph information is obtained using object-attributes and methods.
     Reporting typically provides views instead of containers to reduce memory
     usage. The views update as the graph is updated similarly to dict-views.
-    The objects `nodes, `edges` and `adj` provide access to data attributes
-    via lookup (e.g. `nodes[n], `edges[u, v]`, `adj[u][v]`) and iteration
+    The objects `nodes`, `edges` and `adj` provide access to data attributes
+    via lookup (e.g. `nodes[n]`, `edges[u, v]`, `adj[u][v]`) and iteration
     (e.g. `nodes.items()`, `nodes.data('color')`,
     `nodes.data('color', default='blue')` and similarly for `edges`)
     Views exist for `nodes`, `edges`, `neighbors()`/`adj` and `degree`.
@@ -275,6 +261,7 @@ class Graph(object):
     creating graph subclasses by overwriting the base class `dict` with
     a dictionary-like object.
     """
+
     node_dict_factory = dict
     node_attr_dict_factory = dict
     adjlist_outer_dict_factory = dict
@@ -338,7 +325,7 @@ class Graph(object):
         self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
         self.edge_attr_dict_factory = self.edge_attr_dict_factory
 
-        self.graph = self.graph_attr_dict_factory()   # dictionary for graph attributes
+        self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         # attempt to load graph with data
@@ -374,11 +361,11 @@ class Graph(object):
         keyed by the string `"name"`. as well as an attribute (technically
         a property) `G.name`. This is entirely user controlled.
         """
-        return self.graph.get('name', '')
+        return self.graph.get("name", "")
 
     @name.setter
     def name(self, s):
-        self.graph['name'] = s
+        self.graph["name"] = s
 
     def __str__(self):
         """Returns the graph name.
@@ -429,12 +416,16 @@ class Graph(object):
             return False
 
     def __len__(self):
-        """Returns the number of nodes. Use: 'len(G)'.
+        """Returns the number of nodes in the graph. Use: 'len(G)'.
 
         Returns
         -------
         nnodes : int
             The number of nodes in the graph.
+
+        See Also
+        --------
+        number_of_nodes, order  which are identical
 
         Examples
         --------
@@ -619,11 +610,11 @@ class Graph(object):
         try:
             nbrs = list(adj[n])  # list handles self-loops (allows mutation)
             del self._node[n]
-        except KeyError:  # NetworkXError if n not in self
-            raise NetworkXError("The node %s is not in the graph." % (n,))
+        except KeyError as e:  # NetworkXError if n not in self
+            raise NetworkXError(f"The node {n} is not in the graph.") from e
         for u in nbrs:
-            del adj[u][n]   # remove all edges n-u in graph
-        del adj[n]          # now remove node
+            del adj[u][n]  # remove all edges n-u in graph
+        del adj[n]  # now remove node
 
     def remove_nodes_from(self, nodes):
         """Remove multiple nodes.
@@ -654,7 +645,7 @@ class Graph(object):
         for n in nodes:
             try:
                 del self._node[n]
-                for u in list(adj[n]):   # list handles self-loops
+                for u in list(adj[n]):  # list handles self-loops
                     del adj[u][n]  # (allows mutation of dict in loop)
                 del adj[n]
             except KeyError:
@@ -755,44 +746,8 @@ class Graph(object):
         # Lazy View creation: overload the (class) property on the instance
         # Then future G.nodes use the existing View
         # setattr doesn't work because attribute already exists
-        self.__dict__['nodes'] = nodes
+        self.__dict__["nodes"] = nodes
         return nodes
-
-    # for backwards compatibility with 1.x, will be removed for 3.x
-    node = nodes
-
-    def add_path(self, nodes, **attr):
-        msg = "add_path is deprecated. Use nx.add_path instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.add_path(self, nodes, **attr)
-
-    def add_cycle(self, nodes, **attr):
-        msg = "add_cycle is deprecated. Use nx.add_cycle instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.add_cycle(self, nodes, **attr)
-
-    def add_star(self, nodes, **attr):
-        msg = "add_star is deprecated. Use nx.add_star instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.add_star(self, nodes, **attr)
-
-    def nodes_with_selfloops(self):
-        msg = "nodes_with_selfloops is deprecated." \
-              "Use nx.nodes_with_selfloops instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.nodes_with_selfloops(self)
-
-    def number_of_selfloops(self):
-        msg = "number_of_selfloops is deprecated." \
-              "Use nx.number_of_selfloops instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.number_of_selfloops(self)
-
-    def selfloop_edges(self, data=False, keys=False, default=None):
-        msg = "selfloop_edges is deprecated. Use nx.selfloop_edges instead."
-        warnings.warn(msg, DeprecationWarning)
-        return nx.selfloop_edges(self, data, keys, default)
-    # Done with backward compatibility methods for 1.x
 
     def number_of_nodes(self):
         """Returns the number of nodes in the graph.
@@ -809,7 +764,7 @@ class Graph(object):
         Examples
         --------
         >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> len(G)
+        >>> G.number_of_nodes()
         3
         """
         return len(self._node)
@@ -826,6 +781,11 @@ class Graph(object):
         --------
         number_of_nodes, __len__  which are identical
 
+        Examples
+        --------
+        >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.order()
+        3
         """
         return len(self._node)
 
@@ -965,8 +925,7 @@ class Graph(object):
                 u, v = e
                 dd = {}  # doesn't need edge_attr_dict_factory
             else:
-                raise NetworkXError(
-                    "Edge tuple %s must be a 2-tuple or 3-tuple." % (e,))
+                raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
             if u not in self._node:
                 self._adj[u] = self.adjlist_inner_dict_factory()
                 self._node[u] = self.node_attr_dict_factory()
@@ -979,7 +938,7 @@ class Graph(object):
             self._adj[u][v] = datadict
             self._adj[v][u] = datadict
 
-    def add_weighted_edges_from(self, ebunch_to_add, weight='weight', **attr):
+    def add_weighted_edges_from(self, ebunch_to_add, weight="weight", **attr):
         """Add weighted edges in `ebunch_to_add` with specified weight attr
 
         Parameters
@@ -1009,8 +968,7 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 7.5)])
         """
-        self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch_to_add),
-                            **attr)
+        self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch_to_add), **attr)
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.
@@ -1042,8 +1000,8 @@ class Graph(object):
             del self._adj[u][v]
             if u != v:  # self-loop needs only one entry removed
                 del self._adj[v][u]
-        except KeyError:
-            raise NetworkXError("The edge %s-%s is not in the graph" % (u, v))
+        except KeyError as e:
+            raise NetworkXError(f"The edge {u}-{v} is not in the graph") from e
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -1083,7 +1041,7 @@ class Graph(object):
         """Update the graph using nodes/edges/graphs as input.
 
         Like dict.update, this method takes a graph as input, adding the
-        graph's noes and edges to this graph. It can also take two inputs:
+        graph's nodes and edges to this graph. It can also take two inputs:
         edges and nodes. Finally it can take either edges or nodes.
         To specify only nodes the keyword `nodes` must be used.
 
@@ -1251,8 +1209,7 @@ class Graph(object):
 
         Notes
         -----
-        It is usually more convenient (and faster) to access the
-        adjacency dictionary as ``G[n]``:
+        Alternate ways to access the neighbors are ``G.adj[n]`` or ``G[n]``:
 
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge('a', 'b', weight=7)
@@ -1264,8 +1221,8 @@ class Graph(object):
         """
         try:
             return iter(self._adj[n])
-        except KeyError:
-            raise NetworkXError("The node %s is not in the graph." % (n,))
+        except KeyError as e:
+            raise NetworkXError(f"The node {n} is not in the graph.") from e
 
     @property
     def edges(self):
@@ -1328,7 +1285,7 @@ class Graph(object):
         """Returns the attribute dictionary associated with edge (u, v).
 
         This is identical to `G[u][v]` except the default is returned
-        instead of an exception is the edge doesn't exist.
+        instead of an exception if the edge doesn't exist.
 
         Parameters
         ----------
@@ -1449,6 +1406,21 @@ class Graph(object):
         self._node.clear()
         self.graph.clear()
 
+    def clear_edges(self):
+        """Remove all edges from the graph without altering nodes.
+
+        Examples
+        --------
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.clear_edges()
+        >>> list(G.nodes)
+        [0, 1, 2, 3]
+        >>> list(G.edges)
+        []
+        """
+        for neighbours_dict in self._adj.values():
+            neighbours_dict.clear()
+
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""
         return False
@@ -1456,12 +1428,6 @@ class Graph(object):
     def is_directed(self):
         """Returns True if graph is directed, False otherwise."""
         return False
-
-    def fresh_copy(self):
-        # remove by v3 if not before
-        msg = 'G.fresh_copy is deprecated. Use G.__class__ instead'
-        warnings.warn(msg, DeprecationWarning, stacklevel=2)
-        return self.__class__()
 
     def copy(self, as_view=False):
         """Returns a copy of the graph.
@@ -1517,7 +1483,7 @@ class Graph(object):
         structure without requiring any memory for copying the information.
 
         See the Python copy module for more information on shallow
-        and deep copies, https://docs.python.org/2/library/copy.html.
+        and deep copies, https://docs.python.org/3/library/copy.html.
 
         Parameters
         ----------
@@ -1545,9 +1511,11 @@ class Graph(object):
         G = self.__class__()
         G.graph.update(self.graph)
         G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
-        G.add_edges_from((u, v, datadict.copy())
-                         for u, nbrs in self._adj.items()
-                         for v, datadict in nbrs.items())
+        G.add_edges_from(
+            (u, v, datadict.copy())
+            for u, nbrs in self._adj.items()
+            for v, datadict in nbrs.items()
+        )
         return G
 
     def to_directed(self, as_view=False):
@@ -1570,7 +1538,7 @@ class Graph(object):
         shallow copy of the data.
 
         See the Python copy module for more information on shallow
-        and deep copies, https://docs.python.org/2/library/copy.html.
+        and deep copies, https://docs.python.org/3/library/copy.html.
 
         Warning: If you have subclassed Graph to use dict-like objects
         in the data structure, those changes do not transfer to the
@@ -1599,9 +1567,11 @@ class Graph(object):
         G = graph_class()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
-        G.add_edges_from((u, v, deepcopy(data))
-                         for u, nbrs in self._adj.items()
-                         for v, data in nbrs.items())
+        G.add_edges_from(
+            (u, v, deepcopy(data))
+            for u, nbrs in self._adj.items()
+            for v, data in nbrs.items()
+        )
         return G
 
     def to_undirected(self, as_view=False):
@@ -1631,7 +1601,7 @@ class Graph(object):
         shallow copy of the data.
 
         See the Python copy module for more information on shallow
-        and deep copies, https://docs.python.org/2/library/copy.html.
+        and deep copies, https://docs.python.org/3/library/copy.html.
 
         Warning: If you have subclassed DiGraph to use dict-like objects
         in the data structure, those changes do not transfer to the
@@ -1654,9 +1624,11 @@ class Graph(object):
         G = graph_class()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
-        G.add_edges_from((u, v, deepcopy(d))
-                         for u, nbrs in self._adj.items()
-                         for v, d in nbrs.items())
+        G.add_edges_from(
+            (u, v, deepcopy(d))
+            for u, nbrs in self._adj.items()
+            for v, d in nbrs.items()
+        )
         return G
 
     def subgraph(self, nodes):
@@ -1698,7 +1670,7 @@ class Graph(object):
             # Create a subgraph SG based on a (possibly multigraph) G
             SG = G.__class__()
             SG.add_nodes_from((n, G.nodes[n]) for n in largest_wcc)
-            if SG.is_multigraph:
+            if SG.is_multigraph():
                 SG.add_edges_from((n, nbr, key, d)
                     for n, nbrs in G.adj.items() if n in largest_wcc
                     for nbr, keydict in nbrs.items() if nbr in largest_wcc
@@ -1719,7 +1691,7 @@ class Graph(object):
         induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nodes))
         # if already a subgraph, don't make a chain
         subgraph = nx.graphviews.subgraph_view
-        if hasattr(self, '_NODE_OK'):
+        if hasattr(self, "_NODE_OK"):
             return subgraph(self._graph, induced_nodes, self._EDGE_OK)
         return subgraph(self, induced_nodes)
 
@@ -1898,11 +1870,12 @@ class Graph(object):
         or None, a :exc:`NetworkXError` is raised.  Also, if any object in
         nbunch is not hashable, a :exc:`NetworkXError` is raised.
         """
-        if nbunch is None:   # include all nodes via iterator
+        if nbunch is None:  # include all nodes via iterator
             bunch = iter(self._adj)
         elif nbunch in self:  # if nbunch is a single node
             bunch = iter([nbunch])
-        else:                # if nbunch is a sequence of nodes
+        else:  # if nbunch is a sequence of nodes
+
             def bunch_iter(nlist, adj):
                 try:
                     for n in nlist:
@@ -1911,14 +1884,15 @@ class Graph(object):
                 except TypeError as e:
                     message = e.args[0]
                     # capture error for non-sequence/iterator nbunch.
-                    if 'iter' in message:
+                    if "iter" in message:
                         msg = "nbunch is not a node or a sequence of nodes."
-                        raise NetworkXError(msg)
+                        raise NetworkXError(msg) from e
                     # capture error for unhashable node.
-                    elif 'hashable' in message:
-                        msg = "Node {} in sequence nbunch is not a valid node."
-                        raise NetworkXError(msg.format(n))
+                    elif "hashable" in message:
+                        msg = f"Node {n} in sequence nbunch is not a valid node."
+                        raise NetworkXError(msg) from e
                     else:
                         raise
+
             bunch = bunch_iter(nbunch, self._adj)
         return bunch

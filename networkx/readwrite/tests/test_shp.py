@@ -3,29 +3,15 @@
 
 import os
 import tempfile
-from nose import SkipTest
-from nose.tools import assert_equal
-from nose.tools import raises
+import pytest
+
+ogr = pytest.importorskip("osgeo.ogr")
 
 import networkx as nx
 
 
-class TestShp(object):
-    @classmethod
-    def setupClass(cls):
-        global ogr
-        try:
-            from osgeo import ogr
-        except ImportError:
-            raise SkipTest('ogr not available.')
-
-    def deletetmp(self, drv, *paths):
-        for p in paths:
-            if os.path.exists(p):
-                drv.DeleteDataSource(p)
-
-    def setUp(self):
-
+class TestShp:
+    def setup_method(self):
         def createlayer(driver, layerType=ogr.wkbLineString):
             lyr = driver.CreateLayer("edges", None, layerType)
             namedef = ogr.FieldDefn("Name", ogr.OFTString)
@@ -35,24 +21,28 @@ class TestShp(object):
 
         drv = ogr.GetDriverByName("ESRI Shapefile")
 
-        testdir = os.path.join(tempfile.gettempdir(), 'shpdir')
-        shppath = os.path.join(tempfile.gettempdir(), 'tmpshp.shp')
-        multi_shppath = os.path.join(tempfile.gettempdir(), 'tmp_mshp.shp')
+        testdir = os.path.join(tempfile.gettempdir(), "shpdir")
+        shppath = os.path.join(tempfile.gettempdir(), "tmpshp.shp")
+        multi_shppath = os.path.join(tempfile.gettempdir(), "tmp_mshp.shp")
 
         self.deletetmp(drv, testdir, shppath, multi_shppath)
         os.mkdir(testdir)
 
-        self.names = ['a', 'b', 'c', 'c']  # edgenames
-        self.paths = ([(1.0, 1.0), (2.0, 2.0)],
-                      [(2.0, 2.0), (3.0, 3.0)],
-                      [(0.9, 0.9), (4.0, 0.9), (4.0, 2.0)])
+        self.names = ["a", "b", "c", "c"]  # edgenames
+        self.paths = (
+            [(1.0, 1.0), (2.0, 2.0)],
+            [(2.0, 2.0), (3.0, 3.0)],
+            [(0.9, 0.9), (4.0, 0.9), (4.0, 2.0)],
+        )
 
-        self.simplified_names = ['a', 'b', 'c']  # edgenames
-        self.simplified_paths = ([(1.0, 1.0), (2.0, 2.0)],
-                                 [(2.0, 2.0), (3.0, 3.0)],
-                                 [(0.9, 0.9), (4.0, 2.0)])
+        self.simplified_names = ["a", "b", "c"]  # edgenames
+        self.simplified_paths = (
+            [(1.0, 1.0), (2.0, 2.0)],
+            [(2.0, 2.0), (3.0, 3.0)],
+            [(0.9, 0.9), (4.0, 2.0)],
+        )
 
-        self.multi_names = ['a', 'a', 'a', 'a']  # edgenames
+        self.multi_names = ["a", "a", "a", "a"]  # edgenames
 
         shp = drv.CreateDataSource(shppath)
         lyr = createlayer(shp)
@@ -81,7 +71,7 @@ class TestShp(object):
 
         multi_feat = ogr.Feature(multi_lyr.GetLayerDefn())
         multi_feat.SetGeometry(multi_g)
-        multi_feat.SetField("Name", 'a')
+        multi_feat.SetField("Name", "a")
         multi_lyr.CreateFeature(multi_feat)
 
         self.shppath = shppath
@@ -89,21 +79,24 @@ class TestShp(object):
         self.testdir = testdir
         self.drv = drv
 
-    def testload(self):
+    def deletetmp(self, drv, *paths):
+        for p in paths:
+            if os.path.exists(p):
+                drv.DeleteDataSource(p)
 
+    def testload(self):
         def compare_graph_paths_names(g, paths, names):
             expected = nx.DiGraph()
             for p in paths:
                 nx.add_path(expected, p)
-            assert_equal(sorted(expected.nodes), sorted(g.nodes))
-            assert_equal(sorted(expected.edges()), sorted(g.edges()))
-            g_names = [g.get_edge_data(s, e)['Name'] for s, e in g.edges()]
-            assert_equal(names, sorted(g_names))
+            assert sorted(expected.nodes) == sorted(g.nodes)
+            assert sorted(expected.edges()) == sorted(g.edges())
+            g_names = [g.get_edge_data(s, e)["Name"] for s, e in g.edges()]
+            assert names == sorted(g_names)
 
         # simplified
         G = nx.read_shp(self.shppath)
-        compare_graph_paths_names(G, self.simplified_paths,
-                                  self.simplified_names)
+        compare_graph_paths_names(G, self.simplified_paths, self.simplified_names)
 
         # unsimplified
         G = nx.read_shp(self.shppath, simplify=False)
@@ -119,7 +112,7 @@ class TestShp(object):
         while feature:
             actualwkt.append(feature.GetGeometryRef().ExportToWkt())
             feature = lyr.GetNextFeature()
-        assert_equal(sorted(expected), sorted(actualwkt))
+        assert sorted(expected) == sorted(actualwkt)
 
     def test_geometryexport(self):
         expectedpoints_simple = (
@@ -127,12 +120,12 @@ class TestShp(object):
             "POINT (2 2)",
             "POINT (3 3)",
             "POINT (0.9 0.9)",
-            "POINT (4 2)"
+            "POINT (4 2)",
         )
         expectedlines_simple = (
             "LINESTRING (1 1,2 2)",
             "LINESTRING (2 2,3 3)",
-            "LINESTRING (0.9 0.9,4.0 0.9,4 2)"
+            "LINESTRING (0.9 0.9,4.0 0.9,4 2)",
         )
         expectedpoints = (
             "POINT (1 1)",
@@ -140,16 +133,16 @@ class TestShp(object):
             "POINT (3 3)",
             "POINT (0.9 0.9)",
             "POINT (4.0 0.9)",
-            "POINT (4 2)"
+            "POINT (4 2)",
         )
         expectedlines = (
             "LINESTRING (1 1,2 2)",
             "LINESTRING (2 2,3 3)",
             "LINESTRING (0.9 0.9,4.0 0.9)",
-            "LINESTRING (4.0 0.9,4 2)"
+            "LINESTRING (4.0 0.9,4 2)",
         )
 
-        tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
+        tpath = os.path.join(tempfile.gettempdir(), "shpdir")
         G = nx.read_shp(self.shppath)
         nx.write_shp(G, tpath)
         shpdir = ogr.Open(tpath)
@@ -173,11 +166,11 @@ class TestShp(object):
                 ref = feature.GetGeometryRef()
                 last = ref.GetPointCount() - 1
                 edge_nodes = (ref.GetPoint_2D(0), ref.GetPoint_2D(last))
-                name = feature.GetFieldAsString('Name')
-                assert_equal(graph.get_edge_data(*edge_nodes)['Name'], name)
+                name = feature.GetFieldAsString("Name")
+                assert graph.get_edge_data(*edge_nodes)["Name"] == name
                 feature = lyr.GetNextFeature()
 
-        tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
+        tpath = os.path.join(tempfile.gettempdir(), "shpdir")
 
         G = nx.read_shp(self.shppath)
         nx.write_shp(G, tpath)
@@ -187,7 +180,7 @@ class TestShp(object):
 
     # Test export of node attributes in nx.write_shp (#2778)
     def test_nodeattributeexport(self):
-        tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
+        tpath = os.path.join(tempfile.gettempdir(), "shpdir")
 
         G = nx.DiGraph()
         A = (0, 0)
@@ -195,25 +188,20 @@ class TestShp(object):
         C = (2, 2)
         G.add_edge(A, B)
         G.add_edge(A, C)
-        label = 'node_label'
+        label = "node_label"
         for n, d in G.nodes(data=True):
-            d['label'] = label
+            d["label"] = label
         nx.write_shp(G, tpath)
 
         H = nx.read_shp(tpath)
         for n, d in H.nodes(data=True):
-            assert_equal(d['label'], label)
+            assert d["label"] == label
 
     def test_wkt_export(self):
         G = nx.DiGraph()
-        tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
-        points = (
-            "POINT (0.9 0.9)",
-            "POINT (4 2)"
-        )
-        line = (
-            "LINESTRING (0.9 0.9,4 2)",
-        )
+        tpath = os.path.join(tempfile.gettempdir(), "shpdir")
+        points = ("POINT (0.9 0.9)", "POINT (4 2)")
+        line = ("LINESTRING (0.9 0.9,4 2)",)
         G.add_node(1, Wkt=points[0])
         G.add_node(2, Wkt=points[1])
         G.add_edge(1, 2, Wkt=line[0])
@@ -225,38 +213,26 @@ class TestShp(object):
         self.checkgeom(shpdir.GetLayerByName("nodes"), points)
         self.checkgeom(shpdir.GetLayerByName("edges"), line)
 
-    def tearDown(self):
+    def teardown_method(self):
         self.deletetmp(self.drv, self.testdir, self.shppath)
 
 
-@raises(RuntimeError)
 def test_read_shp_nofile():
-    try:
-        from osgeo import ogr
-    except ImportError:
-        raise SkipTest('ogr not available.')
-    G = nx.read_shp("hopefully_this_file_will_not_be_available")
+    with pytest.raises(RuntimeError):
+        G = nx.read_shp("hopefully_this_file_will_not_be_available")
 
 
-class TestMissingGeometry(object):
-    @classmethod
-    def setup_class(cls):
-        global ogr
-        try:
-            from osgeo import ogr
-        except ImportError:
-            raise SkipTest('ogr not available.')
-
-    def setUp(self):
+class TestMissingGeometry:
+    def setup_method(self):
         self.setup_path()
         self.delete_shapedir()
         self.create_shapedir()
 
-    def tearDown(self):
+    def teardown_method(self):
         self.delete_shapedir()
 
     def setup_path(self):
-        self.path = os.path.join(tempfile.gettempdir(), 'missing_geometry')
+        self.path = os.path.join(tempfile.gettempdir(), "missing_geometry")
 
     def create_shapedir(self):
         drv = ogr.GetDriverByName("ESRI Shapefile")
@@ -272,29 +248,21 @@ class TestMissingGeometry(object):
         if os.path.exists(self.path):
             drv.DeleteDataSource(self.path)
 
-    @raises(nx.NetworkXError)
     def test_missing_geometry(self):
-        G = nx.read_shp(self.path)
+        with pytest.raises(nx.NetworkXError):
+            G = nx.read_shp(self.path)
 
 
-class TestMissingAttrWrite(object):
-    @classmethod
-    def setup_class(cls):
-        global ogr
-        try:
-            from osgeo import ogr
-        except ImportError:
-            raise SkipTest('ogr not available.')
-
-    def setUp(self):
+class TestMissingAttrWrite:
+    def setup_method(self):
         self.setup_path()
         self.delete_shapedir()
 
-    def tearDown(self):
+    def teardown_method(self):
         self.delete_shapedir()
 
     def setup_path(self):
-        self.path = os.path.join(tempfile.gettempdir(), 'missing_attributes')
+        self.path = os.path.join(tempfile.gettempdir(), "missing_attributes")
 
     def delete_shapedir(self):
         drv = ogr.GetDriverByName("ESRI Shapefile")
@@ -314,6 +282,6 @@ class TestMissingAttrWrite(object):
 
         for u, v, d in H.edges(data=True):
             if u == A and v == B:
-                assert_equal(d['foo'], 100)
+                assert d["foo"] == 100
             if u == A and v == C:
-                assert_equal(d['foo'], None)
+                assert d["foo"] is None

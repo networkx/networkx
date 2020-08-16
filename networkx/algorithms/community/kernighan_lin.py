@@ -1,105 +1,53 @@
-# -*- coding: utf-8 -*-
-#
-# kernighan_lin.py - Kernighan–Lin bipartition algorithm
-#
-# Copyright 2011 Ben Edwards <bedwards@cs.unm.edu>.
-# Copyright 2011 Aric Hagberg <hagberg@lanl.gov>.
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for computing the Kernighan–Lin bipartition algorithm."""
-from __future__ import division
-
-from collections import defaultdict
-from itertools import islice
-from operator import itemgetter
 
 import networkx as nx
-from networkx.utils import not_implemented_for, py_random_state
+from itertools import count
+from networkx.utils import not_implemented_for, py_random_state, BinaryHeap
 from networkx.algorithms.community.community_utils import is_partition
 
-__all__ = ['kernighan_lin_bisection']
+__all__ = ["kernighan_lin_bisection"]
 
 
-def _compute_delta(G, A, B, weight):
-    # helper to compute initial swap deltas for a pass
-    delta = defaultdict(float)
-    for u, v, d in G.edges(data=True):
-        w = d.get(weight, 1)
-        if u in A:
-            if v in A:
-                delta[u] -= w
-                delta[v] -= w
-            elif v in B:
-                delta[u] += w
-                delta[v] += w
-        elif u in B:
-            if v in A:
-                delta[u] += w
-                delta[v] += w
-            elif v in B:
-                delta[u] -= w
-                delta[v] -= w
-    return delta
+def _kernighan_lin_sweep(edges, side):
+    """
+    This is a modified form of Kernighan-Lin, which moves single nodes at a
+    time, alternating between sides to keep the bisection balanced.  We keep
+    two min-heaps of swap costs to make optimal-next-move selection fast.
+    """
+    costs0, costs1 = costs = BinaryHeap(), BinaryHeap()
+    for u, side_u, edges_u in zip(count(), side, edges):
+        cost_u = sum(w if side[v] else -w for v, w in edges_u)
+        costs[side_u].insert(u, cost_u if side_u else -cost_u)
 
+    def _update_costs(costs_x, x):
+        for y, w in edges[x]:
+            costs_y = costs[side[y]]
+            cost_y = costs_y.get(y)
+            if cost_y is not None:
+                cost_y += 2 * (-w if costs_x is costs_y else w)
+                costs_y.insert(y, cost_y, True)
 
-def _update_delta(delta, G, A, B, u, v, weight):
-    # helper to update swap deltas during single pass
-    for _, nbr, d in G.edges(u, data=True):
-        w = d.get(weight, 1)
-        if nbr in A:
-            delta[nbr] += 2 * w
-        if nbr in B:
-            delta[nbr] -= 2 * w
-    for _, nbr, d in G.edges(v, data=True):
-        w = d.get(weight, 1)
-        if nbr in A:
-            delta[nbr] -= 2 * w
-        if nbr in B:
-            delta[nbr] += 2 * w
-    return delta
-
-
-def _kernighan_lin_pass(G, A, B, weight):
-    # do a single iteration of Kernighan–Lin algorithm
-    # returns list of  (g_i,u_i,v_i) for i node pairs u_i,v_i
-    multigraph = G.is_multigraph()
-    delta = _compute_delta(G, A, B, weight)
-    swapped = set()
-    gains = []
-    while len(swapped) < len(G):
-        gain = []
-        for u in A - swapped:
-            for v in B - swapped:
-                try:
-                    if multigraph:
-                        w = sum(d.get(weight, 1) for d in G[u][v].values())
-                    else:
-                        w = G[u][v].get(weight, 1)
-                except KeyError:
-                    w = 0
-                gain.append((delta[u] + delta[v] - 2 * w, u, v))
-        if len(gain) == 0:
-            break
-        maxg, u, v = max(gain, key=itemgetter(0))
-        swapped |= {u, v}
-        gains.append((maxg, u, v))
-        delta = _update_delta(delta, G, A - swapped, B - swapped, u, v, weight)
-    return gains
+    i = totcost = 0
+    while costs0 and costs1:
+        u, cost_u = costs0.pop()
+        _update_costs(costs0, u)
+        v, cost_v = costs1.pop()
+        _update_costs(costs1, v)
+        totcost += cost_u + cost_v
+        yield totcost, i, (u, v)
 
 
 @py_random_state(4)
-@not_implemented_for('directed')
-def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
-                            seed=None):
+@not_implemented_for("directed")
+def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", seed=None):
     """Partition a graph into two blocks using the Kernighan–Lin
     algorithm.
 
-    This algorithm paritions a network into two sets by iteratively
-    swapping pairs of nodes to reduce the edge cut between the two sets.
+    This algorithm partitions a network into two sets by iteratively
+    swapping pairs of nodes to reduce the edge cut between the two sets.  The
+    pairs are chosen according to a modified form of Kernighan-Lin, which
+    moves node individually, alternating between sides to keep the bisection
+    balanced.
 
     Parameters
     ----------
@@ -140,36 +88,47 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight='weight',
        Oxford University Press 2011.
 
     """
-    # If no partition is provided, split the nodes randomly into a
-    # balanced partition.
+    n = len(G)
+    labels = list(G)
+    seed.shuffle(labels)
+    index = {v: i for i, v in enumerate(labels)}
+
     if partition is None:
-        nodes = list(G)
-        seed.shuffle(nodes)
-        h = len(nodes) // 2
-        partition = (nodes[:h], nodes[h:])
-    # Make a copy of the partition as a pair of sets.
-    try:
-        A, B = set(partition[0]), set(partition[1])
-    except:
-        raise ValueError('partition must be two sets')
-    if not is_partition(G, (A, B)):
-        raise nx.NetworkXError('partition invalid')
+        side = [0] * (n // 2) + [1] * ((n + 1) // 2)
+    else:
+        try:
+            A, B = partition
+        except (TypeError, ValueError) as e:
+            raise nx.NetworkXError("partition must be two sets") from e
+        if not is_partition(G, (A, B)):
+            raise nx.NetworkXError("partition invalid")
+        side = [0] * n
+        for a in A:
+            side[a] = 1
+
+    if G.is_multigraph():
+        edges = [
+            [
+                (index[u], sum(e.get(weight, 1) for e in d.values()))
+                for u, d in G[v].items()
+            ]
+            for v in labels
+        ]
+    else:
+        edges = [
+            [(index[u], e.get(weight, 1)) for u, e in G[v].items()] for v in labels
+        ]
+
     for i in range(max_iter):
-        # `gains` is a list of triples of the form (g, u, v) for each
-        # node pair (u, v), where `g` is the gain of that node pair.
-        gains = _kernighan_lin_pass(G, A, B, weight)
-        csum = list(nx.utils.accumulate(g for g, u, v in gains))
-        max_cgain = max(csum)
-        if max_cgain <= 0:
+        costs = list(_kernighan_lin_sweep(edges, side))
+        min_cost, min_i, _ = min(costs)
+        if min_cost >= 0:
             break
-        # Get the node pairs up to the index of the maximum cumulative
-        # gain, and collect each `u` into `anodes` and each `v` into
-        # `bnodes`, for each pair `(u, v)`.
-        index = csum.index(max_cgain)
-        nodesets = islice(zip(*gains[:index + 1]), 1, 3)
-        anodes, bnodes = (set(s) for s in nodesets)
-        A |= bnodes
-        A -= anodes
-        B |= anodes
-        B -= bnodes
+
+        for _, _, (u, v) in costs[: min_i + 1]:
+            side[u] = 1
+            side[v] = 0
+
+    A = {u for u, s in zip(labels, side) if s == 0}
+    B = {u for u, s in zip(labels, side) if s == 1}
     return A, B

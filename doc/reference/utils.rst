@@ -15,6 +15,7 @@ Helper Functions
    flatten
    iterable
    is_list_of_ints
+   make_list_of_ints
    make_str
    generate_unique_node
    default_opener
@@ -64,11 +65,3 @@ Cuthill-Mckee Ordering
 
    cuthill_mckee_ordering
    reverse_cuthill_mckee_ordering
-
-Context Managers
-----------------
-.. automodule:: networkx.utils.contextmanagers
-.. autosummary::
-   :toctree: generated/
-
-   reversed

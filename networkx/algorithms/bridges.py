@@ -1,23 +1,14 @@
-# -*- coding: utf-8 -*-
-# bridges.py - bridge-finding algorithms
-#
-# Copyright 2004-2018 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Bridge-finding algorithms."""
 from itertools import chain
 
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['bridges', 'has_bridges', 'local_bridges']
+__all__ = ["bridges", "has_bridges", "local_bridges"]
 
 
-@not_implemented_for('multigraph')
-@not_implemented_for('directed')
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
 def bridges(G, root=None):
     """Generate all bridges in a graph.
 
@@ -74,8 +65,8 @@ def bridges(G, root=None):
             yield u, v
 
 
-@not_implemented_for('multigraph')
-@not_implemented_for('directed')
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
 def has_bridges(G, root=None):
     """Decide whether a graph has any bridges.
 
@@ -131,8 +122,8 @@ def has_bridges(G, root=None):
         return True
 
 
-@not_implemented_for('multigraph')
-@not_implemented_for('directed')
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
 def local_bridges(G, with_span=True, weight=None):
     """Iterate over local bridges of `G` optionally computing the span
 
@@ -187,4 +178,4 @@ def local_bridges(G, with_span=True, weight=None):
                     span = nx.shortest_path_length(G, u, v, weight=hide_edge)
                     yield u, v, span
                 except nx.NetworkXNoPath:
-                    yield u, v, float('inf')
+                    yield u, v, float("inf")

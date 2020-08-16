@@ -1,13 +1,3 @@
-# boykovkolmogorov.py - Boykov Kolmogorov algorithm for maximum flow problems.
-#
-# Copyright 2016-2018 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Author: Jordi Torrents <jordi.t21@gmail.com>
 """
 Boykov-Kolmogorov algorithm for maximum flow problems.
 """
@@ -17,11 +7,12 @@ from operator import itemgetter
 import networkx as nx
 from networkx.algorithms.flow.utils import build_residual_network
 
-__all__ = ['boykov_kolmogorov']
+__all__ = ["boykov_kolmogorov"]
 
 
-def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None,
-                      value_only=False, cutoff=None):
+def boykov_kolmogorov(
+    G, s, t, capacity="capacity", residual=None, value_only=False, cutoff=None
+):
     r"""Find a maximum single-commodity flow using Boykov-Kolmogorov algorithm.
 
     This function returns the residual network resulting after computing
@@ -114,7 +105,6 @@ def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None,
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.flow import boykov_kolmogorov
 
     The functions that implement flow algorithms and output a residual
@@ -164,17 +154,17 @@ def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None,
 
     """
     R = boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff)
-    R.graph['algorithm'] = 'boykov_kolmogorov'
+    R.graph["algorithm"] = "boykov_kolmogorov"
     return R
 
 
 def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     if s not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(s))
+        raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(t))
+        raise nx.NetworkXError(f"node {str(t)} not in graph")
     if s == t:
-        raise nx.NetworkXError('source and sink are the same node')
+        raise nx.NetworkXError("source and sink are the same node")
 
     if residual is None:
         R = build_residual_network(G, capacity)
@@ -183,14 +173,14 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
 
     # Initialize/reset the residual network.
     # This is way too slow
-    #nx.set_edge_attributes(R, 0, 'flow')
+    # nx.set_edge_attributes(R, 0, 'flow')
     for u in R:
         for e in R[u].values():
-            e['flow'] = 0
+            e["flow"] = 0
 
     # Use an arbitrary high value as infinite. It is computed
     # when building the residual network.
-    INF = R.graph['inf']
+    INF = R.graph["inf"]
 
     if cutoff is None:
         cutoff = INF
@@ -218,7 +208,7 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
                 other_tree = source_tree
                 neighbors = R_pred
             for v, attr in neighbors[u].items():
-                if attr['capacity'] - attr['flow'] > 0:
+                if attr["capacity"] - attr["flow"] > 0:
                     if v not in this_tree:
                         if v in other_tree:
                             return (u, v) if this_tree is source_tree else (v, u)
@@ -243,7 +233,7 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
            and the input of this function.
         """
         attr = R_succ[u][v]
-        flow = min(INF, attr['capacity'] - attr['flow'])
+        flow = min(INF, attr["capacity"] - attr["flow"])
         path = [u]
         # Trace a path from u to s in source_tree.
         w = u
@@ -251,7 +241,7 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
             n = w
             w = source_tree[n]
             attr = R_pred[n][w]
-            flow = min(flow, attr['capacity'] - attr['flow'])
+            flow = min(flow, attr["capacity"] - attr["flow"])
             path.append(w)
         path.reverse()
         # Trace a path from v to t in target_tree.
@@ -261,16 +251,16 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
             n = w
             w = target_tree[n]
             attr = R_succ[n][w]
-            flow = min(flow, attr['capacity'] - attr['flow'])
+            flow = min(flow, attr["capacity"] - attr["flow"])
             path.append(w)
         # Augment flow along the path and check for saturated edges.
         it = iter(path)
         u = next(it)
         these_orphans = []
         for v in it:
-            R_succ[u][v]['flow'] += flow
-            R_succ[v][u]['flow'] -= flow
-            if R_succ[u][v]['flow'] == R_succ[u][v]['capacity']:
+            R_succ[u][v]["flow"] += flow
+            R_succ[v][u]["flow"] -= flow
+            if R_succ[u][v]["flow"] == R_succ[u][v]["capacity"]:
                 if v in source_tree:
                     source_tree[v] = None
                     these_orphans.append(v)
@@ -299,20 +289,20 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
             else:
                 tree = target_tree
                 neighbors = R_succ
-            nbrs = ((n, attr, dist[n]) for n, attr in neighbors[u].items()
-                    if n in tree)
+            nbrs = ((n, attr, dist[n]) for n, attr in neighbors[u].items() if n in tree)
             for v, attr, d in sorted(nbrs, key=itemgetter(2)):
-                if attr['capacity'] - attr['flow'] > 0:
+                if attr["capacity"] - attr["flow"] > 0:
                     if _has_valid_root(v, tree):
                         tree[u] = v
                         dist[u] = dist[v] + 1
                         timestamp[u] = time
                         break
             else:
-                nbrs = ((n, attr, dist[n]) for n, attr in neighbors[u].items()
-                        if n in tree)
+                nbrs = (
+                    (n, attr, dist[n]) for n, attr in neighbors[u].items() if n in tree
+                )
                 for v, attr, d in sorted(nbrs, key=itemgetter(2)):
-                    if attr['capacity'] - attr['flow'] > 0:
+                    if attr["capacity"] - attr["flow"] > 0:
                         if v not in active:
                             active.append(v)
                     if tree[v] == u:
@@ -366,12 +356,12 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
         adopt()
 
     if flow_value * 2 > INF:
-        raise nx.NetworkXUnbounded('Infinite capacity path, flow unbounded above.')
+        raise nx.NetworkXUnbounded("Infinite capacity path, flow unbounded above.")
 
     # Add source and target tree in a graph attribute.
     # A partition that defines a minimum cut can be directly
     # computed from the search trees as explained in the docstrings.
-    R.graph['trees'] = (source_tree, target_tree)
+    R.graph["trees"] = (source_tree, target_tree)
     # Add the standard flow_value graph attribute.
-    R.graph['flow_value'] = flow_value
+    R.graph["flow_value"] = flow_value
     return R

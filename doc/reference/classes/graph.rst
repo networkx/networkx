@@ -30,6 +30,7 @@ Adding and removing nodes and edges
    Graph.remove_edges_from
    Graph.update
    Graph.clear
+   Graph.clear_edges
 
 
 

@@ -1,24 +1,22 @@
-#!/usr/bin/env python
 """
 ego graph
 ---------
 """
 
-from nose.tools import assert_true
 import networkx as nx
-from networkx.testing.utils import *
+from networkx.testing.utils import assert_edges_equal, assert_nodes_equal
 
 
-class TestGeneratorEgo():
+class TestGeneratorEgo:
     def test_ego(self):
         G = nx.star_graph(3)
         H = nx.ego_graph(G, 0)
-        assert_true(nx.is_isomorphic(G, H))
+        assert nx.is_isomorphic(G, H)
         G.add_edge(1, 11)
         G.add_edge(2, 22)
         G.add_edge(3, 33)
         H = nx.ego_graph(G, 0)
-        assert_true(nx.is_isomorphic(nx.star_graph(3), H))
+        assert nx.is_isomorphic(nx.star_graph(3), H)
         G = nx.path_graph(3)
         H = nx.ego_graph(G, 0)
         assert_edges_equal(H.edges(), [(0, 1)])
@@ -33,9 +31,9 @@ class TestGeneratorEgo():
         G.add_edge(1, 2, weight=2, distance=2)
         G.add_edge(2, 3, weight=2, distance=1)
         assert_nodes_equal(nx.ego_graph(G, 0, radius=3).nodes(), [0, 1, 2, 3])
-        eg = nx.ego_graph(G, 0, radius=3, distance='weight')
+        eg = nx.ego_graph(G, 0, radius=3, distance="weight")
         assert_nodes_equal(eg.nodes(), [0, 1])
-        eg = nx.ego_graph(G, 0, radius=3, distance='weight', undirected=True)
+        eg = nx.ego_graph(G, 0, radius=3, distance="weight", undirected=True)
         assert_nodes_equal(eg.nodes(), [0, 1])
-        eg = nx.ego_graph(G, 0, radius=3, distance='distance')
+        eg = nx.ego_graph(G, 0, radius=3, distance="distance")
         assert_nodes_equal(eg.nodes(), [0, 1, 2])

@@ -1,16 +1,9 @@
-#    Copyright (C) 2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from itertools import chain
 import networkx as nx
-from networkx.utils import make_str
-__author__ = """Aric Hagberg (hagberg@lanl.gov))"""
-__all__ = ['tree_data', 'tree_graph']
 
-_attrs = dict(id='id', children='children')
+__all__ = ["tree_data", "tree_graph"]
+
+_attrs = dict(id="id", children="children")
 
 
 def tree_data(G, root, attrs=_attrs):
@@ -73,10 +66,10 @@ def tree_data(G, root, attrs=_attrs):
     if not G.is_directed():
         raise TypeError("G is not directed.")
 
-    id_ = attrs['id']
-    children = attrs['children']
+    id_ = attrs["id"]
+    children = attrs["children"]
     if id_ == children:
-        raise nx.NetworkXError('Attribute names are not unique.')
+        raise nx.NetworkXError("Attribute names are not unique.")
 
     def add_children(n, G):
         nbrs = G[n]
@@ -130,8 +123,8 @@ def tree_graph(data, attrs=_attrs):
     tree_graph, node_link_data, adjacency_data
     """
     graph = nx.DiGraph()
-    id_ = attrs['id']
-    children = attrs['children']
+    id_ = attrs["id"]
+    children = attrs["children"]
 
     def add_children(parent, children_):
         for data in children_:
@@ -140,14 +133,14 @@ def tree_graph(data, attrs=_attrs):
             grandchildren = data.get(children, [])
             if grandchildren:
                 add_children(child, grandchildren)
-            nodedata = dict((make_str(k), v) for k, v in data.items()
-                            if k != id_ and k != children)
+            nodedata = {
+                str(k): v for k, v in data.items() if k != id_ and k != children
+            }
             graph.add_node(child, **nodedata)
 
     root = data[id_]
     children_ = data.get(children, [])
-    nodedata = dict((make_str(k), v) for k, v in data.items()
-                    if k != id_ and k != children)
+    nodedata = {str(k): v for k, v in data.items() if k != id_ and k != children}
     graph.add_node(root, **nodedata)
     add_children(root, children_)
     return graph

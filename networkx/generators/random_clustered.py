@@ -1,18 +1,9 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Joel Miller (joel.c.miller.research@gmail.com)
 """Generate graphs with given degree and triangle sequence.
 """
 import networkx as nx
 from networkx.utils import py_random_state
 
-__all__ = ['random_clustered_graph']
+__all__ = ["random_clustered_graph"]
 
 
 @py_random_state(2)
@@ -111,7 +102,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
             tlist.append(n)
 
     if len(ilist) % 2 != 0 or len(tlist) % 3 != 0:
-        raise nx.NetworkXError('Invalid degree sequence')
+        raise nx.NetworkXError("Invalid degree sequence")
 
     seed.shuffle(ilist)
     seed.shuffle(tlist)

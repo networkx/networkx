@@ -1,7 +1,7 @@
 .. _using-git:
 
-Working with *networkx* source code
-================================================
+Advanced Git
+============
 
 Contents:
 

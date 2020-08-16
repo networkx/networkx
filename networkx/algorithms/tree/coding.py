@@ -1,13 +1,3 @@
-# -*- encoding: utf-8 -*-
-#
-# coding.py - functions for encoding and decoding trees as sequences
-#
-# Copyright 2015-2018 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for encoding and decoding trees.
 
 Since a tree is a highly restricted form of graph, it can be represented
@@ -24,8 +14,13 @@ from itertools import chain
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['from_nested_tuple', 'from_prufer_sequence', 'NotATree',
-           'to_nested_tuple', 'to_prufer_sequence']
+__all__ = [
+    "from_nested_tuple",
+    "from_prufer_sequence",
+    "NotATree",
+    "to_nested_tuple",
+    "to_prufer_sequence",
+]
 
 
 class NotATree(nx.NetworkXException):
@@ -36,7 +31,7 @@ class NotATree(nx.NetworkXException):
     """
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def to_nested_tuple(T, root, canonical_form=False):
     """Returns a nested tuple representation of the given tree.
 
@@ -125,9 +120,9 @@ def to_nested_tuple(T, root, canonical_form=False):
 
     # Do some sanity checks on the input.
     if not nx.is_tree(T):
-        raise nx.NotATree('provided graph is not a tree')
+        raise nx.NotATree("provided graph is not a tree")
     if root not in T:
-        raise nx.NodeNotFound('Graph {} contains no node {}'.format(T, root))
+        raise nx.NodeNotFound(f"Graph {T} contains no node {root}")
 
     return _make_tuple(T, root, None)
 
@@ -215,7 +210,7 @@ def from_nested_tuple(sequence, sensible_relabeling=False):
     return T
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def to_prufer_sequence(T):
     r"""Returns the Prüfer sequence of the given tree.
 
@@ -258,7 +253,7 @@ def to_prufer_sequence(T):
     relabel the nodes of your tree to the appropriate format.
 
     This implementation is from [1]_ and has a running time of
-    $O(n \log n)$.
+    $O(n)$.
 
     See also
     --------
@@ -291,19 +286,19 @@ def to_prufer_sequence(T):
     # Perform some sanity checks on the input.
     n = len(T)
     if n < 2:
-        msg = 'Prüfer sequence undefined for trees with fewer than two nodes'
+        msg = "Prüfer sequence undefined for trees with fewer than two nodes"
         raise nx.NetworkXPointlessConcept(msg)
     if not nx.is_tree(T):
-        raise nx.NotATree('provided graph is not a tree')
+        raise nx.NotATree("provided graph is not a tree")
     if set(T) != set(range(n)):
-        raise KeyError('tree must have node labels {0, ..., n - 1}')
+        raise KeyError("tree must have node labels {0, ..., n - 1}")
 
     degree = dict(T.degree())
 
     def parents(u):
         return next(v for v in T[u] if degree[v] > 1)
 
-    index = u = min(k for k in range(n) if degree[k] == 1)
+    index = u = next(k for k in range(n) if degree[k] == 1)
     result = []
     for i in range(n - 2):
         v = parents(u)
@@ -312,7 +307,7 @@ def to_prufer_sequence(T):
         if v < index and degree[v] == 1:
             u = v
         else:
-            index = u = min(k for k in range(index + 1, n) if degree[k] == 1)
+            index = u = next(k for k in range(index + 1, n) if degree[k] == 1)
     return result
 
 
@@ -347,7 +342,7 @@ def from_prufer_sequence(sequence):
     relabel the nodes of your tree to the appropriate format.
 
     This implementation is from [1]_ and has a running time of
-    $O(n \log n)$.
+    $O(n)$.
 
     References
     ----------
@@ -387,7 +382,7 @@ def from_prufer_sequence(sequence):
     # tree. After the loop, there should be exactly two nodes that are
     # not in this set.
     not_orphaned = set()
-    index = u = min(k for k in range(n) if degree[k] == 1)
+    index = u = next(k for k in range(n) if degree[k] == 1)
     for v in sequence:
         T.add_edge(u, v)
         not_orphaned.add(u)
@@ -395,7 +390,7 @@ def from_prufer_sequence(sequence):
         if v < index and degree[v] == 1:
             u = v
         else:
-            index = u = min(k for k in range(index + 1, n) if degree[k] == 1)
+            index = u = next(k for k in range(index + 1, n) if degree[k] == 1)
     # At this point, there must be exactly two orphaned nodes; join them.
     orphans = set(T) - not_orphaned
     u, v = orphans

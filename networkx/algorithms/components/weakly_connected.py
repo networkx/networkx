@@ -1,27 +1,15 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Christopher Ellison
 """Weakly connected components."""
-import warnings as _warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
-    'number_weakly_connected_components',
-    'weakly_connected_components',
-    'weakly_connected_component_subgraphs',
-    'is_weakly_connected',
+    "number_weakly_connected_components",
+    "weakly_connected_components",
+    "is_weakly_connected",
 ]
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def weakly_connected_components(G):
     """Generate weakly connected components of G.
 
@@ -38,7 +26,7 @@ def weakly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
 
     Examples
@@ -74,7 +62,7 @@ def weakly_connected_components(G):
             seen.update(c)
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def number_weakly_connected_components(G):
     """Returns the number of weakly connected components in G.
 
@@ -90,7 +78,7 @@ def number_weakly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
 
     See Also
@@ -107,23 +95,7 @@ def number_weakly_connected_components(G):
     return sum(1 for wcc in weakly_connected_components(G))
 
 
-@not_implemented_for('undirected')
-def weakly_connected_component_subgraphs(G, copy=True):
-    """DEPRECATED: Use ``(G.subgraph(c) for c in weakly_connected_components(G))``
-
-           Or ``(G.subgraph(c).copy() for c in weakly_connected_components(G))``
-    """
-    msg = "weakly_connected_component_subgraphs is deprecated and will be removed in 2.2" \
-        "use (G.subgraph(c).copy() for c in weakly_connected_components(G))"
-    _warnings.warn(msg, DeprecationWarning)
-    for c in weakly_connected_components(G):
-        if copy:
-            yield G.subgraph(c).copy()
-        else:
-            yield G.subgraph(c)
-
-
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def is_weakly_connected(G):
     """Test directed graph for weak connectivity.
 
@@ -146,7 +118,7 @@ def is_weakly_connected(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
 
     See Also
@@ -164,7 +136,8 @@ def is_weakly_connected(G):
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
-            """Connectivity is undefined for the null graph.""")
+            """Connectivity is undefined for the null graph."""
+        )
 
     return len(list(weakly_connected_components(G))[0]) == len(G)
 

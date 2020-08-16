@@ -22,6 +22,7 @@ Graph
    add_path
    add_cycle
    subgraph
+   subgraph_view
    induced_subgraph
    restricted_view
    reverse_view
@@ -72,6 +73,13 @@ Attributes
    set_edge_attributes
    get_edge_attributes
 
+Paths
+----------
+.. autosummary::
+   :toctree: generated/
+
+   is_path
+   path_weight
 
 Freezing graph structure
 ------------------------

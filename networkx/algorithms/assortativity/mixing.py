@@ -1,18 +1,17 @@
-#-*- coding: utf-8 -*-
 """
 Mixing matrices for node attributes and degree.
 """
-import networkx as nx
 from networkx.utils import dict_to_numpy_array
-from networkx.algorithms.assortativity.pairs import node_degree_xy, \
-    node_attribute_xy
-__author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>'])
-__all__ = ['attribute_mixing_matrix',
-           'attribute_mixing_dict',
-           'degree_mixing_matrix',
-           'degree_mixing_dict',
-           'numeric_mixing_matrix',
-           'mixing_dict']
+from networkx.algorithms.assortativity.pairs import node_degree_xy, node_attribute_xy
+
+__all__ = [
+    "attribute_mixing_matrix",
+    "attribute_mixing_dict",
+    "degree_mixing_matrix",
+    "degree_mixing_dict",
+    "numeric_mixing_matrix",
+    "mixing_dict",
+]
 
 
 def attribute_mixing_dict(G, attribute, nodes=None, normalized=False):
@@ -53,8 +52,7 @@ def attribute_mixing_dict(G, attribute, nodes=None, normalized=False):
     return mixing_dict(xy_iter, normalized=normalized)
 
 
-def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None,
-                            normalized=True):
+def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=True):
     """Returns mixing matrix for attribute.
 
     Parameters
@@ -88,8 +86,7 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None,
     return a
 
 
-def degree_mixing_dict(G, x='out', y='in', weight=None,
-                       nodes=None, normalized=False):
+def degree_mixing_dict(G, x="out", y="in", weight=None, nodes=None, normalized=False):
     """Returns dictionary representation of mixing matrix for degree.
 
     Parameters
@@ -120,8 +117,7 @@ def degree_mixing_dict(G, x='out', y='in', weight=None,
     return mixing_dict(xy_iter, normalized=normalized)
 
 
-def degree_mixing_matrix(G, x='out', y='in', weight=None,
-                         nodes=None, normalized=True):
+def degree_mixing_matrix(G, x="out", y="in", weight=None, nodes=None, normalized=True):
     """Returns mixing matrix for attribute.
 
     Parameters
@@ -235,16 +231,3 @@ def mixing_dict(xy, normalized=False):
             for j in jdict:
                 jdict[j] /= psum
     return d
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

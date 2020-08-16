@@ -1,30 +1,18 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Eben Kenah
-#          Aric Hagberg (hagberg@lanl.gov)
-#          Christopher Ellison
-#          Ben Edwards (bedwards@cs.unm.edu)
 """Strongly connected components."""
-import warnings as _warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
-__all__ = ['number_strongly_connected_components',
-           'strongly_connected_components',
-           'strongly_connected_component_subgraphs',
-           'is_strongly_connected',
-           'strongly_connected_components_recursive',
-           'kosaraju_strongly_connected_components',
-           'condensation']
+__all__ = [
+    "number_strongly_connected_components",
+    "strongly_connected_components",
+    "is_strongly_connected",
+    "strongly_connected_components_recursive",
+    "kosaraju_strongly_connected_components",
+    "condensation",
+]
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def strongly_connected_components(G):
     """Generate nodes in strongly connected components of graph.
 
@@ -41,7 +29,7 @@ def strongly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If G is undirected.
 
     Examples
@@ -80,12 +68,11 @@ def strongly_connected_components(G):
        Information Processing Letters 49(1): 9-14, (1994)..
 
     """
-    nbrs = {}
     preorder = {}
     lowlink = {}
-    scc_found = {}
+    scc_found = set()
     scc_queue = []
-    i = 0     # Preorder counter
+    i = 0  # Preorder counter
     for source in G:
         if source not in scc_found:
             queue = [source]
@@ -94,16 +81,13 @@ def strongly_connected_components(G):
                 if v not in preorder:
                     i = i + 1
                     preorder[v] = i
-                done = 1
-                if v not in nbrs:
-                    nbrs[v] = iter(G[v])
-                v_nbrs = nbrs[v]
-                for w in v_nbrs:
+                done = True
+                for w in G[v]:
                     if w not in preorder:
                         queue.append(w)
-                        done = 0
+                        done = False
                         break
-                if done == 1:
+                if done:
                     lowlink[v] = preorder[v]
                     for w in G[v]:
                         if w not in scc_found:
@@ -113,18 +97,17 @@ def strongly_connected_components(G):
                                 lowlink[v] = min([lowlink[v], preorder[w]])
                     queue.pop()
                     if lowlink[v] == preorder[v]:
-                        scc_found[v] = True
                         scc = {v}
                         while scc_queue and preorder[scc_queue[-1]] > preorder[v]:
                             k = scc_queue.pop()
-                            scc_found[k] = True
                             scc.add(k)
+                        scc_found.update(scc)
                         yield scc
                     else:
                         scc_queue.append(v)
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def kosaraju_strongly_connected_components(G, source=None):
     """Generate nodes in strongly connected components of graph.
 
@@ -141,7 +124,7 @@ def kosaraju_strongly_connected_components(G, source=None):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
 
     Examples
@@ -168,8 +151,7 @@ def kosaraju_strongly_connected_components(G, source=None):
     Uses Kosaraju's algorithm.
 
     """
-    with nx.utils.reversed(G):
-        post = list(nx.dfs_postorder_nodes(G, source=source))
+    post = list(nx.dfs_postorder_nodes(G.reverse(copy=False), source=source))
 
     seen = set()
     while post:
@@ -182,7 +164,7 @@ def kosaraju_strongly_connected_components(G, source=None):
         seen.update(new)
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def strongly_connected_components_recursive(G):
     """Generate nodes in strongly connected components of graph.
 
@@ -201,7 +183,7 @@ def strongly_connected_components_recursive(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If G is undirected.
 
     Examples
@@ -218,6 +200,9 @@ def strongly_connected_components_recursive(G):
     use max instead of sort.
 
     >>> largest = max(nx.strongly_connected_components_recursive(G), key=len)
+
+    To create the induced subgraph of the components use:
+    >>> S = [G.subgraph(c).copy() for c in nx.weakly_connected_components(G)]
 
     See Also
     --------
@@ -237,6 +222,7 @@ def strongly_connected_components_recursive(G):
        Information Processing Letters 49(1): 9-14, (1994)..
 
     """
+
     def visit(v, cnt):
         root[v] = cnt
         visited[v] = cnt
@@ -244,8 +230,7 @@ def strongly_connected_components_recursive(G):
         stack.append(v)
         for w in G[v]:
             if w not in visited:
-                for c in visit(w, cnt):
-                    yield c
+                yield from visit(w, cnt)
             if w not in component:
                 root[v] = min(root[v], root[w])
         if root[v] == visited[v]:
@@ -265,27 +250,10 @@ def strongly_connected_components_recursive(G):
     stack = []
     for source in G:
         if source not in visited:
-            for c in visit(source, cnt):
-                yield c
+            yield from visit(source, cnt)
 
 
-@not_implemented_for('undirected')
-def strongly_connected_component_subgraphs(G, copy=True):
-    """DEPRECATED: Use ``(G.subgraph(c) for c in strongly_connected_components(G))``
-
-         Or ``(G.subgraph(c).copy() for c in strongly_connected_components(G))``
-    """
-    msg = "strongly_connected_component_subgraphs is deprecated and will be removed in 2.2" \
-        "use (G.subgraph(c).copy() for c in strongly_connected_components(G))"
-    _warnings.warn(msg, DeprecationWarning)
-    for c in strongly_connected_components(G):
-        if copy:
-            yield G.subgraph(c).copy()
-        else:
-            yield G.subgraph(c)
-
-
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def number_strongly_connected_components(G):
     """Returns number of strongly connected components in graph.
 
@@ -301,7 +269,7 @@ def number_strongly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
 
     See Also
@@ -317,7 +285,7 @@ def number_strongly_connected_components(G):
     return sum(1 for scc in strongly_connected_components(G))
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def is_strongly_connected(G):
     """Test directed graph for strong connectivity.
 
@@ -336,7 +304,7 @@ def is_strongly_connected(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
 
     See Also
@@ -353,12 +321,13 @@ def is_strongly_connected(G):
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
-            """Connectivity is undefined for the null graph.""")
+            """Connectivity is undefined for the null graph."""
+        )
 
     return len(list(strongly_connected_components(G))[0]) == len(G)
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def condensation(G, scc=None):
     """Returns the condensation of G.
 
@@ -388,7 +357,7 @@ def condensation(G, scc=None):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
 
     Notes
@@ -403,7 +372,7 @@ def condensation(G, scc=None):
     members = {}
     C = nx.DiGraph()
     # Add mapping dict as graph attribute
-    C.graph['mapping'] = mapping
+    C.graph["mapping"] = mapping
     if len(G) == 0:
         return C
     for i, component in enumerate(scc):
@@ -411,8 +380,9 @@ def condensation(G, scc=None):
         mapping.update((n, i) for n in component)
     number_of_components = i + 1
     C.add_nodes_from(range(number_of_components))
-    C.add_edges_from((mapping[u], mapping[v]) for u, v in G.edges()
-                     if mapping[u] != mapping[v])
+    C.add_edges_from(
+        (mapping[u], mapping[v]) for u, v in G.edges() if mapping[u] != mapping[v]
+    )
     # Add a list of members (ie original nodes) to each node (ie scc) in C.
-    nx.set_node_attributes(C, members, 'members')
+    nx.set_node_attributes(C, members, "members")
     return C

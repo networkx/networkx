@@ -1,23 +1,13 @@
 """Modularity matrix of graphs.
 """
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-from __future__ import division
 import networkx as nx
 from networkx.utils import not_implemented_for
-__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)',
-                        'Jean-Gabriel Young (Jean.gabriel.young@gmail.com)'])
-__all__ = ['modularity_matrix', 'directed_modularity_matrix']
+
+__all__ = ["modularity_matrix", "directed_modularity_matrix"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def modularity_matrix(G, nodelist=None, weight=None):
     r"""Returns the modularity matrix of G.
 
@@ -54,7 +44,6 @@ def modularity_matrix(G, nodelist=None, weight=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> k =[3, 2, 2, 1, 0]
     >>> G = nx.havel_hakimi_graph(k)
     >>> B = nx.modularity_matrix(G)
@@ -62,9 +51,9 @@ def modularity_matrix(G, nodelist=None, weight=None):
 
     See Also
     --------
-    to_numpy_matrix
+    to_numpy_array
+    modularity_spectrum
     adjacency_matrix
-    laplacian_matrix
     directed_modularity_matrix
 
     References
@@ -74,8 +63,7 @@ def modularity_matrix(G, nodelist=None, weight=None):
     """
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
-                                  format='csr')
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
     k = A.sum(axis=1)
     m = k.sum() * 0.5
     # Expected adjacency matrix
@@ -83,8 +71,8 @@ def modularity_matrix(G, nodelist=None, weight=None):
     return A - X
 
 
-@not_implemented_for('undirected')
-@not_implemented_for('multigraph')
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
 def directed_modularity_matrix(G, nodelist=None, weight=None):
     """Returns the directed modularity matrix of G.
 
@@ -122,7 +110,6 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_edges_from(((1,2), (1,3), (3,1), (3,2), (3,5), (4,5), (4,6),
     ...                   (5,4), (5,6), (6,4)))
@@ -137,9 +124,9 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
 
     See Also
     --------
-    to_numpy_matrix
+    to_numpy_array
+    modularity_spectrum
     adjacency_matrix
-    laplacian_matrix
     modularity_matrix
 
     References
@@ -150,21 +137,10 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
     """
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
-                                  format='csr')
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
     k_in = A.sum(axis=0)
     k_out = A.sum(axis=1)
     m = k_in.sum()
     # Expected adjacency matrix
     X = k_out * k_in / m
     return A - X
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import scipy
-    except:
-        raise SkipTest("NumPy not available")

@@ -1,29 +1,25 @@
-# -*- coding: utf-8 -*-
-# cuts.py - functions for computing and evaluating cuts
-#
-# Copyright 2011 Ben Edwards <bedwards@cs.unm.edu>.
-# Copyright 2011 Aric Hagberg <hagberg@lanl.gov>.
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for finding and evaluating cuts in a graph.
 
 """
-from __future__ import division
 
 from itertools import chain
 
 import networkx as nx
 
-__all__ = ['boundary_expansion', 'conductance', 'cut_size', 'edge_expansion',
-           'mixing_expansion', 'node_expansion', 'normalized_cut_size',
-           'volume']
+__all__ = [
+    "boundary_expansion",
+    "conductance",
+    "cut_size",
+    "edge_expansion",
+    "mixing_expansion",
+    "node_expansion",
+    "normalized_cut_size",
+    "volume",
+]
 
 
 # TODO STILL NEED TO UPDATE ALL THE DOCUMENTATION!
+
 
 def cut_size(G, S, T=None, weight=None):
     """Returns the size of the cut between two sets of nodes.
@@ -363,8 +359,8 @@ def node_expansion(G, S):
 def boundary_expansion(G, S):
     """Returns the boundary expansion of the set `S`.
 
-    The *boundary expansion* is the quotient of the size of the edge
-    boundary and the cardinality of *S*. [1]
+    The *boundary expansion* is the quotient of the size
+    of the node boundary and the cardinality of *S*. [1]
 
     Parameters
     ----------

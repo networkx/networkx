@@ -1,27 +1,18 @@
-#    Copyright (C) 2010-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """Current-flow betweenness centrality measures for subsets of nodes."""
-import itertools
-
 import networkx as nx
-from networkx.algorithms.centrality.flow_matrix import *
+from networkx.algorithms.centrality.flow_matrix import flow_matrix_row
 from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
 
-__all__ = ['current_flow_betweenness_centrality_subset',
-           'edge_current_flow_betweenness_centrality_subset']
+__all__ = [
+    "current_flow_betweenness_centrality_subset",
+    "edge_current_flow_betweenness_centrality_subset",
+]
 
 
-@not_implemented_for('directed')
-def current_flow_betweenness_centrality_subset(G, sources, targets,
-                                               normalized=True,
-                                               weight=None,
-                                               dtype=float, solver='lu'):
+@not_implemented_for("directed")
+def current_flow_betweenness_centrality_subset(
+    G, sources, targets, normalized=True, weight=None, dtype=float, solver="lu"
+):
     r"""Compute current-flow betweenness centrality for subsets of nodes.
 
     Current-flow betweenness centrality uses an electrical current
@@ -97,16 +88,13 @@ def current_flow_betweenness_centrality_subset(G, sources, targets,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
     from networkx.utils import reverse_cuthill_mckee_ordering
+
     try:
         import numpy as np
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://scipy.org/')
-    try:
-        import scipy
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires SciPy ',
-                          'http://scipy.org/')
+    except ImportError as e:
+        raise ImportError(
+            "current_flow_betweenness_centrality requires NumPy ", "http://numpy.org/"
+        ) from e
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()
@@ -116,8 +104,7 @@ def current_flow_betweenness_centrality_subset(G, sources, targets,
     mapping = dict(zip(ordering, range(n)))
     H = nx.relabel_nodes(G, mapping)
     betweenness = dict.fromkeys(H, 0.0)  # b[v]=0 for v in H
-    for row, (s, t) in flow_matrix_row(H, weight=weight, dtype=dtype,
-                                       solver=solver):
+    for row, (s, t) in flow_matrix_row(H, weight=weight, dtype=dtype, solver=solver):
         for ss in sources:
             i = mapping[ss]
             for tt in targets:
@@ -130,14 +117,13 @@ def current_flow_betweenness_centrality_subset(G, sources, targets,
         nb = 2.0
     for v in H:
         betweenness[v] = betweenness[v] / nb + 1.0 / (2 - n)
-    return dict((ordering[k], v) for k, v in betweenness.items())
+    return {ordering[k]: v for k, v in betweenness.items()}
 
 
-@not_implemented_for('directed')
-def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
-                                                    normalized=True,
-                                                    weight=None,
-                                                    dtype=float, solver='lu'):
+@not_implemented_for("directed")
+def edge_current_flow_betweenness_centrality_subset(
+    G, sources, targets, normalized=True, weight=None, dtype=float, solver="lu"
+):
     r"""Compute current-flow betweenness centrality for edges using subsets
     of nodes.
 
@@ -214,14 +200,10 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
     """
     try:
         import numpy as np
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://scipy.org/')
-    try:
-        import scipy
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires SciPy ',
-                          'http://scipy.org/')
+    except ImportError as e:
+        raise ImportError(
+            "current_flow_betweenness_centrality requires NumPy " "http://numpy.org/"
+        ) from e
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()
@@ -236,23 +218,11 @@ def edge_current_flow_betweenness_centrality_subset(G, sources, targets,
         nb = (n - 1.0) * (n - 2.0)  # normalization factor
     else:
         nb = 2.0
-    for row, (e) in flow_matrix_row(H, weight=weight, dtype=dtype,
-                                    solver=solver):
+    for row, (e) in flow_matrix_row(H, weight=weight, dtype=dtype, solver=solver):
         for ss in sources:
             i = mapping[ss]
             for tt in targets:
                 j = mapping[tt]
                 betweenness[e] += 0.5 * np.abs(row[i] - row[j])
         betweenness[e] /= nb
-    return dict(((ordering[s], ordering[t]), v)
-                for (s, t), v in betweenness.items())
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import scipy
-    except:
-        raise SkipTest("NumPy not available")
+    return {(ordering[s], ordering[t]): v for (s, t), v in betweenness.items()}

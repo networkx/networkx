@@ -1,10 +1,3 @@
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Copyright 2015 NetworkX developers.
-#    All rights reserved.
-#    BSD license.
 """Routines to find the boundary of a set of nodes.
 
 An edge boundary is a set of edges, each of which has exactly one
@@ -17,13 +10,10 @@ nodes in *S* that are outside *S*.
 """
 from itertools import chain
 
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-
-__all__ = ['edge_boundary', 'node_boundary']
+__all__ = ["edge_boundary", "node_boundary"]
 
 
-def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
-                  default=None):
+def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None):
     """Returns the edge boundary of `nbunch1`.
 
     The *edge boundary* of a set *S* with respect to a set *T* is the
@@ -92,9 +82,11 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
     if nbunch2 is None:
         return (e for e in edges if (e[0] in nset1) ^ (e[1] in nset1))
     nset2 = set(nbunch2)
-    return (e for e in edges
-            if (e[0] in nset1 and e[1] in nset2)
-            or (e[1] in nset1 and e[0] in nset2))
+    return (
+        e
+        for e in edges
+        if (e[0] in nset1 and e[1] in nset2) or (e[1] in nset1 and e[0] in nset2)
+    )
 
 
 def node_boundary(G, nbunch1, nbunch2=None):

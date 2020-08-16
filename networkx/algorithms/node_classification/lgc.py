@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# Author: Yuto Yamaguchi <yuto.ymgc@gmail.com>
 """Function for computing Local and global consistency algorithm by Zhou et al.
 
 References
@@ -19,13 +16,11 @@ from networkx.algorithms.node_classification.utils import (
     _predict,
 )
 
-__all__ = ['local_and_global_consistency']
+__all__ = ["local_and_global_consistency"]
 
 
-@not_implemented_for('directed')
-def local_and_global_consistency(G, alpha=0.99,
-                                 max_iter=30,
-                                 label_name='label'):
+@not_implemented_for("directed")
+def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label"):
     """Node classification by Local and Global Consistency
 
     Parameters
@@ -38,21 +33,22 @@ def local_and_global_consistency(G, alpha=0.99,
     label_name : string
         Name of target labels to predict
 
-    Raises
-    ----------
-    `NetworkXError` if no nodes on `G` has `label_name`.
-
     Returns
     ----------
     predicted : array, shape = [n_samples]
         Array of predicted labels
 
+    Raises
+    ------
+    NetworkXError
+        If no nodes on `G` has `label_name`.
+
     Examples
     --------
     >>> from networkx.algorithms import node_classification
     >>> G = nx.path_graph(4)
-    >>> G.node[0]['label'] = 'A'
-    >>> G.node[3]['label'] = 'B'
+    >>> G.nodes[0]['label'] = 'A'
+    >>> G.nodes[3]['label'] = 'B'
     >>> G.nodes(data=True)
     NodeDataView({0: {'label': 'A'}, 1: {}, 2: {}, 3: {'label': 'B'}})
     >>> G.edges()
@@ -70,16 +66,16 @@ def local_and_global_consistency(G, alpha=0.99,
     """
     try:
         import numpy as np
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "local_and_global_consistency() requires numpy: ",
-            "http://scipy.org/ ")
+            "local_and_global_consistency() requires numpy: ", "http://numpy.org/ "
+        ) from e
     try:
         from scipy import sparse
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
-            "local_and_global_consistensy() requires scipy: ",
-            "http://scipy.org/ ")
+            "local_and_global_consistensy() requires scipy: ", "http://scipy.org/ "
+        ) from e
 
     def _build_propagation_matrix(X, labels, alpha):
         """Build propagation matrix of Local and global consistency
@@ -135,7 +131,8 @@ def local_and_global_consistency(G, alpha=0.99,
 
     if labels.shape[0] == 0:
         raise nx.NetworkXError(
-            "No node on the input graph is labeled by '" + label_name + "'.")
+            "No node on the input graph is labeled by '" + label_name + "'."
+        )
 
     n_samples = X.shape[0]
     n_classes = label_dict.shape[0]
@@ -152,16 +149,3 @@ def local_and_global_consistency(G, alpha=0.99,
     predicted = _predict(F, label_dict)
 
     return predicted
-
-
-def setup_module(module):
-    """Fixture for nose tests."""
-    from nose import SkipTest
-    try:
-        import numpy
-    except ImportError:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except ImportError:
-        raise SkipTest("SciPy not available")

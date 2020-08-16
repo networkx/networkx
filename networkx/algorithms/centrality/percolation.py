@@ -1,26 +1,18 @@
-# coding=utf8
-#    Copyright (C) 2018 by
-#    Pranay Kanwar <pranay.kanwar@gmail.com>
-#    All rights reserved.
-#    BSD license.
-#
 """Percolation centrality measures."""
-from __future__ import division
-
-__author__ = """\n""".join(['Pranay Kanwar <pranay.kanwar@gmail.com>'])
 
 import networkx as nx
 
-from networkx.algorithms.centrality.betweenness import\
-    _single_source_dijkstra_path_basic as dijkstra
-from networkx.algorithms.centrality.betweenness import\
-    _single_source_shortest_path_basic as shortest_path
+from networkx.algorithms.centrality.betweenness import (
+    _single_source_dijkstra_path_basic as dijkstra,
+)
+from networkx.algorithms.centrality.betweenness import (
+    _single_source_shortest_path_basic as shortest_path,
+)
 
-__all__ = ['percolation_centrality']
+__all__ = ["percolation_centrality"]
 
 
-def percolation_centrality(G, attribute='percolation',
-                           states=None, weight=None):
+def percolation_centrality(G, attribute="percolation", states=None, weight=None):
     r"""Compute the percolation centrality for nodes.
 
     Percolation centrality of a node $v$, at a given time, is defined
@@ -105,8 +97,9 @@ def percolation_centrality(G, attribute='percolation',
         else:  # use Dijkstra's algorithm
             S, P, sigma = dijkstra(G, s, weight)
         # accumulation
-        percolation = _accumulate_percolation(percolation, G, S, P, sigma, s,
-                                              states, p_sigma_x_t)
+        percolation = _accumulate_percolation(
+            percolation, G, S, P, sigma, s, states, p_sigma_x_t
+        )
 
     n = len(G)
 
@@ -116,8 +109,7 @@ def percolation_centrality(G, attribute='percolation',
     return percolation
 
 
-def _accumulate_percolation(percolation, G, S, P, sigma, s,
-                            states, p_sigma_x_t):
+def _accumulate_percolation(percolation, G, S, P, sigma, s, states, p_sigma_x_t):
     delta = dict.fromkeys(S, 0)
     while S:
         w = S.pop()

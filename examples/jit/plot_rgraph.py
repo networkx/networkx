@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 ======
 Rgraph
@@ -10,7 +9,6 @@ JSON export
 See the JIT documentation and examples at http://thejit.org
 
 """
-__author__ = """Ollie Glass (ollieglaskovik@gmail.com)"""
 
 import json
 
@@ -34,8 +32,8 @@ jit_json = jit_data(G, indent=4)
 print(jit_json)
 
 X = jit_graph(json.loads(jit_json))
-print("Nodes: %s" % list(X.nodes(data=True)))
-print("Edges: %s" % list(X.edges(data=True)))
+print(f"Nodes: {list(X.nodes(data=True))}")
+print(f"Edges: {list(X.edges(data=True))}")
 
 nx.draw(G, with_labels=True)
 plt.show()
