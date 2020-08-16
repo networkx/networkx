@@ -22,7 +22,6 @@ def karate_club_graph():
     --------
     To get the name of the club to which a node belongs::
 
-        >>> import networkx as nx
         >>> G = nx.karate_club_graph()
         >>> G.nodes[5]['club']
         'Mr. Hi'

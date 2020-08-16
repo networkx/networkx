@@ -52,7 +52,6 @@ def is_chordal(G):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> e=[(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6)]
     >>> G=nx.Graph(e)
     >>> nx.is_chordal(G)
@@ -112,7 +111,6 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G=nx.Graph()
     >>> G = nx.generators.classic.path_graph(10)
     >>> Induced_nodes = nx.find_induced_nodes(G,1,9,2)
@@ -185,7 +183,6 @@ def chordal_graph_cliques(G):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> e= [(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6),(7,8)]
     >>> G = nx.Graph(e)
     >>> G.add_node(9)
@@ -225,7 +222,6 @@ def chordal_graph_treewidth(G):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> e = [(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6),(7,8)]
     >>> G = nx.Graph(e)
     >>> G.add_node(9)
@@ -381,7 +377,6 @@ def complete_to_chordal_graph(G):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.chordal import complete_to_chordal_graph
     >>> G = nx.wheel_graph(10)
     >>> H,alpha = complete_to_chordal_graph(G)

@@ -137,7 +137,6 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.karate_club_graph()
     >>> H = nx.spectral_graph_forge(G, 0.3)
     >>>

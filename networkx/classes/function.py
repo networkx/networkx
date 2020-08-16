@@ -384,7 +384,6 @@ def induced_subgraph(G, nbunch):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
     >>> H = G.subgraph([0, 1, 2])
     >>> list(H.edges)
@@ -427,7 +426,6 @@ def edge_subgraph(G, edges):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.path_graph(5)
     >>> H = G.edge_subgraph([(0, 1), (3, 4)])
     >>> list(H.nodes)
@@ -488,7 +486,6 @@ def restricted_view(G, nodes, edges):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.path_graph(5)
     >>> H = nx.restricted_view(G, [0], [(1, 2), (3, 4)])
     >>> list(H.nodes)

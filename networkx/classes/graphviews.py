@@ -112,7 +112,6 @@ def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.path_graph(6)
 
     Filter functions operate on the node, and return `True` if the node should
@@ -201,7 +200,6 @@ def reverse_view(G):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_edge(1, 2)
     >>> G.add_edge(2, 3)

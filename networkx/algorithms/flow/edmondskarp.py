@@ -215,7 +215,6 @@ def edmonds_karp(
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.flow import edmonds_karp
 
     The functions that implement flow algorithms and output a residual

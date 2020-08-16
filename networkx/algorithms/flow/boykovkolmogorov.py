@@ -105,7 +105,6 @@ def boykov_kolmogorov(
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.flow import boykov_kolmogorov
 
     The functions that implement flow algorithms and output a residual

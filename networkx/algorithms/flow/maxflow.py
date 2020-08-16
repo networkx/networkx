@@ -124,7 +124,6 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity=3.0)
     >>> G.add_edge('x','b', capacity=1.0)
@@ -266,7 +265,6 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity=3.0)
     >>> G.add_edge('x','b', capacity=1.0)
@@ -405,7 +403,6 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity = 3.0)
     >>> G.add_edge('x','b', capacity = 1.0)
@@ -567,7 +564,6 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity = 3.0)
     >>> G.add_edge('x','b', capacity = 1.0)

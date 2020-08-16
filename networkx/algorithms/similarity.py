@@ -1301,7 +1301,6 @@ def simrank_similarity(
     from the return value of this function where the node numbers are
     the row and column indices of the matrix::
 
-        >>> import networkx as nx
         >>> from numpy import array
         >>> G = nx.cycle_graph(4)
         >>> sim = nx.simrank_similarity(G)
@@ -1402,7 +1401,6 @@ def simrank_similarity_numpy(
 
     Examples
     --------
-        >>> import networkx as nx
         >>> from numpy import array
         >>> G = nx.cycle_graph(4)
         >>> sim = nx.simrank_similarity_numpy(G)
