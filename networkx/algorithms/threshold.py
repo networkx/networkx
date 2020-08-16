@@ -10,7 +10,27 @@ __all__ = ["is_threshold_graph", "find_threshold_graph"]
 
 def is_threshold_graph(G):
     """
-    Returns True if G is a threshold graph.
+    Returns `True` if `G` is a threshold graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph instance
+        An instance of `Graph`, `DiGraph`, `MultiGraph` or `MultiDiGraph`
+
+    Returns
+    -------
+    bool
+        `True` if `G` is a threshold graph, `False` otherwise.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(3)
+    >>> is_threshold_graph(G)
+    True
+
+    References
+    ----------
+    .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph
     """
     return is_threshold_sequence(list(d for n, d in G.degree()))
 
