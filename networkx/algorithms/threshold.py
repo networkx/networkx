@@ -385,7 +385,7 @@ def find_threshold_graph(G, create_using=None):
 
     Examples
     --------
-    >>> G = nx.barbell_graph(3, 3)    
+    >>> G = nx.barbell_graph(3, 3)
     >>> T = find_threshold_graph(G)
     >>> T.nodes # may vary
     NodeView((7, 8, 5, 6))
