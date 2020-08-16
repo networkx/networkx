@@ -228,7 +228,7 @@ def graphviz_layout(G, prog="neato", root=None, args=""):
     --------
     >>> G = nx.petersen_graph()
     >>> pos = nx.nx_agraph.graphviz_layout(G)
-    >>> pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
+    >>> pos = nx.nx_agraph.graphviz_layout(G, prog="dot")
 
     Notes
     -----
@@ -260,7 +260,7 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
     --------
     >>> G = nx.petersen_graph()
     >>> pos = nx.nx_agraph.graphviz_layout(G)
-    >>> pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
+    >>> pos = nx.nx_agraph.graphviz_layout(G, prog="dot")
 
     Notes
     -----
@@ -270,9 +270,9 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
     If this occurs in your case, consider relabeling the nodes just
     for the layout computation using something similar to::
 
-        >>> H = nx.convert_node_labels_to_integers(G, label_attribute='node_label')
-        >>> H_layout = nx.nx_agraph.pygraphviz_layout(G, prog='dot')
-        >>> G_layout = {H.nodes[n]['node_label']: p for n, p in H_layout.items()}
+        >>> H = nx.convert_node_labels_to_integers(G, label_attribute="node_label")
+        >>> H_layout = nx.nx_agraph.pygraphviz_layout(G, prog="dot")
+        >>> G_layout = {H.nodes[n]["node_label"]: p for n, p in H_layout.items()}
 
     """
     try:

@@ -97,9 +97,9 @@ def katz_centrality(
     >>> import math
     >>> G = nx.path_graph(4)
     >>> phi = (1 + math.sqrt(5)) / 2.0  # largest eigenvalue of adj matrix
-    >>> centrality = nx.katz_centrality(G, 1/phi - 0.01)
+    >>> centrality = nx.katz_centrality(G, 1 / phi - 0.01)
     >>> for n, c in sorted(centrality.items()):
-    ...    print(f"{n} {c:.2f}")
+    ...     print(f"{n} {c:.2f}")
     0 0.37
     1 0.60
     2 0.60
@@ -259,9 +259,9 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     >>> import math
     >>> G = nx.path_graph(4)
     >>> phi = (1 + math.sqrt(5)) / 2.0  # largest eigenvalue of adj matrix
-    >>> centrality = nx.katz_centrality_numpy(G, 1/phi)
+    >>> centrality = nx.katz_centrality_numpy(G, 1 / phi)
     >>> for n, c in sorted(centrality.items()):
-    ...    print(f"{n} {c:.2f}")
+    ...     print(f"{n} {c:.2f}")
     0 0.37
     1 0.60
     2 0.60

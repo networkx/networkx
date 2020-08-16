@@ -174,9 +174,9 @@ def freeze(G):
     >>> G = nx.path_graph(4)
     >>> G = nx.freeze(G)
     >>> try:
-    ...    G.add_edge(4, 5)
+    ...     G.add_edge(4, 5)
     ... except nx.NetworkXError as e:
-    ...    print(str(e))
+    ...     print(str(e))
     Frozen graph can't be modified
 
     Notes
@@ -311,7 +311,7 @@ def add_cycle(G_to_add_to, nodes_for_cycle, **attr):
 
     Examples
     --------
-    >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+    >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
     >>> nx.add_cycle(G, [0, 1, 2, 3])
     >>> nx.add_cycle(G, [10, 11, 12], weight=7)
     """
@@ -637,8 +637,8 @@ def set_node_attributes(G, values, name=None):
         >>> bb = nx.betweenness_centrality(G)
         >>> isinstance(bb, dict)
         True
-        >>> nx.set_node_attributes(G, bb, 'betweenness')
-        >>> G.nodes[1]['betweenness']
+        >>> nx.set_node_attributes(G, bb, "betweenness")
+        >>> G.nodes[1]["betweenness"]
         1.0
 
     If you provide a list as the second argument, updates to the list
@@ -646,13 +646,13 @@ def set_node_attributes(G, values, name=None):
 
         >>> G = nx.path_graph(3)
         >>> labels = []
-        >>> nx.set_node_attributes(G, labels, 'labels')
-        >>> labels.append('foo')
-        >>> G.nodes[0]['labels']
+        >>> nx.set_node_attributes(G, labels, "labels")
+        >>> labels.append("foo")
+        >>> G.nodes[0]["labels"]
         ['foo']
-        >>> G.nodes[1]['labels']
+        >>> G.nodes[1]["labels"]
         ['foo']
-        >>> G.nodes[2]['labels']
+        >>> G.nodes[2]["labels"]
         ['foo']
 
     If you provide a dictionary of dictionaries as the second argument,
@@ -660,13 +660,13 @@ def set_node_attributes(G, values, name=None):
     dictionary of node attributes for that node::
 
         >>> G = nx.path_graph(3)
-        >>> attrs = {0: {'attr1': 20, 'attr2': 'nothing'}, 1: {'attr2': 3}}
+        >>> attrs = {0: {"attr1": 20, "attr2": "nothing"}, 1: {"attr2": 3}}
         >>> nx.set_node_attributes(G, attrs)
-        >>> G.nodes[0]['attr1']
+        >>> G.nodes[0]["attr1"]
         20
-        >>> G.nodes[0]['attr2']
+        >>> G.nodes[0]["attr2"]
         'nothing'
-        >>> G.nodes[1]['attr2']
+        >>> G.nodes[1]["attr2"]
         3
         >>> G.nodes[2]
         {}
@@ -708,8 +708,8 @@ def get_node_attributes(G, name):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_nodes_from([1, 2, 3], color='red')
-    >>> color = nx.get_node_attributes(G, 'color')
+    >>> G.add_nodes_from([1, 2, 3], color="red")
+    >>> color = nx.get_node_attributes(G, "color")
     >>> color[1]
     'red'
     """
@@ -752,33 +752,32 @@ def set_edge_attributes(G, values, name=None):
 
         >>> G = nx.path_graph(3)
         >>> bb = nx.edge_betweenness_centrality(G, normalized=False)
-        >>> nx.set_edge_attributes(G, bb, 'betweenness')
-        >>> G.edges[1, 2]['betweenness']
+        >>> nx.set_edge_attributes(G, bb, "betweenness")
+        >>> G.edges[1, 2]["betweenness"]
         2.0
 
     If you provide a list as the second argument, updates to the list
     will be reflected in the edge attribute for each edge::
 
         >>> labels = []
-        >>> nx.set_edge_attributes(G, labels, 'labels')
-        >>> labels.append('foo')
-        >>> G.edges[0, 1]['labels']
+        >>> nx.set_edge_attributes(G, labels, "labels")
+        >>> labels.append("foo")
+        >>> G.edges[0, 1]["labels"]
         ['foo']
-        >>> G.edges[1, 2]['labels']
+        >>> G.edges[1, 2]["labels"]
         ['foo']
 
     If you provide a dictionary of dictionaries as the second argument,
     the entire dictionary will be used to update edge attributes::
 
         >>> G = nx.path_graph(3)
-        >>> attrs = {(0, 1): {'attr1': 20, 'attr2': 'nothing'},
-        ...          (1, 2): {'attr2': 3}}
+        >>> attrs = {(0, 1): {"attr1": 20, "attr2": "nothing"}, (1, 2): {"attr2": 3}}
         >>> nx.set_edge_attributes(G, attrs)
-        >>> G[0][1]['attr1']
+        >>> G[0][1]["attr1"]
         20
-        >>> G[0][1]['attr2']
+        >>> G[0][1]["attr2"]
         'nothing'
-        >>> G[1][2]['attr2']
+        >>> G[1][2]["attr2"]
         3
 
     """
@@ -837,8 +836,8 @@ def get_edge_attributes(G, name):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> nx.add_path(G, [1, 2, 3], color='red')
-    >>> color = nx.get_edge_attributes(G, 'color')
+    >>> nx.add_path(G, [1, 2, 3], color="red")
+    >>> color = nx.get_edge_attributes(G, "color")
     >>> color[(1, 2)]
     'red'
     """
@@ -1043,11 +1042,11 @@ def is_negatively_weighted(G, edge=None, weight="weight"):
     >>> G.add_edge(1, 2, weight=4)
     >>> nx.is_negatively_weighted(G, (1, 2))
     False
-    >>> G[2][4]['weight'] = -2
+    >>> G[2][4]["weight"] = -2
     >>> nx.is_negatively_weighted(G)
     True
     >>> G = nx.DiGraph()
-    >>> edges = [('0', '3', 3), ('0', '1', -5), ('1', '0', -2)]
+    >>> edges = [("0", "3", 3), ("0", "1", -5), ("1", "0", -2)]
     >>> G.add_weighted_edges_from(edges)
     >>> nx.is_negatively_weighted(G)
     True
@@ -1103,7 +1102,7 @@ def nodes_with_selfloops(G):
 
     Examples
     --------
-    >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+    >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
     >>> G.add_edge(1, 1)
     >>> G.add_edge(1, 2)
     >>> list(nx.nodes_with_selfloops(G))
@@ -1141,7 +1140,7 @@ def selfloop_edges(G, data=False, keys=False, default=None):
 
     Examples
     --------
-    >>> G = nx.MultiGraph()   # or Graph, DiGraph, MultiDiGraph, etc
+    >>> G = nx.MultiGraph()  # or Graph, DiGraph, MultiDiGraph, etc
     >>> ekey = G.add_edge(1, 1)
     >>> ekey = G.add_edge(1, 2)
     >>> list(nx.selfloop_edges(G))
@@ -1226,7 +1225,7 @@ def number_of_selfloops(G):
 
     Examples
     --------
-    >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+    >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
     >>> G.add_edge(1, 1)
     >>> G.add_edge(1, 2)
     >>> nx.number_of_selfloops(G)

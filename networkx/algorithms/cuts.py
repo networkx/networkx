@@ -65,9 +65,9 @@ def cut_size(G, S, T=None, weight=None):
     Each parallel edge in a multigraph is counted when determining the
     cut size::
 
-        >>> G = nx.MultiGraph(['ab', 'ab'])
-        >>> S = {'a'}
-        >>> T = {'b'}
+        >>> G = nx.MultiGraph(["ab", "ab"])
+        >>> S = {"a"}
+        >>> T = {"b"}
         >>> nx.cut_size(G, S, T)
         2
 

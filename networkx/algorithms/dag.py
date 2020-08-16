@@ -862,16 +862,16 @@ def dag_to_branching(G):
         >>> from collections import defaultdict
         >>> from operator import itemgetter
         >>>
-        >>> G = nx.DiGraph(nx.utils.pairwise('abd'))
-        >>> G.add_edges_from(nx.utils.pairwise('acd'))
+        >>> G = nx.DiGraph(nx.utils.pairwise("abd"))
+        >>> G.add_edges_from(nx.utils.pairwise("acd"))
         >>> B = nx.dag_to_branching(G)
         >>>
         >>> sources = defaultdict(set)
-        >>> for v, source in B.nodes(data='source'):
+        >>> for v, source in B.nodes(data="source"):
         ...     sources[source].add(v)
-        >>> len(sources['a'])
+        >>> len(sources["a"])
         1
-        >>> len(sources['d'])
+        >>> len(sources["d"])
         2
 
     To copy node attributes from the original graph to the new graph,

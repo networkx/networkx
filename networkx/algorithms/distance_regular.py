@@ -36,7 +36,7 @@ def is_distance_regular(G):
 
     Examples
     --------
-    >>> G=nx.hypercube_graph(6)
+    >>> G = nx.hypercube_graph(6)
     >>> nx.is_distance_regular(G)
     True
 
@@ -129,7 +129,7 @@ def intersection_array(G):
 
     Examples
     --------
-    >>> G=nx.icosahedral_graph()
+    >>> G = nx.icosahedral_graph()
     >>> nx.intersection_array(G)
     ([5, 2, 1], [1, 2, 5])
 

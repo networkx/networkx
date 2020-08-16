@@ -50,7 +50,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(list(nx.bfs_edges(G,0)))
+    >>> print(list(nx.bfs_edges(G, 0)))
     [(0, 1), (1, 2)]
     >>> print(list(nx.bfs_edges(G, source=0, depth_limit=1)))
     [(0, 1)]
@@ -193,7 +193,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(list(nx.bfs_tree(G,1).edges()))
+    >>> print(list(nx.bfs_tree(G, 1).edges()))
     [(1, 0), (1, 2)]
     >>> H = nx.Graph()
     >>> nx.add_path(H, [0, 1, 2, 3, 4, 5, 6])
@@ -316,7 +316,7 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(dict(nx.bfs_successors(G,0)))
+    >>> print(dict(nx.bfs_successors(G, 0)))
     {0: [1], 1: [2]}
     >>> H = nx.Graph()
     >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])

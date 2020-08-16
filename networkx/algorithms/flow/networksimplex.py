@@ -94,16 +94,16 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     A simple example of a min cost flow problem.
 
     >>> G = nx.DiGraph()
-    >>> G.add_node('a', demand=-5)
-    >>> G.add_node('d', demand=5)
-    >>> G.add_edge('a', 'b', weight=3, capacity=4)
-    >>> G.add_edge('a', 'c', weight=6, capacity=10)
-    >>> G.add_edge('b', 'd', weight=1, capacity=9)
-    >>> G.add_edge('c', 'd', weight=2, capacity=5)
+    >>> G.add_node("a", demand=-5)
+    >>> G.add_node("d", demand=5)
+    >>> G.add_edge("a", "b", weight=3, capacity=4)
+    >>> G.add_edge("a", "c", weight=6, capacity=10)
+    >>> G.add_edge("b", "d", weight=1, capacity=9)
+    >>> G.add_edge("c", "d", weight=2, capacity=5)
     >>> flowCost, flowDict = nx.network_simplex(G)
     >>> flowCost
     24
-    >>> flowDict # doctest: +SKIP
+    >>> flowDict  # doctest: +SKIP
     {'a': {'c': 1, 'b': 4}, 'c': {'d': 1}, 'b': {'d': 4}, 'd': {}}
 
     The mincost flow algorithm can also be used to solve shortest path
@@ -113,42 +113,51 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     min cost flow will be the distance between u and v and edges
     carrying positive flow will indicate the path.
 
-    >>> G=nx.DiGraph()
-    >>> G.add_weighted_edges_from([('s', 'u' ,10), ('s' ,'x' ,5),
-    ...                            ('u', 'v' ,1), ('u' ,'x' ,2),
-    ...                            ('v', 'y' ,1), ('x' ,'u' ,3),
-    ...                            ('x', 'v' ,5), ('x' ,'y' ,2),
-    ...                            ('y', 's' ,7), ('y' ,'v' ,6)])
-    >>> G.add_node('s', demand = -1)
-    >>> G.add_node('v', demand = 1)
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from(
+    ...     [
+    ...         ("s", "u", 10),
+    ...         ("s", "x", 5),
+    ...         ("u", "v", 1),
+    ...         ("u", "x", 2),
+    ...         ("v", "y", 1),
+    ...         ("x", "u", 3),
+    ...         ("x", "v", 5),
+    ...         ("x", "y", 2),
+    ...         ("y", "s", 7),
+    ...         ("y", "v", 6),
+    ...     ]
+    ... )
+    >>> G.add_node("s", demand=-1)
+    >>> G.add_node("v", demand=1)
     >>> flowCost, flowDict = nx.network_simplex(G)
-    >>> flowCost == nx.shortest_path_length(G, 's', 'v', weight='weight')
+    >>> flowCost == nx.shortest_path_length(G, "s", "v", weight="weight")
     True
     >>> sorted([(u, v) for u in flowDict for v in flowDict[u] if flowDict[u][v] > 0])
     [('s', 'x'), ('u', 'v'), ('x', 'u')]
-    >>> nx.shortest_path(G, 's', 'v', weight = 'weight')
+    >>> nx.shortest_path(G, "s", "v", weight="weight")
     ['s', 'x', 'u', 'v']
 
     It is possible to change the name of the attributes used for the
     algorithm.
 
     >>> G = nx.DiGraph()
-    >>> G.add_node('p', spam=-4)
-    >>> G.add_node('q', spam=2)
-    >>> G.add_node('a', spam=-2)
-    >>> G.add_node('d', spam=-1)
-    >>> G.add_node('t', spam=2)
-    >>> G.add_node('w', spam=3)
-    >>> G.add_edge('p', 'q', cost=7, vacancies=5)
-    >>> G.add_edge('p', 'a', cost=1, vacancies=4)
-    >>> G.add_edge('q', 'd', cost=2, vacancies=3)
-    >>> G.add_edge('t', 'q', cost=1, vacancies=2)
-    >>> G.add_edge('a', 't', cost=2, vacancies=4)
-    >>> G.add_edge('d', 'w', cost=3, vacancies=4)
-    >>> G.add_edge('t', 'w', cost=4, vacancies=1)
-    >>> flowCost, flowDict = nx.network_simplex(G, demand='spam',
-    ...                                         capacity='vacancies',
-    ...                                         weight='cost')
+    >>> G.add_node("p", spam=-4)
+    >>> G.add_node("q", spam=2)
+    >>> G.add_node("a", spam=-2)
+    >>> G.add_node("d", spam=-1)
+    >>> G.add_node("t", spam=2)
+    >>> G.add_node("w", spam=3)
+    >>> G.add_edge("p", "q", cost=7, vacancies=5)
+    >>> G.add_edge("p", "a", cost=1, vacancies=4)
+    >>> G.add_edge("q", "d", cost=2, vacancies=3)
+    >>> G.add_edge("t", "q", cost=1, vacancies=2)
+    >>> G.add_edge("a", "t", cost=2, vacancies=4)
+    >>> G.add_edge("d", "w", cost=3, vacancies=4)
+    >>> G.add_edge("t", "w", cost=4, vacancies=1)
+    >>> flowCost, flowDict = nx.network_simplex(
+    ...     G, demand="spam", capacity="vacancies", weight="cost"
+    ... )
     >>> flowCost
     37
     >>> flowDict  # doctest: +SKIP

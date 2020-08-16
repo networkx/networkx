@@ -36,12 +36,12 @@ def triangles(G, nodes=None):
 
     Examples
     --------
-    >>> G=nx.complete_graph(5)
-    >>> print(nx.triangles(G,0))
+    >>> G = nx.complete_graph(5)
+    >>> print(nx.triangles(G, 0))
     6
     >>> print(nx.triangles(G))
     {0: 6, 1: 6, 2: 6, 3: 6, 4: 6}
-    >>> print(list(nx.triangles(G,(0,1)).values()))
+    >>> print(list(nx.triangles(G, (0, 1)).values()))
     [6, 6]
 
     Notes
@@ -240,7 +240,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
 
     Examples
     --------
-    >>> G=nx.complete_graph(5)
+    >>> G = nx.complete_graph(5)
     >>> print(nx.average_clustering(G))
     1.0
 
@@ -326,8 +326,8 @@ def clustering(G, nodes=None, weight=None):
 
     Examples
     --------
-    >>> G=nx.complete_graph(5)
-    >>> print(nx.clustering(G,0))
+    >>> G = nx.complete_graph(5)
+    >>> print(nx.clustering(G, 0))
     1.0
     >>> print(nx.clustering(G))
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0}
@@ -438,8 +438,8 @@ def square_clustering(G, nodes=None):
 
     Examples
     --------
-    >>> G=nx.complete_graph(5)
-    >>> print(nx.square_clustering(G,0))
+    >>> G = nx.complete_graph(5)
+    >>> print(nx.square_clustering(G, 0))
     1.0
     >>> print(nx.square_clustering(G))
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0}
@@ -508,16 +508,16 @@ def generalized_degree(G, nodes=None):
 
     Examples
     --------
-    >>> G=nx.complete_graph(5)
-    >>> print(nx.generalized_degree(G,0))
+    >>> G = nx.complete_graph(5)
+    >>> print(nx.generalized_degree(G, 0))
     Counter({3: 4})
     >>> print(nx.generalized_degree(G))
     {0: Counter({3: 4}), 1: Counter({3: 4}), 2: Counter({3: 4}), 3: Counter({3: 4}), 4: Counter({3: 4})}
 
     To recover the number of triangles attached to a node:
 
-    >>> k1 = nx.generalized_degree(G,0)
-    >>> sum([k*v for k,v in k1.items()])/2 == nx.triangles(G,0)
+    >>> k1 = nx.generalized_degree(G, 0)
+    >>> sum([k * v for k, v in k1.items()]) / 2 == nx.triangles(G, 0)
     True
 
     Notes

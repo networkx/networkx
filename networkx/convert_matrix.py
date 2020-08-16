@@ -188,7 +188,7 @@ def from_pandas_adjacency(df, create_using=None):
     0  1  1
     1  2  1
     >>> G = nx.from_pandas_adjacency(df)
-    >>> G.name = 'Graph from pandas adjacency matrix'
+    >>> G.name = "Graph from pandas adjacency matrix"
     >>> print(nx.info(G))
     Name: Graph from pandas adjacency matrix
     Type: Graph
@@ -240,10 +240,14 @@ def to_pandas_edgelist(
 
     Examples
     --------
-    >>> G = nx.Graph([('A', 'B', {'cost': 1, 'weight': 7}),
-    ...               ('C', 'E', {'cost': 9, 'weight': 10})])
-    >>> df = nx.to_pandas_edgelist(G, nodelist=['A', 'C'])
-    >>> df[['source', 'target', 'cost', 'weight']]
+    >>> G = nx.Graph(
+    ...     [
+    ...         ("A", "B", {"cost": 1, "weight": 7}),
+    ...         ("C", "E", {"cost": 9, "weight": 10}),
+    ...     ]
+    ... )
+    >>> df = nx.to_pandas_edgelist(G, nodelist=["A", "C"])
+    >>> df[["source", "target", "cost", "weight"]]
       source target  cost  weight
     0      A      B     1       7
     1      C      E     9      10
@@ -331,41 +335,51 @@ def from_pandas_edgelist(
     >>> pd.options.display.max_columns = 20
     >>> import numpy as np
     >>> rng = np.random.RandomState(seed=5)
-    >>> ints = rng.randint(1, 11, size=(3,2))
-    >>> a = ['A', 'B', 'C']
-    >>> b = ['D', 'A', 'E']
-    >>> df = pd.DataFrame(ints, columns=['weight', 'cost'])
+    >>> ints = rng.randint(1, 11, size=(3, 2))
+    >>> a = ["A", "B", "C"]
+    >>> b = ["D", "A", "E"]
+    >>> df = pd.DataFrame(ints, columns=["weight", "cost"])
     >>> df[0] = a
-    >>> df['b'] = b
-    >>> df[['weight', 'cost', 0, 'b']]
+    >>> df["b"] = b
+    >>> df[["weight", "cost", 0, "b"]]
        weight  cost  0  b
     0       4     7  A  D
     1       7     1  B  A
     2      10     9  C  E
-    >>> G = nx.from_pandas_edgelist(df, 0, 'b', ['weight', 'cost'])
-    >>> G['E']['C']['weight']
+    >>> G = nx.from_pandas_edgelist(df, 0, "b", ["weight", "cost"])
+    >>> G["E"]["C"]["weight"]
     10
-    >>> G['E']['C']['cost']
+    >>> G["E"]["C"]["cost"]
     9
-    >>> edges = pd.DataFrame({'source': [0, 1, 2],
-    ...                       'target': [2, 2, 3],
-    ...                       'weight': [3, 4, 5],
-    ...                       'color': ['red', 'blue', 'blue']})
+    >>> edges = pd.DataFrame(
+    ...     {
+    ...         "source": [0, 1, 2],
+    ...         "target": [2, 2, 3],
+    ...         "weight": [3, 4, 5],
+    ...         "color": ["red", "blue", "blue"],
+    ...     }
+    ... )
     >>> G = nx.from_pandas_edgelist(edges, edge_attr=True)
-    >>> G[0][2]['color']
+    >>> G[0][2]["color"]
     'red'
 
     Build multigraph with custom keys:
 
-    >>> edges = pd.DataFrame({'source': [0, 1, 2, 0],
-    ...                       'target': [2, 2, 3, 2],
-    ...                       'my_edge_key': ['A', 'B', 'C', 'D'],
-    ...                       'weight': [3, 4, 5, 6],
-    ...                       'color': ['red', 'blue', 'blue', 'blue']})
-    >>> G = nx.from_pandas_edgelist(edges, \
-                                    edge_key='my_edge_key', \
-                                    edge_attr=['weight', 'color'], \
-                                    create_using=nx.MultiGraph())
+    >>> edges = pd.DataFrame(
+    ...     {
+    ...         "source": [0, 1, 2, 0],
+    ...         "target": [2, 2, 3, 2],
+    ...         "my_edge_key": ["A", "B", "C", "D"],
+    ...         "weight": [3, 4, 5, 6],
+    ...         "color": ["red", "blue", "blue", "blue"],
+    ...     }
+    ... )
+    >>> G = nx.from_pandas_edgelist(
+    ...     edges,
+    ...     edge_key="my_edge_key",
+    ...     edge_attr=["weight", "color"],
+    ...     create_using=nx.MultiGraph(),
+    ... )
     >>> G[0][2]
     AtlasView({'A': {'weight': 3, 'color': 'red'}, 'D': {'weight': 6, 'color': 'blue'}})
 
@@ -614,14 +628,14 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
 
     User defined compound data type on edges:
 
-    >>> dt = [('weight', float), ('cost', int)]
+    >>> dt = [("weight", float), ("cost", int)]
     >>> A = np.array([[(1.0, 2)]], dtype=dt)
     >>> G = nx.from_numpy_matrix(A)
     >>> list(G.edges())
     [(0, 0)]
-    >>> G[0][0]['cost']
+    >>> G[0][0]["cost"]
     2
-    >>> G[0][0]['weight']
+    >>> G[0][0]["weight"]
     1.0
 
     """
@@ -740,7 +754,7 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     --------
     >>> G = nx.Graph()
     >>> G.add_edge(1, 2, weight=7.0, cost=5)
-    >>> A = nx.to_numpy_recarray(G, dtype=[('weight', float), ('cost', int)])
+    >>> A = nx.to_numpy_recarray(G, dtype=[("weight", float), ("cost", int)])
     >>> print(A.weight)
     [[0. 7.]
      [7. 0.]]
@@ -1032,8 +1046,9 @@ def from_scipy_sparse_matrix(
     as the number of parallel edges joining those two vertices:
 
     >>> A = sp.sparse.csr_matrix([[1, 1], [1, 2]])
-    >>> G = nx.from_scipy_sparse_matrix(A, parallel_edges=True,
-    ...                                 create_using=nx.MultiGraph)
+    >>> G = nx.from_scipy_sparse_matrix(
+    ...     A, parallel_edges=True, create_using=nx.MultiGraph
+    ... )
     >>> G[1][1]
     AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
 
@@ -1331,14 +1346,14 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
 
     User defined compound data type on edges:
 
-    >>> dt = [('weight', float), ('cost', int)]
+    >>> dt = [("weight", float), ("cost", int)]
     >>> A = np.array([[(1.0, 2)]], dtype=dt)
     >>> G = nx.from_numpy_array(A)
     >>> G.edges()
     EdgeView([(0, 0)])
-    >>> G[0][0]['cost']
+    >>> G[0][0]["cost"]
     2
-    >>> G[0][0]['weight']
+    >>> G[0][0]["weight"]
     1.0
 
     """

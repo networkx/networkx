@@ -47,8 +47,8 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     --------
     >>> from networkx.algorithms import node_classification
     >>> G = nx.path_graph(4)
-    >>> G.nodes[0]['label'] = 'A'
-    >>> G.nodes[3]['label'] = 'B'
+    >>> G.nodes[0]["label"] = "A"
+    >>> G.nodes[3]["label"] = "B"
     >>> G.nodes(data=True)
     NodeDataView({0: {'label': 'A'}, 1: {}, 2: {}, 3: {'label': 'B'}})
     >>> G.edges()

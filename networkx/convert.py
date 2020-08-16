@@ -36,7 +36,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     The preferred way to call this is automatically
     from the class constructor
 
-    >>> d = {0: {1: {'weight':1}}} # dict-of-dicts single edge (0,1)
+    >>> d = {0: {1: {"weight": 1}}}  # dict-of-dicts single edge (0,1)
     >>> G = nx.Graph(d)
 
     instead of the equivalent
@@ -211,12 +211,12 @@ def from_dict_of_lists(d, create_using=None):
 
     Examples
     --------
-    >>> dol = {0: [1]} # single edge (0,1)
+    >>> dol = {0: [1]}  # single edge (0,1)
     >>> G = nx.from_dict_of_lists(dol)
 
     or
 
-    >>> G = nx.Graph(dol) # use Graph constructor
+    >>> G = nx.Graph(dol)  # use Graph constructor
 
     """
     G = nx.empty_graph(0, create_using)
@@ -296,12 +296,12 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
 
     Examples
     --------
-    >>> dod = {0: {1: {'weight': 1}}} # single edge (0,1)
+    >>> dod = {0: {1: {"weight": 1}}}  # single edge (0,1)
     >>> G = nx.from_dict_of_dicts(dod)
 
     or
 
-    >>> G = nx.Graph(dod) # use Graph constructor
+    >>> G = nx.Graph(dod)  # use Graph constructor
 
     """
     G = nx.empty_graph(0, create_using)
@@ -393,12 +393,12 @@ def from_edgelist(edgelist, create_using=None):
 
     Examples
     --------
-    >>> edgelist = [(0, 1)] # single edge (0,1)
+    >>> edgelist = [(0, 1)]  # single edge (0,1)
     >>> G = nx.from_edgelist(edgelist)
 
     or
 
-    >>> G = nx.Graph(edgelist) # use Graph constructor
+    >>> G = nx.Graph(edgelist)  # use Graph constructor
 
     """
     G = nx.empty_graph(0, create_using)

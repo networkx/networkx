@@ -44,7 +44,7 @@ def girvan_newman(G, most_valuable_edge=None):
         >>> k = 2
         >>> comp = girvan_newman(G)
         >>> for communities in itertools.islice(comp, k):
-        ...     print(tuple(sorted(c) for c in communities)) # doctest: +SKIP
+        ...     print(tuple(sorted(c) for c in communities))  # doctest: +SKIP
         ...
         ([0, 1, 2, 3], [4, 5, 6, 7])
         ([0, 1], [2, 3], [4, 5, 6, 7])
@@ -58,7 +58,7 @@ def girvan_newman(G, most_valuable_edge=None):
         >>> comp = girvan_newman(G)
         >>> limited = itertools.takewhile(lambda c: len(c) <= k, comp)
         >>> for communities in limited:
-        ...     print(tuple(sorted(c) for c in communities)) # doctest: +SKIP
+        ...     print(tuple(sorted(c) for c in communities))  # doctest: +SKIP
         ...
         ([0, 1, 2, 3], [4, 5, 6, 7])
         ([0, 1], [2, 3], [4, 5, 6, 7])
@@ -69,9 +69,9 @@ def girvan_newman(G, most_valuable_edge=None):
         >>> from operator import itemgetter
         >>> G = nx.path_graph(10)
         >>> edges = G.edges()
-        >>> nx.set_edge_attributes(G, {(u, v): v for u, v in edges}, 'weight')
+        >>> nx.set_edge_attributes(G, {(u, v): v for u, v in edges}, "weight")
         >>> def heaviest(G):
-        ...     u, v, w = max(G.edges(data='weight'), key=itemgetter(2))
+        ...     u, v, w = max(G.edges(data="weight"), key=itemgetter(2))
         ...     return (u, v)
         ...
         >>> comp = girvan_newman(G, most_valuable_edge=heaviest)
@@ -83,7 +83,7 @@ def girvan_newman(G, most_valuable_edge=None):
 
         >>> from networkx import edge_betweenness_centrality as betweenness
         >>> def most_central_edge(G):
-        ...     centrality = betweenness(G, weight='weight')
+        ...     centrality = betweenness(G, weight="weight")
         ...     return max(centrality, key=centrality.get)
         ...
         >>> G = nx.path_graph(10)

@@ -89,7 +89,7 @@ def from_pydot(P):
     --------
     >>> K5 = nx.complete_graph(5)
     >>> A = nx.nx_pydot.to_pydot(K5)
-    >>> G = nx.nx_pydot.from_pydot(A) # return MultiGraph
+    >>> G = nx.nx_pydot.from_pydot(A)  # return MultiGraph
 
     # make a Graph instead of MultiGraph
     >>> G = nx.Graph(nx.nx_pydot.from_pydot(A))
@@ -248,7 +248,7 @@ def graphviz_layout(G, prog="neato", root=None):
     --------
     >>> G = nx.complete_graph(4)
     >>> pos = nx.nx_pydot.graphviz_layout(G)
-    >>> pos = nx.nx_pydot.graphviz_layout(G, prog='dot')
+    >>> pos = nx.nx_pydot.graphviz_layout(G, prog="dot")
 
     Notes
     -----
@@ -280,7 +280,7 @@ def pydot_layout(G, prog="neato", root=None):
     --------
     >>> G = nx.complete_graph(4)
     >>> pos = nx.nx_pydot.pydot_layout(G)
-    >>> pos = nx.nx_pydot.pydot_layout(G, prog='dot')
+    >>> pos = nx.nx_pydot.pydot_layout(G, prog="dot")
 
     Notes
     -----

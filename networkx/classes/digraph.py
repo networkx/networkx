@@ -112,23 +112,23 @@ class DiGraph(Graph):
 
     Add node attributes using add_node(), add_nodes_from() or G.nodes
 
-    >>> G.add_node(1, time='5pm')
-    >>> G.add_nodes_from([3], time='2pm')
+    >>> G.add_node(1, time="5pm")
+    >>> G.add_nodes_from([3], time="2pm")
     >>> G.nodes[1]
     {'time': '5pm'}
-    >>> G.nodes[1]['room'] = 714
-    >>> del G.nodes[1]['room'] # remove attribute
+    >>> G.nodes[1]["room"] = 714
+    >>> del G.nodes[1]["room"]  # remove attribute
     >>> list(G.nodes(data=True))
     [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
     Add edge attributes using add_edge(), add_edges_from(), subscript
     notation, or G.edges.
 
-    >>> G.add_edge(1, 2, weight=4.7 )
-    >>> G.add_edges_from([(3, 4), (4, 5)], color='red')
-    >>> G.add_edges_from([(1, 2, {'color':'blue'}), (2, 3, {'weight':8})])
-    >>> G[1][2]['weight'] = 4.7
-    >>> G.edges[1, 2]['weight'] = 4
+    >>> G.add_edge(1, 2, weight=4.7)
+    >>> G.add_edges_from([(3, 4), (4, 5)], color="red")
+    >>> G.add_edges_from([(1, 2, {"color": "blue"}), (2, 3, {"weight": 8})])
+    >>> G[1][2]["weight"] = 4.7
+    >>> G.edges[1, 2]["weight"] = 4
 
     Warning: we protect the graph data structure by making `G.edges[1, 2]` a
     read-only dict-like structure. However, you can assign to attributes
@@ -140,7 +140,7 @@ class DiGraph(Graph):
 
     Many common graph features allow python syntax to speed reporting.
 
-    >>> 1 in G     # check if node in graph
+    >>> 1 in G  # check if node in graph
     True
     >>> [n for n in G if n < 3]  # iterate through nodes
     [1, 2]
@@ -152,13 +152,13 @@ class DiGraph(Graph):
 
     >>> for n, nbrsdict in G.adjacency():
     ...     for nbr, eattr in nbrsdict.items():
-    ...        if 'weight' in eattr:
-    ...            # Do something useful with the edges
-    ...            pass
+    ...         if "weight" in eattr:
+    ...             # Do something useful with the edges
+    ...             pass
 
     But the edges reporting object is often more convenient:
 
-    >>> for u, v, weight in G.edges(data='weight'):
+    >>> for u, v, weight in G.edges(data="weight"):
     ...     if weight is not None:
     ...         # Do something useful with the edges
     ...         pass
@@ -244,9 +244,11 @@ class DiGraph(Graph):
     This reduces the memory used, but you lose edge attributes.
 
     >>> class ThinGraph(nx.Graph):
-    ...     all_edge_dict = {'weight': 1}
+    ...     all_edge_dict = {"weight": 1}
+    ... 
     ...     def single_edge_dict(self):
     ...         return self.all_edge_dict
+    ... 
     ...     edge_attr_dict_factory = single_edge_dict
     >>> G = ThinGraph()
     >>> G.add_edge(2, 1)
@@ -283,9 +285,9 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G = nx.Graph(name='my graph')
-        >>> e = [(1, 2), (2, 3), (3, 4)] # list of edges
+        >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G = nx.Graph(name="my graph")
+        >>> e = [(1, 2), (2, 3), (3, 4)]  # list of edges
         >>> G = nx.Graph(e)
 
         Arbitrary graph attribute pairs (key=value) may be assigned
@@ -389,9 +391,9 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_node(1)
-        >>> G.add_node('Hello')
+        >>> G.add_node("Hello")
         >>> K3 = nx.Graph([(0, 1), (1, 2), (2, 0)])
         >>> G.add_node(K3)
         >>> G.number_of_nodes()
@@ -400,7 +402,7 @@ class DiGraph(Graph):
         Use keywords set/change node attributes:
 
         >>> G.add_node(1, size=10)
-        >>> G.add_node(3, weight=0.4, UTM=('13S', 382871, 3972649))
+        >>> G.add_node(3, weight=0.4, UTM=("13S", 382871, 3972649))
 
         Notes
         -----
@@ -441,8 +443,8 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_nodes_from('Hello')
+        >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_nodes_from("Hello")
         >>> K3 = nx.Graph([(0, 1), (1, 2), (2, 0)])
         >>> G.add_nodes_from(K3)
         >>> sorted(G.nodes(), key=str)
@@ -455,12 +457,12 @@ class DiGraph(Graph):
 
         Use (node, attrdict) tuples to update attributes for specific nodes.
 
-        >>> G.add_nodes_from([(1, dict(size=11)), (2, {'color':'blue'})])
-        >>> G.nodes[1]['size']
+        >>> G.add_nodes_from([(1, dict(size=11)), (2, {"color": "blue"})])
+        >>> G.nodes[1]["size"]
         11
         >>> H = nx.Graph()
         >>> H.add_nodes_from(G.nodes(data=True))
-        >>> H.nodes[1]['size']
+        >>> H.nodes[1]["size"]
         11
 
         """
@@ -602,11 +604,11 @@ class DiGraph(Graph):
         --------
         The following all add the edge e=(1, 2) to graph G:
 
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> e = (1, 2)
-        >>> G.add_edge(1, 2)           # explicit two-node form
-        >>> G.add_edge(*e)             # single edge as tuple of two nodes
-        >>> G.add_edges_from( [(1, 2)] ) # add edges from iterable container
+        >>> G.add_edge(1, 2)  # explicit two-node form
+        >>> G.add_edge(*e)  # single edge as tuple of two nodes
+        >>> G.add_edges_from([(1, 2)])  # add edges from iterable container
 
         Associate data to edges using keywords:
 
@@ -663,15 +665,15 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_edges_from([(0, 1), (1, 2)]) # using a list of edge tuples
+        >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_edges_from([(0, 1), (1, 2)])  # using a list of edge tuples
         >>> e = zip(range(0, 3), range(1, 4))
-        >>> G.add_edges_from(e) # Add the path graph 0-1-2-3
+        >>> G.add_edges_from(e)  # Add the path graph 0-1-2-3
 
         Associate data to edges
 
         >>> G.add_edges_from([(1, 2), (2, 3)], weight=3)
-        >>> G.add_edges_from([(3, 4), (1, 4)], label='WN2898')
+        >>> G.add_edges_from([(3, 4), (1, 4)], label="WN2898")
         """
         for e in ebunch_to_add:
             ne = len(e)
@@ -715,13 +717,13 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, etc
+        >>> G = nx.Graph()  # or DiGraph, etc
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.remove_edge(0, 1)
         >>> e = (1, 2)
-        >>> G.remove_edge(*e) # unpacks e from an edge tuple
-        >>> e = (2, 3, {'weight':7}) # an edge with attribute data
-        >>> G.remove_edge(*e[:2]) # select first part of edge tuple
+        >>> G.remove_edge(*e)  # unpacks e from an edge tuple
+        >>> e = (2, 3, {"weight": 7})  # an edge with attribute data
+        >>> G.remove_edge(*e[:2])  # select first part of edge tuple
         """
         try:
             del self._succ[u][v]
@@ -878,14 +880,14 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.DiGraph()   # or MultiDiGraph, etc
+        >>> G = nx.DiGraph()  # or MultiDiGraph, etc
         >>> nx.add_path(G, [0, 1, 2])
         >>> G.add_edge(2, 3, weight=5)
         >>> [e for e in G.edges]
         [(0, 1), (1, 2), (2, 3)]
         >>> G.edges.data()  # default data is {} (empty dict)
         OutEdgeDataView([(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})])
-        >>> G.edges.data('weight', default=1)
+        >>> G.edges.data("weight", default=1)
         OutEdgeDataView([(0, 1, 1), (1, 2, 1), (2, 3, 5)])
         >>> G.edges([0, 2])  # only edges incident to these nodes
         OutEdgeDataView([(0, 1), (2, 3)])
@@ -966,9 +968,9 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.DiGraph()   # or MultiDiGraph
+        >>> G = nx.DiGraph()  # or MultiDiGraph
         >>> nx.add_path(G, [0, 1, 2, 3])
-        >>> G.degree(0) # node 0 with degree 1
+        >>> G.degree(0)  # node 0 with degree 1
         1
         >>> list(G.degree([0, 1, 2]))
         [(0, 1), (1, 2), (2, 2)]
@@ -1015,7 +1017,7 @@ class DiGraph(Graph):
         --------
         >>> G = nx.DiGraph()
         >>> nx.add_path(G, [0, 1, 2, 3])
-        >>> G.in_degree(0) # node 0 with degree 0
+        >>> G.in_degree(0)  # node 0 with degree 0
         0
         >>> list(G.in_degree([0, 1, 2]))
         [(0, 0), (1, 1), (2, 1)]
@@ -1062,7 +1064,7 @@ class DiGraph(Graph):
         --------
         >>> G = nx.DiGraph()
         >>> nx.add_path(G, [0, 1, 2, 3])
-        >>> G.out_degree(0) # node 0 with degree 1
+        >>> G.out_degree(0)  # node 0 with degree 1
         1
         >>> list(G.out_degree([0, 1, 2]))
         [(0, 1), (1, 1), (2, 1)]
@@ -1165,7 +1167,7 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.path_graph(2)   # or MultiGraph, etc
+        >>> G = nx.path_graph(2)  # or MultiGraph, etc
         >>> H = G.to_directed()
         >>> list(H.edges)
         [(0, 1), (1, 0)]

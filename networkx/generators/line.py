@@ -275,7 +275,7 @@ def inverse_line_graph(G):
     You should invert every component seperately:
 
     >>> K5 = nx.complete_graph(5)
-    >>> P4 = nx.Graph([('a', 'b'), ('b', 'c'), ('c', 'd')])
+    >>> P4 = nx.Graph([("a", "b"), ("b", "c"), ("c", "d")])
     >>> G = nx.union(K5, P4)
     >>> root_graphs = []
     >>> for comp in nx.connected_components(G):

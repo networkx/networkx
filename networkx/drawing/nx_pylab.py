@@ -249,7 +249,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     >>> nx.draw(G, pos=nx.spring_layout(G))  # use spring layout
 
     >>> import matplotlib.pyplot as plt
-    >>> limits = plt.axis('off')  # turn of axis
+    >>> limits = plt.axis("off")  # turn of axis
 
     Also see the NetworkX drawing examples at
     https://networkx.github.io/documentation/latest/auto_examples/index.html

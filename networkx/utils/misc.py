@@ -213,7 +213,7 @@ def arbitrary_element(iterable):
 
         >>> arbitrary_element({3, 2, 1})
         1
-        >>> arbitrary_element('hello')
+        >>> arbitrary_element("hello")
         'h'
 
     This function raises a :exc:`ValueError` if `iterable` is an
@@ -262,7 +262,7 @@ def groups(many_to_one):
     For example::
 
         >>> from networkx.utils import groups
-        >>> many_to_one = {'a': 1, 'b': 1, 'c': 2, 'd': 3, 'e': 3}
+        >>> many_to_one = {"a": 1, "b": 1, "c": 2, "d": 3, "e": 3}
         >>> groups(many_to_one)  # doctest: +SKIP
         {1: {'a', 'b'}, 2: {'c'}, 3: {'d', 'e'}}
 

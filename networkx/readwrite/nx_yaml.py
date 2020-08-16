@@ -41,8 +41,8 @@ def write_yaml(G_to_be_yaml, path_for_yaml_output, **kwds):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> nx.write_yaml(G,'test.yaml')
+    >>> G = nx.path_graph(4)
+    >>> nx.write_yaml(G, "test.yaml")
 
     References
     ----------
@@ -74,9 +74,9 @@ def read_yaml(path):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> nx.write_yaml(G,'test.yaml')
-    >>> G=nx.read_yaml('test.yaml')
+    >>> G = nx.path_graph(4)
+    >>> nx.write_yaml(G, "test.yaml")
+    >>> G = nx.read_yaml("test.yaml")
 
     References
     ----------

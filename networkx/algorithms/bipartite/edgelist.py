@@ -53,20 +53,20 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> G.add_nodes_from([0,2], bipartite=0)
-    >>> G.add_nodes_from([1,3], bipartite=1)
+    >>> G = nx.path_graph(4)
+    >>> G.add_nodes_from([0, 2], bipartite=0)
+    >>> G.add_nodes_from([1, 3], bipartite=1)
     >>> nx.write_edgelist(G, "test.edgelist")
-    >>> fh=open("test.edgelist",'wb')
+    >>> fh = open("test.edgelist", "wb")
     >>> nx.write_edgelist(G, fh)
     >>> nx.write_edgelist(G, "test.edgelist.gz")
     >>> nx.write_edgelist(G, "test.edgelist.gz", data=False)
 
-    >>> G=nx.Graph()
-    >>> G.add_edge(1,2,weight=7,color='red')
-    >>> nx.write_edgelist(G,'test.edgelist',data=False)
-    >>> nx.write_edgelist(G,'test.edgelist',data=['color'])
-    >>> nx.write_edgelist(G,'test.edgelist',data=['color','weight'])
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2, weight=7, color="red")
+    >>> nx.write_edgelist(G, "test.edgelist", data=False)
+    >>> nx.write_edgelist(G, "test.edgelist", data=["color"])
+    >>> nx.write_edgelist(G, "test.edgelist", data=["color", "weight"])
 
     See Also
     --------
@@ -105,10 +105,10 @@ def generate_edgelist(G, delimiter=" ", data=True):
     --------
     >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
-    >>> G.add_nodes_from([0,2], bipartite=0)
-    >>> G.add_nodes_from([1,3], bipartite=1)
-    >>> G[1][2]['weight'] = 3
-    >>> G[2][3]['capacity'] = 12
+    >>> G.add_nodes_from([0, 2], bipartite=0)
+    >>> G.add_nodes_from([1, 3], bipartite=1)
+    >>> G[1][2]["weight"] = 3
+    >>> G[2][3]["capacity"] = 12
     >>> for line in bipartite.generate_edgelist(G, data=False):
     ...     print(line)
     0 1
@@ -121,7 +121,7 @@ def generate_edgelist(G, delimiter=" ", data=True):
     2 1 {'weight': 3}
     2 3 {'capacity': 12}
 
-    >>> for line in bipartite.generate_edgelist(G,data=['weight']):
+    >>> for line in bipartite.generate_edgelist(G, data=["weight"]):
     ...     print(line)
     0 1
     2 1 3
@@ -178,10 +178,8 @@ def parse_edgelist(
     Edgelist with no data:
 
     >>> from networkx.algorithms import bipartite
-    >>> lines = ["1 2",
-    ...          "2 3",
-    ...          "3 4"]
-    >>> G = bipartite.parse_edgelist(lines, nodetype = int)
+    >>> lines = ["1 2", "2 3", "3 4"]
+    >>> G = bipartite.parse_edgelist(lines, nodetype=int)
     >>> sorted(G.nodes())
     [1, 2, 3, 4]
     >>> sorted(G.nodes(data=True))
@@ -191,24 +189,20 @@ def parse_edgelist(
 
     Edgelist with data in Python dictionary representation:
 
-    >>> lines = ["1 2 {'weight':3}",
-    ...          "2 3 {'weight':27}",
-    ...          "3 4 {'weight':3.0}"]
-    >>> G = bipartite.parse_edgelist(lines, nodetype = int)
+    >>> lines = ["1 2 {'weight':3}", "2 3 {'weight':27}", "3 4 {'weight':3.0}"]
+    >>> G = bipartite.parse_edgelist(lines, nodetype=int)
     >>> sorted(G.nodes())
     [1, 2, 3, 4]
-    >>> sorted(G.edges(data = True))
+    >>> sorted(G.edges(data=True))
     [(1, 2, {'weight': 3}), (2, 3, {'weight': 27}), (3, 4, {'weight': 3.0})]
 
     Edgelist with data in a list:
 
-    >>> lines = ["1 2 3",
-    ...          "2 3 27",
-    ...          "3 4 3.0"]
-    >>> G = bipartite.parse_edgelist(lines, nodetype = int, data=(('weight',float),))
+    >>> lines = ["1 2 3", "2 3 27", "3 4 3.0"]
+    >>> G = bipartite.parse_edgelist(lines, nodetype=int, data=(("weight", float),))
     >>> sorted(G.nodes())
     [1, 2, 3, 4]
-    >>> sorted(G.edges(data = True))
+    >>> sorted(G.edges(data=True))
     [(1, 2, {'weight': 3.0}), (2, 3, {'weight': 27.0}), (3, 4, {'weight': 3.0})]
 
     See Also
@@ -316,24 +310,26 @@ def read_edgelist(
     --------
     >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
-    >>> G.add_nodes_from([0,2], bipartite=0)
-    >>> G.add_nodes_from([1,3], bipartite=1)
+    >>> G.add_nodes_from([0, 2], bipartite=0)
+    >>> G.add_nodes_from([1, 3], bipartite=1)
     >>> bipartite.write_edgelist(G, "test.edgelist")
     >>> G = bipartite.read_edgelist("test.edgelist")
 
-    >>> fh = open("test.edgelist", 'rb')
+    >>> fh = open("test.edgelist", "rb")
     >>> G = bipartite.read_edgelist(fh)
     >>> fh.close()
 
-    >>> G=bipartite.read_edgelist("test.edgelist", nodetype=int)
+    >>> G = bipartite.read_edgelist("test.edgelist", nodetype=int)
 
     Edgelist with data in a list:
 
-    >>> textline = '1 2 3'
-    >>> fh = open('test.edgelist','w')
+    >>> textline = "1 2 3"
+    >>> fh = open("test.edgelist", "w")
     >>> d = fh.write(textline)
     >>> fh.close()
-    >>> G = bipartite.read_edgelist('test.edgelist', nodetype=int, data=(('weight',float),))
+    >>> G = bipartite.read_edgelist(
+    ...     "test.edgelist", nodetype=int, data=(("weight", float),)
+    ... )
     >>> list(G)
     [1, 2]
     >>> list(G.edges(data=True))

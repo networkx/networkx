@@ -10,7 +10,7 @@ def cycles(seq):
 
     For example::
 
-        >>> list(cycles('abc'))
+        >>> list(cycles("abc"))
         [('a', 'b', 'c'), ('b', 'c', 'a'), ('c', 'a', 'b')]
 
     """
@@ -26,9 +26,9 @@ def cyclic_equals(seq1, seq2):
 
     For example::
 
-        >>> cyclic_equals('xyz', 'zxy')
+        >>> cyclic_equals("xyz", "zxy")
         True
-        >>> cyclic_equals('xyz', 'zyx')
+        >>> cyclic_equals("xyz", "zyx")
         False
 
     """

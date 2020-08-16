@@ -333,11 +333,11 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
     their associated keys::
 
         >>> mg = nx.MultiGraph()
-        >>> mg.add_edge(1, 2, key='k0')
+        >>> mg.add_edge(1, 2, key="k0")
         'k0'
-        >>> mg.add_edge(1, 2, key='k1')
+        >>> mg.add_edge(1, 2, key="k1")
         'k1'
-        >>> mg.add_edge(2, 3, key='k0')
+        >>> mg.add_edge(2, 3, key="k0")
         'k0'
         >>> for path in sorted(nx.all_simple_edge_paths(mg, 1, 3)):
         ...     print(path)
@@ -473,7 +473,9 @@ def shortest_simple_paths(G, source, target, weight=None):
 
     >>> from itertools import islice
     >>> def k_shortest_paths(G, source, target, k, weight=None):
-    ...     return list(islice(nx.shortest_simple_paths(G, source, target, weight=weight), k))
+    ...     return list(
+    ...         islice(nx.shortest_simple_paths(G, source, target, weight=weight), k)
+    ...     )
     >>> for path in k_shortest_paths(G, 0, 3, 2):
     ...     print(path)
     [0, 1, 2, 3]

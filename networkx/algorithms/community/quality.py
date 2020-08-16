@@ -35,7 +35,7 @@ def require_partition(func):
 
         >>> @require_partition
         ... def foo(G, partition):
-        ...     print('partition is valid!')
+        ...     print("partition is valid!")
         ...
         >>> G = nx.complete_graph(5)
         >>> partition = [{0, 1}, {2, 3}, {4}]

@@ -26,7 +26,7 @@ def relabel_nodes(G, mapping, copy=True):
     >>> G = nx.path_graph(3)
     >>> sorted(G)
     [0, 1, 2]
-    >>> mapping = {0: 'a', 1: 'b', 2: 'c'}
+    >>> mapping = {0: "a", 1: "b", 2: "c"}
     >>> H = nx.relabel_nodes(G, mapping)
     >>> sorted(H)
     ['a', 'b', 'c']
@@ -39,7 +39,7 @@ def relabel_nodes(G, mapping, copy=True):
     >>> sorted(G)[:3]
     [0, 1, 2]
     >>> mapping = dict(zip(G, string.ascii_lowercase))
-    >>> G = nx.relabel_nodes(G, mapping) # nodes are characters a through z
+    >>> G = nx.relabel_nodes(G, mapping)  # nodes are characters a through z
     >>> sorted(G)[:3]
     ['a', 'b', 'c']
     >>> mapping = dict(zip(G, range(1, 27)))
@@ -52,7 +52,7 @@ def relabel_nodes(G, mapping, copy=True):
     argument to False:
 
     >>> G = nx.path_graph(3)  # nodes 0-1-2
-    >>> mapping = {0: 'a', 1: 'b'} # 0->'a' and 1->'b'
+    >>> mapping = {0: "a", 1: "b"}  # 0->'a' and 1->'b'
     >>> G = nx.relabel_nodes(G, mapping, copy=False)
     >>> sorted(G, key=str)
     [2, 'a', 'b']
