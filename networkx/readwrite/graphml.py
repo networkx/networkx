@@ -874,8 +874,8 @@ class GraphMLReader(GraphML):
             self.multigraph = True
 
         # Use add_edges_from to avoid error with add_edge when `'key' in data`
-        # Note there is only one edge here...  the [0] gets the edge key
-        key_used = G.add_edges_from([(source, target, edge_id, data)])[0]
+        # Note there is only one edge here...
+        G.add_edges_from([(source, target, edge_id, data)])
 
     def decode_data_elements(self, graphml_keys, obj_xml):
         """Use the key information to decode the data XML if present."""
