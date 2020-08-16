@@ -10,6 +10,7 @@ from networkx.algorithms.centrality.betweenness import (
 
 __all__ = [
     "betweenness_centrality_subset",
+    "betweenness_centrality_source",
     "edge_betweenness_centrality_subset",
 ]
 

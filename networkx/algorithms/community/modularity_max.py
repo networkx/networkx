@@ -8,7 +8,11 @@ from networkx.algorithms.community.quality import modularity
 
 from networkx.utils.mapped_queue import MappedQueue
 
-__all__ = ["greedy_modularity_communities", "naive_greedy_modularity_communities"]
+__all__ = [
+    "greedy_modularity_communities",
+    "naive_greedy_modularity_communities",
+    "_naive_greedy_modularity_communities",
+]
 
 
 def greedy_modularity_communities(G, weight=None):
