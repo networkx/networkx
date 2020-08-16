@@ -44,9 +44,10 @@ Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 Version 3.0
 ~~~~~~~~~~~
 
-* In ``networkx/readwrite/gml.py`` remove ``literal_stringizer`` and related tests.
-* In ``networkx/readwrite/gml.py`` remove ``literal_destringizer`` and related tests.
-* In ``networkx/utils/misc.py`` remove ``is_string_like`` and related tests.
-* In ``networkx/utils/misc.py`` remove ``make_str`` and related tests.
-* Remove ``networkx/utils/contextmanagers.py`` and related tests.
-* In ``networkx/drawing/nx_agraph.py`` remove ``display_pygraphviz`` and related tests.
+* In ``readwrite/gml.py`` remove ``literal_stringizer`` and related tests.
+* In ``readwrite/gml.py`` remove ``literal_destringizer`` and related tests.
+* In ``utils/misc.py`` remove ``is_string_like`` and related tests.
+* In ``utils/misc.py`` remove ``make_str`` and related tests.
+* Remove ``utils/contextmanagers.py`` and related tests.
+* In ``drawing/nx_agraph.py`` remove ``display_pygraphviz`` and related tests.
+* In ``algorithms/chordal.py`` replace ``chordal_graph_cliques`` with ``_chordal_graph_cliques``.
