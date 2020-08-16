@@ -286,10 +286,10 @@ class TestReadGraphML(BaseGraphML):
         assert sorted(G.edges(data=True)) == sorted(H.edges(data=True))
         self.simple_directed_fh.seek(0)
 
-        I = nx.parse_graphml(self.simple_directed_data)
-        assert sorted(G.nodes()) == sorted(I.nodes())
-        assert sorted(G.edges()) == sorted(I.edges())
-        assert sorted(G.edges(data=True)) == sorted(I.edges(data=True))
+        PG = nx.parse_graphml(self.simple_directed_data)
+        assert sorted(G.nodes()) == sorted(PG.nodes())
+        assert sorted(G.edges()) == sorted(PG.edges())
+        assert sorted(G.edges(data=True)) == sorted(PG.edges(data=True))
 
     def test_read_simple_undirected_graphml(self):
         G = self.simple_undirected_graph
@@ -298,9 +298,9 @@ class TestReadGraphML(BaseGraphML):
         assert_edges_equal(G.edges(), H.edges())
         self.simple_undirected_fh.seek(0)
 
-        I = nx.parse_graphml(self.simple_undirected_data)
-        assert_nodes_equal(G.nodes(), I.nodes())
-        assert_edges_equal(G.edges(), I.edges())
+        PG = nx.parse_graphml(self.simple_undirected_data)
+        assert_nodes_equal(G.nodes(), PG.nodes())
+        assert_edges_equal(G.edges(), PG.edges())
 
     def test_read_undirected_multigraph_graphml(self):
         G = self.undirected_multigraph
@@ -309,9 +309,9 @@ class TestReadGraphML(BaseGraphML):
         assert_edges_equal(G.edges(), H.edges())
         self.undirected_multigraph_fh.seek(0)
 
-        I = nx.parse_graphml(self.undirected_multigraph_data)
-        assert_nodes_equal(G.nodes(), I.nodes())
-        assert_edges_equal(G.edges(), I.edges())
+        PG = nx.parse_graphml(self.undirected_multigraph_data)
+        assert_nodes_equal(G.nodes(), PG.nodes())
+        assert_edges_equal(G.edges(), PG.edges())
 
     def test_read_undirected_multigraph_no_multiedge_graphml(self):
         G = self.undirected_multigraph_no_multiedge
@@ -320,9 +320,9 @@ class TestReadGraphML(BaseGraphML):
         assert_edges_equal(G.edges(), H.edges())
         self.undirected_multigraph_no_multiedge_fh.seek(0)
 
-        I = nx.parse_graphml(self.undirected_multigraph_no_multiedge_data)
-        assert_nodes_equal(G.nodes(), I.nodes())
-        assert_edges_equal(G.edges(), I.edges())
+        PG = nx.parse_graphml(self.undirected_multigraph_no_multiedge_data)
+        assert_nodes_equal(G.nodes(), PG.nodes())
+        assert_edges_equal(G.edges(), PG.edges())
 
     def test_read_undirected_multigraph_only_ids_for_multiedges_graphml(self):
         G = self.multigraph_only_ids_for_multiedges
@@ -331,9 +331,9 @@ class TestReadGraphML(BaseGraphML):
         assert_edges_equal(G.edges(), H.edges())
         self.multigraph_only_ids_for_multiedges_fh.seek(0)
 
-        I = nx.parse_graphml(self.multigraph_only_ids_for_multiedges_data)
-        assert_nodes_equal(G.nodes(), I.nodes())
-        assert_edges_equal(G.edges(), I.edges())
+        PG = nx.parse_graphml(self.multigraph_only_ids_for_multiedges_data)
+        assert_nodes_equal(G.nodes(), PG.nodes())
+        assert_edges_equal(G.edges(), PG.edges())
 
     def test_read_attribute_graphml(self):
         G = self.attribute_graph
@@ -345,10 +345,10 @@ class TestReadGraphML(BaseGraphML):
             assert a == b
         self.attribute_fh.seek(0)
 
-        I = nx.parse_graphml(self.attribute_data)
-        assert sorted(G.nodes(True)) == sorted(I.nodes(data=True))
+        PG = nx.parse_graphml(self.attribute_data)
+        assert sorted(G.nodes(True)) == sorted(PG.nodes(data=True))
         ge = sorted(G.edges(data=True))
-        he = sorted(I.edges(data=True))
+        he = sorted(PG.edges(data=True))
         for a, b in zip(ge, he):
             assert a == b
 
@@ -497,6 +497,22 @@ class TestReadGraphML(BaseGraphML):
         H = nx.read_graphml(fh, node_type=int)
         assert_edges_equal(G.edges(data=True, keys=True), H.edges(data=True, keys=True))
         assert G._adj == H._adj
+
+        Gadj = {
+            str(node): {
+                str(nbr): {str(ekey): dd for ekey, dd in key_dict.items()}
+                for nbr, key_dict in nbr_dict.items()
+            }
+            for node, nbr_dict in G._adj.items()
+        }
+        fh.seek(0)
+        HH = nx.read_graphml(fh, node_type=str, edge_key_type=str)
+        assert Gadj == HH._adj
+
+        fh.seek(0)
+        string_fh = fh.read()
+        HH = nx.parse_graphml(string_fh, node_type=str, edge_key_type=str)
+        assert Gadj == HH._adj
 
     def test_yfiles_extension(self):
         data = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>

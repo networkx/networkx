@@ -328,7 +328,7 @@ def parse_graphml(
     will be provided.
 
     """
-    reader = GraphMLReader(node_type=node_type, force_multigraph=force_multigraph)
+    reader = GraphMLReader(node_type, edge_key_type, force_multigraph)
     # need to check for multiple graphs
     glist = list(reader(string=graphml_string))
     if len(glist) == 0:
