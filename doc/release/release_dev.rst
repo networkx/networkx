@@ -108,8 +108,22 @@ Deprecations
   Deprecate `literal_stringizer` and `literal_destringizer`.
 
 - [`#3983 <https://github.com/networkx/networkx/pull/3983>`_]
-  Deprecate `reversed` context manager in favor of `reversed_view`
+  Deprecate `reversed` context manager.
 
+- [`#4155 <https://github.com/networkx/networkx/pull/4155>`_]
+  Deprecate `display_pygraphviz`.
+
+- [`#4162 <https://github.com/networkx/networkx/pull/4162>`_]
+  Deprecate `chordal_graph_cliques` returning a set.
+
+- [`#4161 <https://github.com/networkx/networkx/pull/4161>`_]
+  Deprecate `betweenness_centrality_source`.
+
+- [`#4161 <https://github.com/networkx/networkx/pull/4161>`_]
+  Deprecate `edge_betweeness`.
+
+- [`#4161 <https://github.com/networkx/networkx/pull/4161>`_]
+  Rename `_naive_greedy_modularity_communities` as `naive_greedy_modularity_communities`.
 
 Pull requests merged in this release
 ------------------------------------
