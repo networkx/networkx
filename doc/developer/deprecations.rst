@@ -51,3 +51,4 @@ Version 3.0
 * Remove ``networkx/utils/contextmanagers.py`` and related tests.
 * In ``networkx/algorithms/centrality/betweenness_centrality_subset.py`` remove ``betweenness_centrality_source``.
 * In ``networkx/algorithms/centrality/betweenness.py`` remove ``edge_betweeness``.
+* In ``networkx/algorithms/community_modularity_max.py`` remove old name ``_naive_greedy_modularity_communities``.
