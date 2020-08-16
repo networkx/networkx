@@ -27,6 +27,9 @@ def is_threshold_graph(G):
     >>> G = nx.path_graph(3)
     >>> is_threshold_graph(G)
     True
+    >>> G = nx.barbell_graph(3, 3)
+    >>> is_threshold_graph(G)
+    False
 
     References
     ----------
