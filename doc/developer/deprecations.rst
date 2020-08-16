@@ -51,3 +51,6 @@ Version 3.0
 * Remove ``utils/contextmanagers.py`` and related tests.
 * In ``drawing/nx_agraph.py`` remove ``display_pygraphviz`` and related tests.
 * In ``algorithms/chordal.py`` replace ``chordal_graph_cliques`` with ``_chordal_graph_cliques``.
+* In ``algorithms/centrality/betweenness_centrality_subset.py`` remove ``betweenness_centrality_source``.
+* In ``algorithms/centrality/betweenness.py`` remove ``edge_betweeness``.
+* In ``algorithms/community_modularity_max.py`` remove old name ``_naive_greedy_modularity_communities``.

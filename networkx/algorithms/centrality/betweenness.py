@@ -1,6 +1,7 @@
 """Betweenness centrality measures."""
 from heapq import heappush, heappop
 from itertools import count
+import warnings
 
 from networkx.utils import py_random_state
 from networkx.utils.decorators import not_implemented_for
@@ -235,9 +236,10 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
 
 
 # obsolete name
-
-
 def edge_betweenness(G, k=None, normalized=True, weight=None, seed=None):
+    warnings.warn(
+        "edge_betweeness is replaced by edge_betweenness_centrality", DeprecationWarning
+    )
     return edge_betweenness_centrality(G, k, normalized, weight, seed)
 
 

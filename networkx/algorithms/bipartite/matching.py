@@ -58,13 +58,21 @@ INFINITY = float("inf")
 def hopcroft_karp_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
+    A matching is a set of edges that do not share any nodes. A maximum 
+    cardinality matching is a matching with the most edges possible. It
+    is not always unique. Finding a matching in a bipartite graph can be
+    treated as a networkx flow problem.
+    
+    The functions ``hopcroft_karp_matching`` and ``maximum_matching``
+    are aliases of the same function. 
+
     Parameters
     ----------
     G : NetworkX graph
 
       Undirected bipartite graph
 
-    top_nodes : container
+    top_nodes : container of nodes
 
       Container with all nodes in one bipartite node set. If not supplied
       it will be computed. But if more than one solution exists an exception
@@ -97,7 +105,8 @@ def hopcroft_karp_matching(G, top_nodes=None):
 
     See Also
     --------
-
+    maximum_matching
+    hopcroft_karp_matching
     eppstein_matching
 
     References
