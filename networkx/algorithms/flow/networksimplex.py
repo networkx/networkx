@@ -93,7 +93,6 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     --------
     A simple example of a min cost flow problem.
 
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_node('a', demand=-5)
     >>> G.add_node('d', demand=5)

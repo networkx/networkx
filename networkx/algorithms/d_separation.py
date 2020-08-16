@@ -15,7 +15,6 @@ alternative algorithms.
 Examples
 --------
 
->>> import networkx as nx
 >>>
 >>> # HMM graph with five states and observation nodes
 ... g= nx.DiGraph()

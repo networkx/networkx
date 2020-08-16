@@ -690,7 +690,6 @@ def complete_multipartite_graph(*subset_sizes):
     Creating a complete tripartite graph, with subsets of one, two, and three
     vertices, respectively.
 
-        >>> import networkx as nx
         >>> G = nx.complete_multipartite_graph(1, 2, 3)
         >>> [G.nodes[u]['subset'] for u in G]
         [0, 1, 1, 2, 2, 2]

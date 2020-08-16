@@ -900,7 +900,6 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.path_graph(5, create_using = nx.DiGraph())
     >>> pred, dist = nx.dijkstra_predecessor_and_distance(G, 0)
     >>> sorted(pred.items())
@@ -1150,7 +1149,6 @@ def bellman_ford_predecessor_and_distance(
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.path_graph(5, create_using = nx.DiGraph())
     >>> pred, dist = nx.bellman_ford_predecessor_and_distance(G, 0)
     >>> sorted(pred.items())
@@ -1752,7 +1750,6 @@ def goldberg_radzik(G, source, weight="weight"):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.path_graph(5, create_using = nx.DiGraph())
     >>> pred, dist = nx.goldberg_radzik(G, 0)
     >>> sorted(pred.items())
@@ -1915,7 +1912,6 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> print(nx.negative_edge_cycle(G))
     False
@@ -2122,7 +2118,6 @@ def johnson(G, weight="weight"):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> graph = nx.DiGraph()
     >>> graph.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5),
     ... ('0', '2', 2), ('1', '2', 4), ('2', '3', 1)])

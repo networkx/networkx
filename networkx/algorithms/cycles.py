@@ -391,7 +391,6 @@ def find_cycle(G, source=None, orientation=None):
     This means that this DAG structure does not form a directed tree (which
     is also known as a polytree).
 
-    >>> import networkx as nx
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
     >>> try:
     ...    nx.find_cycle(G, orientation='original')

@@ -12,7 +12,6 @@ there is an exponential number of isomorphisms that are symmetrically
 equivalent. In that case, the ISMAGS algorithm will provide only one solution
 per symmetry group.
 
->>> import networkx as nx
 >>> petersen = nx.petersen_graph()
 >>> ismags = nx.isomorphism.ISMAGS(petersen, petersen)
 >>> isomorphisms = list(ismags.isomorphisms_iter(symmetry=False))

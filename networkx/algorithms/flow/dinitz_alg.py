@@ -102,7 +102,6 @@ def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.flow import dinitz
 
     The functions that implement flow algorithms and output a residual

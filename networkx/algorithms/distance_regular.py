@@ -211,7 +211,6 @@ def is_strongly_regular(G):
     two-regular, each pair of adjacent vertices has no shared neighbors,
     and each pair of nonadjacent vertices has one shared neighbor::
 
-        >>> import networkx as nx
         >>> G = nx.cycle_graph(5)
         >>> nx.is_strongly_regular(G)
         True

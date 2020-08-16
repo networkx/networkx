@@ -58,7 +58,6 @@ def weisfeiler_lehman_graph_hash(
     Two graphs with edge attributes that are isomorphic, except for
     differences in the edge labels.
 
-    >>> import networkx as nx
     >>> G1 = nx.Graph()
     >>> G1.add_edges_from([(1, 2, {'label': 'A'}),
     ...                    (2, 3, {'label': 'A'}),

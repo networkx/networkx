@@ -6,7 +6,6 @@ to use an spatial analogy referring to the two node sets as top and bottom nodes
 The bipartite algorithms are not imported into the networkx namespace
 at the top level so the easiest way to use them is with:
 
->>> import networkx as nx
 >>> from networkx.algorithms import bipartite
 
 NetworkX does not have a custom bipartite graph class but the Graph()

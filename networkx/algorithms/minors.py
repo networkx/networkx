@@ -145,7 +145,6 @@ def quotient_graph(
     neighbors" equivalence relation is `K_2`. Under this relation, two nodes
     are equivalent if they are not adjacent but have the same neighbor set::
 
-        >>> import networkx as nx
         >>> G = nx.complete_bipartite_graph(2, 3)
         >>> same_neighbors = lambda u, v: (u not in G[v] and v not in G[u]
         ...                                and G[u] == G[v])
@@ -159,7 +158,6 @@ def quotient_graph(
     :func:`condensation`). This example comes from the Wikipedia article
     *`Strongly connected component`_*::
 
-        >>> import networkx as nx
         >>> G = nx.DiGraph()
         >>> edges = ['ab', 'be', 'bf', 'bc', 'cg', 'cd', 'dc', 'dh', 'ea',
         ...          'ef', 'fg', 'gf', 'hd', 'hf']
@@ -179,7 +177,6 @@ def quotient_graph(
     equivalence relation that places the two nodes in one block and each other
     node in its own singleton block::
 
-        >>> import networkx as nx
         >>> K24 = nx.complete_bipartite_graph(2, 4)
         >>> K34 = nx.complete_bipartite_graph(3, 4)
         >>> C = nx.contracted_nodes(K34, 1, 2)
@@ -472,7 +469,6 @@ def contracted_edge(G, edge, self_loops=True):
     --------
     Attempting to contract two nonadjacent nodes yields an error::
 
-        >>> import networkx as nx
         >>> G = nx.cycle_graph(4)
         >>> nx.contracted_edge(G, (1, 3))
         Traceback (most recent call last):
@@ -482,7 +478,6 @@ def contracted_edge(G, edge, self_loops=True):
     Contracting two adjacent nodes in the cycle graph on *n* nodes yields the
     cycle graph on *n - 1* nodes::
 
-        >>> import networkx as nx
         >>> C5 = nx.cycle_graph(5)
         >>> C4 = nx.cycle_graph(4)
         >>> M = nx.contracted_edge(C5, (0, 1), self_loops=False)

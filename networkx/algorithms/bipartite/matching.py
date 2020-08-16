@@ -18,7 +18,6 @@ import one of the named maximum matching algorithms directly.
 For example, to find a maximum matching in the complete bipartite graph with
 two vertices on the left and three vertices on the right:
 
->>> import networkx as nx
 >>> G = nx.complete_bipartite_graph(2, 3)
 >>> left, right = nx.bipartite.sets(G)
 >>> list(left)
@@ -462,7 +461,6 @@ def to_vertex_cover(G, matching, top_nodes=None):
     for any graph, one can compute the maximum independent set of a bipartite
     graph this way:
 
-    >>> import networkx as nx
     >>> G = nx.complete_bipartite_graph(2, 3)
     >>> matching = nx.bipartite.maximum_matching(G)
     >>> vertex_cover = nx.bipartite.to_vertex_cover(G, matching)

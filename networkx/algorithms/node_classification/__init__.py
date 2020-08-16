@@ -7,7 +7,6 @@ the `networkx.algorithms.node_classification` modules,
 then accessing the functions as attributes of `node_classification`.
 For example:
 
-  >>> import networkx as nx
   >>> from networkx.algorithms import node_classification
   >>> G = nx.path_graph(4)
   >>> G.edges()
