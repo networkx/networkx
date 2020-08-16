@@ -196,7 +196,7 @@ def generate_graphml(G, encoding="utf-8", prettyprint=True, named_key_ids=False)
 
 
 @open_file(0, mode="rb")
-def read_graphml(path, node_type=str, edge_key_type=int):
+def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False):
     """Read graph in GraphML format from path.
 
     Parameters
@@ -209,14 +209,19 @@ def read_graphml(path, node_type=str, edge_key_type=int):
        Convert node ids to this type
 
     edge_key_type: Python type (default: int)
-       Convert graphml edge ids to this type as key of multi-edges
+       Convert graphml edge ids to this type. Multigraphs use id as edge key.
+       Non-multigraphs add to edge attribute dict with name "id".
 
+    force_multigraph : bool (default: False)
+       If True, return a multigraph with edge keys. If False (the default)
+       return a multigraph when multiedges are in the graph.
 
     Returns
     -------
     graph: NetworkX graph
-        If no parallel edges are found a Graph or DiGraph is returned.
-        Otherwise a MultiGraph or MultiDiGraph is returned.
+        If parallel edges are present or `force_multigraph == True```then
+        a MultiGraph or MultiDiGraph is returned. Otherwise a Graph/DiGraph.
+        The returned graph is directed if the file indicates it should be.
 
     Notes
     -----
@@ -248,7 +253,7 @@ def read_graphml(path, node_type=str, edge_key_type=int):
     the file to "file.graphml.gz".
 
     """
-    reader = GraphMLReader(node_type=node_type, edge_key_type=edge_key_type)
+    reader = GraphMLReader(node_type, edge_key_type, force_multigraph)
     # need to check for multiple graphs
     glist = list(reader(path=path))
     if len(glist) == 0:
@@ -263,7 +268,9 @@ def read_graphml(path, node_type=str, edge_key_type=int):
     return glist[0]
 
 
-def parse_graphml(graphml_string, node_type=str):
+def parse_graphml(
+    graphml_string, node_type=str, edge_key_type=int, force_multigraph=False
+):
     """Read graph in GraphML format from string.
 
     Parameters
@@ -274,6 +281,15 @@ def parse_graphml(graphml_string, node_type=str):
 
     node_type: Python type (default: str)
        Convert node ids to this type
+
+    edge_key_type: Python type (default: int)
+       Convert graphml edge ids to this type. Multigraphs use id as edge key.
+       Non-multigraphs add to edge attribute dict with name "id".
+
+    force_multigraph : bool (default: False)
+       If True, return a multigraph with edge keys. If False (the default)
+       return a multigraph when multiedges are in the graph.
+
 
     Returns
     -------
@@ -312,7 +328,7 @@ def parse_graphml(graphml_string, node_type=str):
     will be provided.
 
     """
-    reader = GraphMLReader(node_type=node_type)
+    reader = GraphMLReader(node_type, edge_key_type, force_multigraph)
     # need to check for multiple graphs
     glist = list(reader(string=graphml_string))
     if len(glist) == 0:
@@ -743,11 +759,11 @@ else:
 class GraphMLReader(GraphML):
     """Read a GraphML document.  Produces NetworkX graph objects."""
 
-    def __init__(self, node_type=str, edge_key_type=int):
+    def __init__(self, node_type=str, edge_key_type=int, force_multigraph=False):
         self.node_type = node_type
         self.edge_key_type = edge_key_type
-        self.multigraph = False  # assume multigraph and test for multiedges
-        self.edge_ids = {}  # dict mapping (u,v) tuples to id edge attributes
+        self.multigraph = force_multigraph  # If False, test for multiedges
+        self.edge_ids = {}  # dict mapping (u,v) tuples to edge id attributes
 
     def __call__(self, path=None, string=None):
         if path is not None:
@@ -793,14 +809,13 @@ class GraphMLReader(GraphML):
         data = self.decode_data_elements(graphml_keys, graph_xml)
         G.graph.update(data)
 
-        # switch to Graph or DiGraph if no parallel edges were found.
-        if not self.multigraph:
-            if G.is_directed():
-                G = nx.DiGraph(G)
-            else:
-                G = nx.Graph(G)
-            nx.set_edge_attributes(G, values=self.edge_ids, name="id")
+        # switch to Graph or DiGraph if no parallel edges were found
+        if self.multigraph:
+            return G
 
+        G = nx.DiGraph(G) if G.is_directed() else nx.Graph(G)
+        # add explicit edge "id" from file as attribute in NX graph.
+        nx.set_edge_attributes(G, values=self.edge_ids, name="id")
         return G
 
     def add_node(self, G, node_xml, graphml_keys, defaults):
@@ -859,6 +874,7 @@ class GraphMLReader(GraphML):
             self.multigraph = True
 
         # Use add_edges_from to avoid error with add_edge when `'key' in data`
+        # Note there is only one edge here...
         G.add_edges_from([(source, target, edge_id, data)])
 
     def decode_data_elements(self, graphml_keys, obj_xml):
