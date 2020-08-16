@@ -202,9 +202,7 @@ class BaseGraphML:
         cls.simple_undirected_graph = nx.Graph()
         cls.simple_undirected_graph.add_node("n10")
         cls.simple_undirected_graph.add_edge("n0", "n2", id="foo")
-        cls.simple_undirected_graph.add_edges_from(
-            [("n1", "n2"), ("n2", "n3"),]
-        )
+        cls.simple_undirected_graph.add_edges_from([("n1", "n2"), ("n2", "n3")])
         fh = io.BytesIO(cls.simple_undirected_data.encode("UTF-8"))
         cls.simple_undirected_fh = fh
 

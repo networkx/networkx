@@ -37,7 +37,7 @@ from .multidigraph import MultiDiGraph
 __all__ = []
 
 __all__.extend(
-    ["OrderedGraph", "OrderedDiGraph", "OrderedMultiGraph", "OrderedMultiDiGraph",]
+    ["OrderedGraph", "OrderedDiGraph", "OrderedMultiGraph", "OrderedMultiDiGraph"]
 )
 
 

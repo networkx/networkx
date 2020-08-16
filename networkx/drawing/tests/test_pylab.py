@@ -27,7 +27,7 @@ class TestPylab:
                 nx.draw_spring,
                 nx.draw_shell,
             ]
-            options = [{"node_color": "black", "node_size": 100, "width": 3,}]
+            options = [{"node_color": "black", "node_size": 100, "width": 3}]
             for function, option in itertools.product(functions, options):
                 function(self.G, **option)
                 plt.savefig("test.ps")

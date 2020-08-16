@@ -18,11 +18,7 @@ import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
 from collections import defaultdict, namedtuple
 
-__all__ = [
-    "k_edge_augmentation",
-    "is_k_edge_connected",
-    "is_locally_k_edge_connected",
-]
+__all__ = ["k_edge_augmentation", "is_k_edge_connected", "is_locally_k_edge_connected"]
 
 
 @not_implemented_for("directed")

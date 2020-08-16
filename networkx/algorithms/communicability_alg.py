@@ -4,10 +4,7 @@ Communicability.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = [
-    "communicability",
-    "communicability_exp",
-]
+__all__ = ["communicability", "communicability_exp"]
 
 
 @not_implemented_for("directed")

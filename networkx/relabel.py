@@ -167,9 +167,9 @@ def _relabel_inplace(G, mapping):
             # Ensure new edges won't overwrite existing ones
             seen = set()
             for i, (source, target, key, data) in enumerate(new_edges):
-                if (target in G[source] and key in G[source][target]):
+                if target in G[source] and key in G[source][target]:
                     new_key = 0 if not isinstance(key, (int, float)) else key
-                    while (new_key in G[source][target] or (target, new_key) in seen):
+                    while new_key in G[source][target] or (target, new_key) in seen:
                         new_key += 1
                     new_edges[i] = (source, target, new_key, data)
                     seen.add((target, new_key))

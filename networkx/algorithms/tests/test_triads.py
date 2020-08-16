@@ -104,7 +104,7 @@ def test_triad_type():
     assert nx.triad_type(G) == "120D"
     G = nx.DiGraph([(0, 1), (1, 0), (0, 2), (1, 2)])
     assert nx.triad_type(G) == "120U"
-    G = nx.DiGraph([(0, 1), (1, 0), (0, 2,), (2, 1)])
+    G = nx.DiGraph([(0, 1), (1, 0), (0, 2), (2, 1)])
     assert nx.triad_type(G) == "120C"
     # 5 edges (1 type)
     G = nx.DiGraph([(0, 1), (1, 0), (2, 1), (1, 2), (0, 2)])

@@ -15,10 +15,7 @@ from .utils import build_auxiliary_edge_connectivity
 
 from itertools import filterfalse as _filterfalse
 
-__all__ = [
-    "edge_disjoint_paths",
-    "node_disjoint_paths",
-]
+__all__ = ["edge_disjoint_paths", "node_disjoint_paths"]
 
 
 def edge_disjoint_paths(

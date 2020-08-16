@@ -7,9 +7,7 @@ For now, only Weisfeiler-Lehman hashing is implemented.
 from collections import Counter
 from hashlib import blake2b
 
-__all__ = [
-    "weisfeiler_lehman_graph_hash",
-]
+__all__ = ["weisfeiler_lehman_graph_hash"]
 
 
 def weisfeiler_lehman_graph_hash(
