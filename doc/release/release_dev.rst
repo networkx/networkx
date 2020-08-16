@@ -35,6 +35,7 @@ New Functions:
 - max_weight_clique
 - path_weight and is_path
 - rescale_layout_dict
+- junction_tree
 
 New generators:
 
@@ -70,6 +71,8 @@ Improvements
 - speedup negative weight cycle detection
 - tree_isomorphism
 - rooted_tree_isomorphism
+- Gexf edge attribute "label" is available
+
 
 API Changes
 -----------
@@ -89,6 +92,10 @@ API Changes
 - draw_networkx accepts numpy array for edgelist
 - relabel_nodes with 2 nodes mapped to same node can now create multiedge
 - steiner_tree works with MultiGraph
+- Add `show` kwarg to view_pygraphviz (#4155)
+- Prepare for turning chordal_graph_cliques into a generator (#4162)
+- GraphML reader keyword force_multigraph creates MultiGraph even w/o multiedges
+
 
 Deprecations
 ------------
@@ -361,9 +368,11 @@ Contributors to this release
 - Lukas Bernwald
 - Isaac Boates
 - Kelly Boothby
+- Matthias Bruhns
 - Mahmut Bulut
 - Rüdiger Busche
 - Gaetano Carpinato
+- Nikos Chan
 - Harold Chan
 - Camden Cheek
 - Daniel
@@ -419,6 +428,7 @@ Contributors to this release
 - Federico Rosato
 - Tom Russell
 - Craig Schmidt
+- Jonathan Schneider
 - Dan Schult
 - Mridul Seth
 - Karthikeyan Singaravelan
@@ -441,6 +451,7 @@ Contributors to this release
 - gseva
 - haochenucr
 - johnthagen
+- kiryph
 - muratgu
 - ryan-duve
 - sauxpa
