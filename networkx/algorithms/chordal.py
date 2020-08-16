@@ -53,9 +53,19 @@ def is_chordal(G):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> e=[(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6)]
-    >>> G=nx.Graph(e)
+    >>> e = [
+    ...     (1, 2),
+    ...     (1, 3),
+    ...     (2, 3),
+    ...     (2, 4),
+    ...     (3, 4),
+    ...     (3, 5),
+    ...     (3, 6),
+    ...     (4, 5),
+    ...     (4, 6),
+    ...     (5, 6),
+    ... ]
+    >>> G = nx.Graph(e)
     >>> nx.is_chordal(G)
     True
 
@@ -113,11 +123,10 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> G=nx.Graph()
+    >>> G = nx.Graph()
     >>> G = nx.generators.classic.path_graph(10)
-    >>> Induced_nodes = nx.find_induced_nodes(G,1,9,2)
-    >>> sorted(Induced_nodes)
+    >>> induced_nodes = nx.find_induced_nodes(G, 1, 9, 2)
+    >>> sorted(induced_nodes)
     [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     Notes
@@ -186,8 +195,19 @@ def chordal_graph_cliques(G):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> e= [(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6),(7,8)]
+    >>> e = [
+    ...     (1, 2),
+    ...     (1, 3),
+    ...     (2, 3),
+    ...     (2, 4),
+    ...     (3, 4),
+    ...     (3, 5),
+    ...     (3, 6),
+    ...     (4, 5),
+    ...     (4, 6),
+    ...     (5, 6),
+    ...     (7, 8),
+    ... ]
     >>> G = nx.Graph(e)
     >>> G.add_node(9)
     >>> setlist = nx.chordal_graph_cliques(G)
@@ -221,8 +241,19 @@ def chordal_graph_treewidth(G):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> e = [(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6),(7,8)]
+    >>> e = [
+    ...     (1, 2),
+    ...     (1, 3),
+    ...     (2, 3),
+    ...     (2, 4),
+    ...     (3, 4),
+    ...     (3, 5),
+    ...     (3, 6),
+    ...     (4, 5),
+    ...     (4, 6),
+    ...     (5, 6),
+    ...     (7, 8),
+    ... ]
     >>> G = nx.Graph(e)
     >>> G.add_node(9)
     >>> nx.chordal_graph_treewidth(G)
@@ -312,7 +343,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 
 
 def _chordal_graph_cliques(G):
-    """Returns all maximal cliques of a connected chordal graph.
+    """Returns all maximal cliques of a chordal graph.
 
     The algorithm breaks the graph in connected components and performs a
     maximum cardinality search in each component to get the cliques.
@@ -324,7 +355,9 @@ def _chordal_graph_cliques(G):
 
     Returns
     -------
-    cliques : A set containing the maximal cliques in G.
+    iterator
+        An iterator over maximal cliques, each of which is a frozenset of
+        nodes in `G`. The order of cliques is arbitrary.
 
     Raises
     ------
@@ -352,7 +385,7 @@ def _chordal_graph_cliques(G):
     ... ]
     >>> G = nx.Graph(e)
     >>> G.add_node(9)
-    >>> cliques = [i for i in _chordal_graph_cliques(G)]
+    >>> cliques = [c for c in _chordal_graph_cliques(G)]
     >>> cliques[0]
     frozenset({1, 2, 3})
     """
@@ -421,10 +454,9 @@ def complete_to_chordal_graph(G):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.chordal import complete_to_chordal_graph
     >>> G = nx.wheel_graph(10)
-    >>> H,alpha = complete_to_chordal_graph(G)
+    >>> H, alpha = complete_to_chordal_graph(G)
     """
     H = G.copy()
     alpha = {node: 0 for node in H}
