@@ -55,7 +55,6 @@ def edge_dfs(G, source=None, orientation=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> nodes = [0, 1, 2, 3]
     >>> edges = [(0, 1), (1, 0), (1, 0), (2, 1), (3, 1)]
 

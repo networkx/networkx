@@ -359,8 +359,8 @@ def node_expansion(G, S):
 def boundary_expansion(G, S):
     """Returns the boundary expansion of the set `S`.
 
-    The *boundary expansion* is the quotient of the size of the edge
-    boundary and the cardinality of *S*. [1]
+    The *boundary expansion* is the quotient of the size
+    of the node boundary and the cardinality of *S*. [1]
 
     Parameters
     ----------

@@ -73,7 +73,6 @@ def resource_allocation_index(G, ebunch=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.complete_graph(5)
     >>> preds = nx.resource_allocation_index(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
@@ -128,7 +127,6 @@ def jaccard_coefficient(G, ebunch=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.complete_graph(5)
     >>> preds = nx.jaccard_coefficient(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
@@ -187,7 +185,6 @@ def adamic_adar_index(G, ebunch=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.complete_graph(5)
     >>> preds = nx.adamic_adar_index(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
@@ -264,7 +261,6 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.complete_graph(5)
     >>> preds = nx.common_neighbor_centrality(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
@@ -322,7 +318,6 @@ def preferential_attachment(G, ebunch=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.complete_graph(5)
     >>> preds = nx.preferential_attachment(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
@@ -386,7 +381,6 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.path_graph(3)
     >>> G.nodes[0]['community'] = 0
     >>> G.nodes[1]['community'] = 0
@@ -461,7 +455,6 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.Graph()
     >>> G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
     >>> G.nodes[0]['community'] = 0
@@ -537,7 +530,6 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.Graph()
     >>> G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 4), (2, 4), (3, 4)])
     >>> G.nodes[0]['community'] = 0

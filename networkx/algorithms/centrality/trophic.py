@@ -14,15 +14,15 @@ def trophic_levels(G, weight="weight"):
 
     .. math::
 
-        s_i = 1 + \frac{1}{k_^{in}_i \sum_{j} a_{ij} s_j
+        s_i = 1 + \frac{1}{k^{in}_i} \sum_{j} a_{ij} s_j
 
-    where $k_^{in}_i$ is the in-degree of i
+    where $k^{in}_i$ is the in-degree of i
 
     .. math::
 
         k^{in}_i = \sum_{j} a_{ij}
 
-    and nodes with $k_^{in}_i = 0$ have $s_i = 1$ by convention.
+    and nodes with $k^{in}_i = 0$ have $s_i = 1$ by convention.
 
     These are calculated using the method outlined in Levine [1]_.
 

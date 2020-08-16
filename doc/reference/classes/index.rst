@@ -58,3 +58,26 @@ Graph Views
    generic_graph_view
    subgraph_view
    reverse_view
+
+Filters
+=======
+
+.. note:: Filters can be used with views to restrict the view (or expand it).
+   They can filter nodes or filter edges. These examples are intended to help
+   you build new ones. They may instead contain all the filters you ever need.
+
+.. automodule:: networkx.classes.filters
+.. autosummary::
+   :toctree: generated/
+
+   no_filter
+   hide_nodes
+   hide_edges
+   hide_diedges
+   hide_multidiedges
+   hide_multiedges
+   show_nodes
+   show_edges
+   show_diedges
+   show_multidiedges
+   show_multiedges

@@ -271,7 +271,6 @@ def shortest_augmenting_path(
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.flow import shortest_augmenting_path
 
     The functions that implement flow algorithms and output a residual

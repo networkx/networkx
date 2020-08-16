@@ -388,7 +388,6 @@ def preflow_push(
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.flow import preflow_push
 
     The functions that implement flow algorithms and output a residual

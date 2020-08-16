@@ -520,10 +520,10 @@ class MultiGraph(Graph):
             ddd.update(attr)
             try:
                 ddd.update(dd)
-            except:
+            except (TypeError, ValueError):
                 if ne != 3:
                     raise
-                key = dd
+                key = dd  # ne == 3 with 3rd value not dict, must be a key
             key = self.add_edge(u, v, key)
             self[u][v][key].update(ddd)
             keylist.append(key)

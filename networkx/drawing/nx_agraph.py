@@ -38,8 +38,9 @@ def from_agraph(A, create_using=None):
     A : PyGraphviz AGraph
       A graph created with PyGraphviz
 
-    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+    create_using : NetworkX graph constructor, optional (default=None)
        Graph type to create. If graph instance, then cleared before populated.
+       If `None`, then the appropriate Graph type is inferred from `A`.
 
     Examples
     --------
@@ -145,26 +146,26 @@ def to_agraph(N):
     # add nodes
     for n, nodedata in N.nodes(data=True):
         A.add_node(n)
-        if nodedata is not None:
-            a = A.get_node(n)
-            a.attr.update({k: str(v) for k, v in nodedata.items()})
+        # Add node data
+        a = A.get_node(n)
+        a.attr.update({k: str(v) for k, v in nodedata.items()})
 
     # loop over edges
     if N.is_multigraph():
         for u, v, key, edgedata in N.edges(data=True, keys=True):
             str_edgedata = {k: str(v) for k, v in edgedata.items() if k != "key"}
             A.add_edge(u, v, key=str(key))
-            if edgedata is not None:
-                a = A.get_edge(u, v)
-                a.attr.update(str_edgedata)
+            # Add edge data
+            a = A.get_edge(u, v)
+            a.attr.update(str_edgedata)
 
     else:
         for u, v, edgedata in N.edges(data=True):
             str_edgedata = {k: str(v) for k, v in edgedata.items()}
             A.add_edge(u, v)
-            if edgedata is not None:
-                a = A.get_edge(u, v)
-                a.attr.update(str_edgedata)
+            # Add edge data
+            a = A.get_edge(u, v)
+            a.attr.update(str_edgedata)
 
     return A
 
@@ -250,7 +251,9 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
     args : string, optional
       Extra arguments to Graphviz layout program
 
-    Returns : dictionary
+    Returns
+    -------
+    node_pos : dict
       Dictionary of x, y, positions keyed by node.
 
     Examples
@@ -265,11 +268,11 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
     representation and GraphViz could treat them as the same node.
     The layout may assign both nodes a single location. See Issue #1568
     If this occurs in your case, consider relabeling the nodes just
-    for the layout computation using something similar to:
+    for the layout computation using something similar to::
 
-        H = nx.convert_node_labels_to_integers(G, label_attribute='node_label')
-        H_layout = nx.nx_agraph.pygraphviz_layout(G, prog='dot')
-        G_layout = {H.nodes[n]['node_label']: p for n, p in H_layout.items()}
+        >>> H = nx.convert_node_labels_to_integers(G, label_attribute='node_label')
+        >>> H_layout = nx.nx_agraph.pygraphviz_layout(G, prog='dot')
+        >>> G_layout = {H.nodes[n]['node_label']: p for n, p in H_layout.items()}
 
     """
     try:
@@ -293,7 +296,9 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
 
 
 @nx.utils.open_file(5, "w+b")
-def view_pygraphviz(G, edgelabel=None, prog="dot", args="", suffix="", path=None):
+def view_pygraphviz(
+    G, edgelabel=None, prog="dot", args="", suffix="", path=None, show=True
+):
     """Views the graph G using the specified layout algorithm.
 
     Parameters
@@ -316,6 +321,10 @@ def view_pygraphviz(G, edgelabel=None, prog="dot", args="", suffix="", path=None
     path : str, None
         The filename used to save the image.  If None, save to a temporary
         file.  File formats are the same as those from pygraphviz.agraph.draw.
+    show : bool, default = True
+        Whether to display the graph with `networkx.utils.default_opener`,
+        default is `True`. If `False`, the rendered graph is still available
+        at `path`.
 
     Returns
     -------
@@ -417,7 +426,13 @@ def view_pygraphviz(G, edgelabel=None, prog="dot", args="", suffix="", path=None
         # Assume the decorator worked and it is a file-object.
         pass
 
-    display_pygraphviz(A, path=path, prog=prog, args=args)
+    # Write graph to file
+    A.draw(path=path, format=None, prog=prog, args=args)
+    path.close()
+
+    # Show graph in a new window (depends on platform configuration)
+    if show:
+        nx.utils.default_opener(path.name)
 
     return path.name, A
 
@@ -446,6 +461,14 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=""):
     calls if you experience problems.
 
     """
+    import warnings
+
+    warnings.warn(
+        "display_pygraphviz is deprecated and will be removed in NetworkX 3.0. "
+        "To view a graph G using pygraphviz, use nx.nx_agraph.view_pygraphviz(G). "
+        "To view a graph from file, consider nx.utils.default_opener(filename).",
+        DeprecationWarning,
+    )
     if format is None:
         filename = path.name
         format = os.path.splitext(filename)[1].lower()[1:]
