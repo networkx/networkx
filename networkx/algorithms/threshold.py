@@ -24,6 +24,7 @@ def is_threshold_graph(G):
 
     Examples
     --------
+    >>> from networkx.algorithms.threshold import is_threshold_graph
     >>> G = nx.path_graph(3)
     >>> is_threshold_graph(G)
     True
@@ -385,6 +386,7 @@ def find_threshold_graph(G, create_using=None):
 
     Examples
     --------
+    >>> from networkx.algorithms.threshold import find_threshold_graph
     >>> G = nx.barbell_graph(3, 3)
     >>> T = find_threshold_graph(G)
     >>> T.nodes # may vary
