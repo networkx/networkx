@@ -38,8 +38,10 @@ def strongly_connected_components(G):
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
     >>> nx.add_cycle(G, [10, 11, 12])
-    >>> [len(c) for c in sorted(nx.strongly_connected_components(G),
-    ...                         key=len, reverse=True)]
+    >>> [
+    ...     len(c)
+    ...     for c in sorted(nx.strongly_connected_components(G), key=len, reverse=True)
+    ... ]
     [4, 3]
 
     If you only want the largest component, it's more efficient to
@@ -133,8 +135,12 @@ def kosaraju_strongly_connected_components(G, source=None):
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
     >>> nx.add_cycle(G, [10, 11, 12])
-    >>> [len(c) for c in sorted(nx.kosaraju_strongly_connected_components(G),
-    ...                         key=len, reverse=True)]
+    >>> [
+    ...     len(c)
+    ...     for c in sorted(
+    ...         nx.kosaraju_strongly_connected_components(G), key=len, reverse=True
+    ...     )
+    ... ]
     [4, 3]
 
     If you only want the largest component, it's more efficient to
@@ -192,8 +198,12 @@ def strongly_connected_components_recursive(G):
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
     >>> nx.add_cycle(G, [10, 11, 12])
-    >>> [len(c) for c in sorted(nx.strongly_connected_components_recursive(G),
-    ...                         key=len, reverse=True)]
+    >>> [
+    ...     len(c)
+    ...     for c in sorted(
+    ...         nx.strongly_connected_components_recursive(G), key=len, reverse=True
+    ...     )
+    ... ]
     [4, 3]
 
     If you only want the largest component, it's more efficient to

@@ -83,12 +83,12 @@ def min_cost_flow_cost(G, demand="demand", capacity="capacity", weight="weight")
     A simple example of a min cost flow problem.
 
     >>> G = nx.DiGraph()
-    >>> G.add_node('a', demand = -5)
-    >>> G.add_node('d', demand = 5)
-    >>> G.add_edge('a', 'b', weight = 3, capacity = 4)
-    >>> G.add_edge('a', 'c', weight = 6, capacity = 10)
-    >>> G.add_edge('b', 'd', weight = 1, capacity = 9)
-    >>> G.add_edge('c', 'd', weight = 2, capacity = 5)
+    >>> G.add_node("a", demand=-5)
+    >>> G.add_node("d", demand=5)
+    >>> G.add_edge("a", "b", weight=3, capacity=4)
+    >>> G.add_edge("a", "c", weight=6, capacity=10)
+    >>> G.add_edge("b", "d", weight=1, capacity=9)
+    >>> G.add_edge("c", "d", weight=2, capacity=5)
     >>> flowCost = nx.min_cost_flow_cost(G)
     >>> flowCost
     24
@@ -173,12 +173,12 @@ def min_cost_flow(G, demand="demand", capacity="capacity", weight="weight"):
     A simple example of a min cost flow problem.
 
     >>> G = nx.DiGraph()
-    >>> G.add_node('a', demand = -5)
-    >>> G.add_node('d', demand = 5)
-    >>> G.add_edge('a', 'b', weight = 3, capacity = 4)
-    >>> G.add_edge('a', 'c', weight = 6, capacity = 10)
-    >>> G.add_edge('b', 'd', weight = 1, capacity = 9)
-    >>> G.add_edge('c', 'd', weight = 2, capacity = 5)
+    >>> G.add_node("a", demand=-5)
+    >>> G.add_node("d", demand=5)
+    >>> G.add_edge("a", "b", weight=3, capacity=4)
+    >>> G.add_edge("a", "c", weight=6, capacity=10)
+    >>> G.add_edge("b", "d", weight=1, capacity=9)
+    >>> G.add_edge("c", "d", weight=2, capacity=5)
     >>> flowDict = nx.min_cost_flow(G)
     """
     return nx.network_simplex(G, demand=demand, capacity=capacity, weight=weight)[1]
@@ -293,18 +293,22 @@ def max_flow_min_cost(G, s, t, capacity="capacity", weight="weight"):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2, {'capacity': 12, 'weight': 4}),
-    ...                   (1, 3, {'capacity': 20, 'weight': 6}),
-    ...                   (2, 3, {'capacity': 6, 'weight': -3}),
-    ...                   (2, 6, {'capacity': 14, 'weight': 1}),
-    ...                   (3, 4, {'weight': 9}),
-    ...                   (3, 5, {'capacity': 10, 'weight': 5}),
-    ...                   (4, 2, {'capacity': 19, 'weight': 13}),
-    ...                   (4, 5, {'capacity': 4, 'weight': 0}),
-    ...                   (5, 7, {'capacity': 28, 'weight': 2}),
-    ...                   (6, 5, {'capacity': 11, 'weight': 1}),
-    ...                   (6, 7, {'weight': 8}),
-    ...                   (7, 4, {'capacity': 6, 'weight': 6})])
+    >>> G.add_edges_from(
+    ...     [
+    ...         (1, 2, {"capacity": 12, "weight": 4}),
+    ...         (1, 3, {"capacity": 20, "weight": 6}),
+    ...         (2, 3, {"capacity": 6, "weight": -3}),
+    ...         (2, 6, {"capacity": 14, "weight": 1}),
+    ...         (3, 4, {"weight": 9}),
+    ...         (3, 5, {"capacity": 10, "weight": 5}),
+    ...         (4, 2, {"capacity": 19, "weight": 13}),
+    ...         (4, 5, {"capacity": 4, "weight": 0}),
+    ...         (5, 7, {"capacity": 28, "weight": 2}),
+    ...         (6, 5, {"capacity": 11, "weight": 1}),
+    ...         (6, 7, {"weight": 8}),
+    ...         (7, 4, {"capacity": 6, "weight": 6}),
+    ...     ]
+    ... )
     >>> mincostFlow = nx.max_flow_min_cost(G, 1, 7)
     >>> mincost = nx.cost_of_flow(G, mincostFlow)
     >>> mincost
@@ -313,8 +317,9 @@ def max_flow_min_cost(G, s, t, capacity="capacity", weight="weight"):
     >>> maxFlow = maximum_flow(G, 1, 7)[1]
     >>> nx.cost_of_flow(G, maxFlow) >= mincost
     True
-    >>> mincostFlowValue = (sum((mincostFlow[u][7] for u in G.predecessors(7)))
-    ...                     - sum((mincostFlow[7][v] for v in G.successors(7))))
+    >>> mincostFlowValue = sum((mincostFlow[u][7] for u in G.predecessors(7))) - sum(
+    ...     (mincostFlow[7][v] for v in G.successors(7))
+    ... )
     >>> mincostFlowValue == nx.maximum_flow_value(G, 1, 7)
     True
 

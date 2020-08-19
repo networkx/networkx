@@ -81,8 +81,8 @@ match : function
 Examples
 --------
 >>> import networkx.algorithms.isomorphism as iso
->>> nm = iso.categorical_node_match('size', 1)
->>> nm = iso.categorical_node_match(['color', 'size'], ['red', 2])
+>>> nm = iso.categorical_node_match("size", 1)
+>>> nm = iso.categorical_node_match(["color", "size"], ["red", 2])
 
 """
 
@@ -173,8 +173,8 @@ match : function
 Examples
 --------
 >>> import networkx.algorithms.isomorphism as iso
->>> nm = iso.numerical_node_match('weight', 1.0)
->>> nm = iso.numerical_node_match(['weight', 'linewidth'], [.25, .5])
+>>> nm = iso.numerical_node_match("weight", 1.0)
+>>> nm = iso.numerical_node_match(["weight", "linewidth"], [0.25, 0.5])
 
 """
 
@@ -276,9 +276,9 @@ Examples
 >>> from operator import eq
 >>> from networkx.algorithms.isomorphism.matchhelpers import close
 >>> from networkx.algorithms.isomorphism import generic_node_match
->>> nm = generic_node_match('weight', 1.0, close)
->>> nm = generic_node_match('color', 'red', eq)
->>> nm = generic_node_match(['weight', 'color'], [1.0, 'red'], [close, eq])
+>>> nm = generic_node_match("weight", 1.0, close)
+>>> nm = generic_node_match("color", "red", eq)
+>>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [close, eq])
 
 """
 
@@ -343,11 +343,9 @@ def generic_multiedge_match(attr, default, op):
     >>> from operator import eq
     >>> from networkx.algorithms.isomorphism.matchhelpers import close
     >>> from networkx.algorithms.isomorphism import generic_node_match
-    >>> nm = generic_node_match('weight', 1.0, close)
-    >>> nm = generic_node_match('color', 'red', eq)
-    >>> nm = generic_node_match(['weight', 'color'],
-    ...                         [1.0, 'red'],
-    ...                         [close, eq])
+    >>> nm = generic_node_match("weight", 1.0, close)
+    >>> nm = generic_node_match("color", "red", eq)
+    >>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [close, eq])
     ...
 
     """

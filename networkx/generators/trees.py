@@ -51,7 +51,7 @@ def prefix_tree(paths):
         attribute; for example::
 
             >>> from networkx.generators.trees import NIL
-            >>> paths = ['ab', 'abs', 'ad']
+            >>> paths = ["ab", "abs", "ad"]
             >>> T, root = nx.prefix_tree(paths)
             >>> T.predecessors(NIL)
             <dict_keyiterator object at 0x...>
@@ -68,7 +68,7 @@ def prefix_tree(paths):
     Create a prefix tree from a list of strings with some common
     prefixes::
 
-        >>> strings = ['ab', 'abs', 'ad']
+        >>> strings = ["ab", "abs", "ad"]
         >>> T, root = nx.prefix_tree(strings)
 
     Continuing the above example, to recover the original paths that
@@ -77,14 +77,14 @@ def prefix_tree(paths):
 
         >>> from networkx.generators.trees import NIL
         >>>
-        >>> strings = ['ab', 'abs', 'ad']
+        >>> strings = ["ab", "abs", "ad"]
         >>> T, root = nx.prefix_tree(strings)
         >>> recovered = []
         >>> for v in T.predecessors(NIL):
-        ...     s = ''
+        ...     s = ""
         ...     while v != root:
         ...         # Prepend the character `v` to the accumulator `s`.
-        ...         s = str(T.nodes[v]['source']) + s
+        ...         s = str(T.nodes[v]["source"]) + s
         ...         # Each non-nil, non-root node has exactly one parent.
         ...         v = next(T.predecessors(v))
         ...     recovered.append(s)

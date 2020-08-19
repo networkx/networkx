@@ -72,14 +72,14 @@ def stoer_wagner(G, weight="weight", heap=BinaryHeap):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_edge('x', 'a', weight=3)
-    >>> G.add_edge('x', 'b', weight=1)
-    >>> G.add_edge('a', 'c', weight=3)
-    >>> G.add_edge('b', 'c', weight=5)
-    >>> G.add_edge('b', 'd', weight=4)
-    >>> G.add_edge('d', 'e', weight=2)
-    >>> G.add_edge('c', 'y', weight=2)
-    >>> G.add_edge('e', 'y', weight=3)
+    >>> G.add_edge("x", "a", weight=3)
+    >>> G.add_edge("x", "b", weight=1)
+    >>> G.add_edge("a", "c", weight=3)
+    >>> G.add_edge("b", "c", weight=5)
+    >>> G.add_edge("b", "d", weight=4)
+    >>> G.add_edge("d", "e", weight=2)
+    >>> G.add_edge("c", "y", weight=2)
+    >>> G.add_edge("e", "y", weight=3)
     >>> cut_value, partition = nx.stoer_wagner(G)
     >>> cut_value
     4
@@ -95,7 +95,7 @@ def stoer_wagner(G, weight="weight", heap=BinaryHeap):
         (u, v, {"weight": e.get(weight, 1)}) for u, v, e in G.edges(data=True) if u != v
     )
 
-    for u, v, e, in G.edges(data=True):
+    for u, v, e in G.edges(data=True):
         if e["weight"] < 0:
             raise nx.NetworkXError("graph has a negative-weighted edge.")
 
@@ -118,7 +118,7 @@ def stoer_wagner(G, weight="weight", heap=BinaryHeap):
         for j in range(n - i - 2):
             u = h.pop()[0]
             A.add(u)
-            for v, e, in G[u].items():
+            for v, e in G[u].items():
                 if v not in A:
                     h.insert(v, h.get(v, 0) - e["weight"])
         # A and the remaining node v define a "cut of the phase". There is a

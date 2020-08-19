@@ -157,7 +157,7 @@ def graph_edit_distance(
 
     >>> G1 = nx.star_graph(5)
     >>> G2 = nx.star_graph(5)
-    >>> nx.graph_edit_distance(G1, G2, roots=(0,0))
+    >>> nx.graph_edit_distance(G1, G2, roots=(0, 0))
     0.0
     >>> nx.graph_edit_distance(G1, G2, roots=(1, 0))
     8.0

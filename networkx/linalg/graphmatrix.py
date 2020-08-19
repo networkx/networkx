@@ -135,11 +135,11 @@ def adjacency_matrix(G, nodelist=None, weight="weight"):
     resulting Scipy sparse matrix can be modified as follows:
 
     >>> import scipy as sp
-    >>> G = nx.Graph([(1,1)])
+    >>> G = nx.Graph([(1, 1)])
     >>> A = nx.adjacency_matrix(G)
     >>> print(A.todense())
     [[1]]
-    >>> A.setdiag(A.diagonal()*2)
+    >>> A.setdiag(A.diagonal() * 2)
     >>> print(A.todense())
     [[2]]
 

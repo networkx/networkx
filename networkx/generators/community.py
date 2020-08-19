@@ -232,10 +232,10 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
 
     Examples
     --------
-    >>> G = nx.random_partition_graph([10,10,10],.25,.01)
+    >>> G = nx.random_partition_graph([10, 10, 10], 0.25, 0.01)
     >>> len(G)
     30
-    >>> partition = G.graph['partition']
+    >>> partition = G.graph["partition"]
     >>> len(partition)
     3
 
@@ -380,7 +380,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=N
 
     Examples
     --------
-    >>> G = nx.gaussian_random_partition_graph(100,10,10,.25,.1)
+    >>> G = nx.gaussian_random_partition_graph(100, 10, 10, 0.25, 0.1)
     >>> len(G)
     100
 
@@ -563,21 +563,19 @@ def stochastic_block_model(
     Examples
     --------
     >>> sizes = [75, 75, 300]
-    >>> probs = [[0.25, 0.05, 0.02],
-    ...          [0.05, 0.35, 0.07],
-    ...          [0.02, 0.07, 0.40]]
+    >>> probs = [[0.25, 0.05, 0.02], [0.05, 0.35, 0.07], [0.02, 0.07, 0.40]]
     >>> g = nx.stochastic_block_model(sizes, probs, seed=0)
     >>> len(g)
     450
-    >>> H = nx.quotient_graph(g, g.graph['partition'], relabel=True)
+    >>> H = nx.quotient_graph(g, g.graph["partition"], relabel=True)
     >>> for v in H.nodes(data=True):
-    ...     print(round(v[1]['density'], 3))
+    ...     print(round(v[1]["density"], 3))
     ...
     0.245
     0.348
     0.405
     >>> for v in H.edges(data=True):
-    ...     print(round(1.0 * v[2]['weight'] / (sizes[v[0]] * sizes[v[1]]), 3))
+    ...     print(round(1.0 * v[2]["weight"] / (sizes[v[0]] * sizes[v[1]]), 3))
     ...
     0.051
     0.022
@@ -949,13 +947,14 @@ def LFR_benchmark_graph(
         >>> tau1 = 3
         >>> tau2 = 1.5
         >>> mu = 0.1
-        >>> G = LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=5,
-        ...                         min_community=20, seed=10)
+        >>> G = LFR_benchmark_graph(
+        ...     n, tau1, tau2, mu, average_degree=5, min_community=20, seed=10
+        ... )
 
     Continuing the example above, you can get the communities from the
     node attributes of the graph::
 
-        >>> communities = {frozenset(G.nodes[v]['community']) for v in G}
+        >>> communities = {frozenset(G.nodes[v]["community"]) for v in G}
 
     Notes
     -----

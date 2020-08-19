@@ -393,11 +393,11 @@ def find_cycle(G, source=None, orientation=None):
 
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
     >>> try:
-    ...    nx.find_cycle(G, orientation='original')
+    ...     nx.find_cycle(G, orientation="original")
     ... except:
-    ...    pass
+    ...     pass
     ...
-    >>> list(nx.find_cycle(G, orientation='ignore'))
+    >>> list(nx.find_cycle(G, orientation="ignore"))
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
     See Also
@@ -518,9 +518,9 @@ def minimum_cycle_basis(G, weight=None):
 
     Examples
     --------
-    >>> G=nx.Graph()
-    >>> nx.add_cycle(G, [0,1,2,3])
-    >>> nx.add_cycle(G, [0,3,4,5])
+    >>> G = nx.Graph()
+    >>> nx.add_cycle(G, [0, 1, 2, 3])
+    >>> nx.add_cycle(G, [0, 3, 4, 5])
     >>> print([sorted(c) for c in nx.minimum_cycle_basis(G)])
     [[0, 1, 2, 3], [0, 3, 4, 5]]
 

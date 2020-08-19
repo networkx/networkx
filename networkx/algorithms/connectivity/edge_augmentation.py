@@ -18,11 +18,7 @@ import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
 from collections import defaultdict, namedtuple
 
-__all__ = [
-    "k_edge_augmentation",
-    "is_k_edge_connected",
-    "is_locally_k_edge_connected",
-]
+__all__ = ["k_edge_augmentation", "is_k_edge_connected", "is_locally_k_edge_connected"]
 
 
 @not_implemented_for("directed")
@@ -230,8 +226,8 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     >>> G = nx.path_graph((1, 2, 3, 4))
     >>> G.add_node(5)
     >>> # avail can be a tuple with a dict
-    >>> avail = [(1, 5, {'weight': 11}), (2, 5, {'weight': 10})]
-    >>> sorted(nx.k_edge_augmentation(G, k=1, avail=avail, weight='weight'))
+    >>> avail = [(1, 5, {"weight": 11}), (2, 5, {"weight": 10})]
+    >>> sorted(nx.k_edge_augmentation(G, k=1, avail=avail, weight="weight"))
     [(2, 5)]
     >>> # or avail can be a 3-tuple with a real number
     >>> avail = [(1, 5, 11), (2, 5, 10), (4, 3, 1), (4, 5, 51)]
@@ -557,7 +553,7 @@ def _lightest_meta_edges(mapping, avail_uv, avail_w):
     >>> groups = ([1, 2, 3], [4, 5], [6])
     >>> mapping = {n: meta_n for meta_n, ns in enumerate(groups) for n in ns}
     >>> avail_uv = [(1, 2), (3, 6), (1, 4), (5, 2), (6, 1), (2, 6), (3, 1)]
-    >>> avail_w =  [    20,     99,     20,     15,     50,     99,     20]
+    >>> avail_w = [20, 99, 20, 15, 50, 99, 20]
     >>> sorted(_lightest_meta_edges(mapping, avail_uv, avail_w))
     [MetaEdge(meta_uv=(0, 1), uv=(5, 2), w=15), MetaEdge(meta_uv=(0, 2), uv=(6, 1), w=50)]
     """
@@ -895,7 +891,7 @@ def weighted_bridge_augmentation(G, avail, weight=None):
     >>> avail = [(1, 4, 1000), (1, 3, 1), (2, 4, 1)]
     >>> sorted(weighted_bridge_augmentation(G, avail))
     [(1, 3), (2, 4)]
-    >>> #------
+    >>> # ------
     >>> G = nx.path_graph((1, 2, 3, 4))
     >>> G.add_node(5)
     >>> avail = [(1, 5, 11), (2, 5, 10), (4, 3, 1), (4, 5, 1)]
@@ -1064,17 +1060,17 @@ def collapse(G, grouped_nodes):
     --------
     >>> # Collapses a graph using disjoint groups, but not necesarilly connected
     >>> G = nx.Graph([(1, 0), (2, 3), (3, 1), (3, 4), (4, 5), (5, 6), (5, 7)])
-    >>> G.add_node('A')
+    >>> G.add_node("A")
     >>> grouped_nodes = [{0, 1, 2, 3}, {5, 6, 7}]
     >>> C = collapse(G, grouped_nodes)
-    >>> members = nx.get_node_attributes(C, 'members')
+    >>> members = nx.get_node_attributes(C, "members")
     >>> sorted(members.keys())
     [0, 1, 2, 3]
     >>> member_values = set(map(frozenset, members.values()))
     >>> assert {0, 1, 2, 3} in member_values
     >>> assert {4} in member_values
     >>> assert {5, 6, 7} in member_values
-    >>> assert {'A'} in member_values
+    >>> assert {"A"} in member_values
     """
     mapping = {}
     members = {}

@@ -27,7 +27,7 @@ class TestPylab:
                 nx.draw_spring,
                 nx.draw_shell,
             ]
-            options = [{"node_color": "black", "node_size": 100, "width": 3,}]
+            options = [{"node_color": "black", "node_size": 100, "width": 3}]
             for function, option in itertools.product(functions, options):
                 function(self.G, **option)
                 plt.savefig("test.ps")
@@ -54,11 +54,11 @@ class TestPylab:
         nx.draw_spring(
             self.G, edge_color=colors, width=4, edge_cmap=plt.cm.Blues, with_labels=True
         )
-        plt.show()
+        # plt.show()
 
     def test_arrows(self):
         nx.draw_spring(self.G.to_directed())
-        plt.show()
+        # plt.show()
 
     def test_edge_colors_and_widths(self):
         pos = nx.circular_layout(self.G)
@@ -136,7 +136,7 @@ class TestPylab:
                 edge_vmax=0.6,
             )
 
-            plt.show()
+            # plt.show()
 
     def test_labels_and_colors(self):
         G = nx.cubical_graph()
@@ -193,7 +193,7 @@ class TestPylab:
         nx.draw_networkx_labels(G, pos, labels, font_size=16)
         nx.draw_networkx_edge_labels(G, pos, edge_labels=None, rotate=False)
         nx.draw_networkx_edge_labels(G, pos, edge_labels={(4, 5): "4-5"})
-        plt.show()
+        # plt.show()
 
     def test_axes(self):
         fig, ax = plt.subplots()

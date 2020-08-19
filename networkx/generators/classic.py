@@ -297,8 +297,17 @@ def circulant_graph(n, offsets, create_using=None):
     >>> import networkx
     >>> G = networkx.generators.classic.circulant_graph(10, [1])
     >>> edges = [
-    ...     (0, 9), (0, 1), (1, 2), (2, 3), (3, 4),
-    ...     (4, 5), (5, 6), (6, 7), (7, 8), (8, 9)]
+    ...     (0, 9),
+    ...     (0, 1),
+    ...     (1, 2),
+    ...     (2, 3),
+    ...     (3, 4),
+    ...     (4, 5),
+    ...     (5, 6),
+    ...     (6, 7),
+    ...     (7, 8),
+    ...     (8, 9),
+    ... ]
     ...
     >>> sorted(edges) == sorted(G.edges())
     True
@@ -308,8 +317,17 @@ def circulant_graph(n, offsets, create_using=None):
 
     >>> G = networkx.generators.classic.circulant_graph(5, [1, 2])
     >>> edges = [
-    ...     (0, 1), (0, 2), (0, 3), (0, 4), (1, 2),
-    ...     (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
+    ...     (0, 1),
+    ...     (0, 2),
+    ...     (0, 3),
+    ...     (0, 4),
+    ...     (1, 2),
+    ...     (1, 3),
+    ...     (1, 4),
+    ...     (2, 3),
+    ...     (2, 4),
+    ...     (3, 4),
+    ... ]
     ...
     >>> sorted(edges) == sorted(G.edges())
     True
@@ -691,7 +709,7 @@ def complete_multipartite_graph(*subset_sizes):
     vertices, respectively.
 
         >>> G = nx.complete_multipartite_graph(1, 2, 3)
-        >>> [G.nodes[u]['subset'] for u in G]
+        >>> [G.nodes[u]["subset"] for u in G]
         [0, 1, 1, 2, 2, 2]
         >>> list(G.edges(0))
         [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
@@ -700,8 +718,8 @@ def complete_multipartite_graph(*subset_sizes):
         >>> list(G.edges(4))
         [(4, 0), (4, 1), (4, 2)]
 
-        >>> G = nx.complete_multipartite_graph('a', 'bc', 'def')
-        >>> [G.nodes[u]['subset'] for u in sorted(G)]
+        >>> G = nx.complete_multipartite_graph("a", "bc", "def")
+        >>> [G.nodes[u]["subset"] for u in sorted(G)]
         [0, 1, 1, 2, 2, 2]
 
     Notes

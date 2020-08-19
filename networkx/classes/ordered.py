@@ -22,7 +22,7 @@ subgraphs and replace with code similar to:
 .. code-block:: python
 
     # instead of SG = G.subgraph(ordered_nodes)
-    SG=nx.OrderedGraph()
+    SG = nx.OrderedGraph()
     SG.add_nodes_from(ordered_nodes)
     SG.add_edges_from((u, v) for (u, v) in G.edges() if u in SG if v in SG)
 
@@ -37,7 +37,7 @@ from .multidigraph import MultiDiGraph
 __all__ = []
 
 __all__.extend(
-    ["OrderedGraph", "OrderedDiGraph", "OrderedMultiGraph", "OrderedMultiDiGraph",]
+    ["OrderedGraph", "OrderedDiGraph", "OrderedMultiGraph", "OrderedMultiDiGraph"]
 )
 
 

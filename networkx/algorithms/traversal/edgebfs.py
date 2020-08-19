@@ -71,10 +71,10 @@ def edge_bfs(G, source=None, orientation=None):
     >>> list(nx.edge_bfs(nx.MultiDiGraph(edges), nodes))
     [(0, 1, 0), (1, 0, 0), (1, 0, 1), (2, 0, 0), (2, 1, 0), (3, 1, 0)]
 
-    >>> list(nx.edge_bfs(nx.DiGraph(edges), nodes, orientation='ignore'))
+    >>> list(nx.edge_bfs(nx.DiGraph(edges), nodes, orientation="ignore"))
     [(0, 1, 'forward'), (1, 0, 'reverse'), (2, 0, 'reverse'), (2, 1, 'reverse'), (3, 1, 'reverse')]
 
-    >>> list(nx.edge_bfs(nx.MultiDiGraph(edges), nodes, orientation='ignore'))
+    >>> list(nx.edge_bfs(nx.MultiDiGraph(edges), nodes, orientation="ignore"))
     [(0, 1, 0, 'forward'), (1, 0, 0, 'reverse'), (1, 0, 1, 'reverse'), (2, 0, 0, 'reverse'), (2, 1, 0, 'reverse'), (3, 1, 0, 'reverse')]
 
     Notes

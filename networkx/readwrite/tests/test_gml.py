@@ -589,7 +589,7 @@ class TestPropertyLists:
             )
             f.seek(0)
             graph = nx.read_gml(f)
-        assert graph.nodes(data=True)["n1"] == {"properties": ["element", 0, 1, 2.5,]}
+        assert graph.nodes(data=True)["n1"] == {"properties": ["element", 0, 1, 2.5]}
 
     def test_reading_graph_with_single_element_list_property(self):
         with byte_file() as f:
@@ -609,4 +609,4 @@ class TestPropertyLists:
             )
             f.seek(0)
             graph = nx.read_gml(f)
-        assert graph.nodes(data=True)["n1"] == {"properties": ["element",]}
+        assert graph.nodes(data=True)["n1"] == {"properties": ["element"]}

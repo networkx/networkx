@@ -129,9 +129,9 @@ def make_compact(creation_sequence):
     Examples
     --------
     >>> from networkx.algorithms.threshold import make_compact
-    >>> make_compact(['d', 'i', 'i', 'd', 'd', 'i', 'i', 'i'])
+    >>> make_compact(["d", "i", "i", "d", "d", "i", "i", "i"])
     [1, 2, 2, 3]
-    >>> make_compact(['d', 'd', 'd', 'i', 'd', 'd'])
+    >>> make_compact(["d", "d", "d", "i", "d", "d"])
     [3, 1, 2]
 
     Notice that the first number is the first vertex

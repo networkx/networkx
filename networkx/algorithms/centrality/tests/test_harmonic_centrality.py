@@ -41,12 +41,7 @@ class TestClosenessCentrality:
 
     def test_cycle_C4(self):
         c = harmonic_centrality(self.C4)
-        d = {
-            0: 2.5,
-            1: 2.5,
-            2: 2.5,
-            3: 2.5,
-        }
+        d = {0: 2.5, 1: 2.5, 2: 2.5, 3: 2.5}
         for n in sorted(self.C4):
             assert almost_equal(c[n], d[n], places=3)
 

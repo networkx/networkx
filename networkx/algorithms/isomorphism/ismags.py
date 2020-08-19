@@ -18,7 +18,7 @@ per symmetry group.
 >>> len(isomorphisms)
 120
 >>> isomorphisms = list(ismags.isomorphisms_iter(symmetry=True))
->>> answer = [{0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7:7, 8: 8, 9: 9}]
+>>> answer = [{0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9}]
 >>> answer == isomorphisms
 True
 
@@ -35,10 +35,7 @@ worth thinking about how you provide your graphs:
 >>> ismags.is_isomorphic()
 False
 >>> largest_common_subgraph = list(ismags.largest_common_subgraph())
->>> answer = [
-...     {1: 0, 0: 1, 2: 2},
-...     {2: 0, 1: 1, 3: 2}
-... ]
+>>> answer = [{1: 0, 0: 1, 2: 2}, {2: 0, 1: 1, 3: 2}]
 >>> answer == largest_common_subgraph
 True
 >>> ismags2 = nx.isomorphism.ISMAGS(graph2, graph1)
@@ -49,7 +46,7 @@ True
 ...     {2: 0, 0: 1, 1: 2},
 ...     {2: 0, 0: 1, 3: 2},
 ...     {3: 0, 0: 1, 1: 2},
-...     {3: 0, 0: 1, 2: 2}
+...     {3: 0, 0: 1, 2: 2},
 ... ]
 >>> answer == largest_common_subgraph
 True
@@ -69,7 +66,7 @@ However, when not taking symmetry into account, it doesn't matter:
 ...     {1: 0, 0: 2, 2: 3},
 ...     {1: 0, 2: 2, 0: 3},
 ...     {2: 0, 1: 2, 3: 3},
-...     {2: 0, 3: 2, 1: 3}
+...     {2: 0, 3: 2, 1: 3},
 ... ]
 >>> answer == largest_common_subgraph
 True
@@ -86,7 +83,7 @@ True
 ...     {2: 1, 0: 2, 1: 3},
 ...     {2: 1, 0: 2, 3: 3},
 ...     {3: 1, 0: 2, 1: 3},
-...     {3: 1, 0: 2, 2: 3}
+...     {3: 1, 0: 2, 2: 3},
 ... ]
 >>> answer == largest_common_subgraph
 True

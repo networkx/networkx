@@ -184,8 +184,6 @@ class TestRelabel:
         G = nx.relabel_nodes(G, {1: 0}, copy=False)
         assert_nodes_equal(G.nodes(), [0])
 
-#    def test_relabel_multidigraph_inout_inplace(self):
-#        pass
     def test_relabel_multidigraph_inout_merge_nodes(self):
         for MG in (nx.MultiGraph, nx.MultiDiGraph):
             for cc in (True, False):

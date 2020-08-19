@@ -181,7 +181,7 @@ def generate_graphml(G, encoding="utf-8", prettyprint=True, named_key_ids=False)
     >>> linefeed = chr(10)  # linefeed = \n
     >>> s = linefeed.join(nx.generate_graphml(G))  # doctest: +SKIP
     >>> for line in nx.generate_graphml(G):  # doctest: +SKIP
-    ...    print(line)
+    ...     print(line)
 
     Notes
     -----
@@ -229,14 +229,14 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
     They can be obtained from `G.graph` and applied to node and edge attributes
     if desired using something like this:
 
-    >>> default_color = G.graph['node_default']['color']  # doctest: +SKIP
+    >>> default_color = G.graph["node_default"]["color"]  # doctest: +SKIP
     >>> for node, data in G.nodes(data=True):  # doctest: +SKIP
-    ...     if 'color' not in data:
-    ...         data['color']=default_color
-    >>> default_color = G.graph['edge_default']['color']  # doctest: +SKIP
+    ...     if "color" not in data:
+    ...         data["color"] = default_color
+    >>> default_color = G.graph["edge_default"]["color"]  # doctest: +SKIP
     >>> for u, v, data in G.edges(data=True):  # doctest: +SKIP
-    ...     if 'color' not in data:
-    ...         data['color']=default_color
+    ...     if "color" not in data:
+    ...         data["color"] = default_color
 
     This implementation does not support mixed graphs (directed and unidirected
     edges together), hypergraphs, nested graphs, or ports.
@@ -310,14 +310,14 @@ def parse_graphml(
     They can be obtained from `G.graph` and applied to node and edge attributes
     if desired using something like this:
 
-    >>> default_color = G.graph['node_default']['color']  # doctest: +SKIP
+    >>> default_color = G.graph["node_default"]["color"]  # doctest: +SKIP
     >>> for node, data in G.nodes(data=True):  # doctest: +SKIP
-    ...    if 'color' not in data:
-    ...        data['color']=default_color
-    >>> default_color = G.graph['edge_default']['color']  # doctest: +SKIP
+    ...     if "color" not in data:
+    ...         data["color"] = default_color
+    >>> default_color = G.graph["edge_default"]["color"]  # doctest: +SKIP
     >>> for u, v, data in G.edges(data=True):  # doctest: +SKIP
-    ...    if 'color' not in data:
-    ...        data['color']=default_color
+    ...     if "color" not in data:
+    ...         data["color"] = default_color
 
     This implementation does not support mixed graphs (directed and unidirected
     edges together), hypergraphs, nested graphs, or ports.

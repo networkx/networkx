@@ -160,7 +160,7 @@ def tensor_product(G, H):
     >>> G = nx.Graph()
     >>> H = nx.Graph()
     >>> G.add_node(0, a1=True)
-    >>> H.add_node('a', a2='Spam')
+    >>> H.add_node("a", a2="Spam")
     >>> P = nx.tensor_product(G, H)
     >>> list(P)
     [(0, 'a')]
@@ -212,7 +212,7 @@ def cartesian_product(G, H):
     >>> G = nx.Graph()
     >>> H = nx.Graph()
     >>> G.add_node(0, a1=True)
-    >>> H.add_node('a', a2='Spam')
+    >>> H.add_node("a", a2="Spam")
     >>> P = nx.cartesian_product(G, H)
     >>> list(P)
     [(0, 'a')]
@@ -262,7 +262,7 @@ def lexicographic_product(G, H):
     >>> G = nx.Graph()
     >>> H = nx.Graph()
     >>> G.add_node(0, a1=True)
-    >>> H.add_node('a', a2='Spam')
+    >>> H.add_node("a", a2="Spam")
     >>> P = nx.lexicographic_product(G, H)
     >>> list(P)
     [(0, 'a')]
@@ -316,7 +316,7 @@ def strong_product(G, H):
     >>> G = nx.Graph()
     >>> H = nx.Graph()
     >>> G.add_node(0, a1=True)
-    >>> H.add_node('a', a2='Spam')
+    >>> H.add_node("a", a2="Spam")
     >>> P = nx.strong_product(G, H)
     >>> list(P)
     [(0, 'a')]

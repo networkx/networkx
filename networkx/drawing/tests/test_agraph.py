@@ -52,7 +52,7 @@ class TestAGraph:
         assert G.name == "test"
 
     @pytest.mark.parametrize(
-        "graph_class", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph,)
+        "graph_class", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
     )
     def test_from_agraph_create_using(self, graph_class):
         G = nx.path_graph(3)

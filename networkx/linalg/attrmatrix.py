@@ -227,7 +227,7 @@ def attr_matrix(
 
     Alternatively, we can obtain the matrix describing edge thickness.
 
-    >>> nx.attr_matrix(G, edge_attr='thickness', rc_order=[0, 1, 2])
+    >>> nx.attr_matrix(G, edge_attr="thickness", rc_order=[0, 1, 2])
     matrix([[0., 1., 2.],
             [1., 0., 3.],
             [2., 3., 0.]])
@@ -237,11 +237,11 @@ def attr_matrix(
 
         Pr(v has color Y | u has color X)
 
-    >>> G.nodes[0]['color'] = 'red'
-    >>> G.nodes[1]['color'] = 'red'
-    >>> G.nodes[2]['color'] = 'blue'
-    >>> rc = ['red', 'blue']
-    >>> nx.attr_matrix(G, node_attr='color', normalized=True, rc_order=rc)
+    >>> G.nodes[0]["color"] = "red"
+    >>> G.nodes[1]["color"] = "red"
+    >>> G.nodes[2]["color"] = "blue"
+    >>> rc = ["red", "blue"]
+    >>> nx.attr_matrix(G, node_attr="color", normalized=True, rc_order=rc)
     matrix([[0.33333333, 0.66666667],
             [1.        , 0.        ]])
 
@@ -255,7 +255,7 @@ def attr_matrix(
 
     Finally, we can obtain the total weights listed by the node colors.
 
-    >>> nx.attr_matrix(G, edge_attr='weight', node_attr='color', rc_order=rc)
+    >>> nx.attr_matrix(G, edge_attr="weight", node_attr="color", rc_order=rc)
     matrix([[3., 2.],
             [2., 0.]])
 
@@ -374,10 +374,10 @@ def attr_sparse_matrix(
     Construct an adjacency matrix:
 
     >>> G = nx.Graph()
-    >>> G.add_edge(0,1,thickness=1,weight=3)
-    >>> G.add_edge(0,2,thickness=2)
-    >>> G.add_edge(1,2,thickness=3)
-    >>> M = nx.attr_sparse_matrix(G, rc_order=[0,1,2])
+    >>> G.add_edge(0, 1, thickness=1, weight=3)
+    >>> G.add_edge(0, 2, thickness=2)
+    >>> G.add_edge(1, 2, thickness=3)
+    >>> M = nx.attr_sparse_matrix(G, rc_order=[0, 1, 2])
     >>> M.todense()
     matrix([[0., 1., 1.],
             [1., 0., 1.],
@@ -385,7 +385,7 @@ def attr_sparse_matrix(
 
     Alternatively, we can obtain the matrix describing edge thickness.
 
-    >>> M = nx.attr_sparse_matrix(G, edge_attr='thickness', rc_order=[0,1,2])
+    >>> M = nx.attr_sparse_matrix(G, edge_attr="thickness", rc_order=[0, 1, 2])
     >>> M.todense()
     matrix([[0., 1., 2.],
             [1., 0., 3.],
@@ -396,12 +396,11 @@ def attr_sparse_matrix(
 
         Pr(v has color Y | u has color X)
 
-    >>> G.nodes[0]['color'] = 'red'
-    >>> G.nodes[1]['color'] = 'red'
-    >>> G.nodes[2]['color'] = 'blue'
-    >>> rc = ['red', 'blue']
-    >>> M = nx.attr_sparse_matrix(G, node_attr='color', \
-                                  normalized=True, rc_order=rc)
+    >>> G.nodes[0]["color"] = "red"
+    >>> G.nodes[1]["color"] = "red"
+    >>> G.nodes[2]["color"] = "blue"
+    >>> rc = ["red", "blue"]
+    >>> M = nx.attr_sparse_matrix(G, node_attr="color", normalized=True, rc_order=rc)
     >>> M.todense()
     matrix([[0.33333333, 0.66666667],
             [1.        , 0.        ]])
@@ -416,8 +415,7 @@ def attr_sparse_matrix(
 
     Finally, we can obtain the total weights listed by the node colors.
 
-    >>> M = nx.attr_sparse_matrix(G, edge_attr='weight',\
-                                  node_attr='color', rc_order=rc)
+    >>> M = nx.attr_sparse_matrix(G, edge_attr="weight", node_attr="color", rc_order=rc)
     >>> M.todense()
     matrix([[3., 2.],
             [2., 0.]])

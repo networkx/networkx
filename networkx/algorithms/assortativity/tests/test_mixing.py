@@ -11,18 +11,12 @@ from .base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
 class TestDegreeMixingDict(BaseTestDegreeMixing):
     def test_degree_mixing_dict_undirected(self):
         d = nx.degree_mixing_dict(self.P4)
-        d_result = {
-            1: {2: 2},
-            2: {1: 2, 2: 2},
-        }
+        d_result = {1: {2: 2}, 2: {1: 2, 2: 2}}
         assert d == d_result
 
     def test_degree_mixing_dict_undirected_normalized(self):
         d = nx.degree_mixing_dict(self.P4, normalized=True)
-        d_result = {
-            1: {2: 1.0 / 3},
-            2: {1: 1.0 / 3, 2: 1.0 / 3},
-        }
+        d_result = {1: {2: 1.0 / 3}, 2: {1: 1.0 / 3, 2: 1.0 / 3}}
         assert d == d_result
 
     def test_degree_mixing_dict_directed(self):
@@ -112,10 +106,7 @@ class TestAttributeMixingDict(BaseTestAttributeMixing):
 
     def test_attribute_mixing_dict_multigraph(self):
         d = nx.attribute_mixing_dict(self.M, "fish")
-        d_result = {
-            "one": {"one": 4},
-            "two": {"two": 2},
-        }
+        d_result = {"one": {"one": 4}, "two": {"two": 2}}
         assert d == d_result
 
 

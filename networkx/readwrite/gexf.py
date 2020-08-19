@@ -57,9 +57,9 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
     >>> nx.write_gexf(G, "test.gexf")
 
     # visualization data
-    >>> G.nodes[0]['viz'] = {'size': 54}
-    >>> G.nodes[0]['viz']['position'] = {'x' : 0, 'y' : 1}
-    >>> G.nodes[0]['viz']['color'] = {'r' : 0, 'g' : 0, 'b' : 256}
+    >>> G.nodes[0]["viz"] = {"size": 54}
+    >>> G.nodes[0]["viz"]["position"] = {"x": 0, "y": 1}
+    >>> G.nodes[0]["viz"]["color"] = {"r": 0, "g": 0, "b": 256}
 
 
     Notes
@@ -103,10 +103,10 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> linefeed = chr(10) # linefeed=\n
+    >>> linefeed = chr(10)  # linefeed=\n
     >>> s = linefeed.join(nx.generate_gexf(G))  # doctest: +SKIP
     >>> for line in nx.generate_gexf(G):  # doctest: +SKIP
-    ...    print(line)
+    ...     print(line)
 
     Notes
     -----

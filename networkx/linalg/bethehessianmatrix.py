@@ -40,7 +40,7 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
 
     Examples
     --------
-    >>> k =[3, 2, 2, 1, 0]
+    >>> k = [3, 2, 2, 1, 0]
     >>> G = nx.havel_hakimi_graph(k)
     >>> H = nx.modularity_matrix(G)
 

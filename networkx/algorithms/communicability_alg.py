@@ -4,10 +4,7 @@ Communicability.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = [
-    "communicability",
-    "communicability_exp",
-]
+__all__ = ["communicability", "communicability_exp"]
 
 
 @not_implemented_for("directed")
@@ -65,7 +62,7 @@ def communicability(G):
 
     Examples
     --------
-    >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
     >>> c = nx.communicability(G)
     """
     import numpy
@@ -143,7 +140,7 @@ def communicability_exp(G):
 
     Examples
     --------
-    >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
     >>> c = nx.communicability_exp(G)
     """
     import scipy.linalg

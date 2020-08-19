@@ -95,9 +95,7 @@ def jit_data(G, indent=None, default=None):
         if G[node]:
             json_node["adjacencies"] = []
             for neighbour in G[node]:
-                adjacency = {
-                    "nodeTo": neighbour,
-                }
+                adjacency = {"nodeTo": neighbour}
                 # adjacency data
                 adjacency["data"] = G.edges[node, neighbour]
                 json_node["adjacencies"].append(adjacency)

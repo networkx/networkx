@@ -26,7 +26,7 @@ def relabel_nodes(G, mapping, copy=True):
     >>> G = nx.path_graph(3)
     >>> sorted(G)
     [0, 1, 2]
-    >>> mapping = {0: 'a', 1: 'b', 2: 'c'}
+    >>> mapping = {0: "a", 1: "b", 2: "c"}
     >>> H = nx.relabel_nodes(G, mapping)
     >>> sorted(H)
     ['a', 'b', 'c']
@@ -39,7 +39,7 @@ def relabel_nodes(G, mapping, copy=True):
     >>> sorted(G)[:3]
     [0, 1, 2]
     >>> mapping = dict(zip(G, string.ascii_lowercase))
-    >>> G = nx.relabel_nodes(G, mapping) # nodes are characters a through z
+    >>> G = nx.relabel_nodes(G, mapping)  # nodes are characters a through z
     >>> sorted(G)[:3]
     ['a', 'b', 'c']
     >>> mapping = dict(zip(G, range(1, 27)))
@@ -52,7 +52,7 @@ def relabel_nodes(G, mapping, copy=True):
     argument to False:
 
     >>> G = nx.path_graph(3)  # nodes 0-1-2
-    >>> mapping = {0: 'a', 1: 'b'} # 0->'a' and 1->'b'
+    >>> mapping = {0: "a", 1: "b"}  # 0->'a' and 1->'b'
     >>> G = nx.relabel_nodes(G, mapping, copy=False)
     >>> sorted(G, key=str)
     [2, 'a', 'b']
@@ -167,9 +167,9 @@ def _relabel_inplace(G, mapping):
             # Ensure new edges won't overwrite existing ones
             seen = set()
             for i, (source, target, key, data) in enumerate(new_edges):
-                if (target in G[source] and key in G[source][target]):
+                if target in G[source] and key in G[source][target]:
                     new_key = 0 if not isinstance(key, (int, float)) else key
-                    while (new_key in G[source][target] or (target, new_key) in seen):
+                    while new_key in G[source][target] or (target, new_key) in seen:
                         new_key += 1
                     new_edges[i] = (source, target, new_key, data)
                     seen.add((target, new_key))

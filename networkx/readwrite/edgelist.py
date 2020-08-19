@@ -63,8 +63,8 @@ def generate_edgelist(G, delimiter=" ", data=True):
     Examples
     --------
     >>> G = nx.lollipop_graph(4, 3)
-    >>> G[1][2]['weight'] = 3
-    >>> G[3][4]['capacity'] = 12
+    >>> G[1][2]["weight"] = 3
+    >>> G[3][4]["capacity"] = 12
     >>> for line in nx.generate_edgelist(G, data=False):
     ...     print(line)
     0 1
@@ -89,7 +89,7 @@ def generate_edgelist(G, delimiter=" ", data=True):
     4 5 {}
     5 6 {}
 
-    >>> for line in nx.generate_edgelist(G,data=['weight']):
+    >>> for line in nx.generate_edgelist(G, data=["weight"]):
     ...     print(line)
     0 1
     0 2
@@ -148,19 +148,19 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G = nx.path_graph(4)
     >>> nx.write_edgelist(G, "test.edgelist")
-    >>> G=nx.path_graph(4)
-    >>> fh=open("test.edgelist",'wb')
+    >>> G = nx.path_graph(4)
+    >>> fh = open("test.edgelist", "wb")
     >>> nx.write_edgelist(G, fh)
     >>> nx.write_edgelist(G, "test.edgelist.gz")
     >>> nx.write_edgelist(G, "test.edgelist.gz", data=False)
 
-    >>> G=nx.Graph()
-    >>> G.add_edge(1,2,weight=7,color='red')
-    >>> nx.write_edgelist(G,'test.edgelist',data=False)
-    >>> nx.write_edgelist(G,'test.edgelist',data=['color'])
-    >>> nx.write_edgelist(G,'test.edgelist',data=['color','weight'])
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2, weight=7, color="red")
+    >>> nx.write_edgelist(G, "test.edgelist", data=False)
+    >>> nx.write_edgelist(G, "test.edgelist", data=["color"])
+    >>> nx.write_edgelist(G, "test.edgelist", data=["color", "weight"])
 
     See Also
     --------
@@ -205,9 +205,7 @@ def parse_edgelist(
     --------
     Edgelist with no data:
 
-    >>> lines = ["1 2",
-    ...          "2 3",
-    ...          "3 4"]
+    >>> lines = ["1 2", "2 3", "3 4"]
     >>> G = nx.parse_edgelist(lines, nodetype=int)
     >>> list(G)
     [1, 2, 3, 4]
@@ -216,9 +214,7 @@ def parse_edgelist(
 
     Edgelist with data in Python dictionary representation:
 
-    >>> lines = ["1 2 {'weight': 3}",
-    ...          "2 3 {'weight': 27}",
-    ...          "3 4 {'weight': 3.0}"]
+    >>> lines = ["1 2 {'weight': 3}", "2 3 {'weight': 27}", "3 4 {'weight': 3.0}"]
     >>> G = nx.parse_edgelist(lines, nodetype=int)
     >>> list(G)
     [1, 2, 3, 4]
@@ -227,10 +223,8 @@ def parse_edgelist(
 
     Edgelist with data in a list:
 
-    >>> lines = ["1 2 3",
-    ...          "2 3 27",
-    ...          "3 4 3.0"]
-    >>> G = nx.parse_edgelist(lines, nodetype=int, data=(('weight',float),))
+    >>> lines = ["1 2 3", "2 3 27", "3 4 3.0"]
+    >>> G = nx.parse_edgelist(lines, nodetype=int, data=(("weight", float),))
     >>> list(G)
     [1, 2, 3, 4]
     >>> list(G.edges(data=True))
@@ -342,22 +336,22 @@ def read_edgelist(
     Examples
     --------
     >>> nx.write_edgelist(nx.path_graph(4), "test.edgelist")
-    >>> G=nx.read_edgelist("test.edgelist")
+    >>> G = nx.read_edgelist("test.edgelist")
 
-    >>> fh=open("test.edgelist", 'rb')
-    >>> G=nx.read_edgelist(fh)
+    >>> fh = open("test.edgelist", "rb")
+    >>> G = nx.read_edgelist(fh)
     >>> fh.close()
 
-    >>> G=nx.read_edgelist("test.edgelist", nodetype=int)
-    >>> G=nx.read_edgelist("test.edgelist",create_using=nx.DiGraph)
+    >>> G = nx.read_edgelist("test.edgelist", nodetype=int)
+    >>> G = nx.read_edgelist("test.edgelist", create_using=nx.DiGraph)
 
     Edgelist with data in a list:
 
-    >>> textline = '1 2 3'
-    >>> fh = open('test.edgelist','w')
+    >>> textline = "1 2 3"
+    >>> fh = open("test.edgelist", "w")
     >>> d = fh.write(textline)
     >>> fh.close()
-    >>> G = nx.read_edgelist('test.edgelist', nodetype=int, data=(('weight',float),))
+    >>> G = nx.read_edgelist("test.edgelist", nodetype=int, data=(("weight", float),))
     >>> list(G)
     [1, 2]
     >>> list(G.edges(data=True))
@@ -406,9 +400,9 @@ def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-
 
     Examples
     --------
-    >>> G=nx.Graph()
-    >>> G.add_edge(1,2,weight=7)
-    >>> nx.write_weighted_edgelist(G, 'test.weighted.edgelist')
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2, weight=7)
+    >>> nx.write_weighted_edgelist(G, "test.weighted.edgelist")
 
     See Also
     --------

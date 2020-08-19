@@ -95,13 +95,13 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     >>> G = nx.path_graph(5)
     >>> print(nx.shortest_path(G, source=0, target=4))
     [0, 1, 2, 3, 4]
-    >>> p = nx.shortest_path(G, source=0) # target not specified
+    >>> p = nx.shortest_path(G, source=0)  # target not specified
     >>> p[4]
     [0, 1, 2, 3, 4]
-    >>> p = nx.shortest_path(G, target=4) # source not specified
+    >>> p = nx.shortest_path(G, target=4)  # source not specified
     >>> p[0]
     [0, 1, 2, 3, 4]
-    >>> p = nx.shortest_path(G) # source, target not specified
+    >>> p = nx.shortest_path(G)  # source, target not specified
     >>> p[0][4]
     [0, 1, 2, 3, 4]
 
@@ -226,13 +226,13 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
     >>> G = nx.path_graph(5)
     >>> nx.shortest_path_length(G, source=0, target=4)
     4
-    >>> p = nx.shortest_path_length(G, source=0) # target not specified
+    >>> p = nx.shortest_path_length(G, source=0)  # target not specified
     >>> p[4]
     4
-    >>> p = nx.shortest_path_length(G, target=4) # source not specified
+    >>> p = nx.shortest_path_length(G, target=4)  # source not specified
     >>> p[0]
     4
-    >>> p = dict(nx.shortest_path_length(G)) # source,target not specified
+    >>> p = dict(nx.shortest_path_length(G))  # source,target not specified
     >>> p[0][4]
     4
 

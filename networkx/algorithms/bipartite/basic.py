@@ -45,10 +45,10 @@ def color(G):
 
     You can use this to set a node attribute indicating the biparite set:
 
-    >>> nx.set_node_attributes(G, c, 'bipartite')
-    >>> print(G.nodes[0]['bipartite'])
+    >>> nx.set_node_attributes(G, c, "bipartite")
+    >>> print(G.nodes[0]["bipartite"])
     1
-    >>> print(G.nodes[1]['bipartite'])
+    >>> print(G.nodes[1]["bipartite"])
     0
     """
     if G.is_directed():
@@ -120,8 +120,8 @@ def is_bipartite_node_set(G, nodes):
     --------
     >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
-    >>> X = set([1,3])
-    >>> bipartite.is_bipartite_node_set(G,X)
+    >>> X = set([1, 3])
+    >>> bipartite.is_bipartite_node_set(G, X)
     True
 
     Notes
@@ -223,12 +223,12 @@ def density(B, nodes):
     Examples
     --------
     >>> from networkx.algorithms import bipartite
-    >>> G = nx.complete_bipartite_graph(3,2)
-    >>> X=set([0,1,2])
-    >>> bipartite.density(G,X)
+    >>> G = nx.complete_bipartite_graph(3, 2)
+    >>> X = set([0, 1, 2])
+    >>> bipartite.density(G, X)
     1.0
-    >>> Y=set([3,4])
-    >>> bipartite.density(G,Y)
+    >>> Y = set([3, 4])
+    >>> bipartite.density(G, Y)
     1.0
 
     Notes
@@ -280,9 +280,9 @@ def degrees(B, nodes, weight=None):
     Examples
     --------
     >>> from networkx.algorithms import bipartite
-    >>> G = nx.complete_bipartite_graph(3,2)
-    >>> Y=set([3,4])
-    >>> degX,degY=bipartite.degrees(G,Y)
+    >>> G = nx.complete_bipartite_graph(3, 2)
+    >>> Y = set([3, 4])
+    >>> degX, degY = bipartite.degrees(G, Y)
     >>> dict(degX)
     {0: 2, 1: 2, 2: 2}
 

@@ -703,7 +703,7 @@ class TestSimilarity:
                 0.570482097206368,
                 0.570482097206368,
                 0.3947180735764555,
-            ],
+            ]
         )
         actual = nx.simrank_similarity_numpy(G, source=0)
         numpy.testing.assert_allclose(expected, actual, atol=1e-7)

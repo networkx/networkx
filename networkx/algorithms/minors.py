@@ -146,8 +146,9 @@ def quotient_graph(
     are equivalent if they are not adjacent but have the same neighbor set::
 
         >>> G = nx.complete_bipartite_graph(2, 3)
-        >>> same_neighbors = lambda u, v: (u not in G[v] and v not in G[u]
-        ...                                and G[u] == G[v])
+        >>> same_neighbors = lambda u, v: (
+        ...     u not in G[v] and v not in G[u] and G[u] == G[v]
+        ... )
         >>> Q = nx.quotient_graph(G, same_neighbors)
         >>> K2 = nx.complete_graph(2)
         >>> nx.is_isomorphic(Q, K2)
@@ -159,15 +160,29 @@ def quotient_graph(
     *`Strongly connected component`_*::
 
         >>> G = nx.DiGraph()
-        >>> edges = ['ab', 'be', 'bf', 'bc', 'cg', 'cd', 'dc', 'dh', 'ea',
-        ...          'ef', 'fg', 'gf', 'hd', 'hf']
+        >>> edges = [
+        ...     "ab",
+        ...     "be",
+        ...     "bf",
+        ...     "bc",
+        ...     "cg",
+        ...     "cd",
+        ...     "dc",
+        ...     "dh",
+        ...     "ea",
+        ...     "ef",
+        ...     "fg",
+        ...     "gf",
+        ...     "hd",
+        ...     "hf",
+        ... ]
         >>> G.add_edges_from(tuple(x) for x in edges)
         >>> components = list(nx.strongly_connected_components(G))
         >>> sorted(sorted(component) for component in components)
         [['a', 'b', 'e'], ['c', 'd', 'h'], ['f', 'g']]
         >>>
         >>> C = nx.condensation(G, components)
-        >>> component_of = C.graph['mapping']
+        >>> component_of = C.graph["mapping"]
         >>> same_component = lambda u, v: component_of[u] == component_of[v]
         >>> Q = nx.quotient_graph(G, same_component)
         >>> nx.is_isomorphic(C, Q)
@@ -370,7 +385,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
         >>> M.edges
         MultiEdgeView([(0, 1, 0), (0, 1, 1)])
 
-        >>> G = nx.Graph([(1,2), (2,2)])
+        >>> G = nx.Graph([(1, 2), (2, 2)])
         >>> H = nx.contracted_nodes(G, 1, 2, self_loops=False)
         >>> list(H.nodes())
         [1]

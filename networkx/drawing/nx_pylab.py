@@ -249,7 +249,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     >>> nx.draw(G, pos=nx.spring_layout(G))  # use spring layout
 
     >>> import matplotlib.pyplot as plt
-    >>> limits = plt.axis('off')  # turn of axis
+    >>> limits = plt.axis("off")  # turn of axis
 
     Also see the NetworkX drawing examples at
     https://networkx.github.io/documentation/latest/auto_examples/index.html
@@ -1046,7 +1046,7 @@ def draw_networkx_edge_labels(
             trans_angle = 0.0
         # use default box of white with white border
         if bbox is None:
-            bbox = dict(boxstyle="round", ec=(1.0, 1.0, 1.0), fc=(1.0, 1.0, 1.0),)
+            bbox = dict(boxstyle="round", ec=(1.0, 1.0, 1.0), fc=(1.0, 1.0, 1.0))
         if not isinstance(label, str):
             label = str(label)  # this makes "1" and 1 labeled the same
 

@@ -247,38 +247,38 @@ def capacity_scaling(
     A simple example of a min cost flow problem.
 
     >>> G = nx.DiGraph()
-    >>> G.add_node('a', demand = -5)
-    >>> G.add_node('d', demand = 5)
-    >>> G.add_edge('a', 'b', weight = 3, capacity = 4)
-    >>> G.add_edge('a', 'c', weight = 6, capacity = 10)
-    >>> G.add_edge('b', 'd', weight = 1, capacity = 9)
-    >>> G.add_edge('c', 'd', weight = 2, capacity = 5)
+    >>> G.add_node("a", demand=-5)
+    >>> G.add_node("d", demand=5)
+    >>> G.add_edge("a", "b", weight=3, capacity=4)
+    >>> G.add_edge("a", "c", weight=6, capacity=10)
+    >>> G.add_edge("b", "d", weight=1, capacity=9)
+    >>> G.add_edge("c", "d", weight=2, capacity=5)
     >>> flowCost, flowDict = nx.capacity_scaling(G)
     >>> flowCost
     24
-    >>> flowDict # doctest: +SKIP
+    >>> flowDict  # doctest: +SKIP
     {'a': {'c': 1, 'b': 4}, 'c': {'d': 1}, 'b': {'d': 4}, 'd': {}}
 
     It is possible to change the name of the attributes used for the
     algorithm.
 
     >>> G = nx.DiGraph()
-    >>> G.add_node('p', spam = -4)
-    >>> G.add_node('q', spam = 2)
-    >>> G.add_node('a', spam = -2)
-    >>> G.add_node('d', spam = -1)
-    >>> G.add_node('t', spam = 2)
-    >>> G.add_node('w', spam = 3)
-    >>> G.add_edge('p', 'q', cost = 7, vacancies = 5)
-    >>> G.add_edge('p', 'a', cost = 1, vacancies = 4)
-    >>> G.add_edge('q', 'd', cost = 2, vacancies = 3)
-    >>> G.add_edge('t', 'q', cost = 1, vacancies = 2)
-    >>> G.add_edge('a', 't', cost = 2, vacancies = 4)
-    >>> G.add_edge('d', 'w', cost = 3, vacancies = 4)
-    >>> G.add_edge('t', 'w', cost = 4, vacancies = 1)
-    >>> flowCost, flowDict = nx.capacity_scaling(G, demand = 'spam',
-    ...                                          capacity = 'vacancies',
-    ...                                          weight = 'cost')
+    >>> G.add_node("p", spam=-4)
+    >>> G.add_node("q", spam=2)
+    >>> G.add_node("a", spam=-2)
+    >>> G.add_node("d", spam=-1)
+    >>> G.add_node("t", spam=2)
+    >>> G.add_node("w", spam=3)
+    >>> G.add_edge("p", "q", cost=7, vacancies=5)
+    >>> G.add_edge("p", "a", cost=1, vacancies=4)
+    >>> G.add_edge("q", "d", cost=2, vacancies=3)
+    >>> G.add_edge("t", "q", cost=1, vacancies=2)
+    >>> G.add_edge("a", "t", cost=2, vacancies=4)
+    >>> G.add_edge("d", "w", cost=3, vacancies=4)
+    >>> G.add_edge("t", "w", cost=4, vacancies=1)
+    >>> flowCost, flowDict = nx.capacity_scaling(
+    ...     G, demand="spam", capacity="vacancies", weight="cost"
+    ... )
     >>> flowCost
     37
     >>> flowDict  # doctest: +SKIP
