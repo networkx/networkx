@@ -219,7 +219,7 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
     Returns
     -------
     graph: NetworkX graph
-        If parallel edges are present or `force_multigraph == True```then
+        If parallel edges are present or `force_multigraph=True` then
         a MultiGraph or MultiDiGraph is returned. Otherwise a Graph/DiGraph.
         The returned graph is directed if the file indicates it should be.
 
