@@ -14,9 +14,13 @@ class TestCytoscape:
         G = nx.path_graph(4)
         input_data = cytoscape_data(G)
         first_edge = input_data['elements']['edges'][0]['data']
+
+        # we see that "source" and "target" properties exist initially
         assert first_edge['source'] == 0 and first_edge['target'] == 1
 
-        H = cytoscape_graph(input_data)
+        cytoscape_graph(input_data)
+
+        # we check that input_data didn't change
         first_edge = input_data['elements']['edges'][0]['data']
         assert first_edge['source'] == 0 and first_edge['target'] == 1
 
