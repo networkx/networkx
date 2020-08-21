@@ -10,6 +10,16 @@ class TestCytoscape:
         H = cytoscape_graph(cytoscape_data(G))
         nx.is_isomorphic(G, H)
 
+    def test_input_data_is_not_modified_when_building_graph(self):
+        G = nx.path_graph(4)
+        input_data = cytoscape_data(G)
+        first_edge = input_data['elements']['edges'][0]['data']
+        assert first_edge['source'] == 0 and first_edge['target'] == 1
+
+        H = cytoscape_graph(input_data)
+        first_edge = input_data['elements']['edges'][0]['data']
+        assert first_edge['source'] == 0 and first_edge['target'] == 1
+
     def test_graph_attributes(self):
         G = nx.path_graph(4)
         G.add_node(1, color="red")
