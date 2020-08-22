@@ -103,8 +103,8 @@ Release Process
   - Sync your branch with the remote repo: ``git pull``.
     If you try to ``make github`` when your branch is out of sync, it
     creates headaches.
-  - Update ``_templates/sidebar_versions.html``.
-  - Edit ``_static/docversions.js`` and commit
+  - Update ``build/index.html``.
+  - Edit ``build/_static/docversions.js`` and commit
   - Push your changes to the repo.
   - Deploy using ``make github``.
 
