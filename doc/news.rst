@@ -3,6 +3,18 @@
 Release Log
 ===========
 
+NetworkX 2.5
+------------
+Release date: 22 August 2020
+
+Supports Python 3.6, 3.7, and 3.8.
+
+Release notes
+~~~~~~~~~~~~~
+
+See :doc:`release/release_2.5`.
+
+
 NetworkX 2.4
 ------------
 Release date: 16 October 2019
