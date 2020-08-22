@@ -128,9 +128,8 @@ Deprecations
 Pull requests merged in this release
 ------------------------------------
 
-A total of 233 changes have been committed.
+A total of 256 changes have been committed.
 
-- Designate 2.4 release
 - Bump release version
 - Update release process
 - Drop support for Python 3.5
@@ -364,6 +363,27 @@ A total of 233 changes have been committed.
 - Use dict instead of OrderedDict since dict is ordered by default from Python 3.6. (#4145)
 - MAINT: fixups to parse_edgelist. (#4128)
 - Update apt-get on circleci image (#4147)
+- add rescale_layout_dict to change scale of the layout_dicts (#4154)
+- Update dependencies
+- Remove gdal from requirements
+- relabel_nodes now preserves edges in multigraphs (#4066)
+- MAINT,TST: Improve coverage of nx_agraph module (#4156)
+- Get steiner_tree to work with MultiGraphs by postprocessing (#4160)
+- junction_tree for #1012 (#4004)
+- API: Add `show` kwarg to view_pygraphviz. (#4155)
+- Prepare for turning chordal_graph_cliques into a generator (#4162)
+- Docs update (#4161)
+- Remove unnecessary nx imports from doctests (#4163)
+- MultiGraph from graphml with explicit edge ids #3470 (#3763)
+- Update sphinx dep (#4164)
+- Add edge label in GEXF writer as an optional attribute (#3347)
+- First Draft of Release Notes for v2.5 (#4159)
+- Designate 2.5rc1 release
+- Bump release version
+- Update deprecations in release notes (#4166)
+- DOC: Update docstrings for public functions in threshold module (#4167)
+- Format python in docstrings (#4168)
+- DOC,BLD: Fix doc build warning from markup error. (#4174)
 
 It contained the following 3 merges:
 
