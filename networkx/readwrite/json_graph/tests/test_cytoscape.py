@@ -1,6 +1,7 @@
 import json
 import pytest
 import networkx as nx
+import copy
 from networkx.readwrite.json_graph import cytoscape_data, cytoscape_graph
 
 
@@ -13,16 +14,10 @@ class TestCytoscape:
     def test_input_data_is_not_modified_when_building_graph(self):
         G = nx.path_graph(4)
         input_data = cytoscape_data(G)
-        first_edge = input_data['elements']['edges'][0]['data']
-
-        # we see that "source" and "target" properties exist initially
-        assert first_edge['source'] == 0 and first_edge['target'] == 1
-
+        orig_data = copy.deepcopy(input_data)
+        # Ensure input is unmodified by cytoscape_graph (gh-4173)
         cytoscape_graph(input_data)
-
-        # we check that input_data didn't change
-        first_edge = input_data['elements']['edges'][0]['data']
-        assert first_edge['source'] == 0 and first_edge['target'] == 1
+        assert input_data == orig_data
 
     def test_graph_attributes(self):
         G = nx.path_graph(4)
