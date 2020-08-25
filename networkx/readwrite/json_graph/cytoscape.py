@@ -98,8 +98,8 @@ def cytoscape_graph(data, attrs=None):
 
     for d in data["elements"]["edges"]:
         edge_data = d["data"].copy()
-        sour = d["data"].pop("source")
-        targ = d["data"].pop("target")
+        sour = d["data"]["source"]
+        targ = d["data"]["target"]
         if multigraph:
             key = d["data"].get("key", 0)
             graph.add_edge(sour, targ, key=key)
