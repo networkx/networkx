@@ -249,7 +249,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     >>> nx.draw(G, pos=nx.spring_layout(G))  # use spring layout
 
     >>> import matplotlib.pyplot as plt
-    >>> limits = plt.axis("off")  # turn of axis
+    >>> limits = plt.axis("off")  # turn off axis
 
     Also see the NetworkX drawing examples at
     https://networkx.github.io/documentation/latest/auto_examples/index.html
@@ -943,12 +943,6 @@ def draw_networkx_edge_labels(
        A dictionary with nodes as keys and positions as values.
        Positions should be sequences of length 2.
 
-    ax : Matplotlib Axes object, optional
-       Draw the graph in the specified Matplotlib axes.
-
-    alpha : float or None
-       The text transparency (default=None)
-
     edge_labels : dictionary
        Edge labels in a dictionary keyed by edge two-tuple of text
        labels (default=None). Only labels for the keys in the dictionary
@@ -956,24 +950,25 @@ def draw_networkx_edge_labels(
 
     label_pos : float
        Position of edge label along edge (0=head, 0.5=center, 1=tail)
+       (default=0.5)
 
     font_size : int
-       Font size for text labels (default=12)
+       Font size for text labels (default=10)
 
     font_color : string
        Font color string (default='k' black)
 
-    font_weight : string
-       Font weight (default='normal')
-
     font_family : string
        Font family (default='sans-serif')
 
-    bbox : Matplotlib bbox
-       Specify text box shape and colors.
+    font_weight : string
+       Font weight (default='normal')
 
-    clip_on : bool
-       Turn on clipping at axis boundaries (default=True)
+    alpha : float or None
+       The text transparency (default=None)
+
+    bbox : Matplotlib bbox
+       Specify text box shape and colors for edge labels.
 
     horizontalalignment : {'center', 'right', 'left'}
        Horizontal alignment (default='center')
@@ -983,6 +978,9 @@ def draw_networkx_edge_labels(
 
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.
+
+    rotate : bool
+        Rotate edge labels to lie parallel to edges (default=True)
 
     Returns
     -------
