@@ -121,14 +121,14 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
 
 def authority_matrix(G, nodelist=None):
     """Returns the HITS authority matrix."""
-    M = nx.to_numpy_matrix(G, nodelist=nodelist)
-    return M.T * M
+    M = nx.to_numpy_array(G, nodelist=nodelist)
+    return M.T @ M
 
 
 def hub_matrix(G, nodelist=None):
     """Returns the HITS hub matrix."""
-    M = nx.to_numpy_matrix(G, nodelist=nodelist)
-    return M * M.T
+    M = nx.to_numpy_array(G, nodelist=nodelist)
+    return M @ M.T
 
 
 def hits_numpy(G, normalized=True):
@@ -178,8 +178,8 @@ def hits_numpy(G, normalized=True):
     """
     try:
         import numpy as np
-    except ImportError:
-        raise ImportError("hits_numpy() requires NumPy: http://scipy.org/")
+    except ImportError as e:
+        raise ImportError("hits_numpy() requires NumPy: " "http://numpy.org/") from e
     if len(G) == 0:
         return {}, {}
     H = nx.hub_matrix(G, list(G))
@@ -268,10 +268,12 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
     try:
-        import scipy.sparse
         import numpy as np
-    except ImportError:
-        raise ImportError("hits_scipy() requires SciPy: http://scipy.org/")
+    except ImportError as e:
+        raise ImportError(
+            "hits_scipy() requires SciPy and NumPy:"
+            "http://scipy.org/ http://numpy.org/"
+        ) from e
     if len(G) == 0:
         return {}, {}
     M = nx.to_scipy_sparse_matrix(G, nodelist=list(G))

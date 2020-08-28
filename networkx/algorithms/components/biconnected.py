@@ -3,14 +3,14 @@ from itertools import chain
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
-    'biconnected_components',
-    'biconnected_component_edges',
-    'is_biconnected',
-    'articulation_points',
+    "biconnected_components",
+    "biconnected_component_edges",
+    "is_biconnected",
+    "articulation_points",
 ]
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def is_biconnected(G):
     """Returns True if the graph is biconnected, False otherwise.
 
@@ -78,12 +78,14 @@ def is_biconnected(G):
     if len(bcc) == 1:
         return len(bcc[0]) == len(G)
     return False  # Multiple bicomponents or No bicomponents (empty graph?)
+
+
 #    if len(bcc) == 0:  # No bicomponents (it could be an empty graph)
 #        return False
 #    return len(bcc[0]) == len(G)
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def biconnected_component_edges(G):
     """Returns a generator of lists of edges, one list for each biconnected
     component of the input graph.
@@ -155,7 +157,7 @@ def biconnected_component_edges(G):
     yield from _biconnected_dfs(G, components=True)
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def biconnected_components(G):
     """Returns a generator of sets of nodes, one set for each biconnected
     component of the graph
@@ -251,7 +253,7 @@ def biconnected_components(G):
         yield set(chain.from_iterable(comp))
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def articulation_points(G):
     """Yield the articulation points, or cut vertices, of a graph.
 
@@ -325,7 +327,7 @@ def articulation_points(G):
             yield articulation
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def _biconnected_dfs(G, components=True):
     # depth-first search algorithm to generate articulation points
     # and biconnected components

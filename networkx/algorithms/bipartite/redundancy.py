@@ -3,7 +3,7 @@ from itertools import combinations
 
 from networkx import NetworkXError
 
-__all__ = ['node_redundancy']
+__all__ = ["node_redundancy"]
 
 
 def node_redundancy(G, nodes=None):
@@ -43,7 +43,6 @@ def node_redundancy(G, nodes=None):
     --------
     Compute the redundancy coefficient of each node in a graph::
 
-        >>> import networkx as nx
         >>> from networkx.algorithms import bipartite
         >>> G = nx.cycle_graph(4)
         >>> rc = bipartite.node_redundancy(G)
@@ -52,7 +51,6 @@ def node_redundancy(G, nodes=None):
 
     Compute the average redundancy for the graph::
 
-        >>> import networkx as nx
         >>> from networkx.algorithms import bipartite
         >>> G = nx.cycle_graph(4)
         >>> rc = bipartite.node_redundancy(G)
@@ -61,7 +59,6 @@ def node_redundancy(G, nodes=None):
 
     Compute the average redundancy for a set of nodes::
 
-        >>> import networkx as nx
         >>> from networkx.algorithms import bipartite
         >>> G = nx.cycle_graph(4)
         >>> rc = bipartite.node_redundancy(G)
@@ -86,8 +83,10 @@ def node_redundancy(G, nodes=None):
     if nodes is None:
         nodes = G
     if any(len(G[v]) < 2 for v in nodes):
-        raise NetworkXError('Cannot compute redundancy coefficient for a node'
-                            ' that has fewer than two neighbors.')
+        raise NetworkXError(
+            "Cannot compute redundancy coefficient for a node"
+            " that has fewer than two neighbors."
+        )
     # TODO This can be trivially parallelized.
     return {v: _node_redundancy(G, v) for v in nodes}
 
@@ -106,6 +105,7 @@ def _node_redundancy(G, v):
     n = len(G[v])
     # TODO On Python 3, we could just use `G[u].keys() & G[w].keys()` instead
     # of instantiating the entire sets.
-    overlap = sum(1 for (u, w) in combinations(G[v], 2)
-                  if (set(G[u]) & set(G[w])) - {v})
+    overlap = sum(
+        1 for (u, w) in combinations(G[v], 2) if (set(G[u]) & set(G[w])) - {v}
+    )
     return (2 * overlap) / (n * (n - 1))

@@ -1,6 +1,7 @@
 import pytest
 import networkx as nx
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
+
 is_isomorphic = graph_could_be_isomorphic
 
 """Generators - Small
@@ -12,17 +13,15 @@ Some small graphs
 null = nx.null_graph()
 
 
-class TestGeneratorsSmall():
+class TestGeneratorsSmall:
     def test_make_small_graph(self):
-        d = ["adjacencylist", "Bull Graph", 5, [[2, 3], [1, 3, 4], [1, 2, 5],
-                                                [2], [3]]]
+        d = ["adjacencylist", "Bull Graph", 5, [[2, 3], [1, 3, 4], [1, 2, 5], [2], [3]]]
         G = nx.make_small_graph(d)
         assert is_isomorphic(G, nx.bull_graph())
 
         # Test small graph creation error with wrong ltype
         d[0] = "erroneouslist"
-        pytest.raises(nx.NetworkXError, nx.make_small_graph,
-                      graph_description=d)
+        pytest.raises(nx.NetworkXError, nx.make_small_graph, graph_description=d)
 
     def test__LCF_graph(self):
         # If n<=0, then return the null_graph
@@ -121,16 +120,14 @@ class TestGeneratorsSmall():
         G = nx.icosahedral_graph()
         assert G.number_of_nodes() == 12
         assert G.number_of_edges() == 30
-        assert (list(d for n, d in G.degree()) ==
-                [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5])
+        assert list(d for n, d in G.degree()) == [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
         assert nx.diameter(G) == 3
         assert nx.radius(G) == 3
 
         G = nx.krackhardt_kite_graph()
         assert G.number_of_nodes() == 10
         assert G.number_of_edges() == 18
-        assert (sorted(d for n, d in G.degree()) ==
-                [1, 2, 3, 3, 3, 4, 4, 5, 5, 6])
+        assert sorted(d for n, d in G.degree()) == [1, 2, 3, 3, 3, 4, 4, 5, 5, 6]
 
         G = nx.moebius_kantor_graph()
         assert G.number_of_nodes() == 16
@@ -186,7 +183,6 @@ class TestGeneratorsSmall():
         assert list(d for n, d in G.degree()) == 46 * [3]
 
         # Test create_using with directed or multigraphs on small graphs
-        pytest.raises(nx.NetworkXError, nx.tutte_graph,
-                      create_using=nx.DiGraph)
+        pytest.raises(nx.NetworkXError, nx.tutte_graph, create_using=nx.DiGraph)
         MG = nx.tutte_graph(create_using=nx.MultiGraph)
         assert sorted(MG.edges()) == sorted(G.edges())

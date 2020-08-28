@@ -8,19 +8,20 @@ import networkx as nx
 # cut algorithms.
 from networkx.algorithms.flow import edmonds_karp
 from networkx.algorithms.flow import build_residual_network
+
 default_flow_func = edmonds_karp
 
-from .utils import (build_auxiliary_node_connectivity,
-                    build_auxiliary_edge_connectivity)
+from .utils import build_auxiliary_node_connectivity, build_auxiliary_edge_connectivity
 
-__all__ = ['minimum_st_node_cut',
-           'minimum_node_cut',
-           'minimum_st_edge_cut',
-           'minimum_edge_cut']
+__all__ = [
+    "minimum_st_node_cut",
+    "minimum_node_cut",
+    "minimum_st_edge_cut",
+    "minimum_edge_cut",
+]
 
 
-def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
-                        residual=None):
+def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     """Returns the edges of the cut-set of a minimum (s, t)-cut.
 
     This function returns the set of edges of minimum cardinality that,
@@ -103,14 +104,13 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
     >>> import itertools
     >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
-    >>> from networkx.algorithms.connectivity import (
-    ...     build_auxiliary_edge_connectivity)
+    >>> from networkx.algorithms.connectivity import build_auxiliary_edge_connectivity
     >>> H = build_auxiliary_edge_connectivity(G)
     >>> # And the function for building the residual network from the
     >>> # flow package
     >>> from networkx.algorithms.flow import build_residual_network
     >>> # Note that the auxiliary digraph has an edge attribute named capacity
-    >>> R = build_residual_network(H, 'capacity')
+    >>> R = build_residual_network(H, "capacity")
     >>> result = dict.fromkeys(G, dict())
     >>> # Reuse the auxiliary digraph and the residual network by passing them
     >>> # as parameters
@@ -140,7 +140,7 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
     else:
         H = auxiliary
 
-    kwargs = dict(capacity='capacity', flow_func=flow_func, residual=residual)
+    kwargs = dict(capacity="capacity", flow_func=flow_func, residual=residual)
 
     cut_value, partition = nx.minimum_cut(H, s, t, **kwargs)
     reachable, non_reachable = partition
@@ -221,14 +221,13 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
 
     >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
-    >>> from networkx.algorithms.connectivity import (
-    ...     build_auxiliary_node_connectivity)
+    >>> from networkx.algorithms.connectivity import build_auxiliary_node_connectivity
     >>> H = build_auxiliary_node_connectivity(G)
     >>> # And the function for building the residual network from the
     >>> # flow package
     >>> from networkx.algorithms.flow import build_residual_network
     >>> # Note that the auxiliary digraph has an edge attribute named capacity
-    >>> R = build_residual_network(H, 'capacity')
+    >>> R = build_residual_network(H, "capacity")
     >>> # Reuse the auxiliary digraph and the residual network by passing them
     >>> # as parameters
     >>> len(minimum_st_node_cut(G, 0, 6, auxiliary=H, residual=R))
@@ -277,19 +276,18 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     else:
         H = auxiliary
 
-    mapping = H.graph.get('mapping', None)
+    mapping = H.graph.get("mapping", None)
     if mapping is None:
-        raise nx.NetworkXError('Invalid auxiliary digraph.')
+        raise nx.NetworkXError("Invalid auxiliary digraph.")
     if G.has_edge(s, t) or G.has_edge(t, s):
         return {}
     kwargs = dict(flow_func=flow_func, residual=residual, auxiliary=H)
 
     # The edge cut in the auxiliary digraph corresponds to the node cut in the
     # original graph.
-    edge_cut = minimum_st_edge_cut(H, f'{mapping[s]}B', f'{mapping[t]}A',
-                                   **kwargs)
+    edge_cut = minimum_st_edge_cut(H, f"{mapping[s]}B", f"{mapping[t]}A", **kwargs)
     # Each node in the original graph maps to two nodes of the auxiliary graph
-    node_cut = {H.nodes[node]['id'] for edge in edge_cut for node in edge}
+    node_cut = {H.nodes[node]["id"] for edge in edge_cut for node in edge}
     return node_cut - {s, t}
 
 
@@ -387,7 +385,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
 
     """
     if (s is not None and t is None) or (s is None and t is not None):
-        raise nx.NetworkXError('Both source and target must be specified.')
+        raise nx.NetworkXError("Both source and target must be specified.")
 
     # Local minimum node cut.
     if s is not None and t is not None:
@@ -401,21 +399,21 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     # Analog to the algorithm 11 for global node connectivity in [1].
     if G.is_directed():
         if not nx.is_weakly_connected(G):
-            raise nx.NetworkXError('Input graph is not connected')
+            raise nx.NetworkXError("Input graph is not connected")
         iter_func = itertools.permutations
 
         def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors(v),
-                                                  G.successors(v)])
+            return itertools.chain.from_iterable([G.predecessors(v), G.successors(v)])
+
     else:
         if not nx.is_connected(G):
-            raise nx.NetworkXError('Input graph is not connected')
+            raise nx.NetworkXError("Input graph is not connected")
         iter_func = itertools.combinations
         neighbors = G.neighbors
 
     # Reuse the auxiliary digraph and the residual network.
     H = build_auxiliary_node_connectivity(G)
-    R = build_residual_network(H, 'capacity')
+    R = build_residual_network(H, "capacity")
     kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 
     # Choose a node with minimum degree.
@@ -534,11 +532,11 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
 
     """
     if (s is not None and t is None) or (s is None and t is not None):
-        raise nx.NetworkXError('Both source and target must be specified.')
+        raise nx.NetworkXError("Both source and target must be specified.")
 
     # reuse auxiliary digraph and residual network
     H = build_auxiliary_edge_connectivity(G)
-    R = build_residual_network(H, 'capacity')
+    R = build_residual_network(H, "capacity")
     kwargs = dict(flow_func=flow_func, residual=R, auxiliary=H)
 
     # Local minimum edge cut if s and t are not None
@@ -554,7 +552,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     if G.is_directed():
         # Based on algorithm 8 in [1]
         if not nx.is_weakly_connected(G):
-            raise nx.NetworkXError('Input graph is not connected')
+            raise nx.NetworkXError("Input graph is not connected")
 
         # Initial cutset is all edges of a node with minimum degree
         node = min(G, key=G.degree)
@@ -576,7 +574,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     else:  # undirected
         # Based on algorithm 6 in [1]
         if not nx.is_connected(G):
-            raise nx.NetworkXError('Input graph is not connected')
+            raise nx.NetworkXError("Input graph is not connected")
 
         # Initial cutset is all edges of a node with minimum degree
         node = min(G, key=G.degree)

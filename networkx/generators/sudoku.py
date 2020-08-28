@@ -42,7 +42,7 @@ References
 import networkx as nx
 from networkx.exception import NetworkXError
 
-__all__ = ['sudoku_graph']
+__all__ = ["sudoku_graph"]
 
 
 def sudoku_graph(n=3):
@@ -65,7 +65,6 @@ def sudoku_graph(n=3):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.sudoku_graph()
     >>> G.number_of_nodes()
     81

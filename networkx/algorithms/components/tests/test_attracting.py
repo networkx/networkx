@@ -7,8 +7,19 @@ class TestAttractingComponents:
     @classmethod
     def setup_class(cls):
         cls.G1 = nx.DiGraph()
-        cls.G1.add_edges_from([(5, 11), (11, 2), (11, 9), (11, 10),
-                               (7, 11), (7, 8), (8, 9), (3, 8), (3, 10)])
+        cls.G1.add_edges_from(
+            [
+                (5, 11),
+                (11, 2),
+                (11, 9),
+                (11, 10),
+                (7, 11),
+                (7, 8),
+                (8, 9),
+                (3, 8),
+                (3, 10),
+            ]
+        )
         cls.G2 = nx.DiGraph()
         cls.G2.add_edges_from([(0, 1), (0, 2), (1, 1), (1, 2), (2, 1)])
 

@@ -65,7 +65,7 @@ Improvements
 - fix unionfind; betweenness_subset; lexico-topo-sort; A*;
   inverse_line_graph; async label propagation; edgelist reading;
   Gomory-Hu flow method; label_propagation; partial_duplication;
-  shell_layout with 1 node in shell; from_pandas_edgelist  
+  shell_layout with 1 node in shell; from_pandas_edgelist
 - Documentation improvement and fixes
 
 

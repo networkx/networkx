@@ -2,7 +2,6 @@ from networkx.utils.mapped_queue import MappedQueue
 
 
 class TestMappedQueue:
-
     def setup(self):
         pass
 

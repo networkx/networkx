@@ -1,6 +1,5 @@
 """Generators of  x-y pairs of node data."""
-__all__ = ['node_attribute_xy',
-           'node_degree_xy']
+__all__ = ["node_attribute_xy", "node_degree_xy"]
 
 
 def node_attribute_xy(G, attribute, nodes=None):
@@ -25,10 +24,10 @@ def node_attribute_xy(G, attribute, nodes=None):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_node(1,color='red')
-    >>> G.add_node(2,color='blue')
-    >>> G.add_edge(1,2)
-    >>> list(nx.node_attribute_xy(G,'color'))
+    >>> G.add_node(1, color="red")
+    >>> G.add_node(2, color="blue")
+    >>> G.add_edge(1, 2)
+    >>> list(nx.node_attribute_xy(G, "color"))
     [('red', 'blue')]
 
     Notes
@@ -57,7 +56,7 @@ def node_attribute_xy(G, attribute, nodes=None):
                 yield (uattr, vattr)
 
 
-def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
+def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
     """Generate node degree-degree pairs for edges in G.
 
     Parameters
@@ -88,10 +87,10 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_edge(1,2)
-    >>> list(nx.node_degree_xy(G,x='out',y='in'))
+    >>> G.add_edge(1, 2)
+    >>> list(nx.node_degree_xy(G, x="out", y="in"))
     [(1, 1)]
-    >>> list(nx.node_degree_xy(G,x='in',y='out'))
+    >>> list(nx.node_degree_xy(G, x="in", y="out"))
     [(0, 0)]
 
     Notes
@@ -107,8 +106,7 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
     xdeg = G.degree
     ydeg = G.degree
     if G.is_directed():
-        direction = {'out': G.out_degree,
-                     'in': G.in_degree}
+        direction = {"out": G.out_degree, "in": G.in_degree}
         xdeg = direction[x]
         ydeg = direction[y]
 

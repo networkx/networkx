@@ -4,7 +4,7 @@ Version 1.4 notes and API changes
 
 We have made some API changes, detailed below, to add clarity.
 This page reflects changes from networkx-1.3 to networkx-1.4.
-For changes from earlier versions to networkx-1.0 see 
+For changes from earlier versions to networkx-1.0 see
 :doc:`Version 1.0 API changes <api_1.0>`.
 
 Please send comments and questions to the networkx-discuss mailing list:

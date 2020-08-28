@@ -8,7 +8,7 @@ from ..generators import (
     havel_hakimi_graph,
     preferential_attachment_graph,
     random_graph,
-    reverse_havel_hakimi_graph
+    reverse_havel_hakimi_graph,
 )
 
 """
@@ -17,7 +17,7 @@ Generators - Bipartite
 """
 
 
-class TestGeneratorsBipartite():
+class TestGeneratorsBipartite:
     def test_complete_bipartite_graph(self):
         G = complete_bipartite_graph(0, 0)
         assert nx.is_isomorphic(G, nx.null_graph())
@@ -44,12 +44,19 @@ class TestGeneratorsBipartite():
             assert nx.number_of_nodes(G) == m1 + m2
             assert nx.number_of_edges(G) == m1 * m2
 
-        pytest.raises(nx.NetworkXError, complete_bipartite_graph,
-                      7, 3, create_using=nx.DiGraph)
-        pytest.raises(nx.NetworkXError, complete_bipartite_graph,
-                      7, 3, create_using=nx.DiGraph)
-        pytest.raises(nx.NetworkXError, complete_bipartite_graph,
-                      7, 3, create_using=nx.MultiDiGraph)
+        pytest.raises(
+            nx.NetworkXError, complete_bipartite_graph, 7, 3, create_using=nx.DiGraph
+        )
+        pytest.raises(
+            nx.NetworkXError, complete_bipartite_graph, 7, 3, create_using=nx.DiGraph
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            complete_bipartite_graph,
+            7,
+            3,
+            create_using=nx.MultiDiGraph,
+        )
 
         mG = complete_bipartite_graph(7, 3, create_using=nx.MultiGraph)
         assert mG.is_multigraph()
@@ -65,9 +72,13 @@ class TestGeneratorsBipartite():
         assert not mG.is_directed()
 
         # specify nodes rather than number of nodes
-        G = complete_bipartite_graph([1, 2], ['a', 'b'])
-        has_edges = G.has_edge(1, 'a') & G.has_edge(1, 'b') &\
-            G.has_edge(2, 'a') & G.has_edge(2, 'b')
+        G = complete_bipartite_graph([1, 2], ["a", "b"])
+        has_edges = (
+            G.has_edge(1, "a")
+            & G.has_edge(1, "b")
+            & G.has_edge(2, "a")
+            & G.has_edge(2, "b")
+        )
         assert has_edges
         assert G.size() == 4
 
@@ -85,28 +96,24 @@ class TestGeneratorsBipartite():
 
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2]
-        pytest.raises(nx.NetworkXError,
-                      configuration_model, aseq, bseq)
+        pytest.raises(nx.NetworkXError, configuration_model, aseq, bseq)
 
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2, 2]
         G = configuration_model(aseq, bseq)
-        assert (sorted(d for n, d in G.degree()) ==
-                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+        assert sorted(d for n, d in G.degree()) == [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
         aseq = [2, 2, 2, 2, 2, 2]
         bseq = [3, 3, 3, 3]
         G = configuration_model(aseq, bseq)
-        assert (sorted(d for n, d in G.degree()) ==
-                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+        assert sorted(d for n, d in G.degree()) == [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
         aseq = [2, 2, 2, 1, 1, 1]
         bseq = [3, 3, 3]
         G = configuration_model(aseq, bseq)
         assert G.is_multigraph()
         assert not G.is_directed()
-        assert (sorted(d for n, d in G.degree()) ==
-                [1, 1, 1, 2, 2, 2, 3, 3, 3])
+        assert sorted(d for n, d in G.degree()) == [1, 1, 1, 2, 2, 2, 3, 3, 3]
 
         GU = nx.project(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
@@ -118,15 +125,19 @@ class TestGeneratorsBipartite():
         assert not G.is_multigraph()
         assert not G.is_directed()
 
-        pytest.raises(nx.NetworkXError,
-                      configuration_model, aseq, bseq,
-                      create_using=nx.DiGraph())
-        pytest.raises(nx.NetworkXError,
-                      configuration_model, aseq, bseq,
-                      create_using=nx.DiGraph)
-        pytest.raises(nx.NetworkXError,
-                      configuration_model, aseq, bseq,
-                      create_using=nx.MultiDiGraph)
+        pytest.raises(
+            nx.NetworkXError, configuration_model, aseq, bseq, create_using=nx.DiGraph()
+        )
+        pytest.raises(
+            nx.NetworkXError, configuration_model, aseq, bseq, create_using=nx.DiGraph
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            configuration_model,
+            aseq,
+            bseq,
+            create_using=nx.MultiDiGraph,
+        )
 
     def test_havel_hakimi_graph(self):
         aseq = []
@@ -142,21 +153,18 @@ class TestGeneratorsBipartite():
 
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2]
-        pytest.raises(nx.NetworkXError,
-                      havel_hakimi_graph, aseq, bseq)
+        pytest.raises(nx.NetworkXError, havel_hakimi_graph, aseq, bseq)
 
         bseq = [2, 2, 2, 2, 2, 2]
         G = havel_hakimi_graph(aseq, bseq)
-        assert (sorted(d for n, d in G.degree()) ==
-                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+        assert sorted(d for n, d in G.degree()) == [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
         aseq = [2, 2, 2, 2, 2, 2]
         bseq = [3, 3, 3, 3]
         G = havel_hakimi_graph(aseq, bseq)
         assert G.is_multigraph()
         assert not G.is_directed()
-        assert (sorted(d for n, d in G.degree()) ==
-                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+        assert sorted(d for n, d in G.degree()) == [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
         GU = nx.project(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
@@ -168,15 +176,19 @@ class TestGeneratorsBipartite():
         assert not G.is_multigraph()
         assert not G.is_directed()
 
-        pytest.raises(nx.NetworkXError,
-                      havel_hakimi_graph, aseq, bseq,
-                      create_using=nx.DiGraph)
-        pytest.raises(nx.NetworkXError,
-                      havel_hakimi_graph, aseq, bseq,
-                      create_using=nx.DiGraph)
-        pytest.raises(nx.NetworkXError,
-                      havel_hakimi_graph, aseq, bseq,
-                      create_using=nx.MultiDiGraph)
+        pytest.raises(
+            nx.NetworkXError, havel_hakimi_graph, aseq, bseq, create_using=nx.DiGraph
+        )
+        pytest.raises(
+            nx.NetworkXError, havel_hakimi_graph, aseq, bseq, create_using=nx.DiGraph
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            havel_hakimi_graph,
+            aseq,
+            bseq,
+            create_using=nx.MultiDiGraph,
+        )
 
     def test_reverse_havel_hakimi_graph(self):
         aseq = []
@@ -192,27 +204,23 @@ class TestGeneratorsBipartite():
 
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2]
-        pytest.raises(nx.NetworkXError,
-                      reverse_havel_hakimi_graph, aseq, bseq)
+        pytest.raises(nx.NetworkXError, reverse_havel_hakimi_graph, aseq, bseq)
 
         bseq = [2, 2, 2, 2, 2, 2]
         G = reverse_havel_hakimi_graph(aseq, bseq)
-        assert (sorted(d for n, d in G.degree()) ==
-                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+        assert sorted(d for n, d in G.degree()) == [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
         aseq = [2, 2, 2, 2, 2, 2]
         bseq = [3, 3, 3, 3]
         G = reverse_havel_hakimi_graph(aseq, bseq)
-        assert (sorted(d for n, d in G.degree()) ==
-                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+        assert sorted(d for n, d in G.degree()) == [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
         aseq = [2, 2, 2, 1, 1, 1]
         bseq = [3, 3, 3]
         G = reverse_havel_hakimi_graph(aseq, bseq)
         assert G.is_multigraph()
         assert not G.is_directed()
-        assert (sorted(d for n, d in G.degree()) ==
-                [1, 1, 1, 2, 2, 2, 3, 3, 3])
+        assert sorted(d for n, d in G.degree()) == [1, 1, 1, 2, 2, 2, 3, 3, 3]
 
         GU = nx.project(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
@@ -224,15 +232,27 @@ class TestGeneratorsBipartite():
         assert not G.is_multigraph()
         assert not G.is_directed()
 
-        pytest.raises(nx.NetworkXError,
-                      reverse_havel_hakimi_graph, aseq, bseq,
-                      create_using=nx.DiGraph)
-        pytest.raises(nx.NetworkXError,
-                      reverse_havel_hakimi_graph, aseq, bseq,
-                      create_using=nx.DiGraph)
-        pytest.raises(nx.NetworkXError,
-                      reverse_havel_hakimi_graph, aseq, bseq,
-                      create_using=nx.MultiDiGraph)
+        pytest.raises(
+            nx.NetworkXError,
+            reverse_havel_hakimi_graph,
+            aseq,
+            bseq,
+            create_using=nx.DiGraph,
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            reverse_havel_hakimi_graph,
+            aseq,
+            bseq,
+            create_using=nx.DiGraph,
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            reverse_havel_hakimi_graph,
+            aseq,
+            bseq,
+            create_using=nx.MultiDiGraph,
+        )
 
     def test_alternating_havel_hakimi_graph(self):
         aseq = []
@@ -248,27 +268,23 @@ class TestGeneratorsBipartite():
 
         aseq = [3, 3, 3, 3]
         bseq = [2, 2, 2, 2, 2]
-        pytest.raises(nx.NetworkXError,
-                      alternating_havel_hakimi_graph, aseq, bseq)
+        pytest.raises(nx.NetworkXError, alternating_havel_hakimi_graph, aseq, bseq)
 
         bseq = [2, 2, 2, 2, 2, 2]
         G = alternating_havel_hakimi_graph(aseq, bseq)
-        assert (sorted(d for n, d in G.degree()) ==
-                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+        assert sorted(d for n, d in G.degree()) == [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
         aseq = [2, 2, 2, 2, 2, 2]
         bseq = [3, 3, 3, 3]
         G = alternating_havel_hakimi_graph(aseq, bseq)
-        assert (sorted(d for n, d in G.degree()) ==
-                [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
+        assert sorted(d for n, d in G.degree()) == [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
         aseq = [2, 2, 2, 1, 1, 1]
         bseq = [3, 3, 3]
         G = alternating_havel_hakimi_graph(aseq, bseq)
         assert G.is_multigraph()
         assert not G.is_directed()
-        assert (sorted(d for n, d in G.degree()) ==
-                [1, 1, 1, 2, 2, 2, 3, 3, 3])
+        assert sorted(d for n, d in G.degree()) == [1, 1, 1, 2, 2, 2, 3, 3, 3]
 
         GU = nx.project(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
@@ -280,15 +296,27 @@ class TestGeneratorsBipartite():
         assert not G.is_multigraph()
         assert not G.is_directed()
 
-        pytest.raises(nx.NetworkXError,
-                      alternating_havel_hakimi_graph, aseq, bseq,
-                      create_using=nx.DiGraph)
-        pytest.raises(nx.NetworkXError,
-                      alternating_havel_hakimi_graph, aseq, bseq,
-                      create_using=nx.DiGraph)
-        pytest.raises(nx.NetworkXError,
-                      alternating_havel_hakimi_graph, aseq, bseq,
-                      create_using=nx.MultiDiGraph)
+        pytest.raises(
+            nx.NetworkXError,
+            alternating_havel_hakimi_graph,
+            aseq,
+            bseq,
+            create_using=nx.DiGraph,
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            alternating_havel_hakimi_graph,
+            aseq,
+            bseq,
+            create_using=nx.DiGraph,
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            alternating_havel_hakimi_graph,
+            aseq,
+            bseq,
+            create_using=nx.MultiDiGraph,
+        )
 
     def test_preferential_attachment(self):
         aseq = [3, 2, 1, 1]
@@ -300,15 +328,27 @@ class TestGeneratorsBipartite():
         assert not G.is_multigraph()
         assert not G.is_directed()
 
-        pytest.raises(nx.NetworkXError,
-                      preferential_attachment_graph, aseq, 0.5,
-                      create_using=nx.DiGraph())
-        pytest.raises(nx.NetworkXError,
-                      preferential_attachment_graph, aseq, 0.5,
-                      create_using=nx.DiGraph())
-        pytest.raises(nx.NetworkXError,
-                      preferential_attachment_graph, aseq, 0.5,
-                      create_using=nx.DiGraph())
+        pytest.raises(
+            nx.NetworkXError,
+            preferential_attachment_graph,
+            aseq,
+            0.5,
+            create_using=nx.DiGraph(),
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            preferential_attachment_graph,
+            aseq,
+            0.5,
+            create_using=nx.DiGraph(),
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            preferential_attachment_graph,
+            aseq,
+            0.5,
+            create_using=nx.DiGraph(),
+        )
 
     def test_random_graph(self):
         n = 10

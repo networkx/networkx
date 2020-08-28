@@ -8,7 +8,7 @@ from networkx.utils import groups
 from networkx.utils import not_implemented_for
 from networkx.utils import py_random_state
 
-__all__ = ['label_propagation_communities', 'asyn_lpa_communities']
+__all__ = ["label_propagation_communities", "asyn_lpa_communities"]
 
 
 @py_random_state(2)
@@ -78,13 +78,15 @@ def asyn_lpa_communities(G, weight=None, seed=None):
             # algorithm asynchronous.
             label_freq = Counter()
             for v in G[node]:
-                label_freq.update({labels[v]: G.edges[node, v][weight]
-                                   if weight else 1})
+                label_freq.update(
+                    {labels[v]: G.edges[node, v][weight] if weight else 1}
+                )
             # Choose the label with the highest frecuency. If more than 1 label
             # has the highest frecuency choose one randomly.
             max_freq = max(label_freq.values())
-            best_labels = [label for label, freq in label_freq.items()
-                           if freq == max_freq]
+            best_labels = [
+                label for label, freq in label_freq.items() if freq == max_freq
+            ]
 
             # Continue until all nodes have a majority label
             if labels[node] not in best_labels:
@@ -94,7 +96,7 @@ def asyn_lpa_communities(G, weight=None, seed=None):
     yield from groups(labels).values()
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def label_propagation_communities(G):
     """Generates community sets determined by label propagation
 
@@ -160,8 +162,9 @@ def _labeling_complete(labeling, G):
 
        Nodes with no neighbors are considered complete.
     """
-    return all(labeling[v] in _most_frequent_labels(v, labeling, G)
-               for v in G if len(G[v]) > 0)
+    return all(
+        labeling[v] in _most_frequent_labels(v, labeling, G) for v in G if len(G[v]) > 0
+    )
 
 
 def _most_frequent_labels(node, labeling, G):

@@ -41,16 +41,11 @@ for p in pvals:
     # identify largest connected component
     Gcc = sorted(nx.connected_components(G), key=len, reverse=True)
     G0 = G.subgraph(Gcc[0])
-    nx.draw_networkx_edges(G0, pos, with_labels=False, edge_color="r", width=6.0)
+    nx.draw_networkx_edges(G0, pos, edge_color="r", width=6.0)
     # show other connected components
     for Gi in Gcc[1:]:
         if len(Gi) > 1:
             nx.draw_networkx_edges(
-                G.subgraph(Gi),
-                pos,
-                with_labels=False,
-                edge_color="r",
-                alpha=0.3,
-                width=5.0,
+                G.subgraph(Gi), pos, edge_color="r", alpha=0.3, width=5.0,
             )
 plt.show()

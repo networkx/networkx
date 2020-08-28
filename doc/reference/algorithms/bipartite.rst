@@ -18,6 +18,18 @@ Basic functions
    density
    degrees
 
+Edgelist
+--------
+.. automodule:: networkx.algorithms.bipartite.edgelist
+.. autosummary::
+   :toctree: generated/
+
+   generate_edgelist
+   write_edgelist
+   parse_edgelist
+   read_edgelist
+
+
 Matching
 --------
 .. automodule:: networkx.algorithms.bipartite.matching
@@ -27,6 +39,7 @@ Matching
    eppstein_matching
    hopcroft_karp_matching
    to_vertex_cover
+   maximum_matching
    minimum_weight_full_matching
 
 

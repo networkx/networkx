@@ -3,13 +3,13 @@ import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
-    'number_weakly_connected_components',
-    'weakly_connected_components',
-    'is_weakly_connected',
+    "number_weakly_connected_components",
+    "weakly_connected_components",
+    "is_weakly_connected",
 ]
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def weakly_connected_components(G):
     """Generate weakly connected components of G.
 
@@ -35,8 +35,10 @@ def weakly_connected_components(G):
 
     >>> G = nx.path_graph(4, create_using=nx.DiGraph())
     >>> nx.add_path(G, [10, 11, 12])
-    >>> [len(c) for c in sorted(nx.weakly_connected_components(G),
-    ...                         key=len, reverse=True)]
+    >>> [
+    ...     len(c)
+    ...     for c in sorted(nx.weakly_connected_components(G), key=len, reverse=True)
+    ... ]
     [4, 3]
 
     If you only want the largest component, it's more efficient to
@@ -62,7 +64,7 @@ def weakly_connected_components(G):
             seen.update(c)
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def number_weakly_connected_components(G):
     """Returns the number of weakly connected components in G.
 
@@ -95,7 +97,7 @@ def number_weakly_connected_components(G):
     return sum(1 for wcc in weakly_connected_components(G))
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
 def is_weakly_connected(G):
     """Test directed graph for weak connectivity.
 
@@ -136,7 +138,8 @@ def is_weakly_connected(G):
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
-            """Connectivity is undefined for the null graph.""")
+            """Connectivity is undefined for the null graph."""
+        )
 
     return len(list(weakly_connected_components(G))[0]) == len(G)
 

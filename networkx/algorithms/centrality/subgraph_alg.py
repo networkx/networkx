@@ -174,10 +174,10 @@ def subgraph_centrality(G):
     import numpy.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G, nodelist)
+    A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
-    A[A != 0.0] = 1
-    w, v = numpy.linalg.eigh(A.A)
+    A[np.nonzero(A)] = 1
+    w, v = numpy.linalg.eigh(A)
     vsquare = np.array(v) ** 2
     expw = np.exp(w)
     xg = np.dot(vsquare, expw)
@@ -248,18 +248,7 @@ def communicability_betweenness_centrality(G, normalized=True):
 
     Examples
     --------
-    >>> G = nx.Graph(
-    ...     [
-    ...         (0, 1),
-    ...         (1, 2),
-    ...         (1, 5),
-    ...         (5, 4),
-    ...         (2, 4),
-    ...         (2, 3),
-    ...         (4, 3),
-    ...         (3, 6),
-    ...     ]
-    ... )
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
     >>> cbc = nx.communicability_betweenness_centrality(G)
     >>> print([f"{node} {cbc[node]:0.2f}" for node in sorted(cbc)])
     ['0 0.03', '1 0.45', '2 0.51', '3 0.45', '4 0.40', '5 0.19', '6 0.03']
@@ -269,10 +258,10 @@ def communicability_betweenness_centrality(G, normalized=True):
 
     nodelist = list(G)  # ordering of nodes in matrix
     n = len(nodelist)
-    A = nx.to_numpy_matrix(G, nodelist)
+    A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
-    A[A != 0.0] = 1
-    expA = scipy.linalg.expm(A.A)
+    A[np.nonzero(A)] = 1
+    expA = scipy.linalg.expm(A)
     mapping = dict(zip(nodelist, range(n)))
     cbc = {}
     for v in G:
@@ -282,7 +271,7 @@ def communicability_betweenness_centrality(G, normalized=True):
         col = A[:, i].copy()
         A[i, :] = 0
         A[:, i] = 0
-        B = (expA - scipy.linalg.expm(A.A)) / expA
+        B = (expA - scipy.linalg.expm(A)) / expA
         # sum with row/col of node v and diag set to zero
         B[i, :] = 0
         B[:, i] = 0
@@ -350,19 +339,7 @@ def estrada_index(G):
 
     Examples
     --------
-    >>> G = nx.Graph(
-    ...     [
-    ...         (0, 1),
-    ...         (1, 2),
-    ...         (1, 5),
-    ...         (5, 4),
-    ...         (2, 4),
-    ...         (2, 3),
-    ...         (4, 3),
-    ...         (3, 6),
-    ...     ]
-    ... )
-    >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
     >>> ei = nx.estrada_index(G)
     >>> print(f"{ei:0.5}")
     20.55

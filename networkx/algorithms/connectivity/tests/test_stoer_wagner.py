@@ -20,40 +20,38 @@ def _check_partition(G, cut_value, partition, weight):
     assert w == cut_value
 
 
-def _test_stoer_wagner(G, answer, weight='weight'):
-    cut_value, partition = nx.stoer_wagner(G, weight,
-                                           heap=nx.utils.PairingHeap)
+def _test_stoer_wagner(G, answer, weight="weight"):
+    cut_value, partition = nx.stoer_wagner(G, weight, heap=nx.utils.PairingHeap)
     assert cut_value == answer
     _check_partition(G, cut_value, partition, weight)
-    cut_value, partition = nx.stoer_wagner(G, weight,
-                                           heap=nx.utils.BinaryHeap)
+    cut_value, partition = nx.stoer_wagner(G, weight, heap=nx.utils.BinaryHeap)
     assert cut_value == answer
     _check_partition(G, cut_value, partition, weight)
 
 
 def test_graph1():
     G = nx.Graph()
-    G.add_edge('x', 'a', weight=3)
-    G.add_edge('x', 'b', weight=1)
-    G.add_edge('a', 'c', weight=3)
-    G.add_edge('b', 'c', weight=5)
-    G.add_edge('b', 'd', weight=4)
-    G.add_edge('d', 'e', weight=2)
-    G.add_edge('c', 'y', weight=2)
-    G.add_edge('e', 'y', weight=3)
+    G.add_edge("x", "a", weight=3)
+    G.add_edge("x", "b", weight=1)
+    G.add_edge("a", "c", weight=3)
+    G.add_edge("b", "c", weight=5)
+    G.add_edge("b", "d", weight=4)
+    G.add_edge("d", "e", weight=2)
+    G.add_edge("c", "y", weight=2)
+    G.add_edge("e", "y", weight=3)
     _test_stoer_wagner(G, 4)
 
 
 def test_graph2():
     G = nx.Graph()
-    G.add_edge('x', 'a')
-    G.add_edge('x', 'b')
-    G.add_edge('a', 'c')
-    G.add_edge('b', 'c')
-    G.add_edge('b', 'd')
-    G.add_edge('d', 'e')
-    G.add_edge('c', 'y')
-    G.add_edge('e', 'y')
+    G.add_edge("x", "a")
+    G.add_edge("x", "b")
+    G.add_edge("a", "c")
+    G.add_edge("b", "c")
+    G.add_edge("b", "d")
+    G.add_edge("d", "e")
+    G.add_edge("c", "y")
+    G.add_edge("e", "y")
     _test_stoer_wagner(G, 2)
 
 
@@ -82,7 +80,7 @@ def test_weight_name():
     G.add_edge(1, 2, weight=1, cost=8)
     G.add_edge(1, 3, cost=2)
     G.add_edge(2, 3, cost=4)
-    _test_stoer_wagner(G, 6, weight='cost')
+    _test_stoer_wagner(G, 6, weight="cost")
 
 
 def test_exceptions():

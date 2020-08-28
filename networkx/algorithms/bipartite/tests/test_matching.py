@@ -12,7 +12,7 @@ from networkx.algorithms.bipartite.matching import minimum_weight_full_matching
 from networkx.algorithms.bipartite.matching import to_vertex_cover
 
 
-class TestMatching():
+class TestMatching:
     """Tests for bipartite matching algorithms."""
 
     def setup(self):
@@ -26,8 +26,7 @@ class TestMatching():
         self.simple_graph = nx.complete_bipartite_graph(2, 3)
         self.simple_solution = {0: 2, 1: 3, 2: 0, 3: 1}
 
-        edges = [(0, 7), (0, 8), (2, 6), (2, 9), (3, 8), (4, 8), (4, 9),
-                 (5, 11)]
+        edges = [(0, 7), (0, 8), (2, 6), (2, 9), (3, 8), (4, 8), (4, 9), (5, 11)]
         self.top_nodes = set(range(6))
         self.graph = nx.Graph()
         self.graph.add_nodes_from(range(12))
@@ -35,33 +34,48 @@ class TestMatching():
 
         # Example bipartite graph from issue 2127
         G = nx.Graph()
-        G.add_nodes_from([
-            (1, 'C'), (1, 'B'), (0, 'G'), (1, 'F'),
-            (1, 'E'), (0, 'C'), (1, 'D'), (1, 'I'),
-            (0, 'A'), (0, 'D'), (0, 'F'), (0, 'E'),
-            (0, 'H'), (1, 'G'), (1, 'A'), (0, 'I'),
-            (0, 'B'), (1, 'H'),
-        ])
-        G.add_edge((1, 'C'), (0, 'A'))
-        G.add_edge((1, 'B'), (0, 'A'))
-        G.add_edge((0, 'G'), (1, 'I'))
-        G.add_edge((0, 'G'), (1, 'H'))
-        G.add_edge((1, 'F'), (0, 'A'))
-        G.add_edge((1, 'F'), (0, 'C'))
-        G.add_edge((1, 'F'), (0, 'E'))
-        G.add_edge((1, 'E'), (0, 'A'))
-        G.add_edge((1, 'E'), (0, 'C'))
-        G.add_edge((0, 'C'), (1, 'D'))
-        G.add_edge((0, 'C'), (1, 'I'))
-        G.add_edge((0, 'C'), (1, 'G'))
-        G.add_edge((0, 'C'), (1, 'H'))
-        G.add_edge((1, 'D'), (0, 'A'))
-        G.add_edge((1, 'I'), (0, 'A'))
-        G.add_edge((1, 'I'), (0, 'E'))
-        G.add_edge((0, 'A'), (1, 'G'))
-        G.add_edge((0, 'A'), (1, 'H'))
-        G.add_edge((0, 'E'), (1, 'G'))
-        G.add_edge((0, 'E'), (1, 'H'))
+        G.add_nodes_from(
+            [
+                (1, "C"),
+                (1, "B"),
+                (0, "G"),
+                (1, "F"),
+                (1, "E"),
+                (0, "C"),
+                (1, "D"),
+                (1, "I"),
+                (0, "A"),
+                (0, "D"),
+                (0, "F"),
+                (0, "E"),
+                (0, "H"),
+                (1, "G"),
+                (1, "A"),
+                (0, "I"),
+                (0, "B"),
+                (1, "H"),
+            ]
+        )
+        G.add_edge((1, "C"), (0, "A"))
+        G.add_edge((1, "B"), (0, "A"))
+        G.add_edge((0, "G"), (1, "I"))
+        G.add_edge((0, "G"), (1, "H"))
+        G.add_edge((1, "F"), (0, "A"))
+        G.add_edge((1, "F"), (0, "C"))
+        G.add_edge((1, "F"), (0, "E"))
+        G.add_edge((1, "E"), (0, "A"))
+        G.add_edge((1, "E"), (0, "C"))
+        G.add_edge((0, "C"), (1, "D"))
+        G.add_edge((0, "C"), (1, "I"))
+        G.add_edge((0, "C"), (1, "G"))
+        G.add_edge((0, "C"), (1, "H"))
+        G.add_edge((1, "D"), (0, "A"))
+        G.add_edge((1, "I"), (0, "A"))
+        G.add_edge((1, "I"), (0, "E"))
+        G.add_edge((0, "A"), (1, "G"))
+        G.add_edge((0, "A"), (1, "H"))
+        G.add_edge((0, "E"), (1, "G"))
+        G.add_edge((0, "E"), (1, "H"))
         self.disconnected_graph = G
 
     def check_match(self, matching):
@@ -157,7 +171,7 @@ class TestMatching():
         matching = hopcroft_karp_matching(btc, top_nodes)
         vertex_cover = to_vertex_cover(btc, matching, top_nodes)
         independent_set = set(G) - {v for _, v in vertex_cover}
-        assert {'B', 'D', 'F', 'I', 'H'} == independent_set
+        assert {"B", "D", "F", "I", "H"} == independent_set
 
     def test_vertex_cover_issue_2384(self):
         G = nx.Graph([(0, 3), (1, 3), (1, 4), (2, 3)])
@@ -182,21 +196,41 @@ class TestMatching():
 def test_eppstein_matching():
     """Test in accordance to issue #1927"""
     G = nx.Graph()
-    G.add_nodes_from(['a', 2, 3, 4], bipartite=0)
-    G.add_nodes_from([1, 'b', 'c'], bipartite=1)
-    G.add_edges_from([('a', 1), ('a', 'b'), (2, 'b'),
-                      (2, 'c'), (3, 'c'), (4, 1)])
+    G.add_nodes_from(["a", 2, 3, 4], bipartite=0)
+    G.add_nodes_from([1, "b", "c"], bipartite=1)
+    G.add_edges_from([("a", 1), ("a", "b"), (2, "b"), (2, "c"), (3, "c"), (4, 1)])
     matching = eppstein_matching(G)
     assert len(matching) == len(maximum_matching(G))
     assert all(x in set(matching.keys()) for x in set(matching.values()))
 
 
 class TestMinimumWeightFullMatching:
-
     @classmethod
     def setup_class(cls):
         global scipy
-        scipy = pytest.importorskip('scipy')
+        scipy = pytest.importorskip("scipy")
+
+    def test_minimum_weight_full_matching_incomplete_graph(self):
+        B = nx.Graph()
+        B.add_nodes_from([1, 2], bipartite=0)
+        B.add_nodes_from([3, 4], bipartite=1)
+        B.add_edge(1, 4, weight=100)
+        B.add_edge(2, 3, weight=100)
+        B.add_edge(2, 4, weight=50)
+        matching = minimum_weight_full_matching(B)
+        assert matching == {1: 4, 2: 3, 4: 1, 3: 2}
+
+    def test_minimum_weight_full_matching_with_no_full_matching(self):
+        B = nx.Graph()
+        B.add_nodes_from([1, 2, 3], bipartite=0)
+        B.add_nodes_from([4, 5, 6], bipartite=1)
+        B.add_edge(1, 4, weight=100)
+        B.add_edge(2, 4, weight=100)
+        B.add_edge(3, 4, weight=50)
+        B.add_edge(3, 5, weight=50)
+        B.add_edge(3, 6, weight=50)
+        with pytest.raises(ValueError):
+            minimum_weight_full_matching(B)
 
     def test_minimum_weight_full_matching_square(self):
         G = nx.complete_bipartite_graph(3, 3)
@@ -278,14 +312,5 @@ class TestMinimumWeightFullMatching:
         G.add_edge(0, 3, mass=0.2)
         G.add_edge(1, 2, mass=1)
         G.add_edge(1, 3, mass=2)
-        matching = minimum_weight_full_matching(G, weight='mass')
+        matching = minimum_weight_full_matching(G, weight="mass")
         assert matching == {0: 3, 1: 2, 2: 1, 3: 0}
-
-    def test_minimum_weight_full_matching_requires_complete_input(self):
-        with pytest.raises(ValueError):
-            G = nx.Graph()
-            G.add_nodes_from([1, 2, 3, 4], bipartite=0)
-            G.add_nodes_from(['a', 'b', 'c'], bipartite=1)
-            G.add_edges_from([(1, 'a'), (1, 'b'), (2, 'b'),
-                              (2, 'c'), (3, 'c'), (4, 'a')])
-            minimum_weight_full_matching(G)

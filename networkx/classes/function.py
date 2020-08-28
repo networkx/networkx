@@ -6,23 +6,51 @@ from itertools import chain
 
 import networkx as nx
 from networkx.utils import pairwise, not_implemented_for
-
 from networkx.classes.graphviews import subgraph_view, reverse_view
 
-__all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
-           'number_of_nodes', 'number_of_edges', 'density',
-           'is_directed', 'info', 'freeze', 'is_frozen',
-           'subgraph', 'subgraph_view', 'induced_subgraph', 'reverse_view',
-           'edge_subgraph', 'restricted_view',
-           'to_directed', 'to_undirected',
-           'add_star', 'add_path', 'add_cycle',
-           'create_empty_copy', 'set_node_attributes',
-           'get_node_attributes', 'set_edge_attributes',
-           'get_edge_attributes', 'all_neighbors', 'non_neighbors',
-           'non_edges', 'common_neighbors', 'is_weighted',
-           'is_negatively_weighted', 'is_empty',
-           'selfloop_edges', 'nodes_with_selfloops', 'number_of_selfloops',
-           ]
+
+__all__ = [
+    "nodes",
+    "edges",
+    "degree",
+    "degree_histogram",
+    "neighbors",
+    "number_of_nodes",
+    "number_of_edges",
+    "density",
+    "is_directed",
+    "info",
+    "freeze",
+    "is_frozen",
+    "subgraph",
+    "subgraph_view",
+    "induced_subgraph",
+    "reverse_view",
+    "edge_subgraph",
+    "restricted_view",
+    "to_directed",
+    "to_undirected",
+    "add_star",
+    "add_path",
+    "add_cycle",
+    "create_empty_copy",
+    "set_node_attributes",
+    "get_node_attributes",
+    "set_edge_attributes",
+    "get_edge_attributes",
+    "all_neighbors",
+    "non_neighbors",
+    "non_edges",
+    "common_neighbors",
+    "is_weighted",
+    "is_negatively_weighted",
+    "is_empty",
+    "selfloop_edges",
+    "nodes_with_selfloops",
+    "number_of_selfloops",
+    "path_weight",
+    "is_path",
+]
 
 
 def nodes(G):
@@ -146,9 +174,9 @@ def freeze(G):
     >>> G = nx.path_graph(4)
     >>> G = nx.freeze(G)
     >>> try:
-    ...    G.add_edge(4, 5)
+    ...     G.add_edge(4, 5)
     ... except nx.NetworkXError as e:
-    ...    print(str(e))
+    ...     print(str(e))
     Frozen graph can't be modified
 
     Notes
@@ -283,7 +311,7 @@ def add_cycle(G_to_add_to, nodes_for_cycle, **attr):
 
     Examples
     --------
-    >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+    >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
     >>> nx.add_cycle(G, [0, 1, 2, 3])
     >>> nx.add_cycle(G, [10, 11, 12], weight=7)
     """
@@ -293,7 +321,9 @@ def add_cycle(G_to_add_to, nodes_for_cycle, **attr):
     except StopIteration:
         return
     G_to_add_to.add_node(first_node)
-    G_to_add_to.add_edges_from(pairwise(chain((first_node,), nlist), cyclic=True), **attr)
+    G_to_add_to.add_edges_from(
+        pairwise(chain((first_node,), nlist), cyclic=True), **attr
+    )
 
 
 def subgraph(G, nbunch):
@@ -354,7 +384,6 @@ def induced_subgraph(G, nbunch):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
     >>> H = G.subgraph([0, 1, 2])
     >>> list(H.edges)
@@ -397,7 +426,6 @@ def edge_subgraph(G, edges):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.path_graph(5)
     >>> H = G.edge_subgraph([(0, 1), (3, 4)])
     >>> list(H.nodes)
@@ -458,7 +486,6 @@ def restricted_view(G, nodes, edges):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.path_graph(5)
     >>> H = nx.restricted_view(G, [0], [(1, 2), (3, 4)])
     >>> list(H.nodes)
@@ -525,7 +552,10 @@ def create_empty_copy(G, with_data=True):
 
 
 def info(G, n=None):
-    """Print short summary of information for the graph G or the node n.
+    """Return a summary of information for the graph G or a single node n.
+
+    The summary includes the number of nodes and edges (or neighbours for a single
+    node), and their average degree.
 
     Parameters
     ----------
@@ -533,8 +563,19 @@ def info(G, n=None):
        A graph
     n : node (any hashable)
        A node in the graph G
+
+    Returns
+    -------
+    info : str
+        A string containing the short summary
+
+    Raises
+    ------
+    NetworkXError
+        If n is not in the graph G
+
     """
-    info = ''  # append this all to a string
+    info = ""  # append this all to a string
     if n is None:
         info += f"Name: {G.name}\n"
         type_name = [type(G).__name__]
@@ -557,7 +598,7 @@ def info(G, n=None):
         info += f"Node {n} has the following properties:\n"
         info += f"Degree: {G.degree(n)}\n"
         info += "Neighbors: "
-        info += ' '.join(str(nbr) for nbr in G.neighbors(n))
+        info += " ".join(str(nbr) for nbr in G.neighbors(n))
     return info
 
 
@@ -596,8 +637,8 @@ def set_node_attributes(G, values, name=None):
         >>> bb = nx.betweenness_centrality(G)
         >>> isinstance(bb, dict)
         True
-        >>> nx.set_node_attributes(G, bb, 'betweenness')
-        >>> G.nodes[1]['betweenness']
+        >>> nx.set_node_attributes(G, bb, "betweenness")
+        >>> G.nodes[1]["betweenness"]
         1.0
 
     If you provide a list as the second argument, updates to the list
@@ -605,13 +646,13 @@ def set_node_attributes(G, values, name=None):
 
         >>> G = nx.path_graph(3)
         >>> labels = []
-        >>> nx.set_node_attributes(G, labels, 'labels')
-        >>> labels.append('foo')
-        >>> G.nodes[0]['labels']
+        >>> nx.set_node_attributes(G, labels, "labels")
+        >>> labels.append("foo")
+        >>> G.nodes[0]["labels"]
         ['foo']
-        >>> G.nodes[1]['labels']
+        >>> G.nodes[1]["labels"]
         ['foo']
-        >>> G.nodes[2]['labels']
+        >>> G.nodes[2]["labels"]
         ['foo']
 
     If you provide a dictionary of dictionaries as the second argument,
@@ -619,13 +660,13 @@ def set_node_attributes(G, values, name=None):
     dictionary of node attributes for that node::
 
         >>> G = nx.path_graph(3)
-        >>> attrs = {0: {'attr1': 20, 'attr2': 'nothing'}, 1: {'attr2': 3}}
+        >>> attrs = {0: {"attr1": 20, "attr2": "nothing"}, 1: {"attr2": 3}}
         >>> nx.set_node_attributes(G, attrs)
-        >>> G.nodes[0]['attr1']
+        >>> G.nodes[0]["attr1"]
         20
-        >>> G.nodes[0]['attr2']
+        >>> G.nodes[0]["attr2"]
         'nothing'
-        >>> G.nodes[1]['attr2']
+        >>> G.nodes[1]["attr2"]
         3
         >>> G.nodes[2]
         {}
@@ -667,8 +708,8 @@ def get_node_attributes(G, name):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_nodes_from([1, 2, 3], color='red')
-    >>> color = nx.get_node_attributes(G, 'color')
+    >>> G.add_nodes_from([1, 2, 3], color="red")
+    >>> color = nx.get_node_attributes(G, "color")
     >>> color[1]
     'red'
     """
@@ -711,33 +752,32 @@ def set_edge_attributes(G, values, name=None):
 
         >>> G = nx.path_graph(3)
         >>> bb = nx.edge_betweenness_centrality(G, normalized=False)
-        >>> nx.set_edge_attributes(G, bb, 'betweenness')
-        >>> G.edges[1, 2]['betweenness']
+        >>> nx.set_edge_attributes(G, bb, "betweenness")
+        >>> G.edges[1, 2]["betweenness"]
         2.0
 
     If you provide a list as the second argument, updates to the list
     will be reflected in the edge attribute for each edge::
 
         >>> labels = []
-        >>> nx.set_edge_attributes(G, labels, 'labels')
-        >>> labels.append('foo')
-        >>> G.edges[0, 1]['labels']
+        >>> nx.set_edge_attributes(G, labels, "labels")
+        >>> labels.append("foo")
+        >>> G.edges[0, 1]["labels"]
         ['foo']
-        >>> G.edges[1, 2]['labels']
+        >>> G.edges[1, 2]["labels"]
         ['foo']
 
     If you provide a dictionary of dictionaries as the second argument,
     the entire dictionary will be used to update edge attributes::
 
         >>> G = nx.path_graph(3)
-        >>> attrs = {(0, 1): {'attr1': 20, 'attr2': 'nothing'},
-        ...          (1, 2): {'attr2': 3}}
+        >>> attrs = {(0, 1): {"attr1": 20, "attr2": "nothing"}, (1, 2): {"attr2": 3}}
         >>> nx.set_edge_attributes(G, attrs)
-        >>> G[0][1]['attr1']
+        >>> G[0][1]["attr1"]
         20
-        >>> G[0][1]['attr2']
+        >>> G[0][1]["attr2"]
         'nothing'
-        >>> G[1][2]['attr2']
+        >>> G[1][2]["attr2"]
         3
 
     """
@@ -796,8 +836,8 @@ def get_edge_attributes(G, name):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> nx.add_path(G, [1, 2, 3], color='red')
-    >>> color = nx.get_edge_attributes(G, 'color')
+    >>> nx.add_path(G, [1, 2, 3], color="red")
+    >>> color = nx.get_edge_attributes(G, "color")
     >>> color[(1, 2)]
     'red'
     """
@@ -878,7 +918,7 @@ def non_edges(graph):
                 yield (u, v)
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def common_neighbors(G, u, v):
     """Returns the common neighbors of two nodes in a graph.
 
@@ -907,16 +947,16 @@ def common_neighbors(G, u, v):
     [2, 3, 4]
     """
     if u not in G:
-        raise nx.NetworkXError('u is not in the graph.')
+        raise nx.NetworkXError("u is not in the graph.")
     if v not in G:
-        raise nx.NetworkXError('v is not in the graph.')
+        raise nx.NetworkXError("v is not in the graph.")
 
     # Return a generator explicitly instead of yielding so that the above
     # checks are executed eagerly.
     return (w for w in G[u] if w in G[v] and w not in (u, v))
 
 
-def is_weighted(G, edge=None, weight='weight'):
+def is_weighted(G, edge=None, weight="weight"):
     """Returns True if `G` has weighted edges.
 
     Parameters
@@ -958,7 +998,7 @@ def is_weighted(G, edge=None, weight='weight'):
     if edge is not None:
         data = G.get_edge_data(*edge)
         if data is None:
-            msg = f'Edge {edge!r} does not exist.'
+            msg = f"Edge {edge!r} does not exist."
             raise nx.NetworkXError(msg)
         return weight in data
 
@@ -969,7 +1009,7 @@ def is_weighted(G, edge=None, weight='weight'):
     return all(weight in data for u, v, data in G.edges(data=True))
 
 
-def is_negatively_weighted(G, edge=None, weight='weight'):
+def is_negatively_weighted(G, edge=None, weight="weight"):
     """Returns True if `G` has negatively weighted edges.
 
     Parameters
@@ -1002,11 +1042,11 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
     >>> G.add_edge(1, 2, weight=4)
     >>> nx.is_negatively_weighted(G, (1, 2))
     False
-    >>> G[2][4]['weight'] = -2
+    >>> G[2][4]["weight"] = -2
     >>> nx.is_negatively_weighted(G)
     True
     >>> G = nx.DiGraph()
-    >>> edges = [('0', '3', 3), ('0', '1', -5), ('1', '0', -2)]
+    >>> edges = [("0", "3", 3), ("0", "1", -5), ("1", "0", -2)]
     >>> G.add_weighted_edges_from(edges)
     >>> nx.is_negatively_weighted(G)
     True
@@ -1015,12 +1055,11 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
     if edge is not None:
         data = G.get_edge_data(*edge)
         if data is None:
-            msg = f'Edge {edge!r} does not exist.'
+            msg = f"Edge {edge!r} does not exist."
             raise nx.NetworkXError(msg)
         return weight in data and data[weight] < 0
 
-    return any(weight in data and data[weight] < 0
-               for u, v, data in G.edges(data=True))
+    return any(weight in data and data[weight] < 0 for u, v, data in G.edges(data=True))
 
 
 def is_empty(G):
@@ -1063,7 +1102,7 @@ def nodes_with_selfloops(G):
 
     Examples
     --------
-    >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+    >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
     >>> G.add_edge(1, 1)
     >>> G.add_edge(1, 2)
     >>> list(nx.nodes_with_selfloops(G))
@@ -1101,7 +1140,7 @@ def selfloop_edges(G, data=False, keys=False, default=None):
 
     Examples
     --------
-    >>> G = nx.MultiGraph()   # or Graph, DiGraph, MultiDiGraph, etc
+    >>> G = nx.MultiGraph()  # or Graph, DiGraph, MultiDiGraph, etc
     >>> ekey = G.add_edge(1, 1)
     >>> ekey = G.add_edge(1, 2)
     >>> list(nx.selfloop_edges(G))
@@ -1116,38 +1155,56 @@ def selfloop_edges(G, data=False, keys=False, default=None):
     if data is True:
         if G.is_multigraph():
             if keys is True:
-                return ((n, n, k, d)
-                        for n, nbrs in G.adj.items()
-                        if n in nbrs for k, d in nbrs[n].items())
+                return (
+                    (n, n, k, d)
+                    for n, nbrs in G.adj.items()
+                    if n in nbrs
+                    for k, d in nbrs[n].items()
+                )
             else:
-                return ((n, n, d)
-                        for n, nbrs in G.adj.items()
-                        if n in nbrs for d in nbrs[n].values())
+                return (
+                    (n, n, d)
+                    for n, nbrs in G.adj.items()
+                    if n in nbrs
+                    for d in nbrs[n].values()
+                )
         else:
             return ((n, n, nbrs[n]) for n, nbrs in G.adj.items() if n in nbrs)
     elif data is not False:
         if G.is_multigraph():
             if keys is True:
-                return ((n, n, k, d.get(data, default))
-                        for n, nbrs in G.adj.items()
-                        if n in nbrs for k, d in nbrs[n].items())
+                return (
+                    (n, n, k, d.get(data, default))
+                    for n, nbrs in G.adj.items()
+                    if n in nbrs
+                    for k, d in nbrs[n].items()
+                )
             else:
-                return ((n, n, d.get(data, default))
-                        for n, nbrs in G.adj.items()
-                        if n in nbrs for d in nbrs[n].values())
+                return (
+                    (n, n, d.get(data, default))
+                    for n, nbrs in G.adj.items()
+                    if n in nbrs
+                    for d in nbrs[n].values()
+                )
         else:
-            return ((n, n, nbrs[n].get(data, default))
-                    for n, nbrs in G.adj.items() if n in nbrs)
+            return (
+                (n, n, nbrs[n].get(data, default))
+                for n, nbrs in G.adj.items()
+                if n in nbrs
+            )
     else:
         if G.is_multigraph():
             if keys is True:
-                return ((n, n, k)
-                        for n, nbrs in G.adj.items()
-                        if n in nbrs for k in nbrs[n])
+                return (
+                    (n, n, k) for n, nbrs in G.adj.items() if n in nbrs for k in nbrs[n]
+                )
             else:
-                return ((n, n)
-                        for n, nbrs in G.adj.items()
-                        if n in nbrs for d in nbrs[n].values())
+                return (
+                    (n, n)
+                    for n, nbrs in G.adj.items()
+                    if n in nbrs
+                    for i in range(len(nbrs[n]))  # for easy edge removal (#4068)
+                )
         else:
             return ((n, n) for n, nbrs in G.adj.items() if n in nbrs)
 
@@ -1168,10 +1225,71 @@ def number_of_selfloops(G):
 
     Examples
     --------
-    >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+    >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
     >>> G.add_edge(1, 1)
     >>> G.add_edge(1, 2)
     >>> nx.number_of_selfloops(G)
     1
     """
     return sum(1 for _ in nx.selfloop_edges(G))
+
+
+def is_path(G, path):
+    """Returns whether or not the specified path exists
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph.
+
+    path: list
+        A list of node labels which defines the path to traverse
+
+    Returns
+    -------
+    isPath: bool
+        A boolean representing whether or not the path exists
+
+    """
+    for node, nbr in nx.utils.pairwise(path):
+        if nbr not in G[node]:
+            return False
+    return True
+
+
+def path_weight(G, path, weight):
+    """Returns total cost associated with specified path and weight
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph.
+
+    path: list
+        A list of node labels which defines the path to traverse
+
+    weight: string
+        A string indicating which edge attribute to use for path cost
+
+    Returns
+    -------
+    cost: int
+        A integer representing the total cost with respect to the
+        specified weight of the specified path
+
+    Raises
+    ------
+    NetworkXNoPath
+        If the specified edge does not exist.
+    """
+    multigraph = G.is_multigraph()
+    cost = 0
+
+    if not nx.is_path(G, path):
+        raise nx.NetworkXNoPath("path does not exist")
+    for node, nbr in nx.utils.pairwise(path):
+        if multigraph:
+            cost += min([v[weight] for v in G[node][nbr].values()])
+        else:
+            cost += G[node][nbr][weight]
+    return cost

@@ -9,7 +9,7 @@ def test_unionfind():
     #
     # Now we just make sure that no exception is raised.
     x = nx.utils.UnionFind()
-    x.union(0, 'a')
+    x.union(0, "a")
 
 
 def test_subtree_union():

@@ -8,7 +8,7 @@ from networkx.utils import reverse_cuthill_mckee_ordering
 from networkx.utils import random_state
 
 try:
-    from numpy import array, asmatrix, asarray, dot, ndarray, ones, sqrt, zeros
+    from numpy import array, asarray, dot, ndarray, ones, sqrt, zeros, atleast_2d
     from numpy.linalg import norm, qr
     from scipy.linalg import eigh, inv
     from scipy.sparse import csc_matrix, spdiags
@@ -271,26 +271,26 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     # Initialize.
     Lnorm = abs(L).sum(axis=1).flatten().max()
     project(X)
-    W = asmatrix(ndarray(X.shape, order="F"))
+    W = ndarray(X.shape, order="F")
 
     while True:
         # Orthonormalize X.
         X = qr(X)[0]
         # Compute iteration matrix H.
-        W[:, :] = L * X
-        H = X.T * W
+        W[:, :] = L @ X
+        H = X.T @ W
         sigma, Y = eigh(H, overwrite_a=True)
         # Compute the Ritz vectors.
-        X *= Y
+        X = X @ Y
         # Test for convergence exploiting the fact that L * X == W * Y.
-        res = dasum(W * asmatrix(Y)[:, 0] - sigma[0] * X[:, 0]) / Lnorm
+        res = dasum(W @ Y[:, 0] - sigma[0] * X[:, 0]) / Lnorm
         if res < tol:
             break
         # Compute X = L \ X / (X' * (L \ X)).
         # L \ X can have an arbitrary projection on the nullspace of L,
         # which will be eliminated.
         W[:, :] = solver.solve(X, tol)
-        X = (inv(W.T * X) * W.T).T  # Preserves Fortran storage order.
+        X = (inv(W.T @ X) @ W.T).T  # Preserves Fortran storage order.
         project(X)
 
     return sigma, asarray(X)
@@ -305,7 +305,7 @@ def _get_fiedler_func(method):
 
         def find_fiedler(L, x, normalized, tol, seed):
             q = 1 if method == "tracemin_pcg" else min(4, L.shape[0] - 1)
-            X = asmatrix(seed.normal(size=(q, L.shape[0]))).T
+            X = asarray(seed.normal(size=(q, L.shape[0]))).T
             sigma, X = _tracemin_fiedler(L, X, normalized, tol, method)
             return sigma[0], X[:, 0]
 
@@ -324,13 +324,13 @@ def _get_fiedler_func(method):
                 sigma, X = eigsh(L, 2, which="SM", tol=tol, return_eigenvectors=True)
                 return sigma[1], X[:, 1]
             else:
-                X = asarray(asmatrix(x).T)
+                X = asarray(atleast_2d(x).T)
                 M = spdiags(1.0 / L.diagonal(), [0], n, n)
                 Y = ones(n)
                 if normalized:
                     Y /= D.diagonal()
                 sigma, X = lobpcg(
-                    L, X, M=M, Y=asmatrix(Y).T, tol=tol, maxiter=n, largest=False
+                    L, X, M=M, Y=atleast_2d(Y).T, tol=tol, maxiter=n, largest=False
                 )
                 return sigma[0], X[:, 0]
 

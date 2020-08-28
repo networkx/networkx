@@ -6,7 +6,7 @@ import networkx as nx
 from networkx.utils import arbitrary_element, generate_unique_node
 from networkx.utils.decorators import not_implemented_for
 
-__all__ = ['line_graph', 'inverse_line_graph']
+__all__ = ["line_graph", "inverse_line_graph"]
 
 
 def line_graph(G, create_using=None):
@@ -37,7 +37,6 @@ def line_graph(G, create_using=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.star_graph(3)
     >>> L = nx.line_graph(G)
     >>> print(sorted(map(sorted, L.edges())))  # makes a 3-clique, K3
@@ -114,11 +113,15 @@ def _node_func(G):
 
     """
     if G.is_multigraph():
+
         def sorted_node(u, v, key):
             return (u, v, key) if u <= v else (v, u, key)
+
     else:
+
         def sorted_node(u, v):
             return (u, v) if u <= v else (v, u)
+
     return sorted_node
 
 
@@ -127,11 +130,15 @@ def _edge_func(G):
 
     """
     if G.is_multigraph():
+
         def get_edges(nbunch=None):
             return G.edges(nbunch, keys=True)
+
     else:
+
         def get_edges(nbunch=None):
             return G.edges(nbunch)
+
     return get_edges
 
 
@@ -225,14 +232,14 @@ def _lg_undirected(G, selfloops=False, create_using=None):
         # especially important for multigraphs, we store the edges in
         # canonical form in a set.
         for i, a in enumerate(nodes):
-            edges.update([_sorted_edge(a, b) for b in nodes[i + shift:]])
+            edges.update([_sorted_edge(a, b) for b in nodes[i + shift :]])
 
     L.add_edges_from(edges)
     return L
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def inverse_line_graph(G):
     """ Returns the inverse line graph of graph G.
 
@@ -268,7 +275,7 @@ def inverse_line_graph(G):
     You should invert every component seperately:
 
     >>> K5 = nx.complete_graph(5)
-    >>> P4 = nx.Graph([('a', 'b'), ('b', 'c'), ('c', 'd')])
+    >>> P4 = nx.Graph([("a", "b"), ("b", "c"), ("c", "d")])
     >>> G = nx.union(K5, P4)
     >>> root_graphs = []
     >>> for comp in nx.connected_components(G):
@@ -309,8 +316,7 @@ def inverse_line_graph(G):
             P_count[u] += 1
 
     if max(P_count.values()) > 2:
-        msg = "G is not a line graph (vertex found in more " \
-              "than two partition cells)"
+        msg = "G is not a line graph (vertex found in more " "than two partition cells)"
         raise nx.NetworkXError(msg)
     W = tuple([(u,) for u in P_count if P_count[u] == 1])
     H = nx.Graph()
@@ -417,8 +423,10 @@ def _find_partition(G, starting_cell):
             for u in new_cell:
                 for v in new_cell:
                     if (u != v) and (v not in G_partition[u]):
-                        msg = "G is not a line graph" \
-                              "(partition cell not a complete subgraph)"
+                        msg = (
+                            "G is not a line graph"
+                            "(partition cell not a complete subgraph)"
+                        )
                         raise nx.NetworkXError(msg)
             P.append(tuple(new_cell))
             G_partition.remove_edges_from(list(combinations(new_cell, 2)))
@@ -500,17 +508,23 @@ def _select_starting_cell(G, starting_edge=None):
                 for u in triangle_nodes:
                     for v in triangle_nodes:
                         if u != v and (v not in G[u]):
-                            msg = "G is not a line graph (odd triangles " \
-                                  "do not form complete subgraph)"
+                            msg = (
+                                "G is not a line graph (odd triangles "
+                                "do not form complete subgraph)"
+                            )
                             raise nx.NetworkXError(msg)
                 # otherwise then we can use this as the starting cell
                 starting_cell = tuple(triangle_nodes)
             else:
-                msg = "G is not a line graph (odd triangles " \
-                      "do not form complete subgraph)"
+                msg = (
+                    "G is not a line graph (odd triangles "
+                    "do not form complete subgraph)"
+                )
                 raise nx.NetworkXError(msg)
         else:
-            msg = "G is not a line graph (incorrect number of " \
-                  "odd triangles around starting edge)"
+            msg = (
+                "G is not a line graph (incorrect number of "
+                "odd triangles around starting edge)"
+            )
             raise nx.NetworkXError(msg)
     return starting_cell
