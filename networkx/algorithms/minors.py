@@ -9,7 +9,13 @@ from networkx import density
 from networkx.exception import NetworkXException
 from networkx.utils import arbitrary_element
 
-__all__ = ["contracted_edge", "contracted_nodes", "identified_nodes", "quotient_graph"]
+__all__ = [
+    "contracted_edge",
+    "contracted_nodes",
+    "equivalence_classes",
+    "identified_nodes",
+    "quotient_graph"
+]
 
 chaini = chain.from_iterable
 
