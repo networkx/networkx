@@ -249,7 +249,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     >>> nx.draw(G, pos=nx.spring_layout(G))  # use spring layout
 
     >>> import matplotlib.pyplot as plt
-    >>> limits = plt.axis("off")  # turn of axis
+    >>> limits = plt.axis("off")  # turn off axis
 
     Also see the NetworkX drawing examples at
     https://networkx.github.io/documentation/latest/auto_examples/index.html
@@ -805,6 +805,7 @@ def draw_networkx_labels(
     horizontalalignment="center",
     verticalalignment="center",
     ax=None,
+    clip_on=True,
 ):
     """Draw node labels on the graph G.
 
@@ -817,35 +818,41 @@ def draw_networkx_labels(
        A dictionary with nodes as keys and positions as values.
        Positions should be sequences of length 2.
 
-    labels : dictionary, optional (default=None)
+    labels : dictionary, optional (default=None), optional
        Node labels in a dictionary keyed by node of text labels
        Node-keys in labels should appear as keys in `pos`.
        If needed use: `{n:lab for n,lab in labels.items() if n in pos}`
 
-    font_size : int
+    font_size : int, optional
        Font size for text labels (default=12)
 
-    font_color : string
+    font_color : string, optional
        Font color string (default='k' black)
 
-    font_family : string
+    font_family : string, optional
        Font family (default='sans-serif')
 
-    font_weight : string
+    font_weight : string, optional
        Font weight (default='normal')
 
-    alpha : float or None
+    alpha : float or None, optional
        The text transparency (default=None)
 
-    horizontalalignment : {'center', 'right', 'left'}
+    bbox : Matplotlib bbox, optional
+       Specify text box properties (e.g. shape, color etc.) for labels. Default
+       is None, i.e. use the Matplotlib defaults.
+
+    horizontalalignment : {'center', 'right', 'left'}, optional
        Horizontal alignment (default='center')
 
-    verticalalignment : {'center', 'top', 'bottom', 'baseline', 'center_baseline'}
+    verticalalignment : {'center', 'top', 'bottom', 'baseline', 'center_baseline'}, optional
         Vertical alignment (default='center')
 
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.
 
+    clip_on : bool, optional
+        Turn on clipping of labels at axis boundaries (default=True)
 
     Returns
     -------
@@ -900,7 +907,7 @@ def draw_networkx_labels(
             verticalalignment=verticalalignment,
             transform=ax.transData,
             bbox=bbox,
-            clip_on=True,
+            clip_on=clip_on,
         )
         text_items[n] = t
 
@@ -931,6 +938,7 @@ def draw_networkx_edge_labels(
     verticalalignment="center",
     ax=None,
     rotate=True,
+    clip_on=True,
 ):
     """Draw edge labels.
 
@@ -943,46 +951,48 @@ def draw_networkx_edge_labels(
        A dictionary with nodes as keys and positions as values.
        Positions should be sequences of length 2.
 
-    ax : Matplotlib Axes object, optional
-       Draw the graph in the specified Matplotlib axes.
-
-    alpha : float or None
-       The text transparency (default=None)
-
-    edge_labels : dictionary
+    edge_labels : dictionary, optional
        Edge labels in a dictionary keyed by edge two-tuple of text
        labels (default=None). Only labels for the keys in the dictionary
        are drawn.
 
-    label_pos : float
+    label_pos : float, optional
        Position of edge label along edge (0=head, 0.5=center, 1=tail)
+       (default=0.5)
 
-    font_size : int
-       Font size for text labels (default=12)
+    font_size : int, optional
+       Font size for text labels (default=10)
 
-    font_color : string
+    font_color : string, optional
        Font color string (default='k' black)
 
-    font_weight : string
-       Font weight (default='normal')
-
-    font_family : string
+    font_family : string, optional
        Font family (default='sans-serif')
 
-    bbox : Matplotlib bbox
-       Specify text box shape and colors.
+    font_weight : string, optional
+       Font weight (default='normal')
 
-    clip_on : bool
-       Turn on clipping at axis boundaries (default=True)
+    alpha : float or None, optional
+       The text transparency (default=None)
 
-    horizontalalignment : {'center', 'right', 'left'}
+    bbox : Matplotlib bbox, optional
+       Specify text box properties (e.g. shape, color etc.) for edge labels.
+       Default is {boxstyle='round', ec=(1.0, 1.0, 1.0), fc=(1.0, 1.0, 1.0)}.
+
+    horizontalalignment : {'center', 'right', 'left'}, optional
        Horizontal alignment (default='center')
 
-    verticalalignment : {'center', 'top', 'bottom', 'baseline', 'center_baseline'}
+    verticalalignment : {'center', 'top', 'bottom', 'baseline', 'center_baseline'}, optional
         Vertical alignment (default='center')
 
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.
+
+    rotate : bool, optional
+        Rotate edge labels to lie parallel to edges (default=True)
+
+    clip_on : bool, optional
+        Turn on clipping of edge labels at axis boundaries (default=True)
 
     Returns
     -------
@@ -1065,7 +1075,7 @@ def draw_networkx_edge_labels(
             transform=ax.transData,
             bbox=bbox,
             zorder=1,
-            clip_on=True,
+            clip_on=clip_on,
         )
         text_items[(n1, n2)] = t
 
