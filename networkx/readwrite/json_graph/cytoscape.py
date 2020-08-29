@@ -16,7 +16,7 @@ def cytoscape_data(G, attrs=None):
         A dictionary containing the keys 'name' and 'ident' which are mapped to
         the 'name' and 'id' node elements in cyjs format. All other keys are
         ignored. Default is `None` which results in the default mapping
-        ``{name="name", ident="id"}``.
+        ``dict(name="name", ident="id")``.
 
     Returns
     -------
@@ -101,7 +101,7 @@ def cytoscape_graph(data, attrs=None):
         A dictionary containing the keys 'name' and 'ident' which are mapped to
         the 'name' and 'id' node elements in cyjs format. All other keys are
         ignored. Default is `None` which results in the default mapping
-        ``{name="name", ident="id"}``.
+        ``dict(name="name", ident="id")``.
 
     Returns
     -------
