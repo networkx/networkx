@@ -21,17 +21,60 @@ chaini = chain.from_iterable
 
 
 def equivalence_classes(iterable, relation):
-    """Returns the set of equivalence classes of the given `iterable` under
-    the specified equivalence relation.
+    """Returns the set of equivalence classes, or blocks, of the equivalence
+    relation `relation` when applied to the elements of `iterable`.
 
-    `relation` must be a Boolean-valued function that takes two argument. It
-    must represent an equivalence relation (that is, the relation induced by
-    the function must be reflexive, symmetric, and transitive).
+    Parameters
+    ----------
+    iterable : list, tuple, or set
+        An iterable of elements/nodes.
 
-    The return value is a set of sets. It is a partition of the elements of
-    `iterable`; duplicate elements will be ignored so it makes the most sense
-    for `iterable` to be a :class:`set`.
+    relation : function
+        A Boolean-valued function that implements an equivalence relation
+        (reflexive, symmetric, transitive binary relation) on the elements
+        of `iterable` - it must take two elements and return `True` if
+        they are related, or `False` if not.
 
+    Returns
+    -------
+    set of frozensets
+        A set of frozensets representing the partition induced by the equivalence
+        relation function `relation` on the elements of `iterable`. Each
+        member set in the return set represents an equivalence class, or
+        block, of the partition.
+
+        Duplicate elements will be ignored so it makes the most sense for
+        `iterable` to be a :class:`set`.
+
+    Examples
+    --------
+    Let `X` be the ring of integers from `0` to `9`, modulo 3, and consider
+    an equivalence relation `R` on `X` of congruence modulo 3: this means that
+    two integers `x` and `y` in `X` are equivalent under `R` if they leave the
+    same remainder when divided by `3`, i.e.::
+
+        (x - y) mod 3 = 0
+
+    The equivalence classes of this relation are `{0, 3, 6, 9}`, `{1, 4, 7}`,
+    `{2, 5, 8}`: `0`, `3`, `6`, `9` are all divisible by `3` so leave a zero
+    remainder; `1`, `4`, `7` all leave a remainder of `1`; while `2`, `5`
+    and `8` all leave the remainder `2`. We can see this by calling
+    `equivalence_classes` with `iterable` as X and `relation` as a function
+    implementation of `R`.
+
+        >>> def mod3(x, y): return (x - y) % 3 == 0
+        >>> X = set(range(10))
+        >>> equivalence_classes(X, mod3)
+        >>> {frozenset({1, 4, 7}), frozenset({2, 5, 8}), frozenset({0, 3, 6, 9})
+
+    In this example, the only possible remainders of division modulo `3` are
+    `0`, `1`, `2`, and therefore the blocks of the relation can actually be
+    identified with certain elements in the blocks: namely, `{0, 3, 6, 9}` can
+    be identified with `0`, as all these integers are congruent to `0` modulo
+    `3`; `{1, 4, 7}` can be identified with `1`, as all these integers are
+    congruent to `1` modulo `3`; `{2, 5, 8}` can be identified with `2`, as
+    all these integers are congruent to `2` modulo `3`. The set of block
+    labels `{0, 1, 2}` is also a finite ring modulo `3`.
     """
     # For simplicity of implementation, we initialize the return value as a
     # list of lists, then convert it to a set of sets at the end of the
