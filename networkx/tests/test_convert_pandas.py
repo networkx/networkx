@@ -229,7 +229,7 @@ class TestConvertPandas:
             "B": {"A": 1, "B": 0, "C": 0},
             "C": {"A": 0, "B": 1, "C": 0},
         }
-        dftrue = pd.DataFrame(data)
+        dftrue = pd.DataFrame(data, dtype=np.intp)
         df = dftrue[["A", "C", "B"]]
         G = nx.from_pandas_adjacency(df, create_using=nx.DiGraph())
         df = nx.to_pandas_adjacency(G, dtype=np.intp)
