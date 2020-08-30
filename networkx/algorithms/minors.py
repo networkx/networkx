@@ -116,12 +116,18 @@ def quotient_graph(
         The graph for which to return the quotient graph with the
         specified node relation.
 
-    partition : function or list of sets
+    partition : function, or dict or list of lists, tuples or sets
         If a function, this function must represent an equivalence
         relation on the nodes of `G`. It must take two arguments *u*
         and *v* and return True exactly when *u* and *v* are in the
         same equivalence class. The equivalence classes form the nodes
         in the returned graph.
+
+        If a dict of lists/tuples/sets, the keys can be any meaningful
+        block labels, but the values must be the block lists/tuples/sets
+        (one list/tuple/set per block), and the blocks must form a valid
+        partition of the nodes of the graph. That is, each node must be
+        in exactly one block of the partition.
 
         If a list of sets, the list must form a valid partition of
         the nodes of the graph. That is, each node must be in exactly
@@ -261,6 +267,14 @@ def quotient_graph(
         >>> list(M.edges())
         [(0, 1), (1, 2)]
 
+    Here is the sample example but using partition as a dict of block sets.
+
+        >>> G = nx.path_graph(6)
+        >>> partition = {0: {0, 1}, 2: {2, 3}, 4: {4, 5}}
+        >>> M = nx.quotient_graph(G, partition, relabel=True)
+        >>> list(M.edges())
+        [(0, 1), (1, 2)]
+
     .. _Strongly connected component: https://en.wikipedia.org/wiki/Strongly_connected_component
 
     References
@@ -270,7 +284,7 @@ def quotient_graph(
            Cambridge University Press, 2004.
 
     """
-    # If the user provided an equivalence relation as a function compute
+    # If the user provided an equivalence relation as a function to compute
     # the blocks of the partition on the nodes of G induced by the
     # equivalence relation.
     if callable(partition):
@@ -279,6 +293,12 @@ def quotient_graph(
         return _quotient_graph(
             G, partition, edge_relation, node_data, edge_data, relabel, create_using
         )
+
+    # If the partition is a dict, it is assumed to be one where the keys are
+    # user-defined block labels, and values are block lists, i.e. lists of
+    # graph nodes related under the graph equivalence relation
+    if isinstance(partition, dict):
+        partition = [block for block in partition.values()]
 
     # If the user provided partition as a collection of sets. Then we
     # need to check if partition covers all of G nodes. If the answer
