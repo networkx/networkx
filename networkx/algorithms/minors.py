@@ -265,6 +265,19 @@ def quotient_graph(
         >>> list(M.edges())
         [(0, 1), (1, 2)]
 
+    Partitions can be represented in various ways:
+    ::
+
+        (0) a list/tuple/set of block lists/tuples/sets
+        (1) a dict with block labels as keys and blocks lists/tuples/sets as values
+        (2) a dict with block lists/tuples/sets as keys and block labels as values
+        (3) a function from nodes in the original iterable to block labels
+        (4) an equivalence relation function on the target iterable
+
+    As `quotient_graph` is designed to accept partitions represented as (0), (1) or
+    (4) only, the `equivalence_classes` function can be used to get the partitions
+    in the right form, in order to call `quotient_graph`.
+
     .. _Strongly connected component: https://en.wikipedia.org/wiki/Strongly_connected_component
 
     References
@@ -285,8 +298,7 @@ def quotient_graph(
         )
 
     # If the partition is a dict, it is assumed to be one where the keys are
-    # user-defined block labels, and values are block lists, i.e. lists of
-    # graph nodes related under the graph equivalence relation
+    # user-defined block labels, and values are block lists, tuples or sets.
     if isinstance(partition, dict):
         partition = [block for block in partition.values()]
 
