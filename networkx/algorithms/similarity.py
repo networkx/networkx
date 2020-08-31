@@ -1639,7 +1639,7 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
         >>> G = nx.star_graph(3)
         >>> index_map = {}
         >>> random_path = nx.generate_random_paths(G, 3, index_map=index_map)
-        >>> paths_containing_node_0 = [random_path[path_idx] for path_idx in index_map[0]]
+        >>> paths_containing_node_0 = [random_path[path_idx] for path_idx in index_map.get(0, [])]
 
     References
     ----------
