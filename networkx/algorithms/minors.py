@@ -48,33 +48,22 @@ def equivalence_classes(iterable, relation):
 
     Examples
     --------
-    Let `X` be the ring of integers from `0` to `9`, modulo 3, and consider
-    an equivalence relation `R` on `X` of congruence modulo 3: this means that
-    two integers `x` and `y` in `X` are equivalent under `R` if they leave the
-    same remainder when divided by `3`, i.e.::
-
-        (x - y) mod 3 = 0
+    Let `X` be the set of integers from `0` to `9`, and consider an equivalence
+    relation `R` on `X` of congruence modulo `3`: this means that two integers
+    `x` and `y` in `X` are equivalent under `R` if they leave the same
+    remainder when divided by `3`, i.e. `(x - y) mod 3 = 0`.
 
     The equivalence classes of this relation are `{0, 3, 6, 9}`, `{1, 4, 7}`,
-    `{2, 5, 8}`: `0`, `3`, `6`, `9` are all divisible by `3` so leave a zero
-    remainder; `1`, `4`, `7` all leave a remainder of `1`; while `2`, `5`
-    and `8` all leave the remainder `2`. We can see this by calling
-    `equivalence_classes` with `iterable` as X and `relation` as a function
-    implementation of `R`.
+    `{2, 5, 8}`: `0`, `3`, `6`, `9` are all divisible by `3` and leave zero
+    remainder; `1`, `4`, `7` leave remainder `1`; while `2`, `5` and `8` leave
+    remainder `2`. We can see this by calling `equivalence_classes` with
+    with `X` and a function implementation of `R`.::
 
-        >>> def mod3(x, y): return (x - y) % 3 == 0
         >>> X = set(range(10))
-        >>> equivalence_classes(X, mod3)
-        >>> {frozenset({1, 4, 7}), frozenset({2, 5, 8}), frozenset({0, 3, 6, 9})
+        >>> def mod3(x, y): return (x - y) % 3 == 0
+        >>> equivalence_classes(X, mod3)    # doctest: +SKIP
+        {frozenset({1, 4, 7}), frozenset({2, 5, 8}), frozenset({0, 3, 6, 9})} # doctest: +SKIP
 
-    In this example, the only possible remainders of division modulo `3` are
-    `0`, `1`, `2`, and therefore the blocks of the relation can actually be
-    identified with certain elements in the blocks: namely, `{0, 3, 6, 9}` can
-    be identified with `0`, as all these integers are congruent to `0` modulo
-    `3`; `{1, 4, 7}` can be identified with `1`, as all these integers are
-    congruent to `1` modulo `3`; `{2, 5, 8}` can be identified with `2`, as
-    all these integers are congruent to `2` modulo `3`. The set of block
-    labels `{0, 1, 2}` is also a finite ring modulo `3`.
     """
     # For simplicity of implementation, we initialize the return value as a
     # list of lists, then convert it to a set of sets at the end of the
@@ -268,6 +257,7 @@ def quotient_graph(
         [(0, 1), (1, 2)]
 
     Here is the sample example but using partition as a dict of block sets.
+    ::
 
         >>> G = nx.path_graph(6)
         >>> partition = {0: {0, 1}, 2: {2, 3}, 4: {4, 5}}
