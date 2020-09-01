@@ -21,7 +21,7 @@ chaini = chain.from_iterable
 
 
 def equivalence_classes(iterable, relation):
-    """Returns equivalence classes of `iterable` given by `relation`.
+    """Returns equivalence classes of `relation` when applied to `iterable`.
 
     The equivalence classes, or blocks, consist of objects from `iterable`
     which are all equivalent. They are defined to be equivalent if the
