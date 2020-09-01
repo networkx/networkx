@@ -21,8 +21,13 @@ chaini = chain.from_iterable
 
 
 def equivalence_classes(iterable, relation):
-    """Returns the set of equivalence classes, or blocks, of the equivalence
-    relation `relation` when applied to the elements of `iterable`.
+    """Returns equivalence classes of `iterable` given by `relation`.
+
+    The equivalence classes, or blocks, consist of objects from `iterable`
+    which are all equivalent. They are defined to be equivalent if the
+    `relation` function returns `True` when passed any two objects from that
+    class, and `False` otherwise. To define an equivalence relation the
+    function must be reflexive, symmetric and transitive.
 
     Parameters
     ----------
@@ -62,7 +67,7 @@ def equivalence_classes(iterable, relation):
         >>> X = set(range(10))
         >>> def mod3(x, y): return (x - y) % 3 == 0
         >>> equivalence_classes(X, mod3)    # doctest: +SKIP
-        {frozenset({1, 4, 7}), frozenset({2, 5, 8}), frozenset({0, 3, 6, 9})} # doctest: +SKIP
+        {frozenset({1, 4, 7}), frozenset({8, 2, 5}), frozenset({0, 9, 3, 6})} # doctest: +SKIP
 
     """
     # For simplicity of implementation, we initialize the return value as a

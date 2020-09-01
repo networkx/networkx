@@ -9,5 +9,5 @@ Minors
    contracted_edge
    contracted_nodes
    identified_nodes
-   equivalence_relation
+   equivalence_classes
    quotient_graph
