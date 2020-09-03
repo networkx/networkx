@@ -1474,11 +1474,11 @@ def n_choose_k(n, k):
 
     Examples
     --------
-        >>> nx.n_choose_k(5, 2)
+        >>> n_choose_k(5, 2)
         10
-        >>> nx.n_choose_k(5, 4)
+        >>> n_choose_k(5, 4)
         5
-        >>> nx.n_choose_k(100, 100)
+        >>> n_choose_k(100, 100)
         1
 
     """
