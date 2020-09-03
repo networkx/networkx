@@ -30,7 +30,6 @@ __all__ = [
     "simrank_similarity_numpy",
     "panther_similarity",
     "generate_random_paths",
-    "n_choose_k",
 ]
 
 
@@ -1457,6 +1456,8 @@ def n_choose_k(n, k):
 
     The general equation is n! / (k! * (n - k)!). The below
     implementation is a more efficient version.
+    
+    Note: this will be deprecated in favor of Python 3.8's ``math.comb(n, k)``.
 
     Parameters
     ----------
@@ -1569,6 +1570,7 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     )
     S = np.zeros(G.number_of_nodes())
 
+    inv_sample_size = 1 / sample_size
     # Calculate the path similarities
     for path_index, path in enumerate(paths):
         path_set = set(path)
@@ -1584,7 +1586,7 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
             # Only sum if they are share the same path,
             # i.e., ``source`` is also on the same path
             if path_index in index_map[source]:
-                S[node_index] += 1 / sample_size
+                S[node_index] += inv_sample_size
 
     # Retrieve top ``k`` similar
     # Note: the below performed anywhere from 4-10x faster
@@ -1671,8 +1673,10 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
 
         # Build the inverted index (P_v) of vertices to paths
         if index_map is not None:
-            index_map.setdefault(node, set())
-            index_map[node].add(path_index)
+            if node in index_map:
+                index_map[node].add(path_index)
+            else:
+                indexmap[node] = {path_index}
 
         starting_index = node_index
         for _ in range(path_length):
