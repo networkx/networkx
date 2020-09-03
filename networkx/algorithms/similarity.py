@@ -1474,7 +1474,6 @@ def n_choose_k(n, k):
 
     Examples
     --------
-        >>> import networkx as nx
         >>> nx.n_choose_k(5, 2)
         10
         >>> nx.n_choose_k(5, 4)
@@ -1527,8 +1526,6 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
 
     Examples
     --------
-
-        >>> import networkx as nx
         >>> G = nx.star_graph(10)
         >>> sim = nx.panther_similarity(G, 0)
 
@@ -1630,14 +1627,12 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
     --------
     Note that the return value is the list of paths::
 
-        >>> import networkx as nx
         >>> G = nx.star_graph(3)
         >>> random_path = nx.generate_random_paths(G, 2)
 
     By passing a dictionary into ``index_map``, it will build an
     inverted index mapping of nodes to the paths in which that node is present::
 
-        >>> import networkx as nx
         >>> G = nx.star_graph(3)
         >>> index_map = {}
         >>> random_path = nx.generate_random_paths(G, 3, index_map=index_map)
