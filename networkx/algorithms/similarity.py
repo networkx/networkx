@@ -1671,7 +1671,7 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
             if node in index_map:
                 index_map[node].add(path_index)
             else:
-                indexmap[node] = {path_index}
+                index_map[node] = {path_index}
 
         starting_index = node_index
         for _ in range(path_length):
