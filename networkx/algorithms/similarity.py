@@ -1512,7 +1512,9 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
         A universal positive constant used to scale the number
         of sample random paths to generate.
     delta : float
-        The probability that $S$ is not an epsilon-approximation to (R, phi)
+        The probability that the similarity $S$ is not an epsilon-approximation to (R, phi),
+        where $R$ is the number of random paths and $\phi$ is the probability
+        that an element sampled from a set $A \subseteq D$, where $D$ is the domain.
     eps : float
         The error bound. Per [1]_, a good value is ``sqrt(1/|E|)``. Therefore,
         if no value is provided, the recommended computed value will be used.
