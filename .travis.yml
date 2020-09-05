@@ -8,7 +8,7 @@ cache: pip
 matrix:
   include:
     - os: linux
-      python: 3.7
+      python: 3.6
       env:
       - OPTIONAL_DEPS=1
       - MINIMUM_REQUIREMENTS=1
@@ -42,15 +42,9 @@ matrix:
           packages:
           - libgdal-dev
           - graphviz
-    - python: 3.6
-    - python: 3.7
     - python: 3.8
     - python: 3.9-dev
-      env:
-      - MIN_DEPS=1
-    - python: pypy3.6-7.1.1
-      env:
-      - MIN_DEPS=1
+    - python: pypy3
 
 before_install:
   # prepare the system to install prerequisites or dependencies
@@ -61,13 +55,10 @@ before_install:
 
 install:
   # install required packages
-  - pip install --upgrade pip
+  - pip install --upgrade pip wheel setuptools
   - pip install --retries 3 ${PIP_FLAGS} -r requirements.txt
   - if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
-      pip install --retries 3 ${PIP_FLAGS} -r requirements/optional.txt;
-      pip install --retries 3 ${PIP_FLAGS} -r requirements/extras.txt;
-    elif [[ "${MIN_DEPS}" != 1 ]]; then
-      pip install --retries 3 ${PIP_FLAGS} -r requirements/optional.txt;
+      pip install --retries 3 ${PIP_FLAGS} -r requirements/extra.txt;
     fi
   # install networkx
   - printenv PWD

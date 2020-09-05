@@ -30,10 +30,9 @@ jobs:
           command: |
             python3 -m venv venv
             source venv/bin/activate
-            pip install --upgrade pip
+            pip install --upgrade pip wheel setuptools
             pip install -r requirements.txt
             pip install -r requirements/doc.txt
-            pip install -r requirements/optional.txt
             pip install pydot pygraphviz
 
       - run:

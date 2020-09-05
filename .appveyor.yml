@@ -12,15 +12,15 @@ environment:
 
   matrix:
     - PYTHON: "C:\\Python36-x64"
-      PYTHON_VERSION: "3.6.8"
+      PYTHON_VERSION: "3.6"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python37-x64"
-      PYTHON_VERSION: "3.7.5"
+      PYTHON_VERSION: "3.7"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python38-x64"
-      PYTHON_VERSION: "3.8.0"
+      PYTHON_VERSION: "3.8"
       PYTHON_ARCH: "64"
       PIP_FLAGS: "--pre"
 
@@ -34,12 +34,8 @@ install:
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
 
-  # install required packages
-  - "pip install --cache-dir=%CACHE_DIR% %PIP_FLAGS% -r requirements.txt"
-  - "pip install --cache-dir=%CACHE_DIR% %PIP_FLAGS% -r requirements/optional.txt"
-
   # Install the build and runtime dependencies of the project.
-  # - "%CMD_IN_ENV% pip install --timeout=60 -r requirements.txt"
+  - "python -m pip install --upgrade pip wheel setuptools"
   - "pip install ."
 
 # Not a .NET project, we build networkx in the install step instead

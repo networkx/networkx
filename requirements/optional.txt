@@ -1,6 +1,0 @@
-numpy>=1.19
-scipy>=1.4
-pandas>=1.0
-matplotlib>=3.2
-pyyaml>=5.3
-lxml>=4.5
