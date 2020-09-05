@@ -5,9 +5,14 @@ import pytest
 import io
 import tempfile
 import os
+from textwrap import dedent
 
 import networkx as nx
 from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
+
+
+def multiline_str_to_bytes_io(s: str, encoding="utf8") -> io.BytesIO:
+    return io.BytesIO(bytes(dedent(s), encoding=encoding))
 
 
 class TestEdgelist:
@@ -23,95 +28,89 @@ class TestEdgelist:
         cls.XDG = nx.MultiDiGraph(cls.XG)
 
     def test_read_edgelist_1(self):
-        s = b"""\
-# comment line
-1 2
-# comment line
-2 3
-"""
-        bytesIO = io.BytesIO(s)
+        s = """\
+            # comment line
+            1 2
+            # comment line
+            2 3
+            """
+        bytesIO = multiline_str_to_bytes_io(s)
         G = nx.read_edgelist(bytesIO, nodetype=int)
         assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
 
     def test_read_edgelist_2(self):
-        s = b"""\
-# comment line
-1 2 2.0
-# comment line
-2 3 3.0
-"""
-        bytesIO = io.BytesIO(s)
+        s = """\
+            # comment line
+            1 2 2.0
+            # comment line
+            2 3 3.0
+            """
+        bytesIO = multiline_str_to_bytes_io(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=False)
         assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
 
-        bytesIO = io.BytesIO(s)
+        bytesIO = multiline_str_to_bytes_io(s)
         G = nx.read_weighted_edgelist(bytesIO, nodetype=int)
         assert_edges_equal(
             G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
         )
 
     def test_read_edgelist_3(self):
-        s = b"""\
-# comment line
-1 2 {'weight':2.0}
-# comment line
-2 3 {'weight':3.0}
-"""
-        bytesIO = io.BytesIO(s)
+        s = """\
+            # comment line
+            1 2 {'weight':2.0}
+            # comment line
+            2 3 {'weight':3.0}
+            """
+        bytesIO = multiline_str_to_bytes_io(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=False)
         assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
 
-        bytesIO = io.BytesIO(s)
+        bytesIO = multiline_str_to_bytes_io(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=True)
         assert_edges_equal(
             G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
         )
 
     def test_read_edgelist_4(self):
-        s = b"""\
-# comment line
-1 2 {'weight':2.0}
-# comment line
-2 3 {'weight':3.0}
-"""
-        bytesIO = io.BytesIO(s)
+        s = """\
+            # comment line
+            1 2 {'weight':2.0}
+            # comment line
+            2 3 {'weight':3.0}
+            """
+        bytesIO = multiline_str_to_bytes_io(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=False)
         assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
 
-        bytesIO = io.BytesIO(s)
+        bytesIO = multiline_str_to_bytes_io(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=True)
         assert_edges_equal(
             G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
         )
 
-        s = """\
-# comment line
-1 2 {'weight':2.0}
-# comment line
-2 3 {'weight':3.0}
-"""
-        StringIO = io.StringIO(s)
+        StringIO = io.StringIO(dedent(s))
         G = nx.read_edgelist(StringIO, nodetype=int, data=False)
         assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
 
-        StringIO = io.StringIO(s)
+        StringIO = io.StringIO(dedent(s))
         G = nx.read_edgelist(StringIO, nodetype=int, data=True)
         assert_edges_equal(
             G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
         )
 
     def test_read_edgelist_5(self):
-        s = b"""\
-# comment line
-1 2 {'weight':2.0, 'color':'green'}
-# comment line
-2 3 {'weight':3.0, 'color':'red'}
-"""
-        bytesIO = io.BytesIO(s)
+        s = """\
+            # comment line
+            1 2 {'weight':2.0, 'color':'green'}
+            # comment line
+            2 3 {'weight':3.0, 'color':'red'}
+            """
+        bytesIO = multiline_str_to_bytes_io(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=False)
         assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
 
-        bytesIO = io.BytesIO(s)
+        bytesIO = multiline_str_to_bytes_io(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=True)
         assert_edges_equal(
             G.edges(data=True),
@@ -122,17 +121,17 @@ class TestEdgelist:
         )
 
     def test_read_edgelist_6(self):
-        s = b"""\
-# comment line
-1, 2, {'weight':2.0, 'color':'green'}
-# comment line
-2, 3, {'weight':3.0, 'color':'red'}
-"""
-        bytesIO = io.BytesIO(s)
+        s = """\
+            # comment line
+            1, 2, {'weight':2.0, 'color':'green'}
+            # comment line
+            2, 3, {'weight':3.0, 'color':'red'}
+            """
+        bytesIO = multiline_str_to_bytes_io(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=False, delimiter=",")
         assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
 
-        bytesIO = io.BytesIO(s)
+        bytesIO = multiline_str_to_bytes_io(s)
         G = nx.read_edgelist(bytesIO, nodetype=int, data=True, delimiter=",")
         assert_edges_equal(
             G.edges(data=True),
