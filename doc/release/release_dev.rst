@@ -17,6 +17,7 @@ Highlights
 This release is the result of X of work with over X pull requests by
 X contributors. Highlights include:
 
+- NumPy, SciPy, Matplotlib, and pandas are now default requirements.
 
 Improvements
 ------------

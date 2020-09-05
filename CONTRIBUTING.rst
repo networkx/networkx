@@ -43,7 +43,7 @@ Development Workflow
          # (Optional) Install pygraphviz, pydot, and gdal packages
          # These packages require that you have your system properly configured
          # and what that involves differs on various systems.
-         # pip install -r requirements/extras.txt
+         # pip install -r requirements/extra.txt
          #
          # Build and install networkx from source
          pip install -e .
@@ -64,7 +64,7 @@ Development Workflow
          # (Optional) Install pygraphviz, pydot, and gdal packages
          # These packages require that you have your system properly configured
          # and what that involves differs on various systems.
-         # pip install -r requirements/extras.txt
+         # pip install -r requirements/extra.txt
          #
          # Install networkx from source
          pip install -e . --no-deps
@@ -228,12 +228,22 @@ Guidelines
 * All changes are reviewed.  Ask on the
   `mailing list <http://groups.google.com/group/networkx-discuss>`_ if
   you get no response to your pull request.
+* Default dependencies are listed in ``requirements/default.txt`` and extra
+  (i.e., optional) dependencies are listed in ``requirements/extra.txt``.
+  We don't often add new default and extra dependencies.  If you are considering
+  adding code that has a dependency, you should first consider adding a gallery
+  example.  Typically, new proposed dependencies would first be added as extra
+  dependencies.  Extra dependencies should be easy to install on all platforms
+  and widely-used.  New default dependencies should be easy to install on all
+  platforms, widely-used in the community, and have demonstrated potential for
+  wide-spread use in NetworkX.
 * Use the following import conventions::
 
    import numpy as np
    import scipy as sp
    import matplotlib as mpl
    import matplotlib.pyplot as plt
+   import pandas as pd 
    import networkx as nx
 
 * Use the decorator ``not_implemented_for`` in ``networkx/utils/decorators.py``

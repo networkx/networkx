@@ -1,3 +1,5 @@
+name: macOS tests
+
 on:
   push:
     branches: [ master ]
@@ -6,7 +8,6 @@ on:
 
 jobs:
   test_macos:
-    name: macOS tests
     runs-on: macos-latest
     strategy:
       max-parallel: 3
@@ -28,7 +29,6 @@ jobs:
       run: |
         pip install --upgrade pip wheel setuptools
         pip install -r requirements.txt
-        pip install -r requirements/optional.txt
         pip install pydot pygraphviz
         pip install .
         pip list

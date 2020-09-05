@@ -124,29 +124,23 @@ package_data = {
     "networkx.utils": ["tests/*.py"],
 }
 
-install_requires = ["decorator>=4.3.0"]
+install_requires = [
+    "decorator>=4.3.0",
+    "numpy>=1.19; platform_python_implementation!='PyPy' and python_version<'3.9'",
+    "scipy>=1.4; platform_python_implementation!='PyPy' and python_version<'3.9'",
+    "matplotlib>=3.2; platform_python_implementation!='PyPy' and python_version<'3.9'",
+    "pandas>=1.0; platform_python_implementation!='PyPy' and python_version<'3.9'",
+]
 extras_require = {
-    "all": [
-        "numpy",
-        "scipy",
-        "pandas",
-        "matplotlib",
-        "pygraphviz",
-        "pydot",
-        "pyyaml",
-        "lxml",
-        "pytest",
+    "extra": [
+        "lxml>=4.5",
+        "pygraphviz>=1.5, <2.0",
+        "pydot>=1.4.1",
+        "pyyaml>=5.3",
     ],
     "gdal": ["gdal"],
-    "lxml": ["lxml"],
-    "matplotlib": ["matplotlib"],
-    "pytest": ["pytest"],
-    "numpy": ["numpy"],
-    "pandas": ["pandas"],
     "pydot": ["pydot"],
     "pygraphviz": ["pygraphviz"],
-    "pyyaml": ["pyyaml"],
-    "scipy": ["scipy"],
 }
 
 with open("README.rst", "r") as fh:
