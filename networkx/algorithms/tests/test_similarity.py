@@ -5,7 +5,7 @@ from networkx.algorithms.similarity import (
     graph_edit_distance,
     optimal_edit_paths,
     optimize_graph_edit_distance,
-    n_choose_k,
+    _n_choose_k,
 )
 from networkx.generators.classic import (
     circular_ladder_graph,
@@ -716,16 +716,16 @@ class TestSimilarity:
         numpy.testing.assert_allclose(expected, actual, atol=1e-7)
 
     def test_n_choose_k_small_k(self):
-        assert n_choose_k(10, 4) == 210
+        assert _n_choose_k(10, 4) == 210
 
     def test_n_choose_k_big_k(self):
-        assert n_choose_k(10, 8) == 45
+        assert _n_choose_k(10, 8) == 45
 
     def test_n_choose_k_same(self):
-        assert n_choose_k(10, 10) == 1
+        assert _n_choose_k(10, 10) == 1
 
     def test_n_choose_k_k_bigger_than_n(self):
-        assert n_choose_k(5, 10) == 0
+        assert _n_choose_k(5, 10) == 0
 
     def test_panther_similarity_unweighted(self):
         numpy.random.seed(42)

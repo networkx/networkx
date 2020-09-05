@@ -1451,13 +1451,14 @@ def simrank_similarity_numpy(
     return newsim
 
 
-def n_choose_k(n, k):
+# TODO replace w/ math.comb(n, k) for Python 3.8+
+def _n_choose_k(n, k):
     """Pure Python implementation of the binomial coefficient
 
     The general equation is n! / (k! * (n - k)!). The below
     implementation is a more efficient version.
     
-    Note: this will be deprecated in favor of Python 3.8's ``math.comb(n, k)``.
+    Note: this will be removed in favor of Python 3.8's ``math.comb(n, k)``.
 
     Parameters
     ----------
@@ -1474,11 +1475,11 @@ def n_choose_k(n, k):
 
     Examples
     --------
-        >>> n_choose_k(5, 2)
+        >>> _n_choose_k(5, 2)
         10
-        >>> n_choose_k(5, 4)
+        >>> _n_choose_k(5, 4)
         5
-        >>> n_choose_k(100, 100)
+        >>> _n_choose_k(100, 100)
         1
 
     """
@@ -1558,7 +1559,7 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
 
     # Calculate the sample size ``R`` for how many paths
     # torandomly generate
-    t_choose_2 = n_choose_k(path_length, 2)
+    t_choose_2 = _n_choose_k(path_length, 2)
     sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
     index_map = {}
     paths = generate_random_paths(
