@@ -992,6 +992,29 @@ class TestReadGraphML(BaseGraphML):
         for node_data in data:
             assert node_data["CustomProperty"] != ""
 
+    def test_long_attribute_type(self):
+        # test that graphs with attr.type="long" (as produced by botch and
+        # dose3) can be parsed
+        s = """<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key attr.name="cudfversion" attr.type="long" for="node" id="d6" />
+  <graph edgedefault="directed">
+    <node id="n1">
+      <data key="d6">4284</data>
+    </node>
+  </graph>
+</graphml>"""
+        fh = io.BytesIO(s.encode("UTF-8"))
+        G = nx.read_graphml(fh)
+        expected = [("n1", {"cudfversion": 4284})]
+        assert sorted(G.nodes(data=True)) == expected
+        fh.seek(0)
+        H = nx.parse_graphml(s)
+        assert sorted(H.nodes(data=True)) == expected
+
 
 class TestWriteGraphML(BaseGraphML):
     writer = staticmethod(nx.write_graphml_lxml)

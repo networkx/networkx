@@ -358,6 +358,7 @@ class GraphML:
         (str, "yfiles"),
         (str, "string"),
         (int, "int"),
+        (int, "long"),
         (float, "float"),
         (float, "double"),
         (bool, "boolean"),
