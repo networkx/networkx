@@ -9,22 +9,65 @@ from networkx import density
 from networkx.exception import NetworkXException
 from networkx.utils import arbitrary_element
 
-__all__ = ["contracted_edge", "contracted_nodes", "identified_nodes", "quotient_graph"]
+__all__ = [
+    "contracted_edge",
+    "contracted_nodes",
+    "equivalence_classes",
+    "identified_nodes",
+    "quotient_graph"
+]
 
 chaini = chain.from_iterable
 
 
 def equivalence_classes(iterable, relation):
-    """Returns the set of equivalence classes of the given `iterable` under
-    the specified equivalence relation.
+    """Returns equivalence classes of `relation` when applied to `iterable`.
 
-    `relation` must be a Boolean-valued function that takes two argument. It
-    must represent an equivalence relation (that is, the relation induced by
-    the function must be reflexive, symmetric, and transitive).
+    The equivalence classes, or blocks, consist of objects from `iterable`
+    which are all equivalent. They are defined to be equivalent if the
+    `relation` function returns `True` when passed any two objects from that
+    class, and `False` otherwise. To define an equivalence relation the
+    function must be reflexive, symmetric and transitive.
 
-    The return value is a set of sets. It is a partition of the elements of
-    `iterable`; duplicate elements will be ignored so it makes the most sense
-    for `iterable` to be a :class:`set`.
+    Parameters
+    ----------
+    iterable : list, tuple, or set
+        An iterable of elements/nodes.
+
+    relation : function
+        A Boolean-valued function that implements an equivalence relation
+        (reflexive, symmetric, transitive binary relation) on the elements
+        of `iterable` - it must take two elements and return `True` if
+        they are related, or `False` if not.
+
+    Returns
+    -------
+    set of frozensets
+        A set of frozensets representing the partition induced by the equivalence
+        relation function `relation` on the elements of `iterable`. Each
+        member set in the return set represents an equivalence class, or
+        block, of the partition.
+
+        Duplicate elements will be ignored so it makes the most sense for
+        `iterable` to be a :class:`set`.
+
+    Examples
+    --------
+    Let `X` be the set of integers from `0` to `9`, and consider an equivalence
+    relation `R` on `X` of congruence modulo `3`: this means that two integers
+    `x` and `y` in `X` are equivalent under `R` if they leave the same
+    remainder when divided by `3`, i.e. `(x - y) mod 3 = 0`.
+
+    The equivalence classes of this relation are `{0, 3, 6, 9}`, `{1, 4, 7}`,
+    `{2, 5, 8}`: `0`, `3`, `6`, `9` are all divisible by `3` and leave zero
+    remainder; `1`, `4`, `7` leave remainder `1`; while `2`, `5` and `8` leave
+    remainder `2`. We can see this by calling `equivalence_classes` with
+    with `X` and a function implementation of `R`.::
+
+        >>> X = set(range(10))
+        >>> def mod3(x, y): return (x - y) % 3 == 0
+        >>> equivalence_classes(X, mod3)    # doctest: +SKIP
+        {frozenset({1, 4, 7}), frozenset({8, 2, 5}), frozenset({0, 9, 3, 6})} # doctest: +SKIP
 
     """
     # For simplicity of implementation, we initialize the return value as a
@@ -67,12 +110,18 @@ def quotient_graph(
         The graph for which to return the quotient graph with the
         specified node relation.
 
-    partition : function or list of sets
+    partition : function, or dict or list of lists, tuples or sets
         If a function, this function must represent an equivalence
         relation on the nodes of `G`. It must take two arguments *u*
         and *v* and return True exactly when *u* and *v* are in the
         same equivalence class. The equivalence classes form the nodes
         in the returned graph.
+
+        If a dict of lists/tuples/sets, the keys can be any meaningful
+        block labels, but the values must be the block lists/tuples/sets
+        (one list/tuple/set per block), and the blocks must form a valid
+        partition of the nodes of the graph. That is, each node must be
+        in exactly one block of the partition.
 
         If a list of sets, the list must form a valid partition of
         the nodes of the graph. That is, each node must be in exactly
@@ -212,6 +261,28 @@ def quotient_graph(
         >>> list(M.edges())
         [(0, 1), (1, 2)]
 
+    Here is the sample example but using partition as a dict of block sets.
+    ::
+
+        >>> G = nx.path_graph(6)
+        >>> partition = {0: {0, 1}, 2: {2, 3}, 4: {4, 5}}
+        >>> M = nx.quotient_graph(G, partition, relabel=True)
+        >>> list(M.edges())
+        [(0, 1), (1, 2)]
+
+    Partitions can be represented in various ways:
+    ::
+
+        (0) a list/tuple/set of block lists/tuples/sets
+        (1) a dict with block labels as keys and blocks lists/tuples/sets as values
+        (2) a dict with block lists/tuples/sets as keys and block labels as values
+        (3) a function from nodes in the original iterable to block labels
+        (4) an equivalence relation function on the target iterable
+
+    As `quotient_graph` is designed to accept partitions represented as (0), (1) or
+    (4) only, the `equivalence_classes` function can be used to get the partitions
+    in the right form, in order to call `quotient_graph`.
+
     .. _Strongly connected component: https://en.wikipedia.org/wiki/Strongly_connected_component
 
     References
@@ -221,7 +292,7 @@ def quotient_graph(
            Cambridge University Press, 2004.
 
     """
-    # If the user provided an equivalence relation as a function compute
+    # If the user provided an equivalence relation as a function to compute
     # the blocks of the partition on the nodes of G induced by the
     # equivalence relation.
     if callable(partition):
@@ -230,6 +301,11 @@ def quotient_graph(
         return _quotient_graph(
             G, partition, edge_relation, node_data, edge_data, relabel, create_using
         )
+
+    # If the partition is a dict, it is assumed to be one where the keys are
+    # user-defined block labels, and values are block lists, tuples or sets.
+    if isinstance(partition, dict):
+        partition = [block for block in partition.values()]
 
     # If the user provided partition as a collection of sets. Then we
     # need to check if partition covers all of G nodes. If the answer
