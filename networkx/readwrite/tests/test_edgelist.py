@@ -11,10 +11,6 @@ import networkx as nx
 from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
 
 
-def multiline_str_to_bytes_io(s: str, encoding="utf8") -> io.BytesIO:
-    return io.BytesIO(bytes(dedent(s), encoding=encoding))
-
-
 class TestEdgelist:
     @classmethod
     def setup_class(cls):
@@ -27,108 +23,111 @@ class TestEdgelist:
         cls.XG.add_weighted_edges_from([(1, 2, 5), (1, 2, 5), (1, 2, 1), (3, 3, 42)])
         cls.XDG = nx.MultiDiGraph(cls.XG)
 
-    def test_read_edgelist_1(self):
-        s = """\
-            # comment line
-            1 2
-            # comment line
-            2 3
-            """
-        bytesIO = multiline_str_to_bytes_io(s)
-        G = nx.read_edgelist(bytesIO, nodetype=int)
-        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
+    @staticmethod
+    def bytes_io(s: str, encoding="utf8") -> io.BytesIO:
+        return io.BytesIO(bytes(dedent(s), encoding=encoding))
 
-    def test_read_edgelist_2(self):
-        s = """\
-            # comment line
-            1 2 2.0
-            # comment line
-            2 3 3.0
-            """
-        bytesIO = multiline_str_to_bytes_io(s)
-        G = nx.read_edgelist(bytesIO, nodetype=int, data=False)
-        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
+    @staticmethod
+    def string_io(s: str) -> io.StringIO:
+        return io.StringIO(dedent(s))
 
-        bytesIO = multiline_str_to_bytes_io(s)
-        G = nx.read_weighted_edgelist(bytesIO, nodetype=int)
+    @staticmethod
+    def example_data(weights=False, colors=False, as_dict=False):
+        if weights and colors and not as_dict:
+            msg = "Cannot have both weights and colors if as_dict=False"
+            raise ValueError(msg)
+        data1, data2 = "", ""
+        if as_dict:
+            data1, data2 = {}, {}
+            if weights:
+                data1["weight"] = 2.0
+                data2["weight"] = 3.0
+            if colors:
+                data1["color"] = "green"
+                data2["color"] = "red"
+        elif weights:
+            data1, data2 = 2.0, 3.0
+        elif colors:
+            data1, data2 = "green", "red"
+        return data1, data2
+
+    @staticmethod
+    def example_edgelist(
+        weights=False, colors=False, as_dict=False, delimiter=""
+    ) -> str:
+        data1, data2 = TestEdgelist.example_data(weights, colors, as_dict)
+        s = f"""\
+            # comment line
+            1{delimiter} 2{delimiter} {data1}
+            # comment line
+            2{delimiter} 3{delimiter} {data2}
+            """
+        return s
+
+    @staticmethod
+    def example_edges(weights=False, colors=False):
+        has_data = weights or colors
+        data1, data2 = TestEdgelist.example_data(weights, colors, as_dict=True)
+        return [
+            (1, 2, data1) if has_data else (1, 2),
+            (2, 3, data2) if has_data else (2, 3),
+        ]
+
+    @staticmethod
+    def example_graph():
+        G = nx.Graph()
+        G.add_weighted_edges_from([(1, 2, 3.0), (2, 3, 27.0), (3, 4, 3.0)])
+        return G
+
+    def test_read_edgelist_no_data(self):
+        s = self.example_edgelist()
+        G = nx.read_edgelist(self.bytes_io(s), nodetype=int)
+        assert_edges_equal(G.edges(), self.example_edges())
+
+    def test_read_edgelist_with_data(self):
+        s = self.example_edgelist(weights=True)
+        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=False)
+        assert_edges_equal(G.edges(), self.example_edges())
+
+        G = nx.read_weighted_edgelist(self.bytes_io(s), nodetype=int)
+        assert_edges_equal(G.edges(data=True), self.example_edges(weights=True))
+
+    def test_read_edgelist_with_data_dict(self):
+        s = self.example_edgelist(weights=True, as_dict=True)
+        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=False)
+        assert_edges_equal(G.edges(), self.example_edges())
+
+        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=True)
+        assert_edges_equal(G.edges(data=True), self.example_edges(weights=True))
+
+    def test_read_edgelist_from_string_io(self):
+        s = self.example_edgelist(weights=True, as_dict=True)
+        G = nx.read_edgelist(self.string_io(s), nodetype=int, data=False)
+        assert_edges_equal(G.edges(), self.example_edges())
+
+        G = nx.read_edgelist(self.string_io(s), nodetype=int, data=True)
+        assert_edges_equal(G.edges(data=True), self.example_edges(weights=True))
+
+    def test_read_edgelist_with_data_dict_2(self):
+        s = self.example_edgelist(weights=True, colors=True, as_dict=True)
+        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=False)
+        assert_edges_equal(G.edges(), self.example_edges())
+
+        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=True)
         assert_edges_equal(
-            G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
+            G.edges(data=True), self.example_edges(weights=True, colors=True)
         )
 
-    def test_read_edgelist_3(self):
-        s = """\
-            # comment line
-            1 2 {'weight':2.0}
-            # comment line
-            2 3 {'weight':3.0}
-            """
-        bytesIO = multiline_str_to_bytes_io(s)
-        G = nx.read_edgelist(bytesIO, nodetype=int, data=False)
-        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
-
-        bytesIO = multiline_str_to_bytes_io(s)
-        G = nx.read_edgelist(bytesIO, nodetype=int, data=True)
-        assert_edges_equal(
-            G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
+    def test_read_edgelist_comma_delimited(self):
+        s = self.example_edgelist(
+            weights=True, colors=True, as_dict=True, delimiter=","
         )
+        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=False, delimiter=",")
+        assert_edges_equal(G.edges(), self.example_edges())
 
-    def test_read_edgelist_4(self):
-        s = """\
-            # comment line
-            1 2 {'weight':2.0}
-            # comment line
-            2 3 {'weight':3.0}
-            """
-        StringIO = io.StringIO(dedent(s))
-        G = nx.read_edgelist(StringIO, nodetype=int, data=False)
-        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
-
-        StringIO = io.StringIO(dedent(s))
-        G = nx.read_edgelist(StringIO, nodetype=int, data=True)
+        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=True, delimiter=",")
         assert_edges_equal(
-            G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
-        )
-
-    def test_read_edgelist_5(self):
-        s = """\
-            # comment line
-            1 2 {'weight':2.0, 'color':'green'}
-            # comment line
-            2 3 {'weight':3.0, 'color':'red'}
-            """
-        bytesIO = multiline_str_to_bytes_io(s)
-        G = nx.read_edgelist(bytesIO, nodetype=int, data=False)
-        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
-
-        bytesIO = multiline_str_to_bytes_io(s)
-        G = nx.read_edgelist(bytesIO, nodetype=int, data=True)
-        assert_edges_equal(
-            G.edges(data=True),
-            [
-                (1, 2, {"weight": 2.0, "color": "green"}),
-                (2, 3, {"weight": 3.0, "color": "red"}),
-            ],
-        )
-
-    def test_read_edgelist_6(self):
-        s = """\
-            # comment line
-            1, 2, {'weight':2.0, 'color':'green'}
-            # comment line
-            2, 3, {'weight':3.0, 'color':'red'}
-            """
-        bytesIO = multiline_str_to_bytes_io(s)
-        G = nx.read_edgelist(bytesIO, nodetype=int, data=False, delimiter=",")
-        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
-
-        bytesIO = multiline_str_to_bytes_io(s)
-        G = nx.read_edgelist(bytesIO, nodetype=int, data=True, delimiter=",")
-        assert_edges_equal(
-            G.edges(data=True),
-            [
-                (1, 2, {"weight": 2.0, "color": "green"}),
-                (2, 3, {"weight": 3.0, "color": "red"}),
-            ],
+            G.edges(data=True), self.example_edges(weights=True, colors=True)
         )
 
     def test_write_edgelist_1(self):
@@ -262,3 +261,24 @@ class TestEdgelist:
         assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
+
+    def test_parse_edgelist_no_data(self):
+        lines = ["1 2", "2 3", "3 4"]
+        G = self.example_graph()
+        H = nx.parse_edgelist(lines, nodetype=int)
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
+
+    def test_parse_edgelist_with_data_dict(self):
+        lines = ["1 2 {'weight': 3}", "2 3 {'weight': 27}", "3 4 {'weight': 3.0}"]
+        G = self.example_graph()
+        H = nx.parse_edgelist(lines, nodetype=int)
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges(data=True)), list(G.edges(data=True)))
+
+    def test_parse_edgelist_with_data_list(self):
+        lines = ["1 2 3", "2 3 27", "3 4 3.0"]
+        G = self.example_graph()
+        H = nx.parse_edgelist(lines, nodetype=int, data=(("weight", float),))
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges(data=True)), list(G.edges(data=True)))
