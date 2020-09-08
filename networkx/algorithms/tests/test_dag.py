@@ -201,6 +201,11 @@ class TestDAG:
             pytest.raises(RuntimeError, runtime_error2)
             pytest.raises(nx.NetworkXUnfeasible, unfeasible_error)
 
+    def test_topological_sort7(self):
+        G = nx.DiGraph([(1, 3), (2, 4), (3, 5), (4, 5)])
+        sort_result = list(nx.topological_sort(G))
+        assert sort_result[0] + sort_result[1] == 3
+
     def test_all_topological_sorts_1(self):
         DG = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 5)])
         assert list(nx.all_topological_sorts(DG)) == [[1, 2, 3, 4, 5]]

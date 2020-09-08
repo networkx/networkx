@@ -178,7 +178,7 @@ def topological_sort(G):
     zero_indegree = [v for v, d in G.in_degree() if d == 0]
 
     while zero_indegree:
-        node = zero_indegree.pop()
+        node = zero_indegree.pop(0)
         if node not in G:
             raise RuntimeError("Graph changed during iteration")
         for _, child in G.edges(node):
