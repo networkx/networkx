@@ -4,6 +4,16 @@ from networkx.utils import not_implemented_for
 
 __all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
 
+class PageRankResult():
+  def __init__(self):
+    self.result = None
+    self.iteration_values = []
+    self.convergence = []
+    self.return_message = ""
+    self.iterations = None
+  
+  def __getitem__(self, index):
+    return self.result[index]
 
 @not_implemented_for("multigraph")
 def pagerank(
@@ -140,8 +150,10 @@ def pagerank(
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
     # power iteration: make up to max_iter iterations
-    for _ in range(max_iter):
+    res = PageRankResult()
+    for i in range(max_iter):
         xlast = x
+        res.iteration_values.append(x)
         x = dict.fromkeys(xlast.keys(), 0)
         danglesum = alpha * sum(xlast[n] for n in dangling_nodes)
         for n in x:
@@ -152,10 +164,17 @@ def pagerank(
             x[n] += danglesum * dangling_weights.get(n, 0) + (1.0 - alpha) * p.get(n, 0)
         # check convergence, l1 norm
         err = sum([abs(x[n] - xlast[n]) for n in x])
+        res.convergence.append(err)
         if err < N * tol:
-            return x
-    raise nx.PowerIterationFailedConvergence(max_iter)
+            res.result=x
+            res.return_message = f"iteration converged within {i} iterations"
+            res.iterations = i+1
+            return res
 
+    res.result=None
+    res.return_message = f"power iteration failed to converge within {max_iter} iterations"
+    res.iteration = max_iter
+    return res
 
 def google_matrix(
     G, alpha=0.85, personalization=None, nodelist=None, weight="weight", dangling=None
