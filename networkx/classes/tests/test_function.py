@@ -298,8 +298,7 @@ class TestFunction:
                 "Type: DiGraph",
                 "Number of nodes: 5",
                 "Number of edges: 4",
-                "Average in degree:   0.8000",
-                "Average out degree:   0.8000",
+                "Average in/out degree:   0.8000",
             ]
         )
         assert info == expected_graph_info

@@ -584,11 +584,10 @@ def info(G, n=None):
         n_edges = G.number_of_edges()
         info += f"Number of nodes: {n_nodes}\n"
         info += f"Number of edges: {n_edges}\n"
-        if len(G) > 0:
+        if n_nodes:
             if G.is_directed():
                 deg = n_edges / n_nodes
-                info += f"Average in degree: {deg:8.4f}\n"
-                info += f"Average out degree: {deg:8.4f}"
+                info += f"Average in/out degree: {deg:8.4f}"
             else:
                 info += f"Average degree: {(2 * n_edges / n_nodes):8.4f}"
     else:
