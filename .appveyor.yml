@@ -36,6 +36,7 @@ install:
 
   # Install the build and runtime dependencies of the project.
   - "python -m pip install --upgrade pip wheel setuptools"
+  - "pip install -r requirements.txt"
   - "pip install ."
 
 # Not a .NET project, we build networkx in the install step instead
