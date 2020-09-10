@@ -124,23 +124,18 @@ package_data = {
     "networkx.utils": ["tests/*.py"],
 }
 
-install_requires = [
-    "decorator>=4.3.0",
-    "numpy>=1.19; platform_python_implementation!='PyPy' and python_version<'3.9'",
-    "scipy>=1.4; platform_python_implementation!='PyPy' and python_version<'3.9'",
-    "matplotlib>=3.2; platform_python_implementation!='PyPy' and python_version<'3.9'",
-    "pandas>=1.0; platform_python_implementation!='PyPy' and python_version<'3.9'",
-]
+
+def parse_requirements_file(filename):
+    with open(filename, encoding="utf-8") as fid:
+        requires = [l.strip() for l in fid.readlines() if l]
+
+    return requires
+
+
+install_requires = parse_requirements_file("requirements/default.txt")
 extras_require = {
-    "extra": [
-        "lxml>=4.5",
-        "pygraphviz>=1.5, <2.0",
-        "pydot>=1.4.1",
-        "pyyaml>=5.3",
-    ],
-    "gdal": ["gdal"],
-    "pydot": ["pydot"],
-    "pygraphviz": ["pygraphviz"],
+    dep: parse_requirements_file("requirements/" + dep + ".txt")
+    for dep in ["developer", "doc", "extra", "test"]
 }
 
 with open("README.rst", "r") as fh:

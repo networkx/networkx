@@ -57,6 +57,7 @@ Release Process
 - Publish on PyPi::
 
    git clean -fxd
+   pip install -r requirements/release.txt
    python setup.py sdist bdist_wheel
    twine upload -s dist/*
 
