@@ -83,19 +83,7 @@ class _CholeskySolver:
     """
 
     def __init__(self, A):
-        if not self._cholesky:
-            raise nx.NetworkXError("Cholesky solver unavailable.")
-        self._chol = self._cholesky(A)
-
-    def solve(self, B, tol=None):
-        return self._chol(B)
-
-    try:
-        from scikits.sparse.cholmod import cholesky
-
-        _cholesky = cholesky
-    except ImportError:
-        _cholesky = None
+        raise nx.NetworkXError("Cholesky solver removed.  Use LU solver instead.")
 
 
 class _LUSolver:
@@ -194,7 +182,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         Warning: There is no limit on number of iterations.
 
     method : string
-        Should be 'tracemin_pcg', 'tracemin_chol' or 'tracemin_lu'.
+        Should be 'tracemin_pcg' or 'tracemin_lu'.
         Otherwise exception is raised.
 
     Returns
@@ -358,7 +346,6 @@ def algebraic_connectivity(
         Value           Solver
         =============== ========================================
         'tracemin_pcg'  Preconditioned conjugate gradient method
-        'tracemin_chol' Cholesky factorization
         'tracemin_lu'   LU factorization
         =============== ========================================
 
@@ -445,7 +432,6 @@ def fiedler_vector(
         Value           Solver
         =============== ========================================
         'tracemin_pcg'  Preconditioned conjugate gradient method
-        'tracemin_chol' Cholesky factorization
         'tracemin_lu'   LU factorization
         =============== ========================================
 
@@ -531,7 +517,6 @@ def spectral_ordering(
         Value           Solver
         =============== ========================================
         'tracemin_pcg'  Preconditioned conjugate gradient method
-        'tracemin_chol' Cholesky factorization
         'tracemin_lu'   LU factorization
         =============== ========================================
 
