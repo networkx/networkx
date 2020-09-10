@@ -179,11 +179,39 @@ implement this NXEP.
 Alternatives
 ------------
 
-- Explicit documentation about casting to list
-- To get rid of the API ambigiouity w.r.t ``__getitem__`` we can impelment a new method, something like ``G.nodes.head(x)`` (insipired by pandas) which return the first x nodes. [After discussion, this has been updated to using a ``slice`` object directly but interfacing it with an independent ``slice`` method of G.nodes and G.edges instead of implementing it in getitem dunder method]
-- The nice colon syntax for slices is only available with subscript notation.
-  To allow G.nodes.slice to use the nice colon syntax, we could make it a
-  property that creates a subscriptable object. Syntax would be ``G.nodes.slice[4:9:2]``.
+The following list summarizes some alternatives to modifying the `__getitem__`
+of the various `View` classes.
+The listed alternatives are not mutually exclusive.
+
+- **Improved Documentation** - Add more explicit documentation about the 
+  necessity of casting Node(Data)View and Edge(Data)View objects to lists in
+  order to be able to use slicing.
+- **Improved Exceptions** - Currently, users see the following exception when
+  attempting to slice a `View`::
+
+     >>> G.nodes[0:10]
+     Traceback (most recent call last)
+        ...
+     TypeError: unhashable type: 'slice'
+
+  The exception message is not very useful in the context of accessing a subset
+  of nodes or edges of a graph. 
+  A more specific exception message could be something along the lines of::
+
+     >>> G.nodes[0:10]
+     Traceback (most recent call last)
+        ...
+     NetworkXError: NodeView does not support slicing. Try list(G.nodes)[0:10].
+
+- Instead of changing the behavior of ``__getitem__`` we can impelment a new
+  method, something like ``G.nodes.head(x)`` (insipired by pandas) which
+  returns the first x nodes.
+  This approach could be expanded to using a ``slice`` object directly but
+  interfacing it with an independent ``slice`` method of G.nodes and G.edges
+  instead of implementing it in getitem dunder method.
+  - The nice colon syntax for slices is only available with subscript notation.
+    To allow G.nodes.slice to use the nice colon syntax, we could make it a
+    property that creates a subscriptable object. Syntax would be ``G.nodes.slice[4:9:2]``.
 
 
 Discussion
