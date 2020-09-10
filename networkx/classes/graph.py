@@ -555,28 +555,18 @@ class Graph:
 
         """
         for n in nodes_for_adding:
-            # keep all this inside try/except because
-            # CPython throws TypeError on n not in self._node,
-            # while pre-2.7.5 ironpython throws on self._adj[n]
             try:
-                if n not in self._node:
-                    self._adj[n] = self.adjlist_inner_dict_factory()
-                    attr_dict = self._node[n] = self.node_attr_dict_factory()
-                    attr_dict.update(attr)
-                else:
-                    self._node[n].update(attr)
+                newnode = n not in self._node
+                newdict = attr
             except TypeError:
-                nn, ndict = n
-                if nn not in self._node:
-                    self._adj[nn] = self.adjlist_inner_dict_factory()
-                    newdict = attr.copy()
-                    newdict.update(ndict)
-                    attr_dict = self._node[nn] = self.node_attr_dict_factory()
-                    attr_dict.update(newdict)
-                else:
-                    olddict = self._node[nn]
-                    olddict.update(attr)
-                    olddict.update(ndict)
+                n, ndict = n
+                newnode = n not in self._node
+                newdict = attr.copy()
+                newdict.update(ndict)
+            if newnode:
+                self._adj[n] = self.adjlist_inner_dict_factory()
+                self._node[n] = self.node_attr_dict_factory()
+            self._node[n].update(newdict)
 
     def remove_node(self, n):
         """Remove node n.
