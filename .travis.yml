@@ -42,20 +42,6 @@ matrix:
           packages:
           - libgdal-dev
           - graphviz
-    - os: osx
-      osx_image: xcode12
-      language: generic
-      env:
-      - TRAVIS_PYTHON_VERSION=3.7
-      - OPTIONAL_DEPS=1
-    - os: osx
-      osx_image: xcode12
-      language: generic
-      env: TRAVIS_PYTHON_VERSION=3.6
-    - os: osx
-      osx_image: xcode12
-      language: generic
-      env: TRAVIS_PYTHON_VERSION=3.8
     - python: 3.6
     - python: 3.7
     - python: 3.8
@@ -71,11 +57,7 @@ before_install:
   - source tools/travis/before_install.sh
   - uname -a
   - printenv
-  - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-      source tools/travis/osx_install.sh;
-    else
-      source tools/travis/linux_install.sh;
-    fi
+  - source tools/travis/linux_install.sh;
 
 install:
   # install required packages
