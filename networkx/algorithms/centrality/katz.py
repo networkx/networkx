@@ -302,10 +302,8 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
        Psychometrika 18(1):39–43, 1953
        http://phya.snu.ac.kr/~dkim/PRL87278701.pdf
     """
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError("Requires NumPy: http://numpy.org/") from e
+    import numpy as np
+
     if len(G) == 0:
         return {}
     try:

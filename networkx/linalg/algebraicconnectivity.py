@@ -11,25 +11,13 @@ try:
     from numpy import array, asarray, dot, ndarray, ones, sqrt, zeros, atleast_2d
     from numpy.linalg import norm, qr
     from scipy.linalg import eigh, inv
+    from scipy.linalg.blas import dasum, daxpy, ddot
     from scipy.sparse import csc_matrix, spdiags
     from scipy.sparse.linalg import eigsh, lobpcg
 
     __all__ = ["algebraic_connectivity", "fiedler_vector", "spectral_ordering"]
 except ImportError:
     __all__ = []
-
-try:
-    from scipy.linalg.blas import dasum, daxpy, ddot
-except ImportError:
-    if __all__:
-        # Make sure the imports succeeded.
-        # Use minimal replacements if BLAS is unavailable from SciPy.
-        dasum = partial(norm, ord=1)
-        ddot = dot
-
-        def daxpy(x, y, a):
-            y += a * x
-            return y
 
 
 class _PCGSolver:
@@ -122,8 +110,6 @@ class _LUSolver:
     """
 
     def __init__(self, A):
-        if not self._splu:
-            raise nx.NetworkXError("LU solver unavailable.")
         self._LU = self._splu(A)
 
     def solve(self, B, tol=None):
@@ -147,8 +133,7 @@ class _LUSolver:
 
 
 def _preprocess_graph(G, weight):
-    """Compute edge weights and eliminate zero-weight edges.
-    """
+    """Compute edge weights and eliminate zero-weight edges."""
     if G.is_directed():
         H = nx.MultiGraph()
         H.add_nodes_from(G)
@@ -174,8 +159,7 @@ def _preprocess_graph(G, weight):
 
 
 def _rcm_estimate(G, nodelist):
-    """Estimate the Fiedler vector using the reverse Cuthill-McKee ordering.
-    """
+    """Estimate the Fiedler vector using the reverse Cuthill-McKee ordering."""
     G = G.subgraph(nodelist)
     order = reverse_cuthill_mckee_ordering(G)
     n = len(nodelist)
@@ -234,8 +218,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     if normalized:
 
         def project(X):
-            """Make X orthogonal to the nullspace of L.
-            """
+            """Make X orthogonal to the nullspace of L."""
             X = asarray(X)
             for j in range(X.shape[1]):
                 X[:, j] -= dot(X[:, j], e) * e
@@ -243,8 +226,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     else:
 
         def project(X):
-            """Make X orthogonal to the nullspace of L.
-            """
+            """Make X orthogonal to the nullspace of L."""
             X = asarray(X)
             for j in range(X.shape[1]):
                 X[:, j] -= X[:, j].sum() / n
@@ -297,8 +279,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
 
 
 def _get_fiedler_func(method):
-    """Returns a function that solves the Fiedler eigenvalue problem.
-    """
+    """Returns a function that solves the Fiedler eigenvalue problem."""
     if method == "tracemin":  # old style keyword <v2.1
         method = "tracemin_pcg"
     if method in ("tracemin_pcg", "tracemin_chol", "tracemin_lu"):

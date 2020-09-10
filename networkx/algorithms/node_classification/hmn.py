@@ -61,18 +61,8 @@ def harmonic_function(G, max_iter=30, label_name="label"):
     Semi-supervised learning using gaussian fields and harmonic functions.
     In ICML (Vol. 3, pp. 912-919).
     """
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError(
-            "harmonic_function() requires numpy: http://numpy.org/ "
-        ) from e
-    try:
-        from scipy import sparse
-    except ImportError as e:
-        raise ImportError(
-            "harmonic_function() requires scipy: http://scipy.org/ "
-        ) from e
+    import numpy as np
+    from scipy import sparse
 
     def _build_propagation_matrix(X, labels):
         """Build propagation matrix of Harmonic function

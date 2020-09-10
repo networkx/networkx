@@ -38,10 +38,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     algorithm fails. This algorithm can still fail if there are negative
     cycles.  It has running time $O(n^3)$ with running space of $O(n^2)$.
     """
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError("to_numpy_array() requires numpy: http://numpy.org/ ") from e
+    import numpy as np
 
     # To handle cases when an edge has weight=0, we must make sure that
     # nonedges are not given the value 0 as well.

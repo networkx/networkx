@@ -13,6 +13,7 @@ matplotlib:     http://matplotlib.org/
 pygraphviz:     http://pygraphviz.github.io/
 
 """
+
 from numbers import Number
 import networkx as nx
 from networkx.drawing.layout import (
@@ -98,13 +99,7 @@ def draw(G, pos=None, ax=None, **kwds):
     Also see the NetworkX drawing examples at
     https://networkx.github.io/documentation/latest/auto_examples/index.html
     """
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError as e:
-        raise ImportError("Matplotlib required for draw()") from e
-    except RuntimeError:
-        print("Matplotlib unable to open display")
-        raise
+    import matplotlib.pyplot as plt
 
     if ax is None:
         cf = plt.gcf()
@@ -262,13 +257,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     draw_networkx_labels()
     draw_networkx_edge_labels()
     """
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError as e:
-        raise ImportError("Matplotlib required for draw()") from e
-    except RuntimeError:
-        print("Matplotlib unable to open display")
-        raise
+    import matplotlib.pyplot as plt
 
     valid_node_kwds = (
         "nodelist",
@@ -432,16 +421,9 @@ def draw_networkx_nodes(
     draw_networkx_edge_labels()
     """
     from collections.abc import Iterable
-
-    try:
-        import matplotlib.pyplot as plt
-        from matplotlib.collections import PathCollection
-        import numpy as np
-    except ImportError as e:
-        raise ImportError("Matplotlib required for draw()") from e
-    except RuntimeError:
-        print("Matplotlib unable to open display")
-        raise
+    import matplotlib.pyplot as plt
+    from matplotlib.collections import PathCollection
+    import numpy as np
 
     if ax is None:
         ax = plt.gca()
@@ -621,17 +603,11 @@ def draw_networkx_edges(
     draw_networkx_labels()
     draw_networkx_edge_labels()
     """
-    try:
-        import matplotlib.pyplot as plt
-        from matplotlib.colors import colorConverter, Colormap, Normalize
-        from matplotlib.collections import LineCollection
-        from matplotlib.patches import FancyArrowPatch
-        import numpy as np
-    except ImportError as e:
-        raise ImportError("Matplotlib required for draw()") from e
-    except RuntimeError:
-        print("Matplotlib unable to open display")
-        raise
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import colorConverter, Colormap, Normalize
+    from matplotlib.collections import LineCollection
+    from matplotlib.patches import FancyArrowPatch
+    import numpy as np
 
     if ax is None:
         ax = plt.gca()
@@ -875,13 +851,7 @@ def draw_networkx_labels(
     draw_networkx_edges()
     draw_networkx_edge_labels()
     """
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError as e:
-        raise ImportError("Matplotlib required for draw()") from e
-    except RuntimeError:
-        print("Matplotlib unable to open display")
-        raise
+    import matplotlib.pyplot as plt
 
     if ax is None:
         ax = plt.gca()
@@ -1015,14 +985,8 @@ def draw_networkx_edge_labels(
     draw_networkx_edges()
     draw_networkx_labels()
     """
-    try:
-        import matplotlib.pyplot as plt
-        import numpy as np
-    except ImportError as e:
-        raise ImportError("Matplotlib required for draw()") from e
-    except RuntimeError:
-        print("Matplotlib unable to open display")
-        raise
+    import matplotlib.pyplot as plt
+    import numpy as np
 
     if ax is None:
         ax = plt.gca()
@@ -1250,13 +1214,9 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
 
     """
     from itertools import islice, cycle
-
-    try:
-        import numpy as np
-        from matplotlib.colors import colorConverter
-        import matplotlib.cm as cm
-    except ImportError as e:
-        raise ImportError("Matplotlib required for draw()") from e
+    import numpy as np
+    from matplotlib.colors import colorConverter
+    import matplotlib.cm as cm
 
     # If we have been provided with a list of numbers as long as elem_list,
     # apply the color mapping.
