@@ -11,14 +11,22 @@ NXEP 2 — API design of view slices
 Abstract
 --------
 
-The core API of base classes in NetworkX uses (dict) views to expose
-data about the graph's nodes and edges. In this NXEP we propose to
-add slicing to Node(Data)View and Edge(Data)View.
+Iterating over a subset of nodes or edges in a graph is a very common 
+operation in networkx analysis.
+The graph classes in NetworkX (e.g. :class:`~networkx.Graph`,
+:class:`~newtorkx.DiGraph`, :class:`~networkx.MultiGraph`, etc.) expose the
+node and edge data of the graph via :meth:`nodes` and :meth:`edges`, which 
+return dict view objects, `NodeView` (or `NodeDataView`) and `EdgeView` 
+(or `EdgeDataView`), respectively.
+The node and edge `View` classes have dict-like semantics for item access,
+returning the data dict corresponding to a given node or edge.
+This NXEP proposes adding support for slicing to the relevant node & edge
+`View` classes.
 
 Motivation and Scope
 --------------------
 
-While accessing Graph data with G.nodes and G.edges, the only way of slicing the data
+While accessing Graph data with `G.nodes` and `G.edges`, the only way of slicing the data
 is by casting the view to a list manually and then calling a slice on it.
 A slice inherently implies an ordering of the elements. We intend to use the ordering
 imposed on the nodes and edges by the iteration order (due to the adjacency data structure).
@@ -37,6 +45,29 @@ Thus ``list(G.nodes(data=True))[0:10]`` either becomes ``G.nodes(data=True)[0:10
 or it is provided by a new slicing method like ``G.nodes(data=True).slice(10)``
 or a new slicing object to allow subscripting like ``G.nodes(data=True).slice[0:10:2]``.
 Then users can get a small subset of nodes by creating a slice.
+
+Motivating Use-Case
+~~~~~~~~~~~~~~~~~~~
+
+It is common to use :meth:`~networkx.Graph.nodes` and 
+:meth:`~networkx.Graph.edges` when using NetworkX interactively, e.g. in a
+terminal.
+If a graph has very many components (i.e. edges or nodes) then the `repr` of 
+`View` object may be very long::
+
+   >>> G = nx.complete_graph(100)   # A graph with 4950 edges
+   >>> G.edges                      # Output suppressed
+   
+In this case, the first instinct of the user is often to inspect only the first
+few edges, say 10, via slicing::
+
+   >>> G.edges[0:10]
+   Traceback (most recent call last)
+      ...
+   TypeError: cannot unpack non-iterable slice object
+
+The resulting `TypeError` is opaque and hard to understand in the context of 
+what was originally intended.
 
 Usage and Impact
 ----------------
@@ -125,10 +156,22 @@ N/A
 Implementation
 --------------
 
+A reference implementation is proposed in 
+`#4086 <https://github.com/networkx/networkx/pull/4086/files>`_.
+
 The core of this NXEP is to implement ``slicing`` to Node(Data)View
 and Edge(Data)View to allow users to access a subset of nodes and edges without casting them
 first to a list. We will do this by adding a check of ``slice`` in the getitem dunder method of
 Node(Data)View and Edge(Data)View and returning a list of the sliced values.
+For example, the `__getitem__` method for `NodeView` might look something like:
+
+.. code-block:: python
+
+    def __getitem__(self, n):
+        if isinstance(n, slice):
+            return list(self._nodes).__getitem__(n)
+        return self._nodes[n]
+
 
 We can instead move the check for ``slice`` to an independent ``slice`` method for nodes and edges to
 implement this NXEP.
@@ -136,11 +179,39 @@ implement this NXEP.
 Alternatives
 ------------
 
-- Explicit documentation about casting to list
-- To get rid of the API ambigiouity w.r.t ``__getitem__`` we can impelment a new method, something like ``G.nodes.head(x)`` (insipired by pandas) which return the first x nodes. [After discussion, this has been updated to using a ``slice`` object directly but interfacing it with an independent ``slice`` method of G.nodes and G.edges instead of implementing it in getitem dunder method]
-- The nice colon syntax for slices is only available with subscript notation.
-  To allow G.nodes.slice to use the nice colon syntax, we could make it a
-  property that creates a subscriptable object. Syntax would be ``G.nodes.slice[4:9:2]``.
+The following list summarizes some alternatives to modifying the `__getitem__`
+of the various `View` classes.
+The listed alternatives are not mutually exclusive.
+
+- **Improved Documentation** - Add more explicit documentation about the 
+  necessity of casting Node(Data)View and Edge(Data)View objects to lists in
+  order to be able to use slicing.
+- **Improved Exceptions** - Currently, users see the following exception when
+  attempting to slice a `View`::
+
+     >>> G.nodes[0:10]
+     Traceback (most recent call last)
+        ...
+     TypeError: unhashable type: 'slice'
+
+  The exception message is not very useful in the context of accessing a subset
+  of nodes or edges of a graph. 
+  A more specific exception message could be something along the lines of::
+
+     >>> G.nodes[0:10]
+     Traceback (most recent call last)
+        ...
+     NetworkXError: NodeView does not support slicing. Try list(G.nodes)[0:10].
+
+- Instead of changing the behavior of ``__getitem__`` we can impelment a new
+  method, something like ``G.nodes.head(x)`` (insipired by pandas) which
+  returns the first x nodes.
+  This approach could be expanded to using a ``slice`` object directly but
+  interfacing it with an independent ``slice`` method of G.nodes and G.edges
+  instead of implementing it in getitem dunder method.
+  - The nice colon syntax for slices is only available with subscript notation.
+    To allow G.nodes.slice to use the nice colon syntax, we could make it a
+    property that creates a subscriptable object. Syntax would be ``G.nodes.slice[4:9:2]``.
 
 
 Discussion
