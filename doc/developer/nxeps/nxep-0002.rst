@@ -156,10 +156,22 @@ N/A
 Implementation
 --------------
 
+A reference implementation is proposed in 
+`#4086 <https://github.com/networkx/networkx/pull/4086/files>`_.
+
 The core of this NXEP is to implement ``slicing`` to Node(Data)View
 and Edge(Data)View to allow users to access a subset of nodes and edges without casting them
 first to a list. We will do this by adding a check of ``slice`` in the getitem dunder method of
 Node(Data)View and Edge(Data)View and returning a list of the sliced values.
+For example, the `__getitem__` method for `NodeView` might look something like:
+
+.. code-block:: python
+
+    def __getitem__(self, n):
+        if isinstance(n, slice):
+            return list(self._nodes).__getitem__(n)
+        return self._nodes[n]
+
 
 We can instead move the check for ``slice`` to an independent ``slice`` method for nodes and edges to
 implement this NXEP.
