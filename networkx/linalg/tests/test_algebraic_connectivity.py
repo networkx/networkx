@@ -11,17 +11,28 @@ scipy.sparse = pytest.importorskip("scipy.sparse")
 import networkx as nx
 from networkx.testing import almost_equal
 
-try:
-    from scikits.sparse.cholmod import cholesky
+methods = ("tracemin_pcg", "tracemin_lu", "lanczos", "lobpcg")
 
-    _cholesky = cholesky
-except ImportError:
-    _cholesky = None
 
-if _cholesky is None:
-    methods = ("tracemin_pcg", "tracemin_lu", "lanczos", "lobpcg")
-else:
-    methods = ("tracemin_pcg", "tracemin_chol", "tracemin_lu", "lanczos", "lobpcg")
+def test_algebraic_connectivity_tracemin_chol():
+    """Test that "tracemin_chol" raises an exception."""
+    G = nx.barbell_graph(5, 4)
+    with pytest.raises(nx.NetworkXError):
+        nx.algebraic_connectivity(G, method="tracemin_chol")
+
+
+def test_fiedler_vector_tracemin_chol():
+    """Test that "tracemin_chol" raises an exception."""
+    G = nx.barbell_graph(5, 4)
+    with pytest.raises(nx.NetworkXError):
+        nx.fiedler_vector(G, method="tracemin_chol")
+
+
+def test_spectral_ordering_tracemin_chol():
+    """Test that "tracemin_chol" raises an exception."""
+    G = nx.barbell_graph(5, 4)
+    with pytest.raises(nx.NetworkXError):
+        nx.spectral_ordering(G, method="tracemin_chol")
 
 
 def check_eigenvector(A, l, x):
