@@ -129,8 +129,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                     msg = "Input is not a correct Pandas DataFrame edge-list."
                     raise nx.NetworkXError(msg) from e
     except ImportError:
-        msg = "pandas not found, skipping conversion test."
-        warnings.warn(msg, ImportWarning)
+        warnings.warn("pandas not found, skipping conversion test.", ImportWarning)
 
     # numpy matrix or ndarray
     try:

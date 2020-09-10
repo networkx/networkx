@@ -580,17 +580,13 @@ def _sparse_fruchterman_reingold(
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     # Sparse version
     import numpy as np
+    from scipy.sparse import coo_matrix
 
     try:
         nnodes, _ = A.shape
     except AttributeError as e:
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
         raise nx.NetworkXError(msg) from e
-    try:
-        from scipy.sparse import coo_matrix
-    except ImportError as e:
-        msg = "_sparse_fruchterman_reingold() scipy numpy: http://scipy.org/ "
-        raise ImportError(msg) from e
     # make sure we have a LIst of Lists representation
     try:
         A = A.tolil()

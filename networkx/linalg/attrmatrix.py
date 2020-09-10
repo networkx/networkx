@@ -267,10 +267,7 @@ def attr_matrix(
         (blue, blue) is 0   # there are no edges with blue endpoints
 
     """
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError("attr_matrix() requires numpy: http://scipy.org/ ") from e
+    import numpy as np
 
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)
@@ -428,13 +425,8 @@ def attr_sparse_matrix(
         (blue, blue) is 0   # there are no edges with blue endpoints
 
     """
-    try:
-        import numpy as np
-        from scipy import sparse
-    except ImportError as e:
-        raise ImportError(
-            "attr_sparse_matrix() requires scipy: " "http://scipy.org/ "
-        ) from e
+    import numpy as np
+    from scipy import sparse
 
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)

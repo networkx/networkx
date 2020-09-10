@@ -54,6 +54,7 @@ def non_randomness(G, k=None):
             On Randomness Measures for Social Networks,
             SIAM International Conference on Data Mining. 2009
     """
+    import numpy as np
 
     if not nx.is_connected(G):
         raise nx.NetworkXException("Non connected graph.")
@@ -62,12 +63,6 @@ def non_randomness(G, k=None):
 
     if k is None:
         k = len(tuple(nx.community.label_propagation_communities(G)))
-
-    try:
-        import numpy as np
-    except ImportError as e:
-        msg = "non_randomness requires NumPy: http://numpy.org/"
-        raise ImportError(msg) from e
 
     # eq. 4.4
     nr = np.real(np.sum(np.linalg.eigvals(nx.to_numpy_array(G))[:k]))

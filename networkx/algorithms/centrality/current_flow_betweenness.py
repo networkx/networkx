@@ -95,12 +95,8 @@ def approximate_current_flow_betweenness_centrality(
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
        http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
     """
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError(
-            "current_flow_betweenness_centrality requires NumPy " "http://numpy.org/"
-        ) from e
+    import numpy as np
+
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     solvername = {

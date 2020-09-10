@@ -176,10 +176,8 @@ def hits_numpy(G, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError("hits_numpy() requires NumPy: " "http://numpy.org/") from e
+    import numpy as np
+
     if len(G) == 0:
         return {}, {}
     H = nx.hub_matrix(G, list(G))
@@ -267,13 +265,8 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError(
-            "hits_scipy() requires SciPy and NumPy:"
-            "http://scipy.org/ http://numpy.org/"
-        ) from e
+    import numpy as np
+
     if len(G) == 0:
         return {}, {}
     M = nx.to_scipy_sparse_matrix(G, nodelist=list(G))
