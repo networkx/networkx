@@ -402,8 +402,13 @@ def transitivity(G):
     >>> print(nx.transitivity(G))
     1.0
     """
-    triangles = sum(t for v, d, t, _ in _triangles_and_degree_iter(G))
-    contri = sum(d * (d - 1) for v, d, t, _ in _triangles_and_degree_iter(G))
+    triangles_contri = [
+        (t, d * (d - 1)) for v, d, t, _ in _triangles_and_degree_iter(G)
+    ]
+    # If the graph is empty
+    if len(triangles_contri) == 0:
+        return 0
+    triangles, contri = map(sum, zip(*triangles_contri))
     return 0 if triangles == 0 else triangles / contri
 
 
