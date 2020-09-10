@@ -26,7 +26,7 @@ This NXEP proposes adding support for slicing to the relevant node & edge
 Motivation and Scope
 --------------------
 
-While accessing Graph data with G.nodes and G.edges, the only way of slicing the data
+While accessing Graph data with `G.nodes` and `G.edges`, the only way of slicing the data
 is by casting the view to a list manually and then calling a slice on it.
 A slice inherently implies an ordering of the elements. We intend to use the ordering
 imposed on the nodes and edges by the iteration order (due to the adjacency data structure).
@@ -45,6 +45,29 @@ Thus ``list(G.nodes(data=True))[0:10]`` either becomes ``G.nodes(data=True)[0:10
 or it is provided by a new slicing method like ``G.nodes(data=True).slice(10)``
 or a new slicing object to allow subscripting like ``G.nodes(data=True).slice[0:10:2]``.
 Then users can get a small subset of nodes by creating a slice.
+
+Motivating Use-Case
+~~~~~~~~~~~~~~~~~~~
+
+It is common to use :meth:`~networkx.Graph.nodes` and 
+:meth:`~networkx.Graph.edges` when using NetworkX interactively, e.g. in a
+terminal.
+If a graph has very many components (i.e. edges or nodes) then the `repr` of 
+`View` object may be very long::
+
+   >>> G = nx.complete_graph(100)   # A graph with 4950 edges
+   >>> G.edges                      # Output suppressed
+   
+In this case, the first instinct of the user is often to inspect only the first
+few edges, say 10, via slicing::
+
+   >>> G.edges[0:10]
+   Traceback (most recent call last)
+      ...
+   TypeError: cannot unpack non-iterable slice object
+
+The resulting `TypeError` is opaque and hard to understand in the context of 
+what was originally intended.
 
 Usage and Impact
 ----------------
