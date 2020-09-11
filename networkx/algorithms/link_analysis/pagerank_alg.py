@@ -4,16 +4,16 @@ from networkx.utils import not_implemented_for
 
 __all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
 
-class PageRankResult():
-  def __init__(self):
-    self.result = None
+class PageRankResult(dict):
+  def __init__(self) -> None:
+    super().__init__()
     self.iteration_values = []
     self.convergence = []
     self.return_message = ""
     self.iterations = None
   
-  def __getitem__(self, index):
-    return self.result[index]
+  def set_result(self, res: dict) -> None:
+    super().__init__(res)
 
 @not_implemented_for("multigraph")
 def pagerank(
@@ -166,7 +166,7 @@ def pagerank(
         err = sum([abs(x[n] - xlast[n]) for n in x])
         res.convergence.append(err)
         if err < N * tol:
-            res.result=x
+            res.set_result(x)
             res.return_message = f"iteration converged within {i} iterations"
             res.iterations = i+1
             return res
