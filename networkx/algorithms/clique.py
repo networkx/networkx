@@ -639,8 +639,7 @@ class MaxWeightClique(object):
         clique has greater weight than the incumbent.
         """
         self.update_incumbent_if_improved(C, C_weight)
-        branching_nodes = self.find_branching_nodes(
-            P, self.incumbent_weight - C_weight)
+        branching_nodes = self.find_branching_nodes(P, self.incumbent_weight - C_weight)
         while branching_nodes:
             v = branching_nodes.pop()
             P.remove(v)
@@ -652,19 +651,18 @@ class MaxWeightClique(object):
     def find_max_weight_clique(self):
         """Find a maximum weight clique."""
         # Sort nodes in reverse order of degree for speed
-        nodes = sorted(self.G.nodes(), key=lambda v: self.G.degree(v),
-                       reverse=True)
+        nodes = sorted(self.G.nodes(), key=lambda v: self.G.degree(v), reverse=True)
         nodes = [v for v in nodes if self.node_weights[v] > 0]
         self.expand([], 0, nodes)
 
 
-@not_implemented_for('directed')
-def max_weight_clique(G, weight='weight'):
+@not_implemented_for("directed")
+def max_weight_clique(G, weight="weight"):
     """Find a maximum weight clique in G.
 
-    A _clique_ in a graph is a set of nodes such that every two distinct nodes
-    are adjacent.  The _weight_ of a clique is the sum of the weights of its
-    nodes.  A _maximum weight clique_ of graph G is a clique C in G such that
+    A *clique* in a graph is a set of nodes such that every two distinct nodes
+    are adjacent.  The *weight* of a clique is the sum of the weights of its
+    nodes.  A *maximum weight clique* of graph G is a clique C in G such that
     no clique in G has weight greater than the weight of C.
 
     Parameters
@@ -693,19 +691,19 @@ def max_weight_clique(G, weight='weight'):
     nodes on which to branch.  The algorithm is very similar to the algorithm
     of Tavares et al. [1]_, other than the fact that the NetworkX version does
     not use bitsets.  This style of algorithm for maximum weight clique (and
-    maximum independent set, which is the same problem but on the complement
-    graph) has a decades-long history.  See Algorithm B of Warren and Hicks
-    [2]_ and the references in that paper.
+    maximum weight independent set, which is the same problem but on the
+    complement graph) has a decades-long history.  See Algorithm B of Warren
+    and Hicks [2]_ and the references in that paper.
 
     References
     ----------
-    [1] Tavares, W.A., Neto, M.B.C., Rodrigues, C.D., Michelon, P.: Um
-    algoritmo de branch and bound para o problema da clique máxima ponderada.
-    Proceedings of XLVII SBPO 1 (2015).
+    .. [1] Tavares, W.A., Neto, M.B.C., Rodrigues, C.D., Michelon, P.: Um
+           algoritmo de branch and bound para o problema da clique máxima
+           ponderada.  Proceedings of XLVII SBPO 1 (2015).
 
-    [2] Warrent, Jeffrey S, Hicks, Illya V.: Combinatorial Branch-and-Bound for
-    the Maximum Weight Independent Set Problem.  Technical Report, Texas A&M
-    University (2016).
+    .. [2] Warrent, Jeffrey S, Hicks, Illya V.: Combinatorial Branch-and-Bound
+           for the Maximum Weight Independent Set Problem.  Technical Report,
+           Texas A&M University (2016).
     """
 
     mwc = MaxWeightClique(G, weight)

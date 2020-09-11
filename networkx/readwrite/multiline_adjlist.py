@@ -152,18 +152,18 @@ def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> nx.write_multiline_adjlist(G,"test.adjlist")
+    >>> G = nx.path_graph(4)
+    >>> nx.write_multiline_adjlist(G, "test.adjlist")
 
     The path can be a file handle or a string with the name of the file. If a
     file handle is provided, it has to be opened in 'wb' mode.
 
-    >>> fh=open("test.adjlist",'wb')
-    >>> nx.write_multiline_adjlist(G,fh)
+    >>> fh = open("test.adjlist", "wb")
+    >>> nx.write_multiline_adjlist(G, fh)
 
     Filenames ending in .gz or .bz2 will be compressed.
 
-    >>> nx.write_multiline_adjlist(G,"test.adjlist.gz")
+    >>> nx.write_multiline_adjlist(G, "test.adjlist.gz")
 
     See Also
     --------
@@ -216,11 +216,13 @@ def parse_multiline_adjlist(
 
     Examples
     --------
-    >>> lines = ['1 2',
-    ...          "2 {'weight':3, 'name': 'Frodo'}",
-    ...          "3 {}",
-    ...          "2 1",
-    ...          "5 {'weight':6, 'name': 'Saruman'}"]
+    >>> lines = [
+    ...     "1 2",
+    ...     "2 {'weight':3, 'name': 'Frodo'}",
+    ...     "3 {}",
+    ...     "2 1",
+    ...     "5 {'weight':6, 'name': 'Saruman'}",
+    ... ]
     >>> G = nx.parse_multiline_adjlist(iter(lines), nodetype=int)
     >>> list(G)
     [1, 2, 3, 5]
@@ -329,39 +331,39 @@ def read_multiline_adjlist(
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> nx.write_multiline_adjlist(G,"test.adjlist")
-    >>> G=nx.read_multiline_adjlist("test.adjlist")
+    >>> G = nx.path_graph(4)
+    >>> nx.write_multiline_adjlist(G, "test.adjlist")
+    >>> G = nx.read_multiline_adjlist("test.adjlist")
 
     The path can be a file or a string with the name of the file. If a
     file s provided, it has to be opened in 'rb' mode.
 
-    >>> fh=open("test.adjlist", 'rb')
-    >>> G=nx.read_multiline_adjlist(fh)
+    >>> fh = open("test.adjlist", "rb")
+    >>> G = nx.read_multiline_adjlist(fh)
 
     Filenames ending in .gz or .bz2 will be compressed.
 
-    >>> nx.write_multiline_adjlist(G,"test.adjlist.gz")
-    >>> G=nx.read_multiline_adjlist("test.adjlist.gz")
+    >>> nx.write_multiline_adjlist(G, "test.adjlist.gz")
+    >>> G = nx.read_multiline_adjlist("test.adjlist.gz")
 
     The optional nodetype is a function to convert node strings to nodetype.
 
     For example
 
-    >>> G=nx.read_multiline_adjlist("test.adjlist", nodetype=int)
+    >>> G = nx.read_multiline_adjlist("test.adjlist", nodetype=int)
 
     will attempt to convert all nodes to integer type.
 
     The optional edgetype is a function to convert edge data strings to
     edgetype.
 
-    >>> G=nx.read_multiline_adjlist("test.adjlist")
+    >>> G = nx.read_multiline_adjlist("test.adjlist")
 
     The optional create_using parameter is a NetworkX graph container.
     The default is Graph(), an undirected graph.  To read the data as
     a directed graph use
 
-    >>> G=nx.read_multiline_adjlist("test.adjlist", create_using=nx.DiGraph)
+    >>> G = nx.read_multiline_adjlist("test.adjlist", create_using=nx.DiGraph)
 
     Notes
     -----

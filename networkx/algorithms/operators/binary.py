@@ -158,9 +158,9 @@ def intersection(G, H):
     with the attributes (including edge data) from G use remove_nodes_from()
     as follows
 
-    >>> G=nx.path_graph(3)
-    >>> H=nx.path_graph(5)
-    >>> R=G.copy()
+    >>> G = nx.path_graph(3)
+    >>> H = nx.path_graph(5)
+    >>> R = G.copy()
     >>> R.remove_nodes_from(n for n in G if n not in H)
     """
     # create new graph

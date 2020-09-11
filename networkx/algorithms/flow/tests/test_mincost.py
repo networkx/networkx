@@ -300,11 +300,7 @@ class TestMinCostFlow:
     def test_digon(self):
         """Check if digons are handled properly. Taken from ticket
         #618 by arv."""
-        nodes = [
-            (1, {}),
-            (2, {"demand": -4}),
-            (3, {"demand": 4}),
-        ]
+        nodes = [(1, {}), (2, {"demand": -4}), (3, {"demand": 4})]
         edges = [
             (1, 2, {"capacity": 3, "weight": 600000}),
             (2, 1, {"capacity": 2, "weight": 0}),
@@ -341,11 +337,7 @@ class TestMinCostFlow:
     def test_infinite_capacity_neg_digon(self):
         """An infinite capacity negative cost digon results in an unbounded
         instance."""
-        nodes = [
-            (1, {}),
-            (2, {"demand": -4}),
-            (3, {"demand": 4}),
-        ]
+        nodes = [(1, {}), (2, {"demand": -4}), (3, {"demand": 4})]
         edges = [
             (1, 2, {"weight": -600}),
             (2, 1, {"weight": 0}),

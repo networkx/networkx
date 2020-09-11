@@ -75,10 +75,10 @@ class UnionFind:
 
         For example::
 
-            >>> partition = UnionFind('xyz')
+            >>> partition = UnionFind("xyz")
             >>> sorted(map(sorted, partition.to_sets()))
             [['x'], ['y'], ['z']]
-            >>> partition.union('x', 'y')
+            >>> partition.union("x", "y")
             >>> sorted(map(sorted, partition.to_sets()))
             [['x', 'y'], ['z']]
 

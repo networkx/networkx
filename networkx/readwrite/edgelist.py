@@ -63,8 +63,8 @@ def generate_edgelist(G, delimiter=" ", data=True):
     Examples
     --------
     >>> G = nx.lollipop_graph(4, 3)
-    >>> G[1][2]['weight'] = 3
-    >>> G[3][4]['capacity'] = 12
+    >>> G[1][2]["weight"] = 3
+    >>> G[3][4]["capacity"] = 12
     >>> for line in nx.generate_edgelist(G, data=False):
     ...     print(line)
     0 1
@@ -89,7 +89,7 @@ def generate_edgelist(G, delimiter=" ", data=True):
     4 5 {}
     5 6 {}
 
-    >>> for line in nx.generate_edgelist(G,data=['weight']):
+    >>> for line in nx.generate_edgelist(G, data=["weight"]):
     ...     print(line)
     0 1
     0 2
@@ -148,19 +148,19 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G = nx.path_graph(4)
     >>> nx.write_edgelist(G, "test.edgelist")
-    >>> G=nx.path_graph(4)
-    >>> fh=open("test.edgelist",'wb')
+    >>> G = nx.path_graph(4)
+    >>> fh = open("test.edgelist", "wb")
     >>> nx.write_edgelist(G, fh)
     >>> nx.write_edgelist(G, "test.edgelist.gz")
     >>> nx.write_edgelist(G, "test.edgelist.gz", data=False)
 
-    >>> G=nx.Graph()
-    >>> G.add_edge(1,2,weight=7,color='red')
-    >>> nx.write_edgelist(G,'test.edgelist',data=False)
-    >>> nx.write_edgelist(G,'test.edgelist',data=['color'])
-    >>> nx.write_edgelist(G,'test.edgelist',data=['color','weight'])
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2, weight=7, color="red")
+    >>> nx.write_edgelist(G, "test.edgelist", data=False)
+    >>> nx.write_edgelist(G, "test.edgelist", data=["color"])
+    >>> nx.write_edgelist(G, "test.edgelist", data=["color", "weight"])
 
     See Also
     --------
@@ -183,15 +183,16 @@ def parse_edgelist(
     lines : list or iterator of strings
         Input data in edgelist format
     comments : string, optional
-       Marker for comment lines
+       Marker for comment lines. Default is `'#'`
     delimiter : string, optional
-       Separator for node labels
+       Separator for node labels. Default is `None`, meaning any whitespace.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
     nodetype : Python type, optional
-       Convert nodes to this type.
+       Convert nodes to this type. Default is `None`, meaning no conversion is
+       performed.
     data : bool or list of (label,type) tuples
-       If False generate no edge data or if True use a dictionary
+       If `False` generate no edge data or if `True` use a dictionary
        representation of edge data or a list tuples specifying dictionary
        key names and types for edge data.
 
@@ -204,10 +205,8 @@ def parse_edgelist(
     --------
     Edgelist with no data:
 
-    >>> lines = ["1 2",
-    ...          "2 3",
-    ...          "3 4"]
-    >>> G = nx.parse_edgelist(lines, nodetype = int)
+    >>> lines = ["1 2", "2 3", "3 4"]
+    >>> G = nx.parse_edgelist(lines, nodetype=int)
     >>> list(G)
     [1, 2, 3, 4]
     >>> list(G.edges())
@@ -215,10 +214,8 @@ def parse_edgelist(
 
     Edgelist with data in Python dictionary representation:
 
-    >>> lines = ["1 2 {'weight':3}",
-    ...          "2 3 {'weight':27}",
-    ...          "3 4 {'weight':3.0}"]
-    >>> G = nx.parse_edgelist(lines, nodetype = int)
+    >>> lines = ["1 2 {'weight': 3}", "2 3 {'weight': 27}", "3 4 {'weight': 3.0}"]
+    >>> G = nx.parse_edgelist(lines, nodetype=int)
     >>> list(G)
     [1, 2, 3, 4]
     >>> list(G.edges(data=True))
@@ -226,10 +223,8 @@ def parse_edgelist(
 
     Edgelist with data in a list:
 
-    >>> lines = ["1 2 3",
-    ...          "2 3 27",
-    ...          "3 4 3.0"]
-    >>> G = nx.parse_edgelist(lines, nodetype = int, data=(('weight',float),))
+    >>> lines = ["1 2 3", "2 3 27", "3 4 3.0"]
+    >>> G = nx.parse_edgelist(lines, nodetype=int, data=(("weight", float),))
     >>> list(G)
     [1, 2, 3, 4]
     >>> list(G.edges(data=True))
@@ -246,7 +241,7 @@ def parse_edgelist(
         p = line.find(comments)
         if p >= 0:
             line = line[:p]
-        if not len(line):
+        if not line:
             continue
         # split line, should have 2 or more
         s = line.strip().split(delimiter)
@@ -259,9 +254,9 @@ def parse_edgelist(
             try:
                 u = nodetype(u)
                 v = nodetype(v)
-            except BaseException as e:
+            except Exception as e:
                 raise TypeError(
-                    f"Failed to convert nodes {u},{v} " f"to type {nodetype}."
+                    f"Failed to convert nodes {u},{v} to type {nodetype}."
                 ) from e
 
         if len(d) == 0 or data is False:
@@ -270,10 +265,14 @@ def parse_edgelist(
         elif data is True:
             # no edge types specified
             try:  # try to evaluate as dictionary
-                edgedata = dict(literal_eval(" ".join(d)))
-            except BaseException as e:
+                if delimiter == ",":
+                    edgedata_str = ",".join(d)
+                else:
+                    edgedata_str = " ".join(d)
+                edgedata = dict(literal_eval(edgedata_str.strip()))
+            except Exception as e:
                 raise TypeError(
-                    f"Failed to convert edge data ({d}) " f"to dictionary."
+                    f"Failed to convert edge data ({d}) to dictionary."
                 ) from e
         else:
             # convert edge data to dictionary with specified keys and type
@@ -285,7 +284,7 @@ def parse_edgelist(
             for (edge_key, edge_type), edge_value in zip(data, d):
                 try:
                     edge_value = edge_type(edge_value)
-                except BaseException as e:
+                except Exception as e:
                     raise TypeError(
                         f"Failed to convert {edge_key} data {edge_value} "
                         f"to type {edge_type}."
@@ -337,22 +336,22 @@ def read_edgelist(
     Examples
     --------
     >>> nx.write_edgelist(nx.path_graph(4), "test.edgelist")
-    >>> G=nx.read_edgelist("test.edgelist")
+    >>> G = nx.read_edgelist("test.edgelist")
 
-    >>> fh=open("test.edgelist", 'rb')
-    >>> G=nx.read_edgelist(fh)
+    >>> fh = open("test.edgelist", "rb")
+    >>> G = nx.read_edgelist(fh)
     >>> fh.close()
 
-    >>> G=nx.read_edgelist("test.edgelist", nodetype=int)
-    >>> G=nx.read_edgelist("test.edgelist",create_using=nx.DiGraph)
+    >>> G = nx.read_edgelist("test.edgelist", nodetype=int)
+    >>> G = nx.read_edgelist("test.edgelist", create_using=nx.DiGraph)
 
     Edgelist with data in a list:
 
-    >>> textline = '1 2 3'
-    >>> fh = open('test.edgelist','w')
+    >>> textline = "1 2 3"
+    >>> fh = open("test.edgelist", "w")
     >>> d = fh.write(textline)
     >>> fh.close()
-    >>> G = nx.read_edgelist('test.edgelist', nodetype=int, data=(('weight',float),))
+    >>> G = nx.read_edgelist("test.edgelist", nodetype=int, data=(("weight", float),))
     >>> list(G)
     [1, 2]
     >>> list(G.edges(data=True))
@@ -401,9 +400,9 @@ def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-
 
     Examples
     --------
-    >>> G=nx.Graph()
-    >>> G.add_edge(1,2,weight=7)
-    >>> nx.write_weighted_edgelist(G, 'test.weighted.edgelist')
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2, weight=7)
+    >>> nx.write_weighted_edgelist(G, "test.weighted.edgelist")
 
     See Also
     --------

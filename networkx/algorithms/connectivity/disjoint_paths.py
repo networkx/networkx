@@ -15,10 +15,7 @@ from .utils import build_auxiliary_edge_connectivity
 
 from itertools import filterfalse as _filterfalse
 
-__all__ = [
-    "edge_disjoint_paths",
-    "node_disjoint_paths",
-]
+__all__ = ["edge_disjoint_paths", "node_disjoint_paths"]
 
 
 def edge_disjoint_paths(
@@ -114,14 +111,13 @@ def edge_disjoint_paths(
     >>> import itertools
     >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
-    >>> from networkx.algorithms.connectivity import (
-    ...     build_auxiliary_edge_connectivity)
+    >>> from networkx.algorithms.connectivity import build_auxiliary_edge_connectivity
     >>> H = build_auxiliary_edge_connectivity(G)
     >>> # And the function for building the residual network from the
     >>> # flow package
     >>> from networkx.algorithms.flow import build_residual_network
     >>> # Note that the auxiliary digraph has an edge attribute named capacity
-    >>> R = build_residual_network(H, 'capacity')
+    >>> R = build_residual_network(H, "capacity")
     >>> result = {n: {} for n in G}
     >>> # Reuse the auxiliary digraph and the residual network by passing them
     >>> # as arguments
@@ -309,14 +305,13 @@ def node_disjoint_paths(
 
     >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
-    >>> from networkx.algorithms.connectivity import (
-    ...     build_auxiliary_node_connectivity)
+    >>> from networkx.algorithms.connectivity import build_auxiliary_node_connectivity
     >>> H = build_auxiliary_node_connectivity(G)
     >>> # And the function for building the residual network from the
     >>> # flow package
     >>> from networkx.algorithms.flow import build_residual_network
     >>> # Note that the auxiliary digraph has an edge attribute named capacity
-    >>> R = build_residual_network(H, 'capacity')
+    >>> R = build_residual_network(H, "capacity")
     >>> # Reuse the auxiliary digraph and the residual network by passing them
     >>> # as arguments
     >>> len(list(nx.node_disjoint_paths(G, 0, 6, auxiliary=H, residual=R)))

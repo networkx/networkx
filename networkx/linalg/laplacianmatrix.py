@@ -42,7 +42,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     See Also
     --------
-    to_numpy_matrix
+    to_numpy_array
     normalized_laplacian_matrix
     laplacian_spectrum
     """
@@ -91,7 +91,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     Notes
     -----
     For MultiGraph/MultiDiGraph, the edges weights are summed.
-    See to_numpy_matrix for other options.
+    See to_numpy_array for other options.
 
     If the Graph contains selfloops, D is defined as diag(sum(A,1)), where A is
     the adjacency matrix [2]_.

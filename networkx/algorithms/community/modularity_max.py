@@ -8,7 +8,11 @@ from networkx.algorithms.community.quality import modularity
 
 from networkx.utils.mapped_queue import MappedQueue
 
-__all__ = ["greedy_modularity_communities", "_naive_greedy_modularity_communities"]
+__all__ = [
+    "greedy_modularity_communities",
+    "naive_greedy_modularity_communities",
+    "_naive_greedy_modularity_communities",
+]
 
 
 def greedy_modularity_communities(G, weight=None):
@@ -205,7 +209,7 @@ def greedy_modularity_communities(G, weight=None):
     return sorted(communities, key=len, reverse=True)
 
 
-def _naive_greedy_modularity_communities(G):
+def naive_greedy_modularity_communities(G):
     """Find communities in graph using the greedy modularity maximization.
     This implementation is O(n^4), much slower than alternatives, but it is
     provided as an easy-to-understand reference implementation.
@@ -255,3 +259,7 @@ def _naive_greedy_modularity_communities(G):
     # Remove empty communities and sort
     communities = [c for c in communities if len(c) > 0]
     yield from sorted(communities, key=lambda x: len(x), reverse=True)
+
+
+# old name
+_naive_greedy_modularity_communities = naive_greedy_modularity_communities

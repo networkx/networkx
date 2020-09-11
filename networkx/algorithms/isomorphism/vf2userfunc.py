@@ -33,12 +33,7 @@
 
 from . import isomorphvf2 as vf2
 
-__all__ = [
-    "GraphMatcher",
-    "DiGraphMatcher",
-    "MultiGraphMatcher",
-    "MultiDiGraphMatcher",
-]
+__all__ = ["GraphMatcher", "DiGraphMatcher", "MultiGraphMatcher", "MultiDiGraphMatcher"]
 
 
 def _semantic_feasibility(self, G1_node, G2_node):

@@ -41,16 +41,20 @@ def node_link_data(G, attrs=None):
     Examples
     --------
     >>> from networkx.readwrite import json_graph
-    >>> G = nx.Graph([('A', 'B')])
+    >>> G = nx.Graph([("A", "B")])
     >>> data1 = json_graph.node_link_data(G)
     >>> H = nx.gn_graph(2)
-    >>> data2 = json_graph.node_link_data(H, {'link': 'edges', 'source': 'from', 'target': 'to'})
+    >>> data2 = json_graph.node_link_data(
+    ...     H, {"link": "edges", "source": "from", "target": "to"}
+    ... )
 
     To serialize with json
 
     >>> import json
     >>> s1 = json.dumps(data1)
-    >>> s2 = json.dumps(data2, default={'link': 'edges', 'source': 'from', 'target': 'to'})
+    >>> s2 = json.dumps(
+    ...     data2, default={"link": "edges", "source": "from", "target": "to"}
+    ... )
 
     Notes
     -----
@@ -126,7 +130,7 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=None):
     Examples
     --------
     >>> from networkx.readwrite import json_graph
-    >>> G = nx.Graph([('A', 'B')])
+    >>> G = nx.Graph([("A", "B")])
     >>> data = json_graph.node_link_data(G)
     >>> H = json_graph.node_link_graph(data)
 

@@ -67,18 +67,22 @@ def make_small_graph(graph_description, create_using=None):
     specifies the nodes connected to vertex j.
     e.g. the "square" graph C_4 can be obtained by
 
-    >>> G=nx.make_small_graph(["adjacencylist","C_4",4,[[2,4],[1,3],[2,4],[1,3]]])
+    >>> G = nx.make_small_graph(
+    ...     ["adjacencylist", "C_4", 4, [[2, 4], [1, 3], [2, 4], [1, 3]]]
+    ... )
 
     or, since we do not need to add edges twice,
 
-    >>> G=nx.make_small_graph(["adjacencylist","C_4",4,[[2,4],[3],[4],[]]])
+    >>> G = nx.make_small_graph(["adjacencylist", "C_4", 4, [[2, 4], [3], [4], []]])
 
     If ltype="edgelist" then xlist is an edge list
     written as [[v1,w2],[v2,w2],...,[vk,wk]],
     where vj and wj integers in the range 1,..,n
     e.g. the "square" graph C_4 can be obtained by
 
-    >>> G=nx.make_small_graph(["edgelist","C_4",4,[[1,2],[3,4],[2,3],[4,1]]])
+    >>> G = nx.make_small_graph(
+    ...     ["edgelist", "C_4", 4, [[1, 2], [3, 4], [2, 3], [4, 1]]]
+    ... )
 
     Use the create_using argument to choose the graph class/type.
     """

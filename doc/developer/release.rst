@@ -22,7 +22,12 @@ Release Process
 
   7. Update ``doc/news.rst``.
 
-- Comment out ``dev_banner.html`` in ``doc/_templates/layout.html``.
+- Delete the following from ``doc/_templates/layout.html``::
+
+    {% block document %}
+      {% include "dev_banner.html" %}
+      {{ super() }}
+    {% endblock %}
 
 - Toggle ``dev = True`` to ``dev = False`` in ``networkx/release.py``.
 
@@ -77,13 +82,18 @@ Release Process
 
  - Increase the version number
 
-  - Uncomment ``dev_banner.html`` in ``doc/_templates/layout.html``.
   - Toggle ``dev = False`` to ``dev = True`` in ``networkx/release.py``.
   - Update ``major`` and ``minor`` in ``networkx/release.py``.
+  - Append the following to ``doc/_templates/layout.html``::
+
+    {% block document %}
+      {% include "dev_banner.html" %}
+      {{ super() }}
+    {% endblock %}
 
  - Commit and push changes::
 
-    git add networkx/release.py
+    git add networkx/release.py doc/_templates/layout.html
     git commit -m "Bump release version"
     git push upstream master
 
@@ -93,8 +103,8 @@ Release Process
   - Sync your branch with the remote repo: ``git pull``.
     If you try to ``make github`` when your branch is out of sync, it
     creates headaches.
-  - Update ``_templates/sidebar_versions.html``.
-  - Edit ``_static/docversions.js`` and commit
+  - Update ``build/index.html``.
+  - Edit ``build/_static/docversions.js`` and commit
   - Push your changes to the repo.
   - Deploy using ``make github``.
 

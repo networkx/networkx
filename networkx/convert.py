@@ -17,6 +17,7 @@ nx_agraph, nx_pydot
 """
 import warnings
 import networkx as nx
+from collections.abc import Collection, Generator, Iterator
 
 __all__ = [
     "to_networkx_graph",
@@ -35,7 +36,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     The preferred way to call this is automatically
     from the class constructor
 
-    >>> d = {0: {1: {'weight':1}}} # dict-of-dicts single edge (0,1)
+    >>> d = {0: {1: {"weight": 1}}}  # dict-of-dicts single edge (0,1)
     >>> G = nx.Graph(d)
 
     instead of the equivalent
@@ -50,7 +51,9 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
          any NetworkX graph
          dict-of-dicts
          dict-of-lists
-         container (ie set, list, tuple, iterator) of edges
+         container (e.g. set, list, tuple) of edges
+         iterator (e.g. itertools.chain) that produces edges
+         generator of edges
          Pandas DataFrame (row per edge)
          numpy matrix
          numpy ndarray
@@ -106,16 +109,6 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             except Exception as e:
                 raise TypeError("Input is not known type.") from e
 
-    # list or generator of edges
-
-    if isinstance(data, (list, tuple, set)) or any(
-        hasattr(data, attr) for attr in ["_adjdict", "next", "__next__"]
-    ):
-        try:
-            return from_edgelist(data, create_using=create_using)
-        except Exception as e:
-            raise nx.NetworkXError("Input is not a valid edge list") from e
-
     # Pandas DataFrame
     try:
         import pandas as pd
@@ -167,6 +160,16 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     except ImportError:
         warnings.warn("scipy not found, skipping conversion test.", ImportWarning)
 
+    # Note: most general check - should remain last in order of execution
+    # Includes containers (e.g. list, set, dict, etc.), generators, and
+    # iterators (e.g. itertools.chain) of edges
+
+    if isinstance(data, (Collection, Generator, Iterator)):
+        try:
+            return from_edgelist(data, create_using=create_using)
+        except Exception as e:
+            raise nx.NetworkXError("Input is not a valid edge list") from e
+
     raise nx.NetworkXError("Input is not a known data type for conversion.")
 
 
@@ -208,12 +211,12 @@ def from_dict_of_lists(d, create_using=None):
 
     Examples
     --------
-    >>> dol = {0: [1]} # single edge (0,1)
+    >>> dol = {0: [1]}  # single edge (0,1)
     >>> G = nx.from_dict_of_lists(dol)
 
     or
 
-    >>> G = nx.Graph(dol) # use Graph constructor
+    >>> G = nx.Graph(dol)  # use Graph constructor
 
     """
     G = nx.empty_graph(0, create_using)
@@ -293,12 +296,12 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
 
     Examples
     --------
-    >>> dod = {0: {1: {'weight': 1}}} # single edge (0,1)
+    >>> dod = {0: {1: {"weight": 1}}}  # single edge (0,1)
     >>> G = nx.from_dict_of_dicts(dod)
 
     or
 
-    >>> G = nx.Graph(dod) # use Graph constructor
+    >>> G = nx.Graph(dod)  # use Graph constructor
 
     """
     G = nx.empty_graph(0, create_using)
@@ -390,12 +393,12 @@ def from_edgelist(edgelist, create_using=None):
 
     Examples
     --------
-    >>> edgelist = [(0, 1)] # single edge (0,1)
+    >>> edgelist = [(0, 1)]  # single edge (0,1)
     >>> G = nx.from_edgelist(edgelist)
 
     or
 
-    >>> G = nx.Graph(edgelist) # use Graph constructor
+    >>> G = nx.Graph(edgelist)  # use Graph constructor
 
     """
     G = nx.empty_graph(0, create_using)

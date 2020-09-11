@@ -188,12 +188,13 @@ def joint_degree_graph(joint_degrees, seed=None):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> joint_degrees = {1: {4: 1},
-    ...                      2: {2: 2, 3: 2, 4: 2},
-    ...                      3: {2: 2, 4: 1},
-    ...                      4: {1: 1, 2: 2, 3: 1}}
-    >>> G=nx.joint_degree_graph(joint_degrees)
+    >>> joint_degrees = {
+    ...     1: {4: 1},
+    ...     2: {2: 2, 3: 2, 4: 2},
+    ...     3: {2: 2, 4: 1},
+    ...     4: {1: 1, 2: 2, 3: 1},
+    ... }
+    >>> G = nx.joint_degree_graph(joint_degrees)
     >>>
     """
 
@@ -533,11 +534,10 @@ def directed_joint_degree_graph(in_degrees, out_degrees, nkk, seed=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> in_degrees = [0, 1, 1, 2]
     >>> out_degrees = [1, 1, 1, 1]
-    >>> nkk = {1:{1:2,2:2}}
-    >>> G=nx.directed_joint_degree_graph(in_degrees, out_degrees, nkk)
+    >>> nkk = {1: {1: 2, 2: 2}}
+    >>> G = nx.directed_joint_degree_graph(in_degrees, out_degrees, nkk)
     >>>
     """
     if not is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):

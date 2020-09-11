@@ -253,7 +253,7 @@ def soft_random_geometric_graph(
     >>> import math
     >>> n = 100
     >>> pos = {i: (random.gauss(0, 2), random.gauss(0, 2)) for i in range(n)}
-    >>> p_dist = lambda dist : math.exp(-dist)
+    >>> p_dist = lambda dist: math.exp(-dist)
     >>> G = nx.soft_random_geometric_graph(n, 0.2, pos=pos, p_dist=p_dist)
 
     References

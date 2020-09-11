@@ -24,6 +24,7 @@ __all__ = [
     "kamada_kawai_layout",
     "random_layout",
     "rescale_layout",
+    "rescale_layout_dict",
     "shell_layout",
     "spring_layout",
     "spectral_layout",
@@ -908,12 +909,6 @@ def planar_layout(G, scale=1, center=None, dim=2):
     ----------
     G : NetworkX graph or list of nodes
         A position will be assigned to every node in G. If G is of type
-        PlanarEmbedding, the positions are selected accordingly.
-
-    Parameters
-    ----------
-    G : NetworkX graph or list of nodes
-        A position will be assigned to every node in G. If G is of type
         nx.PlanarEmbedding, the positions are selected accordingly.
 
     scale : number (default: 1)
@@ -1163,6 +1158,9 @@ def rescale_layout(pos, scale=1):
     pos : numpy array
         scaled positions. Each row is a position.
 
+    See Also
+    --------
+    rescale_layout_dict
     """
     # Find max length over all dimensions
     lim = 0  # max coordinate for all axes
@@ -1174,3 +1172,40 @@ def rescale_layout(pos, scale=1):
         for i in range(pos.shape[1]):
             pos[:, i] *= scale / lim
     return pos
+
+
+def rescale_layout_dict(pos, scale=1):
+    """Return a dictionary of scaled positions keyed by node
+
+    Parameters
+    ----------
+    pos : A dictionary of positions keyed by node
+
+    scale : number (default: 1)
+        The size of the resulting extent in all directions.
+
+    Returns
+    -------
+    pos : A dictionary of positions keyed by node
+
+    Examples
+    --------
+    >>> pos = {0: (0, 0), 1: (1, 1), 2: (0.5, 0.5)}
+    >>> nx.rescale_layout_dict(pos)
+    {0: (-1.0, -1.0), 1: (1.0, 1.0), 2: (0.0, 0.0)}
+
+    >>> pos = {0: (0, 0), 1: (-1, 1), 2: (-0.5, 0.5)}
+    >>> nx.rescale_layout_dict(pos, scale=2)
+    {0: (2.0, -2.0), 1: (-2.0, 2.0), 2: (0.0, 0.0)}
+
+    See Also
+    --------
+    rescale_layout
+    """
+    import numpy as np
+
+    if not pos:  # empty_graph
+        return {}
+    pos_v = np.array(list(pos.values()))
+    pos_v = rescale_layout(pos_v, scale=scale)
+    return {k: tuple(v) for k, v in zip(pos.keys(), pos_v)}

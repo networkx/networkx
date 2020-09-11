@@ -49,7 +49,7 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     --------
     >>> G = nx.path_graph(4)
     >>> r = nx.degree_assortativity_coefficient(G)
-    >>> print("%3.1f"%r)
+    >>> print(f"{r:3.1f}")
     -0.5
 
     See Also
@@ -115,7 +115,7 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     --------
     >>> G = nx.path_graph(4)
     >>> r = nx.degree_pearson_correlation_coefficient(G)
-    >>> print("%3.1f"%r)
+    >>> print(f"{r:3.1f}")
     -0.5
 
     Notes
@@ -163,10 +163,10 @@ def attribute_assortativity_coefficient(G, attribute, nodes=None):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_nodes_from([0,1],color='red')
-    >>> G.add_nodes_from([2,3],color='blue')
-    >>> G.add_edges_from([(0,1),(2,3)])
-    >>> print(nx.attribute_assortativity_coefficient(G,'color'))
+    >>> G.add_nodes_from([0, 1], color="red")
+    >>> G.add_nodes_from([2, 3], color="blue")
+    >>> G.add_edges_from([(0, 1), (2, 3)])
+    >>> print(nx.attribute_assortativity_coefficient(G, "color"))
     1.0
 
     Notes
@@ -211,10 +211,10 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_nodes_from([0,1],size=2)
-    >>> G.add_nodes_from([2,3],size=3)
-    >>> G.add_edges_from([(0,1),(2,3)])
-    >>> print(nx.numeric_assortativity_coefficient(G,'size'))
+    >>> G.add_nodes_from([0, 1], size=2)
+    >>> G.add_nodes_from([2, 3], size=3)
+    >>> G.add_edges_from([(0, 1), (2, 3)])
+    >>> print(nx.numeric_assortativity_coefficient(G, "size"))
     1.0
 
     Notes

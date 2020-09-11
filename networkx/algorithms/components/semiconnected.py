@@ -35,10 +35,10 @@ def is_semiconnected(G, topo_order=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(4,create_using=nx.DiGraph())
+    >>> G = nx.path_graph(4, create_using=nx.DiGraph())
     >>> print(nx.is_semiconnected(G))
     True
-    >>> G=nx.DiGraph([(1, 2), (3, 2)])
+    >>> G = nx.DiGraph([(1, 2), (3, 2)])
     >>> print(nx.is_semiconnected(G))
     False
 

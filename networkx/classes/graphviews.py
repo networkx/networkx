@@ -112,7 +112,6 @@ def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.path_graph(6)
 
     Filter functions operate on the node, and return `True` if the node should
@@ -121,32 +120,22 @@ def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
     >>> def filter_node(n1):
     ...     return n1 != 5
     ...
-    >>> view = nx.subgraph_view(
-    ...     G,
-    ...     filter_node=filter_node
-    ... )
+    >>> view = nx.subgraph_view(G, filter_node=filter_node)
     >>> view.nodes()
     NodeView((0, 1, 2, 3, 4))
 
     We can use a closure pattern to filter graph elements based on additional
     data --- for example, filtering on edge data attached to the graph:
 
-    >>> G[3][4]['cross_me'] = False
+    >>> G[3][4]["cross_me"] = False
     >>> def filter_edge(n1, n2):
-    ...     return G[n1][n2].get('cross_me', True)
+    ...     return G[n1][n2].get("cross_me", True)
     ...
-    >>> view = nx.subgraph_view(
-    ...     G,
-    ...     filter_edge=filter_edge
-    ... )
+    >>> view = nx.subgraph_view(G, filter_edge=filter_edge)
     >>> view.edges()
     EdgeView([(0, 1), (1, 2), (2, 3), (4, 5)])
 
-    >>> view = nx.subgraph_view(
-    ...     G,
-    ...     filter_node=filter_node,
-    ...     filter_edge=filter_edge,
-    ... )
+    >>> view = nx.subgraph_view(G, filter_node=filter_node, filter_edge=filter_edge,)
     >>> view.nodes()
     NodeView((0, 1, 2, 3, 4))
     >>> view.edges()
@@ -201,7 +190,6 @@ def reverse_view(G):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_edge(1, 2)
     >>> G.add_edge(2, 3)

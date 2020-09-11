@@ -103,12 +103,12 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.write_adjlist(G,"test.adjlist")
+    >>> nx.write_adjlist(G, "test.adjlist")
 
     The path can be a filehandle or a string with the name of the file. If a
     filehandle is provided, it has to be opened in 'wb' mode.
 
-    >>> fh = open("test.adjlist",'wb')
+    >>> fh = open("test.adjlist", "wb")
     >>> nx.write_adjlist(G, fh)
 
     Notes
@@ -166,11 +166,7 @@ def parse_adjlist(
 
     Examples
     --------
-    >>> lines = ['1 2 5',
-    ...          '2 3 4',
-    ...          '3 5',
-    ...          '4',
-    ...          '5']
+    >>> lines = ["1 2 5", "2 3 4", "3 5", "4", "5"]
     >>> G = nx.parse_adjlist(lines, nodetype=int)
     >>> nodes = [1, 2, 3, 4, 5]
     >>> all(node in G for node in nodes)
@@ -257,12 +253,12 @@ def read_adjlist(
     The path can be a filehandle or a string with the name of the file. If a
     filehandle is provided, it has to be opened in 'rb' mode.
 
-    >>> fh = open("test.adjlist", 'rb')
+    >>> fh = open("test.adjlist", "rb")
     >>> G = nx.read_adjlist(fh)
 
     Filenames ending in .gz or .bz2 will be compressed.
 
-    >>> nx.write_adjlist(G,"test.adjlist.gz")
+    >>> nx.write_adjlist(G, "test.adjlist.gz")
     >>> G = nx.read_adjlist("test.adjlist.gz")
 
     The optional nodetype is a function to convert node strings to nodetype.

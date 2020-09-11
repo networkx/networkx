@@ -29,6 +29,7 @@ Modularity-based communities
    :toctree: generated/
 
    greedy_modularity_communities
+   _naive_greedy_modularity_communities
 
 Tree partitioning
 -----------------
