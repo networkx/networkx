@@ -10,6 +10,7 @@ NetworkX Enhancement Proposals (NXEPs) document major changes or proposals.
 
    nxep-0000
    nxep-0001
+   nxep-0002
 
 .. toctree::
    :hidden:
