@@ -102,14 +102,7 @@ def categorical_node_match(attr, default):
     return match
 
 
-try:
-    categorical_edge_match = copyfunc(categorical_node_match, "categorical_edge_match")
-except NotImplementedError:
-    # IronPython lacks support for types.FunctionType.
-    # https://github.com/networkx/networkx/issues/949
-    # https://github.com/networkx/networkx/issues/1127
-    def categorical_edge_match(*args, **kwargs):
-        return categorical_node_match(*args, **kwargs)
+categorical_edge_match = copyfunc(categorical_node_match, "categorical_edge_match")
 
 
 def categorical_multiedge_match(attr, default):
@@ -198,14 +191,7 @@ def numerical_node_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08)
     return match
 
 
-try:
-    numerical_edge_match = copyfunc(numerical_node_match, "numerical_edge_match")
-except NotImplementedError:
-    # IronPython lacks support for types.FunctionType.
-    # https://github.com/networkx/networkx/issues/949
-    # https://github.com/networkx/networkx/issues/1127
-    def numerical_edge_match(*args, **kwargs):
-        return numerical_node_match(*args, **kwargs)
+numerical_edge_match = copyfunc(numerical_node_match, "numerical_edge_match")
 
 
 def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08):
@@ -302,14 +288,7 @@ def generic_node_match(attr, default, op):
     return match
 
 
-try:
-    generic_edge_match = copyfunc(generic_node_match, "generic_edge_match")
-except NotImplementedError:
-    # IronPython lacks support for types.FunctionType.
-    # https://github.com/networkx/networkx/issues/949
-    # https://github.com/networkx/networkx/issues/1127
-    def generic_edge_match(*args, **kwargs):
-        return generic_node_match(*args, **kwargs)
+generic_edge_match = copyfunc(generic_node_match, "generic_edge_match")
 
 
 def generic_multiedge_match(attr, default, op):
