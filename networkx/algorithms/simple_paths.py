@@ -1,6 +1,7 @@
 from heapq import heappush, heappop
 from itertools import count
 
+import collections
 import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.utils import pairwise
@@ -331,60 +332,6 @@ def _all_simple_paths_multigraph(G, source, targets, cutoff):
                 count = ([child] + list(children)).count(target)
                 for i in range(count):
                     yield list(visited) + [target]
-            stack.pop()
-            visited.popitem()
-
-
-def _all_simple_paths_weighted_graph(G, source, targets, cutoff):
-
-    visited = collections.OrderedDict.fromkeys([source])
-    stack = [iter(G[source])]
-
-    while stack:
-        children = stack[-1]
-        child = next(children, None)
-        if child is None:
-            stack.pop()
-            visited.popitem()
-        elif _is_path_under_cutoff(G, list(visited), cutoff):
-            if child in visited:
-                continue
-            if child in targets:
-                if _is_path_under_cutoff(G, list(visited) + [child], cutoff):
-                    yield list(visited) + [child]
-            visited[child] = None
-            if targets - set(visited.keys()):  # expand stack until find all targets
-                stack.append(iter(G[child]))
-            else:
-                visited.popitem()  # maybe other ways to child
-        else:
-            stack.pop()
-            visited.popitem()
-
-
-def _all_simple_paths_weighted_multigraph(G, source, targets, cutoff):
-
-    visited = collections.OrderedDict.fromkeys([source])
-    stack = [iter(G[source])]
-
-    while stack:
-        children = stack[-1]
-        child = next(children, None)
-        if child is None:
-            stack.pop()
-            visited.popitem()
-        elif _is_path_under_cutoff(G, list(visited), cutoff):
-            if child in visited:
-                continue
-            if child in targets:
-                if _is_path_under_cutoff(G, list(visited) + [child], cutoff):
-                    yield list(visited) + [child]
-            visited[child] = None
-            if targets - set(visited.keys()):  # expand stack until find all targets
-                stack.append((v for u, v in G.edges(child)))
-            else:
-                visited.popitem()  # maybe other ways to child
-        else:
             stack.pop()
             visited.popitem()
 
