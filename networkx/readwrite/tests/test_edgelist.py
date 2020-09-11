@@ -3,9 +3,11 @@
 """
 import pytest
 import io
+import itertools
 import tempfile
 import os
 from textwrap import dedent
+from typing import Callable, List, Tuple
 
 import networkx as nx
 from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
@@ -31,47 +33,52 @@ class TestEdgelist:
     def string_io(s: str) -> io.StringIO:
         return io.StringIO(dedent(s))
 
-    @staticmethod
-    def example_data(weights=False, colors=False, as_dict=False):
-        if weights and colors and not as_dict:
-            msg = "Cannot have both weights and colors if as_dict=False"
-            raise ValueError(msg)
-        data1, data2 = "", ""
-        if as_dict:
-            data1, data2 = {}, {}
-            if weights:
-                data1["weight"] = 2.0
-                data2["weight"] = 3.0
-            if colors:
-                data1["color"] = "green"
-                data2["color"] = "red"
-        elif weights:
-            data1, data2 = 2.0, 3.0
-        elif colors:
-            data1, data2 = "green", "red"
-        return data1, data2
+    @pytest.fixture(params=["BytesIO", "StringIO"])
+    def stream(self, request) -> Callable[[str], io.IOBase]:
+        return self.bytes_io if request.param == "BytesIO" else self.string_io
 
-    @staticmethod
-    def example_edgelist(
-        weights=False, colors=False, as_dict=False, delimiter=""
-    ) -> str:
-        data1, data2 = TestEdgelist.example_data(weights, colors, as_dict)
+    @pytest.fixture(params=["", ","])
+    def delimiter(self, request) -> str:
+        return request.param
+
+    @pytest.fixture
+    def edgelist_no_data(self, delimiter):
+        s = f"""\
+            # comment line
+            1{delimiter} 2
+            # comment line
+            2{delimiter} 3
+            """
+        expected = [(1, 2), (2, 3)]
+        return s, expected, delimiter if delimiter != "" else None
+
+    @pytest.fixture(params=itertools.product([True, False], repeat=2))
+    def edgelist_data_dict(self, request, delimiter) -> (str, List[Tuple]):
+        weights, colors = request.param
+        data1, data2 = {}, {}
+        if weights:
+            data1["weight"], data2["weight"] = 2.0, 3.0
+        if colors:
+            data1["color"], data2["color"] = "green", "red"
         s = f"""\
             # comment line
             1{delimiter} 2{delimiter} {data1}
             # comment line
             2{delimiter} 3{delimiter} {data2}
             """
-        return s
+        expected = [(1, 2, data1), (2, 3, data2)]
+        return s, expected, delimiter if delimiter != "" else None
 
-    @staticmethod
-    def example_edges(weights=False, colors=False):
-        has_data = weights or colors
-        data1, data2 = TestEdgelist.example_data(weights, colors, as_dict=True)
-        return [
-            (1, 2, data1) if has_data else (1, 2),
-            (2, 3, data2) if has_data else (2, 3),
-        ]
+    @pytest.fixture
+    def edgelist_data_list(self, delimiter):
+        s = f"""\
+            # comment line
+            1{delimiter} 2{delimiter} 2.0
+            # comment line
+            2{delimiter} 3{delimiter} 3.0
+            """
+        expected = [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
+        return s, expected, delimiter if delimiter != "" else None
 
     @staticmethod
     def example_graph():
@@ -79,56 +86,27 @@ class TestEdgelist:
         G.add_weighted_edges_from([(1, 2, 3.0), (2, 3, 27.0), (3, 4, 3.0)])
         return G
 
-    def test_read_edgelist_no_data(self):
-        s = self.example_edgelist()
-        G = nx.read_edgelist(self.bytes_io(s), nodetype=int)
-        assert_edges_equal(G.edges(), self.example_edges())
+    def test_read_edgelist_no_data(self, edgelist_no_data, stream):
+        s, expected, delimiter = edgelist_no_data
+        G = nx.read_edgelist(stream(s), nodetype=int, delimiter=delimiter)
+        assert_edges_equal(G.edges(), expected)
 
-    def test_read_edgelist_with_data(self):
-        s = self.example_edgelist(weights=True)
-        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=False)
-        assert_edges_equal(G.edges(), self.example_edges())
+    def test_read_edgelist_data_dict(self, edgelist_data_dict, stream):
+        s, expected, delimiter = edgelist_data_dict
+        G = nx.read_edgelist(stream(s), nodetype=int, data=True, delimiter=delimiter)
+        assert_edges_equal(G.edges(data=True), expected)
 
-        G = nx.read_weighted_edgelist(self.bytes_io(s), nodetype=int)
-        assert_edges_equal(G.edges(data=True), self.example_edges(weights=True))
-
-    def test_read_edgelist_with_data_dict(self):
-        s = self.example_edgelist(weights=True, as_dict=True)
-        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=False)
-        assert_edges_equal(G.edges(), self.example_edges())
-
-        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=True)
-        assert_edges_equal(G.edges(data=True), self.example_edges(weights=True))
-
-    def test_read_edgelist_from_string_io(self):
-        s = self.example_edgelist(weights=True, as_dict=True)
-        G = nx.read_edgelist(self.string_io(s), nodetype=int, data=False)
-        assert_edges_equal(G.edges(), self.example_edges())
-
-        G = nx.read_edgelist(self.string_io(s), nodetype=int, data=True)
-        assert_edges_equal(G.edges(data=True), self.example_edges(weights=True))
-
-    def test_read_edgelist_with_data_dict_2(self):
-        s = self.example_edgelist(weights=True, colors=True, as_dict=True)
-        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=False)
-        assert_edges_equal(G.edges(), self.example_edges())
-
-        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=True)
-        assert_edges_equal(
-            G.edges(data=True), self.example_edges(weights=True, colors=True)
+    def test_read_edgelist_data_list(self, edgelist_data_list, stream):
+        s, expected, delimiter = edgelist_data_list
+        G = nx.read_edgelist(
+            stream(s), nodetype=int, data=(("weight", float),), delimiter=delimiter
         )
+        assert_edges_equal(G.edges(data=True), expected)
 
-    def test_read_edgelist_comma_delimited(self):
-        s = self.example_edgelist(
-            weights=True, colors=True, as_dict=True, delimiter=","
-        )
-        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=False, delimiter=",")
-        assert_edges_equal(G.edges(), self.example_edges())
-
-        G = nx.read_edgelist(self.bytes_io(s), nodetype=int, data=True, delimiter=",")
-        assert_edges_equal(
-            G.edges(data=True), self.example_edges(weights=True, colors=True)
-        )
+    def test_read_weighted_edgelist(self, edgelist_data_list, stream):
+        s, expected, delimiter = edgelist_data_list
+        G = nx.read_weighted_edgelist(stream(s), nodetype=int, delimiter=delimiter)
+        assert_edges_equal(G.edges(data=True), expected)
 
     def test_write_edgelist_1(self):
         fh = io.BytesIO()
