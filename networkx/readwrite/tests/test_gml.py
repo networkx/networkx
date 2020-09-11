@@ -336,10 +336,7 @@ graph
             '"&&amp;&&#34;"',
             [{(b"\xfd",): "\x7f", chr(0x4444): (1, 2)}, (2, "3")],
         ]
-        try:  # fails under IronPython
-            data.append(chr(0x14444))
-        except ValueError:
-            data.append(chr(0x1444))
+        data.append(chr(0x14444))
         data.append(literal_eval("{2.3j, 1 - 2.3j, ()}"))
         G = nx.Graph()
         G.name = data
