@@ -219,7 +219,10 @@ def write_shp(G, outdir):
     ogr.UseExceptions()
 
     os.environ['SHAPE_ENCODING'] = "cp1251"
-    srs = osr.SpatialReference(G.graph['crs'])
+    try:
+        srs = osr.SpatialReference(G.graph['crs'])
+    except:
+        srs = None
 
     def netgeometry(key, data):
         if "Wkb" in data:
