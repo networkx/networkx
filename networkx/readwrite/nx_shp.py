@@ -85,6 +85,9 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
 
     net = nx.DiGraph()
     shp = ogr.Open(path)
+    layer = shp.GetLayer()
+    spatial_ref = str(layer.GetSpatialRef())
+    net.graph['crs'] = spatial_ref
     if shp is None:
         raise RuntimeError(f"Unable to open {path}")
     for lyr in shp:
@@ -207,12 +210,16 @@ def write_shp(G, outdir):
     ----------
     .. [1] https://en.wikipedia.org/wiki/Shapefile
     """
+    import os
     try:
-        from osgeo import ogr
+        from osgeo import ogr, osr
     except ImportError as e:
         raise ImportError("write_shp requires OGR: http://www.gdal.org/") from e
     # easier to debug in python if ogr throws exceptions
     ogr.UseExceptions()
+
+    os.environ['SHAPE_ENCODING'] = "cp1251"
+    srs = osr.SpatialReference(G.graph['crs'])
 
     def netgeometry(key, data):
         if "Wkb" in data:
@@ -275,7 +282,7 @@ def write_shp(G, outdir):
         shpdir.DeleteLayer("nodes")
     except:
         pass
-    nodes = shpdir.CreateLayer("nodes", None, ogr.wkbPoint)
+    nodes = shpdir.CreateLayer("nodes", srs, ogr.wkbPoint)
 
     # Storage for node field names and their data types
     node_fields = {}
@@ -302,7 +309,7 @@ def write_shp(G, outdir):
         shpdir.DeleteLayer("edges")
     except:
         pass
-    edges = shpdir.CreateLayer("edges", None, ogr.wkbLineString)
+    edges = shpdir.CreateLayer("edges", srs, ogr.wkbLineString)
 
     # New edge attribute write support merged into edge loop
     edge_fields = {}  # storage for field names and their data types
