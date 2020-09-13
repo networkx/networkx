@@ -224,7 +224,7 @@ def write_shp(G, outdir):
     os.environ['SHAPE_ENCODING'] = "cp1251"
     try:
         srs = osr.SpatialReference(G.graph['crs'])
-    except:
+    except AttributeError:
         srs = None
 
     def netgeometry(key, data):
