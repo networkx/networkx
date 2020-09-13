@@ -85,8 +85,11 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
 
     net = nx.DiGraph()
     shp = ogr.Open(path)
-    layer = shp.GetLayer()
-    spatial_ref = str(layer.GetSpatialRef())
+    if shp is not None:
+        layer = shp.GetLayer()
+        spatial_ref = str(layer.GetSpatialRef())
+    else:
+        spatial_ref = None
     net.graph['crs'] = spatial_ref
     if shp is None:
         raise RuntimeError(f"Unable to open {path}")
