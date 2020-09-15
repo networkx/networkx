@@ -5,7 +5,7 @@ import networkx as nx
 __all__ = ["hits", "hits_numpy", "hits_scipy", "authority_matrix", "hub_matrix"]
 
 class HitsResult(tuple):
-    def __new__ (cls, hub_score, authority_score, analytics) -> tuple:
+    def __new__ (cls, hub_score, authority_score, analytics_info) -> tuple:
         return super().__new__(cls, (hub_score, authority_score))
     
     def __init__(self, hub_score, authority_score, analytics_info) -> None:

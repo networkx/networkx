@@ -5,15 +5,13 @@ from networkx.utils import not_implemented_for
 __all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
 
 class PageRankResult(dict):
-  def __init__(self) -> None:
-    super().__init__()
-    self.iteration_values = []
-    self.convergence = []
-    self.return_message = ""
-    self.iterations = None
-  
-  def set_result(self, res: dict) -> None:
-    super().__init__(res)
+  def __init__(self, pagerank_score, analytics_info) -> None:
+    super().__init__(pagerank_score)
+    self.pagerank_iterations = analytics_info['x']
+    self.convergence = analytics_info['err']
+    self.iterations = analytics_info['iterations']
+    self.return_message=analytics_info['return_message']
+
 
 @not_implemented_for("multigraph")
 def pagerank(
@@ -25,6 +23,7 @@ def pagerank(
     nstart=None,
     weight="weight",
     dangling=None,
+    analytics=False
 ):
     """Returns the PageRank of the nodes in the graph.
 
@@ -150,10 +149,13 @@ def pagerank(
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
     # power iteration: make up to max_iter iterations
-    res = PageRankResult()
-    for i in range(max_iter):
+    analytics_info=dict(
+        x=[],
+        err=[],
+        iterations=0
+    )
+    for _ in range(max_iter):
         xlast = x
-        res.iteration_values.append(x)
         x = dict.fromkeys(xlast.keys(), 0)
         danglesum = alpha * sum(xlast[n] for n in dangling_nodes)
         for n in x:
@@ -164,17 +166,17 @@ def pagerank(
             x[n] += danglesum * dangling_weights.get(n, 0) + (1.0 - alpha) * p.get(n, 0)
         # check convergence, l1 norm
         err = sum([abs(x[n] - xlast[n]) for n in x])
-        res.convergence.append(err)
+        if analytics:
+            analytics_info['x'].append(x)
+            analytics_info['err'].append(err)
+        analytics_info['iterations']+=1
         if err < N * tol:
-            res.set_result(x)
-            res.return_message = f"iteration converged within {i} iterations"
-            res.iterations = i+1
-            return res
-
-    res.result=None
-    res.return_message = f"power iteration failed to converge within {max_iter} iterations"
-    res.iteration = max_iter
-    return res
+            analytics_info['return_message'] = f"iteration converged within {analytics_info['iterations']} iterations"
+            return PageRankResult(x, analytics_info)
+    if not analytics:
+        raise nx.PowerIterationFailedConvergence(max_iter)
+    analytics_info['return_message']=f"power iteration failed to converge within {max_iter} iterations"
+    return PageRankResult(x, analytics_info)
 
 def google_matrix(
     G, alpha=0.85, personalization=None, nodelist=None, weight="weight", dangling=None
