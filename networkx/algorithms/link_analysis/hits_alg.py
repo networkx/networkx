@@ -8,13 +8,14 @@ class HitsResult(tuple):
     def __new__ (cls, hub_score, authority_score, analytics) -> tuple:
         return super().__new__(cls, (hub_score, authority_score))
     
-    def __init__(self, hub_score, authority_score, analytics) -> None:
-        self.hub_iterations=analytics['h']
-        self.authority_iterations=analytics['a']
-        self.convergence = analytics['err']
-        self.iterations = analytics['iterations']
+    def __init__(self, hub_score, authority_score, analytics_info) -> None:
+        self.hub_iterations=analytics_info['h']
+        self.authority_iterations=analytics_info['a']
+        self.convergence = analytics_info['err']
+        self.iterations = analytics_info['iterations']
+        self.return_message=analytics_info['return_message']
 
-def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
+def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True, analytics=False):
     """Returns HITS hubs and authorities values for nodes.
 
     The HITS algorithm computes two numbers for a node.
@@ -91,7 +92,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
         s = 1.0 / sum(h.values())
         for k in h:
             h[k] *= s
-    analytics=dict(
+    analytics_info=dict(
         h=[],
         a=[],
         err=[],
@@ -120,14 +121,18 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
             a[n] *= s        
         # check convergence, l1 norm
         err = sum([abs(h[n] - hlast[n]) for n in h])
-        analytics['a'].append(a)
-        analytics['h'].append(h)
-        analytics['err'].append(err)
-        analytics['iterations']+=1
+        if analytics:
+            analytics_info['a'].append(a)
+            analytics_info['h'].append(h)
+            analytics_info['err'].append(err)
+        analytics_info['iterations']+=1
         if err < tol:
+            analytics_info['return_message']=f"iteration converged within {analytics_info['iterations']} iterations"
             break
     else:
-        raise nx.PowerIterationFailedConvergence(max_iter)
+        if not analytics:
+            raise nx.PowerIterationFailedConvergence(max_iter)
+        analytics_info['return_message']=f"power iteration failed to converge within {max_iter} iterations"
     if normalized:
         s = 1.0 / sum(a.values())
         for n in a:
@@ -135,7 +140,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
         s = 1.0 / sum(h.values())
         for n in h:
             h[n] *= s
-    return HitsResult(h,a,analytics)
+    return HitsResult(h,a,analytics_info)
 
 
 def authority_matrix(G, nodelist=None):
