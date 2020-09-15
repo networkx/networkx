@@ -28,7 +28,7 @@ class TestHITS:
 
     def test_hits(self):
         G = self.G
-        h, a = networkx.hits(G, tol=1.0e-08)
+        h, a = networkx.hits(G, tol=1.0e-08, analytics=True)
         for n in G:
             assert almost_equal(h[n], G.h[n], places=4)
         for n in G:
@@ -74,3 +74,8 @@ class TestHITS:
         with pytest.raises(networkx.PowerIterationFailedConvergence):
             G = self.G
             networkx.hits(G, max_iter=0)
+    
+    
+    def test_hits_not_convergent_analytics(self):
+        h=networkx.hits(self.G, max_iter=0, analytics=True)
+        assert 'power iteration failed to converge' in h.return_message
