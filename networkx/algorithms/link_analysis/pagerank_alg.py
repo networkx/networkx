@@ -176,7 +176,7 @@ def pagerank(
     if not analytics:
         raise nx.PowerIterationFailedConvergence(max_iter)
     analytics_info['return_message']=f"power iteration failed to converge within {max_iter} iterations"
-    return PageRankResult(x, analytics_info)
+    return PageRankResult(dict(), analytics_info)
 
 def google_matrix(
     G, alpha=0.85, personalization=None, nodelist=None, weight="weight", dangling=None

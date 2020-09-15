@@ -133,6 +133,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True, analytics=Fa
         if not analytics:
             raise nx.PowerIterationFailedConvergence(max_iter)
         analytics_info['return_message']=f"power iteration failed to converge within {max_iter} iterations"
+        return HitsResult(dict(),dict(),analytics_info)
     if normalized:
         s = 1.0 / sum(a.values())
         for n in a:
