@@ -4,6 +4,15 @@ import networkx as nx
 
 __all__ = ["hits", "hits_numpy", "hits_scipy", "authority_matrix", "hub_matrix"]
 
+class HitsResult(tuple):
+    def __new__ (cls, hub_score, authority_score, analytics) -> tuple:
+        return super().__new__(cls, (hub_score, authority_score))
+    
+    def __init__(self, hub_score, authority_score, analytics) -> None:
+        self.hub_iterations=analytics['h']
+        self.authority_iterations=analytics['a']
+        self.convergence = analytics['err']
+        self.iterations = analytics['iterations']
 
 def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
@@ -82,6 +91,12 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
         s = 1.0 / sum(h.values())
         for k in h:
             h[k] *= s
+    analytics=dict(
+        h=[],
+        a=[],
+        err=[],
+        iterations=0
+    )
     for _ in range(max_iter):  # power iteration: make up to max_iter iterations
         hlast = h
         h = dict.fromkeys(hlast.keys(), 0)
@@ -102,9 +117,13 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
         # normalize vector
         s = 1.0 / max(a.values())
         for n in a:
-            a[n] *= s
+            a[n] *= s        
         # check convergence, l1 norm
         err = sum([abs(h[n] - hlast[n]) for n in h])
+        analytics['a'].append(a)
+        analytics['h'].append(h)
+        analytics['err'].append(err)
+        analytics['iterations']+=1
         if err < tol:
             break
     else:
@@ -116,7 +135,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
         s = 1.0 / sum(h.values())
         for n in h:
             h[n] *= s
-    return h, a
+    return HitsResult(h,a,analytics)
 
 
 def authority_matrix(G, nodelist=None):
