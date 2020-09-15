@@ -68,10 +68,14 @@ def pagerank(
       matrix (see notes under google_matrix). It may be common to have the
       dangling dict to be the same as the personalization dict.
 
+    analytics : bool (default=False)
+        Store the pagerank scores and error deltas of each Iteration.
+
     Returns
     -------
     pagerank : dictionary
        Dictionary of nodes with PageRank as value
+       with further analytics information if specified.
 
     Examples
     --------
@@ -101,7 +105,7 @@ def pagerank(
     PowerIterationFailedConvergence
         If the algorithm fails to converge to the specified tolerance
         within the specified number of iterations of the power iteration
-        method.
+        method and analytics is disabled.
 
     References
     ----------

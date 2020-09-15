@@ -38,19 +38,23 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True, analytics=Fa
 
     normalized : bool (default=True)
        Normalize results by the sum of all of the values.
+    
+    analytics : bool (default=False)
+        Store the authority and hub scores and error delta of each Iteration.
+        Iteration values are not normalized.
 
     Returns
     -------
     (hubs,authorities) : two-tuple of dictionaries
        Two dictionaries keyed by node containing the hub and authority
-       values.
+       values. With further analytics information if specified.
 
     Raises
     ------
     PowerIterationFailedConvergence
         If the algorithm fails to converge to the specified tolerance
         within the specified number of iterations of the power iteration
-        method.
+        method and analytics is disabled.
 
     Examples
     --------
