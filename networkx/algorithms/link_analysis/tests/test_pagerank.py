@@ -56,7 +56,7 @@ class TestPageRank:
 
     def test_pagerank(self):
         G = self.G
-        p = networkx.pagerank(G, alpha=0.9, tol=1.0e-08)
+        p = networkx.pagerank(G, alpha=0.9, tol=1.0e-08, analytics=True)
         for n in G:
             assert almost_equal(p[n], G.pagerank[n], places=4)
 
@@ -68,6 +68,10 @@ class TestPageRank:
     def test_pagerank_max_iter(self):
         with pytest.raises(networkx.PowerIterationFailedConvergence):
             networkx.pagerank(self.G, max_iter=0)
+    
+    def test_pagerank_max_iter_analytics(self):
+        pr=networkx.pagerank(self.G, max_iter=0, analytics=True)
+        assert 'power iteration failed to converge' in pr.return_message
 
     def test_numpy_pagerank(self):
         G = self.G
