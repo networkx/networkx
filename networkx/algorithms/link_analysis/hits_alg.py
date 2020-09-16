@@ -4,16 +4,18 @@ import networkx as nx
 
 __all__ = ["hits", "hits_numpy", "hits_scipy", "authority_matrix", "hub_matrix"]
 
+
 class HitsResult(tuple):
-    def __new__ (cls, hub_score, authority_score, analytics_info) -> tuple:
+    def __new__(cls, hub_score, authority_score, analytics_info) -> tuple:
         return super().__new__(cls, (hub_score, authority_score))
-    
+
     def __init__(self, hub_score, authority_score, analytics_info) -> None:
-        self.hub_iterations=analytics_info['h']
-        self.authority_iterations=analytics_info['a']
-        self.convergence = analytics_info['err']
-        self.iterations = analytics_info['iterations']
-        self.return_message=analytics_info['return_message']
+        self.hub_iterations = analytics_info["h"]
+        self.authority_iterations = analytics_info["a"]
+        self.convergence = analytics_info["err"]
+        self.iterations = analytics_info["iterations"]
+        self.return_message = analytics_info["return_message"]
+
 
 def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True, analytics=False):
     """Returns HITS hubs and authorities values for nodes.
@@ -38,7 +40,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True, analytics=Fa
 
     normalized : bool (default=True)
        Normalize results by the sum of all of the values.
-    
+
     analytics : bool (default=False)
         Store the authority and hub scores and error delta of each Iteration.
         Iteration values are not normalized.
@@ -96,12 +98,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True, analytics=Fa
         s = 1.0 / sum(h.values())
         for k in h:
             h[k] *= s
-    analytics_info=dict(
-        h=[],
-        a=[],
-        err=[],
-        iterations=0
-    )
+    analytics_info = dict(h=[], a=[], err=[], iterations=0)
     for _ in range(max_iter):  # power iteration: make up to max_iter iterations
         hlast = h
         h = dict.fromkeys(hlast.keys(), 0)
@@ -122,22 +119,26 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True, analytics=Fa
         # normalize vector
         s = 1.0 / max(a.values())
         for n in a:
-            a[n] *= s        
+            a[n] *= s
         # check convergence, l1 norm
         err = sum([abs(h[n] - hlast[n]) for n in h])
         if analytics:
-            analytics_info['a'].append(a)
-            analytics_info['h'].append(h)
-            analytics_info['err'].append(err)
-        analytics_info['iterations']+=1
+            analytics_info["a"].append(a)
+            analytics_info["h"].append(h)
+            analytics_info["err"].append(err)
+        analytics_info["iterations"] += 1
         if err < tol:
-            analytics_info['return_message']=f"iteration converged within {analytics_info['iterations']} iterations"
+            analytics_info[
+                "return_message"
+            ] = f"iteration converged within {analytics_info['iterations']} iterations"
             break
     else:
         if not analytics:
             raise nx.PowerIterationFailedConvergence(max_iter)
-        analytics_info['return_message']=f"power iteration failed to converge within {max_iter} iterations"
-        return HitsResult(dict(),dict(),analytics_info)
+        analytics_info[
+            "return_message"
+        ] = f"power iteration failed to converge within {max_iter} iterations"
+        return HitsResult(dict(), dict(), analytics_info)
     if normalized:
         s = 1.0 / sum(a.values())
         for n in a:
@@ -145,7 +146,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True, analytics=Fa
         s = 1.0 / sum(h.values())
         for n in h:
             h[n] *= s
-    return HitsResult(h,a,analytics_info)
+    return HitsResult(h, a, analytics_info)
 
 
 def authority_matrix(G, nodelist=None):
