@@ -97,8 +97,7 @@ class TestConvertNumpy:
         GA = nx.Graph(A)
         self.assert_equal(GA, P3)
 
-        pytest.raises(nx.NetworkXError, nx.to_numpy_matrix, nx.Graph())
-        pytest.raises(nx.NetworkXError, nx.to_numpy_matrix, P3, nodelist=[])
+        assert nx.to_numpy_matrix(P3, nodelist=[]).shape == (0, 0)
         # Test nodelist duplicates.
         long_nodelist = nodelist + [0]
         pytest.raises(nx.NetworkXError, nx.to_numpy_matrix, P3, nodelist=long_nodelist)

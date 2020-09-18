@@ -768,9 +768,6 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     if dtype is None:
         dtype = [("weight", float)]
 
-    if len(G) == 0:
-        raise nx.NetworkXError("Graph has no nodes or edges")
-
     if nodelist is None:
         nodelist = list(G)
         nodeset = G
@@ -1205,9 +1202,6 @@ def to_numpy_array(
     """
     import numpy as np
 
-    if len(G) == 0:
-        raise nx.NetworkXError("Graph has no nodes or edges")
-
     if nodelist is None:
         nodelist = list(G)
         nodeset = G
@@ -1215,8 +1209,6 @@ def to_numpy_array(
     else:
         nlen = len(nodelist)
         nodeset = set(nodelist)
-        if nlen == 0:
-            raise nx.NetworkXError("nodelist has no nodes")
         if nlen != len(nodeset):
             raise nx.NetworkXError("nodelist contains duplicates.")
         for n in nodelist:

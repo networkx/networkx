@@ -104,7 +104,6 @@ class TestConvertNumpy:
         GA = nx.Graph(A)
         self.assert_isomorphic(GA, P3)
 
-        pytest.raises(nx.NetworkXError, nx.to_scipy_sparse_matrix, nx.Graph())
         pytest.raises(nx.NetworkXError, nx.to_scipy_sparse_matrix, P3, nodelist=[])
         # Test nodelist duplicates.
         long_nl = nodelist + [0]
