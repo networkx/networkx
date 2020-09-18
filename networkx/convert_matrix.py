@@ -1393,12 +1393,12 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     return G
 
 
-def generate_nodefeature_dataframe(
+def generate_node_dataframe(
     G: nx.Graph,
     funcs: List[Callable],
 ):
     """
-    Return a pandas DataFrame representation of node metadata.
+    Return a pandas DataFrame representation of nodes and their metadata.
 
     This function accepts a graph and a collection of user-defined functions
     and returns a pandas DataFrame in which the nodes' are the DataFrame index,
@@ -1561,6 +1561,4 @@ def generate_adjacency_tensor(G: nx.Graph, funcs: List[Callable]):
     for func in funcs:
         mats.append(func(G))
     da = xr.concat(mats, dim="name")
-    if return_array:
-        return da.data
     return da
