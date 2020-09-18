@@ -26,6 +26,7 @@ import itertools
 import warnings
 import networkx as nx
 from networkx.utils import not_implemented_for
+from typing import Callable, List
 
 __all__ = [
     "from_numpy_matrix",
@@ -1392,17 +1393,10 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     return G
 
 
-from typing import Callable, List
-
-import networkx as nx
-import numpy as np
-import xarray as xr
-
-
 def generate_nodefeature_dataframe(
     G: nx.Graph,
     funcs: List[Callable],
-) -> pd.DataFrame:
+):
     """
     Return a pandas DataFrame representation of node metadata.
 
@@ -1488,38 +1482,39 @@ def generate_nodefeature_dataframe(
     return df
 
 
-def format_adjacency(G: nx.Graph, adj: np.ndarray, name: str) -> xr.DataArray:
+def format_adjacency(G: nx.Graph, adj, name: str):
     """
     Format adjacency matrix nicely.
 
-    Intended to be used when computing an adjacency-like matrix
-    off a graph object G.
+    Intended to be used when computing
+    an adjacency-like matrix off a graph object G;
+    the function will give it nice xarray names
+    that will allow indexing later on.
+
     For example, in defining a func:
 
-    ```python
-    def my_adj_matrix_func(G):
-        adj = some_adj_func(G)
-        return format_adjacency(G, adj, "xarray_coord_name")
-    ```
+    .. code-block:: python
 
-    ## Assumptions
+        def my_adj_matrix_func(G):
+            adj = some_adj_func(G)
+            return format_adjacency(G, adj, "xarray_coord_name")
+
+    We make some assumptions here.
 
     1. `adj` should be a 2D matrix of shape (n_nodes, n_nodes)
     1. `name` is something that is unique amongst all names used
     in the final adjacency tensor.
 
-    ## Parameters
-
-    - `G`: NetworkX-compatible Graph
-    - `adj`: 2D numpy array
-    - `name`: A unique name for the kind of adjacency matrix
+    :param G: NetworkX-compatible Graph
+    :param adj: 2D numpy array
+    :param name: A unique name for the kind of adjacency matrix
         being constructed.
         Gets used in xarray as a coordinate in the "name" dimension.
-
-    ## Returns
-
-    - An XArray DataArray of shape (n_nodes, n_nodes, 1)
+    :returns: An XArray DataArray of shape (n_nodes, n_nodes, 1)
     """
+    import xarray as xr
+    import numpy as np
+
     expected_shape = (len(G), len(G))
     if adj.shape != expected_shape:
         raise ValueError(
@@ -1536,33 +1531,32 @@ def format_adjacency(G: nx.Graph, adj: np.ndarray, name: str) -> xr.DataArray:
     )
 
 
-def generate_adjacency_tensor(
-    G: nx.Graph, funcs: List[Callable], return_array=False
-) -> xr.DataArray:
+def generate_adjacency_tensor(G: nx.Graph, funcs: List[Callable]):
     """
     Generate adjacency tensor for a graph.
 
-    Uses the collection of functions in `funcs`
+    Uses the collection of functions in ``funcs``
     to build an xarray DataArray
     that houses the resulting "adjacency tensor".
+    Each function in ``funcs`` should return
+    an xarray DataArray with the dimensions
+    ``n1``, ``n2``, and ``name``,
+    giving rise to an array
+    that is of shape ``(num_nodes, num_nodes, 1)``.
 
-    A key design choice:
-    We default to returning xarray DataArrays,
-    to make inspecting the data easy,
-    but for consumption in tensor libraries,
-    you can turn on returning a NumPy array
-    by switching `return_array` to True.
+    We return xarray DataArrays, to make inspecting the data easy.
+    For consumption in tensor libraries,
+    you can ask for ``data_array.data``
+    to get the underlying NumPy array.
 
-    ## Parameters
-
-    - G: NetworkX Graph.
-    - funcs: A list of functions that take in G
+    :param G: NetworkX Graph.
+    :param funcs: A list of functions that take in G
         and return an xr.DataArray
-
-    ## Returns
-    - xr.DataArray,
+    :returns: xr.DataArray
         which is of shape (n_nodes, n_nodes, n_funcs).
     """
+    import xarray as xr
+
     mats = []
     for func in funcs:
         mats.append(func(G))
