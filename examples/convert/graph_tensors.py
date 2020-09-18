@@ -23,7 +23,6 @@ from random import choice
 import pandas as pd
 import numpy as np
 from functools import partial
-import xarray as xr
 
 
 def make_graph():
