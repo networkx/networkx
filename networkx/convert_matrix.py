@@ -763,17 +763,29 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
      [5 0]]
 
     """
+    import numpy as np
+
     if dtype is None:
         dtype = [("weight", float)]
-    import numpy as np
+
+    if len(G) == 0:
+        raise nx.NetworkXError("Graph has no nodes or edges")
 
     if nodelist is None:
         nodelist = list(G)
-    nodeset = set(nodelist)
-    if len(nodelist) != len(nodeset):
-        msg = "Ambiguous ordering: `nodelist` contained duplicates."
-        raise nx.NetworkXError(msg)
-    nlen = len(nodelist)
+        nodeset = G
+        nlen = len(G)
+    else:
+        nlen = len(nodelist)
+        nodeset = set(nodelist)
+        if nlen == 0:
+            raise nx.NetworkXError("nodelist has no nodes")
+        if nlen != len(set(nodelist)):
+            raise nx.NetworkXError("nodelist contains duplicates.")
+        for n in nodelist:
+            if n not in G:
+                raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
+
     undirected = not G.is_directed()
     index = dict(zip(nodelist, range(nlen)))
     M = np.zeros((nlen, nlen), dtype=dtype, order=order)
@@ -873,22 +885,29 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
     """
     from scipy import sparse
 
-    if nodelist is None:
-        nodelist = list(G)
-    nlen = len(nodelist)
-    if nlen == 0:
+    if len(G) == 0:
         raise nx.NetworkXError("Graph has no nodes or edges")
 
-    if len(nodelist) != len(set(nodelist)):
-        msg = "Ambiguous ordering: `nodelist` contained duplicates."
-        raise nx.NetworkXError(msg)
+    if nodelist is None:
+        nodelist = list(G)
+        nlen = len(G)
+    else:
+        nlen = len(nodelist)
+        if nlen == 0:
+            raise nx.NetworkXError("nodelist has no nodes")
+        if nlen != len(set(nodelist)):
+            raise nx.NetworkXError("nodelist contains duplicates.")
+        for n in nodelist:
+            if n not in G:
+                raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
+        if nlen < len(G):
+            G = G.subgraph(nodelist)
 
     index = dict(zip(nodelist, range(nlen)))
     coefficients = zip(
         *(
             (index[u], index[v], d.get(weight, 1))
             for u, v, d in G.edges(nodelist, data=True)
-            if u in index and v in index
         )
     )
     try:
@@ -906,15 +925,9 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
         c = col + row
         # selfloop entries get double counted when symmetrizing
         # so we subtract the data on the diagonal
-        selfloops = list(nx.selfloop_edges(G.subgraph(nodelist), data=True))
+        selfloops = list(nx.selfloop_edges(G, data=weight, default=1))
         if selfloops:
-            diag_index, diag_data = zip(
-                *(
-                    (index[u], -d.get(weight, 1))
-                    for u, v, d in selfloops
-                    if u in index and v in index
-                )
-            )
+            diag_index, diag_data = zip(*((index[u], -wt) for u, v, wt in selfloops))
             d += diag_data
             r += diag_index
             c += diag_index
@@ -1192,14 +1205,24 @@ def to_numpy_array(
     """
     import numpy as np
 
+    if len(G) == 0:
+        raise nx.NetworkXError("Graph has no nodes or edges")
+
     if nodelist is None:
         nodelist = list(G)
-    nodeset = set(nodelist)
-    if len(nodelist) != len(nodeset):
-        msg = "Ambiguous ordering: `nodelist` contained duplicates."
-        raise nx.NetworkXError(msg)
+        nodeset = G
+        nlen = len(G)
+    else:
+        nlen = len(nodelist)
+        nodeset = set(nodelist)
+        if nlen == 0:
+            raise nx.NetworkXError("nodelist has no nodes")
+        if nlen != len(nodeset):
+            raise nx.NetworkXError("nodelist contains duplicates.")
+        for n in nodelist:
+            if n not in G:
+                raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
 
-    nlen = len(nodelist)
     undirected = not G.is_directed()
     index = dict(zip(nodelist, range(nlen)))
 
