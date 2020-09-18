@@ -318,9 +318,9 @@ def from_pandas_edgelist(
         Graph type to create. If graph instance, then cleared before populated.
 
     edge_key : str or None, optional (default=None)
-        A valid column name for the edge keys (for a MultiGraph). The values in
-        this column are used for the edge keys when adding edges if create_using
-        is a multigraph.
+        A valid column name for the edge keys (for a MultiGraph).
+        The values in this column are used for the edge keys
+        when adding edges if create_using is a multigraph.
 
     See Also
     --------
@@ -383,7 +383,7 @@ def from_pandas_edgelist(
     AtlasView({'A': {'weight': 3, 'color': 'red'}, 'D': {'weight': 6, 'color': 'blue'}})
 
 
-    """
+    """  # noqa: E501
     g = nx.empty_graph(0, create_using)
 
     if edge_attr is None:
@@ -405,7 +405,7 @@ def from_pandas_edgelist(
         attr_col_headings = [edge_attr]
     if len(attr_col_headings) == 0:
         raise nx.NetworkXError(
-            f"Invalid edge_attr argument: No columns found with name: {attr_col_headings}"
+            f"Invalid edge_attr argument: No columns found with name: {attr_col_headings}"  # noqa: E501
         )
 
     try:
@@ -1531,9 +1531,9 @@ def format_adjacency(G: nx.Graph, adj, name: str):
     )
 
 
-def generate_adjacency_tensor(G: nx.Graph, funcs: List[Callable]):
+def generate_adjacency_xarray(G: nx.Graph, funcs: List[Callable]):
     """
-    Generate adjacency tensor for a graph.
+    Generate adjacency tensor for a graph as an xarray DataArray.
 
     Uses the collection of functions in ``funcs``
     to build an xarray DataArray
