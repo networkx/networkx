@@ -38,10 +38,14 @@ def set_warnings():
         message="literal_destringizer is deprecated*",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="is_string_like is deprecated*"
+        "ignore",
+        category=DeprecationWarning,
+        message="is_string_like is deprecated*",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="make_str is deprecated*"
+        "ignore",
+        category=DeprecationWarning,
+        message="make_str is deprecated*",
     )
     warnings.filterwarnings(
         "ignore",
@@ -136,6 +140,14 @@ except ImportError:
     has_ogr = False
 
 
+try:
+    import xarray
+
+    has_xarray = True
+except ImportError:
+    has_xarray = False
+
+
 # List of files that pytest should ignore
 
 collect_ignore = []
@@ -178,11 +190,12 @@ needs_scipy = [
     "utils/rcm.py",
 ]
 needs_matplotlib = ["drawing/nx_pylab.py"]
-needs_pandas = ["convert_matrix.py"]
+needs_pandas = ["convert_matrix.py", "convert.py"]
 needs_yaml = ["readwrite/nx_yaml.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
 needs_ogr = ["readwrite/nx_shp.py"]
+needs_xarray = ["convert.py"]
 
 if not has_numpy:
     collect_ignore += needs_numpy

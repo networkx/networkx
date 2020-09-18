@@ -23,17 +23,20 @@ from random import choice
 import pandas as pd
 import numpy as np
 from functools import partial
-
-# Generate a graph
-G = nx.erdos_renyi_graph(n=20, p=0.1)
+import xarray as xr
 
 
-# Add metadata to it:
-# - some arbitrary letter chosen from the English alphabet
-# - a random number chosen from the range(0,100)
-for node in G.nodes():
-    G.nodes[node]["letter"] = choice(string.ascii_lowercase)
-    G.nodes[node]["number"] = choice(range(100))
+def make_graph():
+    # Generate a graph
+    G = nx.erdos_renyi_graph(n=20, p=0.1)
+
+    # Add metadata to it:
+    # - some arbitrary letter chosen from the English alphabet
+    # - a random number chosen from the range(0,100)
+    for node in G.nodes():
+        G.nodes[node]["letter"] = choice(string.ascii_lowercase)
+        G.nodes[node]["number"] = choice(range(100))
+    return G
 
 
 # Now, generate a node dataframe using a custom function.
@@ -47,12 +50,14 @@ def ten_times_number(n, d):
 
 
 # Now, generate node dataframe
+G = make_graph()
 funcs = [
     node_metadata,
     ten_times_number,
 ]
 dataframe = nx.generate_node_dataframe(G, funcs)
 assert set(dataframe.columns) == set(["letter", "number", "10x_number"])
+assert set(dataframe.index) == set(G.nodes())
 
 
 # We are now going to generate a graph's adjacency tensor.
@@ -67,6 +72,7 @@ def laplacian(G):
     return nx.format_adjacency(G, A, name="laplacian_matrix")
 
 
+G = make_graph()
 adj_funcs = [
     partial(adjacency_power, n=1),
     partial(adjacency_power, n=2),
@@ -76,3 +82,5 @@ adj_funcs = [
 
 
 adjacency_tensor = nx.generate_adjacency_xarray(G, adj_funcs)
+assert isinstance(adjacency_tensor, xr.DataArray)
+assert set(adjacency_tensor.dims) == set(["n1", "n2", "name"])
