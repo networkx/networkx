@@ -345,7 +345,7 @@ def test_generate_node_dataframe(G):
     def node_metadata(n, d):
         return pd.Series(**d, name=n)
 
-    # We'll define a function that also transforms number by multiplying it by 10
+    # Another user-defined function to transform number by multiplying it by 10
     def ten_times_number(n, d):
         return pd.Series({"10x_number": d["number"] * 10}, name=n)
 
