@@ -6,9 +6,9 @@ Generating Node Feature Matrices and Diffusion Matrix Tensors from Graphs
 In this example, we show how two things:
 
 1. How to obtain a node dataframe from NetworkX graphs
-using custom user-defined functions,
+   using custom user-defined functions,
 2. How to obtain an adjacency tensor from NetworkX graphs,
-using custom user-defined functions.
+   using custom user-defined functions.
 
 This allows you to generate structured dataframes and xarray dataarrays
 in a highly customized fashion.
@@ -39,17 +39,21 @@ def make_graph():
     return G
 
 
+# %%
 # Now, generate a node dataframe using a custom function.
+
 def node_metadata(n, d):
     return pd.Series(**d, name=n)
 
-
+# %%
 # We'll define a function that also transforms number by multiplying it by 10
+
 def ten_times_number(n, d):
     return pd.Series({"10x_number": d["number"] * 10}, name=n)
 
-
+# %%
 # Now, generate node dataframe
+
 G = make_graph()
 funcs = [
     node_metadata,
@@ -59,8 +63,9 @@ dataframe = nx.generate_node_dataframe(G, funcs)
 assert set(dataframe.columns) == set(["letter", "number", "10x_number"])
 assert set(dataframe.index) == set(G.nodes())
 
-
+# %%
 # We are now going to generate a graph's adjacency tensor.
+
 def adjacency_power(G, n):
     A = np.asarray(nx.adjacency_matrix(G).todense())
     A = np.linalg.matrix_power(A, n)
