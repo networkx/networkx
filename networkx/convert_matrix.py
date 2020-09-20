@@ -774,14 +774,12 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
         nlen = len(G)
     else:
         nlen = len(nodelist)
-        nodeset = set(nodelist)
-        if nlen == 0:
-            raise nx.NetworkXError("nodelist has no nodes")
-        if nlen != len(set(nodelist)):
+        nodeset = set(G.nbunch_iter(nodelist))
+        if nlen != len(nodeset):
+            for n in nodelist:
+                if n not in G:
+                    raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
             raise nx.NetworkXError("nodelist contains duplicates.")
-        for n in nodelist:
-            if n not in G:
-                raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
 
     undirected = not G.is_directed()
     index = dict(zip(nodelist, range(nlen)))
@@ -892,19 +890,20 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
         nlen = len(nodelist)
         if nlen == 0:
             raise nx.NetworkXError("nodelist has no nodes")
-        if nlen != len(set(nodelist)):
+        nodeset = set(G.nbunch_iter(nodelist))
+        if nlen != len(nodeset):
+            for n in nodelist:
+                if n not in G:
+                    raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
             raise nx.NetworkXError("nodelist contains duplicates.")
-        for n in nodelist:
-            if n not in G:
-                raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
         if nlen < len(G):
             G = G.subgraph(nodelist)
 
     index = dict(zip(nodelist, range(nlen)))
     coefficients = zip(
         *(
-            (index[u], index[v], d.get(weight, 1))
-            for u, v, d in G.edges(nodelist, data=True)
+            (index[u], index[v], wt)
+            for u, v, wt in G.edges(data=weight, default=1)
         )
     )
     try:
@@ -1208,12 +1207,12 @@ def to_numpy_array(
         nlen = len(G)
     else:
         nlen = len(nodelist)
-        nodeset = set(nodelist)
+        nodeset = set(G.nbunch_iter(nodelist))
         if nlen != len(nodeset):
+            for n in nodelist:
+                if n not in G:
+                    raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
             raise nx.NetworkXError("nodelist contains duplicates.")
-        for n in nodelist:
-            if n not in G:
-                raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
 
     undirected = not G.is_directed()
     index = dict(zip(nodelist, range(nlen)))
