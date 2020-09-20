@@ -1392,16 +1392,16 @@ def generate_node_dataframe(
 
     This function accepts a graph and a collection of user-defined functions
     and returns a pandas DataFrame in which the nodes' are the DataFrame index,
-    the node metadata keys are column names,
-    and node metadata values are the values in the DataFrame.
+    with column names and DataFrame values being arbitrarily defined
+    based off user functions.
 
-    ``funcs`` is an iterable of callables whose signature is
+    ``funcs`` is an iterable of callables, each of which has the signature
 
         f(n, d) -> pd.Series
 
-    In other words, it accepts a (node, metadata dictionary) pair,
+    In other words, it accepts a (node, node attribute dict) pair,
     such that `n` is the node,
-    and `d` is the node metadata dictionary.
+    and `d` is the node attribute dictionary.
     Each function ``f`` must return a pandas Series whose name is the node.
 
     As an example:
@@ -1413,7 +1413,7 @@ def generate_node_dataframe(
 
     One fairly strong assumption is that each func
     has all the information it needs to act
-    stored on the metadata dictionary,
+    stored on the attribute dictionary,
     and does not take in any other keyword arguments.
 
     If you need to reference an external piece of information,
