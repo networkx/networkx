@@ -1435,6 +1435,12 @@ def generate_node_dataframe(
 
         generate_feature_dataframe(G, [get_molweight_func])
 
+    Lambda expressions are also valid!
+
+    .. code-block:: python
+
+        generate_feature_dataframe(G, lambda n, d: mw_dict.get(d["amino_acid"]))
+
     The `name=n` piece is important,
     as this is the piece that allows
     the node ``n`` in the graph to become
@@ -1447,7 +1453,8 @@ def generate_node_dataframe(
 
     A key design choice: We default to returning DataFrames,
     to make inspecting the data easy,
-    For consumption in tensor libraries,
+    To pass the data into tensor libraries,
+    such as JAX, PyTorch or TensorFlow,
     you can extract the DataFrame values after the fact.
 
     :param G: A NetworkX-compatible graph object.
