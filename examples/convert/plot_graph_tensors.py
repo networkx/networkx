@@ -63,7 +63,7 @@ def make_graph():
 
 
 def node_metadata(n, d):
-    return pd.Series(**d, name=n)
+    return pd.Series(d, name=n)
 
 
 # %%
