@@ -1403,14 +1403,25 @@ def generate_node_dataframe(
     In other words, it accepts a (node, node attribute dict) pair,
     such that `n` is the node,
     and `d` is the node attribute dictionary.
-    Each function ``f`` must return a pandas Series whose name is the node.
+    Each function ``f`` must return a pandas Series,
+    whose ``name`` is the node,
+    the index labels are column names,
+    and data are the values.
+    This function then stacks them correctly
+    such that they form a row "record" for each node.
 
     As an example:
 
     .. code-block:: python
 
         def x_vec(n: Hashable, d: Dict[Hashable, Any]) -> pd.Series:
-            return pd.Series({"x_coord": d["x_coord"]}, name=n)
+            return pd.Series(
+                {
+                    "x_coord": d["x_coord"],
+                    "y_coord": d["y_coord"],
+                },
+                name=n
+            )
 
     One fairly strong assumption is that the attribute dictionary
     has all the information it needs to act
@@ -1542,7 +1553,8 @@ def generate_adjacency_xarray(G: nx.Graph, funcs: List[Callable]):
     that is of shape ``(num_nodes, num_nodes, 1)``.
 
     We return xarray DataArrays, to make inspecting the data easy.
-    For consumption in tensor libraries,
+    To pass the underlying tensor data into other libraries,
+    such as JAX, PyTorch and TensorFlow,
     you can ask for ``data_array.data``
     to get the underlying NumPy array.
 
