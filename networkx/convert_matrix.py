@@ -1412,10 +1412,9 @@ def generate_node_dataframe(
         def x_vec(n: Hashable, d: Dict[Hashable, Any]) -> pd.Series:
             return pd.Series({"x_coord": d["x_coord"]}, name=n)
 
-    One fairly strong assumption is that each func
+    One fairly strong assumption is that the attribute dictionary
     has all the information it needs to act
-    stored on the attribute dictionary,
-    and does not take in any other keyword arguments.
+    and does not need any other keyword arguments.
 
     If you need to reference an external piece of information,
     such as a dictionary to look up values,
