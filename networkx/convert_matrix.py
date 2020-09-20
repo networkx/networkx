@@ -42,6 +42,7 @@ __all__ = [
     "to_numpy_array",
     "generate_node_dataframe",
     "generate_adjacency_xarray",
+    "format_adjacency",
 ]
 
 
