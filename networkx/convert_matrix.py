@@ -396,22 +396,20 @@ def from_pandas_edgelist(
     attr_col_headings = []
     attribute_data = []
     if edge_attr is True:
-        attr_col_headings = [
-            c for c in df.columns if c not in reserved_columns
-        ]
+        attr_col_headings = [c for c in df.columns if c not in reserved_columns]
     elif isinstance(edge_attr, (list, tuple)):
         attr_col_headings = edge_attr
     else:
         attr_col_headings = [edge_attr]
     if len(attr_col_headings) == 0:
         raise nx.NetworkXError(
-            f"Invalid edge_attr argument: No columns found with name: {attr_col_headings}"  # noqa: E501
+            f"Invalid edge_attr: No columns found with name: {attr_col_headings}"
         )
 
     try:
         attribute_data = zip(*[df[col] for col in attr_col_headings])
     except (KeyError, TypeError) as e:
-        msg = f"Invalid edge_attr argument: {edge_attr}"
+        msg = f"Invalid edge_attr: {edge_attr}"
         raise nx.NetworkXError(msg) from e
 
     if g.is_multigraph():
@@ -421,7 +419,7 @@ def from_pandas_edgelist(
                 multigraph_edge_keys = df[edge_key]
                 attribute_data = zip(attribute_data, multigraph_edge_keys)
             except (KeyError, TypeError) as e:
-                msg = f"Invalid edge_key argument: {edge_key}"
+                msg = f"Invalid edge_key: {edge_key}"
                 raise nx.NetworkXError(msg) from e
 
         for s, t, attrs in zip(df[source], df[target], attribute_data):
@@ -739,9 +737,7 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     return M.view(np.recarray)
 
 
-def to_scipy_sparse_matrix(
-    G, nodelist=None, dtype=None, weight="weight", format="csr"
-):
+def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format="csr"):
     """Returns the graph adjacency matrix as a SciPy sparse matrix.
 
     Parameters
@@ -854,9 +850,7 @@ def to_scipy_sparse_matrix(
         row, col, data = [], [], []
 
     if G.is_directed():
-        M = sparse.coo_matrix(
-            (data, (row, col)), shape=(nlen, nlen), dtype=dtype
-        )
+        M = sparse.coo_matrix((data, (row, col)), shape=(nlen, nlen), dtype=dtype)
     else:
         # symmetrize matrix
         d = data + data
@@ -876,9 +870,7 @@ def to_scipy_sparse_matrix(
     # From Scipy 1.1.0, asformat will throw a ValueError instead of an
     # AttributeError if the format if not recognized.
     except (AttributeError, ValueError) as e:
-        raise nx.NetworkXError(
-            f"Unknown sparse matrix format: {format}"
-        ) from e
+        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from e
 
 
 def _csr_gen_triples(A):
@@ -1202,9 +1194,7 @@ def to_numpy_array(
         try:
             op = operator[multigraph_weight]
         except Exception as e:
-            raise ValueError(
-                "multigraph_weight must be sum, min, or max"
-            ) from e
+            raise ValueError("multigraph_weight must be sum, min, or max") from e
 
         for u, v, attrs in G.edges(data=True):
             if (u in nodeset) and (v in nodeset):
