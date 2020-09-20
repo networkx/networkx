@@ -7,8 +7,15 @@ In this example, we show how two things:
 
 1. How to obtain a node dataframe from NetworkX graphs
    using custom user-defined functions,
-2. How to obtain an adjacency tensor from NetworkX graphs,
+2. How to obtain an adjacency matrix/tensor from NetworkX graphs,
    using custom user-defined functions.
+
+A tensor is a generalization of vectors & matrices
+to arbitrary numbers of dimensions.
+By convention, vectors are 1D, matrices are 2D,
+and tensors are ND.
+In the Python world, we refer to all of these as nD-arrays
+(i.e. n-dimensional arrays).
 
 This allows you to generate structured dataframes and xarray dataarrays
 in a highly customized fashion.
@@ -16,6 +23,18 @@ The resulting data containers are highly compatible
 with the rest of the PyData ecosystem,
 and can easily be converted into NumPy arrays/tensors
 to be fed into deep learning models.
+
+An overview of the steps involved looks like this:
+
+1. Create your graph with data attributes
+1. Define functions to extract data.
+    - For node DataFrames functions have signature:
+    f(node, datadict) -> pd.Series.
+    - For adjacency DataArray functions have signature: f(G) -> xr.DataArray.
+    Use ``format_adjacency()`` to ease creation of the DataArray.
+1. Call the relevant generate function
+(``generate_node_dataframe`` or ``generate_adjacency_xarray``)
+
 """
 import networkx as nx
 import string
@@ -42,14 +61,18 @@ def make_graph():
 # %%
 # Now, generate a node dataframe using a custom function.
 
+
 def node_metadata(n, d):
     return pd.Series(**d, name=n)
+
 
 # %%
 # We'll define a function that also transforms number by multiplying it by 10
 
+
 def ten_times_number(n, d):
     return pd.Series({"10x_number": d["number"] * 10}, name=n)
+
 
 # %%
 # Now, generate node dataframe
@@ -65,6 +88,7 @@ assert set(dataframe.index) == set(G.nodes())
 
 # %%
 # We are now going to generate a graph's adjacency tensor.
+
 
 def adjacency_power(G, n):
     A = np.asarray(nx.adjacency_matrix(G).todense())
