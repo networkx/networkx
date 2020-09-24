@@ -1,5 +1,3 @@
 """Maximum common subgraph algorithms
 """
-from .maximum_common_induced_subgraph import *
-
-__all__ = maximum_common_induced_subgraph.__all__
+from networkx.algorithms.maximum_common_subgraph.maximum_common_induced_subgraph import *
