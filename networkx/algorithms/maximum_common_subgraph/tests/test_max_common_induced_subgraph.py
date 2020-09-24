@@ -14,7 +14,11 @@ class TestMaxCommonSubgraph:
         G0 = nx.Graph()
         G0.add_edge(1, 1)
         G1 = nx.Graph()
-        for algorithm in nx.max_common_induced_subgraph, nx.weak_modular_product_mcis, nx.ismags_mcis:
+        for algorithm in (
+            nx.max_common_induced_subgraph,
+            nx.weak_modular_product_mcis,
+            nx.ismags_mcis,
+        ):
             with pytest.raises(nx.exception.NetworkXNotImplemented):
                 algorithm(G0, G1)
             with pytest.raises(nx.exception.NetworkXNotImplemented):
@@ -27,7 +31,11 @@ class TestMaxCommonSubgraph:
     def test_digraph_exception(self):
         G0 = nx.Graph()
         G1 = nx.DiGraph()
-        for algorithm in nx.max_common_induced_subgraph, nx.weak_modular_product_mcis, nx.ismags_mcis:
+        for algorithm in (
+            nx.max_common_induced_subgraph,
+            nx.weak_modular_product_mcis,
+            nx.ismags_mcis,
+        ):
             with pytest.raises(nx.exception.NetworkXNotImplemented):
                 algorithm(G0, G1)
             with pytest.raises(nx.exception.NetworkXNotImplemented):
@@ -40,7 +48,11 @@ class TestMaxCommonSubgraph:
     def test_multigraph_exception(self):
         G0 = nx.Graph()
         G1 = nx.MultiGraph()
-        for algorithm in nx.max_common_induced_subgraph, nx.weak_modular_product_mcis, nx.ismags_mcis:
+        for algorithm in (
+            nx.max_common_induced_subgraph,
+            nx.weak_modular_product_mcis,
+            nx.ismags_mcis,
+        ):
             with pytest.raises(nx.exception.NetworkXNotImplemented):
                 algorithm(G0, G1)
             with pytest.raises(nx.exception.NetworkXNotImplemented):
@@ -55,8 +67,12 @@ class TestMaxCommonSubgraph:
         G1 = nx.Graph()
         G0.add_edge(0, 1, label=1)
         G1.add_edge(0, 1, label=2)
-        edge_label = lambda d: None if d['label']==1 else 1
-        for algorithm in nx.max_common_induced_subgraph, nx.weak_modular_product_mcis, nx.ismags_mcis:
+        edge_label = lambda d: None if d["label"] == 1 else 1
+        for algorithm in (
+            nx.max_common_induced_subgraph,
+            nx.weak_modular_product_mcis,
+            nx.ismags_mcis,
+        ):
             with pytest.raises(ValueError):
                 algorithm(G0, G1, edge_label=edge_label)
             with pytest.raises(ValueError):
@@ -70,29 +86,37 @@ class TestMaxCommonSubgraph:
         G0 = nx.Graph()
         G1 = nx.Graph()
         G0.add_node(1)
-        for algorithm in nx.max_common_induced_subgraph, nx.weak_modular_product_mcis, nx.ismags_mcis:
+        for algorithm in (
+            nx.max_common_induced_subgraph,
+            nx.weak_modular_product_mcis,
+            nx.ismags_mcis,
+        ):
             with pytest.raises(KeyError):
-                algorithm(G0, G1, node_label='missing_key')
+                algorithm(G0, G1, node_label="missing_key")
             with pytest.raises(KeyError):
-                algorithm(G1, G0, node_label='missing_key')
+                algorithm(G1, G0, node_label="missing_key")
         with pytest.raises(KeyError):
-            nx.common_induced_subgraph(G0, G1, 1, node_label='missing_key')
+            nx.common_induced_subgraph(G0, G1, 1, node_label="missing_key")
         with pytest.raises(KeyError):
-            nx.common_induced_subgraph(G1, G0, 1, node_label='missing_key')
+            nx.common_induced_subgraph(G1, G0, 1, node_label="missing_key")
 
     def test_missing_edge_label_exception(self):
         G0 = nx.Graph()
         G1 = nx.Graph()
         G0.add_edge(0, 1, label=1)
-        for algorithm in nx.max_common_induced_subgraph, nx.weak_modular_product_mcis, nx.ismags_mcis:
+        for algorithm in (
+            nx.max_common_induced_subgraph,
+            nx.weak_modular_product_mcis,
+            nx.ismags_mcis,
+        ):
             with pytest.raises(KeyError):
-                algorithm(G0, G1, edge_label='missing_key')
+                algorithm(G0, G1, edge_label="missing_key")
             with pytest.raises(KeyError):
-                algorithm(G1, G0, edge_label='missing_key')
+                algorithm(G1, G0, edge_label="missing_key")
         with pytest.raises(KeyError):
-            nx.common_induced_subgraph(G0, G1, 1, edge_label='missing_key')
+            nx.common_induced_subgraph(G0, G1, 1, edge_label="missing_key")
         with pytest.raises(KeyError):
-            nx.common_induced_subgraph(G1, G0, 1, edge_label='missing_key')
+            nx.common_induced_subgraph(G1, G0, 1, edge_label="missing_key")
 
     def test_unsupported_connected_exception(self):
         G0 = nx.Graph()
@@ -148,17 +172,17 @@ class TestMaxCommonSubgraph:
         G1.add_node(0, label="x")
         G1.add_node(1, label="y")
         generate_and_check_mcis(G0, G1, 2)
-        fun = lambda node_data: node_data['label']
+        fun = lambda node_data: node_data["label"]
         generate_and_check_mcis(G0, G0, 2, node_label=fun)
-        generate_and_check_mcis(G0, G0, 2, node_label='label')
+        generate_and_check_mcis(G0, G0, 2, node_label="label")
         generate_and_check_mcis(G0, G1, 0, node_label=fun)
-        generate_and_check_mcis(G0, G1, 0, node_label='label')
+        generate_and_check_mcis(G0, G1, 0, node_label="label")
         G1.add_node(2, label="a")
         generate_and_check_mcis(G0, G1, 1, node_label=fun)
-        generate_and_check_mcis(G0, G1, 1, node_label='label')
+        generate_and_check_mcis(G0, G1, 1, node_label="label")
         G1.add_node(3, label="b")
         generate_and_check_mcis(G0, G1, 2, node_label=fun)
-        generate_and_check_mcis(G0, G1, 2, node_label='label')
+        generate_and_check_mcis(G0, G1, 2, node_label="label")
 
     def test_edge_labelled_mcis(self):
         G0 = nx.empty_graph(3)
@@ -167,14 +191,14 @@ class TestMaxCommonSubgraph:
         G0.add_edge(0, 2, label="b")
         G1.add_edge(0, 1, label="x")
         G1.add_edge(0, 2, label="y")
-        fun = lambda edge_data: edge_data['label']
+        fun = lambda edge_data: edge_data["label"]
         generate_and_check_mcis(G0, G1, 2, edge_label=fun)
-        generate_and_check_mcis(G0, G1, 2, edge_label='label')
+        generate_and_check_mcis(G0, G1, 2, edge_label="label")
         G0.add_edge(1, 2, label="c")
         generate_and_check_mcis(G0, G1, 1, edge_label=fun)
-        generate_and_check_mcis(G0, G1, 1, edge_label='label')
+        generate_and_check_mcis(G0, G1, 1, edge_label="label")
         generate_and_check_mcis(G0, G0, 3, edge_label=fun)
-        generate_and_check_mcis(G0, G0, 3, edge_label='label')
+        generate_and_check_mcis(G0, G0, 3, edge_label="label")
 
     def test_weak_modular_product_graph(self):
         G0 = nx.Graph()
@@ -187,17 +211,28 @@ class TestMaxCommonSubgraph:
         G1.add_node(2, label="a")
         G0.add_edge(0, 2, label="x")
         G1.add_edge(0, 1, label="x")
-        node_fun = lambda node_data: node_data['label']
-        edge_fun = lambda edge_data: edge_data['label']
-        G = nx.algorithms.maximum_common_subgraph.maximum_common_induced_subgraph.weak_modular_product_graph(G0, G1, node_fun, edge_fun)
+        node_fun = lambda node_data: node_data["label"]
+        edge_fun = lambda edge_data: edge_data["label"]
+        G = nx.algorithms.maximum_common_subgraph.maximum_common_induced_subgraph.weak_modular_product_graph(
+            G0, G1, node_fun, edge_fun
+        )
         assert len(G.nodes()) == 4
         assert len(G.edges()) == 2
-        
+
+
 def generate_and_check_mcis(G0, G1, expected_size, **kwargs):
     sizes = set()
     for G, H in [(G0, G1), (G1, G0)]:
-        for algorithm in nx.max_common_induced_subgraph, nx.weak_modular_product_mcis, nx.ismags_mcis:
-            if algorithm in [nx.weak_modular_product_mcis, nx.ismags_mcis] and 'connected' in kwargs and kwargs['connected']:
+        for algorithm in (
+            nx.max_common_induced_subgraph,
+            nx.weak_modular_product_mcis,
+            nx.ismags_mcis,
+        ):
+            if (
+                algorithm in [nx.weak_modular_product_mcis, nx.ismags_mcis]
+                and "connected" in kwargs
+                and kwargs["connected"]
+            ):
                 continue
             mcis = algorithm(G, H, **kwargs)
             check_common_induced_subgraph(mcis, G, H, expected_size, **kwargs)
@@ -211,7 +246,10 @@ def generate_and_check_mcis(G0, G1, expected_size, **kwargs):
             assert nx.common_induced_subgraph(H, G, expected_size + 1, **kwargs) is None
     assert len(sizes) == 1
 
-def check_common_induced_subgraph(mcis, G0, G1, expected_size=None, connected=False, node_label=None, edge_label=None):
+
+def check_common_induced_subgraph(
+    mcis, G0, G1, expected_size=None, connected=False, node_label=None, edge_label=None
+):
     # Vertices should be in G0 and G1
     for v in mcis.keys():
         assert v in G0.nodes()

@@ -204,7 +204,7 @@ def check_valid_labels(G, H, node_label, edge_label):
     for graph in G, H:
         for edge in graph.edges():
             if edge_label(graph.edges[edge]) is None:
-                raise ValueError(f'Edge {edge} has label None')
+                raise ValueError(f"Edge {edge} has label None")
         for node in graph.nodes():
             # Make sure that accessing the node does not raise an exception
             node_label(graph.nodes[node])
@@ -629,14 +629,22 @@ def ismags_mcis(G, H, node_label=None, edge_label=None):
     if node_label is None:
         node_match = None
     else:
-        node_match = lambda node1_attrs, node2_attrs: node_label_fun(node1_attrs) == node_label_fun(node2_attrs)
+        node_match = lambda node1_attrs, node2_attrs: node_label_fun(
+            node1_attrs
+        ) == node_label_fun(node2_attrs)
 
     if edge_label is None:
         edge_match = None
     else:
-        edge_match = lambda edge1_attrs, edge2_attrs: edge_label_fun(edge1_attrs) == edge_label_fun(edge2_attrs)
+        edge_match = lambda edge1_attrs, edge2_attrs: edge_label_fun(
+            edge1_attrs
+        ) == edge_label_fun(edge2_attrs)
 
     try:
-        return next(nx.isomorphism.ISMAGS(G, H, node_match=node_match, edge_match=edge_match).largest_common_subgraph(False))
+        return next(
+            nx.isomorphism.ISMAGS(
+                G, H, node_match=node_match, edge_match=edge_match
+            ).largest_common_subgraph(False)
+        )
     except StopIteration:
         return {}
