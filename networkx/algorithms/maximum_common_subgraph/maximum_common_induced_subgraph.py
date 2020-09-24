@@ -19,7 +19,7 @@ The function :func:`ismags_mcis` is a wrapper for convienience around
 :func:`networkx.algorithms.isomorphism.ISMAGS.largest_common_subgraph`; this
 provides another alternative approach to solving the optimisation problem.
 
-.. _`maximum common induced subgraph`: https://en.wikipedia.org/wiki/Maximum_common_induced_subgraph 
+.. _`maximum common induced subgraph`: https://en.wikipedia.org/wiki/Maximum_common_induced_subgraph
 .. [1] McCreesh, C., Prosser, P., & Trimble, J. (2017). A partitioning
    algorithm for maximum common subgraph problems. In Proceedings of the 26th
    International Joint Conference on Artificial Intelligence (pp. 712-719).
@@ -31,7 +31,6 @@ provides another alternative approach to solving the optimisation problem.
 
 import itertools
 import networkx as nx
-from networkx.utils import not_implemented_for
 
 
 __all__ = [
@@ -189,18 +188,22 @@ class PartitioningMCISFinder(object):
 
 def check_valid_graph_types(G, H):
     if G.is_directed() or H.is_directed():
-        msg = f"not implemented for directed graphs"
+        msg = "not implemented for directed graphs"
         raise nx.NetworkXNotImplemented(msg)
     if G.is_multigraph() or H.is_multigraph():
-        msg = f"not implemented for multigraphs"
+        msg = "not implemented for multigraphs"
         raise nx.NetworkXNotImplemented(msg)
     if nx.number_of_selfloops(G) or nx.number_of_selfloops(H):
-        msg = f"not implemented for graphs with self-loops"
+        msg = "not implemented for graphs with self-loops"
         raise nx.NetworkXNotImplemented(msg)
 
 
 def check_valid_labels(G, H, node_label, edge_label):
-    """Raise an exception if any edge label is None or if accessing any label raises an exception"""
+    """Raise an exception if labels are invalid
+
+    An exception is raised if any edge label is None or if accessing any label
+    raises an exception.
+    """
     for graph in G, H:
         for edge in graph.edges():
             if edge_label(graph.edges[edge]) is None:

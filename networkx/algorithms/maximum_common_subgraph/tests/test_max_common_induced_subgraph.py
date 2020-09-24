@@ -5,7 +5,6 @@
 import itertools
 import networkx as nx
 import pytest
-from networkx.utils import not_implemented_for
 
 
 class TestMaxCommonSubgraph:
