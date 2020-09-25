@@ -29,6 +29,10 @@ API Changes
 - [`#4190 <https://github.com/networkx/networkx/pull/4190>`_]
   Removed ``tracemin_chol``.  Use ``tracemin_lu`` instead.
 
+- [`#4216 <https://github.com/networkx/networkx/pull/4216>`_]
+  In `to_*_array/matrix`, nodes in nodelist but not in G now raise an exception.
+  Use G.add_nodes_from(nodelist) to add them to G before converting.
+
 Deprecations
 ------------
 

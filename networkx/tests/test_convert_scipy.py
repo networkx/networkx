@@ -104,9 +104,14 @@ class TestConvertNumpy:
         GA = nx.Graph(A)
         self.assert_isomorphic(GA, P3)
 
-        # Make nodelist ambiguous by containing duplicates.
-        nodelist += [nodelist[0]]
-        pytest.raises(nx.NetworkXError, nx.to_numpy_matrix, P3, nodelist=nodelist)
+        pytest.raises(nx.NetworkXError, nx.to_scipy_sparse_matrix, P3, nodelist=[])
+        # Test nodelist duplicates.
+        long_nl = nodelist + [0]
+        pytest.raises(nx.NetworkXError, nx.to_scipy_sparse_matrix, P3, nodelist=long_nl)
+
+        # Test nodelist contains non-nodes
+        non_nl = [-1, 0, 1, 2]
+        pytest.raises(nx.NetworkXError, nx.to_scipy_sparse_matrix, P3, nodelist=non_nl)
 
     def test_weight_keyword(self):
         WP4 = nx.Graph()
