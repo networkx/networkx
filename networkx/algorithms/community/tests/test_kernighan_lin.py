@@ -24,6 +24,13 @@ def test_partition_argument():
     assert_partition_equal(C, partition)
 
 
+def test_partition_argument_non_integer_nodes():
+    G = nx.Graph([("A", "B"), ("A", "C"), ("B", "C"), ("C", "D")])
+    partition = ({"A", "B"}, {"C", "D"})
+    C = kernighan_lin_bisection(G, partition)
+    assert_partition_equal(C, partition)
+
+
 def test_seed_argument():
     G = nx.barbell_graph(3, 0)
     C = kernighan_lin_bisection(G, seed=1)
@@ -55,15 +62,3 @@ def test_multigraph():
         assert_partition_equal(
             [A, B], [{mapping[0], mapping[1]}, {mapping[2], mapping[3]}]
         )
-
-
-def test_defined_partition_str_nodes():
-    G = nx.Graph([("A", "B"), ("A", "C"), ("B", "C"), ("C", "D")])
-    partition = ({"A", "B"}, {"C", "D"})
-    kernighan_lin_bisection(G, partition)
-
-
-def test_defined_partition_int_nodes():
-    G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4)])
-    partition = ({1, 2}, {3, 4})
-    kernighan_lin_bisection(G, partition)
