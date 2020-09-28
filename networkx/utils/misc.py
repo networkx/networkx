@@ -53,12 +53,12 @@ def empty_generator():
 
 def flatten(obj, result=None):
     """ Return flattened version of (possibly nested) iterable object. """
-    if not iterable(obj) or is_string_like(obj):
+    if not iterable(obj) or isinstance(obj, str):
         return obj
     if result is None:
         result = []
     for item in obj:
-        if not iterable(item) or is_string_like(item):
+        if not iterable(item) or isinstance(item, str):
             result.append(item)
         else:
             flatten(item, result)
