@@ -21,14 +21,14 @@ NetworkX
 
 NetworkX is a Python package for the creation, manipulation,
 and study of the structure, dynamics, and functions
-of complex networks.
+associated with complex networks.
 
 - **Website (including documentation):** https://networkx.github.io
 - **Mailing list:** https://groups.google.com/forum/#!forum/networkx-discuss
 - **Source:** https://github.com/networkx/networkx
 - **Bug reports:** https://github.com/networkx/networkx/issues
 
-Simple example
+An example-
 --------------
 
 Find the shortest path between two nodes in an undirected graph:
