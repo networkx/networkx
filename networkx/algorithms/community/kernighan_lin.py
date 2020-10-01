@@ -104,7 +104,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
             raise nx.NetworkXError("partition invalid")
         side = [0] * n
         for a in A:
-            side[a] = 1
+            side[index[a]] = 1
 
     if G.is_multigraph():
         edges = [
