@@ -267,15 +267,7 @@ class TestFunction:
         G = nx.path_graph(5)
         G.name = "path_graph(5)"
         info = nx.info(G)
-        expected_graph_info = "\n".join(
-            [
-                "Name: path_graph(5)",
-                "Type: Graph",
-                "Number of nodes: 5",
-                "Number of edges: 4",
-                "Average degree:   1.6000",
-            ]
-        )
+        expected_graph_info = "Graph named 'path_graph(5)' with 5 nodes and 4 edges"
         assert info == expected_graph_info
 
         info = nx.info(G, n=1)
@@ -292,16 +284,7 @@ class TestFunction:
         G = nx.DiGraph(name="path_graph(5)")
         nx.add_path(G, [0, 1, 2, 3, 4])
         info = nx.info(G)
-        expected_graph_info = "\n".join(
-            [
-                "Name: path_graph(5)",
-                "Type: DiGraph",
-                "Number of nodes: 5",
-                "Number of edges: 4",
-                "Average in degree:   0.8000",
-                "Average out degree:   0.8000",
-            ]
-        )
+        expected_graph_info = "DiGraph named 'path_graph(5)' with 5 nodes and 4 edges"
         assert info == expected_graph_info
 
         info = nx.info(G, n=1)

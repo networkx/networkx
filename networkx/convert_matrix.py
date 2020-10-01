@@ -190,12 +190,7 @@ def from_pandas_adjacency(df, create_using=None):
     >>> G = nx.from_pandas_adjacency(df)
     >>> G.name = "Graph from pandas adjacency matrix"
     >>> print(nx.info(G))
-    Name: Graph from pandas adjacency matrix
-    Type: Graph
-    Number of nodes: 2
-    Number of edges: 3
-    Average degree:   3.0000
-
+    Graph named 'Graph from pandas adjacency matrix' with 2 nodes and 3 edges
     """
 
     try:

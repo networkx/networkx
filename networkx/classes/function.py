@@ -554,8 +554,8 @@ def create_empty_copy(G, with_data=True):
 def info(G, n=None):
     """Return a summary of information for the graph G or a single node n.
 
-    The summary includes the number of nodes and edges (or neighbours for a single
-    node), and their average degree.
+    The summary includes the number of nodes and edges, or neighbours for a single
+    node.
 
     Parameters
     ----------
@@ -575,26 +575,20 @@ def info(G, n=None):
         If n is not in the graph G
 
     """
-    info = ""  # append this all to a string
     if n is None:
-        info += f"Name: {G.name}\n"
-        type_name = [type(G).__name__]
-        info += f"Type: {','.join(type_name)}\n"
-        info += f"Number of nodes: {G.number_of_nodes()}\n"
-        info += f"Number of edges: {G.number_of_edges()}\n"
-        nnodes = G.number_of_nodes()
-        if len(G) > 0:
-            if G.is_directed():
-                deg = sum(d for n, d in G.in_degree()) / float(nnodes)
-                info += f"Average in degree: {deg:8.4f}\n"
-                deg = sum(d for n, d in G.out_degree()) / float(nnodes)
-                info += f"Average out degree: {deg:8.4f}"
-            else:
-                s = sum(dict(G.degree()).values())
-                info += f"Average degree: {(float(s) / float(nnodes)):8.4f}"
+        n_nodes = G.number_of_nodes()
+        n_edges = G.number_of_edges()
+        return "".join(
+            [
+                type(G).__name__,
+                f" named '{G.name}'" if G.name else "",
+                f" with {n_nodes} nodes and {n_edges} edges",
+            ]
+        )
     else:
         if n not in G:
             raise nx.NetworkXError(f"node {n} not in graph")
+        info = ""  # append this all to a string
         info += f"Node {n} has the following properties:\n"
         info += f"Degree: {G.degree(n)}\n"
         info += "Neighbors: "
