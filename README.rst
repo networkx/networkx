@@ -75,3 +75,6 @@ Released under the 3-Clause BSD license (see `LICENSE.txt`)::
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>
+
+
+THANKS! FOR VISITING
