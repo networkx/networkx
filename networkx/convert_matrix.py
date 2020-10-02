@@ -38,8 +38,84 @@ __all__ = [
     "to_scipy_sparse_matrix",
     "from_numpy_array",
     "to_numpy_array",
+    "from_node_dataframe"
 ]
 
+def from_node_dataframe(
+    df,
+    index=None,
+    create_using=None,
+    attribute_list=None
+):
+    """ Returns the Graph Object From Pandas DataFrame Node
+
+    Parameters
+    ----------
+    df : Pandas DataFrame 
+        Graph Node Attributes
+
+    index : String column Name, optional
+        Set Id Of Node Based On Column Name
+
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
+
+    attribute_list : Columns Name List used in DataFrame , optional (default = all columns)
+    
+    Returns
+    -------
+    G : Graph Object
+        Nodes Attribute
+    
+    Examples
+    --------
+    >>> import pandas as pd  
+    >>> import networkx as nx 
+    >>> df = pd.DataFrame({"id" : [12,54,23,545,23],
+    ...         "Level" : ["low","medium","low","low","high"],
+    ...         "color" : ["red","blue","red","yellow","green"],
+    ...         "name" : ["Mike","Jeff","Walter","kin","Ali"]
+    ...      })
+    >>> G = nx.from_node_dataframe(df)
+    >>> G._node
+    {0: {'id': 12, 'Level': 'low', 'color': 'red', 'name': 'Mike'}, 1: {'id': 54, 'Level': 'medium', 'color': 'blue', 'name': 'Jeff'}, 2: {'id': 23, 'Level': 'low', 'color': 'red', 'name': 'Walter'}, 3: {'id': 545, 'Level': 'low', 'color': 'yellow', 'name': 
+    'kin'}, 4: {'id': 23, 'Level': 'high', 'color': 'green', 'name': 'Ali'}}
+
+    ------
+
+    >>> import pandas as pd  
+    >>> import networkx as nx 
+    >>> df = pd.DataFrame({"id" : [12,54,23,545,23],
+    ...         "Level" : ["low","medium","low","low","high"],
+    ...         "color" : ["red","blue","red","yellow","green"],
+    ...         "name" : ["Mike","Jeff","Walter","kin","Ali"]
+    ...      })
+    >>> G = nx.from_node_dataframe(df,attribute_list=["color","name"],index="id")
+    >>> G._node
+    {
+        12: {'color': 'red', 'name': 'Mike'}, 
+        54: {'color': 'blue', 'name': 'Jeff'}, 
+        23: {'color': 'green', 'name': 'Ali'}, 
+        545: {'color': 'yellow', 'name': 'kin'}
+    }
+
+    """
+    df_new = df.copy()
+
+    G = nx.empty_graph(0,create_using)
+    if index:
+        df_new = df_new.set_index(index)
+    
+    if attribute_list :
+        try:
+            df_new = df_new[attribute_list]
+        except Exception as e:
+            raise e
+    
+    for index, attr in df_new.iterrows():
+        G.add_node(index,**attr)
+    
+    return G
 
 def to_pandas_adjacency(
     G,
