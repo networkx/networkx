@@ -116,8 +116,7 @@ def get_counterexample(G):
 
 
 def get_counterexample_recursive(G):
-    """Recursive version of :meth:`get_counterexample`.
-    """
+    """Recursive version of :meth:`get_counterexample`."""
 
     # copy graph
     G = nx.Graph(G)
@@ -392,8 +391,7 @@ class LRPlanarity:
         return self.embedding
 
     def dfs_orientation(self, v):
-        """Orient the graph by DFS, compute lowpoints and nesting order.
-        """
+        """Orient the graph by DFS, compute lowpoints and nesting order."""
         # the recursion stack
         dfs_stack = [v]
         # index of next edge to handle in adjacency list of each node

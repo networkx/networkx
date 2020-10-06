@@ -16,8 +16,7 @@ __all__ = ["preflow_push"]
 
 
 def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_only):
-    """Implementation of the highest-label preflow-push algorithm.
-    """
+    """Implementation of the highest-label preflow-push algorithm."""
     if s not in G:
         raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:
@@ -85,8 +84,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
         R_nodes[u]["curr_edge"] = CurrentEdge(R_succ[u])
 
     def push(u, v, flow):
-        """Push flow units of flow from u to v.
-        """
+        """Push flow units of flow from u to v."""
         R_succ[u][v]["flow"] += flow
         R_succ[v][u]["flow"] -= flow
         R_nodes[u]["excess"] -= flow
@@ -110,8 +108,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
                 level.inactive.add(u)
 
     def activate(v):
-        """Move a node from the inactive set to the active set of its level.
-        """
+        """Move a node from the inactive set to the active set of its level."""
         if v != s and v != t:
             level = levels[R_nodes[v]["height"]]
             if v in level.inactive:
@@ -119,8 +116,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
                 level.active.add(v)
 
     def relabel(u):
-        """Relabel a node to create an admissible edge.
-        """
+        """Relabel a node to create an admissible edge."""
         grt.add_work(len(R_succ[u]))
         return (
             min(
@@ -173,8 +169,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
         return next_height
 
     def gap_heuristic(height):
-        """Apply the gap heuristic.
-        """
+        """Apply the gap heuristic."""
         # Move all nodes at levels (height + 1) to max_height to level n + 1.
         for level in islice(levels, height + 1, max_height + 1):
             for u in level.active:
@@ -187,8 +182,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
             level.inactive.clear()
 
     def global_relabel(from_sink):
-        """Apply the global relabeling heuristic.
-        """
+        """Apply the global relabeling heuristic."""
         src = t if from_sink else s
         heights = reverse_bfs(src)
         if not from_sink:

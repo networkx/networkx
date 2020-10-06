@@ -22,8 +22,8 @@ from networkx.generators.atlas import graph_atlas_g
 
 
 def atlas6():
-    """ Return the atlas of all connected graphs of 6 nodes or less.
-        Attempt to check for isomorphisms and remove.
+    """Return the atlas of all connected graphs of 6 nodes or less.
+    Attempt to check for isomorphisms and remove.
     """
 
     Atlas = graph_atlas_g()[0:208]  # 208

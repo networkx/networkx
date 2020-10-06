@@ -896,10 +896,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
 
     index = dict(zip(nodelist, range(nlen)))
     coefficients = zip(
-        *(
-            (index[u], index[v], wt)
-            for u, v, wt in G.edges(data=weight, default=1)
-        )
+        *((index[u], index[v], wt) for u, v, wt in G.edges(data=weight, default=1))
     )
     try:
         row, col, data = coefficients

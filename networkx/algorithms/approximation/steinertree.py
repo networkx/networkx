@@ -8,7 +8,7 @@ __all__ = ["metric_closure", "steiner_tree"]
 
 @not_implemented_for("directed")
 def metric_closure(G, weight="weight"):
-    """  Return the metric closure of a graph.
+    """Return the metric closure of a graph.
 
     The metric closure of a graph *G* is the complete graph in which each edge
     is weighted by the shortest path distance between the nodes in *G* .
@@ -48,7 +48,7 @@ def metric_closure(G, weight="weight"):
 
 @not_implemented_for("directed")
 def steiner_tree(G, terminal_nodes, weight="weight"):
-    """ Return an approximation to the minimum Steiner tree of a graph.
+    """Return an approximation to the minimum Steiner tree of a graph.
 
     The minimum Steiner tree of `G` w.r.t a set of `terminal_nodes`
     is a tree within `G` that spans those nodes and has minimum size

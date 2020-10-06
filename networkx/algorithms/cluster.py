@@ -61,7 +61,7 @@ def triangles(G, nodes=None):
 
 @not_implemented_for("multigraph")
 def _triangles_and_degree_iter(G, nodes=None):
-    """ Return an iterator of (node, degree, triangles, generalized degree).
+    """Return an iterator of (node, degree, triangles, generalized degree).
 
     This double counts triangles so you may want to divide by 2.
     See degree(), triangles() and generalized_degree() for definitions
@@ -82,7 +82,7 @@ def _triangles_and_degree_iter(G, nodes=None):
 
 @not_implemented_for("multigraph")
 def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
-    """ Return an iterator of (node, degree, weighted_triangles).
+    """Return an iterator of (node, degree, weighted_triangles).
 
     Used for weighted clustering.
 
@@ -118,7 +118,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
 
 @not_implemented_for("multigraph")
 def _directed_triangles_and_degree_iter(G, nodes=None):
-    """ Return an iterator of
+    """Return an iterator of
     (node, total_degree, reciprocal_degree, directed_triangles).
 
     Used for directed clustering.
@@ -150,7 +150,7 @@ def _directed_triangles_and_degree_iter(G, nodes=None):
 
 @not_implemented_for("multigraph")
 def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
-    """ Return an iterator of
+    """Return an iterator of
     (node, total_degree, reciprocal_degree, directed_weighted_triangles).
 
     Used for directed weighted clustering.
@@ -413,7 +413,7 @@ def transitivity(G):
 
 
 def square_clustering(G, nodes=None):
-    r""" Compute the squares clustering coefficient for nodes.
+    r"""Compute the squares clustering coefficient for nodes.
 
     For each node return the fraction of possible squares that exist at
     the node [1]_
@@ -488,7 +488,7 @@ def square_clustering(G, nodes=None):
 
 @not_implemented_for("directed")
 def generalized_degree(G, nodes=None):
-    r""" Compute the generalized degree for nodes.
+    r"""Compute the generalized degree for nodes.
 
     For each node, the generalized degree shows how many edges of given
     triangle multiplicity the node is connected to. The triangle multiplicity

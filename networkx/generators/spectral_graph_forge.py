@@ -8,7 +8,7 @@ __all__ = ["spectral_graph_forge"]
 
 
 def _mat_spect_approx(A, level, sorteigs=True, reverse=False, absolute=True):
-    """ Returns the low-rank approximation of the given matrix A
+    """Returns the low-rank approximation of the given matrix A
 
     Parameters
     ----------

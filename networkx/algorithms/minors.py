@@ -14,7 +14,7 @@ __all__ = [
     "contracted_nodes",
     "equivalence_classes",
     "identified_nodes",
-    "quotient_graph"
+    "quotient_graph",
 ]
 
 chaini = chain.from_iterable

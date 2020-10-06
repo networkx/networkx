@@ -458,7 +458,7 @@ def graph_number_of_cliques(G, cliques=None):
 
 
 def node_clique_number(G, nodes=None, cliques=None):
-    """ Returns the size of the largest maximal clique containing
+    """Returns the size of the largest maximal clique containing
     each given node.
 
     Returns a single or list depending on input nodes.

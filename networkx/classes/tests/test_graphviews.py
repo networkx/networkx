@@ -213,7 +213,7 @@ class TestChainsOfViews:
             assert SSG._graph is G
 
     def test_restricted_induced_subgraph_chains(self):
-        """ Test subgraph chains that both restrict and show nodes/edges.
+        """Test subgraph chains that both restrict and show nodes/edges.
 
         A restricted_view subgraph should allow induced subgraphs using
         G.subgraph that automagically without a chain (meaning the result

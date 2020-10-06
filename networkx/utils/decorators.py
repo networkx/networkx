@@ -306,7 +306,7 @@ def nodes_or_number(which_args):
 
 
 def preserve_random_state(func):
-    """ Decorator to preserve the numpy.random state during a function.
+    """Decorator to preserve the numpy.random state during a function.
 
     Parameters
     ----------

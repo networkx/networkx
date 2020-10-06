@@ -425,7 +425,7 @@ def power(G, k):
 
 @not_implemented_for("multigraph")
 def rooted_product(G, H, root):
-    """ Return the rooted product of graphs G and H rooted at root in H.
+    """Return the rooted product of graphs G and H rooted at root in H.
 
     A new graph is constructed representing the rooted product of
     the inputted graphs, G and H, with a root in H.

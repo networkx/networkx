@@ -60,7 +60,7 @@ class AntiGraph(nx.Graph):
 
     def neighbors(self, n):
         """Return an iterator over all neighbors of node n in the
-           dense graph.
+        dense graph.
 
         """
         try:

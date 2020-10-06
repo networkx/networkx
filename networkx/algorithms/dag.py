@@ -468,7 +468,7 @@ def is_aperiodic(G):
 
 @not_implemented_for("undirected")
 def transitive_closure(G, reflexive=False):
-    """ Returns transitive closure of a directed graph
+    """Returns transitive closure of a directed graph
 
     The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
     for all v, w in V there is an edge (v, w) in E+ if and only if there
@@ -530,7 +530,7 @@ def transitive_closure(G, reflexive=False):
 
 @not_implemented_for("undirected")
 def transitive_closure_dag(G, topo_order=None):
-    """ Returns the transitive closure of a directed acyclic graph.
+    """Returns the transitive closure of a directed acyclic graph.
 
     This function is faster than the function `transitive_closure`, but fails
     if the graph has a cycle.
@@ -579,7 +579,7 @@ def transitive_closure_dag(G, topo_order=None):
 
 @not_implemented_for("undirected")
 def transitive_reduction(G):
-    """ Returns transitive reduction of a directed graph
+    """Returns transitive reduction of a directed graph
 
     The transitive reduction of G = (V,E) is a graph G- = (V,E-) such that
     for all v,w in V there is an edge (v,w) in E- if and only if (v,w) is

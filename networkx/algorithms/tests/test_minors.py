@@ -122,11 +122,7 @@ class TestQuotient:
 
     def test_path__partition_provided_as_dict_of_lists(self):
         G = nx.path_graph(6)
-        partition = {
-            0: [0, 1],
-            2: [2, 3],
-            4: [4, 5]
-        }
+        partition = {0: [0, 1], 2: [2, 3], 4: [4, 5]}
         M = nx.quotient_graph(G, partition, relabel=True)
         assert_nodes_equal(M, [0, 1, 2])
         assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
@@ -137,11 +133,7 @@ class TestQuotient:
 
     def test_path__partition_provided_as_dict_of_tuples(self):
         G = nx.path_graph(6)
-        partition = {
-            0: (0, 1),
-            2: (2, 3),
-            4: (4, 5)
-        }
+        partition = {0: (0, 1), 2: (2, 3), 4: (4, 5)}
         M = nx.quotient_graph(G, partition, relabel=True)
         assert_nodes_equal(M, [0, 1, 2])
         assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
@@ -152,11 +144,7 @@ class TestQuotient:
 
     def test_path__partition_provided_as_dict_of_sets(self):
         G = nx.path_graph(6)
-        partition = {
-            0: {0, 1},
-            2: {2, 3},
-            4: {4, 5}
-        }
+        partition = {0: {0, 1}, 2: {2, 3}, 4: {4, 5}}
         M = nx.quotient_graph(G, partition, relabel=True)
         assert_nodes_equal(M, [0, 1, 2])
         assert_edges_equal(M.edges(), [(0, 1), (1, 2)])

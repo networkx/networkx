@@ -14,8 +14,7 @@ from ...utils import arbitrary_element
 
 
 def _detect_unboundedness(R):
-    """Detect infinite-capacity negative cycles.
-    """
+    """Detect infinite-capacity negative cycles."""
     s = generate_unique_node()
     G = nx.DiGraph()
     G.add_nodes_from(R)
@@ -43,8 +42,7 @@ def _detect_unboundedness(R):
 
 @not_implemented_for("undirected")
 def _build_residual_network(G, demand, capacity, weight):
-    """Build a residual network and initialize a zero flow.
-    """
+    """Build a residual network and initialize a zero flow."""
     if sum(G.nodes[u].get(demand, 0) for u in G) != 0:
         raise nx.NetworkXUnfeasible("Sum of the demands should be 0.")
 
@@ -110,8 +108,7 @@ def _build_residual_network(G, demand, capacity, weight):
 
 
 def _build_flow_dict(G, R, capacity, weight):
-    """Build a flow dictionary from a residual network.
-    """
+    """Build a flow dictionary from a residual network."""
     inf = float("inf")
     flow_dict = {}
     if G.is_multigraph():

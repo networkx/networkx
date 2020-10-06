@@ -307,7 +307,7 @@ def _max_cardinality_node(G, choices, wanna_connect):
 
 
 def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
-    """ Given a graph G, starts a max cardinality search
+    """Given a graph G, starts a max cardinality search
     (starting from s if s is given and from an arbitrary node otherwise)
     trying to find a non-chordal cycle.
 

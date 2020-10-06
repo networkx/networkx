@@ -82,7 +82,7 @@ def color(G):
 
 
 def is_bipartite(G):
-    """ Returns True if graph G is bipartite, False if not.
+    """Returns True if graph G is bipartite, False if not.
 
     Parameters
     ----------
