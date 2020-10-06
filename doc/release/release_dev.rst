@@ -36,6 +36,9 @@ API Changes
 Deprecations
 ------------
 
+- [`#4238 <https://github.com/networkx/networkx/pull/4238>`_]
+  Deprecate `to_numpy_matrix` and `from_numpy_matrix`.
+
 Contributors to this release
 ----------------------------
 
