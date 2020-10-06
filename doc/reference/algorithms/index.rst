@@ -30,6 +30,7 @@ Algorithms
    cycles
    cuts
    dag
+   dedensification
    distance_measures
    distance_regular
    dominance
