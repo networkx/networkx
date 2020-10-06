@@ -66,6 +66,7 @@ Algorithms
    smetric
    sparsifiers
    structuralholes
+   summarization
    swap
    threshold
    tournament
