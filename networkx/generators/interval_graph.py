@@ -8,7 +8,7 @@ __all__ = ["interval_graph"]
 
 
 def interval_graph(intervals):
-    """ Generates an interval graph for a list of intervals given.
+    """Generates an interval graph for a list of intervals given.
 
     In graph theory, an interval graph is an undirected graph formed from a set
     of closed intervals on the real line, with a vertex for each interval

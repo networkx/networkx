@@ -26,8 +26,8 @@ import networkx as nx
 
 
 def miles_graph():
-    """ Return the cites example graph in miles_dat.txt
-        from the Stanford GraphBase.
+    """Return the cites example graph in miles_dat.txt
+    from the Stanford GraphBase.
     """
     # open file miles_dat.txt.gz (or miles_dat.txt)
 

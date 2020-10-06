@@ -462,8 +462,7 @@ def barycenter(G, weight=None, attr=None, sp=None):
 
 
 def _laplacian_submatrix(node, mat, node_list):
-    """Removes row/col from a sparse matrix and returns the submatrix
-    """
+    """Removes row/col from a sparse matrix and returns the submatrix"""
     j = node_list.index(node)
     n = list(range(len(node_list)))
     n.pop(j)
@@ -486,8 +485,7 @@ def _laplacian_submatrix(node, mat, node_list):
 
 
 def _count_lu_permutations(perm_array):
-    """Counts the number of permutations in SuperLU perm_c or perm_r
-    """
+    """Counts the number of permutations in SuperLU perm_c or perm_r"""
     perm_cnt = 0
     arr = perm_array.tolist()
     for i in range(len(arr)):

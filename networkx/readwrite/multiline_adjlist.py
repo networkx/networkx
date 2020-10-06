@@ -135,7 +135,7 @@ def generate_multiline_adjlist(G, delimiter=" "):
 
 @open_file(1, mode="wb")
 def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-8"):
-    """ Write the graph G in multiline adjacency list format to path
+    """Write the graph G in multiline adjacency list format to path
 
     Parameters
     ----------

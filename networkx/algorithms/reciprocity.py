@@ -55,8 +55,7 @@ def reciprocity(G, nodes=None):
 
 
 def _reciprocity_iter(G, nodes):
-    """ Return an iterator of (node, reciprocity).
-    """
+    """Return an iterator of (node, reciprocity)."""
     n = G.nbunch_iter(nodes)
     for node in n:
         pred = set(G.predecessors(node))

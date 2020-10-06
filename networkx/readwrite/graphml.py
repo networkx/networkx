@@ -820,8 +820,7 @@ class GraphMLReader(GraphML):
         return G
 
     def add_node(self, G, node_xml, graphml_keys, defaults):
-        """Add a node to the graph.
-        """
+        """Add a node to the graph."""
         # warn on finding unsupported ports tag
         ports = node_xml.find(f"{{{self.NS_GRAPHML}}}port")
         if ports is not None:
@@ -837,8 +836,7 @@ class GraphMLReader(GraphML):
             self.make_graph(graph_xml, graphml_keys, defaults, G)
 
     def add_edge(self, G, edge_element, graphml_keys):
-        """Add an edge to the graph.
-        """
+        """Add an edge to the graph."""
         # warn on finding unsupported ports tag
         ports = edge_element.find(f"{{{self.NS_GRAPHML}}}port")
         if ports is not None:
@@ -930,8 +928,7 @@ class GraphMLReader(GraphML):
         return data
 
     def find_graphml_keys(self, graph_element):
-        """Extracts all the keys and key defaults from the xml.
-        """
+        """Extracts all the keys and key defaults from the xml."""
         graphml_keys = {}
         graphml_key_defaults = {}
         for k in graph_element.findall(f"{{{self.NS_GRAPHML}}}key"):

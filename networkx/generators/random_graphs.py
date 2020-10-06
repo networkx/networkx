@@ -600,7 +600,7 @@ def random_regular_graph(d, n, seed=None):
 
 
 def _random_subset(seq, m, rng):
-    """ Return m unique elements from seq.
+    """Return m unique elements from seq.
 
     This differs from random.sample which can return repeated
     elements if seq holds repeated elements.

@@ -15,9 +15,7 @@ __all__ = ["coverage", "modularity", "performance"]
 
 
 class NotAPartition(NetworkXError):
-    """Raised if a given collection is not a partition.
-
-    """
+    """Raised if a given collection is not a partition."""
 
     def __init__(self, G, collection):
         msg = f"{G} is not a valid partition of the graph {collection}"

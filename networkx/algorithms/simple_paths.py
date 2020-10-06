@@ -645,9 +645,9 @@ def _bidirectional_shortest_path(
 
 def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=None):
     """Bidirectional shortest path helper.
-       Returns (pred,succ,w) where
-       pred is a dictionary of predecessors from w to the source, and
-       succ is a dictionary of successors from w to the target.
+    Returns (pred,succ,w) where
+    pred is a dictionary of predecessors from w to the source, and
+    succ is a dictionary of successors from w to the target.
     """
     # does BFS from both source and target and meets in the middle
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):

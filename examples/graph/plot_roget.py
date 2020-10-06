@@ -29,7 +29,7 @@ from networkx import nx
 
 
 def roget_graph():
-    """ Return the thesaurus graph from the roget.dat example in
+    """Return the thesaurus graph from the roget.dat example in
     the Stanford Graph Base.
     """
     # open file roget_dat.txt.gz

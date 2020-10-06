@@ -292,14 +292,12 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     ###########################################################################
 
     def reduced_cost(i):
-        """Returns the reduced cost of an edge i.
-        """
+        """Returns the reduced cost of an edge i."""
         c = C[i] - pi[S[i]] + pi[T[i]]
         return c if x[i] == 0 else -c
 
     def find_entering_edges():
-        """Yield entering edges until none can be found.
-        """
+        """Yield entering edges until none can be found."""
         if e == 0:
             return
 
@@ -399,8 +397,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
         return U[i] - x[i] if S[i] == p else x[i]
 
     def find_leaving_edge(Wn, We):
-        """Returns the leaving edge in a cycle represented by Wn and We.
-        """
+        """Returns the leaving edge in a cycle represented by Wn and We."""
         j, s = min(
             zip(reversed(We), reversed(Wn)), key=lambda i_p: residual_capacity(*i_p)
         )
@@ -408,8 +405,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
         return j, s, t
 
     def augment_flow(Wn, We, f):
-        """Augment f units of flow along a cycle represented by Wn and We.
-        """
+        """Augment f units of flow along a cycle represented by Wn and We."""
         for i, p in zip(We, Wn):
             if S[i] == p:
                 x[i] += f
@@ -417,8 +413,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
                 x[i] -= f
 
     def trace_subtree(p):
-        """Yield the nodes in the subtree rooted at a node p.
-        """
+        """Yield the nodes in the subtree rooted at a node p."""
         yield p
         l = last[p]
         while p != l:
@@ -426,8 +421,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
             yield p
 
     def remove_edge(s, t):
-        """Remove an edge (s, t) where parent[t] == s from the spanning tree.
-        """
+        """Remove an edge (s, t) where parent[t] == s from the spanning tree."""
         size_t = size[t]
         prev_t = prev[t]
         last_t = last[t]
@@ -449,8 +443,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
             s = parent[s]
 
     def make_root(q):
-        """Make a node q the root of its containing subtree.
-        """
+        """Make a node q the root of its containing subtree."""
         ancestors = []
         while q is not None:
             ancestors.append(q)
@@ -560,8 +553,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     flow_dict = {n: {} for n in N}
 
     def add_entry(e):
-        """Add a flow dict entry.
-        """
+        """Add a flow dict entry."""
         d = flow_dict[e[0]]
         for k in e[1:-2]:
             try:

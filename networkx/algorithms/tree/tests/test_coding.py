@@ -59,9 +59,7 @@ class TestPruferSequence:
         assert_edges_equal(list(tree.edges()), edges)
 
     def test_inverse(self):
-        """Tests that the encoding and decoding functions are inverses.
-
-        """
+        """Tests that the encoding and decoding functions are inverses."""
         for T in nx.nonisomorphic_trees(4):
             T2 = nx.from_prufer_sequence(nx.to_prufer_sequence(T))
             assert_nodes_equal(list(T), list(T2))
@@ -73,9 +71,7 @@ class TestPruferSequence:
 
 
 class TestNestedTuple:
-    """Unit tests for the nested tuple encoding and decoding functions.
-
-    """
+    """Unit tests for the nested tuple encoding and decoding functions."""
 
     def test_nontree(self):
         with pytest.raises(nx.NotATree):

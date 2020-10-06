@@ -282,8 +282,7 @@ LIST_START_VALUE = "_networkx_list_start"
 
 
 def parse_gml_lines(lines, label, destringizer):
-    """Parse GML `lines` into a graph.
-    """
+    """Parse GML `lines` into a graph."""
 
     def tokenize():
         patterns = [

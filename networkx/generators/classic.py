@@ -219,7 +219,7 @@ def binomial_tree(n):
 
 @nodes_or_number(0)
 def complete_graph(n, create_using=None):
-    """ Return the complete graph `K_n` with n nodes.
+    """Return the complete graph `K_n` with n nodes.
 
     Parameters
     ----------
@@ -587,7 +587,7 @@ def path_graph(n, create_using=None):
 
 @nodes_or_number(0)
 def star_graph(n, create_using=None):
-    """ Return the star graph
+    """Return the star graph
 
     The star graph consists of one center node connected to n outer nodes.
 
@@ -616,15 +616,13 @@ def star_graph(n, create_using=None):
 
 
 def trivial_graph(create_using=None):
-    """ Return the Trivial graph with one node (with label 0) and no edges.
-
-    """
+    """Return the Trivial graph with one node (with label 0) and no edges."""
     G = empty_graph(1, create_using)
     return G
 
 
 def turan_graph(n, r):
-    r""" Return the Turan Graph
+    r"""Return the Turan Graph
 
     The Turan Graph is a complete multipartite graph on $n$ vertices
     with $r$ disjoint subsets. It is the graph with the edges for any graph with
@@ -658,7 +656,7 @@ def turan_graph(n, r):
 
 @nodes_or_number(0)
 def wheel_graph(n, create_using=None):
-    """ Return the wheel graph
+    """Return the wheel graph
 
     The wheel graph consists of a hub node connected to a cycle of (n-1) nodes.
 

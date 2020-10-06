@@ -1620,7 +1620,7 @@ def single_source_bellman_ford(G, source, target=None, weight="weight"):
 
 
 def all_pairs_bellman_ford_path_length(G, weight="weight"):
-    """ Compute shortest path lengths between all nodes in a weighted graph.
+    """Compute shortest path lengths between all nodes in a weighted graph.
 
     Parameters
     ----------
@@ -1664,7 +1664,7 @@ def all_pairs_bellman_ford_path_length(G, weight="weight"):
 
 
 def all_pairs_bellman_ford_path(G, weight="weight"):
-    """ Compute shortest paths between all nodes in a weighted graph.
+    """Compute shortest paths between all nodes in a weighted graph.
 
     Parameters
     ----------
@@ -1853,8 +1853,7 @@ def goldberg_radzik(G, source, weight="weight"):
         return to_scan
 
     def relax(to_scan):
-        """Relax out-edges of relabeled nodes.
-        """
+        """Relax out-edges of relabeled nodes."""
         relabeled = set()
         # Scan nodes in to_scan in topological order and relax incident
         # out-edges. Add the relabled nodes to labeled.

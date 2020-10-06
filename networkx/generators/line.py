@@ -126,9 +126,7 @@ def _node_func(G):
 
 
 def _edge_func(G):
-    """Returns the edges from G, handling keys for multigraphs as necessary.
-
-    """
+    """Returns the edges from G, handling keys for multigraphs as necessary."""
     if G.is_multigraph():
 
         def get_edges(nbunch=None):
@@ -241,7 +239,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def inverse_line_graph(G):
-    """ Returns the inverse line graph of graph G.
+    """Returns the inverse line graph of graph G.
 
     If H is a graph, and G is the line graph of H, such that H = L(G).
     Then H is the inverse line graph of G.
@@ -343,7 +341,7 @@ def _triangles(G, e):
 
 
 def _odd_triangle(G, T):
-    """ Test whether T is an odd triangle in G
+    """Test whether T is an odd triangle in G
 
     Parameters
     ----------
@@ -386,7 +384,7 @@ def _odd_triangle(G, T):
 
 
 def _find_partition(G, starting_cell):
-    """ Find a partition of the vertices of G into cells of complete graphs
+    """Find a partition of the vertices of G into cells of complete graphs
 
     Parameters
     ----------
@@ -435,7 +433,7 @@ def _find_partition(G, starting_cell):
 
 
 def _select_starting_cell(G, starting_edge=None):
-    """ Select a cell to initiate _find_partition
+    """Select a cell to initiate _find_partition
 
     Parameters
     ----------

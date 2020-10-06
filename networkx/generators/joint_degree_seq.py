@@ -12,7 +12,7 @@ __all__ = [
 
 
 def is_valid_joint_degree(joint_degrees):
-    """ Checks whether the given joint degree dictionary is realizable.
+    """Checks whether the given joint degree dictionary is realizable.
 
     A *joint degree dictionary* is a dictionary of dictionaries, in
     which entry ``joint_degrees[k][l]`` is an integer representing the
@@ -78,7 +78,7 @@ def is_valid_joint_degree(joint_degrees):
 
 
 def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
-    """ Releases one free stub for ``w``, while preserving joint degree in G.
+    """Releases one free stub for ``w``, while preserving joint degree in G.
 
     Parameters
     ----------
@@ -142,7 +142,7 @@ def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
 
 @py_random_state(1)
 def joint_degree_graph(joint_degrees, seed=None):
-    """ Generates a random simple graph with the given joint degree dictionary.
+    """Generates a random simple graph with the given joint degree dictionary.
 
     Parameters
     ----------
@@ -288,7 +288,7 @@ def joint_degree_graph(joint_degrees, seed=None):
 
 
 def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
-    """ Checks whether the given directed joint degree input is realizable
+    """Checks whether the given directed joint degree input is realizable
 
     Parameters
     ----------
@@ -363,7 +363,7 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
 def _directed_neighbor_switch(
     G, w, unsat, h_node_residual_out, chords, h_partition_in, partition
 ):
-    """ Releases one free stub for node w, while preserving joint degree in G.
+    """Releases one free stub for node w, while preserving joint degree in G.
 
     Parameters
     ----------
@@ -426,7 +426,7 @@ def _directed_neighbor_switch(
 def _directed_neighbor_switch_rev(
     G, w, unsat, h_node_residual_in, chords, h_partition_out, partition
 ):
-    """ The reverse of directed_neighbor_switch.
+    """The reverse of directed_neighbor_switch.
 
     Parameters
     ----------
@@ -477,7 +477,7 @@ def _directed_neighbor_switch_rev(
 
 @py_random_state(3)
 def directed_joint_degree_graph(in_degrees, out_degrees, nkk, seed=None):
-    """ Generates a random simple directed graph with the joint degree.
+    """Generates a random simple directed graph with the joint degree.
 
     Parameters
     ----------

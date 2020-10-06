@@ -15,7 +15,7 @@ __all__ = [
 
 
 def union(G, H, rename=(None, None), name=None):
-    """ Return the union of graphs G and H.
+    """Return the union of graphs G and H.
 
     Graphs G and H must be disjoint, otherwise an exception is raised.
 
@@ -103,7 +103,7 @@ def union(G, H, rename=(None, None), name=None):
 
 
 def disjoint_union(G, H):
-    """ Return the disjoint union of graphs G and H.
+    """Return the disjoint union of graphs G and H.
 
     This algorithm forces distinct integer node labels.
 
