@@ -87,8 +87,19 @@ We'd like to improve interoperability with the rest of the scientific Python
 ecosystem.
 This includes projects we depend on (e.g., NumPy, SciPy, Pandas, Matplotlib)
 as well as ones we don't (e.g., Geopandas).
-We would also like to be able to seamlessly exchange graphs with other
-network analysis software.
+
+For example, we would also like to be able to seamlessly exchange graphs with
+other network analysis software.
+Another way to integrate with other scientific python ecosystem tools is to
+take on features from the other tools that are useful. And we should develop
+tools to ease use of NetworkX from within these other tools.
+Additional examples of interoperability improvements may include providing a more
+pandas-like interface for the ```__getitem__``` dunder function of node and
+edge views (:ref:`NXEP2`).
+Also developing a universal method to represent a graph as a single sequence of
+```nodes_and_edges``` objects that allow attribute dicts, nodes and edges as
+`discussed for graph generators
+<https://github.com/networkx/networkx/issues/3036>`_.
 
 Visualization
 -------------
