@@ -721,6 +721,7 @@ def _generate_min_degree(gamma, average_degree, max_degree, tolerance, max_iters
     try:
         from scipy.special import zeta
     except ImportError:
+
         def zeta(x, q):
             return _hurwitz_zeta(x, q, tolerance)
 
