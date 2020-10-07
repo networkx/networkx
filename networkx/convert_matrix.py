@@ -1270,8 +1270,7 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     >>> A = np.array([[1, 1], [2, 1]])
     >>> G = nx.from_numpy_array(A)
     >>> G.edges(data=True)
-    EdgeDataView([(0, 0, {'weight': 1}), (0, 1, {'weight': 2}), \
-(1, 1, {'weight': 1})])
+    EdgeDataView([(0, 0, {'weight': 1}), (0, 1, {'weight': 2}), (1, 1, {'weight': 1})])
 
     If `create_using` indicates a multigraph and the array has only integer
     entries and `parallel_edges` is False, then the entries will be treated
@@ -1305,9 +1304,6 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     1.0
 
     """
-    # This should never fail if you have created a numpy array with numpy...
-    import numpy as np
-
     kind_to_python_type = {
         "f": float,
         "i": int,
@@ -1315,9 +1311,9 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
         "b": bool,
         "c": complex,
         "S": str,
+        "U": str,
         "V": "void",
     }
-    kind_to_python_type["U"] = str
     G = nx.empty_graph(0, create_using)
     if A.ndim != 2:
         raise nx.NetworkXError(f"Input array must be 2D, not {A.ndim}")
