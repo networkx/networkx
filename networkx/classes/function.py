@@ -576,23 +576,14 @@ def info(G, n=None):
 
     """
     if n is None:
-        n_nodes = G.number_of_nodes()
-        n_edges = G.number_of_edges()
-        return "".join(
-            [
-                type(G).__name__,
-                f" named '{G.name}'" if G.name else "",
-                f" with {n_nodes} nodes and {n_edges} edges",
-            ]
-        )
-    else:
-        if n not in G:
-            raise nx.NetworkXError(f"node {n} not in graph")
-        info = ""  # append this all to a string
-        info += f"Node {n} has the following properties:\n"
-        info += f"Degree: {G.degree(n)}\n"
-        info += "Neighbors: "
-        info += " ".join(str(nbr) for nbr in G.neighbors(n))
+        return str(G)
+    if n not in G:
+        raise nx.NetworkXError(f"node {n} not in graph")
+    info = ""  # append this all to a string
+    info += f"Node {n} has the following properties:\n"
+    info += f"Degree: {G.degree(n)}\n"
+    info += "Neighbors: "
+    info += " ".join(str(nbr) for nbr in G.neighbors(n))
     return info
 
 

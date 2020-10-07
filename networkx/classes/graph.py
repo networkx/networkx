@@ -388,7 +388,13 @@ class Graph:
         'Graph with 3 nodes and 2 edges'
 
         """
-        return nx.info(self)
+        return "".join(
+            [
+                type(self).__name__,
+                f" named '{self.name}'" if self.name else "",
+                f" with {self.number_of_nodes()} nodes and {self.number_of_edges()} edges",
+            ]
+        )
 
     def __iter__(self):
         """Iterate over the nodes. Use: 'for n in G'.
