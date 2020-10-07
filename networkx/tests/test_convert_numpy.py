@@ -8,7 +8,17 @@ from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
 from networkx.testing.utils import assert_graphs_equal
 
 
-class TestConvertNumpy:
+def test_to_numpy_matrix_deprecation():
+    pytest.deprecated_call(nx.to_numpy_matrix, nx.Graph())
+
+
+def test_from_numpy_matrix_deprecation():
+    pytest.deprecated_call(nx.from_numpy_matrix, np.eye(2))
+
+
+class TestConvertNumpyMatrix:
+    # TODO: This entire class can be removed when to/from_numpy_matrix
+    # deprecation expires
     def setup_method(self):
         self.G1 = barbell_graph(10, 3)
         self.G2 = cycle_graph(10, create_using=nx.DiGraph)

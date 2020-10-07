@@ -64,6 +64,12 @@ def set_warnings():
         category=PendingDeprecationWarning,
         message="the matrix subclass is not the recommended way*",
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="to_numpy_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="from_numpy_matrix"
+    )
 
 
 @pytest.fixture(autouse=True)

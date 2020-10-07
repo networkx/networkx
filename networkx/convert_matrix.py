@@ -23,6 +23,7 @@ nx_agraph, nx_pydot
 """
 
 import itertools
+import warnings
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -487,7 +488,7 @@ def to_numpy_matrix(
 
     See Also
     --------
-    to_numpy_recarray, from_numpy_matrix
+    to_numpy_recarray
 
     Notes
     -----
@@ -534,6 +535,14 @@ def to_numpy_matrix(
             [0., 0., 4.]])
 
     """
+    warnings.warn(
+        (
+            "to_numpy_matrix is deprecated and will be removed in NetworkX 3.0.\n"
+            "Use to_numpy_array instead, e.g. np.asmatrix(to_numpy_array(G, **kwargs))"
+        ),
+        DeprecationWarning,
+    )
+
     import numpy as np
 
     A = to_numpy_array(
@@ -592,7 +601,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
 
     See Also
     --------
-    to_numpy_matrix, to_numpy_recarray
+    to_numpy_recarray
 
     Examples
     --------
@@ -634,81 +643,14 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     1.0
 
     """
-    # This should never fail if you have created a numpy matrix with numpy...
-    import numpy as np
-
-    kind_to_python_type = {
-        "f": float,
-        "i": int,
-        "u": int,
-        "b": bool,
-        "c": complex,
-        "S": str,
-        "V": "void",
-    }
-    kind_to_python_type["U"] = str
-    G = nx.empty_graph(0, create_using)
-    n, m = A.shape
-    if n != m:
-        raise nx.NetworkXError(f"Adjacency matrix not square: nx,ny={A.shape}")
-    dt = A.dtype
-    try:
-        python_type = kind_to_python_type[dt.kind]
-    except Exception as e:
-        raise TypeError(f"Unknown numpy data type: {dt}") from e
-
-    # Make sure we get even the isolated nodes of the graph.
-    G.add_nodes_from(range(n))
-    # Get a list of all the entries in the matrix with nonzero entries. These
-    # coordinates become edges in the graph. (convert to int from np.int64)
-    edges = ((int(e[0]), int(e[1])) for e in zip(*np.asarray(A).nonzero()))
-    # handle numpy constructed data type
-    if python_type == "void":
-        # Sort the fields by their offset, then by dtype, then by name.
-        fields = sorted(
-            (offset, dtype, name) for name, (dtype, offset) in A.dtype.fields.items()
-        )
-        triples = (
-            (
-                u,
-                v,
-                {
-                    name: kind_to_python_type[dtype.kind](val)
-                    for (_, dtype, name), val in zip(fields, A[u, v])
-                },
-            )
-            for u, v in edges
-        )
-    # If the entries in the adjacency matrix are integers, the graph is a
-    # multigraph, and parallel_edges is True, then create parallel edges, each
-    # with weight 1, for each entry in the adjacency matrix. Otherwise, create
-    # one edge for each positive entry in the adjacency matrix and set the
-    # weight of that edge to be the entry in the matrix.
-    elif python_type is int and G.is_multigraph() and parallel_edges:
-        chain = itertools.chain.from_iterable
-        # The following line is equivalent to:
-        #
-        #     for (u, v) in edges:
-        #         for d in range(A[u, v]):
-        #             G.add_edge(u, v, weight=1)
-        #
-        triples = chain(
-            ((u, v, {"weight": 1}) for d in range(A[u, v])) for (u, v) in edges
-        )
-    else:  # basic data type
-        triples = ((u, v, dict(weight=python_type(A[u, v]))) for u, v in edges)
-    # If we are creating an undirected multigraph, only add the edges from the
-    # upper triangle of the matrix. Otherwise, add all the edges. This relies
-    # on the fact that the vertices created in the
-    # `_generated_weighted_edges()` function are actually the row/column
-    # indices for the matrix `A`.
-    #
-    # Without this check, we run into a problem where each edge is added twice
-    # when `G.add_edges_from()` is invoked below.
-    if G.is_multigraph() and not G.is_directed():
-        triples = ((u, v, d) for u, v, d in triples if u <= v)
-    G.add_edges_from(triples)
-    return G
+    warnings.warn(
+        (
+            "from_numpy_matrix is deprecated and will be removed in NetworkX 3.0.\n"
+            "Use from_numpy_array instead, e.g. from_numpy_array(A, **kwargs)"
+        ),
+        DeprecationWarning,
+    )
+    return from_numpy_array(A, parallel_edges=parallel_edges, create_using=create_using)
 
 
 @not_implemented_for("multigraph")
@@ -1276,13 +1218,13 @@ def to_numpy_array(
 
 
 def from_numpy_array(A, parallel_edges=False, create_using=None):
-    """Returns a graph from NumPy array.
+    """Returns a graph from a 2D NumPy array.
 
-    The NumPy array is interpreted as an adjacency matrix for the graph.
+    The 2D NumPy array is interpreted as an adjacency matrix for the graph.
 
     Parameters
     ----------
-    A : NumPy ndarray
+    A : a 2D numpy.ndarray
         An adjacency matrix representation of a graph
 
     parallel_edges : Boolean
@@ -1328,8 +1270,7 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     >>> A = np.array([[1, 1], [2, 1]])
     >>> G = nx.from_numpy_array(A)
     >>> G.edges(data=True)
-    EdgeDataView([(0, 0, {'weight': 1}), (0, 1, {'weight': 2}), \
-(1, 1, {'weight': 1})])
+    EdgeDataView([(0, 0, {'weight': 1}), (0, 1, {'weight': 2}), (1, 1, {'weight': 1})])
 
     If `create_using` indicates a multigraph and the array has only integer
     entries and `parallel_edges` is False, then the entries will be treated
@@ -1363,6 +1304,77 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     1.0
 
     """
-    return from_numpy_matrix(
-        A, parallel_edges=parallel_edges, create_using=create_using
-    )
+    kind_to_python_type = {
+        "f": float,
+        "i": int,
+        "u": int,
+        "b": bool,
+        "c": complex,
+        "S": str,
+        "U": str,
+        "V": "void",
+    }
+    G = nx.empty_graph(0, create_using)
+    if A.ndim != 2:
+        raise nx.NetworkXError(f"Input array must be 2D, not {A.ndim}")
+    n, m = A.shape
+    if n != m:
+        raise nx.NetworkXError(f"Adjacency matrix not square: nx,ny={A.shape}")
+    dt = A.dtype
+    try:
+        python_type = kind_to_python_type[dt.kind]
+    except Exception as e:
+        raise TypeError(f"Unknown numpy data type: {dt}") from e
+
+    # Make sure we get even the isolated nodes of the graph.
+    G.add_nodes_from(range(n))
+    # Get a list of all the entries in the array with nonzero entries. These
+    # coordinates become edges in the graph. (convert to int from np.int64)
+    edges = ((int(e[0]), int(e[1])) for e in zip(*A.nonzero()))
+    # handle numpy constructed data type
+    if python_type == "void":
+        # Sort the fields by their offset, then by dtype, then by name.
+        fields = sorted(
+            (offset, dtype, name) for name, (dtype, offset) in A.dtype.fields.items()
+        )
+        triples = (
+            (
+                u,
+                v,
+                {
+                    name: kind_to_python_type[dtype.kind](val)
+                    for (_, dtype, name), val in zip(fields, A[u, v])
+                },
+            )
+            for u, v in edges
+        )
+    # If the entries in the adjacency matrix are integers, the graph is a
+    # multigraph, and parallel_edges is True, then create parallel edges, each
+    # with weight 1, for each entry in the adjacency matrix. Otherwise, create
+    # one edge for each positive entry in the adjacency matrix and set the
+    # weight of that edge to be the entry in the matrix.
+    elif python_type is int and G.is_multigraph() and parallel_edges:
+        chain = itertools.chain.from_iterable
+        # The following line is equivalent to:
+        #
+        #     for (u, v) in edges:
+        #         for d in range(A[u, v]):
+        #             G.add_edge(u, v, weight=1)
+        #
+        triples = chain(
+            ((u, v, {"weight": 1}) for d in range(A[u, v])) for (u, v) in edges
+        )
+    else:  # basic data type
+        triples = ((u, v, dict(weight=python_type(A[u, v]))) for u, v in edges)
+    # If we are creating an undirected multigraph, only add the edges from the
+    # upper triangle of the matrix. Otherwise, add all the edges. This relies
+    # on the fact that the vertices created in the
+    # `_generated_weighted_edges()` function are actually the row/column
+    # indices for the matrix `A`.
+    #
+    # Without this check, we run into a problem where each edge is added twice
+    # when `G.add_edges_from()` is invoked below.
+    if G.is_multigraph() and not G.is_directed():
+        triples = ((u, v, d) for u, v, d in triples if u <= v)
+    G.add_edges_from(triples)
+    return G
