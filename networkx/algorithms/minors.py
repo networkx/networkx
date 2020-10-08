@@ -445,37 +445,36 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
     not be the same as the edge keys for the old edges. This is
     natural because edge keys are unique only within each pair of nodes.
 
+    This function is also available as `identified_nodes`.
+
     Examples
     --------
     Contracting two nonadjacent nodes of the cycle graph on four nodes `C_4`
     yields the path graph (ignoring parallel edges)::
 
-        >>> G = nx.cycle_graph(4)
-        >>> M = nx.contracted_nodes(G, 1, 3)
-        >>> P3 = nx.path_graph(3)
-        >>> nx.is_isomorphic(M, P3)
-        True
+    >>> G = nx.cycle_graph(4)
+    >>> M = nx.contracted_nodes(G, 1, 3)
+    >>> P3 = nx.path_graph(3)
+    >>> nx.is_isomorphic(M, P3)
+    True
 
-        >>> G = nx.MultiGraph(P3)
-        >>> M = nx.contracted_nodes(G, 0, 2)
-        >>> M.edges
-        MultiEdgeView([(0, 1, 0), (0, 1, 1)])
+    >>> G = nx.MultiGraph(P3)
+    >>> M = nx.contracted_nodes(G, 0, 2)
+    >>> M.edges
+    MultiEdgeView([(0, 1, 0), (0, 1, 1)])
 
-        >>> G = nx.Graph([(1, 2), (2, 2)])
-        >>> H = nx.contracted_nodes(G, 1, 2, self_loops=False)
-        >>> list(H.nodes())
-        [1]
-        >>> list(H.edges())
-        [(1, 1)]
+    >>> G = nx.Graph([(1, 2), (2, 2)])
+    >>> H = nx.contracted_nodes(G, 1, 2, self_loops=False)
+    >>> list(H.nodes())
+    [1]
+    >>> list(H.edges())
+    [(1, 1)]
 
-    See also
+    See Also
     --------
     contracted_edge
     quotient_graph
 
-    Notes
-    -----
-    This function is also available as `identified_nodes`.
     """
     # Copying has significant overhead and can be disabled if needed
     if copy:
