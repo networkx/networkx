@@ -47,7 +47,11 @@ It may also include review existing comparisons between NetworkX
 and other packages.
 
 Individual functions can be optimized for performance and memory use.
-Technologies such as Cython and Numba may also be of interest.
+We are also interested in exploring new technologies to accelerate
+code and reduce memory use.  Before adopting any new technologies
+we will need to careful consider its impact on code readability
+and difficulty of building and installating NetworkX.
+For more information, see our :ref:`mission_and_values`.
 
 Many functions can be trivially parallelized.
 But, we need to decide on an API and perhaps implement some
@@ -107,10 +111,3 @@ Visualization
 Visualization is not a focus on NetworkX, but it is a major feature for
 many users.
 We need to enhance the drawing tools for NetworkX.
-
-Algorithms
-----------
-
-We aim to implement new algorithms such as Louvain methods of community
-detection and the VF2++ algorithm for subgraph isomorphism checking.
-These and other new algorithms will speed up calculations and maintain relevancy.
