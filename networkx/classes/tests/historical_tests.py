@@ -21,7 +21,6 @@ class HistoricalTests:
 
     def test_name(self):
         G = self.G(name="test")
-        assert str(G) == "test"
         assert G.name == "test"
         H = self.G()
         assert H.name == ""

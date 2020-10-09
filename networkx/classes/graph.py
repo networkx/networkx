@@ -370,20 +370,31 @@ class Graph:
         self.graph["name"] = s
 
     def __str__(self):
-        """Returns the graph name.
+        """Returns a short summary of the graph.
 
         Returns
         -------
-        name : string
-            The name of the graph.
+        info : string
+            Graph information as provided by `nx.info`
 
         Examples
         --------
         >>> G = nx.Graph(name="foo")
         >>> str(G)
-        'foo'
+        "Graph named 'foo' with 0 nodes and 0 edges"
+
+        >>> G = nx.path_graph(3)
+        >>> str(G)
+        'Graph with 3 nodes and 2 edges'
+
         """
-        return self.name
+        return "".join(
+            [
+                type(self).__name__,
+                f" named '{self.name}'" if self.name else "",
+                f" with {self.number_of_nodes()} nodes and {self.number_of_edges()} edges",
+            ]
+        )
 
     def __iter__(self):
         """Iterate over the nodes. Use: 'for n in G'.

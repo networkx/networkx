@@ -182,8 +182,17 @@ class BaseAttrGraphTester(BaseGraphTester):
         G = self.Graph(name="")
         assert G.name == ""
         G = self.Graph(name="test")
-        assert G.__str__() == "test"
         assert G.name == "test"
+
+    def test_str_unnamed(self):
+        G = self.Graph()
+        G.add_edges_from([(1, 2), (2, 3)])
+        assert str(G) == f"{type(G).__name__} with 3 nodes and 2 edges"
+
+    def test_str_named(self):
+        G = self.Graph(name="foo")
+        G.add_edges_from([(1, 2), (2, 3)])
+        assert str(G) == f"{type(G).__name__} named 'foo' with 3 nodes and 2 edges"
 
     def test_graph_chain(self):
         G = self.Graph([(0, 1), (1, 2)])
