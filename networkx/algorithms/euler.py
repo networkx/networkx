@@ -262,7 +262,7 @@ def has_eulerian_path(G):
             elif ins(v) != outs(v):
                 return False
 
-        return(
+        return (
             unbalanced_ins <= 1 and unbalanced_outs <= 1 and nx.is_weakly_connected(H)
         )
 
