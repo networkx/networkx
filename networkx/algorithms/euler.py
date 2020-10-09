@@ -247,9 +247,8 @@ def has_eulerian_path(G):
     """
     if G.is_directed():
         H = G.copy()
-        H.remove_nodes_from(
-            v for v in H if H.in_degree(v) == 0 and H.out_degree(v) == 0
-        )
+        nodes_remove = [v for v in H if H.in_degree(v) == 0 and H.out_degree(v) == 0]
+        H.remove_nodes_from(nodes_remove)
         ins = H.in_degree
         outs = H.out_degree
         unbalanced_ins = 0
