@@ -7,8 +7,12 @@ __all__ = ["randomized_partitioning", "one_exchange"]
 @nx.not_implemented_for('directed', 'multigraph')
 @py_random_state(1)
 def randomized_partitioning(G, seed=None, p=0.5, weight=None):
-    """Compute a random partitioning of the graphs nodes and the
-    corresponding cut value.
+    """Compute a random partitioning of the graph nodes and its cut value.
+
+    A partitioning is calculated by observing each node
+    and deciding to add it to the partition with probability p,
+    returning a random cut and its corresponding value (the
+    sum of weights of edges connecting different partitions).
 
     Parameters
     ----------
@@ -55,7 +59,11 @@ def _swap_node_partition(cut, node):
 @py_random_state(2)
 def one_exchange(G, initial_cut=None, seed=None, weight=None):
     """Compute a partitioning of the graphs nodes and the corresponding cut value.
-    Use a greedy one exchange strategy to find a locally maximal cut.
+
+    Use a greedy one exchange strategy to find a locally maximal cut
+    and its value, it works by finding the best node (one that gives
+    the highest gain to the cut value) to add to the current cut
+    and repeats this process until no improvement can be made.
 
     Parameters
     ----------
