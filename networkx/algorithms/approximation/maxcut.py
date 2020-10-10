@@ -4,7 +4,7 @@ from networkx.utils.decorators import py_random_state
 __all__ = ["randomized_partitioning", "one_exchange"]
 
 
-@nx.not_implemented_for('directed', 'multigraph')
+@nx.not_implemented_for("directed", "multigraph")
 @py_random_state(1)
 def randomized_partitioning(G, seed=None, p=0.5, weight=None):
     """Compute a random partitioning of the graph nodes and its cut value.
@@ -55,7 +55,7 @@ def _swap_node_partition(cut, node):
     return new_cut
 
 
-@nx.not_implemented_for('directed', 'multigraph')
+@nx.not_implemented_for("directed", "multigraph")
 @py_random_state(2)
 def one_exchange(G, initial_cut=None, seed=None, weight=None):
     """Compute a partitioning of the graphs nodes and the corresponding cut value.
@@ -97,10 +97,13 @@ def one_exchange(G, initial_cut=None, seed=None, weight=None):
     while True:
         nodes = list(G.nodes())
         seed.shuffle(nodes)
-        best_node_to_swap = max(nodes,
-                                key=lambda v:
-                                nx.algorithms.cut_size(G, _swap_node_partition(
-                                    cut, v), weight=weight), default=None)
+        best_node_to_swap = max(
+            nodes,
+            key=lambda v: nx.algorithms.cut_size(
+                G, _swap_node_partition(cut, v), weight=weight
+            ),
+            default=None,
+        )
         potential_cut = _swap_node_partition(cut, best_node_to_swap)
         potential_cut_size = nx.algorithms.cut_size(G, potential_cut, weight=weight)
 
