@@ -7,7 +7,6 @@ import itertools
 import tempfile
 import os
 from textwrap import dedent
-from typing import Callable, List, Tuple
 
 import networkx as nx
 from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
@@ -26,19 +25,19 @@ class TestEdgelist:
         cls.XDG = nx.MultiDiGraph(cls.XG)
 
     @staticmethod
-    def bytes_io(s: str, encoding="utf8") -> io.BytesIO:
+    def bytes_io(s, encoding="utf8"):
         return io.BytesIO(bytes(dedent(s), encoding=encoding))
 
     @staticmethod
-    def string_io(s: str) -> io.StringIO:
+    def string_io(s):
         return io.StringIO(dedent(s))
 
     @pytest.fixture(params=["BytesIO", "StringIO"])
-    def stream(self, request) -> Callable[[str], io.IOBase]:
+    def stream(self, request):
         return self.bytes_io if request.param == "BytesIO" else self.string_io
 
     @pytest.fixture(params=["", ","])
-    def delimiter(self, request) -> str:
+    def delimiter(self, request):
         return request.param
 
     @pytest.fixture
@@ -53,7 +52,7 @@ class TestEdgelist:
         return s, expected, delimiter if delimiter != "" else None
 
     @pytest.fixture(params=itertools.product([True, False], repeat=2))
-    def edgelist_data_dict(self, request, delimiter) -> (str, List[Tuple]):
+    def edgelist_data_dict(self, request, delimiter):
         weights, colors = request.param
         data1, data2 = {}, {}
         if weights:
