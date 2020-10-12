@@ -46,8 +46,8 @@ def chess_pgn_graph(pgn_file="chess_masters_WCC.pgn.bz2"):
 
     G = nx.MultiDiGraph()
     game = {}
-    datafile = bz2.BZ2File(pgn_file)
-    lines = (line.decode().rstrip("\r\n") for line in datafile)
+    with bz2.BZ2File(pgn_file) as datafile:
+        lines = [line.decode().rstrip("\r\n") for line in datafile]
     for line in lines:
         if line.startswith("["):
             tag, value = line[1:-1].split(" ", 1)
