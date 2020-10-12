@@ -3,7 +3,7 @@
 Knuth Miles
 ===========
 
-`miles_graph()` returns an undirected graph over the 128 US cities from.  The
+`miles_graph()` returns an undirected graph over 128 US cities. The
 cities each have location and population data.  The edges are labeled with the
 distance between the two cities.
 
@@ -67,7 +67,7 @@ def miles_graph():
 G = miles_graph()
 
 print("Loaded miles_dat.txt containing 128 cities.")
-print(f"digraph has {nx.number_of_nodes(G)} nodes with {nx.number_of_edges(G)} edges")
+print(G)
 
 # make new graph of cites, edge if less then 300 miles between them
 H = nx.Graph()
@@ -76,6 +76,7 @@ for v in G:
 for (u, v, d) in G.edges(data=True):
     if d["weight"] < 300:
         H.add_edge(u, v)
+
 
 # draw with matplotlib/pylab
 plt.figure(figsize=(8, 8))
