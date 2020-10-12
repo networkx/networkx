@@ -65,18 +65,15 @@ def chess_pgn_graph(pgn_file="chess_masters_WCC.pgn.bz2"):
 
 G = chess_pgn_graph()
 
-ngames = G.number_of_edges()
-nplayers = G.number_of_nodes()
+print(
+    f"Loaded {G.number_of_edges()} chess games between {G.number_of_nodes()} players\n"
+)
 
-print(f"Loaded {ngames} chess games between {nplayers} players\n")
-
-# identify connected components
-# of the undirected version
+# identify connected components of the undirected version
 H = G.to_undirected()
 Gcc = [H.subgraph(c) for c in nx.connected_components(H)]
 if len(Gcc) > 1:
-    print("Note the disconnected component consisting of:")
-    print(Gcc[1].nodes())
+    print(f"Note the disconnected component consisting of:\n{Gcc[1].nodes()}")
 
 # find all games with B97 opening (as described in ECO)
 openings = {game_info["ECO"] for (white, black, game_info) in G.edges(data=True)}
@@ -86,10 +83,11 @@ print('with the Najdorff 7...Qb6 "Poisoned Pawn" variation.\n')
 
 for (white, black, game_info) in G.edges(data=True):
     if game_info["ECO"] == "B97":
-        print(white, "vs", black)
+        summary = f"{white} vs {black}\n"
         for k, v in game_info.items():
-            print("   ", k, ": ", v)
-        print("\n")
+            summary += f"   {k}: {v}\n"
+        summary += "\n"
+        print(summary)
 
 # make new undirected graph H without multi-edges
 H = nx.Graph(G)
