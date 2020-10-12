@@ -21,6 +21,7 @@ The data file can be found at:
 import gzip
 import re
 
+import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -58,8 +59,8 @@ def miles_graph():
             (y, x) = coord.split(",")
 
             G.add_node(city)
-            # assign position - flip x axis for matplotlib, shift origin
-            G.position[city] = (-int(x) + 7500, int(y) - 3000)
+            # assign position - Convert string to lat/long
+            G.position[city] = (-float(x) / 100, float(y) / 100)
             G.population[city] = float(pop) / 1000.0
     return G
 
@@ -77,21 +78,58 @@ for (u, v, d) in G.edges(data=True):
     if d["weight"] < 300:
         H.add_edge(u, v)
 
-
 # draw with matplotlib/pylab
-plt.figure(figsize=(8, 8))
+fig = plt.figure(figsize=(8, 8))
+
+# Use cartopy to provide a backdrop for the visualization
+try:
+    import cartopy.crs as ccrs
+    import cartopy.io.shapereader as shpreader
+
+    ax = fig.add_axes([0, 0, 1, 1], projection=ccrs.LambertConformal(), frameon=False)
+    ax.set_extent([-125, -66.5, 20, 50], ccrs.Geodetic())
+    shapename = "admin_1_states_provinces_lakes_shp"
+    states_shp = shpreader.natural_earth(
+        resolution="110m", category="cultural", name=shapename
+    )
+    ax.add_geometries(
+        shpreader.Reader(states_shp).geometries(),
+        ccrs.PlateCarree(),
+        facecolor="none",
+        edgecolor="k",
+    )
+
+except ImportError:
+    # If cartopy is unavailable, the backdrop for the plot will be blank;
+    # though you should still be able to discern the general shape of the US
+    # from graph nodes and edges!
+    pass
+
 # with nodes colored by degree sized by population
 node_color = [float(H.degree(v)) for v in H]
-nx.draw(
-    H,
-    G.position,
-    node_size=[G.population[v] for v in H],
-    node_color=node_color,
-    with_labels=False,
-)
 
-# scale the axes equally
-plt.xlim(-5000, 500)
-plt.ylim(-2000, 3500)
+for edge in H.edges():
+    edge_coords = np.array([G.position[v] for v in edge])
+    ax.plot(
+        edge_coords[:, 0],
+        edge_coords[:, 1],
+        transform=ccrs.PlateCarree(),
+        color="k",
+        linewidth=1.0,
+    )
+ax.scatter(
+    *np.array([v for v in G.position.values()]).T,
+    s=[G.population[v] for v in H],
+    c=node_color,
+    transform=ccrs.PlateCarree(),
+    zorder=100
+)
+# nx.draw(
+#    H,
+#    G.position,
+#    node_size=[G.population[v] for v in H],
+#    node_color=node_color,
+#    with_labels=False,
+# )
 
 plt.show()
