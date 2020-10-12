@@ -129,7 +129,7 @@ ax.text(
     0.10,
     "edge width = # games played",
     horizontalalignment="center",
-    transform=plt.gca().transAxes,
+    transform=ax.transAxes,
     fontdict=font,
 )
 ax.text(
@@ -137,7 +137,7 @@ ax.text(
     0.06,
     "node size = # games won",
     horizontalalignment="center",
-    transform=plt.gca().transAxes,
+    transform=ax.transAxes,
     fontdict=font,
 )
 
