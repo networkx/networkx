@@ -81,11 +81,15 @@ for (u, v, d) in G.edges(data=True):
 # draw with matplotlib/pylab
 fig = plt.figure(figsize=(8, 8))
 
+# nodes colored by degree sized by population
+node_color = [float(H.degree(v)) for v in H]
+
 # Use cartopy to provide a backdrop for the visualization
 try:
     import cartopy.crs as ccrs
     import cartopy.io.shapereader as shpreader
 
+    # Add map of US as a backdrop
     ax = fig.add_axes([0, 0, 1, 1], projection=ccrs.LambertConformal(), frameon=False)
     ax.set_extent([-125, -66.5, 20, 50], ccrs.Geodetic())
     shapename = "admin_1_states_provinces_lakes_shp"
@@ -98,38 +102,35 @@ try:
         facecolor="none",
         edgecolor="k",
     )
+    # NOTE: When using cartopy, use matplotlib directly rather than nx.draw
+    # to take advantage of the cartopy transforms
+    ax.scatter(
+        *np.array([v for v in G.position.values()]).T,
+        s=[G.population[v] for v in H],
+        c=node_color,
+        transform=ccrs.PlateCarree(),
+        zorder=100  # Ensure nodes lie on top of edges/state lines
+    )
+    # Plot edges between the cities
+    for edge in H.edges():
+        edge_coords = np.array([G.position[v] for v in edge])
+        ax.plot(
+            edge_coords[:, 0],
+            edge_coords[:, 1],
+            transform=ccrs.PlateCarree(),
+            color="k",
+        )
 
 except ImportError:
     # If cartopy is unavailable, the backdrop for the plot will be blank;
     # though you should still be able to discern the general shape of the US
     # from graph nodes and edges!
-    pass
-
-# with nodes colored by degree sized by population
-node_color = [float(H.degree(v)) for v in H]
-
-for edge in H.edges():
-    edge_coords = np.array([G.position[v] for v in edge])
-    ax.plot(
-        edge_coords[:, 0],
-        edge_coords[:, 1],
-        transform=ccrs.PlateCarree(),
-        color="k",
-        linewidth=1.0,
+    nx.draw(
+        H,
+        G.position,
+        node_size=[G.population[v] for v in H],
+        node_color=node_color,
+        with_labels=False,
     )
-ax.scatter(
-    *np.array([v for v in G.position.values()]).T,
-    s=[G.population[v] for v in H],
-    c=node_color,
-    transform=ccrs.PlateCarree(),
-    zorder=100
-)
-# nx.draw(
-#    H,
-#    G.position,
-#    node_size=[G.population[v] for v in H],
-#    node_color=node_color,
-#    with_labels=False,
-# )
 
 plt.show()
