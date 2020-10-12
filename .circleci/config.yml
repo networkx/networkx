@@ -26,6 +26,11 @@ jobs:
             sudo apt-get install texlive texlive-latex-extra latexmk
 
       - run:
+          name: Install cartopy dependencies
+          command: |
+            sudo apt-get install libgeos-dev libproj-dev
+
+      - run:
           name: Install Python dependencies
           command: |
             python3 -m venv venv
@@ -33,7 +38,8 @@ jobs:
             pip install --upgrade pip wheel setuptools
             pip install -r requirements.txt
             pip install -r requirements/doc.txt
-            pip install pydot pygraphviz
+            pip install -r requirements/extra.txt
+            pip install -r requirements/example.txt
 
       - run:
           name: Install
