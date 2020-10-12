@@ -32,6 +32,8 @@ matrix:
           - texlive
           - texlive-latex-extra
           - latexmk
+          - libgeos-dev
+          - libproj-dev
     - os: linux
       python: 3.7
       env:
@@ -59,6 +61,9 @@ install:
   - pip install --retries 3 ${PIP_FLAGS} -r requirements.txt
   - if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
       pip install --retries 3 ${PIP_FLAGS} -r requirements/extra.txt;
+    fi
+  - if [[ "${BUILD_DOCS}" == 1 ]]; then
+      pip install --retries 3 ${PIP_FLAGS} -r requirements/example.txt;
     fi
   # install networkx
   - printenv PWD
