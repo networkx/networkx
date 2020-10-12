@@ -37,12 +37,6 @@ for examples.
 import warnings
 from collections import defaultdict
 
-from xml.etree.ElementTree import Element, ElementTree, tostring, fromstring
-
-try:
-    import lxml.etree as lxmletree
-except ImportError:
-    lxmletree = None
 
 import networkx as nx
 from networkx.utils import open_file
@@ -150,6 +144,13 @@ def write_graphml_lxml(
     This implementation does not support mixed graphs (directed
     and unidirected edges together) hyperedges, nested graphs, or ports.
     """
+    try:
+        import lxml.etree as lxmletree
+    except ImportError:
+        return write_graphml_xml(
+            G, path, encoding, prettyprint, infer_numeric_types, named_key_ids
+        )
+
     writer = GraphMLWriterLxml(
         path,
         graph=G,
@@ -418,6 +419,8 @@ class GraphMLWriter(GraphML):
         infer_numeric_types=False,
         named_key_ids=False,
     ):
+        from xml.etree.ElementTree import Element
+
         self.myElement = Element
 
         self.infer_numeric_types = infer_numeric_types
@@ -440,6 +443,8 @@ class GraphMLWriter(GraphML):
             self.add_graph_element(graph)
 
     def __str__(self):
+        from xml.etree.ElementTree import tostring
+
         if self.prettyprint:
             self.indent(self.xml)
         s = tostring(self.xml).decode(self.encoding)
@@ -585,6 +590,8 @@ class GraphMLWriter(GraphML):
             self.add_graph_element(G)
 
     def dump(self, stream):
+        from xml.etree.ElementTree import ElementTree
+
         if self.prettyprint:
             self.indent(self.xml)
         document = ElementTree(self.xml)
@@ -632,6 +639,8 @@ class GraphMLWriterLxml(GraphMLWriter):
         infer_numeric_types=False,
         named_key_ids=False,
     ):
+        import lxml.etree as lxmletree
+
         self.myElement = lxmletree.Element
 
         self._encoding = encoding
@@ -750,11 +759,8 @@ class GraphMLWriterLxml(GraphMLWriter):
         self._xml_base.__exit__(None, None, None)
 
 
-# Choose a writer function for default
-if lxmletree is None:
-    write_graphml = write_graphml_xml
-else:
-    write_graphml = write_graphml_lxml
+# default is lxml is present.
+write_graphml = write_graphml_lxml
 
 
 class GraphMLReader(GraphML):
@@ -767,6 +773,8 @@ class GraphMLReader(GraphML):
         self.edge_ids = {}  # dict mapping (u,v) tuples to edge id attributes
 
     def __call__(self, path=None, string=None):
+        from xml.etree.ElementTree import ElementTree, fromstring
+
         if path is not None:
             self.xml = ElementTree(file=path)
         elif string is not None:
