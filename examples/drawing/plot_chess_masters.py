@@ -3,10 +3,10 @@
 Chess Masters
 =============
 
-An example of the MultiDiGraph class
+An example of the MultiDiGraph class.
 
-The function chess_pgn_graph reads a collection of chess matches stored in the
-specified PGN file (PGN ="Portable Game Notation").  Here the (compressed)
+The function `chess_pgn_graph` reads a collection of chess matches stored in
+the specified PGN file (PGN ="Portable Game Notation").  Here the (compressed)
 default file::
 
     chess_masters_WCC.pgn.bz2
@@ -36,7 +36,7 @@ game_details = ["Event", "Date", "Result", "ECO", "Site"]
 def chess_pgn_graph(pgn_file="chess_masters_WCC.pgn.bz2"):
     """Read chess games in pgn format in pgn_file.
 
-    Filenames ending in .gz or .bz2 will be uncompressed.
+    Filenames ending in .bz2 will be uncompressed.
 
     Return the MultiDiGraph of players connected by a chess game.
     Edges contain game data in a dict.
