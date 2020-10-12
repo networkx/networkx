@@ -93,9 +93,7 @@ for (white, black, game_info) in G.edges(data=True):
 H = nx.Graph(G)
 
 # edge width is proportional number of games played
-edgewidth = []
-for (u, v, d) in H.edges(data=True):
-    edgewidth.append(len(G.get_edge_data(u, v)))
+edgewidth = [len(G.get_edge_data(u, v)) for u, v in H.edges()]
 
 # node size is proportional to number of games won
 wins = dict.fromkeys(G.nodes(), 0.0)
@@ -108,16 +106,14 @@ for (u, v, d) in G.edges(data=True):
         wins[v] += 0.5
     else:
         wins[v] += 1.0
-# try:
-#    pos = nx.nx_agraph.graphviz_layout(H)
-# except ImportError:
-#    pos = nx.spring_layout(H, iterations=20)
+nodesize = [wins[v] * 50 for v in H]
+
+# Generate layout for visualization
 pos = nx.kamada_kawai_layout(H)
 
 plt.rcParams["text.usetex"] = False
 fig, ax = plt.subplots(figsize=(12, 12))
 nx.draw_networkx_edges(H, pos, alpha=0.3, width=edgewidth, edge_color="m")
-nodesize = [wins[v] * 50 for v in H]
 nx.draw_networkx_nodes(H, pos, node_size=nodesize, node_color="w", alpha=0.4)
 nx.draw_networkx_edges(H, pos, alpha=0.4, node_size=0, width=1, edge_color="k")
 nx.draw_networkx_labels(H, pos, font_size=14)
