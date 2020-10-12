@@ -3,7 +3,7 @@
 Chess Masters
 =============
 
-An example of the MultiDiGraph clas
+An example of the MultiDiGraph class
 
 The function chess_pgn_graph reads a collection of chess matches stored in the
 specified PGN file (PGN ="Portable Game Notation").  Here the (compressed)
@@ -110,38 +110,43 @@ for (u, v, d) in G.edges(data=True):
         wins[v] += 0.5
     else:
         wins[v] += 1.0
-try:
-    pos = nx.nx_agraph.graphviz_layout(H)
-except ImportError:
-    pos = nx.spring_layout(H, iterations=20)
+# try:
+#    pos = nx.nx_agraph.graphviz_layout(H)
+# except ImportError:
+#    pos = nx.spring_layout(H, iterations=20)
+pos = nx.kamada_kawai_layout(H)
 
 plt.rcParams["text.usetex"] = False
-plt.figure(figsize=(8, 8))
+fig, ax = plt.subplots(figsize=(12, 12))
 nx.draw_networkx_edges(H, pos, alpha=0.3, width=edgewidth, edge_color="m")
 nodesize = [wins[v] * 50 for v in H]
 nx.draw_networkx_nodes(H, pos, node_size=nodesize, node_color="w", alpha=0.4)
 nx.draw_networkx_edges(H, pos, alpha=0.4, node_size=0, width=1, edge_color="k")
 nx.draw_networkx_labels(H, pos, font_size=14)
+ax.set_xlim(-0.8, 0.8)
 font = {"fontname": "Helvetica", "color": "k", "fontweight": "bold", "fontsize": 14}
 plt.title("World Chess Championship Games: 1886 - 1985", font)
 
-# change font and write text (using data coordinates)
-font = {"fontname": "Helvetica", "color": "r", "fontweight": "bold", "fontsize": 14}
+# Change font color for legend
+font["color"] = "r"
 
 plt.text(
-    0.5,
-    0.97,
+    0.80,
+    0.10,
     "edge width = # games played",
     horizontalalignment="center",
     transform=plt.gca().transAxes,
+    fontdict=font,
 )
 plt.text(
-    0.5,
-    0.94,
+    0.80,
+    0.06,
     "node size = # games won",
     horizontalalignment="center",
     transform=plt.gca().transAxes,
+    fontdict=font,
 )
 
+fig.tight_layout()
 plt.axis("off")
 plt.show()
