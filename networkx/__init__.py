@@ -67,9 +67,10 @@ from networkx.readwrite import *
 # Need to test with SciPy, when available
 import networkx.algorithms
 from networkx.algorithms import *
-import networkx.linalg
 
+import networkx.linalg
 from networkx.linalg import *
+
 from networkx.testing.test import run as test
 
 import networkx.drawing
