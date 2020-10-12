@@ -111,20 +111,20 @@ nodesize = [wins[v] * 50 for v in H]
 # Generate layout for visualization
 pos = nx.kamada_kawai_layout(H)
 
-plt.rcParams["text.usetex"] = False
 fig, ax = plt.subplots(figsize=(12, 12))
+# Visualize graph components
 nx.draw_networkx_edges(H, pos, alpha=0.3, width=edgewidth, edge_color="m")
 nx.draw_networkx_nodes(H, pos, node_size=nodesize, node_color="w", alpha=0.4)
 nx.draw_networkx_edges(H, pos, alpha=0.4, node_size=0, width=1, edge_color="k")
 nx.draw_networkx_labels(H, pos, font_size=14)
-ax.set_xlim(-0.8, 0.8)
-font = {"fontname": "Helvetica", "color": "k", "fontweight": "bold", "fontsize": 14}
-plt.title("World Chess Championship Games: 1886 - 1985", font)
 
+# Title/legend
+font = {"fontname": "Helvetica", "color": "k", "fontweight": "bold", "fontsize": 14}
+ax.set_title("World Chess Championship Games: 1886 - 1985", font)
 # Change font color for legend
 font["color"] = "r"
 
-plt.text(
+ax.text(
     0.80,
     0.10,
     "edge width = # games played",
@@ -132,7 +132,7 @@ plt.text(
     transform=plt.gca().transAxes,
     fontdict=font,
 )
-plt.text(
+ax.text(
     0.80,
     0.06,
     "node size = # games won",
@@ -141,6 +141,8 @@ plt.text(
     fontdict=font,
 )
 
+# Resize figure for label readibility
+ax.set_xlim(-0.8, 0.8)
 fig.tight_layout()
 plt.axis("off")
 plt.show()
