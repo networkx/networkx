@@ -509,8 +509,9 @@ class GraphMLWriter(GraphML):
         type in the keys table.
         """
         if element_type not in self.xml_type:
-            msg = f"GraphML writer does not support {element_type} as data values."
-            raise nx.NetworkXError(msg)
+            raise nx.NetworkXError(
+                f"GraphML writer does not support {element_type} as data values."
+            )
         keyid = self.get_key(name, self.xml_type[element_type], scope, default)
         data_element = self.myElement("data", key=keyid)
         data_element.text = str(value)
