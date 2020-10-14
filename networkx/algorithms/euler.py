@@ -224,7 +224,7 @@ def has_eulerian_path(G):
         - at most one vertex has in_degree - out_degree = 1,
         - every other vertex has equal in_degree and out_degree,
         - and all of its vertices with nonzero degree belong to a
-        - single connected component of the underlying undirected graph.
+          single connected component of the underlying undirected graph.
 
     An undirected graph has an Eulerian path iff:
         - exactly zero or two vertices have odd degree,
