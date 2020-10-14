@@ -246,23 +246,24 @@ def has_eulerian_path(G):
     eulerian_path
     """
     if G.is_directed():
-        H = G.copy()
-        nodes_remove = [v for v in H if H.in_degree(v) == 0 and H.out_degree(v) == 0]
-        H.remove_nodes_from(nodes_remove)
-        ins = H.in_degree
-        outs = H.out_degree
+        nodes_remove = [v for v in G if G.in_degree[v] == 0 and G.out_degree[v] == 0]
+        if nodes_remove:
+            G = G.copy()
+            G.remove_nodes_from(nodes_remove)
+        ins = G.in_degree
+        outs = G.out_degree
         unbalanced_ins = 0
         unbalanced_outs = 0
-        for v in H:
-            if ins(v) - outs(v) == 1:
+        for v in G:
+            if ins[v] - outs[v] == 1:
                 unbalanced_ins += 1
-            elif outs(v) - ins(v) == 1:
+            elif outs[v] - ins[v] == 1:
                 unbalanced_outs += 1
-            elif ins(v) != outs(v):
+            elif ins[v] != outs[v]:
                 return False
 
         return (
-            unbalanced_ins <= 1 and unbalanced_outs <= 1 and nx.is_weakly_connected(H)
+            unbalanced_ins <= 1 and unbalanced_outs <= 1 and nx.is_weakly_connected(G)
         )
 
     else:
