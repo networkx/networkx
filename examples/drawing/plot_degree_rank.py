@@ -14,10 +14,10 @@ G = nx.gnp_random_graph(100, 0.02)
 degree_sequence = sorted([d for n, d in G.degree()], reverse=True)
 dmax = max(degree_sequence)
 
-plt.loglog(degree_sequence, "b-", marker="o")
-plt.title("Degree rank plot")
-plt.ylabel("degree")
-plt.xlabel("rank")
+plt.plot(degree_sequence, "b-", marker="o")
+plt.title("Degree rank plot", fontweight="bold")
+plt.ylabel("degree", fontweight="bold")
+plt.xlabel("rank", fontweight="bold")
 
 # draw graph in inset
 plt.axes([0.45, 0.45, 0.45, 0.45])
