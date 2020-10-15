@@ -1,10 +1,17 @@
 """
-===========
-Degree Rank
-===========
+===============
+Degree Analysis
+===============
 
-Random graph from given degree sequence.
-Draw degree rank plot and graph with matplotlib.
+This example shows several ways to visualize the distribution of the degree of
+nodes with two common techniques: a *degree-rank plot* and a
+*degree histogram*.
+
+In this example, a random Graph is generated with 100 nodes. The degree of
+each node is determined, and a figure is generated showing three things:
+  1. The subgraph of connected components
+  2. The degree-rank plot for the Graph, and
+  3. The degree histogram
 """
 import networkx as nx
 import numpy as np
@@ -29,9 +36,9 @@ ax0.set_axis_off()
 
 ax1 = fig.add_subplot(axgrid[3:, :2])
 ax1.plot(degree_sequence, "b-", marker="o")
-ax1.set_title("Degree rank plot")
-ax1.set_ylabel("degree")
-ax1.set_xlabel("rank")
+ax1.set_title("Degree Rank Plot")
+ax1.set_ylabel("Degree")
+ax1.set_xlabel("Rank")
 
 ax2 = fig.add_subplot(axgrid[3:, 2:])
 ax2.bar(*np.unique(degree_sequence, return_counts=True))
