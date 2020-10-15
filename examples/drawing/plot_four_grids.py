@@ -3,7 +3,10 @@
 Four Grids
 ==========
 
-Draw a graph with matplotlib.
+Draw a 4x4 graph with matplotlib.
+
+This example illustrates the use of keyword arguments to `networkx.draw` to
+customize the visualization of a simple Graph comprising a 4x4 grid.
 """
 
 import matplotlib.pyplot as plt
