@@ -29,10 +29,10 @@ central_lat = 37.5
 central_lon = -96
 extent = [-120, -70, 24, 50.5]
 central_lon = np.mean(extent[:2])
-central_lat = np.mean(extent[2:])
+central_lat = np.mean(extent[ 2  :])
 
 plt.figure(figsize=(12, 6))
-ax = plt.axes(projection=ccrs.AlbersEqualArea(central_lon, central_lat))
+ax = plt.axes(projection = ccrs.AlbersEqualArea(central_lon, central_lat))
 ax.set_extent(extent)
 
 ax.add_feature(cartopy.feature.OCEAN)
