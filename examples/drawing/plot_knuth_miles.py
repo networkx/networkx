@@ -118,6 +118,7 @@ try:
             edge_coords[:, 0],
             edge_coords[:, 1],
             transform=ccrs.PlateCarree(),
+            linewidth=0.75,
             color="k",
         )
 
