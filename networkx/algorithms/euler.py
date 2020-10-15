@@ -246,10 +246,12 @@ def has_eulerian_path(G):
     eulerian_path
     """
     if G.is_directed():
+        # Remove isolated nodes (if any) without altering the input graph
         nodes_remove = [v for v in G if G.in_degree[v] == 0 and G.out_degree[v] == 0]
         if nodes_remove:
             G = G.copy()
             G.remove_nodes_from(nodes_remove)
+
         ins = G.in_degree
         outs = G.out_degree
         unbalanced_ins = 0
