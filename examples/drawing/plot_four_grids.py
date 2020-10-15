@@ -26,4 +26,8 @@ nx.draw(G, pos, ax=ax[2], node_color="g", node_size=250, with_labels=False, widt
 H = G.to_directed()
 nx.draw(H, pos, ax=ax[3], node_color="b", node_size=20, with_labels=False)
 
+# Set margins for the axes so that nodes aren't clipped
+for a in ax:
+    a.margins(0.10)
+fig.tight_layout()
 plt.show()
