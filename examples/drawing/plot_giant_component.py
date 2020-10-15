@@ -14,10 +14,12 @@ import networkx as nx
 
 # This example needs Graphviz and either PyGraphviz or pydot.
 # from networkx.drawing.nx_pydot import graphviz_layout as layout
-from networkx.drawing.nx_agraph import graphviz_layout as layout
-
-# If you don't have pygraphviz or pydot, you can do this
-# layout = nx.spring_layout
+# If you don't have pygraphviz or pydot, the script will fall back to
+# a built-in layout
+try:
+    from networkx.drawing.nx_agraph import graphviz_layout as layout
+except ImportError:
+    layout = nx.spring_layout
 
 
 n = 150  # 150 nodes
