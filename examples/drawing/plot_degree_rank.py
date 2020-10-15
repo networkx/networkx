@@ -20,7 +20,7 @@ plt.ylabel("degree", fontweight="bold")
 plt.xlabel("rank", fontweight="bold")
 
 # draw graph in inset
-plt.axes([0.45, 0.45, 0.45, 0.45])
+plt.axes([0.44, 0.44, 0.45, 0.45])
 Gcc = G.subgraph(sorted(nx.connected_components(G), key=len, reverse=True)[0])
 pos = nx.spring_layout(Gcc)
 plt.axis("off")
