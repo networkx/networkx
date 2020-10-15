@@ -145,7 +145,7 @@ ax.text(
 )
 
 # Resize figure for label readibility
-ax.set_xlim(-0.8, 0.8)
+ax.margins(0.1, 0.05)
 fig.tight_layout()
 plt.axis("off")
 plt.show()
