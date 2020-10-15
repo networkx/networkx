@@ -79,7 +79,7 @@ for (u, v, d) in G.edges(data=True):
         H.add_edge(u, v)
 
 # draw with matplotlib/pylab
-fig = plt.figure(figsize=(8, 8))
+fig = plt.figure(figsize=(8, 6))
 
 # nodes colored by degree sized by population
 node_color = [float(H.degree(v)) for v in H]
