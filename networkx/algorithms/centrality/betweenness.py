@@ -101,20 +101,20 @@ def betweenness_centrality(
     .. [1] Ulrik Brandes:
        A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
-       http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+       https://doi.org/10.1080/0022250X.2001.9990249
     .. [2] Ulrik Brandes:
        On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
-       http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
+       https://doi.org/10.1016/j.socnet.2007.11.001
     .. [3] Ulrik Brandes and Christian Pich:
        Centrality Estimation in Large Networks.
        International Journal of Bifurcation and Chaos 17(7):2303-2318, 2007.
-       http://www.inf.uni-konstanz.de/algo/publications/bp-celn-06.pdf
+       https://dx.doi.org/10.1142/S0218127407018403
     .. [4] Linton C. Freeman:
        A set of measures of centrality based on betweenness.
        Sociometry 40: 35–41, 1977
-       http://moreno.ss.uci.edu/23.pdf
+       https://doi.org/10.2307/3033543
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     if k is None:
