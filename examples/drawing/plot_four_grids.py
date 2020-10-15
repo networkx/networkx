@@ -16,17 +16,14 @@ G = nx.grid_2d_graph(4, 4)  # 4x4 grid
 
 pos = nx.spring_layout(G, iterations=100)
 
-plt.subplot(221)
-nx.draw(G, pos, font_size=8)
+# Create a 2x2 subplot
+fig, all_axes = plt.subplots(2, 2)
+ax = all_axes.flat
 
-plt.subplot(222)
-nx.draw(G, pos, node_color="k", node_size=0, with_labels=False)
-
-plt.subplot(223)
-nx.draw(G, pos, node_color="g", node_size=250, with_labels=False, width=6)
-
-plt.subplot(224)
+nx.draw(G, pos, ax=ax[0], font_size=8)
+nx.draw(G, pos, ax=ax[1], node_color="k", node_size=0, with_labels=False)
+nx.draw(G, pos, ax=ax[2], node_color="g", node_size=250, with_labels=False, width=6)
 H = G.to_directed()
-nx.draw(H, pos, node_color="b", node_size=20, with_labels=False)
+nx.draw(H, pos, ax=ax[3], node_color="b", node_size=20, with_labels=False)
 
 plt.show()
