@@ -114,7 +114,7 @@ pos = nx.kamada_kawai_layout(H)
 fig, ax = plt.subplots(figsize=(12, 12))
 # Visualize graph components
 nx.draw_networkx_edges(H, pos, alpha=0.3, width=edgewidth, edge_color="m")
-nx.draw_networkx_nodes(H, pos, node_size=nodesize, node_color="w", alpha=0.4)
+nx.draw_networkx_nodes(H, pos, node_size=nodesize, node_color="#210070", alpha=0.3)
 nx.draw_networkx_labels(H, pos, font_size=14)
 
 # Title/legend
