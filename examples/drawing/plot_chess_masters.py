@@ -110,6 +110,10 @@ nodesize = [wins[v] * 50 for v in H]
 
 # Generate layout for visualization
 pos = nx.kamada_kawai_layout(H)
+# Manual tweaking to limit node label overlap in the visualization
+pos["Reshevsky, Samuel H"] += (0.05, -0.10)
+pos["Botvinnik, Mikhail M"] += (0.03, -0.06)
+pos["Smyslov, Vassily V"] += (0.05, -0.03)
 
 fig, ax = plt.subplots(figsize=(12, 12))
 # Visualize graph components
