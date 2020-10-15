@@ -89,19 +89,19 @@ try:
     import cartopy.crs as ccrs
     import cartopy.io.shapereader as shpreader
 
-    # Add map of US as a backdrop
     ax = fig.add_axes([0, 0, 1, 1], projection=ccrs.LambertConformal(), frameon=False)
     ax.set_extent([-125, -66.5, 20, 50], ccrs.Geodetic())
-    shapename = "admin_1_states_provinces_lakes_shp"
-    states_shp = shpreader.natural_earth(
-        resolution="110m", category="cultural", name=shapename
-    )
-    ax.add_geometries(
-        shpreader.Reader(states_shp).geometries(),
-        ccrs.PlateCarree(),
-        facecolor="none",
-        edgecolor="k",
-    )
+    # Add map of countries & US states as a backdrop
+    for shapename in ("admin_1_states_provinces_lakes_shp", "admin_0_countries"):
+        shp = shpreader.natural_earth(
+            resolution="110m", category="cultural", name=shapename
+        )
+        ax.add_geometries(
+            shpreader.Reader(shp).geometries(),
+            ccrs.PlateCarree(),
+            facecolor="none",
+            edgecolor="k",
+        )
     # NOTE: When using cartopy, use matplotlib directly rather than nx.draw
     # to take advantage of the cartopy transforms
     ax.scatter(
