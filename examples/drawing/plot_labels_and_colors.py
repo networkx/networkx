@@ -12,7 +12,7 @@ G = nx.cubical_graph()
 pos = nx.spring_layout(G)  # positions for all nodes
 
 # nodes
-options = {"node_size": 500, "alpha": 0.8}
+options = {"node_size": 600, "alpha": 0.9}
 nx.draw_networkx_nodes(G, pos, nodelist=[0, 1, 2, 3], node_color="r", **options)
 nx.draw_networkx_nodes(G, pos, nodelist=[4, 5, 6, 7], node_color="b", **options)
 
@@ -46,7 +46,8 @@ labels[4] = r"$\alpha$"
 labels[5] = r"$\beta$"
 labels[6] = r"$\gamma$"
 labels[7] = r"$\delta$"
-nx.draw_networkx_labels(G, pos, labels, font_size=16)
+nx.draw_networkx_labels(G, pos, labels, font_size=22, font_color="whitesmoke")
 
+plt.tight_layout()
 plt.axis("off")
 plt.show()
