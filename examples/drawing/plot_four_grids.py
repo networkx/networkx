@@ -21,10 +21,19 @@ fig, all_axes = plt.subplots(2, 2)
 ax = all_axes.flat
 
 nx.draw(G, pos, ax=ax[0], font_size=8)
-nx.draw(G, pos, ax=ax[1], node_color="k", node_size=0, with_labels=False)
-nx.draw(G, pos, ax=ax[2], node_color="g", node_size=250, with_labels=False, width=6)
+nx.draw(G, pos, ax=ax[1], node_size=0, with_labels=False)
+nx.draw(
+    G,
+    pos,
+    ax=ax[2],
+    node_color="tab:green",
+    edge_color="tab:gray",
+    node_size=250,
+    with_labels=False,
+    width=6,
+)
 H = G.to_directed()
-nx.draw(H, pos, ax=ax[3], node_color="b", node_size=20, with_labels=False)
+nx.draw(H, pos, ax=ax[3], node_color="tab:orange", node_size=20, with_labels=False)
 
 # Set margins for the axes so that nodes aren't clipped
 for a in ax:
