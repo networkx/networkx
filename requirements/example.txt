@@ -1,0 +1,6 @@
+Cython>=0.29
+pyshp>=2.1
+six>=1.15
+--no-binary shapely
+shapely>=1.5.17
+Cartopy>=0.18.0
