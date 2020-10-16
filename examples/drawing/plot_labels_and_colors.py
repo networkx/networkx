@@ -3,7 +3,8 @@
 Labels And Colors
 =================
 
-Draw a graph with matplotlib, color by degree.
+Use `nodelist` and `edgelist` to apply custom coloring and labels to various
+components of a graph.
 """
 import matplotlib.pyplot as plt
 import networkx as nx
