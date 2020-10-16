@@ -27,13 +27,23 @@ nx.draw(
     pos,
     ax=ax[2],
     node_color="tab:green",
-    edge_color="tab:gray",
+    edgecolors="tab:gray",  # Node surface color
+    edge_color="tab:gray",  # Color of graph edges
     node_size=250,
     with_labels=False,
     width=6,
 )
 H = G.to_directed()
-nx.draw(H, pos, ax=ax[3], node_color="tab:orange", node_size=20, with_labels=False)
+nx.draw(
+    H,
+    pos,
+    ax=ax[3],
+    node_color="tab:orange",
+    node_size=20,
+    with_labels=False,
+    arrowsize=10,
+    width=2,
+)
 
 # Set margins for the axes so that nodes aren't clipped
 for a in ax:
