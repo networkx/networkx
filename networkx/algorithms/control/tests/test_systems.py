@@ -36,6 +36,30 @@ def test_lti_system():
     assert (G_A == A).all()
     assert (G_B == B).all()
 
+def test_controllability_matrix():
+    A = np.array([[0, 0, 0, 0, 0],
+                  [1, 0, 0, 0, 0],
+                  [2, 0, 0, 0, 0],
+                  [-1, 0, 3, 0, 0],
+                  [0, 0, 0, 0, 4]])
+    B = np.array([[5, 0],
+                  [0, -2],
+                  [0, 0],
+                  [0, 0],
+                  [0, 6]])
+    true_C = np.array([[5, 4, 0, 0, 0, 0, 0, 0, 0, 0],
+                       [5, 4, 5, 0, 5, 0, 5, 0, 5, 0],
+                       [5, 4, 10, 0, 20, 0, 40, 0, 80, 0],
+                       [5, 4, -5, 0, 5, 0, -5, 0, 5, 0],
+                       [5, 4, 0, 24, 0, 96, 0, 384, 0, 1536]])
+
+    sys = nx.algorithms.control.systems.LTISystem(A, B)
+    sys_C = sys.construct_controllability_matrix()
+
+    assert (sys_C == true_C).all()
+    assert sys.is_controllable()
+
 
 if __name__ == '__main__':
     test_lti_system()
+    test_controllability_matrix()
