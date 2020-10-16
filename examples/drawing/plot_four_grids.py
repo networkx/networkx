@@ -14,7 +14,7 @@ import networkx as nx
 
 G = nx.grid_2d_graph(4, 4)  # 4x4 grid
 
-pos = nx.spring_layout(G, iterations=100)
+pos = nx.spring_layout(G, iterations=100, seed=39775)
 
 # Create a 2x2 subplot
 fig, all_axes = plt.subplots(2, 2)
