@@ -36,7 +36,11 @@ for p, ax in zip(pvals, axes.ravel()):
     G = nx.binomial_graph(n, p)
     pos = layout(G)
     ax.set_title(f"p = {p:.3f}")
-    nx.draw(G, pos, ax=ax, with_labels=False, node_size=10)
+    # Draw connected/disconnected nodes with different alpha values
+    connected = [n for n, d in G.degree() if d > 0]
+    disconnected = list(set(G.nodes()) - set(connected))
+    nx.draw(G, pos, ax=ax, nodelist=connected, with_labels=False, node_size=10)
+    nx.draw(G, pos, ax=ax, nodelist=disconnected, node_size=10, alpha=0.25)
     # identify largest connected component
     Gcc = sorted(nx.connected_components(G), key=len, reverse=True)
     G0 = G.subgraph(Gcc[0])
