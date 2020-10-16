@@ -13,13 +13,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 # This example needs Graphviz and either PyGraphviz or pydot.
-# from networkx.drawing.nx_pydot import graphviz_layout as layout
-# If you don't have pygraphviz or pydot, the script will fall back to
-# a built-in layout
-try:
-    from networkx.drawing.nx_agraph import graphviz_layout as layout
-except ImportError:
-    layout = nx.spring_layout
+from networkx.drawing.nx_agraph import graphviz_layout as layout
 
 
 n = 150  # 150 nodes
@@ -32,9 +26,9 @@ p_conn = math.log(n) / n
 pvals = [0.003, 0.006, 0.008, 0.015]
 
 fig, axes = plt.subplots(2, 2)
-for p, ax in zip(pvals, axes.ravel()):
+for p, ax, seed in zip(pvals, axes.ravel(), range(len(pvals))):
     #### generate graph ####
-    G = nx.binomial_graph(n, p)
+    G = nx.binomial_graph(n, p, seed=seed)
     # identify connected/disconnected nodes
     connected = [n for n, d in G.degree() if d > 0]
     disconnected = list(set(G.nodes()) - set(connected))
