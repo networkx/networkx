@@ -21,6 +21,11 @@ The data file can be found at:
 import gzip
 import re
 
+# Ignore any warnings related to downloading shpfiles with cartopy
+import warnings
+
+warnings.simplefilter("ignore")
+
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
