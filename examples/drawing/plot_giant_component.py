@@ -33,28 +33,33 @@ pvals = [0.003, 0.006, 0.008, 0.015]
 
 fig, axes = plt.subplots(2, 2)
 for p, ax in zip(pvals, axes.ravel()):
+    #### generate graph ####
     G = nx.binomial_graph(n, p)
-    pos = layout(G)
-    ax.set_title(f"p = {p:.3f}")
-    # Draw connected/disconnected nodes with different alpha values
+    # identify connected/disconnected nodes
     connected = [n for n, d in G.degree() if d > 0]
     disconnected = list(set(G.nodes()) - set(connected))
-    nx.draw(G, pos, ax=ax, nodelist=connected, with_labels=False, node_size=10)
-    nx.draw(G, pos, ax=ax, nodelist=disconnected, node_size=10, alpha=0.25)
     # identify largest connected component
     Gcc = sorted(nx.connected_components(G), key=len, reverse=True)
     G0 = G.subgraph(Gcc[0])
-    nx.draw_networkx_edges(G0, pos, ax=ax, edge_color="r", width=6.0)
-    # show other connected components
+    #### draw graph ####
+    pos = layout(G)
+    ax.set_title(f"p = {p:.3f}")
+    # draw largest connected component
+    options = {"ax": ax, "edge_color": "tab:red"}
+    nx.draw_networkx_edges(G0, pos, width=6.0, **options)
+    # draw other connected components
     for Gi in Gcc[1:]:
         if len(Gi) > 1:
             nx.draw_networkx_edges(
                 G.subgraph(Gi),
                 pos,
-                ax=ax,
-                edge_color="r",
                 alpha=0.3,
                 width=5.0,
+                **options,
             )
+    # draw connected/disconnected nodes
+    options = {"ax": ax, "node_size": 30, "edgecolors": "white"}
+    nx.draw(G, pos, nodelist=connected, **options)
+    nx.draw(G, pos, nodelist=disconnected, alpha=0.25, **options)
 fig.tight_layout()
 plt.show()
