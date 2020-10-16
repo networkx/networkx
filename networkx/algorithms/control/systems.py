@@ -1,6 +1,7 @@
 """Classes for networked control systems."""
 import networkx as nx
 import numpy as np
+from itertools import combinations
 
 
 class LTISystem:
@@ -51,3 +52,41 @@ class LTISystem:
         C = self.construct_controllability_matrix()
         rank = np.linalg.matrix_rank(C)
         return self.A.shape[0] == rank
+
+    def is_inaccessible(self):
+        """Check if any states are inaccessible from the inputs."""
+        total_reachable = set()
+        for input_node in self.input_nodes:
+            reachable = nx.single_source_shortest_path_length(self.G,
+                                                              input_node).keys()
+            total_reachable = total_reachable.union(reachable)
+        reachable_states = total_reachable.intersection(self.state_nodes)
+        return len(reachable_states) < len(self.state_nodes)
+
+    def contains_dilation(self):
+        """Check if the system contains a dilation.
+
+        A dilation is defined as a subset of the state nodes S
+        such that the neighborhood set T(S) contains fewer nodes than S itself.
+        """
+        incoming_neighbors = [list(self.G.predecessors(node))
+                              for node in self.state_nodes]
+        for i in range(1, len(self.state_nodes) + 1):
+            for neighbors in combinations(incoming_neighbors, i):
+                neighborhood_set = set().union(*neighbors)
+                if len(neighborhood_set) < i:
+                    return True
+        return False
+
+    def is_structurally_controllable(self):
+        """
+        Check if the system is structurally controllable based on
+        Lin's structural controllability test.
+
+        A system is structurally controllable if and only if
+        it contains no inaccessible state nodes or dilations.
+
+        This test ignores the weights and only focuses on the topology
+        of the underlying graph of the system.
+        """
+        return not self.is_inaccessible() and not self.contains_dilation()

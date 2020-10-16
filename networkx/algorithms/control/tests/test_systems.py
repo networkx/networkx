@@ -59,7 +59,39 @@ def test_controllability_matrix():
     assert (sys_C == true_C).all()
     assert sys.is_controllable()
 
+def test_structural_controllability():
+    A = np.array([[0, 0, 0, 0, 0],
+                  [1, 0, 0, 0, 0],
+                  [2, 0, 0, 0, 0],
+                  [-1, 0, 3, 0, 0],
+                  [0, 0, 0, 0, 4]])
+    B = np.array([[5, 0],
+                  [0, -2],
+                  [0, 0],
+                  [0, 0],
+                  [0, 6]])
+    sys = nx.algorithms.control.systems.LTISystem(A, B)
+    assert not sys.is_inaccessible()
+    assert not sys.contains_dilation()
+    assert sys.is_structurally_controllable()
+
+    A = np.array([[0, 1, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 1],
+                  [0, 1, 0, 0, 1],
+                  [0, 0, 0, 0, 0]])
+    B = np.array([[0],
+                  [0],
+                  [0],
+                  [0],
+                  [1]])
+    sys = nx.algorithms.control.systems.LTISystem(A, B)
+    assert sys.is_inaccessible()
+    assert sys.contains_dilation()
+    assert not sys.is_structurally_controllable()
+
 
 if __name__ == '__main__':
     test_lti_system()
     test_controllability_matrix()
+    test_structural_controllability()
