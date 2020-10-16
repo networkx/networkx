@@ -118,8 +118,9 @@ pos["Smyslov, Vassily V"] += (0.05, -0.03)
 fig, ax = plt.subplots(figsize=(12, 12))
 # Visualize graph components
 nx.draw_networkx_edges(H, pos, alpha=0.3, width=edgewidth, edge_color="m")
-nx.draw_networkx_nodes(H, pos, node_size=nodesize, node_color="#210070", alpha=0.3)
-nx.draw_networkx_labels(H, pos, font_size=14)
+nx.draw_networkx_nodes(H, pos, node_size=nodesize, node_color="#210070", alpha=0.9)
+label_options = {"ec": "k", "fc": "white", "alpha": 0.7}
+nx.draw_networkx_labels(H, pos, font_size=14, bbox=label_options)
 
 # Title/legend
 font = {"fontname": "Helvetica", "color": "k", "fontweight": "bold", "fontsize": 14}
