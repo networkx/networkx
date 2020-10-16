@@ -31,6 +31,11 @@ def test_lti_system():
     assert [e for e in sys.G.edges] == edges
     assert list(sys.G.edges.data('weight')) == edge_data
 
+    G_A = nx.adjacency_matrix(sys.G, nodelist=states).todense().T
+    G_B = nx.adjacency_matrix(sys.G).todense().T[:len(states), -len(inputs):]
+    assert (G_A == A).all()
+    assert (G_B == B).all()
+
 
 if __name__ == '__main__':
     test_lti_system()
