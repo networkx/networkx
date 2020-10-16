@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 G = nx.cubical_graph()
-pos = nx.spring_layout(G)  # positions for all nodes
+pos = nx.spring_layout(G, seed=3113794652)  # positions for all nodes
 
 # nodes
 options = {"node_size": 600, "alpha": 0.9}
