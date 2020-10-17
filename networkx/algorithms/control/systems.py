@@ -21,6 +21,14 @@ def create_bipartite_from_directed_graph(G):
     return H
 
 
+def convert_bipartite_edges_to_original(edges):
+    """
+    Convert bipartite edges to original edges by removing
+    the in (-) and out (+) specification in the string name.
+    """
+    return [(u[:-1], v[:-1]) for u, v in edges]
+
+
 def find_matchings(G, t, selfloops=True):
     """Find matchings in a given graph.
 
@@ -163,3 +171,17 @@ class LTISystem:
         G_x = add_self_loops(G_no_inputs)
         H_x = create_bipartite_from_directed_graph(G_x)
         return has_t_constrained_matching(H_x, n - m, selfloops=False)
+
+    def find_minimum_driver_nodes(self):
+        """Find a minimum set of driver nodes for the system.
+
+        Driver nodes are a set of nodes that when driven by different signals,
+        can control the entire network.
+        """
+        G_no_inputs = self.G.subgraph(self.state_nodes)
+        H = create_bipartite_from_directed_graph(G_no_inputs)
+        max_matching = nx.maximal_matching(H)
+        max_matching = convert_bipartite_edges_to_original(max_matching)
+        matched_nodes = [v for u, v in max_matching]
+        unmatched_nodes = set(self.state_nodes).difference(matched_nodes)
+        return unmatched_nodes

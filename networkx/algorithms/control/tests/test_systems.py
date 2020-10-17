@@ -129,9 +129,25 @@ def test_strong_structural_controllability():
     sys = nx.algorithms.control.systems.LTISystem(A, B)
     assert not sys.is_strongly_structurally_controllable()
 
+def test_driver_nodes():
+    A = np.array([[0, 0, 0, 0, 0],
+                  [1, 0, 0, 0, 0],
+                  [2, 0, 0, 0, 0],
+                  [-1, 0, 3, 0, 0],
+                  [0, 0, 0, 0, 4]])
+    B = np.array([[5, 0],
+                  [0, -2],
+                  [0, 0],
+                  [0, 0],
+                  [0, 6]])
+    true_nodes = {'x0', 'x2'}
+    sys = nx.algorithms.control.systems.LTISystem(A, B)
+    assert true_nodes == sys.find_minimum_driver_nodes()
+
 
 if __name__ == '__main__':
     test_lti_system()
     test_controllability_matrix()
     test_structural_controllability()
     test_strong_structural_controllability()
+    test_driver_nodes()
