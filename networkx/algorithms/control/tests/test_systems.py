@@ -1,4 +1,5 @@
 import networkx as nx
+from networkx.algorithms.control.systems import *
 import numpy as np
 
 
@@ -91,7 +92,46 @@ def test_structural_controllability():
     assert not sys.is_structurally_controllable()
 
 
+def test_strong_structural_controllability():
+    A = np.array([[0, 0, 0],
+                  [1, 0, 0],
+                  [0, 1, 0]])
+    B = np.array([[1],
+                  [0],
+                  [0]])
+    sys = nx.algorithms.control.systems.LTISystem(A, B)
+    G = sys.G
+    G_no_inputs = G.subgraph(sys.state_nodes)
+    H = create_bipartite_from_directed_graph(G_no_inputs)
+    assert nx.is_bipartite(H)
+    assert not has_t_constrained_matching(H, 1)
+    assert has_t_constrained_matching(H, 2)
+    assert not has_t_constrained_matching(H, 3)
+
+    G_x = add_self_loops(G_no_inputs)
+    H_x = create_bipartite_from_directed_graph(G_x)
+    assert not has_t_constrained_matching(H_x, 1, selfloops=False)
+    assert has_t_constrained_matching(H_x, 2, selfloops=False)
+    assert not has_t_constrained_matching(H_x, 3, selfloops=False)
+
+    assert sys.is_strongly_structurally_controllable()
+
+    A = np.array([[0, 0, 0, 0, 0],
+                  [1, 0, 0, 0, 0],
+                  [2, 0, 0, 0, 0],
+                  [-1, 0, 3, 0, 0],
+                  [0, 0, 0, 0, 4]])
+    B = np.array([[5, 0],
+                  [0, -2],
+                  [0, 0],
+                  [0, 0],
+                  [0, 6]])
+    sys = nx.algorithms.control.systems.LTISystem(A, B)
+    assert not sys.is_strongly_structurally_controllable()
+
+
 if __name__ == '__main__':
     test_lti_system()
     test_controllability_matrix()
     test_structural_controllability()
+    test_strong_structural_controllability()

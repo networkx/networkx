@@ -4,6 +4,59 @@ import numpy as np
 from itertools import combinations
 
 
+def create_bipartite_from_directed_graph(G):
+    """Create a bipartite graph from a directed graph.
+
+    Adds in and out nodes for each node of the graph.
+    """
+    in_nodes = [node + '-' for node in G.nodes]
+    out_nodes = [node + '+' for node in G.nodes]
+    edges = []
+    for u, v in G.edges:
+        edges.append((u + '+', v + '-'))
+    H = nx.Graph()
+    H.add_nodes_from(out_nodes, bipartite=0)
+    H.add_nodes_from(in_nodes, bipartite=1)
+    H.add_edges_from(edges)
+    return H
+
+
+def find_matchings(G, t, selfloops=True):
+    """Find matchings in a given graph.
+
+    A matching is defined as a set of edges such that no edges share
+    any vertices. t specifies the sizes of such matchings to search for.
+    """
+    matchings = []
+    if selfloops:
+        all_edges = G.edges
+    else:
+        all_edges = [(u, v) for (u, v) in G.edges if u[:-1] != v[:-1]]
+    for edges in combinations(all_edges, t):
+        if nx.is_matching(G, edges):
+            matchings.append(edges)
+    return matchings
+
+
+def has_t_constrained_matching(G, t, selfloops=True):
+    """Check if a graph contains a t-constrained matching.
+
+    A t-matching is contrained if it is the only such matching of size t.
+    """
+    matchings = find_matchings(G, t, selfloops=selfloops)
+    if len(matchings) == 0 or len(matchings) > 1:
+        return False
+    return True
+
+
+def add_self_loops(G):
+    """Add self loops to all nodes of G."""
+    G = G.copy()
+    for node in G.nodes:
+        G.add_edge(node, node)
+    return G
+
+
 class LTISystem:
     """
     Linear time-invariant system whose dynamics
@@ -90,3 +143,23 @@ class LTISystem:
         of the underlying graph of the system.
         """
         return not self.is_inaccessible() and not self.contains_dilation()
+
+    def is_strongly_structurally_controllable(self):
+        """
+        Check if the system is strongly structurally controllable based on
+        bipartite matchings.
+
+        A system is strongly structurally controllably if and only if
+        the bipartite representation of the system has a constrained
+        (n - m) matching, and the bipartite representation of the system
+        with self-loops added has a constrained self-loop-less (n - m) matching.
+        """
+        n = len(self.state_nodes)
+        m = len(self.input_nodes)
+        G_no_inputs = self.G.subgraph(self.state_nodes)
+        H = create_bipartite_from_directed_graph(G_no_inputs)
+        if not has_t_constrained_matching(H, n - m, selfloops=True):
+            return False
+        G_x = add_self_loops(G_no_inputs)
+        H_x = create_bipartite_from_directed_graph(G_x)
+        return has_t_constrained_matching(H_x, n - m, selfloops=False)
