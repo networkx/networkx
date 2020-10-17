@@ -357,6 +357,24 @@ class TestContraction:
         assert nx.is_isomorphic(actual, expected)
         assert actual.nodes == expected.nodes
 
+    def test_edge_attributes(self):
+        """Tests that node contraction preserves edge attributes."""
+        # Shape: src1 --> dest <-- src2
+        G = nx.DiGraph([("src1", "dest"), ("src2", "dest")])
+        G["src1"]["dest"]["value"] = "src1-->dest"
+        G["src2"]["dest"]["value"] = "src2-->dest"
+        H = nx.MultiDiGraph(G)
+
+        G = nx.contracted_nodes(G, "src1", "src2")  # New Shape: src1 --> dest
+        assert G.edges[("src1", "dest")]["value"] == "src1-->dest"
+        assert (
+            G.edges[("src1", "dest")]["contraction"][("src2", "dest")]["value"]
+            == "src2-->dest"
+        )
+
+        H = nx.contracted_nodes(H, "src1", "src2")  # New Shape: src1 -(x2)-> dest
+        assert len(H.edges(("src1", "dest"))) == 2
+
     def test_without_self_loops(self):
         """Tests for node contraction without preserving self-loops."""
         G = nx.cycle_graph(4)
