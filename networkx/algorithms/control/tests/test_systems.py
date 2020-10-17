@@ -145,9 +145,38 @@ def test_driver_nodes():
     assert true_nodes == sys.find_minimum_driver_nodes()
 
 
+def test_controllability_pbh():
+    A = np.array([[0, 0, 0, 0, 0],
+                  [1, 0, 0, 0, 0],
+                  [2, 0, 0, 0, 0],
+                  [-1, 0, 3, 0, 0],
+                  [0, 0, 0, 0, 4]])
+    B = np.array([[5, 0],
+                  [0, -2],
+                  [0, 0],
+                  [0, 0],
+                  [0, 6]])
+    sys = nx.algorithms.control.systems.LTISystem(A, B)
+    assert sys.is_controllable_pbh()
+
+    A = np.array([[0, 1, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 1],
+                  [0, 1, 0, 0, 1],
+                  [0, 0, 0, 0, 0]])
+    B = np.array([[0],
+                  [0],
+                  [0],
+                  [0],
+                  [1]])
+    sys = nx.algorithms.control.systems.LTISystem(A, B)
+    assert not sys.is_controllable_pbh()
+
+
 if __name__ == '__main__':
     test_lti_system()
     test_controllability_matrix()
     test_structural_controllability()
     test_strong_structural_controllability()
     test_driver_nodes()
+    test_controllability_pbh()

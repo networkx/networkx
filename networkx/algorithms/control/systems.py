@@ -185,3 +185,20 @@ class LTISystem:
         matched_nodes = [v for u, v in max_matching]
         unmatched_nodes = set(self.state_nodes).difference(matched_nodes)
         return unmatched_nodes
+
+    def is_controllable_pbh(self):
+        """
+        Check if system is controllable via the
+        Popov-Belevitch-Hautus (PBH) test.
+        """
+        n = self.A.shape[0]
+        m = self.B.shape[1]
+        D = np.zeros((n, n + m))
+        D[:, n:] = self.B
+        evals, evecs = np.linalg.eig(self.A)
+        for val in evals:
+            D[:, :n] = val * np.eye(n) - self.A
+            rank = np.linalg.matrix_rank(D)
+            if rank != n:
+                return False
+        return True
