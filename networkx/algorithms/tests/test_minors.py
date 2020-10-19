@@ -387,6 +387,14 @@ class TestContraction:
         expected.add_edge(0, 0)
         assert nx.is_isomorphic(actual, expected)
 
+    def test_multigraph_edge_contraction(self):
+        """Tests for edge contraction in a multigraph"""
+        G = nx.cycle_graph(4)
+        actual = nx.contracted_edge(G, (0, 1, 0))
+        expected = nx.complete_graph(3)
+        expected.add_edge(0, 0)
+        assert nx.is_isomorphic(actual, expected)
+
     def test_nonexistent_edge(self):
         """Tests that attempting to contract a non-existent edge raises an
         exception.
