@@ -504,7 +504,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
         w = prev_w if prev_w != v else u
         x = prev_x if prev_x != v else u
 
-        if w is x and not self_loops:
+        if ({prev_w, prev_x} == {u, v}) and not self_loops:
             continue
 
         if not H.has_edge(w, x) or G.is_multigraph():
