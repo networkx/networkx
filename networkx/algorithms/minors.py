@@ -508,7 +508,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
             continue
 
         if not H.has_edge(w, x) or G.is_multigraph():
-            H.add_edge(w, x, *d)
+            H.add_edge(w, x, **d)
         else:
             if "contraction" in H.edges[(w, x)]:
                 H.edges[(w, x)]["contraction"][(prev_w, prev_x)] = d
