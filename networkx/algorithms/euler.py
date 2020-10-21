@@ -213,7 +213,7 @@ def eulerian_circuit(G, source=None, keys=False):
         yield from _simplegraph_eulerian_circuit(G, source)
 
 
-def has_eulerian_path(G):
+def has_eulerian_path(G, source = None):
     """Return True iff `G` has an Eulerian path.
 
     An Eulerian path is a path in a graph which uses each edge of a graph
@@ -261,6 +261,8 @@ def has_eulerian_path(G):
                 unbalanced_ins += 1
             elif outs[v] - ins[v] == 1:
                 unbalanced_outs += 1
+                if source is not None and source != v: #added
+                    return False    #added
             elif ins[v] != outs[v]:
                 return False
 
@@ -293,10 +295,11 @@ def eulerian_path(G, source=None, keys=False):
     Warning: If `source` provided is not the start node of an Euler path
     will raise error even if an Euler Path exists.
     """
-    if not has_eulerian_path(G):
+    if not has_eulerian_path(G, source): #changed
         raise nx.NetworkXError("Graph has no Eulerian paths.")
     if G.is_directed():
-        G = G.reverse()
+        #G = G.reverse()???
+        G = G.copy()
     else:
         G = G.copy()
     if source is None:
