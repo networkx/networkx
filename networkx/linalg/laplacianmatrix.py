@@ -253,7 +253,7 @@ def directed_combinatorial_laplacian_matrix(
 
     Returns
     -------
-    L : SciPy Sparse Matrix
+    L : scipy.sparse.csr_matrix
       Combinatorial Laplacian of G.
 
     Notes
@@ -325,7 +325,6 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
         If walk_type not specified or alpha not in valid range
     """
     import numpy as np
-    import scipy as sp
     from scipy.sparse import identity, spdiags
 
     if walk_type is None:
@@ -340,7 +339,7 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
     M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
     n, m = M.shape
     if walk_type in ["random", "lazy"]:
-        DI = spdiags(1.0 / sp.array(M.sum(axis=1).flat), [0], n, n)
+        DI = spdiags(1.0 / np.array(M.sum(axis=1).flat), [0], n, n)
         if walk_type == "random":
             P = DI @ M
         else:
@@ -351,14 +350,16 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
         if not (0 < alpha < 1):
             raise nx.NetworkXError("alpha must be between 0 and 1")
         # add constant to dangling nodes' row
-        dangling = sp.where(M.sum(axis=1) == 0)
+        dangling = np.where(M.sum(axis=1) == 0)
         for d in dangling[0]:
             M[d] = 1.0 / n
+        DI = spdiags(1.0 / np.array(M.sum(axis=1).flat), [0], n, n)
         # normalize
-        M = M / sp.array(M.sum(axis=1))
-        P = alpha * M + (1 - alpha) / n
+        M = DI @ M
+        P = alpha * M
+        P[P.nonzero()] += (1 - alpha) / n
 
     else:
         raise nx.NetworkXError("walk_type must be random, lazy, or pagerank")
 
-    return sp.sparse.csr_matrix(P)
+    return P
