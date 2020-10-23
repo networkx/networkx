@@ -20,19 +20,23 @@ B.add_edges_from(
 
 options = {"with_labels": True, "node_color": "white", "edgecolors": "blue"}
 
+fig = plt.figure(figsize=(6, 8))
+axgrid = fig.add_gridspec(3, 2)
+
 bayes_pos = layout(B, prog="neato")
-ax1 = plt.subplot(1, 3, 1)
-plt.title("Bayesian Network")
+ax1 = fig.add_subplot(axgrid[0, 0])
+ax1.set_title("Bayesian Network")
 nx.draw_networkx(B, pos=bayes_pos, **options)
 
 mg = moral.moral_graph(B)
-plt.subplot(1, 3, 2, sharex=ax1, sharey=ax1)
-plt.title("Moralized Graph")
+ax2 = fig.add_subplot(axgrid[0, 1], sharex=ax1, sharey=ax1)
+ax2.set_title("Moralized Graph")
 nx.draw_networkx(mg, pos=bayes_pos, **options)
 
 jt = junction_tree(B)
-plt.subplot(1, 3, 3)
-plt.title("Junction Tree")
+ax3 = fig.add_subplot(axgrid[1:, :])
+ax3.set_title("Junction Tree")
+ax3.margins(0.15, 0.25)
 nsize = [2000 * len(n) for n in list(jt.nodes())]
 nx.draw_networkx(jt, pos=layout(jt, prog="neato"), node_size=nsize, **options)
 
