@@ -187,5 +187,6 @@ for G, A in pairs:
     assert sum(d for n, d in A.degree()) == sum(d for n, d in A.degree(weight="weight"))
     assert sum(d for n, d in G.degree(nodes)) == sum(d for n, d in A.degree(nodes))
 
-nx.draw(Gnp)
+pos = nx.spring_layout(G, seed=268)  # Seed for reproducible layout
+nx.draw(Gnp, pos=pos)
 plt.show()
