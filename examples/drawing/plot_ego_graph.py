@@ -15,7 +15,8 @@ import networkx as nx
 # Create a BA model graph - use seed for reproducibility
 n = 1000
 m = 2
-G = nx.generators.barabasi_albert_graph(n, m, seed=20532)
+seed = 20532
+G = nx.generators.barabasi_albert_graph(n, m, seed=seed)
 
 # find node with largest degree
 node_and_degree = G.degree()
@@ -25,7 +26,7 @@ node_and_degree = G.degree()
 hub_ego = nx.ego_graph(G, largest_hub)
 
 # Draw graph
-pos = nx.spring_layout(hub_ego, seed=205920)  # Seed layout for reproducibility
+pos = nx.spring_layout(hub_ego, seed=seed)  # Seed layout for reproducibility
 nx.draw(hub_ego, pos, node_color="b", node_size=50, with_labels=False)
 
 # Draw ego as large and red
