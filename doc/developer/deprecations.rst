@@ -48,6 +48,7 @@ Version 3.0
 * In ``readwrite/gml.py`` remove ``literal_destringizer`` and related tests.
 * In ``utils/misc.py`` remove ``is_string_like`` and related tests.
 * In ``utils/misc.py`` remove ``make_str`` and related tests.
+* In ``utils/misc.py`` remove ``is_iterator``.
 * Remove ``utils/contextmanagers.py`` and related tests.
 * In ``drawing/nx_agraph.py`` remove ``display_pygraphviz`` and related tests.
 * In ``algorithms/chordal.py`` replace ``chordal_graph_cliques`` with ``_chordal_graph_cliques``.
