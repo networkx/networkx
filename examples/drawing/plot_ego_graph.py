@@ -16,7 +16,7 @@ import networkx as nx
 n = 1000
 m = 2
 seed = 20532
-G = nx.generators.barabasi_albert_graph(n, m, seed=seed)
+G = nx.barabasi_albert_graph(n, m, seed=seed)
 
 # find node with largest degree
 node_and_degree = G.degree()

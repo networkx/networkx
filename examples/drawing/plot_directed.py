@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 seed = 13648  # Seed random number generators for reproducibility
-G = nx.generators.directed.random_k_out_graph(10, 3, 0.5, seed=seed)
-pos = nx.layout.spring_layout(G, seed=seed)
+G = nx.random_k_out_graph(10, 3, 0.5, seed=seed)
+pos = nx.spring_layout(G, seed=seed)
 
 node_sizes = [3 + 10 * i for i in range(len(G))]
 M = G.number_of_edges()
