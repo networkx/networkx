@@ -20,7 +20,7 @@ B.add_edges_from(
 
 options = {"with_labels": True, "node_color": "white", "edgecolors": "blue"}
 
-fig = plt.figure(figsize=(6, 8))
+fig = plt.figure(figsize=(6, 9))
 axgrid = fig.add_gridspec(3, 2)
 
 bayes_pos = layout(B, prog="neato")
