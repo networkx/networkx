@@ -7,8 +7,6 @@ Example of creating a junction tree from a directed graph.
 """
 
 import networkx as nx
-from networkx.algorithms import moral
-from networkx.algorithms.tree.decomposition import junction_tree
 from networkx.drawing.nx_agraph import graphviz_layout as layout
 import matplotlib.pyplot as plt
 
@@ -28,12 +26,12 @@ ax1 = fig.add_subplot(axgrid[0, 0])
 ax1.set_title("Bayesian Network")
 nx.draw_networkx(B, pos=bayes_pos, **options)
 
-mg = moral.moral_graph(B)
+mg = nx.moral_graph(B)
 ax2 = fig.add_subplot(axgrid[0, 1], sharex=ax1, sharey=ax1)
 ax2.set_title("Moralized Graph")
 nx.draw_networkx(mg, pos=bayes_pos, **options)
 
-jt = junction_tree(B)
+jt = nx.junction_tree(B)
 ax3 = fig.add_subplot(axgrid[1:, :])
 ax3.set_title("Junction Tree")
 ax3.margins(0.15, 0.25)
