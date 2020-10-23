@@ -35,5 +35,5 @@ X = jit_graph(json.loads(jit_json))
 print(f"Nodes: {list(X.nodes(data=True))}")
 print(f"Edges: {list(X.edges(data=True))}")
 
-nx.draw(G, with_labels=True)
+nx.draw(G, pos=nx.planar_layout(G), with_labels=True)
 plt.show()
