@@ -83,5 +83,6 @@ print("Edges in G: ", G.edges(data=True))
 G = PrintGraph()
 nx.add_path(G, range(10))
 nx.add_star(G, range(9, 13))
-nx.draw(G)
+pos = nx.spring_layout(G, seed=225)  # Seed for reproducible layout
+nx.draw(G, pos)
 plt.show()
