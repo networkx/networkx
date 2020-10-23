@@ -17,7 +17,8 @@ from networkx import nx
 n = 10  # 10 nodes
 m = 20  # 20 edges
 
-G = nx.gnm_random_graph(n, m)
+# Use seed for reproducibility
+G = nx.gnm_random_graph(n, m, seed=20160)
 
 # some properties
 print("node degree clustering")
@@ -29,5 +30,6 @@ print("the adjacency list")
 for line in nx.generate_adjlist(G):
     print(line)
 
-nx.draw(G)
+pos = nx.spring_layout(G, seed=6720)  # Seed for reproducible layout
+nx.draw(G, pos=pos)
 plt.show()
