@@ -44,9 +44,11 @@ for n in G.nodes():
 
 print(list(G.nodes()))
 
-pos = nx.spring_layout(G)
+pos = nx.spring_layout(G, seed=330)
 nx.draw(G, pos, font_size=16, with_labels=False)
 for p in pos:  # raise text positions
     pos[p][1] += 0.07
 nx.draw_networkx_labels(G, pos)
+ax = plt.gca()
+ax.margins(0.15, 0.10)
 plt.show()
