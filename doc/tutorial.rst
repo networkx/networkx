@@ -597,4 +597,46 @@ node positions, or write the graph in dot format for further processing.
 
 See :doc:`/reference/drawing` for additional details.
 
+Reading and writing graphs
+--------------------------
+
+.. csv-table:: Supported file formats
+   :header: "Format", "Description"
+   :widths: 20, 40
+
+   "Adjacency list", "Each row 1st column as out-degree"
+   "Edge list", "2 column, source$\rightarrow$ target"
+   "DOT", "Graphviz format"
+   "GEXF", "XML implementation"
+   "GML", "Similar to DOT"
+   "GraphML", "XML implementation"
+   "LEDA", "Between edge list and Pajek"
+   "Pajek", "Edge list + node and edge attr"
+   "SparseGraph6", "Adjacency list variant"
+
+You can read and write NetworkX graphs as Python pickles.
+
+>>> import pickle
+>>> G = nx.path_graph(4)
+>>> with open('test.gpickle', 'wb') as f:
+...     pickle.dump(G, f, pickle.HIGHEST_PROTOCOL)
+... 
+>>> with open('test.gpickle', 'rb') as f:
+...     G = pickle.load(f)
+... 
+
+You can also read and write NetworkX graphs in YAML format
+using pyyaml.
+
+>>> import yaml
+>>> G = nx.path_graph(4)
+>>> with open('test.yaml', 'w') as f:
+...     yaml.dump(G, f)
+... 
+>>> with open('test.yaml', 'r') as f:
+...     G = yaml.load(f, Loader=yaml.FullLoader)
+... 
+
+See :doc:`/reference/readwrite` for additional details.
+
 .. code-links::
