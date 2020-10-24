@@ -14,7 +14,6 @@ Helper Functions
    is_string_like
    flatten
    iterable
-   is_list_of_ints
    make_list_of_ints
    make_str
    generate_unique_node
