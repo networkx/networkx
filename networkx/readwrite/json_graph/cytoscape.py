@@ -48,16 +48,16 @@ def cytoscape_data(G, attrs=None):
        {'data': {'id': '1', 'value': 1, 'name': '1'}}],
       'edges': [{'data': {'source': 0, 'target': 1}}]}}
     """
-    if not attrs:
+    if attrs is None:
         attrs = _attrs
-    else:
-        attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
+    # Will raise if attrs is not dict-like
+    attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
 
     name = attrs["name"]
     ident = attrs["ident"]
 
-    if len({name, ident}) < 2:
-        raise nx.NetworkXError("Attribute names are not unique.")
+    if name == ident:
+        raise nx.NetworkXError("name and ident must be different.")
 
     jsondata = {"data": list(G.graph.items())}
     jsondata["directed"] = G.is_directed()
@@ -143,16 +143,16 @@ def cytoscape_graph(data, attrs=None):
     >>> G.edges(data=True)
     EdgeDataView([(0, 1, {'source': 0, 'target': 1})])
     """
-    if not attrs:
+    if attrs is None:
         attrs = _attrs
-    else:
-        attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
+    # Will raise if attrs is not dict-like
+    attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
 
     name = attrs["name"]
     ident = attrs["ident"]
 
-    if len({ident, name}) < 2:
-        raise nx.NetworkXError("Attribute names are not unique.")
+    if name == ident:
+        raise nx.NetworkXError("name and ident must be different.")
 
     multigraph = data.get("multigraph")
     directed = data.get("directed")
