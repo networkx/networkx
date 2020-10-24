@@ -37,13 +37,15 @@ Deprecations
 ------------
 
 - [`#4238 <https://github.com/networkx/networkx/pull/4238>`_]
-  Deprecate `to_numpy_matrix` and `from_numpy_matrix`.
+  Deprecate ``to_numpy_matrix`` and ``from_numpy_matrix``.
 - [`#4279 <https://github.com/networkx/networkx/pull/4279>`_]
   Deprecate ``networkx.utils.misc.is_iterator``.
   Use ``isinstance(obj, collections.abc.Iterator)`` instead.
 - [`#4280 <https://github.com/networkx/networkx/pull/4280>`_]
   Deprecate ``networkx.utils.misc.is_list_of_ints`` as it is no longer used.
   See ``networkx.utils.misc.make_list_of_ints`` for related functionality.
+- [`#4281 <https://github.com/networkx/networkx/pull/4281>`_]
+  Deprecate ``read_yaml`` and ``write_yaml``.
 
 Contributors to this release
 ----------------------------

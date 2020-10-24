@@ -58,3 +58,4 @@ Version 3.0
 * In ``algorithms/community_modularity_max.py`` remove old name ``_naive_greedy_modularity_communities``.
 * In ``linalg/algebraicconnectivity.py`` remove ``_CholeskySolver`` and related code.
 * In ``convert_matrix.py`` remove ``to_numpy_matrix`` and ``from_numpy_matrix``.
+* Remove ``networkx/readwrite/nx_yaml.py`` and related tests.
