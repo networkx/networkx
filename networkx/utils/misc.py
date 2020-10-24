@@ -11,8 +11,8 @@ True
 False
 """
 
-from collections import defaultdict
-from collections import deque
+from collections import defaultdict, deque
+from collections.abc import Iterator
 import warnings
 import sys
 import uuid
@@ -200,7 +200,16 @@ def is_iterator(obj):
     """Returns True if and only if the given object is an iterator
     object.
 
+    .. deprecated:: 2.6.0
+
+       Deprecated in favor of ``isinstance(obj, collections.abc.Iterator)``
+
     """
+    msg = (
+        "is_iterator is deprecated and will be removed in version 3.0. "
+        "Use ``isinstance(obj, collections.abc.Iterator)`` instead."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     has_next_attr = hasattr(obj, "__next__") or hasattr(obj, "next")
     return iter(obj) is obj and has_next_attr
 
@@ -227,7 +236,7 @@ def arbitrary_element(iterable):
         ValueError: cannot return an arbitrary item from an iterator
 
     """
-    if is_iterator(iterable):
+    if isinstance(iterable, Iterator):
         raise ValueError("cannot return an arbitrary item from an iterator")
     # Another possible implementation is ``for x in iterable: return x``.
     return next(iter(iterable))
