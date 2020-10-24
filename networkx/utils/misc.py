@@ -5,10 +5,10 @@ These are not imported into the base networkx namespace but
 can be accessed, for example, as
 
 >>> import networkx
->>> networkx.utils.is_list_of_ints([1, 2, 3])
-True
->>> networkx.utils.is_list_of_ints([1, 2, "spam"])
-False
+>>> networkx.utils.make_list_of_ints({1, 2, 3})
+[1, 2, 3]
+>>> networkx.utils.arbitrary_element({5, 1, 7})  # doctest: +SKIP
+1
 """
 
 from collections import defaultdict, deque
