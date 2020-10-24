@@ -11,7 +11,7 @@ import numpy.linalg
 
 n = 1000  # 1000 nodes
 m = 5000  # 5000 edges
-G = nx.gnm_random_graph(n, m)
+G = nx.gnm_random_graph(n, m, seed=5040)  # Seed for reproducibility
 
 L = nx.normalized_laplacian_matrix(G)
 e = numpy.linalg.eigvals(L.A)
