@@ -41,6 +41,9 @@ Deprecations
 - [`#4279 <https://github.com/networkx/networkx/pull/4279>`_]
   Deprecate ``networkx.utils.misc.is_iterator``.
   Use ``isinstance(obj, collections.abc.Iterator)`` instead.
+- [`#4280 <https://github.com/networkx/networkx/pull/4280>`_]
+  Deprecate ``networkx.utils.misc.is_list_of_ints`` as it is no longer used.
+  See ``networkx.utils.misc.make_list_of_ints`` for related functionality.
 
 Contributors to this release
 ----------------------------

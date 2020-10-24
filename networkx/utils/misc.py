@@ -5,10 +5,10 @@ These are not imported into the base networkx namespace but
 can be accessed, for example, as
 
 >>> import networkx
->>> networkx.utils.is_list_of_ints([1, 2, 3])
-True
->>> networkx.utils.is_list_of_ints([1, 2, "spam"])
-False
+>>> networkx.utils.make_list_of_ints({1, 2, 3})
+[1, 2, 3]
+>>> networkx.utils.arbitrary_element({5, 1, 7})  # doctest: +SKIP
+1
 """
 
 from collections import defaultdict, deque
@@ -102,7 +102,16 @@ def make_list_of_ints(sequence):
 
 
 def is_list_of_ints(intlist):
-    """ Return True if list is a list of ints. """
+    """
+    Return True if list is a list of ints.
+
+    .. deprecated:: 2.6
+    """
+    msg = (
+        "is_list_of_ints is deprecated and will be removed in 3.0."
+        "See also: ``networkx.utils.make_list_of_ints.``"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     if not isinstance(intlist, list):
         return False
     for i in intlist:
