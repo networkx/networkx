@@ -46,6 +46,8 @@ Deprecations
   See ``networkx.utils.misc.make_list_of_ints`` for related functionality.
 - [`#4281 <https://github.com/networkx/networkx/pull/4281>`_]
   Deprecate ``read_yaml`` and ``write_yaml``.
+- [`#4282 <https://github.com/networkx/networkx/pull/4282>`_]
+  Deprecate ``read_gpickle`` and ``write_gpickle``.
 
 Contributors to this release
 ----------------------------
