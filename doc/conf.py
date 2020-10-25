@@ -161,7 +161,7 @@ html_last_updated_fmt = "%b %d, %Y"
 # If true, the reST sources are included in the HTML build as _sources/<name>.
 html_copy_source = False
 
-html_use_opensearch = "http://networkx.org"
+html_use_opensearch = "https://networkx.org"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "NetworkX"
