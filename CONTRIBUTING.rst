@@ -117,7 +117,7 @@ Development Workflow
 
 For a more detailed discussion, read these :doc:`detailed documents
 <gitwash/index>` on how to use Git with ``networkx``
-(`<https://networkx.github.io/documentation/latest/developer/gitwash/index.html>`_).
+(`<https://networkx.org/documentation/latest/developer/gitwash/index.html>`_).
 
 5. Review process:
 
@@ -214,7 +214,7 @@ Once you've fixed all merge conflicts, do::
 .. note::
 
    Advanced Git users are encouraged to `rebase instead of merge
-   <https://networkx.github.io/documentation/stable/developer/gitwash/development_workflow.html#rebase-on-trunk>`__,
+   <https://networkx.org/documentation/stable/developer/gitwash/development_workflow.html#rebase-on-trunk>`__,
    but we squash and merge most PRs either way.
 
 
