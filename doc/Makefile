@@ -116,6 +116,6 @@ docs: clean html latexpdf
 
 gitwash-update:
 	python ../tools/gitwash_dumper.py developer networkx \
-	--project-url=http://networkx.github.io \
+	--project-url=http://networkx.org \
 	--project-ml-url=http://groups.google.com/group/networkx-discuss/ \
 	--gitwash-url git@github.com:matthew-brett/gitwash.git

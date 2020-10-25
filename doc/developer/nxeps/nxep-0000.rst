@@ -266,7 +266,7 @@ References and Footnotes
    `GitHub <https://github.com/networkx/networkx/tree/master/doc/nxeps>`_.
 
 .. [2] The URL for viewing NXEPs on the web is
-   https://networkx.github.io/nxeps/.
+   https://networkx.org/nxeps/.
 
 .. _repo: https://github.com/networkx/networkx
 

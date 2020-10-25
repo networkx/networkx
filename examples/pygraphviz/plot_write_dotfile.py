@@ -8,7 +8,7 @@ Write a dot file from a networkx graph for further processing with graphviz.
 
 You need to have either pygraphviz or pydot for this example.
 
-See https://networkx.github.io/documentation/latest/reference/drawing.html
+See https://networkx.org/documentation/latest/reference/drawing.html
 """
 
 import networkx as nx
