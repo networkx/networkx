@@ -317,7 +317,7 @@ def test_generate_node_dataframe(G):
     """
     # Now, generate a node dataframe using a custom function.
     def node_metadata(n, d):
-        return pd.Series(**d, name=n)
+        return pd.Series(d, name=n)
 
     # Another user-defined function to transform number by multiplying it by 10
     def ten_times_number(n, d):
