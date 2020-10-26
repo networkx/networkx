@@ -26,7 +26,6 @@ import itertools
 import warnings
 import networkx as nx
 from networkx.utils import not_implemented_for
-from typing import Callable, List
 
 __all__ = [
     "from_numpy_matrix",
@@ -1385,8 +1384,8 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
 
 
 def generate_node_dataframe(
-    G: nx.Graph,
-    funcs: List[Callable],
+    G,
+    funcs,
 ):
     """
     Return a pandas DataFrame representation of nodes and their metadata.
@@ -1490,7 +1489,7 @@ def generate_node_dataframe(
     return df
 
 
-def format_adjacency(G: nx.Graph, adj, name: str):
+def format_adjacency(G, adj, name):
     """
     Format adjacency matrix nicely.
 
@@ -1539,7 +1538,7 @@ def format_adjacency(G: nx.Graph, adj, name: str):
     )
 
 
-def generate_adjacency_xarray(G: nx.Graph, funcs: List[Callable]):
+def generate_adjacency_xarray(G, funcs):
     """
     Generate adjacency tensor for a graph as an xarray DataArray.
 
