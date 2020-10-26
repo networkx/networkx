@@ -4,8 +4,6 @@ set -e
 
 section "build_docs section"
 
-pip install --retries 3 -q -r requirements/doc.txt
-pip install --retries 3 -q -r requirements/example.txt
 pip list
 export SPHINXCACHE=$HOME/.cache/sphinx
 cd doc

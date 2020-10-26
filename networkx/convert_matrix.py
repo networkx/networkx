@@ -319,9 +319,9 @@ def from_pandas_edgelist(
         Graph type to create. If graph instance, then cleared before populated.
 
     edge_key : str or None, optional (default=None)
-        A valid column name for the edge keys (for a MultiGraph).
-        The values in this column are used for the edge keys
-        when adding edges if create_using is a multigraph.
+        A valid column name for the edge keys (for a MultiGraph).  The values in
+        this column are used for the edge keys when adding edges if create_using
+        is a multigraph.
 
     See Also
     --------
@@ -384,7 +384,7 @@ def from_pandas_edgelist(
     AtlasView({'A': {'weight': 3, 'color': 'red'}, 'D': {'weight': 6, 'color': 'blue'}})
 
 
-    """  # noqa: E501
+    """
     g = nx.empty_graph(0, create_using)
 
     if edge_attr is None:

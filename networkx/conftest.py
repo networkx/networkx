@@ -41,9 +41,7 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="is_string_like is deprecated*"
     )
     warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="make_str is deprecated*",
+        "ignore", category=DeprecationWarning, message="make_str is deprecated*"
     )
     warnings.filterwarnings(
         "ignore",
