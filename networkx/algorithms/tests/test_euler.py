@@ -171,6 +171,31 @@ class TestEulerianPath:
         for e1, e2 in zip(x, nx.eulerian_path(nx.DiGraph(x))):
             assert e1 == e2
 
+    def test_eulerian_path_straight_link(self):
+        G = nx.DiGraph()
+        result = [(1, 2), (2, 3), (3, 4), (4, 5)]
+        G.add_edges_from(result)
+        assert result == list(nx.eulerian_path(G))
+        assert result == list(nx.eulerian_path(G, source=1))
+
+    def test_eulerian_path_multigraph(self):
+        G = nx.MultiDiGraph()
+        result = [(2, 1), (1, 2), (2, 3), (3, 4), (4, 3)]
+        G.add_edges_from(result)
+        assert result == list(nx.eulerian_path(G))
+        assert result == list(nx.eulerian_path(G, source=2))
+
+    def test_eulerian_path_eulerian_circuit(self):
+        G = nx.DiGraph()
+        result = [(1, 2), (2, 3), (3, 4), (4, 1)]
+        result2 = [(2, 3), (3, 4), (4, 1), (1, 2)]
+        result3 = [(3, 4), (4, 1), (1, 2), (2, 3)]
+        G.add_edges_from(result)
+        assert result == list(nx.eulerian_path(G))
+        assert result == list(nx.eulerian_path(G, source=1))
+        assert result2 == list(nx.eulerian_path(G, source=2))
+        assert result3 == list(nx.eulerian_path(G, source=3))
+
 
 class TestEulerize:
     def test_disconnected(self):
