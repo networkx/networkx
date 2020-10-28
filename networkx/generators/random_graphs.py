@@ -1293,3 +1293,57 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
             j = int(math.ceil(n * kernel_root(i / n, j / n, r)))
             graph.add_edge(i - 1, j - 1)
     return graph
+
+
+@py_random_state(2)
+def random_ordered_tree(n, seed=None, directed=False):
+    """
+    Creates a random ordered tree
+
+    Parameters
+    ----------
+    n : int
+        A positive integer representing the number of nodes in the tree.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    directed : bool
+        if the edges are one-way
+
+    Returns
+    -------
+    networkx.OrderedDiGraph | networkx.OrderedGraph
+
+    Example
+    -------
+    >>> assert len(random_ordered_tree(n=1, seed=0).nodes) == 1
+    >>> assert len(random_ordered_tree(n=2, seed=0).nodes) == 2
+    >>> assert len(random_ordered_tree(n=3, seed=0).nodes) == 3
+    >>> from networkx.readwrite.text import forest_str
+    >>> otree = random_ordered_tree(n=5, seed=3, directed=True)
+    >>> print(forest_str(otree))
+    ╙── 1
+        ├─╼ 0
+        └─╼ 4
+            ├─╼ 2
+            └─╼ 3
+    """
+    from networkx.utils import create_py_random_state
+
+    rng = create_py_random_state(seed)
+    # Create a random undirected tree
+    utree = nx.random_tree(n, seed=rng)
+    # Use a random root node and dfs to define edge directions
+    nodes = list(utree.nodes)
+    source = rng.choice(nodes)
+    edges = nx.dfs_edges(utree, source=source)
+    if directed:
+        otree = nx.OrderedDiGraph()
+    else:
+        otree = nx.OrderedGraph()
+    # Populate the ordered graph
+    otree.add_nodes_from(utree.nodes)
+    otree.add_edges_from(edges)
+    return otree
