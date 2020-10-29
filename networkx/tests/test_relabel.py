@@ -287,3 +287,10 @@ class TestRelabel:
                 assert 0 in G[0][4]
                 assert "I" in G[0][4]
                 assert "II" in G[0][4]
+
+    def test_relabel_circular(self):
+        G = nx.path_graph(3)
+        mapping = {0: 1, 1: 0}
+        H = nx.relabel_nodes(G, mapping, copy=True)
+        with pytest.raises(nx.NetworkXUnfeasible):
+            H = nx.relabel_nodes(G, mapping, copy=False)
