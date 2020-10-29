@@ -11,6 +11,7 @@ and regulated by Esri as a (mostly) open specification for data
 interoperability among Esri and other software products."
 See https://en.wikipedia.org/wiki/Shapefile for additional information.
 """
+import warnings
 import networkx as nx
 
 __all__ = ["read_shp", "write_shp"]
@@ -75,6 +76,8 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
     ----------
     .. [1] https://en.wikipedia.org/wiki/Shapefile
     """
+    msg = "read_shp is deprecated and will be removed in 3.0."
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         from osgeo import ogr
     except ImportError as e:
@@ -143,7 +146,11 @@ def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
         each edge is a tuple of form
         (node1_coord, node2_coord, attribute_dict)
         suitable for expanding into a networkx Graph add_edge call
+
+    .. deprecated:: 2.6
     """
+    msg = "edges_from_line is deprecated and will be removed in 3.0."
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         from osgeo import ogr
     except ImportError as e:
@@ -207,6 +214,8 @@ def write_shp(G, outdir):
     ----------
     .. [1] https://en.wikipedia.org/wiki/Shapefile
     """
+    msg = "write_shp is deprecated and will be removed in 3.0."
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         from osgeo import ogr
     except ImportError as e:
