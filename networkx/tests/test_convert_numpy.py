@@ -2,6 +2,7 @@ import pytest
 
 np = pytest.importorskip("numpy")
 np_assert_equal = np.testing.assert_equal
+import numpy as np
 import numpy.testing as npt
 
 import networkx as nx
@@ -361,17 +362,6 @@ class TestConvertNumpyArray:
         assert G[0][0]["cost"] == 2
         assert G[0][0]["weight"] == 1.0
 
-    def test_numpy_multigraph(self):
-        G = nx.MultiGraph()
-        G.add_edge(1, 2, weight=7)
-        G.add_edge(1, 2, weight=70)
-        A = nx.to_numpy_array(G)
-        assert A[1, 0] == 77
-        A = nx.to_numpy_array(G, multigraph_weight=min)
-        assert A[1, 0] == 7
-        A = nx.to_numpy_array(G, multigraph_weight=max)
-        assert A[1, 0] == 70
-
     def test_from_numpy_array_parallel_edges(self):
         """Tests that the :func:`networkx.from_numpy_array` function
         interprets integer weights as the number of parallel edges when
@@ -514,3 +504,38 @@ def test_to_numpy_recarray_nodelist(recarray_nodelist_test_graph):
 def test_to_numpy_recarray_bad_nodelist(recarray_nodelist_test_graph, nodelist, errmsg):
     with pytest.raises(nx.NetworkXError, match=errmsg):
         A = nx.to_numpy_recarray(recarray_nodelist_test_graph, nodelist=nodelist)
+
+
+def test_to_numpy_array_multigraph_weight():
+    G = nx.MultiGraph()
+    with pytest.raises(ValueError, match="must be sum, min, or max"):
+        nx.to_numpy_array(G, multigraph_weight=np.median)
+
+
+@pytest.fixture
+def multigraph_test_graph():
+    G = nx.MultiGraph()
+    G.add_edge(1, 2, weight=7)
+    G.add_edge(1, 2, weight=70)
+    return G
+
+
+@pytest.mark.parametrize(
+    ("operator", "expected"),
+    (
+        (sum, 77),
+        (min, 7),
+        (max, 70),
+    ),
+)
+def test_numpy_multigraph(multigraph_test_graph, operator, expected):
+    A = nx.to_numpy_array(multigraph_test_graph, multigraph_weight=operator)
+    assert A[1, 0] == expected
+
+
+def test_to_numpy_array_multigraph_nodelist(multigraph_test_graph):
+    G = multigraph_test_graph
+    G.add_edge(0, 1, weight=3)
+    A = nx.to_numpy_array(G, nodelist=[1, 2])
+    assert A.shape == (2, 2)
+    assert A[1, 0] == 77
