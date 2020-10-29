@@ -354,3 +354,12 @@ class TestFilteredGraphs:
             assert SG.adj[2].copy() == SG.adj[2]
             assert RG.adj.copy() == RG.adj
             assert RG.adj[2].copy() == RG.adj[2]
+
+            # test FilterAtlas & co in these subgraphs
+            assert SG.adj._atlas.copy() == SG.adj._atlas
+            assert RG.adj._atlas.copy() == RG.adj._atlas
+            assert SG.adj[2]._atlas.copy() == SG.adj[2]._atlas
+            assert RG.adj[2]._atlas.copy() == RG.adj[2]._atlas
+
+            SSG = SG.subgraph([2])
+            assert list(SSG) == [2]
