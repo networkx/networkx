@@ -59,3 +59,4 @@ Version 3.0
 * In ``linalg/algebraicconnectivity.py`` remove ``_CholeskySolver`` and related code.
 * In ``convert_matrix.py`` remove ``to_numpy_matrix`` and ``from_numpy_matrix``.
 * Remove ``networkx/readwrite/nx_yaml.py`` and related tests.
+* Remove ``networkx/readwrite/gpickle.py`` and related tests. 
