@@ -1,7 +1,5 @@
 import pytest
 
-np = pytest.importorskip("numpy")
-np_assert_equal = np.testing.assert_equal
 import numpy as np
 import numpy.testing as npt
 
@@ -123,9 +121,9 @@ class TestConvertNumpyMatrix:
         WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_numpy_matrix(P4)
-        np_assert_equal(A, nx.to_numpy_matrix(WP4, weight=None))
-        np_assert_equal(0.5 * A, nx.to_numpy_matrix(WP4))
-        np_assert_equal(0.3 * A, nx.to_numpy_matrix(WP4, weight="other"))
+        npt.assert_equal(A, nx.to_numpy_matrix(WP4, weight=None))
+        npt.assert_equal(0.5 * A, nx.to_numpy_matrix(WP4))
+        npt.assert_equal(0.3 * A, nx.to_numpy_matrix(WP4, weight="other"))
 
     def test_from_numpy_matrix_type(self):
         A = np.matrix([[1]])
@@ -325,9 +323,9 @@ class TestConvertNumpyArray:
         WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_numpy_array(P4)
-        np_assert_equal(A, nx.to_numpy_array(WP4, weight=None))
-        np_assert_equal(0.5 * A, nx.to_numpy_array(WP4))
-        np_assert_equal(0.3 * A, nx.to_numpy_array(WP4, weight="other"))
+        npt.assert_equal(A, nx.to_numpy_array(WP4, weight=None))
+        npt.assert_equal(0.5 * A, nx.to_numpy_array(WP4))
+        npt.assert_equal(0.3 * A, nx.to_numpy_array(WP4, weight="other"))
 
     def test_from_numpy_array_type(self):
         A = np.array([[1]])
