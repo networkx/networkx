@@ -1210,6 +1210,10 @@ class OutMultiEdgeView(OutEdgeView):
             return False
 
     def __getitem__(self, e):
+        if isinstance(e, slice):
+            raise nx.NetworkXError(
+                f"OutMultiEdgeView does not support slicing, try list(G.nodes)[{e.start}:{e.stop}]"
+            )
         u, v, k = e
         return self._adjdict[u][v][k]
 
