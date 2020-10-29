@@ -124,7 +124,6 @@ def _multigraph_eulerian_circuit(G, source):
         if degree(current_vertex) == 0:
             if last_vertex is not None:
                 yield (last_vertex, current_vertex, last_key)
-            #    yield (current_vertex, last_vertex, last_key)
             last_vertex, last_key = current_vertex, current_key
             vertex_stack.pop()
         else:
@@ -308,18 +307,27 @@ def eulerian_path(G, source=None, keys=False):
         raise nx.NetworkXError("Graph has no Eulerian paths.")
     if G.is_directed():
         G = G.reverse()
+        if source is None or nx.is_eulerian(G) is False:
+            source = _find_path_start(G)
+        if G.is_multigraph():
+            for u, v, k in _multigraph_eulerian_circuit(G, source):
+                if keys:
+                    yield u, v, k
+                else:
+                    yield u, v
+        else:
+            yield from _simplegraph_eulerian_circuit(G, source)
     else:
         G = G.copy()
-    if source is None or nx.is_eulerian(G) is False:
-        source = _find_path_start(G)
-    if G.is_multigraph():
-        for u, v, k in _multigraph_eulerian_circuit(G, source):
+        if source is None:
+            source = _find_path_start(G)
+        if G.is_multigraph():
             if keys:
-                yield u, v, k
+                yield from reversed([(v, u, k) for u, v, k in _multigraph_eulerian_circuit(G, source)])
             else:
-                yield u, v
-    else:
-        yield from _simplegraph_eulerian_circuit(G, source)
+                yield from reversed([(v, u) for u, v, k in _multigraph_eulerian_circuit(G, source)])
+        else:
+            yield from reversed([(v, u) for u, v in _simplegraph_eulerian_circuit(G, source)])
 
 
 @not_implemented_for("directed")
