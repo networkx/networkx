@@ -41,6 +41,8 @@ class TestNodeView:
         G.nodes[3]["foo"] = "bar"
         assert nv[7] == {}
         assert nv[3] == {"foo": "bar"}
+        # slicing
+        pytest.raises(nx.NetworkXError, G.nodes[0:5])
 
     def test_iter(self):
         nv = self.nv
@@ -128,6 +130,8 @@ class TestNodeDataView:
         nwv_def = G.nodes(data="foo", default="biz")
         assert nwv_def[7], "biz"
         assert nwv_def[3] == "bar"
+        # slicing
+        pytest.raises(nx.NetworkXError, G.nodes.data()[0:5])
 
     def test_iter(self):
         G = self.G.copy()
