@@ -7,8 +7,8 @@ NetworkX
 .. image:: https://img.shields.io/pypi/pyversions/networkx.svg
    :target: https://pypi.org/project/networkx/
 
-.. image:: https://travis-ci.org/networkx/networkx.svg?branch=master
-   :target: https://travis-ci.org/networkx/networkx
+.. image:: https://travis-ci.com/networkx/networkx.svg?branch=master
+   :target: https://travis-ci.com/networkx/networkx
 
 .. image:: https://github.com/networkx/networkx/workflows/macOS%20tests/badge.svg?branch=master
   :target: https://github.com/networkx/networkx/actions?query=workflow%3A%22macOS+tests%22
