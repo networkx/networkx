@@ -110,9 +110,10 @@ def is_directed_acyclic_graph(G):
 def topological_sort(G):
     """Returns a generator of nodes in topologically sorted order.
 
-    A topological sort is a nonunique permutation of the nodes such that an
-    edge from u to v implies that u appears before v in the topological sort
-    order.
+    A topological sort is a nonunique permutation of the nodes of a
+    directed graph such that an edge from u to v implies that u
+    appears before v in the topological sort order. This ordering is
+    valid only if the graph has no directed cycles.
 
     Parameters
     ----------
