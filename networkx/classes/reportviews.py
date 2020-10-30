@@ -1173,6 +1173,10 @@ class InEdgeView(OutEdgeView):
             return False
 
     def __getitem__(self, e):
+        if isinstance(e, slice):
+            raise nx.NetworkXError(
+                f"{type(self).__name__} does not support slicing, try list(G.in_edges)[{e.start}:{e.stop}]"
+            )
         u, v = e
         return self._adjdict[v][u]
 
