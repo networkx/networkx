@@ -1,19 +1,16 @@
 import pytest
 
+np = pytest.importorskip("numpy")
+sp = pytest.importorskip("scipy")
+sparse = sp.sparse
+npt = np.testing
+
 import networkx as nx
 from networkx.testing import assert_graphs_equal
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
 
 
-class TestConvertNumpy:
-    @classmethod
-    def setup_class(cls):
-        global np, sp, sparse, np_assert_equal
-        np = pytest.importorskip("numpy")
-        sp = pytest.importorskip("scipy")
-        sparse = sp.sparse
-        np_assert_equal = np.testing.assert_equal
-
+class TestConvertScipy:
     def setup_method(self):
         self.G1 = barbell_graph(10, 3)
         self.G2 = cycle_graph(10, create_using=nx.DiGraph)
@@ -118,11 +115,11 @@ class TestConvertNumpy:
         WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_scipy_sparse_matrix(P4)
-        np_assert_equal(
+        npt.assert_equal(
             A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
         )
-        np_assert_equal(0.5 * A.todense(), nx.to_scipy_sparse_matrix(WP4).todense())
-        np_assert_equal(
+        npt.assert_equal(0.5 * A.todense(), nx.to_scipy_sparse_matrix(WP4).todense())
+        npt.assert_equal(
             0.3 * A.todense(), nx.to_scipy_sparse_matrix(WP4, weight="other").todense()
         )
 
@@ -131,37 +128,37 @@ class TestConvertNumpy:
         WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_scipy_sparse_matrix(P4, format="csr")
-        np_assert_equal(
+        npt.assert_equal(
             A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
         )
 
         A = nx.to_scipy_sparse_matrix(P4, format="csc")
-        np_assert_equal(
+        npt.assert_equal(
             A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
         )
 
         A = nx.to_scipy_sparse_matrix(P4, format="coo")
-        np_assert_equal(
+        npt.assert_equal(
             A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
         )
 
         A = nx.to_scipy_sparse_matrix(P4, format="bsr")
-        np_assert_equal(
+        npt.assert_equal(
             A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
         )
 
         A = nx.to_scipy_sparse_matrix(P4, format="lil")
-        np_assert_equal(
+        npt.assert_equal(
             A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
         )
 
         A = nx.to_scipy_sparse_matrix(P4, format="dia")
-        np_assert_equal(
+        npt.assert_equal(
             A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
         )
 
         A = nx.to_scipy_sparse_matrix(P4, format="dok")
-        np_assert_equal(
+        npt.assert_equal(
             A.todense(), nx.to_scipy_sparse_matrix(WP4, weight=None).todense()
         )
 
@@ -182,7 +179,7 @@ class TestConvertNumpy:
         G = nx.Graph()
         G.add_node(1)
         M = nx.to_scipy_sparse_matrix(G)
-        np_assert_equal(M.todense(), np.matrix([[0]]))
+        npt.assert_equal(M.todense(), np.matrix([[0]]))
 
     def test_ordering(self):
         G = nx.DiGraph()
@@ -190,25 +187,25 @@ class TestConvertNumpy:
         G.add_edge(2, 3)
         G.add_edge(3, 1)
         M = nx.to_scipy_sparse_matrix(G, nodelist=[3, 2, 1])
-        np_assert_equal(M.todense(), np.matrix([[0, 0, 1], [1, 0, 0], [0, 1, 0]]))
+        npt.assert_equal(M.todense(), np.matrix([[0, 0, 1], [1, 0, 0], [0, 1, 0]]))
 
     def test_selfloop_graph(self):
         G = nx.Graph([(1, 1)])
         M = nx.to_scipy_sparse_matrix(G)
-        np_assert_equal(M.todense(), np.matrix([[1]]))
+        npt.assert_equal(M.todense(), np.matrix([[1]]))
 
         G.add_edges_from([(2, 3), (3, 4)])
         M = nx.to_scipy_sparse_matrix(G, nodelist=[2, 3, 4])
-        np_assert_equal(M.todense(), np.matrix([[0, 1, 0], [1, 0, 1], [0, 1, 0]]))
+        npt.assert_equal(M.todense(), np.matrix([[0, 1, 0], [1, 0, 1], [0, 1, 0]]))
 
     def test_selfloop_digraph(self):
         G = nx.DiGraph([(1, 1)])
         M = nx.to_scipy_sparse_matrix(G)
-        np_assert_equal(M.todense(), np.matrix([[1]]))
+        npt.assert_equal(M.todense(), np.matrix([[1]]))
 
         G.add_edges_from([(2, 3), (3, 4)])
         M = nx.to_scipy_sparse_matrix(G, nodelist=[2, 3, 4])
-        np_assert_equal(M.todense(), np.matrix([[0, 1, 0], [0, 0, 1], [0, 0, 0]]))
+        npt.assert_equal(M.todense(), np.matrix([[0, 1, 0], [0, 0, 1], [0, 0, 0]]))
 
     def test_from_scipy_sparse_matrix_parallel_edges(self):
         """Tests that the :func:`networkx.from_scipy_sparse_matrix` function
@@ -261,3 +258,22 @@ class TestConvertNumpy:
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
         assert_graphs_equal(G, expected)
+
+
+@pytest.mark.parametrize("sparse_format", ("csr", "csc", "dok"))
+def test_from_scipy_sparse_matrix_formats(sparse_format):
+    """Test all formats supported by _generate_weighted_edges."""
+    # trinode complete graph with non-uniform edge weights
+    expected = nx.Graph()
+    expected.add_edges_from(
+        [
+            (0, 1, {"weight": 3}),
+            (0, 2, {"weight": 2}),
+            (1, 0, {"weight": 3}),
+            (1, 2, {"weight": 1}),
+            (2, 0, {"weight": 2}),
+            (2, 1, {"weight": 1}),
+        ]
+    )
+    A = sparse.coo_matrix([[0, 3, 2], [3, 0, 1], [2, 1, 0]]).asformat(sparse_format)
+    assert_graphs_equal(expected, nx.from_scipy_sparse_matrix(A))
