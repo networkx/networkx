@@ -1373,11 +1373,11 @@ class TestInMultiDegreeView(TestDegreeView):
         (rv.EdgeView, "list(G.edges"),
         # Directed EdgeViews
         (rv.InEdgeView, "list(G.in_edges"),
-        (rv.OutEdgeView, "list(G.out_edges"),
+        (rv.OutEdgeView, "list(G.edges"),
         # Multi EdgeViews
         (rv.MultiEdgeView, "list(G.edges"),
         (rv.InMultiEdgeView, "list(G.in_edges"),
-        (rv.OutMultiEdgeView, "list(G.out_edges"),
+        (rv.OutMultiEdgeView, "list(G.edges"),
     ),
 )
 def test_slicing_reportviews(reportview, err_msg_terms):
