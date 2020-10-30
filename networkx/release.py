@@ -148,7 +148,13 @@ def get_info(dynamic=True):
         # no vcs information will be provided.
         # sys.path.insert(0, basedir)
         try:
-            from version import date, date_info, version, version_info, vcs_info
+            from networkx.version import (
+                date,
+                date_info,
+                version,
+                version_info,
+                vcs_info,
+            )
         except ImportError:
             import_failed = True
             vcs_info = (None, (None, None))
