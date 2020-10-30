@@ -44,7 +44,7 @@ matrix:
           - libgdal-dev
           - graphviz
     - python: 3.8
-    - python: 3.9-dev
+    - python: 3.9
     - python: pypy3
 
 before_install:
