@@ -1,7 +1,7 @@
 import pytest
 
-import numpy as np
-import numpy.testing as npt
+np = pytest.importorskip("numpy")
+npt = np.testing
 
 import networkx as nx
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
