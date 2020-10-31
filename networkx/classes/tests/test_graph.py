@@ -109,12 +109,14 @@ class BaseGraphTester:
         # node not in graph doesn't get caught upon creation of iterator
         bunch = G.nbunch_iter(-1)
         # but gets caught when iterator used
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError, match="is not a node or a sequence"):
             list(bunch)
         # unhashable doesn't get caught upon creation of iterator
         bunch = G.nbunch_iter([0, 1, 2, {}])
         # but gets caught when iterator hits the unhashable
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(
+            nx.NetworkXError, match="in sequence nbunch is not a valid node"
+        ):
             list(bunch)
 
     def test_nbunch_iter_node_format_raise(self):
