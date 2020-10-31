@@ -1434,8 +1434,8 @@ class Graph:
         >>> list(G.edges)
         []
         """
-        for neighbours_dict in self._adj.values():
-            neighbours_dict.clear()
+        for neighbors_dict in self._adj.values():
+            neighbors_dict.clear()
 
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""

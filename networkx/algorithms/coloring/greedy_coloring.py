@@ -352,10 +352,10 @@ def greedy_color(G, strategy="largest_first", interchange=False):
         return _interchange.greedy_coloring_with_interchange(G, nodes)
     for u in nodes:
         # Set to keep track of colors of neighbours
-        neighbour_colors = {colors[v] for v in G[u] if v in colors}
+        neighbor_colors = {colors[v] for v in G[u] if v in colors}
         # Find the first unused color.
         for color in itertools.count():
-            if color not in neighbour_colors:
+            if color not in neighbor_colors:
                 break
         # Assign the new color to the current node.
         colors[u] = color
