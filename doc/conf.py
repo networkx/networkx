@@ -123,7 +123,7 @@ html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 html_theme_options = {
-    "canonical_url": "https://networkx.github.io/documentation/stable/",
+    "canonical_url": "https://networkx.org/documentation/stable/",
     "navigation_depth": 3,
     "logo_only": True,
 }
@@ -161,7 +161,7 @@ html_last_updated_fmt = "%b %d, %Y"
 # If true, the reST sources are included in the HTML build as _sources/<name>.
 html_copy_source = False
 
-html_use_opensearch = "http://networkx.github.io"
+html_use_opensearch = "https://networkx.org"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "NetworkX"

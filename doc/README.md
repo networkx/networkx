@@ -4,7 +4,7 @@ We use Sphinx for generating the API and reference documentation.
 
 Pre-built versions can be found at
 
-    http://networkx.github.io/
+    https://networkx.org/
 
 for both the stable and the latest (i.e., development) releases.
 

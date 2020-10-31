@@ -10,7 +10,7 @@ matrix:
     - os: linux
       python: 3.6
       env:
-      - OPTIONAL_DEPS=1
+      - EXTRA_DEPS=1
       - MINIMUM_REQUIREMENTS=1
       - REPORT_COVERAGE=1
       addons:
@@ -21,8 +21,7 @@ matrix:
     - os: linux
       python: 3.7
       env:
-      - OPTIONAL_DEPS=1
-      - BUILD_DOCS=1
+      - EXTRA_DEPS=1
       - DEPLOY_DOCS=1
       addons:
         apt:
@@ -37,7 +36,7 @@ matrix:
     - os: linux
       python: 3.7
       env:
-      - OPTIONAL_DEPS=1
+      - EXTRA_DEPS=1
       - PIP_FLAGS="--pre"
       addons:
         apt:
@@ -53,17 +52,14 @@ before_install:
   - source tools/travis/before_install.sh
   - uname -a
   - printenv
-  - source tools/travis/linux_install.sh;
+  - source tools/travis/linux_install.sh
 
 install:
   # install required packages
   - pip install --upgrade pip wheel setuptools
   - pip install --retries 3 ${PIP_FLAGS} -r requirements.txt
-  - if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
+  - if [[ "${EXTRA_DEPS}" == 1 ]]; then
       pip install --retries 3 ${PIP_FLAGS} -r requirements/extra.txt;
-    fi
-  - if [[ "${BUILD_DOCS}" == 1 ]]; then
-      pip install --retries 3 ${PIP_FLAGS} -r requirements/example.txt;
     fi
   # install networkx
   - printenv PWD
@@ -73,17 +69,15 @@ install:
   - pip list
 
 script:
-  - if [[ "${BUILD_DOCS}" == 1 ]]; then
-      source tools/travis/build_docs.sh;
-    else
-      source tools/travis/script.sh;
-    fi
+  - source tools/travis/script.sh
 
 after_success:
   - if [[ "${REPORT_COVERAGE}" == 1 ]]; then
       codecov;
     fi
-  - if [[ "${BUILD_DOCS}" == 1 && "${DEPLOY_DOCS}" == 1 ]]; then
+  - if [[ "${DEPLOY_DOCS}" == 1 && $TRAVIS_PULL_REQUEST == false && $TRAVIS_BRANCH == "master" ]]; then
+      pip install ${PIP_FLAGS} -r requirements/example.txt;
+      source tools/travis/build_docs.sh;
       source tools/travis/deploy_docs.sh;
     fi
 
