@@ -78,14 +78,14 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                 create_using=create_using,
                 multigraph_input=data.is_multigraph(),
             )
-            if hasattr(data, "graph"):  # data.graph should be dict-like
-                result.graph.update(data.graph)
-            if hasattr(data, "nodes"):  # data.nodes should be dict-like
-                # result.add_node_from(data.nodes.items()) possible but
-                # for custom node_attr_dict_factory which may be hashable
-                # will be unexpected behavior
-                for n, dd in data.nodes.items():
-                    result._node[n].update(dd)
+            # data.graph should be dict-like
+            result.graph.update(data.graph)
+            # data.nodes should be dict-like
+            # result.add_node_from(data.nodes.items()) possible but
+            # for custom node_attr_dict_factory which may be hashable
+            # will be unexpected behavior
+            for n, dd in data.nodes.items():
+                result._node[n].update(dd)
             return result
         except Exception as e:
             raise nx.NetworkXError("Input is not a correct NetworkX graph.") from e
