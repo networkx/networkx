@@ -15,7 +15,7 @@ def weisfeiler_lehman_graph_hash(
 ):
     """Return Weisfeiler Lehman (WL) graph hash.
 
-    The function iteratively aggregates and hashes neighbourhoods of each node.
+    The function iteratively aggregates and hashes neighborhoods of each node.
     After each node's neighbors are hashed to obtain updated node labels,
     a hashed histogram of resulting labels is returned as the final hash.
 
