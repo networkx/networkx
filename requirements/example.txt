@@ -8,5 +8,4 @@ geopandas>=0.8
 osmnx>=0.16
 pysal>=2.3
 # For mayavi
-PySide2>=5.15
 mayavi>=4.7
