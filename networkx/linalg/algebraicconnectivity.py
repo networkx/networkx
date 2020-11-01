@@ -28,7 +28,7 @@ class _PCGSolver:
 
     def __init__(self, A, M):
         self._A = A
-        self._M = M or (lambda x: x.copy())
+        self._M = M
 
     def solve(self, B, tol):
         import numpy as np
