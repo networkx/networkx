@@ -148,6 +148,26 @@ class TestLaplacian:
         )
         npt.assert_almost_equal(L, GL, decimal=3)
 
+        # Make a strongly connected periodic graph
+        G = nx.DiGraph()
+        G.add_edges_from(
+            (
+                (1, 2),
+                (2, 4),
+                (4, 1),
+                (1, 3),
+                (3, 4),
+            )
+        )
+        # fmt: off
+        GL = np.array([[ 0.5      , -0.1767767, -0.1767767, -0.25     ],
+                       [-0.1767767,  0.5      ,  0.       , -0.1767767],
+                       [-0.1767767,  0.       ,  0.5      , -0.1767767],
+                       [-0.25     , -0.1767767, -0.1767767,  0.5      ]])
+        # fmt: on
+        L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G))
+        npt.assert_almost_equal(L, GL, decimal=3)
+
     def test_directed_combinatorial_laplacian(self):
         "Directed combinatorial Laplacian"
         # Graph used as an example in Sec. 4.1 of Langville and Meyer,
