@@ -376,9 +376,6 @@ def algebraic_connectivity(
     Edge weights are interpreted by their absolute values. For MultiGraph's,
     weights of parallel edges are summed. Zero-weighted edges are ignored.
 
-    To use Cholesky factorization in the TraceMIN algorithm, the
-    :samp:`scikits.sparse` package must be installed.
-
     See Also
     --------
     laplacian_matrix
@@ -462,9 +459,6 @@ def fiedler_vector(
     Edge weights are interpreted by their absolute values. For MultiGraph's,
     weights of parallel edges are summed. Zero-weighted edges are ignored.
 
-    To use Cholesky factorization in the TraceMIN algorithm, the
-    :samp:`scikits.sparse` package must be installed.
-
     See Also
     --------
     laplacian_matrix
@@ -545,9 +539,6 @@ def spectral_ordering(
     -----
     Edge weights are interpreted by their absolute values. For MultiGraph's,
     weights of parallel edges are summed. Zero-weighted edges are ignored.
-
-    To use Cholesky factorization in the TraceMIN algorithm, the
-    :samp:`scikits.sparse` package must be installed.
 
     See Also
     --------
