@@ -8,6 +8,4 @@ geopandas>=0.8
 osmnx>=0.16
 pysal>=2.3
 # For mayavi
-vtk>=9.0
-pyqt5>=5.15
 mayavi>=4.7

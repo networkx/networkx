@@ -54,6 +54,7 @@ jobs:
             pip install --upgrade pip wheel setuptools
             pip install -r requirements.txt
             pip install -r requirements/extra.txt
+            pip install -r requirements/example-requirements.txt
             pip install -r requirements/example.txt
             pip install -U -r requirements/doc.txt
 
