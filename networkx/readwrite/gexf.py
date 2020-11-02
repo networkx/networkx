@@ -1010,7 +1010,7 @@ def relabel_gexf_graph(G):
     Returns
     -------
     H : graph
-      A NetworkX graph with relabed nodes
+      A NetworkX graph with relabeled nodes
 
     Raises
     ------
