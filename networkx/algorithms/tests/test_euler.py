@@ -179,6 +179,10 @@ class TestEulerianPath:
         assert result == list(nx.eulerian_path(G, source=1))
         with pytest.raises(nx.NetworkXError):
             list(nx.eulerian_path(G, source=3))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=4))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=5))
 
     def test_eulerian_path_multigraph(self):
         G = nx.MultiDiGraph()
@@ -188,6 +192,8 @@ class TestEulerianPath:
         assert result == list(nx.eulerian_path(G, source=2))
         with pytest.raises(nx.NetworkXError):
             list(nx.eulerian_path(G, source=3))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=4))
 
     def test_eulerian_path_eulerian_circuit(self):
         G = nx.DiGraph()
@@ -210,6 +216,8 @@ class TestEulerianPath:
         assert result2 == list(nx.eulerian_path(G, source=5))
         with pytest.raises(nx.NetworkXError):
             list(nx.eulerian_path(G, source=3))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=2))
 
     def test_eulerian_path_multigraph_undirected(self):
         G = nx.MultiGraph()
@@ -219,6 +227,9 @@ class TestEulerianPath:
         assert result == list(nx.eulerian_path(G, source=2))
         with pytest.raises(nx.NetworkXError):
             list(nx.eulerian_path(G, source=3))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=1))
+
 
 class TestEulerize:
     def test_disconnected(self):

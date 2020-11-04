@@ -236,6 +236,9 @@ def has_eulerian_path(G, source=None):
     G : NetworkX Graph
         The graph to find an euler path in.
 
+    source : node, optional
+        Starting node for circuit.
+
     Returns
     -------
     Bool : True if G has an eulerian path.
@@ -323,11 +326,17 @@ def eulerian_path(G, source=None, keys=False):
             source = _find_path_start(G)
         if G.is_multigraph():
             if keys:
-                yield from reversed([(v, u, k) for u, v, k in _multigraph_eulerian_circuit(G, source)])
+                yield from reversed(
+                    [(v, u, k) for u, v, k in _multigraph_eulerian_circuit(G, source)]
+                )
             else:
-                yield from reversed([(v, u) for u, v, k in _multigraph_eulerian_circuit(G, source)])
+                yield from reversed(
+                    [(v, u) for u, v, k in _multigraph_eulerian_circuit(G, source)]
+                )
         else:
-            yield from reversed([(v, u) for u, v in _simplegraph_eulerian_circuit(G, source)])
+            yield from reversed(
+                [(v, u) for u, v in _simplegraph_eulerian_circuit(G, source)]
+            )
 
 
 @not_implemented_for("directed")
