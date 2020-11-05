@@ -281,7 +281,6 @@ class TestConvert:
         # assert isinstance(h._node[1], custom_dict)
 
 
-<<<<<<< HEAD
 @pytest.mark.parametrize(
     "edgelist",
     (
