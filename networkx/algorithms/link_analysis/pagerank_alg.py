@@ -61,7 +61,7 @@ def pagerank(
       dangling dict to be the same as the personalization dict.
 
     impl: str, optional
-      PageRank implementaion is available in pure Python, SciPy and NumPy flavours
+      PageRank implementation is available in pure Python, SciPy and NumPy flavours
       By default nx.pagerank will use the 'scipy' implementation. 'python' and 'numpy'
       is also avaiable.
 
@@ -122,6 +122,10 @@ def pagerank(
     elif impl == "numpy":
         # max_iter and tol, nstart doesn't exist, check for that?
         return pagerank_numpy(G, alpha, personalization, weight, dangling)
+    else:
+        return nx.NetworkXError(
+            "Only 'scipy', 'numpy', 'python' keywords are accepted for the implementation argument."
+        )
 
 
 def _pagerank_python(
