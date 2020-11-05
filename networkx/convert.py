@@ -250,7 +250,7 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
 
     edge_data : singleton, optional
        If provided, the value of the dictionary will be set to `edge_data` for
-       all edges. Usual numbers could be `1` or `True`. If `edge_data` is
+       all edges. Usual values could be `1` or `True`. If `edge_data` is
        `None` (the default), the edgedata in `G` is used, resulting in a
        dict-of-dict-of-dicts. If `G` is a MultiGraph, the result will be a
        dict-of-dict-of-dict-of-dicts. See Notes for an approach to customize
@@ -259,9 +259,9 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     Returns
     -------
     dod : dict
-       A dict-of-dict representation of `G`. Note that the level of
-       dictionary nesting depends on the type of `G` and the value of
-       `edge_data` (see Examples).
+       A nested dictionary representation of `G`. Note that the level of
+       nesting depends on the type of `G` and the value of `edge_data`
+       (see Examples).
 
     See Also
     --------
@@ -302,8 +302,8 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     {0: {1: {'weight': 1.0}, 2: {'weight': 1.0}},
      1: {0: {'weight': 1.0}, 2: {'weight': 2.0}},
      2: {1: {'weight': 2.0}, 0: {'weight': 1.0}}}
-    >>> d[1][2]
-    {'weight': 2.0}
+    >>> d[1][2]['weight']
+    2.0
 
     If `edge_data` is not `None`, edge data in the original graph (if any) is
     replaced:
