@@ -8,7 +8,7 @@ cache: pip
 matrix:
   include:
     - os: linux
-      python: 3.6
+      python: 3.7
       env:
       - EXTRA_DEPS=1
       - MINIMUM_REQUIREMENTS=1
