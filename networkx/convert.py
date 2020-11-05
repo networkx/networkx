@@ -248,12 +248,91 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     nodelist : list
        Use only nodes specified in nodelist
 
-    edge_data : list, optional
-       If provided,  the value of the dictionary will be
-       set to edge_data for all edges.  This is useful to make
-       an adjacency matrix type representation with 1 as the edge data.
-       If edgedata is None, the edgedata in G is used to fill the values.
-       If G is a multigraph, the edgedata is a dict for each pair (u,v).
+    edge_data : singleton, optional
+       If provided, the value of the dictionary will be set to `edge_data` for
+       all edges. Usual numbers could be `1` or `True`. If `edge_data` is
+       `None` (the default), the edgedata in `G` is used, resulting in a
+       dict-of-dict-of-dicts. If `G` is a MultiGraph, the result will be a
+       dict-of-dict-of-dict-of-dicts. See Notes for an approach to customize
+       handling edge data.
+
+    Returns
+    -------
+    dod : dict
+       A dict-of-dict representation of `G`. Note that the level of
+       dictionary nesting depends on the type of `G` and the value of
+       `edge_data` (see Examples).
+
+    See Also
+    --------
+    from_dict_of_dicts, to_dict_of_lists
+
+    Notes
+    -----
+    `edge_data` should *not* be a container. For a more custom approach to
+    handling edge data, try::
+
+        dod = {
+            n: {
+                nbr: custom(n, nbr, dd) for nbr, dd in nbrdict.items()
+            }
+            for n, nbrdict in G.adj.items()
+        }
+
+    Examples
+    --------
+    >>> G = nx.path_graph(3)
+    >>> nx.to_dict_of_dicts(G)
+    {0: {1: {}}, 1: {0: {}, 2: {}}, 2: {1: {}}}
+
+    Edge data is preserved by default (``edge_data=None``), resulting
+    in dict-of-dict-of-dicts where the innermost dictionary contains the
+    edge data:
+
+    >>> G = nx.Graph()
+    >>> G.add_edges_from(
+    ...     [
+    ...         (0, 1, {'weight': 1.0}),
+    ...         (1, 2, {'weight': 2.0}),
+    ...         (2, 0, {'weight': 1.0}),
+    ...     ]
+    ... )
+    >>> d = nx.to_dict_of_dicts(G)
+    >>> d  # doctest: +SKIP
+    {0: {1: {'weight': 1.0}, 2: {'weight': 1.0}},
+     1: {0: {'weight': 1.0}, 2: {'weight': 2.0}},
+     2: {1: {'weight': 2.0}, 0: {'weight': 1.0}}}
+    >>> d[1][2]
+    {'weight': 2.0}
+
+    If `edge_data` is not `None`, edge data in the original graph (if any) is
+    replaced:
+
+    >>> d = nx.to_dict_of_dicts(G, edge_data=1)
+    >>> d
+    {0: {1: 1, 2: 1}, 1: {0: 1, 2: 1}, 2: {1: 1, 0: 1}}
+    >>> d[1][2]
+    1
+
+    This also applies to MultiGraphs: edge data is preserved by default:
+
+    >>> G = nx.MultiGraph()
+    >>> G.add_edge(0, 1, key='a', weight=1.0)
+    'a'
+    >>> G.add_edge(0, 1, key='b', weight=5.0)
+    'b'
+    >>> d = nx.to_dict_of_dicts(G)
+    >>> d  # doctest: +SKIP
+    {0: {1: {'a': {'weight': 1.0}, 'b': {'weight': 5.0}}},
+     1: {0: {'a': {'weight': 1.0}, 'b': {'weight': 5.0}}}}
+    >>> d[0][1]['b']['weight']
+    5.0
+
+    But multi edge data is lost if `edge_data` is not `None`:
+
+    >>> d = nx.to_dict_of_dicts(G, edge_data=10)
+    >>> d
+    {0: {1: 10}, 1: {0: 10}}
     """
     dod = {}
     if nodelist is None:
