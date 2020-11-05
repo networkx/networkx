@@ -15,6 +15,7 @@ def pagerank(
     nstart=None,
     weight="weight",
     dangling=None,
+    impl="scipy",
 ):
     """Returns the PageRank of the nodes in the graph.
 
@@ -58,6 +59,12 @@ def pagerank(
       specified). This must be selected to result in an irreducible transition
       matrix (see notes under google_matrix). It may be common to have the
       dangling dict to be the same as the personalization dict.
+
+    impl: str, optional
+      PageRank implementaion is available in pure Python, SciPy and NumPy flavours
+      By default nx.pagerank will use the 'scipy' implementation. 'python' and 'numpy'
+      is also avaiable.
+
 
     Returns
     -------
@@ -104,6 +111,29 @@ def pagerank(
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
 
     """
+    if impl == "python":
+        return _pagerank_python(
+            G, alpha, personalization, max_iter, tol, nstart, weight, dangling
+        )
+    elif impl == "scipy":
+        return pagerank_scipy(
+            G, alpha, personalization, max_iter, tol, nstart, weight, dangling
+        )
+    elif impl == "numpy":
+        # max_iter and tol, nstart doesn't exist, check for that?
+        return pagerank_numpy(G, alpha, personalization, weight, dangling)
+
+
+def _pagerank_python(
+    G,
+    alpha,
+    personalization,
+    max_iter,
+    tol,
+    nstart,
+    weight,
+    dangling,
+):
     if len(G) == 0:
         return {}
 
@@ -231,6 +261,8 @@ def google_matrix(
         p = np.repeat(1.0 / N, N)
     else:
         p = np.array([personalization.get(n, 0) for n in nodelist], dtype=float)
+        if p.sum() == 0:
+            raise ZeroDivisionError
         p /= p.sum()
 
     # Dangling nodes
@@ -319,6 +351,7 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
+    # Add deprecation warning
     import numpy as np
 
     if len(G) == 0:
@@ -427,6 +460,7 @@ def pagerank_scipy(
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
+    # Add deprecation warning
     import numpy as np
     import scipy.sparse
 
@@ -453,8 +487,9 @@ def pagerank_scipy(
         p = np.repeat(1.0 / N, N)
     else:
         p = np.array([personalization.get(n, 0) for n in nodelist], dtype=float)
+        if p.sum() == 0:
+            raise ZeroDivisionError
         p = p / p.sum()
-
     # Dangling nodes
     if dangling is None:
         dangling_weights = p
