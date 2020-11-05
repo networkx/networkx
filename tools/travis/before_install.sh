@@ -12,11 +12,4 @@ section_end () {
 export -f section
 export -f section_end
 
-if [[ "${MINIMUM_REQUIREMENTS}" == 1 ]]; then
-    sed -i 's/>=/==/g' requirements/default.txt
-    sed -i 's/>=/==/g' requirements/extra.txt
-    sed -i 's/>=/==/g' requirements/test.txt
-    sed -i 's/>=/==/g' requirements/doc.txt
-fi
-
 set +e

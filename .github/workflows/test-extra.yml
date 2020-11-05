@@ -1,4 +1,4 @@
-name: macOS tests
+name: extra
 
 on:
   push:
@@ -7,31 +7,38 @@ on:
     branches: [ master ]
 
 jobs:
-  test_macos:
-    runs-on: macos-latest
+  test:
+    runs-on: ${{ matrix.os }}
     strategy:
-      max-parallel: 3
       matrix:
+        os: [Ubuntu-20.04, macOS-latest]
         python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Before install
       run: |
-        brew install graphviz
-        dot -V
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          sudo apt-get update
+          sudo apt-get install graphviz graphviz-dev
+        elif [ "$RUNNER_OS" == "macOS" ]; then
+          brew install graphviz pkg-config
+        fi
         python3 -m venv ~/venv
         source ~/venv/bin/activate
+
     - name: Install packages
       run: |
         pip install --upgrade pip wheel setuptools
         pip install -r requirements.txt
-        pip install pydot pygraphviz
+        pip install -r requirements/extra.txt
         pip install .
         pip list
+
     - name: Test NetworkX
       run: |
         pytest --doctest-modules --durations=10 --pyargs networkx
