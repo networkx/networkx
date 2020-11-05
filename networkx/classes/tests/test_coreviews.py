@@ -355,7 +355,24 @@ class TestFilteredGraphs:
             assert RG.adj.copy() == RG.adj
             assert RG.adj[2].copy() == RG.adj[2]
 
+    def test_filtered__copy(self):
+        for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):
+            G = nx.path_graph(4, Graph)
+            SG = G.subgraph([2, 3])
+            RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
             # test FilterAtlas & co in these subgraphs
+            assert SG.adj._atlas.copy() == SG.adj._atlas
+            assert RG.adj._atlas.copy() == RG.adj._atlas
+            assert SG.adj[2]._atlas.copy() == SG.adj[2]._atlas
+            assert RG.adj[2]._atlas.copy() == RG.adj[2]._atlas
+
+            SSG = SG.subgraph([2])
+            assert list(SSG) == [2]
+
+            # check case when node_ok is small
+            G = nx.path_graph(9, Graph)
+            SG = G.subgraph([2, 3])
+            RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
             assert SG.adj._atlas.copy() == SG.adj._atlas
             assert RG.adj._atlas.copy() == RG.adj._atlas
             assert SG.adj[2]._atlas.copy() == SG.adj[2]._atlas
