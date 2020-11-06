@@ -172,6 +172,41 @@ def test_controllability_pbh():
     sys = nx.algorithms.control.systems.LTISystem(A, B)
     assert not sys.is_controllable_pbh()
 
+def test_minimum_actuators():
+
+    A = np.array([[1, 0, 0, 0, 0, 0],
+                  [0, 1, 0, 0, 0, 0],
+                  [1, 1, 0, 1, 0, 0],
+                  [0, 0, 1, 0, 1, 1],
+                  [0, 0, 0, 1, 0 ,0],
+                  [0, 0, 0, 1, 0, 0]])
+    B = np.array([[0],
+                  [0],
+                  [0],
+                  [0],
+                  [0],
+                  [0]])
+    sys = nx.algorithms.control.systems.LTISystem(A, B)
+    actuators = sys.find_minimum_actuators()
+    valids = [{'x0', 'x1', 'x2'}, {'x0', 'x1', 'x3'},
+              {'x0', 'x1', 'x4'}, {'x0', 'x1', 'x5'}]
+    assert actuators in valids
+
+    A = np.array([[0, 0, 0, 0, 0],
+                  [1, 0, 0, 0, 0],
+                  [2, 0, 0, 3, 0],
+                  [-1, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 4]])
+    B = np.array([[5, 0],
+                  [0, -2],
+                  [0, 0],
+                  [0, 0],
+                  [0, 6]])
+    sys = nx.algorithms.control.systems.LTISystem(A, B)
+    actuators = sys.find_minimum_actuators()
+    valids = [{'x0', 'x1', 'x4'}, {'x0', 'x3', 'x4'}]
+    assert actuators in valids
+
 
 if __name__ == '__main__':
     test_lti_system()
@@ -180,3 +215,4 @@ if __name__ == '__main__':
     test_strong_structural_controllability()
     test_driver_nodes()
     test_controllability_pbh()
+    test_minimum_actuators()
