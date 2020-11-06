@@ -283,6 +283,7 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
             return self._atlas[key]
         raise KeyError(f"Key {key} not found")
 
+    # FIXME should this just be removed? we don't use it, but someone might
     def copy(self):
         try:  # check that NODE_OK has attr 'nodes'
             node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
@@ -326,6 +327,7 @@ class FilterAdjacency(Mapping):  # edgedict
             return FilterAtlas(self._atlas[node], new_node_ok)
         raise KeyError(f"Key {node} not found")
 
+    # FIXME should this just be removed? we don't use it, but someone might
     def copy(self):
         try:  # check that NODE_OK has attr 'nodes'
             node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
@@ -384,6 +386,7 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
             return FilterAtlas(self._atlas[nbr], new_node_ok)
         raise KeyError(f"Key {nbr} not found")
 
+    # FIXME should this just be removed? we don't use it, but someone might
     def copy(self):
         try:  # check that NODE_OK has attr 'nodes'
             node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
@@ -412,6 +415,7 @@ class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
             return FilterMultiInner(self._atlas[node], self.NODE_OK, edge_ok)
         raise KeyError(f"Key {node} not found")
 
+    # FIXME should this just be removed? we don't use it, but someone might
     def copy(self):
         try:  # check that NODE_OK has attr 'nodes'
             node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
