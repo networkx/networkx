@@ -365,10 +365,12 @@ class TestFilteredGraphs:
             assert RG.adj._atlas.copy() == RG.adj._atlas
             assert SG.adj[2]._atlas.copy() == SG.adj[2]._atlas
             assert RG.adj[2]._atlas.copy() == RG.adj[2]._atlas
+            assert SG.adj[2]._atlas[3].copy() == SG.adj[2]._atlas[3]
+            assert RG.adj[2]._atlas[3].copy() == RG.adj[2]._atlas[3]
             # test MultiFilterInner
             if G.is_multigraph():
-                assert SG.adj[2][3]._atlas.copy() == SG.adj[2][3]._atlas
-                assert RG.adj[2][3]._atlas.copy() == RG.adj[2][3]._atlas
+                assert SG.adj[2]._atlas[3][0].copy() == SG.adj[2]._atlas[3][0]
+                assert RG.adj[2]._atlas[3][0].copy() == RG.adj[2]._atlas[3][0]
 
             SSG = SG.subgraph([2])
             assert list(SSG) == [2]
