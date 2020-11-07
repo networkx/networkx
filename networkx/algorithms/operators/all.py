@@ -129,6 +129,43 @@ def compose_all(graphs):
     return C
 
 
+def relational_compose_all(graphs, with_keys=False):
+    """Returns the relational composition of all graphs.
+
+    Relational composition is the composition of graphs viewed as relations.  Graphs P, Q, R are composed as P; Q; R, i.e., R o Q o P.
+
+    Parameters
+    ----------
+    graphs : list
+       List of NetworkX graphs
+    with_keys : bool, optional (default=False)
+       Ignored for simple graphs.
+       For multigraphs:
+          If with_keys=True, keys of edges being composed must match.  This may be desired if keys are set explicitly.
+          Otherwise, keys are ignored and reassigned.
+
+    Returns
+    -------
+    C: A new graph that is a multigraph if all graphs in the list are multigraphs; directed if any graph in the list is directed; an undirected graph all graphs in the list are undirected graphs; and an error otherwise
+
+    Raises
+    ------
+    ValueError
+       If `graphs` is an empty list.
+
+    Notes
+    -----
+    Graph, edge, and node attributes are not propagated to the result graph.
+    """
+    if not graphs:
+        raise ValueError("cannot apply compose_all to an empty list")
+    graphs = iter(graphs)
+    C = next(graphs)
+    for H in graphs:
+        C = nx.relational_compose(C, H, with_keys)
+    return C
+
+
 def intersection_all(graphs):
     """Returns a new graph that contains only the edges that exist in
     all graphs.

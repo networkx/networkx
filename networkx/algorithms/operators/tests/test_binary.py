@@ -401,3 +401,549 @@ def test_mixed_type_union():
     pytest.raises(nx.NetworkXError, nx.difference, G, H)
     pytest.raises(nx.NetworkXError, nx.symmetric_difference, G, H)
     pytest.raises(nx.NetworkXError, nx.compose, G, H)
+
+
+class TestRelationalCompose:
+    def test_trivial_composition_empty_graphs(self):
+        for gclass, hclass in [
+                (nx.DiGraph, nx.DiGraph),
+                (nx.DiGraph, nx.Graph),
+                (nx.Graph, nx.DiGraph),
+                (nx.Graph, nx.Graph),
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+
+            H = hclass()
+
+            R = nx.relational_compose(G, H)
+
+            assert set(R.nodes()) == set([])
+            assert set(R.edges()) == set([])
+
+
+    def test_trivial_composition_empty_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.DiGraph, nx.DiGraph),
+                (nx.DiGraph, nx.Graph),
+                (nx.Graph, nx.DiGraph),
+                (nx.Graph, nx.Graph),
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H)
+
+            assert set(R.nodes()) == set([2, 3, 4])
+            assert set(R.edges()) == set([])
+
+
+    def test_trivial_composition_self_empty_graphs(self):
+        for gclass, hclass in [
+                (nx.DiGraph, nx.DiGraph),
+                (nx.DiGraph, nx.Graph),
+                (nx.Graph, nx.DiGraph),
+                (nx.Graph, nx.Graph),
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 2)
+
+            H = hclass()
+
+            R = nx.relational_compose(G, H)
+
+            assert set(R.nodes()) == set([2])
+            assert set(R.edges()) == set([])
+
+
+    def test_trivial_composition_multi_empty_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H)
+
+            assert set(R.nodes()) == set([2, 3, 4])
+            assert set(R.edges()) == set([])
+
+
+    def test_trivial_composition_multi_keys_empty_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+
+            H = hclass()
+            H.add_edge(2, 3, "B")
+            H.add_edge(2, 3, "C")
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H, with_keys=True)
+
+            assert set(R.nodes()) == set([2, 3, 4])
+            assert set(R.edges()) == set([])
+
+
+    def test_trivial_composition_multi_default_keys_empty_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H, with_keys=True)
+
+            assert set(R.nodes()) == set([2, 3, 4])
+            assert set(R.edges()) == set([])
+
+
+    def test_trivial_composition_multi_self_empty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 2)
+            G.add_edge(2, 2)
+
+            H = hclass()
+
+            R = nx.relational_compose(G, H)
+
+            assert set(R.nodes()) == set([2])
+            assert set(R.edges()) == set([])
+
+
+    def test_trivial_composition_multi_keys_self_empty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 2, "A")
+            G.add_edge(2, 2, "B")
+
+            H = hclass()
+
+            R = nx.relational_compose(G, H, with_keys=True)
+
+            assert set(R.nodes()) == set([2])
+            assert set(R.edges()) == set([])
+
+
+    def test_trivial_composition_multi_default_keys_self_empty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 2)
+            G.add_edge(2, 2)
+
+            H = hclass()
+
+            R = nx.relational_compose(G, H, with_keys=True)
+
+            assert set(R.nodes()) == set([2])
+            assert set(R.edges()) == set([])
+
+
+    def test_composition_self_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.DiGraph, nx.DiGraph),
+                (nx.DiGraph, nx.Graph),
+                (nx.Graph, nx.DiGraph),
+                (nx.Graph, nx.Graph),
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 2)
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H)
+
+            assert set(R.nodes()) == set([2, 3, 4])
+            assert set(R.edges()) == set([(2, 3), (2, 4)])
+            assert len(R.edges()) == 2
+
+
+    def test_composition_multi_self_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 2)
+            G.add_edge(2, 2)
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H)
+
+            assert set(R.nodes()) == set([2, 3, 4])
+            assert set(R.edges()) == set([(2, 3), (2, 4)])
+            assert len(R.edges()) == 8
+
+
+    def test_composition_multi_keys_self_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 2, "A")
+            G.add_edge(2, 2, "B")
+
+            H = hclass()
+            H.add_edge(2, 3, "B")
+            H.add_edge(2, 3, "C")
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H, with_keys=True)
+
+            assert set(R.nodes()) == set([2, 3, 4])
+            assert set(R.edges()) == set([(2, 3)])
+            assert len(R.edges()) == 1
+
+
+    def test_composition_multi_default_keys_self_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 2)
+            G.add_edge(2, 2)
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H, with_keys=True)
+
+            assert set(R.nodes()) == set([2, 3, 4])
+            assert set(R.edges()) == set([(2, 3), (2, 4)])
+            assert len(R.edges()) == 3
+
+
+    def test_composition_forw_edge_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.DiGraph, nx.DiGraph),
+                (nx.DiGraph, nx.Graph),
+                (nx.Graph, nx.DiGraph),
+                (nx.Graph, nx.Graph),
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(1, 2)
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H)
+
+            assert set(R.nodes()) == set([1, 2, 3, 4])
+            assert set(R.edges()) == set([(1, 3), (1, 4)])
+            assert len(R.edges()) == 2
+
+
+    def test_composition_rev_edge_undirected_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.Graph, nx.DiGraph),
+                (nx.Graph, nx.Graph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 1)
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H)
+
+            assert set(R.nodes()) == set([1, 2, 3, 4])
+            assert set(R.edges()) == set([(1, 3), (1, 4)])
+            assert len(R.edges()) == 2
+
+
+    def test_composition_multi_forw_edge_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(1, 2)
+            G.add_edge(1, 2)
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H)
+
+            assert set(R.nodes()) == set([1, 2, 3, 4])
+            assert set(R.edges()) == set([(1, 3), (1, 4)])
+            assert len(R.edges()) == 8
+
+
+    def test_composition_multi_rev_edge_undirected_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 1)
+            G.add_edge(2, 1)
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H)
+
+            assert set(R.nodes()) == set([1, 2, 3, 4])
+            assert set(R.edges()) == set([(1, 3), (1, 4)])
+            assert len(R.edges()) == 8
+
+
+    def test_composition_multi_keys_forw_edge_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(1, 2, "A")
+            G.add_edge(1, 2, "B")
+
+            H = hclass()
+            H.add_edge(2, 3, "B")
+            H.add_edge(2, 3, "C")
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H, with_keys=True)
+
+            assert set(R.nodes()) == set([1, 2, 3, 4])
+            assert set(R.edges()) == set([(1, 3)])
+            assert len(R.edges()) == 1
+
+
+    def test_composition_multi_keys_rev_edge_undirected_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 1, "A")
+            G.add_edge(2, 1, "B")
+
+            H = hclass()
+            H.add_edge(2, 3, "B")
+            H.add_edge(2, 3, "C")
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H, with_keys=True)
+
+            assert set(R.nodes()) == set([1, 2, 3, 4])
+            assert set(R.edges()) == set([(1, 3)])
+            assert len(R.edges()) == 1
+
+
+    def test_composition_multi_keys_default_forw_edge_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(1, 2)
+            G.add_edge(1, 2)
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H, with_keys=True)
+
+            assert set(R.nodes()) == set([1, 2, 3, 4])
+            assert set(R.edges()) == set([(1, 3), (1, 4)])
+            assert len(R.edges()) == 3
+
+
+    def test_composition_multi_keys_default_rev_edge_undirected_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiGraph, nx.MultiDiGraph),
+                (nx.MultiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 1)
+            G.add_edge(2, 1)
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H, with_keys=True)
+
+            assert set(R.nodes()) == set([1, 2, 3, 4])
+            assert set(R.edges()) == set([(1, 3), (1, 4)])
+            assert len(R.edges()) == 3
+
+
+    def test_trivial_composition_rev_edge_directed_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.DiGraph, nx.DiGraph),
+                (nx.DiGraph, nx.Graph),
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 1)
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H)
+
+            assert set(R.nodes()) == set([1, 2, 3, 4])
+            assert set(R.edges()) == set([])
+
+
+    def test_trivial_composition_multi_rev_edge_directed_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 1)
+            G.add_edge(2, 1)
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H)
+
+            assert set(R.nodes()) == set([1, 2, 3, 4])
+            assert set(R.edges()) == set([])
+
+
+    def test_trivial_composition_multi_keys_rev_edge_directed_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 1, "A")
+            G.add_edge(2, 1, "B")
+
+            H = hclass()
+            H.add_edge(2, 3, "B")
+            H.add_edge(2, 3, "C")
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H, with_keys=True)
+
+            assert set(R.nodes()) == set([1, 2, 3, 4])
+            assert set(R.edges()) == set([])
+
+
+    def test_trivial_composition_multi_keys_default_rev_edge_directed_nonempty_graphs(self):
+        for gclass, hclass in [
+                (nx.MultiDiGraph, nx.MultiDiGraph),
+                (nx.MultiDiGraph, nx.MultiGraph),
+        ]:
+            G = gclass()
+            G.add_edge(2, 1)
+            G.add_edge(2, 1)
+
+            H = hclass()
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 3)
+            H.add_edge(2, 4)
+
+            R = nx.relational_compose(G, H, with_keys=True)
+
+            assert set(R.nodes()) == set([1, 2, 3, 4])
+            assert set(R.edges()) == set([])

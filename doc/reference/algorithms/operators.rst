@@ -15,6 +15,7 @@ Operators
    :toctree: generated/
 
    compose
+   relational_compose
    union
    disjoint_union
    intersection
@@ -28,6 +29,7 @@ Operators
    :toctree: generated/
 
    compose_all
+   relational_compose_all
    union_all
    disjoint_union_all
    intersection_all

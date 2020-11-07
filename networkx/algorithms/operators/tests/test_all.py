@@ -1,5 +1,6 @@
 import pytest
 import networkx as nx
+from networkx.algorithms.operators.all import relational_compose_all # Why can't this be accessed from nx.relational_compose_all?
 from networkx.testing import assert_edges_equal
 
 
@@ -171,6 +172,47 @@ def test_union_all_and_compose_all():
     G3.add_edge(11, 22)
     G4 = nx.union_all([G1, G2, G3], rename=("G1", "G2", "G3"))
     assert sorted(G4.nodes()) == ["G1A", "G1B", "G21", "G22", "G311", "G322"]
+
+
+def test_relational_compose_all_digraph():
+    G1 = nx.DiGraph()
+    G1.add_edge("A", "B")
+    G1.add_edge("A", "C")
+    G1.add_edge("A", "D")
+    G1.add_edge("X", "D")
+    G2 = nx.DiGraph()
+    G2.add_edge("B", "L")
+    G2.add_edge("C", "L")
+    G2.add_edge("C", "M")
+    G2.add_edge("Y", "M")
+    G2.add_edge("Y", "Z")
+
+    G = relational_compose_all([G1, G2])
+    assert_edges_equal(G.edges(), [
+        ("A", "L"),
+        ("A", "M"),
+    ])
+
+
+def test_relational_compose_all_multidigraph():
+    G1 = nx.MultiDiGraph()
+    G1.add_edge("A", "B")
+    G1.add_edge("A", "C")
+    G1.add_edge("A", "D")
+    G1.add_edge("X", "D")
+    G2 = nx.MultiDiGraph()
+    G2.add_edge("B", "L")
+    G2.add_edge("C", "L")
+    G2.add_edge("C", "M")
+    G2.add_edge("Y", "M")
+    G2.add_edge("Y", "Z")
+
+    G = relational_compose_all([G1, G2])
+    assert_edges_equal(G.edges(), [
+        ("A", "L"),
+        ("A", "L"),
+        ("A", "M"),
+    ])
 
 
 def test_union_all_multigraph():

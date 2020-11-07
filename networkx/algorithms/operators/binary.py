@@ -11,6 +11,7 @@ __all__ = [
     "difference",
     "symmetric_difference",
     "full_join",
+    "relational_compose",
 ]
 
 
@@ -329,6 +330,76 @@ def compose(G, H):
         R.add_edges_from(H.edges(keys=True, data=True))
     else:
         R.add_edges_from(H.edges(data=True))
+    return R
+
+
+def relational_compose(G, H, with_keys=False):
+    """Returns a new graph of G composed with H.
+
+    Relational composition is the composition of G and H viewed as relations.
+    We compute G; H, i.e., H o G. The nodes of the result are the union of the nodes of G and H. The result contains an edge from a node a in G to a node c in H if there is an node b in G and H such that G contains an edge from a to b and H contains an edge from b to c.
+    For a multigraph, given m edges from a to b and n edges from b to c, the result will have mxn edges from a to c.  The user may wish to define attributes of these edges as a function of the attributes of a participating edge instance for each particpating edge; we could ultimately allow them to pass in such a function.
+    Where two nodes are connected by more than one intermediate node, a single edge is created in a Graph or DiGraph, and multiple edges are created in a MultiGraph or MultiDiGraph.
+    An undirected graph is treated as a directed graph with dual directed edges between the connected nodes, in each direction, as by to_directed, so can be composed with a directed graph in either direction.
+    The relational composition of hypergraphs would contain a hyperedge with nodeset U if G contains a hyperedge with nodeset V and H contains a hyperedge with nodeset W, with U the symmetric difference of V and W.
+
+    Parameters
+    ----------
+    G, H : graph
+       A NetworkX graph
+    with_keys : bool, optional (default=False)
+       Ignored for simple graphs.
+       For multigraphs:
+          If with_keys=True, keys of edges being composed must match.  This may be desired if keys are set explicitly.
+          Otherwise, keys are ignored and reassigned.
+
+    Returns
+    -------
+    C: A new graph that is a multigraph if both G and H are multigraphs; directed if either G or H is directed; an undirected graph if both G and H are undirected graphs; and an error otherwise
+
+    Notes
+    -----
+    Attributes from the graph, nodes, and edges are not copied to the new graph.
+    """
+    # specify result graph
+    # ultimately promote simple graphs to multigraphs
+    if not G.is_multigraph() == H.is_multigraph():
+        raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
+    is_multigraph = G.is_multigraph()
+
+    if not (G.is_directed() or H.is_directed()):
+        is_directed = False
+    else:
+        if not G.is_directed():
+            G = G.to_directed()
+        elif not H.is_directed():
+            H = H.to_directed()
+        is_directed = True
+
+    # create result graph
+    R = nx.create_empty_copy(G, with_data=False)
+    R.add_nodes_from(H.nodes(data=False))
+
+    # add composite edges to result graph
+    for (gsource, nbrdict) in G.adjacency_iter():
+        for gtarget in nbrdict.keys():
+            succ_nodes = H[gtarget] if gtarget in H else {}
+            if is_multigraph:
+                for succ_node in succ_nodes:
+                    if with_keys:
+                        # for each edge in H from gtarget to succ_node with the same key as the edge from gsource to gtarget in G, create an edge in R with that key pre-composing the edge from gsource to gtarget in G
+                        for k in succ_nodes[succ_node]:
+                            if k in G[gsource][gtarget]:
+                                R.add_edge(gsource, succ_node, k)
+                    else:
+                        # Create an edge in R pre-composing the edge from gsource to gtarget in G for each edge in H from gtarget to succ_node
+                        for _ in range(len(G[gsource][gtarget]) * len(H[gtarget][succ_node])):
+                            R.add_edge(gsource, succ_node)
+            else:
+                # Create an edge in R pre-composing the edge from gsource to gtarget in G for each edge in H from gtarget to any succ_node of gtarget
+                for succ_node in succ_nodes:
+                    R.add_edge(gsource, succ_node)
+
     return R
 
 

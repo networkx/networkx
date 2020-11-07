@@ -355,6 +355,23 @@ class Graph:
         """
         return AdjacencyView(self._adj)
 
+    def adjacency_iter(self):
+        """Return an iterator of (node, adjacency set) tuples for all nodes
+           in the dense graph.
+
+        This is the fastest way to look at every edge.
+        For directed graphs, only outgoing adjacencies are included.
+
+        Returns
+        -------
+        adj_iter : iterator
+           An iterator of (node, adjacency set) for all nodes in
+           the graph.
+
+        """
+        for n in self.adj:
+            yield n, self.adj[n]
+
     @property
     def name(self):
         """String identifier of the graph.
