@@ -96,6 +96,7 @@ class LTISystem:
     Constructs an underlying (weighted) directed graph of the system
     based on the given matrices.
     """
+
     def __init__(self, A, B, state_prefix="x", input_prefix="u"):
         self.A = A
         self.B = B
