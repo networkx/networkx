@@ -1,3 +1,4 @@
+import pytest
 import networkx as nx
 from networkx.algorithms.control.systems import *
 import numpy as np
@@ -224,13 +225,3 @@ def test_minimum_actuators():
     actuators = sys.find_minimum_actuators()
     valids = [{"x0", "x1", "x4"}, {"x0", "x3", "x4"}]
     assert actuators in valids
-
-
-if __name__ == "__main__":
-    test_lti_system()
-    test_controllability_matrix()
-    test_structural_controllability()
-    test_strong_structural_controllability()
-    test_driver_nodes()
-    test_controllability_pbh()
-    test_minimum_actuators()
