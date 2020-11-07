@@ -200,15 +200,19 @@ def test_minimum_actuators():
             [0, 1, 0, 0, 0, 0],
             [1, 1, 0, 1, 0, 0],
             [0, 0, 1, 0, 1, 1],
-            [0, 0, 0, 1, 0 ,0],
+            [0, 0, 0, 1, 0, 0],
             [0, 0, 0, 1, 0, 0],
         ]
     )
     B = np.array([[0], [0], [0], [0], [0], [0]])
     sys = nx.algorithms.control.systems.LTISystem(A, B)
     actuators = sys.find_minimum_actuators()
-    valids = [{"x0", "x1", "x2"}, {"x0", "x1", "x3"},
-              {"x0", "x1", "x4"}, {"x0", "x1", "x5"}]
+    valids = [
+        {"x0", "x1", "x2"},
+        {"x0", "x1", "x3"},
+        {"x0", "x1", "x4"},
+        {"x0", "x1", "x5"}
+    ]
     assert actuators in valids
 
     A = np.array(
