@@ -211,7 +211,7 @@ def test_minimum_actuators():
         {"x0", "x1", "x2"},
         {"x0", "x1", "x3"},
         {"x0", "x1", "x4"},
-        {"x0", "x1", "x5"}
+        {"x0", "x1", "x5"},
     ]
     assert actuators in valids
 
