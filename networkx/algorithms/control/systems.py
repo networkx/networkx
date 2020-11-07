@@ -9,11 +9,11 @@ def create_bipartite_from_directed_graph(G):
 
     Adds in and out nodes for each node of the graph.
     """
-    in_nodes = [node + '-' for node in G.nodes]
-    out_nodes = [node + '+' for node in G.nodes]
+    in_nodes = [node + "-" for node in G.nodes]
+    out_nodes = [node + "+" for node in G.nodes]
     edges = []
     for u, v in G.edges:
-        edges.append((u + '+', v + '-'))
+        edges.append((u + "+", v + "-"))
     H = nx.Graph()
     H.add_nodes_from(out_nodes, bipartite=0)
     H.add_nodes_from(in_nodes, bipartite=1)
@@ -96,14 +96,13 @@ class LTISystem:
     Constructs an underlying (weighted) directed graph of the system
     based on the given matrices.
     """
-    def __init__(self, A, B,
-                 state_prefix='x', input_prefix='u'):
+    def __init__(self, A, B, state_prefix="x", input_prefix="u"):
         self.A = A
         self.B = B
 
         self.G = nx.DiGraph()
-        self.state_nodes = [state_prefix + '{}'.format(i) for i in range(A.shape[0])]
-        self.input_nodes = [input_prefix + '{}'.format(i) for i in range(B.shape[1])]
+        self.state_nodes = [state_prefix + "{}".format(i) for i in range(A.shape[0])]
+        self.input_nodes = [input_prefix + "{}".format(i) for i in range(B.shape[1])]
         self.G.add_nodes_from(self.state_nodes)
         self.G.add_nodes_from(self.input_nodes)
 
@@ -128,7 +127,7 @@ class LTISystem:
 
         C = np.zeros((n, n * m))
         for i in range(n):
-            C[:, i*m:(i+1)*m] = self.A ** i @ self.B
+            C[:, i * m:(i + 1) * m] = self.A ** i @ self.B
         return C
 
     def is_controllable(self):
@@ -141,8 +140,7 @@ class LTISystem:
         """Check if any states are inaccessible from the inputs."""
         total_reachable = set()
         for input_node in self.input_nodes:
-            reachable = nx.single_source_shortest_path_length(self.G,
-                                                              input_node).keys()
+            reachable = nx.single_source_shortest_path_length(self.G, input_node).keys()
             total_reachable = total_reachable.union(reachable)
         reachable_states = total_reachable.intersection(self.state_nodes)
         return len(reachable_states) < len(self.state_nodes)
@@ -153,8 +151,9 @@ class LTISystem:
         A dilation is defined as a subset of the state nodes S
         such that the neighborhood set T(S) contains fewer nodes than S itself.
         """
-        incoming_neighbors = [list(self.G.predecessors(node))
-                              for node in self.state_nodes]
+        incoming_neighbors = [
+            list(self.G.predecessors(node)) for node in self.state_nodes
+        ]
         for i in range(1, len(self.state_nodes) + 1):
             for neighbors in combinations(incoming_neighbors, i):
                 neighborhood_set = set().union(*neighbors)
@@ -204,8 +203,9 @@ class LTISystem:
         G_no_inputs = self.G.subgraph(self.state_nodes)
         H = create_bipartite_from_directed_graph(G_no_inputs)
         max_matching = find_maximum_matchings(H)[0]
-        _, unmatched = convert_matching_to_nodes(max_matching, self.state_nodes,
-                                                 from_bipartite=True)
+        _, unmatched = convert_matching_to_nodes(
+            max_matching, self.state_nodes, from_bipartite=True
+        )
         return unmatched
 
     def is_controllable_pbh(self):
@@ -233,7 +233,7 @@ class LTISystem:
         """
         G = self.G.subgraph(self.state_nodes)
         scc_dag = nx.condensation(G)
-        node_to_scc = scc_dag.graph['mapping']
+        node_to_scc = scc_dag.graph["mapping"]
         scc_to_nodes = {}
         for node, scc in node_to_scc.items():
             if scc not in scc_to_nodes:
@@ -247,8 +247,9 @@ class LTISystem:
         alpha = 0
         top_assignable_scc = None
         for matching in max_matchings:
-            matched, unmatched = convert_matching_to_nodes(matching, G.nodes,
-                                                           from_bipartite=True)
+            matched, unmatched = convert_matching_to_nodes(
+                matching, G.nodes, from_bipartite=True
+            )
             assignable = set()
             # Find set of rSCCs that contain driver nodes
             for node in unmatched:
@@ -264,8 +265,9 @@ class LTISystem:
                 root_scc_nodes.add(node)
 
         max_matching = max_matchings[0]
-        matched, unmatched = convert_matching_to_nodes(max_matching, G.nodes,
-                                                       from_bipartite=True)
+        matched, unmatched = convert_matching_to_nodes(
+            max_matching, G.nodes, from_bipartite=True
+        )
         n_driver_nodes = len(unmatched)
 
         min_num_actuators = n_driver_nodes + beta - alpha
@@ -285,8 +287,9 @@ class LTISystem:
                 B_new = B.copy()
                 B_new.remove_edges_from(bad_edges)
                 matching = find_maximum_matchings(B_new)[0]
-                new_matches, _ = convert_matching_to_nodes(matching, G.nodes,
-                                                           from_bipartite=True)
+                new_matches, _ = convert_matching_to_nodes(
+                    matching, G.nodes, from_bipartite=True
+                )
                 match_lens.append(len(new_matches))
             max_len = max(match_lens)
             for i, length in enumerate(match_lens):
