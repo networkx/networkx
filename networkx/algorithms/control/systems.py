@@ -127,7 +127,7 @@ class LTISystem:
 
         C = np.zeros((n, n * m))
         for i in range(n):
-            C[:, i * m:(i + 1) * m] = self.A ** i @ self.B
+            C[:, i * m : (i + 1) * m] = self.A ** i @ self.B
         return C
 
     def is_controllable(self):
