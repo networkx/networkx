@@ -17,14 +17,17 @@ CommandLine
 pytest networkx/algorithms/minors --doctest-modules
 
 # Autogenerate the `__init__.py` file for this subpackage with `mkinit`.
+mkinit ~/code/networkx/networkx/algorithms/minors/__init__.py --diff
 mkinit ~/code/networkx/networkx/algorithms/minors/__init__.py -w
 """
 
 __submodules__ = [
     "contraction",
+    "tree_embedding",
 ]
 
 from networkx.algorithms.minors import contraction
+from networkx.algorithms.minors import tree_embedding
 
 from networkx.algorithms.minors.contraction import (
     contracted_edge,
@@ -33,6 +36,9 @@ from networkx.algorithms.minors.contraction import (
     identified_nodes,
     quotient_graph,
 )
+from networkx.algorithms.minors.tree_embedding import (
+    maximum_common_ordered_subtree_embedding,
+)
 
 __all__ = [
     "contracted_edge",
@@ -40,5 +46,7 @@ __all__ = [
     "contraction",
     "equivalence_classes",
     "identified_nodes",
+    "maximum_common_ordered_subtree_embedding",
     "quotient_graph",
+    "tree_embedding",
 ]
