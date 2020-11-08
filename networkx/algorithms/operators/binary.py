@@ -333,13 +333,13 @@ def compose(G, H):
     return R
 
 
-def relational_compose(G, H, with_keys=False):
+def relational_compose(G, H, with_keys=False, with_data=True, edge_data_combiner=None):
     """Returns a new graph of G composed with H.
 
     Relational composition is the composition of G and H viewed as relations.
     We compute G; H, i.e., H o G. The nodes of the result are the union of the nodes of G and H. The result contains an edge from a node a in G to a node c in H if there is an node b in G and H such that G contains an edge from a to b and H contains an edge from b to c.
-    For a multigraph, given m edges from a to b and n edges from b to c, the result will have mxn edges from a to c.  The user may wish to define attributes of these edges as a function of the attributes of a participating edge instance for each particpating edge; we could ultimately allow them to pass in such a function.
-    Where two nodes are connected by more than one intermediate node, a single edge is created in a Graph or DiGraph, and multiple edges are created in a MultiGraph or MultiDiGraph.
+    For a multigraph, given m edges from a to b and n edges from b to c, the result will have mxn edges from a to c.  The user can define attributes of these edges as a function edge_data_combiner of the attributes of a participating edge instance for each particpating edge.
+    Where two nodes are connected by more than one intermediate node, a single edge is created in a Graph or DiGraph (it is not defined in this case which pair is used to calculate the attribute data), and multiple edges are created in a MultiGraph or MultiDiGraph (so attribute data calculated from each pair is preserved), but note the restrictions imposed by the with_keys parameter.
     An undirected graph is treated as a directed graph with dual directed edges between the connected nodes, in each direction, as by to_directed, so can be composed with a directed graph in either direction.
     The relational composition of hypergraphs would contain a hyperedge with nodeset U if G contains a hyperedge with nodeset V and H contains a hyperedge with nodeset W, with U the symmetric difference of V and W.
 
@@ -352,6 +352,8 @@ def relational_compose(G, H, with_keys=False):
        For multigraphs:
           If with_keys=True, keys of edges being composed must match.  This may be desired if keys are set explicitly.
           Otherwise, keys are ignored and reassigned.
+    with_data : bool, optional (default=True)
+    edge_data_combiner: function of two arguments
 
     Returns
     -------
@@ -359,7 +361,8 @@ def relational_compose(G, H, with_keys=False):
 
     Notes
     -----
-    Attributes from the graph, nodes, and edges are not copied to the new graph.
+    Attributes from the graph and nodes are copied to the new graph if with_data is set.  For consistency with other routines, attributes from H take precedence over attributes from G.
+    Attributes from the edges are copied to the new graph if with_data is set and a edge_data_combiner is provided.
     """
     # specify result graph
     # ultimately promote simple graphs to multigraphs
@@ -377,8 +380,11 @@ def relational_compose(G, H, with_keys=False):
         is_directed = True
 
     # create result graph
-    R = nx.create_empty_copy(G, with_data=False)
-    R.add_nodes_from(H.nodes(data=False))
+    R = nx.create_empty_copy(G, with_data=with_data)
+    if with_data:
+        for k, v in H.graph.items():
+            R.graph[k] = v
+        R.add_nodes_from(H.nodes(data=True))
 
     # add composite edges to result graph
     for (gsource, nbrdict) in G.adjacency_iter():
@@ -390,15 +396,16 @@ def relational_compose(G, H, with_keys=False):
                         # for each edge in H from gtarget to succ_node with the same key as the edge from gsource to gtarget in G, create an edge in R with that key pre-composing the edge from gsource to gtarget in G
                         for k in succ_nodes[succ_node]:
                             if k in G[gsource][gtarget]:
-                                R.add_edge(gsource, succ_node, k)
+                                R.add_edge(gsource, succ_node, key=k, **(edge_data_combiner(G[gsource][gtarget][k], H[gtarget][succ_node][k]) if with_data and edge_data_combiner else {}))
                     else:
                         # Create an edge in R pre-composing the edge from gsource to gtarget in G for each edge in H from gtarget to succ_node
-                        for _ in range(len(G[gsource][gtarget]) * len(H[gtarget][succ_node])):
-                            R.add_edge(gsource, succ_node)
+                        for gk in G[gsource][gtarget]:
+                            for hk in H[gtarget][succ_node]:
+                                R.add_edge(gsource, succ_node, **(edge_data_combiner(G[gsource][gtarget][gk], H[gtarget][succ_node][hk]) if with_data and edge_data_combiner else {}))
             else:
                 # Create an edge in R pre-composing the edge from gsource to gtarget in G for each edge in H from gtarget to any succ_node of gtarget
                 for succ_node in succ_nodes:
-                    R.add_edge(gsource, succ_node)
+                    R.add_edge(gsource, succ_node, **(edge_data_combiner(G[gsource][gtarget], H[gtarget][succ_node]) if with_data and edge_data_combiner else {}))
 
     return R
 

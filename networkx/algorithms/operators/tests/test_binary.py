@@ -404,77 +404,77 @@ def test_mixed_type_union():
 
 
 class TestRelationalCompose:
-    def create_empty_g(self):
+    def create_empty_g(self, with_data=False):
         return self.gclass()
 
-    def create_empty_h(self):
+    def create_empty_h(self, with_data=False):
         return self.hclass()
 
-    def create_simple_self_g(self):
-        G = self.create_empty_g()
-        G.add_edge(2, 2)
+    def create_simple_self_g(self, with_data=False):
+        G = self.create_empty_g(with_data)
+        G.add_edge(2, 2, **({"size": 2**1} if with_data else {}))
         return G
 
-    def create_multi_self_g(self):
-        G = self.create_simple_self_g()
-        G.add_edge(2, 2)
+    def create_multi_self_g(self, with_data=False):
+        G = self.create_simple_self_g(with_data)
+        G.add_edge(2, 2, **({"size": 2**2} if with_data else {}))
         return G
 
-    def create_multi_self_g_keys(self):
-        G = self.create_empty_g()
-        G.add_edge(2, 2, "A")
-        G.add_edge(2, 2, "B")
+    def create_multi_self_g_keys(self, with_data=False):
+        G = self.create_empty_g(with_data)
+        G.add_edge(2, 2, "A", **({"size": 2**1} if with_data else {}))
+        G.add_edge(2, 2, "B", **({"size": 2**2} if with_data else {}))
         return G
 
-    def create_simple_forw_g(self):
-        G = self.create_empty_g()
-        G.add_edge(1, 2)
+    def create_simple_forw_g(self, with_data=False):
+        G = self.create_empty_g(with_data)
+        G.add_edge(1, 2, **({"size": 3**1} if with_data else {}))
         return G
 
-    def create_multi_forw_g(self):
-        G = self.create_simple_forw_g()
-        G.add_edge(1, 2)
+    def create_multi_forw_g(self, with_data=False):
+        G = self.create_simple_forw_g(with_data)
+        G.add_edge(1, 2, **({"size": 3**2} if with_data else {}))
         return G
 
-    def create_multi_forw_g_keys(self):
-        G = self.create_empty_g()
-        G.add_edge(1, 2, "A")
-        G.add_edge(1, 2, "B")
+    def create_multi_forw_g_keys(self, with_data=False):
+        G = self.create_empty_g(with_data)
+        G.add_edge(1, 2, "A", **({"size": 3**1} if with_data else {}))
+        G.add_edge(1, 2, "B", **({"size": 3**2} if with_data else {}))
         return G
 
-    def create_simple_rev_g(self):
-        G = self.create_empty_g()
-        G.add_edge(2, 1)
+    def create_simple_rev_g(self, with_data=False):
+        G = self.create_empty_g(with_data)
+        G.add_edge(2, 1, **({"size": 3**1} if with_data else {}))
         return G
 
-    def create_multi_rev_g(self):
-        G = self.create_simple_rev_g()
-        G.add_edge(2, 1)
+    def create_multi_rev_g(self, with_data=False):
+        G = self.create_simple_rev_g(with_data)
+        G.add_edge(2, 1, **({"size": 3**2} if with_data else {}))
         return G
 
-    def create_multi_rev_g_keys(self):
-        G = self.create_empty_g()
-        G.add_edge(2, 1, "A")
-        G.add_edge(2, 1, "B")
+    def create_multi_rev_g_keys(self, with_data=False):
+        G = self.create_empty_g(with_data)
+        G.add_edge(2, 1, "A", **({"size": 3**1} if with_data else {}))
+        G.add_edge(2, 1, "B", **({"size": 3**2} if with_data else {}))
         return G
 
-    def create_simple_h(self):
-        H = self.create_empty_h()
-        H.add_edge(2, 3)
-        H.add_edge(2, 4)
+    def create_simple_h(self, with_data=False):
+        H = self.create_empty_h(with_data)
+        H.add_edge(2, 3, **({"size": 5**1} if with_data else {}))
+        H.add_edge(2, 4, **({"size": 7**1} if with_data else {}))
         return H
 
-    def create_multi_h(self):
-        H = self.create_simple_h()
-        H.add_edge(2, 3)
-        H.add_edge(2, 3)
+    def create_multi_h(self, with_data=False):
+        H = self.create_simple_h(with_data)
+        H.add_edge(2, 3, **({"size": 5**2} if with_data else {}))
+        H.add_edge(2, 3, **({"size": 5**3} if with_data else {}))
         return H
 
-    def create_multi_h_keys(self):
-        H = self.create_empty_h()
-        H.add_edge(2, 3, "B")
-        H.add_edge(2, 3, "C")
-        H.add_edge(2, 4)
+    def create_multi_h_keys(self, with_data=False):
+        H = self.create_empty_h(with_data)
+        H.add_edge(2, 3, "B", **({"size": 5**1} if with_data else {}))
+        H.add_edge(2, 3, "C", **({"size": 5**2} if with_data else {}))
+        H.add_edge(2, 4, **({"size": 7**1} if with_data else {}))
         return H
 
     leading_directed_graph_combinations = [
@@ -516,6 +516,45 @@ class TestRelationalCompose:
     multi_g_h_edge_count = 8
     matching_multi_g_h_edge_count = 1
     default_matching_multi_g_h_edge_count = 3
+
+    edge_data_combiner = lambda self, gattr, hattr: {"size": gattr["size"]*hattr["size"]}
+
+
+    def check_simple_self_g_h_no_edge_attribs(self, R):
+        assert "size" not in R[2][3]
+        assert "size" not in R[2][4]
+
+    def check_simple_self_g_h_edge_attribs(self, R):
+        assert R[2][3]["size"] == 10
+        assert R[2][4]["size"] == 14
+
+    def check_simple_edge_g_h_edge_attribs(self, R):
+        assert R[1][3]["size"] == 15
+        assert R[1][4]["size"] == 21
+
+    def check_multi_self_g_h_edge_attribs(self, R):
+        assert {data["size"] for data in R[2][3].values()} == set([10, 50, 250, 20, 100, 500])
+        assert {data["size"] for data in R[2][4].values()} == set([14, 28])
+
+    def check_matching_multi_self_g_h_edge_attribs(self, R):
+        assert {data["size"] for data in R[2][3].values()} == set([20])
+        assert 4 not in R[2]
+
+    def check_default_matching_multi_self_g_h_edge_attribs(self, R):
+        assert {data["size"] for data in R[2][3].values()} == set([10, 100])
+        assert {data["size"] for data in R[2][4].values()} == set([14])
+
+    def check_multi_edge_g_h_edge_attribs(self, R):
+        assert {data["size"] for data in R[1][3].values()} == set([15, 75, 375, 45, 225, 1125])
+        assert {data["size"] for data in R[1][4].values()} == set([21, 63])
+
+    def check_matching_multi_edge_g_h_edge_attribs(self, R):
+        assert {data["size"] for data in R[1][3].values()} == set([45])
+        assert 4 not in R[1]
+
+    def check_default_matching_multi_edge_g_h_edge_attribs(self, R):
+        assert {data["size"] for data in R[1][3].values()} == set([15, 225])
+        assert {data["size"] for data in R[1][4].values()} == set([21])
 
 
     def test_trivial_composition_empty_graphs(self):
@@ -621,196 +660,238 @@ class TestRelationalCompose:
             assert set(R.edges()) == TestRelationalCompose.empty_edge_set
 
 
-    def test_composition_self_nonempty_graphs(self):
-        for self.gclass, self.hclass in self.all_graph_and_multigraph_combinations:
+    def test_composition_self_nonempty_graphs_without_data(self):
+        for self.gclass, self.hclass in self.all_graph_combinations:
             R = nx.relational_compose(
-                self.create_simple_self_g(),
-                self.create_simple_h(),
+                self.create_simple_self_g(with_data=True),
+                self.create_simple_h(with_data=True),
+                with_data = False,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.self_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.self_g_h_edge_set
             assert len(R.edges()) == TestRelationalCompose.simple_g_h_edge_count
+            self.check_simple_self_g_h_no_edge_attribs(R)
 
 
-    def test_composition_multi_self_nonempty_graphs(self):
+    def test_composition_self_nonempty_graphs_with_data(self):
+        for self.gclass, self.hclass in self.all_graph_combinations:
+            R = nx.relational_compose(
+                self.create_simple_self_g(with_data=True),
+                self.create_simple_h(with_data=True),
+                edge_data_combiner = self.edge_data_combiner,
+            )
+
+            assert set(R.nodes()) == TestRelationalCompose.self_g_h_node_set
+            assert set(R.edges()) == TestRelationalCompose.self_g_h_edge_set
+            assert len(R.edges()) == TestRelationalCompose.simple_g_h_edge_count
+            self.check_simple_self_g_h_edge_attribs(R)
+
+
+    def test_composition_multi_self_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.all_multigraph_combinations:
             R = nx.relational_compose(
-                self.create_multi_self_g(),
-                self.create_multi_h(),
+                self.create_multi_self_g(with_data=True),
+                self.create_multi_h(with_data=True),
+                edge_data_combiner = self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.self_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.self_g_h_edge_set
             assert len(R.edges()) == TestRelationalCompose.multi_g_h_edge_count
+            self.check_multi_self_g_h_edge_attribs(R)
 
 
-    def test_composition_multi_keys_self_nonempty_graphs(self):
+    def test_composition_multi_keys_self_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.all_multigraph_combinations:
             R = nx.relational_compose(
-                self.create_multi_self_g_keys(),
-                self.create_multi_h_keys(),
+                self.create_multi_self_g_keys(with_data=True),
+                self.create_multi_h_keys(with_data=True),
                 with_keys=True,
+                edge_data_combiner = self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.self_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.matching_self_g_h_edge_set
             assert len(R.edges()) == TestRelationalCompose.matching_multi_g_h_edge_count
+            self.check_matching_multi_self_g_h_edge_attribs(R)
 
 
-    def test_composition_multi_default_keys_self_nonempty_graphs(self):
+    def test_composition_multi_default_keys_self_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.all_multigraph_combinations:
             R = nx.relational_compose(
-                self.create_multi_self_g(),
-                self.create_multi_h(),
+                self.create_multi_self_g(with_data=True),
+                self.create_multi_h(with_data=True),
                 with_keys=True,
+                edge_data_combiner = self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.self_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.self_g_h_edge_set
             assert len(R.edges()) == TestRelationalCompose.default_matching_multi_g_h_edge_count
+            self.check_default_matching_multi_self_g_h_edge_attribs(R)
 
 
-    def test_composition_forw_edge_nonempty_graphs(self):
-        for self.gclass, self.hclass in self.all_graph_and_multigraph_combinations:
+    def test_composition_forw_edge_nonempty_graphs_with_data(self):
+        for self.gclass, self.hclass in self.all_graph_combinations:
             R = nx.relational_compose(
-                self.create_simple_forw_g(),
-                self.create_simple_h(),
+                self.create_simple_forw_g(with_data=True),
+                self.create_simple_h(with_data=True),
+                edge_data_combiner = self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.edge_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.edge_g_h_edge_set
             assert len(R.edges()) == TestRelationalCompose.simple_g_h_edge_count
+            self.check_simple_edge_g_h_edge_attribs(R)
 
 
-    def test_composition_rev_edge_undirected_nonempty_graphs(self):
-        for self.gclass, self.hclass in self.leading_nondirected_graph_and_multigraph_combinations:
+    def test_composition_rev_edge_undirected_nonempty_graphs_with_data(self):
+        for self.gclass, self.hclass in self.leading_nondirected_graph_combinations:
             R = nx.relational_compose(
-                self.create_simple_rev_g(),
-                self.create_simple_h(),
+                self.create_simple_rev_g(with_data=True),
+                self.create_simple_h(with_data=True),
+                edge_data_combiner = self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.edge_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.edge_g_h_edge_set
             assert len(R.edges()) == TestRelationalCompose.simple_g_h_edge_count
+            self.check_simple_edge_g_h_edge_attribs(R)
 
 
-    def test_composition_multi_forw_edge_nonempty_graphs(self):
+    def test_composition_multi_forw_edge_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.all_multigraph_combinations:
             R = nx.relational_compose(
-                self.create_multi_forw_g(),
-                self.create_multi_h(),
+                self.create_multi_forw_g(with_data=True),
+                self.create_multi_h(with_data=True),
+                edge_data_combiner = self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.edge_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.edge_g_h_edge_set
             assert len(R.edges()) == TestRelationalCompose.multi_g_h_edge_count
+            self.check_multi_edge_g_h_edge_attribs(R)
 
 
-    def test_composition_multi_rev_edge_undirected_nonempty_graphs(self):
+    def test_composition_multi_rev_edge_undirected_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.leading_nondirected_multigraph_combinations:
             R = nx.relational_compose(
-                self.create_multi_rev_g(),
-                self.create_multi_h(),
+                self.create_multi_rev_g(with_data=True),
+                self.create_multi_h(with_data=True),
+                edge_data_combiner = self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.edge_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.edge_g_h_edge_set
             assert len(R.edges()) == TestRelationalCompose.multi_g_h_edge_count
+            self.check_multi_edge_g_h_edge_attribs(R)
 
 
-    def test_composition_multi_keys_forw_edge_nonempty_graphs(self):
+    def test_composition_multi_keys_forw_edge_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.all_multigraph_combinations:
             R = nx.relational_compose(
-                self.create_multi_forw_g_keys(),
-                self.create_multi_h_keys(),
+                self.create_multi_forw_g_keys(with_data=True),
+                self.create_multi_h_keys(with_data=True),
                 with_keys=True,
+                edge_data_combiner = self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.edge_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.matching_edge_g_h_edge_set
             assert len(R.edges()) == TestRelationalCompose.matching_multi_g_h_edge_count
+            self.check_matching_multi_edge_g_h_edge_attribs(R)
 
 
-    def test_composition_multi_keys_rev_edge_undirected_nonempty_graphs(self):
+    def test_composition_multi_keys_rev_edge_undirected_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.leading_nondirected_multigraph_combinations:
             R = nx.relational_compose(
-                self.create_multi_rev_g_keys(),
-                self.create_multi_h_keys(),
+                self.create_multi_rev_g_keys(with_data=True),
+                self.create_multi_h_keys(with_data=True),
                 with_keys=True,
+                edge_data_combiner = self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.edge_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.matching_edge_g_h_edge_set
             assert len(R.edges()) == TestRelationalCompose.matching_multi_g_h_edge_count
+            self.check_matching_multi_edge_g_h_edge_attribs(R)
 
 
-    def test_composition_multi_keys_default_forw_edge_nonempty_graphs(self):
+    def test_composition_multi_keys_default_forw_edge_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.all_multigraph_combinations:
             R = nx.relational_compose(
-                self.create_multi_forw_g(),
-                self.create_multi_h(),
+                self.create_multi_forw_g(with_data=True),
+                self.create_multi_h(with_data=True),
                 with_keys=True,
+                edge_data_combiner=self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.edge_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.edge_g_h_edge_set
             assert len(R.edges()) == TestRelationalCompose.default_matching_multi_g_h_edge_count
+            self.check_default_matching_multi_edge_g_h_edge_attribs(R)
 
 
-    def test_composition_multi_keys_default_rev_edge_undirected_nonempty_graphs(self):
+    def test_composition_multi_keys_default_rev_edge_undirected_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.leading_nondirected_multigraph_combinations:
             R = nx.relational_compose(
-                self.create_multi_rev_g(),
-                self.create_multi_h(),
+                self.create_multi_rev_g(with_data=True),
+                self.create_multi_h(with_data=True),
                 with_keys=True,
+                edge_data_combiner = self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.edge_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.edge_g_h_edge_set
             assert len(R.edges()) == TestRelationalCompose.default_matching_multi_g_h_edge_count
+            self.check_default_matching_multi_edge_g_h_edge_attribs(R)
 
 
-    def test_trivial_composition_rev_edge_directed_nonempty_graphs(self):
+    def test_trivial_composition_rev_edge_directed_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.leading_directed_graph_and_multigraph_combinations:
             R = nx.relational_compose(
-                self.create_simple_rev_g(),
-                self.create_simple_h(),
+                self.create_simple_rev_g(with_data=True),
+                self.create_simple_h(with_data=True),
+                edge_data_combiner=self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.edge_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.empty_edge_set
 
 
-    def test_trivial_composition_multi_rev_edge_directed_nonempty_graphs(self):
+    def test_trivial_composition_multi_rev_edge_directed_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.leading_directed_multigraph_combinations:
             R = nx.relational_compose(
-                self.create_multi_rev_g(),
-                self.create_multi_h(),
+                self.create_multi_rev_g(with_data=True),
+                self.create_multi_h(with_data=True),
+                edge_data_combiner = self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.edge_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.empty_edge_set
 
 
-    def test_trivial_composition_multi_keys_rev_edge_directed_nonempty_graphs(self):
+    def test_trivial_composition_multi_keys_rev_edge_directed_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.leading_directed_multigraph_combinations:
             R = nx.relational_compose(
-                self.create_multi_rev_g_keys(),
-                self.create_multi_h_keys(),
+                self.create_multi_rev_g_keys(with_data=True),
+                self.create_multi_h_keys(with_data=True),
                 with_keys=True,
+                edge_data_combiner = self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.edge_g_h_node_set
             assert set(R.edges()) == TestRelationalCompose.empty_edge_set
 
 
-    def test_trivial_composition_multi_keys_default_rev_edge_directed_nonempty_graphs(self):
+    def test_trivial_composition_multi_keys_default_rev_edge_directed_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.leading_directed_multigraph_combinations:
             R = nx.relational_compose(
-                self.create_multi_rev_g(),
-                self.create_multi_h(),
+                self.create_multi_rev_g(with_data=True),
+                self.create_multi_h(with_data=True),
                 with_keys=True,
+                edge_data_combiner = self.edge_data_combiner,
             )
 
             assert set(R.nodes()) == TestRelationalCompose.edge_g_h_node_set
