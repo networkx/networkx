@@ -75,5 +75,6 @@ Making copies and subgraphs
    Graph.copy
    Graph.to_undirected
    Graph.to_directed
+   Graph.to_multigraph
    Graph.subgraph
    Graph.edge_subgraph

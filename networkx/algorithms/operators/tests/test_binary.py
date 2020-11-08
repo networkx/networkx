@@ -493,11 +493,35 @@ class TestRelationalCompose:
         (nx.MultiGraph, nx.MultiDiGraph),
         (nx.MultiGraph, nx.MultiGraph),
     ]
-    leading_directed_graph_and_multigraph_combinations = leading_directed_graph_combinations + leading_directed_multigraph_combinations
-    leading_nondirected_graph_and_multigraph_combinations = leading_nondirected_graph_combinations + leading_nondirected_multigraph_combinations
+    leading_directed_mixed_graph_multigraph_combinations = [
+        (nx.DiGraph, nx.MultiDiGraph),
+        (nx.DiGraph, nx.MultiGraph),
+        (nx.MultiDiGraph, nx.DiGraph),
+        (nx.MultiDiGraph, nx.Graph),
+    ]
+    leading_nondirected_mixed_graph_multigraph_combinations = [
+        (nx.Graph, nx.MultiDiGraph),
+        (nx.Graph, nx.MultiGraph),
+        (nx.MultiGraph, nx.DiGraph),
+        (nx.MultiGraph, nx.Graph),
+    ]
+    leading_simple_mixed_combinations = [
+        (nx.DiGraph, nx.MultiDiGraph),
+        (nx.DiGraph, nx.MultiGraph),
+        (nx.Graph, nx.MultiDiGraph),
+        (nx.Graph, nx.MultiGraph),
+    ]
+    leading_multi_mixed_combinations = [
+        (nx.MultiDiGraph, nx.DiGraph),
+        (nx.MultiDiGraph, nx.Graph),
+        (nx.MultiGraph, nx.DiGraph),
+        (nx.MultiGraph, nx.Graph),
+    ]
+    leading_directed_graph_and_multigraph_combinations = leading_directed_graph_combinations + leading_directed_multigraph_combinations + leading_directed_mixed_graph_multigraph_combinations
+    leading_nondirected_graph_and_multigraph_combinations = leading_nondirected_graph_combinations + leading_nondirected_multigraph_combinations + leading_nondirected_mixed_graph_multigraph_combinations
     all_graph_combinations = leading_directed_graph_combinations + leading_nondirected_graph_combinations
     all_multigraph_combinations = leading_nondirected_multigraph_combinations + leading_directed_multigraph_combinations
-    all_graph_and_multigraph_combinations = all_graph_combinations  + all_multigraph_combinations
+    all_graph_and_multigraph_combinations = all_graph_combinations  + all_multigraph_combinations + leading_directed_mixed_graph_multigraph_combinations + leading_nondirected_mixed_graph_multigraph_combinations
 
     empty_node_set = set([])
     self_g_node_set = set([2])
@@ -516,6 +540,7 @@ class TestRelationalCompose:
     multi_g_h_edge_count = 8
     matching_multi_g_h_edge_count = 1
     default_matching_multi_g_h_edge_count = 3
+    mixed_g_h_edge_count = 4
 
     edge_data_combiner = lambda self, gattr, hattr: {"size": gattr["size"]*hattr["size"]}
 
@@ -534,6 +559,14 @@ class TestRelationalCompose:
 
     def check_multi_self_g_h_edge_attribs(self, R):
         assert {data["size"] for data in R[2][3].values()} == set([10, 50, 250, 20, 100, 500])
+        assert {data["size"] for data in R[2][4].values()} == set([14, 28])
+
+    def check_mixed_leading_simple_self_g_h_edge_attribs(self, R):
+        assert {data["size"] for data in R[2][3].values()} == set([10, 50, 250])
+        assert {data["size"] for data in R[2][4].values()} == set([14])
+
+    def check_mixed_leading_multi_self_g_h_edge_attribs(self, R):
+        assert {data["size"] for data in R[2][3].values()} == set([10, 20])
         assert {data["size"] for data in R[2][4].values()} == set([14, 28])
 
     def check_matching_multi_self_g_h_edge_attribs(self, R):
@@ -660,20 +693,6 @@ class TestRelationalCompose:
             assert set(R.edges()) == TestRelationalCompose.empty_edge_set
 
 
-    def test_composition_self_nonempty_graphs_without_data(self):
-        for self.gclass, self.hclass in self.all_graph_combinations:
-            R = nx.relational_compose(
-                self.create_simple_self_g(with_data=True),
-                self.create_simple_h(with_data=True),
-                with_data = False,
-            )
-
-            assert set(R.nodes()) == TestRelationalCompose.self_g_h_node_set
-            assert set(R.edges()) == TestRelationalCompose.self_g_h_edge_set
-            assert len(R.edges()) == TestRelationalCompose.simple_g_h_edge_count
-            self.check_simple_self_g_h_no_edge_attribs(R)
-
-
     def test_composition_self_nonempty_graphs_with_data(self):
         for self.gclass, self.hclass in self.all_graph_combinations:
             R = nx.relational_compose(
@@ -686,6 +705,34 @@ class TestRelationalCompose:
             assert set(R.edges()) == TestRelationalCompose.self_g_h_edge_set
             assert len(R.edges()) == TestRelationalCompose.simple_g_h_edge_count
             self.check_simple_self_g_h_edge_attribs(R)
+
+
+    def test_composition_multi_self_nonempty_simple_then_multi_with_data(self):
+        for self.gclass, self.hclass in self.leading_simple_mixed_combinations:
+            R = nx.relational_compose(
+                self.create_simple_self_g(with_data=True),
+                self.create_multi_h(with_data=True),
+                edge_data_combiner = self.edge_data_combiner,
+            )
+
+            assert set(R.nodes()) == TestRelationalCompose.self_g_h_node_set
+            assert set(R.edges()) == TestRelationalCompose.self_g_h_edge_set
+            assert len(R.edges()) == TestRelationalCompose.mixed_g_h_edge_count
+            self.check_mixed_leading_simple_self_g_h_edge_attribs(R)
+
+
+    def test_composition_multi_self_nonempty_multi_then_simple_with_data(self):
+        for self.gclass, self.hclass in self.leading_multi_mixed_combinations:
+            R = nx.relational_compose(
+                self.create_multi_self_g(with_data=True),
+                self.create_simple_h(with_data=True),
+                edge_data_combiner = self.edge_data_combiner,
+            )
+
+            assert set(R.nodes()) == TestRelationalCompose.self_g_h_node_set
+            assert set(R.edges()) == TestRelationalCompose.self_g_h_edge_set
+            assert len(R.edges()) == TestRelationalCompose.mixed_g_h_edge_count
+            self.check_mixed_leading_multi_self_g_h_edge_attribs(R)
 
 
     def test_composition_multi_self_nonempty_graphs_with_data(self):

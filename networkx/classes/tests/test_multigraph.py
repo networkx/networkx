@@ -105,6 +105,13 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         H = G.to_directed()
         self.is_deepcopy(H, G)
 
+    def test_to_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edge(1, 2, size=123)
+        H = G.to_multigraph()
+        assert G[1][2][0] == H[1][2][0]
+        assert not G[1][2][0] is H[1][2][0]
+
     def test_number_of_edges_selfloops(self):
         G = self.K3
         G.add_edge(0, 0)

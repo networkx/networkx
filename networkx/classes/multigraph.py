@@ -1075,6 +1075,64 @@ class MultiGraph(Graph):
         )
         return G
 
+    def to_multigraph(self, as_view=False):
+        """Returns a multigraph representation of the graph.
+
+        Returns
+        -------
+        G : MultiGraph
+            A multigraph with the same name, same nodes, and with
+            each edge (u, v, data) replaced by the keyed edge (u, v, 0, data).
+
+        Notes
+        -----
+        This returns a "deepcopy" of the edge, node, and
+        graph attributes which attempts to completely copy
+        all of the data and references.
+
+        This is in contrast to the similar M=MultiGraph(G) which returns a
+        shallow copy of the data.
+
+        See the Python copy module for more information on shallow
+        and deep copies, https://docs.python.org/3/library/copy.html.
+
+        Warning: If you have subclassed MultiGraph to use dict-like objects
+        in the data structure, those changes do not transfer to the
+        MultiGraph created by this method.
+
+        Examples
+        --------
+        >>> G = nx.MultiGraph()  # or MultiDiGraph, etc
+        >>> G.add_edge(0, 1)
+        >>> G[0][1]
+        {0: {}}
+        >>> H = G.to_multigraph()
+        >>> dict(H[0][1])
+        {0: {}}
+
+        Return a (deep) copy
+
+        >>> G = nx.MultiGraph()  # or MultiDiGraph, etc
+        >>> G.add_edge(0, 1, size=3)
+        >>> H = G.to_multigraph()
+        >>> G[0][1][0] is H[0][1][0]
+        False
+        """
+        graph_class = self.to_multigraph_class()
+        if as_view is True:
+            return nx.graphviews.generic_graph_view(self, graph_class)
+        # deepcopy when not a view
+        G = graph_class()
+        G.graph.update(deepcopy(self.graph))
+        G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
+        G.add_edges_from(
+            # Can't use adjacency dict because it includes reverse edges for undirected
+            (u, v, k, deepcopy(self[u][v][k]))
+            for u, v in self.edges()
+            for k in self[u][v]
+        )
+        return G
+
     def number_of_edges(self, u=None, v=None):
         """Returns the number of edges between two nodes.
 

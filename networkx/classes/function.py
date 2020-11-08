@@ -528,6 +528,16 @@ def to_undirected(graph):
     return graph.to_undirected(as_view=True)
 
 
+def to_multigraph(graph):
+    """Returns a multigraph view of the graph `graph`.
+
+    Identical to graph.to_multigraph(as_view=True)
+    Note that graph.to_multigraph defaults to `as_view=False`
+    while this function always provides a view.
+    """
+    return graph.to_multigraph(as_view=True)
+
+
 def create_empty_copy(G, with_data=True):
     """Returns a copy of the graph G with all of the edges removed.
 

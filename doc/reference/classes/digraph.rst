@@ -82,6 +82,7 @@ Making copies and subgraphs
    DiGraph.copy
    DiGraph.to_undirected
    DiGraph.to_directed
+   DiGraph.to_multigraph
    DiGraph.subgraph
    DiGraph.edge_subgraph
    DiGraph.reverse

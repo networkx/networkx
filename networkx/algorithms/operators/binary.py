@@ -365,10 +365,14 @@ def relational_compose(G, H, with_keys=False, with_data=True, edge_data_combiner
     Attributes from the edges are copied to the new graph if with_data is set and a edge_data_combiner is provided.
     """
     # specify result graph
-    # ultimately promote simple graphs to multigraphs
-    if not G.is_multigraph() == H.is_multigraph():
-        raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
-    is_multigraph = G.is_multigraph()
+    if not (G.is_multigraph() or H.is_multigraph()):
+        is_multigraph = False
+    else:
+        if not G.is_multigraph():
+            G = G.to_multigraph()
+        elif not H.is_multigraph():
+            H = H.to_multigraph()
+        is_multigraph = True
 
     if not (G.is_directed() or H.is_directed()):
         is_directed = False

@@ -1099,6 +1099,14 @@ class DiGraph(Graph):
         for successor_dict in self._succ.values():
             successor_dict.clear()
 
+    def to_multigraph_class(self):
+        """Returns the class to use for empty multigraph copies.
+
+        If you subclass the base classes, use this to designate
+        what directed class to use for `to_multi()` copies.
+        """
+        return nx.MultiDiGraph
+
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""
         return False
