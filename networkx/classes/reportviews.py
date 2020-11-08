@@ -187,7 +187,8 @@ class NodeView(Mapping, Set):
     def __getitem__(self, n):
         if isinstance(n, slice):
             raise nx.NetworkXError(
-                f"{type(self).__name__} does not support slicing, try list(G.nodes)[{n}]"
+                f"{type(self).__name__} does not support slicing, "
+                f"try list(G.nodes)[{n.start}:{n.stop}:{n.step}]"
             )
         return self._nodes[n]
 
@@ -291,7 +292,8 @@ class NodeDataView(Set):
     def __getitem__(self, n):
         if isinstance(n, slice):
             raise nx.NetworkXError(
-                f"{type(self).__name__} does not support slicing, try list(G.nodes.data())[{n}]"
+                f"{type(self).__name__} does not support slicing, "
+                f"try list(G.nodes.data())[{n.start}:{n.stop}:{n.step}]"
             )
         ddict = self._nodes[n]
         data = self._data
@@ -1023,7 +1025,8 @@ class OutEdgeView(Set, Mapping):
     def __getitem__(self, e):
         if isinstance(e, slice):
             raise nx.NetworkXError(
-                f"{type(self).__name__} does not support slicing, try list(G.edges)[{e}]"
+                f"{type(self).__name__} does not support slicing, "
+                f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
             )
         u, v = e
         return self._adjdict[u][v]
@@ -1175,7 +1178,8 @@ class InEdgeView(OutEdgeView):
     def __getitem__(self, e):
         if isinstance(e, slice):
             raise nx.NetworkXError(
-                f"{type(self).__name__} does not support slicing, try list(G.in_edges)[{e}]"
+                f"{type(self).__name__} does not support slicing, "
+                f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
             )
         u, v = e
         return self._adjdict[v][u]
@@ -1216,7 +1220,8 @@ class OutMultiEdgeView(OutEdgeView):
     def __getitem__(self, e):
         if isinstance(e, slice):
             raise nx.NetworkXError(
-                f"{type(self).__name__} does not support slicing, try list(G.edges)[{e}]"
+                f"{type(self).__name__} does not support slicing, "
+                f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
             )
         u, v, k = e
         return self._adjdict[u][v][k]
@@ -1293,7 +1298,8 @@ class InMultiEdgeView(OutMultiEdgeView):
     def __getitem__(self, e):
         if isinstance(e, slice):
             raise nx.NetworkXError(
-                f"{type(self).__name__} does not support slicing, try list(G.in_edges)[{e}]"
+                f"{type(self).__name__} does not support slicing, "
+                f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
             )
         u, v, k = e
         return self._adjdict[v][u][k]
