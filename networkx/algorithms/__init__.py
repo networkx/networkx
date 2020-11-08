@@ -68,6 +68,7 @@ import networkx.algorithms.components
 import networkx.algorithms.connectivity
 import networkx.algorithms.community
 import networkx.algorithms.coloring
+import networkx.algorithms.embedding
 import networkx.algorithms.flow
 import networkx.algorithms.isomorphism
 import networkx.algorithms.link_analysis
@@ -99,6 +100,7 @@ from networkx.algorithms.connectivity import minimum_node_cut
 from networkx.algorithms.connectivity import node_connectivity
 from networkx.algorithms.connectivity import node_disjoint_paths
 from networkx.algorithms.connectivity import stoer_wagner
+from networkx.algorithms.embedding import *
 from networkx.algorithms.flow import capacity_scaling
 from networkx.algorithms.flow import cost_of_flow
 from networkx.algorithms.flow import gomory_hu_tree

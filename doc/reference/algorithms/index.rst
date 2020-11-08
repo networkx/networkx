@@ -29,6 +29,8 @@ Algorithms
    covering
    cycles
    cuts
+   embedding
+   string
    d_separation
    dag
    distance_measures
