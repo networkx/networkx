@@ -11,3 +11,4 @@ Minors
    identified_nodes
    equivalence_classes
    quotient_graph
+   maximum_common_ordered_subtree_embedding
