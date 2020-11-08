@@ -169,6 +169,15 @@ htmlhelp_basename = "NetworkX"
 # Options for LaTeX output
 # ------------------------
 
+# Notes for customization
+# https://www.sphinx-doc.org/en/master/latex.html
+# https://github.com/sphinx-doc/sphinx/issues/4136
+
+# Use a latex engine allows for unicode characters in docstrings
+
+latex_engine = "xelatex"
+latex_use_xindy = False
+
 # The paper size ('letter' or 'a4').
 latex_paper_size = "letter"
 

@@ -23,7 +23,7 @@ jobs:
       - run:
           name: Install TeX
           command: |
-            sudo apt-get install texlive texlive-latex-extra latexmk
+            sudo apt-get install texlive texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra
 
       - run:
           name: Install cartopy dependencies
