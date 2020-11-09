@@ -3,9 +3,19 @@
 Rainbow Coloring
 ================
 
-Generate a complete graph with `n` nodes in a circular layout with the
+Generate a complete graph with 13 nodes in a circular layout with the
 edges colored by node distance. The node distance is given by the minimum
 number of nodes traversed along an arc between any two nodes on the circle.
+
+Such graphs are the subject of Ringel's conjecture, which states: any complete
+graph with ``2n + 1`` nodes can be tiled by any tree with ``n + 1`` nodes
+(i.e. copies of the tree can be placed over the complete graph such that each
+edge in the complete graph is covered exactly once). The edge coloring is
+helpful in determining how to place the tree copies.
+
+References
+----------
+https://www.quantamagazine.org/mathematicians-prove-ringels-graph-theory-conjecture-20200219/
 """
 import matplotlib.pyplot as plt
 import networkx as nx
