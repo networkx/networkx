@@ -32,8 +32,8 @@ ndist_iter = list(range(1, n + 1))
 ndist_iter += ndist_iter[::-1]
 
 
-def cycle(l, n):
-    return l[-n:] + l[:-n]
+def cycle(nlist, n):
+    return nlist[-n:] + nlist[:-n]
 
 
 # Rotate nodes around the circle and assign colors for each edge based on
