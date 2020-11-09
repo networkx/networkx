@@ -33,6 +33,11 @@ API Changes
   In `to_*_array/matrix`, nodes in nodelist but not in G now raise an exception.
   Use G.add_nodes_from(nodelist) to add them to G before converting.
 
+- [`#4329 <https://github.com/networkx/networkx/pull/4329>`_]
+  A relational_compose operator is now available in networkx.algorithms.operators.binary.
+  The corresponding relational_compose_all is available in networkx.algorithms.operators.all.
+  These make use of Graph.to_multigraph, available in networkx.classes.graph, and MultiGraph.to_multigraph, available in networkx.classes.multigraph, with a corresponding function to_multigraph available in networkx.classes.function.
+
 Deprecations
 ------------
 
