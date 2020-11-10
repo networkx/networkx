@@ -76,6 +76,7 @@ after_success:
       codecov;
     fi
   - if [[ "${DEPLOY_DOCS}" == 1 && $TRAVIS_PULL_REQUEST == false && $TRAVIS_BRANCH == "master" ]]; then
+      pip install ${PIP_FLAGS} -r requirements/doc.txt;
       pip install ${PIP_FLAGS} -r requirements/example.txt;
       source tools/travis/build_docs.sh;
       source tools/travis/deploy_docs.sh;

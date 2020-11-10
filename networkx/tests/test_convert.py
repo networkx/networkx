@@ -1,7 +1,10 @@
+import string
+from functools import partial
+from random import choice
+
 import pytest
 
 import networkx as nx
-from networkx.testing import assert_nodes_equal, assert_edges_equal, assert_graphs_equal
 from networkx.convert import (
     to_networkx_graph,
     to_dict_of_dicts,
@@ -10,6 +13,15 @@ from networkx.convert import (
     from_dict_of_lists,
 )
 from networkx.generators.classic import barbell_graph, cycle_graph
+from networkx.testing import (
+    assert_edges_equal,
+    assert_graphs_equal,
+    assert_nodes_equal,
+)
+
+np = pytest.importorskip("numpy")
+pd = pytest.importorskip("pandas")
+xr = pytest.importorskip("xarray")
 
 
 class TestConvert:
@@ -279,3 +291,66 @@ class TestConvert:
         # this raise exception
         # h._node.update((n, dd.copy()) for n, dd in g.nodes.items())
         # assert isinstance(h._node[1], custom_dict)
+
+
+@pytest.fixture
+def G():
+    # Generate a graph
+    G = nx.erdos_renyi_graph(n=20, p=0.1)
+
+    # Add metadata to it:
+    # - some arbitrary letter chosen from the English alphabet
+    # - a random number chosen from the range(0,100)
+    for node in G.nodes():
+        G.nodes[node]["letter"] = choice(string.ascii_lowercase)
+        G.nodes[node]["number"] = choice(range(100))
+    return G
+
+
+def test_generate_node_dataframe(G):
+    """
+    Test for generate_node_dataframe.
+
+    We check that it returns a dataframe,
+    that the index is equal to the node set,
+    and that the columns are added correctly,
+    """
+    # Now, generate a node dataframe using a custom function.
+    def node_metadata(n, d):
+        return pd.Series(d, name=n)
+
+    # Another user-defined function to transform number by multiplying it by 10
+    def ten_times_number(n, d):
+        return pd.Series({"10x_number": d["number"] * 10}, name=n)
+
+    # Now, generate node dataframe
+    funcs = [
+        node_metadata,
+        ten_times_number,
+    ]
+    dataframe = nx.generate_node_dataframe(G, funcs)
+    assert set(dataframe.columns) == set(["letter", "number", "10x_number"])
+    assert set(dataframe.index) == set(G.nodes())
+    assert isinstance(dataframe, pd.DataFrame)
+
+
+def test_generate_adjacency_xarray(G):
+    def adjacency_power(G, n):
+        A = np.asarray(nx.adjacency_matrix(G).todense())
+        A = np.linalg.matrix_power(A, n)
+        return nx.format_adjacency(G, A, name=f"adjacency_{n}")
+
+    def laplacian(G):
+        A = np.asarray(nx.laplacian_matrix(G).todense())
+        return nx.format_adjacency(G, A, name="laplacian_matrix")
+
+    adj_funcs = [
+        partial(adjacency_power, n=1),
+        partial(adjacency_power, n=2),
+        partial(adjacency_power, n=3),
+        laplacian,
+    ]
+
+    adjacency_tensor = nx.generate_adjacency_xarray(G, adj_funcs)
+    assert isinstance(adjacency_tensor, xr.DataArray)
+    assert set(adjacency_tensor.dims) == set(["n1", "n2", "name"])

@@ -39,6 +39,9 @@ __all__ = [
     "to_scipy_sparse_matrix",
     "from_numpy_array",
     "to_numpy_array",
+    "generate_node_dataframe",
+    "generate_adjacency_xarray",
+    "format_adjacency",
 ]
 
 
@@ -315,7 +318,7 @@ def from_pandas_edgelist(
         Graph type to create. If graph instance, then cleared before populated.
 
     edge_key : str or None, optional (default=None)
-        A valid column name for the edge keys (for a MultiGraph). The values in
+        A valid column name for the edge keys (for a MultiGraph).  The values in
         this column are used for the edge keys when adding edges if create_using
         is a multigraph.
 
@@ -400,13 +403,13 @@ def from_pandas_edgelist(
         attr_col_headings = [edge_attr]
     if len(attr_col_headings) == 0:
         raise nx.NetworkXError(
-            f"Invalid edge_attr argument: No columns found with name: {attr_col_headings}"
+            f"Invalid edge_attr: No columns found with name: {attr_col_headings}"
         )
 
     try:
         attribute_data = zip(*[df[col] for col in attr_col_headings])
     except (KeyError, TypeError) as e:
-        msg = f"Invalid edge_attr argument: {edge_attr}"
+        msg = f"Invalid edge_attr: {edge_attr}"
         raise nx.NetworkXError(msg) from e
 
     if g.is_multigraph():
@@ -416,7 +419,7 @@ def from_pandas_edgelist(
                 multigraph_edge_keys = df[edge_key]
                 attribute_data = zip(attribute_data, multigraph_edge_keys)
             except (KeyError, TypeError) as e:
-                msg = f"Invalid edge_key argument: {edge_key}"
+                msg = f"Invalid edge_key: {edge_key}"
                 raise nx.NetworkXError(msg) from e
 
         for s, t, attrs in zip(df[source], df[target], attribute_data):
@@ -1378,3 +1381,192 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
         triples = ((u, v, d) for u, v, d in triples if u <= v)
     G.add_edges_from(triples)
     return G
+
+
+def generate_node_dataframe(
+    G,
+    funcs,
+):
+    """
+    Return a pandas DataFrame representation of nodes and their metadata.
+
+    This function accepts a graph and a collection of user-defined functions
+    and returns a pandas DataFrame in which the nodes' are the DataFrame index,
+    with column names and DataFrame values being arbitrarily defined
+    based off user functions.
+
+    ``funcs`` is an iterable of callables, each of which has the signature
+
+        f(n, d) -> pd.Series
+
+    In other words, it accepts a (node, node attribute dict) pair,
+    such that `n` is the node,
+    and `d` is the node attribute dictionary.
+    Each function ``f`` must return a pandas Series,
+    whose ``name`` is the node,
+    the index labels are column names,
+    and data are the values.
+    This function then stacks them correctly
+    such that they form a row "record" for each node.
+
+    As an example:
+
+    .. code-block:: python
+
+        def x_vec(n: Hashable, d: Dict[Hashable, Any]) -> pd.Series:
+            return pd.Series(
+                {
+                    "x_coord": d["x_coord"],
+                    "y_coord": d["y_coord"],
+                },
+                name=n
+            )
+
+    One fairly strong assumption is that the attribute dictionary
+    has all the information it needs to act
+    and does not need any other keyword arguments.
+
+    If you need to reference an external piece of information,
+    such as a dictionary to look up values,
+    set up the function to accept the dictionary,
+    and use ``functools.partial``
+    to "reduce" the function signature to just ``(n, d)``.
+    An example below:
+
+    .. code-block:: python
+
+        from functools import partial
+        def get_molweight(n, d, mw_dict):
+            return pd.Series({"mw": mw_dict[d["amino_acid"]]}, name=n)
+
+        mw_dict = {"PHE": 165, "GLY": 75, ...}
+        get_molweight_func = partial(get_molweight, mw_dict=mw_dict)
+
+        generate_feature_dataframe(G, [get_molweight_func])
+
+    Lambda expressions are also valid!
+
+    .. code-block:: python
+
+        generate_feature_dataframe(G, lambda n, d: mw_dict.get(d["amino_acid"]))
+
+    The `name=n` piece is important,
+    as this is the piece that allows
+    the node ``n`` in the graph to become
+    the row index in the resulting dataframe.
+
+    The series that is returned from each function
+    need not only contain one key-value pair.
+    You can have two or more, and that's completely fine;
+    each key becomes a column in the resulting dataframe.
+
+    A key design choice: We default to returning DataFrames,
+    to make inspecting the data easy,
+    To pass the data into tensor libraries,
+    such as JAX, PyTorch or TensorFlow,
+    you can extract the DataFrame values after the fact.
+
+    :param G: A NetworkX-compatible graph object.
+    :param funcs: A list of functions.
+    :returns: A pandas DataFrame.
+    """
+    import pandas as pd
+
+    matrix = []
+    for n, d in G.nodes(data=True):
+        series = []
+        for func in funcs:
+            res = func(n, d)
+            if res.name != n:
+                raise NameError(
+                    f"function {func.__name__} returns a series "
+                    "that is not named after the node."
+                )
+            series.append(res)
+        matrix.append(pd.concat(series))
+
+    df = pd.DataFrame(matrix)
+    return df
+
+
+def format_adjacency(G, adj, name):
+    """
+    Format adjacency matrix nicely.
+
+    Intended to be used when computing
+    an adjacency-like matrix off a graph object G;
+    the function will give it nice xarray names
+    that will allow indexing later on.
+
+    For example, in defining a func:
+
+    .. code-block:: python
+
+        def my_adj_matrix_func(G):
+            adj = some_adj_func(G)
+            return format_adjacency(G, adj, "xarray_coord_name")
+
+    We make some assumptions here.
+
+    1. `adj` should be a 2D matrix of shape (n_nodes, n_nodes)
+    1. `name` is something that is unique amongst all names used
+    in the final adjacency tensor.
+
+    :param G: NetworkX-compatible Graph
+    :param adj: 2D numpy array
+    :param name: A unique name for the kind of adjacency matrix
+        being constructed.
+        Gets used in xarray as a coordinate in the "name" dimension.
+    :returns: An XArray DataArray of shape (n_nodes, n_nodes, 1)
+    """
+    import xarray as xr
+    import numpy as np
+
+    expected_shape = (len(G), len(G))
+    if adj.shape != expected_shape:
+        raise ValueError(
+            "Adjacency matrix is not shaped correctly, "
+            f"should be of shape {expected_shape}, "
+            f"instead got shape {adj.shape}."
+        )
+    adj = np.expand_dims(adj, axis=-1)
+    nodes = list(G.nodes())
+    return xr.DataArray(
+        adj,
+        dims=["n1", "n2", "name"],
+        coords={"n1": nodes, "n2": nodes, "name": [name]},
+    )
+
+
+def generate_adjacency_xarray(G, funcs):
+    """
+    Generate adjacency tensor for a graph as an xarray DataArray.
+
+    Uses the collection of functions in ``funcs``
+    to build an xarray DataArray
+    that houses the resulting "adjacency tensor".
+    Each function in ``funcs`` should return
+    an xarray DataArray with the dimensions
+    ``n1``, ``n2``, and ``name``,
+    giving rise to an array
+    that is of shape ``(num_nodes, num_nodes, 1)``.
+
+    We return xarray DataArrays, to make inspecting the data easy.
+    To pass the underlying tensor data into other libraries,
+    such as JAX, PyTorch and TensorFlow,
+    you can ask for ``data_array.data``
+    to get the underlying NumPy array.
+
+    :param G: NetworkX Graph.
+    :param funcs: A list of functions that take in G
+        and return an xr.DataArray
+    :returns: xr.DataArray
+        which is of shape (n_nodes, n_nodes, n_funcs).
+    """
+    import xarray as xr
+
+    mats = []
+    for func in funcs:
+        mats.append(func(G))
+    da = xr.concat(mats, dim="name")
+    return da
