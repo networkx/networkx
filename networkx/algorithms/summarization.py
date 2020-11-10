@@ -172,9 +172,6 @@ def dedensify(G, threshold, prefix=None, copy=True):
     if threshold < 2:
         raise nx.NetworkXError("The degree threshold must be >= 2")
 
-    high_degree_nodes = set()
-    low_degree_nodes = set()
-
     degrees = G.in_degree if G.is_directed() else G.degree
     # Group nodes based on degree threshold
     high_degree_nodes = set([n for n, d in degrees if d > threshold])
