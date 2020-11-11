@@ -33,6 +33,7 @@ class _PCGSolver:
 
     def solve(self, B, tol):
         import numpy as np
+
         B = np.asarray(B)
         X = np.ndarray(B.shape, order="F")
         for j in range(B.shape[1]):
@@ -104,6 +105,7 @@ class _LUSolver:
 
     def solve(self, B, tol=None):
         import numpy as np
+
         B = np.asarray(B)
         X = np.ndarray(B.shape, order="F")
         for j in range(B.shape[1]):
@@ -140,6 +142,7 @@ def _preprocess_graph(G, weight):
 def _rcm_estimate(G, nodelist):
     """Estimate the Fiedler vector using the reverse Cuthill-McKee ordering."""
     import numpy as np
+
     G = G.subgraph(nodelist)
     order = reverse_cuthill_mckee_ordering(G)
     n = len(nodelist)
@@ -267,6 +270,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
 def _get_fiedler_func(method):
     """Returns a function that solves the Fiedler eigenvalue problem."""
     import numpy as np
+
     if method == "tracemin":  # old style keyword <v2.1
         method = "tracemin_pcg"
     if method in ("tracemin_pcg", "tracemin_chol", "tracemin_lu"):
