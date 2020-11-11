@@ -35,23 +35,22 @@ def geometric_edges(G, radius, p):
     Radius uses Minkowski distance metric `p`.
     If scipy available, use scipy KDTree to speed computation.
     """
+    nodes_pos = G.nodes(data="pos")
     try:
         from scipy.spatial import cKDTree as KDTree
     except ImportError:
-        KDTree = None
-    nodes_pos = G.nodes(data="pos")
-    if KDTree is not None:
-        nodes, coords = list(zip(*nodes_pos))
-        kdtree = KDTree(coords)  # Cannot provide generator.
-        edge_indexes = kdtree.query_pairs(radius, p)
-        edges = ((nodes[u], nodes[v]) for u, v in edge_indexes)
+        # no scipy KDTree so compute by for-loop
+        radius_p = radius ** p
+        edges = [
+            (u, v) for (u, pu), (v, pv) in combinations(nodes_pos, 2)
+            if sum(abs(a - b) ** p for a, b in zip(pu, pv)) <= radius_p
+        ]
         return edges
-    # no scipy KDTree so compute by for-loop
-    edges = [
-        (u, v)
-        for (u, pu), (v, pv) in combinations(nodes_pos, 2)
-        if sum(abs(a - b) ** p for a, b in zip(pu, pv)) <= radius ** p
-    ]
+    # scipy KDTree is available
+    nodes, coords = list(zip(*nodes_pos))
+    kdtree = KDTree(coords)  # Cannot provide generator.
+    edge_indexes = kdtree.query_pairs(radius, p)
+    edges = [(nodes[u], nodes[v]) for u, v in edge_indexes]
     return edges
 
 
