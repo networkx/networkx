@@ -214,7 +214,8 @@ def eulerian_circuit(G, source=None, keys=False):
 
 
 def has_eulerian_path(G, source=None):
-    """Return True iff `G` has an Eulerian path.
+    """Return True iff `G` has an Eulerian path
+
 
     An Eulerian path is a path in a graph which uses each edge of a graph
     exactly once.
@@ -237,7 +238,7 @@ def has_eulerian_path(G, source=None):
         The graph to find an euler path in.
 
     source : node, optional
-        Starting node for circuit.
+        Starting node for path.
 
     Returns
     -------
