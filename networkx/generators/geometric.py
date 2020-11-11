@@ -42,7 +42,8 @@ def geometric_edges(G, radius, p):
         # no scipy KDTree so compute by for-loop
         radius_p = radius ** p
         edges = [
-            (u, v) for (u, pu), (v, pv) in combinations(nodes_pos, 2)
+            (u, v)
+            for (u, pu), (v, pv) in combinations(nodes_pos, 2)
             if sum(abs(a - b) ** p for a, b in zip(pu, pv)) <= radius_p
         ]
         return edges
