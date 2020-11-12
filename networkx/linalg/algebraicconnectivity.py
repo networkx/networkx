@@ -188,10 +188,8 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         constant eigenvector) are avoided.
     """
     import numpy as np
-    from numpy.linalg import norm, qr
-    from scipy.linalg import eigh, inv
+    from scipy import linalg, sparse
     from scipy.linalg.blas import dasum, daxpy
-    from scipy.sparse import csc_matrix, spdiags
 
     n = X.shape[0]
 
@@ -283,10 +281,10 @@ def _get_fiedler_func(method):
     elif method == "lanczos" or method == "lobpcg":
 
         def find_fiedler(L, x, normalized, tol, seed):
-            from scipy.sparse import csc_matrix, spdiags
+            from scipy import sparse
             from scipy.sparse.linalg import eigsh, lobpcg
 
-            L = csc_matrix(L, dtype=float)
+            L = sparse.csc_matrix(L, dtype=float)
             n = L.shape[0]
             if normalized:
                 D = sparse.spdiags(1.0 / np.sqrt(L.diagonal()), [0], n, n, format="csc")
