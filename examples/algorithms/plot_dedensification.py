@@ -1,7 +1,7 @@
 """
-=============
+===============
 Dedensification
-=============
+===============
 
 Examples of dedensification of a graph.  Dedensification retains the structural
 pattern of the original graph and will only add compressor nodes when doing so
