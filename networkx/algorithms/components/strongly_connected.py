@@ -166,8 +166,8 @@ def kosaraju_strongly_connected_components(G, source=None):
             continue
         c = nx.dfs_preorder_nodes(G, r)
         new = {v for v in c if v not in seen}
-        yield new
         seen.update(new)
+        yield new
 
 
 @not_implemented_for("undirected")
