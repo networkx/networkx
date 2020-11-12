@@ -153,38 +153,7 @@ class AntiGraph(nx.Graph):
         nodes = set(self.adj)
         for n, nbrs in self.adj.items():
             yield (n, nodes - set(nbrs) - {n})
-
-    # This string will be parsed and discarded. It is low impact.
-    # Non-docstring benchmark for developer purposes.
-    """
-        Benchmark
-        ---------
-        In [1]: # xdoctest: +REQUIRES(--bench, module:timerit)
-           ...: import timerit
-           ...: import timerit
-           ...: import networkx as nx
-           ...: self = nx.random_graphs.erdos_renyi_graph(n=100, p=0.9)
-           ...: ti = timerit.Timerit(100, bestof=10, verbose=2)
-           ...: def method1(self):
-           ...:     for n in self.adj:
-           ...:         yield (n, set(self.adj) - set(self.adj[n]) - {n})
-           ...: def method2(self):
-           ...:     nodes = set(self.adj)
-           ...:     for n, nbrs in self.adj.items():
-           ...:         yield (n, nodes - set(nbrs) - {n})
-           ...: for timer in ti.reset('method1'):
-           ...:     with timer:
-           ...:         list(method1(self))
-           ...: for timer in ti.reset('method2'):
-           ...:     with timer:
-           ...:         list(method2(self))
-            Timed method1 for: 100 loops, best of 10
-                time per loop: best=753.379 µs, mean=779.844 ± 13.0 µs
-            Timed method2 for: 100 loops, best of 10
-                time per loop: best=464.054 µs, mean=476.076 ± 9.2 µs
-
-    """
-
+            
 
 # Build several pairs of graphs, a regular graph
 # and the AntiGraph of it's complement, which behaves
