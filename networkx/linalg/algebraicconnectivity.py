@@ -7,7 +7,6 @@ from networkx.utils import not_implemented_for
 from networkx.utils import reverse_cuthill_mckee_ordering
 from networkx.utils import random_state
 
-
 __all__ = ["algebraic_connectivity", "fiedler_vector", "spectral_ordering"]
 
 
@@ -29,7 +28,7 @@ class _PCGSolver:
 
     def __init__(self, A, M):
         self._A = A
-        self._M = M or (lambda x: x.copy())
+        self._M = M
 
     def solve(self, B, tol):
         import numpy as np
@@ -189,10 +188,8 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         constant eigenvector) are avoided.
     """
     import numpy as np
-    from numpy.linalg import norm, qr
-    from scipy.linalg import eigh, inv
+    from scipy import linalg, sparse
     from scipy.linalg.blas import dasum, daxpy
-    from scipy.sparse import csc_matrix, spdiags
 
     n = X.shape[0]
 
@@ -200,9 +197,9 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # Form the normalized Laplacian matrix and determine the eigenvector of
         # its nullspace.
         e = np.sqrt(L.diagonal())
-        D = spdiags(1.0 / e, [0], n, n, format="csr")
+        D = sparse.spdiags(1.0 / e, [0], n, n, format="csr")
         L = D * L * D
-        e *= 1.0 / norm(e, 2)
+        e *= 1.0 / np.linalg.norm(e, 2)
 
     if normalized:
 
@@ -225,7 +222,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         solver = _PCGSolver(lambda x: L * x, lambda x: D * x)
     elif method == "tracemin_lu" or method == "tracemin_chol":
         # Convert A to CSC to suppress SparseEfficiencyWarning.
-        A = csc_matrix(L, dtype=float, copy=True)
+        A = sparse.csc_matrix(L, dtype=float, copy=True)
         # Force A to be nonsingular. Since A is the Laplacian matrix of a
         # connected graph, its rank deficiency is one, and thus one diagonal
         # element needs to modified. Changing to infinity forces a zero in the
@@ -246,11 +243,11 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
 
     while True:
         # Orthonormalize X.
-        X = qr(X)[0]
+        X = np.linalg.qr(X)[0]
         # Compute iteration matrix H.
         W[:, :] = L @ X
         H = X.T @ W
-        sigma, Y = eigh(H, overwrite_a=True)
+        sigma, Y = linalg.eigh(H, overwrite_a=True)
         # Compute the Ritz vectors.
         X = X @ Y
         # Test for convergence exploiting the fact that L * X == W * Y.
@@ -261,7 +258,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # L \ X can have an arbitrary projection on the nullspace of L,
         # which will be eliminated.
         W[:, :] = solver.solve(X, tol)
-        X = (inv(W.T @ X) @ W.T).T  # Preserves Fortran storage order.
+        X = (linalg.inv(W.T @ X) @ W.T).T  # Preserves Fortran storage order.
         project(X)
 
     return sigma, np.asarray(X)
@@ -284,13 +281,13 @@ def _get_fiedler_func(method):
     elif method == "lanczos" or method == "lobpcg":
 
         def find_fiedler(L, x, normalized, tol, seed):
-            from scipy.sparse import csc_matrix, spdiags
+            from scipy import sparse
             from scipy.sparse.linalg import eigsh, lobpcg
 
-            L = csc_matrix(L, dtype=float)
+            L = sparse.csc_matrix(L, dtype=float)
             n = L.shape[0]
             if normalized:
-                D = spdiags(1.0 / np.sqrt(L.diagonal()), [0], n, n, format="csc")
+                D = sparse.spdiags(1.0 / np.sqrt(L.diagonal()), [0], n, n, format="csc")
                 L = D * L * D
             if method == "lanczos" or n < 10:
                 # Avoid LOBPCG when n < 10 due to
@@ -300,7 +297,7 @@ def _get_fiedler_func(method):
                 return sigma[1], X[:, 1]
             else:
                 X = np.asarray(np.atleast_2d(x).T)
-                M = spdiags(1.0 / L.diagonal(), [0], n, n)
+                M = sparse.spdiags(1.0 / L.diagonal(), [0], n, n)
                 Y = np.ones(n)
                 if normalized:
                     Y /= D.diagonal()
@@ -376,9 +373,6 @@ def algebraic_connectivity(
     -----
     Edge weights are interpreted by their absolute values. For MultiGraph's,
     weights of parallel edges are summed. Zero-weighted edges are ignored.
-
-    To use Cholesky factorization in the TraceMIN algorithm, the
-    :samp:`scikits.sparse` package must be installed.
 
     See Also
     --------
@@ -463,9 +457,6 @@ def fiedler_vector(
     Edge weights are interpreted by their absolute values. For MultiGraph's,
     weights of parallel edges are summed. Zero-weighted edges are ignored.
 
-    To use Cholesky factorization in the TraceMIN algorithm, the
-    :samp:`scikits.sparse` package must be installed.
-
     See Also
     --------
     laplacian_matrix
@@ -546,9 +537,6 @@ def spectral_ordering(
     -----
     Edge weights are interpreted by their absolute values. For MultiGraph's,
     weights of parallel edges are summed. Zero-weighted edges are ignored.
-
-    To use Cholesky factorization in the TraceMIN algorithm, the
-    :samp:`scikits.sparse` package must be installed.
 
     See Also
     --------
