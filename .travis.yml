@@ -36,9 +36,9 @@ script:
 
 after_success:
   - if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_BRANCH == "master" ]]; then
-      pip install --upgrade pip wheel setuptools
-      pip install -r requirements.txt
-      pip install -r requirements/extra.txt
+      pip install --upgrade pip wheel setuptools;
+      pip install -r requirements.txt;
+      pip install -r requirements/extra.txt;
       pip install -r requirements/example.txt;
       source tools/travis/build_docs.sh;
       source tools/travis/deploy_docs.sh;
