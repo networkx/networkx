@@ -616,6 +616,24 @@ def test_set_edge_attributes_multi(graph_type):
     assert G[1][2][0] == {}
 
 
+@pytest.mark.parametrize(
+    ("values", "name"),
+    (
+        ({(0, 1, 0): 1.0, (0, 2, 0): 2.0}, "weight"),  # values dict
+        ({(0, 1, 0): {"weight": 1.0}, (0, 2, 0): {"weight": 2.0}}, None),  # values dod
+    ),
+)
+def test_set_edge_attributes_multi_ignores_extra_edges(values, name):
+    """If `values` is a dict or dict-of-dicts containing edges that are not in
+    G, data associate with these edges should be ignored.
+    """
+    G = nx.MultiGraph([(0, 1, 0), (0, 1, 1)])
+    nx.set_edge_attributes(G, values, name)
+    assert G[0][1][0]["weight"] == 1.0
+    assert G[0][1][1] == {}
+    assert (0, 2) not in G.edges()
+
+
 def test_get_node_attributes():
     graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
     for G in graphs:
