@@ -248,13 +248,13 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     nodelist : list
        Use only nodes specified in nodelist
 
-    edge_data : singleton, optional
+    edge_data : scalar, optional
        If provided, the value of the dictionary will be set to `edge_data` for
        all edges. Usual values could be `1` or `True`. If `edge_data` is
        `None` (the default), the edgedata in `G` is used, resulting in a
        dict-of-dict-of-dicts. If `G` is a MultiGraph, the result will be a
        dict-of-dict-of-dict-of-dicts. See Notes for an approach to customize
-       handling edge data.
+       handling edge data. `edge_data` should *not* be a container.
 
     Returns
     -------
@@ -269,8 +269,7 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
 
     Notes
     -----
-    `edge_data` should *not* be a container. For a more custom approach to
-    handling edge data, try::
+    For a more custom approach to handling edge data, try::
 
         dod = {
             n: {
@@ -278,6 +277,9 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
             }
             for n, nbrdict in G.adj.items()
         }
+
+    where `custom` returns the desired edge data for each edge between `n` and
+    `nbr`, given existing edge data `dd`.
 
     Examples
     --------
