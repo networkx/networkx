@@ -40,6 +40,10 @@ after_success:
       pip install -r requirements.txt;
       pip install -r requirements/extra.txt;
       pip install -r requirements/example.txt;
+      export CPLUS_INCLUDE_PATH=/usr/include/gdal;
+      export C_INCLUDE_PATH=/usr/include/gdal;
+      pip install gdal==3.0.4;
+      pip install .;
       source tools/travis/build_docs.sh;
       source tools/travis/deploy_docs.sh;
     fi
