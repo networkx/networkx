@@ -156,7 +156,7 @@ class AntiGraph(nx.Graph):
 
     # This string will be parsed and discarded. It is low impact.
     # Non-docstring benchmark for developer purposes.
-    '''
+    """
         Benchmark
         ---------
         In [1]: # xdoctest: +REQUIRES(--bench, module:timerit)
@@ -183,7 +183,8 @@ class AntiGraph(nx.Graph):
             Timed method2 for: 100 loops, best of 10
                 time per loop: best=464.054 µs, mean=476.076 ± 9.2 µs
 
-    '''
+    """
+
 
 # Build several pairs of graphs, a regular graph
 # and the AntiGraph of it's complement, which behaves
