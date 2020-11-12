@@ -216,9 +216,8 @@ def eulerian_circuit(G, source=None, keys=False):
 def has_eulerian_path(G, source=None):
     """Return True iff `G` has an Eulerian path
 
-
     An Eulerian path is a path in a graph which uses each edge of a graph
-    exactly once.
+    exactly once. The input `source` is the node at which the path starts.
 
     A directed graph has an Eulerian path iff:
         - at most one vertex has out_degree - in_degree = 1,
@@ -227,10 +226,19 @@ def has_eulerian_path(G, source=None):
         - and all of its vertices with nonzero degree belong to a
           single connected component of the underlying undirected graph.
 
+    If `source` is not None, an eulerian path starting at `source` exists if no
+    other node has out_degree - in_degree = 1. This is equivalent to either
+    there exists an eulerian circuit or `source` has out_degree - in_degree = 1
+    and the conditions above hold.
+
     An undirected graph has an Eulerian path iff:
         - exactly zero or two vertices have odd degree,
         - and all of its vertices with nonzero degree belong to a
         - single connected component.
+
+    If `source` is not None, an eulerian path starting at `source` exists if
+    either there exists an eulerian circuit or `source` has an odd degree and the
+    conditions above hold.
 
     Parameters
     ----------
