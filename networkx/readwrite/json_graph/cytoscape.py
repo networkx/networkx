@@ -2,6 +2,7 @@ import networkx as nx
 
 __all__ = ["cytoscape_data", "cytoscape_graph"]
 
+# TODO: Remove in NX 3.0
 _attrs = dict(name="name", ident="id")
 
 
@@ -18,6 +19,11 @@ def cytoscape_data(G, attrs=None):
         ignored. Default is `None` which results in the default mapping
         ``dict(name="name", ident="id")``.
 
+        .. deprecated:: 2.6
+
+           The `attrs` keyword argument will be replaced with `name` and
+           `ident` in networkx 3.0
+
     Returns
     -------
     data: dict
@@ -26,7 +32,7 @@ def cytoscape_data(G, attrs=None):
     Raises
     ------
     NetworkXError
-        If values in `attrs` are not unique.
+        If the `name` and `ident` attributes are identical.
 
     See Also
     --------
@@ -48,16 +54,33 @@ def cytoscape_data(G, attrs=None):
        {'data': {'id': '1', 'value': 1, 'name': '1'}}],
       'edges': [{'data': {'source': 0, 'target': 1}}]}}
     """
-    if not attrs:
+    # ------ TODO: Remove between the lines in 3.0 ----- #
+    if attrs is None:
         attrs = _attrs
     else:
+        import warnings
+
+        msg = (
+            "\nThe function signature for cytoscape_data will change in "
+            "networkx 3.0.\n"
+            "The `attrs` keyword argument will be replaced with \n"
+            "explicit `name` and `ident` keyword arguments, e.g.\n\n"
+            "   >>> cytoscape_data(G, attrs={'name': 'foo', 'ident': 'bar'})\n\n"
+            "should instead be written as\n\n"
+            "   >>> cytoscape_data(G, name='foo', ident='bar')\n\n"
+            "in networkx 3.0.\n"
+            "The default values for 'name' and 'ident' will not change."
+        )
+        warnings.warn(msg, FutureWarning, stacklevel=2)
+
         attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
 
     name = attrs["name"]
     ident = attrs["ident"]
+    # -------------------------------------------------- #
 
-    if len({name, ident}) < 2:
-        raise nx.NetworkXError("Attribute names are not unique.")
+    if name == ident:
+        raise nx.NetworkXError("name and ident must be different.")
 
     jsondata = {"data": list(G.graph.items())}
     jsondata["directed"] = G.is_directed()
@@ -103,6 +126,11 @@ def cytoscape_graph(data, attrs=None):
         ignored. Default is `None` which results in the default mapping
         ``dict(name="name", ident="id")``.
 
+        .. deprecated:: 2.6
+
+           The `attrs` keyword argument will be replaced with `name` and
+           `ident` in networkx 3.0
+
     Returns
     -------
     graph : a NetworkX graph instance
@@ -112,7 +140,7 @@ def cytoscape_graph(data, attrs=None):
     Raises
     ------
     NetworkXError
-        If values in `attrs` are not unique.
+        If the `name` and `ident` attributes are identical.
 
     See Also
     --------
@@ -143,16 +171,33 @@ def cytoscape_graph(data, attrs=None):
     >>> G.edges(data=True)
     EdgeDataView([(0, 1, {'source': 0, 'target': 1})])
     """
-    if not attrs:
+    # ------ TODO: Remove between the lines in 3.0 ----- #
+    if attrs is None:
         attrs = _attrs
     else:
+        import warnings
+
+        msg = (
+            "\nThe function signature for cytoscape_data will change in "
+            "networkx 3.0.\n"
+            "The `attrs` keyword argument will be replaced with \n"
+            "explicit `name` and `ident` keyword arguments, e.g.\n\n"
+            "   >>> cytoscape_data(G, attrs={'name': 'foo', 'ident': 'bar'})\n\n"
+            "should instead be written as\n\n"
+            "   >>> cytoscape_data(G, name='foo', ident='bar')\n\n"
+            "in networkx 3.0.\n"
+            "The default values for 'name' and 'ident' will not change."
+        )
+        warnings.warn(msg, FutureWarning, stacklevel=2)
+
         attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
 
     name = attrs["name"]
     ident = attrs["ident"]
+    # -------------------------------------------------- #
 
-    if len({ident, name}) < 2:
-        raise nx.NetworkXError("Attribute names are not unique.")
+    if name == ident:
+        raise nx.NetworkXError("name and ident must be different.")
 
     multigraph = data.get("multigraph")
     directed = data.get("directed")
