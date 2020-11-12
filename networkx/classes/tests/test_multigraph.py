@@ -373,3 +373,14 @@ class TestEdgeSubgraph:
 
         """
         assert self.G.graph is self.H.graph
+
+
+def test_multigraph_add_edges_from_four_tuple_misordered():
+    """add_edges_from expects 4-tuples of the format (u, v, key, data_dict).
+
+    Ensure 4-tuples of form (u, v, data_dict, key) raises exception.
+    """
+    G = nx.MultiGraph()
+    with pytest.raises(TypeError):
+        # key/data values flipped in 4-tuple
+        G.add_edges_from([(0, 1, {"color": "red"}, 0)])
