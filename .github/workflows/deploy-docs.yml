@@ -20,7 +20,7 @@ jobs:
     - name: Before install
       run: |
         sudo apt-get update
-        sudo apt-get install libgdal-dev graphviz
+        sudo apt-get install libgdal-dev graphviz graphviz-dev
         sudo apt-get install texlive texlive-latex-extra latexmk
         python3 -m venv ~/venv
         source ~/venv/bin/activate
