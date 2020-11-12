@@ -8,17 +8,6 @@ cache: pip
 matrix:
   include:
     - os: linux
-      python: 3.6
-      env:
-      - EXTRA_DEPS=1
-      - MINIMUM_REQUIREMENTS=1
-      - REPORT_COVERAGE=1
-      addons:
-        apt:
-          packages:
-          - libgdal-dev
-          - graphviz
-    - os: linux
       python: 3.7
       env:
       - EXTRA_DEPS=1
@@ -33,50 +22,24 @@ matrix:
           - latexmk
           - libgeos-dev
           - libproj-dev
-    - os: linux
-      python: 3.7
-      env:
-      - EXTRA_DEPS=1
-      - PIP_FLAGS="--pre"
-      addons:
-        apt:
-          packages:
-          - libgdal-dev
-          - graphviz
-    - python: 3.8
-    - python: 3.9
-    - python: pypy3
 
 before_install:
   # prepare the system to install prerequisites or dependencies
   - source tools/travis/before_install.sh
-  - uname -a
-  - printenv
   - source tools/travis/linux_install.sh
 
 install:
-  # install required packages
-  - pip install --upgrade pip wheel setuptools
-  - pip install --retries 3 ${PIP_FLAGS} -r requirements.txt
-  - if [[ "${EXTRA_DEPS}" == 1 ]]; then
-      pip install --retries 3 ${PIP_FLAGS} -r requirements/extra.txt;
-    fi
-  # install networkx
-  - printenv PWD
-  - pip install .
-  # show what's installed
-  - python --version
-  - pip list
+  - echo "Nothing to see here."
 
 script:
-  - source tools/travis/script.sh
+  - echo "Nothing to see here."
 
 after_success:
-  - if [[ "${REPORT_COVERAGE}" == 1 ]]; then
-      codecov;
-    fi
-  - if [[ "${DEPLOY_DOCS}" == 1 && $TRAVIS_PULL_REQUEST == false && $TRAVIS_BRANCH == "master" ]]; then
-      pip install ${PIP_FLAGS} -r requirements/example.txt;
+  - if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_BRANCH == "master" ]]; then
+      pip install --upgrade pip wheel setuptools
+      pip install -r requirements.txt
+      pip install -r requirements/extra.txt
+      pip install -r requirements/example.txt;
       source tools/travis/build_docs.sh;
       source tools/travis/deploy_docs.sh;
     fi
