@@ -153,7 +153,7 @@ class AntiGraph(nx.Graph):
         nodes = set(self.adj)
         for n, nbrs in self.adj.items():
             yield (n, nodes - set(nbrs) - {n})
-            
+
 
 # Build several pairs of graphs, a regular graph
 # and the AntiGraph of it's complement, which behaves
