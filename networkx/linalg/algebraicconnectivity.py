@@ -7,17 +7,8 @@ from networkx.utils import not_implemented_for
 from networkx.utils import reverse_cuthill_mckee_ordering
 from networkx.utils import random_state
 
-try:
-    from numpy import array, asarray, dot, ndarray, ones, sqrt, zeros, atleast_2d
-    from numpy.linalg import norm, qr
-    from scipy.linalg import eigh, inv
-    from scipy.linalg.blas import dasum, daxpy, ddot
-    from scipy.sparse import csc_matrix, spdiags
-    from scipy.sparse.linalg import eigsh, lobpcg
 
-    __all__ = ["algebraic_connectivity", "fiedler_vector", "spectral_ordering"]
-except ImportError:
-    __all__ = []
+__all__ = ["algebraic_connectivity", "fiedler_vector", "spectral_ordering"]
 
 
 class _PCGSolver:
@@ -41,18 +32,23 @@ class _PCGSolver:
         self._M = M or (lambda x: x.copy())
 
     def solve(self, B, tol):
-        B = asarray(B)
-        X = ndarray(B.shape, order="F")
+        import numpy as np
+
+        B = np.asarray(B)
+        X = np.ndarray(B.shape, order="F")
         for j in range(B.shape[1]):
             X[:, j] = self._solve(B[:, j], tol)
         return X
 
     def _solve(self, b, tol):
+        import numpy as np
+        from scipy.linalg.blas import dasum, daxpy, ddot
+
         A = self._A
         M = self._M
         tol *= dasum(b)
         # Initialize.
-        x = zeros(b.shape)
+        x = np.zeros(b.shape)
         r = b.copy()
         z = M(r)
         rz = ddot(r, z)
@@ -98,26 +94,23 @@ class _LUSolver:
     """
 
     def __init__(self, A):
-        self._LU = self._splu(A)
-
-    def solve(self, B, tol=None):
-        B = asarray(B)
-        X = ndarray(B.shape, order="F")
-        for j in range(B.shape[1]):
-            X[:, j] = self._LU.solve(B[:, j])
-        return X
-
-    try:
         from scipy.sparse.linalg import splu
 
-        _splu = partial(
-            splu,
+        self._LU = splu(
+            A,
             permc_spec="MMD_AT_PLUS_A",
             diag_pivot_thresh=0.0,
             options={"Equil": True, "SymmetricMode": True},
         )
-    except ImportError:
-        _splu = None
+
+    def solve(self, B, tol=None):
+        import numpy as np
+
+        B = np.asarray(B)
+        X = np.ndarray(B.shape, order="F")
+        for j in range(B.shape[1]):
+            X[:, j] = self._LU.solve(B[:, j])
+        return X
 
 
 def _preprocess_graph(G, weight):
@@ -148,11 +141,13 @@ def _preprocess_graph(G, weight):
 
 def _rcm_estimate(G, nodelist):
     """Estimate the Fiedler vector using the reverse Cuthill-McKee ordering."""
+    import numpy as np
+
     G = G.subgraph(nodelist)
     order = reverse_cuthill_mckee_ordering(G)
     n = len(nodelist)
     index = dict(zip(nodelist, range(n)))
-    x = ndarray(n, dtype=float)
+    x = np.ndarray(n, dtype=float)
     for i, u in enumerate(order):
         x[index[u]] = i
     x -= (n - 1) / 2.0
@@ -193,12 +188,18 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         As this is for Fiedler vectors, the zero eigenvalue (and
         constant eigenvector) are avoided.
     """
+    import numpy as np
+    from numpy.linalg import norm, qr
+    from scipy.linalg import eigh, inv
+    from scipy.linalg.blas import dasum, daxpy
+    from scipy.sparse import csc_matrix, spdiags
+
     n = X.shape[0]
 
     if normalized:
         # Form the normalized Laplacian matrix and determine the eigenvector of
         # its nullspace.
-        e = sqrt(L.diagonal())
+        e = np.sqrt(L.diagonal())
         D = spdiags(1.0 / e, [0], n, n, format="csr")
         L = D * L * D
         e *= 1.0 / norm(e, 2)
@@ -207,22 +208,22 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
 
         def project(X):
             """Make X orthogonal to the nullspace of L."""
-            X = asarray(X)
+            X = np.asarray(X)
             for j in range(X.shape[1]):
-                X[:, j] -= dot(X[:, j], e) * e
+                X[:, j] -= np.dot(X[:, j], e) * e
 
     else:
 
         def project(X):
             """Make X orthogonal to the nullspace of L."""
-            X = asarray(X)
+            X = np.asarray(X)
             for j in range(X.shape[1]):
                 X[:, j] -= X[:, j].sum() / n
 
     if method == "tracemin_pcg":
         D = L.diagonal().astype(float)
         solver = _PCGSolver(lambda x: L * x, lambda x: D * x)
-    elif method == "tracemin_chol" or method == "tracemin_lu":
+    elif method == "tracemin_lu" or method == "tracemin_chol":
         # Convert A to CSC to suppress SparseEfficiencyWarning.
         A = csc_matrix(L, dtype=float, copy=True)
         # Force A to be nonsingular. Since A is the Laplacian matrix of a
@@ -241,7 +242,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     # Initialize.
     Lnorm = abs(L).sum(axis=1).flatten().max()
     project(X)
-    W = ndarray(X.shape, order="F")
+    W = np.ndarray(X.shape, order="F")
 
     while True:
         # Orthonormalize X.
@@ -263,28 +264,33 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         X = (inv(W.T @ X) @ W.T).T  # Preserves Fortran storage order.
         project(X)
 
-    return sigma, asarray(X)
+    return sigma, np.asarray(X)
 
 
 def _get_fiedler_func(method):
     """Returns a function that solves the Fiedler eigenvalue problem."""
+    import numpy as np
+
     if method == "tracemin":  # old style keyword <v2.1
         method = "tracemin_pcg"
     if method in ("tracemin_pcg", "tracemin_chol", "tracemin_lu"):
 
         def find_fiedler(L, x, normalized, tol, seed):
             q = 1 if method == "tracemin_pcg" else min(4, L.shape[0] - 1)
-            X = asarray(seed.normal(size=(q, L.shape[0]))).T
+            X = np.asarray(seed.normal(size=(q, L.shape[0]))).T
             sigma, X = _tracemin_fiedler(L, X, normalized, tol, method)
             return sigma[0], X[:, 0]
 
     elif method == "lanczos" or method == "lobpcg":
 
         def find_fiedler(L, x, normalized, tol, seed):
+            from scipy.sparse import csc_matrix, spdiags
+            from scipy.sparse.linalg import eigsh, lobpcg
+
             L = csc_matrix(L, dtype=float)
             n = L.shape[0]
             if normalized:
-                D = spdiags(1.0 / sqrt(L.diagonal()), [0], n, n, format="csc")
+                D = spdiags(1.0 / np.sqrt(L.diagonal()), [0], n, n, format="csc")
                 L = D * L * D
             if method == "lanczos" or n < 10:
                 # Avoid LOBPCG when n < 10 due to
@@ -293,13 +299,13 @@ def _get_fiedler_func(method):
                 sigma, X = eigsh(L, 2, which="SM", tol=tol, return_eigenvectors=True)
                 return sigma[1], X[:, 1]
             else:
-                X = asarray(atleast_2d(x).T)
+                X = np.asarray(np.atleast_2d(x).T)
                 M = spdiags(1.0 / L.diagonal(), [0], n, n)
-                Y = ones(n)
+                Y = np.ones(n)
                 if normalized:
                     Y /= D.diagonal()
                 sigma, X = lobpcg(
-                    L, X, M=M, Y=atleast_2d(Y).T, tol=tol, maxiter=n, largest=False
+                    L, X, M=M, Y=np.atleast_2d(Y).T, tol=tol, maxiter=n, largest=False
                 )
                 return sigma[0], X[:, 0]
 
@@ -464,6 +470,8 @@ def fiedler_vector(
     --------
     laplacian_matrix
     """
+    import numpy as np
+
     if len(G) < 2:
         raise nx.NetworkXError("graph has less than two nodes.")
     G = _preprocess_graph(G, weight)
@@ -471,7 +479,7 @@ def fiedler_vector(
         raise nx.NetworkXError("graph is not connected.")
 
     if len(G) == 2:
-        return array([1.0, -1.0])
+        return np.array([1.0, -1.0])
 
     find_fiedler = _get_fiedler_func(method)
     L = nx.laplacian_matrix(G)

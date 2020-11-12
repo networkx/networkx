@@ -193,47 +193,48 @@ class GEXF:
     }
     versions["1.2draft"] = d
 
-    types = [
-        (int, "integer"),
-        (float, "float"),
-        (float, "double"),
-        (bool, "boolean"),
-        (list, "string"),
-        (dict, "string"),
-        (int, "long"),
-        (str, "liststring"),
-        (str, "anyURI"),
-        (str, "string"),
-    ]
-
-    # These additions to types allow writing numpy types
-    try:
-        import numpy as np
-    except ImportError:
-        pass
-    else:
-        # prepend so that python types are created upon read (last entry wins)
+    def construct_types(self):
         types = [
-            (np.float64, "float"),
-            (np.float32, "float"),
-            (np.float16, "float"),
-            (np.float_, "float"),
-            (np.int_, "int"),
-            (np.int8, "int"),
-            (np.int16, "int"),
-            (np.int32, "int"),
-            (np.int64, "int"),
-            (np.uint8, "int"),
-            (np.uint16, "int"),
-            (np.uint32, "int"),
-            (np.uint64, "int"),
-            (np.int_, "int"),
-            (np.intc, "int"),
-            (np.intp, "int"),
-        ] + types
+            (int, "integer"),
+            (float, "float"),
+            (float, "double"),
+            (bool, "boolean"),
+            (list, "string"),
+            (dict, "string"),
+            (int, "long"),
+            (str, "liststring"),
+            (str, "anyURI"),
+            (str, "string"),
+        ]
 
-    xml_type = dict(types)
-    python_type = dict(reversed(a) for a in types)
+        # These additions to types allow writing numpy types
+        try:
+            import numpy as np
+        except ImportError:
+            pass
+        else:
+            # prepend so that python types are created upon read (last entry wins)
+            types = [
+                (np.float64, "float"),
+                (np.float32, "float"),
+                (np.float16, "float"),
+                (np.float_, "float"),
+                (np.int_, "int"),
+                (np.int8, "int"),
+                (np.int16, "int"),
+                (np.int32, "int"),
+                (np.int64, "int"),
+                (np.uint8, "int"),
+                (np.uint16, "int"),
+                (np.uint32, "int"),
+                (np.uint64, "int"),
+                (np.int_, "int"),
+                (np.intc, "int"),
+                (np.intp, "int"),
+            ] + types
+
+        self.xml_type = dict(types)
+        self.python_type = dict(reversed(a) for a in types)
 
     # http://www.w3.org/TR/xmlschema-2/#boolean
     convert_bool = {
@@ -265,6 +266,7 @@ class GEXFWriter(GEXF):
     def __init__(
         self, graph=None, encoding="utf-8", prettyprint=True, version="1.2draft"
     ):
+        self.construct_types()
         self.prettyprint = prettyprint
         self.encoding = encoding
         self.set_version(version)
@@ -674,6 +676,7 @@ class GEXFReader(GEXF):
     # Class to read GEXF format files
     # use read_gexf() function
     def __init__(self, node_type=None, version="1.2draft"):
+        self.construct_types()
         self.node_type = node_type
         # assume simple graph and test for multigraph on read
         self.simple_graph = True
