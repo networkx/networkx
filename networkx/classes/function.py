@@ -656,6 +656,17 @@ def set_node_attributes(G, values, name=None):
         >>> G.nodes[2]
         {}
 
+    Note that if the dictionary contains nodes that are not in `G`, the
+    values are silently ignored::
+
+        >>> G = nx.Graph()
+        >>> G.add_node(0)
+        >>> nx.set_node_attributes(G, {0: "red", 1: "blue"}, name="color")
+        >>> G.nodes[0]["color"]
+        'red'
+        >>> 1 in G.nodes
+        False
+
     """
     # Set node attributes based on type of `values`
     if name is not None:  # `values` must not be a dict of dict
@@ -764,6 +775,14 @@ def set_edge_attributes(G, values, name=None):
         'nothing'
         >>> G[1][2]["attr2"]
         3
+
+    Note that if the dict contains edges that are not in `G`, they are
+    silently ignored::
+
+        >>> G = nx.Graph([(0, 1)])
+        >>> nx.set_edge_attributes(G, {(1, 2): {"weight": 2.0}})
+        >>> (1, 2) in G.edges()
+        False
 
     """
     if name is not None:

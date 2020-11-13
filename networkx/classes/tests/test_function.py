@@ -487,98 +487,151 @@ class TestCommonNeighbors:
         self.test(G, 0, 0, [1, 2, 3])
 
 
-def test_set_node_attributes():
-    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
-    for G in graphs:
-        # Test single value
-        G = nx.path_graph(3, create_using=G)
-        vals = 100
-        attr = "hello"
-        nx.set_node_attributes(G, vals, attr)
-        assert G.nodes[0][attr] == vals
-        assert G.nodes[1][attr] == vals
-        assert G.nodes[2][attr] == vals
+@pytest.mark.parametrize(
+    "graph_type", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+)
+def test_set_node_attributes(graph_type):
+    # Test single value
+    G = nx.path_graph(3, create_using=graph_type)
+    vals = 100
+    attr = "hello"
+    nx.set_node_attributes(G, vals, attr)
+    assert G.nodes[0][attr] == vals
+    assert G.nodes[1][attr] == vals
+    assert G.nodes[2][attr] == vals
 
-        # Test dictionary
-        G = nx.path_graph(3, create_using=G)
-        vals = dict(zip(sorted(G.nodes()), range(len(G))))
-        attr = "hi"
-        nx.set_node_attributes(G, vals, attr)
-        assert G.nodes[0][attr] == 0
-        assert G.nodes[1][attr] == 1
-        assert G.nodes[2][attr] == 2
+    # Test dictionary
+    G = nx.path_graph(3, create_using=graph_type)
+    vals = dict(zip(sorted(G.nodes()), range(len(G))))
+    attr = "hi"
+    nx.set_node_attributes(G, vals, attr)
+    assert G.nodes[0][attr] == 0
+    assert G.nodes[1][attr] == 1
+    assert G.nodes[2][attr] == 2
 
-        # Test dictionary of dictionaries
-        G = nx.path_graph(3, create_using=G)
-        d = {"hi": 0, "hello": 200}
-        vals = dict.fromkeys(G.nodes(), d)
-        vals.pop(0)
-        nx.set_node_attributes(G, vals)
-        assert G.nodes[0] == {}
-        assert G.nodes[1]["hi"] == 0
-        assert G.nodes[2]["hello"] == 200
-
-
-def test_set_edge_attributes():
-    graphs = [nx.Graph(), nx.DiGraph()]
-    for G in graphs:
-        # Test single value
-        G = nx.path_graph(3, create_using=G)
-        attr = "hello"
-        vals = 3
-        nx.set_edge_attributes(G, vals, attr)
-        assert G[0][1][attr] == vals
-        assert G[1][2][attr] == vals
-
-        # Test multiple values
-        G = nx.path_graph(3, create_using=G)
-        attr = "hi"
-        edges = [(0, 1), (1, 2)]
-        vals = dict(zip(edges, range(len(edges))))
-        nx.set_edge_attributes(G, vals, attr)
-        assert G[0][1][attr] == 0
-        assert G[1][2][attr] == 1
-
-        # Test dictionary of dictionaries
-        G = nx.path_graph(3, create_using=G)
-        d = {"hi": 0, "hello": 200}
-        edges = [(0, 1)]
-        vals = dict.fromkeys(edges, d)
-        nx.set_edge_attributes(G, vals)
-        assert G[0][1]["hi"] == 0
-        assert G[0][1]["hello"] == 200
-        assert G[1][2] == {}
+    # Test dictionary of dictionaries
+    G = nx.path_graph(3, create_using=graph_type)
+    d = {"hi": 0, "hello": 200}
+    vals = dict.fromkeys(G.nodes(), d)
+    vals.pop(0)
+    nx.set_node_attributes(G, vals)
+    assert G.nodes[0] == {}
+    assert G.nodes[1]["hi"] == 0
+    assert G.nodes[2]["hello"] == 200
 
 
-def test_set_edge_attributes_multi():
-    graphs = [nx.MultiGraph(), nx.MultiDiGraph()]
-    for G in graphs:
-        # Test single value
-        G = nx.path_graph(3, create_using=G)
-        attr = "hello"
-        vals = 3
-        nx.set_edge_attributes(G, vals, attr)
-        assert G[0][1][0][attr] == vals
-        assert G[1][2][0][attr] == vals
+@pytest.mark.parametrize(
+    ("values", "name"),
+    (
+        ({0: "red", 1: "blue"}, "color"),  # values dictionary
+        ({0: {"color": "red"}, 1: {"color": "blue"}}, None),  # dict-of-dict
+    ),
+)
+def test_set_node_attributes_ignores_extra_nodes(values, name):
+    """
+    When `values` is a dict or dict-of-dict keyed by nodes, ensure that keys
+    that correspond to nodes not in G are ignored.
+    """
+    G = nx.Graph()
+    G.add_node(0)
+    nx.set_node_attributes(G, values, name)
+    assert G.nodes[0]["color"] == "red"
+    assert 1 not in G.nodes
 
-        # Test multiple values
-        G = nx.path_graph(3, create_using=G)
-        attr = "hi"
-        edges = [(0, 1, 0), (1, 2, 0)]
-        vals = dict(zip(edges, range(len(edges))))
-        nx.set_edge_attributes(G, vals, attr)
-        assert G[0][1][0][attr] == 0
-        assert G[1][2][0][attr] == 1
 
-        # Test dictionary of dictionaries
-        G = nx.path_graph(3, create_using=G)
-        d = {"hi": 0, "hello": 200}
-        edges = [(0, 1, 0)]
-        vals = dict.fromkeys(edges, d)
-        nx.set_edge_attributes(G, vals)
-        assert G[0][1][0]["hi"] == 0
-        assert G[0][1][0]["hello"] == 200
-        assert G[1][2][0] == {}
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_set_edge_attributes(graph_type):
+    # Test single value
+    G = nx.path_graph(3, create_using=graph_type)
+    attr = "hello"
+    vals = 3
+    nx.set_edge_attributes(G, vals, attr)
+    assert G[0][1][attr] == vals
+    assert G[1][2][attr] == vals
+
+    # Test multiple values
+    G = nx.path_graph(3, create_using=graph_type)
+    attr = "hi"
+    edges = [(0, 1), (1, 2)]
+    vals = dict(zip(edges, range(len(edges))))
+    nx.set_edge_attributes(G, vals, attr)
+    assert G[0][1][attr] == 0
+    assert G[1][2][attr] == 1
+
+    # Test dictionary of dictionaries
+    G = nx.path_graph(3, create_using=graph_type)
+    d = {"hi": 0, "hello": 200}
+    edges = [(0, 1)]
+    vals = dict.fromkeys(edges, d)
+    nx.set_edge_attributes(G, vals)
+    assert G[0][1]["hi"] == 0
+    assert G[0][1]["hello"] == 200
+    assert G[1][2] == {}
+
+
+@pytest.mark.parametrize(
+    ("values", "name"),
+    (
+        ({(0, 1): 1.0, (0, 2): 2.0}, "weight"),  # values dict
+        ({(0, 1): {"weight": 1.0}, (0, 2): {"weight": 2.0}}, None),  # values dod
+    ),
+)
+def test_set_edge_attributes_ignores_extra_edges(values, name):
+    """If `values` is a dict or dict-of-dicts containing edges that are not in
+    G, data associate with these edges should be ignored.
+    """
+    G = nx.Graph([(0, 1)])
+    nx.set_edge_attributes(G, values, name)
+    assert G[0][1]["weight"] == 1.0
+    assert (0, 2) not in G.edges
+
+
+@pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.MultiDiGraph))
+def test_set_edge_attributes_multi(graph_type):
+    # Test single value
+    G = nx.path_graph(3, create_using=graph_type)
+    attr = "hello"
+    vals = 3
+    nx.set_edge_attributes(G, vals, attr)
+    assert G[0][1][0][attr] == vals
+    assert G[1][2][0][attr] == vals
+
+    # Test multiple values
+    G = nx.path_graph(3, create_using=graph_type)
+    attr = "hi"
+    edges = [(0, 1, 0), (1, 2, 0)]
+    vals = dict(zip(edges, range(len(edges))))
+    nx.set_edge_attributes(G, vals, attr)
+    assert G[0][1][0][attr] == 0
+    assert G[1][2][0][attr] == 1
+
+    # Test dictionary of dictionaries
+    G = nx.path_graph(3, create_using=graph_type)
+    d = {"hi": 0, "hello": 200}
+    edges = [(0, 1, 0)]
+    vals = dict.fromkeys(edges, d)
+    nx.set_edge_attributes(G, vals)
+    assert G[0][1][0]["hi"] == 0
+    assert G[0][1][0]["hello"] == 200
+    assert G[1][2][0] == {}
+
+
+@pytest.mark.parametrize(
+    ("values", "name"),
+    (
+        ({(0, 1, 0): 1.0, (0, 2, 0): 2.0}, "weight"),  # values dict
+        ({(0, 1, 0): {"weight": 1.0}, (0, 2, 0): {"weight": 2.0}}, None),  # values dod
+    ),
+)
+def test_set_edge_attributes_multi_ignores_extra_edges(values, name):
+    """If `values` is a dict or dict-of-dicts containing edges that are not in
+    G, data associate with these edges should be ignored.
+    """
+    G = nx.MultiGraph([(0, 1, 0), (0, 1, 1)])
+    nx.set_edge_attributes(G, values, name)
+    assert G[0][1][0]["weight"] == 1.0
+    assert G[0][1][1] == {}
+    assert (0, 2) not in G.edges()
 
 
 def test_get_node_attributes():
