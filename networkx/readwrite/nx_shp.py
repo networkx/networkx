@@ -76,7 +76,10 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
     ----------
     .. [1] https://en.wikipedia.org/wiki/Shapefile
     """
-    msg = "read_shp is deprecated and will be removed in 3.0."
+    msg = (
+        "read_shp is deprecated and will be removed in 3.0."
+        "See https://networkx.org/documentation/latest/auto_examples/index.html#geospatial."
+    )
     warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         from osgeo import ogr
@@ -149,7 +152,10 @@ def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
 
     .. deprecated:: 2.6
     """
-    msg = "edges_from_line is deprecated and will be removed in 3.0."
+    msg = (
+        "edges_from_line is deprecated and will be removed in 3.0."
+        "See https://networkx.org/documentation/latest/auto_examples/index.html#geospatial."
+    )
     warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         from osgeo import ogr
@@ -214,7 +220,10 @@ def write_shp(G, outdir):
     ----------
     .. [1] https://en.wikipedia.org/wiki/Shapefile
     """
-    msg = "write_shp is deprecated and will be removed in 3.0."
+    msg = (
+        "write_shp is deprecated and will be removed in 3.0."
+        "See https://networkx.org/documentation/latest/auto_examples/index.html#geospatial."
+    )
     warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         from osgeo import ogr
