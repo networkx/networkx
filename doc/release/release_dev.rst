@@ -22,6 +22,9 @@ X contributors. Highlights include:
 Improvements
 ------------
 
+- [`#4317 <https://github.com/networkx/networkx/pull/4317>`]
+  New ``source`` argument to ``has_eulerian_path`` to look for path starting at
+  source.
 
 API Changes
 -----------

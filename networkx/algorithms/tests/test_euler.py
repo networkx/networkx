@@ -150,21 +150,15 @@ class TestHasEulerianPath:
         G.add_node(3)
         assert nx.has_eulerian_path(G)
 
-    def test_has_eulerian_path_not_weakly_connected(self):
-        G = nx.DiGraph()
-        H = nx.Graph()
+    @pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
+    def test_has_eulerian_path_not_weakly_connected(self, G):
         G.add_edges_from([(0, 1), (2, 3), (3, 2)])
-        H.add_edges_from([(0, 1), (2, 3), (3, 2)])
         assert not nx.has_eulerian_path(G)
-        assert not nx.has_eulerian_path(H)
 
-    def test_has_eulerian_path_unbalancedins_more_than_one(self):
-        G = nx.DiGraph()
-        H = nx.Graph()
+    @pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
+    def test_has_eulerian_path_unbalancedins_more_than_one(self, G):
         G.add_edges_from([(0, 1), (2, 3)])
-        H.add_edges_from([(0, 1), (2, 3)])
         assert not nx.has_eulerian_path(G)
-        assert not nx.has_eulerian_path(H)
 
 
 class TestFindPathStart:
