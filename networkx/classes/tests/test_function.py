@@ -210,11 +210,6 @@ class TestFunction:
             == nx.edge_subgraph(self.DG, [(1, 2), (0, 3)]).adj
         )
 
-    def test_restricted_view(self):
-        H = nx.restricted_view(self.G, [0, 2, 5], [(1, 2), (3, 4)])
-        assert set(H.nodes) == {1, 3, 4}
-        assert set(H.edges) == {(1, 1)}
-
     def test_create_empty_copy(self):
         G = nx.create_empty_copy(self.G, with_data=False)
         assert_nodes_equal(G, list(self.G))
@@ -752,3 +747,23 @@ def test_ispath():
         graph.add_edges_from(edges)
         assert nx.is_path(graph, valid_path)
         assert not nx.is_path(graph, invalid_path)
+
+
+@pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
+def test_restricted_view(G):
+    G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2)])
+    G.add_node(4)
+    H = nx.restricted_view(G, [0, 2, 5], [(1, 2), (3, 4)])
+    assert set(H.nodes()) == {1, 3, 4}
+    assert set(H.edges()) == {(1, 1)}
+
+
+@pytest.mark.parametrize("G", (nx.MultiGraph(), nx.MultiDiGraph()))
+def test_restricted_view_multi(G):
+    G.add_edges_from(
+        [(0, 1, 0), (0, 2, 0), (0, 3, 0), (0, 1, 1), (1, 0, 0), (1, 1, 0), (1, 2, 0)]
+    )
+    G.add_node(4)
+    H = nx.restricted_view(G, [0, 2, 5], [(1, 2, 0), (3, 4, 0)])
+    assert set(H.nodes()) == {1, 3, 4}
+    assert set(H.edges()) == {(1, 1)}
