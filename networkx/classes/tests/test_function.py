@@ -693,7 +693,7 @@ def test_selfloops(graph_type):
 @pytest.mark.parametrize(
     "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 )
-def test_selfloops_attr(graph_type):
+def test_selfloop_edges_attr(graph_type):
     G = nx.complete_graph(3, create_using=graph_type)
     G.add_edge(0, 0)
     G.add_edge(1, 1, weight=2)
@@ -701,6 +701,16 @@ def test_selfloops_attr(graph_type):
         nx.selfloop_edges(G, data=True), [(0, 0, {}), (1, 1, {"weight": 2})]
     )
     assert_edges_equal(nx.selfloop_edges(G, data="weight"), [(0, 0, None), (1, 1, 2)])
+
+
+def test_selfloop_edges_multi_with_data_and_keys():
+    G = nx.complete_graph(3, create_using=nx.MultiGraph)
+    G.add_edge(0, 0, weight=10)
+    G.add_edge(0, 0, weight=100)
+    assert_edges_equal(
+        nx.selfloop_edges(G, data="weight", keys=True),
+        [(0, 0, 0, 10), (0, 0, 1, 100)],
+    )
 
 
 @pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph])
