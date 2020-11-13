@@ -24,10 +24,12 @@ mkinit ~/code/networkx/networkx/algorithms/minors/__init__.py -w
 __submodules__ = [
     "contraction",
     "tree_embedding",
+    "tree_isomorphism",
 ]
 
 from networkx.algorithms.minors import contraction
 from networkx.algorithms.minors import tree_embedding
+from networkx.algorithms.minors import tree_isomorphism
 
 from networkx.algorithms.minors.contraction import (
     contracted_edge,
@@ -39,6 +41,9 @@ from networkx.algorithms.minors.contraction import (
 from networkx.algorithms.minors.tree_embedding import (
     maximum_common_ordered_subtree_embedding,
 )
+from networkx.algorithms.minors.tree_isomorphism import (
+    maximum_common_ordered_subtree_isomorphism,
+)
 
 __all__ = [
     "contracted_edge",
@@ -47,6 +52,8 @@ __all__ = [
     "equivalence_classes",
     "identified_nodes",
     "maximum_common_ordered_subtree_embedding",
+    "maximum_common_ordered_subtree_isomorphism",
     "quotient_graph",
     "tree_embedding",
+    "tree_isomorphism",
 ]
