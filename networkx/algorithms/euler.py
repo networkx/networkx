@@ -251,7 +251,7 @@ def has_eulerian_path(G, source=None):
 
     Returns
     -------
-    Bool : True if G has an eulerian path.
+    Bool : True if G has an Eulerian path.
 
     See Also
     --------
