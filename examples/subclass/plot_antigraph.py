@@ -137,7 +137,7 @@ class AntiGraph(nx.Graph):
                 for n, nbrs in nodes_nbrs
             )
 
-    def adjacency_iter(self):
+    def adjacency(self):
         """Return an iterator of (node, adjacency set) tuples for all nodes
            in the dense graph.
 
@@ -149,10 +149,10 @@ class AntiGraph(nx.Graph):
         adj_iter : iterator
            An iterator of (node, adjacency set) for all nodes in
            the graph.
-
         """
-        for n in self.adj:
-            yield (n, set(self.adj) - set(self.adj[n]) - {n})
+        nodes = set(self.adj)
+        for n, nbrs in self.adj.items():
+            yield (n, nodes - set(nbrs) - {n})
 
 
 # Build several pairs of graphs, a regular graph
