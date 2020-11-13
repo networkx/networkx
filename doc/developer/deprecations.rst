@@ -63,3 +63,4 @@ Version 3.0
   argument with explicit ``name`` and ``ident`` keyword args.
 * Remove ``networkx/readwrite/nx_yaml.py`` and related tests.
 * Remove ``networkx/readwrite/gpickle.py`` and related tests. 
+* Remove ``networkx/readwrite/nx_shp.py`` and related tests (add info in alternatives). 

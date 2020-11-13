@@ -51,6 +51,8 @@ Deprecations
   Deprecate ``read_yaml`` and ``write_yaml``.
 - [`#4282 <https://github.com/networkx/networkx/pull/4282>`_]
   Deprecate ``read_gpickle`` and ``write_gpickle``.
+- [`#4298 <https://github.com/networkx/networkx/pull/4298>`_]
+  Deprecate ``read_shp``, ``edges_from_line``, and ``write_shp``.
 
 Contributors to this release
 ----------------------------

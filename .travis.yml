@@ -22,6 +22,7 @@ matrix:
           - latexmk
           - libgeos-dev
           - libproj-dev
+          - libspatialindex-dev
 
 before_install:
   # prepare the system to install prerequisites or dependencies
@@ -40,6 +41,7 @@ after_success:
       pip install -r requirements.txt;
       pip install -r requirements/extra.txt;
       pip install -r requirements/example.txt;
+      pip install -U -r requirements/doc.txt;
       export CPLUS_INCLUDE_PATH=/usr/include/gdal;
       export C_INCLUDE_PATH=/usr/include/gdal;
       pip install gdal==1.11.2;

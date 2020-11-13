@@ -31,15 +31,20 @@ jobs:
             sudo apt-get install libgeos-dev libproj-dev
 
       - run:
+          name: Install pysal dependencies
+          command: |
+            sudo apt-get install libspatialindex-dev
+
+      - run:
           name: Install Python dependencies
           command: |
             python3 -m venv venv
             source venv/bin/activate
             pip install --upgrade pip wheel setuptools
             pip install -r requirements.txt
-            pip install -r requirements/doc.txt
             pip install -r requirements/extra.txt
             pip install -r requirements/example.txt
+            pip install -U -r requirements/doc.txt
 
       - run:
           name: Install

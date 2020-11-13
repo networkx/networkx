@@ -22,6 +22,8 @@ jobs:
         sudo apt-get update
         sudo apt-get install libgdal-dev graphviz graphviz-dev
         sudo apt-get install texlive texlive-latex-extra latexmk
+        sudo apt-get install libgeos-dev libproj-dev
+        sudo apt-get install libspatialindex-dev
         python3 -m venv ~/venv
         source ~/venv/bin/activate
 
@@ -29,9 +31,9 @@ jobs:
       run: |
         pip install --upgrade pip wheel setuptools
         pip install -r requirements.txt
-        pip install -r requirements/doc.txt
         pip install -r requirements/extra.txt
         pip install -r requirements/example.txt
+        pip install -U -r requirements/doc.txt
         export CPLUS_INCLUDE_PATH=/usr/include/gdal
         export C_INCLUDE_PATH=/usr/include/gdal
         pip install gdal==3.0.4
