@@ -678,48 +678,67 @@ def test_is_empty():
         assert not nx.is_empty(G)
 
 
-def test_selfloops():
-    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
-    for graph in graphs:
-        G = nx.complete_graph(3, create_using=graph)
-        G.add_edge(0, 0)
-        assert_nodes_equal(nx.nodes_with_selfloops(G), [0])
-        assert_edges_equal(nx.selfloop_edges(G), [(0, 0)])
-        assert_edges_equal(nx.selfloop_edges(G, data=True), [(0, 0, {})])
-        assert nx.number_of_selfloops(G) == 1
-        # test selfloop attr
-        G.add_edge(1, 1, weight=2)
-        assert_edges_equal(
-            nx.selfloop_edges(G, data=True), [(0, 0, {}), (1, 1, {"weight": 2})]
-        )
-        assert_edges_equal(
-            nx.selfloop_edges(G, data="weight"), [(0, 0, None), (1, 1, 2)]
-        )
-        # test removing selfloops behavior vis-a-vis altering a dict while iterating
-        G.add_edge(0, 0)
-        G.remove_edges_from(nx.selfloop_edges(G))
-        if G.is_multigraph():
-            G.add_edge(0, 0)
-            pytest.raises(
-                RuntimeError, G.remove_edges_from, nx.selfloop_edges(G, keys=True)
-            )
-            G.add_edge(0, 0)
-            pytest.raises(
-                TypeError, G.remove_edges_from, nx.selfloop_edges(G, data=True)
-            )
-            G.add_edge(0, 0)
-            pytest.raises(
-                RuntimeError,
-                G.remove_edges_from,
-                nx.selfloop_edges(G, data=True, keys=True),
-            )
-        else:
-            G.add_edge(0, 0)
-            G.remove_edges_from(nx.selfloop_edges(G, keys=True))
-            G.add_edge(0, 0)
-            G.remove_edges_from(nx.selfloop_edges(G, data=True))
-            G.add_edge(0, 0)
-            G.remove_edges_from(nx.selfloop_edges(G, keys=True, data=True))
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
+def test_selfloops(graph_type):
+    G = nx.complete_graph(3, create_using=graph_type)
+    G.add_edge(0, 0)
+    assert_nodes_equal(nx.nodes_with_selfloops(G), [0])
+    assert_edges_equal(nx.selfloop_edges(G), [(0, 0)])
+    assert_edges_equal(nx.selfloop_edges(G, data=True), [(0, 0, {})])
+    assert nx.number_of_selfloops(G) == 1
+
+
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
+def test_selfloops_attr(graph_type):
+    G = nx.complete_graph(3, create_using=graph_type)
+    G.add_edge(0, 0)
+    G.add_edge(1, 1, weight=2)
+    assert_edges_equal(
+        nx.selfloop_edges(G, data=True), [(0, 0, {}), (1, 1, {"weight": 2})]
+    )
+    assert_edges_equal(nx.selfloop_edges(G, data="weight"), [(0, 0, None), (1, 1, 2)])
+
+
+@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph])
+def test_selfloops_removal(graph_type):
+    G = nx.complete_graph(3, create_using=graph_type)
+    G.add_edge(0, 0)
+    G.remove_edges_from(nx.selfloop_edges(G, keys=True))
+    G.add_edge(0, 0)
+    G.remove_edges_from(nx.selfloop_edges(G, data=True))
+    G.add_edge(0, 0)
+    G.remove_edges_from(nx.selfloop_edges(G, keys=True, data=True))
+
+
+@pytest.mark.parametrize("graph_type", [nx.MultiGraph, nx.MultiDiGraph])
+def test_selfloops_removal_multi(graph_type):
+    """test removing selfloops behavior vis-a-vis altering a dict while iterating.
+    cf. gh-4068"""
+    G = nx.complete_graph(3, create_using=graph_type)
+    # Defaults - see gh-4080
+    G.add_edge(0, 0)
+    G.add_edge(0, 0)
+    G.remove_edges_from(nx.selfloop_edges(G))
+    assert (0, 0) not in G.edges()
+    # With keys
+    G.add_edge(0, 0)
+    G.add_edge(0, 0)
+    with pytest.raises(RuntimeError):
+        G.remove_edges_from(nx.selfloop_edges(G, keys=True))
+    # With data
+    G.add_edge(0, 0)
+    G.add_edge(0, 0)
+    with pytest.raises(TypeError):
+        G.remove_edges_from(nx.selfloop_edges(G, data=True))
+    # With keys and data
+    G.add_edge(0, 0)
+    G.add_edge(0, 0)
+    with pytest.raises(RuntimeError):
+        G.remove_edges_from(nx.selfloop_edges(G, data=True, keys=True))
 
 
 def test_pathweight():
