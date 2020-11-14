@@ -9,8 +9,6 @@ import networkx as nx
 import numpy as np
 from mayavi import mlab
 
-mlab.options.offscreen = True
-
 # some graphs to try
 # H=nx.krackhardt_kite_graph()
 # H=nx.Graph();H.add_edge('a','b');H.add_edge('a','c');H.add_edge('a','d')

@@ -2,9 +2,6 @@ from datetime import date
 from sphinx_gallery.sorting import ExplicitOrder
 import sphinx_rtd_theme
 from warnings import filterwarnings
-from mayavi import mlab
-
-mlab.options.offscreen = True
 
 filterwarnings(
     "ignore", message="Matplotlib is currently using agg", category=UserWarning
