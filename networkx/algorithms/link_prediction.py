@@ -17,6 +17,7 @@ __all__ = [
     "ra_index_soundarajan_hopcroft",
     "within_inter_cluster",
     "common_neighbor_centrality",
+    "cngf_score",
 ]
 
 
@@ -566,6 +567,29 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
         within = {w for w in cnbors if _community(G, w, community) == Cu}
         inter = cnbors - within
         return len(within) / (len(inter) + delta)
+
+    return _apply_prediction(G, predict, ebunch)
+
+
+def cngf_score(G, ebunch=None):
+    r""""""
+
+    def predict(u, v):
+        cnbors = set(nx.common_neighbors(G, u, v))
+        tempCnbors = cnbors.add(u, v)
+        subG = G.subgraph(tempCnbors).copy()
+        similarity = 0
+        if cnbors is not None:
+            v_degree = G.degree(v)
+            u_degree = G.degree(u)
+
+            v_cmnDegree = subG.degree(v)
+            u_cmnDegree = subG.degree(u)
+
+            v_guidance = v_cmnDegree / log(v_degree)
+            u_guidance = u_cmnDegree / log(u_degree)
+            similarity = v_guidance + u_guidance
+        return similarity
 
     return _apply_prediction(G, predict, ebunch)
 
