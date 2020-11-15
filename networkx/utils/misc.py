@@ -62,7 +62,7 @@ def flatten(obj, result=None):
             result.append(item)
         else:
             flatten(item, result)
-    return result
+    return obj.__class__(result)
 
 
 def make_list_of_ints(sequence):
