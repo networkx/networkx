@@ -1,4 +1,5 @@
 """PageRank analysis of graph structure. """
+from warnings import warn
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -354,7 +355,8 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    # Add deprecation warning
+    msg = "networkx.pagerank_numpy will be deprecated in NetworkX 3.0, use networkx.pagerank instead."
+    warn(msg, DeprecationWarning)
     import numpy as np
 
     if len(G) == 0:
@@ -463,7 +465,8 @@ def pagerank_scipy(
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    # Add deprecation warning
+    msg = "networkx.pagerank_scipy will be deprecated in NetworkX 3.0, use networkx.pagerank instead."
+    warn(msg, DeprecationWarning)
     import numpy as np
     import scipy.sparse
 

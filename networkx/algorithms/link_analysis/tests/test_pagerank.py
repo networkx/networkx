@@ -187,7 +187,7 @@ class TestPageRank:
         p = networkx.pagerank(G)
         p_scipy = networkx.pagerank(G, impl='scipy')
         p_numpy = networkx.pagerank(G, impl='numpy')
-        p_python = networkx.pagerank(G, imple='python')
+        p_python = networkx.pagerank(G, impl='python')
         for n in G:
             assert almost_equal(p[n], p_scipy[n], places=4)
             assert almost_equal(p_numpy[n], p_scipy[n], places=4)
