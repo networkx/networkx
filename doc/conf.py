@@ -50,6 +50,7 @@ sphinx_gallery_conf = {
     # path where to save gallery generated examples
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
+    "image_scrapers": ("matplotlib", "mayavi"),
 }
 
 # generate autosummary pages
