@@ -62,6 +62,8 @@ def flatten(obj, result=None):
             result.append(item)
         else:
             flatten(item, result)
+    if issubclass(type(obj), (dict, set)):
+        return tuple(result)
     return obj.__class__(result)
 
 
