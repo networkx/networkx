@@ -131,7 +131,13 @@ At this stage the graph ``G`` consists of 8 nodes and 3 edges, as can be seen by
     >>> G.number_of_edges()
     3
 
-.. note:: With Python 3.6 or later the behavior of Graph/DiGraph is ordered. Since dictionaries became ordered with that version, the order of adjacency reporting: G.adj, G.successors, G.predecessors is now the order of edge adding. However, the order of G.edges is not always the order of edge adding. The order of G.edges is the order of the adjacencies which includes both the order of the nodes and each node's adjacencies. See example below:
+.. note::
+   With Python 3.6 or later the behavior of Graph/DiGraph is ordered.
+   Since dictionaries became ordered with that version, the order of adjacency
+   reporting: G.adj, G.successors, G.predecessors is now the order of edge
+   adding. However, the order of G.edges is not always the order of edge
+   adding. The order of G.edges is the order of the adjacencies which includes
+   both the order of the nodes and each node's adjacencies. See example below:
 
 >>> G = nx.DiGraph()
 >>> G.add_edge(2, 1)   # adds the nodes in order 2, 1
