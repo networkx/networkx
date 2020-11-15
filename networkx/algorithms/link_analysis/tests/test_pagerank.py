@@ -54,20 +54,24 @@ class TestPageRank:
             )
         )
 
-    def test_pagerank(self):
+    # Currently silently "failing" for numpy version when using tol and nstart
+    @pytest.mark.parametrize("impl", ("python", "scipy", "numpy"))
+    def test_pagerank(self, impl):
         G = self.G
-        p = networkx.pagerank(G, alpha=0.9, tol=1.0e-08)
+        p = networkx.pagerank(G, alpha=0.9, tol=1.0e-08, impl=impl)
         for n in G:
             assert almost_equal(p[n], G.pagerank[n], places=4)
 
         nstart = {n: random.random() for n in G}
-        p = networkx.pagerank(G, alpha=0.9, tol=1.0e-08, nstart=nstart)
+        p = networkx.pagerank(G, alpha=0.9, tol=1.0e-08, nstart=nstart, impl=impl)
         for n in G:
             assert almost_equal(p[n], G.pagerank[n], places=4)
 
-    def test_pagerank_max_iter(self):
+    # not implemented in the numpy version
+    @pytest.mark.parametrize("impl", ("python", "scipy"))
+    def test_pagerank_max_iter(self, impl):
         with pytest.raises(networkx.PowerIterationFailedConvergence):
-            networkx.pagerank(self.G, max_iter=0)
+            networkx.pagerank(self.G, max_iter=0, impl=impl)
 
     def test_numpy_pagerank(self):
         G = self.G
@@ -85,7 +89,8 @@ class TestPageRank:
         for (a, b) in zip(p, self.G.pagerank.values()):
             assert almost_equal(a, b)
 
-    def test_personalization(self):
+    @pytest.mark.parametrize("impl", ("python", "scipy", "numpy"))
+    def test_personalization(self, impl):
         G = networkx.complete_graph(4)
         personalize = {0: 1, 1: 1, 2: 4, 3: 4}
         answer = {
@@ -94,18 +99,24 @@ class TestPageRank:
             2: 0.267532673843324,
             3: 0.2675326738433241,
         }
-        p = networkx.pagerank(G, alpha=0.85, personalization=personalize)
+        p = networkx.pagerank(G, alpha=0.85, personalization=personalize, impl=impl)
         for n in G:
             assert almost_equal(p[n], answer[n], places=4)
 
-    def test_zero_personalization_vector(self):
+    @pytest.mark.parametrize("impl", ("python", "scipy", "numpy"))
+    def test_zero_personalization_vector(self, impl):
         G = networkx.complete_graph(4)
         personalize = {0: 0, 1: 0, 2: 0, 3: 0}
         pytest.raises(
-            ZeroDivisionError, networkx.pagerank, G, personalization=personalize
+            ZeroDivisionError,
+            networkx.pagerank,
+            G,
+            personalization=personalize,
+            impl=impl,
         )
 
-    def test_one_nonzero_personalization_value(self):
+    @pytest.mark.parametrize("impl", ("python", "scipy", "numpy"))
+    def test_one_nonzero_personalization_value(self, impl):
         G = networkx.complete_graph(4)
         personalize = {0: 0, 1: 0, 2: 0, 3: 1}
         answer = {
@@ -114,11 +125,12 @@ class TestPageRank:
             2: 0.22077931820379187,
             3: 0.3376620453886241,
         }
-        p = networkx.pagerank(G, alpha=0.85, personalization=personalize)
+        p = networkx.pagerank(G, alpha=0.85, personalization=personalize, impl=impl)
         for n in G:
             assert almost_equal(p[n], answer[n], places=4)
 
-    def test_incomplete_personalization(self):
+    @pytest.mark.parametrize("impl", ("python", "scipy", "numpy"))
+    def test_incomplete_personalization(self, impl):
         G = networkx.complete_graph(4)
         personalize = {3: 1}
         answer = {
@@ -127,7 +139,7 @@ class TestPageRank:
             2: 0.22077931820379187,
             3: 0.3376620453886241,
         }
-        p = networkx.pagerank(G, alpha=0.85, personalization=personalize)
+        p = networkx.pagerank(G, alpha=0.85, personalization=personalize, impl=impl)
         for n in G:
             assert almost_equal(p[n], answer[n], places=4)
 
@@ -150,8 +162,9 @@ class TestPageRank:
                 else:
                     assert almost_equal(M2[i, j], M1[i, j], places=4)
 
-    def test_dangling_pagerank(self):
-        pr = networkx.pagerank(self.G, dangling=self.dangling_edges)
+    @pytest.mark.parametrize("impl", ("python", "scipy", "numpy"))
+    def test_dangling_pagerank(self, impl):
+        pr = networkx.pagerank(self.G, dangling=self.dangling_edges, impl=impl)
         for n in self.G:
             assert almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
 
@@ -160,13 +173,15 @@ class TestPageRank:
         for n in self.G:
             assert almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
 
-    def test_empty(self):
+    @pytest.mark.parametrize("impl", ("python", "scipy", "numpy"))
+    def test_empty(self, impl):
         G = networkx.Graph()
-        assert networkx.pagerank(G) == {}
+        assert networkx.pagerank(G, impl=impl) == {}
         assert networkx.pagerank_numpy(G) == {}
         assert networkx.google_matrix(G).shape == (0, 0)
 
-    def test_multigraph(self):
+    @pytest.mark.parametrize("impl", ("python", "scipy", "numpy"))
+    def test_multigraph(self, impl):
         G = networkx.MultiGraph()
         G.add_edges_from([(1, 2), (1, 2), (1, 2), (2, 3), (2, 3), ("3", 3), ("3", 3)])
         answer = {
@@ -175,27 +190,9 @@ class TestPageRank:
             3: 0.28933951385531687,
             "3": 0.16046911740146227,
         }
-        p = networkx.pagerank(G)
+        p = networkx.pagerank(G, impl=impl)
         for n in G:
             assert almost_equal(p[n], answer[n], places=4)
-
-    def test_impl(self):
-        G = networkx.MultiGraph()
-        G.add_edges_from([(1, 2), (1, 2), (1, 2), (2, 3), (2, 3), ("3", 3), ("3", 3)])
-        answer = {
-            1: 0.21066048614468322,
-            2: 0.3395308825985378,
-            3: 0.28933951385531687,
-            "3": 0.16046911740146227,
-        }
-        p = networkx.pagerank(G)
-        p_scipy = networkx.pagerank(G, impl="scipy")
-        p_numpy = networkx.pagerank(G, impl="numpy")
-        p_python = networkx.pagerank(G, impl="python")
-        for n in G:
-            assert almost_equal(p[n], p_scipy[n], places=4)
-            assert almost_equal(p_numpy[n], p_scipy[n], places=4)
-            assert almost_equal(p_numpy[n], p_python[n], places=4)
 
 
 class TestPageRankScipy(TestPageRank):
