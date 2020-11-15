@@ -70,7 +70,7 @@ def test_flatten(nested, result):
         val = flatten(nested, _result)
         assert len(val) == len(_result) == 20 + nexisting
 
-    assert issubclass(type(val), (type(nested), tuple))
+    assert issubclass(type(val), tuple)
 
 
 def test_is_string_like():
