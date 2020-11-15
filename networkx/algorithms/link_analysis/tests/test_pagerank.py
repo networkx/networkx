@@ -166,6 +166,32 @@ class TestPageRank:
         assert networkx.pagerank_numpy(G) == {}
         assert networkx.google_matrix(G).shape == (0, 0)
 
+    def test_multigraph(self):
+        G = networkx.MultiGraph()
+        G.add_edges_from([(1, 2), (1, 2), (1, 2), (2, 3), (2, 3), ('3', 3), ('3', 3)])
+        answer = {1: 0.21066048614468322,
+                  2: 0.3395308825985378,
+                  3: 0.28933951385531687,
+                  '3': 0.16046911740146227}
+        p = networkx.pagerank(G)
+        for n in G:
+            assert almost_equal(p[n], answer[n], places=4)
+
+    def test_impl(self):
+        G = networkx.MultiGraph()
+        G.add_edges_from([(1, 2), (1, 2), (1, 2), (2, 3), (2, 3), ('3', 3), ('3', 3)])
+        answer = {1: 0.21066048614468322,
+                  2: 0.3395308825985378,
+                  3: 0.28933951385531687,
+                  '3': 0.16046911740146227}
+        p = networkx.pagerank(G)
+        p_scipy = networkx.pagerank(G, impl='scipy')
+        p_numpy = networkx.pagerank(G, impl='numpy')
+        p_python = networkx.pagerank(G, imple='python')
+        for n in G:
+            assert almost_equal(p[n], p_scipy[n], places=4)
+            assert almost_equal(p_numpy[n], p_scipy[n], places=4)
+            assert almost_equal(p_numpy[n], p_python[n], places=4)
 
 class TestPageRankScipy(TestPageRank):
     def test_scipy_pagerank(self):
