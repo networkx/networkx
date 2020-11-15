@@ -609,7 +609,6 @@ def draw_networkx_edges(
     """
     import matplotlib.pyplot as plt
     from matplotlib.colors import colorConverter, Colormap, Normalize
-    from matplotlib.collections import LineCollection
     from matplotlib.patches import FancyArrowPatch
     import numpy as np
 
@@ -633,10 +632,7 @@ def draw_networkx_edges(
         edgelist = list(G.edges())
 
     if len(edgelist) == 0:  # no edges!
-        if not G.is_directed() or not arrows:
-            return LineCollection(None)
-        else:
-            return []
+        return []
 
     if nodelist is None:
         nodelist = list(G.nodes())
