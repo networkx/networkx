@@ -54,7 +54,6 @@ class TestPageRank:
             )
         )
 
-    # Currently silently "failing" for numpy version when using tol and nstart
     @pytest.mark.parametrize("impl", ("python", "scipy", "numpy"))
     def test_pagerank(self, impl):
         G = self.G

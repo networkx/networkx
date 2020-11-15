@@ -120,7 +120,10 @@ def pagerank(
             G, alpha, personalization, max_iter, tol, nstart, weight, dangling
         )
     elif impl == "numpy":
-        # max_iter and tol, nstart doesn't exist, check for that?
+        if nstart is not None:
+            warn(
+                "The NumPy implementation of pagerank doesn't support a nstart vector, use scipy or python instead."
+            )
         return pagerank_numpy(G, alpha, personalization, weight, dangling)
     else:
         return nx.NetworkXError(
