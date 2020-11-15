@@ -5,7 +5,6 @@ from networkx.utils import not_implemented_for
 __all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
 
 
-@not_implemented_for("multigraph")
 def pagerank(
     G,
     alpha=0.85,
@@ -181,8 +180,8 @@ def _pagerank_python(
         for n in x:
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W
-            for nbr in W[n]:
-                x[nbr] += alpha * xlast[n] * W[n][nbr][weight]
+            for _, nbr, wt in W.edges(n, data=weight):
+                x[nbr] += alpha * xlast[n] * wt
             x[n] += danglesum * dangling_weights.get(n, 0) + (1.0 - alpha) * p.get(n, 0)
         # check convergence, l1 norm
         err = sum([abs(x[n] - xlast[n]) for n in x])
