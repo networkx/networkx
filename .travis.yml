@@ -50,6 +50,7 @@ after_success:
       pip install --upgrade pip wheel setuptools;
       pip install -r requirements.txt;
       pip install -r requirements/extra.txt;
+      pip install -r requirements/example-requirements.txt;
       pip install -r requirements/example.txt;
       pip install -U -r requirements/doc.txt;
       export CPLUS_INCLUDE_PATH=/usr/include/gdal;
