@@ -361,6 +361,8 @@ class TestFilteredGraphs:
             assert RsG.adj[2].copy() == RsG.adj[2]
 
     def test_filtered_copy(self):
+        # TODO: This function can be removed when filtered.copy()
+        # deprecation expires
         SubGraph = nx.graphviews.subgraph_view
         for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
@@ -385,6 +387,18 @@ class TestFilteredGraphs:
                 assert SG.adj[2]._atlas[3][0].copy() == SG.adj[2]._atlas[3][0]
                 assert RG.adj[2]._atlas[3][0].copy() == RG.adj[2]._atlas[3][0]
                 assert RsG.adj[2]._atlas[3][0].copy() == RsG.adj[2]._atlas[3][0]
+
+            # test deprecation
+            # FilterAtlas.copy()
+            pytest.deprecated_call(SG._node.copy)
+            # FilterAdjacency.copy()
+            pytest.deprecated_call(SG.adj._atlas.copy)
+            # FilterMultiAdjacency.copy()
+            if G.is_multigraph():
+                pytest.deprecated_call(SG.adj._atlas.copy)
+            # FilterMultiInner.copy()
+            if G.is_multigraph():
+                pytest.deprecated_call(SG.adj[2]._atlas.copy)
 
             SSG = SG.subgraph([2])
             assert list(SSG) == [2]

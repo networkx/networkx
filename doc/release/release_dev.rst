@@ -53,6 +53,9 @@ Deprecations
   Deprecate ``read_gpickle`` and ``write_gpickle``.
 - [`#4298 <https://github.com/networkx/networkx/pull/4298>`_]
   Deprecate ``read_shp``, ``edges_from_line``, and ``write_shp``.
+- [`#4355 <https://github.com/networkx/networkx/pull/4355>`_]
+  Deprecate ``copy`` method in the coreview Filtered-related classes.
+
 
 Contributors to this release
 ----------------------------
