@@ -609,7 +609,8 @@ def draw_networkx_edges(
     """
     import matplotlib.pyplot as plt
     from matplotlib.colors import colorConverter, Colormap, Normalize
-    from matplotlib.patches import FancyArrowPatch
+    from matplotlib.patches import FancyArrowPatch, ConnectionStyle
+    from matplotlib.path import Path
     import numpy as np
 
     if arrowstyle is not None and arrows is not None:
@@ -676,6 +677,49 @@ def draw_networkx_edges(
     arrow_collection = []
     mutation_scale = arrowsize  # scale factor of arrow head
 
+    # compute view
+    minx = np.amin(np.ravel(edge_pos[:, :, 0]))
+    maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
+    miny = np.amin(np.ravel(edge_pos[:, :, 1]))
+    maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
+    w = maxx - minx
+    h = maxy - miny
+
+    if connectionstyle is not None:
+        base_connection_style = ConnectionStyle(connectionstyle)
+
+        def _connectionstyle(posA, posB, *args, **kwargs):
+            # check if we need to do a self-loop
+            if np.all(posA == posB):
+                # this is called with _screen space_ values so covert back
+                # to data space
+                data_loc = ax.transData.inverted().transform(posA)
+                v_shift = 0.1 * h
+                h_shift = v_shift * 0.5
+                # put the top of the loop first so arrow is not hidden by node
+                path = [
+                    # 1
+                    data_loc + np.asarray([0, v_shift]),
+                    # 4 4 4
+                    data_loc + np.asarray([h_shift, v_shift]),
+                    data_loc + np.asarray([h_shift, 0]),
+                    data_loc,
+                    # 4 4 4
+                    data_loc + np.asarray([-h_shift, 0]),
+                    data_loc + np.asarray([-h_shift, v_shift]),
+                    data_loc + np.asarray([0, v_shift]),
+                ]
+
+                ret = Path(ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4])
+            # if not, fall back to the user specified behavior
+            else:
+                ret = base_connection_style(posA, posB, *args, **kwargs)
+
+            return ret
+
+    else:
+        _connectionstyle = connectionstyle
+
     # FancyArrowPatch doesn't handle color strings
     arrow_colors = colorConverter.to_rgba_array(edge_color, alpha)
     for i, (src, dst) in enumerate(edge_pos):
@@ -722,25 +766,15 @@ def draw_networkx_edges(
             mutation_scale=mutation_scale,
             color=arrow_color,
             linewidth=line_width,
-            connectionstyle=connectionstyle,
+            connectionstyle=_connectionstyle,
             linestyle=style,
             zorder=1,
         )  # arrows go behind nodes
 
-        # There seems to be a bug in matplotlib to make collections of
-        # FancyArrowPatch instances. Until fixed, the patches are added
-        # individually to the axes instance.
         arrow_collection.append(arrow)
         ax.add_patch(arrow)
 
     # update view
-    minx = np.amin(np.ravel(edge_pos[:, :, 0]))
-    maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
-    miny = np.amin(np.ravel(edge_pos[:, :, 1]))
-    maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
-
-    w = maxx - minx
-    h = maxy - miny
     padx, pady = 0.05 * w, 0.05 * h
     corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
     ax.update_datalim(corners)
