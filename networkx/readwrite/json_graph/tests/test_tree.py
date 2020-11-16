@@ -28,7 +28,13 @@ class TestTree:
         assert H.nodes[1]["color"] == "red"
 
     def test_exception(self):
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(TypeError, match="is not a tree."):
+            G = nx.complete_graph(3)
+            tree_data(G, 0)
+        with pytest.raises(TypeError, match="is not directed."):
+            G = nx.path_graph(3)
+            tree_data(G, 0)
+        with pytest.raises(nx.NetworkXError, match="names are not unique."):
             G = nx.MultiDiGraph()
             G.add_node(0)
             attrs = dict(id="node", children="node")

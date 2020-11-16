@@ -22,7 +22,10 @@ environment:
     - PYTHON: "C:\\Python38-x64"
       PYTHON_VERSION: "3.8"
       PYTHON_ARCH: "64"
-      PIP_FLAGS: "--pre"
+
+    - PYTHON: "C:\\Python39-x64"
+      PYTHON_VERSION: "3.9.0"
+      PYTHON_ARCH: "64"
 
 install:
   # Install Python (from the official .msi of http://python.org) and pip when

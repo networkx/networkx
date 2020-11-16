@@ -1898,17 +1898,18 @@ class Graph:
                         if n in adj:
                             yield n
                 except TypeError as e:
-                    message = e.args[0]
+                    exc, message = e, e.args[0]
                     # capture error for non-sequence/iterator nbunch.
                     if "iter" in message:
-                        msg = "nbunch is not a node or a sequence of nodes."
-                        raise NetworkXError(msg) from e
+                        exc = NetworkXError(
+                            "nbunch is not a node or a sequence of nodes."
+                        )
                     # capture error for unhashable node.
-                    elif "hashable" in message:
-                        msg = f"Node {n} in sequence nbunch is not a valid node."
-                        raise NetworkXError(msg) from e
-                    else:
-                        raise
+                    if "hashable" in message:
+                        exc = NetworkXError(
+                            f"Node {n} in sequence nbunch is not a valid node."
+                        )
+                    raise exc
 
             bunch = bunch_iter(nbunch, self._adj)
         return bunch

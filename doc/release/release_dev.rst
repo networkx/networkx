@@ -22,6 +22,9 @@ X contributors. Highlights include:
 Improvements
 ------------
 
+- [`#4317 <https://github.com/networkx/networkx/pull/4317>`]
+  New ``source`` argument to ``has_eulerian_path`` to look for path starting at
+  source.
 
 API Changes
 -----------
@@ -46,6 +49,10 @@ Deprecations
   See ``networkx.utils.misc.make_list_of_ints`` for related functionality.
 - [`#4281 <https://github.com/networkx/networkx/pull/4281>`_]
   Deprecate ``read_yaml`` and ``write_yaml``.
+- [`#4282 <https://github.com/networkx/networkx/pull/4282>`_]
+  Deprecate ``read_gpickle`` and ``write_gpickle``.
+- [`#4298 <https://github.com/networkx/networkx/pull/4298>`_]
+  Deprecate ``read_shp``, ``edges_from_line``, and ``write_shp``.
 
 Contributors to this release
 ----------------------------

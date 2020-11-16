@@ -1,7 +1,7 @@
 import pytest
 
 np = pytest.importorskip("numpy")
-np_assert_equal = np.testing.assert_equal
+npt = np.testing
 
 import networkx as nx
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
@@ -121,9 +121,9 @@ class TestConvertNumpyMatrix:
         WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_numpy_matrix(P4)
-        np_assert_equal(A, nx.to_numpy_matrix(WP4, weight=None))
-        np_assert_equal(0.5 * A, nx.to_numpy_matrix(WP4))
-        np_assert_equal(0.3 * A, nx.to_numpy_matrix(WP4, weight="other"))
+        npt.assert_equal(A, nx.to_numpy_matrix(WP4, weight=None))
+        npt.assert_equal(0.5 * A, nx.to_numpy_matrix(WP4))
+        npt.assert_equal(0.3 * A, nx.to_numpy_matrix(WP4, weight="other"))
 
     def test_from_numpy_matrix_type(self):
         A = np.matrix([[1]])
@@ -323,9 +323,9 @@ class TestConvertNumpyArray:
         WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_numpy_array(P4)
-        np_assert_equal(A, nx.to_numpy_array(WP4, weight=None))
-        np_assert_equal(0.5 * A, nx.to_numpy_array(WP4))
-        np_assert_equal(0.3 * A, nx.to_numpy_array(WP4, weight="other"))
+        npt.assert_equal(A, nx.to_numpy_array(WP4, weight=None))
+        npt.assert_equal(0.5 * A, nx.to_numpy_array(WP4))
+        npt.assert_equal(0.3 * A, nx.to_numpy_array(WP4, weight="other"))
 
     def test_from_numpy_array_type(self):
         A = np.array([[1]])
@@ -359,27 +359,6 @@ class TestConvertNumpyArray:
         assert type(G[0][0]["cost"]) == int
         assert G[0][0]["cost"] == 2
         assert G[0][0]["weight"] == 1.0
-
-    def test_to_numpy_recarray(self):
-        G = nx.Graph()
-        G.add_edge(1, 2, weight=7.0, cost=5)
-        A = nx.to_numpy_recarray(G, dtype=[("weight", float), ("cost", int)])
-        assert sorted(A.dtype.names) == ["cost", "weight"]
-        assert A.weight[0, 1] == 7.0
-        assert A.weight[0, 0] == 0.0
-        assert A.cost[0, 1] == 5
-        assert A.cost[0, 0] == 0
-
-    def test_numpy_multigraph(self):
-        G = nx.MultiGraph()
-        G.add_edge(1, 2, weight=7)
-        G.add_edge(1, 2, weight=70)
-        A = nx.to_numpy_array(G)
-        assert A[1, 0] == 77
-        A = nx.to_numpy_array(G, multigraph_weight=min)
-        assert A[1, 0] == 7
-        A = nx.to_numpy_array(G, multigraph_weight=max)
-        assert A[1, 0] == 70
 
     def test_from_numpy_array_parallel_edges(self):
         """Tests that the :func:`networkx.from_numpy_array` function
@@ -447,3 +426,114 @@ class TestConvertNumpyArray:
         G = nx.MultiGraph(nx.complete_graph(3))
         A = nx.to_numpy_array(G, dtype=int)
         assert A.dtype == int
+
+
+@pytest.fixture
+def recarray_test_graph():
+    G = nx.Graph()
+    G.add_edge(1, 2, weight=7.0, cost=5)
+    return G
+
+
+def test_to_numpy_recarray(recarray_test_graph):
+    A = nx.to_numpy_recarray(
+        recarray_test_graph, dtype=[("weight", float), ("cost", int)]
+    )
+    assert sorted(A.dtype.names) == ["cost", "weight"]
+    assert A.weight[0, 1] == 7.0
+    assert A.weight[0, 0] == 0.0
+    assert A.cost[0, 1] == 5
+    assert A.cost[0, 0] == 0
+    with pytest.raises(AttributeError, match="has no attribute"):
+        A.color[0, 1]
+
+
+def test_to_numpy_recarray_default_dtype(recarray_test_graph):
+    A = nx.to_numpy_recarray(recarray_test_graph)
+    assert A.dtype.names == ("weight",)
+    assert A.weight[0, 0] == 0
+    assert A.weight[0, 1] == 7
+    with pytest.raises(AttributeError, match="has no attribute"):
+        A.cost[0, 1]
+
+
+def test_to_numpy_recarray_directed(recarray_test_graph):
+    G = recarray_test_graph.to_directed()
+    G.remove_edge(2, 1)
+    A = nx.to_numpy_recarray(G, dtype=[("weight", float), ("cost", int)])
+    npt.assert_array_equal(A.weight, np.array([[0, 7.0], [0, 0]]))
+    npt.assert_array_equal(A.cost, np.array([[0, 5], [0, 0]]))
+
+
+def test_to_numpy_recarray_default_dtype_no_weight():
+    G = nx.Graph()
+    G.add_edge(0, 1, color="red")
+    with pytest.raises(KeyError):
+        A = nx.to_numpy_recarray(G)
+    A = nx.to_numpy_recarray(G, dtype=[("color", "U8")])
+    assert A.color[0, 1] == "red"
+
+
+@pytest.fixture
+def recarray_nodelist_test_graph():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            (0, 1, {"weight": 1.0}),
+            (0, 2, {"weight": 2.0}),
+            (1, 2, {"weight": 0.5}),
+        ]
+    )
+    return G
+
+
+def test_to_numpy_recarray_nodelist(recarray_nodelist_test_graph):
+    A = nx.to_numpy_recarray(recarray_nodelist_test_graph, nodelist=[0, 1])
+    npt.assert_array_equal(A.weight, np.array([[0, 1], [1, 0]]))
+
+
+@pytest.mark.parametrize(
+    ("nodelist", "errmsg"),
+    (
+        ([2, 3], "in nodelist is not in G"),
+        ([1, 1], "nodelist contains duplicates"),
+    ),
+)
+def test_to_numpy_recarray_bad_nodelist(recarray_nodelist_test_graph, nodelist, errmsg):
+    with pytest.raises(nx.NetworkXError, match=errmsg):
+        A = nx.to_numpy_recarray(recarray_nodelist_test_graph, nodelist=nodelist)
+
+
+def test_to_numpy_array_multigraph_weight():
+    G = nx.MultiGraph()
+    with pytest.raises(ValueError, match="must be sum, min, or max"):
+        nx.to_numpy_array(G, multigraph_weight=np.median)
+
+
+@pytest.fixture
+def multigraph_test_graph():
+    G = nx.MultiGraph()
+    G.add_edge(1, 2, weight=7)
+    G.add_edge(1, 2, weight=70)
+    return G
+
+
+@pytest.mark.parametrize(
+    ("operator", "expected"),
+    (
+        (sum, 77),
+        (min, 7),
+        (max, 70),
+    ),
+)
+def test_numpy_multigraph(multigraph_test_graph, operator, expected):
+    A = nx.to_numpy_array(multigraph_test_graph, multigraph_weight=operator)
+    assert A[1, 0] == expected
+
+
+def test_to_numpy_array_multigraph_nodelist(multigraph_test_graph):
+    G = multigraph_test_graph
+    G.add_edge(0, 1, weight=3)
+    A = nx.to_numpy_array(G, nodelist=[1, 2])
+    assert A.shape == (2, 2)
+    assert A[1, 0] == 77

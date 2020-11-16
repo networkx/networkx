@@ -2,10 +2,7 @@ from math import sqrt
 
 import pytest
 
-numpy = pytest.importorskip("numpy")
-numpy.linalg = pytest.importorskip("numpy.linalg")
-scipy = pytest.importorskip("scipy")
-scipy.sparse = pytest.importorskip("scipy.sparse")
+np = pytest.importorskip("numpy")
 
 
 import networkx as nx
@@ -35,14 +32,25 @@ def test_spectral_ordering_tracemin_chol():
         nx.spectral_ordering(G, method="tracemin_chol")
 
 
+def test_fiedler_vector_tracemin_unknown():
+    """Test that "tracemin_unknown" raises an exception."""
+    G = nx.barbell_graph(5, 4)
+    L = nx.laplacian_matrix(G)
+    X = np.asarray(np.random.normal(size=(1, L.shape[0]))).T
+    with pytest.raises(nx.NetworkXError, match="Unknown linear system solver"):
+        nx.linalg.algebraicconnectivity._tracemin_fiedler(
+            L, X, normalized=False, tol=1e-8, method="tracemin_unknown"
+        )
+
+
 def check_eigenvector(A, l, x):
-    nx = numpy.linalg.norm(x)
+    nx = np.linalg.norm(x)
     # Check zeroness.
     assert not almost_equal(nx, 0)
     y = A * x
-    ny = numpy.linalg.norm(y)
+    ny = np.linalg.norm(y)
     # Check collinearity.
-    assert almost_equal(numpy.dot(x, y), nx * ny)
+    assert almost_equal(np.dot(x, y), nx * ny)
     # Check eigenvalue.
     assert almost_equal(ny, l * nx)
 
@@ -312,11 +320,8 @@ class TestSpectralOrdering:
 
     @pytest.mark.parametrize("method", methods)
     def test_path(self, method):
-        # based on setup_class numpy is installed if we get here
-        from numpy.random import shuffle
-
         path = list(range(10))
-        shuffle(path)
+        np.random.shuffle(path)
         G = nx.Graph()
         nx.add_path(G, path)
         order = nx.spectral_ordering(G, method=method)
@@ -324,11 +329,8 @@ class TestSpectralOrdering:
 
     @pytest.mark.parametrize("method", methods)
     def test_seed_argument(self, method):
-        # based on setup_class numpy is installed if we get here
-        from numpy.random import shuffle
-
         path = list(range(10))
-        shuffle(path)
+        np.random.shuffle(path)
         G = nx.Graph()
         nx.add_path(G, path)
         order = nx.spectral_ordering(G, method=method, seed=1)
