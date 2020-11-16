@@ -2,10 +2,15 @@
 import networkx as nx
 from collections import defaultdict
 
-__all__ = ['dfs_edges', 'dfs_tree',
-           'dfs_predecessors', 'dfs_successors',
-           'dfs_preorder_nodes', 'dfs_postorder_nodes',
-           'dfs_labeled_edges']
+__all__ = [
+    "dfs_edges",
+    "dfs_tree",
+    "dfs_predecessors",
+    "dfs_successors",
+    "dfs_preorder_nodes",
+    "dfs_postorder_nodes",
+    "dfs_labeled_edges",
+]
 
 
 def dfs_edges(G, source=None, depth_limit=None):
@@ -282,7 +287,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     bfs_tree
     """
     edges = nx.dfs_labeled_edges(G, source=source, depth_limit=depth_limit)
-    return (v for u, v, d in edges if d == 'reverse')
+    return (v for u, v, d in edges if d == "reverse")
 
 
 def dfs_preorder_nodes(G, source=None, depth_limit=None):
@@ -333,7 +338,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     bfs_edges
     """
     edges = nx.dfs_labeled_edges(G, source=source, depth_limit=depth_limit)
-    return (v for u, v, d in edges if d == 'forward')
+    return (v for u, v, d in edges if d == "forward")
 
 
 def dfs_labeled_edges(G, source=None, depth_limit=None):
@@ -413,7 +418,7 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
     for start in nodes:
         if start in visited:
             continue
-        yield start, start, 'forward'
+        yield start, start, "forward"
         visited.add(start)
         stack = [(start, depth_limit, iter(G[start]))]
         while stack:
@@ -421,14 +426,14 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
             try:
                 child = next(children)
                 if child in visited:
-                    yield parent, child, 'nontree'
+                    yield parent, child, "nontree"
                 else:
-                    yield parent, child, 'forward'
+                    yield parent, child, "forward"
                     visited.add(child)
                     if depth_now > 1:
                         stack.append((child, depth_now - 1, iter(G[child])))
             except StopIteration:
                 stack.pop()
                 if stack:
-                    yield stack[-1][0], parent, 'reverse'
-        yield start, start, 'reverse'
+                    yield stack[-1][0], parent, "reverse"
+        yield start, start, "reverse"

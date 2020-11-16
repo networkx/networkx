@@ -124,30 +124,18 @@ package_data = {
     "networkx.utils": ["tests/*.py"],
 }
 
-install_requires = ["decorator>=4.3.0"]
+
+def parse_requirements_file(filename):
+    with open(filename, encoding="utf-8") as fid:
+        requires = [l.strip() for l in fid.readlines() if l]
+
+    return requires
+
+
+install_requires = parse_requirements_file("requirements/default.txt")
 extras_require = {
-    "all": [
-        "numpy",
-        "scipy",
-        "pandas",
-        "matplotlib",
-        "pygraphviz",
-        "pydot",
-        "pyyaml",
-        "gdal",
-        "lxml",
-        "pytest",
-    ],
-    "gdal": ["gdal"],
-    "lxml": ["lxml"],
-    "matplotlib": ["matplotlib"],
-    "pytest": ["pytest"],
-    "numpy": ["numpy"],
-    "pandas": ["pandas"],
-    "pydot": ["pydot"],
-    "pygraphviz": ["pygraphviz"],
-    "pyyaml": ["pyyaml"],
-    "scipy": ["scipy"],
+    dep: parse_requirements_file("requirements/" + dep + ".txt")
+    for dep in ["developer", "doc", "extra", "test"]
 }
 
 with open("README.rst", "r") as fh:

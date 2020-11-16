@@ -14,8 +14,13 @@ from itertools import chain
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['from_nested_tuple', 'from_prufer_sequence', 'NotATree',
-           'to_nested_tuple', 'to_prufer_sequence']
+__all__ = [
+    "from_nested_tuple",
+    "from_prufer_sequence",
+    "NotATree",
+    "to_nested_tuple",
+    "to_prufer_sequence",
+]
 
 
 class NotATree(nx.NetworkXException):
@@ -26,7 +31,7 @@ class NotATree(nx.NetworkXException):
     """
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def to_nested_tuple(T, root, canonical_form=False):
     """Returns a nested tuple representation of the given tree.
 
@@ -115,9 +120,9 @@ def to_nested_tuple(T, root, canonical_form=False):
 
     # Do some sanity checks on the input.
     if not nx.is_tree(T):
-        raise nx.NotATree('provided graph is not a tree')
+        raise nx.NotATree("provided graph is not a tree")
     if root not in T:
-        raise nx.NodeNotFound(f'Graph {T} contains no node {root}')
+        raise nx.NodeNotFound(f"Graph {T} contains no node {root}")
 
     return _make_tuple(T, root, None)
 
@@ -205,7 +210,7 @@ def from_nested_tuple(sequence, sensible_relabeling=False):
     return T
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def to_prufer_sequence(T):
     r"""Returns the Prüfer sequence of the given tree.
 
@@ -281,12 +286,12 @@ def to_prufer_sequence(T):
     # Perform some sanity checks on the input.
     n = len(T)
     if n < 2:
-        msg = 'Prüfer sequence undefined for trees with fewer than two nodes'
+        msg = "Prüfer sequence undefined for trees with fewer than two nodes"
         raise nx.NetworkXPointlessConcept(msg)
     if not nx.is_tree(T):
-        raise nx.NotATree('provided graph is not a tree')
+        raise nx.NotATree("provided graph is not a tree")
     if set(T) != set(range(n)):
-        raise KeyError('tree must have node labels {0, ..., n - 1}')
+        raise KeyError("tree must have node labels {0, ..., n - 1}")
 
     degree = dict(T.degree())
 

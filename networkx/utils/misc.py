@@ -5,14 +5,14 @@ These are not imported into the base networkx namespace but
 can be accessed, for example, as
 
 >>> import networkx
->>> networkx.utils.is_list_of_ints([1, 2, 3])
-True
->>> networkx.utils.is_list_of_ints([1, 2, "spam"])
-False
+>>> networkx.utils.make_list_of_ints({1, 2, 3})
+[1, 2, 3]
+>>> networkx.utils.arbitrary_element({5, 1, 7})  # doctest: +SKIP
+1
 """
 
-from collections import defaultdict
-from collections import deque
+from collections import defaultdict, deque
+from collections.abc import Iterator
 import warnings
 import sys
 import uuid
@@ -27,8 +27,10 @@ import networkx as nx
 
 def is_string_like(obj):  # from John Hunter, types-free version
     """Check if obj is string."""
-    msg = "is_string_like is deprecated and will be removed in 2.6." \
-          "Use isinstance(obj, str) instead."
+    msg = (
+        "is_string_like is deprecated and will be removed in 3.0."
+        "Use isinstance(obj, str) instead."
+    )
     warnings.warn(msg, DeprecationWarning)
     return isinstance(obj, str)
 
@@ -44,14 +46,19 @@ def iterable(obj):
     return True
 
 
+def empty_generator():
+    """ Return a generator with no members """
+    yield from ()
+
+
 def flatten(obj, result=None):
     """ Return flattened version of (possibly nested) iterable object. """
-    if not iterable(obj) or is_string_like(obj):
+    if not iterable(obj) or isinstance(obj, str):
         return obj
     if result is None:
         result = []
     for item in obj:
-        if not iterable(item) or is_string_like(item):
+        if not iterable(item) or isinstance(item, str):
             result.append(item)
         else:
             flatten(item, result)
@@ -95,7 +102,16 @@ def make_list_of_ints(sequence):
 
 
 def is_list_of_ints(intlist):
-    """ Return True if list is a list of ints. """
+    """
+    Return True if list is a list of ints.
+
+    .. deprecated:: 2.6
+    """
+    msg = (
+        "is_list_of_ints is deprecated and will be removed in 3.0."
+        "See also: ``networkx.utils.make_list_of_ints.``"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     if not isinstance(intlist, list):
         return False
     for i in intlist:
@@ -106,7 +122,7 @@ def is_list_of_ints(intlist):
 
 def make_str(x):
     """Returns the string representation of t."""
-    msg = "make_str is deprecated and will be removed in 2.6. Use str instead."
+    msg = "make_str is deprecated and will be removed in 3.0. Use str instead."
     warnings.warn(msg, DeprecationWarning)
     return str(x)
 
@@ -127,10 +143,12 @@ def default_opener(filename):
     """
     from subprocess import call
 
-    cmds = {'darwin': ['open'],
-            'linux': ['xdg-open'],
-            'linux2': ['xdg-open'],
-            'win32': ['cmd.exe', '/C', 'start', '']}
+    cmds = {
+        "darwin": ["open"],
+        "linux": ["xdg-open"],
+        "linux2": ["xdg-open"],
+        "win32": ["cmd.exe", "/C", "start", ""],
+    }
     cmd = cmds[sys.platform] + [filename]
     call(cmd)
 
@@ -152,6 +170,7 @@ def dict_to_numpy_array2(d, mapping=None):
 
     """
     import numpy
+
     if mapping is None:
         s = set(d.keys())
         for k, v in d.items():
@@ -174,6 +193,7 @@ def dict_to_numpy_array1(d, mapping=None):
 
     """
     import numpy
+
     if mapping is None:
         s = set(d.keys())
         mapping = dict(zip(s, range(len(s))))
@@ -189,8 +209,17 @@ def is_iterator(obj):
     """Returns True if and only if the given object is an iterator
     object.
 
+    .. deprecated:: 2.6.0
+
+       Deprecated in favor of ``isinstance(obj, collections.abc.Iterator)``
+
     """
-    has_next_attr = hasattr(obj, '__next__') or hasattr(obj, 'next')
+    msg = (
+        "is_iterator is deprecated and will be removed in version 3.0. "
+        "Use ``isinstance(obj, collections.abc.Iterator)`` instead."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
+    has_next_attr = hasattr(obj, "__next__") or hasattr(obj, "next")
     return iter(obj) is obj and has_next_attr
 
 
@@ -202,7 +231,7 @@ def arbitrary_element(iterable):
 
         >>> arbitrary_element({3, 2, 1})
         1
-        >>> arbitrary_element('hello')
+        >>> arbitrary_element("hello")
         'h'
 
     This function raises a :exc:`ValueError` if `iterable` is an
@@ -216,8 +245,8 @@ def arbitrary_element(iterable):
         ValueError: cannot return an arbitrary item from an iterator
 
     """
-    if is_iterator(iterable):
-        raise ValueError('cannot return an arbitrary item from an iterator')
+    if isinstance(iterable, Iterator):
+        raise ValueError("cannot return an arbitrary item from an iterator")
     # Another possible implementation is ``for x in iterable: return x``.
     return next(iter(iterable))
 
@@ -251,7 +280,7 @@ def groups(many_to_one):
     For example::
 
         >>> from networkx.utils import groups
-        >>> many_to_one = {'a': 1, 'b': 1, 'c': 2, 'd': 3, 'e': 3}
+        >>> many_to_one = {"a": 1, "b": 1, "c": 2, "d": 3, "e": 3}
         >>> groups(many_to_one)  # doctest: +SKIP
         {1: {'a', 'b'}, 2: {'c'}, 3: {'d', 'e'}}
 
@@ -297,19 +326,24 @@ def create_random_state(random_state=None):
         return random_state
     if isinstance(random_state, int):
         return np.random.RandomState(random_state)
-    msg = f"{random_state} cannot be used to generate a numpy.random.RandomState instance"
+    msg = (
+        f"{random_state} cannot be used to generate a numpy.random.RandomState instance"
+    )
     raise ValueError(msg)
 
 
 class PythonRandomInterface:
     try:
+
         def __init__(self, rng=None):
             import numpy
+
             if rng is None:
                 self._rng = numpy.random.mtrand._rand
             self._rng = rng
+
     except ImportError:
-        msg = 'numpy not found, only random.random available.'
+        msg = "numpy not found, only random.random available."
         warnings.warn(msg, ImportWarning)
 
     def random(self):
@@ -330,8 +364,8 @@ class PythonRandomInterface:
     def shuffle(self, seq):
         return self._rng.shuffle(seq)
 
-#    Some methods don't match API for numpy RandomState.
-#    Commented out versions are not used by NetworkX
+    #    Some methods don't match API for numpy RandomState.
+    #    Commented out versions are not used by NetworkX
 
     def sample(self, seq, k):
         return self._rng.choice(list(seq), size=(k,), replace=False)
@@ -339,13 +373,14 @@ class PythonRandomInterface:
     def randint(self, a, b):
         return self._rng.randint(a, b + 1)
 
-#    exponential as expovariate with 1/argument,
+    #    exponential as expovariate with 1/argument,
     def expovariate(self, scale):
-        return self._rng.exponential(1/scale)
+        return self._rng.exponential(1 / scale)
 
-#    pareto as paretovariate with 1/argument,
+    #    pareto as paretovariate with 1/argument,
     def paretovariate(self, shape):
         return self._rng.pareto(shape)
+
 
 #    weibull as weibullvariate multiplied by beta,
 #    def weibullvariate(self, alpha, beta):
@@ -375,17 +410,18 @@ def create_py_random_state(random_state=None):
         if a PythonRandomInterface instance, return it
     """
     import random
+
     try:
         import numpy as np
+
         if random_state is np.random:
             return PythonRandomInterface(np.random.mtrand._rand)
         if isinstance(random_state, np.random.RandomState):
             return PythonRandomInterface(random_state)
         if isinstance(random_state, PythonRandomInterface):
             return random_state
-        has_numpy = True
     except ImportError:
-        has_numpy = False
+        pass
 
     if random_state is None or random_state is random:
         return random._inst

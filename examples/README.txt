@@ -1,7 +1,7 @@
 .. _examples_gallery:
 
-Examples
-========
+Gallery
+=======
 
 General-purpose and introductory examples for NetworkX.
 The `tutorial <../tutorial.html>`_ introduces conventions and basic graph

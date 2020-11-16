@@ -16,11 +16,11 @@ from networkx.algorithms.node_classification.utils import (
     _predict,
 )
 
-__all__ = ['harmonic_function']
+__all__ = ["harmonic_function"]
 
 
-@not_implemented_for('directed')
-def harmonic_function(G, max_iter=30, label_name='label'):
+@not_implemented_for("directed")
+def harmonic_function(G, max_iter=30, label_name="label"):
     """Node classification by Harmonic function
 
     Parameters
@@ -45,8 +45,8 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     --------
     >>> from networkx.algorithms import node_classification
     >>> G = nx.path_graph(4)
-    >>> G.nodes[0]['label'] = 'A'
-    >>> G.nodes[3]['label'] = 'B'
+    >>> G.nodes[0]["label"] = "A"
+    >>> G.nodes[3]["label"] = "B"
     >>> G.nodes(data=True)
     NodeDataView({0: {'label': 'A'}, 1: {}, 2: {}, 3: {'label': 'B'}})
     >>> G.edges()
@@ -61,16 +61,8 @@ def harmonic_function(G, max_iter=30, label_name='label'):
     Semi-supervised learning using gaussian fields and harmonic functions.
     In ICML (Vol. 3, pp. 912-919).
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-            "harmonic_function() requires numpy: http://scipy.org/ ")
-    try:
-        from scipy import sparse
-    except ImportError:
-        raise ImportError(
-            "harmonic_function() requires scipy: http://scipy.org/ ")
+    import numpy as np
+    from scipy import sparse
 
     def _build_propagation_matrix(X, labels):
         """Build propagation matrix of Harmonic function
@@ -122,7 +114,8 @@ def harmonic_function(G, max_iter=30, label_name='label'):
 
     if labels.shape[0] == 0:
         raise nx.NetworkXError(
-            "No node on the input graph is labeled by '" + label_name + "'.")
+            "No node on the input graph is labeled by '" + label_name + "'."
+        )
 
     n_samples = X.shape[0]
     n_classes = label_dict.shape[0]

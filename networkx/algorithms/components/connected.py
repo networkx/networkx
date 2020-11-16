@@ -4,14 +4,14 @@ from networkx.utils.decorators import not_implemented_for
 from ...utils import arbitrary_element
 
 __all__ = [
-    'number_connected_components',
-    'connected_components',
-    'is_connected',
-    'node_connected_component',
+    "number_connected_components",
+    "connected_components",
+    "is_connected",
+    "node_connected_component",
 ]
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def connected_components(G):
     """Generate connected components.
 
@@ -45,7 +45,8 @@ def connected_components(G):
     >>> largest_cc = max(nx.connected_components(G), key=len)
 
     To create the induced subgraph of each component use:
-    >>> S = [G.subgraph(c).copy() for c in connected_components(G)]
+
+    >>> S = [G.subgraph(c).copy() for c in nx.connected_components(G)]
 
     See Also
     --------
@@ -60,9 +61,9 @@ def connected_components(G):
     seen = set()
     for v in G:
         if v not in seen:
-            c = set(_plain_bfs(G, v))
-            yield c
+            c = _plain_bfs(G, v)
             seen.update(c)
+            yield c
 
 
 def number_connected_components(G):
@@ -92,7 +93,7 @@ def number_connected_components(G):
     return sum(1 for cc in connected_components(G))
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def is_connected(G):
     """Returns True if the graph is connected, False otherwise.
 
@@ -131,12 +132,13 @@ def is_connected(G):
 
     """
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept('Connectivity is undefined ',
-                                          'for the null graph.')
+        raise nx.NetworkXPointlessConcept(
+            "Connectivity is undefined ", "for the null graph."
+        )
     return sum(1 for node in _plain_bfs(G, arbitrary_element(G))) == len(G)
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def node_connected_component(G, n):
     """Returns the set of nodes in the component of graph containing node n.
 
@@ -167,7 +169,7 @@ def node_connected_component(G, n):
     For undirected graphs only.
 
     """
-    return set(_plain_bfs(G, n))
+    return _plain_bfs(G, n)
 
 
 def _plain_bfs(G, source):
@@ -180,6 +182,6 @@ def _plain_bfs(G, source):
         nextlevel = set()
         for v in thislevel:
             if v not in seen:
-                yield v
                 seen.add(v)
                 nextlevel.update(G_adj[v])
+    return seen

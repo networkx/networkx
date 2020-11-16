@@ -19,10 +19,9 @@ from networkx.drawing.nx_agraph import graphviz_layout
 
 
 def lanl_graph():
-    """ Return the lanl internet view graph from lanl.edges
-    """
+    """Return the lanl internet view graph from lanl.edges"""
     try:
-        fh = open("lanl_routes.edgelist", "r")
+        fh = open("lanl_routes.edgelist")
     except OSError:
         print("lanl.edges not found")
         raise

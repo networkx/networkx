@@ -32,6 +32,7 @@ def test_factories():
             adjlist_inner_dict_factory = mydict3
             edge_key_dict_factory = mydict4
             edge_attr_dict_factory = mydict5
+
         G = MyGraph()
         assert isinstance(G._node, mydict1)
         assert isinstance(G._adj, mydict2)
@@ -64,21 +65,22 @@ class TestOrderedGraph(_TestGraph):
             adjlist_outer_dict_factory = OrderedDict
             adjlist_inner_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
+
         self.Graph = MyGraph
 
 
 class TestThinGraph(BaseGraphTester):
     def setup_method(self):
-        all_edge_dict = {'weight': 1}
+        all_edge_dict = {"weight": 1}
 
         class MyGraph(nx.Graph):
-            def edge_attr_dict_factory(self): return all_edge_dict
+            def edge_attr_dict_factory(self):
+                return all_edge_dict
+
         self.Graph = MyGraph
         # build dict-of-dict-of-dict K3
         ed1, ed2, ed3 = (all_edge_dict, all_edge_dict, all_edge_dict)
-        self.k3adj = {0: {1: ed1, 2: ed2},
-                      1: {0: ed1, 2: ed3},
-                      2: {0: ed2, 1: ed3}}
+        self.k3adj = {0: {1: ed1, 2: ed2}, 1: {0: ed1, 2: ed3}, 2: {0: ed2, 1: ed3}}
         self.k3edges = [(0, 1), (0, 2), (1, 2)]
         self.k3nodes = [0, 1, 2]
         self.K3 = self.Graph()
@@ -104,15 +106,18 @@ class TestOrderedDiGraph(_TestDiGraph):
             adjlist_outer_dict_factory = OrderedDict
             adjlist_inner_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
+
         self.Graph = MyGraph
 
 
 class TestThinDiGraph(BaseDiGraphTester):
     def setup_method(self):
-        all_edge_dict = {'weight': 1}
+        all_edge_dict = {"weight": 1}
 
         class MyGraph(nx.DiGraph):
-            def edge_attr_dict_factory(self): return all_edge_dict
+            def edge_attr_dict_factory(self):
+                return all_edge_dict
+
         self.Graph = MyGraph
         # build dict-of-dict-of-dict K3
         ed1, ed2, ed3 = (all_edge_dict, all_edge_dict, all_edge_dict)
@@ -155,6 +160,7 @@ class TestOrderedMultiGraph(_TestMultiGraph):
             adjlist_inner_dict_factory = OrderedDict
             edge_key_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
+
         self.Graph = MyGraph
 
 
@@ -174,4 +180,5 @@ class TestOrderedMultiDiGraph(_TestMultiDiGraph):
             adjlist_inner_dict_factory = OrderedDict
             edge_key_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
+
         self.Graph = MyGraph

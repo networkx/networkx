@@ -26,7 +26,6 @@ from networkx.generators.random_graphs import watts_strogatz_graph
 
 
 class TestGeneratorsRandom:
-
     def test_random_graph(self):
         seed = 42
         G = gnp_random_graph(100, 0.25, seed)
@@ -46,8 +45,9 @@ class TestGeneratorsRandom:
         G = connected_watts_strogatz_graph(10, 2, 0.1, tries=10, seed=seed)
         assert len(G) == 10
         assert G.number_of_edges() == 10
-        pytest.raises(NetworkXError, connected_watts_strogatz_graph,
-                      10, 2, 0.1, tries=0)
+        pytest.raises(
+            NetworkXError, connected_watts_strogatz_graph, 10, 2, 0.1, tries=0
+        )
 
         G = watts_strogatz_graph(10, 4, 0.25, seed)
         assert len(G) == 10
@@ -91,7 +91,38 @@ class TestGeneratorsRandom:
         constructor = [(10, 20, 0.8), (20, 40, 0.8)]
         G = random_shell_graph(constructor, seed)
 
+        def is_caterpillar(g):
+            """
+            A tree is a caterpillar iff all nodes of degree >=3 are surrounded
+            by at most two nodes of degree two or greater.
+            ref: http://mathworld.wolfram.com/CaterpillarGraph.html
+            """
+            deg_over_3 = [n for n in g if g.degree(n) >= 3]
+            for n in deg_over_3:
+                nbh_deg_over_2 = [nbh for nbh in g.neighbors(n) if g.degree(nbh) >= 2]
+                if not len(nbh_deg_over_2) <= 2:
+                    return False
+            return True
+
+        def is_lobster(g):
+            """
+            A tree is a lobster if it has the property that the removal of leaf
+            nodes leaves a caterpillar graph (Gallian 2007)
+            ref: http://mathworld.wolfram.com/LobsterGraph.html
+            """
+            non_leafs = [n for n in g if g.degree(n) > 1]
+            return is_caterpillar(g.subgraph(non_leafs))
+
         G = random_lobster(10, 0.1, 0.5, seed)
+        assert max([G.degree(n) for n in G.nodes()]) > 3
+        assert is_lobster(G)
+        pytest.raises(NetworkXError, random_lobster, 10, 0.1, 1, seed)
+        pytest.raises(NetworkXError, random_lobster, 10, 1, 1, seed)
+        pytest.raises(NetworkXError, random_lobster, 10, 1, 0.5, seed)
+
+        # docstring says this should be a caterpillar
+        G = random_lobster(10, 0.1, 0.0, seed)
+        assert is_caterpillar(G)
 
         # difficult to find seed that requires few tries
         seq = random_powerlaw_tree_sequence(10, 3, seed=14, tries=1)
@@ -180,8 +211,12 @@ class TestGeneratorsRandom:
         assert sum(1 for _ in G.edges()) == 0
 
     def test_gnp(self):
-        for generator in [gnp_random_graph, binomial_graph, erdos_renyi_graph,
-                          fast_gnp_random_graph]:
+        for generator in [
+            gnp_random_graph,
+            binomial_graph,
+            erdos_renyi_graph,
+            fast_gnp_random_graph,
+        ]:
             G = generator(10, -1.1)
             assert len(G) == 10
             assert sum(1 for _ in G.edges()) == 0
@@ -258,6 +293,7 @@ class TestGeneratorsRandom:
 
         def root(u, w, r):
             return r / c + w
+
         c = 1
         graph = random_kernel_graph(1000, integral, root)
         graph = random_kernel_graph(1000, integral, root, seed=42)

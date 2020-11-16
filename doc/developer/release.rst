@@ -1,5 +1,5 @@
-How to make a new release of ``networkx``
-=========================================
+Release Process
+===============
 
 - Update the release notes:
 
@@ -22,12 +22,19 @@ How to make a new release of ``networkx``
 
   7. Update ``doc/news.rst``.
 
+- Delete the following from ``doc/_templates/layout.html``::
+
+    {% block document %}
+      {% include "dev_banner.html" %}
+      {{ super() }}
+    {% endblock %}
+
 - Toggle ``dev = True`` to ``dev = False`` in ``networkx/release.py``.
 
 - Commit changes::
 
-  git add networkx/release.py
-  git commit -m "Designate X.X release"
+   git add networkx/release.py
+   git commit -m "Designate X.X release"
 
 - Add the version number as a tag in git::
 
@@ -45,11 +52,12 @@ How to make a new release of ``networkx``
 
 - Review the github release page::
 
-  https://github.com/networkx/networkx/releases
+   https://github.com/networkx/networkx/releases
 
 - Publish on PyPi::
 
    git clean -fxd
+   pip install -r requirements/release.txt
    python setup.py sdist bdist_wheel
    twine upload -s dist/*
 
@@ -61,7 +69,8 @@ How to make a new release of ``networkx``
   - Copy the documentation built by Travis.
     Assuming you are at the top-level of the ``documentation`` repo::
 
-      cp -a latest networkx-<major>.<minor> 
+      # FIXME - use eol_banner.html
+      cp -a latest networkx-<major>.<minor>
       ln -sfn networkx-<major>.<minor> stable
       git add networkx-<major>.<minor> stable
       git commit -m "Add <major>.<minor> docs"
@@ -76,12 +85,18 @@ How to make a new release of ``networkx``
 
   - Toggle ``dev = False`` to ``dev = True`` in ``networkx/release.py``.
   - Update ``major`` and ``minor`` in ``networkx/release.py``.
+  - Append the following to ``doc/_templates/layout.html``::
+
+    {% block document %}
+      {% include "dev_banner.html" %}
+      {{ super() }}
+    {% endblock %}
 
  - Commit and push changes::
 
-   git add networkx/release.py
-   git commit -m "Bump release version"
-   git push upstream master
+    git add networkx/release.py doc/_templates/layout.html
+    git commit -m "Bump release version"
+    git push upstream master
 
 - Update the web frontpage:
   The webpage is kept in a separate repo: networkx/website
@@ -89,8 +104,8 @@ How to make a new release of ``networkx``
   - Sync your branch with the remote repo: ``git pull``.
     If you try to ``make github`` when your branch is out of sync, it
     creates headaches.
-  - Update ``_templates/sidebar_versions.html``.
-  - Edit ``_static/docversions.js`` and commit
+  - Update ``build/index.html``.
+  - Edit ``build/_static/docversions.js`` and commit
   - Push your changes to the repo.
   - Deploy using ``make github``.
 

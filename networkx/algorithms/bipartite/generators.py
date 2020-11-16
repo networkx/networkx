@@ -7,15 +7,16 @@ from functools import reduce
 import networkx as nx
 from networkx.utils import nodes_or_number, py_random_state
 
-__all__ = ['configuration_model',
-           'havel_hakimi_graph',
-           'reverse_havel_hakimi_graph',
-           'alternating_havel_hakimi_graph',
-           'preferential_attachment_graph',
-           'random_graph',
-           'gnmk_random_graph',
-           'complete_bipartite_graph',
-           ]
+__all__ = [
+    "configuration_model",
+    "havel_hakimi_graph",
+    "reverse_havel_hakimi_graph",
+    "alternating_havel_hakimi_graph",
+    "preferential_attachment_graph",
+    "random_graph",
+    "gnmk_random_graph",
+    "complete_bipartite_graph",
+]
 
 
 @nodes_or_number([0, 1])
@@ -56,7 +57,7 @@ def complete_bipartite_graph(n1, n2, create_using=None):
     G.add_nodes_from(top, bipartite=0)
     G.add_nodes_from(bottom, bipartite=1)
     G.add_edges_from((u, v) for u in top for v in bottom)
-    G.graph['name'] = f"complete_bipartite_graph({n1},{n2})"
+    G.graph["name"] = f"complete_bipartite_graph({n1},{n2})"
     return G
 
 
@@ -105,7 +106,9 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise nx.NetworkXError(f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}")
+        raise nx.NetworkXError(
+            f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}"
+        )
 
     G = _add_nodes_with_bipartite_label(G, lena, lenb)
 
@@ -177,7 +180,9 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise nx.NetworkXError(f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}")
+        raise nx.NetworkXError(
+            f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}"
+        )
 
     G = _add_nodes_with_bipartite_label(G, naseq, nbseq)
 
@@ -248,7 +253,9 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise nx.NetworkXError(f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}")
+        raise nx.NetworkXError(
+            f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}"
+        )
 
     G = _add_nodes_with_bipartite_label(G, lena, lenb)
 
@@ -320,7 +327,9 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb = sum(bseq)
 
     if not suma == sumb:
-        raise nx.NetworkXError(f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}")
+        raise nx.NetworkXError(
+            f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}"
+        )
 
     G = _add_nodes_with_bipartite_label(G, naseq, nbseq)
 
@@ -335,8 +344,8 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
         if degree == 0:
             break  # done, all are zero
         bstubs.sort()
-        small = bstubs[0:degree // 2]  # add these low degree targets
-        large = bstubs[(-degree + degree // 2):]  # now high degree targets
+        small = bstubs[0 : degree // 2]  # add these low degree targets
+        large = bstubs[(-degree + degree // 2) :]  # now high degree targets
         stubs = [x for z in zip(large, small) for x in z]  # combine, sorry
         if len(stubs) < len(small) + len(large):  # check for zip truncation
             stubs.append(large.pop())
@@ -563,7 +572,7 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
     if k >= max_edges:  # Maybe we should raise an exception here
         return nx.complete_bipartite_graph(n, m, create_using=G)
 
-    top = [n for n, d in G.nodes(data=True) if d['bipartite'] == 0]
+    top = [n for n, d in G.nodes(data=True) if d["bipartite"] == 0]
     bottom = list(set(G) - set(top))
     edge_count = 0
     while edge_count < k:
@@ -582,5 +591,5 @@ def _add_nodes_with_bipartite_label(G, lena, lenb):
     G.add_nodes_from(range(0, lena + lenb))
     b = dict(zip(range(0, lena), [0] * lena))
     b.update(dict(zip(range(lena, lena + lenb), [1] * lenb)))
-    nx.set_node_attributes(G, b, 'bipartite')
+    nx.set_node_attributes(G, b, "bipartite")
     return G

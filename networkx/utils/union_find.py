@@ -65,9 +65,7 @@ class UnionFind:
         return root
 
     def __iter__(self):
-        """Iterate through all items ever found or unioned by this structure.
-
-        """
+        """Iterate through all items ever found or unioned by this structure."""
         return iter(self.parents)
 
     def to_sets(self):
@@ -75,10 +73,10 @@ class UnionFind:
 
         For example::
 
-            >>> partition = UnionFind('xyz')
+            >>> partition = UnionFind("xyz")
             >>> sorted(map(sorted, partition.to_sets()))
             [['x'], ['y'], ['z']]
-            >>> partition.union('x', 'y')
+            >>> partition.union("x", "y")
             >>> sorted(map(sorted, partition.to_sets()))
             [['x', 'y'], ['z']]
 
@@ -91,10 +89,17 @@ class UnionFind:
 
     def union(self, *objects):
         """Find the sets containing the objects and merge them all."""
-        roots = [self[x] for x in objects]
         # Find the heaviest root according to its weight.
-        heaviest = max(roots, key=lambda r: self.weights[r])
+        roots = iter(
+            sorted(
+                {self[x] for x in objects}, key=lambda r: self.weights[r], reverse=True
+            )
+        )
+        try:
+            root = next(roots)
+        except StopIteration:
+            return
+
         for r in roots:
-            if r != heaviest:
-                self.weights[heaviest] += self.weights[r]
-                self.parents[r] = heaviest
+            self.weights[root] += self.weights[r]
+            self.parents[r] = root

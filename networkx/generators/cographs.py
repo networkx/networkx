@@ -14,7 +14,7 @@ References
 import networkx as nx
 from networkx.utils import py_random_state
 
-__all__ = ['random_cograph']
+__all__ = ["random_cograph"]
 
 
 @py_random_state(1)

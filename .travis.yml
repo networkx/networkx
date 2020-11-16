@@ -10,19 +10,7 @@ matrix:
     - os: linux
       python: 3.7
       env:
-      - OPTIONAL_DEPS=1
-      - MINIMUM_REQUIREMENTS=1
-      - REPORT_COVERAGE=1
-      addons:
-        apt:
-          packages:
-          - libgdal-dev
-          - graphviz
-    - os: linux
-      python: 3.7
-      env:
-      - OPTIONAL_DEPS=1
-      - BUILD_DOCS=1
+      - EXTRA_DEPS=1
       - DEPLOY_DOCS=1
       addons:
         apt:
@@ -32,85 +20,44 @@ matrix:
           - texlive
           - texlive-latex-extra
           - latexmk
-    - os: linux
-      python: 3.7
-      env:
-      - OPTIONAL_DEPS=1
-      - PIP_FLAGS="--pre"
-      addons:
-        apt:
-          packages:
-          - libgdal-dev
-          - graphviz
-    - os: osx
-      osx_image: xcode7.3
-      language: generic
-      env:
-      - TRAVIS_PYTHON_VERSION=3.6
-      - OPTIONAL_DEPS=1
-      - OSX_PKG_ENV=miniconda
-    - os: osx
-      language: generic
-      env: TRAVIS_PYTHON_VERSION=3.7
-      cache:
-        # As for now travis caches only "$HOME/.cache/pip"
-        # https://docs.travis-ci.com/user/caching/#pip-cache
-        pip: false
-        directories:
-          - $HOME/Library/Caches/pip
-    - os: osx
-      osx_image: xcode11
-      language: generic
-      env: TRAVIS_PYTHON_VERSION=3.8
-    - python: 3.6
-    - python: 3.7
-    - python: 3.8
-      env:
-      - PIP_FLAGS="--pre"
-    - python: pypy3.6-7.1.1
-      env:
-      - MIN_DEPS=1
+          - libgeos-dev
+          - libproj-dev
+          - libspatialindex-dev
+          - libxkbcommon-x11-0
+          - optipng
+          - libxcb-icccm4
+          - libxcb-image0
+          - libxcb-keysyms1
+          - libxcb-randr0
+          - libxcb-render-util0
+          - xcb libxcb-xfixes0
+          - libxcb-xinerama0
+          - libxcb-shape0
 
 before_install:
   # prepare the system to install prerequisites or dependencies
   - source tools/travis/before_install.sh
-  - uname -a
-  - printenv
-  - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-      source tools/travis/osx_install.sh;
-    else
-      source tools/travis/linux_install.sh;
-    fi
+  - source tools/travis/linux_install.sh
 
 install:
-  # install required packages
-  - pip install --upgrade pip
-  - pip install --retries 3 ${PIP_FLAGS} -r requirements.txt
-  - if [[ "${OPTIONAL_DEPS}" == 1 ]]; then
-      pip install --retries 3 ${PIP_FLAGS} -r requirements/optional.txt;
-      pip install --retries 3 ${PIP_FLAGS} -r requirements/extras.txt;
-    elif [[ "${MIN_DEPS}" != 1 ]]; then
-      pip install --retries 3 ${PIP_FLAGS} -r requirements/optional.txt;
-    fi
-  # install networkx
-  - printenv PWD
-  - pip install .
-  # show what's installed
-  - python --version
-  - pip list
+  - echo "Nothing to see here."
 
 script:
-  - if [[ "${BUILD_DOCS}" == 1 ]]; then
-      source tools/travis/build_docs.sh;
-    else
-      source tools/travis/script.sh;
-    fi
+  - echo "Nothing to see here."
 
 after_success:
-  - if [[ "${REPORT_COVERAGE}" == 1 ]]; then
-      codecov;
-    fi
-  - if [[ "${BUILD_DOCS}" == 1 && "${DEPLOY_DOCS}" == 1 ]]; then
+  - if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_BRANCH == "master" ]]; then
+      pip install --upgrade pip wheel setuptools;
+      pip install -r requirements.txt;
+      pip install -r requirements/extra.txt;
+      pip install -r requirements/example-requirements.txt;
+      pip install -r requirements/example.txt;
+      pip install -U -r requirements/doc.txt;
+      export CPLUS_INCLUDE_PATH=/usr/include/gdal;
+      export C_INCLUDE_PATH=/usr/include/gdal;
+      pip install gdal==1.11.2;
+      pip install .;
+      source tools/travis/build_docs.sh;
       source tools/travis/deploy_docs.sh;
     fi
 

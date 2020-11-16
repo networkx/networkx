@@ -30,6 +30,7 @@ Adding and removing nodes and edges
    DiGraph.remove_edges_from
    DiGraph.update
    DiGraph.clear
+   DiGraph.clear_edges
 
 
 

@@ -9,10 +9,10 @@ Algorithms for a breadth-first traversal of edges in a graph.
 from collections import deque
 import networkx as nx
 
-FORWARD = 'forward'
-REVERSE = 'reverse'
+FORWARD = "forward"
+REVERSE = "reverse"
 
-__all__ = ['edge_bfs']
+__all__ = ["edge_bfs"]
 
 
 def edge_bfs(G, source=None, orientation=None):
@@ -56,7 +56,6 @@ def edge_bfs(G, source=None, orientation=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> nodes = [0, 1, 2, 3]
     >>> edges = [(0, 1), (1, 0), (1, 0), (2, 0), (2, 1), (3, 1)]
 
@@ -72,10 +71,10 @@ def edge_bfs(G, source=None, orientation=None):
     >>> list(nx.edge_bfs(nx.MultiDiGraph(edges), nodes))
     [(0, 1, 0), (1, 0, 0), (1, 0, 1), (2, 0, 0), (2, 1, 0), (3, 1, 0)]
 
-    >>> list(nx.edge_bfs(nx.DiGraph(edges), nodes, orientation='ignore'))
+    >>> list(nx.edge_bfs(nx.DiGraph(edges), nodes, orientation="ignore"))
     [(0, 1, 'forward'), (1, 0, 'reverse'), (2, 0, 'reverse'), (2, 1, 'reverse'), (3, 1, 'reverse')]
 
-    >>> list(nx.edge_bfs(nx.MultiDiGraph(edges), nodes, orientation='ignore'))
+    >>> list(nx.edge_bfs(nx.MultiDiGraph(edges), nodes, orientation="ignore"))
     [(0, 1, 0, 'forward'), (1, 0, 0, 'reverse'), (1, 0, 1, 'reverse'), (2, 0, 0, 'reverse'), (2, 1, 0, 'reverse'), (3, 1, 0, 'reverse')]
 
     Notes
@@ -108,28 +107,36 @@ def edge_bfs(G, source=None, orientation=None):
         return
 
     directed = G.is_directed()
-    kwds = {'data': False}
+    kwds = {"data": False}
     if G.is_multigraph() is True:
-        kwds['keys'] = True
+        kwds["keys"] = True
 
     # set up edge lookup
     if orientation is None:
+
         def edges_from(node):
             return iter(G.edges(node, **kwds))
-    elif not directed or orientation == 'original':
+
+    elif not directed or orientation == "original":
+
         def edges_from(node):
             for e in G.edges(node, **kwds):
                 yield e + (FORWARD,)
-    elif orientation == 'reverse':
+
+    elif orientation == "reverse":
+
         def edges_from(node):
             for e in G.in_edges(node, **kwds):
                 yield e + (REVERSE,)
-    elif orientation == 'ignore':
+
+    elif orientation == "ignore":
+
         def edges_from(node):
             for e in G.edges(node, **kwds):
                 yield e + (FORWARD,)
             for e in G.in_edges(node, **kwds):
                 yield e + (REVERSE,)
+
     else:
         raise nx.NetworkXError("invalid orientation argument.")
 
@@ -146,7 +153,7 @@ def edge_bfs(G, source=None, orientation=None):
         def edge_id(edge):
             return (frozenset(edge[:2]),) + edge[2:]
 
-    check_reverse = directed and orientation in ('reverse', 'ignore')
+    check_reverse = directed and orientation in ("reverse", "ignore")
 
     # start BFS
     visited_nodes = {n for n in nodes}

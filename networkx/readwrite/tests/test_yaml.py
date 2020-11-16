@@ -5,6 +5,7 @@
 import os
 import tempfile
 import pytest
+
 yaml = pytest.importorskip("yaml")
 
 import networkx as nx
@@ -19,9 +20,9 @@ class TestYaml:
     @classmethod
     def build_graphs(cls):
         cls.G = nx.Graph(name="test")
-        e = [('a', 'b'), ('b', 'c'), ('c', 'd'), ('d', 'e'), ('e', 'f'), ('a', 'f')]
+        e = [("a", "b"), ("b", "c"), ("c", "d"), ("d", "e"), ("e", "f"), ("a", "f")]
         cls.G.add_edges_from(e)
-        cls.G.add_node('g')
+        cls.G.add_node("g")
 
         cls.DG = nx.DiGraph(cls.G)
 

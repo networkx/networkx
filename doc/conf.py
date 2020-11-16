@@ -40,6 +40,7 @@ sphinx_gallery_conf = {
             "../examples/advanced",
             "../examples/3d_drawing",
             "../examples/pygraphviz",
+            "../examples/geospatial",
             "../examples/javascript",
             "../examples/jit",
             "../examples/applications",
@@ -49,13 +50,14 @@ sphinx_gallery_conf = {
     # path where to save gallery generated examples
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
+    "image_scrapers": ("matplotlib", "mayavi"),
 }
 
 # generate autosummary pages
 autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
-# templates_path = ['']
+templates_path = ["_templates"]
 
 suppress_warnings = ["ref.citation", "ref.footnote"]
 
@@ -123,10 +125,12 @@ html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 html_theme_options = {
-    "canonical_url": "https://networkx.github.io/documentation/stable/",
+    "canonical_url": "https://networkx.org/documentation/stable/",
     "navigation_depth": 3,
+    "logo_only": True,
 }
 
+html_logo = "_static/networkx_logo.svg"
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
@@ -159,7 +163,7 @@ html_last_updated_fmt = "%b %d, %Y"
 # If true, the reST sources are included in the HTML build as _sources/<name>.
 html_copy_source = False
 
-html_use_opensearch = "http://networkx.github.io"
+html_use_opensearch = "https://networkx.org"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "NetworkX"
@@ -190,8 +194,8 @@ latex_appendices = ["tutorial"]
 
 # Intersphinx mapping
 intersphinx_mapping = {
-    "https://docs.python.org/2/": None,
-    "https://docs.scipy.org/doc/numpy/": None,
+    "https://docs.python.org/3/": None,
+    "https://numpy.org/doc/stable/": None,
 }
 
 # The reST default role (used for this markup: `text`) to use for all
@@ -201,6 +205,6 @@ default_role = "obj"
 numpydoc_show_class_members = False
 
 
-# Add the 'copybutton' javascript, to hide/show the prompt in code examples
 def setup(app):
-    app.add_javascript("copybutton.js")
+    app.add_css_file("custom.css")
+    app.add_js_file("copybutton.js")

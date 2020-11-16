@@ -2,13 +2,15 @@
 """
 import networkx as nx
 
-__all__ = ['floyd_warshall',
-           'floyd_warshall_predecessor_and_distance',
-           'reconstruct_path',
-           'floyd_warshall_numpy']
+__all__ = [
+    "floyd_warshall",
+    "floyd_warshall_predecessor_and_distance",
+    "reconstruct_path",
+    "floyd_warshall_numpy",
+]
 
 
-def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
+def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 
     Parameters
@@ -36,24 +38,22 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
     algorithm fails. This algorithm can still fail if there are negative
     cycles.  It has running time $O(n^3)$ with running space of $O(n^2)$.
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-            "to_numpy_matrix() requires numpy: http://scipy.org/ ")
+    import numpy as np
 
     # To handle cases when an edge has weight=0, we must make sure that
     # nonedges are not given the value 0 as well.
-    A = nx.to_numpy_matrix(G, nodelist=nodelist, multigraph_weight=min,
-                           weight=weight, nonedge=np.inf)
+    A = nx.to_numpy_array(
+        G, nodelist=nodelist, multigraph_weight=min, weight=weight, nonedge=np.inf
+    )
     n, m = A.shape
-    A[np.identity(n) == 1] = 0  # diagonal elements should be zero
+    np.fill_diagonal(A, 0)  # diagonal elements should be zero
     for i in range(n):
-        A = np.minimum(A, A[i, :] + A[:, i])
+        # The second term has the same shape as A due to broadcasting
+        A = np.minimum(A, A[i, :][np.newaxis, :] + A[:, i][:, np.newaxis])
     return A
 
 
-def floyd_warshall_predecessor_and_distance(G, weight='weight'):
+def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 
     Parameters
@@ -72,11 +72,22 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from([('s', 'u', 10), ('s', 'x', 5),
-    ...     ('u', 'v', 1), ('u', 'x', 2), ('v', 'y', 1), ('x', 'u', 3),
-    ...     ('x', 'v', 5), ('x', 'y', 2), ('y', 's', 7), ('y', 'v', 6)])
+    >>> G.add_weighted_edges_from(
+    ...     [
+    ...         ("s", "u", 10),
+    ...         ("s", "x", 5),
+    ...         ("u", "v", 1),
+    ...         ("u", "x", 2),
+    ...         ("v", "y", 1),
+    ...         ("x", "u", 3),
+    ...         ("x", "v", 5),
+    ...         ("x", "y", 2),
+    ...         ("y", "s", 7),
+    ...         ("y", "v", 6),
+    ...     ]
+    ... )
     >>> predecessors, _ = nx.floyd_warshall_predecessor_and_distance(G)
-    >>> print(nx.reconstruct_path('s', 'v', predecessors))
+    >>> print(nx.reconstruct_path("s", "v", predecessors))
     ['s', 'x', 'u', 'v']
 
     Notes
@@ -94,10 +105,11 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
     all_pairs_shortest_path_length
     """
     from collections import defaultdict
+
     # dictionary-of-dictionaries representation for dist and pred
     # use some defaultdict magick here
     # for dist the default is the floating point inf value
-    dist = defaultdict(lambda: defaultdict(lambda: float('inf')))
+    dist = defaultdict(lambda: defaultdict(lambda: float("inf")))
     for u in G:
         dist[u][u] = 0
     pred = defaultdict(dict)
@@ -166,7 +178,7 @@ def reconstruct_path(source, target, predecessors):
     return list(reversed(path))
 
 
-def floyd_warshall(G, weight='weight'):
+def floyd_warshall(G, weight="weight"):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 
     Parameters
