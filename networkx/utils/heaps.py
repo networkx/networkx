@@ -32,6 +32,7 @@ class MinHeap:
     def __init__(self):
         """Initialize a new min-heap."""
         self._dict = {}
+        self._heap = []
 
     def min(self):
         """Query the minimum key-value pair.
@@ -46,7 +47,10 @@ class MinHeap:
         NetworkXError
             If the heap is empty.
         """
-        raise NotImplementedError
+        try:
+            return self._heap[0]
+        except IndexError:
+            raise nx.NetworkXError("heap is empty")
 
     def pop(self):
         """Delete the minimum pair in the heap.
@@ -61,7 +65,11 @@ class MinHeap:
         NetworkXError
             If the heap is empty.
         """
-        raise NotImplementedError
+        try:
+            del self._dict[self._heap[0][0]]
+            return heappop(self._heap)
+        except IndexError:
+            raise nx.NetworkXError("heap is empty")
 
     def get(self, key, default=None):
         """Returns the value associated with a key.
@@ -80,7 +88,8 @@ class MinHeap:
         value : object.
             The value associated with the key.
         """
-        raise NotImplementedError
+
+        return self._dict.get(key, default)
 
     def insert(self, key, value, allow_increase=False):
         """Insert a new key-value pair or modify the value in an existing
@@ -103,7 +112,29 @@ class MinHeap:
         decreased : bool
             True if a pair is inserted or the existing value is decreased.
         """
-        raise NotImplementedError
+        if key in self._dict:
+            oldValue = self._dict[key]
+            if value < oldValue or (allow_increase and value > oldValue):
+                self._dict[key] = value
+                self._replaceValue(key, value, 0)
+            return value < oldValue
+        else:
+            self._dict[key] = value
+            heappush(self._heap, (key, value))
+            return True
+
+    def _replaceValue(self,key, value, pos):
+        """Replace the value of a given key with a new value.
+        Recursivly calls itself in a DFS way until the value is found"""
+        if pos < len(self._heap):
+            if key == self._heap[pos][0]:
+                self._heap[pos] = (key, value)
+                return True
+            elif key < self._heap[pos][0]:
+                return False
+            else:
+                return self._replaceValue(key, value, pos*2+1) or self._replaceValue(key, value, pos*2+2)
+        return False
 
     def __nonzero__(self):
         """Returns whether the heap if empty."""
@@ -181,10 +212,6 @@ class PairingHeap(MinHeap):
         del self._dict[min_node.key]
         return (min_node.key, min_node.value)
 
-    @_inherit_doc(MinHeap)
-    def get(self, key, default=None):
-        node = self._dict.get(key)
-        return node.value if node is not None else default
 
     @_inherit_doc(MinHeap)
     def insert(self, key, value, allow_increase=False):
@@ -290,14 +317,12 @@ class PairingHeap(MinHeap):
             node.next = None
         node.parent = None
 
-
 class BinaryHeap(MinHeap):
     """A binary heap."""
 
     def __init__(self):
         """Initialize a binary heap."""
         super().__init__()
-        self._heap = []
         self._count = count()
 
     @_inherit_doc(MinHeap)
@@ -332,10 +357,6 @@ class BinaryHeap(MinHeap):
                 break
         del dict[key]
         return (key, value)
-
-    @_inherit_doc(MinHeap)
-    def get(self, key, default=None):
-        return self._dict.get(key, default)
 
     @_inherit_doc(MinHeap)
     def insert(self, key, value, allow_increase=False):
