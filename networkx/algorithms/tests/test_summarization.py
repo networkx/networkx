@@ -3,7 +3,7 @@ Unit tests for dedensification/densification
 """
 
 import networkx as nx
-from networkx.algorithms.summarization import dedensify
+from networkx.algorithms import summarization
 
 
 class TestDirectedDedensification:
@@ -45,7 +45,7 @@ class TestDirectedDedensification:
         Verify that an empty directed graph results in no compressor nodes
         """
         G = nx.DiGraph()
-        compressed_graph, c_nodes = dedensify(G, threshold=2)
+        compressed_graph, c_nodes = summarization.dedensify(G, threshold=2)
         assert c_nodes == set()
 
     @staticmethod
@@ -92,7 +92,7 @@ class TestDirectedDedensification:
         """
         G = self.build_original_graph()
         compressed_G = self.build_compressed_graph()
-        compressed_graph, c_nodes = dedensify(G, threshold=2)
+        compressed_graph, c_nodes = summarization.dedensify(G, threshold=2)
         for s, t in compressed_graph.edges():
             o_s = "".join(sorted(s))
             o_t = "".join(sorted(t))
@@ -108,7 +108,7 @@ class TestDirectedDedensification:
         """
         G = self.build_original_graph()
         original_edge_count = len(G.edges())
-        c_G, c_nodes = dedensify(G, threshold=2)
+        c_G, c_nodes = summarization.dedensify(G, threshold=2)
         compressed_edge_count = len(c_G.edges())
         assert compressed_edge_count <= original_edge_count
         compressed_G = self.build_compressed_graph()
@@ -164,7 +164,7 @@ class TestUnDirectedDedensification:
         Verify that an empty undirected graph results in no compressor nodes
         """
         G = nx.Graph()
-        compressed_G, c_nodes = dedensify(G, threshold=2)
+        compressed_G, c_nodes = summarization.dedensify(G, threshold=2)
         assert c_nodes == set()
 
     def setup_method(self):
@@ -197,7 +197,7 @@ class TestUnDirectedDedensification:
         correct edges to/from the compressor nodes in an undirected graph
         """
         G = self.build_original_graph()
-        c_G, c_nodes = dedensify(G, threshold=2)
+        c_G, c_nodes = summarization.dedensify(G, threshold=2)
         v_compressed_G = self.build_compressed_graph()
         for s, t in c_G.edges():
             o_s = "".join(sorted(s))
@@ -213,10 +213,35 @@ class TestUnDirectedDedensification:
         undirected graph
         """
         G = self.build_original_graph()
-        c_G, c_nodes = dedensify(G, threshold=2, copy=True)
+        c_G, c_nodes = summarization.dedensify(G, threshold=2, copy=True)
         compressed_edge_count = len(c_G.edges())
         verified_original_edge_count = len(G.edges())
         assert compressed_edge_count <= verified_original_edge_count
         verified_compressed_G = self.build_compressed_graph()
         verified_compressed_edge_count = len(verified_compressed_G.edges())
         assert compressed_edge_count == verified_compressed_edge_count
+
+
+class TestSNAP:
+    def test_supernodes(self):
+        """
+        Verifies that the generated supernodes contain the correct subsets of
+        nodes in the supernodes
+        """
+        G = nx.karate_club_graph()
+        node_attributes = ("club",)
+        summarizer = summarization.SNAP.from_graph(G, node_attributes)
+        summary_graph, supernodes = summarizer.summarize(G)
+        assert summary_graph.number_of_nodes() == 27
+        assert summary_graph.number_of_edges() == 64
+
+        correct_supernodes = (
+            set([4, 10]),
+            set([5, 6]),
+            set([14, 15, 18, 20, 22]),
+            set([17, 21]),
+        )
+        correct_grouped_nodes = set()
+        for correct_supernode in correct_supernodes:
+            correct_grouped_nodes |= correct_supernode
+            any(supernode == correct_supernode for supernode in supernodes)
