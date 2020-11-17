@@ -131,6 +131,24 @@ At this stage the graph ``G`` consists of 8 nodes and 3 edges, as can be seen by
     >>> G.number_of_edges()
     3
 
+.. note:: 
+   
+   The order of adjacency reporting (e.g., G.adj, G.successors,
+   G.predecessors) is the order of edge addition. However, 
+   the order of G.edges is the order of the adjacencies
+   which includes both the order of the nodes and each 
+   node's adjacencies. See example below:
+
+.. nbplot::
+
+    >>> G = nx.DiGraph()
+    >>> G.add_edge(2, 1)   # adds the nodes in order 2, 1
+    >>> G.add_edge(1, 3)
+    >>> G.add_edge(2, 4)
+    >>> G.add_edge(1, 2)
+    >>> assert list(G.successors(2)) == [1, 4]
+    >>> assert list(G.edges) == [(2, 1), (2, 4), (1, 3), (1, 2)]
+
 Examining elements of a graph
 -----------------------------
 
