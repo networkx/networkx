@@ -123,7 +123,7 @@ class MinHeap:
             heappush(self._heap, (key, value))
             return True
 
-    def _replaceValue(self,key, value, pos):
+    def _replaceValue(self, key, value, pos):
         """Replace the value of a given key with a new value.
         Recursivly calls itself in a DFS way until the value is found"""
         if pos < len(self._heap):
@@ -133,7 +133,9 @@ class MinHeap:
             elif key < self._heap[pos][0]:
                 return False
             else:
-                return self._replaceValue(key, value, pos*2+1) or self._replaceValue(key, value, pos*2+2)
+                return self._replaceValue(
+                    key, value, pos * 2 + 1
+                ) or self._replaceValue(key, value, pos * 2 + 2)
         return False
 
     def __nonzero__(self):
@@ -174,7 +176,6 @@ class PairingHeap(MinHeap):
 
     class _Node(MinHeap._Item):
         """A node in a pairing heap.
-
         A tree in a pairing heap is stored using the left-child, right-sibling
         representation.
         """
@@ -212,6 +213,10 @@ class PairingHeap(MinHeap):
         del self._dict[min_node.key]
         return (min_node.key, min_node.value)
 
+    @_inherit_doc(MinHeap)
+    def get(self, key, default=None):
+        node = self._dict.get(key)
+        return node.value if node is not None else default
 
     @_inherit_doc(MinHeap)
     def insert(self, key, value, allow_increase=False):
@@ -317,12 +322,14 @@ class PairingHeap(MinHeap):
             node.next = None
         node.parent = None
 
+
 class BinaryHeap(MinHeap):
     """A binary heap."""
 
     def __init__(self):
         """Initialize a binary heap."""
         super().__init__()
+        self._heap = []
         self._count = count()
 
     @_inherit_doc(MinHeap)
@@ -357,6 +364,10 @@ class BinaryHeap(MinHeap):
                 break
         del dict[key]
         return (key, value)
+
+    @_inherit_doc(MinHeap)
+    def get(self, key, default=None):
+        return self._dict.get(key, default)
 
     @_inherit_doc(MinHeap)
     def insert(self, key, value, allow_increase=False):
