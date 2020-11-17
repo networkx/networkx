@@ -131,15 +131,23 @@ At this stage the graph ``G`` consists of 8 nodes and 3 edges, as can be seen by
     >>> G.number_of_edges()
     3
 
-.. note:: With Python 3.6 or later the behavior of Graph/DiGraph is ordered. Since dictionaries became ordered with that version, the order of adjacency reporting: G.adj, G.successors, G.predecessors is now the order of edge adding. However, the order of G.edges is not always the order of edge adding. The order of G.edges is the order of the adjacencies which includes both the order of the nodes and each node's adjacencies. See example below:
+.. note::
+   With Python 3.6 or later the behavior of Graph/DiGraph is ordered.
+   Since dictionaries became ordered with that version, the order of adjacency
+   reporting: G.adj, G.successors, G.predecessors is now the order of edge
+   adding. However, the order of G.edges is not always the order of edge
+   adding. The order of G.edges is the order of the adjacencies which includes
+   both the order of the nodes and each node's adjacencies. See example below:
 
->>> G = nx.DiGraph()
->>> G.add_edge(2, 1)   # adds the nodes in order 2, 1
->>> G.add_edge(1, 3)
->>> G.add_edge(2, 4)
->>> G.add_edge(1, 2)
->>> assert list(G.successors(2)) == [1, 4]
->>> assert list(G.edges) == [(2, 1), (2, 4), (1, 3), (1, 2)] 
+.. nbplot::
+
+    >>> G = nx.DiGraph()
+    >>> G.add_edge(2, 1)   # adds the nodes in order 2, 1
+    >>> G.add_edge(1, 3)
+    >>> G.add_edge(2, 4)
+    >>> G.add_edge(1, 2)
+    >>> assert list(G.successors(2)) == [1, 4]
+    >>> assert list(G.edges) == [(2, 1), (2, 4), (1, 3), (1, 2)]
 
 Examining elements of a graph
 -----------------------------
