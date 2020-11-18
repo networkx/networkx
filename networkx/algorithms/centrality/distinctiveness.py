@@ -100,6 +100,7 @@ def g_preprocess(G, alpha=1,
     if type(G) == nx.MultiGraph:
         print("MultiGraph converted to Graph")
         G1 = nx.Graph()
+        G1.add_nodes_from(G.nodes(data=True))
         for u, v, data in G.edges(data=True):
             w = data["weight"] if "weight" in data else 1.0
             if G1.has_edge(u, v):
@@ -110,6 +111,7 @@ def g_preprocess(G, alpha=1,
     elif type(G) == nx.MultiDiGraph:
         print("MultiDiGraph converted to DiGraph")
         G1 = nx.DiGraph()
+        G1.add_nodes_from(G.nodes(data=True))
         for u, v, data in G.edges(data=True):
             w = data["weight"] if "weight" in data else 1.0
             if G1.has_edge(u, v):
