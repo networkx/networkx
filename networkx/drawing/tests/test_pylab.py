@@ -205,7 +205,7 @@ class TestPylab:
 
     def test_draw_empty_nodes_return_values(self):
         # See Issue #3833
-        from matplotlib.collections import PathCollection, LineCollection
+        from matplotlib.collections import PathCollection
 
         G = nx.Graph([(1, 2), (2, 3)])
         DG = nx.DiGraph([(1, 2), (2, 3)])
@@ -213,16 +213,11 @@ class TestPylab:
         assert isinstance(nx.draw_networkx_nodes(G, pos, nodelist=[]), PathCollection)
         assert isinstance(nx.draw_networkx_nodes(DG, pos, nodelist=[]), PathCollection)
 
-        # drawing empty edges either return an empty LineCollection or empty list.
-        assert isinstance(
-            nx.draw_networkx_edges(G, pos, edgelist=[], arrows=True), LineCollection
-        )
-        assert isinstance(
-            nx.draw_networkx_edges(G, pos, edgelist=[], arrows=False), LineCollection
-        )
-        assert isinstance(
-            nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=False), LineCollection
-        )
+        # drawing empty edges used to return an empty LineCollection or empty list.
+        # Now it is always an empty list (because edges are now lists of FancyArrows)
+        assert nx.draw_networkx_edges(G, pos, edgelist=[], arrows=True) == []
+        assert nx.draw_networkx_edges(G, pos, edgelist=[], arrows=False) == []
+        assert nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=False) == []
         assert nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=True) == []
 
     def test_multigraph_edgelist_tuples(self):

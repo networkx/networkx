@@ -25,6 +25,7 @@ from networkx.drawing.layout import (
     random_layout,
     planar_layout,
 )
+import warnings
 
 __all__ = [
     "draw",
@@ -480,13 +481,13 @@ def draw_networkx_edges(
     edge_color="k",
     style="solid",
     alpha=None,
-    arrowstyle="-|>",
+    arrowstyle=None,
     arrowsize=10,
     edge_cmap=None,
     edge_vmin=None,
     edge_vmax=None,
     ax=None,
-    arrows=True,
+    arrows=None,
     label=None,
     node_size=300,
     nodelist=None,
@@ -536,11 +537,15 @@ def draw_networkx_edges(
        Draw the graph in the specified Matplotlib axes.
 
     arrows : bool, optional (default=True)
-       For directed graphs, if True draw arrowheads.
+       For directed graphs, if True draw arrowheads by default.  Ignored
+       if *arrowstyle* is passed.
+
        Note: Arrows will be the same color as edges.
 
-    arrowstyle : str, optional (default='-|>')
-       For directed graphs, choose the style of the arrow heads.
+    arrowstyle : str, optional (default=None)
+       For directed graphs and *arrows==True* defaults to ``'-|>'`` otherwise
+       defaults to ``'-'``.
+
        See :py:class: `matplotlib.patches.ArrowStyle` for more
        options.
 
@@ -566,19 +571,17 @@ def draw_networkx_edges(
 
     Returns
     -------
-    matplotlib.collection.LineCollection
-        `LineCollection` of the edges
-
     list of matplotlib.patches.FancyArrowPatch
         `FancyArrowPatch` instances of the directed edges
-
-    Depending whether the drawing includes arrows or not.
 
     Notes
     -----
     For directed graphs, arrows are drawn at the head end.  Arrows can be
-    turned off with keyword arrows=False. Be sure to include `node_size` as a
-    keyword argument; arrows are drawn considering the size of nodes.
+    turned off with keyword arrows=False or by passing an arrowstyle without
+    an arrow on the end.
+
+    Be sure to include `node_size` as a keyword argument; arrows are
+    drawn considering the size of nodes.
 
     Examples
     --------
@@ -602,12 +605,26 @@ def draw_networkx_edges(
     draw_networkx_nodes()
     draw_networkx_labels()
     draw_networkx_edge_labels()
+
     """
     import matplotlib.pyplot as plt
     from matplotlib.colors import colorConverter, Colormap, Normalize
-    from matplotlib.collections import LineCollection
-    from matplotlib.patches import FancyArrowPatch
+    from matplotlib.patches import FancyArrowPatch, ConnectionStyle
+    from matplotlib.path import Path
     import numpy as np
+
+    if arrowstyle is not None and arrows is not None:
+        warnings.warn(
+            f"You passed both arrowstyle={arrowstyle} and "
+            f"arrows={arrows}.  Because you set a non-default "
+            "*arrowstyle*, arrows will be ignored."
+        )
+
+    if arrowstyle is None:
+        if G.is_directed() and arrows:
+            arrowstyle = "-|>"
+        else:
+            arrowstyle = "-"
 
     if ax is None:
         ax = plt.gca()
@@ -616,10 +633,7 @@ def draw_networkx_edges(
         edgelist = list(G.edges())
 
     if len(edgelist) == 0:  # no edges!
-        if not G.is_directed() or not arrows:
-            return LineCollection(None)
-        else:
-            return []
+        return []
 
     if nodelist is None:
         nodelist = list(G.nodes())
@@ -649,108 +663,118 @@ def draw_networkx_edges(
         color_normal = Normalize(vmin=edge_vmin, vmax=edge_vmax)
         edge_color = [edge_cmap(color_normal(e)) for e in edge_color]
 
-    if not G.is_directed() or not arrows:
-        edge_collection = LineCollection(
-            edge_pos,
-            colors=edge_color,
-            linewidths=width,
-            antialiaseds=(1,),
-            linestyle=style,
-            transOffset=ax.transData,
-            alpha=alpha,
-        )
+    # Note: Waiting for someone to implement arrow to intersection with
+    # marker.  Meanwhile, this works well for polygons with more than 4
+    # sides and circle.
 
-        edge_collection.set_cmap(edge_cmap)
-        edge_collection.set_clim(edge_vmin, edge_vmax)
+    def to_marker_edge(marker_size, marker):
+        if marker in "s^>v<d":  # `large` markers need extra space
+            return np.sqrt(2 * marker_size) / 2
+        else:
+            return np.sqrt(marker_size) / 2
 
-        edge_collection.set_zorder(1)  # edges go behind nodes
-        edge_collection.set_label(label)
-        ax.add_collection(edge_collection)
+    # Draw arrows with `matplotlib.patches.FancyarrowPatch`
+    arrow_collection = []
+    mutation_scale = arrowsize  # scale factor of arrow head
 
-        return edge_collection
-
-    arrow_collection = None
-
-    if G.is_directed() and arrows:
-        # Note: Waiting for someone to implement arrow to intersection with
-        # marker.  Meanwhile, this works well for polygons with more than 4
-        # sides and circle.
-
-        def to_marker_edge(marker_size, marker):
-            if marker in "s^>v<d":  # `large` markers need extra space
-                return np.sqrt(2 * marker_size) / 2
-            else:
-                return np.sqrt(marker_size) / 2
-
-        # Draw arrows with `matplotlib.patches.FancyarrowPatch`
-        arrow_collection = []
-        mutation_scale = arrowsize  # scale factor of arrow head
-
-        # FancyArrowPatch doesn't handle color strings
-        arrow_colors = colorConverter.to_rgba_array(edge_color, alpha)
-        for i, (src, dst) in enumerate(edge_pos):
-            x1, y1 = src
-            x2, y2 = dst
-            shrink_source = 0  # space from source to tail
-            shrink_target = 0  # space from  head to target
-            if np.iterable(node_size):  # many node sizes
-                source, target = edgelist[i][:2]
-                source_node_size = node_size[nodelist.index(source)]
-                target_node_size = node_size[nodelist.index(target)]
-                shrink_source = to_marker_edge(source_node_size, node_shape)
-                shrink_target = to_marker_edge(target_node_size, node_shape)
-            else:
-                shrink_source = shrink_target = to_marker_edge(node_size, node_shape)
-
-            if shrink_source < min_source_margin:
-                shrink_source = min_source_margin
-
-            if shrink_target < min_target_margin:
-                shrink_target = min_target_margin
-
-            if len(arrow_colors) == len(edge_pos):
-                arrow_color = arrow_colors[i]
-            elif len(arrow_colors) == 1:
-                arrow_color = arrow_colors[0]
-            else:  # Cycle through colors
-                arrow_color = arrow_colors[i % len(arrow_colors)]
-
-            if np.iterable(width):
-                if len(width) == len(edge_pos):
-                    line_width = width[i]
-                else:
-                    line_width = width[i % len(width)]
-            else:
-                line_width = width
-
-            arrow = FancyArrowPatch(
-                (x1, y1),
-                (x2, y2),
-                arrowstyle=arrowstyle,
-                shrinkA=shrink_source,
-                shrinkB=shrink_target,
-                mutation_scale=mutation_scale,
-                color=arrow_color,
-                linewidth=line_width,
-                connectionstyle=connectionstyle,
-                linestyle=style,
-                zorder=1,
-            )  # arrows go behind nodes
-
-            # There seems to be a bug in matplotlib to make collections of
-            # FancyArrowPatch instances. Until fixed, the patches are added
-            # individually to the axes instance.
-            arrow_collection.append(arrow)
-            ax.add_patch(arrow)
-
-    # update view
+    # compute view
     minx = np.amin(np.ravel(edge_pos[:, :, 0]))
     maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
     miny = np.amin(np.ravel(edge_pos[:, :, 1]))
     maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
-
     w = maxx - minx
     h = maxy - miny
+
+    if connectionstyle is not None:
+        base_connection_style = ConnectionStyle(connectionstyle)
+
+        def _connectionstyle(posA, posB, *args, **kwargs):
+            # check if we need to do a self-loop
+            if np.all(posA == posB):
+                # this is called with _screen space_ values so covert back
+                # to data space
+                data_loc = ax.transData.inverted().transform(posA)
+                v_shift = 0.1 * h
+                h_shift = v_shift * 0.5
+                # put the top of the loop first so arrow is not hidden by node
+                path = [
+                    # 1
+                    data_loc + np.asarray([0, v_shift]),
+                    # 4 4 4
+                    data_loc + np.asarray([h_shift, v_shift]),
+                    data_loc + np.asarray([h_shift, 0]),
+                    data_loc,
+                    # 4 4 4
+                    data_loc + np.asarray([-h_shift, 0]),
+                    data_loc + np.asarray([-h_shift, v_shift]),
+                    data_loc + np.asarray([0, v_shift]),
+                ]
+
+                ret = Path(ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4])
+            # if not, fall back to the user specified behavior
+            else:
+                ret = base_connection_style(posA, posB, *args, **kwargs)
+
+            return ret
+
+    else:
+        _connectionstyle = connectionstyle
+
+    # FancyArrowPatch doesn't handle color strings
+    arrow_colors = colorConverter.to_rgba_array(edge_color, alpha)
+    for i, (src, dst) in enumerate(edge_pos):
+        x1, y1 = src
+        x2, y2 = dst
+        shrink_source = 0  # space from source to tail
+        shrink_target = 0  # space from  head to target
+        if np.iterable(node_size):  # many node sizes
+            source, target = edgelist[i][:2]
+            source_node_size = node_size[nodelist.index(source)]
+            target_node_size = node_size[nodelist.index(target)]
+            shrink_source = to_marker_edge(source_node_size, node_shape)
+            shrink_target = to_marker_edge(target_node_size, node_shape)
+        else:
+            shrink_source = shrink_target = to_marker_edge(node_size, node_shape)
+
+        if shrink_source < min_source_margin:
+            shrink_source = min_source_margin
+
+        if shrink_target < min_target_margin:
+            shrink_target = min_target_margin
+
+        if len(arrow_colors) == len(edge_pos):
+            arrow_color = arrow_colors[i]
+        elif len(arrow_colors) == 1:
+            arrow_color = arrow_colors[0]
+        else:  # Cycle through colors
+            arrow_color = arrow_colors[i % len(arrow_colors)]
+
+        if np.iterable(width):
+            if len(width) == len(edge_pos):
+                line_width = width[i]
+            else:
+                line_width = width[i % len(width)]
+        else:
+            line_width = width
+
+        arrow = FancyArrowPatch(
+            (x1, y1),
+            (x2, y2),
+            arrowstyle=arrowstyle,
+            shrinkA=shrink_source,
+            shrinkB=shrink_target,
+            mutation_scale=mutation_scale,
+            color=arrow_color,
+            linewidth=line_width,
+            connectionstyle=_connectionstyle,
+            linestyle=style,
+            zorder=1,
+        )  # arrows go behind nodes
+
+        arrow_collection.append(arrow)
+        ax.add_patch(arrow)
+
+    # update view
     padx, pady = 0.05 * w, 0.05 * h
     corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
     ax.update_datalim(corners)

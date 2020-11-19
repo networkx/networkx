@@ -36,6 +36,14 @@ API Changes
   In `to_*_array/matrix`, nodes in nodelist but not in G now raise an exception.
   Use G.add_nodes_from(nodelist) to add them to G before converting.
 
+- [`#4360  <https://github.com/networkx/networkx/pull/4360>`_]
+  Internally `.nx_pylab.draw_networkx_edges` now always generates a
+  list of `matplotlib.patches.FancyArrowPatch` rather than using
+  a `matplotlib.collections.LineCollection` for un-directed graphs.  This
+  unifies interface for all types of graphs.  In
+  addition to the API change this may cause a performance regression for
+  large graphs.
+
 Deprecations
 ------------
 
