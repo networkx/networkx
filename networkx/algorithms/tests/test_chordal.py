@@ -46,6 +46,18 @@ class TestMCS:
         non_chordal_G.add_edges_from([(1, 2), (1, 3), (2, 4), (2, 5), (3, 4), (3, 5)])
         cls.non_chordal_G = non_chordal_G
 
+        di_graph = nx.DiGraph()
+        di_graph.add_edges_from([(1, 2), (2, 3)])
+        cls.di_graph = di_graph
+
+        multi_di_graph = nx.MultiGraph()
+        multi_di_graph.add_edges_from([(1, 2), (1, 3), (2, 3)])
+        cls.multi_di_graph = multi_di_graph
+
+#        self_loop = nx.Graph()
+#        self_loop.add_edge(1, 1)
+#        cls.self_loop = self_loop
+
     def test_is_chordal(self):
         assert not nx.is_chordal(self.non_chordal_G)
         assert nx.is_chordal(self.chordal_G)
@@ -53,6 +65,13 @@ class TestMCS:
         assert nx.is_chordal(nx.complete_graph(3))
         assert nx.is_chordal(nx.cycle_graph(3))
         assert not nx.is_chordal(nx.cycle_graph(5))
+        with pytest.raises(nx.NetworkXError):
+            nx.is_chordal(self.di_graph)
+        with pytest.raises(nx.NetworkXError):
+            nx.is_chordal(self.multi_di_graph)
+        # Testing _is_complete_graph within is_chordal
+#        with pytest.raises(nx.NetworkXError):
+#            nx.is_chordal(self.self_loop)
 
     def test_induced_nodes(self):
         G = nx.generators.classic.path_graph(10)
@@ -65,6 +84,10 @@ class TestMCS:
         assert Induced_nodes == {1, 2, 4, 6}
         pytest.raises(nx.NetworkXError, nx.find_induced_nodes, self.non_chordal_G, 1, 5)
 
+    def test_graph_treewidth(self):
+        with pytest.raises(nx.NetworkXError):
+            nx.chordal_graph_treewidth(self.non_chordal_G)
+
     def test_chordal_find_cliques(self):
         cliques = {
             frozenset([9]),
@@ -74,6 +97,8 @@ class TestMCS:
             frozenset([3, 4, 5, 6]),
         }
         assert nx.chordal_graph_cliques(self.chordal_G) == cliques
+        with pytest.raises(nx.NetworkXError):
+            nx.chordal_graph_cliques(self.non_chordal_G)
 
     def test_chordal_find_cliques_path(self):
         G = nx.path_graph(10)
