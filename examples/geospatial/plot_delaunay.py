@@ -19,13 +19,13 @@ import numpy
 import geopandas
 
 # read in example data online
-cases = geopandas.read_file('cholera_cases.gpkg')
+cases = geopandas.read_file("cholera_cases.gpkg")
 
 # construct the array of coordinates for the centroid
 coordinates = numpy.column_stack((cases.geometry.x, cases.geometry.y))
 
 # construct the voronoi diagram
-cells, generators = voronoi_frames(coordinates, clip='convex hull')
+cells, generators = voronoi_frames(coordinates, clip="convex hull")
 
 # the contiguity graph of voronoi cells is the delaunay triangulation
 # clipping the extent of the voronoi diagram to the original pattern's
@@ -39,8 +39,16 @@ delaunay_graph = delaunay.to_networkx()
 positions = dict(zip(delaunay_graph.nodes, coordinates))
 
 # plot
-ax = cells.plot(facecolor='lightblue', alpha=.50, edgecolor='cornsilk', linewidth=2)
+ax = cells.plot(facecolor="lightblue", alpha=0.50, edgecolor="cornsilk", linewidth=2)
 add_basemap(ax)
-ax.axis('off')
-nx.draw(delaunay_graph, positions, ax=ax, node_size=2, node_color="k", edge_color='k', alpha=.8)
+ax.axis("off")
+nx.draw(
+    delaunay_graph,
+    positions,
+    ax=ax,
+    node_size=2,
+    node_color="k",
+    edge_color="k",
+    alpha=0.8,
+)
 plt.show()

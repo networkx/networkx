@@ -18,7 +18,7 @@ import numpy
 import geopandas
 
 # read in example data online
-cases = geopandas.read_file('cholera_cases.gpkg')
+cases = geopandas.read_file("cholera_cases.gpkg")
 
 # construct the array of coordinates for the centroid
 coordinates = numpy.column_stack((cases.geometry.x, cases.geometry.y))
@@ -28,7 +28,7 @@ coordinates = numpy.column_stack((cases.geometry.x, cases.geometry.y))
 ## 3-nearest neighbor graph
 knn3 = weights.KNN.from_dataframe(cases, k=3)
 
-## all pairs within 50 meters 
+## all pairs within 50 meters
 dist = weights.DistanceBand.from_array(coordinates, threshold=50)
 
 # convert the graphs to networkx
@@ -44,7 +44,7 @@ for i, facet in enumerate(ax):
     cases.plot(marker=".", color="orangered", ax=facet)
     add_basemap(facet)
     facet.set_title(("KNN-3", "50-meter Distance Band")[i])
-    facet.axis('off')
+    facet.axis("off")
 nx.draw(knn_graph, positions, ax=ax[0], node_size=5, node_color="b")
 nx.draw(dist_graph, positions, ax=ax[1], node_size=5, node_color="b")
 plt.show()

@@ -38,6 +38,6 @@ tempe.plot(color="k", ax=ax[0])
 for i, facet in enumerate(ax):
     add_basemap(facet)
     facet.set_title(("Streets", "Graph")[i])
-    facet.axis('off')
+    facet.axis("off")
 nx.draw(graph, positions, ax=ax[1], node_size=5)
 plt.show()
