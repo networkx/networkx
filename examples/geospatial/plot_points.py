@@ -6,6 +6,8 @@ Graphs from geographic points
 This example shows how to build a graph from a set of points
 using PySAL and geopandas. In this example, we'll use the famous
 set of cholera cases at the Broad Street Pump, recorded by John Snow in 1853.
+The methods shown here can also work directly with polygonal data using their
+centroids as representative points. 
 """
 
 from libpysal import weights, examples
