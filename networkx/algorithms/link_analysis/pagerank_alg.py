@@ -15,7 +15,6 @@ def pagerank(
     nstart=None,
     weight="weight",
     dangling=None,
-    impl="scipy",
 ):
     """Returns the PageRank of the nodes in the graph.
 
@@ -59,11 +58,6 @@ def pagerank(
       specified). This must be selected to result in an irreducible transition
       matrix (see notes under google_matrix). It may be common to have the
       dangling dict to be the same as the personalization dict.
-
-    impl: str, optional
-      PageRank implementation is available in pure Python, SciPy and NumPy flavours
-      By default nx.pagerank will use the 'scipy' implementation. 'python' and 'numpy'
-      is also avaiable.
 
 
     Returns
