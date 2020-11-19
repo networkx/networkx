@@ -41,5 +41,6 @@ positions = dict(zip(delaunay_graph.nodes, coordinates))
 # plot
 ax = cells.plot(facecolor='lightblue', alpha=.50, edgecolor='cornsilk', linewidth=2)
 add_basemap(ax)
+ax.axis('off')
 nx.draw(delaunay_graph, positions, ax=ax, node_size=2, node_color="k", edge_color='k', alpha=.8)
 plt.show()

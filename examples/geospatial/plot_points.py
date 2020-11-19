@@ -44,6 +44,7 @@ for i, facet in enumerate(ax):
     cases.plot(marker=".", color="orangered", ax=facet)
     add_basemap(facet)
     facet.set_title(("KNN-3", "50-meter Distance Band")[i])
+    facet.axis('off')
 nx.draw(knn_graph, positions, ax=ax[0], node_size=5, node_color="b")
 nx.draw(dist_graph, positions, ax=ax[1], node_size=5, node_color="b")
 plt.show()

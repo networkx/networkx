@@ -35,6 +35,7 @@ positions = dict(zip(graph.nodes, centroids))
 
 # plot
 ax = european_regions.plot(linewidth=1, edgecolor="grey", facecolor="lightblue")
-ax.axis([-10, 45, 39, 60])
+ax.axis([-12, 45, 33, 66])
+ax.axis('off')
 nx.draw(graph, positions, ax=ax, node_size=5, node_color="r")
 plt.show()
