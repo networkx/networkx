@@ -16,7 +16,7 @@ import numpy
 import geopandas
 
 # read in example data online
-filepath = examples.get_path("SohoPeople.shp")
+filepath = examples.get_path("cholera_cases.gpkg")
 cases = geopandas.read_file(filepath)
 
 coordinates = numpy.column_stack((cases.geometry.x, cases.geometry.y))
@@ -29,9 +29,9 @@ dist = weights.DistanceBand.from_array(coordinates, threshold=50)
 knn_graph = knn3.to_networkx()
 dist_graph = dist.to_networkx()
 
+# merge the nodes back to their positions
 positions = dict(zip(knn_graph.nodes, coordinates))
 
-# merge the nodes back to their positions
 
 # plot
 f, ax = plt.subplots(1, 2, figsize=(8, 4))

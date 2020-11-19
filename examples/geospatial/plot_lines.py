@@ -12,8 +12,8 @@ from libpysal import weights, examples
 from contextily import add_basemap
 import matplotlib.pyplot as plt
 import networkx as nx
-import numpy
 import geopandas
+import numpy
 
 # read in example data online
 filepath = examples.get_path("streets.shp")
@@ -23,13 +23,14 @@ coordinates = numpy.column_stack((tempe.centroid.x, tempe.centroid.y))
 
 # construct the graph
 w_graph = weights.Queen.from_dataframe(tempe)
-graph = w_graph.to_networkx()
 
 # convert the graph to networkx
+graph = w_graph.to_networkx()
 
-positions = dict(zip(graph.nodes, coordinates))
 
 # merge the nodes back to their positions
+positions = dict(zip(graph.nodes, coordinates))
+
 
 # plot
 f, ax = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)

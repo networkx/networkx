@@ -8,14 +8,14 @@ using PySAL and geopandas
 """
 
 from libpysal import weights
-import geopandas as gpd
 import matplotlib.pyplot as plt
 import networkx as nx
+import geopandas
 import numpy
 
 # read in example data online
-filepath = "https://datahub.io/core/geo-nuts-administrative-boundaries/r/nuts_rg_60m_2013_lvl_1.geojson"
-european_regions = gpd.read_file(filepath)
+filepath = "nuts1.geojson"
+european_regions = geopandas.read_file(filepath)
 
 # extract the centroids for connecting the regions
 centroids = numpy.column_stack(
