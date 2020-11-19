@@ -492,7 +492,7 @@ def draw_networkx_edges(
     node_size=300,
     nodelist=None,
     node_shape="o",
-    connectionstyle=None,
+    connectionstyle="arc3",
     min_source_margin=0,
     min_target_margin=0,
 ):
@@ -554,7 +554,7 @@ def draw_networkx_edges(
        width. See :py:class: `matplotlib.patches.FancyArrowPatch` for attribute
        `mutation_scale` for more info.
 
-    connectionstyle : str, optional (default=None)
+    connectionstyle : str, optional (default="arc3")
        Pass the connectionstyle parameter to create curved arc of rounding
        radius rad. For example, connectionstyle='arc3,rad=0.2'.
        See :py:class: `matplotlib.patches.ConnectionStyle` and
@@ -685,40 +685,36 @@ def draw_networkx_edges(
     w = maxx - minx
     h = maxy - miny
 
-    if connectionstyle is not None:
-        base_connection_style = ConnectionStyle(connectionstyle)
+    base_connection_style = ConnectionStyle(connectionstyle)
 
-        def _connectionstyle(posA, posB, *args, **kwargs):
-            # check if we need to do a self-loop
-            if np.all(posA == posB):
-                # this is called with _screen space_ values so covert back
-                # to data space
-                data_loc = ax.transData.inverted().transform(posA)
-                v_shift = 0.1 * h
-                h_shift = v_shift * 0.5
-                # put the top of the loop first so arrow is not hidden by node
-                path = [
-                    # 1
-                    data_loc + np.asarray([0, v_shift]),
-                    # 4 4 4
-                    data_loc + np.asarray([h_shift, v_shift]),
-                    data_loc + np.asarray([h_shift, 0]),
-                    data_loc,
-                    # 4 4 4
-                    data_loc + np.asarray([-h_shift, 0]),
-                    data_loc + np.asarray([-h_shift, v_shift]),
-                    data_loc + np.asarray([0, v_shift]),
-                ]
+    def _connectionstyle(posA, posB, *args, **kwargs):
+        # check if we need to do a self-loop
+        if np.all(posA == posB):
+            # this is called with _screen space_ values so covert back
+            # to data space
+            data_loc = ax.transData.inverted().transform(posA)
+            v_shift = 0.1 * h
+            h_shift = v_shift * 0.5
+            # put the top of the loop first so arrow is not hidden by node
+            path = [
+                # 1
+                data_loc + np.asarray([0, v_shift]),
+                # 4 4 4
+                data_loc + np.asarray([h_shift, v_shift]),
+                data_loc + np.asarray([h_shift, 0]),
+                data_loc,
+                # 4 4 4
+                data_loc + np.asarray([-h_shift, 0]),
+                data_loc + np.asarray([-h_shift, v_shift]),
+                data_loc + np.asarray([0, v_shift]),
+            ]
 
-                ret = Path(ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4])
-            # if not, fall back to the user specified behavior
-            else:
-                ret = base_connection_style(posA, posB, *args, **kwargs)
+            ret = Path(ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4])
+        # if not, fall back to the user specified behavior
+        else:
+            ret = base_connection_style(posA, posB, *args, **kwargs)
 
-            return ret
-
-    else:
-        _connectionstyle = connectionstyle
+        return ret
 
     # FancyArrowPatch doesn't handle color strings
     arrow_colors = colorConverter.to_rgba_array(edge_color, alpha)
