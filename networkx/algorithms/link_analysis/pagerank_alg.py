@@ -111,35 +111,21 @@ def pagerank(
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
 
     """
-    if impl == "python":
-        return _pagerank_python(
-            G, alpha, personalization, max_iter, tol, nstart, weight, dangling
-        )
-    elif impl == "scipy":
-        return pagerank_scipy(
-            G, alpha, personalization, max_iter, tol, nstart, weight, dangling
-        )
-    elif impl == "numpy":
-        if nstart is not None:
-            warn(
-                "The NumPy implementation of pagerank doesn't support a nstart vector, use scipy or python instead."
-            )
-        return pagerank_numpy(G, alpha, personalization, weight, dangling)
-    else:
-        return nx.NetworkXError(
-            "Only 'scipy', 'numpy', 'python' keywords are accepted for the implementation argument."
-        )
+    return pagerank_scipy(
+        G, alpha, personalization, max_iter, tol, nstart, weight, dangling
+    )
 
 
 def _pagerank_python(
     G,
-    alpha,
-    personalization,
-    max_iter,
-    tol,
-    nstart,
-    weight,
-    dangling,
+    alpha=0.85,
+    personalization=None,
+    max_iter=100,
+    tol=1.0e-6,
+    nstart=None,
+    weight="weight",
+    dangling=None,
+    impl="scipy",
 ):
     if len(G) == 0:
         return {}
