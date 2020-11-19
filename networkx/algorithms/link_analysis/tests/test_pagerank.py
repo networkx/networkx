@@ -83,10 +83,6 @@ class TestPageRank:
         p = networkx.pagerank_numpy(G, alpha=0.9)
         for n in G:
             assert almost_equal(p[n], G.pagerank[n], places=4)
-        # personalize = {n: random.random() for n in G}
-        # p = networkx.pagerank_numpy(G, alpha=0.9, personalization=personalize)
-        # for n in G:
-        #     assert almost_equal(p[n], G.pagerank[n], places=4)
 
     def test_google_matrix(self):
         G = self.G
