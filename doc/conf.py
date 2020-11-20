@@ -194,8 +194,9 @@ latex_appendices = ["tutorial"]
 
 # Intersphinx mapping
 intersphinx_mapping = {
-    "https://docs.python.org/3/": None,
-    "https://numpy.org/doc/stable/": None,
+    "python": ("https://docs.python.org/3/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "matplotlib": ("https://matplotlib.org", None),
 }
 
 # The reST default role (used for this markup: `text`) to use for all
