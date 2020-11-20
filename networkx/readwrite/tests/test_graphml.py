@@ -1215,7 +1215,7 @@ class TestWriteGraphML(BaseGraphML):
 
     def test_numpy_float(self):
         np = pytest.importorskip("numpy")
-        wt = np.float(3.4)
+        wt = np.float_(3.4)
         G = nx.Graph([(1, 2, {"weight": wt})])
         fd, fname = tempfile.mkstemp()
         self.writer(G, fname)
