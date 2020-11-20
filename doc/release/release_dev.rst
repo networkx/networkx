@@ -22,7 +22,9 @@ X contributors. Highlights include:
 Improvements
 ------------
 
-- [`#4317 <https://github.com/networkx/networkx/pull/4317>`]
+- [`#4319 <https://github.com/networkx/networkx/pull/4319>`_]
+pagerank uses scipy by default now.
+- [`#4317 <https://github.com/networkx/networkx/pull/4317>`_]
   New ``source`` argument to ``has_eulerian_path`` to look for path starting at
   source.
 
@@ -61,6 +63,8 @@ Deprecations
   Deprecate ``read_gpickle`` and ``write_gpickle``.
 - [`#4298 <https://github.com/networkx/networkx/pull/4298>`_]
   Deprecate ``read_shp``, ``edges_from_line``, and ``write_shp``.
+- [`#4319 <https://github.com/networkx/networkx/pull/4319>`_]
+  Deprecate ``pagerank_numpy``, ``pagerank_scipy``.
 - [`#4355 <https://github.com/networkx/networkx/pull/4355>`_]
   Deprecate ``copy`` method in the coreview Filtered-related classes.
 
