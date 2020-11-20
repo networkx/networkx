@@ -438,8 +438,6 @@ def draw_networkx_nodes(
         xy = np.asarray([pos[v] for v in nodelist])
     except KeyError as e:
         raise nx.NetworkXError(f"Node {e} has no position.") from e
-    except ValueError as e:
-        raise nx.NetworkXError("Bad value in node positions.") from e
 
     if isinstance(alpha, Iterable):
         node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
