@@ -250,3 +250,10 @@ class TestPylab:
         # see issue #4129
         np = pytest.importorskip("numpy")
         nx.draw_networkx(self.G, edgelist=np.array([(0, 2), (0, 3)]))
+
+
+def test_draw_nodes_missing_node_from_position():
+    G = nx.path_graph(3)
+    pos = {0: (0, 0), 1: (1, 1)}  # No position for node 2
+    with pytest.raises(nx.NetworkXError, match="has no position"):
+        nx.draw_networkx_nodes(G, pos)
