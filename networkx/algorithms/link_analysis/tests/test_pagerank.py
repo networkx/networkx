@@ -102,7 +102,9 @@ class TestPageRank:
         for n in G:
             assert almost_equal(p[n], answer[n], places=4)
 
-    @pytest.mark.parametrize("alg", (networkx.pagerank, _pagerank_python))
+    @pytest.mark.parametrize(
+        "alg", (networkx.pagerank, _pagerank_python, networkx.google_matrix)
+    )
     def test_zero_personalization_vector(self, alg):
         G = networkx.complete_graph(4)
         personalize = {0: 0, 1: 0, 2: 0, 3: 0}
