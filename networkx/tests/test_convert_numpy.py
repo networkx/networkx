@@ -130,23 +130,23 @@ class TestConvertNumpyMatrix:
         G = nx.from_numpy_matrix(A)
         assert type(G[0][0]["weight"]) == int
 
-        A = np.matrix([[1]]).astype(np.float)
+        A = np.matrix([[1]]).astype(float)
         G = nx.from_numpy_matrix(A)
         assert type(G[0][0]["weight"]) == float
 
-        A = np.matrix([[1]]).astype(np.str)
+        A = np.matrix([[1]]).astype(str)
         G = nx.from_numpy_matrix(A)
         assert type(G[0][0]["weight"]) == str
 
-        A = np.matrix([[1]]).astype(np.bool)
+        A = np.matrix([[1]]).astype(bool)
         G = nx.from_numpy_matrix(A)
         assert type(G[0][0]["weight"]) == bool
 
-        A = np.matrix([[1]]).astype(np.complex)
+        A = np.matrix([[1]]).astype(complex)
         G = nx.from_numpy_matrix(A)
         assert type(G[0][0]["weight"]) == complex
 
-        A = np.matrix([[1]]).astype(np.object)
+        A = np.matrix([[1]]).astype(object)
         pytest.raises(TypeError, nx.from_numpy_matrix, A)
 
         G = nx.cycle_graph(3)
@@ -332,23 +332,23 @@ class TestConvertNumpyArray:
         G = nx.from_numpy_array(A)
         assert type(G[0][0]["weight"]) == int
 
-        A = np.array([[1]]).astype(np.float)
+        A = np.array([[1]]).astype(float)
         G = nx.from_numpy_array(A)
         assert type(G[0][0]["weight"]) == float
 
-        A = np.array([[1]]).astype(np.str)
+        A = np.array([[1]]).astype(str)
         G = nx.from_numpy_array(A)
         assert type(G[0][0]["weight"]) == str
 
-        A = np.array([[1]]).astype(np.bool)
+        A = np.array([[1]]).astype(bool)
         G = nx.from_numpy_array(A)
         assert type(G[0][0]["weight"]) == bool
 
-        A = np.array([[1]]).astype(np.complex)
+        A = np.array([[1]]).astype(complex)
         G = nx.from_numpy_array(A)
         assert type(G[0][0]["weight"]) == complex
 
-        A = np.array([[1]]).astype(np.object)
+        A = np.array([[1]]).astype(object)
         pytest.raises(TypeError, nx.from_numpy_array, A)
 
     def test_from_numpy_array_dtype(self):
