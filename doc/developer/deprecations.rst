@@ -60,3 +60,5 @@ Version 3.0
 * In ``convert_matrix.py`` remove ``to_numpy_matrix`` and ``from_numpy_matrix``.
 * Remove ``networkx/readwrite/nx_yaml.py`` and related tests.
 * Remove ``networkx/readwrite/gpickle.py`` and related tests. 
+* In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
+* In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.
