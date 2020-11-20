@@ -119,7 +119,6 @@ def _pagerank_python(
     nstart=None,
     weight="weight",
     dangling=None,
-    impl="scipy",
 ):
     if len(G) == 0:
         return {}
