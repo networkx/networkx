@@ -1,7 +1,6 @@
 """PageRank analysis of graph structure. """
 from warnings import warn
 import networkx as nx
-from networkx.utils import not_implemented_for
 
 __all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
 
