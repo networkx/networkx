@@ -243,3 +243,17 @@ class TestPageRankScipy(TestPageRank):
     def test_empty_scipy(self):
         G = networkx.Graph()
         assert networkx.pagerank_scipy(G) == {}
+
+
+@pytest.mark.parametrize(
+    "pagerank_alg",
+    (networkx.pagerank_numpy, networkx.pagerank_scipy),
+)
+def test_deprecation_warnings(pagerank_alg):
+    """Make sure deprecation warnings are raised.
+
+    To be removed when deprecations expire.
+    """
+    G = networkx.DiGraph(networkx.path_graph(4))
+    with pytest.warns(DeprecationWarning):
+        pr = pagerank_alg(G, alpha=0.9)
