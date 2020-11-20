@@ -1,3 +1,5 @@
+from copy import copy
+
 import pytest
 import networkx as nx
 import random
@@ -8,6 +10,7 @@ from networkx.utils import (
     dict_to_numpy_array,
     dict_to_numpy_array1,
     dict_to_numpy_array2,
+    flatten,
     is_string_like,
     iterable,
     groups,
@@ -18,6 +21,56 @@ from networkx.utils import (
     PythonRandomInterface,
     to_tuple,
 )
+
+nested_depth = (
+    1,
+    2,
+    (
+        3,
+        4,
+        (
+            (5, 6, (7,), (8, (9, 10), 11), (12, 13, (14, 15)), 16),
+            17,
+        ),
+        18,
+        19,
+    ),
+    20,
+)
+
+nested_set = {
+    (1, 2, 3, 4),
+    (5, 6, 7, 8, 9),
+    (10, 11, (12, 13, 14), (15, 16, 17, 18)),
+    19,
+    20,
+}
+
+nested_mixed = [
+    1,
+    (2, 3, {4, (5, 6), 7}, [8, 9]),
+    {10: "foo", 11: "bar", (12, 13): "baz"},
+    {(14, 15): "qwe", 16: "asd"},
+    (17, (18, "19"), 20),
+]
+
+
+@pytest.mark.parametrize("result", [None, [], ["existing"], ["existing1", "existing2"]])
+@pytest.mark.parametrize(
+    "nested",
+    [nested_depth, nested_mixed, nested_set],
+)
+def test_flatten(nested, result):
+    if result is None:
+        val = flatten(nested, result)
+        assert len(val) == 20
+    else:
+        _result = copy(result)  # because pytest passes parameters as is
+        nexisting = len(_result)
+        val = flatten(nested, _result)
+        assert len(val) == len(_result) == 20 + nexisting
+
+    assert issubclass(type(val), tuple)
 
 
 def test_is_string_like():

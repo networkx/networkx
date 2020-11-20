@@ -159,7 +159,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
             if method == "unweighted":
                 paths = nx.bidirectional_shortest_path(G, source, target)
             elif method == "dijkstra":
-                paths = nx.dijkstra_path(G, source, target, weight)
+                _, paths = nx.bidirectional_dijkstra(G, source, target, weight)
             else:  # method == 'bellman-ford':
                 paths = nx.bellman_ford_path(G, source, target, weight)
     return paths

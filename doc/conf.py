@@ -40,6 +40,7 @@ sphinx_gallery_conf = {
             "../examples/advanced",
             "../examples/3d_drawing",
             "../examples/pygraphviz",
+            "../examples/geospatial",
             "../examples/javascript",
             "../examples/jit",
             "../examples/applications",
@@ -49,6 +50,7 @@ sphinx_gallery_conf = {
     # path where to save gallery generated examples
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
+    "image_scrapers": ("matplotlib", "mayavi"),
 }
 
 # generate autosummary pages
@@ -192,8 +194,11 @@ latex_appendices = ["tutorial"]
 
 # Intersphinx mapping
 intersphinx_mapping = {
-    "https://docs.python.org/3/": None,
-    "https://numpy.org/doc/stable/": None,
+    "python": ("https://docs.python.org/3/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "matplotlib": ("https://matplotlib.org", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
 }
 
 # The reST default role (used for this markup: `text`) to use for all

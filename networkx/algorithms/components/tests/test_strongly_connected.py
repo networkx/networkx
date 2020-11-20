@@ -188,6 +188,22 @@ class TestStronglyConnected:
         )
         pytest.raises(NetworkXNotImplemented, nx.condensation, G)
 
+    strong_cc_methods = (
+        nx.strongly_connected_components,
+        nx.kosaraju_strongly_connected_components,
+        nx.strongly_connected_components_recursive,
+    )
+
+    @pytest.mark.parametrize("get_components", strong_cc_methods)
+    def test_connected_mutability(self, get_components):
+        DG = nx.path_graph(5, create_using=nx.DiGraph)
+        G = nx.disjoint_union(DG, DG)
+        seen = set()
+        for component in get_components(G):
+            assert len(seen & component) == 0
+            seen.update(component)
+            component.clear()
+
 
 #    Commented out due to variability on Travis-CI hardware/operating systems
 #    def test_linear_time(self):

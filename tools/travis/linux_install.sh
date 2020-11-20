@@ -9,6 +9,10 @@ source ~/venv/bin/activate
 
 if [[ "${EXTRA_DEPS}" == 1 ]]; then
 
+  # Setup virtual framebuffer for headless mayavi
+  export DISPLAY=:99
+  /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1400x200x24 -ac +extension GLX +render -noreset;
+
   # needed to build Python binding for GDAL
   export CPLUS_INCLUDE_PATH=/usr/include/gdal
   export C_INCLUDE_PATH=/usr/include/gdal

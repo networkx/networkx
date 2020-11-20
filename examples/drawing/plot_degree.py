@@ -9,9 +9,9 @@ nodes with two common techniques: a *degree-rank plot* and a
 
 In this example, a random Graph is generated with 100 nodes. The degree of
 each node is determined, and a figure is generated showing three things:
-  1. The subgraph of connected components
-  2. The degree-rank plot for the Graph, and
-  3. The degree histogram
+1. The subgraph of connected components
+2. The degree-rank plot for the Graph, and
+3. The degree histogram
 """
 import networkx as nx
 import numpy as np

@@ -279,3 +279,38 @@ class TestConvert:
         # this raise exception
         # h._node.update((n, dd.copy()) for n, dd in g.nodes.items())
         # assert isinstance(h._node[1], custom_dict)
+
+
+@pytest.mark.parametrize(
+    "edgelist",
+    (
+        # Graph with no edge data
+        [(0, 1), (1, 2)],
+        # Graph with edge data
+        [(0, 1, {"weight": 1.0}), (1, 2, {"weight": 2.0})],
+    ),
+)
+def test_to_dict_of_dicts_with_edgedata_param(edgelist):
+    G = nx.Graph()
+    G.add_edges_from(edgelist)
+    # Innermost dict value == edge_data when edge_data != None.
+    # In the case when G has edge data, it is overwritten
+    expected = {0: {1: 10}, 1: {0: 10, 2: 10}, 2: {1: 10}}
+    assert nx.to_dict_of_dicts(G, edge_data=10) == expected
+
+
+def test_to_dict_of_dicts_with_edgedata_and_nodelist():
+    G = nx.path_graph(5)
+    nodelist = [2, 3, 4]
+    expected = {2: {3: 10}, 3: {2: 10, 4: 10}, 4: {3: 10}}
+    assert nx.to_dict_of_dicts(G, nodelist=nodelist, edge_data=10) == expected
+
+
+def test_to_dict_of_dicts_with_edgedata_multigraph():
+    """Multi edge data overwritten when edge_data != None"""
+    G = nx.MultiGraph()
+    G.add_edge(0, 1, key="a")
+    G.add_edge(0, 1, key="b")
+    # Multi edge data lost when edge_data is not None
+    expected = {0: {1: 10}, 1: {0: 10}}
+    assert nx.to_dict_of_dicts(G, edge_data=10) == expected

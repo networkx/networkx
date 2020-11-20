@@ -24,6 +24,9 @@ Improvements
 
 - [`#4319 <https://github.com/networkx/networkx/pull/4319>`_]
 pagerank uses scipy by default now.
+- [`#4317 <https://github.com/networkx/networkx/pull/4317>`_]
+  New ``source`` argument to ``has_eulerian_path`` to look for path starting at
+  source.
 
 API Changes
 -----------
@@ -34,6 +37,14 @@ API Changes
 - [`#4216 <https://github.com/networkx/networkx/pull/4216>`_]
   In `to_*_array/matrix`, nodes in nodelist but not in G now raise an exception.
   Use G.add_nodes_from(nodelist) to add them to G before converting.
+
+- [`#4360  <https://github.com/networkx/networkx/pull/4360>`_]
+  Internally `.nx_pylab.draw_networkx_edges` now always generates a
+  list of `matplotlib.patches.FancyArrowPatch` rather than using
+  a `matplotlib.collections.LineCollection` for un-directed graphs.  This
+  unifies interface for all types of graphs.  In
+  addition to the API change this may cause a performance regression for
+  large graphs.
 
 Deprecations
 ------------
@@ -50,8 +61,13 @@ Deprecations
   Deprecate ``read_yaml`` and ``write_yaml``.
 - [`#4282 <https://github.com/networkx/networkx/pull/4282>`_]
   Deprecate ``read_gpickle`` and ``write_gpickle``.
+- [`#4298 <https://github.com/networkx/networkx/pull/4298>`_]
+  Deprecate ``read_shp``, ``edges_from_line``, and ``write_shp``.
 - [`#4319 <https://github.com/networkx/networkx/pull/4319>`_]
   Deprecate ``pagerank_numpy``, ``pagerank_scipy``.
+- [`#4355 <https://github.com/networkx/networkx/pull/4355>`_]
+  Deprecate ``copy`` method in the coreview Filtered-related classes.
+
 
 Contributors to this release
 ----------------------------

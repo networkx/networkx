@@ -62,7 +62,7 @@ def flatten(obj, result=None):
             result.append(item)
         else:
             flatten(item, result)
-    return obj.__class__(result)
+    return tuple(result)
 
 
 def make_list_of_ints(sequence):
@@ -333,18 +333,17 @@ def create_random_state(random_state=None):
 
 
 class PythonRandomInterface:
-    try:
-
-        def __init__(self, rng=None):
+    def __init__(self, rng=None):
+        try:
             import numpy
+        except ImportError:
+            msg = "numpy not found, only random.random available."
+            warnings.warn(msg, ImportWarning)
 
-            if rng is None:
-                self._rng = numpy.random.mtrand._rand
+        if rng is None:
+            self._rng = numpy.random.mtrand._rand
+        else:
             self._rng = rng
-
-    except ImportError:
-        msg = "numpy not found, only random.random available."
-        warnings.warn(msg, ImportWarning)
 
     def random(self):
         return self._rng.random_sample()
