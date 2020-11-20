@@ -197,6 +197,8 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "matplotlib": ("https://matplotlib.org", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
 }
 
 # The reST default role (used for this markup: `text`) to use for all
