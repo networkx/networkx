@@ -22,6 +22,8 @@ X contributors. Highlights include:
 Improvements
 ------------
 
+- [`#4319 <https://github.com/networkx/networkx/pull/4319>`_]
+pagerank uses scipy by default now.
 
 API Changes
 -----------
@@ -48,6 +50,8 @@ Deprecations
   Deprecate ``read_yaml`` and ``write_yaml``.
 - [`#4282 <https://github.com/networkx/networkx/pull/4282>`_]
   Deprecate ``read_gpickle`` and ``write_gpickle``.
+- [`#4319 <https://github.com/networkx/networkx/pull/4319>`_]
+  Deprecate ``pagerank_numpy``, ``pagerank_scipy``.
 
 Contributors to this release
 ----------------------------
