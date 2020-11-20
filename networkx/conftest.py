@@ -70,6 +70,12 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="from_numpy_matrix"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="networkx.pagerank_numpy*"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="networkx.pagerank_scipy*"
+    )
 
 
 @pytest.fixture(autouse=True)
