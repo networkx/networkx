@@ -146,12 +146,11 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
 
     arrowstyle : str, optional (default='-|>')
         For directed graphs, choose the style of the arrowsheads.
-        See :py:class: `matplotlib.patches.ArrowStyle` for more
-        options.
+        See `matplotlib.patches.ArrowStyle` for more options.
 
     arrowsize : int, optional (default=10)
        For directed graphs, choose the size of the arrow head head's length and
-       width. See :py:class: `matplotlib.patches.FancyArrowPatch` for attribute
+       width. See `matplotlib.patches.FancyArrowPatch` for attribute
        `mutation_scale` for more info.
 
     with_labels :  bool, optional (default=True)
@@ -546,19 +545,18 @@ def draw_networkx_edges(
        For directed graphs and *arrows==True* defaults to ``'-|>'`` otherwise
        defaults to ``'-'``.
 
-       See :py:class: `matplotlib.patches.ArrowStyle` for more
-       options.
+       See `matplotlib.patches.ArrowStyle` for more options.
 
     arrowsize : int, optional (default=10)
        For directed graphs, choose the size of the arrow head head's length and
-       width. See :py:class: `matplotlib.patches.FancyArrowPatch` for attribute
+       width. See `matplotlib.patches.FancyArrowPatch` for attribute
        `mutation_scale` for more info.
 
     connectionstyle : str, optional (default="arc3")
        Pass the connectionstyle parameter to create curved arc of rounding
        radius rad. For example, connectionstyle='arc3,rad=0.2'.
-       See :py:class: `matplotlib.patches.ConnectionStyle` and
-       :py:class: `matplotlib.patches.FancyArrowPatch` for more info.
+       See `matplotlib.patches.ConnectionStyle` and
+       `matplotlib.patches.FancyArrowPatch` for more info.
 
     label : [None| string]
        Label for legend
