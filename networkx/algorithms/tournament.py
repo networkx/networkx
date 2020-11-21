@@ -149,7 +149,7 @@ def random_tournament(n, seed=None):
     Returns
     -------
     G : DiGraph
-        A tournament on n nodes, with exactly one directed edge joining
+        A tournament on `n` nodes, with exactly one directed edge joining
         each pair of distinct nodes.
 
     Notes
