@@ -266,7 +266,10 @@ def test_draw_edges_warns_on_arrow_and_arrowstyle():
         nx.draw_networkx_edges(G, pos, arrowstyle="-|>", arrows=False)
 
 
-def test_draw_edges_min_source_target_margins():
+# NOTE: parametrizing on marker to test both branches of internal
+# nx.draw_networkx_edges.to_marker_edge function
+@pytest.mark.parametrize("node_shape", ("o", "s"))
+def test_draw_edges_min_source_target_margins(node_shape):
     """Test that there is a wider gap between the node and the start of an
     incident edge when min_source_margin is specified.
 
@@ -289,12 +292,17 @@ def test_draw_edges_min_source_target_margins():
     pos = {0: (0, 0), 1: (1, 0)}  # horizontal layout
     # Get leftmost and rightmost points of the FancyArrowPatch object
     # representing the edge between nodes 0 and 1 (in pixel coordinates)
-    default_patch = nx.draw_networkx_edges(G, pos, ax=ax)[0]
+    default_patch = nx.draw_networkx_edges(G, pos, ax=ax, node_shape=node_shape)[0]
     default_extent = default_patch.get_extents().corners()[::2, 0]
     # Now, do the same but with "padding" for the source and target via the
     # min_{source/target}_margin kwargs
     padded_patch = nx.draw_networkx_edges(
-        G, pos, ax=ax, min_source_margin=100, min_target_margin=100
+        G,
+        pos,
+        ax=ax,
+        node_shape=node_shape,
+        min_source_margin=100,
+        min_target_margin=100,
     )[0]
     padded_extent = padded_patch.get_extents().corners()[::2, 0]
 
