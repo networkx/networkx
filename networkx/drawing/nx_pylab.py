@@ -556,6 +556,19 @@ def draw_networkx_edges(
        See `matplotlib.patches.ConnectionStyle` and
        `matplotlib.patches.FancyArrowPatch` for more info.
 
+    node_size : scalar or array, optional (default=300)
+       Size of nodes. Though the nodes are not drawn with this function, the
+       node size is used in determining edge positioning.
+
+    nodelist : list, optional (default=G.nodes())
+       Only draw edges that are in `edgelist` and that lie between nodes in
+       `nodelist`. Any edges in `edgelist` incident on nodes that are *not* in
+       `nodelist` will not be drawn.
+
+    node_shape :  string, optional (default='o')
+       The marker used for nodes, used in determining edge positioning.
+       Specification is as a `matplotlib.markers` marker, e.g. one of 'so^>v<dph8'.
+
     label : [None| string]
        Label for legend
 
