@@ -312,3 +312,14 @@ def test_draw_edges_min_source_target_margins(node_shape):
     assert padded_extent[0] > default_extent[0]
     # And the rightmost extent of the edge, further to the left
     assert padded_extent[1] < default_extent[1]
+
+
+def test_apply_alpha():
+    """Test apply_alpha when there is a mismatch between the number of
+    supplied colors and elements.
+    """
+    nodelist = [0, 1, 2]
+    colorlist = ["r", "g", "b"]
+    alpha = 0.5
+    rgba_colors = nx.drawing.nx_pylab.apply_alpha(colorlist, alpha, nodelist)
+    assert all(rgba_colors[:, -1] == alpha)
