@@ -198,6 +198,7 @@ class TestPylab:
     def test_axes(self):
         fig, ax = plt.subplots()
         nx.draw(self.G, ax=ax)
+        nx.draw_networkx_edge_labels(self.G, nx.circular_layout(self.G), ax=ax)
 
     def test_empty_graph(self):
         G = nx.Graph()
