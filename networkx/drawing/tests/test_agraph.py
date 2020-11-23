@@ -6,7 +6,12 @@ import pytest
 pygraphviz = pytest.importorskip("pygraphviz")
 
 
-from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
+from networkx.testing import (
+    assert_edges_equal,
+    assert_nodes_equal,
+    assert_graphs_equal,
+    missing_modules,
+)
 
 import networkx as nx
 
@@ -247,3 +252,27 @@ class TestAGraph:
         with pytest.warns(DeprecationWarning, match="display_pygraphviz is deprecated"):
             with open(path_name, "wb") as fh:
                 nx.nx_agraph.display_pygraphviz(A, fh, prog="dot")
+
+
+@missing_modules(["pygraphviz"])
+def test_to_agraph_import_error():
+    """Test ImportError is raised when pygraphviz not installed."""
+    G = nx.path_graph(2)
+    with pytest.raises(ImportError, match="requires pygraphviz"):
+        nx.nx_agraph.to_agraph(G)
+
+
+@missing_modules(["pygraphviz"])
+def test_read_dot_import_error():
+    """Test ImportError is raised when pygraphviz not installed."""
+    path = "none"
+    with pytest.raises(ImportError, match="requires pygraphviz"):
+        nx.nx_agraph.read_dot(path)
+
+
+@missing_modules(["pygraphviz"])
+def test_pygraphviz_layout_import_error():
+    """Test ImportError is raised when pygraphviz not installed."""
+    G = nx.path_graph(2)
+    with pytest.raises(ImportError, match="requires pygraphviz"):
+        nx.nx_agraph.pygraphviz_layout(G)
