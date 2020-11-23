@@ -4,24 +4,22 @@ import networkx as nx
 import networkx.generators.trees as tree_constructors
 import networkx.algorithms.d_fragmentation as sut
 import random as rand
-from networkx.algorithms.shortest_paths.unweighted import single_source_shortest_path_length as sssp
-from networkx.algorithms.shortest_paths.unweighted import all_pairs_shortest_path_length as apsp
+from networkx.algorithms.shortest_paths.unweighted import (
+    single_source_shortest_path_length as sssp,
+)
+from networkx.algorithms.shortest_paths.unweighted import (
+    all_pairs_shortest_path_length as apsp,
+)
 from networkx.algorithms.tree import recognition
 from networkx.algorithms.components import connected
 import networkx.exception as nx_exceptions
 from networkx.generators.random_graphs import gnm_random_graph
 
 
-TREE_SIZE = {
-    'LOWER_BOUND': 1,
-    'UPPER_BOUND': 10000
-}
+TREE_SIZE = {"LOWER_BOUND": 1, "UPPER_BOUND": 10000}
 
 # The value for d in the d-club.
-CLUB_SIZE = {
-    'LOWER_BOUND': 1,
-    'UPPER_BOUND': 50
-}
+CLUB_SIZE = {"LOWER_BOUND": 1, "UPPER_BOUND": 50}
 
 
 def _get_random_number_from_bound(l_bound: int, u_bound: int):
@@ -31,18 +29,22 @@ def _get_random_number_from_bound(l_bound: int, u_bound: int):
 
 
 def _get_random_number_of_nodes():
-    return _get_random_number_from_bound(TREE_SIZE['LOWER_BOUND'], TREE_SIZE['UPPER_BOUND'])
+    return _get_random_number_from_bound(
+        TREE_SIZE["LOWER_BOUND"], TREE_SIZE["UPPER_BOUND"]
+    )
 
 
 def _get_random_number_of_edges(nodes):
-    upper_edges = max(0, (nodes * (nodes - 1))//2)
+    upper_edges = max(0, (nodes * (nodes - 1)) // 2)
     # To get a sparse graph, we divide the upper bound of edges by a large
     # enough number like 2**5.
-    return _get_random_number_from_bound(0, upper_edges // (2**5))
+    return _get_random_number_from_bound(0, upper_edges // (2 ** 5))
 
 
 def _get_random_club_size():
-    return _get_random_number_from_bound(CLUB_SIZE['LOWER_BOUND'], CLUB_SIZE['UPPER_BOUND'])
+    return _get_random_number_from_bound(
+        CLUB_SIZE["LOWER_BOUND"], CLUB_SIZE["UPPER_BOUND"]
+    )
 
 
 def _get_random_tree():
@@ -104,7 +106,9 @@ def _get_tree_diameter(tree: nx.Graph) -> int:
 
     antipodal_one = max(distances_from_start, key=lambda x: distances_from_start[x])
     distances_from_antipodal_one = sssp(tree, antipodal_one)
-    antipodal_two = max(distances_from_antipodal_one, key=lambda x: distances_from_antipodal_one[x])
+    antipodal_two = max(
+        distances_from_antipodal_one, key=lambda x: distances_from_antipodal_one[x]
+    )
 
     return distances_from_antipodal_one[antipodal_two]
 
@@ -214,11 +218,13 @@ def test_multiple(count: int = 5):
         g = gnm_random_graph(n, m)
         d_fragmentation_in_graphs(g, d)
 
-    print(f'Tested d-club cluster graphs for {trees:02d} random trees and {non_trees:02d} random graphs successfully!')
+    print(
+        f"Tested d-club cluster graphs for {trees:02d} random trees and {non_trees:02d} random graphs successfully!"
+    )
 
     return
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_multiple()
     pass

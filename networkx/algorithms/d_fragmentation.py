@@ -100,10 +100,7 @@ References
 """
 
 
-from typing import (
-    Dict,
-    Generator
-)
+from typing import Dict, Generator
 
 import networkx as nx
 from networkx.utils import not_implemented_for
