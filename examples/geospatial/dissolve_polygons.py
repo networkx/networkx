@@ -26,9 +26,9 @@ GeoPandas.
 
 See also
 --------
-plot_polygons.py: provides an example using PySAL to identify contiguous
-    groups of polygons, which could then be unioned together to create
-    the same results as this example.
+plot_polygons.py: provides an example using PySAL to identify contiguous groups
+    of polygons, which could then be unioned together to create the same results
+    as this example.
 """
 
 import matplotlib.pyplot as plt
@@ -85,8 +85,8 @@ dissolved = dissolved.join(grouped.groupby("group").NUTS_ID.unique())
 
 ### Merge in regions that were not dissolved together
 not_dissolved = european_regions.loc[~european_regions.index.isin(groups.index)][
-        ["NUTS_ID", "geometry"]
-    ]
+    ["NUTS_ID", "geometry"]
+]
 # convert NUTS_ID to a list similar to those that are dissolved
 not_dissolved.NUTS_ID = not_dissolved.NUTS_ID.apply(lambda x: [x])
 
