@@ -1,7 +1,12 @@
 import pytest
 
 import networkx as nx
-from networkx.testing import assert_nodes_equal, assert_edges_equal, assert_graphs_equal
+from networkx.testing import (
+    assert_nodes_equal,
+    assert_edges_equal,
+    assert_graphs_equal,
+    missing_modules,
+)
 from networkx.convert import (
     to_networkx_graph,
     to_dict_of_dicts,
@@ -320,3 +325,21 @@ def test_to_networkx_graph_non_edgelist():
     invalid_edgelist = [1, 2, 3]
     with pytest.raises(nx.NetworkXError, match="Input is not a valid edge list"):
         nx.to_networkx_graph(invalid_edgelist)
+
+
+@missing_modules(["scipy"])
+def test_to_networkx_graph_warns_no_scipy():
+    with pytest.warns(ImportWarning, match="scipy not found"):
+        nx.to_networkx_graph([(0, 1)])
+
+
+@missing_modules(["pandas"])
+def test_to_networkx_graph_warns_no_pandas():
+    with pytest.warns(ImportWarning, match="pandas not found"):
+        nx.to_networkx_graph([(0, 1)])
+
+
+@missing_modules(["numpy"])
+def test_to_networkx_graph_warns_no_numpy():
+    with pytest.warns(ImportWarning, match="numpy not found"):
+        nx.to_networkx_graph([(0, 1)])

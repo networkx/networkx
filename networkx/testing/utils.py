@@ -1,8 +1,13 @@
+import sys
+from copy import copy
+from contextlib import ContextDecorator
+
 __all__ = [
     "assert_nodes_equal",
     "assert_edges_equal",
     "assert_graphs_equal",
     "almost_equal",
+    "missing_modules",
 ]
 
 
@@ -63,3 +68,52 @@ def assert_graphs_equal(graph1, graph2):
     assert graph1.adj == graph2.adj
     assert graph1.nodes == graph2.nodes
     assert graph1.graph == graph2.graph
+
+
+class missing_modules(ContextDecorator):
+    """
+    Creates a decorator where the decorated (test) function will be run in a
+    context simulating an environment where any module in `modules_to_remove`
+    is not installed.
+
+    The target use-case for this decorator is to test the raising of
+    ImportError and ImportWarning.
+
+    A usage example::
+
+        @missing_modules(['numpy'])
+        def test_raises_import_error():
+            with pytest.raises(ImportError):
+                import numpy as np
+
+    In this example, `missing_modules` creates a context in which
+    `test_raises_import_error` passes, regardless of whether `numpy` is
+    installed on the target system.
+    """
+
+    def __init__(self, modules_to_remove):
+        """
+        Remove modules from local context.
+
+        Parameters
+        ----------
+        modules_to_remove : list of strings
+            A list of strings where each string is the name of a module to
+            be removed from the local context, e.g. ['numpy', 'scipy']
+        """
+
+        if not isinstance(modules_to_remove, list):
+            raise TypeError(
+                "The argument to `missing_modules` must be a list of strings."
+            )
+        self._orig_sysmodules = copy(sys.modules)
+        self._modules_to_remove = modules_to_remove
+
+    def __enter__(self):
+        for mod in self._modules_to_remove:
+            # Causes ModuleNotFoundError, a subclass of ImportError
+            sys.modules[mod] = None
+
+    def __exit__(self, *exc):
+        # Restore sys.modules when exiting context
+        sys.modules.update(self._orig_sysmodules)
