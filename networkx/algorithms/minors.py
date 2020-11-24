@@ -445,6 +445,10 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
     not be the same as the edge keys for the old edges. This is
     natural because edge keys are unique only within each pair of nodes.
 
+    For non-multigraphs where `u` and `v` are adjacent to a third node
+    `w`, the edge (`v`, `w`) will be contracted into the edge (`u`,
+    `w`) with its attributes stored into a "contraction" attribute.
+
     This function is also available as `identified_nodes`.
 
     Examples
@@ -484,32 +488,32 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
 
     # edge code uses G.edges(v) instead of G.adj[v] to handle multiedges
     if H.is_directed():
-        in_edges = (
-            (w if w != v else u, u, d)
-            for w, x, d in G.in_edges(v, data=True)
-            if self_loops or w != u
-        )
-        out_edges = (
-            (u, w if w != v else u, d)
-            for x, w, d in G.out_edges(v, data=True)
-            if self_loops or w != u
-        )
-        new_edges = chain(in_edges, out_edges)
+        edges_to_remap = chain(G.in_edges(v, data=True), G.out_edges(v, data=True))
     else:
-        new_edges = (
-            (u, w if w != v else u, d)
-            for x, w, d in G.edges(v, data=True)
-            if self_loops or w != u
-        )
+        edges_to_remap = G.edges(v, data=True)
 
     # If the H=G, the generators change as H changes
-    # This makes the new_edges independent of H
+    # This makes the edges_to_remap independent of H
     if not copy:
-        new_edges = list(new_edges)
+        edges_to_remap = list(edges_to_remap)
 
     v_data = H.nodes[v]
     H.remove_node(v)
-    H.add_edges_from(new_edges)
+
+    for (prev_w, prev_x, d) in edges_to_remap:
+        w = prev_w if prev_w != v else u
+        x = prev_x if prev_x != v else u
+
+        if ({prev_w, prev_x} == {u, v}) and not self_loops:
+            continue
+
+        if not H.has_edge(w, x) or G.is_multigraph():
+            H.add_edge(w, x, **d)
+        else:
+            if "contraction" in H.edges[(w, x)]:
+                H.edges[(w, x)]["contraction"][(prev_w, prev_x)] = d
+            else:
+                H.edges[(w, x)]["contraction"] = {(prev_w, prev_x): d}
 
     if "contraction" in H.nodes[u]:
         H.nodes[u]["contraction"][v] = v_data
