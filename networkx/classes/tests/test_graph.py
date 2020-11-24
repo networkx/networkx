@@ -52,7 +52,9 @@ class BaseGraphTester:
         with pytest.raises(nx.NetworkXError):
             G.neighbors(-1)
 
-    @pytest.mark.skipif(platform.python_implementation() == "PyPy")
+    @pytest.mark.skipif(
+        platform.python_implementation() == "PyPy", reason="PyPy gc is different"
+    )
     def test_memory_leak(self):
         G = self.Graph()
 
