@@ -198,6 +198,7 @@ class TestPylab:
     def test_axes(self):
         fig, ax = plt.subplots()
         nx.draw(self.G, ax=ax)
+        nx.draw_networkx_edge_labels(self.G, nx.circular_layout(self.G), ax=ax)
 
     def test_empty_graph(self):
         G = nx.Graph()
@@ -250,3 +251,75 @@ class TestPylab:
         # see issue #4129
         np = pytest.importorskip("numpy")
         nx.draw_networkx(self.G, edgelist=np.array([(0, 2), (0, 3)]))
+
+
+def test_draw_nodes_missing_node_from_position():
+    G = nx.path_graph(3)
+    pos = {0: (0, 0), 1: (1, 1)}  # No position for node 2
+    with pytest.raises(nx.NetworkXError, match="has no position"):
+        nx.draw_networkx_nodes(G, pos)
+
+
+def test_draw_edges_warns_on_arrow_and_arrowstyle():
+    G = nx.Graph([(0, 1)])
+    pos = {0: (0, 0), 1: (1, 1)}
+    with pytest.warns(Warning, match="arrows will be ignored"):
+        nx.draw_networkx_edges(G, pos, arrowstyle="-|>", arrows=False)
+
+
+# NOTE: parametrizing on marker to test both branches of internal
+# nx.draw_networkx_edges.to_marker_edge function
+@pytest.mark.parametrize("node_shape", ("o", "s"))
+def test_draw_edges_min_source_target_margins(node_shape):
+    """Test that there is a wider gap between the node and the start of an
+    incident edge when min_source_margin is specified.
+
+    This test checks that the use of min_{source/target}_margin kwargs result
+    in shorter (more padding) between the edges and source and target nodes.
+    As a crude visual example, let 's' and 't' represent source and target
+    nodes, respectively:
+
+       Default:
+       s-----------------------------t
+
+       With margins:
+       s   -----------------------   t
+
+    """
+    # Create a single axis object to get consistent pixel coords across
+    # multiple draws
+    fig, ax = plt.subplots()
+    G = nx.Graph([(0, 1)])
+    pos = {0: (0, 0), 1: (1, 0)}  # horizontal layout
+    # Get leftmost and rightmost points of the FancyArrowPatch object
+    # representing the edge between nodes 0 and 1 (in pixel coordinates)
+    default_patch = nx.draw_networkx_edges(G, pos, ax=ax, node_shape=node_shape)[0]
+    default_extent = default_patch.get_extents().corners()[::2, 0]
+    # Now, do the same but with "padding" for the source and target via the
+    # min_{source/target}_margin kwargs
+    padded_patch = nx.draw_networkx_edges(
+        G,
+        pos,
+        ax=ax,
+        node_shape=node_shape,
+        min_source_margin=100,
+        min_target_margin=100,
+    )[0]
+    padded_extent = padded_patch.get_extents().corners()[::2, 0]
+
+    # With padding, the left-most extent of the edge should be further to the
+    # right
+    assert padded_extent[0] > default_extent[0]
+    # And the rightmost extent of the edge, further to the left
+    assert padded_extent[1] < default_extent[1]
+
+
+def test_apply_alpha():
+    """Test apply_alpha when there is a mismatch between the number of
+    supplied colors and elements.
+    """
+    nodelist = [0, 1, 2]
+    colorlist = ["r", "g", "b"]
+    alpha = 0.5
+    rgba_colors = nx.drawing.nx_pylab.apply_alpha(colorlist, alpha, nodelist)
+    assert all(rgba_colors[:, -1] == alpha)
