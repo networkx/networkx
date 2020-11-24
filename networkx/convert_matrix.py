@@ -241,7 +241,9 @@ def to_pandas_edgelist(
 
     order : None
         An unused parameter mistakenly included in the function.
-        This is deprecated and will be removed in NetworkX v3.0.
+
+        .. deprecated:: 2.6
+            This is deprecated and will be removed in NetworkX v3.0.
 
     edge_key : str or int or None, optional (default=None)
         A valid column name (string or integer) for the edge keys (for the
@@ -280,22 +282,22 @@ def to_pandas_edgelist(
         edgelist = G.edges(data=True)
     else:
         edgelist = G.edges(nodelist, data=True)
-    source_nodes = [s for s, t, d in edgelist]
-    target_nodes = [t for s, t, d in edgelist]
+    source_nodes = [s for s, _, _ in edgelist]
+    target_nodes = [t for _, t, _ in edgelist]
 
-    all_attrs = set().union(*(d.keys() for s, t, d in edgelist))
+    all_attrs = set().union(*(d.keys() for _, _, d in edgelist))
     if source in all_attrs:
         raise nx.NetworkXError(f"Source name '{source}' is an edge attr name")
     if target in all_attrs:
         raise nx.NetworkXError(f"Target name '{target}' is an edge attr name")
 
     nan = float("nan")
-    edge_attr = {k: [d.get(k, nan) for s, t, d in edgelist] for k in all_attrs}
+    edge_attr = {k: [d.get(k, nan) for _, _, d in edgelist] for k in all_attrs}
 
     if G.is_multigraph() and edge_key is not None:
         if edge_key in all_attrs:
             raise nx.NetworkXError(f"Edge key name '{edge_key}' is an edge attr name")
-        edge_keys = [k for s, t, k in G.edges(keys=True)]
+        edge_keys = [k for _, _, k in G.edges(keys=True)]
         edgelistdict = {source: source_nodes, target: target_nodes, edge_key: edge_keys}
     else:
         edgelistdict = {source: source_nodes, target: target_nodes}

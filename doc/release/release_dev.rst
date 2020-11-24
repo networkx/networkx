@@ -46,6 +46,9 @@ API Changes
   addition to the API change this may cause a performance regression for
   large graphs.
 
+- [`#4384 <https://github.com/networkx/networkx/pull/4384>`_]
+  Added edge_key parameter for MultiGraphs in to_pandas_edgelist
+
 Deprecations
 ------------
 
@@ -67,6 +70,8 @@ Deprecations
   Deprecate ``pagerank_numpy``, ``pagerank_scipy``.
 - [`#4355 <https://github.com/networkx/networkx/pull/4355>`_]
   Deprecate ``copy`` method in the coreview Filtered-related classes.
+- [`#4384 <https://github.com/networkx/networkx/pull/4384>`_]
+  Deprecate unused ``order`` parameter in to_pandas_edgelist.
 
 
 Contributors to this release
