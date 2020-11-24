@@ -209,7 +209,13 @@ def from_pandas_adjacency(df, create_using=None):
 
 
 def to_pandas_edgelist(
-    G, source="source", target="target", nodelist=None, dtype=None, order=None
+    G,
+    source="source",
+    target="target",
+    nodelist=None,
+    dtype=None,
+    order=None,
+    edge_key=None,
 ):
     """Returns the graph edge list as a Pandas DataFrame.
 
@@ -228,6 +234,20 @@ def to_pandas_edgelist(
 
     nodelist : list, optional
        Use only nodes specified in nodelist
+
+    dtype : dtype, default None
+        Use to create the DataFrame. Data type to force.
+        Only a single dtype is allowed. If None, infer.
+
+    order : None
+        An unused parameter mistakenly included in the function.
+
+        .. deprecated:: 2.6
+            This is deprecated and will be removed in NetworkX v3.0.
+
+    edge_key : str or int or None, optional (default=None)
+        A valid column name (string or integer) for the edge keys (for the
+        multigraph case). If None, edge keys are not stored in the DataFrame.
 
     Returns
     -------
@@ -248,6 +268,13 @@ def to_pandas_edgelist(
     0      A      B     1       7
     1      C      E     9      10
 
+    >>> G = nx.MultiGraph([('A', 'B', {'cost': 1}), ('A', 'B', {'cost': 9})])
+    >>> df = nx.to_pandas_edgelist(G, nodelist=['A', 'C'], edge_key='ekey')
+    >>> df[['source', 'target', 'cost', 'ekey']]
+      source target  cost  ekey
+    0      A      B     1     0
+    1      A      B     9     1
+
     """
     import pandas as pd
 
@@ -255,21 +282,28 @@ def to_pandas_edgelist(
         edgelist = G.edges(data=True)
     else:
         edgelist = G.edges(nodelist, data=True)
-    source_nodes = [s for s, t, d in edgelist]
-    target_nodes = [t for s, t, d in edgelist]
+    source_nodes = [s for s, _, _ in edgelist]
+    target_nodes = [t for _, t, _ in edgelist]
 
-    all_keys = set().union(*(d.keys() for s, t, d in edgelist))
-    if source in all_keys:
+    all_attrs = set().union(*(d.keys() for _, _, d in edgelist))
+    if source in all_attrs:
         raise nx.NetworkXError(f"Source name '{source}' is an edge attr name")
-    if target in all_keys:
+    if target in all_attrs:
         raise nx.NetworkXError(f"Target name '{target}' is an edge attr name")
 
     nan = float("nan")
-    edge_attr = {k: [d.get(k, nan) for s, t, d in edgelist] for k in all_keys}
+    edge_attr = {k: [d.get(k, nan) for _, _, d in edgelist] for k in all_attrs}
 
-    edgelistdict = {source: source_nodes, target: target_nodes}
+    if G.is_multigraph() and edge_key is not None:
+        if edge_key in all_attrs:
+            raise nx.NetworkXError(f"Edge key name '{edge_key}' is an edge attr name")
+        edge_keys = [k for _, _, k in G.edges(keys=True)]
+        edgelistdict = {source: source_nodes, target: target_nodes, edge_key: edge_keys}
+    else:
+        edgelistdict = {source: source_nodes, target: target_nodes}
+
     edgelistdict.update(edge_attr)
-    return pd.DataFrame(edgelistdict)
+    return pd.DataFrame(edgelistdict, dtype=dtype)
 
 
 def from_pandas_edgelist(

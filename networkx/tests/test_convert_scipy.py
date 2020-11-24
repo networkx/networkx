@@ -2,7 +2,7 @@ import pytest
 
 np = pytest.importorskip("numpy")
 sp = pytest.importorskip("scipy")
-sparse = sp.sparse
+sp_sparse = sp.sparse
 npt = np.testing
 
 import networkx as nx
@@ -213,7 +213,7 @@ class TestConvertScipy:
         creating a multigraph.
 
         """
-        A = sparse.csr_matrix([[1, 1], [1, 2]])
+        A = sp_sparse.csr_matrix([[1, 1], [1, 2]])
         # First, with a simple graph, each integer entry in the adjacency
         # matrix is interpreted as the weight of a single edge in the graph.
         expected = nx.DiGraph()
@@ -253,7 +253,7 @@ class TestConvertScipy:
         :func:`networkx.from_scipy_sparse_matrix`.
 
         """
-        A = sparse.csr_matrix([[0, 1], [1, 0]])
+        A = sp_sparse.csr_matrix([[0, 1], [1, 0]])
         G = nx.from_scipy_sparse_matrix(A, create_using=nx.MultiGraph)
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
@@ -275,5 +275,5 @@ def test_from_scipy_sparse_matrix_formats(sparse_format):
             (2, 1, {"weight": 1}),
         ]
     )
-    A = sparse.coo_matrix([[0, 3, 2], [3, 0, 1], [2, 1, 0]]).asformat(sparse_format)
+    A = sp_sparse.coo_matrix([[0, 3, 2], [3, 0, 1], [2, 1, 0]]).asformat(sparse_format)
     assert_graphs_equal(expected, nx.from_scipy_sparse_matrix(A))
