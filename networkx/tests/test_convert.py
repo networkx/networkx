@@ -314,3 +314,9 @@ def test_to_dict_of_dicts_with_edgedata_multigraph():
     # Multi edge data lost when edge_data is not None
     expected = {0: {1: 10}, 1: {0: 10}}
     assert nx.to_dict_of_dicts(G, edge_data=10) == expected
+
+
+def test_to_networkx_graph_non_edgelist():
+    invalid_edgelist = [1, 2, 3]
+    with pytest.raises(nx.NetworkXError, match="Input is not a valid edge list"):
+        nx.to_networkx_graph(invalid_edgelist)
