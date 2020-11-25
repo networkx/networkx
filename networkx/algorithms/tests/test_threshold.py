@@ -254,7 +254,7 @@ class TestGeneratorThreshold:
         cs = "ddiiddid"
         G = nxt.threshold_graph(cs)
         (tgeval, tgevec) = nxt.eigenvectors(cs)
-        assert [abs((lv @ lv) - 1.0) < 1e-9 for lv in tgevec] == [True] * 8
+        assert [abs(np.dot(lv, lv) - 1.0) < 1e-9 for lv in tgevec] == [True] * 8
         lapl = nx.laplacian_matrix(G)
 
     def test_create_using(self):
