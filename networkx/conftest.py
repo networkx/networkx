@@ -96,13 +96,6 @@ def set_warnings():
     )
 
 
-#    warnings.filterwarnings(
-#        "ignore",
-#        category=FutureWarning,
-#        message="The function signature for cytoscape_data",
-#    )
-
-
 @pytest.fixture(autouse=True)
 def add_nx(doctest_namespace):
     doctest_namespace["nx"] = networkx
