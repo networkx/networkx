@@ -94,11 +94,13 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="FilterMultiInner.copy"
     )
-    warnings.filterwarnings(
-        "ignore",
-        category=FutureWarning,
-        message="The function signature for cytoscape_data",
-    )
+
+
+#    warnings.filterwarnings(
+#        "ignore",
+#        category=FutureWarning,
+#        message="The function signature for cytoscape_data",
+#    )
 
 
 @pytest.fixture(autouse=True)
