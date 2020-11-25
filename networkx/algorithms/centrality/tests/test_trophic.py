@@ -137,7 +137,7 @@ def test_trophic_levels_even_more_complex():
         [0, 0, 0, 0, 1],
     ])
     # fmt: on
-    result_1 = np.ravel(np.matmul(np.linalg.inv(K), np.ones(5)))
+    result_1 = np.ravel(np.linalg.inv(K) @ np.ones(5))
     G = nx.from_numpy_array(matrix, create_using=nx.DiGraph)
     result_2 = nx.trophic_levels(G)
 
