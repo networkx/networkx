@@ -354,18 +354,18 @@ class TestSquareClustering:
     def test_cubical(self):
         G = nx.cubical_graph()
         assert list(nx.square_clustering(G).values()) == [
-            1/3,
-            1/3,
-            1/3,
-            1/3,
-            1/3,
-            1/3,
-            1/3,
-            1/3,
+            1 / 3,
+            1 / 3,
+            1 / 3,
+            1 / 3,
+            1 / 3,
+            1 / 3,
+            1 / 3,
+            1 / 3,
         ]
-        assert list(nx.square_clustering(G, [1, 2]).values()) == [1/3, 1/3]
-        assert nx.square_clustering(G, [1])[1] == 1/3
-        assert nx.square_clustering(G, [1, 2]) == {1: 1/3, 2: 1/3}
+        assert list(nx.square_clustering(G, [1, 2]).values()) == [1 / 3, 1 / 3]
+        assert nx.square_clustering(G, [1])[1] == 1 / 3
+        assert nx.square_clustering(G, [1, 2]) == {1: 1 / 3, 2: 1 / 3}
 
     def test_k5(self):
         G = nx.complete_graph(5)
@@ -418,7 +418,7 @@ class TestSquareClustering:
                 (3, 6),
             ]
         )
-        assert nx.square_clustering(G, [1])[1] == 1/3
+        assert nx.square_clustering(G, [1])[1] == 1 / 3
 
 
 def test_average_clustering():
