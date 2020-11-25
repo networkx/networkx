@@ -744,13 +744,13 @@ class TestSimilarity:
         numpy.random.seed(42)
 
         G = nx.Graph()
-        G.add_edge('v1', 'v2', weight=5)
-        G.add_edge('v1', 'v3', weight=1)
-        G.add_edge('v1', 'v4', weight=2)
-        G.add_edge('v2', 'v3', weight=0.1)
-        G.add_edge('v3', 'v5', weight=1)
-        expected = {'v3': 0.75, 'v4': 0.5, 'v2': 0.5, 'v5': 0.25}
-        sim = nx.panther_similarity(G, 'v1', path_length=2)
+        G.add_edge("v1", "v2", weight=5)
+        G.add_edge("v1", "v3", weight=1)
+        G.add_edge("v1", "v4", weight=2)
+        G.add_edge("v2", "v3", weight=0.1)
+        G.add_edge("v3", "v5", weight=1)
+        expected = {"v3": 0.75, "v4": 0.5, "v2": 0.5, "v5": 0.25}
+        sim = nx.panther_similarity(G, "v1", path_length=2)
         assert sim == expected
 
     def test_generate_random_paths_unweighted(self):
@@ -766,10 +766,7 @@ class TestSimilarity:
         G.add_edge(1, 2)
         G.add_edge(2, 4)
         paths = nx.generate_random_paths(
-            G,
-            num_paths,
-            path_length=path_length,
-            index_map=index_map
+            G, num_paths, path_length=path_length, index_map=index_map
         )
         expected_paths = [
             [3, 0, 3],
@@ -801,38 +798,35 @@ class TestSimilarity:
         num_paths = 10
         path_length = 6
         G = nx.Graph()
-        G.add_edge('a', 'b', weight=0.6)
-        G.add_edge('a', 'c', weight=0.2)
-        G.add_edge('c', 'd', weight=0.1)
-        G.add_edge('c', 'e', weight=0.7)
-        G.add_edge('c', 'f', weight=0.9)
-        G.add_edge('a', 'd', weight=0.3)
+        G.add_edge("a", "b", weight=0.6)
+        G.add_edge("a", "c", weight=0.2)
+        G.add_edge("c", "d", weight=0.1)
+        G.add_edge("c", "e", weight=0.7)
+        G.add_edge("c", "f", weight=0.9)
+        G.add_edge("a", "d", weight=0.3)
         paths = nx.generate_random_paths(
-            G,
-            num_paths,
-            path_length=path_length,
-            index_map=index_map
+            G, num_paths, path_length=path_length, index_map=index_map
         )
 
         expected_paths = [
-            ['d', 'c', 'f', 'c', 'd', 'a', 'b'],
-            ['e', 'c', 'f', 'c', 'f', 'c', 'e'],
-            ['d', 'a', 'b', 'a', 'b', 'a', 'c'],
-            ['b', 'a', 'd', 'a', 'b', 'a', 'b'],
-            ['d', 'a', 'b', 'a', 'b', 'a', 'd'],
-            ['d', 'a', 'b', 'a', 'b', 'a', 'c'],
-            ['d', 'a', 'b', 'a', 'b', 'a', 'b'],
-            ['f', 'c', 'f', 'c', 'f', 'c', 'e'],
-            ['d', 'a', 'd', 'a', 'b', 'a', 'b'],
-            ['e', 'c', 'f', 'c', 'e', 'c', 'd'],
+            ["d", "c", "f", "c", "d", "a", "b"],
+            ["e", "c", "f", "c", "f", "c", "e"],
+            ["d", "a", "b", "a", "b", "a", "c"],
+            ["b", "a", "d", "a", "b", "a", "b"],
+            ["d", "a", "b", "a", "b", "a", "d"],
+            ["d", "a", "b", "a", "b", "a", "c"],
+            ["d", "a", "b", "a", "b", "a", "b"],
+            ["f", "c", "f", "c", "f", "c", "e"],
+            ["d", "a", "d", "a", "b", "a", "b"],
+            ["e", "c", "f", "c", "e", "c", "d"],
         ]
         expected_map = {
-            'd': {0, 2, 3, 4, 5, 6, 8, 9},
-            'c': {0, 1, 2, 5, 7, 9},
-            'f': {0, 1, 9, 7},
-            'a': {0, 2, 3, 4, 5, 6, 8},
-            'b': {0, 2, 3, 4, 5, 6, 8},
-            'e': {1, 9, 7},
+            "d": {0, 2, 3, 4, 5, 6, 8, 9},
+            "c": {0, 1, 2, 5, 7, 9},
+            "f": {0, 1, 9, 7},
+            "a": {0, 2, 3, 4, 5, 6, 8},
+            "b": {0, 2, 3, 4, 5, 6, 8},
+            "e": {1, 9, 7},
         }
 
         assert expected_paths == list(paths)
