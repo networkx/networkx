@@ -1457,7 +1457,7 @@ def _n_choose_k(n, k):
 
     The general equation is n! / (k! * (n - k)!). The below
     implementation is a more efficient version.
-    
+
     Note: this will be removed in favor of Python 3.8's ``math.comb(n, k)``.
 
     Parameters
@@ -1475,12 +1475,12 @@ def _n_choose_k(n, k):
 
     Examples
     --------
-        >>> _n_choose_k(5, 2)
-        10
-        >>> _n_choose_k(5, 4)
-        5
-        >>> _n_choose_k(100, 100)
-        1
+    >>> _n_choose_k(5, 2)
+    10
+    >>> _n_choose_k(5, 4)
+    5
+    >>> _n_choose_k(100, 100)
+    1
 
     """
     if k > n:
@@ -1494,7 +1494,7 @@ def _n_choose_k(n, k):
 
 
 def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
-    """Returns the Panther similarity of nodes in the graph ``G`` to node ``v``.
+    """Returns the Panther similarity of nodes in the graph `G` to node ``v``.
 
     Panther is a similarity metric that says "two objects are considered
     to be similar if they frequently appear on the same paths." [1]_.
@@ -1504,19 +1504,19 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     G : NetworkX graph
         A NetworkX graph
     source : node
-        Source node for whom to find the top ``k`` similar other nodes
-    k : int
+        Source node for which to find the top `k` similar other nodes
+    k : int (default = 5)
         The number of most similar nodes to return
-    path_length : int
+    path_length : int (default = 5)
         How long the randomly generated paths should be (``T`` in [1]_)
     c : float (default = 0.5)
         A universal positive constant used to scale the number
         of sample random paths to generate.
-    delta : float
+    delta : float (default = 0.1)
         The probability that the similarity $S$ is not an epsilon-approximation to (R, phi),
         where $R$ is the number of random paths and $\phi$ is the probability
         that an element sampled from a set $A \subseteq D$, where $D$ is the domain.
-    eps : float
+    eps : float or None (default = None)
         The error bound. Per [1]_, a good value is ``sqrt(1/|E|)``. Therefore,
         if no value is provided, the recommended computed value will be used.
 
@@ -1529,8 +1529,8 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
 
     Examples
     --------
-        >>> G = nx.star_graph(10)
-        >>> sim = nx.panther_similarity(G, 0)
+    >>> G = nx.star_graph(10)
+    >>> sim = nx.panther_similarity(G, 0)
 
     References
     ----------
@@ -1558,17 +1558,14 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     node_map = np.array(G)
 
     # Calculate the sample size ``R`` for how many paths
-    # torandomly generate
+    # to randomly generate
     t_choose_2 = _n_choose_k(path_length, 2)
     sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
     index_map = {}
     paths = generate_random_paths(
-        G,
-        sample_size,
-        path_length=path_length,
-        index_map=index_map
+        G, sample_size, path_length=path_length, index_map=index_map
     )
-    S = np.zeros(G.number_of_nodes())
+    S = np.zeros(num_nodes)
 
     inv_sample_size = 1 / sample_size
     # Calculate the path similarities
@@ -1604,7 +1601,7 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
 
 
 def generate_random_paths(G, sample_size, path_length=5, index_map=None):
-    """Randomly generate ``sample_size`` paths of length ``path_length``.
+    """Randomly generate `sample_size` paths of length `path_length`.
 
     Parameters
     ----------
@@ -1612,9 +1609,9 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
         A NetworkX graph
     sample_size : integer
         The number of paths to generate. This is ``R`` in [1]_.
-    path_length : integer
+    path_length : integer (default = 5)
         The maximum size of the path to randomly generate.
-        This is ``T`` in [1]_. According to the paper, T >= 5 is
+        This is ``T`` in [1]_. According to the paper, ``T >= 5`` is
         recommended.
     index_map : dictionary, optional
         If provided, this will be populated with the inverted
@@ -1624,22 +1621,22 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
     Returns
     -------
     paths : generator of lists
-        Generator of ``sample_size`` paths each with length ``path_length``.
+        Generator of `sample_size` paths each with length `path_length`.
 
     Examples
     --------
-    Note that the return value is the list of paths::
+    Note that the return value is the list of paths:
 
-        >>> G = nx.star_graph(3)
-        >>> random_path = nx.generate_random_paths(G, 2)
+    >>> G = nx.star_graph(3)
+    >>> random_path = nx.generate_random_paths(G, 2)
 
-    By passing a dictionary into ``index_map``, it will build an
-    inverted index mapping of nodes to the paths in which that node is present::
+    By passing a dictionary into `index_map`, it will build an
+    inverted index mapping of nodes to the paths in which that node is present:
 
-        >>> G = nx.star_graph(3)
-        >>> index_map = {}
-        >>> random_path = nx.generate_random_paths(G, 3, index_map=index_map)
-        >>> paths_containing_node_0 = [random_path[path_idx] for path_idx in index_map.get(0, [])]
+    >>> G = nx.star_graph(3)
+    >>> index_map = {}
+    >>> random_path = nx.generate_random_paths(G, 3, index_map=index_map)
+    >>> paths_containing_node_0 = [random_path[path_idx] for path_idx in index_map.get(0, [])]
 
     References
     ----------
@@ -1681,8 +1678,7 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
             # Randomly sample a neighbor (v_j) according
             # to transition probabilities from ``node`` (v) to its neighbors
             neighbor_index = np.random.choice(
-                num_nodes,
-                p=transition_probabilities[starting_index]
+                num_nodes, p=transition_probabilities[starting_index]
             )
 
             # Set current vertex (v = v_j)
