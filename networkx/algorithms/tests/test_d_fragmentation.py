@@ -1,5 +1,4 @@
 import pytest
-import networkx
 import networkx as nx
 import networkx.generators.trees as tree_constructors
 import networkx.algorithms.d_fragmentation as sut
@@ -12,8 +11,6 @@ from networkx.algorithms.shortest_paths.unweighted import (
 )
 from networkx.algorithms.tree import recognition
 from networkx.algorithms.components import connected
-import networkx.exception as nx_exceptions
-from networkx.generators.random_graphs import gnm_random_graph
 
 
 TREE_SIZE = {"LOWER_BOUND": 1, "UPPER_BOUND": 10000}
@@ -38,7 +35,7 @@ def _get_random_number_of_edges(nodes):
     upper_edges = max(0, (nodes * (nodes - 1)) // 2)
     # To get a sparse graph, we divide the upper bound of edges by a large
     # enough number like 2**5.
-    return _get_random_number_from_bound(0, upper_edges // (2 ** 5))
+    return _get_random_number_from_bound(0, max(1, upper_edges // (2 ** 5)))
 
 
 def _get_random_club_size():
@@ -66,10 +63,19 @@ def _get_random_node(G: nx.Graph):
 
 def _get_non_tree_diameter(g: nx.Graph) -> int:
     """
+    Compute the diameter in a graph that is not a tree.
 
     Parameters
     ----------
-    g
+    g: nx.Graph
+        A networkX graph.
+
+
+    Notes
+    _____
+        Relies on an efficient implementation of the
+        APSP. Currently relies on Bellman-Ford and runs
+        in O(|V|^3).
 
     Returns
     -------
@@ -115,7 +121,8 @@ def _get_tree_diameter(tree: nx.Graph) -> int:
 
 def _get_diameters_of_components(g: nx.Graph):
     """
-
+    Get the diameters of the connected components
+    in g.
     Parameters
     ----------
     g: A networkX graph.
@@ -158,24 +165,19 @@ def d_fragmentation_in_graphs(g: nx.Graph, d: int):
     if d < 0:
         with pytest.raises(ValueError):
             sut.d_fragmented(g, d)
-        return
     elif d == 0:
         assert set(sut.d_fragmented(g, d)) == set(g.edges)
-        return
-    if not recognition.is_forest(g):
-        if d != 1:
-            with pytest.raises(networkx.exception.NetworkXNotImplemented) as e:
-                sut.d_fragmented(g, d)
-    chosen_edges = list(sut.d_fragmented(g, d))
-    h = _remove_edges(g, chosen_edges)
-    diam_list = list(_get_diameters_of_components(h))
+    elif recognition.is_forest(g):
 
-    # After removing the selected edge_set,
-    # check that the diameter in all the components
-    # of the resultant graph is at most d.
-    # Hence the resultant graph is a d-club cluster graph.
+        # After removing the selected edge_set,
+        # check that the diameter in all the components
+        # of the resultant graph is at most d.
+        # Hence the resultant graph is a d-club cluster graph.
 
-    assert max(diam_list) <= d
+        chosen_edges = list(sut.d_fragmented(g, d))
+        h = _remove_edges(g, chosen_edges)
+        diam_list = list(_get_diameters_of_components(h))
+        assert max(diam_list) <= d
 
     return
 
@@ -195,36 +197,14 @@ def test_multiple(count: int = 5):
     -------
     None
     """
-    trees = int(count * 0.8)
-    non_trees = count - trees
+    trees = count
 
     # Check some random trees on some order.
     for _ in range(trees):
         g = _get_random_tree()
         d = _get_random_club_size()
         d_fragmentation_in_graphs(g, d)
-    # Check some random graphs on some order.
-    for _ in range(non_trees):
-        # There are only two cases really:
-        # d = 1 or d > 1.
-
-        # The current implementation only works for
-        # d = 1.
-        # If d > 1, then a NetworkXNotImplemented Exception
-        # is thrown.
-        d = _get_random_number_from_bound(1, 2)
-        n = _get_random_number_from_bound(1, 100)
-        m = _get_random_number_of_edges(n)
-        g = gnm_random_graph(n, m)
-        d_fragmentation_in_graphs(g, d)
-
     print(
-        f"Tested d-club cluster graphs for {trees:02d} random trees and {non_trees:02d} random graphs successfully!"
+        f"Tested d-club cluster graphs for {trees:02d} random trees successfully!"
     )
-
     return
-
-
-if __name__ == "__main__":
-    test_multiple()
-    pass

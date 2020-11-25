@@ -105,29 +105,11 @@ from typing import Dict, Generator
 import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.algorithms.tree import recognition
-from networkx.algorithms import matching
 from networkx.algorithms.components import connected
 from operator import itemgetter
 
 
 __all__ = ["d_fragmented"]
-
-
-@not_implemented_for("directed", "multigraph")
-def _is_forest(G: nx.Graph) -> bool:
-    """
-    A local helper that determines if a given graph
-    is a forest (i.e. a collection of pair-wise disconnected trees).
-
-    Parameters
-    ----------
-    G: A networkX graph.
-
-    Returns
-    -------
-    True if G is a forest, False otherwise.
-    """
-    return recognition.is_forest(G)
 
 
 @not_implemented_for("directed", "multigraph")
@@ -146,7 +128,7 @@ def d_fragmented(G: nx.Graph, d: int) -> Generator:
     Raises
     ------
     NetworkXNotImplemented
-        The case where G is not a Forest and d > 1 is not
+        The case where G is not a Forest is not
         supported.
 
 
@@ -166,22 +148,6 @@ def d_fragmented(G: nx.Graph, d: int) -> Generator:
     This algorithm is provided in
     [1]_.
 
-    If G is not a Forest and d = 1,
-    then it relies on an efficient
-    implementation of maximum matching
-    algorithms in arbitrary graphs (like
-    Edmonds' blossom algorithm, or Micali-Vazirani Matching).
-
-    In this case, the implementation of Edmonds' blossom
-    algorithm (runs in O(|V|^2 * |E|)) is used
-    because it is available in networkX.
-
-    In contrast to that, Micali-Vazirani Matching
-    runs in O(sqrt(|V|) * |E|) which is significantly
-    faster but the algorithm itself is extremely complicated
-    to implement.
-
-
     If more results are known, it is encouraged to add to this file
     the support for more cases.
 
@@ -196,25 +162,20 @@ def d_fragmented(G: nx.Graph, d: int) -> Generator:
         raise ValueError("Note d cannot be negative.")
     elif d == 0:
         yield from G.edges
-    elif _is_forest(G):
+    elif recognition.is_forest(G):
         for comp in connected.connected_components(G):
             h = G.subgraph(comp)
-            if len(h) > 1:
-                yield from iter(_d_fragment_tree(h, d))
-    elif d == 1:
-        # Note M is a maximum matching in G if and only if
-        # G[G-M] is a 1-fragmentation of G.
-        mwm = matching.max_weight_matching(G)
-        yield from iter(set(G.edges()) - set(mwm))
+            yield from iter(_d_fragment_tree(h, d))
+
     else:
         # TODO: Implement d-fragmentation for arbitrary graphs
 
         no_good_algorithm_known = """
-            If d > 1, then no fast algorithms of d-fragmentation are known for graphs that are not forests.
+            If d >= 1, then no fast algorithms of d-fragmentation are known for graphs that are not forests.
             In fact, the problem of extracting a maximum d-club cluster graph from an arbitrary graph
             for d >= 2 is known to be NP-Complete.
 
-            The current implementation only supports forests for d >= 1 or general graphs for d = 1.
+            The current implementation only supports forests for d >= 1.
             If you know one, please consider adding it to NetworkX by following:
 
             https://github.com/networkx/networkx/blob/master/CONTRIBUTING.rst
@@ -339,9 +300,21 @@ def _d_fragment_tree(G: nx.Graph, d: int):
     -------
 
     """
+    class Sentinel:
+        """
+        A sentinel node that is different
+        from every other node in a graph.
+        """
+        def __eq__(self, other):
+            return False
+        pass
+
+    if len(list(G.edges)) == 0:
+        return set()
+
     node = _get_node_with_highest_degree(G)
     sub_ecc = dict()
-    parent = -1
+    parent = Sentinel()
     edge_set = set()
     ecc, edges = _d_fragment_tree_helper(G, parent, node, sub_ecc, d, edge_set)
     return edges
