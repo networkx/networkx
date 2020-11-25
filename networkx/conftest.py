@@ -60,9 +60,7 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="edge_betweeness*"
     )
     warnings.filterwarnings(
-        "ignore",
-        category=PendingDeprecationWarning,
-        message="the matrix subclass is not the recommended way*",
+        "ignore", category=PendingDeprecationWarning, message="the matrix subclass*"
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="to_numpy_matrix"
@@ -75,6 +73,18 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="networkx.pagerank_scipy*"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="write_gpickle*"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="read_gpickle*"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="copy is deprecated*"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="signature for cytoscape_data*"
     )
 
 
