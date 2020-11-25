@@ -400,11 +400,11 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
     def test_numpy_type(self):
         G = nx.path_graph(4)
         try:
-            import numpy
+            import numpy as np
         except ImportError:
             return
-        nx.set_node_attributes(G, {n: n for n in numpy.arange(4)}, "number")
-        G[0][1]["edge-number"] = numpy.float64(1.1)
+        nx.set_node_attributes(G, {n: n for n in np.arange(4)}, "number")
+        G[0][1]["edge-number"] = np.float64(1.1)
 
         if sys.version_info < (3, 8):
             expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft"\
