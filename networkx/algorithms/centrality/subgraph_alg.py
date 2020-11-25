@@ -171,16 +171,15 @@ def subgraph_centrality(G):
 
     """
     import numpy as np
-    import numpy.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[np.nonzero(A)] = 1
-    w, v = numpy.linalg.eigh(A)
+    w, v = np.linalg.eigh(A)
     vsquare = np.array(v) ** 2
     expw = np.exp(w)
-    xg = np.dot(vsquare, expw)
+    xg = vsquare @ expw
     # convert vector dictionary keyed by node
     sc = dict(zip(nodelist, map(float, xg)))
     return sc

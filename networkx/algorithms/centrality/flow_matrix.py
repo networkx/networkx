@@ -26,7 +26,7 @@ def flow_matrix_row(G, weight=None, dtype=float, solver="lu"):
         B[v % w] = -c
         # get only the rows needed in the inverse laplacian
         # and multiply to get the flow matrix row
-        row = np.dot(B, C.get_rows(u, v))
+        row = B @ C.get_rows(u, v)
         yield row, (u, v)
 
 
@@ -86,7 +86,7 @@ class FullInverseLaplacian(InverseLaplacian):
 
     def solve(self, rhs):
         s = np.zeros(rhs.shape, dtype=self.dtype)
-        s = np.dot(self.IL, rhs)
+        s = self.IL @ rhs
         return s
 
     def solve_inverse(self, r):
