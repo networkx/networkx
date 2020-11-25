@@ -81,10 +81,19 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="read_gpickle*"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="copy is deprecated*"
+        "ignore", category=DeprecationWarning, message="write_yaml*"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_yaml*")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="FilterAtlas.copy"
     )
     warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="signature for cytoscape_data*"
+        "ignore", category=DeprecationWarning, message="FilterAdjacency.copy*"
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=FutureWarning,
+        message="The function signature for cytoscape_data*",
     )
 
 
