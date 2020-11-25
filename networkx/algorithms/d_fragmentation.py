@@ -300,13 +300,16 @@ def _d_fragment_tree(G: nx.Graph, d: int):
     -------
 
     """
+
     class Sentinel:
         """
         A sentinel node that is different
         from every other node in a graph.
         """
+
         def __eq__(self, other):
             return False
+
         pass
 
     if len(list(G.edges)) == 0:

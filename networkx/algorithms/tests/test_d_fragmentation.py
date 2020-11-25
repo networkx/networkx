@@ -204,7 +204,5 @@ def test_multiple(count: int = 5):
         g = _get_random_tree()
         d = _get_random_club_size()
         d_fragmentation_in_graphs(g, d)
-    print(
-        f"Tested d-club cluster graphs for {trees:02d} random trees successfully!"
-    )
+    print(f"Tested d-club cluster graphs for {trees:02d} random trees successfully!")
     return
