@@ -163,7 +163,6 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     >>> flowDict
     {'p': {'q': 2, 'a': 2}, 'q': {'d': 1}, 'a': {'t': 4}, 'd': {'w': 2}, 't': {'q': 1, 'w': 1}, 'w': {}}
 
-
     References
     ----------
     .. [1] Z. Kiraly, P. Kovacs.

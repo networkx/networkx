@@ -80,6 +80,11 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="read_gpickle"
     )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_shp")
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_shp")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="edges_from_line"
+    )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_yaml")
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_yaml")
     warnings.filterwarnings(
