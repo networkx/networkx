@@ -104,7 +104,7 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
     --------
     >>> G = nx.path_graph(4)
     >>> linefeed = chr(10)  # linefeed=\n
-    >>> s = linefeed.join(nx.generate_gexf(G))  # doctest: +SKIP
+    >>> s = linefeed.join(nx.generate_gexf(G))
     >>> for line in nx.generate_gexf(G):  # doctest: +SKIP
     ...     print(line)
 

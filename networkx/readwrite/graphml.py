@@ -137,7 +137,7 @@ def write_graphml_lxml(
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.write_graphml_lxml(G, "fourpath.graphml")  # doctest: +SKIP
+    >>> nx.write_graphml_lxml(G, "fourpath.graphml")
 
     Notes
     -----
@@ -180,7 +180,7 @@ def generate_graphml(G, encoding="utf-8", prettyprint=True, named_key_ids=False)
     --------
     >>> G = nx.path_graph(4)
     >>> linefeed = chr(10)  # linefeed = \n
-    >>> s = linefeed.join(nx.generate_graphml(G))  # doctest: +SKIP
+    >>> s = linefeed.join(nx.generate_graphml(G))
     >>> for line in nx.generate_graphml(G):  # doctest: +SKIP
     ...     print(line)
 

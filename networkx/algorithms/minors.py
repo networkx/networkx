@@ -67,8 +67,7 @@ def equivalence_classes(iterable, relation):
     >>> X = set(range(10))
     >>> def mod3(x, y): return (x - y) % 3 == 0
     >>> equivalence_classes(X, mod3)    # doctest: +SKIP
-    {frozenset({1, 4, 7}), frozenset({8, 2, 5}), frozenset({0, 9, 3, 6})} # doctest: +SKIP
-
+    {frozenset({1, 4, 7}), frozenset({8, 2, 5}), frozenset({0, 9, 3, 6})}
     """
     # For simplicity of implementation, we initialize the return value as a
     # list of lists, then convert it to a set of sets at the end of the
