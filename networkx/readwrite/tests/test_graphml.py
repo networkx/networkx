@@ -1325,4 +1325,3 @@ class TestXMLGraphML(TestWriteGraphML):
     @classmethod
     def setup_class(cls):
         TestWriteGraphML.setup_class()
-        pytest.importorskip("xml.etree.ElementTree")

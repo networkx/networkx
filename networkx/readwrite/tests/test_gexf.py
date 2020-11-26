@@ -9,8 +9,6 @@ import networkx as nx
 class TestGEXF:
     @classmethod
     def setup_class(cls):
-        _ = pytest.importorskip("xml.etree.ElementTree")
-
         cls.simple_directed_data = """<?xml version="1.0" encoding="UTF-8"?>
 <gexf xmlns="http://www.gexf.net/1.2draft" version="1.2">
     <graph mode="static" defaultedgetype="directed">
