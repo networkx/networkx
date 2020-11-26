@@ -50,7 +50,7 @@ def check_eigenvector(A, l, x):
     y = A * x
     ny = np.linalg.norm(y)
     # Check collinearity.
-    assert almost_equal(np.dot(x, y), nx * ny)
+    assert almost_equal(x @ y, nx * ny)
     # Check eigenvalue.
     assert almost_equal(ny, l * nx)
 

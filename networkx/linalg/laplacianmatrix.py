@@ -46,14 +46,14 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     normalized_laplacian_matrix
     laplacian_spectrum
     """
-    import scipy.sparse
+    from scipy.sparse import spdiags
 
     if nodelist is None:
         nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
     diags = A.sum(axis=1)
-    D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
+    D = spdiags(diags.flatten(), [0], m, n, format="csr")
     return D - A
 
 
@@ -110,21 +110,21 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
        March 2007.
     """
     import numpy as np
-    import scipy
-    import scipy.sparse
+    import scipy as sp
+    from scipy.sparse import spdiags
 
     if nodelist is None:
         nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
     diags = A.sum(axis=1).flatten()
-    D = scipy.sparse.spdiags(diags, [0], m, n, format="csr")
+    D = spdiags(diags, [0], m, n, format="csr")
     L = D - A
-    with scipy.errstate(divide="ignore"):
+    with sp.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
-    DH = scipy.sparse.spdiags(diags_sqrt, [0], m, n, format="csr")
-    return DH.dot(L.dot(DH))
+    DH = spdiags(diags_sqrt, [0], m, n, format="csr")
+    return DH @ (L @ DH)
 
 
 ###############################################################################

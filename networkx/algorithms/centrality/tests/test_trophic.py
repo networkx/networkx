@@ -62,7 +62,7 @@ def test_trophic_levels_levine():
 
     i = np.eye(nn)
     n = np.linalg.inv(i - q)
-    y = np.dot(np.asarray(n), np.ones(nn))
+    y = np.asarray(n) @ np.ones(nn)
 
     expected_y = np.array([1, 2.07906977, 1.46511628, 2.3255814])
     assert np.allclose(y, expected_y)
@@ -137,7 +137,7 @@ def test_trophic_levels_even_more_complex():
         [0, 0, 0, 0, 1],
     ])
     # fmt: on
-    result_1 = np.ravel(np.matmul(np.linalg.inv(K), np.ones(5)))
+    result_1 = np.ravel(np.linalg.inv(K) @ np.ones(5))
     G = nx.from_numpy_array(matrix, create_using=nx.DiGraph)
     result_2 = nx.trophic_levels(G)
 

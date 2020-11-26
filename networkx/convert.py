@@ -133,9 +133,9 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
 
     # numpy matrix or ndarray
     try:
-        import numpy
+        import numpy as np
 
-        if isinstance(data, (numpy.matrix, numpy.ndarray)):
+        if isinstance(data, (np.matrix, np.ndarray)):
             try:
                 return nx.from_numpy_matrix(data, create_using=create_using)
             except Exception as e:

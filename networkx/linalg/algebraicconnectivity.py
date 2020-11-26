@@ -207,7 +207,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
             """Make X orthogonal to the nullspace of L."""
             X = np.asarray(X)
             for j in range(X.shape[1]):
-                X[:, j] -= np.dot(X[:, j], e) * e
+                X[:, j] -= (X[:, j] @ e) * e
 
     else:
 

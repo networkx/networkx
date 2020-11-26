@@ -169,7 +169,7 @@ def dict_to_numpy_array2(d, mapping=None):
     with optional mapping.
 
     """
-    import numpy
+    import numpy as np
 
     if mapping is None:
         s = set(d.keys())
@@ -177,7 +177,7 @@ def dict_to_numpy_array2(d, mapping=None):
             s.update(v.keys())
         mapping = dict(zip(s, range(len(s))))
     n = len(mapping)
-    a = numpy.zeros((n, n))
+    a = np.zeros((n, n))
     for k1, i in mapping.items():
         for k2, j in mapping.items():
             try:
@@ -192,13 +192,13 @@ def dict_to_numpy_array1(d, mapping=None):
     with optional mapping.
 
     """
-    import numpy
+    import numpy as np
 
     if mapping is None:
         s = set(d.keys())
         mapping = dict(zip(s, range(len(s))))
     n = len(mapping)
-    a = numpy.zeros(n)
+    a = np.zeros(n)
     for k1, i in mapping.items():
         i = mapping[k1]
         a[i] = d[k1]
@@ -335,13 +335,13 @@ def create_random_state(random_state=None):
 class PythonRandomInterface:
     def __init__(self, rng=None):
         try:
-            import numpy
+            import numpy as np
         except ImportError:
             msg = "numpy not found, only random.random available."
             warnings.warn(msg, ImportWarning)
 
         if rng is None:
-            self._rng = numpy.random.mtrand._rand
+            self._rng = np.random.mtrand._rand
         else:
             self._rng = rng
 

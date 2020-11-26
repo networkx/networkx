@@ -1429,9 +1429,7 @@ def simrank_similarity_numpy(
     newsim = np.eye(adjacency_matrix.shape[0], dtype=np.float64)
     for _ in range(max_iterations):
         prevsim = np.copy(newsim)
-        newsim = importance_factor * np.matmul(
-            np.matmul(adjacency_matrix.T, prevsim), adjacency_matrix
-        )
+        newsim = importance_factor * ((adjacency_matrix.T @ prevsim) @ adjacency_matrix)
         np.fill_diagonal(newsim, 1.0)
 
         if np.allclose(prevsim, newsim, atol=tolerance):

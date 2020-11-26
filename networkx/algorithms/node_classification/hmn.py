@@ -83,7 +83,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
         degrees = X.sum(axis=0).A[0]
         degrees[degrees == 0] = 1  # Avoid division by 0
         D = sparse.diags((1.0 / degrees), offsets=0)
-        P = D.dot(X).tolil()
+        P = (D @ X).tolil()
         P[labels[:, 0]] = 0  # labels[:, 0] indicates IDs of labeled nodes
         return P
 

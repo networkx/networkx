@@ -143,7 +143,7 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     """
 
     import numpy as np
-    import scipy.stats as stats
+    from scipy import stats
 
     available_transformations = ["identity", "modularity"]
     alpha = np.clip(alpha, 0, 1)
