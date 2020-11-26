@@ -103,8 +103,8 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     >>> flowCost, flowDict = nx.network_simplex(G)
     >>> flowCost
     24
-    >>> flowDict  # doctest: +SKIP
-    {'a': {'c': 1, 'b': 4}, 'c': {'d': 1}, 'b': {'d': 4}, 'd': {}}
+    >>> flowDict
+    {'a': {'b': 4, 'c': 1}, 'd': {}, 'b': {'d': 4}, 'c': {'d': 1}}
 
     The mincost flow algorithm can also be used to solve shortest path
     problems. To find the shortest path between two nodes u and v,
@@ -160,8 +160,8 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     ... )
     >>> flowCost
     37
-    >>> flowDict  # doctest: +SKIP
-    {'a': {'t': 4}, 'd': {'w': 2}, 'q': {'d': 1}, 'p': {'q': 2, 'a': 2}, 't': {'q': 1, 'w': 1}, 'w': {}}
+    >>> flowDict
+    {'p': {'q': 2, 'a': 2}, 'q': {'d': 1}, 'a': {'t': 4}, 'd': {'w': 2}, 't': {'q': 1, 'w': 1}, 'w': {}}
 
     References
     ----------

@@ -1737,7 +1737,7 @@ class Graph:
         To create a full graph version of the subgraph with its own copy
         of the edge or node attributes, use::
 
-            >>> G.edge_subgraph(edges).copy()  # doctest: +SKIP
+            G.edge_subgraph(edges).copy()
 
         Examples
         --------

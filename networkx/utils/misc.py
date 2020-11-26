@@ -277,13 +277,12 @@ def groups(many_to_one):
     The return value is a dictionary mapping values from `many_to_one`
     to sets of keys from `many_to_one` that have that value.
 
-    For example::
-
-        >>> from networkx.utils import groups
-        >>> many_to_one = {"a": 1, "b": 1, "c": 2, "d": 3, "e": 3}
-        >>> groups(many_to_one)  # doctest: +SKIP
-        {1: {'a', 'b'}, 2: {'c'}, 3: {'d', 'e'}}
-
+    Examples
+    --------
+    >>> from networkx.utils import groups
+    >>> many_to_one = {"a": 1, "b": 1, "c": 2, "d": 3, "e": 3}
+    >>> groups(many_to_one)  # doctest: +SKIP
+    {1: {'a', 'b'}, 2: {'c'}, 3: {'e', 'd'}}
     """
     one_to_many = defaultdict(set)
     for v, k in many_to_one.items():
@@ -294,13 +293,12 @@ def groups(many_to_one):
 def to_tuple(x):
     """Converts lists to tuples.
 
-    For example::
-
-        >>> from networkx.utils import to_tuple
-        >>> a_list = [1, 2, [1, 4]]
-        >>> to_tuple(a_list)
-        (1, 2, (1, 4))
-
+    Examples
+    --------
+    >>> from networkx.utils import to_tuple
+    >>> a_list = [1, 2, [1, 4]]
+    >>> to_tuple(a_list)
+    (1, 2, (1, 4))
     """
     if not isinstance(x, (tuple, list)):
         return x
