@@ -312,6 +312,8 @@ def test_draw_edges_min_source_target_margins(node_shape):
     assert padded_extent[0] > default_extent[0]
     # And the rightmost extent of the edge, further to the left
     assert padded_extent[1] < default_extent[1]
+    # NOTE: Prevent axes objects from impacting other tests via plt.gca
+    plt.delaxes(ax)
 
 
 def test_apply_alpha():
