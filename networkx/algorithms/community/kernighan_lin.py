@@ -35,6 +35,7 @@ def _kernighan_lin_sweep(edges, side):
         _update_costs(costs1, v)
         totcost += cost_u + cost_v
         yield totcost, i, (u, v)
+        i += 1
 
 
 @py_random_state(4)
