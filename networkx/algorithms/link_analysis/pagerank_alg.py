@@ -236,7 +236,7 @@ def google_matrix(
     if nodelist is None:
         nodelist = list(G)
 
-    M = nx.to_numpy_matrix(G, nodelist=nodelist, weight=weight)
+    M = np.asmatrix(nx.to_numpy_array(G, nodelist=nodelist, weight=weight))
     N = len(G)
     if N == 0:
         return M
@@ -336,7 +336,7 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    msg = "networkx.pagerank_numpy will be deprecated in NetworkX 3.0, use networkx.pagerank instead."
+    msg = "networkx.pagerank_numpy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
     warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
 
@@ -446,7 +446,7 @@ def pagerank_scipy(
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    msg = "networkx.pagerank_scipy will be deprecated in NetworkX 3.0, use networkx.pagerank instead."
+    msg = "networkx.pagerank_scipy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
     warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
     import scipy.sparse
