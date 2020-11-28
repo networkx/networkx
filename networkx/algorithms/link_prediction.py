@@ -571,6 +571,8 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
     return _apply_prediction(G, predict, ebunch)
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def cngf_score(G, ebunch=None):
     r""""""
 
