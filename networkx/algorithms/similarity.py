@@ -1690,7 +1690,9 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
 
             # Add p_r into P_v
             if index_map is not None:
-                index_map.setdefault(neighbor_node, set())
-                index_map[neighbor_node].add(path_index)
+                if neighbor_node in index_map:
+                    index_map[neighbor_node].add(path_index)
+                else:
+                    index_map[neighbor_node] = {path_index}
 
         yield path
