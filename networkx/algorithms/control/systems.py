@@ -329,3 +329,24 @@ class LTISystem:
         redundant = all_edges.difference(*matchings)
         ordinary = all_edges.difference(critical, redundant)
         return critical, redundant, ordinary
+
+    def classify_node_importance(self):
+        """
+        Classify the importance of each node using
+        minimum driver node tests.
+        """
+
+        G = self.G.subgraph(self.state_nodes)
+        all_nodes = set(self.state_nodes)
+        H = create_bipartite_from_directed_graph(G)
+        max_matchings = find_maximum_matchings(H)
+        all_driver_nodes = []
+        for matching in max_matchings:
+            _, driver_nodes = convert_matching_to_nodes(
+                matching, G.nodes, from_bipartite=True
+            )
+            all_driver_nodes.append(driver_nodes)
+        critical = set.intersection(*all_driver_nodes)
+        redundant = all_nodes.difference(*all_driver_nodes)
+        intermittent = all_nodes.difference(critical, redundant)
+        return critical, redundant, intermittent

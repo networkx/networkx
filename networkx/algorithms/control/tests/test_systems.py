@@ -250,3 +250,24 @@ def test_link_importance():
     assert critical == true_critical
     assert redundant == true_redundant
     assert ordinary == true_ordinary
+
+
+def test_node_importance():
+    A = np.array(
+        [
+            [0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0],
+            [2, 0, 0, 3, 0],
+            [-1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 4],
+        ]
+    )
+    B = np.array([[5, 0], [0, -2], [0, 0], [0, 0], [0, 6]])
+    sys = nx.algorithms.control.systems.LTISystem(A, B)
+    true_critical = {"x0"}
+    true_redundant = {"x2", "x4"}
+    true_intermittent = {"x1", "x3"}
+    critical, redundant, intermittent = sys.classify_node_importance()
+    assert critical == true_critical
+    assert redundant == true_redundant
+    assert intermittent == true_intermittent
