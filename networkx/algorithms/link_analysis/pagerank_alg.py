@@ -236,7 +236,7 @@ def google_matrix(
     if nodelist is None:
         nodelist = list(G)
 
-    M = nx.to_numpy_matrix(G, nodelist=nodelist, weight=weight)
+    M = np.asmatrix(nx.to_numpy_array(G, nodelist=nodelist, weight=weight))
     N = len(G)
     if N == 0:
         return M
