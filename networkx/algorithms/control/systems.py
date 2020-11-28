@@ -350,3 +350,39 @@ class LTISystem:
         redundant = all_nodes.difference(*all_driver_nodes)
         intermittent = all_nodes.difference(critical, redundant)
         return critical, redundant, intermittent
+
+    def classify_node_deletion_importance(self):
+        """
+        Classify the importance of each node by
+        testing the number of minimum driver nodes required
+        after the node has been removed from the network.
+        """
+
+        all_nodes = set(self.state_nodes)
+        G = self.G.subgraph(self.state_nodes)
+        print(G.edges)
+        H = create_bipartite_from_directed_graph(G)
+        matching = find_maximum_matchings(H)[0]
+        _, driver_nodes = convert_matching_to_nodes(
+            matching, G.nodes, from_bipartite=True
+        )
+        n_driver_nodes = len(driver_nodes)
+
+        critical, redundant, ordinary = set(), set(), set()
+        for node in all_nodes:
+            G = self.G.subgraph(all_nodes.difference({node}))
+            H = create_bipartite_from_directed_graph(G)
+            matchings = find_maximum_matchings(H)
+            if len(matchings) > 0:
+                _, driver_nodes = convert_matching_to_nodes(
+                    matching, G.nodes, from_bipartite=True
+                )
+            else:
+                driver_nodes = G.nodes
+            if len(driver_nodes) > n_driver_nodes:
+                critical.add(node)
+            elif len(driver_nodes) < n_driver_nodes:
+                redundant.add(node)
+            else:
+                ordinary.add(node)
+        return critical, redundant, ordinary

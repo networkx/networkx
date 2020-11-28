@@ -271,3 +271,23 @@ def test_node_importance():
     assert critical == true_critical
     assert redundant == true_redundant
     assert intermittent == true_intermittent
+
+
+def test_node_deletion_importance():
+    A = np.array(
+        [
+            [0, 0, 0, 0],
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 1, 0, 0],
+        ]
+    )
+    B = np.array([[0], [0], [0], [0]])
+    sys = nx.algorithms.control.systems.LTISystem(A, B)
+    true_critical = {"x1"}
+    true_redundant = {"x0", "x3"}
+    true_ordinary = {"x2"}
+    critical, redundant, ordinary = sys.classify_node_deletion_importance()
+    assert critical == true_critical
+    assert redundant == true_redundant
+    assert ordinary == true_ordinary
