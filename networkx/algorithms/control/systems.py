@@ -276,7 +276,6 @@ class LTISystem:
         matched = list(matched)
         thetas = []
         for node in unmatched:
-            print(node)
             theta = set()
             other_unmatched = unmatched.difference({node})
             bad_edges = [(u, v) for u, v in H.edges() if v[:-1] in other_unmatched]
@@ -309,3 +308,24 @@ class LTISystem:
                 continue
             return nodes
         return None
+
+    def classify_link_importance(self):
+        """Classify the importance of each edge using
+        structural controllability tests.
+
+        This implementation is generally exponential in the number of edges,
+        due to the fact that all maximum matchings need to be enumerated.
+        """
+
+        G = self.G.subgraph(self.state_nodes)
+        all_edges = set(G.edges())
+        H = create_bipartite_from_directed_graph(G)
+        max_matchings = find_maximum_matchings(H)
+        matchings = []
+        for matching in max_matchings:
+            matching = convert_bipartite_edges_to_original(matching)
+            matchings.append(set(matching))
+        critical = set.intersection(*matchings)
+        redundant = all_edges.difference(*matchings)
+        ordinary = all_edges.difference(critical, redundant)
+        return critical, redundant, ordinary

@@ -229,3 +229,24 @@ def test_minimum_actuators():
     actuators = sys.find_minimum_actuators()
     valids = [{"x0", "x1", "x4"}, {"x0", "x3", "x4"}]
     assert actuators in valids
+
+
+def test_link_importance():
+    A = np.array(
+        [
+            [0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0],
+            [2, 0, 0, 3, 0],
+            [-1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 4],
+        ]
+    )
+    B = np.array([[5, 0], [0, -2], [0, 0], [0, 0], [0, 6]])
+    sys = nx.algorithms.control.systems.LTISystem(A, B)
+    true_critical = {("x3", "x2"), ("x4", "x4")}
+    true_redundant = {("x0", "x2")}
+    true_ordinary = {("x0", "x1"), ("x0", "x3")}
+    critical, redundant, ordinary = sys.classify_link_importance()
+    assert critical == true_critical
+    assert redundant == true_redundant
+    assert ordinary == true_ordinary
