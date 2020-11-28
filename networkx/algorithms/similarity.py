@@ -1561,29 +1561,28 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     # to randomly generate
     t_choose_2 = _n_choose_k(path_length, 2)
     sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
+    print(sample_size)
     index_map = {}
-    paths = generate_random_paths(
-        G, sample_size, path_length=path_length, index_map=index_map
+    paths = list(
+        generate_random_paths(
+            G, sample_size, path_length=path_length, index_map=index_map
+        )
     )
     S = np.zeros(num_nodes)
 
     inv_sample_size = 1 / sample_size
+
+    source_paths = set(index_map[source])
+
     # Calculate the path similarities
-    for path_index, path in enumerate(paths):
-        path_set = set(path)
-
-        # Comparing ``source`` with ``node`` (v_j)
-        for node in path_set:
-            # Don't compare with self
-            if source == node:
-                continue
-
-            node_index = inv_node_map[node]
-
-            # Only sum if they are share the same path,
-            # i.e., ``source`` is also on the same path
-            if path_index in index_map[source]:
-                S[node_index] += inv_sample_size
+    # between ``source`` (v) and ``node`` (v_j)
+    # using our inverted index mapping of
+    # vertices to paths
+    for node, paths in index_map.items():
+        # Only consider paths where both
+        # ``node`` and ``source`` are present
+        common_paths = source_paths.intersection(paths)
+        S[inv_node_map[node]] = len(common_paths) * inv_sample_size
 
     # Retrieve top ``k`` similar
     # Note: the below performed anywhere from 4-10x faster
