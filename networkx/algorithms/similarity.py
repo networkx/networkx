@@ -1563,7 +1563,7 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
     print(sample_size)
     index_map = {}
-    paths = list(
+    _ = list(
         generate_random_paths(
             G, sample_size, path_length=path_length, index_map=index_map
         )
