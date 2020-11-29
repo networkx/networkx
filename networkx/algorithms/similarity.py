@@ -1596,6 +1596,129 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     return top_k_with_val
 
 
+def panther_vector_similarity(
+    G, source, D=50, k=5, path_length=5, c=0.5, delta=0.1, eps=None
+):
+    """Returns the Panther vector similarity of nodes in the graph ``G``
+    to node ``v``. Panther is a similarity metric that says
+    "two objects are considered to be similar if their structure
+    is " [1]_.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A NetworkX graph
+    source : node
+        Source node for whom to find the top ``k`` similar other nodes
+    D : int
+        The number of similarity scores to use (in descending order)
+        for each feature vector. Defaults to 50 per [1]_
+    k : int
+        The number of most similar nodes to return
+    path_length : int
+        How long the randomly generated paths should be (``T`` in [1]_)
+    c : float
+        A universal positive constant. Defaults to 0.5 per [1]_
+    delta : float
+        The probability that $S$ is not an epsilon-approximation to (R, phi)
+    eps : float
+        The error bound. Per [1]_, a good value is ``sqrt(1/|E|)``. Therefore,
+        if no value is provided, the recommended computed value will be used.
+
+    Returns
+    -------
+    similarity : dictionary
+        Dictionary of nodes to similarity scores (as floats). Note:
+        the self-similarity (i.e., ``v``) will not be included in
+        the returned dictionary.
+
+    Examples
+    --------
+
+        >>> import networkx as nx
+        >>> G = nx.star_graph(10)
+        >>> sim = nx.panther_vector_similarity(G, 0)
+
+    References
+    ----------
+    .. [1] Zhang, J., Tang, J., Ma, C., Tong, H., Jing, Y., & Li, J.
+           Panther: Fast top-k similarity search on large networks.
+           In Proceedings of the ACM SIGKDD International Conference
+           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).
+           Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
+    """
+    from scipy.spatial import cKDTree as KDTree
+    import numpy as np
+
+    num_nodes = G.number_of_nodes()
+    if num_nodes < k:
+        warnings.warn(
+            f"Number of nodes is {num_nodes}, but requested k is {k}. "
+            "Setting k to number of nodes."
+        )
+        k = num_nodes
+
+    # According to [1], they empirically determined
+    # a good value for ``eps`` to be sqrt( 1 / |E| )
+    if eps is None:
+        eps = np.sqrt(1.0 / G.number_of_edges())
+
+    inv_node_map = {name: index for index, name in enumerate(G.nodes)}
+    node_map = np.array(G)
+
+    # Calculate the sample size ``R`` for how many paths
+    # to randomly generate
+    t_choose_2 = _n_choose_k(path_length, 2)
+    sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
+    index_map = {}
+    _ = list(
+        generate_random_paths(
+            G, sample_size, path_length=path_length, index_map=index_map
+        )
+    )
+    S = np.zeros((num_nodes, D))
+
+    theta = np.zeros((num_nodes, D))
+    inv_sample_size = 1 / sample_size
+
+    # Calculate the path similarities
+    # for each node against each other node
+    for vi_idx, vi in enumerate(G.nodes):
+        # Calculate the path similarities
+        # between ``source`` (v) and ``node`` (v_j)
+        # using our inverted index mapping of
+        # vertices to paths
+        for node, paths in index_map.items():
+            # Only consider paths where both
+            # ``node`` and ``source`` are present
+            common_paths = set(index_map[vi]).intersection(paths)
+            S[vi_idx, inv_node_map[node]] = len(common_paths) * inv_sample_size
+
+        # Build up the feature vector using the
+        # largest ``D`` similarity scores
+        theta[vi_idx] = np.sort(np.partition(S[vi_idx], -D)[-D:])[::-1]
+
+    # Insert the feature vectors into a k-d tree
+    # for fast retrieval
+    kdtree = KDTree(theta)
+
+    # Retrieve top ``k`` similar vertices (i.e., vectors)
+    # (based on their Euclidean distance)
+    neighbor_distances, nearest_neighbors = kdtree.query(theta[source], k=k)
+
+    # The paper defines the similarity S(v_i, v_j) as
+    # 1 / || Theta(v_i) - Theta(v_j) ||
+    similarities = np.reciprocal(neighbor_distances)
+
+    # Add back the similarity scores (i.e., distances)
+    top_k_sorted_names = map(lambda n: node_map[n], nearest_neighbors)
+    top_k_with_val = dict(zip(top_k_sorted_names, similarities))
+
+    # Remove the self-similarity
+    top_k_with_val.pop(source, None)
+    return top_k_with_val
+
+
 def generate_random_paths(G, sample_size, path_length=5, index_map=None):
     """Randomly generate `sample_size` paths of length `path_length`.
 
