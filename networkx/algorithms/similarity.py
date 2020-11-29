@@ -669,7 +669,8 @@ def optimize_edit_paths(
     # TODO: support DiGraph
 
     import numpy as np
-    from scipy.optimize import linear_sum_assignment
+    import scipy as sp
+    import scipy.optimize  # call as sp.optimize
 
     class CostMatrix:
         def __init__(self, C, lsa_row_ind, lsa_col_ind, ls):
@@ -686,7 +687,7 @@ def optimize_edit_paths(
 
     def make_CostMatrix(C, m, n):
         # assert(C.shape == (m + n, m + n))
-        lsa_row_ind, lsa_col_ind = linear_sum_assignment(C)
+        lsa_row_ind, lsa_col_ind = sp.optimize.linear_sum_assignment(C)
 
         # Fixup dummy assignments:
         # each substitution i<->j should have dummy assignment m+j<->n+i

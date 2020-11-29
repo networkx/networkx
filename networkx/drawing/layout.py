@@ -580,7 +580,8 @@ def _sparse_fruchterman_reingold(
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     # Sparse version
     import numpy as np
-    from scipy.sparse import coo_matrix
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     try:
         nnodes, _ = A.shape
@@ -591,7 +592,7 @@ def _sparse_fruchterman_reingold(
     try:
         A = A.tolil()
     except AttributeError:
-        A = (coo_matrix(A)).tolil()
+        A = (sp.sparse.coo_matrix(A)).tolil()
 
     if pos is None:
         # random initial positions

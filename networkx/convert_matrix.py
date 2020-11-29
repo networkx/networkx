@@ -818,7 +818,6 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
     alternate convention of doubling the edge weight is desired the
     resulting Scipy sparse matrix can be modified as follows:
 
-    >>> import scipy as sp
     >>> G = nx.Graph([(1, 1)])
     >>> A = nx.to_scipy_sparse_matrix(G)
     >>> print(A.todense())
@@ -849,7 +848,8 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
     .. [1] Scipy Dev. References, "Sparse Matrices",
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
-    from scipy import sparse
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     if len(G) == 0:
         raise nx.NetworkXError("Graph has no nodes or edges")
@@ -881,7 +881,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
         row, col, data = [], [], []
 
     if G.is_directed():
-        M = sparse.coo_matrix((data, (row, col)), shape=(nlen, nlen), dtype=dtype)
+        M = sp.sparse.coo_matrix((data, (row, col)), shape=(nlen, nlen), dtype=dtype)
     else:
         # symmetrize matrix
         d = data + data
@@ -895,7 +895,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
             d += diag_data
             r += diag_index
             c += diag_index
-        M = sparse.coo_matrix((d, (r, c)), shape=(nlen, nlen), dtype=dtype)
+        M = sp.sparse.coo_matrix((d, (r, c)), shape=(nlen, nlen), dtype=dtype)
     try:
         return M.asformat(format)
     # From Scipy 1.1.0, asformat will throw a ValueError instead of an
@@ -1006,6 +1006,7 @@ def from_scipy_sparse_matrix(
     Examples
     --------
     >>> import scipy as sp
+    >>> import scipy.sparse  # call as sp.sparse
     >>> A = sp.sparse.eye(2, 2, 1)
     >>> G = nx.from_scipy_sparse_matrix(A)
 

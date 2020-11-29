@@ -194,7 +194,6 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     import scipy.linalg  # call as sp.linalg
     import scipy.linalg.blas  # call as sp.linalg.blas
     import scipy.sparse  # call as sp.sparse
-    from scipy.linalg.blas import dasum, daxpy
 
     n = X.shape[0]
 

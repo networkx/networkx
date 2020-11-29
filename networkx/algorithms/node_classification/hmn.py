@@ -62,7 +62,8 @@ def harmonic_function(G, max_iter=30, label_name="label"):
     In ICML (Vol. 3, pp. 912-919).
     """
     import numpy as np
-    from scipy import sparse
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     def _build_propagation_matrix(X, labels):
         """Build propagation matrix of Harmonic function
@@ -82,7 +83,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
         """
         degrees = X.sum(axis=0).A[0]
         degrees[degrees == 0] = 1  # Avoid division by 0
-        D = sparse.diags((1.0 / degrees), offsets=0)
+        D = sp.sparse.diags((1.0 / degrees), offsets=0)
         P = (D @ X).tolil()
         P[labels[:, 0]] = 0  # labels[:, 0] indicates IDs of labeled nodes
         return P
