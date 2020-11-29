@@ -421,9 +421,10 @@ def draw_networkx_nodes(
     draw_networkx_edge_labels()
     """
     from collections.abc import Iterable
-    import matplotlib.pyplot as plt
-    from matplotlib.collections import PathCollection
     import numpy as np
+    import matplotlib as mpl
+    import matplotlib.collections  # call as mpl.collections
+    import matplotlib.pyplot as plt
 
     if ax is None:
         ax = plt.gca()
@@ -432,7 +433,7 @@ def draw_networkx_nodes(
         nodelist = list(G)
 
     if len(nodelist) == 0:  # empty nodelist, no drawing
-        return PathCollection(None)
+        return mpl.collections.PathCollection(None)
 
     try:
         xy = np.asarray([pos[v] for v in nodelist])
@@ -616,11 +617,12 @@ def draw_networkx_edges(
     draw_networkx_edge_labels()
 
     """
-    import matplotlib.pyplot as plt
-    from matplotlib.colors import colorConverter, Colormap, Normalize
-    from matplotlib.patches import FancyArrowPatch, ConnectionStyle
-    from matplotlib.path import Path
     import numpy as np
+    import matplotlib as mpl
+    import matplotlib.colors  # call as mpl.colors
+    import matplotlib.patches  # call as mpl.patches
+    import matplotlib.path  # call as mpl.path
+    import matplotlib.pyplot as plt
 
     if arrowstyle is not None and arrows is not None:
         warnings.warn(
@@ -666,14 +668,14 @@ def draw_networkx_edges(
         and np.alltrue([isinstance(c, Number) for c in edge_color])
     ):
         if edge_cmap is not None:
-            assert isinstance(edge_cmap, Colormap)
+            assert isinstance(edge_cmap, mpl.colors.Colormap)
         else:
             edge_cmap = plt.get_cmap()
         if edge_vmin is None:
             edge_vmin = min(edge_color)
         if edge_vmax is None:
             edge_vmax = max(edge_color)
-        color_normal = Normalize(vmin=edge_vmin, vmax=edge_vmax)
+        color_normal = mpl.colors.Normalize(vmin=edge_vmin, vmax=edge_vmax)
         edge_color = [edge_cmap(color_normal(e)) for e in edge_color]
 
     # Note: Waiting for someone to implement arrow to intersection with
@@ -698,7 +700,7 @@ def draw_networkx_edges(
     w = maxx - minx
     h = maxy - miny
 
-    base_connection_style = ConnectionStyle(connectionstyle)
+    base_connection_style = mpl.patches.ConnectionStyle(connectionstyle)
 
     def _connectionstyle(posA, posB, *args, **kwargs):
         # check if we need to do a self-loop
@@ -722,7 +724,7 @@ def draw_networkx_edges(
                 data_loc + np.asarray([0, v_shift]),
             ]
 
-            ret = Path(ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4])
+            ret = mpl.path.Path(ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4])
         # if not, fall back to the user specified behavior
         else:
             ret = base_connection_style(posA, posB, *args, **kwargs)
@@ -730,7 +732,7 @@ def draw_networkx_edges(
         return ret
 
     # FancyArrowPatch doesn't handle color strings
-    arrow_colors = colorConverter.to_rgba_array(edge_color, alpha)
+    arrow_colors = mpl.colors.colorConverter.to_rgba_array(edge_color, alpha)
     for i, (src, dst) in enumerate(edge_pos):
         x1, y1 = src
         x2, y2 = dst
@@ -766,7 +768,7 @@ def draw_networkx_edges(
         else:
             line_width = width
 
-        arrow = FancyArrowPatch(
+        arrow = mpl.patches.FancyArrowPatch(
             (x1, y1),
             (x2, y2),
             arrowstyle=arrowstyle,
@@ -1248,13 +1250,14 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
     """
     from itertools import islice, cycle
     import numpy as np
-    from matplotlib.colors import colorConverter
-    import matplotlib.cm as cm
+    import matplotlib as mpl
+    import matplotlib.colors  # call as mpl.colors
+    import matplotlib.cm  # call as mpl.cm
 
     # If we have been provided with a list of numbers as long as elem_list,
     # apply the color mapping.
     if len(colors) == len(elem_list) and isinstance(colors[0], Number):
-        mapper = cm.ScalarMappable(cmap=cmap)
+        mapper = mpl.cm.ScalarMappable(cmap=cmap)
         mapper.set_clim(vmin, vmax)
         rgba_colors = mapper.to_rgba(colors)
     # Otherwise, convert colors to matplotlib's RGB using the colorConverter
@@ -1262,9 +1265,11 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
     # to_rgba method of ScalarMappable.
     else:
         try:
-            rgba_colors = np.array([colorConverter.to_rgba(colors)])
+            rgba_colors = np.array([mpl.colors.colorConverter.to_rgba(colors)])
         except ValueError:
-            rgba_colors = np.array([colorConverter.to_rgba(color) for color in colors])
+            rgba_colors = np.array(
+                [mpl.colors.colorConverter.to_rgba(color) for color in colors]
+            )
     # Set the final column of the rgba_colors to have the relevant alpha values
     try:
         # If alpha is longer than the number of colors, resize to the number of
