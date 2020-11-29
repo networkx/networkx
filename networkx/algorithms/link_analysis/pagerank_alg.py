@@ -449,7 +449,8 @@ def pagerank_scipy(
     msg = "networkx.pagerank_scipy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
     warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
-    import scipy.sparse
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     N = len(G)
     if N == 0:
@@ -459,7 +460,7 @@ def pagerank_scipy(
     M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
     S = np.array(M.sum(axis=1)).flatten()
     S[S != 0] = 1.0 / S[S != 0]
-    Q = scipy.sparse.spdiags(S.T, 0, *M.shape, format="csr")
+    Q = sp.sparse.spdiags(S.T, 0, *M.shape, format="csr")
     M = Q * M
 
     # initial vector

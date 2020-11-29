@@ -1274,13 +1274,14 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
        PLoS ONE 10(9): e0135177, 2015. doi:10.1371/journal.pone.0135177
     """
     if kernel_root is None:
-        from scipy import optimize
+        import scipy as sp
+        import scipy.optimize  # call as sp.optimize
 
         def kernel_root(y, a, r):
             def my_function(b):
                 return kernel_integral(y, a, b) - r
 
-            return optimize.brentq(my_function, a, 1)
+            return sp.optimize.brentq(my_function, a, 1)
 
     graph = nx.Graph()
     graph.add_nodes_from(range(n))

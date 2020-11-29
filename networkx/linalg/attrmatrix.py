@@ -426,7 +426,8 @@ def attr_sparse_matrix(
 
     """
     import numpy as np
-    from scipy import sparse
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)
@@ -439,7 +440,7 @@ def attr_sparse_matrix(
     N = len(ordering)
     undirected = not G.is_directed()
     index = dict(zip(ordering, range(N)))
-    M = sparse.lil_matrix((N, N), dtype=dtype)
+    M = sp.sparse.lil_matrix((N, N), dtype=dtype)
 
     seen = set()
     for u, nbrdict in G.adjacency():

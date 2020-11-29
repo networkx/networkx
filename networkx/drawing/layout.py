@@ -729,12 +729,13 @@ def _kamada_kawai_solve(dist_mtx, pos_arr, dim):
     # and starting locations.
 
     import numpy as np
-    from scipy.optimize import minimize
+    import scipy as sp
+    import scipy.optimize  # call as sp.optimize
 
     meanwt = 1e-3
     costargs = (np, 1 / (dist_mtx + np.eye(dist_mtx.shape[0]) * 1e-3), meanwt, dim)
 
-    optresult = minimize(
+    optresult = sp.optimize.minimize(
         _kamada_kawai_costfn,
         pos_arr.ravel(),
         method="L-BFGS-B",
@@ -875,8 +876,9 @@ def _sparse_spectral(A, dim=2):
     # Uses sparse eigenvalue solver from scipy
     # Could use multilevel methods here, see Koren "On spectral graph drawing"
     import numpy as np
-    from scipy.sparse import spdiags
-    from scipy.sparse.linalg.eigen import eigsh
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     try:
         nnodes, _ = A.shape
@@ -886,14 +888,14 @@ def _sparse_spectral(A, dim=2):
 
     # form Laplacian matrix
     data = np.asarray(A.sum(axis=1).T)
-    D = spdiags(data, 0, nnodes, nnodes)
+    D = sp.sparse.spdiags(data, 0, nnodes, nnodes)
     L = D - A
 
     k = dim + 1
     # number of Lanczos vectors for ARPACK solver.What is the right scaling?
     ncv = max(2 * k + 1, int(np.sqrt(nnodes)))
     # return smallest k eigenvalues and eigenvectors
-    eigenvalues, eigenvectors = eigsh(L, k, which="SM", ncv=ncv)
+    eigenvalues, eigenvectors = sp.sparse.linalg.eigen.eigsh(L, k, which="SM", ncv=ncv)
     index = np.argsort(eigenvalues)[1:k]  # 0 index is zero eigenvalue
     return np.real(eigenvectors[:, index])
 
