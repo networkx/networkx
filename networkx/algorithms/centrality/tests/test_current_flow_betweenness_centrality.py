@@ -6,9 +6,8 @@ from networkx import edge_current_flow_betweenness_centrality as edge_current_fl
 from networkx import approximate_current_flow_betweenness_centrality as approximate_cfbc
 
 
-np = pytest.importorskip("numpy")
 npt = pytest.importorskip("numpy.testing")
-scipy = pytest.importorskip("scipy")
+pytest.importorskip("scipy")
 
 
 class TestFlowBetweennessCentrality:

@@ -13,6 +13,7 @@ methods = ("tracemin_pcg", "tracemin_lu", "lanczos", "lobpcg")
 
 def test_algebraic_connectivity_tracemin_chol():
     """Test that "tracemin_chol" raises an exception."""
+    pytest.importorskip("scipy")
     G = nx.barbell_graph(5, 4)
     with pytest.raises(nx.NetworkXError):
         nx.algebraic_connectivity(G, method="tracemin_chol")
@@ -20,6 +21,7 @@ def test_algebraic_connectivity_tracemin_chol():
 
 def test_fiedler_vector_tracemin_chol():
     """Test that "tracemin_chol" raises an exception."""
+    pytest.importorskip("scipy")
     G = nx.barbell_graph(5, 4)
     with pytest.raises(nx.NetworkXError):
         nx.fiedler_vector(G, method="tracemin_chol")
@@ -27,6 +29,7 @@ def test_fiedler_vector_tracemin_chol():
 
 def test_spectral_ordering_tracemin_chol():
     """Test that "tracemin_chol" raises an exception."""
+    pytest.importorskip("scipy")
     G = nx.barbell_graph(5, 4)
     with pytest.raises(nx.NetworkXError):
         nx.spectral_ordering(G, method="tracemin_chol")
@@ -34,6 +37,7 @@ def test_spectral_ordering_tracemin_chol():
 
 def test_fiedler_vector_tracemin_unknown():
     """Test that "tracemin_unknown" raises an exception."""
+    pytest.importorskip("scipy")
     G = nx.barbell_graph(5, 4)
     L = nx.laplacian_matrix(G)
     X = np.asarray(np.random.normal(size=(1, L.shape[0]))).T
@@ -84,12 +88,14 @@ class TestAlgebraicConnectivity:
         pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method=method)
 
     def test_unrecognized_method(self):
+        pytest.importorskip("scipy")
         G = nx.path_graph(4)
         pytest.raises(nx.NetworkXError, nx.algebraic_connectivity, G, method="unknown")
         pytest.raises(nx.NetworkXError, nx.fiedler_vector, G, method="unknown")
 
     @pytest.mark.parametrize("method", methods)
     def test_two_nodes(self, method):
+        pytest.importorskip("scipy")
         G = nx.Graph()
         G.add_edge(0, 1, weight=1)
         A = nx.laplacian_matrix(G)
@@ -99,6 +105,7 @@ class TestAlgebraicConnectivity:
 
     @pytest.mark.parametrize("method", methods)
     def test_two_nodes_multigraph(self, method):
+        pytest.importorskip("scipy")
         G = nx.MultiGraph()
         G.add_edge(0, 0, spam=1e8)
         G.add_edge(0, 1, spam=1)
@@ -111,6 +118,7 @@ class TestAlgebraicConnectivity:
         check_eigenvector(A, 6, x)
 
     def test_abbreviation_of_method(self):
+        pytest.importorskip("scipy")
         G = nx.path_graph(8)
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2 + sqrt(2))
@@ -121,6 +129,7 @@ class TestAlgebraicConnectivity:
 
     @pytest.mark.parametrize("method", methods)
     def test_path(self, method):
+        pytest.importorskip("scipy")
         G = nx.path_graph(8)
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2 + sqrt(2))
@@ -131,6 +140,7 @@ class TestAlgebraicConnectivity:
 
     @pytest.mark.parametrize("method", methods)
     def test_problematic_graph_issue_2381(self, method):
+        pytest.importorskip("scipy")
         G = nx.path_graph(4)
         G.add_edges_from([(4, 2), (5, 1)])
         A = nx.laplacian_matrix(G)
@@ -142,6 +152,7 @@ class TestAlgebraicConnectivity:
 
     @pytest.mark.parametrize("method", methods)
     def test_cycle(self, method):
+        pytest.importorskip("scipy")
         G = nx.cycle_graph(8)
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2)
@@ -152,6 +163,7 @@ class TestAlgebraicConnectivity:
 
     @pytest.mark.parametrize("method", methods)
     def test_seed_argument(self, method):
+        pytest.importorskip("scipy")
         G = nx.cycle_graph(8)
         A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2)
@@ -169,6 +181,7 @@ class TestAlgebraicConnectivity:
     )
     @pytest.mark.parametrize("method", methods)
     def test_buckminsterfullerene(self, normalized, sigma, laplacian_fn, method):
+        pytest.importorskip("scipy")
         G = nx.Graph(
             [
                 (1, 10),
@@ -304,6 +317,7 @@ class TestSpectralOrdering:
 
     @pytest.mark.parametrize("method", methods)
     def test_three_nodes(self, method):
+        pytest.importorskip("scipy")
         G = nx.Graph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1)], weight="spam")
         order = nx.spectral_ordering(G, weight="spam", method=method)
@@ -312,6 +326,7 @@ class TestSpectralOrdering:
 
     @pytest.mark.parametrize("method", methods)
     def test_three_nodes_multigraph(self, method):
+        pytest.importorskip("scipy")
         G = nx.MultiDiGraph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1), (2, 3, 2)])
         order = nx.spectral_ordering(G, method=method)
@@ -320,6 +335,7 @@ class TestSpectralOrdering:
 
     @pytest.mark.parametrize("method", methods)
     def test_path(self, method):
+        pytest.importorskip("scipy")
         path = list(range(10))
         np.random.shuffle(path)
         G = nx.Graph()
@@ -329,6 +345,7 @@ class TestSpectralOrdering:
 
     @pytest.mark.parametrize("method", methods)
     def test_seed_argument(self, method):
+        pytest.importorskip("scipy")
         path = list(range(10))
         np.random.shuffle(path)
         G = nx.Graph()
@@ -338,6 +355,7 @@ class TestSpectralOrdering:
 
     @pytest.mark.parametrize("method", methods)
     def test_disconnected(self, method):
+        pytest.importorskip("scipy")
         G = nx.Graph()
         nx.add_path(G, range(0, 10, 2))
         nx.add_path(G, range(1, 10, 2))
@@ -361,6 +379,7 @@ class TestSpectralOrdering:
     )
     @pytest.mark.parametrize("method", methods)
     def test_cycle(self, normalized, expected_order, method):
+        pytest.importorskip("scipy")
         path = list(range(10))
         G = nx.Graph()
         nx.add_path(G, path, weight=5)

@@ -5,7 +5,7 @@ from networkx.testing import almost_equal
 import pytest
 
 np = pytest.importorskip("numpy")
-test_smoke_empty_graphscipy = pytest.importorskip("scipy")
+pytest.importorskip("scipy")
 
 
 class TestLayout:

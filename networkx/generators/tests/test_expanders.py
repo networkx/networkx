@@ -24,7 +24,6 @@ def test_margulis_gabber_galil_graph():
                 assert 0 <= i < n
 
     np = pytest.importorskip("numpy")
-    scipy = pytest.importorskip("scipy")
     scipy.linalg = pytest.importorskip("scipy.linalg")
     # Eigenvalues are already sorted using the scipy eigvalsh,
     # but the implementation in numpy does not guarantee order.

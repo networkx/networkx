@@ -1,7 +1,7 @@
 import pytest
 
 np = pytest.importorskip("numpy")
-import numpy.testing as npt
+npt = pytest.importorskip("numpy.testing")
 
 import networkx as nx
 
@@ -92,6 +92,7 @@ def test_attr_sparse_matrix():
 
 
 def test_attr_sparse_matrix_directed():
+    pytest.importorskip("scipy")
     G = nx.DiGraph()
     G.add_edge(0, 1, thickness=1, weight=3)
     G.add_edge(0, 1, thickness=1, weight=3)

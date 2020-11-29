@@ -3,8 +3,8 @@ import random
 import networkx as nx
 import pytest
 
-numpy = pytest.importorskip("numpy")
-scipy = pytest.importorskip("scipy")
+np = pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 from networkx.testing import almost_equal
 from networkx.algorithms.link_analysis.pagerank_alg import _pagerank_python
@@ -81,8 +81,8 @@ class TestPageRank:
     def test_google_matrix(self):
         G = self.G
         M = nx.google_matrix(G, alpha=0.9, nodelist=sorted(G))
-        e, ev = numpy.linalg.eig(M.T)
-        p = numpy.array(ev[:, 0] / ev[:, 0].sum())[:, 0]
+        e, ev = np.linalg.eig(M.T)
+        p = np.array(ev[:, 0] / ev[:, 0].sum())[:, 0]
         for (a, b) in zip(p, self.G.pagerank.values()):
             assert almost_equal(a, b)
 

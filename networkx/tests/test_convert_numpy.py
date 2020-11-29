@@ -126,6 +126,8 @@ class TestConvertNumpyMatrix:
         npt.assert_equal(0.3 * A, nx.to_numpy_matrix(WP4, weight="other"))
 
     def test_from_numpy_matrix_type(self):
+        pytest.importorskip("scipy")
+
         A = np.matrix([[1]])
         G = nx.from_numpy_matrix(A)
         assert type(G[0][0]["weight"]) == int

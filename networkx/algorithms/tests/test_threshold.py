@@ -249,7 +249,7 @@ class TestGeneratorThreshold:
     def test_eigenvectors(self):
         np = pytest.importorskip("numpy")
         eigenval = np.linalg.eigvals
-        scipy = pytest.importorskip("scipy")
+        pytest.importorskip("scipy")
 
         cs = "ddiiddid"
         G = nxt.threshold_graph(cs)

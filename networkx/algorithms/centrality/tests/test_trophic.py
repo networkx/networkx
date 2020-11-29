@@ -3,6 +3,7 @@
 import pytest
 
 np = pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 import networkx as nx
 from networkx.testing import almost_equal

@@ -1,6 +1,6 @@
 import pytest
 
-numpy = pytest.importorskip("numpy")
+np = pytest.importorskip("numpy")
 npt = pytest.importorskip("numpy.testing")
 
 
@@ -67,10 +67,10 @@ class TestFloydNumpy:
         edges = [(1, 2, -2), (2, 3, -4), (1, 5, 1), (5, 4, 0), (4, 3, -5), (2, 5, -7)]
         G.add_weighted_edges_from(edges)
         dist = nx.floyd_warshall_numpy(G)
-        assert int(numpy.min(dist)) == -14
+        assert int(np.min(dist)) == -14
 
         G = nx.MultiDiGraph()
         edges.append((2, 5, -7))
         G.add_weighted_edges_from(edges)
         dist = nx.floyd_warshall_numpy(G)
-        assert int(numpy.min(dist)) == -14
+        assert int(np.min(dist)) == -14

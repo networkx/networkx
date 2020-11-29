@@ -2,7 +2,7 @@ import pytest
 
 np = pytest.importorskip("numpy")
 npt = pytest.importorskip("numpy.testing")
-sp = pytest.importorskip("scipy")
+pytest.importorskip("scipy")
 
 import networkx as nx
 from networkx.generators.degree_seq import havel_hakimi_graph

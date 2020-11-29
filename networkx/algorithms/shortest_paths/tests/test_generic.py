@@ -358,11 +358,9 @@ class TestAverageShortestPathLength:
 class TestAverageShortestPathLengthNumpy:
     @classmethod
     def setup_class(cls):
-        global numpy
         global npt
         import pytest
 
-        numpy = pytest.importorskip("numpy")
         npt = pytest.importorskip("numpy.testing")
 
     def test_specified_methods_numpy(self):

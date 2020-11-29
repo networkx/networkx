@@ -2,7 +2,6 @@ import networkx as nx
 
 import pytest
 
-numpy = pytest.importorskip("numpy")
 npt = pytest.importorskip("numpy.testing")
 
 
