@@ -1602,8 +1602,8 @@ def panther_vector_similarity(
 ):
     """Returns the Panther vector similarity of nodes in the graph ``G``
     to node ``v``. Panther is a similarity metric that says
-    "two objects are considered to be similar if their structure
-    is " [1]_.
+    "two objects are considered to be similar if their structures
+    are similar" [1]_.
 
     Parameters
     ----------
