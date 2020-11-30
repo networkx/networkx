@@ -21,7 +21,8 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install libgdal-dev graphviz graphviz-dev
-        sudo apt-get install texlive texlive-latex-extra latexmk
+        sudo apt-get install texlive texlive-latex-extra latexmk texlive-xetex
+        sudo apt-get install fonts-freefont-otf xindy
         sudo apt-get install libgeos-dev libproj-dev
         sudo apt-get install libspatialindex-dev
         python3 -m venv ~/venv
