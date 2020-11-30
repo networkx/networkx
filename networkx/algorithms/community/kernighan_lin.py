@@ -127,7 +127,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
         if min_cost >= 0:
             break
 
-        for _, _, (u, v) in costs[: min_i]:
+        for _, _, (u, v) in costs[:min_i]:
             side[u] = 1
             side[v] = 0
 
