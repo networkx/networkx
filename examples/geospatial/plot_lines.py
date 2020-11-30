@@ -1,7 +1,7 @@
 """
-=====
+==========================
 Graphs from a set of lines
-=====
+==========================
 
 This example shows how to build a graph from a set of geographic lines 
 (sometimes called "linestrings") using PySAL and geopandas. We'll plot

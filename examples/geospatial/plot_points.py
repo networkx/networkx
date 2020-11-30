@@ -1,7 +1,7 @@
 """
-=====
+=============================
 Graphs from geographic points
-=====
+=============================
 
 This example shows how to build a graph from a set of points
 using PySAL and geopandas. In this example, we'll use the famous

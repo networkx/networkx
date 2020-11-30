@@ -1,7 +1,7 @@
 """
-=====
+====================
 Graphs from Polygons
-=====
+====================
 
 This example shows how to build a graph from a set of polygons
 using PySAL and geopandas. We'll focus on the Queen contiguity 
