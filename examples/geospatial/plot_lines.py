@@ -13,13 +13,13 @@ from contextily import add_basemap
 import matplotlib.pyplot as plt
 import networkx as nx
 import geopandas
-import numpy
+import numpy as np
 
 # read in example data online
 filepath = examples.get_path("streets.shp")
 tempe = geopandas.read_file(filepath).to_crs(epsg=3857)
 
-coordinates = numpy.column_stack((tempe.centroid.x, tempe.centroid.y))
+coordinates = np.column_stack((tempe.centroid.x, tempe.centroid.y))
 
 # construct the graph
 w_graph = weights.Queen.from_dataframe(tempe)

@@ -15,14 +15,14 @@ from libpysal.cg import voronoi_frames
 from contextily import add_basemap
 import matplotlib.pyplot as plt
 import networkx as nx
-import numpy
+import numpy as np
 import geopandas
 
 # read in example data online
 cases = geopandas.read_file("cholera_cases.gpkg")
 
 # construct the array of coordinates for the centroid
-coordinates = numpy.column_stack((cases.geometry.x, cases.geometry.y))
+coordinates = np.column_stack((cases.geometry.x, cases.geometry.y))
 
 # construct the voronoi diagram
 cells, generators = voronoi_frames(coordinates, clip="convex hull")

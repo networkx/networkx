@@ -13,16 +13,14 @@ from libpysal import weights
 import matplotlib.pyplot as plt
 import networkx as nx
 import geopandas
-import numpy
+import numpy as np
 
 # read in example data online
 filepath = "nuts1.geojson"
 european_regions = geopandas.read_file(filepath)
 
 # extract the centroids for connecting the regions
-centroids = numpy.column_stack(
-    (european_regions.centroid.x, european_regions.centroid.y)
-)
+centroids = np.column_stack((european_regions.centroid.x, european_regions.centroid.y))
 
 # construct the graph
 queen = weights.Queen.from_dataframe(european_regions)
