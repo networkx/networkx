@@ -6,7 +6,7 @@ Degree Sequence
 Random graph from given degree sequence.
 """
 import matplotlib.pyplot as plt
-from networkx import nx
+import networkx as nx
 
 # Specify seed for reproducibility
 seed = 668273
