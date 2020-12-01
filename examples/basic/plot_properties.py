@@ -7,7 +7,7 @@ Compute some network properties for the lollipop graph.
 """
 
 import matplotlib.pyplot as plt
-from networkx import nx
+import networkx as nx
 
 G = nx.lollipop_graph(4, 6)
 
