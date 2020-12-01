@@ -12,3 +12,5 @@ contextily>=1.0
 # For mayavi
 mayavi>=4.7
 seaborn>=0.11
+cairocffi>=1.2
+python-igraph>=0.8.3
