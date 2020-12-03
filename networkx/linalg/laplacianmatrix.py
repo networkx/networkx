@@ -224,7 +224,7 @@ def directed_combinatorial_laplacian_matrix(
 
         L = \Phi - (\Phi P + P^T \Phi) / 2
 
-    where `P` is the transition matrix of the graph and and `\Phi` a matrix
+    where `P` is the transition matrix of the graph and `\Phi` a matrix
     with the Perron vector of `P` in the diagonal and zeros elsewhere.
 
     Depending on the value of walk_type, `P` can be the transition matrix

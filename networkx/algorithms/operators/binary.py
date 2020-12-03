@@ -208,7 +208,7 @@ def difference(G, H):
     -----
     Attributes from the graph, nodes, and edges are not copied to the new
     graph.  If you want a new graph of the difference of G and H with
-    with the attributes (including edge data) from G use remove_nodes_from()
+    the attributes (including edge data) from G use remove_nodes_from()
     as follows:
 
     >>> G = nx.path_graph(3)

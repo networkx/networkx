@@ -265,7 +265,7 @@ def get_canonical_ordering(embedding, outer_face):
         wp_wq = [wp]
         nbr = wp
         while nbr != wq:
-            # Get next next neighbor (clockwise on the outer face)
+            # Get next neighbor (clockwise on the outer face)
             next_nbr = embedding[v][nbr]["ccw"]
             wp_wq.append(next_nbr)
             # Update outer face

@@ -217,7 +217,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
 
     Notes
     -----
-    This computes Eq. (21) in Ref. [1]_ , for the mixing matrix of
+    This computes Eq. (21) in Ref. [1]_ , for the mixing matrix
     of the specified attribute.
 
     References

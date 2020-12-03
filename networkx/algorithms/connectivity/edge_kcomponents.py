@@ -58,7 +58,7 @@ def k_edge_components(G, k):
     Notes
     -----
     Attempts to use the most efficient implementation available based on k.
-    If k=1, this is simply simply connected components for directed graphs and
+    If k=1, this is simply connected components for directed graphs and
     connected components for undirected graphs.
     If k=2 on an efficient bridge connected component algorithm from _[1] is
     run based on the chain decomposition.
@@ -320,7 +320,7 @@ class EdgeComponentAuxGraph:
         Choose an arbitrary source node s.  Initialize a set N of available
         nodes (that can be used as the sink). The algorithm picks an
         arbitrary node t from N - {s}, and then computes the minimum st-cut
-        (S, T) with value w. If G is directed the the minimum of the st-cut or
+        (S, T) with value w. If G is directed the minimum of the st-cut or
         the ts-cut is used instead. Then, the edge (s, t) is added to the
         auxiliary graph with weight w. The algorithm is called recursively
         first using S as the available nodes and s as the source, and then
@@ -372,7 +372,7 @@ class EdgeComponentAuxGraph:
             _recursive_build(H, A, source, avail)
 
         # This class is a container the holds the auxiliary graph A and
-        # provides access the the k_edge_components function.
+        # provides access the k_edge_components function.
         self = EdgeComponentAuxGraph()
         self.A = A
         self.H = H

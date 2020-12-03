@@ -889,7 +889,7 @@ class Graph:
         ----------
         ebunch_to_add : container of edges
             Each edge given in the container will be added to the
-            graph. The edges must be given as as 2-tuples (u, v) or
+            graph. The edges must be given as 2-tuples (u, v) or
             3-tuples (u, v, d) where d is a dictionary containing edge data.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
@@ -1867,7 +1867,7 @@ class Graph:
         Raises
         ------
         NetworkXError
-            If nbunch is not a node or or sequence of nodes.
+            If nbunch is not a node or sequence of nodes.
             If a node in nbunch is not hashable.
 
         See Also

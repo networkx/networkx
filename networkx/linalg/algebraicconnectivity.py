@@ -157,7 +157,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     """Compute the Fiedler vector of L using the TraceMIN-Fiedler algorithm.
 
     The Fiedler vector of a connected undirected graph is the eigenvector
-    corresponding to the second smallest eigenvalue of the Laplacian matrix of
+    corresponding to the second smallest eigenvalue of the Laplacian matrix
     of the graph. This function starts with the Laplacian L, not the Graph.
 
     Parameters
@@ -402,7 +402,7 @@ def fiedler_vector(
     """Returns the Fiedler vector of a connected undirected graph.
 
     The Fiedler vector of a connected undirected graph is the eigenvector
-    corresponding to the second smallest eigenvalue of the Laplacian matrix of
+    corresponding to the second smallest eigenvalue of the Laplacian matrix
     of the graph.
 
     Parameters
