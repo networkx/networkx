@@ -27,13 +27,15 @@ def _kernighan_lin_sweep(edges, side):
                 cost_y += 2 * (-w if costs_x is costs_y else w)
                 costs_y.insert(y, cost_y, True)
 
-    i = totcost = 0
+    i = 0
+    totcost = 0
     while costs0 and costs1:
         u, cost_u = costs0.pop()
         _update_costs(costs0, u)
         v, cost_v = costs1.pop()
         _update_costs(costs1, v)
         totcost += cost_u + cost_v
+        i += 1
         yield totcost, i, (u, v)
 
 
@@ -125,7 +127,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
         if min_cost >= 0:
             break
 
-        for _, _, (u, v) in costs[: min_i + 1]:
+        for _, _, (u, v) in costs[:min_i]:
             side[u] = 1
             side[v] = 0
 
