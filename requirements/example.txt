@@ -6,7 +6,7 @@ shapely>=1.5.17
 Cartopy>=0.18.0
 geopandas>=0.8
 osmnx>=0.16
-libpysal>=2.3
+libpysal>=4.3.0
 momepy>=0.3
 contextily>=1.0
 # For mayavi
