@@ -312,6 +312,8 @@ def test_draw_edges_min_source_target_margins(node_shape):
     assert padded_extent[0] > default_extent[0]
     # And the rightmost extent of the edge, further to the left
     assert padded_extent[1] < default_extent[1]
+    # NOTE: Prevent axes objects from impacting other tests via plt.gca
+    plt.delaxes(ax)
 
 
 def test_apply_alpha():
@@ -323,3 +325,21 @@ def test_apply_alpha():
     alpha = 0.5
     rgba_colors = nx.drawing.nx_pylab.apply_alpha(colorlist, alpha, nodelist)
     assert all(rgba_colors[:, -1] == alpha)
+
+
+@pytest.mark.parametrize(
+    ("nodelist", "expected_num_edges"),
+    (
+        ([], 0),
+        ([1], 0),
+        ([1, 2], 1),
+        ([0, 1, 2, 3], 6),
+    ),
+)
+def test_draw_edges_with_nodelist(nodelist, expected_num_edges):
+    """Test that edges that contain a node in `nodelist` are not drawn by
+    draw_networkx_edges. See gh-4374.
+    """
+    G = nx.complete_graph(5)
+    edge_patches = nx.draw_networkx_edges(G, nx.circular_layout(G), nodelist=nodelist)
+    assert len(edge_patches) == expected_num_edges
