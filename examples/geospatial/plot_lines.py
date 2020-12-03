@@ -92,6 +92,8 @@ for i, facet in enumerate(ax):
 nx.draw(G_dual, {n: [n[0], n[1]] for n in list(G_dual.nodes)}, ax=ax[1], node_size=50)
 plt.show()
 
+# Convert dual graph back to GeoDataFrame. Returns only original line geometry.
+lines = momepy.nx_to_gdf(G_dual)
 
 # We can also construct the dual graph using PySAL. Note that it only encodes
 # relationship between geometries and do not any store attributes. However, it is
