@@ -585,8 +585,19 @@ def cngf_score(G, ebunch=None):
         tempCnbors.add(u)
         subG = G.subgraph(tempCnbors).copy()
         similarity = 0
-        if cnbors is not None:
 
+        def guidance(x):
+            x_degree = G.degree(v)
+            x_sub_degree = subG.degree(v)
+
+            return x_sub_degree / log(v_degree)
+
+
+        for x in cnbors:
+            
+            similarity +=guidance(x)
+            
+            '''
             v_degree = G.degree(v)
             u_degree = G.degree(u)
 
@@ -597,7 +608,7 @@ def cngf_score(G, ebunch=None):
                 v_guidance = (v_cmnDegree / log(v_degree)) if v_degree != 1 else 0
                 u_guidance = u_cmnDegree / log(u_degree) if u_degree != 1 else 0
                 similarity = v_guidance + u_guidance
-
+            '''
         return similarity
 
     return _apply_prediction(G, predict, ebunch)
