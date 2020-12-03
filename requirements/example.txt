@@ -9,3 +9,4 @@ osmnx>=0.16
 pysal>=2.3
 # For mayavi
 mayavi>=4.7
+seaborn>=0.11
