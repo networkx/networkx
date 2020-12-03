@@ -62,7 +62,7 @@ def words_graph():
 G = words_graph()
 print("Loaded words_dat.txt containing 5757 five-letter English words.")
 print("Two words are connected if they differ in one letter.")
-print(f"Graph has {nx.number_of_nodes(G)} nodes with {nx.number_of_edges(G)} edges")
+print(G)
 print(f"{nx.number_connected_components(G)} connected components")
 
 for (source, target) in [("chaos", "order"), ("nodes", "graph"), ("pound", "marks")]:
