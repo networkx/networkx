@@ -18,7 +18,7 @@ import numpy as np
 # read in example data from geojson. GeoJSON is a file format
 # for encoding geographic data based on JSON. It is useful for
 # presenting geographic data on the web, and is increasingly
-# used as a file format for geographic data. 
+# used as a file format for geographic data.
 filepath = "nuts1.geojson"
 european_regions = geopandas.read_file(filepath)
 
@@ -30,8 +30,8 @@ centroids = numpy.column_stack(
 
 # construct the "Queen" adjacency graph. In geographical applications,
 # the "Queen" adjacency graph considers two polygons as connected if
-# they share a single point on their boundary. This is an analogue to 
-# the "Moore" neighborhood nine surrounding cells in a regular grid. 
+# they share a single point on their boundary. This is an analogue to
+# the "Moore" neighborhood nine surrounding cells in a regular grid.
 queen = weights.Queen.from_dataframe(european_regions)
 
 # convert the graph to networkx

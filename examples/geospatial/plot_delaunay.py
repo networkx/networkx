@@ -21,7 +21,7 @@ import geopandas
 # read in example data from a geopackage file. Geopackages
 # are a format for storing geographic data that is backed
 # by sqlite. geopandas reads data relying on the fiona package,
-# providing a high-level pandas-style interface to geographic data. 
+# providing a high-level pandas-style interface to geographic data.
 cases = geopandas.read_file("cholera_cases.gpkg")
 
 # construct the array of coordinates for the centroid

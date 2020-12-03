@@ -20,7 +20,7 @@ import geopandas
 # read in example data from a geopackage file. Geopackages
 # are a format for storing geographic data that is backed
 # by sqlite. geopandas reads data relying on the fiona package,
-# providing a high-level pandas-style interface to geographic data. 
+# providing a high-level pandas-style interface to geographic data.
 cases = geopandas.read_file("cholera_cases.gpkg")
 
 # construct the array of coordinates for the centroid
@@ -33,9 +33,9 @@ coordinates = np.column_stack((cases.geometry.x, cases.geometry.y))
 ## will have exactly three neighbors.
 knn3 = weights.KNN.from_dataframe(cases, k=3)
 
-## The 50-meter distance band graph will connect all pairs of points 
+## The 50-meter distance band graph will connect all pairs of points
 ## that are within 50 meters from one another. This means that points
-## may have different numbers of neighbors. 
+## may have different numbers of neighbors.
 dist = weights.DistanceBand.from_array(coordinates, threshold=50)
 
 # convert the graphs to networkx
