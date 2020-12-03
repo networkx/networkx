@@ -43,6 +43,8 @@ dist: html
 	(cd build/dist && tar czf ../dist.tar.gz .)
 
 html:
+	mkdir -p auto_examples/geospatial/
+	cp ../examples/geospatial/extended_description.rst auto_examples/geospatial/
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
