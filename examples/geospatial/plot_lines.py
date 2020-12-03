@@ -54,7 +54,6 @@ for i, facet in enumerate(ax):
     facet.set_title(("Rivers", "Graph")[i])
     facet.axis("off")
 nx.draw(G, positions, ax=ax[1], node_size=5)
-plt.show()
 
 # %%
 # Once we finish graph-based analysis, we can convert graph back
@@ -81,7 +80,6 @@ for i, facet in enumerate(ax):
 nx.draw(
     G_primal, {n: [n[0], n[1]] for n in list(G_primal.nodes)}, ax=ax[1], node_size=50
 )
-plt.show()
 
 # %%
 # Construct the dual graph. momepy will store row attributes as node attributes and
