@@ -32,7 +32,8 @@ import networkx as nx
 from contextily import add_basemap
 from libpysal import weights
 
-# Read in example river geometry from GeoJSON
+# Read in example river geometry from GeoJSON. Source of example data:
+# https://doi.org/10.3390/data5010008 (Nicolas Cadieux)
 rivers = geopandas.read_file("rivers.geojson")
 
 # Construct the primal graph. momepy automatically preserves all attributes
