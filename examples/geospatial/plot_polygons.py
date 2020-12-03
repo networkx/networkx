@@ -15,23 +15,32 @@ import networkx as nx
 import geopandas
 import numpy as np
 
-# read in example data online
+# read in example data from geojson. GeoJSON is a file format
+# for encoding geographic data based on JSON. It is useful for
+# presenting geographic data on the web, and is increasingly
+# used as a file format for geographic data. 
 filepath = "nuts1.geojson"
 european_regions = geopandas.read_file(filepath)
 
-# extract the centroids for connecting the regions
-centroids = np.column_stack((european_regions.centroid.x, european_regions.centroid.y))
+# extract the centroids for connecting the regions, which is
+# the average of the coordinates that define the polygon's boundary
+centroids = numpy.column_stack(
+    (european_regions.centroid.x, european_regions.centroid.y)
+)
 
-# construct the graph
+# construct the "Queen" adjacency graph. In geographical applications,
+# the "Queen" adjacency graph considers two polygons as connected if
+# they share a single point on their boundary. This is an analogue to 
+# the "Moore" neighborhood nine surrounding cells in a regular grid. 
 queen = weights.Queen.from_dataframe(european_regions)
 
 # convert the graph to networkx
 graph = queen.to_networkx()
 
-# merge the nodes back to their positions
+# merge the nodes back to their positions in order to plot in networkx
 positions = dict(zip(graph.nodes, centroids))
 
-# plot
+# plot with a nice basemap
 ax = european_regions.plot(linewidth=1, edgecolor="grey", facecolor="lightblue")
 ax.axis([-12, 45, 33, 66])
 ax.axis("off")

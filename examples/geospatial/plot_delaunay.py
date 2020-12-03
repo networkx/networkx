@@ -1,7 +1,7 @@
 """
-=============================
-Graphs from geographic points
-=============================
+=====
+Delaunay graphs from geographic points
+=====
 
 This example shows how to build a delaunay graph (plus its dual,
 the set of Voronoi polygons) from a set of points.
@@ -18,7 +18,10 @@ import networkx as nx
 import numpy as np
 import geopandas
 
-# read in example data online
+# read in example data from a geopackage file. Geopackages
+# are a format for storing geographic data that is backed
+# by sqlite. geopandas reads data relying on the fiona package,
+# providing a high-level pandas-style interface to geographic data. 
 cases = geopandas.read_file("cholera_cases.gpkg")
 
 # construct the array of coordinates for the centroid
@@ -38,7 +41,7 @@ delaunay_graph = delaunay.to_networkx()
 # merge the networkx nodes back to their positions
 positions = dict(zip(delaunay_graph.nodes, coordinates))
 
-# plot
+# plot with a nice basemap
 ax = cells.plot(facecolor="lightblue", alpha=0.50, edgecolor="cornsilk", linewidth=2)
 add_basemap(ax)
 ax.axis("off")
