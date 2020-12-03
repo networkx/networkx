@@ -54,35 +54,3 @@ plt.show()
 # or not a line "crosses" a polygon, or whether two polygons "touch."
 # These relationships, called "predicates", are extensive, and are documented
 # by the pygeos package.
-# The underlying algorithms for this are slightly different from that used
-# in the contiguity graph, and so we document this here for clarity.
-
-import pygeos
-
-# In order to do this, we need to convert the default geometry object set
-# into the representation required by pygeos
-pygeos_polygons = pygeos.from_shapely(european_regions.geometry)
-
-# Then, we need to build a spatial index that allows us to efficiently
-# identify polygons that may satisfy our geographic predicate. This is
-# an ST-R-Tree, a variant of an R-Tree with efficient storage and construction.
-rtree = pygeos.STRtree(pygeos_polygons)
-
-# Then, to make a bunch of queries at the same time, we can
-# use the query_bulk() method to obtain head "head" and "tail" of
-# each edge in the adjacency graph. We'll use the "touches" graph here
-# for clarity.
-heads, tails = rtree.query_bulk(pygeos_polygons, predicate="touches")
-
-# With the heads and tails for each edge in the graph of touching polygons,
-# we can use networkx's Graph.add_edges_from() method to build our networkx
-# graph.
-graph = nx.Graph()
-graph.add_edges_from(zip(heads, tails))
-
-# finally, we can make a plot in the same fashion as we did before:
-ax = european_regions.plot(linewidth=1, edgecolor="grey", facecolor="lightblue")
-ax.axis([-12, 45, 33, 66])
-ax.axis("off")
-nx.draw(graph, positions, ax=ax, node_size=5, node_color="r")
-plt.show()
