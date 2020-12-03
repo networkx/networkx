@@ -52,7 +52,8 @@ delaunay = weights.Rook.from_dataframe(cells)
 # relevant method.
 delaunay_graph = delaunay.to_networkx()
 
-# Networkx requires the positions of the nodes in order to plot the graph.
+# To plot with networkx, we need to merge the nodes back to
+# their positions in order to plot in networkx
 positions = dict(zip(delaunay_graph.nodes, coordinates))
 
 # Now, we can plot with a nice basemap.

@@ -38,11 +38,13 @@ knn3 = weights.KNN.from_dataframe(cases, k=3)
 ## may have different numbers of neighbors.
 dist = weights.DistanceBand.from_array(coordinates, threshold=50)
 
-# convert the graphs to networkx
+# Then, we can convert the graph to networkx object using the
+# .to_networkx() method.
 knn_graph = knn3.to_networkx()
 dist_graph = dist.to_networkx()
 
-# merge the nodes back to their positions in order to plot in networkx
+# To plot with networkx, we need to merge the nodes back to
+# their positions in order to plot in networkx
 positions = dict(zip(knn_graph.nodes, coordinates))
 
 # plot with a nice basemap
