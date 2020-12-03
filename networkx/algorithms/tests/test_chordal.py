@@ -46,13 +46,14 @@ class TestMCS:
         non_chordal_G.add_edges_from([(1, 2), (1, 3), (2, 4), (2, 5), (3, 4), (3, 5)])
         cls.non_chordal_G = non_chordal_G
 
-        self_loop = nx.Graph()
-        self_loop.add_edges_from([(1, 1), (1, 2)])
-        cls.self_loop = self_loop
-#    @pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph(), nx.MultiDiGraph()))
-#    def test_is_chordal_not_implemented(self, G):
-#        with pytest.raises(nx.NetworkXNotImplemented):
-#            nx.is_chordal(G)
+        self_loop_G = nx.Graph()
+        self_loop_G.add_edges_from([(1, 1)])
+        cls.self_loop_G = self_loop_G
+
+    @pytest.mark.parametrize("G", (nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()))
+    def test_is_chordal_not_implemented(self, G):
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.is_chordal(G)
 
     def test_is_chordal(self):
         assert not nx.is_chordal(self.non_chordal_G)
@@ -61,12 +62,9 @@ class TestMCS:
         assert nx.is_chordal(nx.complete_graph(3))
         assert nx.is_chordal(nx.cycle_graph(3))
         assert not nx.is_chordal(nx.cycle_graph(5))
-        with pytest.raises(nx.NetworkXNotImplemented): #Instead of NetworkXError
-            nx.is_chordal(nx.DiGraph())
-        with pytest.raises(nx.NetworkXNotImplemented):
-            nx.is_chordal(nx.MultiGraph())
-        with pytest.raises(nx.NetworkXNotImplemented):
-            nx.is_chordal(nx.MultiDiGraph())
+        with pytest.raises(nx.NetworkXError):
+            nx.is_chordal(self.self_loop_G)
+
         # Testing _is_complete_graph within is_chordal
 #        with pytest.raises(nx.NetworkXError):
 #            nx.is_chordal(self.self_loop)
@@ -98,7 +96,7 @@ class TestMCS:
         with pytest.raises(nx.NetworkXError):
             nx.chordal_graph_cliques(self.non_chordal_G)
         with pytest.raises(nx.NetworkXError):
-            nx.chordal_graph_cliques(self.self_loop)
+            nx.chordal_graph_cliques(self.self_loop_G)
 
     def test_chordal_find_cliques_path(self):
         G = nx.path_graph(10)
