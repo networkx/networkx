@@ -12,14 +12,14 @@ more than once. Thus creating a Boolean formula from a Boolean circuit
 in this way may be infeasible if the circuit is large.
 
 """
-from networkx import dag_to_branching
-from networkx import DiGraph
+import matplotlib.pyplot as plt
+import networkx as nx
 from networkx.utils import arbitrary_element
 
 
 def circuit_to_formula(circuit):
     # Convert the circuit to an equivalent formula.
-    formula = dag_to_branching(circuit)
+    formula = nx.dag_to_branching(circuit)
     # Transfer the operator or variable labels for each node from the
     # circuit to the formula.
     for v in formula:
@@ -64,25 +64,41 @@ def formula_to_string(formula):
 # variable y that appears in both the left and right ∨s, and a
 # negation for the variable z that appears as the sole node in the
 # fourth layer.
-circuit = DiGraph()
+circuit = nx.DiGraph()
 # Layer 0
-circuit.add_node(0, label="∧")
+circuit.add_node(0, label="∧", layer=0)
 # Layer 1
-circuit.add_node(1, label="∨")
-circuit.add_node(2, label="∨")
+circuit.add_node(1, label="∨", layer=1)
+circuit.add_node(2, label="∨", layer=1)
 circuit.add_edge(0, 1)
 circuit.add_edge(0, 2)
 # Layer 2
-circuit.add_node(3, label="x")
-circuit.add_node(4, label="y")
-circuit.add_node(5, label="¬")
+circuit.add_node(3, label="x", layer=2)
+circuit.add_node(4, label="y", layer=2)
+circuit.add_node(5, label="¬", layer=2)
 circuit.add_edge(1, 3)
 circuit.add_edge(1, 4)
 circuit.add_edge(2, 4)
 circuit.add_edge(2, 5)
 # Layer 3
-circuit.add_node(6, label="z")
+circuit.add_node(6, label="z", layer=3)
 circuit.add_edge(5, 6)
 # Convert the circuit to an equivalent formula.
 formula = circuit_to_formula(circuit)
 print(formula_to_string(formula))
+
+
+labels = nx.get_node_attributes(circuit, "label")
+options = {
+    "node_size": 600,
+    "alpha": 0.5,
+    "node_color": "blue",
+    "labels": labels,
+    "font_size": 22,
+}
+plt.figure(figsize=(8, 8))
+pos = nx.multipartite_layout(circuit, subset_key="layer")
+nx.draw_networkx(circuit, pos, **options)
+plt.title(formula_to_string(formula))
+plt.axis("equal")
+plt.show()
