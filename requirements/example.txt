@@ -11,3 +11,4 @@ momepy>=0.3
 contextily>=1.0
 # For mayavi
 mayavi>=4.7
+seaborn>=0.11

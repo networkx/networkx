@@ -171,6 +171,8 @@ htmlhelp_basename = "NetworkX"
 # Options for LaTeX output
 # ------------------------
 
+# Use a latex engine that allows for unicode characters in docstrings
+latex_engine = "xelatex"
 # The paper size ('letter' or 'a4').
 latex_paper_size = "letter"
 
