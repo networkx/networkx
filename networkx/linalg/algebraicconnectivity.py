@@ -307,7 +307,7 @@ def _get_fiedler_func(method):
                 return sigma[0], X[:, 0]
 
     else:
-        raise nx.NetworkXError(f"unknown method '{method}'.")
+        raise nx.NetworkXError(f"unknown method {method!r}.")
 
     return find_fiedler
 

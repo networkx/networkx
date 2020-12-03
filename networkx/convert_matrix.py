@@ -287,16 +287,16 @@ def to_pandas_edgelist(
 
     all_attrs = set().union(*(d.keys() for _, _, d in edgelist))
     if source in all_attrs:
-        raise nx.NetworkXError(f"Source name '{source}' is an edge attr name")
+        raise nx.NetworkXError(f"Source name {source!r} is an edge attr name")
     if target in all_attrs:
-        raise nx.NetworkXError(f"Target name '{target}' is an edge attr name")
+        raise nx.NetworkXError(f"Target name {target!r} is an edge attr name")
 
     nan = float("nan")
     edge_attr = {k: [d.get(k, nan) for _, _, d in edgelist] for k in all_attrs}
 
     if G.is_multigraph() and edge_key is not None:
         if edge_key in all_attrs:
-            raise nx.NetworkXError(f"Edge key name '{edge_key}' is an edge attr name")
+            raise nx.NetworkXError(f"Edge key name {edge_key!r} is an edge attr name")
         edge_keys = [k for _, _, k in G.edges(keys=True)]
         edgelistdict = {source: source_nodes, target: target_nodes, edge_key: edge_keys}
     else:

@@ -152,7 +152,7 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     level = int(round(n * alpha))
 
     if transformation not in available_transformations:
-        msg = f"'{transformation}' is not a valid transformation. "
+        msg = f"{transformation!r} is not a valid transformation. "
         msg += f"Transformations: {available_transformations}"
         raise nx.NetworkXError(msg)
 
