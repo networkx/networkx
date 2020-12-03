@@ -27,7 +27,8 @@ class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
     """Exception raised when a treewidth bound has been provided and it has
     been exceeded"""
 
-
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def is_chordal(G):
     """Checks whether G is a chordal graph.
 
@@ -82,10 +83,10 @@ def is_chordal(G):
        selectively reduce acyclic hypergraphs, SIAM J. Comput., 13 (1984),
        pp. 566–579.
     """
-    if G.is_directed():
-        raise nx.NetworkXError("Directed graphs not supported")
-    if G.is_multigraph():
-        raise nx.NetworkXError("Multiply connected graphs not supported.")
+    #if G.is_directed():
+    #    raise nx.NetworkXError("Directed graphs not supported")
+    #if G.is_multigraph():
+    #    raise nx.NetworkXError("Multiply connected graphs not supported.")
     if len(_find_chordality_breaker(G)) == 0:
         return True
     else:
@@ -389,8 +390,8 @@ def _chordal_graph_cliques(G):
     >>> cliques[0]
     frozenset({1, 2, 3})
     """
-    if not is_chordal(G):
-        raise nx.NetworkXError("Input graph is not chordal.")
+    #if not is_chordal(G):
+    #    raise nx.NetworkXError("Input graph is not chordal.")
 
     for C in (G.subgraph(c).copy() for c in connected_components(G)):
         if C.number_of_nodes() == 1:
