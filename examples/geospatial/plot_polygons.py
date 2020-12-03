@@ -24,9 +24,7 @@ european_regions = geopandas.read_file(filepath)
 
 # extract the centroids for connecting the regions, which is
 # the average of the coordinates that define the polygon's boundary
-centroids = np.column_stack(
-    (european_regions.centroid.x, european_regions.centroid.y)
-)
+centroids = np.column_stack((european_regions.centroid.x, european_regions.centroid.y))
 
 # construct the "Queen" adjacency graph. In geographical applications,
 # the "Queen" adjacency graph considers two polygons as connected if
