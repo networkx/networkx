@@ -20,6 +20,9 @@ matrix:
           - texlive
           - texlive-latex-extra
           - latexmk
+          - texlive-xetex
+          - fonts-freefont-otf
+          - xindy
           - libgeos-dev
           - libproj-dev
           - libspatialindex-dev
