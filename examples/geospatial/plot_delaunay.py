@@ -22,26 +22,40 @@ import geopandas
 # are a format for storing geographic data that is backed
 # by sqlite. geopandas reads data relying on the fiona package,
 # providing a high-level pandas-style interface to geographic data.
+# Many different kinds of geographic data formats can be read by geopandas.
 cases = geopandas.read_file("cholera_cases.gpkg")
 
-# construct the array of coordinates for the centroid
+# In order for networkx to plot the nodes of our graph correctly, we
+# need to construct the array of coordinates for each point in our dataset.
+# To get this as a numpy array, we extract the x and y coordinates from the
+# geometry column.
 coordinates = np.column_stack((cases.geometry.x, cases.geometry.y))
 
-# construct the voronoi diagram
+# While we could simply present the Delaunay graph directly, it is useful to
+# visualize the Delaunay graph alongside the Voronoi diagram. This is because
+# the two are intrinsically linked: the adjacency graph of the Voronoi diagram
+# is the Delaunay graph for the set of generator points! Put simply, this means
+# we can build the Voronoi diagram (relying on scipy.spatial for the underlying
+# computations), and then convert these polygons quickly into the Delaunay graph.
+# Be careful, though; our algorithm, by default, will clip the voronoi diagram to
+# the bounding box of the point pattern. This is controlled by the "clip" argument.
 cells, generators = voronoi_frames(coordinates, clip="convex hull")
 
-# the contiguity graph of voronoi cells is the delaunay triangulation
-# clipping the extent of the voronoi diagram to the original pattern's
-# convex hull may remove distant links on the edges, though!
+# With the voronoi polygons, we can construct the adjacency graph between them using
+# "Rook" contiguity. This represents voronoi cells as being adjacent if they share
+# an edge/face. This is an analogue to the "von Neuman" neighborhood, or the 4 cardinal
+# neighbors in a regular grid. The name comes from the directions a Rook piece can move
+# on a chessboard.
 delaunay = weights.Rook.from_dataframe(cells)
 
-# convert the graphs to networkx
+# Once the graph is built, we can convert the graphs to networkx objects using the
+# relevant method.
 delaunay_graph = delaunay.to_networkx()
 
-# merge the networkx nodes back to their positions
+# Networkx requires the positions of the nodes in order to plot the graph.
 positions = dict(zip(delaunay_graph.nodes, coordinates))
 
-# plot with a nice basemap
+# Now, we can plot with a nice basemap.
 ax = cells.plot(facecolor="lightblue", alpha=0.50, edgecolor="cornsilk", linewidth=2)
 add_basemap(ax)
 ax.axis("off")
