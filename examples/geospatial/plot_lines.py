@@ -32,14 +32,17 @@ import networkx as nx
 from contextily import add_basemap
 from libpysal import weights
 
+# %%
 # Read in example river geometry from GeoJSON. Source of example data:
 # https://doi.org/10.3390/data5010008 (Nicolas Cadieux)
 rivers = geopandas.read_file("rivers.geojson")
 
+# %%
 # Construct the primal graph. momepy automatically preserves all attributes
 # from GeoDataFrame and stores then as edge attributes.
 G = momepy.gdf_to_nx(rivers, approach="primal")
 
+# %%
 # Each node is encoded by its coordinates, which allows us to use them
 # in plotting.
 positions = {n: [n[0], n[1]] for n in list(G.nodes)}
@@ -53,6 +56,7 @@ for i, facet in enumerate(ax):
 nx.draw(G, positions, ax=ax[1], node_size=5)
 plt.show()
 
+# %%
 # Once we finish graph-based analysis, we can convert graph back
 # to GeoDataFrames. momepy can return nodes as point geometry,
 # edges as original line geometry and W object, which is PySAL
@@ -79,6 +83,7 @@ nx.draw(
 )
 plt.show()
 
+# %%
 # Construct the dual graph. momepy will store row attributes as node attributes and
 # automatically measures angle between lines.
 G_dual = momepy.gdf_to_nx(streets, approach="dual")
@@ -96,6 +101,7 @@ plt.show()
 # Convert dual graph back to GeoDataFrame. Returns only original line geometry.
 lines = momepy.nx_to_gdf(G_dual)
 
+# %%
 # We can also construct the dual graph using PySAL. Note that it only encodes
 # relationship between geometries and do not any store attributes. However, it is
 # significantly faster than momepy.gdf_to_nx().
