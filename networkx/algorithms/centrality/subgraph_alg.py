@@ -137,7 +137,7 @@ def subgraph_centrality(G):
        SC(u)=\sum_{j=1}^{N}(v_{j}^{u})^2 e^{\lambda_{j}},
 
     where `v_j` is an eigenvector of the adjacency matrix `A` of G
-    corresponding corresponding to the eigenvalue `\lambda_j`.
+    corresponding to the eigenvalue `\lambda_j`.
 
     Examples
     --------

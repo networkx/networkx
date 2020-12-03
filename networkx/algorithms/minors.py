@@ -62,7 +62,7 @@ def equivalence_classes(iterable, relation):
     `{2, 5, 8}`: `0`, `3`, `6`, `9` are all divisible by `3` and leave zero
     remainder; `1`, `4`, `7` leave remainder `1`; while `2`, `5` and `8` leave
     remainder `2`. We can see this by calling `equivalence_classes` with
-    with `X` and a function implementation of `R`.
+    `X` and a function implementation of `R`.
 
     >>> X = set(range(10))
     >>> def mod3(x, y): return (x - y) % 3 == 0
