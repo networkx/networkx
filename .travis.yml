@@ -21,9 +21,9 @@ matrix:
           - texlive-latex-extra
           - latexmk
           - texlive-xetex
-          - texlive-fonts-recommended
           - fonts-freefont-otf
           - xindy
+          - lmodern
           - libgeos-dev
           - libproj-dev
           - libspatialindex-dev
