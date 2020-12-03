@@ -5,7 +5,7 @@ Graphs from a set of lines
 
 This example shows how to build a graph from a set of geographic lines
 (sometimes called "linestrings") using GeoPandas, momepy and alternatively
-PySAL. We'll plot some rivers and streets, as well as their grapsh formed
+PySAL. We'll plot some rivers and streets, as well as their graphs formed
 from the segments.
 
 There are generally two ways of creating graph object from line geometry.
@@ -20,7 +20,7 @@ used for street network analysis is an angular analysis, where your routing
 is weighted via angles between street segments on intersections.
 
 We will use GeoPandas to read spatial data and momepy to generate first
-primal graph and then dual graph. Furhtemore, we will use PySAL to
+primal graph and then dual graph. Furthermore, we will use PySAL to
 illustrate an alternative way of creating raw dual graph.
 """
 
@@ -48,7 +48,7 @@ positions = {n: [n[0], n[1]] for n in list(G.nodes)}
 f, ax = plt.subplots(1, 2, figsize=(12, 6), sharex=True, sharey=True)
 rivers.plot(color="k", ax=ax[0])
 for i, facet in enumerate(ax):
-    facet.set_title(("Streets", "Graph")[i])
+    facet.set_title(("Rivers", "Graph")[i])
     facet.axis("off")
 nx.draw(G, positions, ax=ax[1], node_size=5)
 plt.show()
@@ -56,7 +56,7 @@ plt.show()
 # Once we finish graph-based analysis, we can convert graph back
 # to GeoDataFrames. momepy can return nodes as point geometry,
 # edges as original line geometry and W object, which is PySAL
-# spatial weights matrix encoding oroginal graph so we can use
+# spatial weights matrix encoding original graph so we can use
 # it with node GeoDataFrame.
 nodes, edges, W = momepy.nx_to_gdf(G, spatial_weights=True)
 
@@ -79,7 +79,7 @@ nx.draw(
 )
 plt.show()
 
-# Construct the dual graph. momepy will store row attributes as node attribtues and
+# Construct the dual graph. momepy will store row attributes as node attributes and
 # automatically measures angle between lines.
 G_dual = momepy.gdf_to_nx(streets, approach="dual")
 
@@ -99,7 +99,7 @@ lines = momepy.nx_to_gdf(G_dual)
 # We can also construct the dual graph using PySAL. Note that it only encodes
 # relationship between geometries and do not any store attributes. However, it is
 # significantly faster than momepy.gdf_to_nx().
-# Create PySAL weigths (graph).
+# Create PySAL weights (graph).
 W = weights.Queen.from_dataframe(streets)
 
 # Convert the graph to networkx
