@@ -577,20 +577,27 @@ def cngf_score(G, ebunch=None):
     r""""""
 
     def predict(u, v):
+        # Find the common neighbor set xy.commonneighbor of the node pair
         cnbors = set(nx.common_neighbors(G, u, v))
-        tempCnbors = cnbors.add(u, v)
+        # Extract the sub-graph which contains the tested node pair and their common neighbors
+        tempCnbors = cnbors
+        tempCnbors.add(v)
+        tempCnbors.add(u)
         subG = G.subgraph(tempCnbors).copy()
         similarity = 0
         if cnbors is not None:
+
             v_degree = G.degree(v)
             u_degree = G.degree(u)
 
             v_cmnDegree = subG.degree(v)
             u_cmnDegree = subG.degree(u)
 
-            v_guidance = v_cmnDegree / log(v_degree)
-            u_guidance = u_cmnDegree / log(u_degree)
-            similarity = v_guidance + u_guidance
+            if v_cmnDegree != 0 or u_cmnDegree != 0:
+                v_guidance = (v_cmnDegree / log(v_degree)) if v_degree != 1 else 0
+                u_guidance = u_cmnDegree / log(u_degree) if u_degree != 1 else 0
+                similarity = v_guidance + u_guidance
+
         return similarity
 
     return _apply_prediction(G, predict, ebunch)
