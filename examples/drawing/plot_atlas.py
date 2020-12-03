@@ -59,7 +59,7 @@ def iso(G1, glist):
 
 G = atlas6()
 
-print(f"graph has {nx.number_of_nodes(G)} nodes with {nx.number_of_edges(G)} edges")
+print(G)
 print(nx.number_connected_components(G), "connected components")
 
 plt.figure(1, figsize=(8, 8))

@@ -47,7 +47,7 @@ def lanl_graph():
 
 G = lanl_graph()
 
-print(f"graph has {nx.number_of_nodes(G)} nodes with {nx.number_of_edges(G)} edges")
+print(G)
 print(nx.number_connected_components(G), "connected components")
 
 plt.figure(figsize=(8, 8))
