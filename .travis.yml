@@ -21,6 +21,7 @@ matrix:
           - texlive-latex-extra
           - latexmk
           - texlive-xetex
+          - texlive-fonts-recommended
           - fonts-freefont-otf
           - xindy
           - libgeos-dev
