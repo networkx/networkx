@@ -41,6 +41,7 @@ sphinx_gallery_conf = {
             "../examples/3d_drawing",
             "../examples/pygraphviz",
             "../examples/geospatial",
+            "../examples/external",
             "../examples/javascript",
             "../examples/jit",
             "../examples/applications",
