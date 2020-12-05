@@ -17,9 +17,10 @@ algorithms.
 """
 import matplotlib.pyplot as plt
 import networkx as nx
+from networkx import Graph
 
 
-class AntiGraph(nx.Graph):
+class AntiGraph(Graph):
     """
     Class for complement graphs.
 
