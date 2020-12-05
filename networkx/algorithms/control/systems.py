@@ -360,7 +360,6 @@ class LTISystem:
 
         all_nodes = set(self.state_nodes)
         G = self.G.subgraph(self.state_nodes)
-        print(G.edges)
         H = create_bipartite_from_directed_graph(G)
         matching = find_maximum_matchings(H)[0]
         _, driver_nodes = convert_matching_to_nodes(
