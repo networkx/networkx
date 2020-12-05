@@ -574,41 +574,68 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def cngf_score(G, ebunch=None):
-    r""""""
+    r"""Computes the CNGF score for all node pairs in the ebunch.
+
+    CNGF score of 'u' and 'v' is defined as sum of guidance of all the common neighbors of 'u' and 'v'.
+    Guidance is defined as degree of node common neighbor x in extracted subgraph / log(degree of common neighbor in orignal graph).
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX undirected graph.
+
+    ebunch : iterable of node pairs, optional (default = None)
+        The WIC measure will be computed for each pair of nodes given in
+        the iterable. The pairs must be given as 2-tuples (u, v) where
+        u and v are nodes in the graph. If ebunch is None then all
+        non-existent edges in the graph will be used.
+        Default value: None.
+
+    Returns
+    -------
+    piter : iterator
+        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
+        pair of nodes and p is their CNGF score.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> preds = nx.cngf_score(G, [(0, 1)])
+    >>> for u, v, p in preds:
+    ...     print(f"({u}, {v}) -> {p}")
+    (0, 1) -> 8.656170245
+
+    References
+    ----------
+    .. [1] Liyan Dong, Yongli Li, Han Yin, Huang Le, and Mao Rui,
+    "The Algorithm of Link Prediction on Social Network",
+    Mathematical Problems in Engineering, vol. 2013, Article ID 125123, 7 pages, 2013.
+    https://doi.org/10.1155/2013/125123
+    """
 
     def predict(u, v):
         # Find the common neighbor set xy.commonneighbor of the node pair
         cnbors = set(nx.common_neighbors(G, u, v))
+        if len(cnbors) == 0 or u == v:
+            return 0
         # Extract the sub-graph which contains the tested node pair and their common neighbors
-        tempCnbors = cnbors
+        tempCnbors = set()
+        tempCnbors = tempCnbors.union(cnbors)
         tempCnbors.add(v)
         tempCnbors.add(u)
         subG = G.subgraph(tempCnbors).copy()
         similarity = 0
 
         def guidance(x):
-            x_degree = G.degree(v)
-            x_sub_degree = subG.degree(v)
+            x_degree = G.degree(x)
+            x_sub_degree = subG.degree(x)
+            if x_degree == 1:
+                return 0
+            return x_sub_degree / log(x_degree)
 
-            return x_sub_degree / log(v_degree)
-
-
-        for x in cnbors:
-            
-            similarity +=guidance(x)
-            
-            '''
-            v_degree = G.degree(v)
-            u_degree = G.degree(u)
-
-            v_cmnDegree = subG.degree(v)
-            u_cmnDegree = subG.degree(u)
-
-            if v_cmnDegree != 0 or u_cmnDegree != 0:
-                v_guidance = (v_cmnDegree / log(v_degree)) if v_degree != 1 else 0
-                u_guidance = u_cmnDegree / log(u_degree) if u_degree != 1 else 0
-                similarity = v_guidance + u_guidance
-            '''
+        if cnbors is not None:
+            for x in cnbors:
+                similarity += guidance(x)
         return similarity
 
     return _apply_prediction(G, predict, ebunch)

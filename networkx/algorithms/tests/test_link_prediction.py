@@ -555,8 +555,16 @@ class TestCngf_score:
 
     def test_P3(self):
         G = nx.path_graph(3)
-        self.test(G, [(0, 1)], [(0, 1, (1 / math.log(2)))])
+        self.test(G, [(0, 2)], [(0, 2, (2 / math.log(2)))])
 
     def test_K5(self):
         G = nx.complete_graph(5)
-        self.test(G, [(0, 1)], [(0, 1, ((4 / math.log(4)) + (4 / math.log(4))))])
+        self.test(
+            G,
+            [(0, 1)],
+            [(0, 1, ((4 / math.log(4)) + (4 / math.log(4)) + (4 / math.log(4))))],
+        )
+
+    def test_equal_nodes(self):
+        G = nx.complete_graph(4)
+        self.test(G, [(0, 0)], [(0, 0, 0)])
