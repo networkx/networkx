@@ -16,12 +16,12 @@ Abstract
 Graph generators in NetworkX create a Graph starting from an object
 specified in the `create_using` argument. Many of these generators
 do no more than create edges to add to the graph. Sometimes all we
-want the graph for is to generate those edges. It might be better 
+want the graph for is to generate those edges. It might be better
 to allow generators to report either the `edgelist` or any of the
 standard graph classes or a custom class. This NXEP proposes a
 framework for graph builders which allows a user friendly interface
 to these features and decorators to make it easy for developers to
-provide these features whether the graph builder algorithm requires 
+provide these features whether the graph builder algorithm requires
 a graph, or just edges.
 
 Motivation and Scope
@@ -46,7 +46,7 @@ The changes proposed involve any nx function that creates a graph or an
 edgelist. The proposal is to make these functions return a graph of
 any type or an edgelist based on the choice indicated by the user.
 Developers choose whether it is more effective to yield edges or to
-return a graph. Decorators are used to construct the surrounding code 
+return a graph. Decorators are used to construct the surrounding code
 to enable the other output styles.
 
 The proposed solution is to provide the user with graph builders that
@@ -83,14 +83,14 @@ the container:
 
                               len(C)  hashable(C[-1])
 Graph attributes:               1        False
-Node without attributes:        1        True 
+Node without attributes:        1        True
 Node with attributes:           2        False
-Edge without attributes:        2        True 
+Edge without attributes:        2        True
 Edge with attributes:           3        False
-Multiedge without attributes:   3        True 
+Multiedge without attributes:   3        True
 Multiedge with attributes:      4        False
 
-Here is some code to process such an edglist and construct the graph 
+Here is some code to process such an edglist and construct the graph
 starting from an empty graph G:
 
 .. code-block:: python
@@ -187,7 +187,8 @@ Backward compatibility
 
 To reduce backward incompatibility, the base calling structure `nx.path_graph(9)`
 works as it currently does. The `create_using` parameter is removed and
-replaced by an attribute of the calling function. So `nx.path_graph(9, nx.DiGraph)` becomes `nx.path_graph.DiGraph(9)`.
+replaced by an attribute of the calling function.
+So `nx.path_graph(9, nx.DiGraph)` becomes `nx.path_graph.DiGraph(9)`.
 
 Due to the renaming of graph generators as graph builders (to avoid confusion
 with Python's generator functions) anyone using full-path calling syntax
@@ -205,8 +206,8 @@ Detailed description
 --------------------
 
 This can be accomplished through a couple decorators, which could be
-adopted gradually -- a big patch initial decorating all existing generators
-with `@graph_generator` would immediately support the notation
+adopted gradually -- a big patch initially decorating all existing generators
+with `@graph_builder` would immediately support the notation
 `nx.complete_graph.edgelist(...)` without impacting existing code.
 Later generators could use `@node_and_edge_builder`.
 
@@ -233,7 +234,7 @@ Later generators could use `@node_and_edge_builder`.
         graph.CustomGraph = custom_graph
         graph.edgelist = f
         return graph
-    
+
     def graph_builder(f):
         @wraps(f)
         def edgelist(*args, **kwargs):
@@ -256,7 +257,7 @@ Later generators could use `@node_and_edge_builder`.
         f.MultiGraph = multigraph
         f.MultiDiGraph = multidigraph
         return f
-    
+
 Note: the graph_builder underlying code should accept a create_using
 parameter for this implementation to work. We need to think if this is
 universally applicable and how to handle builders that shouldn't work
@@ -274,7 +275,7 @@ Example developer usage:
     def path_graph(n):
         """an overly simplified path graph implementation"""
         return pairwise(range(n))
-    
+
     @graph_builder
     def complete_graph(n, create_using=None):
         """an overly simplified complete graph implementation"""
@@ -299,7 +300,7 @@ The first major step is to implement the two builder decorators.
 Next we need to change the Graph update methods, convert functions, etc.
 to process edgelists that contain isolated nodes and data attributes.
 Third we should identify any functions that build graphs or edgelists
-and decorate them to make them Graph Builders. 
+and decorate them to make them Graph Builders.
 
 Special care should be made to ensure only desired graph types are
 accepted and appropriate errors raised when not.
@@ -323,7 +324,7 @@ most of the time.
 Discussion
 ----------
 
-Most of the ideas here are from 
+Most of the ideas here are from
 - [`#3036 <https://github.com/networkx/networkx/pull/3036>`]
-which built on disucssion from
+which built on discussion from
 - [`#1393 <https://github.com/networkx/networkx/pull/1393>`]
