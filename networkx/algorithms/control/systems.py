@@ -5,9 +5,36 @@ from itertools import combinations, product
 
 
 def create_bipartite_from_directed_graph(G):
-    """Create a bipartite graph from a directed graph.
+    """Create a bipartite representation of a directed graph.
 
-    Adds in and out nodes for each node of the graph.
+    Creates a bipartite representation of a directed graph by adding two nodes
+    $x_i^+$ and $x_i^-$ per each node $x_i$ in the original graph,
+    corresponding to the incoming and and outgoing edges, respectively.
+    Then, given an edge $(x_i \\to x_j)$ in the original directed graph,
+    the edge $(x_i^+, x_j^-)$ is added to the bipartite graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Directed graph
+
+    Returns
+    -------
+    bipartite : Graph
+        The bipartite representation of the graph
+
+    Notes
+    -----
+    Definition comes from [1]_. This formulation results in a bipartite graph
+    between the two partitions of
+    $\{x_1^+, \ldots, x_n^+\} \cup \{x_1^-, \ldots x_n^-\}$.
+
+    References
+    ----------
+    .. [1] Liu, Y. Y., Slotine, J. J., & Barabási, A. L. (2011).
+        Controllability of complex networks.
+        Nature, 473(7346), 167-173.
+        https://doi.org/10.1038/nature10011
     """
     in_nodes = [node + "-" for node in G.nodes]
     out_nodes = [node + "+" for node in G.nodes]
