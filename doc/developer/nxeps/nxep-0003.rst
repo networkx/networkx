@@ -58,7 +58,7 @@ extra code needed to construct a single API so users would use the
 same interface no matter which style of underlying code was used.
 The user facing interface would allow the user to specify a graph
 data structure by type, or request an edgelist. One syntax proposal
-is:
+is::
 
     G = nx.path_graph(9)
     DG = nx.path_graph.DiGraph(9)
