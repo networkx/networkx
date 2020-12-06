@@ -11,29 +11,6 @@ import networkx as nx
 from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
 
 
-def test_parse_edgelist():
-    # ignore lines with less than 2 nodes
-    lines = ["1;2", "2 3", "3 4"]
-    G = nx.parse_edgelist(lines, nodetype=int)
-    assert list(G.edges()) == [(2, 3), (3, 4)]
-    # unknown nodetype
-    with pytest.raises(TypeError, match="Failed to convert nodes"):
-        lines = ["1 2", "2 3", "3 4"]
-        nx.parse_edgelist(lines, nodetype="nope")
-    # lines have invalid edge format
-    with pytest.raises(TypeError, match="Failed to convert edge data"):
-        lines = ["1 2 3", "2 3", "3 4"]
-        nx.parse_edgelist(lines, nodetype=int)
-    # edge data and data_keys not the same length
-    with pytest.raises(IndexError, match="not the same length"):
-        lines = ["1 2 3", "2 3 27", "3 4 3.0"]
-        nx.parse_edgelist(
-            lines, nodetype=int, data=(("weight", float), ("capacity", int))
-        )
-    # edge data can't be converted to edge type
-    with pytest.raises(TypeError, match="Failed to convert"):
-        lines = ["1 2 't1'", "2 3 't3'", "3 4 't3'"]
-        nx.parse_edgelist(lines, nodetype=int, data=(("weight", float),))
 edges_no_data = textwrap.dedent(
     """
     # comment line
@@ -125,6 +102,64 @@ def test_read_edgelist_with_data(data, extra_kwargs, expected):
     bytesIO = io.BytesIO(data.encode("utf-8"))
     G = nx.read_edgelist(bytesIO, nodetype=int, **extra_kwargs)
     assert_edges_equal(G.edges(data=True), expected)
+
+
+@pytest.fixture
+def example_graph():
+    G = nx.Graph()
+    G.add_weighted_edges_from([(1, 2, 3.0), (2, 3, 27.0), (3, 4, 3.0)])
+    return G
+
+
+def test_parse_edgelist_no_data(example_graph):
+    G = example_graph
+    H = nx.parse_edgelist(["1 2", "2 3", "3 4"], nodetype=int)
+    assert_nodes_equal(G.nodes, H.nodes)
+    assert_edges_equal(G.edges, H.edges)
+
+
+def test_parse_edgelist_with_data_dict(example_graph):
+    G = example_graph
+    H = nx.parse_edgelist(
+        ["1 2 {'weight': 3}", "2 3 {'weight': 27}", "3 4 {'weight': 3.0}"],
+        nodetype=int,
+    )
+    assert_nodes_equal(G.nodes, H.nodes)
+    assert_edges_equal(G.edges(data=True), H.edges(data=True))
+
+
+def test_parse_edgelist_with_data_list(example_graph):
+    G = example_graph
+    H = nx.parse_edgelist(
+        ["1 2 3", "2 3 27", "3 4 3.0"], nodetype=int, data=(("weight", float),)
+    )
+    assert_nodes_equal(G.nodes, H.nodes)
+    assert_edges_equal(G.edges(data=True), H.edges(data=True))
+
+
+def test_parse_edgelist():
+    # ignore lines with less than 2 nodes
+    lines = ["1;2", "2 3", "3 4"]
+    G = nx.parse_edgelist(lines, nodetype=int)
+    assert list(G.edges()) == [(2, 3), (3, 4)]
+    # unknown nodetype
+    with pytest.raises(TypeError, match="Failed to convert nodes"):
+        lines = ["1 2", "2 3", "3 4"]
+        nx.parse_edgelist(lines, nodetype="nope")
+    # lines have invalid edge format
+    with pytest.raises(TypeError, match="Failed to convert edge data"):
+        lines = ["1 2 3", "2 3", "3 4"]
+        nx.parse_edgelist(lines, nodetype=int)
+    # edge data and data_keys not the same length
+    with pytest.raises(IndexError, match="not the same length"):
+        lines = ["1 2 3", "2 3 27", "3 4 3.0"]
+        nx.parse_edgelist(
+            lines, nodetype=int, data=(("weight", float), ("capacity", int))
+        )
+    # edge data can't be converted to edge type
+    with pytest.raises(TypeError, match="Failed to convert"):
+        lines = ["1 2 't1'", "2 3 't3'", "3 4 't3'"]
+        nx.parse_edgelist(lines, nodetype=int, data=(("weight", float),))
 
 
 class TestEdgelist:
