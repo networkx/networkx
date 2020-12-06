@@ -81,16 +81,25 @@ information included in the container. All currently used graph information
 can be stored in such a sequence. The logic is as follows where C denotes
 the container:
 
-                              len(C)  hashable(C[-1])
-Graph attributes:               1        False
-Node without attributes:        1        True
-Node with attributes:           2        False
-Edge without attributes:        2        True
-Edge with attributes:           3        False
-Multiedge without attributes:   3        True
-Multiedge with attributes:      4        False
++------------------------------+--------+-----------------+
+|                              | len(C) | hashable(C[-1]) |
++==============================+========+=================+
+|Graph attributes:             |   1    |    False        |
++------------------------------+--------+-----------------+
+|Node without attributes:      |   1    |    True         |
++------------------------------+--------+-----------------+
+|Node with attributes:         |   2    |    False        |
++------------------------------+--------+-----------------+
+|Edge without attributes:      |   2    |    True         |
++------------------------------+--------+-----------------+
+|Edge with attributes:         |   3    |    False        |
++------------------------------+--------+-----------------+
+|Multiedge without attributes: |   3    |    True         |
++------------------------------+--------+-----------------+
+|Multiedge with attributes:    |   4    |    False        |
++------------------------------+--------+-----------------+
 
-Here is some code to process such an edglist and construct the graph
+Here is some code to process such an edgelist and construct the graph
 starting from an empty graph G:
 
 .. code-block:: python
