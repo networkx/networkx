@@ -62,7 +62,7 @@ def _tree_edges(n, r):
 
 
 def full_rary_tree(r, n, create_using=None):
-    """Creates a full r-ary tree of n nodes.
+    """Creates a full r-ary tree of `n` nodes.
 
     Sometimes called a k-ary, n-ary, or m-ary tree.
     "... all non-leaf nodes have exactly r children and all levels
