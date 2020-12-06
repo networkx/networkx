@@ -36,11 +36,9 @@ def create_bipartite_from_directed_graph(G):
         Nature, 473(7346), 167-173.
         https://doi.org/10.1038/nature10011
     """
-    in_nodes = [node + "-" for node in G.nodes]
-    out_nodes = [node + "+" for node in G.nodes]
-    edges = []
-    for u, v in G.edges:
-        edges.append((u + "+", v + "-"))
+    in_nodes = [repr(node) + "-" for node in G.nodes]
+    out_nodes = [repr(node) + "+" for node in G.nodes]
+    edges = [(repr(u) + "+", repr(v) + "-") for u, v in G.edges]
     H = nx.Graph()
     H.add_nodes_from(out_nodes, bipartite=0)
     H.add_nodes_from(in_nodes, bipartite=1)
@@ -53,7 +51,7 @@ def convert_bipartite_edges_to_original(edges):
     Convert bipartite edges to original edges by removing
     the in (-) and out (+) specification in the string name.
     """
-    return [(u[:-1], v[:-1]) for u, v in edges]
+    return [(eval(u[:-1]), eval(v[:-1])) for u, v in edges]
 
 
 def find_matchings(G, t, selfloops=True):
@@ -66,7 +64,7 @@ def find_matchings(G, t, selfloops=True):
     if selfloops:
         all_edges = G.edges
     else:
-        all_edges = [(u, v) for (u, v) in G.edges if u[:-1] != v[:-1]]
+        all_edges = [(u, v) for u, v in G.edges if eval(u[:-1]) != eval(v[:-1])]
     for edges in combinations(all_edges, t):
         if nx.is_matching(G, edges):
             matchings.append(edges)
@@ -305,12 +303,12 @@ class LTISystem:
         for node in unmatched:
             theta = set()
             other_unmatched = unmatched.difference({node})
-            bad_edges = [(u, v) for u, v in H.edges() if v[:-1] in other_unmatched]
+            bad_edges = [(u, v) for u, v in H.edges() if eval(v[:-1]) in other_unmatched]
             B = H.copy()
             B.remove_edges_from(bad_edges)
             match_lens = []
             for candidate in matched:
-                bad_edges = [(u, v) for u, v in B.edges() if v[:-1] == candidate]
+                bad_edges = [(u, v) for u, v in B.edges() if eval(v[:-1]) == candidate]
                 B_new = B.copy()
                 B_new.remove_edges_from(bad_edges)
                 matching = find_maximum_matchings(B_new)[0]
