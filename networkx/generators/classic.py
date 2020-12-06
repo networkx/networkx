@@ -5,7 +5,7 @@ The typical graph builder function is called as follows:
 >>> G = nx.complete_graph(100)
 
 returning the complete graph on n nodes labeled 0, .., 99
-as a simple graph. Except for empty_graph, all the functions
+as a simple graph. Except for `empty_graph`, all the functions
 in this module return a Graph class (i.e. a simple, undirected graph).
 
 """
