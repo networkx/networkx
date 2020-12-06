@@ -705,6 +705,12 @@ def draw_networkx_edges(
     def _connectionstyle(posA, posB, *args, **kwargs):
         # check if we need to do a self-loop
         if np.all(posA == posB):
+            # Compute width and height from all node positions.
+            # Prevents patches with 0 extent when nodelist or edgelist contains
+            # a single value
+            allpos = np.asarray(list(pos.values()))
+            w = np.ptp(allpos[:, 0])
+            h = np.ptp(allpos[:, 1])
             # this is called with _screen space_ values so covert back
             # to data space
             data_loc = ax.transData.inverted().transform(posA)
