@@ -4,6 +4,21 @@ from networkx.algorithms.control.systems import *
 import numpy as np
 
 
+def test_directed_matching():
+    G = nx.path_graph(5, create_using=nx.DiGraph)
+    for t in range(1, len(G.edges) + 1):
+        for edges in combinations(G.edges, t):
+            assert is_directed_matching(edges)
+
+    # Directed star graph
+    edges = [(0, 1), (0, 2), (0, 3), (0, 4)]
+    G = nx.DiGraph()
+    G.add_edges_from(edges)
+    for t in range(2, len(G.edges) + 1):
+        for edges in combinations(G.edges, t):
+            assert not is_directed_matching(edges)
+
+
 def test_lti_system():
     A = np.array(
         [

@@ -12,3 +12,4 @@ Systems
 
     create_bipartite_from_directed_graph
     convert_bipartite_edges_to_original
+    is_directed_matching

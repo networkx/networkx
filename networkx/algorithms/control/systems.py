@@ -67,6 +67,40 @@ def convert_bipartite_edges_to_original(edges):
     return [(eval(u[:-1]), eval(v[:-1])) for u, v in edges]
 
 
+def is_directed_matching(edges):
+    """Check whether a set of edges is a valid directed matching.
+
+    A matching for a directed graph is defined as a set of edges that do not
+    share common start or end vertices [1]_. Extends the definition of a
+    matching for an undirected graph.
+
+    Parameters
+    ----------
+    edges : list or set
+        Directed edges representing a candidate matching.
+
+    Returns
+    -------
+    bool
+        Whether or not the given set of edges is a valid directed matching.
+
+    References
+    ----------
+    .. [1] Liu, Y. Y., Slotine, J. J., & Barabási, A. L. (2011).
+        Controllability of complex networks.
+        Nature, 473(7346), 167-173.
+        https://doi.org/10.1038/nature10011
+    """
+    in_set = set()
+    out_set = set()
+    for u, v in edges:
+        if u in in_set or v in out_set:
+            return False
+        in_set.add(u)
+        out_set.add(v)
+    return True
+
+
 def find_matchings(G, t, selfloops=True):
     """Find matchings in a given graph.
 
