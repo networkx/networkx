@@ -316,12 +316,16 @@ class LTISystem:
         for node in unmatched:
             theta = set()
             other_unmatched = unmatched.difference({node})
-            bad_edges = [(u, v) for u, v in H.edges() if eval(v[:-1]) in other_unmatched]
+            bad_edges = [
+                (u, v) for u, v in H.edges() if eval(v[:-1]) in other_unmatched
+            ]
             B = H.copy()
             B.remove_edges_from(bad_edges)
             match_lens = []
             for candidate in matched:
-                bad_edges = [(u, v) for u, v in B.edges() if eval(v[:-1]) == candidate]
+                bad_edges = [
+                    (u, v) for u, v in B.edges() if eval(v[:-1]) == candidate
+                ]
                 B_new = B.copy()
                 B_new.remove_edges_from(bad_edges)
                 matching = find_maximum_matchings(B_new)[0]
