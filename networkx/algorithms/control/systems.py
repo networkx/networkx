@@ -101,27 +101,62 @@ def is_directed_matching(edges):
     return True
 
 
-def find_matchings(G, t, selfloops=True):
-    """Find matchings in a given graph.
+def find_matchings(G, t):
+    """Find matchings of a certain size in the given graph.
 
-    A matching is defined as a set of edges such that no edges share
-    any vertices. t specifies the sizes of such matchings to search for.
+    A matching for an undirected graph is defined as a set of edges that
+    share no vertices. For a directed graph, a matching is a set of edges
+    that do not share common start or end vertices, as defined by [1]_.
+    $t$ specifies the sizes of such matchings to search for.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        Undirected or directed graph
+
+    t : int
+        Size of matchings to search for.
+
+    Returns
+    -------
+    iterator
+        Iterator over matchings of size $t$.
+
+    Notes
+    -----
+    To obtain all matchings of size $t$, use `list(find_matchings(G, t))`.
+
+    References
+    ----------
+    .. [1] Liu, Y. Y., Slotine, J. J., & Barabási, A. L. (2011).
+        Controllability of complex networks.
+        Nature, 473(7346), 167-173.
+        https://doi.org/10.1038/nature10011
+
+    See also
+    --------
+    :func:`networkx.algorithms.matching.is_matching`
+        A function that verifies if a set of edges is a valid matching
+        for an undirected graph.
+    :func:`networkx.algorithms.control.systems.is_directed_matching`
+        A function that verifies if a set of edges is a valid matching
+        for a directed graph.
+    :mod:`networkx.algorithms.matching`
+        Functions for finding matchings in graphs.
     """
-    matchings = []
-    if selfloops:
-        all_edges = G.edges
+    if G.is_directed():
+        is_matching = is_directed_matching
     else:
-        all_edges = [(u, v) for u, v in G.edges if eval(u[:-1]) != eval(v[:-1])]
-    for edges in combinations(all_edges, t):
-        if nx.is_matching(G, edges):
-            matchings.append(edges)
-    return matchings
+        is_matching = lambda edges : nx.is_matching(G, edges)
+    for edges in combinations(G.edges, t):
+        if is_matching(edges):
+            yield edges
 
 
 def find_maximum_matchings(G):
     """Find the sets of maximum matchings for a given graph."""
     for t in range(len(G.edges) + 1, 0, -1):
-        matchings = find_matchings(G, t)
+        matchings = list(find_matchings(G, t))
         if len(matchings) > 0:
             return matchings
     return matchings
@@ -146,7 +181,10 @@ def has_t_constrained_matching(G, t, selfloops=True):
 
     A t-matching is contrained if it is the only such matching of size t.
     """
-    matchings = find_matchings(G, t, selfloops=selfloops)
+    if not selfloops:
+        edges = [(u, v) for u, v in G.edges if eval(u[:-1]) != eval(v[:-1])]
+        G = G.edge_subgraph(edges)
+    matchings = list(find_matchings(G, t))
     if len(matchings) == 0 or len(matchings) > 1:
         return False
     return True
