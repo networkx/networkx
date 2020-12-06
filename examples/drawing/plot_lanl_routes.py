@@ -8,14 +8,12 @@ Routes to LANL from 186 sites on the Internet.
 The data file can be found at:
 
 - https://github.com/networkx/networkx/blob/master/examples/drawing/lanl_routes.edgelist
+
+This example needs Graphviz and PyGraphviz.
 """
 
 import matplotlib.pyplot as plt
 import networkx as nx
-
-# This example needs Graphviz and either PyGraphviz or pydot
-# from networkx.drawing.nx_pydot import graphviz_layout
-from networkx.drawing.nx_agraph import graphviz_layout
 
 
 def lanl_graph():
@@ -52,7 +50,7 @@ print(nx.number_connected_components(G), "connected components")
 
 plt.figure(figsize=(8, 8))
 # use graphviz to find radial layout
-pos = graphviz_layout(G, prog="twopi", root=0)
+pos = nx.nx_agraph.graphviz_layout(G, prog="twopi", root=0)
 # draw nodes, coloring by rtt ping time
 options = {"with_labels": False, "alpha": 0.5, "node_size": 15}
 nx.draw(G, pos, node_color=[G.rtt[v] for v in G], **options)

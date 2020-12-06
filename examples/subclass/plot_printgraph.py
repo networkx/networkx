@@ -19,7 +19,7 @@ class PrintGraph(Graph):
     """
 
     def __init__(self, data=None, name="", file=None, **attr):
-        Graph.__init__(self, data=data, name=name, **attr)
+        super().__init__(data=data, name=name, **attr)
         if file is None:
             import sys
 
@@ -28,7 +28,7 @@ class PrintGraph(Graph):
             self.fh = open(file, "w")
 
     def add_node(self, n, attr_dict=None, **attr):
-        Graph.add_node(self, n, attr_dict=attr_dict, **attr)
+        super().add_node(n, attr_dict=attr_dict, **attr)
         self.fh.write(f"Add node: {n}\n")
 
     def add_nodes_from(self, nodes, **attr):
@@ -36,7 +36,7 @@ class PrintGraph(Graph):
             self.add_node(n, **attr)
 
     def remove_node(self, n):
-        Graph.remove_node(self, n)
+        super().remove_node(n)
         self.fh.write(f"Remove node: {n}\n")
 
     def remove_nodes_from(self, nodes):
@@ -44,7 +44,7 @@ class PrintGraph(Graph):
             self.remove_node(n)
 
     def add_edge(self, u, v, attr_dict=None, **attr):
-        Graph.add_edge(self, u, v, attr_dict=attr_dict, **attr)
+        super().add_edge(u, v, attr_dict=attr_dict, **attr)
         self.fh.write(f"Add edge: {u}-{v}\n")
 
     def add_edges_from(self, ebunch, attr_dict=None, **attr):
@@ -53,7 +53,7 @@ class PrintGraph(Graph):
             self.add_edge(u, v, attr_dict=attr_dict, **attr)
 
     def remove_edge(self, u, v):
-        Graph.remove_edge(self, u, v)
+        super().remove_edge(u, v)
         self.fh.write(f"Remove edge: {u}-{v}\n")
 
     def remove_edges_from(self, ebunch):
@@ -62,7 +62,7 @@ class PrintGraph(Graph):
             self.remove_edge(u, v)
 
     def clear(self):
-        Graph.clear(self)
+        super().clear()
         self.fh.write("Clear graph\n")
 
 

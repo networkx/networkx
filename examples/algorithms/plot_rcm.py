@@ -9,16 +9,15 @@ The reverse Cuthill--McKee algorithm gives a sparse matrix ordering that
 reduces the matrix bandwidth.
 """
 
-import networkx as nx
-from networkx.utils import reverse_cuthill_mckee_ordering
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
+import networkx as nx
 
 
 # build low-bandwidth numpy matrix
 G = nx.grid_2d_graph(3, 3)
-rcm = list(reverse_cuthill_mckee_ordering(G))
+rcm = list(nx.utils.reverse_cuthill_mckee_ordering(G))
 print("ordering", rcm)
 
 print("unordered Laplacian matrix")

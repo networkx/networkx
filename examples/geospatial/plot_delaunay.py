@@ -1,7 +1,7 @@
 """
-=====
+======================================
 Delaunay graphs from geographic points
-=====
+======================================
 
 This example shows how to build a delaunay graph (plus its dual,
 the set of Voronoi polygons) from a set of points.

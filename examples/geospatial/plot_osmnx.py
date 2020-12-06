@@ -1,7 +1,7 @@
 """
-=====
-OSMnx
-=====
+========================
+OpenStreetMap with OSMnx
+========================
 
 This example shows how to use OSMnx to download and model a street network
 from OpenStreetMap, visualize centrality, and save the graph as a shapefile,

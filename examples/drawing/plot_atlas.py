@@ -4,21 +4,14 @@ Atlas
 =====
 
 Atlas of all graphs of 6 nodes or less.
+
+This example needs Graphviz and PyGraphviz.
 """
 
 import random
 
-# This example needs Graphviz and either PyGraphviz or pydot.
-# from networkx.drawing.nx_pydot import graphviz_layout
-from networkx.drawing.nx_agraph import graphviz_layout
-
 import matplotlib.pyplot as plt
-
 import networkx as nx
-from networkx.algorithms.isomorphism.isomorph import (
-    graph_could_be_isomorphic as isomorphic,
-)
-from networkx.generators.atlas import graph_atlas_g
 
 
 def atlas6():
@@ -26,7 +19,7 @@ def atlas6():
     Attempt to check for isomorphisms and remove.
     """
 
-    Atlas = graph_atlas_g()[0:208]  # 208
+    Atlas = nx.graph_atlas_g()[0:208]  # 208
     # remove isolated nodes, only connected graphs are left
     U = nx.Graph()  # graph for union of all graphs in atlas
     for G in Atlas:
@@ -52,7 +45,7 @@ def atlas6():
 def iso(G1, glist):
     """Quick and dirty nonisomorphism checker used to check isomorphisms."""
     for G2 in glist:
-        if isomorphic(G1, G2):
+        if nx.isomorphism.isomorph.graph_could_be_isomorphic(G1, G2):
             return True
     return False
 
@@ -64,7 +57,7 @@ print(nx.number_connected_components(G), "connected components")
 
 plt.figure(1, figsize=(8, 8))
 # layout graphs with positions using graphviz neato
-pos = graphviz_layout(G, prog="neato")
+pos = nx.nx_agraph.graphviz_layout(G, prog="neato")
 # color nodes the same in each connected subgraph
 C = (G.subgraph(c) for c in nx.connected_components(G))
 for g in C:

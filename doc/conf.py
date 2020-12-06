@@ -35,15 +35,12 @@ sphinx_gallery_conf = {
         [
             "../examples/basic",
             "../examples/drawing",
+            "../examples/3d_drawing",
             "../examples/graph",
             "../examples/algorithms",
             "../examples/advanced",
-            "../examples/3d_drawing",
-            "../examples/pygraphviz",
+            "../examples/external",
             "../examples/geospatial",
-            "../examples/javascript",
-            "../examples/jit",
-            "../examples/applications",
             "../examples/subclass",
         ]
     ),

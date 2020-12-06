@@ -14,7 +14,6 @@ in this way may be infeasible if the circuit is large.
 """
 import matplotlib.pyplot as plt
 import networkx as nx
-from networkx.utils import arbitrary_element
 
 
 def circuit_to_formula(circuit):
@@ -38,7 +37,7 @@ def formula_to_string(formula):
         children = formula[root]
         # If one child, the label must be a NOT operator.
         if len(children) == 1:
-            child = arbitrary_element(children)
+            child = nx.utils.arbitrary_element(children)
             return f"{label}({_to_string(formula, child)})"
         # NB "left" and "right" here are a little misleading: there is
         # no order on the children of a node. That's okay because the

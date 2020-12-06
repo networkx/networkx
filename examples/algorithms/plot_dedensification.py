@@ -7,9 +7,8 @@ Examples of dedensification of a graph.  Dedensification retains the structural
 pattern of the original graph and will only add compressor nodes when doing so
 would result in fewer edges in the compressed graph.
 """
-import networkx as nx
-from networkx.algorithms import summarization
 import matplotlib.pyplot as plt
+import networkx as nx
 
 plt.suptitle("Dedensification")
 
@@ -55,7 +54,7 @@ ax1 = plt.subplot(1, 2, 1)
 plt.title("Original (%s edges)" % original_graph.number_of_edges())
 nx.draw_networkx(original_graph, pos=pos, node_color=node_colors, **base_options)
 
-nonexp_graph, compression_nodes = summarization.dedensify(
+nonexp_graph, compression_nodes = nx.summarization.dedensify(
     original_graph, threshold=2, copy=False
 )
 nonexp_node_colors = list(node_colors)
