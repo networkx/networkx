@@ -99,6 +99,8 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="FilterMultiInner.copy"
     )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_data")
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_graph")
 
 
 @pytest.fixture(autouse=True)
