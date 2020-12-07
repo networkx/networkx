@@ -422,7 +422,7 @@ def parse_gml_lines(lines, label, destringizer):
         try:
             return dct.pop(attr)
         except KeyError as e:
-            raise NetworkXError(f"{category} #{i} has no '{attr}' attribute") from e
+            raise NetworkXError(f"{category} #{i} has no {attr!r} attribute") from e
 
     nodes = graph.get("node", [])
     mapping = {}

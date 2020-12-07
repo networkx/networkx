@@ -391,7 +391,7 @@ class Graph:
         return "".join(
             [
                 type(self).__name__,
-                f" named '{self.name}'" if self.name else "",
+                f" named {self.name!r}" if self.name else "",
                 f" with {self.number_of_nodes()} nodes and {self.number_of_edges()} edges",
             ]
         )

@@ -590,11 +590,11 @@ class MaxWeightClique(object):
         else:
             for v in G.nodes():
                 if weight not in G.nodes[v]:
-                    err = "Node {} does not have the requested weight field."
-                    raise KeyError(err.format(v))
+                    errmsg = f"Node {v!r} does not have the requested weight field."
+                    raise KeyError(errmsg)
                 if not isinstance(G.nodes[v][weight], int):
-                    err = "The '{}' field of node {} is not an integer."
-                    raise ValueError(err.format(weight, v))
+                    errmsg = f"The {weight!r} field of node {v!r} is not an integer."
+                    raise ValueError(errmsg)
             self.node_weights = {v: G.nodes[v][weight] for v in G.nodes()}
 
     def update_incumbent_if_improved(self, C, C_weight):
