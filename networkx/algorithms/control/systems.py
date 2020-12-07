@@ -147,7 +147,7 @@ def find_matchings(G, t):
     if G.is_directed():
         is_matching = is_directed_matching
     else:
-        is_matching = lambda edges : nx.is_matching(G, edges)
+        is_matching = lambda edges: nx.is_matching(G, edges)
     for edges in combinations(G.edges, t):
         if is_matching(edges):
             yield edges
@@ -395,9 +395,7 @@ class LTISystem:
             B.remove_edges_from(bad_edges)
             match_lens = []
             for candidate in matched:
-                bad_edges = [
-                    (u, v) for u, v in B.edges() if eval(v[:-1]) == candidate
-                ]
+                bad_edges = [(u, v) for u, v in B.edges() if eval(v[:-1]) == candidate]
                 B_new = B.copy()
                 B_new.remove_edges_from(bad_edges)
                 matching = find_maximum_matchings(B_new)[0]
