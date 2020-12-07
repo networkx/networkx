@@ -201,13 +201,11 @@ def find_maximum_matchings(G):
             break
 
 
-def convert_matching_to_nodes(matching, all_nodes, from_bipartite=False):
+def convert_matching_to_nodes(matching, all_nodes):
     """Convert a list of matching edges to matched and unmatched nodes.
 
     A vertex is matched if it is the end of an edge in the matching.
     """
-    if from_bipartite:
-        matching = convert_bipartite_edges_to_original(matching)
     matched = set()
     for u, v in matching:
         matched.add(v)
@@ -351,11 +349,8 @@ class LTISystem:
         can control the entire network.
         """
         G_no_inputs = self.G.subgraph(self.state_nodes)
-        H = create_bipartite_from_directed_graph(G_no_inputs)
-        max_matching = next(find_maximum_matchings(H))
-        _, unmatched = convert_matching_to_nodes(
-            max_matching, self.state_nodes, from_bipartite=True
-        )
+        max_matching = next(find_maximum_matchings(G_no_inputs))
+        _, unmatched = convert_matching_to_nodes(max_matching, self.state_nodes)
         return unmatched
 
     def is_controllable_pbh(self):
@@ -391,15 +386,12 @@ class LTISystem:
             scc_to_nodes[scc].append(node)
         root_scc = [u for u, in_deg in scc_dag.in_degree() if in_deg == 0]
         beta = len(root_scc)
-        H = create_bipartite_from_directed_graph(G)
 
-        max_matchings = list(find_maximum_matchings(H))
+        max_matchings = list(find_maximum_matchings(G))
         alpha = 0
         top_assignable_scc = None
         for matching in max_matchings:
-            matched, unmatched = convert_matching_to_nodes(
-                matching, G.nodes, from_bipartite=True
-            )
+            matched, unmatched = convert_matching_to_nodes(matching, G.nodes)
             assignable = set()
             # Find set of rSCCs that contain driver nodes
             for node in unmatched:
@@ -415,9 +407,7 @@ class LTISystem:
                 root_scc_nodes.add(node)
 
         max_matching = max_matchings[0]
-        matched, unmatched = convert_matching_to_nodes(
-            max_matching, G.nodes, from_bipartite=True
-        )
+        matched, unmatched = convert_matching_to_nodes(max_matching, G.nodes)
         n_driver_nodes = len(unmatched)
 
         min_num_actuators = n_driver_nodes + beta - alpha
@@ -427,20 +417,16 @@ class LTISystem:
         for node in unmatched:
             theta = set()
             other_unmatched = unmatched.difference({node})
-            bad_edges = [
-                (u, v) for u, v in H.edges() if eval(v[:-1]) in other_unmatched
-            ]
-            B = H.copy()
+            bad_edges = [(u, v) for u, v in G.edges() if v in other_unmatched]
+            B = G.copy()
             B.remove_edges_from(bad_edges)
             match_lens = []
             for candidate in matched:
-                bad_edges = [(u, v) for u, v in B.edges() if eval(v[:-1]) == candidate]
+                bad_edges = [(u, v) for u, v in B.edges() if v == candidate]
                 B_new = B.copy()
                 B_new.remove_edges_from(bad_edges)
                 matching = next(find_maximum_matchings(B_new))
-                new_matches, _ = convert_matching_to_nodes(
-                    matching, G.nodes, from_bipartite=True
-                )
+                new_matches, _ = convert_matching_to_nodes(matching, G.nodes)
                 match_lens.append(len(new_matches))
             max_len = max(match_lens)
             for i, length in enumerate(match_lens):
@@ -470,11 +456,9 @@ class LTISystem:
 
         G = self.G.subgraph(self.state_nodes)
         all_edges = set(G.edges())
-        H = create_bipartite_from_directed_graph(G)
-        max_matchings = list(find_maximum_matchings(H))
+        max_matchings = list(find_maximum_matchings(G))
         matchings = []
         for matching in max_matchings:
-            matching = convert_bipartite_edges_to_original(matching)
             matchings.append(set(matching))
         critical = set.intersection(*matchings)
         redundant = all_edges.difference(*matchings)
@@ -489,13 +473,10 @@ class LTISystem:
 
         G = self.G.subgraph(self.state_nodes)
         all_nodes = set(self.state_nodes)
-        H = create_bipartite_from_directed_graph(G)
-        max_matchings = list(find_maximum_matchings(H))
+        max_matchings = list(find_maximum_matchings(G))
         all_driver_nodes = []
         for matching in max_matchings:
-            _, driver_nodes = convert_matching_to_nodes(
-                matching, G.nodes, from_bipartite=True
-            )
+            _, driver_nodes = convert_matching_to_nodes(matching, G.nodes)
             all_driver_nodes.append(driver_nodes)
         critical = set.intersection(*all_driver_nodes)
         redundant = all_nodes.difference(*all_driver_nodes)
@@ -511,22 +492,16 @@ class LTISystem:
 
         all_nodes = set(self.state_nodes)
         G = self.G.subgraph(self.state_nodes)
-        H = create_bipartite_from_directed_graph(G)
-        matching = next(find_maximum_matchings(H))
-        _, driver_nodes = convert_matching_to_nodes(
-            matching, G.nodes, from_bipartite=True
-        )
+        matching = next(find_maximum_matchings(G))
+        _, driver_nodes = convert_matching_to_nodes(matching, G.nodes)
         n_driver_nodes = len(driver_nodes)
 
         critical, redundant, ordinary = set(), set(), set()
         for node in all_nodes:
             G = self.G.subgraph(all_nodes.difference({node}))
-            H = create_bipartite_from_directed_graph(G)
-            matchings = list(find_maximum_matchings(H))
+            matchings = list(find_maximum_matchings(G))
             if len(matchings) > 0:
-                _, driver_nodes = convert_matching_to_nodes(
-                    matching, G.nodes, from_bipartite=True
-                )
+                _, driver_nodes = convert_matching_to_nodes(matching, G.nodes)
             else:
                 driver_nodes = G.nodes
             if len(driver_nodes) > n_driver_nodes:
