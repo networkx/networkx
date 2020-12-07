@@ -59,6 +59,25 @@ Graph Views
    subgraph_view
    reverse_view
 
+Core Views
+==========
+
+.. automodule:: networkx.classes.coreviews
+.. autosummary::
+   :toctree: generated/
+
+   AtlasView
+   AdjacencyView
+   MultiAdjacencyView
+   UnionAtlas
+   UnionAdjacency
+   UnionMultiInner
+   UnionMultiAdjacency
+   FilterAtlas
+   FilterAdjacency
+   FilterMultiInner
+   FilterMultiAdjacency
+
 Filters
 =======
 
