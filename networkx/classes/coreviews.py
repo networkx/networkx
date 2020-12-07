@@ -1,4 +1,6 @@
-"""
+"""Views of core data structures such as nested Mappings (e.g. dict-of-dicts).
+These ``Views`` often restrict element access, with either the entire view or
+layers of nested mappings being read-only.
 """
 import warnings
 from collections.abc import Mapping
