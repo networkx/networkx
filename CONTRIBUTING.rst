@@ -258,6 +258,10 @@ Guidelines
    import scipy.stats  # call as sp.stats
    import scipy.optimize  # call as sp.optimize
 
+  For example, many libraries have a ``linalg`` subpackage: ``nx.linalg``,
+  ``np.linalg``, ``sp.linalg``, ``sp.sparse.linalg``. The above import
+  pattern makes the origin of any particular instance of ``linalg`` explicit.
+
 * Use the decorator ``not_implemented_for`` in ``networkx/utils/decorators.py``
   to designate that a function doesn't accept 'directed', 'undirected',
   'multigraph' or 'graph'.  The first argument of the decorated function should
