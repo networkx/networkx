@@ -14,3 +14,4 @@ Systems
     convert_bipartite_edges_to_original
     is_directed_matching
     find_matchings
+    find_maximum_matchings

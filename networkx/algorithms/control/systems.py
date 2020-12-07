@@ -154,12 +154,51 @@ def find_matchings(G, t):
 
 
 def find_maximum_matchings(G):
-    """Find the sets of maximum matchings for a given graph."""
-    for t in range(len(G.edges) + 1, 0, -1):
-        matchings = list(find_matchings(G, t))
-        if len(matchings) > 0:
-            return matchings
-    return matchings
+    """Find the maximum matchings for a given graph.
+
+    A maximum matching is a matching of maximum size for a particular graph.
+    A matching for an undirected graph is defined as a set of edges that
+    share no vertices. For a directed graph, a matching is a set of edges
+    that do not share common start or end vertices, as defined by [1]_.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected or directed graph
+
+    Returns
+    -------
+    iterator
+        Iterator over all maximum matchings.
+
+    Notes
+    -----
+    To obtain all maximum matchings, use `list(find_maximum_matchings(G))`.
+    Uses :func:`networkx.algorithms.control.systems.find_matchings`, iterating
+    from `len(G.edges)` down until a non-empty set of matchings is found.
+
+    References
+    ----------
+    .. [1] Liu, Y. Y., Slotine, J. J., & Barabási, A. L. (2011).
+        Controllability of complex networks.
+        Nature, 473(7346), 167-173.
+        https://doi.org/10.1038/nature10011
+
+    See also
+    --------
+    :func:`networkx.algorithms.control.systems.find_matchings`
+        A function that finds matchings of a particular size.
+    :mod:`networkx.algorithms.matching`
+        Functions for finding matchings in graphs.
+    """
+    found_matching = False
+    for t in range(len(G.edges), 0, -1):
+        matchings = find_matchings(G, t)
+        for matching in matchings:
+            found_matching = True
+            yield matching
+        if found_matching:
+            break
 
 
 def convert_matching_to_nodes(matching, all_nodes, from_bipartite=False):
@@ -313,7 +352,7 @@ class LTISystem:
         """
         G_no_inputs = self.G.subgraph(self.state_nodes)
         H = create_bipartite_from_directed_graph(G_no_inputs)
-        max_matching = find_maximum_matchings(H)[0]
+        max_matching = next(find_maximum_matchings(H))
         _, unmatched = convert_matching_to_nodes(
             max_matching, self.state_nodes, from_bipartite=True
         )
@@ -354,7 +393,7 @@ class LTISystem:
         beta = len(root_scc)
         H = create_bipartite_from_directed_graph(G)
 
-        max_matchings = find_maximum_matchings(H)
+        max_matchings = list(find_maximum_matchings(H))
         alpha = 0
         top_assignable_scc = None
         for matching in max_matchings:
@@ -398,7 +437,7 @@ class LTISystem:
                 bad_edges = [(u, v) for u, v in B.edges() if eval(v[:-1]) == candidate]
                 B_new = B.copy()
                 B_new.remove_edges_from(bad_edges)
-                matching = find_maximum_matchings(B_new)[0]
+                matching = next(find_maximum_matchings(B_new))
                 new_matches, _ = convert_matching_to_nodes(
                     matching, G.nodes, from_bipartite=True
                 )
@@ -432,7 +471,7 @@ class LTISystem:
         G = self.G.subgraph(self.state_nodes)
         all_edges = set(G.edges())
         H = create_bipartite_from_directed_graph(G)
-        max_matchings = find_maximum_matchings(H)
+        max_matchings = list(find_maximum_matchings(H))
         matchings = []
         for matching in max_matchings:
             matching = convert_bipartite_edges_to_original(matching)
@@ -451,7 +490,7 @@ class LTISystem:
         G = self.G.subgraph(self.state_nodes)
         all_nodes = set(self.state_nodes)
         H = create_bipartite_from_directed_graph(G)
-        max_matchings = find_maximum_matchings(H)
+        max_matchings = list(find_maximum_matchings(H))
         all_driver_nodes = []
         for matching in max_matchings:
             _, driver_nodes = convert_matching_to_nodes(
@@ -473,7 +512,7 @@ class LTISystem:
         all_nodes = set(self.state_nodes)
         G = self.G.subgraph(self.state_nodes)
         H = create_bipartite_from_directed_graph(G)
-        matching = find_maximum_matchings(H)[0]
+        matching = next(find_maximum_matchings(H))
         _, driver_nodes = convert_matching_to_nodes(
             matching, G.nodes, from_bipartite=True
         )
@@ -483,7 +522,7 @@ class LTISystem:
         for node in all_nodes:
             G = self.G.subgraph(all_nodes.difference({node}))
             H = create_bipartite_from_directed_graph(G)
-            matchings = find_maximum_matchings(H)
+            matchings = list(find_maximum_matchings(H))
             if len(matchings) > 0:
                 _, driver_nodes = convert_matching_to_nodes(
                     matching, G.nodes, from_bipartite=True

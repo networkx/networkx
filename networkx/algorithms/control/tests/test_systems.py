@@ -174,9 +174,9 @@ def test_driver_nodes():
         ]
     )
     B = np.array([[5, 0], [0, -2], [0, 0], [0, 0], [0, 6]])
-    true_nodes = {"x0", "x2"}
+    true_nodes = [{"x0", "x1"}, {"x0", "x2"}]
     sys = nx.algorithms.control.systems.LTISystem(A, B)
-    assert true_nodes == sys.find_minimum_driver_nodes()
+    assert sys.find_minimum_driver_nodes() in true_nodes
 
 
 def test_controllability_pbh():
