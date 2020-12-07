@@ -1,7 +1,6 @@
 import pytest
 
 np = pytest.importorskip("numpy")
-npt = pytest.importorskip("numpy.testing")
 pytest.importorskip("scipy")
 
 import networkx as nx
@@ -36,15 +35,17 @@ class TestLaplacian:
         # fmt: on
         WL = 0.5 * NL
         OL = 0.3 * NL
-        npt.assert_equal(nx.laplacian_matrix(self.G).todense(), NL)
-        npt.assert_equal(nx.laplacian_matrix(self.MG).todense(), NL)
-        npt.assert_equal(
+        np.testing.assert_equal(nx.laplacian_matrix(self.G).todense(), NL)
+        np.testing.assert_equal(nx.laplacian_matrix(self.MG).todense(), NL)
+        np.testing.assert_equal(
             nx.laplacian_matrix(self.G, nodelist=[0, 1]).todense(),
             np.array([[1, -1], [-1, 1]]),
         )
-        npt.assert_equal(nx.laplacian_matrix(self.WG).todense(), WL)
-        npt.assert_equal(nx.laplacian_matrix(self.WG, weight=None).todense(), NL)
-        npt.assert_equal(nx.laplacian_matrix(self.WG, weight="other").todense(), OL)
+        np.testing.assert_equal(nx.laplacian_matrix(self.WG).todense(), WL)
+        np.testing.assert_equal(nx.laplacian_matrix(self.WG, weight=None).todense(), NL)
+        np.testing.assert_equal(
+            nx.laplacian_matrix(self.WG, weight="other").todense(), OL
+        )
 
     def test_normalized_laplacian(self):
         "Generalized Graph Laplacian"
@@ -66,26 +67,26 @@ class TestLaplacian:
                         [ 0.    ,  0.    ,  0.    ,  0.    ,  0.    ]])
         # fmt: on
 
-        npt.assert_almost_equal(
+        np.testing.assert_almost_equal(
             nx.normalized_laplacian_matrix(self.G, nodelist=range(5)).todense(),
             G,
             decimal=3,
         )
-        npt.assert_almost_equal(
+        np.testing.assert_almost_equal(
             nx.normalized_laplacian_matrix(self.G).todense(), GL, decimal=3
         )
-        npt.assert_almost_equal(
+        np.testing.assert_almost_equal(
             nx.normalized_laplacian_matrix(self.MG).todense(), GL, decimal=3
         )
-        npt.assert_almost_equal(
+        np.testing.assert_almost_equal(
             nx.normalized_laplacian_matrix(self.WG).todense(), GL, decimal=3
         )
-        npt.assert_almost_equal(
+        np.testing.assert_almost_equal(
             nx.normalized_laplacian_matrix(self.WG, weight="other").todense(),
             GL,
             decimal=3,
         )
-        npt.assert_almost_equal(
+        np.testing.assert_almost_equal(
             nx.normalized_laplacian_matrix(self.Gsl).todense(), Lsl, decimal=3
         )
 
@@ -118,7 +119,7 @@ class TestLaplacian:
                        [-0.0261, -0.0554, -0.0251, -0.6675, -0.2078,  0.9833]])
         # fmt: on
         L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G))
-        npt.assert_almost_equal(L, GL, decimal=3)
+        np.testing.assert_almost_equal(L, GL, decimal=3)
 
         # Make the graph strongly connected, so we can use a random and lazy walk
         G.add_edges_from(((2, 5), (6, 1)))
@@ -133,7 +134,7 @@ class TestLaplacian:
         L = nx.directed_laplacian_matrix(
             G, alpha=0.9, nodelist=sorted(G), walk_type="random"
         )
-        npt.assert_almost_equal(L, GL, decimal=3)
+        np.testing.assert_almost_equal(L, GL, decimal=3)
 
         # fmt: off
         GL = np.array([[ 0.5   , -0.1531, -0.2357,  0.    ,  0.    , -0.1614],
@@ -146,7 +147,7 @@ class TestLaplacian:
         L = nx.directed_laplacian_matrix(
             G, alpha=0.9, nodelist=sorted(G), walk_type="lazy"
         )
-        npt.assert_almost_equal(L, GL, decimal=3)
+        np.testing.assert_almost_equal(L, GL, decimal=3)
 
         # Make a strongly connected periodic graph
         G = nx.DiGraph()
@@ -166,7 +167,7 @@ class TestLaplacian:
                        [-0.25 , -0.176, -0.176,  0.5  ]])
         # fmt: on
         L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G))
-        npt.assert_almost_equal(L, GL, decimal=3)
+        np.testing.assert_almost_equal(L, GL, decimal=3)
 
     def test_directed_combinatorial_laplacian(self):
         "Directed combinatorial Laplacian"
@@ -198,7 +199,7 @@ class TestLaplacian:
         # fmt: on
 
         L = nx.directed_combinatorial_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G))
-        npt.assert_almost_equal(L, GL, decimal=3)
+        np.testing.assert_almost_equal(L, GL, decimal=3)
 
         # Make the graph strongly connected, so we can use a random and lazy walk
         G.add_edges_from(((2, 5), (6, 1)))
@@ -215,7 +216,7 @@ class TestLaplacian:
         L = nx.directed_combinatorial_laplacian_matrix(
             G, alpha=0.9, nodelist=sorted(G), walk_type="random"
         )
-        npt.assert_almost_equal(L, GL, decimal=3)
+        np.testing.assert_almost_equal(L, GL, decimal=3)
 
         # fmt: off
         GL = np.array([[ 0.0698, -0.0174, -0.0233,  0.    ,  0.    , -0.0291],
@@ -229,7 +230,7 @@ class TestLaplacian:
         L = nx.directed_combinatorial_laplacian_matrix(
             G, alpha=0.9, nodelist=sorted(G), walk_type="lazy"
         )
-        npt.assert_almost_equal(L, GL, decimal=3)
+        np.testing.assert_almost_equal(L, GL, decimal=3)
 
         E = nx.DiGraph(margulis_gabber_galil_graph(2))
         L = nx.directed_combinatorial_laplacian_matrix(E)
@@ -241,7 +242,7 @@ class TestLaplacian:
              [ 0.        , -0.08333333, -0.08333333,  0.16666667]]
         )
         # fmt: on
-        npt.assert_almost_equal(L, expected, decimal=6)
+        np.testing.assert_almost_equal(L, expected, decimal=6)
 
         with pytest.raises(nx.NetworkXError):
             nx.directed_combinatorial_laplacian_matrix(

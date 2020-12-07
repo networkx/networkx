@@ -1,7 +1,6 @@
 import pytest
 
 np = pytest.importorskip("numpy")
-npt = pytest.importorskip("numpy.testing")
 
 
 import networkx as nx
@@ -60,7 +59,7 @@ class TestFloydNumpy:
         nx.add_cycle(G, [0, 1, 2, 3])
         pred, dist = nx.floyd_warshall_predecessor_and_distance(G)
         D = nx.utils.dict_to_numpy_array(dist)
-        npt.assert_equal(nx.floyd_warshall_numpy(G), D)
+        np.testing.assert_equal(nx.floyd_warshall_numpy(G), D)
 
     def test_zero_weight(self):
         G = nx.DiGraph()
