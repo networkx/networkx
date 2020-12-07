@@ -33,7 +33,7 @@ def geometric_edges(G, radius, p):
     """Returns edge list of node pairs within `radius` of each other
 
     Radius uses Minkowski distance metric `p`.
-    If scipy available, use scipy KDTree to speed computation.
+    If scipy available, use scipy cKDTree to speed computation.
     """
     nodes_pos = G.nodes(data="pos")
     try:
@@ -50,7 +50,7 @@ def geometric_edges(G, radius, p):
         return edges
     # scipy KDTree is available
     nodes, coords = list(zip(*nodes_pos))
-    kdtree = sp.spatial.KDTree(coords)  # Cannot provide generator.
+    kdtree = sp.spatial.cKDTree(coords)  # Cannot provide generator.
     edge_indexes = kdtree.query_pairs(radius, p)
     edges = [(nodes[u], nodes[v]) for u, v in edge_indexes]
     return edges

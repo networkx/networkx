@@ -105,6 +105,7 @@ def adjacency_spectrum(G, weight="weight"):
     adjacency_matrix
     """
     import scipy as sp
+    import scipy.linalg  # call as sp.linalg
 
     return sp.linalg.eigvals(nx.adjacency_matrix(G, weight=weight).todense())
 

@@ -3,6 +3,7 @@ import pytest
 np = pytest.importorskip("numpy")
 npt = pytest.importorskip("numpy.testing")
 sp = pytest.importorskip("scipy")
+import scipy.sparse  # call as sp.sparse
 
 import networkx as nx
 from networkx.testing import assert_graphs_equal
