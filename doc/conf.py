@@ -36,6 +36,7 @@ sphinx_gallery_conf = {
             "../examples/basic",
             "../examples/drawing",
             "../examples/3d_drawing",
+            "../examples/graphviz",
             "../examples/graph",
             "../examples/algorithms",
             "../examples/advanced",
