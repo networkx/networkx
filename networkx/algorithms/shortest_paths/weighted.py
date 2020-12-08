@@ -449,7 +449,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight="weight")
     will find the shortest red path.
 
     Based on the Python cookbook recipe (119466) at
-    http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/119466
+    https://code.activestate.com/recipes/119466/
 
     This algorithm is not guaranteed to work if edge weights
     are negative or are floating point numbers
@@ -694,7 +694,7 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None, weight="weight")
     will find the shortest red path.
 
     Based on the Python cookbook recipe (119466) at
-    http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/119466
+    https://code.activestate.com/recipes/119466/
 
     This algorithm is not guaranteed to work if edge weights
     are negative or are floating point numbers
