@@ -1,7 +1,7 @@
 """
-===================
-Pygraphviz Examples
-===================
+============
+Introduction
+============
 
 See the pygraphviz documentation and examples at
 http://pygraphviz.github.io/

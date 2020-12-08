@@ -1,5 +1,5 @@
 from datetime import date
-from sphinx_gallery.sorting import ExplicitOrder
+from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
 import sphinx_rtd_theme
 from warnings import filterwarnings
 
@@ -36,6 +36,7 @@ sphinx_gallery_conf = {
             "../examples/basic",
             "../examples/drawing",
             "../examples/3d_drawing",
+            "../examples/graphviz",
             "../examples/graph",
             "../examples/algorithms",
             "../examples/advanced",
@@ -44,6 +45,7 @@ sphinx_gallery_conf = {
             "../examples/subclass",
         ]
     ),
+    "within_subsection_order": FileNameSortKey,
     # path where to save gallery generated examples
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
