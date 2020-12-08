@@ -120,9 +120,11 @@ def group_betweenness_centrality(G, C, normalized=False, endpoints=True, weight=
         PB[group_node1] = dict.fromkeys(G, 0.0)
         for group_node2 in set_v:
             for node in G:
-                if D[node][group_node2] != float("inf") or D[node][group_node1] != float("inf"):  # if node isn't connected to the two group nodes than continue
+                # if node isn't connected to the two group nodes than continue
+                if D[node][group_node2] != float("inf") or D[node][group_node1] != float("inf"):
                     if D[node][group_node2] == D[node][group_node1] + D[group_node1][group_node2]:
-                        PB[group_node1][group_node2] += delta[node][group_node2]*sigma[node][group_node1]*sigma[group_node1][group_node2]/sigma[node][group_node2]
+                        PB[group_node1][group_node2] += delta[node][group_node2]*sigma[node][group_node1] * \
+                                                        sigma[group_node1][group_node2]/sigma[node][group_node2]
 
     # the algorithm for each group
     for group in C:
@@ -140,7 +142,9 @@ def group_betweenness_centrality(G, C, normalized=False, endpoints=True, weight=
                     dxvy = 0
                     dxyv = 0
                     dvxy = 0
-                    if not (sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[y][v] == 0):
+                    if not (
+                            sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[y][v] == 0
+                    ):
                         if D[x][v] == D[x][y] + D[y][v]:
                             dxyv = 1.0 * sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
                         if D[x][y] == D[x][v] + D[v][y]:
@@ -168,9 +172,9 @@ def group_betweenness_centrality(G, C, normalized=False, endpoints=True, weight=
             # are connected to the group's nodes and deduce them
             if nx.is_directed(G):
                 if nx.is_strongly_connected(G):
-                    scale = (c * (2 * v - c - 1))
+                    scale = c * (2 * v - c - 1)
             elif nx.is_connected(G):
-                scale = (c * (2 * v - c - 1))
+                scale = c * (2 * v - c - 1)
             if scale == 0:
                 for group_node1 in group:
                     for node in G:
