@@ -121,10 +121,19 @@ def group_betweenness_centrality(G, C, normalized=False, endpoints=True, weight=
         for group_node2 in set_v:
             for node in G:
                 # if node isn't connected to the two group nodes than continue
-                if D[node][group_node2] != float("inf") or D[node][group_node1] != float("inf"):
-                    if D[node][group_node2] == D[node][group_node1] + D[group_node1][group_node2]:
-                        PB[group_node1][group_node2] += delta[node][group_node2]*sigma[node][group_node1] * \
-                                                        sigma[group_node1][group_node2]/sigma[node][group_node2]
+                if D[node][group_node2] != float("inf") or D[node][
+                    group_node1
+                ] != float("inf"):
+                    if (
+                            D[node][group_node2]
+                            == D[node][group_node1] + D[group_node1][group_node2]
+                    ):
+                        PB[group_node1][group_node2] += (
+                            delta[node][group_node2]
+                            * sigma[node][group_node1]
+                            * sigma[group_node1][group_node2]
+                            / sigma[node][group_node2]
+                        )
 
     # the algorithm for each group
     for group in C:
@@ -143,7 +152,7 @@ def group_betweenness_centrality(G, C, normalized=False, endpoints=True, weight=
                     dxyv = 0
                     dvxy = 0
                     if not (
-                            sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[y][v] == 0
+                        sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[y][v] == 0
                     ):
                         if D[x][v] == D[x][y] + D[y][v]:
                             dxyv = 1.0 * sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
@@ -191,7 +200,6 @@ def group_betweenness_centrality(G, C, normalized=False, endpoints=True, weight=
             if not G.is_directed():
                 scale *= 2
             GBC_group *= scale
-
 
         GBC.append(GBC_group)
     return GBC
