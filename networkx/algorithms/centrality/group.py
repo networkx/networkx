@@ -1,6 +1,7 @@
 """Group centrality measures."""
-from itertools import combinations
-
+from heapq import heappush, heappop
+from itertools import count
+from copy import deepcopy
 
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
@@ -15,7 +16,7 @@ __all__ = [
 ]
 
 
-def group_betweenness_centrality(G, C, normalized=True, weight=None):
+def group_betweenness_centrality(G, C, normalized=False, endpoints=True, weight=None):
     r"""Compute the group betweenness centrality for a group of nodes.
 
     Group betweenness centrality of a group of nodes $C$ is the sum of the
@@ -36,8 +37,8 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
     G : graph
       A NetworkX graph.
 
-    C : list or set
-      C is a group of nodes which belong to G, for which group betweenness
+    C : list or set or list of lists or list of sets
+      C is a group or a list of groups containing nodes which belong to G, for which group betweenness
       centrality is to be calculated.
 
     normalized : bool, optional
@@ -49,6 +50,9 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
 
+    endpoints : bool, optional
+      If True include the endpoints in the shortest path counts.
+
     Raises
     ------
     NodeNotFound
@@ -56,8 +60,8 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
 
     Returns
     -------
-    betweenness : float
-       Group betweenness centrality of the group C.
+    betweenness : list of floats
+       The list of group betweenness centrality of the groups C.
 
     See Also
     --------
@@ -66,10 +70,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
     Notes
     -----
     The measure is described in [1]_.
-    The algorithm is an extension of the one proposed by Ulrik Brandes for
-    betweenness centrality of nodes. Group betweenness is also mentioned in
-    his paper [2]_ along with the algorithm. The importance of the measure is
-    discussed in [3]_.
+    The algorithm is presented in [2].
 
     The number of nodes in the group must be a maximum of n - 2 where `n`
     is the total number of nodes in the graph.
@@ -84,49 +85,184 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None):
        The Centrality of Groups and Classes.
        Journal of Mathematical Sociology. 23(3): 181-201. 1999.
        http://www.analytictech.com/borgatti/group_centrality.htm
-    .. [2] Ulrik Brandes:
-       On Variants of Shortest-Path Betweenness
-       Centrality and their Generic Computation.
-       Social Networks 30(2):136-145, 2008.
-       http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.72.9610&rep=rep1&type=pdf
-    .. [3] Sourav Medya et. al.:
-       Group Centrality Maximization via Network Design.
-       SIAM International Conference on Data Mining, SDM 2018, 126–134.
-       https://sites.cs.ucsb.edu/~arlei/pubs/sdm18.pdf
+    .. [2] Rami Puzis, Yuval Elovici, and Shlomi Dolev.
+       "Fast algorithm for successive computation of group betweenness centrality."
+        https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709?casa_token=YvH6xTIc6AUAAAAA%3A90BkxMRiQyOg9y7PEU_lrcf1FXPF_sqTCI_Y_2lD0QodSeyXAQtz-s0_e1Z0CtkZ1bWdVCkK9S5fXw
+
     """
-    betweenness = 0  # initialize betweenness to 0
+    GBC = []  # initialize betweenness
     V = set(G)  # set of nodes in G
-    C = set(C)  # set of nodes in C (group)
-    if len(C - V) != 0:  # element(s) of C not in V
-        raise nx.NodeNotFound(
-            "The node(s) " + str(list(C - V)) + " are not " "in the graph."
-        )
-    V_C = V - C  # set of nodes in V but not in C
-    # accumulation
-    for pair in combinations(V_C, 2):  # (s, t) pairs of V_C
-        try:
-            paths = 0
-            paths_through_C = 0
-            for path in nx.all_shortest_paths(
-                G, source=pair[0], target=pair[1], weight=weight
-            ):
-                if set(path) & C:
-                    paths_through_C += 1
-                paths += 1
-            betweenness += paths_through_C / paths
-        except nx.exception.NetworkXNoPath:
-            betweenness += 0
-    # rescaling
-    v, c = len(G), len(C)
-    if normalized:
-        scale = 1 / ((v - c) * (v - c - 1))
-        if not G.is_directed():
-            scale *= 2
-    else:
-        scale = None
-    if scale is not None:
-        betweenness *= scale
-    return betweenness
+
+    #  check weather C contains one or many groups
+    if not any(isinstance(el, list) for el in C):
+        C = [C]
+    set_v = set()
+    for i in range(len(C)):
+        set_v.update(C[i])
+        if len(set_v - V) != 0:  # element(s) of C not in V
+            C[i] = list(set_v.intersection(C[i]))
+            raise nx.NodeNotFound(
+                "The node(s) " + str(list(set_v - V)) + " are not " "in the graph."
+            )
+
+    # pre-processing
+    sigma = dict.fromkeys(G)
+    delta = dict.fromkeys(G)
+    D = dict.fromkeys(G)
+    for s in G:
+        if weight is None:  # use BFS
+            D[s], sigma[s], delta[s] = _single_source_shortest_path_basic(G, s)
+        else:  # use Dijkstra's algorithm
+            D[s], sigma[s], delta[s] = _single_source_dijkstra_path_basic(G, s, weight)
+    # building the path betweenness matrix only for nodes that appear in the group
+    PB = dict.fromkeys(G)
+    for group_node1 in set_v:
+        PB[group_node1] = dict.fromkeys(G, 0.0)
+        for group_node2 in set_v:
+            for node in G:
+                if D[node][group_node2] != float("inf") or D[node][group_node1] != float("inf"):  # if node isn't connected to the two group nodes than continue
+                    if D[node][group_node2] == D[node][group_node1] + D[group_node1][group_node2]:
+                        PB[group_node1][group_node2] += delta[node][group_node2]*sigma[node][group_node1]*sigma[group_node1][group_node2]/sigma[node][group_node2]
+
+    # the algorithm for each group
+    for group in C:
+        group = set(group)  # set of nodes in group
+        # initialize the matrices of the sigma and the PB
+        GBC_group = 0
+        sigma_m = deepcopy(sigma)
+        PB_m = deepcopy(PB)
+        sigma_m_v = deepcopy(sigma_m)
+        PB_m_v = deepcopy(PB_m)
+        for v in group:
+            GBC_group += PB_m[v][v]
+            for x in group:
+                for y in group:
+                    dxvy = 0
+                    dxyv = 0
+                    dvxy = 0
+                    if not (sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[y][v] == 0):
+                        if D[x][v] == D[x][y] + D[y][v]:
+                            dxyv = 1.0 * sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
+                        if D[x][y] == D[x][v] + D[v][y]:
+                            dxvy = 1.0 * sigma_m[x][v] * sigma_m[v][y] / sigma_m[x][y]
+                        if D[v][y] == D[v][x] + D[x][y]:
+                            dvxy = 1.0 * sigma_m[v][x] * sigma[x][y] / sigma[v][y]
+                    sigma_m_v[x][y] = sigma_m[x][y] * (1 - dxvy)
+                    PB_m_v[x][y] = PB_m[x][y] - PB_m[x][y] * dxvy
+                    if y != v:
+                        PB_m_v[x][y] -= PB_m[x][v] * dxyv
+                    if x != v:
+                        PB_m_v[x][y] -= PB_m[v][y] * dvxy
+            tmp = PB_m
+            PB_m = PB_m_v
+            PB_m_v = tmp
+            tmp = sigma_m
+            sigma_m = sigma_m_v
+            sigma_m_v = tmp
+
+        # endpoints
+        v, c = len(G), len(group)
+        if not endpoints:
+            scale = 0
+            # if the graph is connected than deduce the endpoints of all the nodes in the graph. else find which nodes
+            # are connected to the group's nodes and deduce them
+            if nx.is_directed(G):
+                if nx.is_strongly_connected(G):
+                    scale = (c * (2 * v - c - 1))
+            elif nx.is_connected(G):
+                scale = (c * (2 * v - c - 1))
+            if scale == 0:
+                for group_node1 in group:
+                    for node in G:
+                        if D[group_node1][node] != float("inf") and node != group_node1:
+                            if node in group:
+                                scale += 1
+                            else:
+                                scale += 2
+            GBC_group -= scale
+
+        # normalized
+        if normalized:
+            scale = 1 / ((v - c) * (v - c - 1))
+            if not G.is_directed():
+                scale *= 2
+            GBC_group *= scale
+
+
+        GBC.append(GBC_group)
+    return GBC
+
+
+def _single_source_shortest_path_basic(G, s):
+    S = []
+    P = {}
+    for v in G:
+        P[v] = []
+    sigma = dict.fromkeys(G, 0.0)  # sigma[v]=0 for v in G
+    D = dict.fromkeys(G, float("inf"))
+    sigma[s] = 1.0
+    D[s] = 0
+    Q = [s]
+    while Q:  # use BFS to find shortest paths
+        v = Q.pop(0)
+        S.append(v)
+        Dv = D[v]
+        sigmav = sigma[v]
+        for w in G[v]:
+            if D[w] == float("inf"):
+                Q.append(w)
+                D[w] = Dv + 1
+            if D[w] == Dv + 1:  # this is a shortest path, count paths
+                sigma[w] += sigmav
+                P[w].append(v)  # predecessors
+
+    # accumulate
+    delta = dict.fromkeys(S, 0)
+    while S:
+        w = S.pop()
+        coeff = (1 + delta[w]) / sigma[w]
+        for v in P[w]:
+            delta[v] += sigma[v] * coeff
+        if w != s:
+            delta[w] += 1  # count the path from w to s
+    return D, sigma, delta
+
+
+def _single_source_dijkstra_path_basic(G, s, weight):
+    S = []
+    P = dict.fromkeys(G, [])
+    sigma = dict.fromkeys(G, 0.0)  # sigma[v]=0 for v in G
+    D = dict.fromkeys(G, float("inf"))
+    D[s] = 0
+    P[s] = []
+    sigma[s] = 1.0
+    push = heappush
+    pop = heappop
+    Q = []  # use Q as heap with (distance,node id) tuples
+    push(Q, (D[s], s))
+    while Q:
+        (dist, v) = pop(Q)
+        S.append(v)
+        for w, edgedata in G[v].items():
+            if D[w] > D[v] + edgedata.get(weight, 1):
+                D[w] = D[v] + edgedata.get(weight, 1)
+                push(Q, (D[w], w))
+                P[w] = []
+                sigma[w] = 0
+            if D[w] == D[v] + edgedata.get(weight, 1):  # handle equal paths
+                sigma[w] += sigma[v]
+                P[w].append(v)
+
+    # accumulate
+    delta = dict.fromkeys(S, 0)
+    while S:
+        w = S.pop()
+        coeff = (1 + delta[w]) / sigma[w]
+        for v in P[w]:
+            delta[v] += sigma[v] * coeff
+        if w != s:
+            delta[w] += 1  # count the path from w to s
+    return D, sigma, delta
 
 
 def group_closeness_centrality(G, S, weight=None):
