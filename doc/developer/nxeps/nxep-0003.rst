@@ -43,6 +43,22 @@ that is desired. The latter is preferred stylistically because the main
 idea of the code phrase is to create a path graph and that comes first.
 Details such as what graph type to use are specified later in the phrase.
 
+Separating edge generation from graph data structure creation
+arguably makes a cleaner interface where independent tools can be put
+together in creative ways. To the extent that users need to generate
+edges rather than graphs, having an edge generator that doesn't store
+the graph is an advantage. It's not exactly clear how much demand there
+is for this feature. But e.g. `nx.utils.pairwise` would no longer be needed
+if we had `nx.path_edges(node_iterable)`.
+
+The `create_using` parameter is a mechanism to tell the function what
+class of graph data structure to start with. Separating edge generation
+from graph construction would mean the edge generator function would
+no longer need a type for the graph data structure since there isn't one.
+This NXEP proposes one way to provide an interface that separates edge
+generation from graph data structure creation when desired, while leaving
+a user-friendly mechanism for selection the graph type when desired.
+
 The changes proposed involve any nx function that creates a graph or an
 edgelist. The proposal is to make these functions return a graph of
 any type or an edgelist based on the choice indicated by the user.
@@ -53,13 +69,12 @@ to enable the other output styles.
 The proposed solution is to provide the user with graph builders that
 return either a graph or an edgelist while minimizing the code needed
 for developers to support both. The underlying code could choose to
-either 1) yield edges from an edgelist, or 2) construct a graph from
-an empty input graph parameter. Two decorators would then add the
-extra code needed to construct a single API so users would use the
-same interface no matter which style of underlying code was used.
-The user facing interface would allow the user to specify a graph
-data structure by type, or request an edgelist. One syntax proposal
-is::
+either 1) yield edges, or 2) construct a graph from an input graph
+parameter. Two decorators would then add the extra code needed to
+construct a single object so users would use the same interface no
+matter which style of underlying code was used. The user facing
+interface would allow the user to specify a graph data structure
+by type, or request an edgelist. One syntax proposal is::
 
     G = nx.path_graph(9)
     DG = nx.path_graph.DiGraph(9)
@@ -69,7 +84,7 @@ is::
     elist = nx.path_graph.edgelist(9)
 
 
-Edgelists that only contain node-pairs indicating an edge are restrictive.
+Edgelists that only contain pairs of nodes indicating an edge are restrictive.
 Some graphs have isolated nodes which would not appear in any node-pair.
 Some graphs have node or edge attributes associated with the node or edge.
 Multigraphs have edge keys associated with each edge, often as a 3-tuple
@@ -159,7 +174,6 @@ Iterate over the edges of a randomly generated graph without storing it.
     >>> for u, v in nx.configuration_model_graph.edgelist(deg_sequence):
     >>>     process(u, v)
 
-
 Developers will use a decorator to indicate whether their graph builder
 has underlying code that yields from an edgelist, or returns a graph.
 
@@ -199,17 +213,25 @@ To reduce backward incompatibility, the base calling structure `nx.path_graph(9)
 works as it currently does. The `create_using` parameter is removed and
 replaced by an attribute of the calling function.
 So `nx.path_graph(9, nx.DiGraph)` becomes `nx.path_graph.DiGraph(9)`.
+The `create_using` parameter could also be retained providing more backward
+compatibility at the potential cost of providing at least 2 ways to create
+the same graph: `nx.path_graph(9, create_using=nx.DiGraph)`
+and `nx.path_graph.DiGraph(9)`. See the Alternatives section.
+
 
 Due to the renaming of graph generators as graph builders (to avoid confusion
 with Python's generator functions) anyone using full-path calling syntax
 e.g., `nx.generators.path_graph(9)` will need to change to `nx.path_graph(9)`
 or `nx.builders.path_graph(9)` though the latter is discouraged.
+This change of name is independent of the main thrust of this proposal.
+But it seems a reasonable time to make such a change.
 
 To reduce developer impact, upon inception, we could use all current graph
 generators as graph builders by attaching the `@graph_builder` decorator.
 Presumably for efficiency many of them should be rewritten to yield
-edgelists rather than returning graphs. But this should not change the
-return values of the graph builders.
+edgelists rather than returning graphs. But this could be done gradually
+and when done switch the decorator to `@node_and_edge_builder`. Both should
+return equivalent graph builder objects.
 
 
 Detailed description
@@ -296,7 +318,6 @@ Example developer usage:
         return g
 
 
-
 Related Work
 ------------
 
@@ -317,7 +338,7 @@ accepted and appropriate errors raised when not.
 
 We should rename the generators directory as builders and adjust
 documentation where needed appropriately (including old documentation
-getting the right canonical url).
+getting the correct canonical url).
 
 Later steps include going through the existing generator code and switching
 that code to yield edgelists instead of returning graphs (where appropriate).
@@ -329,6 +350,12 @@ Alternatives
 We can just leave the generators as they are and deal with the cost of
 creating a graph when one only needs the edgelist. It's not a huge cost
 most of the time.
+
+We can split the edge generation from graph creation using
+`nx.DiGraph(nx.path_edgelist(9))` and disallowing `create_using`.
+
+We can implement the proposal retaining the `create_using` parameter
+for backward compatibility.
 
 
 Discussion
