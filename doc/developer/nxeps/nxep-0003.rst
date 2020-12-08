@@ -4,7 +4,8 @@
 NXEP 3 — Graph Builders
 ==================================
 
-:Author: Dan Schult <dschult@colgate.edu>
+:Author: Dan Schult
+:Author: Kelly Boothby
 :Status: Draft
 :Type: Standards Track
 :Created: 2020-11-27
