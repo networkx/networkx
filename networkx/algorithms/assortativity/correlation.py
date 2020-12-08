@@ -129,11 +129,12 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     .. [2] Foster, J.G., Foster, D.V., Grassberger, P. & Paczuski, M.
        Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
     """
-    from scipy import stats
+    import scipy as sp
+    import scipy.stats  # call as sp.stats
 
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
-    return stats.pearsonr(x, y)[0]
+    return sp.stats.pearsonr(x, y)[0]
 
 
 def attribute_assortativity_coefficient(G, attribute, nodes=None):

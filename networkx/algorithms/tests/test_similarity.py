@@ -38,10 +38,9 @@ def getCanonical():
 class TestSimilarity:
     @classmethod
     def setup_class(cls):
-        global numpy
-        global scipy
-        numpy = pytest.importorskip("numpy")
-        scipy = pytest.importorskip("scipy")
+        global np
+        np = pytest.importorskip("numpy")
+        pytest.importorskip("scipy")
 
     def test_graph_edit_distance_roots_and_timeout(self):
         G0 = nx.star_graph(5)
@@ -653,7 +652,7 @@ class TestSimilarity:
 
     def test_simrank_numpy_no_source_no_target(self):
         G = nx.cycle_graph(5)
-        expected = numpy.array(
+        expected = np.array(
             [
                 [
                     1.0,
@@ -693,11 +692,11 @@ class TestSimilarity:
             ]
         )
         actual = nx.simrank_similarity_numpy(G)
-        numpy.testing.assert_allclose(expected, actual, atol=1e-7)
+        np.testing.assert_allclose(expected, actual, atol=1e-7)
 
     def test_simrank_numpy_source_no_target(self):
         G = nx.cycle_graph(5)
-        expected = numpy.array(
+        expected = np.array(
             [
                 1.0,
                 0.3947180735764555,
@@ -707,13 +706,13 @@ class TestSimilarity:
             ]
         )
         actual = nx.simrank_similarity_numpy(G, source=0)
-        numpy.testing.assert_allclose(expected, actual, atol=1e-7)
+        np.testing.assert_allclose(expected, actual, atol=1e-7)
 
     def test_simrank_numpy_source_and_target(self):
         G = nx.cycle_graph(5)
         expected = 1.0
         actual = nx.simrank_similarity_numpy(G, source=0, target=0)
-        numpy.testing.assert_allclose(expected, actual, atol=1e-7)
+        np.testing.assert_allclose(expected, actual, atol=1e-7)
 
     def test_n_choose_k_small_k(self):
         assert _n_choose_k(10, 4) == 210
@@ -728,7 +727,7 @@ class TestSimilarity:
         assert _n_choose_k(5, 10) == 0
 
     def test_panther_similarity_unweighted(self):
-        numpy.random.seed(42)
+        np.random.seed(42)
 
         G = nx.Graph()
         G.add_edge(0, 1)
@@ -741,7 +740,7 @@ class TestSimilarity:
         assert sim == expected
 
     def test_panther_similarity_weighted(self):
-        numpy.random.seed(42)
+        np.random.seed(42)
 
         G = nx.Graph()
         G.add_edge("v1", "v2", weight=5)
@@ -754,7 +753,7 @@ class TestSimilarity:
         assert sim == expected
 
     def test_generate_random_paths_unweighted(self):
-        numpy.random.seed(42)
+        np.random.seed(42)
 
         index_map = {}
         num_paths = 10
@@ -792,7 +791,7 @@ class TestSimilarity:
         assert expected_map == index_map
 
     def test_generate_random_paths_weighted(self):
-        numpy.random.seed(42)
+        np.random.seed(42)
 
         index_map = {}
         num_paths = 10

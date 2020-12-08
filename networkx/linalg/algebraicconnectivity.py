@@ -41,29 +41,30 @@ class _PCGSolver:
 
     def _solve(self, b, tol):
         import numpy as np
-        from scipy.linalg.blas import dasum, daxpy, ddot
+        import scipy as sp
+        import scipy.linalg.blas  # call as sp.linalg.blas
 
         A = self._A
         M = self._M
-        tol *= dasum(b)
+        tol *= sp.linalg.blas.dasum(b)
         # Initialize.
         x = np.zeros(b.shape)
         r = b.copy()
         z = M(r)
-        rz = ddot(r, z)
+        rz = sp.linalg.blas.ddot(r, z)
         p = z.copy()
         # Iterate.
         while True:
             Ap = A(p)
-            alpha = rz / ddot(p, Ap)
-            x = daxpy(p, x, a=alpha)
-            r = daxpy(Ap, r, a=-alpha)
-            if dasum(r) < tol:
+            alpha = rz / sp.linalg.blas.ddot(p, Ap)
+            x = sp.linalg.blas.daxpy(p, x, a=alpha)
+            r = sp.linalg.blas.daxpy(Ap, r, a=-alpha)
+            if sp.linalg.blas.dasum(r) < tol:
                 return x
             z = M(r)
-            beta = ddot(r, z)
+            beta = sp.linalg.blas.ddot(r, z)
             beta, rz = beta / rz, beta
-            p = daxpy(p, z, a=beta)
+            p = sp.linalg.blas.daxpy(p, z, a=beta)
 
 
 class _CholeskySolver:
@@ -93,9 +94,10 @@ class _LUSolver:
     """
 
     def __init__(self, A):
-        from scipy.sparse.linalg import splu
+        import scipy as sp
+        import scipy.sparse.linalg  # call as sp.sparse.linalg
 
-        self._LU = splu(
+        self._LU = sp.sparse.linalg.splu(
             A,
             permc_spec="MMD_AT_PLUS_A",
             diag_pivot_thresh=0.0,
@@ -188,8 +190,10 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         constant eigenvector) are avoided.
     """
     import numpy as np
-    from scipy import linalg, sparse
-    from scipy.linalg.blas import dasum, daxpy
+    import scipy as sp
+    import scipy.linalg  # call as sp.linalg
+    import scipy.linalg.blas  # call as sp.linalg.blas
+    import scipy.sparse  # call as sp.sparse
 
     n = X.shape[0]
 
@@ -197,7 +201,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # Form the normalized Laplacian matrix and determine the eigenvector of
         # its nullspace.
         e = np.sqrt(L.diagonal())
-        D = sparse.spdiags(1.0 / e, [0], n, n, format="csr")
+        D = sp.sparse.spdiags(1.0 / e, [0], n, n, format="csr")
         L = D * L * D
         e *= 1.0 / np.linalg.norm(e, 2)
 
@@ -222,7 +226,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         solver = _PCGSolver(lambda x: L * x, lambda x: D * x)
     elif method == "tracemin_lu" or method == "tracemin_chol":
         # Convert A to CSC to suppress SparseEfficiencyWarning.
-        A = sparse.csc_matrix(L, dtype=float, copy=True)
+        A = sp.sparse.csc_matrix(L, dtype=float, copy=True)
         # Force A to be nonsingular. Since A is the Laplacian matrix of a
         # connected graph, its rank deficiency is one, and thus one diagonal
         # element needs to modified. Changing to infinity forces a zero in the
@@ -247,18 +251,18 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # Compute iteration matrix H.
         W[:, :] = L @ X
         H = X.T @ W
-        sigma, Y = linalg.eigh(H, overwrite_a=True)
+        sigma, Y = sp.linalg.eigh(H, overwrite_a=True)
         # Compute the Ritz vectors.
         X = X @ Y
         # Test for convergence exploiting the fact that L * X == W * Y.
-        res = dasum(W @ Y[:, 0] - sigma[0] * X[:, 0]) / Lnorm
+        res = sp.linalg.blas.dasum(W @ Y[:, 0] - sigma[0] * X[:, 0]) / Lnorm
         if res < tol:
             break
         # Compute X = L \ X / (X' * (L \ X)).
         # L \ X can have an arbitrary projection on the nullspace of L,
         # which will be eliminated.
         W[:, :] = solver.solve(X, tol)
-        X = (linalg.inv(W.T @ X) @ W.T).T  # Preserves Fortran storage order.
+        X = (sp.linalg.inv(W.T @ X) @ W.T).T  # Preserves Fortran storage order.
         project(X)
 
     return sigma, np.asarray(X)
@@ -281,27 +285,32 @@ def _get_fiedler_func(method):
     elif method == "lanczos" or method == "lobpcg":
 
         def find_fiedler(L, x, normalized, tol, seed):
-            from scipy import sparse
-            from scipy.sparse.linalg import eigsh, lobpcg
+            import scipy as sp
+            import scipy.sparse  # call as sp.sparse
+            import scipy.sparse.linalg  # call as sp.sparse.linalg
 
-            L = sparse.csc_matrix(L, dtype=float)
+            L = sp.sparse.csc_matrix(L, dtype=float)
             n = L.shape[0]
             if normalized:
-                D = sparse.spdiags(1.0 / np.sqrt(L.diagonal()), [0], n, n, format="csc")
+                D = sp.sparse.spdiags(
+                    1.0 / np.sqrt(L.diagonal()), [0], n, n, format="csc"
+                )
                 L = D * L * D
             if method == "lanczos" or n < 10:
                 # Avoid LOBPCG when n < 10 due to
                 # https://github.com/scipy/scipy/issues/3592
                 # https://github.com/scipy/scipy/pull/3594
-                sigma, X = eigsh(L, 2, which="SM", tol=tol, return_eigenvectors=True)
+                sigma, X = sp.sparse.linalg.eigsh(
+                    L, 2, which="SM", tol=tol, return_eigenvectors=True
+                )
                 return sigma[1], X[:, 1]
             else:
                 X = np.asarray(np.atleast_2d(x).T)
-                M = sparse.spdiags(1.0 / L.diagonal(), [0], n, n)
+                M = sp.sparse.spdiags(1.0 / L.diagonal(), [0], n, n)
                 Y = np.ones(n)
                 if normalized:
                     Y /= D.diagonal()
-                sigma, X = lobpcg(
+                sigma, X = sp.sparse.linalg.lobpcg(
                     L, X, M=M, Y=np.atleast_2d(Y).T, tol=tol, maxiter=n, largest=False
                 )
                 return sigma[0], X[:, 0]

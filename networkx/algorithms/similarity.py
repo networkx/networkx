@@ -669,7 +669,8 @@ def optimize_edit_paths(
     # TODO: support DiGraph
 
     import numpy as np
-    from scipy.optimize import linear_sum_assignment
+    import scipy as sp
+    import scipy.optimize  # call as sp.optimize
 
     class CostMatrix:
         def __init__(self, C, lsa_row_ind, lsa_col_ind, ls):
@@ -686,7 +687,7 @@ def optimize_edit_paths(
 
     def make_CostMatrix(C, m, n):
         # assert(C.shape == (m + n, m + n))
-        lsa_row_ind, lsa_col_ind = linear_sum_assignment(C)
+        lsa_row_ind, lsa_col_ind = sp.optimize.linear_sum_assignment(C)
 
         # Fixup dummy assignments:
         # each substitution i<->j should have dummy assignment m+j<->n+i
@@ -1306,13 +1307,13 @@ def simrank_similarity(
     If the nodes of the graph are numbered from zero to *n - 1*, where *n*
     is the number of nodes in the graph, you can create a SimRank matrix
     from the return value of this function where the node numbers are
-    the row and column indices of the matrix::
+    the row and column indices of the matrix:
 
-        >>> from numpy import array
-        >>> G = nx.cycle_graph(4)
-        >>> sim = nx.simrank_similarity(G)
-        >>> lol = [[sim[u][v] for v in sorted(sim[u])] for u in sorted(sim)]
-        >>> sim_array = array(lol)
+    >>> import numpy as np
+    >>> G = nx.cycle_graph(4)
+    >>> sim = nx.simrank_similarity(G)
+    >>> lol = [[sim[u][v] for v in sorted(sim[u])] for u in sorted(sim)]
+    >>> sim_array = np.array(lol)
 
     References
     ----------
@@ -1408,9 +1409,8 @@ def simrank_similarity_numpy(
 
     Examples
     --------
-        >>> from numpy import array
-        >>> G = nx.cycle_graph(4)
-        >>> sim = nx.simrank_similarity_numpy(G)
+    >>> G = nx.cycle_graph(4)
+    >>> sim = nx.simrank_similarity_numpy(G)
 
     References
     ----------
