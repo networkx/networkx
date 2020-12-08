@@ -125,8 +125,8 @@ def group_betweenness_centrality(G, C, normalized=False, endpoints=True, weight=
                     group_node1
                 ] != float("inf"):
                     if (
-                            D[node][group_node2]
-                            == D[node][group_node1] + D[group_node1][group_node2]
+                        D[node][group_node2]
+                        == D[node][group_node1] + D[group_node1][group_node2]
                     ):
                         PB[group_node1][group_node2] += (
                             delta[node][group_node2]
