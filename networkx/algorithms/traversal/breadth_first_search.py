@@ -250,8 +250,8 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     Returns
     -------
     pred: iterator
-        (node, predecessor) iterator where `predecessor` is a predecessor of
-        `node` in a shortest path from `source` to `node`.
+        (node, predecessor) iterator where `predecessor` is the predecessor of
+        `node` in a breadth first search starting from `source`.
 
     Examples
     --------
