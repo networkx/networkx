@@ -72,7 +72,8 @@ Deprecations
   Deprecate ``copy`` method in the coreview Filtered-related classes.
 - [`#4384 <https://github.com/networkx/networkx/pull/4384>`_]
   Deprecate unused ``order`` parameter in to_pandas_edgelist.
-
+- [`#4428 <https://github.com/networkx/networkx/pull/4428>`_]
+  Deprecate ``jit_data`` and ``jit_graph``.
 
 Contributors to this release
 ----------------------------
