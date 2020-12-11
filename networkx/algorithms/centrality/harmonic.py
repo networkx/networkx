@@ -17,7 +17,7 @@ def harmonic_centrality(G, nbunch=None, nbunch_v=None, distance=None):
         C(u) = \sum_{v \neq u} \frac{1}{d(v, u)}
 
     where `d(v, u)` is the shortest-path distance between `v` and `u`.
-    
+
     If nbunch_v is given as an arguemnt, the harmonic centrality for u in
     nbunch is calculated considering only nodes v in nbunch_v.
 
@@ -61,14 +61,14 @@ def harmonic_centrality(G, nbunch=None, nbunch_v=None, distance=None):
     .. [1] Boldi, Paolo, and Sebastiano Vigna. "Axioms for centrality."
            Internet Mathematics 10.3-4 (2014): 222-262.
     """
-    
+
     if G.is_directed():
         g = G.reverse(copy=False)
     else:
         g = G
 
     spl = partial(nx.shortest_path_length, g, weight=distance)
-    
+
     if nbunch_v is None:
         # original implementation of harmonic centrality
         centrality = {
