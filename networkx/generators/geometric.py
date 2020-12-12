@@ -247,7 +247,7 @@ def soft_random_geometric_graph(
     ----------
     .. [1] Penrose, Mathew D. "Connectivity of soft random geometric graphs."
            The Annals of Applied Probability 26.2 (2016): 986-1028.
-       [2] scipy.stats -
+    .. [2] scipy.stats -
            https://docs.scipy.org/doc/scipy/reference/tutorial/stats.html
 
     """

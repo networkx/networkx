@@ -245,9 +245,6 @@ class MultiGraph(Graph):
         Class to create a new graph structure in the `to_undirected` method.
         If `None`, a NetworkX class (Graph or MultiGraph) is used.
 
-    Examples
-    --------
-
     Please see :mod:`~networkx.classes.ordered` for examples of
     creating graph subclasses by overwriting the base class `dict` with
     a dictionary-like object.

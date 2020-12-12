@@ -196,7 +196,7 @@ def dense_gnm_random_graph(n, m, seed=None):
 
     See Also
     --------
-    gnm_random_graph()
+    gnm_random_graph
 
     Notes
     -----
@@ -319,7 +319,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
 
     See Also
     --------
-    watts_strogatz_graph()
+    watts_strogatz_graph
 
     References
     ----------
@@ -379,8 +379,8 @@ def watts_strogatz_graph(n, k, p, seed=None):
 
     See Also
     --------
-    newman_watts_strogatz_graph()
-    connected_watts_strogatz_graph()
+    newman_watts_strogatz_graph
+    connected_watts_strogatz_graph
 
     Notes
     -----
@@ -469,8 +469,8 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
 
     See Also
     --------
-    newman_watts_strogatz_graph()
-    watts_strogatz_graph()
+    newman_watts_strogatz_graph
+    watts_strogatz_graph
 
     References
     ----------

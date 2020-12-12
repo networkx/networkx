@@ -70,8 +70,8 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
 
     See Also
     --------
-    write_edgelist()
-    generate_edgelist()
+    write_edgelist
+    generate_edgelist
     """
     for line in generate_edgelist(G, delimiter, data):
         line += "\n"

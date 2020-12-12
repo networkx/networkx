@@ -132,7 +132,7 @@ def circular_layout(G, scale=1, center=None, dim=2):
         A dictionary of positions keyed by node
 
     Raises
-    -------
+    ------
     ValueError
         If dim < 2
 
@@ -205,7 +205,7 @@ def shell_layout(G, nlist=None, rotate=None, scale=1, center=None, dim=2):
         A dictionary of positions keyed by node
 
     Raises
-    -------
+    ------
     ValueError
         If dim != 2
 
@@ -977,12 +977,14 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
         Lower values result in more compressed spiral layouts.
     equidistant : bool
         If True, nodes will be plotted equidistant from each other.
+
     Returns
     -------
     pos : dict
         A dictionary of positions keyed by node
+
     Raises
-    -------
+    ------
     ValueError
         If dim != 2
 

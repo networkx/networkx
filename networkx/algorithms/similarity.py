@@ -173,7 +173,7 @@ def graph_edit_distance(
     --------
     optimal_edit_paths, optimize_graph_edit_distance,
 
-    is_isomorphic (test for graph edit distance of 0)
+    is_isomorphic: test for graph edit distance of 0
 
     References
     ----------

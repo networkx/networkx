@@ -36,7 +36,7 @@ def cytoscape_data(G, attrs=None):
 
     See Also
     --------
-    cytoscape_graph - convert a dictionary in cyjs format to a graph
+    cytoscape_graph: convert a dictionary in cyjs format to a graph
 
     References
     ----------
@@ -144,7 +144,7 @@ def cytoscape_graph(data, attrs=None):
 
     See Also
     --------
-    cytoscape_data - convert a NetworkX graph to a dict in cyjs format
+    cytoscape_data: convert a NetworkX graph to a dict in cyjs format
 
     References
     ----------

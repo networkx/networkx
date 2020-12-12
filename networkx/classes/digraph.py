@@ -236,8 +236,7 @@ class DiGraph(Graph):
         Class to create a new graph structure in the `to_undirected` method.
         If `None`, a NetworkX class (Graph or MultiGraph) is used.
 
-    Examples
-    --------
+    **Subclassing Example**
 
     Create a low memory graph class that effectively disallows edge
     attributes by using a single attribute dict for all edges.
@@ -493,7 +492,7 @@ class DiGraph(Graph):
            A node in the graph
 
         Raises
-        -------
+        ------
         NetworkXError
            If n is not in the graph.
 
@@ -778,7 +777,7 @@ class DiGraph(Graph):
            A node in the graph
 
         Raises
-        -------
+        ------
         NetworkXError
            If n is not in the graph.
 
@@ -810,7 +809,7 @@ class DiGraph(Graph):
            A node in the graph
 
         Raises
-        -------
+        ------
         NetworkXError
            If n is not in the graph.
 

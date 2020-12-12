@@ -34,7 +34,7 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
         Name of target labels to predict
 
     Returns
-    ----------
+    -------
     predicted : array, shape = [n_samples]
         Array of predicted labels
 
@@ -81,7 +81,7 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
             Clamping factor
 
         Returns
-        ----------
+        -------
         S : scipy sparse matrix, shape = [n_samples, n_samples]
             Propagation matrix
 
@@ -107,7 +107,7 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
             The number of classes (distinct labels) on the input graph
 
         Returns
-        ----------
+        -------
         B : array, shape = [n_samples, n_classes]
             Base matrix
         """

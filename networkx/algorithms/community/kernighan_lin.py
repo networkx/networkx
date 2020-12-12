@@ -78,7 +78,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
         A pair of sets of nodes representing the bipartition.
 
     Raises
-    -------
+    ------
     NetworkXError
         If partition is not a valid partition of the nodes of the graph.
 
