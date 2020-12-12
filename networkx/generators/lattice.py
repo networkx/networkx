@@ -18,7 +18,7 @@ from math import sqrt
 from networkx.classes import set_node_attributes
 from networkx.exception import NetworkXError
 from networkx.relabel import relabel_nodes
-from networkx.utils import flatten, nodes_or_number, pairwise, iterable
+from networkx.utils import flatten, nodes_or_number, pairwise
 from networkx.generators.classic import cycle_graph
 from networkx.generators.classic import empty_graph
 from networkx.generators.classic import path_graph
@@ -67,9 +67,9 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
     G.add_edges_from(((i, j), (pi, j)) for pi, i in pairwise(rows) for j in cols)
     G.add_edges_from(((i, j), (i, pj)) for i in rows for pj, j in pairwise(cols))
 
-    if iterable(periodic):
+    try:
         periodic_r, periodic_c = periodic
-    else:
+    except TypeError:
         periodic_r = periodic_c = periodic
 
     if periodic_r and len(rows) > 2:
@@ -128,9 +128,9 @@ def grid_graph(dim, periodic=False):
     if not dim:
         return empty_graph(0)
 
-    if iterable(periodic):
+    try:
         func = (cycle_graph if p else path_graph for p in periodic)
-    else:
+    except TypeError:
         func = repeat(cycle_graph if periodic else path_graph)
 
     G = next(func)(dim[0])

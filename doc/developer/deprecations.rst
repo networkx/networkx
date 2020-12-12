@@ -49,6 +49,7 @@ Version 3.0
 * In ``utils/misc.py`` remove ``is_string_like`` and related tests.
 * In ``utils/misc.py`` remove ``make_str`` and related tests.
 * In ``utils/misc.py`` remove ``is_iterator``.
+* In ``utils/misc.py`` remove ``iterable``.
 * In ``utils/misc.py`` remove ``is_list_of_ints``.
 * In ``utils/misc.py`` remove ``consume``.
 * Remove ``utils/contextmanagers.py`` and related tests.

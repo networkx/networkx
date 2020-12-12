@@ -37,6 +37,8 @@ def is_string_like(obj):  # from John Hunter, types-free version
 
 def iterable(obj):
     """ Return True if obj is iterable with a well-defined len()."""
+    msg = "iterable is deprecated and will be removed in 3.0."
+    warnings.warn(msg, DeprecationWarning)
     if hasattr(obj, "__iter__"):
         return True
     try:
