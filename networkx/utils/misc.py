@@ -255,6 +255,11 @@ def arbitrary_element(iterable):
 def consume(iterator):
     "Consume the iterator entirely."
     # Feed the entire iterator into a zero-length deque.
+    msg = (
+        "consume is deprecated and will be removed in version 3.0. "
+        "Use ``collections.deque(iterator, maxlen=0)`` instead."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     deque(iterator, maxlen=0)
 
 

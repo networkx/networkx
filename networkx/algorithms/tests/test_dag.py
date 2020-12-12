@@ -1,11 +1,17 @@
 from itertools import combinations, permutations
+from collections import deque
 
 import pytest
 
 import networkx as nx
 from networkx.testing.utils import assert_edges_equal
-from networkx.utils import consume
 from networkx.utils import pairwise
+
+# Recipe from the itertools documentation.
+def _consume(iterator):
+    "Consume the iterator entirely."
+    # Feed the entire iterator into a zero-length deque.
+    deque(iterator, maxlen=0)
 
 
 class TestDagLongestPath:
@@ -100,7 +106,7 @@ class TestDAG:
         DG.add_edge(3, 2)
 
         for algorithm in [nx.topological_sort, nx.lexicographical_topological_sort]:
-            pytest.raises(nx.NetworkXUnfeasible, consume, algorithm(DG))
+            pytest.raises(nx.NetworkXUnfeasible, _consume, algorithm(DG))
 
         DG.remove_edge(2, 3)
 
@@ -133,12 +139,12 @@ class TestDAG:
                 14: [15],
             }
         )
-        pytest.raises(nx.NetworkXUnfeasible, consume, nx.topological_sort(DG))
+        pytest.raises(nx.NetworkXUnfeasible, _consume, nx.topological_sort(DG))
 
         assert not nx.is_directed_acyclic_graph(DG)
 
         DG.remove_edge(1, 2)
-        consume(nx.topological_sort(DG))
+        _consume(nx.topological_sort(DG))
         assert nx.is_directed_acyclic_graph(DG)
 
     def test_topological_sort3(self):
@@ -157,13 +163,13 @@ class TestDAG:
         validate(list(nx.topological_sort(DG)))
 
         DG.add_edge(14, 1)
-        pytest.raises(nx.NetworkXUnfeasible, consume, nx.topological_sort(DG))
+        pytest.raises(nx.NetworkXUnfeasible, _consume, nx.topological_sort(DG))
 
     def test_topological_sort4(self):
         G = nx.Graph()
         G.add_edge(1, 2)
         # Only directed graphs can be topologically sorted.
-        pytest.raises(nx.NetworkXError, consume, nx.topological_sort(G))
+        pytest.raises(nx.NetworkXError, _consume, nx.topological_sort(G))
 
     def test_topological_sort5(self):
         G = nx.DiGraph()
