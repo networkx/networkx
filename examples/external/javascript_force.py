@@ -8,7 +8,7 @@ to produce an HTML/Javascript drawing.
 
 You will need to download the following directory:
 
-- https://github.com/networkx/networkx/tree/master/examples/javascript/force
+- https://github.com/networkx/networkx/tree/master/examples/external/force
 """
 import json
 
