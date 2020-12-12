@@ -74,6 +74,8 @@ Deprecations
   Deprecate unused ``order`` parameter in to_pandas_edgelist.
 - [`#4428 <https://github.com/networkx/networkx/pull/4428>`_]
   Deprecate ``jit_data`` and ``jit_graph``.
+- [`#4449 <https://github.com/networkx/networkx/pull/4449>`_]
+  Deprecate ``consume``.
 
 Contributors to this release
 ----------------------------

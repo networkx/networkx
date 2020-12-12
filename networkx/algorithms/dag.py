@@ -17,7 +17,6 @@ import networkx as nx
 from networkx.algorithms.traversal.breadth_first_search import descendants_at_distance
 from networkx.generators.trees import NIL
 from networkx.utils import arbitrary_element
-from networkx.utils import consume
 from networkx.utils import pairwise
 from networkx.utils import not_implemented_for
 
@@ -84,7 +83,8 @@ def ancestors(G, source):
 def has_cycle(G):
     """Decides whether the directed graph has a cycle."""
     try:
-        consume(topological_sort(G))
+        # Feed the entire iterator into a zero-length deque.
+        deque(topological_sort(G), maxlen=0)
     except nx.NetworkXUnfeasible:
         return True
     else:
