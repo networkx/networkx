@@ -377,7 +377,7 @@ def eulerize(G):
     .. [1] J. Edmonds, E. L. Johnson.
        Matching, Euler tours and the Chinese postman.
        Mathematical programming, Volume 5, Issue 1 (1973), 111-114.
-       [2] https://en.wikipedia.org/wiki/Eulerian_path
+    .. [2] https://en.wikipedia.org/wiki/Eulerian_path
     .. [3] http://web.math.princeton.edu/math_alive/5/Notes1.pdf
 
     Examples

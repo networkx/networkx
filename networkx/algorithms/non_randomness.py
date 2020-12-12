@@ -50,9 +50,9 @@ def non_randomness(G, k=None):
 
     References
     ----------
-     .. [1] Xiaowei Ying and Xintao Wu,
-            On Randomness Measures for Social Networks,
-            SIAM International Conference on Data Mining. 2009
+    .. [1] Xiaowei Ying and Xintao Wu,
+           On Randomness Measures for Social Networks,
+           SIAM International Conference on Data Mining. 2009
     """
     import numpy as np
 

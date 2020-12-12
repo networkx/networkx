@@ -35,7 +35,7 @@ def interval_graph(intervals):
     [((-2, 3), (1, 4)), ((-2, 3), (2, 3)), ((1, 4), (2, 3)), ((1, 4), (4, 6))]
 
     Raises
-    --------
+    ------
     :exc:`TypeError`
         if `intervals` contains None or an element which is not
         collections.abc.Sequence or not a length of 2.

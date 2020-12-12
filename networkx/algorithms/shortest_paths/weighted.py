@@ -151,8 +151,9 @@ def dijkstra_path(G, source, target, weight="weight"):
 
     See Also
     --------
-    bidirectional_dijkstra(), bellman_ford_path()
-    single_source_dijkstra()
+    bidirectional_dijkstra
+    bellman_ford_path
+    single_source_dijkstra
     """
     (length, path) = single_source_dijkstra(G, source, target=target, weight=weight)
     return path
@@ -220,8 +221,9 @@ def dijkstra_path_length(G, source, target, weight="weight"):
 
     See Also
     --------
-    bidirectional_dijkstra(), bellman_ford_path_length()
-    single_source_dijkstra()
+    bidirectional_dijkstra
+    bellman_ford_path_length
+    single_source_dijkstra
 
     """
     if source == target:
@@ -291,7 +293,7 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight="weight"):
 
     See Also
     --------
-    single_source_dijkstra(), single_source_bellman_ford()
+    single_source_dijkstra, single_source_bellman_ford
 
     """
     return multi_source_dijkstra_path(G, {source}, cutoff=cutoff, weight=weight)
@@ -361,7 +363,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None, weight="weight"):
 
     See Also
     --------
-    single_source_dijkstra(), single_source_bellman_ford_path_length()
+    single_source_dijkstra, single_source_bellman_ford_path_length
 
     """
     return multi_source_dijkstra_path_length(G, {source}, cutoff=cutoff, weight=weight)
@@ -457,9 +459,9 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight="weight")
 
     See Also
     --------
-    single_source_dijkstra_path()
-    single_source_dijkstra_path_length()
-    single_source_bellman_ford()
+    single_source_dijkstra_path
+    single_source_dijkstra_path_length
+    single_source_bellman_ford
     """
     return multi_source_dijkstra(
         G, {source}, cutoff=cutoff, target=target, weight=weight
@@ -531,7 +533,7 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight="weight"):
 
     See Also
     --------
-    multi_source_dijkstra(), multi_source_bellman_ford()
+    multi_source_dijkstra, multi_source_bellman_ford
 
     """
     length, path = multi_source_dijkstra(G, sources, cutoff=cutoff, weight=weight)
@@ -606,7 +608,7 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None, weight="weight"):
 
     See Also
     --------
-    multi_source_dijkstra()
+    multi_source_dijkstra
 
     """
     if not sources:
@@ -709,8 +711,8 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None, weight="weight")
 
     See Also
     --------
-    multi_source_dijkstra_path()
-    multi_source_dijkstra_path_length()
+    multi_source_dijkstra_path
+    multi_source_dijkstra_path_length
 
     """
     if not sources:
@@ -1085,7 +1087,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
 
     See Also
     --------
-    floyd_warshall(), all_pairs_bellman_ford_path()
+    floyd_warshall, all_pairs_bellman_ford_path
 
     """
     path = single_source_dijkstra_path
@@ -1380,7 +1382,7 @@ def bellman_ford_path(G, source, target, weight="weight"):
 
     See Also
     --------
-    dijkstra_path(), bellman_ford_path_length()
+    dijkstra_path, bellman_ford_path_length
     """
     length, path = single_source_bellman_ford(G, source, target=target, weight=weight)
     return path
@@ -1429,7 +1431,7 @@ def bellman_ford_path_length(G, source, target, weight="weight"):
 
     See Also
     --------
-    dijkstra_path_length(), bellman_ford_path()
+    dijkstra_path_length, bellman_ford_path
     """
     if source == target:
         return 0
@@ -1482,7 +1484,7 @@ def single_source_bellman_ford_path(G, source, weight="weight"):
 
     See Also
     --------
-    single_source_dijkstra(), single_source_bellman_ford()
+    single_source_dijkstra, single_source_bellman_ford
 
     """
     (length, path) = single_source_bellman_ford(G, source, weight=weight)
@@ -1534,7 +1536,7 @@ def single_source_bellman_ford_path_length(G, source, weight="weight"):
 
     See Also
     --------
-    single_source_dijkstra(), single_source_bellman_ford()
+    single_source_dijkstra, single_source_bellman_ford
 
     """
     weight = _weight_function(G, weight)
@@ -1599,9 +1601,9 @@ def single_source_bellman_ford(G, source, target=None, weight="weight"):
 
     See Also
     --------
-    single_source_dijkstra()
-    single_source_bellman_ford_path()
-    single_source_bellman_ford_path_length()
+    single_source_dijkstra
+    single_source_bellman_ford_path
+    single_source_bellman_ford_path_length
     """
     if source == target:
         return (0, [source])
@@ -1692,7 +1694,7 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
 
     See Also
     --------
-    floyd_warshall(), all_pairs_dijkstra_path()
+    floyd_warshall, all_pairs_dijkstra_path
 
     """
     path = single_source_bellman_ford_path

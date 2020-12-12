@@ -540,7 +540,7 @@ def create_empty_copy(G, with_data=True):
        Propagate Graph and Nodes data to the new graph.
 
     See Also
-    -----
+    --------
     empty_graph
 
     """

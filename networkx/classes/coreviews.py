@@ -29,8 +29,8 @@ class AtlasView(Mapping):
 
     See Also
     ========
-    AdjacencyView - View into dict-of-dict-of-dict
-    MultiAdjacencyView - View into dict-of-dict-of-dict-of-dict
+    AdjacencyView: View into dict-of-dict-of-dict
+    MultiAdjacencyView: View into dict-of-dict-of-dict-of-dict
     """
 
     __slots__ = ("_atlas",)
@@ -72,8 +72,8 @@ class AdjacencyView(AtlasView):
 
     See Also
     ========
-    AtlasView - View into dict-of-dict
-    MultiAdjacencyView - View into dict-of-dict-of-dict-of-dict
+    AtlasView: View into dict-of-dict
+    MultiAdjacencyView: View into dict-of-dict-of-dict-of-dict
     """
 
     __slots__ = ()  # Still uses AtlasView slots names _atlas
@@ -94,8 +94,8 @@ class MultiAdjacencyView(AdjacencyView):
 
     See Also
     ========
-    AtlasView - View into dict-of-dict
-    AdjacencyView - View into dict-of-dict-of-dict
+    AtlasView: View into dict-of-dict
+    AdjacencyView: View into dict-of-dict-of-dict
     """
 
     __slots__ = ()  # Still uses AtlasView slots names _atlas
@@ -117,8 +117,8 @@ class UnionAtlas(Mapping):
 
     See Also
     ========
-    UnionAdjacency - View into dict-of-dict-of-dict
-    UnionMultiAdjacency - View into dict-of-dict-of-dict-of-dict
+    UnionAdjacency: View into dict-of-dict-of-dict
+    UnionMultiAdjacency: View into dict-of-dict-of-dict-of-dict
     """
 
     __slots__ = ("_succ", "_pred")
@@ -176,8 +176,8 @@ class UnionAdjacency(Mapping):
 
     See Also
     ========
-    UnionAtlas - View into dict-of-dict
-    UnionMultiAdjacency - View into dict-of-dict-of-dict-of-dict
+    UnionAtlas: View into dict-of-dict
+    UnionMultiAdjacency: View into dict-of-dict-of-dict-of-dict
     """
 
     __slots__ = ("_succ", "_pred")
@@ -224,9 +224,9 @@ class UnionMultiInner(UnionAtlas):
 
     See Also
     ========
-    UnionAtlas - View into dict-of-dict
-    UnionAdjacency - View into dict-of-dict-of-dict
-    UnionMultiAdjacency - View into dict-of-dict-of-dict-of-dict
+    UnionAtlas: View into dict-of-dict
+    UnionAdjacency:  View into dict-of-dict-of-dict
+    UnionMultiAdjacency:  View into dict-of-dict-of-dict-of-dict
     """
 
     __slots__ = ()  # Still uses UnionAtlas slots names _succ, _pred
@@ -254,8 +254,8 @@ class UnionMultiAdjacency(UnionAdjacency):
 
     See Also
     ========
-    UnionAtlas - View into dict-of-dict
-    UnionMultiInner - View into dict-of-dict-of-dict
+    UnionAtlas:  View into dict-of-dict
+    UnionMultiInner:  View into dict-of-dict-of-dict
     """
 
     __slots__ = ()  # Still uses UnionAdjacency slots names _succ, _pred

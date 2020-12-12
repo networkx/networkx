@@ -77,11 +77,11 @@ def draw(G, pos=None, ax=None, **kwds):
 
     See Also
     --------
-    draw_networkx()
-    draw_networkx_nodes()
-    draw_networkx_edges()
-    draw_networkx_labels()
-    draw_networkx_edge_labels()
+    draw_networkx
+    draw_networkx_nodes
+    draw_networkx_edges
+    draw_networkx_labels
+    draw_networkx_edge_labels
 
     Notes
     -----
@@ -144,7 +144,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
        For directed graphs, if True draw arrowheads.
        Note: Arrows will be the same color as edges.
 
-    arrowstyle : str, optional (default='-|>')
+    arrowstyle : str, optional (default='-\|>')
         For directed graphs, choose the style of the arrowsheads.
         See `matplotlib.patches.ArrowStyle` for more options.
 
@@ -251,11 +251,11 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
 
     See Also
     --------
-    draw()
-    draw_networkx_nodes()
-    draw_networkx_edges()
-    draw_networkx_labels()
-    draw_networkx_edge_labels()
+    draw
+    draw_networkx_nodes
+    draw_networkx_edges
+    draw_networkx_labels
+    draw_networkx_edge_labels
     """
     import matplotlib.pyplot as plt
 
@@ -414,11 +414,11 @@ def draw_networkx_nodes(
 
     See Also
     --------
-    draw()
-    draw_networkx()
-    draw_networkx_edges()
-    draw_networkx_labels()
-    draw_networkx_edge_labels()
+    draw
+    draw_networkx
+    draw_networkx_edges
+    draw_networkx_labels
+    draw_networkx_edge_labels
     """
     from collections.abc import Iterable
     import numpy as np
@@ -610,11 +610,11 @@ def draw_networkx_edges(
 
     See Also
     --------
-    draw()
-    draw_networkx()
-    draw_networkx_nodes()
-    draw_networkx_labels()
-    draw_networkx_edge_labels()
+    draw
+    draw_networkx
+    draw_networkx_nodes
+    draw_networkx_labels
+    draw_networkx_edge_labels
 
     """
     import numpy as np
@@ -880,11 +880,11 @@ def draw_networkx_labels(
 
     See Also
     --------
-    draw()
-    draw_networkx()
-    draw_networkx_nodes()
-    draw_networkx_edges()
-    draw_networkx_edge_labels()
+    draw
+    draw_networkx
+    draw_networkx_nodes
+    draw_networkx_edges
+    draw_networkx_edge_labels
     """
     import matplotlib.pyplot as plt
 
@@ -1014,11 +1014,11 @@ def draw_networkx_edge_labels(
 
     See Also
     --------
-    draw()
-    draw_networkx()
-    draw_networkx_nodes()
-    draw_networkx_edges()
-    draw_networkx_labels()
+    draw
+    draw_networkx
+    draw_networkx_nodes
+    draw_networkx_edges
+    draw_networkx_labels
     """
     import matplotlib.pyplot as plt
     import numpy as np

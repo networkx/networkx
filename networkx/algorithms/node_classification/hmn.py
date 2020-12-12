@@ -32,12 +32,12 @@ def harmonic_function(G, max_iter=30, label_name="label"):
         name of target labels to predict
 
     Returns
-    ----------
+    -------
     predicted : array, shape = [n_samples]
         Array of predicted labels
 
     Raises
-    ----------
+    ------
     NetworkXError
         If no nodes on `G` has `label_name`.
 
@@ -76,7 +76,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
             Array of pairs of node id and label id
 
         Returns
-        ----------
+        -------
         P : scipy sparse matrix, shape = [n_samples, n_samples]
             Propagation matrix
 
@@ -101,7 +101,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
             The number of classes (distinct labels) on the input graph
 
         Returns
-        ----------
+        -------
         B : array, shape = [n_samples, n_classes]
             Base matrix
         """

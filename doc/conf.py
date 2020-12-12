@@ -19,12 +19,12 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
-    "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
     "nb2plots",
     "texext",
+    "numpydoc",
 ]
 
 # https://github.com/sphinx-gallery/sphinx-gallery
@@ -112,9 +112,6 @@ pygments_style = "sphinx"
 modindex_common_prefix = ["networkx."]
 
 doctest_global_setup = "import networkx as nx"
-
-# treat ``x, y : type`` as vars x and y instead of default ``y(x,) : type``
-napoleon_use_param = False
 
 # Options for HTML output
 # -----------------------
