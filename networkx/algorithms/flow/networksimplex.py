@@ -62,8 +62,8 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     Raises
     ------
     NetworkXError
-        This exception is raised if the input graph is not directed,
-        not connected or is a multigraph.
+        This exception is raised if the input graph is not directed or
+        not connected.
 
     NetworkXUnfeasible
         This exception is raised in the following situations:
