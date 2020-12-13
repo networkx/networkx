@@ -10,13 +10,13 @@ def randomized_partitioning(G, seed=None, p=0.5, weight=None):
     """Compute a random partitioning of the graph nodes and its cut value.
 
     A partitioning is calculated by observing each node
-    and deciding to add it to the partition with probability p,
+    and deciding to add it to the partition with probability `p`,
     returning a random cut and its corresponding value (the
     sum of weights of edges connecting different partitions).
 
     Parameters
     ----------
-    G: NetworkX graph
+    G : NetworkX graph
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
@@ -67,10 +67,10 @@ def one_exchange(G, initial_cut=None, seed=None, weight=None):
 
     Parameters
     ----------
-    G: networkx Graph
+    G : networkx Graph
         Graph to find a maximum cut for.
 
-    initial_cut: set
+    initial_cut : set
         Cut to use as a starting point. If not supplied the algorithm
         starts with an empty cut.
 

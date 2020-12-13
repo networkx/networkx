@@ -110,7 +110,7 @@ Vertex Cover
 
 
 Max Cut
-------------
+-------
 .. automodule:: networkx.algorithms.approximation.maxcut
 .. autosummary::
    :toctree: generated/
