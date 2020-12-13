@@ -231,7 +231,7 @@ def arbitrary_element(iterable):
 
     Parameters
     ----------
-    iterable: `abc.collections.Iterable` instance
+    iterable : `abc.collections.Iterable` instance
         Any object that implements ``__iter__``, e.g. set, dict, list, tuple,
         etc.
 
