@@ -38,10 +38,7 @@ def randomized_partitioning(G, seed=None, p=0.5, weight=None):
     partition : pair of node sets
         A partitioning of the nodes that defines a minimum cut.
     """
-    cut = set()
-    for node in G.nodes():
-        if seed.random() < p:
-            cut.add(node)
+    cut = {node for node in G.nodes() if seed.random() < p}
     cut_size = nx.algorithms.cut_size(G, cut, weight=weight)
     partition = (cut, G.nodes - cut)
     return cut_size, partition
