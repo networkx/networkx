@@ -32,7 +32,7 @@ def randomized_partitioning(G, seed=None, p=0.5, weight=None):
 
     Returns
     -------
-    cut_size : integer, float
+    cut_size : scalar
         Value of the minimum cut.
 
     partition : pair of node sets
@@ -77,7 +77,7 @@ def one_exchange(G, initial_cut=None, seed=None, weight=None):
 
     Returns
     -------
-    cut_value : integer, float
+    cut_value : scalar
         Value of the maximum cut.
 
     partition : pair of node sets
