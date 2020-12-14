@@ -65,7 +65,7 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
             └── 2
 
     >>> print(nx.forest_str(graph, ascii_only=True))
-    +── 0
+    +-- 0
         L-- 1
             L-- 2
     """
@@ -83,7 +83,7 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
     # https://stackoverflow.com/questions/2701192/triangle-arrow
     if ascii_only:
         glyph_empty = "+"
-        glyph_newtree_last = "+── "
+        glyph_newtree_last = "+-- "
         glyph_newtree_mid = "+-- "
         glyph_endof_forest = "    "
         glyph_within_forest = ":   "

@@ -139,7 +139,7 @@ def test_directed_multi_tree_forest():
         :   L-> 16
         :       |-> 19
         :       L-> 20
-        +── 7
+        +-- 7
             |-> 8
             |   |-> 10
             |   L-> 11
@@ -191,7 +191,7 @@ def test_undirected_multi_tree_forest():
         :   L-- 2
         :       |-- 5
         :       L-- 6
-        +── 7
+        +-- 7
             |-- 8
             |   |-- 10
             |   L-- 11
