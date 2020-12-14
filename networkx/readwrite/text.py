@@ -3,7 +3,8 @@ Text-based visual representations of graphs
 """
 
 
-def forest_str(graph, with_labels=True, sources=None, write=None):
+def forest_str(graph, with_labels=True, sources=None, write=None,
+               ascii_only=False):
     """
     Creates a nice utf8 representation of a directed forest
 
@@ -27,6 +28,9 @@ def forest_str(graph, with_labels=True, sources=None, write=None):
         a list and returned. If set to the `print` function, lines will
         be written to stdout as they are generated. If specified,
         this function will return None. Defaults to None.
+
+    ascii_only : Boolean
+        If True only ASCII characters are used to construct the visualization
 
     Returns
     -------
@@ -60,6 +64,11 @@ def forest_str(graph, with_labels=True, sources=None, write=None):
     ╙── 0
         └── 1
             └── 2
+
+    >>> print(nx.forest_str(graph, ascii_only=True))
+    +── 0
+        L-- 1
+            L-- 2
     """
     import networkx as nx
 
@@ -69,8 +78,36 @@ def forest_str(graph, with_labels=True, sources=None, write=None):
     else:
         _write = write
 
+    # Define glphys
+    if ascii_only:
+        empty_glyph = "+"
+        glyph_newtree_last  = "+── "
+        glyph_newtree_mid   = "+-- "
+        glyph_endof_forest  = "    "
+        glyph_within_forest = ":   "
+        glyph_within_tree   = "|   "
+
+        glyph_directed_last  = "L-> "
+        glyph_directed_mid   = "|-> "
+
+        glyph_undirected_last = "L-- "
+        glyph_undirected_mid  = "|-- "
+    else:
+        empty_glyph = "╙"
+        glyph_newtree_last  = "╙── "
+        glyph_newtree_mid   = "╟── "
+        glyph_endof_forest  = "    "
+        glyph_within_forest = "╎   "
+        glyph_within_tree   = "│   "
+
+        glyph_directed_last  = "└─╼ "
+        glyph_directed_mid   = "├─╼ "
+
+        glyph_undirected_last = "└── "
+        glyph_undirected_mid  = "├── "
+
     if len(graph.nodes) == 0:
-        _write("╙")
+        _write(empty_glyph)
     else:
         if not nx.is_forest(graph):
             raise nx.NetworkXNotImplemented("input must be a forest or the empty graph")
@@ -111,29 +148,29 @@ def forest_str(graph, with_labels=True, sources=None, write=None):
                 # Top level items (i.e. trees in the forest) get different
                 # glyphs to indicate they are not actually connected
                 if islast:
-                    this_prefix = indent + "╙── "
-                    next_prefix = indent + "    "
+                    this_prefix = indent + glyph_newtree_last
+                    next_prefix = indent + glyph_endof_forest
                 else:
-                    this_prefix = indent + "╟── "
-                    next_prefix = indent + "╎   "
+                    this_prefix = indent + glyph_newtree_mid
+                    next_prefix = indent + glyph_within_forest
 
             else:
                 # For individual forests distinguish between directed and
                 # undirected cases
                 if is_directed:
                     if islast:
-                        this_prefix = indent + "└─╼ "
-                        next_prefix = indent + "    "
+                        this_prefix = indent + glyph_directed_last
+                        next_prefix = indent + glyph_endof_forest
                     else:
-                        this_prefix = indent + "├─╼ "
-                        next_prefix = indent + "│   "
+                        this_prefix = indent + glyph_directed_mid
+                        next_prefix = indent + glyph_within_tree
                 else:
                     if islast:
-                        this_prefix = indent + "└── "
-                        next_prefix = indent + "    "
+                        this_prefix = indent + glyph_undirected_last
+                        next_prefix = indent + glyph_endof_forest
                     else:
-                        this_prefix = indent + "├── "
-                        next_prefix = indent + "│   "
+                        this_prefix = indent + glyph_undirected_mid
+                        next_prefix = indent + glyph_within_tree
 
             if with_labels:
                 label = graph.nodes[node].get("label", node)
