@@ -85,11 +85,11 @@ def latapy_clustering(G, nodes=None, mode="dot"):
     Examples
     --------
     >>> from networkx.algorithms import bipartite
-    >>> G = nx.path_graph(4) # path graphs are bipartite
+    >>> G = nx.path_graph(4)  # path graphs are bipartite
     >>> c = bipartite.clustering(G)
     >>> c[0]
     0.5
-    >>> c = bipartite.clustering(G,mode='min')
+    >>> c = bipartite.clustering(G, mode="min")
     >>> c[0]
     1.0
 
@@ -174,13 +174,13 @@ def average_clustering(G, nodes=None, mode="dot"):
     Examples
     --------
     >>> from networkx.algorithms import bipartite
-    >>> G=nx.star_graph(3) # star graphs are bipartite
+    >>> G = nx.star_graph(3)  # star graphs are bipartite
     >>> bipartite.average_clustering(G)
     0.75
-    >>> X,Y=bipartite.sets(G)
-    >>> bipartite.average_clustering(G,X)
+    >>> X, Y = bipartite.sets(G)
+    >>> bipartite.average_clustering(G, X)
     0.0
-    >>> bipartite.average_clustering(G,Y)
+    >>> bipartite.average_clustering(G, Y)
     1.0
 
     See Also

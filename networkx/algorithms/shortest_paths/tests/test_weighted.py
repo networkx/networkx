@@ -198,7 +198,7 @@ class TestWeightedPath(WeightedTestBase):
 
     def test_weight_functions(self):
         def heuristic(*z):
-            return hash(z)
+            return sum(val ** 2 for val in z)
 
         def getpath(pred, v, s):
             return [v] if v == s else getpath(pred, pred[v], s) + [v]

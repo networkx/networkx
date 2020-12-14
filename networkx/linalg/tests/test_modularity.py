@@ -1,8 +1,7 @@
 import pytest
 
 np = pytest.importorskip("numpy")
-npt = pytest.importorskip("numpy.testing")
-scipy = pytest.importorskip("scipy")
+pytest.importorskip("scipy")
 
 import networkx as nx
 from networkx.generators.degree_seq import havel_hakimi_graph
@@ -42,8 +41,8 @@ class TestModularity:
         # fmt: on
 
         permutation = [4, 0, 1, 2, 3]
-        npt.assert_equal(nx.modularity_matrix(self.G), B)
-        npt.assert_equal(
+        np.testing.assert_equal(nx.modularity_matrix(self.G), B)
+        np.testing.assert_equal(
             nx.modularity_matrix(self.G, nodelist=permutation),
             B[np.ix_(permutation, permutation)],
         )
@@ -62,9 +61,11 @@ class TestModularity:
         for n1, n2 in G_weighted.edges():
             G_weighted.edges[n1, n2]["weight"] = 0.5
         # The following test would fail in networkx 1.1
-        npt.assert_equal(nx.modularity_matrix(G_weighted), B)
+        np.testing.assert_equal(nx.modularity_matrix(G_weighted), B)
         # The following test that the modularity matrix get rescaled accordingly
-        npt.assert_equal(nx.modularity_matrix(G_weighted, weight="weight"), 0.5 * B)
+        np.testing.assert_equal(
+            nx.modularity_matrix(G_weighted, weight="weight"), 0.5 * B
+        )
 
     def test_directed_modularity(self):
         "Directed Modularity matrix"
@@ -79,8 +80,8 @@ class TestModularity:
         node_permutation = [5, 1, 2, 3, 4, 6]
         idx_permutation = [4, 0, 1, 2, 3, 5]
         mm = nx.directed_modularity_matrix(self.DG, nodelist=sorted(self.DG))
-        npt.assert_equal(mm, B)
-        npt.assert_equal(
+        np.testing.assert_equal(mm, B)
+        np.testing.assert_equal(
             nx.directed_modularity_matrix(self.DG, nodelist=node_permutation),
             B[np.ix_(idx_permutation, idx_permutation)],
         )

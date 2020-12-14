@@ -35,8 +35,10 @@ def weakly_connected_components(G):
 
     >>> G = nx.path_graph(4, create_using=nx.DiGraph())
     >>> nx.add_path(G, [10, 11, 12])
-    >>> [len(c) for c in sorted(nx.weakly_connected_components(G),
-    ...                         key=len, reverse=True)]
+    >>> [
+    ...     len(c)
+    ...     for c in sorted(nx.weakly_connected_components(G), key=len, reverse=True)
+    ... ]
     [4, 3]
 
     If you only want the largest component, it's more efficient to
@@ -58,8 +60,8 @@ def weakly_connected_components(G):
     for v in G:
         if v not in seen:
             c = set(_plain_bfs(G, v))
-            yield c
             seen.update(c)
+            yield c
 
 
 @not_implemented_for("undirected")
@@ -160,7 +162,7 @@ def _plain_bfs(G, source):
         nextlevel = set()
         for v in thislevel:
             if v not in seen:
-                yield v
                 seen.add(v)
                 nextlevel.update(Gsucc[v])
                 nextlevel.update(Gpred[v])
+                yield v

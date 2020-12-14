@@ -83,7 +83,7 @@ def from_graph6_bytes(bytes_in):
 
     Examples
     --------
-    >>> G = nx.from_graph6_bytes(b'A_')
+    >>> G = nx.from_graph6_bytes(b"A_")
     >>> sorted(G.edges())
     [(0, 1)]
 
@@ -205,7 +205,7 @@ def read_graph6(path):
 
         >>> import tempfile
         >>> with tempfile.NamedTemporaryFile() as f:
-        ...     _ = f.write(b'>>graph6<<A_\\n')
+        ...     _ = f.write(b">>graph6<<A_\\n")
         ...     _ = f.seek(0)
         ...     G = nx.read_graph6(f.name)
         >>> list(G.edges())
@@ -215,7 +215,7 @@ def read_graph6(path):
 
         >>> import tempfile
         >>> with tempfile.NamedTemporaryFile() as f:
-        ...     _ = f.write(b'>>graph6<<A_\\n')
+        ...     _ = f.write(b">>graph6<<A_\\n")
         ...     _ = f.seek(0)
         ...     G = nx.read_graph6(f)
         >>> list(G.edges())

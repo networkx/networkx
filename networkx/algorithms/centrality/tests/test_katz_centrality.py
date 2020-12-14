@@ -123,7 +123,7 @@ class TestKatzCentralityNumpy:
     def setup_class(cls):
         global np
         np = pytest.importorskip("numpy")
-        scipy = pytest.importorskip("scipy")
+        pytest.importorskip("scipy")
 
     def test_K5(self):
         """Katz centrality: K5"""
@@ -320,7 +320,7 @@ class TestKatzCentralityDirectedNumpy(TestKatzCentralityDirected):
     def setup_class(cls):
         global np
         np = pytest.importorskip("numpy")
-        scipy = pytest.importorskip("scipy")
+        pytest.importorskip("scipy")
 
     def test_katz_centrality_weighted(self):
         G = self.G
@@ -341,14 +341,12 @@ class TestKatzEigenvectorVKatz:
     @classmethod
     def setup_class(cls):
         global np
-        global eigvals
         np = pytest.importorskip("numpy")
-        scipy = pytest.importorskip("scipy")
-        from numpy.linalg import eigvals
+        pytest.importorskip("scipy")
 
     def test_eigenvector_v_katz_random(self):
         G = nx.gnp_random_graph(10, 0.5, seed=1234)
-        l = float(max(eigvals(nx.adjacency_matrix(G).todense())))
+        l = float(max(np.linalg.eigvals(nx.adjacency_matrix(G).todense())))
         e = nx.eigenvector_centrality_numpy(G)
         k = nx.katz_centrality_numpy(G, 1.0 / l)
         for n in G:

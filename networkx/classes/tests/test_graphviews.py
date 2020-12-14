@@ -32,7 +32,8 @@ class TestReverseView:
 
     def test_exceptions(self):
         nxg = nx.graphviews
-        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, nx.Graph())
+        G = nx.Graph()
+        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, G)
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
@@ -84,6 +85,16 @@ class TestMultiReverseView:
         nxg = nx.graphviews
         MG = nx.MultiGraph(self.G)
         pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, MG)
+
+
+def test_generic_multitype():
+    nxg = nx.graphviews
+    G = nx.DiGraph([(1, 2)])
+    with pytest.raises(nx.NetworkXError):
+        nxg.generic_graph_view(G, create_using=nx.MultiGraph)
+    G = nx.MultiDiGraph([(1, 2)])
+    with pytest.raises(nx.NetworkXError):
+        nxg.generic_graph_view(G, create_using=nx.DiGraph)
 
 
 class TestToDirected:
@@ -213,7 +224,7 @@ class TestChainsOfViews:
             assert SSG._graph is G
 
     def test_restricted_induced_subgraph_chains(self):
-        """ Test subgraph chains that both restrict and show nodes/edges.
+        """Test subgraph chains that both restrict and show nodes/edges.
 
         A restricted_view subgraph should allow induced subgraphs using
         G.subgraph that automagically without a chain (meaning the result

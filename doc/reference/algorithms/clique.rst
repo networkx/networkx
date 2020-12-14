@@ -15,3 +15,4 @@ Clique
    node_clique_number
    number_of_cliques
    cliques_containing_node
+   max_weight_clique

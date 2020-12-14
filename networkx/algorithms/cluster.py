@@ -36,12 +36,12 @@ def triangles(G, nodes=None):
 
     Examples
     --------
-    >>> G=nx.complete_graph(5)
-    >>> print(nx.triangles(G,0))
+    >>> G = nx.complete_graph(5)
+    >>> print(nx.triangles(G, 0))
     6
     >>> print(nx.triangles(G))
     {0: 6, 1: 6, 2: 6, 3: 6, 4: 6}
-    >>> print(list(nx.triangles(G,(0,1)).values()))
+    >>> print(list(nx.triangles(G, (0, 1)).values()))
     [6, 6]
 
     Notes
@@ -61,7 +61,7 @@ def triangles(G, nodes=None):
 
 @not_implemented_for("multigraph")
 def _triangles_and_degree_iter(G, nodes=None):
-    """ Return an iterator of (node, degree, triangles, generalized degree).
+    """Return an iterator of (node, degree, triangles, generalized degree).
 
     This double counts triangles so you may want to divide by 2.
     See degree(), triangles() and generalized_degree() for definitions
@@ -82,7 +82,7 @@ def _triangles_and_degree_iter(G, nodes=None):
 
 @not_implemented_for("multigraph")
 def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
-    """ Return an iterator of (node, degree, weighted_triangles).
+    """Return an iterator of (node, degree, weighted_triangles).
 
     Used for weighted clustering.
 
@@ -118,7 +118,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
 
 @not_implemented_for("multigraph")
 def _directed_triangles_and_degree_iter(G, nodes=None):
-    """ Return an iterator of
+    """Return an iterator of
     (node, total_degree, reciprocal_degree, directed_triangles).
 
     Used for directed clustering.
@@ -150,7 +150,7 @@ def _directed_triangles_and_degree_iter(G, nodes=None):
 
 @not_implemented_for("multigraph")
 def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
-    """ Return an iterator of
+    """Return an iterator of
     (node, total_degree, reciprocal_degree, directed_weighted_triangles).
 
     Used for directed weighted clustering.
@@ -240,7 +240,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
 
     Examples
     --------
-    >>> G=nx.complete_graph(5)
+    >>> G = nx.complete_graph(5)
     >>> print(nx.average_clustering(G))
     1.0
 
@@ -326,8 +326,8 @@ def clustering(G, nodes=None, weight=None):
 
     Examples
     --------
-    >>> G=nx.complete_graph(5)
-    >>> print(nx.clustering(G,0))
+    >>> G = nx.complete_graph(5)
+    >>> print(nx.clustering(G, 0))
     1.0
     >>> print(nx.clustering(G))
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0}
@@ -402,13 +402,18 @@ def transitivity(G):
     >>> print(nx.transitivity(G))
     1.0
     """
-    triangles = sum(t for v, d, t, _ in _triangles_and_degree_iter(G))
-    contri = sum(d * (d - 1) for v, d, t, _ in _triangles_and_degree_iter(G))
+    triangles_contri = [
+        (t, d * (d - 1)) for v, d, t, _ in _triangles_and_degree_iter(G)
+    ]
+    # If the graph is empty
+    if len(triangles_contri) == 0:
+        return 0
+    triangles, contri = map(sum, zip(*triangles_contri))
     return 0 if triangles == 0 else triangles / contri
 
 
 def square_clustering(G, nodes=None):
-    r""" Compute the squares clustering coefficient for nodes.
+    r"""Compute the squares clustering coefficient for nodes.
 
     For each node return the fraction of possible squares that exist at
     the node [1]_
@@ -420,9 +425,9 @@ def square_clustering(G, nodes=None):
 
     where :math:`q_v(u,w)` are the number of common neighbors of :math:`u` and
     :math:`w` other than :math:`v` (ie squares), and :math:`a_v(u,w) = (k_u -
-    (1+q_v(u,w)+\theta_{uv}))(k_w - (1+q_v(u,w)+\theta_{uw}))`, where
+    (1+q_v(u,w)+\theta_{uv})) + (k_w - (1+q_v(u,w)+\theta_{uw}))`, where
     :math:`\theta_{uw} = 1` if :math:`u` and :math:`w` are connected and 0
-    otherwise.
+    otherwise. [2]_
 
     Parameters
     ----------
@@ -438,8 +443,8 @@ def square_clustering(G, nodes=None):
 
     Examples
     --------
-    >>> G=nx.complete_graph(5)
-    >>> print(nx.square_clustering(G,0))
+    >>> G = nx.complete_graph(5)
+    >>> print(nx.square_clustering(G, 0))
     1.0
     >>> print(nx.square_clustering(G))
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0}
@@ -457,6 +462,9 @@ def square_clustering(G, nodes=None):
     .. [1] Pedro G. Lind, Marta C. González, and Hans J. Herrmann. 2005
         Cycles and clustering in bipartite networks.
         Physical Review E (72) 056127.
+    .. [2] Zhang, Peng et al. Clustering Coefficient and Community Structure of
+        Bipartite Networks. Physica A: Statistical Mechanics and its Applications 387.27 (2008): 6869–6875.
+        https://arxiv.org/abs/0710.0117v1
     """
     if nodes is None:
         node_iter = G
@@ -472,7 +480,7 @@ def square_clustering(G, nodes=None):
             degm = squares + 1
             if w in G[u]:
                 degm += 1
-            potential += (len(G[u]) - degm) * (len(G[w]) - degm) + squares
+            potential += (len(G[u]) - degm) + (len(G[w]) - degm) + squares
         if potential > 0:
             clustering[v] /= potential
     if nodes in G:
@@ -483,7 +491,7 @@ def square_clustering(G, nodes=None):
 
 @not_implemented_for("directed")
 def generalized_degree(G, nodes=None):
-    r""" Compute the generalized degree for nodes.
+    r"""Compute the generalized degree for nodes.
 
     For each node, the generalized degree shows how many edges of given
     triangle multiplicity the node is connected to. The triangle multiplicity
@@ -508,16 +516,16 @@ def generalized_degree(G, nodes=None):
 
     Examples
     --------
-    >>> G=nx.complete_graph(5)
-    >>> print(nx.generalized_degree(G,0))
+    >>> G = nx.complete_graph(5)
+    >>> print(nx.generalized_degree(G, 0))
     Counter({3: 4})
     >>> print(nx.generalized_degree(G))
     {0: Counter({3: 4}), 1: Counter({3: 4}), 2: Counter({3: 4}), 3: Counter({3: 4}), 4: Counter({3: 4})}
 
     To recover the number of triangles attached to a node:
 
-    >>> k1 = nx.generalized_degree(G,0)
-    >>> sum([k*v for k,v in k1.items()])/2 == nx.triangles(G,0)
+    >>> k1 = nx.generalized_degree(G, 0)
+    >>> sum([k * v for k, v in k1.items()]) / 2 == nx.triangles(G, 0)
     True
 
     Notes

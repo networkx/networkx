@@ -354,18 +354,18 @@ class TestSquareClustering:
     def test_cubical(self):
         G = nx.cubical_graph()
         assert list(nx.square_clustering(G).values()) == [
-            0.5,
-            0.5,
-            0.5,
-            0.5,
-            0.5,
-            0.5,
-            0.5,
-            0.5,
+            1 / 3,
+            1 / 3,
+            1 / 3,
+            1 / 3,
+            1 / 3,
+            1 / 3,
+            1 / 3,
+            1 / 3,
         ]
-        assert list(nx.square_clustering(G, [1, 2]).values()) == [0.5, 0.5]
-        assert nx.square_clustering(G, [1])[1] == 0.5
-        assert nx.square_clustering(G, [1, 2]) == {1: 0.5, 2: 0.5}
+        assert list(nx.square_clustering(G, [1, 2]).values()) == [1 / 3, 1 / 3]
+        assert nx.square_clustering(G, [1])[1] == 1 / 3
+        assert nx.square_clustering(G, [1, 2]) == {1: 1 / 3, 2: 1 / 3}
 
     def test_k5(self):
         G = nx.complete_graph(5)
@@ -402,9 +402,23 @@ class TestSquareClustering:
         )
         G1 = G.subgraph([1, 2, 3, 4, 5, 13, 14, 15, 16])
         G2 = G.subgraph([1, 6, 7, 8, 9, 10, 11, 12])
-        assert nx.square_clustering(G, [1])[1] == 3 / 75.0
+        assert nx.square_clustering(G, [1])[1] == 3 / 43.0
         assert nx.square_clustering(G1, [1])[1] == 2 / 6.0
         assert nx.square_clustering(G2, [1])[1] == 1 / 5.0
+
+    def test_peng_square_clustering(self):
+        """Test eq2 for figure 1 Peng et al (2008)"""
+        G = nx.Graph(
+            [
+                (1, 2),
+                (1, 3),
+                (2, 4),
+                (3, 4),
+                (3, 5),
+                (3, 6),
+            ]
+        )
+        assert nx.square_clustering(G, [1])[1] == 1 / 3
 
 
 def test_average_clustering():

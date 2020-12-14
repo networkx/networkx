@@ -16,6 +16,17 @@ Isomorphism
    fast_could_be_isomorphic
    faster_could_be_isomorphic
 
+
+Tree Isomorphism
+-----------------
+.. automodule:: networkx.algorithms.isomorphism.tree_isomorphism
+.. autosummary::
+   :toctree: generated/
+
+    rooted_tree_isomorphism
+    tree_isomorphism
+
+
 Advanced Interfaces
 -------------------
 .. toctree::

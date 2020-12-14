@@ -5,14 +5,14 @@ These are not imported into the base networkx namespace but
 can be accessed, for example, as
 
 >>> import networkx
->>> networkx.utils.is_list_of_ints([1, 2, 3])
-True
->>> networkx.utils.is_list_of_ints([1, 2, "spam"])
-False
+>>> networkx.utils.make_list_of_ints({1, 2, 3})
+[1, 2, 3]
+>>> networkx.utils.arbitrary_element({5, 1, 7})  # doctest: +SKIP
+1
 """
 
-from collections import defaultdict
-from collections import deque
+from collections import defaultdict, deque
+from collections.abc import Iterator
 import warnings
 import sys
 import uuid
@@ -53,16 +53,16 @@ def empty_generator():
 
 def flatten(obj, result=None):
     """ Return flattened version of (possibly nested) iterable object. """
-    if not iterable(obj) or is_string_like(obj):
+    if not iterable(obj) or isinstance(obj, str):
         return obj
     if result is None:
         result = []
     for item in obj:
-        if not iterable(item) or is_string_like(item):
+        if not iterable(item) or isinstance(item, str):
             result.append(item)
         else:
             flatten(item, result)
-    return obj.__class__(result)
+    return tuple(result)
 
 
 def make_list_of_ints(sequence):
@@ -102,7 +102,16 @@ def make_list_of_ints(sequence):
 
 
 def is_list_of_ints(intlist):
-    """ Return True if list is a list of ints. """
+    """
+    Return True if list is a list of ints.
+
+    .. deprecated:: 2.6
+    """
+    msg = (
+        "is_list_of_ints is deprecated and will be removed in 3.0."
+        "See also: ``networkx.utils.make_list_of_ints.``"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     if not isinstance(intlist, list):
         return False
     for i in intlist:
@@ -160,7 +169,7 @@ def dict_to_numpy_array2(d, mapping=None):
     with optional mapping.
 
     """
-    import numpy
+    import numpy as np
 
     if mapping is None:
         s = set(d.keys())
@@ -168,7 +177,7 @@ def dict_to_numpy_array2(d, mapping=None):
             s.update(v.keys())
         mapping = dict(zip(s, range(len(s))))
     n = len(mapping)
-    a = numpy.zeros((n, n))
+    a = np.zeros((n, n))
     for k1, i in mapping.items():
         for k2, j in mapping.items():
             try:
@@ -183,13 +192,13 @@ def dict_to_numpy_array1(d, mapping=None):
     with optional mapping.
 
     """
-    import numpy
+    import numpy as np
 
     if mapping is None:
         s = set(d.keys())
         mapping = dict(zip(s, range(len(s))))
     n = len(mapping)
-    a = numpy.zeros(n)
+    a = np.zeros(n)
     for k1, i in mapping.items():
         i = mapping[k1]
         a[i] = d[k1]
@@ -200,7 +209,16 @@ def is_iterator(obj):
     """Returns True if and only if the given object is an iterator
     object.
 
+    .. deprecated:: 2.6.0
+
+       Deprecated in favor of ``isinstance(obj, collections.abc.Iterator)``
+
     """
+    msg = (
+        "is_iterator is deprecated and will be removed in version 3.0. "
+        "Use ``isinstance(obj, collections.abc.Iterator)`` instead."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     has_next_attr = hasattr(obj, "__next__") or hasattr(obj, "next")
     return iter(obj) is obj and has_next_attr
 
@@ -213,7 +231,7 @@ def arbitrary_element(iterable):
 
         >>> arbitrary_element({3, 2, 1})
         1
-        >>> arbitrary_element('hello')
+        >>> arbitrary_element("hello")
         'h'
 
     This function raises a :exc:`ValueError` if `iterable` is an
@@ -227,7 +245,7 @@ def arbitrary_element(iterable):
         ValueError: cannot return an arbitrary item from an iterator
 
     """
-    if is_iterator(iterable):
+    if isinstance(iterable, Iterator):
         raise ValueError("cannot return an arbitrary item from an iterator")
     # Another possible implementation is ``for x in iterable: return x``.
     return next(iter(iterable))
@@ -237,6 +255,11 @@ def arbitrary_element(iterable):
 def consume(iterator):
     "Consume the iterator entirely."
     # Feed the entire iterator into a zero-length deque.
+    msg = (
+        "consume is deprecated and will be removed in version 3.0. "
+        "Use ``collections.deque(iterator, maxlen=0)`` instead."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     deque(iterator, maxlen=0)
 
 
@@ -259,13 +282,12 @@ def groups(many_to_one):
     The return value is a dictionary mapping values from `many_to_one`
     to sets of keys from `many_to_one` that have that value.
 
-    For example::
-
-        >>> from networkx.utils import groups
-        >>> many_to_one = {'a': 1, 'b': 1, 'c': 2, 'd': 3, 'e': 3}
-        >>> groups(many_to_one)  # doctest: +SKIP
-        {1: {'a', 'b'}, 2: {'c'}, 3: {'d', 'e'}}
-
+    Examples
+    --------
+    >>> from networkx.utils import groups
+    >>> many_to_one = {"a": 1, "b": 1, "c": 2, "d": 3, "e": 3}
+    >>> groups(many_to_one)  # doctest: +SKIP
+    {1: {'a', 'b'}, 2: {'c'}, 3: {'e', 'd'}}
     """
     one_to_many = defaultdict(set)
     for v, k in many_to_one.items():
@@ -276,13 +298,12 @@ def groups(many_to_one):
 def to_tuple(x):
     """Converts lists to tuples.
 
-    For example::
-
-        >>> from networkx.utils import to_tuple
-        >>> a_list = [1, 2, [1, 4]]
-        >>> to_tuple(a_list)
-        (1, 2, (1, 4))
-
+    Examples
+    --------
+    >>> from networkx.utils import to_tuple
+    >>> a_list = [1, 2, [1, 4]]
+    >>> to_tuple(a_list)
+    (1, 2, (1, 4))
     """
     if not isinstance(x, (tuple, list)):
         return x
@@ -315,18 +336,17 @@ def create_random_state(random_state=None):
 
 
 class PythonRandomInterface:
-    try:
+    def __init__(self, rng=None):
+        try:
+            import numpy as np
+        except ImportError:
+            msg = "numpy not found, only random.random available."
+            warnings.warn(msg, ImportWarning)
 
-        def __init__(self, rng=None):
-            import numpy
-
-            if rng is None:
-                self._rng = numpy.random.mtrand._rand
+        if rng is None:
+            self._rng = np.random.mtrand._rand
+        else:
             self._rng = rng
-
-    except ImportError:
-        msg = "numpy not found, only random.random available."
-        warnings.warn(msg, ImportWarning)
 
     def random(self):
         return self._rng.random_sample()

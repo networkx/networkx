@@ -58,7 +58,7 @@ def lukes_partitioning(G, max_size: int, node_weight=None, edge_weight=None) -> 
         partition.
 
     Raises
-    -------
+    ------
     NotATree
         If G is not a tree.
     TypeError

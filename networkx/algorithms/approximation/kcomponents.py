@@ -235,7 +235,7 @@ class _AntiGraph(nx.Graph):
 
     def neighbors(self, n):
         """Returns an iterator over all neighbors of node n in the
-           dense graph.
+        dense graph.
         """
         try:
             return iter(set(self._adj) - set(self._adj[n]) - {n})
@@ -342,9 +342,9 @@ class _AntiGraph(nx.Graph):
         Examples
         --------
         >>> G = nx.path_graph(4)
-        >>> G.degree(0) # node 0 with degree 1
+        >>> G.degree(0)  # node 0 with degree 1
         1
-        >>> list(G.degree([0,1]))
+        >>> list(G.degree([0, 1]))
         [(0, 1), (1, 2)]
 
         """

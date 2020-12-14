@@ -23,7 +23,7 @@ def max_clique(G):
         The apx-maximum clique of the graph
 
     Notes
-    ------
+    -----
     A clique in an undirected graph G = (V, E) is a subset of the vertex set
     `C \subseteq V` such that for every two vertices in C there exists an edge
     connecting the two. This is equivalent to saying that the subgraph
@@ -55,7 +55,7 @@ def max_clique(G):
 
 
 def clique_removal(G):
-    r""" Repeatedly remove cliques from the graph.
+    r"""Repeatedly remove cliques from the graph.
 
     Results in a $O(|V|/(\log |V|)^2)$ approximation of maximum clique
     and independent set. Returns the largest independent set found, along

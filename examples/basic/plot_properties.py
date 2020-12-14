@@ -7,7 +7,7 @@ Compute some network properties for the lollipop graph.
 """
 
 import matplotlib.pyplot as plt
-from networkx import nx
+import networkx as nx
 
 G = nx.lollipop_graph(4, 6)
 
@@ -44,5 +44,6 @@ print(f"center: {nx.center(G)}")
 print(f"periphery: {nx.periphery(G)}")
 print(f"density: {nx.density(G)}")
 
-nx.draw(G, with_labels=True)
+pos = nx.spring_layout(G, seed=3068)  # Seed layout for reproducibility
+nx.draw(G, pos=pos, with_labels=True)
 plt.show()

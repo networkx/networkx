@@ -357,8 +357,8 @@ def expected_degree_graph(w, seed=None, selfloops=True):
 
     Examples
     --------
-    >>> z=[10 for i in range(100)]
-    >>> G=nx.expected_degree_graph(z)
+    >>> z = [10 for i in range(100)]
+    >>> G = nx.expected_degree_graph(z)
 
     Notes
     -----

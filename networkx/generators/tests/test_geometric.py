@@ -57,9 +57,7 @@ class TestRandomGeometricGraph:
                 assert not dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
 
     def test_node_names(self):
-        """Tests using values other than sequential numbers as node IDs.
-
-        """
+        """Tests using values other than sequential numbers as node IDs."""
         import string
 
         nodes = list(string.ascii_lowercase)
@@ -120,9 +118,7 @@ class TestSoftRandomGeometricGraph:
                 assert dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
 
     def test_node_names(self):
-        """Tests using values other than sequential numbers as node IDs.
-
-        """
+        """Tests using values other than sequential numbers as node IDs."""
         import string
 
         nodes = list(string.ascii_lowercase)
@@ -139,7 +135,7 @@ class TestSoftRandomGeometricGraph:
 
     def test_p_dist_default(self):
         """Tests default p_dict = 0.5 returns graph with edge count <= RGG with
-           same n, radius, dim and positions
+        same n, radius, dim and positions
 
         """
         nodes = 50
@@ -150,9 +146,7 @@ class TestSoftRandomGeometricGraph:
         assert len(SRGG.edges()) <= len(RGG.edges())
 
     def test_p_dist_zero(self):
-        """Tests if p_dict = 0 returns disconencted graph with 0 edges
-
-        """
+        """Tests if p_dict = 0 returns disconencted graph with 0 edges"""
 
         def p_dist(dist):
             return 0
@@ -225,9 +219,7 @@ class TestGeographicalThresholdGraph:
                 assert not join(G, u, v, 10, -2, dist)
 
     def test_p_dist_zero(self):
-        """Tests if p_dict = 0 returns disconencted graph with 0 edges
-
-        """
+        """Tests if p_dict = 0 returns disconencted graph with 0 edges"""
 
         def p_dist(dist):
             return 0
@@ -321,9 +313,7 @@ class TestThresholdedRandomGeometricGraph:
                 assert dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
 
     def test_node_names(self):
-        """Tests using values other than sequential numbers as node IDs.
-
-        """
+        """Tests using values other than sequential numbers as node IDs."""
         import string
 
         nodes = list(string.ascii_lowercase)

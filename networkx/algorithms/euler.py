@@ -213,51 +213,86 @@ def eulerian_circuit(G, source=None, keys=False):
         yield from _simplegraph_eulerian_circuit(G, source)
 
 
-def has_eulerian_path(G):
+def has_eulerian_path(G, source=None):
     """Return True iff `G` has an Eulerian path.
 
     An Eulerian path is a path in a graph which uses each edge of a graph
-    exactly once.
+    exactly once. If `source` is specified, then this function checks
+    whether an Eulerian path that starts at node `source` exists.
 
     A directed graph has an Eulerian path iff:
         - at most one vertex has out_degree - in_degree = 1,
         - at most one vertex has in_degree - out_degree = 1,
         - every other vertex has equal in_degree and out_degree,
         - and all of its vertices with nonzero degree belong to a
-        - single connected component of the underlying undirected graph.
+          single connected component of the underlying undirected graph.
+
+    If `source` is not None, an Eulerian path starting at `source` exists if no
+    other node has out_degree - in_degree = 1. This is equivalent to either
+    there exists an Eulerian circuit or `source` has out_degree - in_degree = 1
+    and the conditions above hold.
 
     An undirected graph has an Eulerian path iff:
         - exactly zero or two vertices have odd degree,
         - and all of its vertices with nonzero degree belong to a
         - single connected component.
 
+    If `source` is not None, an Eulerian path starting at `source` exists if
+    either there exists an Eulerian circuit or `source` has an odd degree and the
+    conditions above hold.
+
     Parameters
     ----------
     G : NetworkX Graph
         The graph to find an euler path in.
 
+    source : node, optional
+        Starting node for path.
+
     Returns
     -------
-    Bool : True if G has an eulerian path.
+    Bool : True if G has an Eulerian path.
 
     See Also
     --------
     is_eulerian
     eulerian_path
     """
+    if nx.is_eulerian(G):
+        return True
+
     if G.is_directed():
+        # Remove isolated nodes (if any) without altering the input graph
+        nodes_remove = [v for v in G if G.in_degree[v] == 0 and G.out_degree[v] == 0]
+        if nodes_remove:
+            G = G.copy()
+            G.remove_nodes_from(nodes_remove)
         ins = G.in_degree
         outs = G.out_degree
-        semibalanced_ins = sum(ins(v) - outs(v) == 1 for v in G)
-        semibalanced_outs = sum(outs(v) - ins(v) == 1 for v in G)
+        # Since we know it is not eulerian, outs - ins must be 1 for source
+        if source is not None and outs[source] - ins[source] != 1:
+            return False
+
+        unbalanced_ins = 0
+        unbalanced_outs = 0
+        for v in G:
+            if ins[v] - outs[v] == 1:
+                unbalanced_ins += 1
+            elif outs[v] - ins[v] == 1:
+                unbalanced_outs += 1
+            elif ins[v] != outs[v]:
+                return False
+
         return (
-            semibalanced_ins <= 1
-            and semibalanced_outs <= 1
-            and sum(G.in_degree(v) != G.out_degree(v) for v in G) <= 2
-            and nx.is_weakly_connected(G)
+            unbalanced_ins <= 1 and unbalanced_outs <= 1 and nx.is_weakly_connected(G)
         )
     else:
-        return sum(d % 2 == 1 for v, d in G.degree()) in (0, 2) and nx.is_connected(G)
+        # We know it is not eulerian, so degree of source must be odd.
+        if source is not None and G.degree[source] % 2 != 1:
+            return False
+
+        # Sum is 2 since we know it is not eulerian (which implies sum is 0)
+        return sum(d % 2 == 1 for v, d in G.degree()) == 2 and nx.is_connected(G)
 
 
 def eulerian_path(G, source=None, keys=False):
@@ -281,22 +316,37 @@ def eulerian_path(G, source=None, keys=False):
     Warning: If `source` provided is not the start node of an Euler path
     will raise error even if an Euler Path exists.
     """
-    if not has_eulerian_path(G):
+    if not has_eulerian_path(G, source):
         raise nx.NetworkXError("Graph has no Eulerian paths.")
     if G.is_directed():
         G = G.reverse()
+        if source is None or nx.is_eulerian(G) is False:
+            source = _find_path_start(G)
+        if G.is_multigraph():
+            for u, v, k in _multigraph_eulerian_circuit(G, source):
+                if keys:
+                    yield u, v, k
+                else:
+                    yield u, v
+        else:
+            yield from _simplegraph_eulerian_circuit(G, source)
     else:
         G = G.copy()
-    if source is None:
-        source = _find_path_start(G)
-    if G.is_multigraph():
-        for u, v, k in _multigraph_eulerian_circuit(G, source):
+        if source is None:
+            source = _find_path_start(G)
+        if G.is_multigraph():
             if keys:
-                yield u, v, k
+                yield from reversed(
+                    [(v, u, k) for u, v, k in _multigraph_eulerian_circuit(G, source)]
+                )
             else:
-                yield u, v
-    else:
-        yield from _simplegraph_eulerian_circuit(G, source)
+                yield from reversed(
+                    [(v, u) for u, v, k in _multigraph_eulerian_circuit(G, source)]
+                )
+        else:
+            yield from reversed(
+                [(v, u) for u, v in _simplegraph_eulerian_circuit(G, source)]
+            )
 
 
 @not_implemented_for("directed")
@@ -327,7 +377,7 @@ def eulerize(G):
     .. [1] J. Edmonds, E. L. Johnson.
        Matching, Euler tours and the Chinese postman.
        Mathematical programming, Volume 5, Issue 1 (1973), 111-114.
-       [2] https://en.wikipedia.org/wiki/Eulerian_path
+    .. [2] https://en.wikipedia.org/wiki/Eulerian_path
     .. [3] http://web.math.princeton.edu/math_alive/5/Notes1.pdf
 
     Examples

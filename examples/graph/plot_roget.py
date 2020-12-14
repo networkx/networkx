@@ -25,11 +25,11 @@ import re
 import sys
 
 import matplotlib.pyplot as plt
-from networkx import nx
+import networkx as nx
 
 
 def roget_graph():
-    """ Return the thesaurus graph from the roget.dat example in
+    """Return the thesaurus graph from the roget.dat example in
     the Stanford Graph Base.
     """
     # open file roget_dat.txt.gz
@@ -65,7 +65,7 @@ def roget_graph():
 
 G = roget_graph()
 print("Loaded roget_dat.txt containing 1022 categories.")
-print(f"digraph has {nx.number_of_nodes(G)} nodes with {nx.number_of_edges(G)} edges")
+print(G)
 UG = G.to_undirected()
 print(nx.number_connected_components(UG), "connected components")
 

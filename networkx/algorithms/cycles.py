@@ -21,7 +21,7 @@ __all__ = [
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def cycle_basis(G, root=None):
-    """ Returns a list of cycles which form a basis for cycles of G.
+    """Returns a list of cycles which form a basis for cycles of G.
 
     A basis for cycles of a network is a minimal collection of
     cycles such that any cycle in the network can be written
@@ -391,14 +391,13 @@ def find_cycle(G, source=None, orientation=None):
     This means that this DAG structure does not form a directed tree (which
     is also known as a polytree).
 
-    >>> import networkx as nx
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
     >>> try:
-    ...    nx.find_cycle(G, orientation='original')
+    ...     nx.find_cycle(G, orientation="original")
     ... except:
-    ...    pass
+    ...     pass
     ...
-    >>> list(nx.find_cycle(G, orientation='ignore'))
+    >>> list(nx.find_cycle(G, orientation="ignore"))
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
     See Also
@@ -500,7 +499,7 @@ def find_cycle(G, source=None, orientation=None):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def minimum_cycle_basis(G, weight=None):
-    """ Returns a minimum weight cycle basis for G
+    """Returns a minimum weight cycle basis for G
 
     Minimum weight means a cycle basis for which the total weight
     (length for unweighted graphs) of all the cycles is minimum.
@@ -519,9 +518,9 @@ def minimum_cycle_basis(G, weight=None):
 
     Examples
     --------
-    >>> G=nx.Graph()
-    >>> nx.add_cycle(G, [0,1,2,3])
-    >>> nx.add_cycle(G, [0,3,4,5])
+    >>> G = nx.Graph()
+    >>> nx.add_cycle(G, [0, 1, 2, 3])
+    >>> nx.add_cycle(G, [0, 3, 4, 5])
     >>> print([sorted(c) for c in nx.minimum_cycle_basis(G)])
     [[0, 1, 2, 3], [0, 3, 4, 5]]
 
