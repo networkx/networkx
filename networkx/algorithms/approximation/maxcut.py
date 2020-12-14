@@ -89,6 +89,7 @@ def one_exchange(G, initial_cut=None, seed=None, weight=None):
     current_cut_size = nx.algorithms.cut_size(G, cut, weight=weight)
     while True:
         nodes = list(G.nodes())
+        # Shuffling the nodes ensures random tie-breaks in the following call to max
         seed.shuffle(nodes)
         best_node_to_swap = max(
             nodes,
