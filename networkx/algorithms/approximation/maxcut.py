@@ -22,7 +22,7 @@ def randomized_partitioning(G, seed=None, p=0.5, weight=None):
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
 
-    p : scalar 
+    p : scalar
         Probability for each node to be part of the first partition.
         Should be in [0,1]
 
