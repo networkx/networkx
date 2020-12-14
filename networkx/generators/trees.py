@@ -226,19 +226,7 @@ def random_tree(n, seed=None, create_using=None):
     if create_using is None:
         tree = utree
     else:
-        # TODO: maybe a tree classmethod like
-        # Graph.new, Graph.fresh, or something like that
-        def new(cls_or_self):
-            if hasattr(cls_or_self, "_adj"):
-                # create_using is a NetworkX style Graph
-                cls_or_self.clear()
-                self = cls_or_self
-            else:
-                # try create_using as constructor
-                self = cls_or_self()
-            return self
-
-        tree = new(create_using)
+        tree = nx.empty_graph(0, create_using)
         if tree.is_directed():
             # Use a arbitrary root node and dfs to define edge directions
             edges = nx.dfs_edges(utree, source=0)
