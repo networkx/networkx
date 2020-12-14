@@ -3,8 +3,7 @@ Text-based visual representations of graphs
 """
 
 
-def forest_str(graph, with_labels=True, sources=None, write=None,
-               ascii_only=False):
+def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=False):
     """
     Creates a nice utf8 representation of a directed forest
 
@@ -81,30 +80,30 @@ def forest_str(graph, with_labels=True, sources=None, write=None,
     # Define glphys
     if ascii_only:
         empty_glyph = "+"
-        glyph_newtree_last  = "+── "
-        glyph_newtree_mid   = "+-- "
-        glyph_endof_forest  = "    "
+        glyph_newtree_last = "+── "
+        glyph_newtree_mid = "+-- "
+        glyph_endof_forest = "    "
         glyph_within_forest = ":   "
-        glyph_within_tree   = "|   "
+        glyph_within_tree = "|   "
 
-        glyph_directed_last  = "L-> "
-        glyph_directed_mid   = "|-> "
+        glyph_directed_last = "L-> "
+        glyph_directed_mid = "|-> "
 
         glyph_undirected_last = "L-- "
-        glyph_undirected_mid  = "|-- "
+        glyph_undirected_mid = "|-- "
     else:
         empty_glyph = "╙"
-        glyph_newtree_last  = "╙── "
-        glyph_newtree_mid   = "╟── "
-        glyph_endof_forest  = "    "
+        glyph_newtree_last = "╙── "
+        glyph_newtree_mid = "╟── "
+        glyph_endof_forest = "    "
         glyph_within_forest = "╎   "
-        glyph_within_tree   = "│   "
+        glyph_within_tree = "│   "
 
-        glyph_directed_last  = "└─╼ "
-        glyph_directed_mid   = "├─╼ "
+        glyph_directed_last = "└─╼ "
+        glyph_directed_mid = "├─╼ "
 
         glyph_undirected_last = "└── "
-        glyph_undirected_mid  = "├── "
+        glyph_undirected_mid = "├── "
 
     if len(graph.nodes) == 0:
         _write(empty_glyph)
