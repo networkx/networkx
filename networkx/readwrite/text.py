@@ -78,8 +78,11 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
         _write = write
 
     # Define glphys
+    # Notes on available box and arrow characters
+    # https://en.wikipedia.org/wiki/Box-drawing_character
+    # https://stackoverflow.com/questions/2701192/triangle-arrow
     if ascii_only:
-        empty_glyph = "+"
+        glyph_empty = "+"
         glyph_newtree_last = "+── "
         glyph_newtree_mid = "+-- "
         glyph_endof_forest = "    "
@@ -92,7 +95,7 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
         glyph_undirected_last = "L-- "
         glyph_undirected_mid = "|-- "
     else:
-        empty_glyph = "╙"
+        glyph_empty = "╙"
         glyph_newtree_last = "╙── "
         glyph_newtree_mid = "╟── "
         glyph_endof_forest = "    "
@@ -106,7 +109,7 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
         glyph_undirected_mid = "├── "
 
     if len(graph.nodes) == 0:
-        _write(empty_glyph)
+        _write(glyph_empty)
     else:
         if not nx.is_forest(graph):
             raise nx.NetworkXNotImplemented("input must be a forest or the empty graph")
@@ -140,9 +143,6 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
                 continue
             seen.add(node)
 
-            # Notes on available box and arrow characters
-            # https://en.wikipedia.org/wiki/Box-drawing_character
-            # https://stackoverflow.com/questions/2701192/triangle-arrow
             if not indent:
                 # Top level items (i.e. trees in the forest) get different
                 # glyphs to indicate they are not actually connected
@@ -154,7 +154,7 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
                     next_prefix = indent + glyph_within_forest
 
             else:
-                # For individual forests distinguish between directed and
+                # For individual tree edges distinguish between directed and
                 # undirected cases
                 if is_directed:
                     if islast:
