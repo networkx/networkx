@@ -61,9 +61,7 @@ def test_one_exchange_optimal():
 
     cut_size, (set1, set2) = a.maxcut.one_exchange(G, weight="weight", seed=5)
 
-    # make sure it is a valid cut
     _is_valid_cut(G, set1, set2)
-    # check local optimality
     _cut_is_locally_optimal(G, cut_size, set1)
     # check global optimality
     assert cut_size == 14
