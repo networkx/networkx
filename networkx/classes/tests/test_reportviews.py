@@ -1,6 +1,7 @@
 import pytest
 
 import networkx as nx
+from networkx.classes import reportviews as rv
 from networkx.classes.reportviews import NodeDataView
 
 
@@ -41,6 +42,9 @@ class TestNodeView:
         G.nodes[3]["foo"] = "bar"
         assert nv[7] == {}
         assert nv[3] == {"foo": "bar"}
+        # slicing
+        with pytest.raises(nx.NetworkXError):
+            G.nodes[0:5]
 
     def test_iter(self):
         nv = self.nv
@@ -128,6 +132,9 @@ class TestNodeDataView:
         nwv_def = G.nodes(data="foo", default="biz")
         assert nwv_def[7], "biz"
         assert nwv_def[3] == "bar"
+        # slicing
+        with pytest.raises(nx.NetworkXError):
+            G.nodes.data()[0:5]
 
     def test_iter(self):
         G = self.G.copy()
@@ -579,6 +586,16 @@ class TestEdgeView:
         )
         assert repr(ev) == rep
 
+    def test_getitem(self):
+        G = self.G.copy()
+        ev = G.edges
+        G.edges[0, 1]["foo"] = "bar"
+        assert ev[0, 1] == {"foo": "bar"}
+
+        # slicing
+        with pytest.raises(nx.NetworkXError):
+            G.edges[0:5]
+
     def test_call(self):
         ev = self.eview(self.G)
         assert id(ev) == id(ev())
@@ -760,6 +777,16 @@ class TestMultiEdgeView(TestEdgeView):
         replist.insert(2, (1, 2, 3))
         rep = str(replist)
         assert str(ev) == rep
+
+    def test_getitem(self):
+        G = self.G.copy()
+        ev = G.edges
+        G.edges[0, 1, 0]["foo"] = "bar"
+        assert ev[0, 1, 0] == {"foo": "bar"}
+
+        # slicing
+        with pytest.raises(nx.NetworkXError):
+            G.edges[0:5]
 
     def test_repr(self):
         ev = self.eview(self.G)
@@ -1336,3 +1363,28 @@ class TestInMultiDegreeView(TestDegreeView):
         assert dvd[1] == 1
         assert dvd[2] == 1
         assert dvd[3] == 6
+
+
+@pytest.mark.parametrize(
+    ("reportview", "err_msg_terms"),
+    (
+        (rv.NodeView, "list(G.nodes"),
+        (rv.NodeDataView, "list(G.nodes.data"),
+        (rv.EdgeView, "list(G.edges"),
+        # Directed EdgeViews
+        (rv.InEdgeView, "list(G.in_edges"),
+        (rv.OutEdgeView, "list(G.edges"),
+        # Multi EdgeViews
+        (rv.MultiEdgeView, "list(G.edges"),
+        (rv.InMultiEdgeView, "list(G.in_edges"),
+        (rv.OutMultiEdgeView, "list(G.edges"),
+    ),
+)
+def test_slicing_reportviews(reportview, err_msg_terms):
+    G = nx.complete_graph(3)
+    view = reportview(G)
+    with pytest.raises(nx.NetworkXError) as exc:
+        view[0:2]
+    errmsg = str(exc.value)
+    assert type(view).__name__ in errmsg
+    assert err_msg_terms in errmsg

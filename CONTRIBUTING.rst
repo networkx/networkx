@@ -43,7 +43,7 @@ Development Workflow
          # (Optional) Install pygraphviz, pydot, and gdal packages
          # These packages require that you have your system properly configured
          # and what that involves differs on various systems.
-         # pip install -r requirements/extras.txt
+         # pip install -r requirements/extra.txt
          #
          # Build and install networkx from source
          pip install -e .
@@ -64,7 +64,7 @@ Development Workflow
          # (Optional) Install pygraphviz, pydot, and gdal packages
          # These packages require that you have your system properly configured
          # and what that involves differs on various systems.
-         # pip install -r requirements/extras.txt
+         # pip install -r requirements/extra.txt
          #
          # Install networkx from source
          pip install -e . --no-deps
@@ -117,7 +117,7 @@ Development Workflow
 
 For a more detailed discussion, read these :doc:`detailed documents
 <gitwash/index>` on how to use Git with ``networkx``
-(`<https://networkx.github.io/documentation/latest/developer/gitwash/index.html>`_).
+(`<https://networkx.org/documentation/latest/developer/gitwash/index.html>`_).
 
 5. Review process:
 
@@ -214,7 +214,7 @@ Once you've fixed all merge conflicts, do::
 .. note::
 
    Advanced Git users are encouraged to `rebase instead of merge
-   <https://networkx.github.io/documentation/stable/developer/gitwash/development_workflow.html#rebase-on-trunk>`__,
+   <https://networkx.org/documentation/stable/developer/gitwash/development_workflow.html#rebase-on-trunk>`__,
    but we squash and merge most PRs either way.
 
 
@@ -228,13 +228,39 @@ Guidelines
 * All changes are reviewed.  Ask on the
   `mailing list <http://groups.google.com/group/networkx-discuss>`_ if
   you get no response to your pull request.
+* Default dependencies are listed in ``requirements/default.txt`` and extra
+  (i.e., optional) dependencies are listed in ``requirements/extra.txt``.
+  We don't often add new default and extra dependencies.  If you are considering
+  adding code that has a dependency, you should first consider adding a gallery
+  example.  Typically, new proposed dependencies would first be added as extra
+  dependencies.  Extra dependencies should be easy to install on all platforms
+  and widely-used.  New default dependencies should be easy to install on all
+  platforms, widely-used in the community, and have demonstrated potential for
+  wide-spread use in NetworkX.
 * Use the following import conventions::
 
    import numpy as np
    import scipy as sp
    import matplotlib as mpl
    import matplotlib.pyplot as plt
+   import pandas as pd 
    import networkx as nx
+
+  After importing `sp`` for ``scipy``::
+
+   import scipy as sp
+
+  use the following imports:: 
+ 
+   import scipy.linalg  # call as sp.linalg
+   import scipy.sparse  # call as sp.sparse
+   import scipy.sparse.linalg  # call as sp.sparse.linalg
+   import scipy.stats  # call as sp.stats
+   import scipy.optimize  # call as sp.optimize
+
+  For example, many libraries have a ``linalg`` subpackage: ``nx.linalg``,
+  ``np.linalg``, ``sp.linalg``, ``sp.sparse.linalg``. The above import
+  pattern makes the origin of any particular instance of ``linalg`` explicit.
 
 * Use the decorator ``not_implemented_for`` in ``networkx/utils/decorators.py``
   to designate that a function doesn't accept 'directed', 'undirected',

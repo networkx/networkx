@@ -458,7 +458,7 @@ def graph_number_of_cliques(G, cliques=None):
 
 
 def node_clique_number(G, nodes=None, cliques=None):
-    """ Returns the size of the largest maximal clique containing
+    """Returns the size of the largest maximal clique containing
     each given node.
 
     Returns a single or list depending on input nodes.
@@ -590,11 +590,11 @@ class MaxWeightClique(object):
         else:
             for v in G.nodes():
                 if weight not in G.nodes[v]:
-                    err = "Node {} does not have the requested weight field."
-                    raise KeyError(err.format(v))
+                    errmsg = f"Node {v!r} does not have the requested weight field."
+                    raise KeyError(errmsg)
                 if not isinstance(G.nodes[v][weight], int):
-                    err = "The '{}' field of node {} is not an integer."
-                    raise ValueError(err.format(weight, v))
+                    errmsg = f"The {weight!r} field of node {v!r} is not an integer."
+                    raise ValueError(errmsg)
             self.node_weights = {v: G.nodes[v][weight] for v in G.nodes()}
 
     def update_incumbent_if_improved(self, C, C_weight):
@@ -639,8 +639,7 @@ class MaxWeightClique(object):
         clique has greater weight than the incumbent.
         """
         self.update_incumbent_if_improved(C, C_weight)
-        branching_nodes = self.find_branching_nodes(
-            P, self.incumbent_weight - C_weight)
+        branching_nodes = self.find_branching_nodes(P, self.incumbent_weight - C_weight)
         while branching_nodes:
             v = branching_nodes.pop()
             P.remove(v)
@@ -652,14 +651,13 @@ class MaxWeightClique(object):
     def find_max_weight_clique(self):
         """Find a maximum weight clique."""
         # Sort nodes in reverse order of degree for speed
-        nodes = sorted(self.G.nodes(), key=lambda v: self.G.degree(v),
-                       reverse=True)
+        nodes = sorted(self.G.nodes(), key=lambda v: self.G.degree(v), reverse=True)
         nodes = [v for v in nodes if self.node_weights[v] > 0]
         self.expand([], 0, nodes)
 
 
-@not_implemented_for('directed')
-def max_weight_clique(G, weight='weight'):
+@not_implemented_for("directed")
+def max_weight_clique(G, weight="weight"):
     """Find a maximum weight clique in G.
 
     A *clique* in a graph is a set of nodes such that every two distinct nodes

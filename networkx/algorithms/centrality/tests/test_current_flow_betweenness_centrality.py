@@ -7,8 +7,7 @@ from networkx import approximate_current_flow_betweenness_centrality as approxim
 
 
 np = pytest.importorskip("numpy")
-npt = pytest.importorskip("numpy.testing")
-scipy = pytest.importorskip("scipy")
+pytest.importorskip("scipy")
 
 
 class TestFlowBetweennessCentrality:
@@ -88,7 +87,7 @@ class TestApproximateFlowBetweennessCentrality:
         epsilon = 0.1
         ba = approximate_cfbc(G, normalized=True, epsilon=0.5 * epsilon)
         for n in sorted(G):
-            npt.assert_allclose(b[n], ba[n], atol=epsilon)
+            np.testing.assert_allclose(b[n], ba[n], atol=epsilon)
 
     def test_K4(self):
         "Approximate current-flow betweenness centrality: K4"
@@ -97,7 +96,7 @@ class TestApproximateFlowBetweennessCentrality:
         epsilon = 0.1
         ba = approximate_cfbc(G, normalized=False, epsilon=0.5 * epsilon)
         for n in sorted(G):
-            npt.assert_allclose(b[n], ba[n], atol=epsilon * len(G) ** 2)
+            np.testing.assert_allclose(b[n], ba[n], atol=epsilon * len(G) ** 2)
 
     def test_star(self):
         "Approximate current-flow betweenness centrality: star"
@@ -107,7 +106,7 @@ class TestApproximateFlowBetweennessCentrality:
         epsilon = 0.1
         ba = approximate_cfbc(G, normalized=True, epsilon=0.5 * epsilon)
         for n in sorted(G):
-            npt.assert_allclose(b[n], ba[n], atol=epsilon)
+            np.testing.assert_allclose(b[n], ba[n], atol=epsilon)
 
     def test_grid(self):
         "Approximate current-flow betweenness centrality: 2d grid"
@@ -116,14 +115,14 @@ class TestApproximateFlowBetweennessCentrality:
         epsilon = 0.1
         ba = approximate_cfbc(G, normalized=True, epsilon=0.5 * epsilon)
         for n in sorted(G):
-            npt.assert_allclose(b[n], ba[n], atol=epsilon)
+            np.testing.assert_allclose(b[n], ba[n], atol=epsilon)
 
     def test_seed(self):
         G = nx.complete_graph(4)
         b = approximate_cfbc(G, normalized=False, epsilon=0.05, seed=1)
         b_answer = {0: 0.75, 1: 0.75, 2: 0.75, 3: 0.75}
         for n in sorted(G):
-            npt.assert_allclose(b[n], b_answer[n], atol=0.1)
+            np.testing.assert_allclose(b[n], b_answer[n], atol=0.1)
 
     def test_solvers(self):
         "Approximate current-flow betweenness centrality: solvers"
@@ -135,7 +134,7 @@ class TestApproximateFlowBetweennessCentrality:
             )
             b_answer = {0: 0.75, 1: 0.75, 2: 0.75, 3: 0.75}
             for n in sorted(G):
-                npt.assert_allclose(b[n], b_answer[n], atol=epsilon)
+                np.testing.assert_allclose(b[n], b_answer[n], atol=epsilon)
 
 
 class TestWeightedFlowBetweennessCentrality:

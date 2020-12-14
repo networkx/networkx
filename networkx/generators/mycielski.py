@@ -48,7 +48,7 @@ def mycielskian(G, iterations=1):
         The Mycielskian of G after the specified number of iterations.
 
     Notes
-    ------
+    -----
     Graph, node, and edge data are not necessarily propagated to the new graph.
 
     """

@@ -9,8 +9,7 @@ __all__ = ["edmonds_karp"]
 
 
 def edmonds_karp_core(R, s, t, cutoff):
-    """Implementation of the Edmonds-Karp algorithm.
-    """
+    """Implementation of the Edmonds-Karp algorithm."""
     R_nodes = R.nodes
     R_pred = R.pred
     R_succ = R.succ
@@ -18,8 +17,7 @@ def edmonds_karp_core(R, s, t, cutoff):
     inf = R.graph["inf"]
 
     def augment(path):
-        """Augment flow along a path from s to t.
-        """
+        """Augment flow along a path from s to t."""
         # Determine the path residual capacity.
         flow = inf
         it = iter(path)
@@ -40,8 +38,7 @@ def edmonds_karp_core(R, s, t, cutoff):
         return flow
 
     def bidirectional_bfs():
-        """Bidirectional breadth-first search for an augmenting path.
-        """
+        """Bidirectional breadth-first search for an augmenting path."""
         pred = {s: None}
         q_s = [s]
         succ = {t: None}
@@ -95,8 +92,7 @@ def edmonds_karp_core(R, s, t, cutoff):
 
 
 def edmonds_karp_impl(G, s, t, capacity, residual, cutoff):
-    """Implementation of the Edmonds-Karp algorithm.
-    """
+    """Implementation of the Edmonds-Karp algorithm."""
     if s not in G:
         raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:
@@ -215,7 +211,6 @@ def edmonds_karp(
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.flow import edmonds_karp
 
     The functions that implement flow algorithms and output a residual
@@ -223,19 +218,19 @@ def edmonds_karp(
     namespace, so you have to explicitly import them from the flow package.
 
     >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> R = edmonds_karp(G, 'x', 'y')
-    >>> flow_value = nx.maximum_flow_value(G, 'x', 'y')
+    >>> G.add_edge("x", "a", capacity=3.0)
+    >>> G.add_edge("x", "b", capacity=1.0)
+    >>> G.add_edge("a", "c", capacity=3.0)
+    >>> G.add_edge("b", "c", capacity=5.0)
+    >>> G.add_edge("b", "d", capacity=4.0)
+    >>> G.add_edge("d", "e", capacity=2.0)
+    >>> G.add_edge("c", "y", capacity=2.0)
+    >>> G.add_edge("e", "y", capacity=3.0)
+    >>> R = edmonds_karp(G, "x", "y")
+    >>> flow_value = nx.maximum_flow_value(G, "x", "y")
     >>> flow_value
     3.0
-    >>> flow_value == R.graph['flow_value']
+    >>> flow_value == R.graph["flow_value"]
     True
 
     """

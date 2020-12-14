@@ -10,7 +10,7 @@ def cycles(seq):
 
     For example::
 
-        >>> list(cycles('abc'))
+        >>> list(cycles("abc"))
         [('a', 'b', 'c'), ('b', 'c', 'a'), ('c', 'a', 'b')]
 
     """
@@ -26,9 +26,9 @@ def cyclic_equals(seq1, seq2):
 
     For example::
 
-        >>> cyclic_equals('xyz', 'zxy')
+        >>> cyclic_equals("xyz", "zxy")
         True
-        >>> cyclic_equals('xyz', 'zyx')
+        >>> cyclic_equals("xyz", "zyx")
         False
 
     """
@@ -92,10 +92,7 @@ class TestChainDecomposition:
         # The (3, 0) barbell graph has two triangles joined by a single edge.
         G = nx.barbell_graph(3, 0)
         chains = list(nx.chain_decomposition(G, root=0))
-        expected = [
-            [(0, 1), (1, 2), (2, 0)],
-            [(3, 4), (4, 5), (5, 3)],
-        ]
+        expected = [[(0, 1), (1, 2), (2, 0)], [(3, 4), (4, 5), (5, 3)]]
         assert len(chains) == len(expected)
         for chain in chains:
             self.assertContainsChain(chain, expected)

@@ -14,6 +14,7 @@ Directed Acyclic Graphs
    is_directed_acyclic_graph
    is_aperiodic
    transitive_closure
+   transitive_closure_dag
    transitive_reduction
    antichains
    dag_longest_path

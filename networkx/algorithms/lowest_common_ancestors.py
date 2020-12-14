@@ -53,8 +53,8 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
 
     See Also
     --------
-    all_pairs_lowest_common_ancestor (similar routine for general DAGs)
-    lowest_common_ancestor           (just a single pair for general DAGs)
+    all_pairs_lowest_common_ancestor: similar routine for general DAGs
+    lowest_common_ancestor: just a single pair for general DAGs
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")

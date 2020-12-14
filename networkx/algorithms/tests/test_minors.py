@@ -120,6 +120,39 @@ class TestQuotient:
             assert M.nodes[n]["nnodes"] == 2
             assert M.nodes[n]["density"] == 1
 
+    def test_path__partition_provided_as_dict_of_lists(self):
+        G = nx.path_graph(6)
+        partition = {0: [0, 1], 2: [2, 3], 4: [4, 5]}
+        M = nx.quotient_graph(G, partition, relabel=True)
+        assert_nodes_equal(M, [0, 1, 2])
+        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
+        for n in M:
+            assert M.nodes[n]["nedges"] == 1
+            assert M.nodes[n]["nnodes"] == 2
+            assert M.nodes[n]["density"] == 1
+
+    def test_path__partition_provided_as_dict_of_tuples(self):
+        G = nx.path_graph(6)
+        partition = {0: (0, 1), 2: (2, 3), 4: (4, 5)}
+        M = nx.quotient_graph(G, partition, relabel=True)
+        assert_nodes_equal(M, [0, 1, 2])
+        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
+        for n in M:
+            assert M.nodes[n]["nedges"] == 1
+            assert M.nodes[n]["nnodes"] == 2
+            assert M.nodes[n]["density"] == 1
+
+    def test_path__partition_provided_as_dict_of_sets(self):
+        G = nx.path_graph(6)
+        partition = {0: {0, 1}, 2: {2, 3}, 4: {4, 5}}
+        M = nx.quotient_graph(G, partition, relabel=True)
+        assert_nodes_equal(M, [0, 1, 2])
+        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
+        for n in M:
+            assert M.nodes[n]["nedges"] == 1
+            assert M.nodes[n]["nnodes"] == 2
+            assert M.nodes[n]["density"] == 1
+
     def test_multigraph_path(self):
         G = nx.MultiGraph(nx.path_graph(6))
         partition = [{0, 1}, {2, 3}, {4, 5}]
@@ -324,6 +357,24 @@ class TestContraction:
         assert nx.is_isomorphic(actual, expected)
         assert actual.nodes == expected.nodes
 
+    def test_edge_attributes(self):
+        """Tests that node contraction preserves edge attributes."""
+        # Shape: src1 --> dest <-- src2
+        G = nx.DiGraph([("src1", "dest"), ("src2", "dest")])
+        G["src1"]["dest"]["value"] = "src1-->dest"
+        G["src2"]["dest"]["value"] = "src2-->dest"
+        H = nx.MultiDiGraph(G)
+
+        G = nx.contracted_nodes(G, "src1", "src2")  # New Shape: src1 --> dest
+        assert G.edges[("src1", "dest")]["value"] == "src1-->dest"
+        assert (
+            G.edges[("src1", "dest")]["contraction"][("src2", "dest")]["value"]
+            == "src2-->dest"
+        )
+
+        H = nx.contracted_nodes(H, "src1", "src2")  # New Shape: src1 -(x2)-> dest
+        assert len(H.edges(("src1", "dest"))) == 2
+
     def test_without_self_loops(self):
         """Tests for node contraction without preserving self-loops."""
         G = nx.cycle_graph(4)
@@ -350,6 +401,14 @@ class TestContraction:
         """Tests for edge contraction in an undirected graph."""
         G = nx.cycle_graph(4)
         actual = nx.contracted_edge(G, (0, 1))
+        expected = nx.complete_graph(3)
+        expected.add_edge(0, 0)
+        assert nx.is_isomorphic(actual, expected)
+
+    def test_multigraph_edge_contraction(self):
+        """Tests for edge contraction in a multigraph"""
+        G = nx.cycle_graph(4)
+        actual = nx.contracted_edge(G, (0, 1, 0))
         expected = nx.complete_graph(3)
         expected.add_edge(0, 0)
         assert nx.is_isomorphic(actual, expected)

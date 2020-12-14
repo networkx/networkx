@@ -22,9 +22,7 @@ class TestPerformance:
         assert almost_equal(8 / 15, performance(G, partition))
 
     def test_good_partition(self):
-        """Tests that a good partition has a high performance measure.
-
-        """
+        """Tests that a good partition has a high performance measure."""
         G = barbell_graph(3, 0)
         partition = [{0, 1, 2}, {3, 4, 5}]
         assert almost_equal(14 / 15, performance(G, partition))

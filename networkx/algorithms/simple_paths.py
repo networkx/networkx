@@ -1,4 +1,3 @@
-import collections
 from heapq import heappush, heappop
 from itertools import count
 
@@ -239,7 +238,7 @@ def all_simple_paths(G, source, target, cutoff=None):
 
 
 def _all_simple_paths_graph(G, source, targets, cutoff):
-    visited = collections.OrderedDict.fromkeys([source])
+    visited = dict.fromkeys([source])
     stack = [iter(G[source])]
     while stack:
         children = stack[-1]
@@ -265,7 +264,7 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
 
 
 def _all_simple_paths_multigraph(G, source, targets, cutoff):
-    visited = collections.OrderedDict.fromkeys([source])
+    visited = dict.fromkeys([source])
     stack = [(v for u, v in G.edges(source))]
     while stack:
         children = stack[-1]
@@ -334,11 +333,11 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
     their associated keys::
 
         >>> mg = nx.MultiGraph()
-        >>> mg.add_edge(1, 2, key='k0')
+        >>> mg.add_edge(1, 2, key="k0")
         'k0'
-        >>> mg.add_edge(1, 2, key='k1')
+        >>> mg.add_edge(1, 2, key="k1")
         'k1'
-        >>> mg.add_edge(2, 3, key='k0')
+        >>> mg.add_edge(2, 3, key="k0")
         'k0'
         >>> for path in sorted(nx.all_simple_edge_paths(mg, 1, 3)):
         ...     print(path)
@@ -474,7 +473,9 @@ def shortest_simple_paths(G, source, target, weight=None):
 
     >>> from itertools import islice
     >>> def k_shortest_paths(G, source, target, k, weight=None):
-    ...     return list(islice(nx.shortest_simple_paths(G, source, target, weight=weight), k))
+    ...     return list(
+    ...         islice(nx.shortest_simple_paths(G, source, target, weight=weight), k)
+    ...     )
     >>> for path in k_shortest_paths(G, 0, 3, 2):
     ...     print(path)
     [0, 1, 2, 3]
@@ -644,9 +645,9 @@ def _bidirectional_shortest_path(
 
 def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=None):
     """Bidirectional shortest path helper.
-       Returns (pred,succ,w) where
-       pred is a dictionary of predecessors from w to the source, and
-       succ is a dictionary of successors from w to the target.
+    Returns (pred,succ,w) where
+    pred is a dictionary of predecessors from w to the source, and
+    succ is a dictionary of successors from w to the target.
     """
     # does BFS from both source and target and meets in the middle
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
@@ -932,7 +933,7 @@ def _bidirectional_dijkstra(
                 push(fringe[dir], (vwLength, next(c), w))
                 paths[dir][w] = paths[dir][v] + [w]
                 if w in seen[0] and w in seen[1]:
-                    # see if this path is better than than the already
+                    # see if this path is better than the already
                     # discovered shortest path
                     totaldist = seen[0][w] + seen[1][w]
                     if finalpath == [] or finaldist > totaldist:

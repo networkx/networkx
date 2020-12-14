@@ -9,7 +9,8 @@ Example
 import matplotlib.pyplot as plt
 import networkx as nx
 
-G = nx.random_geometric_graph(200, 0.125)
+# Use seed when creating the graph for reproducibility
+G = nx.random_geometric_graph(200, 0.125, seed=896803)
 # position is stored as node attribute data for random_geometric_graph
 pos = nx.get_node_attributes(G, "pos")
 

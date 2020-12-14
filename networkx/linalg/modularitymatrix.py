@@ -44,8 +44,7 @@ def modularity_matrix(G, nodelist=None, weight=None):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> k =[3, 2, 2, 1, 0]
+    >>> k = [3, 2, 2, 1, 0]
     >>> G = nx.havel_hakimi_graph(k)
     >>> B = nx.modularity_matrix(G)
 
@@ -111,10 +110,21 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
-    >>> G.add_edges_from(((1,2), (1,3), (3,1), (3,2), (3,5), (4,5), (4,6),
-    ...                   (5,4), (5,6), (6,4)))
+    >>> G.add_edges_from(
+    ...     (
+    ...         (1, 2),
+    ...         (1, 3),
+    ...         (3, 1),
+    ...         (3, 2),
+    ...         (3, 5),
+    ...         (4, 5),
+    ...         (4, 6),
+    ...         (5, 4),
+    ...         (5, 6),
+    ...         (6, 4),
+    ...     )
+    ... )
     >>> B = nx.directed_modularity_matrix(G)
 
 

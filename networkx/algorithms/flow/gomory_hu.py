@@ -68,15 +68,15 @@ def gomory_hu_tree(G, capacity="capacity", flow_func=None):
     Examples
     --------
     >>> G = nx.karate_club_graph()
-    >>> nx.set_edge_attributes(G, 1, 'capacity')
+    >>> nx.set_edge_attributes(G, 1, "capacity")
     >>> T = nx.gomory_hu_tree(G)
     >>> # The value of the minimum cut between any pair
     ... # of nodes in G is the minimum edge weight in the
     ... # shortest path between the two nodes in the
     ... # Gomory-Hu tree.
     ... def minimum_edge_weight_in_shortest_path(T, u, v):
-    ...     path = nx.shortest_path(T, u, v, weight='weight')
-    ...     return min((T[u][v]['weight'], (u,v)) for (u, v) in zip(path, path[1:]))
+    ...     path = nx.shortest_path(T, u, v, weight="weight")
+    ...     return min((T[u][v]["weight"], (u, v)) for (u, v) in zip(path, path[1:]))
     >>> u, v = 0, 33
     >>> cut_value, edge = minimum_edge_weight_in_shortest_path(T, u, v)
     >>> cut_value

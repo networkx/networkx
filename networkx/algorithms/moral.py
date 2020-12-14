@@ -10,32 +10,32 @@ __all__ = ["moral_graph"]
 def moral_graph(G):
     r"""Return the Moral Graph
 
-        Returns the moralized graph of a given directed graph.
+    Returns the moralized graph of a given directed graph.
 
-        Parameters
-        ----------
-        G : NetworkX graph
-            Directed graph
+    Parameters
+    ----------
+    G : NetworkX graph
+        Directed graph
 
-        Returns
-        -------
-        H : NetworkX graph
-            The undirected moralized graph of G
+    Returns
+    -------
+    H : NetworkX graph
+        The undirected moralized graph of G
 
-        Notes
-        ------
-        A moral graph is an undirected graph H = (V, E) generated from a
-        directed Graph, where if a node has more than one parent node, edges
-        between these parent nodes are inserted and all directed edges become
-        undirected.
+    Notes
+    -----
+    A moral graph is an undirected graph H = (V, E) generated from a
+    directed Graph, where if a node has more than one parent node, edges
+    between these parent nodes are inserted and all directed edges become
+    undirected.
 
-        https://en.wikipedia.org/wiki/Moral_graph
+    https://en.wikipedia.org/wiki/Moral_graph
 
-        References
-        ----------
-        .. [1] Wray L. Buntine. 1995. Chain graphs for learning.
-               In Proceedings of the Eleventh conference on Uncertainty
-               in artificial intelligence (UAI'95)
+    References
+    ----------
+    .. [1] Wray L. Buntine. 1995. Chain graphs for learning.
+           In Proceedings of the Eleventh conference on Uncertainty
+           in artificial intelligence (UAI'95)
     """
     if G is None:
         raise ValueError("Expected NetworkX graph!")

@@ -148,7 +148,13 @@ def get_info(dynamic=True):
         # no vcs information will be provided.
         # sys.path.insert(0, basedir)
         try:
-            from version import date, date_info, version, version_info, vcs_info
+            from networkx.version import (
+                date,
+                date_info,
+                version,
+                version_info,
+                vcs_info,
+            )
         except ImportError:
             import_failed = True
             vcs_info = (None, (None, None))
@@ -171,7 +177,7 @@ def get_info(dynamic=True):
 # Version information
 name = "networkx"
 major = "2"
-minor = "5rc1"
+minor = "6rc1"
 
 
 # Declare current release as a development release.
@@ -187,10 +193,10 @@ authors = {
 }
 maintainer = "NetworkX Developers"
 maintainer_email = "networkx-discuss@googlegroups.com"
-url = "http://networkx.github.io/"
+url = "https://networkx.org/"
 project_urls = {
     "Bug Tracker": "https://github.com/networkx/networkx/issues",
-    "Documentation": "https://networkx.github.io/documentation/stable/",
+    "Documentation": "https://networkx.org/documentation/stable/",
     "Source Code": "https://github.com/networkx/networkx",
 }
 platforms = ["Linux", "Mac OSX", "Windows", "Unix"]
@@ -213,6 +219,7 @@ classifiers = [
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Bio-Informatics",

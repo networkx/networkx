@@ -196,7 +196,7 @@ def dense_gnm_random_graph(n, m, seed=None):
 
     See Also
     --------
-    gnm_random_graph()
+    gnm_random_graph
 
     Notes
     -----
@@ -319,7 +319,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
 
     See Also
     --------
-    watts_strogatz_graph()
+    watts_strogatz_graph
 
     References
     ----------
@@ -379,8 +379,8 @@ def watts_strogatz_graph(n, k, p, seed=None):
 
     See Also
     --------
-    newman_watts_strogatz_graph()
-    connected_watts_strogatz_graph()
+    newman_watts_strogatz_graph
+    connected_watts_strogatz_graph
 
     Notes
     -----
@@ -469,8 +469,8 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
 
     See Also
     --------
-    newman_watts_strogatz_graph()
-    watts_strogatz_graph()
+    newman_watts_strogatz_graph
+    watts_strogatz_graph
 
     References
     ----------
@@ -600,7 +600,7 @@ def random_regular_graph(d, n, seed=None):
 
 
 def _random_subset(seq, m, rng):
-    """ Return m unique elements from seq.
+    """Return m unique elements from seq.
 
     This differs from random.sample which can return repeated
     elements if seq holds repeated elements.
@@ -1274,13 +1274,14 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
        PLoS ONE 10(9): e0135177, 2015. doi:10.1371/journal.pone.0135177
     """
     if kernel_root is None:
-        import scipy.optimize as optimize
+        import scipy as sp
+        import scipy.optimize  # call as sp.optimize
 
         def kernel_root(y, a, r):
             def my_function(b):
                 return kernel_integral(y, a, b) - r
 
-            return optimize.brentq(my_function, a, 1)
+            return sp.optimize.brentq(my_function, a, 1)
 
     graph = nx.Graph()
     graph.add_nodes_from(range(n))

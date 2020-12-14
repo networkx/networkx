@@ -64,7 +64,6 @@ def global_reaching_centrality(G, weight=None, normalized=True):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_edge(1, 2)
     >>> G.add_edge(1, 3)
@@ -159,7 +158,6 @@ def local_reaching_centrality(G, v, paths=None, weight=None, normalized=True):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (1, 3)])
     >>> nx.local_reaching_centrality(G, 3)

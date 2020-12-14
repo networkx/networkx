@@ -14,8 +14,7 @@ from ...utils import arbitrary_element
 
 
 def _detect_unboundedness(R):
-    """Detect infinite-capacity negative cycles.
-    """
+    """Detect infinite-capacity negative cycles."""
     s = generate_unique_node()
     G = nx.DiGraph()
     G.add_nodes_from(R)
@@ -43,8 +42,7 @@ def _detect_unboundedness(R):
 
 @not_implemented_for("undirected")
 def _build_residual_network(G, demand, capacity, weight):
-    """Build a residual network and initialize a zero flow.
-    """
+    """Build a residual network and initialize a zero flow."""
     if sum(G.nodes[u].get(demand, 0) for u in G) != 0:
         raise nx.NetworkXUnfeasible("Sum of the demands should be 0.")
 
@@ -110,8 +108,7 @@ def _build_residual_network(G, demand, capacity, weight):
 
 
 def _build_flow_dict(G, R, capacity, weight):
-    """Build a flow dictionary from a residual network.
-    """
+    """Build a flow dictionary from a residual network."""
     inf = float("inf")
     flow_dict = {}
     if G.is_multigraph():
@@ -246,44 +243,43 @@ def capacity_scaling(
     --------
     A simple example of a min cost flow problem.
 
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
-    >>> G.add_node('a', demand = -5)
-    >>> G.add_node('d', demand = 5)
-    >>> G.add_edge('a', 'b', weight = 3, capacity = 4)
-    >>> G.add_edge('a', 'c', weight = 6, capacity = 10)
-    >>> G.add_edge('b', 'd', weight = 1, capacity = 9)
-    >>> G.add_edge('c', 'd', weight = 2, capacity = 5)
+    >>> G.add_node("a", demand=-5)
+    >>> G.add_node("d", demand=5)
+    >>> G.add_edge("a", "b", weight=3, capacity=4)
+    >>> G.add_edge("a", "c", weight=6, capacity=10)
+    >>> G.add_edge("b", "d", weight=1, capacity=9)
+    >>> G.add_edge("c", "d", weight=2, capacity=5)
     >>> flowCost, flowDict = nx.capacity_scaling(G)
     >>> flowCost
     24
-    >>> flowDict # doctest: +SKIP
-    {'a': {'c': 1, 'b': 4}, 'c': {'d': 1}, 'b': {'d': 4}, 'd': {}}
+    >>> flowDict
+    {'a': {'b': 4, 'c': 1}, 'd': {}, 'b': {'d': 4}, 'c': {'d': 1}}
 
     It is possible to change the name of the attributes used for the
     algorithm.
 
     >>> G = nx.DiGraph()
-    >>> G.add_node('p', spam = -4)
-    >>> G.add_node('q', spam = 2)
-    >>> G.add_node('a', spam = -2)
-    >>> G.add_node('d', spam = -1)
-    >>> G.add_node('t', spam = 2)
-    >>> G.add_node('w', spam = 3)
-    >>> G.add_edge('p', 'q', cost = 7, vacancies = 5)
-    >>> G.add_edge('p', 'a', cost = 1, vacancies = 4)
-    >>> G.add_edge('q', 'd', cost = 2, vacancies = 3)
-    >>> G.add_edge('t', 'q', cost = 1, vacancies = 2)
-    >>> G.add_edge('a', 't', cost = 2, vacancies = 4)
-    >>> G.add_edge('d', 'w', cost = 3, vacancies = 4)
-    >>> G.add_edge('t', 'w', cost = 4, vacancies = 1)
-    >>> flowCost, flowDict = nx.capacity_scaling(G, demand = 'spam',
-    ...                                          capacity = 'vacancies',
-    ...                                          weight = 'cost')
+    >>> G.add_node("p", spam=-4)
+    >>> G.add_node("q", spam=2)
+    >>> G.add_node("a", spam=-2)
+    >>> G.add_node("d", spam=-1)
+    >>> G.add_node("t", spam=2)
+    >>> G.add_node("w", spam=3)
+    >>> G.add_edge("p", "q", cost=7, vacancies=5)
+    >>> G.add_edge("p", "a", cost=1, vacancies=4)
+    >>> G.add_edge("q", "d", cost=2, vacancies=3)
+    >>> G.add_edge("t", "q", cost=1, vacancies=2)
+    >>> G.add_edge("a", "t", cost=2, vacancies=4)
+    >>> G.add_edge("d", "w", cost=3, vacancies=4)
+    >>> G.add_edge("t", "w", cost=4, vacancies=1)
+    >>> flowCost, flowDict = nx.capacity_scaling(
+    ...     G, demand="spam", capacity="vacancies", weight="cost"
+    ... )
     >>> flowCost
     37
-    >>> flowDict  # doctest: +SKIP
-    {'a': {'t': 4}, 'd': {'w': 2}, 'q': {'d': 1}, 'p': {'q': 2, 'a': 2}, 't': {'q': 1, 'w': 1}, 'w': {}}
+    >>> flowDict
+    {'p': {'q': 2, 'a': 2}, 'q': {'d': 1}, 'a': {'t': 4}, 'd': {'w': 2}, 't': {'q': 1, 'w': 1}, 'w': {}}
     """
     R = _build_residual_network(G, demand, capacity, weight)
 

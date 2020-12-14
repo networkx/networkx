@@ -16,6 +16,7 @@ http://pyyaml.org/wiki/PyYAML
 
 __all__ = ["read_yaml", "write_yaml"]
 
+import warnings
 from networkx.utils import open_file
 
 
@@ -41,13 +42,20 @@ def write_yaml(G_to_be_yaml, path_for_yaml_output, **kwds):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> nx.write_yaml(G,'test.yaml')
+    >>> G = nx.path_graph(4)
+    >>> nx.write_yaml(G, "test.yaml")
 
     References
     ----------
     .. [1] http://www.yaml.org
+
+    .. deprecated:: 2.6
     """
+    msg = (
+        "write_yaml is deprecated and will be removed in 3.0."
+        "Use ``yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)``"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         import yaml
     except ImportError as e:
@@ -74,15 +82,21 @@ def read_yaml(path):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> nx.write_yaml(G,'test.yaml')
-    >>> G=nx.read_yaml('test.yaml')
+    >>> G = nx.path_graph(4)
+    >>> nx.write_yaml(G, "test.yaml")
+    >>> G = nx.read_yaml("test.yaml")
 
     References
     ----------
     .. [1] http://www.yaml.org
 
+    .. deprecated:: 2.6
     """
+    msg = (
+        "read_yaml is deprecated and will be removed in 3.0."
+        "Use ``yaml.load(path, Loader=yaml.FullLoader)``"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         import yaml
     except ImportError as e:

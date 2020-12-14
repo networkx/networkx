@@ -15,29 +15,45 @@ alternative algorithms.
 Examples
 --------
 
->>> import networkx as nx
 >>>
 >>> # HMM graph with five states and observation nodes
-... g= nx.DiGraph()
->>> g.add_edges_from([('S1', 'S2'), ('S2', 'S3'), ('S3', 'S4'), ('S4', 'S5'),
-...                   ('S1', 'O1'), ('S2', 'O2'), ('S3', 'O3'), ('S4', 'O4'),
-...                   ('S5', 'O5')])
+... g = nx.DiGraph()
+>>> g.add_edges_from(
+...     [
+...         ("S1", "S2"),
+...         ("S2", "S3"),
+...         ("S3", "S4"),
+...         ("S4", "S5"),
+...         ("S1", "O1"),
+...         ("S2", "O2"),
+...         ("S3", "O3"),
+...         ("S4", "O4"),
+...         ("S5", "O5"),
+...     ]
+... )
 >>>
 >>> # states/obs before 'S3' are d-separated from states/obs after 'S3'
-... nx.d_separated(g, {'S1', 'S2', 'O1', 'O2'}, {'S4', 'S5', 'O4', 'O5'}, {'S3'})
+... nx.d_separated(g, {"S1", "S2", "O1", "O2"}, {"S4", "S5", "O4", "O5"}, {"S3"})
 True
 
 
 References
 ----------
 
-..  [1] Pearl, J.  (2009).  Causality.  Cambridge: Cambridge University Press.
+.. [1] Pearl, J.  (2009).  Causality.  Cambridge: Cambridge University Press.
 
-..  [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks.  Cambridge: Cambridge University Press.
+.. [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks. 
+   Cambridge: Cambridge University Press.
 
-..  [3] Shachter, R.  D.  (1998).  Bayes-ball: rational pastime (for determining irrelevance and requisite information in belief networks and influence diagrams).  In , Proceedings of the Fourteenth Conference on Uncertainty in Artificial Intelligence (pp.  480–487).  San Francisco, CA, USA: Morgan Kaufmann Publishers Inc.
+.. [3] Shachter, R.  D.  (1998).
+   Bayes-ball: rational pastime (for determining irrelevance and requisite
+   information in belief networks and influence diagrams).
+   In , Proceedings of the Fourteenth Conference on Uncertainty in Artificial
+   Intelligence (pp.  480–487).
+   San Francisco, CA, USA: Morgan Kaufmann Publishers Inc.
 
-..  [4] Koller, D., & Friedman, N. (2009). Probabilistic graphical models: principles and techniques. The MIT Press.
+.. [4] Koller, D., & Friedman, N. (2009).
+   Probabilistic graphical models: principles and techniques. The MIT Press.
 
 """
 

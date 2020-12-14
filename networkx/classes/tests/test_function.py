@@ -210,11 +210,6 @@ class TestFunction:
             == nx.edge_subgraph(self.DG, [(1, 2), (0, 3)]).adj
         )
 
-    def test_restricted_view(self):
-        H = nx.restricted_view(self.G, [0, 2, 5], [(1, 2), (3, 4)])
-        assert set(H.nodes) == {1, 3, 4}
-        assert set(H.edges) == {(1, 1)}
-
     def test_create_empty_copy(self):
         G = nx.create_empty_copy(self.G, with_data=False)
         assert_nodes_equal(G, list(self.G))
@@ -267,15 +262,7 @@ class TestFunction:
         G = nx.path_graph(5)
         G.name = "path_graph(5)"
         info = nx.info(G)
-        expected_graph_info = "\n".join(
-            [
-                "Name: path_graph(5)",
-                "Type: Graph",
-                "Number of nodes: 5",
-                "Number of edges: 4",
-                "Average degree:   1.6000",
-            ]
-        )
+        expected_graph_info = "Graph named 'path_graph(5)' with 5 nodes and 4 edges"
         assert info == expected_graph_info
 
         info = nx.info(G, n=1)
@@ -292,16 +279,7 @@ class TestFunction:
         G = nx.DiGraph(name="path_graph(5)")
         nx.add_path(G, [0, 1, 2, 3, 4])
         info = nx.info(G)
-        expected_graph_info = "\n".join(
-            [
-                "Name: path_graph(5)",
-                "Type: DiGraph",
-                "Number of nodes: 5",
-                "Number of edges: 4",
-                "Average in degree:   0.8000",
-                "Average out degree:   0.8000",
-            ]
-        )
+        expected_graph_info = "DiGraph named 'path_graph(5)' with 5 nodes and 4 edges"
         assert info == expected_graph_info
 
         info = nx.info(G, n=1)
@@ -504,98 +482,151 @@ class TestCommonNeighbors:
         self.test(G, 0, 0, [1, 2, 3])
 
 
-def test_set_node_attributes():
-    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
-    for G in graphs:
-        # Test single value
-        G = nx.path_graph(3, create_using=G)
-        vals = 100
-        attr = "hello"
-        nx.set_node_attributes(G, vals, attr)
-        assert G.nodes[0][attr] == vals
-        assert G.nodes[1][attr] == vals
-        assert G.nodes[2][attr] == vals
+@pytest.mark.parametrize(
+    "graph_type", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+)
+def test_set_node_attributes(graph_type):
+    # Test single value
+    G = nx.path_graph(3, create_using=graph_type)
+    vals = 100
+    attr = "hello"
+    nx.set_node_attributes(G, vals, attr)
+    assert G.nodes[0][attr] == vals
+    assert G.nodes[1][attr] == vals
+    assert G.nodes[2][attr] == vals
 
-        # Test dictionary
-        G = nx.path_graph(3, create_using=G)
-        vals = dict(zip(sorted(G.nodes()), range(len(G))))
-        attr = "hi"
-        nx.set_node_attributes(G, vals, attr)
-        assert G.nodes[0][attr] == 0
-        assert G.nodes[1][attr] == 1
-        assert G.nodes[2][attr] == 2
+    # Test dictionary
+    G = nx.path_graph(3, create_using=graph_type)
+    vals = dict(zip(sorted(G.nodes()), range(len(G))))
+    attr = "hi"
+    nx.set_node_attributes(G, vals, attr)
+    assert G.nodes[0][attr] == 0
+    assert G.nodes[1][attr] == 1
+    assert G.nodes[2][attr] == 2
 
-        # Test dictionary of dictionaries
-        G = nx.path_graph(3, create_using=G)
-        d = {"hi": 0, "hello": 200}
-        vals = dict.fromkeys(G.nodes(), d)
-        vals.pop(0)
-        nx.set_node_attributes(G, vals)
-        assert G.nodes[0] == {}
-        assert G.nodes[1]["hi"] == 0
-        assert G.nodes[2]["hello"] == 200
-
-
-def test_set_edge_attributes():
-    graphs = [nx.Graph(), nx.DiGraph()]
-    for G in graphs:
-        # Test single value
-        G = nx.path_graph(3, create_using=G)
-        attr = "hello"
-        vals = 3
-        nx.set_edge_attributes(G, vals, attr)
-        assert G[0][1][attr] == vals
-        assert G[1][2][attr] == vals
-
-        # Test multiple values
-        G = nx.path_graph(3, create_using=G)
-        attr = "hi"
-        edges = [(0, 1), (1, 2)]
-        vals = dict(zip(edges, range(len(edges))))
-        nx.set_edge_attributes(G, vals, attr)
-        assert G[0][1][attr] == 0
-        assert G[1][2][attr] == 1
-
-        # Test dictionary of dictionaries
-        G = nx.path_graph(3, create_using=G)
-        d = {"hi": 0, "hello": 200}
-        edges = [(0, 1)]
-        vals = dict.fromkeys(edges, d)
-        nx.set_edge_attributes(G, vals)
-        assert G[0][1]["hi"] == 0
-        assert G[0][1]["hello"] == 200
-        assert G[1][2] == {}
+    # Test dictionary of dictionaries
+    G = nx.path_graph(3, create_using=graph_type)
+    d = {"hi": 0, "hello": 200}
+    vals = dict.fromkeys(G.nodes(), d)
+    vals.pop(0)
+    nx.set_node_attributes(G, vals)
+    assert G.nodes[0] == {}
+    assert G.nodes[1]["hi"] == 0
+    assert G.nodes[2]["hello"] == 200
 
 
-def test_set_edge_attributes_multi():
-    graphs = [nx.MultiGraph(), nx.MultiDiGraph()]
-    for G in graphs:
-        # Test single value
-        G = nx.path_graph(3, create_using=G)
-        attr = "hello"
-        vals = 3
-        nx.set_edge_attributes(G, vals, attr)
-        assert G[0][1][0][attr] == vals
-        assert G[1][2][0][attr] == vals
+@pytest.mark.parametrize(
+    ("values", "name"),
+    (
+        ({0: "red", 1: "blue"}, "color"),  # values dictionary
+        ({0: {"color": "red"}, 1: {"color": "blue"}}, None),  # dict-of-dict
+    ),
+)
+def test_set_node_attributes_ignores_extra_nodes(values, name):
+    """
+    When `values` is a dict or dict-of-dict keyed by nodes, ensure that keys
+    that correspond to nodes not in G are ignored.
+    """
+    G = nx.Graph()
+    G.add_node(0)
+    nx.set_node_attributes(G, values, name)
+    assert G.nodes[0]["color"] == "red"
+    assert 1 not in G.nodes
 
-        # Test multiple values
-        G = nx.path_graph(3, create_using=G)
-        attr = "hi"
-        edges = [(0, 1, 0), (1, 2, 0)]
-        vals = dict(zip(edges, range(len(edges))))
-        nx.set_edge_attributes(G, vals, attr)
-        assert G[0][1][0][attr] == 0
-        assert G[1][2][0][attr] == 1
 
-        # Test dictionary of dictionaries
-        G = nx.path_graph(3, create_using=G)
-        d = {"hi": 0, "hello": 200}
-        edges = [(0, 1, 0)]
-        vals = dict.fromkeys(edges, d)
-        nx.set_edge_attributes(G, vals)
-        assert G[0][1][0]["hi"] == 0
-        assert G[0][1][0]["hello"] == 200
-        assert G[1][2][0] == {}
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_set_edge_attributes(graph_type):
+    # Test single value
+    G = nx.path_graph(3, create_using=graph_type)
+    attr = "hello"
+    vals = 3
+    nx.set_edge_attributes(G, vals, attr)
+    assert G[0][1][attr] == vals
+    assert G[1][2][attr] == vals
+
+    # Test multiple values
+    G = nx.path_graph(3, create_using=graph_type)
+    attr = "hi"
+    edges = [(0, 1), (1, 2)]
+    vals = dict(zip(edges, range(len(edges))))
+    nx.set_edge_attributes(G, vals, attr)
+    assert G[0][1][attr] == 0
+    assert G[1][2][attr] == 1
+
+    # Test dictionary of dictionaries
+    G = nx.path_graph(3, create_using=graph_type)
+    d = {"hi": 0, "hello": 200}
+    edges = [(0, 1)]
+    vals = dict.fromkeys(edges, d)
+    nx.set_edge_attributes(G, vals)
+    assert G[0][1]["hi"] == 0
+    assert G[0][1]["hello"] == 200
+    assert G[1][2] == {}
+
+
+@pytest.mark.parametrize(
+    ("values", "name"),
+    (
+        ({(0, 1): 1.0, (0, 2): 2.0}, "weight"),  # values dict
+        ({(0, 1): {"weight": 1.0}, (0, 2): {"weight": 2.0}}, None),  # values dod
+    ),
+)
+def test_set_edge_attributes_ignores_extra_edges(values, name):
+    """If `values` is a dict or dict-of-dicts containing edges that are not in
+    G, data associate with these edges should be ignored.
+    """
+    G = nx.Graph([(0, 1)])
+    nx.set_edge_attributes(G, values, name)
+    assert G[0][1]["weight"] == 1.0
+    assert (0, 2) not in G.edges
+
+
+@pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.MultiDiGraph))
+def test_set_edge_attributes_multi(graph_type):
+    # Test single value
+    G = nx.path_graph(3, create_using=graph_type)
+    attr = "hello"
+    vals = 3
+    nx.set_edge_attributes(G, vals, attr)
+    assert G[0][1][0][attr] == vals
+    assert G[1][2][0][attr] == vals
+
+    # Test multiple values
+    G = nx.path_graph(3, create_using=graph_type)
+    attr = "hi"
+    edges = [(0, 1, 0), (1, 2, 0)]
+    vals = dict(zip(edges, range(len(edges))))
+    nx.set_edge_attributes(G, vals, attr)
+    assert G[0][1][0][attr] == 0
+    assert G[1][2][0][attr] == 1
+
+    # Test dictionary of dictionaries
+    G = nx.path_graph(3, create_using=graph_type)
+    d = {"hi": 0, "hello": 200}
+    edges = [(0, 1, 0)]
+    vals = dict.fromkeys(edges, d)
+    nx.set_edge_attributes(G, vals)
+    assert G[0][1][0]["hi"] == 0
+    assert G[0][1][0]["hello"] == 200
+    assert G[1][2][0] == {}
+
+
+@pytest.mark.parametrize(
+    ("values", "name"),
+    (
+        ({(0, 1, 0): 1.0, (0, 2, 0): 2.0}, "weight"),  # values dict
+        ({(0, 1, 0): {"weight": 1.0}, (0, 2, 0): {"weight": 2.0}}, None),  # values dod
+    ),
+)
+def test_set_edge_attributes_multi_ignores_extra_edges(values, name):
+    """If `values` is a dict or dict-of-dicts containing edges that are not in
+    G, data associate with these edges should be ignored.
+    """
+    G = nx.MultiGraph([(0, 1, 0), (0, 1, 1)])
+    nx.set_edge_attributes(G, values, name)
+    assert G[0][1][0]["weight"] == 1.0
+    assert G[0][1][1] == {}
+    assert (0, 2) not in G.edges()
 
 
 def test_get_node_attributes():
@@ -647,48 +678,77 @@ def test_is_empty():
         assert not nx.is_empty(G)
 
 
-def test_selfloops():
-    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
-    for graph in graphs:
-        G = nx.complete_graph(3, create_using=graph)
-        G.add_edge(0, 0)
-        assert_nodes_equal(nx.nodes_with_selfloops(G), [0])
-        assert_edges_equal(nx.selfloop_edges(G), [(0, 0)])
-        assert_edges_equal(nx.selfloop_edges(G, data=True), [(0, 0, {})])
-        assert nx.number_of_selfloops(G) == 1
-        # test selfloop attr
-        G.add_edge(1, 1, weight=2)
-        assert_edges_equal(
-            nx.selfloop_edges(G, data=True), [(0, 0, {}), (1, 1, {"weight": 2})]
-        )
-        assert_edges_equal(
-            nx.selfloop_edges(G, data="weight"), [(0, 0, None), (1, 1, 2)]
-        )
-        # test removing selfloops behavior vis-a-vis altering a dict while iterating
-        G.add_edge(0, 0)
-        G.remove_edges_from(nx.selfloop_edges(G))
-        if G.is_multigraph():
-            G.add_edge(0, 0)
-            pytest.raises(
-                RuntimeError, G.remove_edges_from, nx.selfloop_edges(G, keys=True)
-            )
-            G.add_edge(0, 0)
-            pytest.raises(
-                TypeError, G.remove_edges_from, nx.selfloop_edges(G, data=True)
-            )
-            G.add_edge(0, 0)
-            pytest.raises(
-                RuntimeError,
-                G.remove_edges_from,
-                nx.selfloop_edges(G, data=True, keys=True),
-            )
-        else:
-            G.add_edge(0, 0)
-            G.remove_edges_from(nx.selfloop_edges(G, keys=True))
-            G.add_edge(0, 0)
-            G.remove_edges_from(nx.selfloop_edges(G, data=True))
-            G.add_edge(0, 0)
-            G.remove_edges_from(nx.selfloop_edges(G, keys=True, data=True))
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
+def test_selfloops(graph_type):
+    G = nx.complete_graph(3, create_using=graph_type)
+    G.add_edge(0, 0)
+    assert_nodes_equal(nx.nodes_with_selfloops(G), [0])
+    assert_edges_equal(nx.selfloop_edges(G), [(0, 0)])
+    assert_edges_equal(nx.selfloop_edges(G, data=True), [(0, 0, {})])
+    assert nx.number_of_selfloops(G) == 1
+
+
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
+def test_selfloop_edges_attr(graph_type):
+    G = nx.complete_graph(3, create_using=graph_type)
+    G.add_edge(0, 0)
+    G.add_edge(1, 1, weight=2)
+    assert_edges_equal(
+        nx.selfloop_edges(G, data=True), [(0, 0, {}), (1, 1, {"weight": 2})]
+    )
+    assert_edges_equal(nx.selfloop_edges(G, data="weight"), [(0, 0, None), (1, 1, 2)])
+
+
+def test_selfloop_edges_multi_with_data_and_keys():
+    G = nx.complete_graph(3, create_using=nx.MultiGraph)
+    G.add_edge(0, 0, weight=10)
+    G.add_edge(0, 0, weight=100)
+    assert_edges_equal(
+        nx.selfloop_edges(G, data="weight", keys=True),
+        [(0, 0, 0, 10), (0, 0, 1, 100)],
+    )
+
+
+@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph])
+def test_selfloops_removal(graph_type):
+    G = nx.complete_graph(3, create_using=graph_type)
+    G.add_edge(0, 0)
+    G.remove_edges_from(nx.selfloop_edges(G, keys=True))
+    G.add_edge(0, 0)
+    G.remove_edges_from(nx.selfloop_edges(G, data=True))
+    G.add_edge(0, 0)
+    G.remove_edges_from(nx.selfloop_edges(G, keys=True, data=True))
+
+
+@pytest.mark.parametrize("graph_type", [nx.MultiGraph, nx.MultiDiGraph])
+def test_selfloops_removal_multi(graph_type):
+    """test removing selfloops behavior vis-a-vis altering a dict while iterating.
+    cf. gh-4068"""
+    G = nx.complete_graph(3, create_using=graph_type)
+    # Defaults - see gh-4080
+    G.add_edge(0, 0)
+    G.add_edge(0, 0)
+    G.remove_edges_from(nx.selfloop_edges(G))
+    assert (0, 0) not in G.edges()
+    # With keys
+    G.add_edge(0, 0)
+    G.add_edge(0, 0)
+    with pytest.raises(RuntimeError):
+        G.remove_edges_from(nx.selfloop_edges(G, keys=True))
+    # With data
+    G.add_edge(0, 0)
+    G.add_edge(0, 0)
+    with pytest.raises(TypeError):
+        G.remove_edges_from(nx.selfloop_edges(G, data=True))
+    # With keys and data
+    G.add_edge(0, 0)
+    G.add_edge(0, 0)
+    with pytest.raises(RuntimeError):
+        G.remove_edges_from(nx.selfloop_edges(G, data=True, keys=True))
 
 
 def test_pathweight():
@@ -716,3 +776,23 @@ def test_ispath():
         graph.add_edges_from(edges)
         assert nx.is_path(graph, valid_path)
         assert not nx.is_path(graph, invalid_path)
+
+
+@pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
+def test_restricted_view(G):
+    G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2)])
+    G.add_node(4)
+    H = nx.restricted_view(G, [0, 2, 5], [(1, 2), (3, 4)])
+    assert set(H.nodes()) == {1, 3, 4}
+    assert set(H.edges()) == {(1, 1)}
+
+
+@pytest.mark.parametrize("G", (nx.MultiGraph(), nx.MultiDiGraph()))
+def test_restricted_view_multi(G):
+    G.add_edges_from(
+        [(0, 1, 0), (0, 2, 0), (0, 3, 0), (0, 1, 1), (1, 0, 0), (1, 1, 0), (1, 2, 0)]
+    )
+    G.add_node(4)
+    H = nx.restricted_view(G, [0, 2, 5], [(1, 2, 0), (3, 4, 0)])
+    assert set(H.nodes()) == {1, 3, 4}
+    assert set(H.edges()) == {(1, 1)}

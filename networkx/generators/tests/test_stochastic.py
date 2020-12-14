@@ -4,9 +4,7 @@ import networkx as nx
 
 
 class TestStochasticGraph:
-    """Unit tests for the :func:`~networkx.stochastic_graph` function.
-
-    """
+    """Unit tests for the :func:`~networkx.stochastic_graph` function."""
 
     def test_default_weights(self):
         G = nx.DiGraph()
@@ -20,9 +18,7 @@ class TestStochasticGraph:
         ]
 
     def test_in_place(self):
-        """Tests for an in-place reweighting of the edges of the graph.
-
-        """
+        """Tests for an in-place reweighting of the edges of the graph."""
         G = nx.DiGraph()
         G.add_edge(0, 1, weight=1)
         G.add_edge(0, 2, weight=1)

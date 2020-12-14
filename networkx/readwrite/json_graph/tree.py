@@ -40,8 +40,8 @@ def tree_data(G, root, attrs=_attrs):
     Examples
     --------
     >>> from networkx.readwrite import json_graph
-    >>> G = nx.DiGraph([(1,2)])
-    >>> data = json_graph.tree_data(G,root=1)
+    >>> G = nx.DiGraph([(1, 2)])
+    >>> data = json_graph.tree_data(G, root=1)
 
     To serialize with json
 
@@ -59,7 +59,7 @@ def tree_data(G, root, attrs=_attrs):
 
     See Also
     --------
-    tree_graph, node_link_data, node_link_data
+    tree_graph, node_link_data, adjacency_data
     """
     if G.number_of_nodes() != G.number_of_edges() + 1:
         raise TypeError("G is not a tree.")
@@ -110,8 +110,8 @@ def tree_graph(data, attrs=_attrs):
     Examples
     --------
     >>> from networkx.readwrite import json_graph
-    >>> G = nx.DiGraph([(1,2)])
-    >>> data = json_graph.tree_data(G,root=1)
+    >>> G = nx.DiGraph([(1, 2)])
+    >>> data = json_graph.tree_data(G, root=1)
     >>> H = json_graph.tree_graph(data)
 
     Notes
@@ -120,7 +120,7 @@ def tree_graph(data, attrs=_attrs):
 
     See Also
     --------
-    tree_graph, node_link_data, adjacency_data
+    tree_data, node_link_data, adjacency_data
     """
     graph = nx.DiGraph()
     id_ = attrs["id"]
