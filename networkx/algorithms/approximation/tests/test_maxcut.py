@@ -44,9 +44,7 @@ def test_one_exchange_basic():
         G, initial_cut, weight="weight", seed=5
     )
 
-    # make sure it is a valid cut
     _is_valid_cut(G, set1, set2)
-    # check local optimality
     _cut_is_locally_optimal(G, cut_size, set1)
 
 
