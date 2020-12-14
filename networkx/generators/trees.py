@@ -218,7 +218,7 @@ def random_tree(n, seed=None, create_using=None):
         raise nx.NetworkXPointlessConcept("the null graph is not a tree")
     # Cannot create a Prüfer sequence unless `n` is at least two.
     if n == 1:
-        utree = nx.empty_graph(1)
+        utree = nx.empty_graph(1, create_using)
     else:
         sequence = [seed.choice(range(n)) for i in range(n - 2)]
         utree = nx.from_prufer_sequence(sequence)
