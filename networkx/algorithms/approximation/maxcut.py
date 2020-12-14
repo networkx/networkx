@@ -45,11 +45,7 @@ def randomized_partitioning(G, seed=None, p=0.5, weight=None):
 
 
 def _swap_node_partition(cut, node):
-    if node in cut:
-        new_cut = cut - {node}
-    else:
-        new_cut = cut.union({node})
-    return new_cut
+    return cut - {node} if node in cut else cut.union({node})
 
 
 @nx.not_implemented_for("directed", "multigraph")
