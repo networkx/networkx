@@ -163,7 +163,7 @@ def parse_requirements_file(filename):
 install_requires = parse_requirements_file("requirements/default.txt")
 extras_require = {
     dep: parse_requirements_file("requirements/" + dep + ".txt")
-    for dep in ["developer", "doc", "extra", "test"]
+    for dep in ["developer", "doc", "test"]
 }
 
 with open("README.rst", "r") as fh:

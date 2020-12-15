@@ -1,5 +1,5 @@
 lxml>=4.5
 # Temporary, remove if relevant patch accepted and released in pygraphviz 1.7
-git+git://github.com/rossbar/pygraphviz.git@spx-gallery-scraper#egg=pygraphviz
+-e git+git://github.com/rossbar/pygraphviz.git@spx-gallery-scraper#egg=pygraphviz
 pydot>=1.4.1
 pyyaml>=5.3
