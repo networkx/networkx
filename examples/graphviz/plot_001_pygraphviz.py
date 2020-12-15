@@ -79,13 +79,4 @@ for G in atlas:
 G = nx.complete_graph(5)
 A = nx.nx_agraph.to_agraph(G)  # convert to a graphviz graph
 A.layout()  # neato layout
-A.draw("k5.ps")  # write postscript in k5.ps with neato layout
-
-
-# %%
-# An example showing how to use matplotlib to draw the graph
-# with a graphviz layout
-
-pos = nx.nx_agraph.graphviz_layout(G)
-nx.draw(G, pos=pos)
-plt.show()
+A.draw("k5.png")  # write png to k5.png with neato layout
