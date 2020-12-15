@@ -51,6 +51,15 @@ sphinx_gallery_conf = {
     "backreferences_dir": "modules/generated",
     "image_scrapers": ("matplotlib", "mayavi"),
 }
+# Add pygraphviz png scraper, if available
+try:
+    from pygraphviz.scraper import PNGScraper
+
+    scrapers = list(sphinx_gallery_conf["image_scrapers"])
+    scrapers.append(PNGScraper())
+    sphinx_gallery_conf["image_scrapers"] = tuple(scrapers)
+except ImportError:
+    pass
 
 # generate autosummary pages
 autosummary_generate = True
