@@ -138,15 +138,12 @@ class TestGeneratorClassic:
         assert_edges_equal(mb.edges(), b.edges())
 
     def test_binomial_tree(self):
-        for create_using in (None, nx.Graph(), nx.DiGraph()):
+        graphs = (None, nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+        for create_using in graphs:
             for n in range(0, 4):
                 b = nx.binomial_tree(n, create_using)
                 assert nx.number_of_nodes(b) == 2 ** n
                 assert nx.number_of_edges(b) == (2 ** n - 1)
-
-        for create_using in (nx.MultiGraph(), nx.MultiDiGraph()):
-            with pytest.raises(nx.NetworkXError):
-                nx.binomial_tree(n, create_using)
 
     def test_complete_graph(self):
         # complete_graph(m) is a connected graph with

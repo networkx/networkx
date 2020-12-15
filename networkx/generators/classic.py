@@ -200,6 +200,9 @@ def binomial_tree(n, create_using=None):
     n : int
         Order of the binomial tree.
 
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
     Returns
     -------
     G : NetworkX graph
@@ -208,12 +211,10 @@ def binomial_tree(n, create_using=None):
     """
     G = nx.empty_graph(1, create_using)
 
-    if G.is_multigraph():
-        raise NetworkXError("Multigraph not supported")
-
     N = 1
     for i in range(n):
-        edges = [(u + N, v + N) for (u, v) in G.edges]
+        # Use G.edges() to ensure 2-tuples. G.edges is 3-tuple for MultiGraph
+        edges = [(u + N, v + N) for (u, v) in G.edges()]
         G.add_edges_from(edges)
         G.add_edge(0, N)
         N *= 2
