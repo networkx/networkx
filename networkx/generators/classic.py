@@ -207,6 +207,10 @@ def binomial_tree(n, create_using=None):
 
     """
     G = nx.empty_graph(1, create_using)
+
+    if G.is_multigraph():
+        raise NetworkXError("Multigraph not supported")
+
     N = 1
     for i in range(n):
         edges = [(u + N, v + N) for (u, v) in G.edges]
