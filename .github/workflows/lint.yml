@@ -1,9 +1,9 @@
-name: style and format
+name: style
 
 on: [push, pull_request]
 
 jobs:
-  build:
+  format:
     runs-on: ubuntu-latest
     strategy:
       matrix:
