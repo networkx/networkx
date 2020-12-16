@@ -38,7 +38,6 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
 
     Example
     -------
-    >>> import networkx as nx
     >>> graph = nx.balanced_tree(r=2, h=3, create_using=nx.DiGraph)
     >>> print(nx.forest_str(graph))
     ╙── 0
