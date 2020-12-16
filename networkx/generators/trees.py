@@ -201,7 +201,7 @@ def random_tree(n, seed=None, create_using=None):
             └── 9
 
     >>> import networkx as nx
-    >>> tree = nx.random_tree(n=10, seed=0, create_using=nx.OrderedDiGraph)
+    >>> tree = nx.random_tree(n=10, seed=0, create_using=nx.DiGraph)
     >>> print(nx.forest_str(tree))
     ╙── 0
         ├─╼ 3
