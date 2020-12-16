@@ -147,10 +147,15 @@ class TestRelabel:
         assert_nodes_equal(H.nodes(), list(range(4)))
 
     def test_relabel_nodes_missing(self):
-        with pytest.raises(KeyError):
-            G = nx.Graph([("A", "B"), ("A", "C"), ("B", "C"), ("C", "D")])
-            mapping = {0: "aardvark"}
-            G = nx.relabel_nodes(G, mapping, copy=False)
+        G = nx.Graph([("A", "B"), ("A", "C"), ("B", "C"), ("C", "D")])
+        mapping = {0: "aardvark"}
+        # copy=True
+        H = nx.relabel_nodes(G, mapping, copy=True)
+        assert_nodes_equal(H.nodes, G.nodes)
+        # copy=False
+        GG = G.copy()
+        nx.relabel_nodes(G, mapping, copy=False)
+        assert_nodes_equal(G.nodes, GG.nodes)
 
     def test_relabel_copy_name(self):
         G = nx.Graph()
