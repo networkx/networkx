@@ -399,3 +399,44 @@ class TestLayout:
         assert s_vpos == {0: (-1, -1), 1: (1, 1), 2: (0, 0)}
         s_vpos = nx.rescale_layout_dict(vpos, scale=2)
         assert s_vpos == {0: (-2, -2), 1: (2, 2), 2: (0, 0)}
+
+    def test_hierarchy_layout(self):
+        G = nx.binomial_tree(3)
+        pos, min_sep = nx.hierarchy_layout_with_min_sep(G, 0)
+        xs = {k: v[0] for k, v in pos.items()}
+        ys = {k: v[1] for k, v in pos.items()}
+        assert (
+            pytest.approx(
+                {0: 0.4875, 1: 0.1, 2: 0.45, 3: 0.45, 4: 0.875, 5: 0.75, 6: 1.0, 7: 1.0}
+            )
+            == xs
+        )
+
+        # Another way to test:
+        # y values: y0 < y1 == y2 == y4 < y3 == y5 == y6 < y7
+        assert (
+            pytest.approx(
+                {0: 0, 1: -0.2, 2: -0.2, 3: -0.4, 4: -0.2, 5: -0.4, 6: -0.4, 7: -0.6}
+            )
+            == ys
+        )
+        assert pytest.approx(0.25) == min_sep
+
+        # Similar but with full true. Min separation wil be less. However
+        # the y values will be the same
+        G = nx.full_rary_tree(3, 5)
+        pos, min_sep = nx.hierarchy_layout_with_min_sep(G, 0)
+        xs = {k: v[0] for k, v in pos.items()}
+        ys = {k: v[1] for k, v in pos.items()}
+
+        assert (
+            pytest.approx(
+                {0: 0.5555555, 1: 0.11111111, 2: 0.5555555, 3: 1.0, 4: 0.1111111111}
+            )
+            == xs
+        )
+
+        # Another way to test:
+        # y values: y0 < y1 == y2 == y4 < y3 == y5 == y6
+        assert pytest.approx({0: 0, 1: -0.2, 2: -0.2, 3: -0.2, 4: -0.4}) == ys
+        assert pytest.approx(0.444444444) == min_sep
