@@ -17,13 +17,14 @@ Highlights
 This release is the result of X of work with over X pull requests by
 X contributors. Highlights include:
 
+- Dropped support for Python 3.6.
 - NumPy, SciPy, Matplotlib, and pandas are now default requirements.
 
 Improvements
 ------------
 
 - [`#4319 <https://github.com/networkx/networkx/pull/4319>`_]
-pagerank uses scipy by default now.
+  pagerank uses scipy by default now.
 - [`#4317 <https://github.com/networkx/networkx/pull/4317>`_]
   New ``source`` argument to ``has_eulerian_path`` to look for path starting at
   source.
