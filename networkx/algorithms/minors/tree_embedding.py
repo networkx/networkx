@@ -91,11 +91,9 @@ def maximum_common_ordered_subtree_embedding(
 
     Example
     -------
-    >>> from networkx.algorithms.minors.tree_embedding import *  # NOQA
-    >>> import networkx as nx
     >>> # Create two random trees
-    >>> tree1 = nx.random_ordered_tree(7, seed=3257073545741117277206611, directed=True)
-    >>> tree2 = nx.random_ordered_tree(7, seed=123568587133124688238689717, directed=True)
+    >>> tree1 = nx.random_tree(7, seed=3257073545741117277206611, create_using=nx.OrderedDiGraph)
+    >>> tree2 = nx.random_tree(7, seed=123568587133124688238689717, create_using=nx.OrderedDiGraph)
     >>> print(nx.forest_str(tree1))
     ╙── 0
         ├─╼ 5
@@ -143,9 +141,15 @@ def maximum_common_ordered_subtree_embedding(
 
     # Note: checks that inputs are forests are handled by tree_to_seq
     if not isinstance(tree1, nx.OrderedDiGraph):
-        raise nx.NetworkXNotImplemented("only implemented for directed ordered trees")
+        raise nx.NetworkXNotImplemented(
+            "only implemented for directed ordered trees. "
+            "Got {} instead".format(type(tree1))
+        )
     if not isinstance(tree1, nx.OrderedDiGraph):
-        raise nx.NetworkXNotImplemented("only implemented for directed ordered trees")
+        raise nx.NetworkXNotImplemented(
+            "only implemented for directed ordered trees. "
+            "Got {} instead".format(type(tree2))
+        )
 
     if tree1.number_of_nodes() == 0 or tree2.number_of_nodes() == 0:
         raise nx.NetworkXPointlessConcept
@@ -246,7 +250,6 @@ def tree_to_seq(
     Examples
     --------
     >>> from networkx.algorithms.minors.tree_embedding import tree_to_seq  # NOQA
-    >>> import networkx as nx
     >>> # This function helps us encode this graph as a balance sequence
     >>> tree = nx.path_graph(3, nx.OrderedDiGraph)
     >>> print(nx.forest_str(tree))
@@ -297,7 +300,7 @@ def tree_to_seq(
     >>> # Demo custom label encoding: If you have custom labels on your
     >>> # tree nodes, those can be used in the encoding.
     >>> import random
-    >>> tree = nx.random_ordered_tree(10, seed=1, directed=True)
+    >>> tree = nx.random_tree(10, seed=1, create_using=nx.OrderedDiGraph)
     >>> rng = random.Random(0)
     >>> open_to_close = dict(zip("[{(", "]})"))
     >>> for node in tree.nodes:
@@ -426,15 +429,13 @@ def seq_to_tree(subseq, open_to_close, open_to_node):
 
     Example
     --------
-    >>> from networkx.algorithms.minors.tree_embedding import seq_to_tree
-    >>> from networkx.readwrite.text import forest_str
     >>> # For a given balanced sequence
     >>> open_to_close = {'{': '}', '(': ')', '[': ']'}
     >>> open_to_node = None
     >>> subseq = '({[[]]})[[][]]{{}}'
     >>> # We can convert it into an ordered directed tree
     >>> subtree = seq_to_tree(subseq, open_to_close, open_to_node)
-    >>> print(forest_str(subtree))
+    >>> print(nx.forest_str(subtree))
     ╟── (
     ╎   └─╼ {
     ╎       └─╼ [

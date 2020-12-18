@@ -49,7 +49,14 @@ def generate_all_decomp(seq, open_to_close, open_to_node=None):
 
     Notes
     -----
-    In the paper: See Definition 2, 4, Lemma, 1, 2, 3, 4.
+    In the paper [1]: See Definition 2, 4, Lemma, 1, 2, 3, 4.
+
+    References
+    ----------
+    .. [1] Lozano, Antoni, and Gabriel Valiente.
+        "On the maximum common embedded subtree problem for ordered trees."
+        String Algorithmics (2004): 155-170.
+        https://pdfs.semanticscholar.org/0b6e/061af02353f7d9b887f9a378be70be64d165.pdf
 
     Example
     -------
@@ -367,19 +374,18 @@ def random_balanced_sequence(
     >>> print("seq = {!r}".format(seq))
     seq = '([[{{[]{[]}}{}()}]])'
     """
+    import networkx as nx
     from networkx.algorithms.minors.tree_embedding import tree_to_seq
-    from networkx.generators.random_graphs import random_ordered_tree
-    from networkx.utils import create_py_random_state
 
     # Create a random otree and then convert it to a balanced sequence
-    rng = create_py_random_state(seed)
+    rng = nx.utils.create_py_random_state(seed)
 
     if open_to_close is None:
         open_to_close = {}
 
     # To create a random balanced sequences we simply create a random ordered
     # tree and convert it to a sequence
-    tree = random_ordered_tree(n, seed=rng, directed=True)
+    tree = nx.random_tree(n, seed=rng, create_using=nx.OrderedDiGraph)
     if item_type == "paren":
         # special case
         pool = "[{("
@@ -400,14 +406,3 @@ def random_balanced_sequence(
             container_type=container_type,
         )
     return seq, open_to_close
-
-
-if __name__ == "__main__":
-    """
-    CommandLine
-    ------------
-    xdoctest -m networkx.algorithms.string.balanced_sequence all
-    """
-    import xdoctest
-
-    xdoctest.doctest_module(__file__)

@@ -1,5 +1,17 @@
 """
 Utilities to just-in-time-cythonize a module at runtime.
+
+
+Issues:
+    - [ ] Currently relies on the "ubelt" module. It should be possible to
+          migrate those utilities into this file without adding the ubelt
+          dependency. Current utilities needed are:
+
+              ubelt.CacheStamp - harder to replace
+              ubelt.import_module_from_path - harder to replace
+              ubelt.hash_file -- replace with hashlib calls
+              ubelt.augpath -- replace with os.path calls
+              ubelt.cmd -- replaceable with subprocess.Popen
 """
 from collections import defaultdict
 from os.path import dirname, join, basename, splitext, exists
@@ -43,9 +55,11 @@ def import_module_from_pyx(fname, dpath, error="raise", autojit=True, verbose=1)
 
     Ignore
     ------
-    from networkx.algorithms.string._autojit import *
+    # This could be a doctest
+    from networkx.algorithms.string._autojit import *  # NOQA
+    from networkx.algorithms.string import _autojit
+    dpath = dirname(_autojit.__file__)
     fname = "balanced_embedding_cython.pyx"
-    dpath = ub.expandpath('$HOME/code/networkx/networkx/algorithms/string')
     module = import_module_from_pyx(fname, dpath, error="ignore", verbose=1)
     print('module = {!r}'.format(module))
     """

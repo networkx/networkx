@@ -499,14 +499,3 @@ def _lcse_recurse(
         found = (val, best)
         _memo[key] = found
         return found
-
-
-if __name__ == "__main__":
-    """
-    CommandLine
-    ------------
-    xdoctest -m networkx.algorithms.string.balanced_embedding all
-    """
-    import xdoctest
-
-    xdoctest.doctest_module(__file__)

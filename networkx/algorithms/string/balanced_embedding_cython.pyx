@@ -7,8 +7,8 @@ speed improvements that could be made.
 
 Issues
 ------
-- [ ] How to deal with cython + networkx? Do we need to fix that skbuild
-with pypy?
+- [ ] How to deal with cython + networkx? Do we need to fix skbuild with pypy?
+      (Note, currently _autojit will ignore cython on unsupported runtimes)
 
 
 CommandLine
