@@ -384,9 +384,6 @@ def _chordal_graph_cliques(G):
     >>> cliques[0]
     frozenset({1, 2, 3})
     """
-    #if not is_chordal(G):
-    #    raise nx.NetworkXError("Input graph is not chordal.")
-
     for C in (G.subgraph(c).copy() for c in connected_components(G)):
         if C.number_of_nodes() == 1:
             if nx.number_of_selfloops(C) > 0:
