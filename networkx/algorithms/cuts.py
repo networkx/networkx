@@ -6,12 +6,20 @@ from itertools import chain
 
 import networkx as nx
 
-__all__ = ['boundary_expansion', 'conductance', 'cut_size', 'edge_expansion',
-           'mixing_expansion', 'node_expansion', 'normalized_cut_size',
-           'volume']
+__all__ = [
+    "boundary_expansion",
+    "conductance",
+    "cut_size",
+    "edge_expansion",
+    "mixing_expansion",
+    "node_expansion",
+    "normalized_cut_size",
+    "volume",
+]
 
 
 # TODO STILL NEED TO UPDATE ALL THE DOCUMENTATION!
+
 
 def cut_size(G, S, T=None, weight=None):
     """Returns the size of the cut between two sets of nodes.
@@ -57,9 +65,9 @@ def cut_size(G, S, T=None, weight=None):
     Each parallel edge in a multigraph is counted when determining the
     cut size::
 
-        >>> G = nx.MultiGraph(['ab', 'ab'])
-        >>> S = {'a'}
-        >>> T = {'b'}
+        >>> G = nx.MultiGraph(["ab", "ab"])
+        >>> S = {"a"}
+        >>> T = {"b"}
         >>> nx.cut_size(G, S, T)
         2
 
@@ -351,8 +359,8 @@ def node_expansion(G, S):
 def boundary_expansion(G, S):
     """Returns the boundary expansion of the set `S`.
 
-    The *boundary expansion* is the quotient of the size of the edge
-    boundary and the cardinality of *S*. [1]
+    The *boundary expansion* is the quotient of the size
+    of the node boundary and the cardinality of *S*. [1]
 
     Parameters
     ----------

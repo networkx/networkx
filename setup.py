@@ -18,9 +18,9 @@ if sys.argv[-1] == "setup.py":
     print("To install, run 'python setup.py install'")
     print()
 
-if sys.version_info[:2] < (3, 6):
+if sys.version_info[:2] < (3, 7):
     error = (
-        "NetworkX 2.5+ requires Python 3.6 or later (%d.%d detected). \n"
+        "NetworkX 2.6+ requires Python 3.7 or later (%d.%d detected). \n"
         "For Python 2.7, please install version 2.2 using: \n"
         "$ pip install 'networkx==2.2'" % sys.version_info[:2]
     )
@@ -124,30 +124,18 @@ package_data = {
     "networkx.utils": ["tests/*.py"],
 }
 
-install_requires = ["decorator>=4.3.0"]
+
+def parse_requirements_file(filename):
+    with open(filename, encoding="utf-8") as fid:
+        requires = [l.strip() for l in fid.readlines() if l]
+
+    return requires
+
+
+install_requires = parse_requirements_file("requirements/default.txt")
 extras_require = {
-    "all": [
-        "numpy",
-        "scipy",
-        "pandas",
-        "matplotlib",
-        "pygraphviz",
-        "pydot",
-        "pyyaml",
-        "gdal",
-        "lxml",
-        "pytest",
-    ],
-    "gdal": ["gdal"],
-    "lxml": ["lxml"],
-    "matplotlib": ["matplotlib"],
-    "pytest": ["pytest"],
-    "numpy": ["numpy"],
-    "pandas": ["pandas"],
-    "pydot": ["pydot"],
-    "pygraphviz": ["pygraphviz"],
-    "pyyaml": ["pyyaml"],
-    "scipy": ["scipy"],
+    dep: parse_requirements_file("requirements/" + dep + ".txt")
+    for dep in ["developer", "doc", "extra", "test"]
 }
 
 with open("README.rst", "r") as fh:
@@ -174,6 +162,6 @@ if __name__ == "__main__":
         package_data=package_data,
         install_requires=install_requires,
         extras_require=extras_require,
-        python_requires=">=3.6",
+        python_requires=">=3.7",
         zip_safe=False,
     )

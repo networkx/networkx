@@ -14,12 +14,11 @@ incident to an endpoint of at least one edge in *F*.
 from ..matching import maximal_matching
 from ...utils import not_implemented_for
 
-__all__ = ["min_weighted_dominating_set",
-           "min_edge_dominating_set"]
+__all__ = ["min_weighted_dominating_set", "min_edge_dominating_set"]
 
 
 # TODO Why doesn't this algorithm work for directed graphs?
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def min_weighted_dominating_set(G, weight=None):
     r"""Returns a dominating set that approximates the minimum weight node
     dominating set.

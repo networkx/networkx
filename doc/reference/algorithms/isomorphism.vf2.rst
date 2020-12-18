@@ -1,7 +1,7 @@
 .. _vf2:
 
 *************
-VF2 Algorithm 
+VF2 Algorithm
 *************
 
 .. automodule:: networkx.algorithms.isomorphism.isomorphvf2
@@ -12,7 +12,7 @@ Graph Matcher
 
 .. autosummary::
    :toctree: generated/
-   
+
     GraphMatcher.__init__
     GraphMatcher.initialize
     GraphMatcher.is_isomorphic

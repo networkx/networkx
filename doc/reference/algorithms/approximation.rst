@@ -107,3 +107,13 @@ Vertex Cover
    :toctree: generated/
 
    min_weighted_vertex_cover
+
+
+Max Cut
+-------
+.. automodule:: networkx.algorithms.approximation.maxcut
+.. autosummary::
+   :toctree: generated/
+
+   randomized_partitioning
+   one_exchange

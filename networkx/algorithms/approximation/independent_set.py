@@ -26,6 +26,7 @@ doi:10.1007/BF01994876
 
 """
 from networkx.algorithms.approximation import clique_removal
+
 __all__ = ["maximum_independent_set"]
 
 

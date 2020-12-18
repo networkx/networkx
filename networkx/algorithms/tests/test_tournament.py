@@ -53,6 +53,7 @@ class TestRandomTournament:
     function.
 
     """
+
     def test_graph_is_tournament(self):
         for n in range(10):
             G = random_tournament(5)

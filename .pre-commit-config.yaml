@@ -1,0 +1,8 @@
+# Install pre-commit hooks via
+# pre-commit install
+
+repos:
+-   repo: https://github.com/ambv/black
+    rev: 20.8b1
+    hooks:
+    - id: black

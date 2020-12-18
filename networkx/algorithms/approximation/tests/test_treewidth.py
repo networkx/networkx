@@ -37,6 +37,7 @@ def is_tree_decomp(graph, decomp):
 
 class TestTreewidthMinDegree:
     """Unit tests for the min_degree function"""
+
     @classmethod
     def setup_class(cls):
         """Setup for different kinds of trees"""
@@ -135,8 +136,9 @@ class TestTreewidthMinDegree:
 
     def test_heuristic_first_steps(self):
         """Test first steps of min_degree heuristic"""
-        graph = {n: set(self.deterministic_graph[n]) - {n}
-                 for n in self.deterministic_graph}
+        graph = {
+            n: set(self.deterministic_graph[n]) - {n} for n in self.deterministic_graph
+        }
         deg_heuristic = MinDegreeHeuristic(graph)
         elim_node = deg_heuristic.best_node(graph)
         print(f"Graph {graph}:")
@@ -165,6 +167,7 @@ class TestTreewidthMinDegree:
 
 class TestTreewidthMinFillIn:
     """Unit tests for the treewidth_min_fill_in function."""
+
     @classmethod
     def setup_class(cls):
         """Setup for different kinds of trees"""
@@ -238,8 +241,9 @@ class TestTreewidthMinFillIn:
 
     def test_heuristic_first_steps(self):
         """Test first steps of min_fill_in heuristic"""
-        graph = {n: set(self.deterministic_graph[n]) - {n}
-                 for n in self.deterministic_graph}
+        graph = {
+            n: set(self.deterministic_graph[n]) - {n} for n in self.deterministic_graph
+        }
         print(f"Graph {graph}:")
         elim_node = min_fill_in_heuristic(graph)
         steps = []
