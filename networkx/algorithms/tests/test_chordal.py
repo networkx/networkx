@@ -65,10 +65,6 @@ class TestMCS:
         with pytest.raises(nx.NetworkXError):
             nx.is_chordal(self.self_loop_G)
 
-        # Testing _is_complete_graph within is_chordal
-#        with pytest.raises(nx.NetworkXError):
-#            nx.is_chordal(self.self_loop)
-
     def test_induced_nodes(self):
         G = nx.generators.classic.path_graph(10)
         Induced_nodes = nx.find_induced_nodes(G, 1, 9, 2)
