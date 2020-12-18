@@ -66,6 +66,11 @@ class TestVolume:
         G = nx.MultiDiGraph(edges * 2)
         assert nx.volume(G, {0, 1}) == 4
 
+    def test_barbell(self):
+        G = nx.barbell_graph(3, 0)
+        assert nx.volume(G, {0, 1, 2}) == 7
+        assert nx.volume(G, {3, 4, 5}) == 7
+
 
 class TestNormalizedCutSize:
     """Unit tests for the :func:`~networkx.normalized_cut_size`
@@ -78,18 +83,22 @@ class TestNormalizedCutSize:
         S = {1, 2}
         T = set(G) - S
         size = nx.normalized_cut_size(G, S, T)
+        size_no_T = nx.normalized_cut_size(G, S)
         # The cut looks like this: o-{-o--o-}-o
         expected = 2 * ((1 / 4) + (1 / 2))
         assert expected == size
+        assert expected == size_no_T
 
     def test_directed(self):
         G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
         S = {1, 2}
         T = set(G) - S
         size = nx.normalized_cut_size(G, S, T)
+        size_no_T = nx.normalized_cut_size(G, S)
         # The cut looks like this: o-{->o-->o-}->o
         expected = 2 * ((1 / 2) + (1 / 1))
         assert expected == size
+        assert expected == size_no_T
 
 
 class TestConductance:
@@ -97,13 +106,18 @@ class TestConductance:
 
     def test_graph(self):
         G = nx.barbell_graph(5, 0)
+        G2 = nx.barbell_graph(3, 0)
         # Consider the singleton sets containing the "bridge" nodes.
         # There is only one cut edge, and each set has volume five.
         S = {4}
         T = {5}
+        S2 = {0, 1, 2}
         conductance = nx.conductance(G, S, T)
+        conductance_no_T = nx.conductance(G2, S2)
         expected = 1 / 5
+        expected2 = 1 / 7
         assert expected == conductance
+        assert expected2 == conductance_no_T
 
 
 class TestEdgeExpansion:
@@ -114,8 +128,10 @@ class TestEdgeExpansion:
         S = set(range(5))
         T = set(G) - S
         expansion = nx.edge_expansion(G, S, T)
+        expansion_no_T = nx.edge_expansion(G, S)
         expected = 1 / 5
         assert expected == expansion
+        assert expected == expansion_no_T
 
 
 class TestNodeExpansion:
