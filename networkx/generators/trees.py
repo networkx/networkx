@@ -153,7 +153,7 @@ def prefix_tree(paths):
 # > method of generating uniformly distributed random labelled trees.
 #
 @py_random_state(1)
-def random_tree(n, seed=None):
+def random_tree(n, seed=None, create_using=None):
     """Returns a uniformly random tree on `n` nodes.
 
     Parameters
@@ -184,11 +184,55 @@ def random_tree(n, seed=None):
     *n* nodes, the tree is chosen uniformly at random from the set of
     all trees on *n* nodes.
 
+    Example
+    -------
+    >>> tree = nx.random_tree(n=10, seed=0)
+    >>> print(nx.forest_str(tree, sources=[0]))
+    ╙── 0
+        ├── 3
+        └── 4
+            ├── 6
+            │   ├── 1
+            │   ├── 2
+            │   └── 7
+            │       └── 8
+            │           └── 5
+            └── 9
+
+    >>> tree = nx.random_tree(n=10, seed=0, create_using=nx.DiGraph)
+    >>> print(nx.forest_str(tree))
+    ╙── 0
+        ├─╼ 3
+        └─╼ 4
+            ├─╼ 6
+            │   ├─╼ 1
+            │   ├─╼ 2
+            │   └─╼ 7
+            │       └─╼ 8
+            │           └─╼ 5
+            └─╼ 9
     """
     if n == 0:
         raise nx.NetworkXPointlessConcept("the null graph is not a tree")
     # Cannot create a Prüfer sequence unless `n` is at least two.
     if n == 1:
-        return nx.empty_graph(1)
-    sequence = [seed.choice(range(n)) for i in range(n - 2)]
-    return nx.from_prufer_sequence(sequence)
+        utree = nx.empty_graph(1, create_using)
+    else:
+        sequence = [seed.choice(range(n)) for i in range(n - 2)]
+        utree = nx.from_prufer_sequence(sequence)
+
+    if create_using is None:
+        tree = utree
+    else:
+        tree = nx.empty_graph(0, create_using)
+        if tree.is_directed():
+            # Use a arbitrary root node and dfs to define edge directions
+            edges = nx.dfs_edges(utree, source=0)
+        else:
+            edges = utree.edges
+
+        # Populate the specified graph type
+        tree.add_nodes_from(utree.nodes)
+        tree.add_edges_from(edges)
+
+    return tree
