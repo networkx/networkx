@@ -12,7 +12,7 @@ can be accessed, for example, as
 """
 
 from collections import defaultdict, deque
-from collections.abc import Iterator
+from collections.abc import Iterator, Sized
 import warnings
 import sys
 import uuid
@@ -55,12 +55,12 @@ def empty_generator():
 
 def flatten(obj, result=None):
     """ Return flattened version of (possibly nested) iterable object. """
-    if not iterable(obj) or isinstance(obj, str):
+    if not isinstance(obj, Sized) or isinstance(obj, str):
         return obj
     if result is None:
         result = []
     for item in obj:
-        if not iterable(item) or isinstance(item, str):
+        if not isinstance(item, Sized) or isinstance(item, str):
             result.append(item)
         else:
             flatten(item, result)
