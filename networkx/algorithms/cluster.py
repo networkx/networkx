@@ -85,6 +85,9 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
     """Return an iterator of (node, degree, weighted_triangles).
 
     Used for weighted clustering.
+    Note: this returns the geometric average weight of edges in the triangle.
+    Also, each triangle is counted twice (each direction).
+    So you may want to divide by 2.
 
     """
     if weight is None or G.number_of_edges() == 0:
@@ -105,7 +108,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
         seen = set()
         for j in inbrs:
             seen.add(j)
-            # This prevents double counting.
+            # This avoids counting twice -- we double at the end.
             jnbrs = set(G[j]) - seen
             # Only compute the edge weight once, before the inner inner
             # loop.
@@ -122,6 +125,8 @@ def _directed_triangles_and_degree_iter(G, nodes=None):
     (node, total_degree, reciprocal_degree, directed_triangles).
 
     Used for directed clustering.
+    Note that unlike `_triangles_and_degree_iter()`, this function counts
+    directed triangles so does not count triangles twice.
 
     """
     nodes_nbrs = ((n, G._pred[n], G._succ[n]) for n in G.nbunch_iter(nodes))
@@ -154,6 +159,8 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
     (node, total_degree, reciprocal_degree, directed_weighted_triangles).
 
     Used for directed weighted clustering.
+    Note that unlike `_weighted_triangles_and_degree_iter()`, this function counts
+    directed triangles so does not count triangles twice.
 
     """
     if weight is None or G.number_of_edges() == 0:
@@ -300,7 +307,7 @@ def clustering(G, nodes=None, weight=None):
 
     .. math::
 
-       c_u = \frac{1}{deg^{tot}(u)(deg^{tot}(u)-1) - 2deg^{\leftrightarrow}(u)}
+       c_u = \frac{2}{deg^{tot}(u)(deg^{tot}(u)-1) - 2deg^{\leftrightarrow}(u)}
              T(u),
 
     where :math:`T(u)` is the number of directed triangles through node
@@ -362,6 +369,7 @@ def clustering(G, nodes=None, weight=None):
                 for v, dt, db, t in td_iter
             }
     else:
+        # The formula 2*T/(d*(d-1)) from docs is t/(d*(d-1)) here b/c t==2*T
         if weight is not None:
             td_iter = _weighted_triangles_and_degree_iter(G, nodes, weight)
             clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for v, d, t in td_iter}
