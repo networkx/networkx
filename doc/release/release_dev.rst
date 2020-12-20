@@ -34,11 +34,9 @@ API Changes
 
 - [`#4190 <https://github.com/networkx/networkx/pull/4190>`_]
   Removed ``tracemin_chol``.  Use ``tracemin_lu`` instead.
-
 - [`#4216 <https://github.com/networkx/networkx/pull/4216>`_]
   In `to_*_array/matrix`, nodes in nodelist but not in G now raise an exception.
   Use G.add_nodes_from(nodelist) to add them to G before converting.
-
 - [`#4360  <https://github.com/networkx/networkx/pull/4360>`_]
   Internally `.nx_pylab.draw_networkx_edges` now always generates a
   list of `matplotlib.patches.FancyArrowPatch` rather than using
@@ -46,7 +44,6 @@ API Changes
   unifies interface for all types of graphs.  In
   addition to the API change this may cause a performance regression for
   large graphs.
-
 - [`#4384 <https://github.com/networkx/networkx/pull/4384>`_]
   Added edge_key parameter for MultiGraphs in to_pandas_edgelist
 
@@ -77,6 +74,8 @@ Deprecations
   Deprecate ``jit_data`` and ``jit_graph``.
 - [`#4449 <https://github.com/networkx/networkx/pull/4449>`_]
   Deprecate ``consume``.
+- [`#4448 <https://github.com/networkx/networkx/pull/4448>`_]
+  Deprecate ``iterable``.
 
 Contributors to this release
 ----------------------------

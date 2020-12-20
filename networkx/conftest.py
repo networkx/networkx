@@ -102,6 +102,9 @@ def set_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_data")
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_graph")
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="consume")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="iterable is deprecated"
+    )
 
 
 @pytest.fixture(autouse=True)
