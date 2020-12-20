@@ -47,6 +47,11 @@ API Changes
 - [`#4384 <https://github.com/networkx/networkx/pull/4384>`_]
   Added edge_key parameter for MultiGraphs in to_pandas_edgelist
 
+- [`#4466 <https://github.com/networkx/networkx/pull/4466>`_]
+  `relabel_nodes` used to raise a KeyError for a key in `mapping` that is not
+  a node in the graph, but it only did this when `copy` was `False`. Now
+  any keys in `mapping` which are not in the graph are ignored.
+
 Deprecations
 ------------
 
