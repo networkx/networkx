@@ -14,9 +14,7 @@ from networkx.algorithms.approximation import local_node_connectivity
 __all__ = ["k_components"]
 
 
-not_implemented_for("directed")
-
-
+@not_implemented_for("directed")
 def k_components(G, min_density=0.95):
     r"""Returns the approximate k-component structure of a graph G.
 
@@ -46,6 +44,10 @@ def k_components(G, min_density=0.95):
         Dictionary with connectivity level `k` as key and a list of
         sets of nodes that form a k-component of level `k` as values.
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
 
     Examples
     --------
