@@ -320,6 +320,42 @@ def test_draw_edges_min_source_target_margins(node_shape):
     plt.delaxes(ax)
 
 
+def test_nonzero_selfloop_with_single_node():
+    """Ensure that selfloop extent is non-zero when there is only one node."""
+    # Create explicit axis object for test
+    fig, ax = plt.subplots()
+    # Graph with single node + self loop
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_edge(0, 0)
+    # Draw
+    patch = nx.draw_networkx_edges(G, {0: (0, 0)})[0]
+    # The resulting patch must have non-zero extent
+    bbox = patch.get_extents()
+    assert bbox.width > 0 and bbox.height > 0
+    # Cleanup
+    plt.delaxes(ax)
+
+
+def test_nonzero_selfloop_with_single_edge_in_edgelist():
+    """Ensure that selfloop extent is non-zero when only a single edge is
+    specified in the edgelist.
+    """
+    # Create explicit axis object for test
+    fig, ax = plt.subplots()
+    # Graph with selfloop
+    G = nx.path_graph(2)
+    G.add_edge(1, 1)
+    pos = {n: (n, n) for n in G.nodes}
+    # Draw only the selfloop edge via the `edgelist` kwarg
+    patch = nx.draw_networkx_edges(G, pos, edgelist=[(1, 1)])[0]
+    # The resulting patch must have non-zero extent
+    bbox = patch.get_extents()
+    assert bbox.width > 0 and bbox.height > 0
+    # Cleanup
+    plt.delaxes(ax)
+
+
 def test_apply_alpha():
     """Test apply_alpha when there is a mismatch between the number of
     supplied colors and elements.

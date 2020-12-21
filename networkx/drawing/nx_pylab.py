@@ -702,13 +702,21 @@ def draw_networkx_edges(
 
     base_connection_style = mpl.patches.ConnectionStyle(connectionstyle)
 
+    # Fallback for self-loop scale. Left outside of _connectionstyle so it is
+    # only computed once
+    max_nodesize = np.array(node_size).max()
+
     def _connectionstyle(posA, posB, *args, **kwargs):
         # check if we need to do a self-loop
         if np.all(posA == posB):
+            # Self-loops are scaled by view extent, except in cases the extent
+            # is 0, e.g. for a single node. In this case, fall back to scaling
+            # by the maximum node size
+            selfloop_ht = 0.005 * max_nodesize if h == 0 else h
             # this is called with _screen space_ values so covert back
             # to data space
             data_loc = ax.transData.inverted().transform(posA)
-            v_shift = 0.1 * h
+            v_shift = 0.1 * selfloop_ht
             h_shift = v_shift * 0.5
             # put the top of the loop first so arrow is not hidden by node
             path = [
