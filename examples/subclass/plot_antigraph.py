@@ -152,7 +152,7 @@ class AntiGraph(Graph):
         """
         nodes = set(self.adj)
         for n, nbrs in self.adj.items():
-            yield (n, nodes - set(nbrs) - {n})
+            yield n, nodes - set(nbrs) - {n}
 
 
 # Build several pairs of graphs, a regular graph

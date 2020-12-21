@@ -290,7 +290,7 @@ def _find_missing_edge(G):
     for u in G:
         missing = nodes - set(list(G[u].keys()) + [u])
         if missing:
-            return (u, missing.pop())
+            return u, missing.pop()
 
 
 def _max_cardinality_node(G, choices, wanna_connect):
@@ -338,7 +338,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
             # sg is not a clique,
             # look for an edge that is not included in sg
             (u, w) = _find_missing_edge(sg)
-            return (u, v, w)
+            return u, v, w
     return ()
 
 

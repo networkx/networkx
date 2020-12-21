@@ -718,16 +718,16 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None, weight="weight")
     if not sources:
         raise ValueError("sources must not be empty")
     if target in sources:
-        return (0, [target])
+        return 0, [target]
     weight = _weight_function(G, weight)
     paths = {source: [source] for source in sources}  # dictionary of paths
     dist = _dijkstra_multisource(
         G, sources, weight, paths=paths, cutoff=cutoff, target=target
     )
     if target is None:
-        return (dist, paths)
+        return dist, paths
     try:
-        return (dist[target], paths[target])
+        return dist[target], paths[target]
     except KeyError as e:
         raise nx.NetworkXNoPath(f"No path to {target}.") from e
 
@@ -918,7 +918,7 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
 
     weight = _weight_function(G, weight)
     pred = {source: []}  # dictionary of predecessors
-    return (pred, _dijkstra(G, source, weight, pred=pred, cutoff=cutoff))
+    return pred, _dijkstra(G, source, weight, pred=pred, cutoff=cutoff)
 
 
 def all_pairs_dijkstra(G, cutoff=None, weight="weight"):
@@ -985,7 +985,7 @@ def all_pairs_dijkstra(G, cutoff=None, weight="weight"):
     """
     for n in G:
         dist, path = single_source_dijkstra(G, n, cutoff=cutoff, weight=weight)
-        yield (n, (dist, path))
+        yield n, (dist, path)
 
 
 def all_pairs_dijkstra_path_length(G, cutoff=None, weight="weight"):
@@ -1042,7 +1042,7 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight="weight"):
     """
     length = single_source_dijkstra_path_length
     for n in G:
-        yield (n, length(G, n, cutoff=cutoff, weight=weight))
+        yield n, length(G, n, cutoff=cutoff, weight=weight)
 
 
 def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
@@ -1093,7 +1093,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
     path = single_source_dijkstra_path
     # TODO This can be trivially parallelized.
     for n in G:
-        yield (n, path(G, n, cutoff=cutoff, weight=weight))
+        yield n, path(G, n, cutoff=cutoff, weight=weight)
 
 
 def bellman_ford_predecessor_and_distance(
@@ -1203,7 +1203,7 @@ def bellman_ford_predecessor_and_distance(
     dist = _bellman_ford(
         G, [source], weight, pred=pred, dist=dist, target=target, heuristic=heuristic
     )
-    return (pred, dist)
+    return pred, dist
 
 
 def _bellman_ford(
@@ -1606,16 +1606,16 @@ def single_source_bellman_ford(G, source, target=None, weight="weight"):
     single_source_bellman_ford_path_length
     """
     if source == target:
-        return (0, [source])
+        return 0, [source]
 
     weight = _weight_function(G, weight)
 
     paths = {source: [source]}  # dictionary of paths
     dist = _bellman_ford(G, [source], weight, paths=paths, target=target)
     if target is None:
-        return (dist, paths)
+        return dist, paths
     try:
-        return (dist[target], paths[target])
+        return dist[target], paths[target]
     except KeyError as e:
         msg = f"Node {target} not reachable from {source}"
         raise nx.NetworkXNoPath(msg) from e
@@ -1662,7 +1662,7 @@ def all_pairs_bellman_ford_path_length(G, weight="weight"):
     """
     length = single_source_bellman_ford_path_length
     for n in G:
-        yield (n, dict(length(G, n, weight=weight)))
+        yield n, dict(length(G, n, weight=weight))
 
 
 def all_pairs_bellman_ford_path(G, weight="weight"):
@@ -1700,7 +1700,7 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
     path = single_source_bellman_ford_path
     # TODO This can be trivially parallelized.
     for n in G:
-        yield (n, path(G, n, weight=weight))
+        yield n, path(G, n, weight=weight)
 
 
 def goldberg_radzik(G, source, weight="weight"):
@@ -2020,7 +2020,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
         raise nx.NodeNotFound(msg)
 
     if source == target:
-        return (0, [source])
+        return 0, [source]
 
     weight = _weight_function(G, weight)
     push = heappush
@@ -2057,7 +2057,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
         if v in dists[1 - dir]:
             # if we have scanned v in both directions we are done
             # we have now discovered the shortest path
-            return (finaldist, finalpath)
+            return finaldist, finalpath
 
         for w, d in neighs[dir][v].items():
             if dir == 0:  # forward

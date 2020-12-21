@@ -148,7 +148,7 @@ def _split_tree(layout):
 
     left = [layout[i] - 1 for i in range(1, m)]
     rest = [0] + [layout[i] for i in range(m, len(layout))]
-    return (left, rest)
+    return left, rest
 
 
 def _layout_to_matrix(layout):

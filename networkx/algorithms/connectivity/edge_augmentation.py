@@ -340,7 +340,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
             # Find the neighbors of u in only1 that are also in only2
             neighbs12 = neighbs.intersection(only2)
             for v in neighbs12:
-                yield (u, v)
+                yield u, v
 
     avail_uv, avail_w = _unpack_available_edges(avail, weight=weight, G=G)
 
@@ -610,7 +610,7 @@ def unconstrained_one_edge_augmentation(G):
     for k, v in C.graph["mapping"].items():
         inverse[v].append(k)
     for mu, mv in meta_aug:
-        yield (inverse[mu][0], inverse[mv][0])
+        yield inverse[mu][0], inverse[mv][0]
 
 
 def weighted_one_edge_augmentation(G, avail, weight=None, partial=False):
@@ -1127,13 +1127,13 @@ def complement_edges(G):
     if G.is_directed():
         for u, v in it.combinations(G.nodes(), 2):
             if v not in G.adj[u]:
-                yield (u, v)
+                yield u, v
             if u not in G.adj[v]:
-                yield (v, u)
+                yield v, u
     else:
         for u, v in it.combinations(G.nodes(), 2):
             if v not in G.adj[u]:
-                yield (u, v)
+                yield u, v
 
 
 def _compat_shuffle(rng, input):

@@ -72,7 +72,7 @@ def girvan_newman(G, most_valuable_edge=None):
         >>> nx.set_edge_attributes(G, {(u, v): v for u, v in edges}, "weight")
         >>> def heaviest(G):
         ...     u, v, w = max(G.edges(data="weight"), key=itemgetter(2))
-        ...     return (u, v)
+        ...     return u, v
         ...
         >>> comp = girvan_newman(G, most_valuable_edge=heaviest)
         >>> tuple(sorted(c) for c in next(comp))

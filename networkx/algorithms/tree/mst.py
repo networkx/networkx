@@ -194,9 +194,9 @@ def kruskal_mst_edges(
         for wt, u, v, d in edges:
             if subtrees[u] != subtrees[v]:
                 if data:
-                    yield (u, v, d)
+                    yield u, v, d
                 else:
-                    yield (u, v)
+                    yield u, v
                 subtrees.union(u, v)
 
 

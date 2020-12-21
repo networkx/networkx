@@ -291,7 +291,7 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     for s, t in bfs_edges(
         G, source, depth_limit=depth_limit, sort_neighbors=sort_neighbors
     ):
-        yield (t, s)
+        yield t, s
 
 
 def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
@@ -360,10 +360,10 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
         if p == parent:
             children.append(c)
             continue
-        yield (parent, children)
+        yield parent, children
         children = [c]
         parent = p
-    yield (parent, children)
+    yield parent, children
 
 
 def descendants_at_distance(G, source, distance):

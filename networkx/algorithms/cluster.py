@@ -77,7 +77,7 @@ def _triangles_and_degree_iter(G, nodes=None):
         vs = set(v_nbrs) - {v}
         gen_degree = Counter(len(vs & (set(G[w]) - {w})) for w in vs)
         ntriangles = sum(k * val for k, val in gen_degree.items())
-        yield (v, len(vs), ntriangles, gen_degree)
+        yield v, len(vs), ntriangles, gen_degree
 
 
 @not_implemented_for("multigraph")
@@ -113,7 +113,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
             weighted_triangles += sum(
                 (wij * wt(j, k) * wt(k, i)) ** (1 / 3) for k in inbrs & jnbrs
             )
-        yield (i, len(inbrs), 2 * weighted_triangles)
+        yield i, len(inbrs), 2 * weighted_triangles
 
 
 @not_implemented_for("multigraph")
@@ -145,7 +145,7 @@ def _directed_triangles_and_degree_iter(G, nodes=None):
             )
         dtotal = len(ipreds) + len(isuccs)
         dbidirectional = len(ipreds & isuccs)
-        yield (i, dtotal, dbidirectional, directed_triangles)
+        yield i, dtotal, dbidirectional, directed_triangles
 
 
 @not_implemented_for("multigraph")
@@ -205,7 +205,7 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
 
         dtotal = len(ipreds) + len(isuccs)
         dbidirectional = len(ipreds & isuccs)
-        yield (i, dtotal, dbidirectional, directed_triangles)
+        yield i, dtotal, dbidirectional, directed_triangles
 
 
 def average_clustering(G, nodes=None, weight=None, count_zeros=True):

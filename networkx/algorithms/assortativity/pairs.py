@@ -49,11 +49,11 @@ def node_attribute_xy(G, attribute, nodes=None):
             for v, keys in nbrsdict.items():
                 vattr = Gnodes[v].get(attribute, None)
                 for k, d in keys.items():
-                    yield (uattr, vattr)
+                    yield uattr, vattr
         else:
             for v, eattr in nbrsdict.items():
                 vattr = Gnodes[v].get(attribute, None)
-                yield (uattr, vattr)
+                yield uattr, vattr
 
 
 def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):

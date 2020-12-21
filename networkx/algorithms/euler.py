@@ -100,7 +100,7 @@ def _simplegraph_eulerian_circuit(G, source):
         current_vertex = vertex_stack[-1]
         if degree(current_vertex) == 0:
             if last_vertex is not None:
-                yield (last_vertex, current_vertex)
+                yield last_vertex, current_vertex
             last_vertex = current_vertex
             vertex_stack.pop()
         else:
@@ -123,7 +123,7 @@ def _multigraph_eulerian_circuit(G, source):
         current_vertex, current_key = vertex_stack[-1]
         if degree(current_vertex) == 0:
             if last_vertex is not None:
-                yield (last_vertex, current_vertex, last_key)
+                yield last_vertex, current_vertex, last_key
             last_vertex, last_key = current_vertex, current_key
             vertex_stack.pop()
         else:

@@ -170,7 +170,7 @@ class PairingHeap(MinHeap):
     def min(self):
         if self._root is None:
             raise nx.NetworkXError("heap is empty.")
-        return (self._root.key, self._root.value)
+        return self._root.key, self._root.value
 
     @_inherit_doc(MinHeap)
     def pop(self):
@@ -179,7 +179,7 @@ class PairingHeap(MinHeap):
         min_node = self._root
         self._root = self._merge_children(self._root)
         del self._dict[min_node.key]
-        return (min_node.key, min_node.value)
+        return min_node.key, min_node.value
 
     @_inherit_doc(MinHeap)
     def get(self, key, default=None):
@@ -314,7 +314,7 @@ class BinaryHeap(MinHeap):
             if key in dict and value == dict[key]:
                 break
             pop(heap)
-        return (key, value)
+        return key, value
 
     @_inherit_doc(MinHeap)
     def pop(self):
@@ -331,7 +331,7 @@ class BinaryHeap(MinHeap):
             if key in dict and value == dict[key]:
                 break
         del dict[key]
-        return (key, value)
+        return key, value
 
     @_inherit_doc(MinHeap)
     def get(self, key, default=None):

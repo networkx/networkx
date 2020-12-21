@@ -67,7 +67,7 @@ def root_trees(t1, root1, t2, root2):
     for old, new in namemap2.items():
         namemap[new] = old
 
-    return (dT, namemap, newroot1, newroot2)
+    return dT, namemap, newroot1, newroot2
 
 
 # figure out the level of each node, with 0 at root

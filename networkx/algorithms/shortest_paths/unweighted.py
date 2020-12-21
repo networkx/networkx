@@ -84,7 +84,7 @@ def _single_shortest_path_length(adj, firstlevel, cutoff):
             if v not in seen:
                 seen[v] = level  # set the level of vertex v
                 found.append(v)
-                yield (v, level)
+                yield v, level
         if len(seen) == n:
             return
         for v in found:
@@ -181,7 +181,7 @@ def all_pairs_shortest_path_length(G, cutoff=None):
     length = single_source_shortest_path_length
     # TODO This can be trivially parallelized.
     for n in G:
-        yield (n, length(G, n, cutoff=cutoff))
+        yield n, length(G, n, cutoff=cutoff)
 
 
 def bidirectional_shortest_path(G, source, target):
@@ -249,7 +249,7 @@ def _bidirectional_pred_succ(G, source, target):
     """
     # does BFS from both source and target and meets in the middle
     if target == source:
-        return ({target: None}, {source: None}, source)
+        return {target: None}, {source: None}, source
 
     # handle either directed or undirected
     if G.is_directed():
@@ -456,7 +456,7 @@ def all_pairs_shortest_path(G, cutoff=None):
     """
     # TODO This can be trivially parallelized.
     for n in G:
-        yield (n, single_source_shortest_path(G, n, cutoff=cutoff))
+        yield n, single_source_shortest_path(G, n, cutoff=cutoff)
 
 
 def predecessor(G, source, target=None, cutoff=None, return_seen=None):
@@ -517,14 +517,14 @@ def predecessor(G, source, target=None, cutoff=None, return_seen=None):
     if target is not None:
         if return_seen:
             if target not in pred:
-                return ([], -1)  # No predecessor
-            return (pred[target], seen[target])
+                return [], -1  # No predecessor
+            return pred[target], seen[target]
         else:
             if target not in pred:
                 return []  # No predecessor
             return pred[target]
     else:
         if return_seen:
-            return (pred, seen)
+            return pred, seen
         else:
             return pred

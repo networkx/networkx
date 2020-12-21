@@ -213,14 +213,14 @@ class TestClosenessCentrality:
         neighbors = list(g.neighbors(u)) + [u]
         possible_nodes.difference_update(neighbors)
         v = nx.utils.arbitrary_element(possible_nodes)
-        return (u, v)
+        return u, v
 
     @staticmethod
     def pick_remove_edge(g):
         u = nx.utils.arbitrary_element(g)
         possible_nodes = list(g.neighbors(u))
         v = nx.utils.arbitrary_element(possible_nodes)
-        return (u, v)
+        return u, v
 
     def test_directed_raises(self):
         with pytest.raises(nx.NetworkXNotImplemented):

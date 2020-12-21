@@ -769,7 +769,7 @@ def _kamada_kawai_costfn(pos_vec, np, invdist, meanweight, dim):
     cost += 0.5 * meanweight * np.sum(sumpos ** 2)
     grad += meanweight * sumpos
 
-    return (cost, grad.ravel())
+    return cost, grad.ravel()
 
 
 def spectral_layout(G, weight="weight", scale=1, center=None, dim=2):

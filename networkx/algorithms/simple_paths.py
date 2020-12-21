@@ -653,7 +653,7 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
         raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
     if target == source:
-        return ({target: None}, {source: None}, source)
+        return {target: None}, {source: None}, source
 
     # handle either directed or undirected
     if G.is_directed():
@@ -820,7 +820,7 @@ def _bidirectional_dijkstra(
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
         raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
     if source == target:
-        return (0, [source])
+        return 0, [source]
 
     # handle either directed or undirected
     if G.is_directed():
@@ -913,7 +913,7 @@ def _bidirectional_dijkstra(
         if v in dists[1 - dir]:
             # if we have scanned v in both directions we are done
             # we have now discovered the shortest path
-            return (finaldist, finalpath)
+            return finaldist, finalpath
 
         wt = _weight_function(G, weight)
         for w in neighs[dir](v):

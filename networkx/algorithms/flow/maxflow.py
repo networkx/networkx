@@ -167,7 +167,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=False, **kwargs)
     flow_dict = build_flow_dict(flowG, R)
 
-    return (R.graph["flow_value"], flow_dict)
+    return R.graph["flow_value"], flow_dict
 
 
 def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
@@ -469,7 +469,7 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     # sure that it is reusable.
     if cutset is not None:
         R.add_edges_from(cutset)
-    return (R.graph["flow_value"], partition)
+    return R.graph["flow_value"], partition
 
 
 def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):

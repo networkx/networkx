@@ -52,7 +52,7 @@ def _get_label_info(G, label_name):
     label_dict = np.array(
         [label for label, _ in sorted(label_to_id.items(), key=lambda x: x[1])]
     )
-    return (labels, label_dict)
+    return labels, label_dict
 
 
 def _init_label_matrix(n_samples, n_classes):

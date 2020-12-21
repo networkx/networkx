@@ -109,7 +109,7 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
     # We looked through all edges and removed none of them.
     # So, H is the maximal (k,l)-connected subgraph of G
     if same_as_graph:
-        return (H, graphOK)
+        return H, graphOK
     return H
 
 

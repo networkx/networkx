@@ -66,10 +66,10 @@ def _reciprocity_iter(G, nodes):
         # Reciprocity is not defined for isolated nodes.
         # Return None.
         if n_total == 0:
-            yield (node, None)
+            yield node, None
         else:
             reciprocity = 2.0 * float(len(overlap)) / float(n_total)
-            yield (node, reciprocity)
+            yield node, reciprocity
 
 
 @not_implemented_for("undirected", "multigraph")

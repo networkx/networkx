@@ -913,13 +913,13 @@ def non_edges(graph):
     if graph.is_directed():
         for u in graph:
             for v in non_neighbors(graph, u):
-                yield (u, v)
+                yield u, v
     else:
         nodes = set(graph)
         while nodes:
             u = nodes.pop()
             for v in nodes - set(graph[u]):
-                yield (u, v)
+                yield u, v
 
 
 @not_implemented_for("directed")

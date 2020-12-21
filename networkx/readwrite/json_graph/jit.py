@@ -51,7 +51,7 @@ def jit_graph(data, create_using=None):
     .. deprecated:: 2.6
     """
     warnings.warn(
-        ("jit_graph is deprecated and will be removed in NetworkX 3.0."),
+        "jit_graph is deprecated and will be removed in NetworkX 3.0.",
         DeprecationWarning,
     )
 
@@ -97,7 +97,7 @@ def jit_data(G, indent=None, default=None):
     .. deprecated:: 2.6
     """
     warnings.warn(
-        ("jit_data is deprecated and will be removed in NetworkX 3.0."),
+        "jit_data is deprecated and will be removed in NetworkX 3.0.",
         DeprecationWarning,
     )
     json_graph = []

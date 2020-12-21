@@ -306,7 +306,7 @@ class _AntiGraph(nx.Graph):
             all_nodes = set(self._succ)
             for n in self._nodes:
                 nbrs = all_nodes - set(self._succ[n]) - {n}
-                yield (n, len(nbrs))
+                yield n, len(nbrs)
 
         def __getitem__(self, n):
             nbrs = set(self._succ) - set(self._succ[n]) - {n}
@@ -367,4 +367,4 @@ class _AntiGraph(nx.Graph):
 
         """
         for n in self._adj:
-            yield (n, set(self._adj) - set(self._adj[n]) - {n})
+            yield n, set(self._adj) - set(self._adj[n]) - {n}

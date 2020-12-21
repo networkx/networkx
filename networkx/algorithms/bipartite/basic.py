@@ -202,7 +202,7 @@ def sets(G, top_nodes=None):
         c = color(G)
         X = {n for n, is_top in c.items() if is_top}
         Y = {n for n, is_top in c.items() if not is_top}
-    return (X, Y)
+    return X, Y
 
 
 def density(B, nodes):
@@ -300,4 +300,4 @@ def degrees(B, nodes, weight=None):
     """
     bottom = set(nodes)
     top = set(B) - bottom
-    return (B.degree(top, weight), B.degree(bottom, weight))
+    return B.degree(top, weight), B.degree(bottom, weight)

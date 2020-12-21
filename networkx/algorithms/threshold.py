@@ -732,7 +732,7 @@ def eigenvectors(creation_sequence):
         i += 1
         dd += 1
     if len(ccs) == 1:
-        return (val, vec)
+        return val, vec
     for nn in ccs[1:]:
         scale = 1.0 / sqrt(nn * i * (i + nn))
         vec[i] = i * [-nn * scale] + nn * [i * scale] + [0] * (N - i - nn)
@@ -753,7 +753,7 @@ def eigenvectors(creation_sequence):
             val[i] = e
             i += 1
             dd += 1
-    return (val, vec)
+    return val, vec
 
 
 def spectral_projection(u, eigenpairs):

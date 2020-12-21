@@ -350,7 +350,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
             "Bidirectional shortest path called without source or target"
         )
     if target == source:
-        return ({target: None}, {source: None}, source)
+        return {target: None}, {source: None}, source
 
     # handle either directed or undirected
     if G.is_directed():
