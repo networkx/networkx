@@ -31,7 +31,7 @@ class TestModularity:
         )
 
     def test_modularity(self):
-        "Modularity matrix"
+        """Modularity matrix"""
         # fmt: off
         B = np.array([[-1.125,  0.25,  0.25,  0.625,  0.],
                       [0.25, -0.5,  0.5, -0.25,  0.],
@@ -48,7 +48,7 @@ class TestModularity:
         )
 
     def test_modularity_weight(self):
-        "Modularity matrix with weights"
+        """Modularity matrix with weights"""
         # fmt: off
         B = np.array([[-1.125,  0.25,  0.25,  0.625,  0.],
                       [0.25, -0.5,  0.5, -0.25,  0.],
@@ -68,7 +68,7 @@ class TestModularity:
         )
 
     def test_directed_modularity(self):
-        "Directed Modularity matrix"
+        """Directed Modularity matrix"""
         # fmt: off
         B = np.array([[-0.2,  0.6,  0.8, -0.4, -0.4, -0.4],
                       [0.,  0.,  0.,  0.,  0.,  0.],

@@ -144,7 +144,7 @@ class TestHypercubeGraph:
 
 
 class TestTriangularLatticeGraph:
-    "Tests for :func:`networkx.generators.lattice.triangular_lattice_graph`"
+    """Tests for :func:`networkx.generators.lattice.triangular_lattice_graph`"""
 
     def test_lattice_points(self):
         """Tests that the graph is really a triangular lattice."""
@@ -191,7 +191,7 @@ class TestTriangularLatticeGraph:
 
 
 class TestHexagonalLatticeGraph:
-    "Tests for :func:`networkx.generators.lattice.hexagonal_lattice_graph`"
+    """Tests for :func:`networkx.generators.lattice.hexagonal_lattice_graph`"""
 
     def test_lattice_points(self):
         """Tests that the graph is really a hexagonal lattice."""

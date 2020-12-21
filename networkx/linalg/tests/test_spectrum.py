@@ -21,7 +21,7 @@ class TestSpectrum:
         nx.add_path(cls.DG, [0, 1, 2])
 
     def test_laplacian_spectrum(self):
-        "Laplacian eigenvalues"
+        """Laplacian eigenvalues"""
         evals = np.array([0, 0, 1, 3, 4])
         e = sorted(nx.laplacian_spectrum(self.G))
         np.testing.assert_almost_equal(e, evals)
@@ -33,7 +33,7 @@ class TestSpectrum:
         np.testing.assert_almost_equal(e, 0.3 * evals)
 
     def test_normalized_laplacian_spectrum(self):
-        "Normalized Laplacian eigenvalues"
+        """Normalized Laplacian eigenvalues"""
         evals = np.array([0, 0, 0.7712864461218, 1.5, 1.7287135538781])
         e = sorted(nx.normalized_laplacian_spectrum(self.G))
         np.testing.assert_almost_equal(e, evals)
@@ -45,13 +45,13 @@ class TestSpectrum:
         np.testing.assert_almost_equal(e, evals)
 
     def test_adjacency_spectrum(self):
-        "Adjacency eigenvalues"
+        """Adjacency eigenvalues"""
         evals = np.array([-np.sqrt(2), 0, np.sqrt(2)])
         e = sorted(nx.adjacency_spectrum(self.P))
         np.testing.assert_almost_equal(e, evals)
 
     def test_modularity_spectrum(self):
-        "Modularity eigenvalues"
+        """Modularity eigenvalues"""
         evals = np.array([-1.5, 0.0, 0.0])
         e = sorted(nx.modularity_spectrum(self.P))
         np.testing.assert_almost_equal(e, evals)
@@ -61,7 +61,7 @@ class TestSpectrum:
         np.testing.assert_almost_equal(e, evals)
 
     def test_bethe_hessian_spectrum(self):
-        "Bethe Hessian eigenvalues"
+        """Bethe Hessian eigenvalues"""
         evals = np.array([0.5 * (9 - np.sqrt(33)), 4, 0.5 * (9 + np.sqrt(33))])
         e = sorted(nx.bethe_hessian_spectrum(self.P, r=2))
         np.testing.assert_almost_equal(e, evals)

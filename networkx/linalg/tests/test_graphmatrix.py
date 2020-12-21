@@ -102,7 +102,7 @@ class TestGraphMatrix:
         cls.no_edges_A = np.array([[0, 0], [0, 0]])
 
     def test_incidence_matrix(self):
-        "Conversion to incidence matrix"
+        """Conversion to incidence matrix"""
         I = (
             nx.incidence_matrix(
                 self.G,
@@ -274,7 +274,7 @@ class TestGraphMatrix:
         np.testing.assert_equal(I, 0.3 * self.MGOI)
 
     def test_adjacency_matrix(self):
-        "Conversion to adjacency matrix"
+        """Conversion to adjacency matrix"""
         np.testing.assert_equal(nx.adj_matrix(self.G).todense(), self.A)
         np.testing.assert_equal(nx.adj_matrix(self.MG).todense(), self.A)
         np.testing.assert_equal(nx.adj_matrix(self.MG2).todense(), self.MG2A)

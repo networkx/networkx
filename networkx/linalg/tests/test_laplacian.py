@@ -25,7 +25,7 @@ class TestLaplacian:
             cls.Gsl.add_edge(node, node)
 
     def test_laplacian(self):
-        "Graph Laplacian"
+        """Graph Laplacian"""
         # fmt: off
         NL = np.array([[ 3, -1, -1, -1,  0],
                        [-1,  2, -1,  0,  0],
@@ -48,7 +48,7 @@ class TestLaplacian:
         )
 
     def test_normalized_laplacian(self):
-        "Generalized Graph Laplacian"
+        """Generalized Graph Laplacian"""
         # fmt: off
         G = np.array([[ 1.   , -0.408, -0.408, -0.577,  0.],
                       [-0.408,  1.   , -0.5  ,  0.   ,  0.],
@@ -91,7 +91,7 @@ class TestLaplacian:
         )
 
     def test_directed_laplacian(self):
-        "Directed Laplacian"
+        """Directed Laplacian"""
         # Graph used as an example in Sec. 4.1 of Langville and Meyer,
         # "Google's PageRank and Beyond". The graph contains dangling nodes, so
         # the pagerank random walk is selected by directed_laplacian
@@ -170,7 +170,7 @@ class TestLaplacian:
         np.testing.assert_almost_equal(L, GL, decimal=3)
 
     def test_directed_combinatorial_laplacian(self):
-        "Directed combinatorial Laplacian"
+        """Directed combinatorial Laplacian"""
         # Graph used as an example in Sec. 4.1 of Langville and Meyer,
         # "Google's PageRank and Beyond". The graph contains dangling nodes, so
         # the pagerank random walk is selected by directed_laplacian

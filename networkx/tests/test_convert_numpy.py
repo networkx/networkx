@@ -49,17 +49,17 @@ class TestConvertNumpyMatrix:
         self.assert_equal(G, GI)
 
     def test_shape(self):
-        "Conversion from non-square array."
+        """Conversion from non-square array."""
         A = np.array([[1, 2, 3], [4, 5, 6]])
         pytest.raises(nx.NetworkXError, nx.from_numpy_matrix, A)
 
     def test_identity_graph_matrix(self):
-        "Conversion from graph to matrix to graph."
+        """Conversion from graph to matrix to graph."""
         A = nx.to_numpy_matrix(self.G1)
         self.identity_conversion(self.G1, A, nx.Graph())
 
     def test_identity_graph_array(self):
-        "Conversion from graph to array to graph."
+        """Conversion from graph to array to graph."""
         A = nx.to_numpy_matrix(self.G1)
         A = np.asarray(A)
         self.identity_conversion(self.G1, A, nx.Graph())
@@ -282,12 +282,12 @@ class TestConvertNumpyArray:
         self.assert_equal(G, GI)
 
     def test_shape(self):
-        "Conversion from non-square array."
+        """Conversion from non-square array."""
         A = np.array([[1, 2, 3], [4, 5, 6]])
         pytest.raises(nx.NetworkXError, nx.from_numpy_array, A)
 
     def test_identity_graph_array(self):
-        "Conversion from graph to array to graph."
+        """Conversion from graph to array to graph."""
         A = nx.to_numpy_array(self.G1)
         self.identity_conversion(self.G1, A, nx.Graph())
 

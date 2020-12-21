@@ -9,7 +9,7 @@ from networkx.utils import pairwise
 
 # Recipe from the itertools documentation.
 def _consume(iterator):
-    "Consume the iterator entirely."
+    """Consume the iterator entirely."""
     # Feed the entire iterator into a zero-length deque.
     deque(iterator, maxlen=0)
 

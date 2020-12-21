@@ -81,7 +81,7 @@ class TestFlowBetweennessCentrality:
 
 class TestApproximateFlowBetweennessCentrality:
     def test_K4_normalized(self):
-        "Approximate current-flow betweenness centrality: K4 normalized"
+        """Approximate current-flow betweenness centrality: K4 normalized"""
         G = nx.complete_graph(4)
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
         epsilon = 0.1
@@ -90,7 +90,7 @@ class TestApproximateFlowBetweennessCentrality:
             np.testing.assert_allclose(b[n], ba[n], atol=epsilon)
 
     def test_K4(self):
-        "Approximate current-flow betweenness centrality: K4"
+        """Approximate current-flow betweenness centrality: K4"""
         G = nx.complete_graph(4)
         b = nx.current_flow_betweenness_centrality(G, normalized=False)
         epsilon = 0.1
@@ -99,7 +99,7 @@ class TestApproximateFlowBetweennessCentrality:
             np.testing.assert_allclose(b[n], ba[n], atol=epsilon * len(G) ** 2)
 
     def test_star(self):
-        "Approximate current-flow betweenness centrality: star"
+        """Approximate current-flow betweenness centrality: star"""
         G = nx.Graph()
         nx.add_star(G, ["a", "b", "c", "d"])
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
@@ -109,7 +109,7 @@ class TestApproximateFlowBetweennessCentrality:
             np.testing.assert_allclose(b[n], ba[n], atol=epsilon)
 
     def test_grid(self):
-        "Approximate current-flow betweenness centrality: 2d grid"
+        """Approximate current-flow betweenness centrality: 2d grid"""
         G = nx.grid_2d_graph(4, 4)
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
         epsilon = 0.1
@@ -125,7 +125,7 @@ class TestApproximateFlowBetweennessCentrality:
             np.testing.assert_allclose(b[n], b_answer[n], atol=0.1)
 
     def test_solvers(self):
-        "Approximate current-flow betweenness centrality: solvers"
+        """Approximate current-flow betweenness centrality: solvers"""
         G = nx.complete_graph(4)
         epsilon = 0.1
         for solver in ["full", "lu", "cg"]:

@@ -15,7 +15,7 @@ class TestBetheHessian:
         cls.P = nx.path_graph(3)
 
     def test_bethe_hessian(self):
-        "Bethe Hessian matrix"
+        """Bethe Hessian matrix"""
         # fmt: off
         H = np.array([[4, -2, 0],
                       [-2, 5, -2],

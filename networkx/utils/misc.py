@@ -258,7 +258,7 @@ def arbitrary_element(iterable):
 
 # Recipe from the itertools documentation.
 def consume(iterator):
-    "Consume the iterator entirely."
+    """Consume the iterator entirely."""
     # Feed the entire iterator into a zero-length deque.
     msg = (
         "consume is deprecated and will be removed in version 3.0. "
@@ -270,7 +270,7 @@ def consume(iterator):
 
 # Recipe from the itertools documentation.
 def pairwise(iterable, cyclic=False):
-    "s -> (s0, s1), (s1, s2), (s2, s3), ..."
+    """s -> (s0, s1), (s1, s2), (s2, s3), ..."""
     a, b = tee(iterable)
     first = next(b, None)
     if cyclic is True:
