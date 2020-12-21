@@ -37,7 +37,7 @@ def are_node_disjoint_paths(G, paths):
         assert is_path(G, path)
     # first and last nodes are source and target
     st = {paths[0][0], paths[0][-1]}
-    num_of_nodes = len([n for path in paths for n in path if n not in st])
+    num_of_nodes = sum(n not in st for path in paths for n in path)
     num_unique_nodes = len({n for path in paths for n in path if n not in st})
     if num_of_nodes == num_unique_nodes:
         return True

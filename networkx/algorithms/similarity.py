@@ -807,8 +807,8 @@ def optimize_edit_paths(
     def reduce_Ce(Ce, ij, m, n):
         if len(ij):
             i, j = zip(*ij)
-            m_i = m - sum(1 for t in i if t < m)
-            n_j = n - sum(1 for t in j if t < n)
+            m_i = m - sum(t < m for t in i)
+            n_j = n - sum(t < n for t in j)
             return make_CostMatrix(reduce_C(Ce.C, i, j, m, n), m_i, n_j)
         else:
             return Ce

@@ -485,8 +485,8 @@ def _check_unconstrained_bridge_property(G, info1):
     # condense G into an forest C
     C = collapse(G, bridge_ccs)
 
-    p = len([n for n, d in C.degree() if d == 1])  # leafs
-    q = len([n for n, d in C.degree() if d == 0])  # isolated
+    p = sum(d == 1 for n, d in C.degree())  # leafs
+    q = sum(d == 0 for n, d in C.degree())  # isolated
     if p + q > 1:
         size_target = int(math.ceil(p / 2.0)) + q
         size_aug = info1["num_edges"]

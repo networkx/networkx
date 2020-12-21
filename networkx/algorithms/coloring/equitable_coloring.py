@@ -59,7 +59,7 @@ def make_N_from_L_C(L, C):
     nodes = L.keys()
     colors = C.keys()
     return {
-        (node, color): sum(1 for v in L[node] if v in C[color])
+        (node, color): sum(v in C[color] for v in L[node])
         for node in nodes
         for color in colors
     }
@@ -67,7 +67,7 @@ def make_N_from_L_C(L, C):
 
 def make_H_from_C_N(C, N):
     return {
-        (c1, c2): sum(1 for node in C[c1] if N[(node, c2)] == 0)
+        (c1, c2): sum(N[(node, c2)] == 0 for node in C[c1])
         for c1 in C.keys()
         for c2 in C.keys()
     }

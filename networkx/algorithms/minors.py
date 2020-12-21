@@ -326,7 +326,7 @@ def _quotient_graph(
     create_using=None,
 ):
     # Each node in the graph must be in exactly one block.
-    if any(sum(1 for b in partition if v in b) != 1 for v in G):
+    if any(sum(v in b for b in partition) != 1 for v in G):
         raise NetworkXException("each node must be in exactly one block")
     if create_using is None:
         H = G.__class__()

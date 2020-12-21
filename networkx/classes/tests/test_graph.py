@@ -59,7 +59,7 @@ class BaseGraphTester:
         G = self.Graph()
 
         def count_objects_of_type(_type):
-            return sum(1 for obj in gc.get_objects() if isinstance(obj, _type))
+            return sum(isinstance(obj, _type) for obj in gc.get_objects())
 
         gc.collect()
         before = count_objects_of_type(self.Graph)

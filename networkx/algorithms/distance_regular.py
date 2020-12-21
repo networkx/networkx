@@ -161,9 +161,9 @@ def intersection_array(G):
             except KeyError as e:  # graph must be connected
                 raise nx.NetworkXError("Graph is not distance regular.") from e
             # number of neighbors of v at a distance of i-1 from u
-            c = len([n for n in G[v] if path_length[n][u] == i - 1])
+            c = sum(path_length[n][u] == i - 1 for n in G[v])
             # number of neighbors of v at a distance of i+1 from u
-            b = len([n for n in G[v] if path_length[n][u] == i + 1])
+            b = sum(path_length[n][u] == i + 1 for n in G[v])
             # b,c are independent of u and v
             if cint.get(i, c) != c or bint.get(i, b) != b:
                 raise nx.NetworkXError("Graph is not distance regular")

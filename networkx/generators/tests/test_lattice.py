@@ -182,7 +182,7 @@ class TestTriangularLatticeGraph:
         assert len(G) == 12
         assert G.size() == 36
         # all degrees are 6
-        assert len([n for n, d in G.degree() if d != 6]) == 0
+        assert sum(d != 6 for n, d in G.degree()) == 0
         G = nx.triangular_lattice_graph(5, 7, periodic=True)
         TLG = nx.triangular_lattice_graph
         pytest.raises(nx.NetworkXError, TLG, 2, 4, periodic=True)
@@ -231,7 +231,7 @@ class TestHexagonalLatticeGraph:
         assert len(G) == 48
         assert G.size() == 72
         # all degrees are 3
-        assert len([n for n, d in G.degree() if d != 3]) == 0
+        assert sum(d != 3 for n, d in G.degree()) == 0
         G = nx.hexagonal_lattice_graph(5, 8, periodic=True)
         HLG = nx.hexagonal_lattice_graph
         pytest.raises(nx.NetworkXError, HLG, 2, 7, periodic=True)

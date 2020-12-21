@@ -523,11 +523,11 @@ def number_of_cliques(G, nodes=None, cliques=None):
     if not isinstance(nodes, list):  # check for a list
         v = nodes
         # assume it is a single value
-        numcliq = len([1 for c in cliques if v in c])
+        numcliq = sum(v in c for c in cliques)
     else:
         numcliq = {}
         for v in nodes:
-            numcliq[v] = len([1 for c in cliques if v in c])
+            numcliq[v] = sum(v in c for c in cliques)
     return numcliq
 
 

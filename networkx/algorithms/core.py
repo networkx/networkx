@@ -363,7 +363,7 @@ def k_corona(G, k, core_number=None):
     """
 
     def func(v, k, c):
-        return c[v] == k and k == sum(1 for w in G[v] if c[w] >= k)
+        return c[v] == k and k == sum(c[w] >= k for w in G[v])
 
     return _core_subgraph(G, func, k, core_number)
 

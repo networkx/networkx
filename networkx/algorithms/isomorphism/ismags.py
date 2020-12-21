@@ -762,7 +762,7 @@ class ISMAGS:
                 if (
                     branch
                     and len(refined) != 1
-                    and len({len(r) for r in refined}) != len([len(r) for r in refined])
+                    and len({len(r) for r in refined}) != len(refined)
                 ):
                     # This is where it breaks. There are multiple new cells
                     # in refined with the same length, and their order
