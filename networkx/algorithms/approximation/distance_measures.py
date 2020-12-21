@@ -14,16 +14,15 @@ def diameter(G, seed=None):
     of a directed or undirected graph G. The procedure used varies depending on the graph
     being directed or not.
 
-    If G is an `undirected` graph, then the `2-sweep` procedure is being used [1]_.
+    If G is an `undirected` graph, then the function uses the `2-sweep` algorithm [1]_.
     The main idea is to pick the farthest node from a random node and return its eccentricity.
 
-    Otherwise, if G is a `directed` graph, then the directed version of the 2-sweep
-    algorithm is used, referred to as `2-dSweep` [2]_. The procedure starts by selecting
-    a random source node $s$ from which it performs a forward and a backward BFS.
-    Let $a_1$ and $a_2$ be the farthest nodes in the forward and backward cases, respectively.
-    Then, it computes the backward eccentricity of $a_1$ using a backward BFS and the
-    forward eccentricity of $a_2$ using a forward BFS. Finally, it returns the best
-    bound between the two.
+    Otherwise, if G is a `directed` graph, the function uses the `2-dSweep` algorithm [2]_,
+    The procedure starts by selecting a random source node $s$ from which it performs a
+    forward and a backward BFS. Let $a_1$ and $a_2$ be the farthest nodes in the forward and
+    backward cases, respectively. Then, it computes the backward eccentricity of $a_1$ using
+    a backward BFS and the forward eccentricity of $a_2$ using a forward BFS.
+    Finally, it returns the best lower bound between the two.
 
     In both cases, the time complexity is linear with respect to the size of G.
 
@@ -92,9 +91,9 @@ def _two_sweep_undirected(G, seed=None):
 
         ``seed`` is a random.Random or numpy.random.RandomState instance
     """
-    # pick a random source node
+    # select a random source node
     source = seed.sample(G.nodes(), 1)[0]
-    # get a node v that is (one of) the farthest nodes from the source
+    # take a node v that is (one of) the farthest nodes from the source
     *_, (_, v) = nx.bfs_edges(G, source)
     # compute the distances from v to the other nodes
     distances = nx.single_source_shortest_path_length(G, v)
@@ -106,8 +105,8 @@ def _two_sweep_directed(G, seed=None):
     """Helper function for finding a lower bound on the diameter
         for directed Graphs.
 
-        It is based on the directed version of the 2-sweep algorithm.
-        The algorithm is based on the following steps.
+        It implements 2-dSweep, the directed version of the 2-sweep algorithm.
+        The algorithm follows the following steps.
         1. Select a source node $s$ at random.
         2. Perform a forward BFS from $s$ to select a node $a_1$ at the maximum
         distance from the source, and compute $LB_1$, the backward eccentricity of $a_1$.
@@ -123,17 +122,17 @@ def _two_sweep_directed(G, seed=None):
     """
     # get a new digraph G' with the edges reversed in the opposite direction
     G_reversed = G.reverse()
-    # pick a random source node
+    # select a random source node
     source = seed.sample(G.nodes(), 1)[0]
-    # get a node a_1 at the maximum distance from the source in G
+    # take a node a_1 at the maximum distance from the source in G
     *_, (_, a_1) = nx.bfs_edges(G, source)
     # compute the distances from a_1 to the other nodes in G reversed
     distances_1 = nx.single_source_shortest_path_length(G_reversed, a_1)
-    # get a node a_2 at the maximum distance from the source in G_reversed
+    # take a node a_2 at the maximum distance from the source in G_reversed
     *_, (_, a_2) = nx.bfs_edges(G, source, reverse=True)
     # compute the distances from a_2 to the other nodes in G
     distances_2 = nx.single_source_shortest_path_length(G, a_2)
     # compute the two bounds
     lb_1, lb_2 = max(distances_1.values()), max(distances_2.values())
-    # return the best bound
+    # return the best lower bound
     return max(lb_1, lb_2)
