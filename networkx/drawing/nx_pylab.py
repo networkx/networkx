@@ -192,8 +192,8 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     linewidths : [None | scalar | sequence]
        Line width of symbol border (default =1.0)
 
-    width : float, optional (default=1.0)
-       Line width of edges
+    width : float, or array of floats
+       Line width of edges (default=1.0)
 
     edge_color : color or array of colors (default='k')
        Edge color. Can be a single color or a sequence of colors with the same
