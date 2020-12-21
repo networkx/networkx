@@ -174,7 +174,7 @@ def dedensify(G, threshold, prefix=None, copy=True):
 
     degrees = G.in_degree if G.is_directed() else G.degree
     # Group nodes based on degree threshold
-    high_degree_nodes = set([n for n, d in degrees if d > threshold])
+    high_degree_nodes = {n for n, d in degrees if d > threshold}
     low_degree_nodes = G.nodes() - high_degree_nodes
 
     auxillary = {}

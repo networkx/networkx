@@ -554,7 +554,7 @@ def cliques_containing_node(G, nodes=None, cliques=None):
     return vcliques
 
 
-class MaxWeightClique(object):
+class MaxWeightClique:
     """A class for the maximum weight clique algorithm.
 
     This class is a helper for the `max_weight_clique` function.  The class
