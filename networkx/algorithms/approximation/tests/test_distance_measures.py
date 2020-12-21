@@ -14,24 +14,23 @@ class TestDiameter:
     def test_null_graph(self):
         """Test empty graph."""
         G = nx.null_graph()
-        with pytest.raises(nx.NetworkXError) as exc:
+        with pytest.raises(
+            nx.NetworkXError, match="Expected non-empty NetworkX graph!"
+        ):
             diameter(G)
-        assert str(exc.value) == "Expected non-empty NetworkX graph!"
 
     def test_undirected_non_connected(self):
         """Test an undirected disconnected graph."""
         graph = nx.path_graph(10)
         graph.remove_edge(3, 4)
-        with pytest.raises(nx.NetworkXError) as exc:
+        with pytest.raises(nx.NetworkXError, match="Graph not connected."):
             diameter(graph)
-        assert str(exc.value) == "Graph not connected."
 
     def test_directed_non_strongly_connected(self):
         """Test an undirected non strongly connected graph."""
         graph = nx.path_graph(10, create_using=nx.DiGraph())
-        with pytest.raises(nx.NetworkXError) as exc:
+        with pytest.raises(nx.NetworkXError, match="DiGraph not strongly connected."):
             diameter(graph)
-        assert str(exc.value) == "DiGraph not strongly connected."
 
     def test_complete_undirected_graph(self):
         """Test a complete undirected graph."""

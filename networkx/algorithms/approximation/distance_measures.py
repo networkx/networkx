@@ -65,35 +65,18 @@ def diameter(G, seed=None):
     # if G is empty
     if not G:
         raise nx.NetworkXError("Expected non-empty NetworkX graph!")
-    # if G is a directed graph
+    # if there's only a node
+    if G.number_of_nodes() == 1:
+        return 0
+    # if G is directed
     if G.is_directed():
         if not nx.is_strongly_connected(G):
             raise nx.NetworkXError("DiGraph not strongly connected.")
         return _two_sweep_directed(G, seed)
-    # else if G is an undirected graph
-    else:
-        if not nx.is_connected(G):
-            raise nx.NetworkXError("Graph not connected.")
-        return _two_sweep_undirected(G, seed)
-
-
-def _random_farthest_node(G, source, seed=None):
-    """Helper function for getting a node at the maximum distance
-        from a source node in G.
-
-        ``G`` is a NetworkX undirected graph.
-
-    .. note::
-
-        ``seed`` is a random.Random or numpy.random.RandomState instance
-    """
-    # compute the distances from the source to the other nodes
-    distances = nx.single_source_shortest_path_length(G, source)
-    # get a list with all the nodes at the maximum distance
-    max_distance = max(distances.values())
-    farthest_nodes = [node for node, dist in distances.items() if dist == max_distance]
-    # return one of nodes at the maximum distance
-    return seed.choice(farthest_nodes)
+    # else if G is undirected
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("Graph not connected.")
+    return _two_sweep_undirected(G, seed)
 
 
 def _two_sweep_undirected(G, seed=None):
@@ -111,11 +94,11 @@ def _two_sweep_undirected(G, seed=None):
     """
     # pick a random source node
     source = seed.sample(G.nodes(), 1)[0]
-    # get a node i that is (one of) the farthest nodes from the source
-    i = _random_farthest_node(G, source, seed)
-    # compute the distances from i to the other nodes
-    distances = nx.single_source_shortest_path_length(G, i)
-    # return the eccentricity of i
+    # get a node v that is (one of) the farthest nodes from the source
+    *_, (_, v) = nx.bfs_edges(G, source)
+    # compute the distances from v to the other nodes
+    distances = nx.single_source_shortest_path_length(G, v)
+    # return the eccentricity of v
     return max(distances.values())
 
 
@@ -143,11 +126,11 @@ def _two_sweep_directed(G, seed=None):
     # pick a random source node
     source = seed.sample(G.nodes(), 1)[0]
     # get a node a_1 at the maximum distance from the source in G
-    a_1 = _random_farthest_node(G, source, seed)
-    # compute the distances from a_1 to the other nodes in G_reversed
+    *_, (_, a_1) = nx.bfs_edges(G, source)
+    # compute the distances from a_1 to the other nodes in G reversed
     distances_1 = nx.single_source_shortest_path_length(G_reversed, a_1)
     # get a node a_2 at the maximum distance from the source in G_reversed
-    a_2 = _random_farthest_node(G_reversed, source, seed)
+    *_, (_, a_2) = nx.bfs_edges(G, source, reverse=True)
     # compute the distances from a_2 to the other nodes in G
     distances_2 = nx.single_source_shortest_path_length(G, a_2)
     # compute the two bounds
