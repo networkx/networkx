@@ -48,11 +48,28 @@ jobs:
         pip install .
         pip list
 
+    - name: Install SSH agent
+      if: github.ref == 'refs/heads/master'
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+        # TODO: Set up deploy key and add to secrets
+        ssh-private-key: ${{ secrets.CI_DEPLOY_KEY }}
+
     - name: Build docs
+      if: github.ref == 'refs/heads/master'
       run: |
-        echo "To do"
+        make -C doc/ html
+        make -C doc/ latexpdf LATEXOPTS="-file-line-error -halt-on-error"
+        cp -a doc/build/latex/networkx_reference.pdf doc/build/html/_downloads/.
+        touch doc/build/html/.nojekyll
 
     - name: Deploy docs
-      run: |
-        echo "To do"
+      if: github.ref == 'refs/heads/master'
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        FOLDER: doc/build/html
+        REPOSITORY_NAME: networkx/documentation
+        BRANCH: gh-pages
+        TARGET_FOLDER: latest
+        SSH: true
 
