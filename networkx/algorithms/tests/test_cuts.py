@@ -87,8 +87,7 @@ class TestNormalizedCutSize:
         expected = 2 * ((1 / 4) + (1 / 2))
         assert expected == size
         # Test with no input T
-        size_no_T = nx.normalized_cut_size(G, S)
-        assert expected == size_no_T
+        assert expected == nx.normalized_cut_size(G, S)
 
     def test_directed(self):
         G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
@@ -99,8 +98,7 @@ class TestNormalizedCutSize:
         expected = 2 * ((1 / 2) + (1 / 1))
         assert expected == size
         # Test with no input T
-        size_no_T = nx.normalized_cut_size(G, S)
-        assert expected == size_no_T
+        assert expected == nx.normalized_cut_size(G, S)
 
 
 class TestConductance:
@@ -119,9 +117,7 @@ class TestConductance:
         G2 = nx.barbell_graph(3, 0)
         # There is only one cut edge, and each set has volume seven.
         S2 = {0, 1, 2}
-        conductance_no_T = nx.conductance(G2, S2)
-        expected2 = 1 / 7
-        assert expected2 == conductance_no_T
+        assert nx.conductance(G2, S2) == 1 / 7
 
 
 class TestEdgeExpansion:
@@ -135,8 +131,7 @@ class TestEdgeExpansion:
         expected = 1 / 5
         assert expected == expansion
         # Test with no input T
-        expansion_no_T = nx.edge_expansion(G, S)
-        assert expected == expansion_no_T
+        assert expected == nx.edge_expansion(G, S)
 
 
 class TestNodeExpansion:
