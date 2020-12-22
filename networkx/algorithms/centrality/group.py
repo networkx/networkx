@@ -1,6 +1,5 @@
 """Group centrality measures."""
 from heapq import heappush, heappop
-from itertools import count
 from copy import deepcopy
 
 import networkx as nx
@@ -16,7 +15,7 @@ __all__ = [
 ]
 
 
-def group_betweenness_centrality(G, C, normalized=False, endpoints=True, weight=None):
+def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=False):
     r"""Compute the group betweenness centrality for a group of nodes.
 
     Group betweenness centrality of a group of nodes $C$ is the sum of the
