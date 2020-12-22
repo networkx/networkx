@@ -78,7 +78,7 @@ def diameter(G, seed=None):
     return _two_sweep_undirected(G, seed)
 
 
-def _two_sweep_undirected(G, seed=None):
+def _two_sweep_undirected(G, seed):
     """Helper function for finding a lower bound on the diameter
         for undirected Graphs.
 
@@ -101,7 +101,7 @@ def _two_sweep_undirected(G, seed=None):
     return max(distances.values())
 
 
-def _two_sweep_directed(G, seed=None):
+def _two_sweep_directed(G, seed):
     """Helper function for finding a lower bound on the diameter
         for directed Graphs.
 
