@@ -93,12 +93,10 @@ def _two_sweep_undirected(G, seed):
     """
     # select a random source node
     source = seed.choice(list(G))
-    # take a node v that is (one of) the farthest nodes from the source
-    *_, (_, v) = nx.bfs_edges(G, source)
-    # compute the distances from v to the other nodes
-    distances = nx.single_source_shortest_path_length(G, v)
-    # return the eccentricity of v
-    return max(distances.values())
+    # take a node that is (one of) the farthest nodes from the source
+    *_, node = nx.shortest_path_length(G, source)
+    # return the eccentricity of the node
+    return nx.eccentricity(G, node)
 
 
 def _two_sweep_directed(G, seed):
@@ -125,14 +123,8 @@ def _two_sweep_directed(G, seed):
     # select a random source node
     source = seed.choice(list(G))
     # take a node a_1 at the maximum distance from the source in G
-    *_, (_, a_1) = nx.bfs_edges(G, source)
-    # compute the distances from a_1 to the other nodes in G reversed
-    distances_1 = nx.single_source_shortest_path_length(G_reversed, a_1)
+    *_, a_1 = nx.shortest_path_length(G, source)
     # take a node a_2 at the maximum distance from the source in G_reversed
-    *_, (_, a_2) = nx.bfs_edges(G, source, reverse=True)
-    # compute the distances from a_2 to the other nodes in G
-    distances_2 = nx.single_source_shortest_path_length(G, a_2)
-    # compute the two bounds
-    lb_1, lb_2 = max(distances_1.values()), max(distances_2.values())
-    # return the best lower bound
-    return max(lb_1, lb_2)
+    *_, a_2 = nx.shortest_path_length(G_reversed, source)
+    # return the max between the backward eccentricity of a_1 and the forward eccentricity of a_2
+    return max(nx.eccentricity(G_reversed, a_1), nx.eccentricity(G, a_2))
