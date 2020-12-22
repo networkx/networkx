@@ -92,7 +92,7 @@ def _two_sweep_undirected(G, seed=None):
         ``seed`` is a random.Random or numpy.random.RandomState instance
     """
     # select a random source node
-    source = seed.sample(G.nodes(), 1)[0]
+    source = seed.choice(list(G))
     # take a node v that is (one of) the farthest nodes from the source
     *_, (_, v) = nx.bfs_edges(G, source)
     # compute the distances from v to the other nodes
@@ -123,7 +123,7 @@ def _two_sweep_directed(G, seed=None):
     # get a new digraph G' with the edges reversed in the opposite direction
     G_reversed = G.reverse()
     # select a random source node
-    source = seed.sample(G.nodes(), 1)[0]
+    source = seed.choice(list(G))
     # take a node a_1 at the maximum distance from the source in G
     *_, (_, a_1) = nx.bfs_edges(G, source)
     # compute the distances from a_1 to the other nodes in G reversed
