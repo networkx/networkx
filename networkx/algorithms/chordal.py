@@ -50,8 +50,6 @@ def is_chordal(G):
     ------
     NetworkXNotImplemented
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
-        If the input graph is an instance of one of these classes, a
-        :exc:`NetworkXNotImplemented` is raised.
 
     Examples
     --------
@@ -183,8 +181,6 @@ def chordal_graph_cliques(G):
     ------
     NetworkXError
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
-        If the input graph is an instance of one of these classes, a
-        :exc:`NetworkXError` is raised.
         The algorithm can only be applied to chordal graphs. If the input
         graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
 
@@ -229,8 +225,6 @@ def chordal_graph_treewidth(G):
     ------
     NetworkXError
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
-        If the input graph is an instance of one of these classes, a
-        :exc:`NetworkXError` is raised.
         The algorithm can only be applied to chordal graphs. If the input
         graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
 
@@ -359,8 +353,6 @@ def _chordal_graph_cliques(G):
     ------
     NetworkXError
         The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
-        If the input graph is an instance of one of these classes, a
-        :exc:`NetworkXError` is raised.
         The algorithm can only be applied to chordal graphs. If the input
         graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
 
