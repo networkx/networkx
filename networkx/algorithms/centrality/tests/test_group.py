@@ -39,7 +39,9 @@ class TestGroupBetweennessCentrality:
         """
         G = nx.cycle_graph(7)
         C = [[0, 1, 6], [0, 1, 5]]
-        b = nx.group_betweenness_centrality(G, C, weight=None, endpoints=False, normalized=False)
+        b = nx.group_betweenness_centrality(
+            G, C, weight=None, endpoints=False, normalized=False
+        )
         b_answer = [0.0, 6.0]
         assert b == b_answer
 
@@ -49,7 +51,9 @@ class TestGroupBetweennessCentrality:
         """
         G = nx.cycle_graph(6)
         C = [0, 1, 5]
-        b = nx.group_betweenness_centrality(G, C, weight=None, endpoints=False, normalized=False)
+        b = nx.group_betweenness_centrality(
+            G, C, weight=None, endpoints=False, normalized=False
+        )
         b_answer = [0.0]
         assert b == b_answer
 
@@ -60,7 +64,9 @@ class TestGroupBetweennessCentrality:
         G = nx.path_graph(5)
         G.remove_edge(0, 1)
         C = [1]
-        b = nx.group_betweenness_centrality(G, C, weight=None, endpoints=False, normalized=False)
+        b = nx.group_betweenness_centrality(
+            G, C, weight=None, endpoints=False, normalized=False
+        )
         b_answer = [0.0]
         assert b == b_answer
 
@@ -84,7 +90,9 @@ class TestGroupBetweennessCentrality:
         G.add_edge(4, 3, weight=6)
         G.add_edge(2, 4, weight=7)
         C = [1, 2]
-        b = nx.group_betweenness_centrality(G, C, weight="weight", endpoints=False)
+        b = nx.group_betweenness_centrality(
+            G, C, weight="weight", endpoints=False, normalized=False
+        )
         b_answer = [5.0]
         assert b == b_answer
 
