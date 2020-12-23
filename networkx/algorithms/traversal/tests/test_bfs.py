@@ -18,18 +18,20 @@ class TestBFS:
 
     def test_predecessor_directed_graph(self):
         # We have a directed graph that looks like this:
-        #        3   4
+        #        0   2
         #        ↓   ↓
-        #        1   2
+        #        1   3
         #         ↘ ↙
-        #          0
+        #          4
+        #          ↓
+        #          5
         G = nx.DiGraph()
-        G.add_edges_from([(3, 1), (1, 0), (4, 2), (2, 0)])
-        assert sorted(nx.bfs_predecessors(G, source=0)) == [
-            (1, 0),
-            (2, 0),
-            (3, 1),
-            (4, 2),
+        G.add_edges_from([(0, 1), (2, 3), (1, 4), (3, 4), (4, 5)])
+        assert sorted(nx.bfs_predecessors(G, source=4)) == [
+            (0, 1),
+            (1, 4),
+            (2, 3),
+            (3, 4),
         ]
 
     def test_bfs_tree(self):
