@@ -16,6 +16,22 @@ class TestBFS:
     def test_predecessor(self):
         assert dict(nx.bfs_predecessors(self.G, source=0)) == {1: 0, 2: 1, 3: 1, 4: 2}
 
+    def test_predecessor_directed_graph(self):
+        # We have a directed graph that looks like this:
+        #        3   4
+        #        ↓   ↓
+        #        1   2
+        #         ↘ ↙
+        #          0
+        G = nx.DiGraph()
+        G.add_edges_from([(3, 1), (1, 0), (4, 2), (2, 0)])
+        assert sorted(nx.bfs_predecessors(G, source=0)) == [
+            (1, 0),
+            (2, 0),
+            (3, 1),
+            (4, 2),
+        ]
+
     def test_bfs_tree(self):
         T = nx.bfs_tree(self.G, source=0)
         assert sorted(T.nodes()) == sorted(self.G.nodes())

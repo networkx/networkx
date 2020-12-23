@@ -289,7 +289,11 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     edge_bfs
     """
     for s, t in bfs_edges(
-        G, source, depth_limit=depth_limit, sort_neighbors=sort_neighbors
+        G,
+        source,
+        reverse=G.is_directed(),
+        depth_limit=depth_limit,
+        sort_neighbors=sort_neighbors,
     ):
         yield (t, s)
 
