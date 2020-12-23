@@ -271,7 +271,7 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     >>> nx.add_path(N, [0, 1, 2, 3, 4, 7])
     >>> nx.add_path(N, [3, 5, 6, 7])
     >>> print(sorted(nx.bfs_predecessors(N, source=2)))
-    [(3, 2), (4, 3), (5, 3), (6, 5), (7, 4)]
+    [(0, 1), (1, 2)]
 
     Notes
     -----
