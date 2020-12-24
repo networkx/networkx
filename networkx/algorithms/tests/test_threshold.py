@@ -142,7 +142,7 @@ class TestGeneratorThreshold:
         ]
         assert pytest.raises(TypeError, nxt.shortest_path, [3.0, 1.0, 2.0], 1)
 
-    def random_threshold_sequence(self):
+    def test_random_threshold_sequence(self):
         assert len(nxt.random_threshold_sequence(10, 0.5)) == 10
         assert nxt.random_threshold_sequence(10, 0.5, seed=42) == [
             "d",
