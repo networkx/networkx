@@ -69,12 +69,8 @@ def diameter(G, seed=None):
         return 0
     # if G is directed
     if G.is_directed():
-        if not nx.is_strongly_connected(G):
-            raise nx.NetworkXError("DiGraph not strongly connected.")
         return _two_sweep_directed(G, seed)
     # else if G is undirected
-    if not nx.is_connected(G):
-        raise nx.NetworkXError("Graph not connected.")
     return _two_sweep_undirected(G, seed)
 
 
@@ -93,8 +89,13 @@ def _two_sweep_undirected(G, seed):
     """
     # select a random source node
     source = seed.choice(list(G))
+    # get the distances to the other nodes
+    distances = nx.shortest_path_length(G, source)
+    # if some nodes have not been visited, then the graph is not connected
+    if len(distances) != len(G):
+        raise nx.NetworkXError("Graph not connected.")
     # take a node that is (one of) the farthest nodes from the source
-    *_, node = nx.shortest_path_length(G, source)
+    *_, node = distances
     # return the eccentricity of the node
     return nx.eccentricity(G, node)
 
@@ -122,9 +123,18 @@ def _two_sweep_directed(G, seed):
     G_reversed = G.reverse()
     # select a random source node
     source = seed.choice(list(G))
+    # compute forward distances from source
+    forward_distances = nx.shortest_path_length(G, source)
+    # compute backward distances  from source
+    backward_distances = nx.shortest_path_length(G_reversed, source)
+    # if either the source can't reach every node or not every node
+    # can reach the source, then the graph is not strongly connected
+    n = len(G)
+    if len(forward_distances) != n or len(backward_distances) != n:
+        raise nx.NetworkXError("DiGraph not strongly connected.")
     # take a node a_1 at the maximum distance from the source in G
-    *_, a_1 = nx.shortest_path_length(G, source)
+    *_, a_1 = forward_distances
     # take a node a_2 at the maximum distance from the source in G_reversed
-    *_, a_2 = nx.shortest_path_length(G_reversed, source)
+    *_, a_2 = backward_distances
     # return the max between the backward eccentricity of a_1 and the forward eccentricity of a_2
     return max(nx.eccentricity(G_reversed, a_1), nx.eccentricity(G, a_2))
