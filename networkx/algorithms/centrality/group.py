@@ -68,8 +68,9 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
 
     Notes
     -----
-    The measure is described in [1]_.
-    The algorithm is presented in [2].
+    Group betweenness centrality is described in [1]_ and its importance discussed in [3]_.
+    initial implementation of the algorithm is mentioned in [2]_. This function uses
+     an improved algorithm presented in [4]_.
 
     The number of nodes in the group must be a maximum of n - 2 where `n`
     is the total number of nodes in the graph.
@@ -84,7 +85,16 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
        The Centrality of Groups and Classes.
        Journal of Mathematical Sociology. 23(3): 181-201. 1999.
        http://www.analytictech.com/borgatti/group_centrality.htm
-    .. [2] Rami Puzis, Yuval Elovici, and Shlomi Dolev.
+    .. [2] Ulrik Brandes:
+       On Variants of Shortest-Path Betweenness
+       Centrality and their Generic Computation.
+       Social Networks 30(2):136-145, 2008.
+       http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.72.9610&rep=rep1&type=pdf
+    .. [3] Sourav Medya et. al.:
+       Group Centrality Maximization via Network Design.
+       SIAM International Conference on Data Mining, SDM 2018, 126–134.
+       https://sites.cs.ucsb.edu/~arlei/pubs/sdm18.pdf
+    .. [4] Rami Puzis, Yuval Elovici, and Shlomi Dolev.
        "Fast algorithm for successive computation of group betweenness centrality."
         https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709?casa_token=YvH6xTIc6AUAAAAA%3A90BkxMRiQyOg9y7PEU_lrcf1FXPF_sqTCI_Y_2lD0QodSeyXAQtz-s0_e1Z0CtkZ1bWdVCkK9S5fXw
 
@@ -93,21 +103,15 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     V = set(G)  # set of nodes in G
 
     #  check weather C contains one or many groups
-    if not any(isinstance(el, list) for el in C):
+    if not any(isinstance(el, list) for el in C) and not any(isinstance(el, set) for el in C):
         C = [C]
-    set_v = set()
-    for i in range(len(C)):
-        set_v.update(C[i])
-        if len(set_v - V) != 0:  # element(s) of C not in V
-            C[i] = list(set_v.intersection(C[i]))
-            raise nx.NodeNotFound(
-                "The node(s) " + str(list(set_v - V)) + " are not " "in the graph."
-            )
-
+    set_v = {node for group in C for node in group}
+    if set_v - G.nodes:  # element(s) of C not in G
+        raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are in C but not in G.")
     # pre-processing
-    sigma = dict.fromkeys(G)
-    delta = dict.fromkeys(G)
-    D = dict.fromkeys(G)
+    sigma = {}
+    delta = {}
+    D = {}
     for s in G:
         if weight is None:  # use BFS
             D[s], sigma[s], delta[s] = _single_source_shortest_path_basic(G, s)
