@@ -1,6 +1,6 @@
-sphinx==3.3.1
+sphinx==3.4.1
 sphinx_rtd_theme==0.5.0
-sphinx-gallery==0.8.1
+sphinx-gallery==0.8.2
 numpydoc>=1.1
 pillow>=8.0
 nb2plots>=0.6
