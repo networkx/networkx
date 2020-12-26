@@ -28,6 +28,8 @@ __author__ = (
 __date__ = release.date
 __version__ = release.version
 
+del release
+
 __bibtex__ = """@inproceedings{hagberg-2008-exploring,
 author = {Aric A. Hagberg and Daniel A. Schult and Pieter J. Swart},
 title = {Exploring network structure, dynamics, and function using {NetworkX}},

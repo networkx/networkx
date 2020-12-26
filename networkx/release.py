@@ -21,15 +21,13 @@ So the created file is included in the source distribution.
 """
 
 import os
-import sys
 import time
 import datetime
-
-basedir = os.path.abspath(os.path.split(__file__)[0])
 
 
 def write_versionfile():
     """Creates a static file containing version information."""
+    basedir = os.path.abspath(os.path.split(__file__)[0])
     versionfile = os.path.join(basedir, "version.py")
 
     text = '''"""
@@ -58,10 +56,8 @@ date = %(date)r
         # This is *good*, and the most likely place users will be when
         # running setup.py. We do not want to overwrite version.py.
         # Grab the version so that setup can use it.
-        # sys.path.insert(0, basedir)
         from version import version
 
-        # del sys.path[0]
     else:
         # This is *bad*.  It means the user might have a tarball that
         # does not include version.py.  Let this error raise so we can
@@ -88,7 +84,11 @@ def get_info():
     # This is where most final releases of NetworkX will be.
     # All info should come from version.py.
     try:
-        from networkx.version import date, version
+        from network import version as _version
+
+        version = _version.version
+        date = _version.date
+        del _version
     except ImportError:
         #   we failed to determine static versioning info
         version = "".join([str(major), ".", str(minor)])
