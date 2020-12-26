@@ -1,22 +1,7 @@
-"""
-Setup script for networkx
-
-You can install networkx with
-
-python setup.py install
-"""
 from glob import glob
 import os
 import sys
-
-if os.path.exists("MANIFEST"):
-    os.remove("MANIFEST")
-
 from setuptools import setup
-
-if sys.argv[-1] == "setup.py":
-    print("To install, run 'python setup.py install'")
-    print()
 
 if sys.version_info[:2] < (3, 7):
     error = (
@@ -27,12 +12,55 @@ if sys.version_info[:2] < (3, 7):
     sys.stderr.write(error + "\n")
     sys.exit(1)
 
-# Write the version information.
-sys.path.insert(0, "networkx")
-import release
 
-version = release.write_versionfile()
-sys.path.pop(0)
+name = "networkx"
+description = "Python package for creating and manipulating graphs and networks"
+authors = {
+    "Hagberg": ("Aric Hagberg", "hagberg@lanl.gov"),
+    "Schult": ("Dan Schult", "dschult@colgate.edu"),
+    "Swart": ("Pieter Swart", "swart@lanl.gov"),
+}
+maintainer = "NetworkX Developers"
+maintainer_email = "networkx-discuss@googlegroups.com"
+url = "https://networkx.org/"
+project_urls = {
+    "Bug Tracker": "https://github.com/networkx/networkx/issues",
+    "Documentation": "https://networkx.org/documentation/stable/",
+    "Source Code": "https://github.com/networkx/networkx",
+}
+platforms = ["Linux", "Mac OSX", "Windows", "Unix"]
+keywords = [
+    "Networks",
+    "Graph Theory",
+    "Mathematics",
+    "network",
+    "graph",
+    "discrete mathematics",
+    "math",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+with open("networkx/__init__.py") as fid:
+    for line in fid:
+        if line.startswith("__version__"):
+            version = line.strip().split()[-1][1:-1]
+            break
 
 packages = [
     "networkx",
@@ -126,7 +154,7 @@ package_data = {
 
 
 def parse_requirements_file(filename):
-    with open(filename, encoding="utf-8") as fid:
+    with open(filename) as fid:
         requires = [l.strip() for l in fid.readlines() if l]
 
     return requires
@@ -144,19 +172,19 @@ with open("README.rst", "r") as fh:
 if __name__ == "__main__":
 
     setup(
-        name=release.name.lower(),
+        name=name,
         version=version,
-        maintainer=release.maintainer,
-        maintainer_email=release.maintainer_email,
-        author=release.authors["Hagberg"][0],
-        author_email=release.authors["Hagberg"][1],
-        description=release.description,
-        keywords=release.keywords,
+        maintainer=maintainer,
+        maintainer_email=maintainer_email,
+        author=authors["Hagberg"][0],
+        author_email=authors["Hagberg"][1],
+        description=description,
+        keywords=keywords,
         long_description=long_description,
-        platforms=release.platforms,
-        url=release.url,
-        project_urls=release.project_urls,
-        classifiers=release.classifiers,
+        platforms=platforms,
+        url=url,
+        project_urls=project_urls,
+        classifiers=classifiers,
         packages=packages,
         data_files=data,
         package_data=package_data,
