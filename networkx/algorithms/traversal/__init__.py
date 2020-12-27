@@ -1,3 +1,6 @@
+__private__ = ["tests"]
+
+
 def lazy_import(module_name, submodules, submod_attrs):
     import sys
     import importlib
@@ -85,25 +88,6 @@ __getattr__ = lazy_import(
         "edgedfs": [
             "edge_dfs",
         ],
-        "tests": [
-            "FORWARD",
-            "REVERSE",
-            "TestBFS",
-            "TestBeamSearch",
-            "TestBreadthLimitedSearch",
-            "TestDFS",
-            "TestDepthLimitedSearch",
-            "TestEdgeBFS",
-            "TestEdgeDFS",
-            "edge_bfs",
-            "edge_dfs",
-            "identity",
-            "test_beamsearch",
-            "test_bfs",
-            "test_dfs",
-            "test_edgebfs",
-            "test_edgedfs",
-        ],
     },
 )
 
@@ -113,15 +97,6 @@ def __dir__():
 
 
 __all__ = [
-    "FORWARD",
-    "REVERSE",
-    "TestBFS",
-    "TestBeamSearch",
-    "TestBreadthLimitedSearch",
-    "TestDFS",
-    "TestDepthLimitedSearch",
-    "TestEdgeBFS",
-    "TestEdgeDFS",
     "beamsearch",
     "bfs_beam_edges",
     "bfs_edges",
@@ -142,11 +117,5 @@ __all__ = [
     "edge_dfs",
     "edgebfs",
     "edgedfs",
-    "identity",
-    "test_beamsearch",
-    "test_bfs",
-    "test_dfs",
-    "test_edgebfs",
-    "test_edgedfs",
     "tests",
 ]
