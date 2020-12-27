@@ -17,6 +17,7 @@ For example:
   ['A', 'A', 'B', 'B']
 
 """
+__private__ = ["tests"]
 
 
 def lazy_import(module_name, submodules, submod_attrs):
@@ -85,12 +86,6 @@ __getattr__ = lazy_import(
         "lgc": [
             "local_and_global_consistency",
         ],
-        "tests": [
-            "TestHarmonicFunction",
-            "TestLocalAndGlobalConsistency",
-            "test_harmonic_function",
-            "test_local_and_global_consistency",
-        ],
     },
 )
 
@@ -100,14 +95,10 @@ def __dir__():
 
 
 __all__ = [
-    "TestHarmonicFunction",
-    "TestLocalAndGlobalConsistency",
     "harmonic_function",
     "hmn",
     "lgc",
     "local_and_global_consistency",
-    "test_harmonic_function",
-    "test_local_and_global_consistency",
     "tests",
     "utils",
 ]

@@ -1,3 +1,6 @@
+__private__ = ["tests"]
+
+
 def lazy_import(module_name, submodules, submod_attrs):
     import sys
     import importlib
@@ -85,27 +88,6 @@ __getattr__ = lazy_import(
             "node_attribute_xy",
             "node_degree_xy",
         ],
-        "tests": [
-            "BaseTestAttributeMixing",
-            "BaseTestDegreeMixing",
-            "TestAttributeMixingCorrelation",
-            "TestAttributeMixingDict",
-            "TestAttributeMixingMatrix",
-            "TestAttributeMixingXY",
-            "TestAverageNeighbor",
-            "TestDegreeMixingCorrelation",
-            "TestDegreeMixingDict",
-            "TestDegreeMixingMatrix",
-            "TestDegreeMixingXY",
-            "TestNeighborConnectivity",
-            "base_test",
-            "np",
-            "test_connectivity",
-            "test_correlation",
-            "test_mixing",
-            "test_neighbor_degree",
-            "test_pairs",
-        ],
     },
 )
 
@@ -115,24 +97,11 @@ def __dir__():
 
 
 __all__ = [
-    "BaseTestAttributeMixing",
-    "BaseTestDegreeMixing",
-    "TestAttributeMixingCorrelation",
-    "TestAttributeMixingDict",
-    "TestAttributeMixingMatrix",
-    "TestAttributeMixingXY",
-    "TestAverageNeighbor",
-    "TestDegreeMixingCorrelation",
-    "TestDegreeMixingDict",
-    "TestDegreeMixingMatrix",
-    "TestDegreeMixingXY",
-    "TestNeighborConnectivity",
     "attribute_assortativity_coefficient",
     "attribute_mixing_dict",
     "attribute_mixing_matrix",
     "average_degree_connectivity",
     "average_neighbor_degree",
-    "base_test",
     "connectivity",
     "correlation",
     "degree_assortativity_coefficient",
@@ -145,14 +114,8 @@ __all__ = [
     "neighbor_degree",
     "node_attribute_xy",
     "node_degree_xy",
-    "np",
     "numeric_assortativity_coefficient",
     "numeric_mixing_matrix",
     "pairs",
-    "test_connectivity",
-    "test_correlation",
-    "test_mixing",
-    "test_neighbor_degree",
-    "test_pairs",
     "tests",
 ]

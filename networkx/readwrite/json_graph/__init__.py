@@ -12,6 +12,7 @@ The three formats that you can generate with NetworkX are:
  - tree like in the d3.js example https://bl.ocks.org/mbostock/4063550
  - adjacency like in the d3.js example https://bost.ocks.org/mike/miserables/
 """
+__private__ = ["tests"]
 
 
 def lazy_import(module_name, submodules, submod_attrs):
@@ -92,19 +93,6 @@ __getattr__ = lazy_import(
             "node_link_data",
             "node_link_graph",
         ],
-        "tests": [
-            "TestAdjacency",
-            "TestCytoscape",
-            "TestJIT",
-            "TestNodeLink",
-            "TestTree",
-            "test_adjacency",
-            "test_cytoscape",
-            "test_futurewarning",
-            "test_jit",
-            "test_node_link",
-            "test_tree",
-        ],
         "tree": [
             "tree_data",
             "tree_graph",
@@ -118,11 +106,6 @@ def __dir__():
 
 
 __all__ = [
-    "TestAdjacency",
-    "TestCytoscape",
-    "TestJIT",
-    "TestNodeLink",
-    "TestTree",
     "adjacency",
     "adjacency_data",
     "adjacency_graph",
@@ -135,12 +118,6 @@ __all__ = [
     "node_link",
     "node_link_data",
     "node_link_graph",
-    "test_adjacency",
-    "test_cytoscape",
-    "test_futurewarning",
-    "test_jit",
-    "test_node_link",
-    "test_tree",
     "tests",
     "tree",
     "tree_data",

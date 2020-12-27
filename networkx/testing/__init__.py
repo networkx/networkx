@@ -1,3 +1,6 @@
+__private__ = ['tests']
+
+
 def lazy_import(module_name, submodules, submod_attrs):
     import sys
     import importlib
@@ -60,12 +63,6 @@ __getattr__ = lazy_import(
         "test": [
             "run",
         ],
-        "tests": [
-            "TestEdgesEqual",
-            "TestGraphsEqual",
-            "TestNodesEqual",
-            "test_utils",
-        ],
         "utils": [
             "almost_equal",
             "assert_edges_equal",
@@ -81,16 +78,12 @@ def __dir__():
 
 
 __all__ = [
-    "TestEdgesEqual",
-    "TestGraphsEqual",
-    "TestNodesEqual",
     "almost_equal",
     "assert_edges_equal",
     "assert_graphs_equal",
     "assert_nodes_equal",
     "run",
     "test",
-    "test_utils",
     "tests",
     "utils",
 ]

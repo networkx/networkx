@@ -1,3 +1,6 @@
+__private__ = ["tests"]
+
+
 def lazy_import(module_name, submodules, submod_attrs):
     import sys
     import importlib
@@ -77,31 +80,6 @@ __getattr__ = lazy_import(
             "shortest_path",
             "shortest_path_length",
         ],
-        "tests": [
-            "TestAStar",
-            "TestAverageShortestPathLength",
-            "TestAverageShortestPathLengthNumpy",
-            "TestBellmanFordAndGoldbergRadzik",
-            "TestDijkstraPathLength",
-            "TestFloyd",
-            "TestFloydNumpy",
-            "TestGenericPath",
-            "TestJohnsonAlgorithm",
-            "TestMultiSourceDijkstra",
-            "TestUnweightedPath",
-            "TestWeightedPath",
-            "WeightedTestBase",
-            "np",
-            "test_astar",
-            "test_dense",
-            "test_dense_numpy",
-            "test_generic",
-            "test_unweighted",
-            "test_weighted",
-            "validate_grid_path",
-            "validate_length_path",
-            "validate_path",
-        ],
         "unweighted": [
             "all_pairs_shortest_path",
             "all_pairs_shortest_path_length",
@@ -147,19 +125,6 @@ def __dir__():
 
 
 __all__ = [
-    "TestAStar",
-    "TestAverageShortestPathLength",
-    "TestAverageShortestPathLengthNumpy",
-    "TestBellmanFordAndGoldbergRadzik",
-    "TestDijkstraPathLength",
-    "TestFloyd",
-    "TestFloydNumpy",
-    "TestGenericPath",
-    "TestJohnsonAlgorithm",
-    "TestMultiSourceDijkstra",
-    "TestUnweightedPath",
-    "TestWeightedPath",
-    "WeightedTestBase",
     "all_pairs_bellman_ford_path",
     "all_pairs_bellman_ford_path_length",
     "all_pairs_dijkstra",
@@ -192,7 +157,6 @@ __all__ = [
     "multi_source_dijkstra_path",
     "multi_source_dijkstra_path_length",
     "negative_edge_cycle",
-    "np",
     "predecessor",
     "reconstruct_path",
     "shortest_path",
@@ -207,16 +171,7 @@ __all__ = [
     "single_source_shortest_path_length",
     "single_target_shortest_path",
     "single_target_shortest_path_length",
-    "test_astar",
-    "test_dense",
-    "test_dense_numpy",
-    "test_generic",
-    "test_unweighted",
-    "test_weighted",
     "tests",
     "unweighted",
-    "validate_grid_path",
-    "validate_length_path",
-    "validate_path",
     "weighted",
 ]

@@ -1,3 +1,6 @@
+__private__ = ["tests"]
+
+
 def lazy_import(module_name, submodules, submod_attrs):
     import sys
     import importlib
@@ -70,15 +73,6 @@ __getattr__ = lazy_import(
             "pagerank_numpy",
             "pagerank_scipy",
         ],
-        "tests": [
-            "TestHITS",
-            "TestPageRank",
-            "TestPageRankScipy",
-            "np",
-            "test_deprecation_warnings",
-            "test_hits",
-            "test_pagerank",
-        ],
     },
 )
 
@@ -88,9 +82,6 @@ def __dir__():
 
 
 __all__ = [
-    "TestHITS",
-    "TestPageRank",
-    "TestPageRankScipy",
     "authority_matrix",
     "google_matrix",
     "hits",
@@ -98,13 +89,9 @@ __all__ = [
     "hits_numpy",
     "hits_scipy",
     "hub_matrix",
-    "np",
     "pagerank",
     "pagerank_alg",
     "pagerank_numpy",
     "pagerank_scipy",
-    "test_deprecation_warnings",
-    "test_hits",
-    "test_pagerank",
     "tests",
 ]
