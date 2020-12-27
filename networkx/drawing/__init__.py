@@ -1,4 +1,5 @@
 # graph drawing and interface to graphviz
+__private__ = ['tests']
 
 
 def lazy_import(module_name, submodules, submod_attrs):
@@ -109,28 +110,6 @@ __getattr__ = lazy_import(
             "draw_spectral",
             "draw_spring",
         ],
-        "tests": [
-            "TestAGraph",
-            "TestLayout",
-            "TestPydot",
-            "TestPylab",
-            "mpl",
-            "np",
-            "plt",
-            "pydot",
-            "pygraphviz",
-            "test_agraph",
-            "test_apply_alpha",
-            "test_draw_edges_min_source_target_margins",
-            "test_draw_edges_warns_on_arrow_and_arrowstyle",
-            "test_draw_edges_with_nodelist",
-            "test_draw_nodes_missing_node_from_position",
-            "test_layout",
-            "test_nonzero_selfloop_with_single_edge_in_edgelist",
-            "test_nonzero_selfloop_with_single_node",
-            "test_pydot",
-            "test_pylab",
-        ],
     },
 )
 
@@ -140,10 +119,6 @@ def __dir__():
 
 
 __all__ = [
-    "TestAGraph",
-    "TestLayout",
-    "TestPydot",
-    "TestPylab",
     "bipartite_layout",
     "circular_layout",
     "draw",
@@ -165,17 +140,12 @@ __all__ = [
     "graphviz_layout",
     "kamada_kawai_layout",
     "layout",
-    "mpl",
     "multipartite_layout",
-    "np",
     "nx_agraph",
     "nx_pydot",
     "nx_pylab",
     "planar_layout",
-    "plt",
-    "pydot",
     "pydot_layout",
-    "pygraphviz",
     "pygraphviz_layout",
     "random_layout",
     "read_dot",
@@ -185,17 +155,6 @@ __all__ = [
     "spectral_layout",
     "spiral_layout",
     "spring_layout",
-    "test_agraph",
-    "test_apply_alpha",
-    "test_draw_edges_min_source_target_margins",
-    "test_draw_edges_warns_on_arrow_and_arrowstyle",
-    "test_draw_edges_with_nodelist",
-    "test_draw_nodes_missing_node_from_position",
-    "test_layout",
-    "test_nonzero_selfloop_with_single_edge_in_edgelist",
-    "test_nonzero_selfloop_with_single_node",
-    "test_pydot",
-    "test_pylab",
     "tests",
     "to_agraph",
     "to_pydot",
