@@ -34,11 +34,10 @@ from .multigraph import MultiGraph
 from .digraph import DiGraph
 from .multidigraph import MultiDiGraph
 
-__all__ = []
-
-__all__.extend(
-    ["OrderedGraph", "OrderedDiGraph", "OrderedMultiGraph", "OrderedMultiDiGraph"]
-)
+# __all__.extend(
+__all__ = [
+    "OrderedGraph", "OrderedDiGraph", "OrderedMultiGraph", "OrderedMultiDiGraph"
+]
 
 
 class OrderedGraph(Graph):

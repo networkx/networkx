@@ -8,8 +8,15 @@ structure, dynamics, and functions of complex networks.
 See https://networkx.org for complete documentation.
 """
 
+
 # Regenerate via:
 # mkinit ./networkx --recursive --black -w --lazy
+
+# TODO: mkinit needs to stop recursing on "tests"
+# for fpath in $(find . -iwholename "*/tests/__init__.py" -type f); do
+#     echo "fpath = $fpath"
+#     echo "" > $fpath
+# done
 
 import sys
 
@@ -699,7 +706,6 @@ __getattr__ = lazy_import(
             "richclub",
             "robins_alexander_clustering",
             "rooted_product",
-            "rooted_tree_isomorphism",
             "s_metric",
             "score_sequence",
             "second_order",
@@ -838,6 +844,10 @@ __getattr__ = lazy_import(
             "MultiGraph",
             "NodeDataView",
             "NodeView",
+            "OrderedDiGraph",
+            "OrderedGraph",
+            "OrderedMultiDiGraph",
+            "OrderedMultiGraph",
             "OutDegreeView",
             "OutEdgeDataView",
             "OutEdgeView",
@@ -1441,6 +1451,10 @@ __all__ = [
     "NodeNotFound",
     "NodeView",
     "NotATree",
+    "OrderedDiGraph",
+    "OrderedGraph",
+    "OrderedMultiDiGraph",
+    "OrderedMultiGraph",
     "OutDegreeView",
     "OutEdgeDataView",
     "OutEdgeView",
@@ -2390,7 +2404,6 @@ __all__ = [
     "ring_of_cliques",
     "robins_alexander_clustering",
     "rooted_product",
-    "rooted_tree_isomorphism",
     "run",
     "s_metric",
     "scale_free_graph",

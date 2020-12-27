@@ -153,6 +153,12 @@ __getattr__ = lazy_import(
         "multigraph": [
             "MultiGraph",
         ],
+        "ordered": [
+            "OrderedDiGraph",
+            "OrderedGraph",
+            "OrderedMultiDiGraph",
+            "OrderedMultiGraph",
+        ],
         "reportviews": [
             "DegreeView",
             "DiDegreeView",
@@ -213,6 +219,10 @@ __all__ = [
     "MultiGraph",
     "NodeDataView",
     "NodeView",
+    "OrderedDiGraph",
+    "OrderedGraph",
+    "OrderedMultiDiGraph",
+    "OrderedMultiGraph",
     "OutDegreeView",
     "OutEdgeDataView",
     "OutEdgeView",

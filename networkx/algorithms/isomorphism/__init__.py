@@ -1,5 +1,8 @@
 __private__ = ["tests"]
 
+# FIXME: tree_isomorphism module with an attribute with the same name
+# mkinit needs to fix that tree_isomorphism
+
 
 def lazy_import(module_name, submodules, submod_attrs):
     import sys
@@ -61,7 +64,7 @@ __getattr__ = lazy_import(
         "matchhelpers",
         "temporalisomorphvf2",
         "tests",
-        "tree_isomorphism",
+        # "tree_isomorphism",
         "vf2userfunc",
     },
     submod_attrs={
