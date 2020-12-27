@@ -72,15 +72,275 @@ For other bipartite graph generators see
 :mod:`Generators <networkx.algorithms.bipartite.generators>`.
 
 """
+def lazy_import(module_name, submodules, submod_attrs):
+    import sys
+    import importlib
+    import importlib.util
 
-from networkx.algorithms.bipartite.basic import *
-from networkx.algorithms.bipartite.centrality import *
-from networkx.algorithms.bipartite.cluster import *
-from networkx.algorithms.bipartite.covering import *
-from networkx.algorithms.bipartite.edgelist import *
-from networkx.algorithms.bipartite.matching import *
-from networkx.algorithms.bipartite.matrix import *
-from networkx.algorithms.bipartite.projection import *
-from networkx.algorithms.bipartite.redundancy import *
-from networkx.algorithms.bipartite.spectral import *
-from networkx.algorithms.bipartite.generators import *
+    all_funcs = []
+    for mod, funcs in submod_attrs.items():
+        all_funcs.extend(funcs)
+    name_to_submod = {
+        func: mod for mod, funcs in submod_attrs.items() for func in funcs
+    }
+
+    def require(fullname):
+        if fullname in sys.modules:
+            return sys.modules[fullname]
+        spec = importlib.util.find_spec(fullname)
+        try:
+            module = importlib.util.module_from_spec(spec)
+        except Exception:
+            raise ImportError(
+                "Could not lazy import module {fullname}".format(fullname=fullname)
+            ) from None
+        loader = importlib.util.LazyLoader(spec.loader)
+        sys.modules[fullname] = module
+        loader.exec_module(module)
+        return module
+
+    def __getattr__(name):
+        if name in submodules:
+            fullname = "{module_name}.{name}".format(module_name=module_name, name=name)
+            attr = require(fullname)
+        elif name in name_to_submod:
+            modname = name_to_submod[name]
+            module = importlib.import_module(
+                "{module_name}.{modname}".format(
+                    module_name=module_name, modname=modname
+                )
+            )
+            attr = getattr(module, name)
+        else:
+            raise AttributeError(
+                "No {module_name} attribute {name}".format(
+                    module_name=module_name, name=name
+                )
+            )
+        globals()[name] = attr
+        return attr
+
+    return __getattr__
+
+
+__getattr__ = lazy_import(
+    __name__,
+    submodules={
+        "basic",
+        "centrality",
+        "cluster",
+        "covering",
+        "edgelist",
+        "generators",
+        "matching",
+        "matrix",
+        "projection",
+        "redundancy",
+        "spectral",
+        "tests",
+    },
+    submod_attrs={
+        "basic": [
+            "color",
+            "degrees",
+            "density",
+            "is_bipartite",
+            "is_bipartite_node_set",
+            "sets",
+        ],
+        "centrality": [
+            "betweenness_centrality",
+            "closeness_centrality",
+            "degree_centrality",
+        ],
+        "cluster": [
+            "average_clustering",
+            "clustering",
+            "latapy_clustering",
+            "robins_alexander_clustering",
+        ],
+        "covering": [
+            "min_edge_cover",
+        ],
+        "edgelist": [
+            "generate_edgelist",
+            "parse_edgelist",
+            "read_edgelist",
+            "write_edgelist",
+        ],
+        "generators": [
+            "alternating_havel_hakimi_graph",
+            "complete_bipartite_graph",
+            "configuration_model",
+            "gnmk_random_graph",
+            "havel_hakimi_graph",
+            "preferential_attachment_graph",
+            "random_graph",
+            "reverse_havel_hakimi_graph",
+        ],
+        "matching": [
+            "eppstein_matching",
+            "hopcroft_karp_matching",
+            "maximum_matching",
+            "minimum_weight_full_matching",
+            "to_vertex_cover",
+        ],
+        "matrix": [
+            "biadjacency_matrix",
+            "from_biadjacency_matrix",
+        ],
+        "projection": [
+            "collaboration_weighted_projected_graph",
+            "generic_weighted_projected_graph",
+            "overlap_weighted_projected_graph",
+            "project",
+            "projected_graph",
+            "weighted_projected_graph",
+        ],
+        "redundancy": [
+            "node_redundancy",
+        ],
+        "spectral": [
+            "spectral_bipartivity",
+        ],
+        "tests": [
+            "TestBiadjacencyMatrix",
+            "TestBipartiteBasic",
+            "TestBipartiteCentrality",
+            "TestBipartiteProject",
+            "TestBipartiteWeightedProjection",
+            "TestEdgelist",
+            "TestGeneratorsBipartite",
+            "TestMatching",
+            "TestMinEdgeCover",
+            "TestMinimumWeightFullMatching",
+            "TestSpectralBipartivity",
+            "np",
+            "sp",
+            "sparse",
+            "test_average_path_graph",
+            "test_bad_mode",
+            "test_basic",
+            "test_centrality",
+            "test_cluster",
+            "test_covering",
+            "test_edgelist",
+            "test_eppstein_matching",
+            "test_generators",
+            "test_matching",
+            "test_matrix",
+            "test_no_redundant_nodes",
+            "test_not_bipartite",
+            "test_not_enough_neighbors",
+            "test_pairwise_bipartite_cc_functions",
+            "test_path_graph",
+            "test_project",
+            "test_ra_clustering_davis",
+            "test_ra_clustering_square",
+            "test_ra_clustering_zero",
+            "test_redundancy",
+            "test_redundant_nodes",
+            "test_spectral_bipartivity",
+            "test_star_graph",
+        ],
+    },
+)
+
+
+def __dir__():
+    return __all__
+
+
+__all__ = [
+    "TestBiadjacencyMatrix",
+    "TestBipartiteBasic",
+    "TestBipartiteCentrality",
+    "TestBipartiteProject",
+    "TestBipartiteWeightedProjection",
+    "TestEdgelist",
+    "TestGeneratorsBipartite",
+    "TestMatching",
+    "TestMinEdgeCover",
+    "TestMinimumWeightFullMatching",
+    "TestSpectralBipartivity",
+    "alternating_havel_hakimi_graph",
+    "average_clustering",
+    "basic",
+    "betweenness_centrality",
+    "biadjacency_matrix",
+    "centrality",
+    "closeness_centrality",
+    "cluster",
+    "clustering",
+    "collaboration_weighted_projected_graph",
+    "color",
+    "complete_bipartite_graph",
+    "configuration_model",
+    "covering",
+    "degree_centrality",
+    "degrees",
+    "density",
+    "edgelist",
+    "eppstein_matching",
+    "from_biadjacency_matrix",
+    "generate_edgelist",
+    "generators",
+    "generic_weighted_projected_graph",
+    "gnmk_random_graph",
+    "havel_hakimi_graph",
+    "hopcroft_karp_matching",
+    "is_bipartite",
+    "is_bipartite_node_set",
+    "latapy_clustering",
+    "matching",
+    "matrix",
+    "maximum_matching",
+    "min_edge_cover",
+    "minimum_weight_full_matching",
+    "node_redundancy",
+    "np",
+    "overlap_weighted_projected_graph",
+    "parse_edgelist",
+    "preferential_attachment_graph",
+    "project",
+    "projected_graph",
+    "projection",
+    "random_graph",
+    "read_edgelist",
+    "redundancy",
+    "reverse_havel_hakimi_graph",
+    "robins_alexander_clustering",
+    "sets",
+    "sp",
+    "sparse",
+    "spectral",
+    "spectral_bipartivity",
+    "test_average_path_graph",
+    "test_bad_mode",
+    "test_basic",
+    "test_centrality",
+    "test_cluster",
+    "test_covering",
+    "test_edgelist",
+    "test_eppstein_matching",
+    "test_generators",
+    "test_matching",
+    "test_matrix",
+    "test_no_redundant_nodes",
+    "test_not_bipartite",
+    "test_not_enough_neighbors",
+    "test_pairwise_bipartite_cc_functions",
+    "test_path_graph",
+    "test_project",
+    "test_ra_clustering_davis",
+    "test_ra_clustering_square",
+    "test_ra_clustering_zero",
+    "test_redundancy",
+    "test_redundant_nodes",
+    "test_spectral_bipartivity",
+    "test_star_graph",
+    "tests",
+    "to_vertex_cover",
+    "weighted_projected_graph",
+    "write_edgelist",
+]
