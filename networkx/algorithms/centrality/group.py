@@ -100,12 +100,9 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
 
     """
     GBC = []  # initialize betweenness
-    V = set(G)  # set of nodes in G
 
     #  check weather C contains one or many groups
-    if not any(isinstance(el, list) for el in C) and not any(
-        isinstance(el, set) for el in C
-    ):
+    if any(el in G for el in C):
         C = [C]
     set_v = {node for group in C for node in group}
     if set_v - G.nodes:  # element(s) of C not in G

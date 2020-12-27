@@ -69,7 +69,7 @@ class TestGroupBetweennessCentrality:
         Node(s) in C not in graph, raises NodeNotFound exception
         """
         with pytest.raises(nx.NodeNotFound):
-            b = nx.group_betweenness_centrality(nx.path_graph(5), [6, 7, 8])
+            b = nx.group_betweenness_centrality(nx.path_graph(5), [4, 7, 8])
 
     def test_group_betweenness_directed_weighted(self):
         """
