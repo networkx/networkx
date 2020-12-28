@@ -311,7 +311,7 @@ def parse_gml_lines(lines, label, destringizer):
                         if i == 0:  # keys
                             value = group.rstrip()
                         elif i == 1:  # reals
-                            value = group.replace('_', '') # handle incoming nan
+                            value = group.replace("_", "")  # handle incoming nan
                             value = float(value)
                         elif i == 2:  # ints
                             value = int(group)
@@ -684,9 +684,9 @@ def generate_gml(G, stringizer=None):
                 # GML matches INF and NAN to keys, so prepend + to INF and _ to NAN
                 # so they can be correctly detected.  Use repr(float(*)) instead of
                 # string literal to future proof against changes to repr.
-                if text == repr(float('nan')).upper():
+                if text == repr(float("nan")).upper():
                     text = "_" + text
-                elif text == repr(float('inf')).upper():
+                elif text == repr(float("inf")).upper():
                     text = "+" + text
                 else:
                     # GML requires that a real literal contain a decimal point, but
