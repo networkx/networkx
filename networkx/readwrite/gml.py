@@ -682,11 +682,12 @@ def generate_gml(G, stringizer=None):
             elif isinstance(value, float):
                 text = repr(value).upper()
                 # GML matches INF and NAN to keys, so prepend + to INF and _ to NAN
-                # so they can be correctly detected.
-                if text == "NAN":
-                    text = "_NAN"
-                elif text == "INF":
-                    text = "+INF"
+                # so they can be correctly detected.  Use repr(float(*)) instead of
+                # string literal to future proof against changes to repr.
+                if text == repr(float('nan')).upper():
+                    text = "_" + text
+                elif text == repr(float('inf')).upper():
+                    text = "+" + text
                 else:
                     # GML requires that a real literal contain a decimal point, but
                     # repr may not output a decimal point when the mantissa is
