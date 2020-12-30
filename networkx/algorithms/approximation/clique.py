@@ -6,6 +6,8 @@ from networkx.algorithms.approximation import ramsey
 __all__ = ["clique_removal", "max_clique", "large_clique_size"]
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def max_clique(G):
     r"""Find the Maximum Clique
 
@@ -21,6 +23,11 @@ def max_clique(G):
     -------
     clique : set
         The apx-maximum clique of the graph
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph is directed or is a multigraph.
 
     Notes
     -----
@@ -54,6 +61,8 @@ def max_clique(G):
     return iset
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def clique_removal(G):
     r"""Repeatedly remove cliques from the graph.
 
@@ -70,6 +79,11 @@ def clique_removal(G):
     -------
     max_ind_cliques : (set, list) tuple
         2-tuple of Maximal Independent Set and list of maximal cliques (sets).
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph is directed or is a multigraph.
 
     References
     ----------
@@ -110,6 +124,11 @@ def large_clique_size(G):
     -------
     int
        The size of a large clique in the graph.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph is directed or is a multigraph.
 
     Notes
     -----
