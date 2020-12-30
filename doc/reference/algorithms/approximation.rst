@@ -31,9 +31,11 @@ Clique
 .. autosummary::
    :toctree: generated/
 
+   maximum_independent_set
    max_clique
    clique_removal
    large_clique_size
+
 
 Clustering
 ----------
@@ -52,16 +54,6 @@ Dominating Set
 
    min_weighted_dominating_set
    min_edge_dominating_set
-
-
-Independent Set
----------------
-.. automodule:: networkx.algorithms.approximation.independent_set
-.. autosummary::
-   :toctree: generated/
-
-   maximum_independent_set
-
 
 Matching
 --------
