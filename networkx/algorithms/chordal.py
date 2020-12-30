@@ -103,7 +103,7 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
         Source node to look for induced nodes
     t : node
         Destination node to look for induced nodes
-    treewith_bound: float
+    treewidth_bound: float
         Maximum treewidth acceptable for the graph H. The search
         for induced nodes will end as soon as the treewidth_bound is exceeded.
 

@@ -24,6 +24,8 @@ def is_simple_path(G, nodes):
 
     Parameters
     ----------
+    G : graph
+        A NetworkX graph.
     nodes : list
         A list of one or more nodes in the graph `G`.
 

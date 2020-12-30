@@ -29,9 +29,9 @@ def write_yaml(G_to_be_yaml, path_for_yaml_output, **kwds):
 
     Parameters
     ----------
-    G : graph
+    G_to_be_yaml : graph
        A NetworkX graph
-    path : file or string
+    path_for_yaml_output : file or string
        File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
 

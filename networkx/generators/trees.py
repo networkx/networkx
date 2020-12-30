@@ -163,6 +163,8 @@ def random_tree(n, seed=None, create_using=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    create_using : NetworkX graph instance, optional
+        Return graph of this type.
 
     Returns
     -------
