@@ -2,6 +2,10 @@ from datetime import date
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
 import sphinx_rtd_theme
 from warnings import filterwarnings
+import plotly.io as pio
+from plotly.io._sg_scraper import plotly_sg_scraper
+
+pio.renderers.default = "sphinx_gallery_png"
 
 filterwarnings(
     "ignore", message="Matplotlib is currently using agg", category=UserWarning
@@ -49,7 +53,7 @@ sphinx_gallery_conf = {
     # path where to save gallery generated examples
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
-    "image_scrapers": ("matplotlib", "mayavi"),
+    "image_scrapers": ("matplotlib", "mayavi", plotly_sg_scraper),
 }
 
 # generate autosummary pages
