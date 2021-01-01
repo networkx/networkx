@@ -63,9 +63,7 @@ axis = {
 }
 
 layout = go.Layout(
-    title="Coauthorship network of scientists working on network theory and experiment"
-    + "<br> Data source: <a href='http://networkdata.ics.uci.edu/data/netscience/netscience.gml'>"
-    + "http://networkdata.ics.uci.edu/data/netscience/netscience.gml</a>",
+    title="Network scientist coauthorship network of scientists",
     font={"size": 16},
     showlegend=False,
     xaxis=axis,
@@ -75,7 +73,8 @@ layout = go.Layout(
     annotations=[
         {
             "showarrow": False,
-            "text": "This networkx.Graph has the Kamada-Kawai layout",
+            "text": "<a href='http://networkdata.ics.uci.edu/data/netscience/netscience.gml'>"
+            + "http://networkdata.ics.uci.edu/data/netscience/netscience.gml</a>",
             "xref": "paper",
             "yref": "paper",
             "x": 0,
@@ -88,4 +87,5 @@ layout = go.Layout(
 )
 
 fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
+fig.write_image("netscience.png")
 fig
