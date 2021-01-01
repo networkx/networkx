@@ -13,7 +13,7 @@ import plotly.graph_objects as go
 # Read and get layout
 # -------------------
 
-G = nx.read_gml("/home/jarrod/netscience.gml")
+G = nx.read_gml("netscience.gml")
 pos = nx.random_layout(G, seed=42)
 # pos = nx.kamada_kawai_layout(G)
 
@@ -89,5 +89,3 @@ layout = go.Layout(
 
 fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
 fig
-# fig.show()
-# fig.write_file("fig.png")
