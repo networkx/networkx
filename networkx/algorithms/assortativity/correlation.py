@@ -263,7 +263,7 @@ def numeric_ac(M):
     import numpy as np
 
     if M.sum() != 1.0:
-        M = M / float(M.sum())
+        M = M / M.sum()
     nx, ny = M.shape  # nx=ny
     x = np.arange(nx)
     y = np.arange(ny)

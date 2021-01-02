@@ -10,11 +10,9 @@ def _average_nbr_deg(G, source_degree, target_degree, nodes=None, weight=None):
             deg = 1
         nbrdeg = target_degree(G[n])
         if weight is None:
-            avg[n] = sum(d for n, d in nbrdeg) / float(deg)
+            avg[n] = sum(d for n, d in nbrdeg) / deg
         else:
-            avg[n] = sum((G[n][nbr].get(weight, 1) * d for nbr, d in nbrdeg)) / float(
-                deg
-            )
+            avg[n] = sum(G[n][nbr].get(weight, 1) * d for nbr, d in nbrdeg) / deg
     return avg
 
 

@@ -250,7 +250,7 @@ class TestGeneratorsRandom:
             runs = 100
             for i in range(runs):
                 edges += sum(1 for _ in generator(10, 0.99999, directed=True).edges())
-            assert abs(edges / float(runs) - 90) <= runs * 2.0 / 100
+            assert abs(edges / runs - 90) <= runs * 2 / 100
 
     def test_gnm(self):
         G = gnm_random_graph(10, 3)

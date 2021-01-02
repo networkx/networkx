@@ -805,7 +805,7 @@ class DegreeSequenceRandomGraph:
 
     def q(self, u, v):
         # remaining degree probability
-        norm = float(max(self.remaining_degree.values())) ** 2
+        norm = max(self.remaining_degree.values()) ** 2
         return self.remaining_degree[u] * self.remaining_degree[v] / norm
 
     def suitable_edge(self):

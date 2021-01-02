@@ -44,4 +44,4 @@ def flow_hierarchy(G, weight=None):
     if not G.is_directed():
         raise nx.NetworkXError("G must be a digraph in flow_hierarchy")
     scc = nx.strongly_connected_components(G)
-    return 1.0 - sum(G.subgraph(c).size(weight) for c in scc) / float(G.size(weight))
+    return 1 - sum(G.subgraph(c).size(weight) for c in scc) / G.size(weight)
