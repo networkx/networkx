@@ -488,7 +488,7 @@ def _check_unconstrained_bridge_property(G, info1):
     p = len([n for n, d in C.degree() if d == 1])  # leafs
     q = len([n for n, d in C.degree() if d == 0])  # isolated
     if p + q > 1:
-        size_target = int(math.ceil(p / 2.0)) + q
+        size_target = math.ceil(p / 2) + q
         size_aug = info1["num_edges"]
         assert (
             size_aug == size_target

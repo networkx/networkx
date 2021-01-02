@@ -305,7 +305,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
         # rule. The edges are cyclically grouped into blocks of size B. Within
         # each block, Dantzig's rule is applied to find an entering edge. The
         # blocks to search is determined following Bland's rule.
-        B = int(ceil(sqrt(e)))  # pivot block size
+        B = ceil(sqrt(e))  # pivot block size
         M = (e + B - 1) // B  # number of blocks needed to cover all edges
         m = 0  # number of consecutive blocks without eligible
         # entering edges
