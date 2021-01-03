@@ -121,8 +121,15 @@ For a more detailed discussion, read these :doc:`detailed documents
 
 5. Review process:
 
+   * Every Pull Request (PR) update triggers a set of `continuous integration
+     <https://en.wikipedia.org/wiki/Continuous_integration>`_ services
+     that check that the code is up to standards and passes all our tests.
+     These checks must pass before your PR can be merged.  If one of the
+     checks fails, you can find out why by clicking on the "failed" icon (red
+     cross) and inspecting the build and test log.
+
    * Reviewers (the other developers and interested community members) will
-     write inline and/or general comments on your Pull Request (PR) to help
+     write inline and/or general comments on your PR to help
      you improve its implementation, documentation, and style.  Every single
      developer working on the project has their code reviewed, and we've come
      to see it as friendly conversation from which we all learn and the
@@ -131,19 +138,9 @@ For a more detailed discussion, read these :doc:`detailed documents
      of project, not to criticize (we are, after all, very grateful for the
      time you're donating!).
 
-   * To update your pull request, make your changes on your local repository
+   * To update your PR, make your changes on your local repository
      and commit. As soon as those changes are pushed up (to the same branch as
-     before) the pull request will update automatically.
-
-   * `Travis-CI <https://travis-ci.org/>`_, a continuous integration service,
-     is triggered after each Pull Request update to build the code and run unit
-     tests of your branch. The Travis tests must pass before your PR can be merged.
-     If Travis fails, you can find out why by clicking on the "failed" icon (red
-     cross) and inspecting the build and test log.
-
-   * `AppVeyor <http://ci.appveyor.com>`_, is another continuous integration
-     service that we use.  You will also need to make sure that the AppVeyor
-     tests pass.
+     before) the PR will update automatically.
 
    .. note::
 
