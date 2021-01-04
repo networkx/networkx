@@ -167,6 +167,13 @@ class TestDirectedWeightedClustering:
         assert nx.clustering(G)[0] == 1.0 / 6.0
         assert nx.clustering(G, weight="weight")[0] == 1.0 / 12.0
 
+    def test_triangle_and_negative_edge(self):
+        G = nx.cycle_graph(3, create_using=nx.DiGraph())
+        G.add_edge(1, 2, weight=-1)
+        G.add_edge(0, 4, weight=2)
+        assert nx.clustering(G)[0] == 1.0 / 6.0
+        assert nx.clustering(G, weight="weight")[0] == -1.0 / 12.0
+
 
 class TestWeightedClustering:
     def test_clustering(self):
@@ -241,6 +248,13 @@ class TestWeightedClustering:
         assert nx.clustering(G)[0] == 1.0 / 3.0
         assert nx.clustering(G, weight="weight")[0] == 1.0 / 6.0
 
+    def test_triangle_and_negative_edge(self):
+        G = nx.cycle_graph(3)
+        G.add_edge(0, 1, weight=-1)
+        G.add_edge(3, 0, weight=0)
+        assert nx.clustering(G)[0] == 1.0 / 3.0
+        assert nx.clustering(G, weight="weight")[0] == -1.0 / 3.0
+
 
 class TestClustering:
     def test_clustering(self):
@@ -296,6 +310,20 @@ class TestClustering:
             5.0 / 6.0,
         ]
         assert nx.clustering(G, [1, 4]) == {1: 1.0, 4: 0.83333333333333337}
+
+    def test_k5_signed(self):
+        G = nx.complete_graph(5)
+        assert list(nx.clustering(G).values()) == [1, 1, 1, 1, 1]
+        assert nx.average_clustering(G) == 1
+        G.remove_edge(1, 2)
+        G.add_edge(0, 1, weight=-1)
+        assert list(nx.clustering(G, weight="weight").values()) == [
+            1.0 / 6.0,
+            -1.0 / 3.0,
+            1.0,
+            3.0 / 6.0,
+            3.0 / 6.0,
+        ]
 
 
 class TestTransitivity:
@@ -421,12 +449,27 @@ class TestSquareClustering:
         assert nx.square_clustering(G, [1])[1] == 1 / 3
 
 
-def test_average_clustering():
-    G = nx.cycle_graph(3)
-    G.add_edge(2, 3)
-    assert nx.average_clustering(G) == (1 + 1 + 1 / 3.0) / 4.0
-    assert nx.average_clustering(G, count_zeros=True) == (1 + 1 + 1 / 3.0) / 4.0
-    assert nx.average_clustering(G, count_zeros=False) == (1 + 1 + 1 / 3.0) / 3.0
+class TestAverageClustering:
+    def test_average_clustering(self):
+        G = nx.cycle_graph(3)
+        G.add_edge(2, 3)
+        assert nx.average_clustering(G) == (1 + 1 + 1 / 3.0) / 4.0
+        assert nx.average_clustering(G, count_zeros=True) == (1 + 1 + 1 / 3.0) / 4.0
+        assert nx.average_clustering(G, count_zeros=False) == (1 + 1 + 1 / 3.0) / 3.0
+
+    def test_average_clustering_signed(self):
+        G = nx.cycle_graph(3)
+        G.add_edge(2, 3)
+        G.add_edge(0, 1, weight=-1)
+        assert nx.average_clustering(G, weight="weight") == (-1 - 1 - 1 / 3.0) / 4.0
+        assert (
+            nx.average_clustering(G, weight="weight", count_zeros=True)
+            == (-1 - 1 - 1 / 3.0) / 4.0
+        )
+        assert (
+            nx.average_clustering(G, weight="weight", count_zeros=False)
+            == (-1 - 1 - 1 / 3.0) / 3.0
+        )
 
 
 class TestGeneralizedDegree:
