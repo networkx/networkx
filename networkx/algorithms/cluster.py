@@ -3,6 +3,7 @@
 from itertools import chain
 from itertools import combinations
 from collections import Counter
+from math import pow
 
 from networkx.utils import not_implemented_for
 
@@ -84,7 +85,7 @@ def _triangles_and_degree_iter(G, nodes=None):
 def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
     """Return an iterator of (node, degree, weighted_triangles).
 
-    Used for weighted clustering.
+    Used for weighted (clustering).
     Note: this returns the geometric average weight of edges in the triangle.
     Also, each triangle is counted twice (each direction).
     So you may want to divide by 2.
@@ -102,6 +103,14 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
     def wt(u, v):
         return G[u][v].get(weight, 1) / max_weight
 
+    def cubed_root(num):
+        if num > 0:
+            return pow(num, 1.0 / 3.0)
+        elif num < 0:
+            return -pow(abs(num), 1.0 / 3.0)
+        else:
+            return 0
+
     for i, nbrs in nodes_nbrs:
         inbrs = set(nbrs) - {i}
         weighted_triangles = 0
@@ -114,7 +123,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
             # loop.
             wij = wt(i, j)
             weighted_triangles += sum(
-                (wij * wt(j, k) * wt(k, i)) ** (1 / 3) for k in inbrs & jnbrs
+                cubed_root(wij * wt(j, k) * wt(k, i)) for k in inbrs & jnbrs
             )
         yield (i, len(inbrs), 2 * weighted_triangles)
 
@@ -173,6 +182,14 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
     def wt(u, v):
         return G[u][v].get(weight, 1) / max_weight
 
+    def cubed_root(num):
+        if num > 0:
+            return pow(num, 1.0 / 3.0)
+        elif num < 0:
+            return -pow(abs(num), 1.0 / 3.0)
+        else:
+            return 0
+
     for i, preds, succs in nodes_nbrs:
         ipreds = set(preds) - {i}
         isuccs = set(succs) - {i}
@@ -182,32 +199,32 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
             jpreds = set(G._pred[j]) - {j}
             jsuccs = set(G._succ[j]) - {j}
             directed_triangles += sum(
-                (wt(j, i) * wt(k, i) * wt(k, j)) ** (1 / 3) for k in ipreds & jpreds
+                cubed_root(wt(j, i) * wt(k, i) * wt(k, j)) for k in ipreds & jpreds
             )
             directed_triangles += sum(
-                (wt(j, i) * wt(k, i) * wt(j, k)) ** (1 / 3) for k in ipreds & jsuccs
+                cubed_root(wt(j, i) * wt(k, i) * wt(j, k)) for k in ipreds & jsuccs
             )
             directed_triangles += sum(
-                (wt(j, i) * wt(i, k) * wt(k, j)) ** (1 / 3) for k in isuccs & jpreds
+                cubed_root(wt(j, i) * wt(i, k) * wt(k, j)) for k in isuccs & jpreds
             )
             directed_triangles += sum(
-                (wt(j, i) * wt(i, k) * wt(j, k)) ** (1 / 3) for k in isuccs & jsuccs
+                cubed_root(wt(j, i) * wt(i, k) * wt(j, k)) for k in isuccs & jsuccs
             )
 
         for j in isuccs:
             jpreds = set(G._pred[j]) - {j}
             jsuccs = set(G._succ[j]) - {j}
             directed_triangles += sum(
-                (wt(i, j) * wt(k, i) * wt(k, j)) ** (1 / 3) for k in ipreds & jpreds
+                cubed_root(wt(i, j) * wt(k, i) * wt(k, j)) for k in ipreds & jpreds
             )
             directed_triangles += sum(
-                (wt(i, j) * wt(k, i) * wt(j, k)) ** (1 / 3) for k in ipreds & jsuccs
+                cubed_root(wt(i, j) * wt(k, i) * wt(j, k)) for k in ipreds & jsuccs
             )
             directed_triangles += sum(
-                (wt(i, j) * wt(i, k) * wt(k, j)) ** (1 / 3) for k in isuccs & jpreds
+                cubed_root(wt(i, j) * wt(i, k) * wt(k, j)) for k in isuccs & jpreds
             )
             directed_triangles += sum(
-                (wt(i, j) * wt(i, k) * wt(j, k)) ** (1 / 3) for k in isuccs & jsuccs
+                cubed_root(wt(i, j) * wt(i, k) * wt(j, k)) for k in isuccs & jsuccs
             )
 
         dtotal = len(ipreds) + len(isuccs)
@@ -270,7 +287,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     """
     c = clustering(G, nodes, weight=weight).values()
     if not count_zeros:
-        c = [v for v in c if v > 0]
+        c = [v for v in c if v != 0]
     return sum(c) / len(c)
 
 
