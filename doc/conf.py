@@ -208,6 +208,7 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "geopandas": ("https://geopandas.org/", None),
+    "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
 }
 
 # The reST default role (used for this markup: `text`) to use for all
