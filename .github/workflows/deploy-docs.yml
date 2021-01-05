@@ -8,7 +8,7 @@ jobs:
   documentation:
 
     # Do not attempt to deploy documentation on forks
-    if github.repository_owner == 'networkx'
+    if: github.repository_owner == 'networkx'
 
     runs-on: Ubuntu-20.04
 
