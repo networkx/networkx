@@ -631,6 +631,9 @@ def draw_networkx_edges(
             "*arrowstyle*, arrows will be ignored."
         )
 
+    if arrows is None:
+        arrows = True
+
     if arrowstyle is None:
         if G.is_directed() and arrows:
             arrowstyle = "-|>"
