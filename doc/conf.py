@@ -36,7 +36,8 @@ sphinx_gallery_conf = {
             "../examples/basic",
             "../examples/drawing",
             "../examples/3d_drawing",
-            "../examples/graphviz",
+            "../examples/graphviz_layout",
+            "../examples/graphviz_drawing",
             "../examples/graph",
             "../examples/algorithms",
             "../examples/advanced",
@@ -51,6 +52,15 @@ sphinx_gallery_conf = {
     "backreferences_dir": "modules/generated",
     "image_scrapers": ("matplotlib", "mayavi"),
 }
+# Add pygraphviz png scraper, if available
+try:
+    from pygraphviz.scraper import PNGScraper
+
+    scrapers = list(sphinx_gallery_conf["image_scrapers"])
+    scrapers.append(PNGScraper())
+    sphinx_gallery_conf["image_scrapers"] = tuple(scrapers)
+except ImportError:
+    pass
 
 # generate autosummary pages
 autosummary_generate = True
@@ -198,6 +208,7 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "geopandas": ("https://geopandas.org/", None),
+    "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
 }
 
 # The reST default role (used for this markup: `text`) to use for all

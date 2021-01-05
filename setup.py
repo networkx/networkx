@@ -155,7 +155,7 @@ package_data = {
 
 def parse_requirements_file(filename):
     with open(filename) as fid:
-        requires = [l.strip() for l in fid.readlines() if l]
+        requires = [l.strip() for l in fid.readlines() if not l.startswith("#")]
 
     return requires
 
