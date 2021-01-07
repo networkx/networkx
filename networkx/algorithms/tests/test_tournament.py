@@ -8,7 +8,7 @@ from networkx.algorithms.tournament import is_strongly_connected
 from networkx.algorithms.tournament import is_tournament
 from networkx.algorithms.tournament import random_tournament
 from networkx.algorithms.tournament import hamiltonian_path
-
+from networkx.algorithms.tournament import score_sequence
 
 class TestIsTournament:
     """Unit tests for the :func:`networkx.tournament.is_tournament`
@@ -70,6 +70,9 @@ class TestHamiltonianPath:
     function.
 
     """
+    def test_hamiltonian_empty_graph(self):##NEW
+        path = hamiltonian_path(DiGraph())
+        assert len(path) == 0
 
     def test_path_is_hamiltonian(self):
         G = DiGraph()
@@ -90,6 +93,15 @@ class TestHamiltonianPath:
         assert len(path) == 4
         assert all(v in G[u] for u, v in zip(path, path[1:]))
         assert path[0] in G[path[-1]]
+
+class TestScoreSequence:
+    """Unit tests for the :func:`networkx.tournament.score_sequence`
+    function.
+
+    """
+    def test_score_sequence(self):
+        G = DiGraph([(0, 1)])
+        assert score_sequence(G) == [0, 1]
 
 
 class TestReachability:
