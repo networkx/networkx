@@ -3,7 +3,7 @@
 from itertools import chain
 from itertools import combinations
 from collections import Counter
-from numpy import cbrt
+import numpy as np
 
 from networkx.utils import not_implemented_for
 
@@ -115,7 +115,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
             # loop.
             wij = wt(i, j)
             weighted_triangles += sum(
-                cbrt([(wij * wt(j, k) * wt(k, i)) for k in inbrs & jnbrs])
+                np.cbrt([(wij * wt(j, k) * wt(k, i)) for k in inbrs & jnbrs])
             )
         yield (i, len(inbrs), 2 * weighted_triangles)
 
@@ -183,32 +183,32 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
             jpreds = set(G._pred[j]) - {j}
             jsuccs = set(G._succ[j]) - {j}
             directed_triangles += sum(
-                cbrt([(wt(j, i) * wt(k, i) * wt(k, j)) for k in ipreds & jpreds])
+                np.cbrt([(wt(j, i) * wt(k, i) * wt(k, j)) for k in ipreds & jpreds])
             )
             directed_triangles += sum(
-                cbrt([(wt(j, i) * wt(k, i) * wt(j, k)) for k in ipreds & jsuccs])
+                np.cbrt([(wt(j, i) * wt(k, i) * wt(j, k)) for k in ipreds & jsuccs])
             )
             directed_triangles += sum(
-                cbrt([(wt(j, i) * wt(i, k) * wt(k, j)) for k in isuccs & jpreds])
+                np.cbrt([(wt(j, i) * wt(i, k) * wt(k, j)) for k in isuccs & jpreds])
             )
             directed_triangles += sum(
-                cbrt([(wt(j, i) * wt(i, k) * wt(j, k)) for k in isuccs & jsuccs])
+                np.cbrt([(wt(j, i) * wt(i, k) * wt(j, k)) for k in isuccs & jsuccs])
             )
 
         for j in isuccs:
             jpreds = set(G._pred[j]) - {j}
             jsuccs = set(G._succ[j]) - {j}
             directed_triangles += sum(
-                cbrt([(wt(i, j) * wt(k, i) * wt(k, j)) for k in ipreds & jpreds])
+                np.cbrt([(wt(i, j) * wt(k, i) * wt(k, j)) for k in ipreds & jpreds])
             )
             directed_triangles += sum(
-                cbrt([(wt(i, j) * wt(k, i) * wt(j, k)) for k in ipreds & jsuccs])
+                np.cbrt([(wt(i, j) * wt(k, i) * wt(j, k)) for k in ipreds & jsuccs])
             )
             directed_triangles += sum(
-                cbrt([(wt(i, j) * wt(i, k) * wt(k, j)) for k in isuccs & jpreds])
+                np.cbrt([(wt(i, j) * wt(i, k) * wt(k, j)) for k in isuccs & jpreds])
             )
             directed_triangles += sum(
-                cbrt([(wt(i, j) * wt(i, k) * wt(j, k)) for k in isuccs & jsuccs])
+                np.cbrt([(wt(i, j) * wt(i, k) * wt(j, k)) for k in isuccs & jsuccs])
             )
 
         dtotal = len(ipreds) + len(isuccs)
