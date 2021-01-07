@@ -36,7 +36,7 @@ def test_connected_double_edge_swap_low_window_threshold():
 
 
 def test_connected_double_edge_swap_star():
-    #Testing ui==xi in connected_double_edge_swap
+    # Testing ui==xi in connected_double_edge_swap
     graph = nx.star_graph(40)
     degrees = sorted(d for n, d in graph.degree())
     G = nx.connected_double_edge_swap(graph, 1, seed=4)
@@ -45,7 +45,7 @@ def test_connected_double_edge_swap_star():
 
 
 def test_connected_double_edge_swap_star_low_window_threshold():
-    #Testing ui==xi in connected_double_edge_swap with low window threshold
+    # Testing ui==xi in connected_double_edge_swap with low window threshold
     graph = nx.star_graph(40)
     degrees = sorted(d for n, d in graph.degree())
     G = nx.connected_double_edge_swap(graph, 1, _window_threshold=0, seed=4)
