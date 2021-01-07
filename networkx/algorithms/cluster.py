@@ -3,7 +3,7 @@
 from itertools import chain
 from itertools import combinations
 from collections import Counter
-from math import pow
+from numpy import cbrt
 
 from networkx.utils import not_implemented_for
 
@@ -85,7 +85,7 @@ def _triangles_and_degree_iter(G, nodes=None):
 def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
     """Return an iterator of (node, degree, weighted_triangles).
 
-    Used for weighted (clustering).
+    Used for weighted clustering.
     Note: this returns the geometric average weight of edges in the triangle.
     Also, each triangle is counted twice (each direction).
     So you may want to divide by 2.
@@ -103,14 +103,6 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
     def wt(u, v):
         return G[u][v].get(weight, 1) / max_weight
 
-    def cubed_root(num):
-        if num > 0:
-            return pow(num, 1.0 / 3.0)
-        elif num < 0:
-            return -pow(abs(num), 1.0 / 3.0)
-        else:
-            return 0
-
     for i, nbrs in nodes_nbrs:
         inbrs = set(nbrs) - {i}
         weighted_triangles = 0
@@ -123,7 +115,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
             # loop.
             wij = wt(i, j)
             weighted_triangles += sum(
-                cubed_root(wij * wt(j, k) * wt(k, i)) for k in inbrs & jnbrs
+                cbrt([(wij * wt(j, k) * wt(k, i)) for k in inbrs & jnbrs])
             )
         yield (i, len(inbrs), 2 * weighted_triangles)
 
@@ -182,14 +174,6 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
     def wt(u, v):
         return G[u][v].get(weight, 1) / max_weight
 
-    def cubed_root(num):
-        if num > 0:
-            return pow(num, 1.0 / 3.0)
-        elif num < 0:
-            return -pow(abs(num), 1.0 / 3.0)
-        else:
-            return 0
-
     for i, preds, succs in nodes_nbrs:
         ipreds = set(preds) - {i}
         isuccs = set(succs) - {i}
@@ -199,32 +183,32 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
             jpreds = set(G._pred[j]) - {j}
             jsuccs = set(G._succ[j]) - {j}
             directed_triangles += sum(
-                cubed_root(wt(j, i) * wt(k, i) * wt(k, j)) for k in ipreds & jpreds
+                cbrt([(wt(j, i) * wt(k, i) * wt(k, j)) for k in ipreds & jpreds])
             )
             directed_triangles += sum(
-                cubed_root(wt(j, i) * wt(k, i) * wt(j, k)) for k in ipreds & jsuccs
+                cbrt([(wt(j, i) * wt(k, i) * wt(j, k)) for k in ipreds & jsuccs])
             )
             directed_triangles += sum(
-                cubed_root(wt(j, i) * wt(i, k) * wt(k, j)) for k in isuccs & jpreds
+                cbrt([(wt(j, i) * wt(i, k) * wt(k, j)) for k in isuccs & jpreds])
             )
             directed_triangles += sum(
-                cubed_root(wt(j, i) * wt(i, k) * wt(j, k)) for k in isuccs & jsuccs
+                cbrt([(wt(j, i) * wt(i, k) * wt(j, k)) for k in isuccs & jsuccs])
             )
 
         for j in isuccs:
             jpreds = set(G._pred[j]) - {j}
             jsuccs = set(G._succ[j]) - {j}
             directed_triangles += sum(
-                cubed_root(wt(i, j) * wt(k, i) * wt(k, j)) for k in ipreds & jpreds
+                cbrt([(wt(i, j) * wt(k, i) * wt(k, j)) for k in ipreds & jpreds])
             )
             directed_triangles += sum(
-                cubed_root(wt(i, j) * wt(k, i) * wt(j, k)) for k in ipreds & jsuccs
+                cbrt([(wt(i, j) * wt(k, i) * wt(j, k)) for k in ipreds & jsuccs])
             )
             directed_triangles += sum(
-                cubed_root(wt(i, j) * wt(i, k) * wt(k, j)) for k in isuccs & jpreds
+                cbrt([(wt(i, j) * wt(i, k) * wt(k, j)) for k in isuccs & jpreds])
             )
             directed_triangles += sum(
-                cubed_root(wt(i, j) * wt(i, k) * wt(j, k)) for k in isuccs & jsuccs
+                cbrt([(wt(i, j) * wt(i, k) * wt(j, k)) for k in isuccs & jsuccs])
             )
 
         dtotal = len(ipreds) + len(isuccs)
@@ -287,7 +271,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     """
     c = clustering(G, nodes, weight=weight).values()
     if not count_zeros:
-        c = [v for v in c if v != 0]
+        c = [v for v in c if abs(v) > 0]
     return sum(c) / len(c)
 
 
@@ -318,9 +302,12 @@ def clustering(G, nodes=None, weight=None):
 
     The value of :math:`c_u` is assigned to 0 if :math:`deg(u) < 2`.
 
+    Additionally, this weighted definition can be generalized to support signed graphs [3]_
+    by replacing unsigned weights with signed ones.
+
     For directed graphs, the clustering is similarly defined as the fraction
     of all possible directed triangles or geometric average of the subgraph
-    edge weights for unweighted and weighted directed graph respectively [3]_.
+    edge weights for unweighted and weighted directed graph respectively [4]_.
 
     .. math::
 
@@ -331,6 +318,7 @@ def clustering(G, nodes=None, weight=None):
     :math:`u`, :math:`deg^{tot}(u)` is the sum of in degree and out degree of
     :math:`u` and :math:`deg^{\leftrightarrow}(u)` is the reciprocal degree of
     :math:`u`.
+
 
     Parameters
     ----------
@@ -369,7 +357,9 @@ def clustering(G, nodes=None, weight=None):
     .. [2] Intensity and coherence of motifs in weighted complex
        networks by J. P. Onnela, J. Saramäki, J. Kertész, and K. Kaski,
        Physical Review E, 71(6), 065103 (2005).
-    .. [3] Clustering in complex directed networks by G. Fagiolo,
+    .. [3] Generalization of Clustering Coefficients to Signed Correlation Networks
+       by G. Costantini and M. Perugini, PloS one, 9(2), e88669 (2014).
+    .. [4] Clustering in complex directed networks by G. Fagiolo,
        Physical Review E, 76(2), 026107 (2007).
     """
     if G.is_directed():

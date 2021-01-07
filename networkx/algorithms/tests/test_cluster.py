@@ -167,13 +167,6 @@ class TestDirectedWeightedClustering:
         assert nx.clustering(G)[0] == 1.0 / 6.0
         assert nx.clustering(G, weight="weight")[0] == 1.0 / 12.0
 
-    def test_triangle_and_negative_edge(self):
-        G = nx.cycle_graph(3, create_using=nx.DiGraph())
-        G.add_edge(1, 2, weight=-1)
-        G.add_edge(0, 4, weight=2)
-        assert nx.clustering(G)[0] == 1.0 / 6.0
-        assert nx.clustering(G, weight="weight")[0] == -1.0 / 12.0
-
 
 class TestWeightedClustering:
     def test_clustering(self):
@@ -248,7 +241,7 @@ class TestWeightedClustering:
         assert nx.clustering(G)[0] == 1.0 / 3.0
         assert nx.clustering(G, weight="weight")[0] == 1.0 / 6.0
 
-    def test_triangle_and_negative_edge(self):
+    def test_triangle_and_signed_edge(self):
         G = nx.cycle_graph(3)
         G.add_edge(0, 1, weight=-1)
         G.add_edge(3, 0, weight=0)
