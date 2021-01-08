@@ -5,15 +5,17 @@ Matplotlib
 
 Draw networks with matplotlib.
 
+Examples
+--------
+>>> G = nx.complete_graph(5)
+>>> nx.draw(G)
+
 See Also
 --------
-
-matplotlib:     http://matplotlib.org/
-
-pygraphviz:     http://pygraphviz.github.io/
-
+ - matplotlib: http://matplotlib.org/
+ - matplotlib's scatter: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.pyplot.scatter.html
+ - matplotlib's FancyArrowPatch: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.patches.FancyArrowPatch.html
 """
-
 from numbers import Number
 import networkx as nx
 from networkx.drawing.layout import (
@@ -207,8 +209,10 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
     edge_vmin,edge_vmax : floats, optional
         Minimum and maximum for edge colormap scaling
 
-    style : string {'-', '--', '-.', ':', ...} (default='-' => solid line)
-        Edge line style (See Matplotlib FancyArrowPatch linestyle)
+    style : string (default=solid line)
+        Edge line style e.g.: '-', '--', '-.', ':'
+        or words like 'solid' or 'dashed'.
+        (See `matplotlib.patches.FancyArrowPatch`: `linestyle`)
 
     labels : dictionary (default=None)
         Node labels in a dictionary of text labels keyed by node
@@ -395,7 +399,7 @@ def draw_networkx_nodes(
     edgecolors : [None | scalar | sequence] (default = node_color)
         Colors of node borders
 
-    label : [None| string]
+    label : [None | string]
         Label for legend
 
     Returns
@@ -518,8 +522,10 @@ def draw_networkx_edges(
         floats from 0-1. If numeric values are specified they will be
         mapped to colors using the edge_cmap and edge_vmin,edge_vmax parameters.
 
-    style : string {'-', '--', '-.', ':', ...} (default='-' => solid line)
-        Edge line style (See Matplotlib FancyArrowPatch linestyle)
+    style : string (default=solid line)
+        Edge line style e.g.: '-', '--', '-.', ':'
+        or words like 'solid' or 'dashed'.
+        (See `matplotlib.patches.FancyArrowPatch`: `linestyle`)
 
     alpha : float or None (default=None)
         The edge transparency
@@ -539,9 +545,9 @@ def draw_networkx_edges(
 
         Note: Arrows will be the same color as edges.
 
-    arrowstyle : str (default='-|>' if directed else '-')
-        For directed graphs and *arrows==True* defaults to ``'-|>'``
-        otherwise defaults to ``'-'``.
+    arrowstyle : str (default='-\|>' if directed else '-')
+        For directed graphs and `arrows==True` defaults to '-\|>',
+        otherwise defaults to '-'.
 
         See `matplotlib.patches.ArrowStyle` for more options.
 
@@ -569,7 +575,7 @@ def draw_networkx_edges(
         The marker used for nodes, used in determining edge positioning.
         Specification is as a `matplotlib.markers` marker, e.g. one of 'so^>v<dph8'.
 
-    label : [None| string]
+    label : None or string
         Label for legend
 
     min_source_margin : int (default=0)
