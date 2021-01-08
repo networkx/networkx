@@ -121,6 +121,8 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     for group_node1 in set_v:
         PB[group_node1] = dict.fromkeys(G, 0.0)
         for group_node2 in set_v:
+            if D[group_node1][group_node2] == float("inf"):
+                continue
             for node in G:
                 # if node isn't connected to the two group nodes than continue
                 if D[node][group_node2] != float("inf") or D[node][
@@ -154,7 +156,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                     dxyv = 0
                     dvxy = 0
                     if not (
-                        sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[y][v] == 0
+                        sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[v][y] == 0
                     ):
                         if D[x][v] == D[x][y] + D[y][v]:
                             dxyv = 1.0 * sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
