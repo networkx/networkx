@@ -3,7 +3,6 @@
 from itertools import chain
 from itertools import combinations
 from collections import Counter
-import numpy as np
 
 from networkx.utils import not_implemented_for
 
@@ -91,6 +90,8 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
     So you may want to divide by 2.
 
     """
+    import numpy as np
+
     if weight is None or G.number_of_edges() == 0:
         max_weight = 1
     else:
@@ -164,6 +165,8 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
     directed triangles so does not count triangles twice.
 
     """
+    import numpy as np
+
     if weight is None or G.number_of_edges() == 0:
         max_weight = 1
     else:
@@ -302,8 +305,7 @@ def clustering(G, nodes=None, weight=None):
 
     The value of :math:`c_u` is assigned to 0 if :math:`deg(u) < 2`.
 
-    Additionally, this weighted definition can be generalized to support signed graphs [3]_
-    by replacing unsigned weights with signed ones.
+    Additionally, this weighted definition has been generalized to support negative edge weights [3]_.
 
     For directed graphs, the clustering is similarly defined as the fraction
     of all possible directed triangles or geometric average of the subgraph

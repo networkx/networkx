@@ -1,4 +1,5 @@
 import networkx as nx
+import pytest
 
 
 class TestTriangles:
@@ -103,6 +104,10 @@ class TestDirectedClustering:
 
 
 class TestDirectedWeightedClustering:
+    @classmethod
+    def setup_class(cls):
+        pytest.importorskip("numpy")
+
     def test_clustering(self):
         G = nx.DiGraph()
         assert list(nx.clustering(G, weight="weight").values()) == []
@@ -169,6 +174,10 @@ class TestDirectedWeightedClustering:
 
 
 class TestWeightedClustering:
+    @classmethod
+    def setup_class(cls):
+        pytest.importorskip("numpy")
+
     def test_clustering(self):
         G = nx.Graph()
         assert list(nx.clustering(G, weight="weight").values()) == []
@@ -250,6 +259,10 @@ class TestWeightedClustering:
 
 
 class TestClustering:
+    @classmethod
+    def setup_class(cls):
+        pytest.importorskip("numpy")
+
     def test_clustering(self):
         G = nx.Graph()
         assert list(nx.clustering(G).values()) == []
@@ -443,6 +456,10 @@ class TestSquareClustering:
 
 
 class TestAverageClustering:
+    @classmethod
+    def setup_class(cls):
+        pytest.importorskip("numpy")
+
     def test_average_clustering(self):
         G = nx.cycle_graph(3)
         G.add_edge(2, 3)
