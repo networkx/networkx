@@ -141,6 +141,10 @@ def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-
     ----------
     G : NetworkX graph
 
+    path : string or file
+       Filename or file handle to write to.
+       Filenames ending in .gz or .bz2 will be compressed.
+
     comments : string, optional
        Marker for comment lines
 
@@ -202,6 +206,9 @@ def parse_multiline_adjlist(
 
     nodetype : Python type, optional
        Convert nodes to this type.
+
+    edgetype : Python type, optional
+       Convert edges to this type.
 
     comments : string, optional
        Marker for comment lines
