@@ -641,15 +641,11 @@ def draw_networkx_edges(
     if edgelist is None:
         edgelist = list(G.edges())
 
-    if nodelist is None:
-        nodelist = list(G.nodes())
-    else:
-        # Remove any edges where both endpoints are not in node list
-        nodeset = set(nodelist)
-        edgelist = [(u, v) for u, v in edgelist if (u in nodeset) and (v in nodeset)]
-
     if len(edgelist) == 0:  # no edges!
         return []
+
+    if nodelist is None:
+        nodelist = list(G.nodes())
 
     # FancyArrowPatch handles color=None different from LineCollection
     if edge_color is None:
