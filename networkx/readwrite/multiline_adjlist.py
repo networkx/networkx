@@ -142,7 +142,7 @@ def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-
     G : NetworkX graph
 
     path : string or file
-       Filename or file handle to read.
+       Filename or file handle to write to.
        Filenames ending in .gz or .bz2 will be compressed.
 
     comments : string, optional
