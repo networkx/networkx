@@ -80,8 +80,16 @@ def minimum_k_cut(G, k, weight=None):
     Note that the case in which $k=2$ corresponds to the global minimum cut and can
     be solved optimally in polynomial time. For $k \geq 3$, it's NP-hard [1]_.
 
-    The function implements the algorithm described in [1]_.
-    @TODO add description of the algorithm
+    The function implements the algorithm described in [1]_.  The algorithm is based on
+    the concept of Gomory-Hu trees (see :meth:`networkx.algorithms.flow.gomory_hu_tree`)
+    for finding a light k-cut.
+
+    The algorithm can be summarised as follows.
+
+    1. Compute a Gomory-Hu tree T starting from G.
+    2. Take the union of the $k − 1$ lightest cuts from the $n − 1$ cuts associated with
+       the edges in $T$. A cut associated with an edge $(u,v)$ of $T$ is a cut that connects the two
+       connected components obtained by removing $(u,v)$ from $T$.
 
     Parameters
     ----------
@@ -149,11 +157,10 @@ def minimum_k_cut(G, k, weight=None):
     for u, v, _ in min_weight_edges:
         # remove (u,v) from the tree
         T.remove_edge(u, v)
-        # get the two connected components p1 and p2
+        # get the connected component that contains u
         p1 = nx.node_connected_component(T, u)
-        p2 = set(T) - p1
-        # add the boundary edges to the cutset
-        cutset |= set(nx.edge_boundary(G2, p1, p2))
+        # add the boundary edges of p1 to the cutset
+        cutset |= set(nx.edge_boundary(G2, p1))
         # re-add (u,v) to the tree
         T.add_edge(u, v)
 
