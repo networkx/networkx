@@ -73,6 +73,16 @@ Dominating Set
    min_weighted_dominating_set
    min_edge_dominating_set
 
+Cuts
+----
+.. automodule:: networkx.algorithms.approximation.kcutsets
+.. autosummary::
+   :toctree: generated/
+
+   minimum_multiway_cut
+   minimum_k_cut
+
+
 Matching
 --------
 .. automodule:: networkx.algorithms.approximation.matching
