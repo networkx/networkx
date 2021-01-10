@@ -108,15 +108,56 @@ def minimum_k_cut(G, k, weight=None):
     Raises
     ------
     NetworkXNotImplemented
-        If G is directed.
+        If G is not connected or
+        If k is smaller than 1 or
+        If k is greater than the number of nodes of G.
+
+    Notes
+    -----
+    The removal of the cutset from G will leave *at least* $k$ components.
+    If more than $k$ components are created then it's enough to throw back
+    some of the removed edges until there are exactly $k$ components.
 
     See also
     --------
     networkx.algorithms.flow.minimum_cut
+    networkx.algorithms.flow.gomory_hu_tree
 
     References
     ----------
     .. [1]  Vazirani, Vijay V. *Approximation algorithms*.
             Springer Science & Business Media, 2013.
     """
-    pass
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("Graph not connected.")
+    if not 1 <= k <= len(G):
+        raise nx.NetworkXError(f"k should be within 1 and {len(G)}")
+
+    # extract edges weight, and set edges weights with no attribute to 1
+    edges_weights = G.edges(data=weight, default=1)
+    # create a new Graph G2
+    G2 = nx.Graph()
+    G2.add_weighted_edges_from(edges_weights, weight="capacity")
+
+    # build a Gomory-Hu tree T from G
+    T = nx.gomory_hu_tree(G2)
+    # get the k-1 cheapest edges of the Gomory-Hu tree
+    min_weight_edges = sorted(T.edges(data="weight"), key=lambda x: x[2])[: k - 1]
+
+    # compute the cutset, the value is computed after as an edge might appear more than once
+    cutset = set()
+    for u, v, _ in min_weight_edges:
+        # remove (u,v) from the tree
+        T.remove_edge(u, v)
+        # get the two connected components p1 and p2
+        p1 = nx.node_connected_component(T, u)
+        p2 = set(T) - p1
+        # add the boundary edges to the cutset
+        cutset |= set(nx.edge_boundary(G2, p1, p2))
+        # re-add (u,v) to the tree
+        T.add_edge(u, v)
+
+    # compute the cut_value, each
+    cut_value = sum(G2.edges[u, v]["capacity"] for u, v in cutset)
+
+    return cut_value, cutset
