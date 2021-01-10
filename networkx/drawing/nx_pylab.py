@@ -445,9 +445,14 @@ def draw_networkx_nodes(
         node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
         alpha = None
 
+    # 3d projection
+    if hasattr(ax, 'get_proj'):
+        labels = "xs ys zs".split()
+    # 2d projection
+    else:
+        labels = "x y".split()
     node_collection = ax.scatter(
-        xy[:, 0],
-        xy[:, 1],
+        **{label : data for label, data in zip(labels, xy.T)},
         s=node_size,
         c=node_color,
         marker=node_shape,
@@ -650,8 +655,19 @@ def draw_networkx_edges(
         edge_color = [edge_cmap(color_normal(e)) for e in edge_color]
 
     if not G.is_directed() or not arrows:
-        edge_collection = LineCollection(
-            edge_pos,
+        # import 3d linecollection
+        if hasattr(ax, 'get_proj'):
+            from mpl_toolkits.mplot3d.art3d import Line3DCollection
+            lc = Line3DCollection
+            # adjust data projection, fails for 2d data
+            idx = 3
+        else:
+            lc = LineCollection
+            # adjust max allowed dimension
+            idx = 2
+
+        edge_collection = lc(
+            edge_pos[..., :idx],
             colors=edge_color,
             linewidths=width,
             antialiaseds=(1,),
