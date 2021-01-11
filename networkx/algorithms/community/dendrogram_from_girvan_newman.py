@@ -3,6 +3,16 @@ This module implements useful functions to prepare data for
 drawing dendrograms of community detections performed by the
 Girvan-Newman algorithm on graphs.
 
+The Girvan–Newman algorithm detects communities by progressively removing
+edges from the original graph. During the procedure the graph is broken
+down into pieces and the tightly knit community structure is exposed, so
+the result can be depicted as a dendrogram.
+In particular, the main goal of this module is to get the result of the
+`girvan_newman` function applied to a given graph and to encode it into
+a matrix named "agglomerative matrix". Then, this matrix can be given in
+input to the `scipy.cluster.hierarchy.dendrogram`function to plot a
+dendrogram.
+
 You can look at some other examples on
 [github](https://github.com/FrancescoBonacina/dendrogram_girvan-newman).
 """
