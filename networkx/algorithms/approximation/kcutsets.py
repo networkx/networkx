@@ -73,12 +73,10 @@ def minimum_multiway_cut(G, terminals, weight=None):
         raise nx.NetworkXError("Expected non-empty NetworkX graph!")
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
-    # convert to a set
-    terminals = set(terminals)
     # only consider the terminals in G
-    terminals = terminals & G.nodes()
+    terminals = set(terminals) & G.nodes()
     # raise an error if less than two terminal have been provided
-    if len(terminals & G.nodes()) < 2:
+    if len(terminals) < 2:
         raise nx.NetworkXError("At least two terminals should be provided.")
 
     # extract edges weight, and set edges weights with no attribute to 1
@@ -89,13 +87,13 @@ def minimum_multiway_cut(G, terminals, weight=None):
 
     # take a non-existing node of G to be the sink
     sink = next(u for u in range(len(G) + 1) if u not in G)
-    # add edges from the terminals to the sink node
+    # add edges from the terminals to the sink node with infinite capacity
     G2.add_edges_from([(u, sink) for u in terminals], capacity=float("inf"))
 
-    # compute the minimum weight cut for each terminal to all the others
     all_cuts = []
+    # compute the minimum weight isolating cut for each terminal
     for u in terminals:
-        # remove the edge to the sink
+        # remove the edge from u to the sink
         G2.remove_edge(u, sink)
         # get the cut value and the 2 partitions of nodes
         value_cut, (p1, p2) = nx.minimum_cut(G2, u, sink)
