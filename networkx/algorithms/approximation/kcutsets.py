@@ -1,5 +1,6 @@
 """Functions involving natural generalizations of the minimum cut problem."""
 
+import itertools
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -55,7 +56,11 @@ def minimum_multiway_cut(G, terminals, weight=None):
     Raises
     ------
     NetworkXNotImplemented
-        If G is directed.
+        If G is directed or a mutigraph
+    NetworkXError
+        If G is empty or
+        If G is not connected or
+        If the number of terminals is smaller than 2.
 
     References
     ----------
@@ -64,7 +69,53 @@ def minimum_multiway_cut(G, terminals, weight=None):
     .. [2]  Dahlhaus, Elias, et al. *The complexity of multiway cuts*.
             Proceedings of the twenty-fourth annual ACM symposium on Theory of computing. 1992
     """
-    pass
+    if not G:
+        raise nx.NetworkXError("Expected non-empty NetworkX graph!")
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("Graph not connected.")
+    # convert to a set
+    terminals = set(terminals)
+    # only consider the terminals in G
+    terminals = terminals & G.nodes()
+    # raise an error if less than two terminal have been provided
+    if len(terminals & G.nodes()) < 2:
+        raise nx.NetworkXError("At least two terminals should be provided.")
+
+    # extract edges weight, and set edges weights with no attribute to 1
+    edges_weights = G.edges(data=weight, default=1)
+    # create a new Graph G2
+    G2 = nx.Graph()
+    G2.add_weighted_edges_from(edges_weights, weight="capacity")
+
+    # take a non-existing node of G to be the sink
+    sink = next(u for u in range(len(G) + 1) if u not in G)
+    # add edges from the terminals to the sink node
+    G2.add_edges_from([(u, sink) for u in terminals], capacity=float("inf"))
+
+    # compute the minimum weight cut for each terminal to all the others
+    all_cuts = []
+    for u in terminals:
+        # remove the edge to the sink
+        G2.remove_edge(u, sink)
+        # get the cut value and the 2 partitions of nodes
+        value_cut, (p1, p2) = nx.minimum_cut(G2, u, sink)
+        # get the edges crossing the cut
+        edges_cut = set(nx.edge_boundary(G2, p1, p2))
+        # add to the result
+        all_cuts.append((edges_cut, value_cut))
+        # re-add the edge to the sink
+        G2.add_edge(u, sink, capacity=float("inf"))
+
+    # discard the heaviest cut and take the union of the rest
+    cutset = set(
+        itertools.chain.from_iterable(
+            el[0] for el in sorted(all_cuts, key=lambda x: x[1])[:-1]
+        )
+    )
+    # compute the cut value
+    cut_value = sum(G2.edges[u, v]["capacity"] for u, v in cutset)
+
+    return cut_value, cutset
 
 
 @not_implemented_for("directed")
@@ -116,9 +167,11 @@ def minimum_k_cut(G, k, weight=None):
     Raises
     ------
     NetworkXNotImplemented
+        If G is directed or a mutigraph
+    NetworkXError
+        If G is empty or
         If G is not connected or
-        If k is smaller than 1 or
-        If k is greater than the number of nodes of G.
+        If k is smaller than 1 or greater than the number of nodes of G.
 
     Notes
     -----
@@ -136,6 +189,8 @@ def minimum_k_cut(G, k, weight=None):
     .. [1]  Vazirani, Vijay V. *Approximation algorithms*.
             Springer Science & Business Media, 2013.
     """
+    if not G:
+        raise nx.NetworkXError("Expected non-empty NetworkX graph!")
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     if not 1 <= k <= len(G):
@@ -164,7 +219,7 @@ def minimum_k_cut(G, k, weight=None):
         # re-add (u,v) to the tree
         T.add_edge(u, v)
 
-    # compute the cut_value, each
+    # compute the cut_value
     cut_value = sum(G2.edges[u, v]["capacity"] for u, v in cutset)
 
     return cut_value, cutset
