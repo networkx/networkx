@@ -105,11 +105,13 @@ def minimum_multiway_cut(G, terminals, weight=None):
         G2.add_edge(u, sink, capacity=float("inf"))
 
     # discard the heaviest cut and take the union of the rest
-    cutset = set(
-        itertools.chain.from_iterable(
-            el[0] for el in sorted(all_cuts, key=lambda x: x[1])[:-1]
-        )
-    )
+    cutset = set()
+    for u, v in itertools.chain.from_iterable(
+        el[0] for el in sorted(all_cuts, key=lambda x: x[1])[:-1]
+    ):
+        if (u, v) not in cutset and (v, u) not in cutset:
+            cutset.add((u, v))
+
     # compute the cut value
     cut_value = sum(G2.edges[u, v]["capacity"] for u, v in cutset)
 
@@ -160,7 +162,7 @@ def minimum_k_cut(G, k, weight=None):
         Value of the (approximated) minimum k-cut.
 
     cutset : set
-        Set of edges whose removal leaves k connected components.
+        Set of edges whose removal leaves at least k connected components.
 
     Raises
     ------
@@ -206,17 +208,22 @@ def minimum_k_cut(G, k, weight=None):
     min_weight_edges = sorted(T.edges(data="weight"), key=lambda x: x[2])[: k - 1]
 
     # compute the cutset, the value is computed after as an edge might appear more than once
-    cutset = set()
+    all_edges_cut = set()
     for u, v, _ in min_weight_edges:
         # remove (u,v) from the tree
         T.remove_edge(u, v)
         # get the connected component that contains u
         p1 = nx.node_connected_component(T, u)
         # add the boundary edges of p1 to the cutset
-        cutset |= set(nx.edge_boundary(G2, p1))
+        all_edges_cut |= set(nx.edge_boundary(G2, p1))
         # re-add (u,v) to the tree
         T.add_edge(u, v)
 
+    # consider edges only in a direction
+    cutset = set()
+    for u, v in all_edges_cut:
+        if (u, v) not in cutset and (v, u) not in cutset:
+            cutset.add((u, v))
     # compute the cut_value
     cut_value = sum(G2.edges[u, v]["capacity"] for u, v in cutset)
 
