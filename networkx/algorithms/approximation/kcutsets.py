@@ -196,7 +196,7 @@ def minimum_k_cut(G, k, weight=None):
     if not 1 <= k <= len(G):
         raise nx.NetworkXError(f"k should be within 1 and {len(G)}")
 
-    # extract edges weight, and set edges weights with no attribute to 1
+    # extract edges weights, and set edges weights with no attribute to 1
     edges_weights = G.edges(data=weight, default=1)
     # create a new Graph G2
     G2 = nx.Graph()
