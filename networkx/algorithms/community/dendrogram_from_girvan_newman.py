@@ -10,7 +10,7 @@ the result can be depicted as a dendrogram.
 In particular, the main goal of this module is to get the result of the
 `girvan_newman` function applied to a given graph and to encode it into
 a matrix named "agglomerative matrix". Then, this matrix can be given in
-input to the `scipy.cluster.hierarchy.dendrogram`function to plot a
+input to the `scipy.cluster.hierarchy.dendrogram` function to plot a
 dendrogram.
 
 You can look at some other examples on
