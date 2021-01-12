@@ -2,11 +2,11 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['bethe_hessian_matrix']
+__all__ = ["bethe_hessian_matrix"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def bethe_hessian_matrix(G, r=None, nodelist=None):
     r"""Returns the Bethe Hessian matrix of G.
 
@@ -40,8 +40,7 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> k =[3, 2, 2, 1, 0]
+    >>> k = [3, 2, 2, 1, 0]
     >>> G = nx.havel_hakimi_graph(k)
     >>> H = nx.modularity_matrix(G)
 
@@ -49,7 +48,7 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     See Also
     --------
     bethe_hessian_spectrum
-    to_numpy_matrix
+    to_numpy_array
     adjacency_matrix
     laplacian_matrix
 
@@ -62,15 +61,19 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
        "Estimating the number of communities in networks by spectral methods"
        arXiv:1507.00827, 2015.
     """
-    import scipy.sparse
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
+
     if nodelist is None:
         nodelist = list(G)
     if r is None:
-        r = sum([d ** 2 for v, d in nx.degree(G)]) /\
-            sum([d for v, d in nx.degree(G)]) - 1
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format='csr')
+        r = (
+            sum([d ** 2 for v, d in nx.degree(G)]) / sum([d for v, d in nx.degree(G)])
+            - 1
+        )
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format="csr")
     n, m = A.shape
     diags = A.sum(axis=1)
-    D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format='csr')
-    I = scipy.sparse.eye(m, n, format='csr')
+    D = sp.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
+    I = sp.sparse.eye(m, n, format="csr")
     return (r ** 2 - 1) * I - r * A + D

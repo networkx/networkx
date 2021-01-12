@@ -2,7 +2,7 @@
 
 import networkx as nx
 
-__all__ = ['constraint', 'local_constraint', 'effective_size']
+__all__ = ["constraint", "local_constraint", "effective_size"]
 
 
 def mutual_weight(G, u, v, weight=None):
@@ -43,8 +43,7 @@ def normalized_mutual_weight(G, u, v, norm=sum, weight=None):
     attribute used as weight.
 
     """
-    scale = norm(mutual_weight(G, u, w, weight)
-                 for w in set(nx.all_neighbors(G, u)))
+    scale = norm(mutual_weight(G, u, w, weight) for w in set(nx.all_neighbors(G, u)))
     return 0 if scale == 0 else mutual_weight(G, u, v, weight) / scale
 
 
@@ -98,7 +97,7 @@ def effective_size(G, nodes=None, weight=None):
     Returns
     -------
     dict
-        Dictionary with nodes as keys and the constraint on the node as values.
+        Dictionary with nodes as keys and the effective size of the node as values.
 
     Notes
     -----
@@ -127,11 +126,15 @@ def effective_size(G, nodes=None, weight=None):
            http://www.analytictech.com/connections/v20(1)/holes.htm
 
     """
+
     def redundancy(G, u, v, weight=None):
         nmw = normalized_mutual_weight
-        r = sum(nmw(G, u, w, weight=weight) * nmw(G, v, w, norm=max, weight=weight)
-                for w in set(nx.all_neighbors(G, u)))
+        r = sum(
+            nmw(G, u, w, weight=weight) * nmw(G, v, w, norm=max, weight=weight)
+            for w in set(nx.all_neighbors(G, u))
+        )
         return 1 - r
+
     effective_size = {}
     if nodes is None:
         nodes = G
@@ -140,7 +143,7 @@ def effective_size(G, nodes=None, weight=None):
         for v in nodes:
             # Effective size is not defined for isolated nodes
             if len(G[v]) == 0:
-                effective_size[v] = float('nan')
+                effective_size[v] = float("nan")
                 continue
             E = nx.ego_graph(G, v, center=False, undirected=True)
             effective_size[v] = len(E) - (2 * E.size()) / len(E)
@@ -148,10 +151,11 @@ def effective_size(G, nodes=None, weight=None):
         for v in nodes:
             # Effective size is not defined for isolated nodes
             if len(G[v]) == 0:
-                effective_size[v] = float('nan')
+                effective_size[v] = float("nan")
                 continue
-            effective_size[v] = sum(redundancy(G, v, u, weight)
-                                    for u in set(nx.all_neighbors(G, v)))
+            effective_size[v] = sum(
+                redundancy(G, v, u, weight) for u in set(nx.all_neighbors(G, v))
+            )
     return effective_size
 
 
@@ -207,10 +211,11 @@ def constraint(G, nodes=None, weight=None):
     for v in nodes:
         # Constraint is not defined for isolated nodes
         if len(G[v]) == 0:
-            constraint[v] = float('nan')
+            constraint[v] = float("nan")
             continue
-        constraint[v] = sum(local_constraint(G, v, n, weight)
-                            for n in set(nx.all_neighbors(G, v)))
+        constraint[v] = sum(
+            local_constraint(G, v, n, weight) for n in set(nx.all_neighbors(G, v))
+        )
     return constraint
 
 
@@ -266,6 +271,8 @@ def local_constraint(G, u, v, weight=None):
     """
     nmw = normalized_mutual_weight
     direct = nmw(G, u, v, weight=weight)
-    indirect = sum(nmw(G, u, w, weight=weight) * nmw(G, w, v, weight=weight)
-                   for w in set(nx.all_neighbors(G, u)))
+    indirect = sum(
+        nmw(G, u, w, weight=weight) * nmw(G, w, v, weight=weight)
+        for w in set(nx.all_neighbors(G, u))
+    )
     return (direct + indirect) ** 2

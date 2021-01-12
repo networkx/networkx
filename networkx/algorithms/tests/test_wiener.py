@@ -8,7 +8,7 @@ from networkx import path_graph
 from networkx import wiener_index
 
 
-class TestWienerIndex(object):
+class TestWienerIndex:
     """Unit tests for computing the Wiener index of a graph."""
 
     def test_disconnected_graph(self):
@@ -16,7 +16,7 @@ class TestWienerIndex(object):
         positive infinity.
 
         """
-        assert wiener_index(empty_graph(2)) == float('inf')
+        assert wiener_index(empty_graph(2)) == float("inf")
 
     def test_directed(self):
         """Tests that each pair of nodes in the directed graph is

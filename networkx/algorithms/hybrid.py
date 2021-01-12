@@ -6,7 +6,7 @@ graphs.
 import copy
 import networkx as nx
 
-__all__ = ['kl_connected_subgraph', 'is_kl_connected']
+__all__ = ["kl_connected_subgraph", "is_kl_connected"]
 
 
 def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
@@ -54,12 +54,12 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
 
     References
     ----------
-    .. [1]: Chung, Fan and Linyuan Lu. "The Small World Phenomenon in Hybrid
-            Power Law Graphs." *Complex Networks*. Springer Berlin Heidelberg,
-            2004. 89--104.
+    .. [1] Chung, Fan and Linyuan Lu. "The Small World Phenomenon in Hybrid
+           Power Law Graphs." *Complex Networks*. Springer Berlin Heidelberg,
+           2004. 89--104.
 
     """
-    H = copy.deepcopy(G)    # subgraph we construct by removing from G
+    H = copy.deepcopy(G)  # subgraph we construct by removing from G
 
     graphOK = True
     deleted_some = True  # hack to start off the while loop
@@ -73,7 +73,7 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
             (u, v) = edge
             # Get copy of graph needed for this search
             if low_memory:
-                verts = set([u, v])
+                verts = {u, v}
                 for i in range(k):
                     for w in verts.copy():
                         verts.update(G[w])
@@ -95,7 +95,7 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
                     if prev != w:
                         G2.remove_edge(prev, w)
                         prev = w
-#                path = shortest_path(G2, u, v, k) # ??? should "Cutoff" be k+1?
+                #                path = shortest_path(G2, u, v, k) # ??? should "Cutoff" be k+1?
                 try:
                     path = nx.shortest_path(G2, u, v)  # ??? should "Cutoff" be k+1?
                 except nx.NetworkXNoPath:
@@ -148,9 +148,9 @@ def is_kl_connected(G, k, l, low_memory=False):
 
     References
     ----------
-    .. [1]: Chung, Fan and Linyuan Lu. "The Small World Phenomenon in Hybrid
-            Power Law Graphs." *Complex Networks*. Springer Berlin Heidelberg,
-            2004. 89--104.
+    .. [1] Chung, Fan and Linyuan Lu. "The Small World Phenomenon in Hybrid
+           Power Law Graphs." *Complex Networks*. Springer Berlin Heidelberg,
+           2004. 89--104.
 
     """
     graphOK = True
@@ -158,7 +158,7 @@ def is_kl_connected(G, k, l, low_memory=False):
         (u, v) = edge
         # Get copy of graph needed for this search
         if low_memory:
-            verts = set([u, v])
+            verts = {u, v}
             for i in range(k):
                 [verts.update(G.neighbors(w)) for w in verts.copy()]
             G2 = G.subgraph(verts)
@@ -179,7 +179,7 @@ def is_kl_connected(G, k, l, low_memory=False):
                 if w != prev:
                     G2.remove_edge(prev, w)
                     prev = w
-#            path = shortest_path(G2, u, v, k) # ??? should "Cutoff" be k+1?
+            #            path = shortest_path(G2, u, v, k) # ??? should "Cutoff" be k+1?
             try:
                 path = nx.shortest_path(G2, u, v)  # ??? should "Cutoff" be k+1?
             except nx.NetworkXNoPath:

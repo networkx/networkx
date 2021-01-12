@@ -4,7 +4,7 @@
 import networkx as nx
 
 
-class TestCutSize(object):
+class TestCutSize:
     """Unit tests for the :func:`~networkx.cut_size` function."""
 
     def test_symmetric(self):
@@ -41,11 +41,11 @@ class TestCutSize(object):
 
     def test_multigraph(self):
         """Tests that parallel edges are each counted for a cut."""
-        G = nx.MultiGraph(['ab', 'ab'])
-        assert nx.cut_size(G, {'a'}, {'b'}) == 2
+        G = nx.MultiGraph(["ab", "ab"])
+        assert nx.cut_size(G, {"a"}, {"b"}) == 2
 
 
-class TestVolume(object):
+class TestVolume:
     """Unit tests for the :func:`~networkx.volume` function."""
 
     def test_graph(self):
@@ -66,8 +66,13 @@ class TestVolume(object):
         G = nx.MultiDiGraph(edges * 2)
         assert nx.volume(G, {0, 1}) == 4
 
+    def test_barbell(self):
+        G = nx.barbell_graph(3, 0)
+        assert nx.volume(G, {0, 1, 2}) == 7
+        assert nx.volume(G, {3, 4, 5}) == 7
 
-class TestNormalizedCutSize(object):
+
+class TestNormalizedCutSize:
     """Unit tests for the :func:`~networkx.normalized_cut_size`
     function.
 
@@ -81,6 +86,8 @@ class TestNormalizedCutSize(object):
         # The cut looks like this: o-{-o--o-}-o
         expected = 2 * ((1 / 4) + (1 / 2))
         assert expected == size
+        # Test with no input T
+        assert expected == nx.normalized_cut_size(G, S)
 
     def test_directed(self):
         G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
@@ -90,9 +97,11 @@ class TestNormalizedCutSize(object):
         # The cut looks like this: o-{->o-->o-}->o
         expected = 2 * ((1 / 2) + (1 / 1))
         assert expected == size
+        # Test with no input T
+        assert expected == nx.normalized_cut_size(G, S)
 
 
-class TestConductance(object):
+class TestConductance:
     """Unit tests for the :func:`~networkx.conductance` function."""
 
     def test_graph(self):
@@ -104,9 +113,14 @@ class TestConductance(object):
         conductance = nx.conductance(G, S, T)
         expected = 1 / 5
         assert expected == conductance
+        # Test with no input T
+        G2 = nx.barbell_graph(3, 0)
+        # There is only one cut edge, and each set has volume seven.
+        S2 = {0, 1, 2}
+        assert nx.conductance(G2, S2) == 1 / 7
 
 
-class TestEdgeExpansion(object):
+class TestEdgeExpansion:
     """Unit tests for the :func:`~networkx.edge_expansion` function."""
 
     def test_graph(self):
@@ -116,12 +130,12 @@ class TestEdgeExpansion(object):
         expansion = nx.edge_expansion(G, S, T)
         expected = 1 / 5
         assert expected == expansion
+        # Test with no input T
+        assert expected == nx.edge_expansion(G, S)
 
 
-class TestNodeExpansion(object):
-    """Unit tests for the :func:`~networkx.node_expansion` function.
-
-    """
+class TestNodeExpansion:
+    """Unit tests for the :func:`~networkx.node_expansion` function."""
 
     def test_graph(self):
         G = nx.path_graph(8)
@@ -133,10 +147,8 @@ class TestNodeExpansion(object):
         assert expected == expansion
 
 
-class TestBoundaryExpansion(object):
-    """Unit tests for the :func:`~networkx.boundary_expansion` function.
-
-    """
+class TestBoundaryExpansion:
+    """Unit tests for the :func:`~networkx.boundary_expansion` function."""
 
     def test_graph(self):
         G = nx.complete_graph(10)
@@ -148,10 +160,8 @@ class TestBoundaryExpansion(object):
         assert expected == expansion
 
 
-class TestMixingExpansion(object):
-    """Unit tests for the :func:`~networkx.mixing_expansion` function.
-
-    """
+class TestMixingExpansion:
+    """Unit tests for the :func:`~networkx.mixing_expansion` function."""
 
     def test_graph(self):
         G = nx.barbell_graph(5, 0)

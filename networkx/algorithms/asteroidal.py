@@ -79,9 +79,11 @@ def find_asteroidal_triple(G):
             """Check for each pair of vertices whether they belong to the
             same connected component when the closed neighborhood of the
             third is removed."""
-            if (component_structure[u][v] == component_structure[u][w] and
-                component_structure[v][u] == component_structure[v][w] and
-                    component_structure[w][u] == component_structure[w][v]):
+            if (
+                component_structure[u][v] == component_structure[u][w]
+                and component_structure[v][u] == component_structure[v][w]
+                and component_structure[w][u] == component_structure[w][v]
+            ):
                 return [u, v, w]
 
     return None
@@ -150,7 +152,7 @@ def create_component_structure(G):
     component_structure = {}
     for v in V:
         label = 0
-        closed_neighborhood = set(G[v]).union(set([v]))
+        closed_neighborhood = set(G[v]).union({v})
         row_dict = {}
         for u in closed_neighborhood:
             row_dict[u] = 0

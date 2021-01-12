@@ -6,13 +6,14 @@ from networkx.testing import assert_edges_equal, assert_nodes_equal
 # Note: SubGraph views are not tested here. They have their own testing file
 
 
-class TestReverseView(object):
+class TestReverseView:
     def setup(self):
         self.G = nx.path_graph(9, create_using=nx.DiGraph())
         self.rv = nx.reverse_view(self.G)
 
     def test_pickle(self):
         import pickle
+
         rv = self.rv
         prv = pickle.loads(pickle.dumps(rv, -1))
         assert rv._node == prv._node
@@ -31,11 +32,11 @@ class TestReverseView(object):
 
     def test_exceptions(self):
         nxg = nx.graphviews
-        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, nx.Graph())
+        G = nx.Graph()
+        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, G)
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
-
             def my_method(self):
                 return "me"
 
@@ -53,7 +54,7 @@ class TestReverseView(object):
         assert RMC.my_method() == "me"
 
 
-class TestMultiReverseView(object):
+class TestMultiReverseView:
     def setup(self):
         self.G = nx.path_graph(9, create_using=nx.MultiDiGraph())
         self.G.add_edge(4, 5)
@@ -61,6 +62,7 @@ class TestMultiReverseView(object):
 
     def test_pickle(self):
         import pickle
+
         rv = self.rv
         prv = pickle.loads(pickle.dumps(rv, -1))
         assert rv._node == prv._node
@@ -85,7 +87,17 @@ class TestMultiReverseView(object):
         pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, MG)
 
 
-class TestToDirected(object):
+def test_generic_multitype():
+    nxg = nx.graphviews
+    G = nx.DiGraph([(1, 2)])
+    with pytest.raises(nx.NetworkXError):
+        nxg.generic_graph_view(G, create_using=nx.MultiGraph)
+    G = nx.MultiDiGraph([(1, 2)])
+    with pytest.raises(nx.NetworkXError):
+        nxg.generic_graph_view(G, create_using=nx.DiGraph)
+
+
+class TestToDirected:
     def setup(self):
         self.G = nx.path_graph(9)
         self.dv = nx.to_directed(self.G)
@@ -104,6 +116,7 @@ class TestToDirected(object):
 
     def test_pickle(self):
         import pickle
+
         dv = self.dv
         pdv = pickle.loads(pickle.dumps(dv, -1))
         assert dv._node == pdv._node
@@ -123,7 +136,7 @@ class TestToDirected(object):
         assert sorted(self.dv.edges) == expected
 
 
-class TestToUndirected(object):
+class TestToUndirected:
     def setup(self):
         self.DG = nx.path_graph(9, create_using=nx.DiGraph())
         self.uv = nx.to_undirected(self.DG)
@@ -142,12 +155,13 @@ class TestToUndirected(object):
 
     def test_pickle(self):
         import pickle
+
         uv = self.uv
         puv = pickle.loads(pickle.dumps(uv, -1))
         assert uv._node == puv._node
         assert uv._adj == puv._adj
         assert uv.graph == puv.graph
-        assert hasattr(uv, '_graph')
+        assert hasattr(uv, "_graph")
 
     def test_contains(self):
         assert (2, 3) in self.DG.edges
@@ -160,7 +174,7 @@ class TestToUndirected(object):
         assert sorted(self.uv.edges) == expected
 
 
-class TestChainsOfViews(object):
+class TestChainsOfViews:
     @classmethod
     def setup_class(cls):
         cls.G = nx.path_graph(9)
@@ -173,14 +187,24 @@ class TestChainsOfViews(object):
         cls.MDGv = nx.to_directed(cls.MG)
         cls.Rv = cls.DG.reverse()
         cls.MRv = cls.MDG.reverse()
-        cls.graphs = [cls.G, cls.DG, cls.MG, cls.MDG,
-                      cls.Gv, cls.DGv, cls.MGv, cls.MDGv,
-                      cls.Rv, cls.MRv]
+        cls.graphs = [
+            cls.G,
+            cls.DG,
+            cls.MG,
+            cls.MDG,
+            cls.Gv,
+            cls.DGv,
+            cls.MGv,
+            cls.MDGv,
+            cls.Rv,
+            cls.MRv,
+        ]
         for G in cls.graphs:
             G.edges, G.nodes, G.degree
 
     def test_pickle(self):
         import pickle
+
         for G in self.graphs:
             H = pickle.loads(pickle.dumps(G, -1))
             assert_edges_equal(H.edges, G.edges)
@@ -200,7 +224,7 @@ class TestChainsOfViews(object):
             assert SSG._graph is G
 
     def test_restricted_induced_subgraph_chains(self):
-        """ Test subgraph chains that both restrict and show nodes/edges.
+        """Test subgraph chains that both restrict and show nodes/edges.
 
         A restricted_view subgraph should allow induced subgraphs using
         G.subgraph that automagically without a chain (meaning the result
@@ -278,42 +302,41 @@ class TestChainsOfViews(object):
         SG = G.subgraph([4, 5, 6])
         CSG = SG.copy(as_view=True)
         DCSG = SG.copy(as_view=False)
-        assert hasattr(CSG, '_graph')  # is a view
-        assert not hasattr(DCSG, '_graph')  # not a view
+        assert hasattr(CSG, "_graph")  # is a view
+        assert not hasattr(DCSG, "_graph")  # not a view
 
     def test_copy_disubgraph(self):
         G = self.DG.copy()
         SG = G.subgraph([4, 5, 6])
         CSG = SG.copy(as_view=True)
         DCSG = SG.copy(as_view=False)
-        assert hasattr(CSG, '_graph')  # is a view
-        assert not hasattr(DCSG, '_graph')  # not a view
+        assert hasattr(CSG, "_graph")  # is a view
+        assert not hasattr(DCSG, "_graph")  # not a view
 
     def test_copy_multidisubgraph(self):
         G = self.MDG.copy()
         SG = G.subgraph([4, 5, 6])
         CSG = SG.copy(as_view=True)
         DCSG = SG.copy(as_view=False)
-        assert hasattr(CSG, '_graph')  # is a view
-        assert not hasattr(DCSG, '_graph')  # not a view
+        assert hasattr(CSG, "_graph")  # is a view
+        assert not hasattr(DCSG, "_graph")  # not a view
 
     def test_copy_multisubgraph(self):
         G = self.MG.copy()
         SG = G.subgraph([4, 5, 6])
         CSG = SG.copy(as_view=True)
         DCSG = SG.copy(as_view=False)
-        assert hasattr(CSG, '_graph')  # is a view
-        assert not hasattr(DCSG, '_graph')  # not a view
+        assert hasattr(CSG, "_graph")  # is a view
+        assert not hasattr(DCSG, "_graph")  # not a view
 
     def test_copy_of_view(self):
         G = nx.OrderedMultiGraph(self.MGv)
-        assert G.__class__.__name__ == 'OrderedMultiGraph'
+        assert G.__class__.__name__ == "OrderedMultiGraph"
         G = G.copy(as_view=True)
-        assert G.__class__.__name__ == 'OrderedMultiGraph'
+        assert G.__class__.__name__ == "OrderedMultiGraph"
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
-
             def my_method(self):
                 return "me"
 

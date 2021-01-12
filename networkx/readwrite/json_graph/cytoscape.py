@@ -1,8 +1,9 @@
 import networkx as nx
 
-__all__ = ['cytoscape_data', 'cytoscape_graph']
+__all__ = ["cytoscape_data", "cytoscape_graph"]
 
-_attrs = dict(name='name', ident='id')
+# TODO: Remove in NX 3.0
+_attrs = dict(name="name", ident="id")
 
 
 def cytoscape_data(G, attrs=None):
@@ -11,31 +12,79 @@ def cytoscape_data(G, attrs=None):
     Parameters
     ----------
     G : NetworkX Graph
+        The graph to convert to cytoscape format
+    attrs : dict or None (default=None)
+        A dictionary containing the keys 'name' and 'ident' which are mapped to
+        the 'name' and 'id' node elements in cyjs format. All other keys are
+        ignored. Default is `None` which results in the default mapping
+        ``dict(name="name", ident="id")``.
 
+        .. deprecated:: 2.6
+
+           The `attrs` keyword argument will be replaced with `name` and
+           `ident` in networkx 3.0
 
     Returns
     -------
     data: dict
         A dictionary with cyjs formatted data.
+
     Raises
     ------
     NetworkXError
-        If values in attrs are not unique.
+        If the `name` and `ident` attributes are identical.
+
+    See Also
+    --------
+    cytoscape_graph: convert a dictionary in cyjs format to a graph
+
+    References
+    ----------
+    .. [1] Cytoscape user's manual:
+       http://manual.cytoscape.org/en/stable/index.html
+
+    Examples
+    --------
+    >>> G = nx.path_graph(2)
+    >>> nx.cytoscape_data(G)  # doctest: +SKIP
+    {'data': [],
+     'directed': False,
+     'multigraph': False,
+     'elements': {'nodes': [{'data': {'id': '0', 'value': 0, 'name': '0'}},
+       {'data': {'id': '1', 'value': 1, 'name': '1'}}],
+      'edges': [{'data': {'source': 0, 'target': 1}}]}}
     """
-    if not attrs:
+    # ------ TODO: Remove between the lines in 3.0 ----- #
+    if attrs is None:
         attrs = _attrs
     else:
+        import warnings
+
+        msg = (
+            "\nThe function signature for cytoscape_data will change in "
+            "networkx 3.0.\n"
+            "The `attrs` keyword argument will be replaced with \n"
+            "explicit `name` and `ident` keyword arguments, e.g.\n\n"
+            "   >>> cytoscape_data(G, attrs={'name': 'foo', 'ident': 'bar'})\n\n"
+            "should instead be written as\n\n"
+            "   >>> cytoscape_data(G, name='foo', ident='bar')\n\n"
+            "in networkx 3.0.\n"
+            "The default values for 'name' and 'ident' will not change."
+        )
+        warnings.warn(msg, FutureWarning, stacklevel=2)
+
         attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
 
     name = attrs["name"]
     ident = attrs["ident"]
+    # -------------------------------------------------- #
 
-    if len(set([name, ident])) < 2:
-        raise nx.NetworkXError('Attribute names are not unique.')
+    if name == ident:
+        raise nx.NetworkXError("name and ident must be different.")
 
     jsondata = {"data": list(G.graph.items())}
-    jsondata['directed'] = G.is_directed()
-    jsondata['multigraph'] = G.is_multigraph()
+    jsondata["directed"] = G.is_directed()
+    jsondata["multigraph"] = G.is_multigraph()
     jsondata["elements"] = {"nodes": [], "edges": []}
     nodes = jsondata["elements"]["nodes"]
     edges = jsondata["elements"]["edges"]
@@ -64,26 +113,101 @@ def cytoscape_data(G, attrs=None):
 
 
 def cytoscape_graph(data, attrs=None):
-    if not attrs:
+    """
+    Create a NetworkX graph from a dictionary in cytoscape JSON format.
+
+    Parameters
+    ----------
+    data : dict
+        A dictionary of data conforming to cytoscape JSON format.
+    attrs : dict or None (default=None)
+        A dictionary containing the keys 'name' and 'ident' which are mapped to
+        the 'name' and 'id' node elements in cyjs format. All other keys are
+        ignored. Default is `None` which results in the default mapping
+        ``dict(name="name", ident="id")``.
+
+        .. deprecated:: 2.6
+
+           The `attrs` keyword argument will be replaced with `name` and
+           `ident` in networkx 3.0
+
+    Returns
+    -------
+    graph : a NetworkX graph instance
+        The `graph` can be an instance of `Graph`, `DiGraph`, `MultiGraph`, or
+        `MultiDiGraph` depending on the input data.
+
+    Raises
+    ------
+    NetworkXError
+        If the `name` and `ident` attributes are identical.
+
+    See Also
+    --------
+    cytoscape_data: convert a NetworkX graph to a dict in cyjs format
+
+    References
+    ----------
+    .. [1] Cytoscape user's manual:
+       http://manual.cytoscape.org/en/stable/index.html
+
+    Examples
+    --------
+    >>> data_dict = {
+    ...     'data': [],
+    ...     'directed': False,
+    ...     'multigraph': False,
+    ...     'elements': {'nodes': [{'data': {'id': '0', 'value': 0, 'name': '0'}},
+    ...       {'data': {'id': '1', 'value': 1, 'name': '1'}}],
+    ...      'edges': [{'data': {'source': 0, 'target': 1}}]}
+    ... }
+    >>> G = nx.cytoscape_graph(data_dict)
+    >>> G.name
+    ''
+    >>> G.nodes()
+    NodeView((0, 1))
+    >>> G.nodes(data=True)[0]
+    {'id': '0', 'value': 0, 'name': '0'}
+    >>> G.edges(data=True)
+    EdgeDataView([(0, 1, {'source': 0, 'target': 1})])
+    """
+    # ------ TODO: Remove between the lines in 3.0 ----- #
+    if attrs is None:
         attrs = _attrs
     else:
+        import warnings
+
+        msg = (
+            "\nThe function signature for cytoscape_data will change in "
+            "networkx 3.0.\n"
+            "The `attrs` keyword argument will be replaced with \n"
+            "explicit `name` and `ident` keyword arguments, e.g.\n\n"
+            "   >>> cytoscape_data(G, attrs={'name': 'foo', 'ident': 'bar'})\n\n"
+            "should instead be written as\n\n"
+            "   >>> cytoscape_data(G, name='foo', ident='bar')\n\n"
+            "in networkx 3.0.\n"
+            "The default values for 'name' and 'ident' will not change."
+        )
+        warnings.warn(msg, FutureWarning, stacklevel=2)
+
         attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
 
     name = attrs["name"]
     ident = attrs["ident"]
+    # -------------------------------------------------- #
 
-    if len(set([ident, name])) < 2:
-        raise nx.NetworkXError('Attribute names are not unique.')
+    if name == ident:
+        raise nx.NetworkXError("name and ident must be different.")
 
-    multigraph = data.get('multigraph')
-    directed = data.get('directed')
+    multigraph = data.get("multigraph")
+    directed = data.get("directed")
     if multigraph:
         graph = nx.MultiGraph()
     else:
         graph = nx.Graph()
     if directed:
         graph = graph.to_directed()
-    graph.graph = dict(data.get('data'))
+    graph.graph = dict(data.get("data"))
     for d in data["elements"]["nodes"]:
         node_data = d["data"].copy()
         node = d["data"]["value"]
@@ -98,8 +222,8 @@ def cytoscape_graph(data, attrs=None):
 
     for d in data["elements"]["edges"]:
         edge_data = d["data"].copy()
-        sour = d["data"].pop("source")
-        targ = d["data"].pop("target")
+        sour = d["data"]["source"]
+        targ = d["data"]["target"]
         if multigraph:
             key = d["data"].get("key", 0)
             graph.add_edge(sour, targ, key=key)

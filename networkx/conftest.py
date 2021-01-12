@@ -1,6 +1,7 @@
 import pytest
 import networkx
 import sys
+import warnings
 
 
 def pytest_addoption(parser):
@@ -21,6 +22,89 @@ def pytest_collection_modifyitems(config, items):
     for item in items:
         if "slow" in item.keywords:
             item.add_marker(skip_slow)
+
+
+# TODO: The warnings below need to be dealt with, but for now we silence them.
+@pytest.fixture(autouse=True)
+def set_warnings():
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="literal_stringizer is deprecated",
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="literal_destringizer is deprecated",
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="is_string_like is deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="make_str is deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="context manager reversed is deprecated",
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="This will return a generator in 3.0*",
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="betweenness_centrality_source"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="edge_betweeness"
+    )
+    warnings.filterwarnings(
+        "ignore", category=PendingDeprecationWarning, message="the matrix subclass"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="to_numpy_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="from_numpy_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="networkx.pagerank_numpy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="networkx.pagerank_scipy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="write_gpickle"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="read_gpickle"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_shp")
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_shp")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="edges_from_line"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_yaml")
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_yaml")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="FilterAtlas.copy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="FilterAdjacency.copy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="FilterMultiAdjacency.copy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="FilterMultiInner.copy"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_data")
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_graph")
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="consume")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="iterable is deprecated"
+    )
 
 
 @pytest.fixture(autouse=True)

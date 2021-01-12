@@ -6,10 +6,10 @@ from heapq import heappop, heappush
 from itertools import count
 import networkx as nx
 
-__all__ = ['MinHeap', 'PairingHeap', 'BinaryHeap']
+__all__ = ["MinHeap", "PairingHeap", "BinaryHeap"]
 
 
-class MinHeap(object):
+class MinHeap:
     """Base class for min-heaps.
 
     A MinHeap stores a collection of key-value pairs ordered by their values.
@@ -17,10 +17,10 @@ class MinHeap(object):
     value in an existing pair and deleting the minimum pair.
     """
 
-    class _Item(object):
-        """Used by subclassess to represent a key-value pair.
-        """
-        __slots__ = ('key', 'value')
+    class _Item:
+        """Used by subclassess to represent a key-value pair."""
+
+        __slots__ = ("key", "value")
 
         def __init__(self, key, value):
             self.key = key
@@ -30,8 +30,7 @@ class MinHeap(object):
             return repr((self.key, self.value))
 
     def __init__(self):
-        """Initialize a new min-heap.
-        """
+        """Initialize a new min-heap."""
         self._dict = {}
 
     def min(self):
@@ -107,18 +106,15 @@ class MinHeap(object):
         raise NotImplementedError
 
     def __nonzero__(self):
-        """Returns whether the heap if empty.
-        """
+        """Returns whether the heap if empty."""
         return bool(self._dict)
 
     def __bool__(self):
-        """Returns whether the heap if empty.
-        """
+        """Returns whether the heap if empty."""
         return bool(self._dict)
 
     def __len__(self):
-        """Returns the number of key-value pairs in the heap.
-        """
+        """Returns the number of key-value pairs in the heap."""
         return len(self._dict)
 
     def __contains__(self, key):
@@ -133,17 +129,17 @@ class MinHeap(object):
 
 
 def _inherit_doc(cls):
-    """Decorator for inheriting docstrings from base classes.
-    """
+    """Decorator for inheriting docstrings from base classes."""
+
     def func(fn):
         fn.__doc__ = cls.__dict__[fn.__name__].__doc__
         return fn
+
     return func
 
 
 class PairingHeap(MinHeap):
-    """A pairing heap.
-    """
+    """A pairing heap."""
 
     class _Node(MinHeap._Item):
         """A node in a pairing heap.
@@ -151,7 +147,8 @@ class PairingHeap(MinHeap):
         A tree in a pairing heap is stored using the left-child, right-sibling
         representation.
         """
-        __slots__ = ('left', 'next', 'prev', 'parent')
+
+        __slots__ = ("left", "next", "prev", "parent")
 
         def __init__(self, key, value):
             super(PairingHeap._Node, self).__init__(key, value)
@@ -165,21 +162,20 @@ class PairingHeap(MinHeap):
             self.parent = None
 
     def __init__(self):
-        """Initialize a pairing heap.
-        """
-        super(PairingHeap, self).__init__()
+        """Initialize a pairing heap."""
+        super().__init__()
         self._root = None
 
     @_inherit_doc(MinHeap)
     def min(self):
         if self._root is None:
-            raise nx.NetworkXError('heap is empty.')
+            raise nx.NetworkXError("heap is empty.")
         return (self._root.key, self._root.value)
 
     @_inherit_doc(MinHeap)
     def pop(self):
         if self._root is None:
-            raise nx.NetworkXError('heap is empty.')
+            raise nx.NetworkXError("heap is empty.")
         min_node = self._root
         self._root = self._merge_children(self._root)
         del self._dict[min_node.key]
@@ -281,8 +277,7 @@ class PairingHeap(MinHeap):
         return node
 
     def _cut(self, node):
-        """Cut a node from its parent.
-        """
+        """Cut a node from its parent."""
         prev = node.prev
         next = node.next
         if prev is not None:
@@ -297,13 +292,11 @@ class PairingHeap(MinHeap):
 
 
 class BinaryHeap(MinHeap):
-    """A binary heap.
-    """
+    """A binary heap."""
 
     def __init__(self):
-        """Initialize a binary heap.
-        """
-        super(BinaryHeap, self).__init__()
+        """Initialize a binary heap."""
+        super().__init__()
         self._heap = []
         self._count = count()
 
@@ -311,7 +304,7 @@ class BinaryHeap(MinHeap):
     def min(self):
         dict = self._dict
         if not dict:
-            raise nx.NetworkXError('heap is empty')
+            raise nx.NetworkXError("heap is empty")
         heap = self._heap
         pop = heappop
         # Repeatedly remove stale key-value pairs until a up-to-date one is
@@ -327,7 +320,7 @@ class BinaryHeap(MinHeap):
     def pop(self):
         dict = self._dict
         if not dict:
-            raise nx.NetworkXError('heap is empty')
+            raise nx.NetworkXError("heap is empty")
         heap = self._heap
         pop = heappop
         # Repeatedly remove stale key-value pairs until a up-to-date one is

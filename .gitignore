@@ -51,6 +51,5 @@ networkx.egg-info/
 # VS Code settings
 .vscode
 
-# created by docstring Examples
-test.edgelist
-test.edgelist.gz
+# PyTest Cache
+.pytest_cache

@@ -7,7 +7,7 @@ from networkx.testing import assert_nodes_equal
 from networkx.testing import assert_edges_equal
 
 
-class TestPruferSequence(object):
+class TestPruferSequence:
     """Unit tests for the Prüfer sequence encoding and decoding
     functions.
 
@@ -28,7 +28,7 @@ class TestPruferSequence(object):
 
     def test_bad_integer_labels(self):
         with pytest.raises(KeyError):
-            T = nx.Graph(nx.utils.pairwise('abc'))
+            T = nx.Graph(nx.utils.pairwise("abc"))
             nx.to_prufer_sequence(T)
 
     def test_encoding(self):
@@ -59,9 +59,7 @@ class TestPruferSequence(object):
         assert_edges_equal(list(tree.edges()), edges)
 
     def test_inverse(self):
-        """Tests that the encoding and decoding functions are inverses.
-
-        """
+        """Tests that the encoding and decoding functions are inverses."""
         for T in nx.nonisomorphic_trees(4):
             T2 = nx.from_prufer_sequence(nx.to_prufer_sequence(T))
             assert_nodes_equal(list(T), list(T2))
@@ -72,10 +70,8 @@ class TestPruferSequence(object):
             assert list(seq) == seq2
 
 
-class TestNestedTuple(object):
-    """Unit tests for the nested tuple encoding and decoding functions.
-
-    """
+class TestNestedTuple:
+    """Unit tests for the nested tuple encoding and decoding functions."""
 
     def test_nontree(self):
         with pytest.raises(nx.NotATree):
@@ -85,7 +81,7 @@ class TestNestedTuple(object):
     def test_unknown_root(self):
         with pytest.raises(nx.NodeNotFound):
             G = nx.path_graph(2)
-            nx.to_nested_tuple(G, 'bogus')
+            nx.to_nested_tuple(G, "bogus")
 
     def test_encoding(self):
         T = nx.full_rary_tree(2, 2 ** 3 - 1)

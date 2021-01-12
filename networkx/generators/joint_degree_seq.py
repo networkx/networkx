@@ -3,14 +3,16 @@
 import networkx as nx
 from networkx.utils import py_random_state
 
-__all__ = ['is_valid_joint_degree',
-           'is_valid_directed_joint_degree',
-           'joint_degree_graph',
-           'directed_joint_degree_graph']
+__all__ = [
+    "is_valid_joint_degree",
+    "is_valid_directed_joint_degree",
+    "joint_degree_graph",
+    "directed_joint_degree_graph",
+]
 
 
 def is_valid_joint_degree(joint_degrees):
-    """ Checks whether the given joint degree dictionary is realizable.
+    """Checks whether the given joint degree dictionary is realizable.
 
     A *joint degree dictionary* is a dictionary of dictionaries, in
     which entry ``joint_degrees[k][l]`` is an integer representing the
@@ -62,12 +64,10 @@ def is_valid_joint_degree(joint_degrees):
             if not float(joint_degrees[k][l]).is_integer():
                 return False
 
-            if (k != l) and (joint_degrees[k][l] >
-                             degree_count[k] * degree_count[l]):
+            if (k != l) and (joint_degrees[k][l] > degree_count[k] * degree_count[l]):
                 return False
             elif k == l:
-                if (joint_degrees[k][k] > degree_count[k] *
-                        (degree_count[k] - 1)):
+                if joint_degrees[k][k] > degree_count[k] * (degree_count[k] - 1):
                     return False
                 if joint_degrees[k][k] % 2 != 0:
                     return False
@@ -78,7 +78,7 @@ def is_valid_joint_degree(joint_degrees):
 
 
 def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
-    """ Releases one free stub for ``w``, while preserving joint degree in G.
+    """Releases one free stub for ``w``, while preserving joint degree in G.
 
     Parameters
     ----------
@@ -142,7 +142,7 @@ def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
 
 @py_random_state(1)
 def joint_degree_graph(joint_degrees, seed=None):
-    """ Generates a random simple graph with the given joint degree dictionary.
+    """Generates a random simple graph with the given joint degree dictionary.
 
     Parameters
     ----------
@@ -188,22 +188,22 @@ def joint_degree_graph(joint_degrees, seed=None):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> joint_degrees = {1: {4: 1},
-    ...                      2: {2: 2, 3: 2, 4: 2},
-    ...                      3: {2: 2, 4: 1},
-    ...                      4: {1: 1, 2: 2, 3: 1}}
-    >>> G=nx.joint_degree_graph(joint_degrees)
+    >>> joint_degrees = {
+    ...     1: {4: 1},
+    ...     2: {2: 2, 3: 2, 4: 2},
+    ...     3: {2: 2, 4: 1},
+    ...     4: {1: 1, 2: 2, 3: 1},
+    ... }
+    >>> G = nx.joint_degree_graph(joint_degrees)
     >>>
     """
 
     if not is_valid_joint_degree(joint_degrees):
-        msg = 'Input joint degree dict not realizable as a simple graph'
+        msg = "Input joint degree dict not realizable as a simple graph"
         raise nx.NetworkXError(msg)
 
     # compute degree count from joint_degrees
-    degree_count = {k: sum(l.values()) // k for k, l in joint_degrees.items()
-                    if k > 0}
+    degree_count = {k: sum(l.values()) // k for k, l in joint_degrees.items() if k > 0}
 
     # start with empty N-node graph
     N = sum(degree_count.values())
@@ -244,10 +244,10 @@ def joint_degree_graph(joint_degrees, seed=None):
 
                 # k_unsat and l_unsat consist of nodes of degree k and l that
                 # are unsaturated (nodes that have at least 1 available stub)
-                k_unsat = set(v for v in k_nodes if h_node_residual[v] > 0)
+                k_unsat = {v for v in k_nodes if h_node_residual[v] > 0}
 
                 if k != l:
-                    l_unsat = set(w for w in l_nodes if h_node_residual[w] > 0)
+                    l_unsat = {w for w in l_nodes if h_node_residual[w] > 0}
                 else:
                     l_unsat = k_unsat
                     n_edges_add = joint_degrees[k][l] // 2
@@ -268,12 +268,11 @@ def joint_degree_graph(joint_degrees, seed=None):
                         # if node w has no free stubs then do neighbor switch
                         if h_node_residual[w] == 0:
                             if k != l:
-                                _neighbor_switch(G, w, l_unsat,
-                                                 h_node_residual)
+                                _neighbor_switch(G, w, l_unsat, h_node_residual)
                             else:
-                                _neighbor_switch(G, w, l_unsat,
-                                                 h_node_residual,
-                                                 avoid_node_id=v)
+                                _neighbor_switch(
+                                    G, w, l_unsat, h_node_residual, avoid_node_id=v
+                                )
 
                         # add edge (v, w) and update data structures
                         G.add_edge(v, w)
@@ -289,7 +288,7 @@ def joint_degree_graph(joint_degrees, seed=None):
 
 
 def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
-    """ Checks whether the given directed joint degree input is realizable
+    """Checks whether the given directed joint degree input is realizable
 
     Parameters
     ----------
@@ -361,9 +360,10 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
     return True
 
 
-def _directed_neighbor_switch(G, w, unsat, h_node_residual_out, chords,
-                              h_partition_in, partition):
-    """ Releases one free stub for node w, while preserving joint degree in G.
+def _directed_neighbor_switch(
+    G, w, unsat, h_node_residual_out, chords, h_partition_in, partition
+):
+    """Releases one free stub for node w, while preserving joint degree in G.
 
     Parameters
     ----------
@@ -423,9 +423,10 @@ def _directed_neighbor_switch(G, w, unsat, h_node_residual_out, chords,
     return w_prime
 
 
-def _directed_neighbor_switch_rev(G, w, unsat, h_node_residual_in, chords,
-                                  h_partition_out, partition):
-    """ The reverse of directed_neighbor_switch.
+def _directed_neighbor_switch_rev(
+    G, w, unsat, h_node_residual_in, chords, h_partition_out, partition
+):
+    """The reverse of directed_neighbor_switch.
 
     Parameters
     ----------
@@ -476,7 +477,7 @@ def _directed_neighbor_switch_rev(G, w, unsat, h_node_residual_in, chords,
 
 @py_random_state(3)
 def directed_joint_degree_graph(in_degrees, out_degrees, nkk, seed=None):
-    """ Generates a random simple directed graph with the joint degree.
+    """Generates a random simple directed graph with the joint degree.
 
     Parameters
     ----------
@@ -533,15 +534,14 @@ def directed_joint_degree_graph(in_degrees, out_degrees, nkk, seed=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> in_degrees = [0, 1, 1, 2]
     >>> out_degrees = [1, 1, 1, 1]
-    >>> nkk = {1:{1:2,2:2}}
-    >>> G=nx.directed_joint_degree_graph(in_degrees, out_degrees, nkk)
+    >>> nkk = {1: {1: 2, 2: 2}}
+    >>> G = nx.directed_joint_degree_graph(in_degrees, out_degrees, nkk)
     >>>
     """
     if not is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
-        msg = 'Input is not realizable as a simple graph'
+        msg = "Input is not realizable as a simple graph"
         raise nx.NetworkXError(msg)
 
     # start with an empty directed graph.
@@ -575,8 +575,7 @@ def directed_joint_degree_graph(in_degrees, out_degrees, nkk, seed=None):
 
     for idx, o in enumerate(out_degrees):
         o = out_degrees[idx]
-        non_chords[(o, in_degrees[idx])] = non_chords.get((o, in_degrees[idx]),
-                                                          0) + 1
+        non_chords[(o, in_degrees[idx])] = non_chords.get((o, in_degrees[idx]), 0) + 1
         idx = int(idx)
         if o > 0:
             h_degree_nodelist_out.setdefault(o, [])
@@ -601,14 +600,15 @@ def directed_joint_degree_graph(in_degrees, out_degrees, nkk, seed=None):
         for l in nkk[k]:
             n_edges_add = nkk[k][l]
 
-            if (n_edges_add > 0):
+            if n_edges_add > 0:
                 # chords contains a random set of potential edges.
                 chords = set()
 
                 k_len = nk_out[k]
                 l_len = nk_in[l]
-                chords_sample = seed.sample(range(k_len * l_len), n_edges_add
-                                            + non_chords.get((k, l), 0))
+                chords_sample = seed.sample(
+                    range(k_len * l_len), n_edges_add + non_chords.get((k, l), 0)
+                )
 
                 num = 0
                 while len(chords) < n_edges_add:
@@ -630,19 +630,29 @@ def directed_joint_degree_graph(in_degrees, out_degrees, nkk, seed=None):
 
                     # if node v has no free stubs then do neighbor switch.
                     if h_node_residual_out[v] == 0:
-                        _v = _directed_neighbor_switch(G, v, k_unsat,
-                                                       h_node_residual_out,
-                                                       chords, h_partition_in,
-                                                       l)
+                        _v = _directed_neighbor_switch(
+                            G,
+                            v,
+                            k_unsat,
+                            h_node_residual_out,
+                            chords,
+                            h_partition_in,
+                            l,
+                        )
                         if _v is not None:
                             v = _v
 
                     # if node w has no free stubs then do neighbor switch.
                     if h_node_residual_in[w] == 0:
-                        _w = _directed_neighbor_switch_rev(G, w, l_unsat,
-                                                           h_node_residual_in,
-                                                           chords,
-                                                           h_partition_out, k)
+                        _w = _directed_neighbor_switch_rev(
+                            G,
+                            w,
+                            l_unsat,
+                            h_node_residual_in,
+                            chords,
+                            h_partition_out,
+                            k,
+                        )
                         if _w is not None:
                             w = _w
 

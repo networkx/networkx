@@ -1,5 +1,3 @@
-
-
 def _propagate(P, F, B):
     """Propagate labels by one step
 
@@ -17,7 +15,7 @@ def _propagate(P, F, B):
     F_new : array, shape = [n_samples, n_classes]
         Label matrix
     """
-    F_new = P.dot(F) + B
+    F_new = (P @ F) + B
     return F_new
 
 
@@ -51,8 +49,9 @@ def _get_label_info(G, label_name):
                 lid += 1
             labels.append([i, label_to_id[label]])
     labels = np.array(labels)
-    label_dict = np.array([label for label, _ in sorted(
-        label_to_id.items(), key=lambda x:x[1])])
+    label_dict = np.array(
+        [label for label, _ in sorted(label_to_id.items(), key=lambda x: x[1])]
+    )
     return (labels, label_dict)
 
 

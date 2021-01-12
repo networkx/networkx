@@ -4,10 +4,10 @@ import pickle
 import networkx as nx
 
 
-class TestAtlasView(object):
+class TestAtlasView:
     # node->data
     def setup(self):
-        self.d = {0: {'color': 'blue', 'weight': 1.2}, 1: {}, 2: {'color': 1}}
+        self.d = {0: {"color": "blue", "weight": 1.2}, 1: {}, 2: {"color": 1}}
         self.av = nx.classes.coreviews.AtlasView(self.d)
 
     def test_pickle(self):
@@ -27,7 +27,7 @@ class TestAtlasView(object):
 
     def test_getitem(self):
         assert self.av[1] is self.d[1]
-        assert self.av[2]['color'] == 1
+        assert self.av[2]["color"] == 1
         pytest.raises(KeyError, self.av.__getitem__, 3)
 
     def test_copy(self):
@@ -39,13 +39,13 @@ class TestAtlasView(object):
         avcopy[5] = {}
         assert avcopy != self.av
 
-        avcopy[0]['ht'] = 4
+        avcopy[0]["ht"] = 4
         assert avcopy[0] != self.av[0]
-        self.av[0]['ht'] = 4
+        self.av[0]["ht"] = 4
         assert avcopy[0] == self.av[0]
-        del self.av[0]['ht']
+        del self.av[0]["ht"]
 
-        assert not hasattr(self.av, '__setitem__')
+        assert not hasattr(self.av, "__setitem__")
 
     def test_items(self):
         assert sorted(self.av.items()) == sorted(self.d.items())
@@ -59,12 +59,12 @@ class TestAtlasView(object):
         assert repr(self.av) == out
 
 
-class TestAdjacencyView(object):
+class TestAdjacencyView:
     # node->nbr->data
     def setup(self):
-        dd = {'color': 'blue', 'weight': 1.2}
-        self.nd = {0: dd, 1: {}, 2: {'color': 1}}
-        self.adj = {3: self.nd, 0: {3: dd}, 1: {}, 2: {3: {'color': 1}}}
+        dd = {"color": "blue", "weight": 1.2}
+        self.nd = {0: dd, 1: {}, 2: {"color": 1}}
+        self.adj = {3: self.nd, 0: {3: dd}, 1: {}, 2: {3: {"color": 1}}}
         self.adjview = nx.classes.coreviews.AdjacencyView(self.adj)
 
     def test_pickle(self):
@@ -82,7 +82,7 @@ class TestAdjacencyView(object):
     def test_getitem(self):
         assert self.adjview[1] is not self.adj[1]
         assert self.adjview[3][0] is self.adjview[0][3]
-        assert self.adjview[2][3]['color'] == 1
+        assert self.adjview[2][3]["color"] == 1
         pytest.raises(KeyError, self.adjview.__getitem__, 4)
 
     def test_copy(self):
@@ -90,13 +90,13 @@ class TestAdjacencyView(object):
         assert avcopy[0] == self.adjview[0]
         assert avcopy[0] is not self.adjview[0]
 
-        avcopy[2][3]['ht'] = 4
+        avcopy[2][3]["ht"] = 4
         assert avcopy[2] != self.adjview[2]
-        self.adjview[2][3]['ht'] = 4
+        self.adjview[2][3]["ht"] = 4
         assert avcopy[2] == self.adjview[2]
-        del self.adjview[2][3]['ht']
+        del self.adjview[2][3]["ht"]
 
-        assert not hasattr(self.adjview, '__setitem__')
+        assert not hasattr(self.adjview, "__setitem__")
 
     def test_items(self):
         view_items = sorted((n, dict(d)) for n, d in self.adjview.items())
@@ -114,16 +114,16 @@ class TestAdjacencyView(object):
 class TestMultiAdjacencyView(TestAdjacencyView):
     # node->nbr->key->data
     def setup(self):
-        dd = {'color': 'blue', 'weight': 1.2}
-        self.kd = {0: dd, 1: {}, 2: {'color': 1}}
-        self.nd = {3: self.kd, 0: {3: dd}, 1: {0: {}}, 2: {3: {'color': 1}}}
+        dd = {"color": "blue", "weight": 1.2}
+        self.kd = {0: dd, 1: {}, 2: {"color": 1}}
+        self.nd = {3: self.kd, 0: {3: dd}, 1: {0: {}}, 2: {3: {"color": 1}}}
         self.adj = {3: self.nd, 0: {3: {3: dd}}, 1: {}, 2: {3: {8: {}}}}
         self.adjview = nx.classes.coreviews.MultiAdjacencyView(self.adj)
 
     def test_getitem(self):
         assert self.adjview[1] is not self.adj[1]
         assert self.adjview[3][0][3] is self.adjview[0][3][3]
-        assert self.adjview[3][2][3]['color'] == 1
+        assert self.adjview[3][2][3]["color"] == 1
         pytest.raises(KeyError, self.adjview.__getitem__, 4)
 
     def test_copy(self):
@@ -131,20 +131,20 @@ class TestMultiAdjacencyView(TestAdjacencyView):
         assert avcopy[0] == self.adjview[0]
         assert avcopy[0] is not self.adjview[0]
 
-        avcopy[2][3][8]['ht'] = 4
+        avcopy[2][3][8]["ht"] = 4
         assert avcopy[2] != self.adjview[2]
-        self.adjview[2][3][8]['ht'] = 4
+        self.adjview[2][3][8]["ht"] = 4
         assert avcopy[2] == self.adjview[2]
-        del self.adjview[2][3][8]['ht']
+        del self.adjview[2][3][8]["ht"]
 
-        assert not hasattr(self.adjview, '__setitem__')
+        assert not hasattr(self.adjview, "__setitem__")
 
 
-class TestUnionAtlas(object):
+class TestUnionAtlas:
     # node->data
     def setup(self):
-        self.s = {0: {'color': 'blue', 'weight': 1.2}, 1: {}, 2: {'color': 1}}
-        self.p = {3: {'color': 'blue', 'weight': 1.2}, 4: {}, 2: {'watch': 2}}
+        self.s = {0: {"color": "blue", "weight": 1.2}, 1: {}, 2: {"color": 1}}
+        self.p = {3: {"color": "blue", "weight": 1.2}, 4: {}, 2: {"watch": 2}}
         self.av = nx.classes.coreviews.UnionAtlas(self.s, self.p)
 
     def test_pickle(self):
@@ -162,8 +162,8 @@ class TestUnionAtlas(object):
     def test_getitem(self):
         assert self.av[0] is self.s[0]
         assert self.av[4] is self.p[4]
-        assert self.av[2]['color'] == 1
-        pytest.raises(KeyError, self.av[2].__getitem__, 'watch')
+        assert self.av[2]["color"] == 1
+        pytest.raises(KeyError, self.av[2].__getitem__, "watch")
         pytest.raises(KeyError, self.av.__getitem__, 8)
 
     def test_copy(self):
@@ -174,13 +174,13 @@ class TestUnionAtlas(object):
         avcopy[5] = {}
         assert avcopy != self.av
 
-        avcopy[0]['ht'] = 4
+        avcopy[0]["ht"] = 4
         assert avcopy[0] != self.av[0]
-        self.av[0]['ht'] = 4
+        self.av[0]["ht"] = 4
         assert avcopy[0] == self.av[0]
-        del self.av[0]['ht']
+        del self.av[0]["ht"]
 
-        assert not hasattr(self.av, '__setitem__')
+        assert not hasattr(self.av, "__setitem__")
 
     def test_items(self):
         expected = dict(self.p.items())
@@ -192,17 +192,17 @@ class TestUnionAtlas(object):
         assert str(self.av) == out
 
     def test_repr(self):
-        out = "{}({}, {})".format(self.av.__class__.__name__, self.s, self.p)
+        out = f"{self.av.__class__.__name__}({self.s}, {self.p})"
         assert repr(self.av) == out
 
 
-class TestUnionAdjacency(object):
+class TestUnionAdjacency:
     # node->nbr->data
     def setup(self):
-        dd = {'color': 'blue', 'weight': 1.2}
-        self.nd = {0: dd, 1: {}, 2: {'color': 1}}
-        self.s = {3: self.nd, 0: {}, 1: {}, 2: {3: {'color': 1}}}
-        self.p = {3: {}, 0: {3: dd}, 1: {0: {}}, 2: {1: {'color': 1}}}
+        dd = {"color": "blue", "weight": 1.2}
+        self.nd = {0: dd, 1: {}, 2: {"color": 1}}
+        self.s = {3: self.nd, 0: {}, 1: {}, 2: {3: {"color": 1}}}
+        self.p = {3: {}, 0: {3: dd}, 1: {0: {}}, 2: {1: {"color": 1}}}
         self.adjview = nx.classes.coreviews.UnionAdjacency(self.s, self.p)
 
     def test_pickle(self):
@@ -220,7 +220,7 @@ class TestUnionAdjacency(object):
     def test_getitem(self):
         assert self.adjview[1] is not self.s[1]
         assert self.adjview[3][0] is self.adjview[0][3]
-        assert self.adjview[2][3]['color'] == 1
+        assert self.adjview[2][3]["color"] == 1
         pytest.raises(KeyError, self.adjview.__getitem__, 4)
 
     def test_copy(self):
@@ -228,13 +228,13 @@ class TestUnionAdjacency(object):
         assert avcopy[0] == self.adjview[0]
         assert avcopy[0] is not self.adjview[0]
 
-        avcopy[2][3]['ht'] = 4
+        avcopy[2][3]["ht"] = 4
         assert avcopy[2] != self.adjview[2]
-        self.adjview[2][3]['ht'] = 4
+        self.adjview[2][3]["ht"] = 4
         assert avcopy[2] == self.adjview[2]
-        del self.adjview[2][3]['ht']
+        del self.adjview[2][3]["ht"]
 
-        assert not hasattr(self.adjview, '__setitem__')
+        assert not hasattr(self.adjview, "__setitem__")
 
     def test_str(self):
         out = str(dict(self.adjview))
@@ -242,17 +242,17 @@ class TestUnionAdjacency(object):
 
     def test_repr(self):
         clsname = self.adjview.__class__.__name__
-        out = "{}({}, {})".format(clsname, self.s, self.p)
+        out = f"{clsname}({self.s}, {self.p})"
         assert repr(self.adjview) == out
 
 
 class TestUnionMultiInner(TestUnionAdjacency):
     # nbr->key->data
     def setup(self):
-        dd = {'color': 'blue', 'weight': 1.2}
-        self.kd = {7: {}, 'ekey': {}, 9: {'color': 1}}
-        self.s = {3: self.kd, 0: {7: dd}, 1: {}, 2: {'key': {'color': 1}}}
-        self.p = {3: {}, 0: {3: dd}, 1: {}, 2: {1: {'span': 2}}}
+        dd = {"color": "blue", "weight": 1.2}
+        self.kd = {7: {}, "ekey": {}, 9: {"color": 1}}
+        self.s = {3: self.kd, 0: {7: dd}, 1: {}, 2: {"key": {"color": 1}}}
+        self.p = {3: {}, 0: {3: dd}, 1: {}, 2: {1: {"span": 2}}}
         self.adjview = nx.classes.coreviews.UnionMultiInner(self.s, self.p)
 
     def test_len(self):
@@ -261,32 +261,32 @@ class TestUnionMultiInner(TestUnionAdjacency):
     def test_getitem(self):
         assert self.adjview[1] is not self.s[1]
         assert self.adjview[0][7] is self.adjview[0][3]
-        assert self.adjview[2]['key']['color'] == 1
-        assert self.adjview[2][1]['span'] == 2
+        assert self.adjview[2]["key"]["color"] == 1
+        assert self.adjview[2][1]["span"] == 2
         pytest.raises(KeyError, self.adjview.__getitem__, 4)
-        pytest.raises(KeyError, self.adjview[1].__getitem__, 'key')
+        pytest.raises(KeyError, self.adjview[1].__getitem__, "key")
 
     def test_copy(self):
         avcopy = self.adjview.copy()
         assert avcopy[0] == self.adjview[0]
         assert avcopy[0] is not self.adjview[0]
 
-        avcopy[2][1]['width'] = 8
+        avcopy[2][1]["width"] = 8
         assert avcopy[2] != self.adjview[2]
-        self.adjview[2][1]['width'] = 8
+        self.adjview[2][1]["width"] = 8
         assert avcopy[2] == self.adjview[2]
-        del self.adjview[2][1]['width']
+        del self.adjview[2][1]["width"]
 
-        assert not hasattr(self.adjview, '__setitem__')
-        assert hasattr(avcopy, '__setitem__')
+        assert not hasattr(self.adjview, "__setitem__")
+        assert hasattr(avcopy, "__setitem__")
 
 
 class TestUnionMultiAdjacency(TestUnionAdjacency):
     # node->nbr->key->data
     def setup(self):
-        dd = {'color': 'blue', 'weight': 1.2}
-        self.kd = {7: {}, 8: {}, 9: {'color': 1}}
-        self.nd = {3: self.kd, 0: {9: dd}, 1: {8: {}}, 2: {9: {'color': 1}}}
+        dd = {"color": "blue", "weight": 1.2}
+        self.kd = {7: {}, 8: {}, 9: {"color": 1}}
+        self.nd = {3: self.kd, 0: {9: dd}, 1: {8: {}}, 2: {9: {"color": 1}}}
         self.s = {3: self.nd, 0: {3: {7: dd}}, 1: {}, 2: {3: {8: {}}}}
         self.p = {3: {}, 0: {3: {9: dd}}, 1: {}, 2: {1: {8: {}}}}
         self.adjview = nx.classes.coreviews.UnionMultiAdjacency(self.s, self.p)
@@ -294,7 +294,7 @@ class TestUnionMultiAdjacency(TestUnionAdjacency):
     def test_getitem(self):
         assert self.adjview[1] is not self.s[1]
         assert self.adjview[3][0][9] is self.adjview[0][3][9]
-        assert self.adjview[3][2][9]['color'] == 1
+        assert self.adjview[3][2][9]["color"] == 1
         pytest.raises(KeyError, self.adjview.__getitem__, 4)
 
     def test_copy(self):
@@ -302,26 +302,23 @@ class TestUnionMultiAdjacency(TestUnionAdjacency):
         assert avcopy[0] == self.adjview[0]
         assert avcopy[0] is not self.adjview[0]
 
-        avcopy[2][3][8]['ht'] = 4
+        avcopy[2][3][8]["ht"] = 4
         assert avcopy[2] != self.adjview[2]
-        self.adjview[2][3][8]['ht'] = 4
+        self.adjview[2][3][8]["ht"] = 4
         assert avcopy[2] == self.adjview[2]
-        del self.adjview[2][3][8]['ht']
+        del self.adjview[2][3][8]["ht"]
 
-        assert not hasattr(self.adjview, '__setitem__')
-        assert hasattr(avcopy, '__setitem__')
+        assert not hasattr(self.adjview, "__setitem__")
+        assert hasattr(avcopy, "__setitem__")
 
 
-class TestFilteredGraphs(object):
+class TestFilteredGraphs:
     def setup(self):
-        self.Graphs = [nx.Graph,
-                       nx.DiGraph,
-                       nx.MultiGraph,
-                       nx.MultiDiGraph]
-        self.SubGraphs = [nx.graphviews.subgraph_view] * 4
+        self.Graphs = [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 
     def test_hide_show_nodes(self):
-        for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):
+        SubGraph = nx.graphviews.subgraph_view
+        for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
             RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
@@ -333,7 +330,8 @@ class TestFilteredGraphs(object):
             assert SGC.edges == RGC.edges
 
     def test_str_repr(self):
-        for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):
+        SubGraph = nx.graphviews.subgraph_view
+        for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
             RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
@@ -347,13 +345,86 @@ class TestFilteredGraphs(object):
             repr(RG.adj[2])
 
     def test_copy(self):
-        for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):
+        SubGraph = nx.graphviews.subgraph_view
+        for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
             RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
+            RsG = SubGraph(G, nx.filters.show_nodes([2, 3]))
             assert G.adj.copy() == G.adj
             assert G.adj[2].copy() == G.adj[2]
             assert SG.adj.copy() == SG.adj
             assert SG.adj[2].copy() == SG.adj[2]
             assert RG.adj.copy() == RG.adj
             assert RG.adj[2].copy() == RG.adj[2]
+            assert RsG.adj.copy() == RsG.adj
+            assert RsG.adj[2].copy() == RsG.adj[2]
+
+    def test_filtered_copy(self):
+        # TODO: This function can be removed when filtered.copy()
+        # deprecation expires
+        SubGraph = nx.graphviews.subgraph_view
+        for Graph in self.Graphs:
+            G = nx.path_graph(4, Graph)
+            SG = G.subgraph([2, 3])
+            RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
+            RsG = SubGraph(G, nx.filters.show_nodes([2, 3]))
+            # test FilterAtlas & co in these subgraphs
+            assert SG._node.copy() == SG._node
+            assert SG.adj._atlas.copy() == SG.adj._atlas
+            assert SG.adj[2]._atlas.copy() == SG.adj[2]._atlas
+            assert SG.adj[2]._atlas[3].copy() == SG.adj[2]._atlas[3]
+            assert RG.adj._atlas.copy() == RG.adj._atlas
+            assert RG.adj[2]._atlas.copy() == RG.adj[2]._atlas
+            assert RG.adj[2]._atlas[3].copy() == RG.adj[2]._atlas[3]
+            assert RG._node.copy() == RG._node
+            assert RsG.adj._atlas.copy() == RsG.adj._atlas
+            assert RsG.adj[2]._atlas.copy() == RsG.adj[2]._atlas
+            assert RsG.adj[2]._atlas[3].copy() == RsG.adj[2]._atlas[3]
+            assert RsG._node.copy() == RsG._node
+            # test MultiFilterInner
+            if G.is_multigraph():
+                assert SG.adj[2]._atlas[3][0].copy() == SG.adj[2]._atlas[3][0]
+                assert RG.adj[2]._atlas[3][0].copy() == RG.adj[2]._atlas[3][0]
+                assert RsG.adj[2]._atlas[3][0].copy() == RsG.adj[2]._atlas[3][0]
+
+            # test deprecation
+            # FilterAtlas.copy()
+            pytest.deprecated_call(SG._node.copy)
+            # FilterAdjacency.copy()
+            pytest.deprecated_call(SG.adj._atlas.copy)
+            # FilterMultiAdjacency.copy()
+            if G.is_multigraph():
+                pytest.deprecated_call(SG.adj._atlas.copy)
+            # FilterMultiInner.copy()
+            if G.is_multigraph():
+                pytest.deprecated_call(SG.adj[2]._atlas.copy)
+
+            SSG = SG.subgraph([2])
+            assert list(SSG) == [2]
+
+            # check case when node_ok is small
+            G = nx.complete_graph(9, Graph)
+            SG = G.subgraph([2, 3])
+            RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
+            RsG = SubGraph(G, nx.filters.show_nodes([2, 3, 4, 5, 6, 7, 8]))
+            assert SG.adj._atlas.copy() == SG.adj._atlas
+            assert SG.adj[2]._atlas.copy() == SG.adj[2]._atlas
+            assert SG.adj[2]._atlas[3].copy() == SG.adj[2]._atlas[3]
+            assert SG._node.copy() == SG._node
+            assert RG.adj._atlas.copy() == RG.adj._atlas
+            assert RG.adj[2]._atlas.copy() == RG.adj[2]._atlas
+            assert RG.adj[2]._atlas[3].copy() == RG.adj[2]._atlas[3]
+            assert RG._node.copy() == RG._node
+            assert RsG.adj._atlas.copy() == RsG.adj._atlas
+            assert RsG.adj[2]._atlas.copy() == RsG.adj[2]._atlas
+            assert RsG.adj[2]._atlas[3].copy() == RsG.adj[2]._atlas[3]
+            assert RsG._node.copy() == RsG._node
+            # test MultiFilterInner
+            if G.is_multigraph():
+                assert SG.adj[2][3]._atlas.copy() == SG.adj[2][3]._atlas
+                assert RG.adj[2][3]._atlas.copy() == RG.adj[2][3]._atlas
+                assert RsG.adj[2][3]._atlas.copy() == RsG.adj[2][3]._atlas
+
+            SSG = SG.subgraph([2])
+            assert list(SSG) == [2]

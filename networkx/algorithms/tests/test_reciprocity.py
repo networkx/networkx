@@ -2,7 +2,7 @@ import pytest
 import networkx as nx
 
 
-class TestReciprocity(object):
+class TestReciprocity:
 
     # test overall reicprocity by passing whole graph
     def test_reciprocity_digraph(self):

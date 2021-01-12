@@ -24,8 +24,7 @@ def test_isolated_K5():
     assert c == {frozenset(range(5)), frozenset(range(5, 10))}
 
 
-class TestZacharyKarateClub(object):
-
+class TestZacharyKarateClub:
     def setup(self):
         self.G = nx.karate_club_graph()
 
@@ -39,16 +38,44 @@ class TestZacharyKarateClub(object):
         self._check_communities(2, expected)
 
     def test_k3(self):
-        comm1 = [0, 1, 2, 3, 7, 8, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23,
-                 26, 27, 28, 29, 30, 31, 32, 33]
+        comm1 = [
+            0,
+            1,
+            2,
+            3,
+            7,
+            8,
+            12,
+            13,
+            14,
+            15,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+        ]
         comm2 = [0, 4, 5, 6, 10, 16]
         comm3 = [24, 25, 31]
         expected = {frozenset(comm1), frozenset(comm2), frozenset(comm3)}
         self._check_communities(3, expected)
 
     def test_k4(self):
-        expected = {frozenset([0, 1, 2, 3, 7, 13]), frozenset([8, 32, 30, 33]),
-                    frozenset([32, 33, 29, 23])}
+        expected = {
+            frozenset([0, 1, 2, 3, 7, 13]),
+            frozenset([8, 32, 30, 33]),
+            frozenset([32, 33, 29, 23]),
+        }
         self._check_communities(4, expected)
 
     def test_k5(self):

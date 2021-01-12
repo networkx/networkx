@@ -1,13 +1,11 @@
-"""Unit tests for the :mod:`networkx.algorithms.approximation.clique`
-module.
-
-"""
+"""Unit tests for the :mod:`networkx.algorithms.approximation.clique` module."""
 
 
 import networkx as nx
 from networkx.algorithms.approximation import max_clique
 from networkx.algorithms.approximation import clique_removal
 from networkx.algorithms.approximation import large_clique_size
+from networkx.algorithms.approximation import maximum_independent_set
 
 
 def is_independent_set(G, nodes):
@@ -33,7 +31,7 @@ def is_clique(G, nodes):
     return H.number_of_edges() == n * (n - 1) // 2
 
 
-class TestCliqueRemoval(object):
+class TestCliqueRemoval:
     """Unit tests for the
     :func:`~networkx.algorithms.approximation.clique_removal` function.
 
@@ -60,7 +58,7 @@ class TestCliqueRemoval(object):
         assert all(is_clique(G, clique) for clique in cliques)
 
 
-class TestMaxClique(object):
+class TestMaxClique:
     """Unit tests for the :func:`networkx.algorithms.approximation.max_clique`
     function.
 
@@ -105,3 +103,9 @@ def test_large_clique_size():
     assert large_clique_size(G) == 8
     G.remove_edge(2, 3)
     assert large_clique_size(G) == 7
+
+
+def test_independent_set():
+    # smoke test
+    G = nx.Graph()
+    assert len(maximum_independent_set(G)) == 0

@@ -9,11 +9,11 @@ from .utils import build_residual_network
 
 default_flow_func = edmonds_karp
 
-__all__ = ['gomory_hu_tree']
+__all__ = ["gomory_hu_tree"]
 
 
-@not_implemented_for('directed')
-def gomory_hu_tree(G, capacity='capacity', flow_func=None):
+@not_implemented_for("directed")
+def gomory_hu_tree(G, capacity="capacity", flow_func=None):
     r"""Returns the Gomory-Hu tree of an undirected graph G.
 
     A Gomory-Hu tree of an undirected graph with capacities is a
@@ -68,15 +68,15 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
     Examples
     --------
     >>> G = nx.karate_club_graph()
-    >>> nx.set_edge_attributes(G, 1, 'capacity')
+    >>> nx.set_edge_attributes(G, 1, "capacity")
     >>> T = nx.gomory_hu_tree(G)
     >>> # The value of the minimum cut between any pair
     ... # of nodes in G is the minimum edge weight in the
     ... # shortest path between the two nodes in the
     ... # Gomory-Hu tree.
     ... def minimum_edge_weight_in_shortest_path(T, u, v):
-    ...     path = nx.shortest_path(T, u, v, weight='weight')
-    ...     return min((T[u][v]['weight'], (u,v)) for (u, v) in zip(path, path[1:]))
+    ...     path = nx.shortest_path(T, u, v, weight="weight")
+    ...     return min((T[u][v]["weight"], (u, v)) for (u, v) in zip(path, path[1:]))
     >>> u, v = 0, 33
     >>> cut_value, edge = minimum_edge_weight_in_shortest_path(T, u, v)
     >>> cut_value
@@ -133,7 +133,7 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
         flow_func = default_flow_func
 
     if len(G) == 0:  # empty graph
-        msg = 'Empty Graph does not have a Gomory-Hu tree representation'
+        msg = "Empty Graph does not have a Gomory-Hu tree representation"
         raise nx.NetworkXError(msg)
 
     # Start the tree as a star graph with an arbitrary node at the center
@@ -152,10 +152,9 @@ def gomory_hu_tree(G, capacity='capacity', flow_func=None):
         # Find neighbor in the tree
         target = tree[source]
         # compute minimum cut
-        cut_value, partition = nx.minimum_cut(G, source, target,
-                                              capacity=capacity,
-                                              flow_func=flow_func,
-                                              residual=R)
+        cut_value, partition = nx.minimum_cut(
+            G, source, target, capacity=capacity, flow_func=flow_func, residual=R
+        )
         labels[(source, target)] = cut_value
         # Update the tree
         # Source will always be in partition[0] and target in partition[1]

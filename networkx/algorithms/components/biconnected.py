@@ -3,14 +3,14 @@ from itertools import chain
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
-    'biconnected_components',
-    'biconnected_component_edges',
-    'is_biconnected',
-    'articulation_points',
+    "biconnected_components",
+    "biconnected_component_edges",
+    "is_biconnected",
+    "articulation_points",
 ]
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def is_biconnected(G):
     """Returns True if the graph is biconnected, False otherwise.
 
@@ -78,12 +78,14 @@ def is_biconnected(G):
     if len(bcc) == 1:
         return len(bcc[0]) == len(G)
     return False  # Multiple bicomponents or No bicomponents (empty graph?)
+
+
 #    if len(bcc) == 0:  # No bicomponents (it could be an empty graph)
 #        return False
 #    return len(bcc[0]) == len(G)
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def biconnected_component_edges(G):
     """Returns a generator of lists of edges, one list for each biconnected
     component of the input graph.
@@ -152,11 +154,10 @@ def biconnected_component_edges(G):
            Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
 
     """
-    for comp in _biconnected_dfs(G, components=True):
-        yield comp
+    yield from _biconnected_dfs(G, components=True)
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def biconnected_components(G):
     """Returns a generator of sets of nodes, one set for each biconnected
     component of the graph
@@ -184,13 +185,6 @@ def biconnected_components(G):
     ------
     NetworkXNotImplemented
         If the input graph is not undirected.
-
-    See Also
-    --------
-    k_components : this function is a special case where k=2
-    bridge_components : similar to this function, but is defined using
-        2-edge-connectivity instead of 2-node-connectivity.
-
 
     Examples
     --------
@@ -227,6 +221,9 @@ def biconnected_components(G):
     is_biconnected
     articulation_points
     biconnected_component_edges
+    k_components : this function is a special case where k=2
+    bridge_components : similar to this function, but is defined using
+        2-edge-connectivity instead of 2-node-connectivity.
 
     Notes
     -----
@@ -252,7 +249,7 @@ def biconnected_components(G):
         yield set(chain.from_iterable(comp))
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def articulation_points(G):
     """Yield the articulation points, or cut vertices, of a graph.
 
@@ -326,7 +323,7 @@ def articulation_points(G):
             yield articulation
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def _biconnected_dfs(G, components=True):
     # depth-first search algorithm to generate articulation points
     # and biconnected components

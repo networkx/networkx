@@ -10,7 +10,7 @@ from networkx.generators.atlas import NUM_GRAPHS
 from networkx.utils import pairwise
 
 
-class TestAtlasGraph(object):
+class TestAtlasGraph:
     """Unit tests for the :func:`~networkx.graph_atlas` function."""
 
     def test_index_too_small(self):
@@ -27,7 +27,7 @@ class TestAtlasGraph(object):
         assert_edges_equal(G.edges(), [(0, 1), (0, 2)])
 
 
-class TestAtlasGraphG(object):
+class TestAtlasGraphG:
     """Unit tests for the :func:`~networkx.graph_atlas_g` function."""
 
     @classmethod
@@ -66,7 +66,7 @@ class TestAtlasGraphG(object):
         # There are three exceptions to this rule in the order given in
         # the "Atlas of Graphs" book, so we need to manually exclude
         # those.
-        exceptions = [('G55', 'G56'), ('G1007', 'G1008'), ('G1012', 'G1013')]
+        exceptions = [("G55", "G56"), ("G1007", "G1008"), ("G1012", "G1013")]
         for n, group in groupby(self.GAG, key=nx.number_of_nodes):
             for m, group in groupby(group, key=nx.number_of_edges):
                 for G1, G2 in pairwise(group):

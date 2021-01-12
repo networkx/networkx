@@ -6,12 +6,14 @@ Bipartite Graph Algorithms
 import networkx as nx
 from networkx.algorithms.components import connected_components
 
-__all__ = ['is_bipartite',
-           'is_bipartite_node_set',
-           'color',
-           'sets',
-           'density',
-           'degrees']
+__all__ = [
+    "is_bipartite",
+    "is_bipartite_node_set",
+    "color",
+    "sets",
+    "density",
+    "degrees",
+]
 
 
 def color(G):
@@ -43,18 +45,18 @@ def color(G):
 
     You can use this to set a node attribute indicating the biparite set:
 
-    >>> nx.set_node_attributes(G, c, 'bipartite')
-    >>> print(G.nodes[0]['bipartite'])
+    >>> nx.set_node_attributes(G, c, "bipartite")
+    >>> print(G.nodes[0]["bipartite"])
     1
-    >>> print(G.nodes[1]['bipartite'])
+    >>> print(G.nodes[1]["bipartite"])
     0
     """
     if G.is_directed():
         import itertools
 
         def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors(v),
-                                                  G.successors(v)])
+            return itertools.chain.from_iterable([G.predecessors(v), G.successors(v)])
+
     else:
         neighbors = G.neighbors
 
@@ -80,7 +82,7 @@ def color(G):
 
 
 def is_bipartite(G):
-    """ Returns True if graph G is bipartite, False if not.
+    """Returns True if graph G is bipartite, False if not.
 
     Parameters
     ----------
@@ -118,8 +120,8 @@ def is_bipartite_node_set(G, nodes):
     --------
     >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
-    >>> X = set([1,3])
-    >>> bipartite.is_bipartite_node_set(G,X)
+    >>> X = set([1, 3])
+    >>> bipartite.is_bipartite_node_set(G, X)
     True
 
     Notes
@@ -130,8 +132,9 @@ def is_bipartite_node_set(G, nodes):
     S = set(nodes)
     for CC in (G.subgraph(c).copy() for c in connected_components(G)):
         X, Y = sets(CC)
-        if not ((X.issubset(S) and Y.isdisjoint(S)) or
-                (Y.issubset(S) and X.isdisjoint(S))):
+        if not (
+            (X.issubset(S) and Y.isdisjoint(S)) or (Y.issubset(S) and X.isdisjoint(S))
+        ):
             return False
     return True
 
@@ -194,7 +197,7 @@ def sets(G, top_nodes=None):
         Y = set(G) - X
     else:
         if not is_connected(G):
-            msg = 'Disconnected graph: Ambiguous solution for bipartite sets.'
+            msg = "Disconnected graph: Ambiguous solution for bipartite sets."
             raise nx.AmbiguousSolution(msg)
         c = color(G)
         X = {n for n, is_top in c.items() if is_top}
@@ -207,7 +210,7 @@ def density(B, nodes):
 
     Parameters
     ----------
-    G : NetworkX graph
+    B : NetworkX graph
 
     nodes: list or container
       Nodes in one node set of the bipartite graph.
@@ -220,12 +223,12 @@ def density(B, nodes):
     Examples
     --------
     >>> from networkx.algorithms import bipartite
-    >>> G = nx.complete_bipartite_graph(3,2)
-    >>> X=set([0,1,2])
-    >>> bipartite.density(G,X)
+    >>> G = nx.complete_bipartite_graph(3, 2)
+    >>> X = set([0, 1, 2])
+    >>> bipartite.density(G, X)
     1.0
-    >>> Y=set([3,4])
-    >>> bipartite.density(G,Y)
+    >>> Y = set([3, 4])
+    >>> bipartite.density(G, Y)
     1.0
 
     Notes
@@ -259,7 +262,7 @@ def degrees(B, nodes, weight=None):
 
     Parameters
     ----------
-    G : NetworkX graph
+    B : NetworkX graph
 
     nodes: list or container
       Nodes in one node set of the bipartite graph.
@@ -277,9 +280,9 @@ def degrees(B, nodes, weight=None):
     Examples
     --------
     >>> from networkx.algorithms import bipartite
-    >>> G = nx.complete_bipartite_graph(3,2)
-    >>> Y=set([3,4])
-    >>> degX,degY=bipartite.degrees(G,Y)
+    >>> G = nx.complete_bipartite_graph(3, 2)
+    >>> Y = set([3, 4])
+    >>> degX, degY = bipartite.degrees(G, Y)
     >>> dict(degX)
     {0: 2, 1: 2, 2: 2}
 

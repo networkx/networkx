@@ -15,12 +15,12 @@ and biconnected_components algorithms but might also work for other
 algorithms.
 
 """
-import networkx as nx
-from networkx.exception import NetworkXError
 import matplotlib.pyplot as plt
+import networkx as nx
+from networkx import Graph
 
 
-class AntiGraph(nx.Graph):
+class AntiGraph(Graph):
     """
     Class for complement graphs.
 
@@ -54,20 +54,19 @@ class AntiGraph(nx.Graph):
            The adjacency dictionary for nodes connected to n.
 
         """
-        return dict(
-            (node, self.all_edge_dict)
-            for node in set(self.adj) - set(self.adj[n]) - set([n])
-        )
+        return {
+            node: self.all_edge_dict for node in set(self.adj) - set(self.adj[n]) - {n}
+        }
 
     def neighbors(self, n):
         """Return an iterator over all neighbors of node n in the
-           dense graph.
+        dense graph.
 
         """
         try:
-            return iter(set(self.adj) - set(self.adj[n]) - set([n]))
-        except KeyError:
-            raise NetworkXError(f"The node {n} is not in the graph.")
+            return iter(set(self.adj) - set(self.adj[n]) - {n})
+        except KeyError as e:
+            raise nx.NetworkXError(f"The node {n} is not in the graph.") from e
 
     def degree(self, nbunch=None, weight=None):
         """Return an iterator for (node, degree) in the dense graph.
@@ -109,7 +108,7 @@ class AntiGraph(nx.Graph):
                     n,
                     {
                         v: self.all_edge_dict
-                        for v in set(self.adj) - set(self.adj[n]) - set([n])
+                        for v in set(self.adj) - set(self.adj[n]) - {n}
                     },
                 )
                 for n in self.nodes()
@@ -123,7 +122,7 @@ class AntiGraph(nx.Graph):
                     n,
                     {
                         v: self.all_edge_dict
-                        for v in set(self.nodes()) - set(self.adj[n]) - set([n])
+                        for v in set(self.nodes()) - set(self.adj[n]) - {n}
                     },
                 )
                 for n in self.nbunch_iter(nbunch)
@@ -138,7 +137,7 @@ class AntiGraph(nx.Graph):
                 for n, nbrs in nodes_nbrs
             )
 
-    def adjacency_iter(self):
+    def adjacency(self):
         """Return an iterator of (node, adjacency set) tuples for all nodes
            in the dense graph.
 
@@ -150,10 +149,10 @@ class AntiGraph(nx.Graph):
         adj_iter : iterator
            An iterator of (node, adjacency set) for all nodes in
            the graph.
-
         """
-        for n in self.adj:
-            yield (n, set(self.adj) - set(self.adj[n]) - set([n]))
+        nodes = set(self.adj)
+        for n, nbrs in self.adj.items():
+            yield (n, nodes - set(nbrs) - {n})
 
 
 # Build several pairs of graphs, a regular graph
@@ -188,5 +187,6 @@ for G, A in pairs:
     assert sum(d for n, d in A.degree()) == sum(d for n, d in A.degree(weight="weight"))
     assert sum(d for n, d in G.degree(nodes)) == sum(d for n, d in A.degree(nodes))
 
-nx.draw(Gnp)
+pos = nx.spring_layout(G, seed=268)  # Seed for reproducible layout
+nx.draw(Gnp, pos=pos)
 plt.show()

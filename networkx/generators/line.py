@@ -6,7 +6,7 @@ import networkx as nx
 from networkx.utils import arbitrary_element, generate_unique_node
 from networkx.utils.decorators import not_implemented_for
 
-__all__ = ['line_graph', 'inverse_line_graph']
+__all__ = ["line_graph", "inverse_line_graph"]
 
 
 def line_graph(G, create_using=None):
@@ -37,7 +37,6 @@ def line_graph(G, create_using=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.star_graph(3)
     >>> L = nx.line_graph(G)
     >>> print(sorted(map(sorted, L.edges())))  # makes a 3-clique, K3
@@ -114,24 +113,30 @@ def _node_func(G):
 
     """
     if G.is_multigraph():
+
         def sorted_node(u, v, key):
             return (u, v, key) if u <= v else (v, u, key)
+
     else:
+
         def sorted_node(u, v):
             return (u, v) if u <= v else (v, u)
+
     return sorted_node
 
 
 def _edge_func(G):
-    """Returns the edges from G, handling keys for multigraphs as necessary.
-
-    """
+    """Returns the edges from G, handling keys for multigraphs as necessary."""
     if G.is_multigraph():
+
         def get_edges(nbunch=None):
             return G.edges(nbunch, keys=True)
+
     else:
+
         def get_edges(nbunch=None):
             return G.edges(nbunch)
+
     return get_edges
 
 
@@ -212,7 +217,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     # Determine if we include self-loops or not.
     shift = 0 if selfloops else 1
 
-    edges = set([])
+    edges = set()
     for u in G:
         # Label nodes as a sorted tuple of nodes in original graph.
         nodes = [sorted_node(*x) for x in get_edges(u)]
@@ -225,16 +230,16 @@ def _lg_undirected(G, selfloops=False, create_using=None):
         # especially important for multigraphs, we store the edges in
         # canonical form in a set.
         for i, a in enumerate(nodes):
-            edges.update([_sorted_edge(a, b) for b in nodes[i + shift:]])
+            edges.update([_sorted_edge(a, b) for b in nodes[i + shift :]])
 
     L.add_edges_from(edges)
     return L
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def inverse_line_graph(G):
-    """ Returns the inverse line graph of graph G.
+    """Returns the inverse line graph of graph G.
 
     If H is a graph, and G is the line graph of H, such that H = L(G).
     Then H is the inverse line graph of G.
@@ -268,7 +273,7 @@ def inverse_line_graph(G):
     You should invert every component seperately:
 
     >>> K5 = nx.complete_graph(5)
-    >>> P4 = nx.Graph([('a', 'b'), ('b', 'c'), ('c', 'd')])
+    >>> P4 = nx.Graph([("a", "b"), ("b", "c"), ("c", "d")])
     >>> G = nx.union(K5, P4)
     >>> root_graphs = []
     >>> for comp in nx.connected_components(G):
@@ -309,8 +314,7 @@ def inverse_line_graph(G):
             P_count[u] += 1
 
     if max(P_count.values()) > 2:
-        msg = "G is not a line graph (vertex found in more " \
-              "than two partition cells)"
+        msg = "G is not a line graph (vertex found in more " "than two partition cells)"
         raise nx.NetworkXError(msg)
     W = tuple([(u,) for u in P_count if P_count[u] == 1])
     H = nx.Graph()
@@ -326,9 +330,9 @@ def _triangles(G, e):
     """ Return list of all triangles containing edge e"""
     u, v = e
     if u not in G:
-        raise nx.NetworkXError("Vertex %s not in graph" % u)
+        raise nx.NetworkXError(f"Vertex {u} not in graph")
     if v not in G[u]:
-        raise nx.NetworkXError("Edge (%s, %s) not in graph" % (u, v))
+        raise nx.NetworkXError(f"Edge ({u}, {v}) not in graph")
     triangle_list = []
     for x in G[u]:
         if x in G[v]:
@@ -337,7 +341,7 @@ def _triangles(G, e):
 
 
 def _odd_triangle(G, T):
-    """ Test whether T is an odd triangle in G
+    """Test whether T is an odd triangle in G
 
     Parameters
     ----------
@@ -363,10 +367,10 @@ def _odd_triangle(G, T):
     """
     for u in T:
         if u not in G.nodes():
-            raise nx.NetworkXError("Vertex %s not in graph" % u)
+            raise nx.NetworkXError(f"Vertex {u} not in graph")
     for e in list(combinations(T, 2)):
         if e[0] not in G[e[1]]:
-            raise nx.NetworkXError("Edge (%s, %s) not in graph" % (e[0], e[1]))
+            raise nx.NetworkXError(f"Edge ({e[0]}, {e[1]}) not in graph")
 
     T_neighbors = defaultdict(int)
     for t in T:
@@ -380,7 +384,7 @@ def _odd_triangle(G, T):
 
 
 def _find_partition(G, starting_cell):
-    """ Find a partition of the vertices of G into cells of complete graphs
+    """Find a partition of the vertices of G into cells of complete graphs
 
     Parameters
     ----------
@@ -417,8 +421,10 @@ def _find_partition(G, starting_cell):
             for u in new_cell:
                 for v in new_cell:
                     if (u != v) and (v not in G_partition[u]):
-                        msg = "G is not a line graph" \
-                              "(partition cell not a complete subgraph)"
+                        msg = (
+                            "G is not a line graph"
+                            "(partition cell not a complete subgraph)"
+                        )
                         raise nx.NetworkXError(msg)
             P.append(tuple(new_cell))
             G_partition.remove_edges_from(list(combinations(new_cell, 2)))
@@ -427,7 +433,7 @@ def _find_partition(G, starting_cell):
 
 
 def _select_starting_cell(G, starting_edge=None):
-    """ Select a cell to initiate _find_partition
+    """Select a cell to initiate _find_partition
 
     Parameters
     ----------
@@ -455,8 +461,8 @@ def _select_starting_cell(G, starting_edge=None):
     else:
         e = starting_edge
         if e[0] not in G[e[1]]:
-            msg = 'starting_edge (%s, %s) is not in the Graph'
-            raise nx.NetworkXError(msg % e)
+            msg = f"starting_edge ({e[0]}, {e[1]}) is not in the Graph"
+            raise nx.NetworkXError(msg)
     e_triangles = _triangles(G, e)
     r = len(e_triangles)
     if r == 0:
@@ -492,7 +498,7 @@ def _select_starting_cell(G, starting_edge=None):
             # check if odd triangles containing e form complete subgraph
             # there must be exactly s+2 of them
             # and they must all be connected
-            triangle_nodes = set([])
+            triangle_nodes = set()
             for T in odd_triangles:
                 for x in T:
                     triangle_nodes.add(x)
@@ -500,17 +506,23 @@ def _select_starting_cell(G, starting_edge=None):
                 for u in triangle_nodes:
                     for v in triangle_nodes:
                         if u != v and (v not in G[u]):
-                            msg = "G is not a line graph (odd triangles " \
-                                  "do not form complete subgraph)"
+                            msg = (
+                                "G is not a line graph (odd triangles "
+                                "do not form complete subgraph)"
+                            )
                             raise nx.NetworkXError(msg)
                 # otherwise then we can use this as the starting cell
                 starting_cell = tuple(triangle_nodes)
             else:
-                msg = "G is not a line graph (odd triangles " \
-                      "do not form complete subgraph)"
+                msg = (
+                    "G is not a line graph (odd triangles "
+                    "do not form complete subgraph)"
+                )
                 raise nx.NetworkXError(msg)
         else:
-            msg = "G is not a line graph (incorrect number of " \
-                  "odd triangles around starting edge)"
+            msg = (
+                "G is not a line graph (incorrect number of "
+                "odd triangles around starting edge)"
+            )
             raise nx.NetworkXError(msg)
     return starting_cell

@@ -6,13 +6,16 @@ Degree Sequence
 Random graph from given degree sequence.
 """
 import matplotlib.pyplot as plt
-from networkx import nx
+import networkx as nx
+
+# Specify seed for reproducibility
+seed = 668273
 
 z = [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
 print(nx.is_graphical(z))
 
 print("Configuration model")
-G = nx.configuration_model(z)  # configuration model
+G = nx.configuration_model(z, seed=seed)  # configuration model, seed for reproduciblity
 degree_sequence = [d for n, d in G.degree()]  # degree sequence
 print(f"Degree sequence {degree_sequence}")
 print("Degree histogram")
@@ -26,5 +29,6 @@ print("degree #nodes")
 for d in hist:
     print(f"{d:4} {hist[d]:6}")
 
-nx.draw(G)
+pos = nx.spring_layout(G, seed=seed)  # Seed layout for reproducibility
+nx.draw(G, pos=pos)
 plt.show()

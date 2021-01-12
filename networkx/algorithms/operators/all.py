@@ -3,8 +3,7 @@
 from itertools import zip_longest
 import networkx as nx
 
-__all__ = ['union_all', 'compose_all', 'disjoint_union_all',
-           'intersection_all']
+__all__ = ["union_all", "compose_all", "disjoint_union_all", "intersection_all"]
 
 
 def union_all(graphs, rename=(None,)):
@@ -46,7 +45,7 @@ def union_all(graphs, rename=(None,)):
     disjoint_union_all
     """
     if not graphs:
-        raise ValueError('cannot apply union_all to an empty list')
+        raise ValueError("cannot apply union_all to an empty list")
     graphs_names = zip_longest(graphs, rename)
     U, gname = next(graphs_names)
     for H, hname in graphs_names:
@@ -84,7 +83,7 @@ def disjoint_union_all(graphs):
     from the last graph in the list with that attribute is used.
     """
     if not graphs:
-        raise ValueError('cannot apply disjoint_union_all to an empty list')
+        raise ValueError("cannot apply disjoint_union_all to an empty list")
     graphs = iter(graphs)
     U = next(graphs)
     for H in graphs:
@@ -122,7 +121,7 @@ def compose_all(graphs):
     from the last graph in the list with that attribute is used.
     """
     if not graphs:
-        raise ValueError('cannot apply compose_all to an empty list')
+        raise ValueError("cannot apply compose_all to an empty list")
     graphs = iter(graphs)
     C = next(graphs)
     for H in graphs:
@@ -156,7 +155,7 @@ def intersection_all(graphs):
     graph.
     """
     if not graphs:
-        raise ValueError('cannot apply intersection_all to an empty list')
+        raise ValueError("cannot apply intersection_all to an empty list")
     graphs = iter(graphs)
     R = next(graphs)
     for H in graphs:
