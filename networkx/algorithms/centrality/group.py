@@ -228,6 +228,7 @@ def _group_preprocessing(G, set_v, weight):
                         )
     return PB, sigma, D
 
+
 def group_closeness_centrality(G, S, weight=None):
     r"""Compute the group closeness centrality for a group of nodes.
 
