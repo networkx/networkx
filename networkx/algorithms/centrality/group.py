@@ -7,7 +7,7 @@ from networkx.utils.decorators import not_implemented_for
 from networkx.algorithms.centrality.betweenness import (
     _single_source_shortest_path_basic,
     _single_source_dijkstra_path_basic,
-    _accumulate_endpoints
+    _accumulate_endpoints,
 )
 
 
@@ -64,8 +64,9 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
 
     Returns
     -------
-    betweenness : list of floats
-       The list of group betweenness centrality of the groups C.
+    betweenness : list of floats or float
+       If C is a list with single group then return a float. If C is a list with
+       several groups then return a list of group betweenness centralities.
 
     See Also
     --------
@@ -217,14 +218,14 @@ def _group_preprocessing(G, set_v, weight):
                 # if node is connected to the two group nodes than continue
                 if group_node2 in D[node] and group_node1 in D[node]:
                     if (
-                            D[node][group_node2]
-                            == D[node][group_node1] + D[group_node1][group_node2]
+                        D[node][group_node2]
+                        == D[node][group_node1] + D[group_node1][group_node2]
                     ):
                         PB[group_node1][group_node2] += (
-                                delta[node][group_node2]
-                                * sigma[node][group_node1]
-                                * sigma[group_node1][group_node2]
-                                / sigma[node][group_node2]
+                            delta[node][group_node2]
+                            * sigma[node][group_node1]
+                            * sigma[group_node1][group_node2]
+                            / sigma[node][group_node2]
                         )
     return PB, sigma, D
 
