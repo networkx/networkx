@@ -1,9 +1,14 @@
 """Group centrality measures."""
-from heapq import heappush, heappop
 from copy import deepcopy
 
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
+
+from networkx.algorithms.centrality.betweenness import (
+    _single_source_shortest_path_basic,
+    _single_source_dijkstra_path_basic,
+    _accumulate_endpoints
+)
 
 
 __all__ = [
@@ -100,10 +105,11 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
 
     """
     GBC = []  # initialize betweenness
-
+    list_of_groups = True
     #  check weather C contains one or many groups
     if any(el in G for el in C):
         C = [C]
+        list_of_groups = False
     set_v = {node for group in C for node in group}
     if set_v - G.nodes:  # element(s) of C not in G
         raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are in C but not in G.")
@@ -111,23 +117,26 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     sigma = {}
     delta = {}
     D = {}
+    betweenness = dict.fromkeys(G, 0)
     for s in G:
         if weight is None:  # use BFS
-            D[s], sigma[s], delta[s] = _single_source_shortest_path_basic(G, s)
+            S, P, sigma[s], D[s] = _single_source_shortest_path_basic(G, s)
         else:  # use Dijkstra's algorithm
-            D[s], sigma[s], delta[s] = _single_source_dijkstra_path_basic(G, s, weight)
+            S, P, sigma[s], D[s] = _single_source_dijkstra_path_basic(G, s, weight)
+        betweenness, delta[s] = _accumulate_endpoints(betweenness, S, P, sigma[s], s)
+        for i in delta[s].keys():  # add the paths from s to i and rescale sigma
+            delta[s][i] += 1
+            sigma[s][i] = sigma[s][i] / 2
     # building the path betweenness matrix only for nodes that appear in the group
     PB = dict.fromkeys(G)
     for group_node1 in set_v:
         PB[group_node1] = dict.fromkeys(G, 0.0)
         for group_node2 in set_v:
-            if D[group_node1][group_node2] == float("inf"):
+            if group_node2 not in D[group_node1]:
                 continue
             for node in G:
-                # if node isn't connected to the two group nodes than continue
-                if D[node][group_node2] != float("inf") or D[node][
-                    group_node1
-                ] != float("inf"):
+                # if node is connected to the two group nodes than continue
+                if group_node2 in D[node] and group_node1 in D[node]:
                     if (
                         D[node][group_node2]
                         == D[node][group_node1] + D[group_node1][group_node2]
@@ -206,9 +215,12 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
             GBC_group *= scale
 
         GBC.append(GBC_group)
-    return GBC
+    if list_of_groups:
+        return GBC
+    else:
+        return GBC[0]
 
-
+"""
 def _single_source_shortest_path_basic(G, s):
     S = []
     P = {}
@@ -280,7 +292,7 @@ def _single_source_dijkstra_path_basic(G, s, weight):
             delta[w] += 1  # count the path from w to s
     return D, sigma, delta
 
-
+"""
 def group_closeness_centrality(G, S, weight=None):
     r"""Compute the group closeness centrality for a group of nodes.
 
