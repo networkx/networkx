@@ -225,7 +225,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
         else:  # use Dijkstra's algorithm
             S, P, sigma, D = _single_source_dijkstra_path_basic(G, s, weight)
         # accumulation
-        betweenness, delta = _accumulate_edges(betweenness, S, P, sigma, s)
+        betweenness = _accumulate_edges(betweenness, S, P, sigma, s)
     # rescaling
     for n in G:  # remove nodes to only return edges
         del betweenness[n]
