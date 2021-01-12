@@ -125,7 +125,8 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
             S, P, sigma[s], D[s] = _single_source_dijkstra_path_basic(G, s, weight)
         betweenness, delta[s] = _accumulate_endpoints(betweenness, S, P, sigma[s], s)
         for i in delta[s].keys():  # add the paths from s to i and rescale sigma
-            delta[s][i] += 1
+            if s != i:
+                delta[s][i] += 1
             sigma[s][i] = sigma[s][i] / 2
     # building the path betweenness matrix only for nodes that appear in the group
     PB = dict.fromkeys(G)
