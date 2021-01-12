@@ -106,14 +106,15 @@ def minimum_multiway_cut(G, terminals, weight=None):
 
     # discard the heaviest cut and take the union of the rest
     cutset = set()
+    cut_value = 0
     for u, v in itertools.chain.from_iterable(
         el[0] for el in sorted(all_cuts, key=lambda x: x[1])[:-1]
     ):
         if (u, v) not in cutset and (v, u) not in cutset:
+            # add to the cutset
             cutset.add((u, v))
-
-    # compute the cut value
-    cut_value = sum(G2.edges[u, v]["capacity"] for u, v in cutset)
+            # add the weight to the cut cost
+            cut_value += G2.edges[u, v]["capacity"]
 
     return cut_value, cutset
 
@@ -221,10 +222,12 @@ def minimum_k_cut(G, k, weight=None):
 
     # consider edges only in a direction
     cutset = set()
+    cut_value = 0
     for u, v in all_edges_cut:
         if (u, v) not in cutset and (v, u) not in cutset:
+            # add to the cutset
             cutset.add((u, v))
-    # compute the cut_value
-    cut_value = sum(G2.edges[u, v]["capacity"] for u, v in cutset)
+            # add the weight to the cut cost
+            cut_value += G2.edges[u, v]["capacity"]
 
     return cut_value, cutset
