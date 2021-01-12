@@ -11,7 +11,7 @@ from networkx import NetworkXError
 from networkx.utils import not_implemented_for
 from networkx.algorithms.community.community_utils import is_partition
 
-__all__ = ["coverage", "modularity", "performance"]
+__all__ = ["coverage", "modularity", "performance", "fast_coverage_performance"]
 
 
 class NotAPartition(NetworkXError):
@@ -330,3 +330,65 @@ def modularity(G, communities, weight="weight"):
         return L_c / m - out_degree_sum * in_degree_sum * norm
 
     return sum(map(community_contribution, communities))
+
+
+@not_implemented_for("multigraph")
+@require_partition
+def fast_coverage_performance(G, partition):
+    """Returns the coverage and performance of a partition.
+
+    Yields the exact same result as the existing `coverage` and `performance` algorithms,
+    without calculating the complement graph (suitable for large graphs, too).
+
+    Complexity: O(C^2 + L)
+        - C = number of communities
+        - L = links
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    partition : sequence
+        Partition of the nodes of `G`, represented as a sequence of
+        sets of nodes. Each block of the partition represents a
+        community.
+
+    Returns
+    -------
+    (float, float)
+        - coverage, performance
+    """
+
+    node_community = {}
+    for i, community in enumerate(partition):
+        for node in community:
+            node_community[node] = i
+
+    # Iterate over the communities, quadratic, to calculate `possible_inter_community_links`
+    possible_inter_community_links = 0
+    for i in range(0, len(partition) - 1):
+        for j in range(i + 1, len(partition)):
+            possible_inter_community_links += len(partition[i]) * len(partition[j])
+
+    if G.is_directed():
+        possible_inter_community_links *= 2
+
+    n = len(G)
+    total_pairs = n * (n - 1)
+    if not G.is_directed():
+        total_pairs //= 2
+
+    intra_community_edges = 0
+    inter_community_non_edges = possible_inter_community_links
+
+    # Iterate over the links to count `intra_community_edges` and `inter_community_non_edges`
+    for e in G.edges():
+        if node_community[e[0]] == node_community[e[1]]:
+            intra_community_edges += 1
+        else:
+            inter_community_non_edges -= 1
+
+    coverage = intra_community_edges / len(G.edges())
+    performance = (intra_community_edges + inter_community_non_edges) / total_pairs
+
+    return coverage, performance
