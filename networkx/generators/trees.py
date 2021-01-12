@@ -2,7 +2,6 @@
 from collections import defaultdict
 
 import networkx as nx
-from networkx.utils import generate_unique_node
 from networkx.utils import py_random_state
 
 __all__ = ["prefix_tree", "random_tree"]
@@ -128,7 +127,7 @@ def prefix_tree(paths):
             # We need to relabel each child with a unique name. To do
             # this we simply change each key in the dictionary to be a
             # (key, uuid) pair.
-            new_head = generate_unique_node()
+            new_head = len(B)
             # Ensure the new child knows the name of the old child so
             # that the user can recover the mapping to the original
             # nodes.
@@ -138,9 +137,9 @@ def prefix_tree(paths):
 
     # Initialize the prefix tree with a root node and a nil node.
     T = nx.DiGraph()
-    root = generate_unique_node()
-    T.add_node(root, source=None)
     T.add_node(NIL, source=NIL)
+    root = len(T)
+    T.add_node(root, source=None)
     # Populate the tree.
     _helper(paths, root, T)
     return T, root

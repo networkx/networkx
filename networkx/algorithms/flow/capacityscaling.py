@@ -8,14 +8,12 @@ from itertools import chain
 from math import log
 import networkx as nx
 from ...utils import BinaryHeap
-from ...utils import generate_unique_node
 from ...utils import not_implemented_for
 from ...utils import arbitrary_element
 
 
 def _detect_unboundedness(R):
     """Detect infinite-capacity negative cycles."""
-    s = generate_unique_node()
     G = nx.DiGraph()
     G.add_nodes_from(R)
 
