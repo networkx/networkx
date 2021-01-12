@@ -46,6 +46,15 @@ Clustering
    average_clustering
 
 
+Distance Measures
+-----------------
+.. automodule:: networkx.algorithms.approximation.distance_measures
+.. autosummary::
+   :toctree: generated/
+
+   diameter
+
+
 Dominating Set
 ---------------
 .. automodule:: networkx.algorithms.approximation.dominating_set

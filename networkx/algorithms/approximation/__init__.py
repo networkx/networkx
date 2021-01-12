@@ -12,6 +12,7 @@ problems.
 from networkx.algorithms.approximation.clustering_coefficient import *
 from networkx.algorithms.approximation.clique import *
 from networkx.algorithms.approximation.connectivity import *
+from networkx.algorithms.approximation.distance_measures import *
 from networkx.algorithms.approximation.dominating_set import *
 from networkx.algorithms.approximation.kcomponents import *
 from networkx.algorithms.approximation.matching import *
