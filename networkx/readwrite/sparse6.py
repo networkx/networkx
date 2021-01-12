@@ -120,7 +120,7 @@ def from_sparse6_bytes(string):
 
     Examples
     --------
-    >>> G = nx.from_sparse6_bytes(b':A_')
+    >>> G = nx.from_sparse6_bytes(b":A_")
     >>> sorted(G.edges())
     [(0, 1), (0, 1), (0, 1)]
 
@@ -273,7 +273,7 @@ def read_sparse6(path):
 
         >>> import tempfile
         >>> with tempfile.NamedTemporaryFile() as f:
-        ...     _ = f.write(b'>>sparse6<<:An\\n')
+        ...     _ = f.write(b">>sparse6<<:An\\n")
         ...     _ = f.seek(0)
         ...     G = nx.read_sparse6(f.name)
         >>> list(G.edges())
@@ -283,7 +283,7 @@ def read_sparse6(path):
 
         >>> import tempfile
         >>> with tempfile.NamedTemporaryFile() as f:
-        ...     _ = f.write(b'>>sparse6<<:An\\n')
+        ...     _ = f.write(b">>sparse6<<:An\\n")
         ...     _ = f.seek(0)
         ...     G = nx.read_sparse6(f)
         >>> list(G.edges())

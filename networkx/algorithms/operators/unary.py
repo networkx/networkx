@@ -17,8 +17,8 @@ def complement(G):
     GC : A new graph.
 
     Notes
-    ------
-    Note that complement() does not create self-loops and also
+    -----
+    Note that `complement` does not create self-loops and also
     does not produce parallel edges for MultiGraphs.
 
     Graph, node, and edge data are not propagated to the new graph.

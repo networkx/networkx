@@ -1,2 +1,2 @@
-black
-pre-commit
+black==20.8b1
+pre-commit==2.9.3

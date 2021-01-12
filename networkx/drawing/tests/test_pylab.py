@@ -27,7 +27,7 @@ class TestPylab:
                 nx.draw_spring,
                 nx.draw_shell,
             ]
-            options = [{"node_color": "black", "node_size": 100, "width": 3,}]
+            options = [{"node_color": "black", "node_size": 100, "width": 3}]
             for function, option in itertools.product(functions, options):
                 function(self.G, **option)
                 plt.savefig("test.ps")
@@ -54,11 +54,11 @@ class TestPylab:
         nx.draw_spring(
             self.G, edge_color=colors, width=4, edge_cmap=plt.cm.Blues, with_labels=True
         )
-        plt.show()
+        # plt.show()
 
     def test_arrows(self):
         nx.draw_spring(self.G.to_directed())
-        plt.show()
+        # plt.show()
 
     def test_edge_colors_and_widths(self):
         pos = nx.circular_layout(self.G)
@@ -136,7 +136,7 @@ class TestPylab:
                 edge_vmax=0.6,
             )
 
-            plt.show()
+            # plt.show()
 
     def test_labels_and_colors(self):
         G = nx.cubical_graph()
@@ -193,11 +193,12 @@ class TestPylab:
         nx.draw_networkx_labels(G, pos, labels, font_size=16)
         nx.draw_networkx_edge_labels(G, pos, edge_labels=None, rotate=False)
         nx.draw_networkx_edge_labels(G, pos, edge_labels={(4, 5): "4-5"})
-        plt.show()
+        # plt.show()
 
     def test_axes(self):
         fig, ax = plt.subplots()
         nx.draw(self.G, ax=ax)
+        nx.draw_networkx_edge_labels(self.G, nx.circular_layout(self.G), ax=ax)
 
     def test_empty_graph(self):
         G = nx.Graph()
@@ -205,24 +206,23 @@ class TestPylab:
 
     def test_draw_empty_nodes_return_values(self):
         # See Issue #3833
-        from matplotlib.collections import PathCollection, LineCollection
+        import matplotlib.collections  # call as mpl.collections
 
         G = nx.Graph([(1, 2), (2, 3)])
         DG = nx.DiGraph([(1, 2), (2, 3)])
         pos = nx.circular_layout(G)
-        assert isinstance(nx.draw_networkx_nodes(G, pos, nodelist=[]), PathCollection)
-        assert isinstance(nx.draw_networkx_nodes(DG, pos, nodelist=[]), PathCollection)
+        assert isinstance(
+            nx.draw_networkx_nodes(G, pos, nodelist=[]), mpl.collections.PathCollection
+        )
+        assert isinstance(
+            nx.draw_networkx_nodes(DG, pos, nodelist=[]), mpl.collections.PathCollection
+        )
 
-        # drawing empty edges either return an empty LineCollection or empty list.
-        assert isinstance(
-            nx.draw_networkx_edges(G, pos, edgelist=[], arrows=True), LineCollection
-        )
-        assert isinstance(
-            nx.draw_networkx_edges(G, pos, edgelist=[], arrows=False), LineCollection
-        )
-        assert isinstance(
-            nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=False), LineCollection
-        )
+        # drawing empty edges used to return an empty LineCollection or empty list.
+        # Now it is always an empty list (because edges are now lists of FancyArrows)
+        assert nx.draw_networkx_edges(G, pos, edgelist=[], arrows=True) == []
+        assert nx.draw_networkx_edges(G, pos, edgelist=[], arrows=False) == []
+        assert nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=False) == []
         assert nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=True) == []
 
     def test_multigraph_edgelist_tuples(self):
@@ -250,3 +250,136 @@ class TestPylab:
     def test_error_invalid_kwds(self):
         with pytest.raises(ValueError, match="Received invalid argument"):
             nx.draw(self.G, foo="bar")
+
+    def test_np_edgelist(self):
+        # see issue #4129
+        np = pytest.importorskip("numpy")
+        nx.draw_networkx(self.G, edgelist=np.array([(0, 2), (0, 3)]))
+
+
+def test_draw_nodes_missing_node_from_position():
+    G = nx.path_graph(3)
+    pos = {0: (0, 0), 1: (1, 1)}  # No position for node 2
+    with pytest.raises(nx.NetworkXError, match="has no position"):
+        nx.draw_networkx_nodes(G, pos)
+
+
+def test_draw_edges_warns_on_arrow_and_arrowstyle():
+    G = nx.Graph([(0, 1)])
+    pos = {0: (0, 0), 1: (1, 1)}
+    with pytest.warns(Warning, match="arrows will be ignored"):
+        nx.draw_networkx_edges(G, pos, arrowstyle="-|>", arrows=False)
+
+
+# NOTE: parametrizing on marker to test both branches of internal
+# nx.draw_networkx_edges.to_marker_edge function
+@pytest.mark.parametrize("node_shape", ("o", "s"))
+def test_draw_edges_min_source_target_margins(node_shape):
+    """Test that there is a wider gap between the node and the start of an
+    incident edge when min_source_margin is specified.
+
+    This test checks that the use of min_{source/target}_margin kwargs result
+    in shorter (more padding) between the edges and source and target nodes.
+    As a crude visual example, let 's' and 't' represent source and target
+    nodes, respectively:
+
+       Default:
+       s-----------------------------t
+
+       With margins:
+       s   -----------------------   t
+
+    """
+    # Create a single axis object to get consistent pixel coords across
+    # multiple draws
+    fig, ax = plt.subplots()
+    G = nx.Graph([(0, 1)])
+    pos = {0: (0, 0), 1: (1, 0)}  # horizontal layout
+    # Get leftmost and rightmost points of the FancyArrowPatch object
+    # representing the edge between nodes 0 and 1 (in pixel coordinates)
+    default_patch = nx.draw_networkx_edges(G, pos, ax=ax, node_shape=node_shape)[0]
+    default_extent = default_patch.get_extents().corners()[::2, 0]
+    # Now, do the same but with "padding" for the source and target via the
+    # min_{source/target}_margin kwargs
+    padded_patch = nx.draw_networkx_edges(
+        G,
+        pos,
+        ax=ax,
+        node_shape=node_shape,
+        min_source_margin=100,
+        min_target_margin=100,
+    )[0]
+    padded_extent = padded_patch.get_extents().corners()[::2, 0]
+
+    # With padding, the left-most extent of the edge should be further to the
+    # right
+    assert padded_extent[0] > default_extent[0]
+    # And the rightmost extent of the edge, further to the left
+    assert padded_extent[1] < default_extent[1]
+    # NOTE: Prevent axes objects from impacting other tests via plt.gca
+    plt.delaxes(ax)
+
+
+def test_nonzero_selfloop_with_single_node():
+    """Ensure that selfloop extent is non-zero when there is only one node."""
+    # Create explicit axis object for test
+    fig, ax = plt.subplots()
+    # Graph with single node + self loop
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_edge(0, 0)
+    # Draw
+    patch = nx.draw_networkx_edges(G, {0: (0, 0)})[0]
+    # The resulting patch must have non-zero extent
+    bbox = patch.get_extents()
+    assert bbox.width > 0 and bbox.height > 0
+    # Cleanup
+    plt.delaxes(ax)
+
+
+def test_nonzero_selfloop_with_single_edge_in_edgelist():
+    """Ensure that selfloop extent is non-zero when only a single edge is
+    specified in the edgelist.
+    """
+    # Create explicit axis object for test
+    fig, ax = plt.subplots()
+    # Graph with selfloop
+    G = nx.path_graph(2)
+    G.add_edge(1, 1)
+    pos = {n: (n, n) for n in G.nodes}
+    # Draw only the selfloop edge via the `edgelist` kwarg
+    patch = nx.draw_networkx_edges(G, pos, edgelist=[(1, 1)])[0]
+    # The resulting patch must have non-zero extent
+    bbox = patch.get_extents()
+    assert bbox.width > 0 and bbox.height > 0
+    # Cleanup
+    plt.delaxes(ax)
+
+
+def test_apply_alpha():
+    """Test apply_alpha when there is a mismatch between the number of
+    supplied colors and elements.
+    """
+    nodelist = [0, 1, 2]
+    colorlist = ["r", "g", "b"]
+    alpha = 0.5
+    rgba_colors = nx.drawing.nx_pylab.apply_alpha(colorlist, alpha, nodelist)
+    assert all(rgba_colors[:, -1] == alpha)
+
+
+@pytest.mark.parametrize(
+    ("nodelist", "expected_num_edges"),
+    (
+        ([], 0),
+        ([1], 0),
+        ([1, 2], 1),
+        ([0, 1, 2, 3], 6),
+    ),
+)
+def test_draw_edges_with_nodelist(nodelist, expected_num_edges):
+    """Test that edges that contain a node in `nodelist` are not drawn by
+    draw_networkx_edges. See gh-4374.
+    """
+    G = nx.complete_graph(5)
+    edge_patches = nx.draw_networkx_edges(G, nx.circular_layout(G), nodelist=nodelist)
+    assert len(edge_patches) == expected_num_edges

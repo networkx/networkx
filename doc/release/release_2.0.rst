@@ -5,9 +5,9 @@ We're happy to announce the release of NetworkX 2.0!
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
-For more information, please visit our `website <http://networkx.github.io/>`_
+For more information, please visit our `website <https://networkx.org/>`_
 and our `gallery of examples
-<https://networkx.github.io/documentation/latest/auto_examples/index.html>`_.
+<https://networkx.org/documentation/latest/auto_examples/index.html>`_.
 Please send comments and questions to the `networkx-discuss mailing list
 <http://groups.google.com/group/networkx-discuss>`_.
 
@@ -19,7 +19,7 @@ This release is the result of over two years of work with 1212 commits and
 
 - We have made major changes to the methods in the Multi/Di/Graph classes.
   There is a `migration guide for people moving from 1.X to 2.0
-  <https://networkx.github.io/documentation/latest/release/migration_guide_from_1.x_to_2.0.html>`_.
+  <https://networkx.org/documentation/latest/release/migration_guide_from_1.x_to_2.0.html>`_.
 
 - We updated the documentation system.
 
@@ -126,7 +126,7 @@ API Changes
       >>> nx.minimum_spanning_tree(G, 'mass')  # old
       >>> nx.minimum_spanning_tree(G, weight='mass') # new
 
-  In the above, we are still relying on the the functions being imported into the
+  In the above, we are still relying on the functions being imported into the
   top-level  namespace. We do not have immediate plans to deprecate this approach,
   but we recommend the following instead::
 

@@ -89,7 +89,7 @@ def from_pydot(P):
     --------
     >>> K5 = nx.complete_graph(5)
     >>> A = nx.nx_pydot.to_pydot(K5)
-    >>> G = nx.nx_pydot.from_pydot(A) # return MultiGraph
+    >>> G = nx.nx_pydot.from_pydot(A)  # return MultiGraph
 
     # make a Graph instead of MultiGraph
     >>> G = nx.Graph(nx.nx_pydot.from_pydot(A))
@@ -248,7 +248,7 @@ def graphviz_layout(G, prog="neato", root=None):
     --------
     >>> G = nx.complete_graph(4)
     >>> pos = nx.nx_pydot.graphviz_layout(G)
-    >>> pos = nx.nx_pydot.graphviz_layout(G, prog='dot')
+    >>> pos = nx.nx_pydot.graphviz_layout(G, prog="dot")
 
     Notes
     -----
@@ -261,7 +261,7 @@ def pydot_layout(G, prog="neato", root=None):
     """Create node positions using :mod:`pydot` and Graphviz.
 
     Parameters
-    --------
+    ----------
     G : Graph
         NetworkX graph to be laid out.
     prog : string  (default: 'neato')
@@ -272,7 +272,7 @@ def pydot_layout(G, prog="neato", root=None):
         The node of G from which to start some layout algorithms.
 
     Returns
-    --------
+    -------
     dict
         Dictionary of positions keyed by node.
 
@@ -280,7 +280,7 @@ def pydot_layout(G, prog="neato", root=None):
     --------
     >>> G = nx.complete_graph(4)
     >>> pos = nx.nx_pydot.pydot_layout(G)
-    >>> pos = nx.nx_pydot.pydot_layout(G, prog='dot')
+    >>> pos = nx.nx_pydot.pydot_layout(G, prog="dot")
 
     Notes
     -----
@@ -288,7 +288,7 @@ def pydot_layout(G, prog="neato", root=None):
     representation and GraphViz could treat them as the same node.
     The layout may assign both nodes a single location. See Issue #1568
     If this occurs in your case, consider relabeling the nodes just
-    for the layout computation using something similar to:
+    for the layout computation using something similar to::
 
         H = nx.convert_node_labels_to_integers(G, label_attribute='node_label')
         H_layout = nx.nx_pydot.pydot_layout(G, prog='dot')

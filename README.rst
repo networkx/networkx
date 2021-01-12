@@ -7,20 +7,20 @@ NetworkX
 .. image:: https://img.shields.io/pypi/pyversions/networkx.svg
    :target: https://pypi.org/project/networkx/
 
-.. image:: https://travis-ci.org/networkx/networkx.svg?branch=master
-   :target: https://travis-ci.org/networkx/networkx
+.. image:: https://github.com/networkx/networkx/workflows/test/badge.svg?branch=master
+  :target: https://github.com/networkx/networkx/actions?query=workflow%3A%22test%22
 
 .. image:: https://ci.appveyor.com/api/projects/status/github/networkx/networkx?branch=master&svg=true
    :target: https://ci.appveyor.com/project/dschult/networkx-pqott
 
 .. image:: https://codecov.io/gh/networkx/networkx/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/networkx/networkx
+   :target: https://app.codecov.io/gh/networkx/networkx/branch/master
 
 NetworkX is a Python package for the creation, manipulation,
 and study of the structure, dynamics, and functions
 of complex networks.
 
-- **Website (including documentation):** https://networkx.github.io
+- **Website (including documentation):** https://networkx.org
 - **Mailing list:** https://groups.google.com/forum/#!forum/networkx-discuss
 - **Source:** https://github.com/networkx/networkx
 - **Bug reports:** https://github.com/networkx/networkx/issues
@@ -68,7 +68,7 @@ License
 
 Released under the 3-Clause BSD license (see `LICENSE.txt`)::
 
-   Copyright (C) 2004-2020 NetworkX Developers
+   Copyright (C) 2004-2021 NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>

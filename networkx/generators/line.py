@@ -37,7 +37,6 @@ def line_graph(G, create_using=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.star_graph(3)
     >>> L = nx.line_graph(G)
     >>> print(sorted(map(sorted, L.edges())))  # makes a 3-clique, K3
@@ -127,9 +126,7 @@ def _node_func(G):
 
 
 def _edge_func(G):
-    """Returns the edges from G, handling keys for multigraphs as necessary.
-
-    """
+    """Returns the edges from G, handling keys for multigraphs as necessary."""
     if G.is_multigraph():
 
         def get_edges(nbunch=None):
@@ -242,7 +239,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def inverse_line_graph(G):
-    """ Returns the inverse line graph of graph G.
+    """Returns the inverse line graph of graph G.
 
     If H is a graph, and G is the line graph of H, such that H = L(G).
     Then H is the inverse line graph of G.
@@ -276,7 +273,7 @@ def inverse_line_graph(G):
     You should invert every component seperately:
 
     >>> K5 = nx.complete_graph(5)
-    >>> P4 = nx.Graph([('a', 'b'), ('b', 'c'), ('c', 'd')])
+    >>> P4 = nx.Graph([("a", "b"), ("b", "c"), ("c", "d")])
     >>> G = nx.union(K5, P4)
     >>> root_graphs = []
     >>> for comp in nx.connected_components(G):
@@ -344,7 +341,7 @@ def _triangles(G, e):
 
 
 def _odd_triangle(G, T):
-    """ Test whether T is an odd triangle in G
+    """Test whether T is an odd triangle in G
 
     Parameters
     ----------
@@ -387,7 +384,7 @@ def _odd_triangle(G, T):
 
 
 def _find_partition(G, starting_cell):
-    """ Find a partition of the vertices of G into cells of complete graphs
+    """Find a partition of the vertices of G into cells of complete graphs
 
     Parameters
     ----------
@@ -436,7 +433,7 @@ def _find_partition(G, starting_cell):
 
 
 def _select_starting_cell(G, starting_edge=None):
-    """ Select a cell to initiate _find_partition
+    """Select a cell to initiate _find_partition
 
     Parameters
     ----------

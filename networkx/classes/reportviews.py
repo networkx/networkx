@@ -83,6 +83,7 @@ EdgeDataView
     The argument `nbunch` restricts edges to those incident to nodes in nbunch.
 """
 from collections.abc import Mapping, Set
+import networkx as nx
 
 __all__ = [
     "NodeView",
@@ -129,20 +130,22 @@ class NodeView(Mapping, Set):
     >>> NV = G.nodes()
     >>> 2 in NV
     True
-    >>> for n in NV: print(n)
+    >>> for n in NV:
+    ...     print(n)
     0
     1
     2
-    >>> assert(NV & {1, 2, 3} == {1, 2})
+    >>> assert NV & {1, 2, 3} == {1, 2}
 
-    >>> G.add_node(2, color='blue')
+    >>> G.add_node(2, color="blue")
     >>> NV[2]
     {'color': 'blue'}
-    >>> G.add_node(8, color='red')
+    >>> G.add_node(8, color="red")
     >>> NDV = G.nodes(data=True)
     >>> (2, NV[2]) in NDV
     True
-    >>> for n, dd in NDV: print((n, dd.get('color', 'aqua')))
+    >>> for n, dd in NDV:
+    ...     print((n, dd.get("color", "aqua")))
     (0, 'aqua')
     (1, 'aqua')
     (2, 'blue')
@@ -150,10 +153,11 @@ class NodeView(Mapping, Set):
     >>> NDV[2] == NV[2]
     True
 
-    >>> NVdata = G.nodes(data='color', default='aqua')
+    >>> NVdata = G.nodes(data="color", default="aqua")
     >>> (2, NVdata[2]) in NVdata
     True
-    >>> for n, dd in NVdata: print((n, dd))
+    >>> for n, dd in NVdata:
+    ...     print((n, dd))
     (0, 'aqua')
     (1, 'aqua')
     (2, 'blue')
@@ -181,6 +185,11 @@ class NodeView(Mapping, Set):
         return iter(self._nodes)
 
     def __getitem__(self, n):
+        if isinstance(n, slice):
+            raise nx.NetworkXError(
+                f"{type(self).__name__} does not support slicing, "
+                f"try list(G.nodes)[{n.start}:{n.stop}:{n.step}]"
+            )
         return self._nodes[n]
 
     # Set methods
@@ -281,6 +290,11 @@ class NodeDataView(Set):
         return n in self._nodes and self[n] == d
 
     def __getitem__(self, n):
+        if isinstance(n, slice):
+            raise nx.NetworkXError(
+                f"{type(self).__name__} does not support slicing, "
+                f"try list(G.nodes.data())[{n.start}:{n.stop}:{n.step}]"
+            )
         ddict = self._nodes[n]
         data = self._data
         if data is False or data is True:
@@ -322,8 +336,8 @@ class DiDegreeView:
     --------
     >>> G = nx.path_graph(3)
     >>> DV = G.degree()
-    >>> assert(DV[2] == 1)
-    >>> assert(sum(deg for n, deg in DV) == 4)
+    >>> assert DV[2] == 1
+    >>> assert sum(deg for n, deg in DV) == 4
 
     >>> DVweight = G.degree(weight="span")
     >>> G.add_edge(1, 2, span=34)
@@ -335,7 +349,7 @@ class DiDegreeView:
     70
 
     >>> DVnbunch = G.degree(nbunch=(1, 2))
-    >>> assert(len(list(DVnbunch)) == 2)  # iteration over nbunch only
+    >>> assert len(list(DVnbunch)) == 2  # iteration over nbunch only
     """
 
     def __init__(self, G, nbunch=None, weight=None):
@@ -422,9 +436,9 @@ class DegreeView(DiDegreeView):
     --------
     >>> G = nx.path_graph(3)
     >>> DV = G.degree()
-    >>> assert(DV[2] == 1)
-    >>> assert(G.degree[2] == 1)
-    >>> assert(sum(deg for n, deg in DV) == 4)
+    >>> assert DV[2] == 1
+    >>> assert G.degree[2] == 1
+    >>> assert sum(deg for n, deg in DV) == 4
 
     >>> DVweight = G.degree(weight="span")
     >>> G.add_edge(1, 2, span=34)
@@ -436,7 +450,7 @@ class DegreeView(DiDegreeView):
     70
 
     >>> DVnbunch = G.degree(nbunch=(1, 2))
-    >>> assert(len(list(DVnbunch)) == 2)  # iteration over nbunch only
+    >>> assert len(list(DVnbunch)) == 2  # iteration over nbunch only
     """
 
     def __getitem__(self, n):
@@ -755,10 +769,10 @@ class EdgeDataView(OutEdgeDataView):
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> G.add_edge(1, 2, foo='bar')
-    >>> list(G.edges(data='foo', default='biz'))
+    >>> G.add_edge(1, 2, foo="bar")
+    >>> list(G.edges(data="foo", default="biz"))
     [(0, 1, 'biz'), (1, 2, 'bar')]
-    >>> assert((0, 1, 'biz') in G.edges(data='foo', default='biz'))
+    >>> assert (0, 1, "biz") in G.edges(data="foo", default="biz")
     """
 
     __slots__ = ()
@@ -1009,6 +1023,11 @@ class OutEdgeView(Set, Mapping):
 
     # Mapping Methods
     def __getitem__(self, e):
+        if isinstance(e, slice):
+            raise nx.NetworkXError(
+                f"{type(self).__name__} does not support slicing, "
+                f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
+            )
         u, v = e
         return self._adjdict[u][v]
 
@@ -1065,33 +1084,37 @@ class EdgeView(OutEdgeView):
     >>> EV = G.edges()
     >>> (2, 3) in EV
     True
-    >>> for u, v in EV: print((u, v))
+    >>> for u, v in EV:
+    ...     print((u, v))
     (0, 1)
     (1, 2)
     (2, 3)
-    >>> assert(EV & {(1, 2), (3, 4)} == {(1, 2)})
+    >>> assert EV & {(1, 2), (3, 4)} == {(1, 2)}
 
-    >>> EVdata = G.edges(data='color', default='aqua')
-    >>> G.add_edge(2, 3, color='blue')
-    >>> assert((2, 3, 'blue') in EVdata)
-    >>> for u, v, c in EVdata: print(f"({u}, {v}) has color: {c}")
+    >>> EVdata = G.edges(data="color", default="aqua")
+    >>> G.add_edge(2, 3, color="blue")
+    >>> assert (2, 3, "blue") in EVdata
+    >>> for u, v, c in EVdata:
+    ...     print(f"({u}, {v}) has color: {c}")
     (0, 1) has color: aqua
     (1, 2) has color: aqua
     (2, 3) has color: blue
 
     >>> EVnbunch = G.edges(nbunch=2)
-    >>> assert((2, 3) in EVnbunch)
-    >>> assert((0, 1) not in EVnbunch)
-    >>> for u, v in EVnbunch: assert(u == 2 or v == 2)
+    >>> assert (2, 3) in EVnbunch
+    >>> assert (0, 1) not in EVnbunch
+    >>> for u, v in EVnbunch:
+    ...     assert u == 2 or v == 2
 
     >>> MG = nx.path_graph(4, create_using=nx.MultiGraph)
     >>> EVmulti = MG.edges(keys=True)
     >>> (2, 3, 0) in EVmulti
     True
-    >>> (2, 3) in EVmulti   # 2-tuples work even when keys is True
+    >>> (2, 3) in EVmulti  # 2-tuples work even when keys is True
     True
     >>> key = MG.add_edge(2, 3)
-    >>> for u, v, k in EVmulti: print((u, v, k))
+    >>> for u, v, k in EVmulti:
+    ...     print((u, v, k))
     (0, 1, 0)
     (1, 2, 0)
     (2, 3, 0)
@@ -1153,6 +1176,11 @@ class InEdgeView(OutEdgeView):
             return False
 
     def __getitem__(self, e):
+        if isinstance(e, slice):
+            raise nx.NetworkXError(
+                f"{type(self).__name__} does not support slicing, "
+                f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
+            )
         u, v = e
         return self._adjdict[v][u]
 
@@ -1190,6 +1218,11 @@ class OutMultiEdgeView(OutEdgeView):
             return False
 
     def __getitem__(self, e):
+        if isinstance(e, slice):
+            raise nx.NetworkXError(
+                f"{type(self).__name__} does not support slicing, "
+                f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
+            )
         u, v, k = e
         return self._adjdict[u][v][k]
 
@@ -1263,5 +1296,10 @@ class InMultiEdgeView(OutMultiEdgeView):
             return False
 
     def __getitem__(self, e):
+        if isinstance(e, slice):
+            raise nx.NetworkXError(
+                f"{type(self).__name__} does not support slicing, "
+                f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
+            )
         u, v, k = e
         return self._adjdict[v][u][k]

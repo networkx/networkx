@@ -29,25 +29,18 @@ G_array = np.array([
 ], dtype=int)
 # fmt: on
 
-# We convert to MultiDiGraph after using from_numpy_matrix
-# https://github.com/networkx/networkx/pull/1305
-
 
 def G1():
-    G = nx.DiGraph()
-    G = nx.from_numpy_matrix(G_array, create_using=G)
-    G = nx.MultiDiGraph(G)
+    G = nx.from_numpy_array(G_array, create_using=nx.MultiDiGraph)
     return G
 
 
 def G2():
     # Now we shift all the weights by -10.
     # Should not affect optimal arborescence, but does affect optimal branching.
-    G = nx.DiGraph()
     Garr = G_array.copy()
     Garr[np.nonzero(Garr)] -= 10
-    G = nx.from_numpy_matrix(Garr, create_using=G)
-    G = nx.MultiDiGraph(G)
+    G = nx.from_numpy_array(Garr, create_using=nx.MultiDiGraph)
     return G
 
 
@@ -387,8 +380,7 @@ def test_edmonds1_minbranch():
     # but with all edges negative.
     edges = [(u, v, -w) for (u, v, w) in optimal_arborescence_1]
 
-    G = nx.DiGraph()
-    G = nx.from_numpy_matrix(-G_array, create_using=G)
+    G = nx.from_numpy_array(-G_array, create_using=nx.DiGraph)
 
     # Quickly make sure max branching is empty.
     x = branchings.maximum_branching(G)

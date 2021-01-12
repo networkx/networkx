@@ -49,9 +49,9 @@ def maximal_independent_set(G, nodes=None, seed=None):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> nx.maximal_independent_set(G) # doctest: +SKIP
+    >>> nx.maximal_independent_set(G)  # doctest: +SKIP
     [4, 0, 2]
-    >>> nx.maximal_independent_set(G, [1]) # doctest: +SKIP
+    >>> nx.maximal_independent_set(G, [1])  # doctest: +SKIP
     [1, 3]
 
     Notes

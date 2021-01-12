@@ -1,9 +1,7 @@
 from contextlib import contextmanager
 import warnings
 
-__all__ = [
-    "reversed",
-]
+__all__ = ["reversed"]
 
 
 @contextmanager

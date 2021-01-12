@@ -169,33 +169,33 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
 
     >>> G1 = nx.DiGraph()
     >>> G2 = nx.DiGraph()
-    >>> nx.add_path(G1, [1,2,3,4], weight=1)
-    >>> nx.add_path(G2, [10,20,30,40], weight=2)
-    >>> em = iso.numerical_edge_match('weight', 1)
+    >>> nx.add_path(G1, [1, 2, 3, 4], weight=1)
+    >>> nx.add_path(G2, [10, 20, 30, 40], weight=2)
+    >>> em = iso.numerical_edge_match("weight", 1)
     >>> nx.is_isomorphic(G1, G2)  # no weights considered
     True
-    >>> nx.is_isomorphic(G1, G2, edge_match=em) # match weights
+    >>> nx.is_isomorphic(G1, G2, edge_match=em)  # match weights
     False
 
     For multidigraphs G1 and G2, using 'fill' node attribute (default: '')
 
     >>> G1 = nx.MultiDiGraph()
     >>> G2 = nx.MultiDiGraph()
-    >>> G1.add_nodes_from([1,2,3], fill='red')
-    >>> G2.add_nodes_from([10,20,30,40], fill='red')
-    >>> nx.add_path(G1, [1,2,3,4], weight=3, linewidth=2.5)
-    >>> nx.add_path(G2, [10,20,30,40], weight=3)
-    >>> nm = iso.categorical_node_match('fill', 'red')
+    >>> G1.add_nodes_from([1, 2, 3], fill="red")
+    >>> G2.add_nodes_from([10, 20, 30, 40], fill="red")
+    >>> nx.add_path(G1, [1, 2, 3, 4], weight=3, linewidth=2.5)
+    >>> nx.add_path(G2, [10, 20, 30, 40], weight=3)
+    >>> nm = iso.categorical_node_match("fill", "red")
     >>> nx.is_isomorphic(G1, G2, node_match=nm)
     True
 
     For multidigraphs G1 and G2, using 'weight' edge attribute (default: 7)
 
-    >>> G1.add_edge(1,2, weight=7)
+    >>> G1.add_edge(1, 2, weight=7)
     1
-    >>> G2.add_edge(10,20)
+    >>> G2.add_edge(10, 20)
     1
-    >>> em = iso.numerical_multiedge_match('weight', 7, rtol=1e-6)
+    >>> em = iso.numerical_multiedge_match("weight", 7, rtol=1e-6)
     >>> nx.is_isomorphic(G1, G2, edge_match=em)
     True
 
@@ -203,8 +203,8 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     with default values 7 and 2.5. Also using 'fill' node attribute with
     default value 'red'.
 
-    >>> em = iso.numerical_multiedge_match(['weight', 'linewidth'], [7, 2.5])
-    >>> nm = iso.categorical_node_match('fill', 'red')
+    >>> em = iso.numerical_multiedge_match(["weight", "linewidth"], [7, 2.5])
+    >>> nm = iso.categorical_node_match("fill", "red")
     >>> nx.is_isomorphic(G1, G2, edge_match=em, node_match=nm)
     True
 

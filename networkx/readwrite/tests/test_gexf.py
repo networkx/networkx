@@ -9,8 +9,6 @@ import networkx as nx
 class TestGEXF:
     @classmethod
     def setup_class(cls):
-        _ = pytest.importorskip("xml.etree.ElementTree")
-
         cls.simple_directed_data = """<?xml version="1.0" encoding="UTF-8"?>
 <gexf xmlns="http://www.gexf.net/1.2draft" version="1.2">
     <graph mode="static" defaultedgetype="directed">
@@ -78,7 +76,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
       </node>
     </nodes>
     <edges>
-      <edge id="0" source="0" target="1"/>
+      <edge id="0" source="0" target="1" label="foo"/>
       <edge id="1" source="0" target="2"/>
       <edge id="2" source="1" target="0"/>
       <edge id="3" source="2" target="1"/>
@@ -105,7 +103,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
             indegree=1,
             frog=True,
         )
-        cls.attribute_graph.add_edge("0", "1", id="0")
+        cls.attribute_graph.add_edge("0", "1", id="0", label="foo")
         cls.attribute_graph.add_edge("0", "2", id="1")
         cls.attribute_graph.add_edge("1", "0", id="2")
         cls.attribute_graph.add_edge("2", "1", id="3")
@@ -398,13 +396,10 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert expected == obtained
 
     def test_numpy_type(self):
+        np = pytest.importorskip("numpy")
         G = nx.path_graph(4)
-        try:
-            import numpy
-        except ImportError:
-            return
-        nx.set_node_attributes(G, {n: n for n in numpy.arange(4)}, "number")
-        G[0][1]["edge-number"] = numpy.float64(1.1)
+        nx.set_node_attributes(G, {n: n for n in np.arange(4)}, "number")
+        G[0][1]["edge-number"] = np.float64(1.1)
 
         if sys.version_info < (3, 8):
             expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft"\
@@ -573,7 +568,8 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         G = nx.MultiGraph()
         G.add_node(0, label="1", color="green")
         G.add_node(1, label="2", color="green")
-        G.add_edge(0, 1, id="0", weight=3, type="undirected", start=0, end=1)
+        G.add_edge(0, 1, id="0", wight=3, type="undirected", start=0, end=1)
+        G.add_edge(0, 1, id="1", label="foo", start=0, end=1)
         G.add_edge(0, 1)
         fh = io.BytesIO()
         nx.write_gexf(G, fh)

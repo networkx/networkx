@@ -15,7 +15,7 @@ def _propagate(P, F, B):
     F_new : array, shape = [n_samples, n_classes]
         Label matrix
     """
-    F_new = P.dot(F) + B
+    F_new = (P @ F) + B
     return F_new
 
 

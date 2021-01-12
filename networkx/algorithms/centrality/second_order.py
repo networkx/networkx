@@ -60,7 +60,7 @@ def second_order_centrality(G):
     --------
     >>> G = nx.star_graph(10)
     >>> soc = nx.second_order_centrality(G)
-    >>> print(sorted(soc.items(), key=lambda x:x[1])[0][0]) # pick first id
+    >>> print(sorted(soc.items(), key=lambda x: x[1])[0][0])  # pick first id
     0
 
     Raises
@@ -95,11 +95,7 @@ def second_order_centrality(G):
        "Second order centrality: Distributed assessment of nodes criticity in
        complex networks", Elsevier Computer Communications 34(5):619-628, 2011.
     """
-
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError("Requires NumPy: http://numpy.org/") from e
+    import numpy as np
 
     n = len(G)
 
@@ -118,8 +114,8 @@ def second_order_centrality(G):
         if deg < d_max:
             G.add_edge(i, i, weight=d_max - deg)
 
-    P = nx.to_numpy_matrix(G)
-    P = P / P.sum(axis=1)  # to transition probability matrix
+    P = nx.to_numpy_array(G)
+    P /= P.sum(axis=1)[:, np.newaxis]  # to transition probability matrix
 
     def _Qj(P, j):
         P = P.copy()

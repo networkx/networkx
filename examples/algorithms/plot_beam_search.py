@@ -76,7 +76,10 @@ def progressive_widening_search(G, source, value, condition, initial_width=1):
 # We generate a random graph, compute the centrality of each node, then perform
 # the progressive widening search in order to find a node of high centrality.
 
-G = nx.gnp_random_graph(100, 0.5)
+# Set a seed for random number generation so the example is reproducible
+seed = 89
+
+G = nx.gnp_random_graph(100, 0.5, seed=seed)
 centrality = nx.eigenvector_centrality(G)
 avg_centrality = sum(centrality.values()) / len(G)
 
@@ -95,7 +98,7 @@ print(f"found node {found_node} with centrality {c}")
 
 
 # Draw graph
-pos = nx.spring_layout(G)
+pos = nx.spring_layout(G, seed=seed)
 options = {
     "node_color": "blue",
     "node_size": 20,

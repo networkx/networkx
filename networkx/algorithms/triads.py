@@ -130,16 +130,19 @@ def _tricode(G, v, u, w):
 
 
 @not_implemented_for("undirected")
-def triadic_census(G):
+def triadic_census(G, nodelist=None):
     """Determines the triadic census of a directed graph.
 
     The triadic census is a count of how many of the 16 possible types of
-    triads are present in a directed graph.
+    triads are present in a directed graph. If a list of nodes is passed, then
+    only those triads are taken into account which have elements of nodelist in them.
 
     Parameters
     ----------
     G : digraph
        A NetworkX DiGraph
+    nodelist : list
+        List of nodes for which you want to calculate triadic census
 
     Returns
     -------
@@ -168,7 +171,9 @@ def triadic_census(G):
     n = len(G)
     # m = dict(zip(G, range(n)))
     m = {v: i for i, v in enumerate(G)}
-    for v in G:
+    if nodelist is None:
+        nodelist = list(G.nodes())
+    for v in nodelist:
         vnbrs = set(G.pred[v]) | set(G.succ[v])
         for u in vnbrs:
             if m[u] <= m[v]:
@@ -186,11 +191,24 @@ def triadic_census(G):
                 ):
                     code = _tricode(G, v, u, w)
                     census[TRICODE_TO_NAME[code]] += 1
-    # null triads = total number of possible triads - all found triads
-    #
-    # Use integer division here, since we know this formula guarantees an
-    # integral value.
-    census["003"] = ((n * (n - 1) * (n - 2)) // 6) - sum(census.values())
+
+    if len(nodelist) != len(G):
+        census["003"] = 0
+        for v in nodelist:
+            vnbrs = set(G.pred[v]) | set(G.succ[v])
+            not_vnbrs = G.nodes() - vnbrs - set(v)
+            triad_003_count = 0
+            for u in not_vnbrs:
+                unbrs = set(set(G.succ[u]) | set(G.pred[u])) - vnbrs
+                triad_003_count += len(not_vnbrs - unbrs) - 1
+            triad_003_count //= 2
+            census["003"] += triad_003_count
+    else:
+        # null triads = total number of possible triads - all found triads
+        #
+        # Use integer division here, since we know this formula guarantees an
+        # integral value.
+        census["003"] = ((n * (n - 1) * (n - 2)) // 6) - sum(census.values())
     return census
 
 

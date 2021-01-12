@@ -243,7 +243,7 @@ because it may be a different graph type (directed/undirected) than the view.
 
 -------
 
-``topolgical_sort``  no longer accepts ``reverse`` or ``nbunch`` arguments.
+``topological_sort``  no longer accepts ``reverse`` or ``nbunch`` arguments.
 If ``nbunch`` was a single node source, then the same effect can now be achieved
 using the ``subgraph`` operator:
 

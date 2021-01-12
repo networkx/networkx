@@ -36,7 +36,7 @@ def is_distance_regular(G):
 
     Examples
     --------
-    >>> G=nx.hypercube_graph(6)
+    >>> G = nx.hypercube_graph(6)
     >>> nx.is_distance_regular(G)
     True
 
@@ -129,7 +129,7 @@ def intersection_array(G):
 
     Examples
     --------
-    >>> G=nx.icosahedral_graph()
+    >>> G = nx.icosahedral_graph()
     >>> nx.intersection_array(G)
     ([5, 2, 1], [1, 2, 5])
 
@@ -211,7 +211,6 @@ def is_strongly_regular(G):
     two-regular, each pair of adjacent vertices has no shared neighbors,
     and each pair of nonadjacent vertices has one shared neighbor::
 
-        >>> import networkx as nx
         >>> G = nx.cycle_graph(5)
         >>> nx.is_strongly_regular(G)
         True

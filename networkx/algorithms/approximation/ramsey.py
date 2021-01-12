@@ -2,11 +2,14 @@
 Ramsey numbers.
 """
 import networkx as nx
+from networkx.utils import not_implemented_for
 from ...utils import arbitrary_element
 
 __all__ = ["ramsey_R2"]
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def ramsey_R2(G):
     r"""Compute the largest clique and largest independent set in `G`.
 
@@ -25,6 +28,11 @@ def ramsey_R2(G):
     -------
     max_pair : (set, set) tuple
         Maximum clique, Maximum independent set.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph is directed or is a multigraph.
     """
     if not G:
         return set(), set()

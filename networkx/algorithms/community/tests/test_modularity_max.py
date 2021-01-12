@@ -1,7 +1,7 @@
 import networkx as nx
 from networkx.algorithms.community import (
     greedy_modularity_communities,
-    _naive_greedy_modularity_communities,
+    naive_greedy_modularity_communities,
 )
 
 
@@ -27,7 +27,7 @@ class TestNaive:
         self.G = nx.karate_club_graph()
 
     def _check_communities(self, expected):
-        communities = set(_naive_greedy_modularity_communities(self.G))
+        communities = set(naive_greedy_modularity_communities(self.G))
         assert communities == expected
 
     def test_karate_club(self):

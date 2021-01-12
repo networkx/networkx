@@ -54,9 +54,9 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
 
     References
     ----------
-    .. [1]: Chung, Fan and Linyuan Lu. "The Small World Phenomenon in Hybrid
-            Power Law Graphs." *Complex Networks*. Springer Berlin Heidelberg,
-            2004. 89--104.
+    .. [1] Chung, Fan and Linyuan Lu. "The Small World Phenomenon in Hybrid
+           Power Law Graphs." *Complex Networks*. Springer Berlin Heidelberg,
+           2004. 89--104.
 
     """
     H = copy.deepcopy(G)  # subgraph we construct by removing from G
@@ -148,9 +148,9 @@ def is_kl_connected(G, k, l, low_memory=False):
 
     References
     ----------
-    .. [1]: Chung, Fan and Linyuan Lu. "The Small World Phenomenon in Hybrid
-            Power Law Graphs." *Complex Networks*. Springer Berlin Heidelberg,
-            2004. 89--104.
+    .. [1] Chung, Fan and Linyuan Lu. "The Small World Phenomenon in Hybrid
+           Power Law Graphs." *Complex Networks*. Springer Berlin Heidelberg,
+           2004. 89--104.
 
     """
     graphOK = True

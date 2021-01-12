@@ -1,3 +1,0 @@
-pygraphviz>=1.5
-pydot>=1.2.4
-gdal==1.10.0

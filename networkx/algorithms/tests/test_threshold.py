@@ -142,7 +142,7 @@ class TestGeneratorThreshold:
         ]
         assert pytest.raises(TypeError, nxt.shortest_path, [3.0, 1.0, 2.0], 1)
 
-    def random_threshold_sequence(self):
+    def test_random_threshold_sequence(self):
         assert len(nxt.random_threshold_sequence(10, 0.5)) == 10
         assert nxt.random_threshold_sequence(10, 0.5, seed=42) == [
             "d",
@@ -249,21 +249,13 @@ class TestGeneratorThreshold:
     def test_eigenvectors(self):
         np = pytest.importorskip("numpy")
         eigenval = np.linalg.eigvals
-        scipy = pytest.importorskip("scipy")
+        pytest.importorskip("scipy")
 
         cs = "ddiiddid"
         G = nxt.threshold_graph(cs)
         (tgeval, tgevec) = nxt.eigenvectors(cs)
-        dot = np.dot
-        assert [abs(dot(lv, lv) - 1.0) < 1e-9 for lv in tgevec] == [True] * 8
+        np.testing.assert_allclose([np.dot(lv, lv) for lv in tgevec], 1.0, rtol=1e-9)
         lapl = nx.laplacian_matrix(G)
-
-    #        tgev=[ dot(lv,dot(lapl,lv)) for lv in tgevec ]
-    #        assert_true(sum([abs(c-d) for c,d in zip(tgev,tgeval)]) < 1e-9)
-    #        tgev.sort()
-    #        lev=list(eigenval(lapl))
-    #        lev.sort()
-    #        assert_true(sum([abs(c-d) for c,d in zip(tgev,lev)]) < 1e-9)
 
     def test_create_using(self):
         cs = "ddiiddid"

@@ -3,6 +3,18 @@
 Release Log
 ===========
 
+NetworkX 2.5
+------------
+Release date: 22 August 2020
+
+Supports Python 3.6, 3.7, and 3.8.
+
+Release notes
+~~~~~~~~~~~~~
+
+See :doc:`release/release_2.5`.
+
+
 NetworkX 2.4
 ------------
 Release date: 16 October 2019
@@ -475,10 +487,10 @@ Adding nodes
 
 Examples
 ~~~~~~~~
- - `Mayvi2 drawing <https://networkx.github.io/documentation/latest/auto_examples/3d_drawing/mayavi2_spring.html>`_
- - `Blockmodel <https://networkx.github.io/documentation/latest/auto_examples/algorithms/plot_blockmodel.html>`_
- - `Sampson's monastery <https://networkx.github.io/documentation/latest/auto_examples/drawing/plot_sampson.html>`_
- - `Ego graph <https://networkx.github.io/documentation/latest/auto_examples/drawing/plot_ego_graph.html>`_
+ - `Mayvi2 drawing <https://networkx.org/documentation/latest/auto_examples/3d_drawing/mayavi2_spring.html>`_
+ - `Blockmodel <https://networkx.org/documentation/latest/auto_examples/algorithms/plot_blockmodel.html>`_
+ - `Sampson's monastery <https://networkx.org/documentation/latest/auto_examples/drawing/plot_sampson.html>`_
+ - `Ego graph <https://networkx.org/documentation/latest/auto_examples/drawing/plot_ego_graph.html>`_
 
 Bug fixes
 ~~~~~~~~~
@@ -877,7 +889,7 @@ Examples
 ~~~~~~~~
   - Formation of giant component in binomial_graph:
   - Chess masters matches:
-  - Gallery https://networkx.github.io/documentation/latest/auto_examples/index.html
+  - Gallery https://networkx.org/documentation/latest/auto_examples/index.html
 
 Bug fixes
 ~~~~~~~~~
