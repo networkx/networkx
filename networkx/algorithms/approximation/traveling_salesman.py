@@ -17,12 +17,12 @@ def _shortcutting(circuit):
         if not nodes:
             nodes.append(u)
         nodes.append(v)
-    yield(nodes[-1], nodes[0])
+    yield (nodes[-1], nodes[0])
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
-def christofides(G, weight='weight', tree=None):
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+def christofides(G, weight="weight", tree=None):
     """Approximate a solution of the traveling salesman problem
 
     Compute a 3/2-approximation of the traveling salesman problem
@@ -71,7 +71,7 @@ def christofides(G, weight='weight', tree=None):
     return _shortcutting(nx.eulerian_circuit(MG))
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def traveling_salesman_problem(G, nodes, weight=None, cycle=True):
     """Find the shortest path in G connecting specified nodes
 
@@ -131,14 +131,14 @@ def traveling_salesman_problem(G, nodes, weight=None, cycle=True):
     if not cycle:
         # find and remove the biggest edge
         biggest_edge = None
-        length_biggest = float('-inf')
+        length_biggest = float("-inf")
         for edge in best_GG:
             u, v = edge[:2]
             if dist[u][v] > length_biggest:
                 biggest_edge = edge
                 length_biggest = dist[u][v]
         pos = best_GG.index(biggest_edge)
-        best_GG = best_GG[pos + 1:] + best_GG[:pos]
+        best_GG = best_GG[pos + 1 :] + best_GG[:pos]
 
     best_path = []
     for u, v in best_GG:

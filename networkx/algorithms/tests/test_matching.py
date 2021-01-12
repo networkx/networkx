@@ -81,7 +81,7 @@ class TestMaxWeightMatching:
         )
         assert_edges_equal(
             nx.min_weight_matching(G, weight="abcd"),
-            matching_dict_to_set({"three": "two"})
+            matching_dict_to_set({"three": "two"}),
         )
 
     def test_floating_point_weights(self):
@@ -347,8 +347,20 @@ class TestMaxWeightMatching:
                 (11, 12, 5),
             ]
         )
-        ans = {1: 8, 2: 3, 3: 2, 4: 6, 5: 9, 6: 4, 7: 10, 8: 1,
-               9: 5, 10: 7, 11: 12, 12: 11}
+        ans = {
+            1: 8,
+            2: 3,
+            3: 2,
+            4: 6,
+            5: 9,
+            6: 4,
+            7: 10,
+            8: 1,
+            9: 5,
+            10: 7,
+            11: 12,
+            12: 11,
+        }
         answer = matching_dict_to_set(ans)
         assert_edges_equal(nx.max_weight_matching(G), answer)
         assert_edges_equal(nx.min_weight_matching(G), answer)
@@ -389,6 +401,7 @@ class TestIsMatching:
     :func:`~networkx.algorithms.matching.is_matching` function.
 
     """
+
     def test_dict(self):
         G = nx.path_graph(4)
         assert nx.is_matching(G, {0: 1, 1: 0, 2: 3, 3: 2})
@@ -435,6 +448,7 @@ class TestIsMaximalMatching:
     :func:`~networkx.algorithms.matching.is_maximal_matching` function.
 
     """
+
     def test_dict(self):
         G = nx.path_graph(4)
         assert nx.is_maximal_matching(G, {0: 1, 1: 0, 2: 3, 3: 2})
@@ -457,6 +471,7 @@ class TestIsPerfectMatching:
     :func:`~networkx.algorithms.matching.is_perfect_matching` function.
 
     """
+
     def test_dict(self):
         G = nx.path_graph(4)
         assert nx.is_perfect_matching(G, {0: 1, 1: 0, 2: 3, 3: 2})
@@ -490,6 +505,7 @@ class TestMaximalMatching:
     :func:`~networkx.algorithms.matching.maximal_matching`.
 
     """
+
     def test_valid_matching(self):
         edges = [(1, 2), (1, 5), (2, 3), (2, 5), (3, 4), (3, 6), (5, 6)]
         G = nx.Graph(edges)

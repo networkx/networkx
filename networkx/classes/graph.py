@@ -514,8 +514,8 @@ class Graph:
         """
         if node_for_adding not in self._node:
             self._adj[node_for_adding] = self.adjlist_inner_dict_factory()
-            attrd = self._node[node_for_adding] = self.node_attr_dict_factory()
-            attrd.update(attr)
+            attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
+            attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
 
@@ -1344,7 +1344,7 @@ class Graph:
             return default
 
     def adjacency(self):
-        """Returns an iterator over (node, adjacency dict) tuples for all nodes
+        """Returns an iterator over (node, adjacency dict) tuples for all nodes.
 
         For directed graphs, only outgoing neighbors/adjacencies are included.
 

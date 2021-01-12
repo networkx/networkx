@@ -15,8 +15,8 @@ __all__ = [
 ]
 
 
-@not_implemented_for('multigraph')
-@not_implemented_for('directed')
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
 def maximal_matching(G):
     r"""Find a maximal matching in the graph.
 
@@ -189,9 +189,9 @@ def is_perfect_matching(G, matching):
     return all(counts[v] == 1 for v in G)
 
 
-@not_implemented_for('multigraph')
-@not_implemented_for('directed')
-def min_weight_matching(G, maxcardinality=False, weight='weight'):
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
+def min_weight_matching(G, maxcardinality=False, weight="weight"):
     """Use reciprocal edge weights to find max reciprocal weight matching.
 
     This method replaces the weights with their reciprocal and
@@ -226,8 +226,8 @@ def min_weight_matching(G, maxcardinality=False, weight='weight'):
     return max_weight_matching(InvG, maxcardinality, weight)
 
 
-@not_implemented_for('multigraph')
-@not_implemented_for('directed')
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
 def max_weight_matching(G, maxcardinality=False, weight="weight"):
     """Compute a maximum-weighted matching of G.
 
