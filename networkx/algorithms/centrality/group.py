@@ -65,7 +65,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     Returns
     -------
     betweenness : list of floats or float
-       If C is a list with single group then return a float. If C is a list with
+       If C is a single group then return a float. If C is a list with
        several groups then return a list of group betweenness centralities.
 
     See Also
