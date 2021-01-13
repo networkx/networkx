@@ -70,7 +70,7 @@ def harmonic_centrality(G, nbunch=None, sources=None, distance=None):
     centrality = {u: 0 for u in nbunch}
     for v in sources:
         dist = spl(v)
-        for u in set(nbunch).intersection(set(dist.keys())):
+        for u in nbunch.intersection(dist):
             d = dist[u]
             if d == 0:  # handle u == v and edges with 0 weight
                 continue
