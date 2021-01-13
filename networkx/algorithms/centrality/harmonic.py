@@ -63,8 +63,8 @@ def harmonic_centrality(G, nbunch=None, sources=None, distance=None):
            Internet Mathematics 10.3-4 (2014): 222-262.
     """
 
-    nbunch = nbunch if nbunch is not None else G.nodes
-    sources = sources if sources is not None else G.nodes
+    nbunch = set(G.nbunch_iter(nbunch)) if nbunch is not None else G.nodes
+    sources = set(G.nbunch_iter(sources)) if sources is not None else G.nodes
 
     spl = partial(nx.shortest_path_length, G, weight=distance)
     centrality = {u: 0 for u in nbunch}
