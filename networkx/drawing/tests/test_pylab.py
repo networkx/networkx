@@ -264,13 +264,6 @@ def test_draw_nodes_missing_node_from_position():
         nx.draw_networkx_nodes(G, pos)
 
 
-def test_draw_edges_warns_on_arrow_and_arrowstyle():
-    G = nx.Graph([(0, 1)])
-    pos = {0: (0, 0), 1: (1, 1)}
-    with pytest.warns(Warning, match="arrows will be ignored"):
-        nx.draw_networkx_edges(G, pos, arrowstyle="-|>", arrows=False)
-
-
 # NOTE: parametrizing on marker to test both branches of internal
 # nx.draw_networkx_edges.to_marker_edge function
 @pytest.mark.parametrize("node_shape", ("o", "s"))
