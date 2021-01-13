@@ -19,7 +19,7 @@ def harmonic_centrality(G, nbunch=None, sources=None, distance=None):
     where `d(v, u)` is the shortest-path distance between `v` and `u`.
 
     If 'sources' is given as an argument, the returned harmonic centrality
-    values are calculated as the sum of the reciprocals of the shortest 
+    values are calculated as the sum of the reciprocals of the shortest
     path distances from the nodes specified in 'sources' to 'u' instead
     of from all nodes to 'u'.
 
@@ -63,7 +63,7 @@ def harmonic_centrality(G, nbunch=None, sources=None, distance=None):
            Internet Mathematics 10.3-4 (2014): 222-262.
     """
 
-    nbunch = set(G.nbunch_iter(nbunch)) if nbunch is not None else G.nodes
+    nbunch = set(G.nbunch_iter(nbunch)) if nbunch is not None else set(G.nodes)
     sources = set(G.nbunch_iter(sources)) if sources is not None else G.nodes
 
     spl = partial(nx.shortest_path_length, G, weight=distance)
