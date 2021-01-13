@@ -33,9 +33,9 @@ def harmonic_centrality(G, nbunch=None, sources=None, distance=None):
     nbunch : container (default: all nodes in G)
       Container of nodes, for which harmonic centrality values are calculated.
 
-    sources : container
-      Container of nodes. If provided, harmonic centrality will be computed
-      only with respect to paths starting at nodes in 'sources'.
+    sources : container (default: all nodes in G)
+      Container of nodes `v` over which reciprocal distances are computed.
+      Nodes not in `G` are silently ignored.
 
     distance : edge attribute key, optional (default=None)
       Use the specified edge attribute as the edge distance in shortest
