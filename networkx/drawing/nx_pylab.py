@@ -485,7 +485,7 @@ def draw_networkx_edges(
     edge_vmin=None,
     edge_vmax=None,
     ax=None,
-    arrows=None,
+    arrows=True,
     label=None,
     node_size=300,
     nodelist=None,
@@ -535,8 +535,8 @@ def draw_networkx_edges(
        Draw the graph in the specified Matplotlib axes.
 
     arrows : bool, optional (default=True)
-       For directed graphs, if True draw arrowheads by default.  Ignored
-       if *arrowstyle* is passed.
+       For directed graphs, if True set default to drawing arrowheads.
+       Otherwise set default to no arrowheads. Ignored if `arrowstyle` is set.
 
        Note: Arrows will be the same color as edges.
 
@@ -623,13 +623,6 @@ def draw_networkx_edges(
     import matplotlib.patches  # call as mpl.patches
     import matplotlib.path  # call as mpl.path
     import matplotlib.pyplot as plt
-
-    if arrowstyle is not None and arrows is not None:
-        warnings.warn(
-            f"You passed both arrowstyle={arrowstyle} and "
-            f"arrows={arrows}.  Because you set a non-default "
-            "*arrowstyle*, arrows will be ignored."
-        )
 
     if arrowstyle is None:
         if G.is_directed() and arrows:
