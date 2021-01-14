@@ -205,6 +205,8 @@ def write_shp(G, outdir):
 
     Parameters
     ----------
+    G : NetworkX graph
+        Directed graph
     outdir : directory path
        Output directory for the two shapefiles.
 

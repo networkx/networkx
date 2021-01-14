@@ -110,7 +110,6 @@ def k_components(G, min_density=0.95):
     k_core = nx.k_core
     core_number = nx.core_number
     biconnected_components = nx.biconnected_components
-    density = nx.density
     combinations = itertools.combinations
     # Exact solution for k = {1,2}
     # There is a linear time algorithm for triconnectivity, if we had an

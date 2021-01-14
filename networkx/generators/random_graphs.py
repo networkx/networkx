@@ -1226,7 +1226,7 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
     ----------
     n : int
         The number of nodes
-    kernal_integral : function
+    kernel_integral : function
         Function that returns the definite integral of the kernel $\kappa(x,y)$,
         $F(y,a,b) := \int_a^b \kappa(x,y)dx$
     kernel_root: function (optional)

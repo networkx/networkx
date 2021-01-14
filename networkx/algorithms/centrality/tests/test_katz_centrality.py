@@ -31,14 +31,7 @@ class TestKatzCentrality:
 
     def test_maxiter(self):
         with pytest.raises(nx.PowerIterationFailedConvergence):
-            alpha = 0.1
-            G = nx.path_graph(3)
-            max_iter = 0
-            try:
-                b = nx.katz_centrality(G, alpha, max_iter=max_iter)
-            except nx.NetworkXError as e:
-                assert str(max_iter) in e.args[0], "max_iter value not in error msg"
-                raise  # So that the decorater sees the exception.
+            b = nx.katz_centrality(nx.path_graph(3), 0.1, max_iter=0)
 
     def test_beta_as_scalar(self):
         alpha = 0.1

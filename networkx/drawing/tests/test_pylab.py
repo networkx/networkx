@@ -264,13 +264,6 @@ def test_draw_nodes_missing_node_from_position():
         nx.draw_networkx_nodes(G, pos)
 
 
-def test_draw_edges_warns_on_arrow_and_arrowstyle():
-    G = nx.Graph([(0, 1)])
-    pos = {0: (0, 0), 1: (1, 1)}
-    with pytest.warns(Warning, match="arrows will be ignored"):
-        nx.draw_networkx_edges(G, pos, arrowstyle="-|>", arrows=False)
-
-
 # NOTE: parametrizing on marker to test both branches of internal
 # nx.draw_networkx_edges.to_marker_edge function
 @pytest.mark.parametrize("node_shape", ("o", "s"))
@@ -317,6 +310,42 @@ def test_draw_edges_min_source_target_margins(node_shape):
     # And the rightmost extent of the edge, further to the left
     assert padded_extent[1] < default_extent[1]
     # NOTE: Prevent axes objects from impacting other tests via plt.gca
+    plt.delaxes(ax)
+
+
+def test_nonzero_selfloop_with_single_node():
+    """Ensure that selfloop extent is non-zero when there is only one node."""
+    # Create explicit axis object for test
+    fig, ax = plt.subplots()
+    # Graph with single node + self loop
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_edge(0, 0)
+    # Draw
+    patch = nx.draw_networkx_edges(G, {0: (0, 0)})[0]
+    # The resulting patch must have non-zero extent
+    bbox = patch.get_extents()
+    assert bbox.width > 0 and bbox.height > 0
+    # Cleanup
+    plt.delaxes(ax)
+
+
+def test_nonzero_selfloop_with_single_edge_in_edgelist():
+    """Ensure that selfloop extent is non-zero when only a single edge is
+    specified in the edgelist.
+    """
+    # Create explicit axis object for test
+    fig, ax = plt.subplots()
+    # Graph with selfloop
+    G = nx.path_graph(2)
+    G.add_edge(1, 1)
+    pos = {n: (n, n) for n in G.nodes}
+    # Draw only the selfloop edge via the `edgelist` kwarg
+    patch = nx.draw_networkx_edges(G, pos, edgelist=[(1, 1)])[0]
+    # The resulting patch must have non-zero extent
+    bbox = patch.get_extents()
+    assert bbox.width > 0 and bbox.height > 0
+    # Cleanup
     plt.delaxes(ax)
 
 

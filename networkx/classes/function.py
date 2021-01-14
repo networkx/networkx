@@ -1123,6 +1123,8 @@ def selfloop_edges(G, data=False, keys=False, default=None):
 
     Parameters
     ----------
+    G : graph
+        A NetworkX graph.
     data : string or bool, optional (default=False)
         Return selfloop edges as two tuples (u, v) (data=False)
         or three-tuples (u, v, datadict) (data=True)

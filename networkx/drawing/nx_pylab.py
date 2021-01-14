@@ -488,7 +488,7 @@ def draw_networkx_edges(
     edge_vmin=None,
     edge_vmax=None,
     ax=None,
-    arrows=None,
+    arrows=True,
     label=None,
     node_size=300,
     nodelist=None,
@@ -539,9 +539,9 @@ def draw_networkx_edges(
     ax : Matplotlib Axes object, optional
         Draw the graph in the specified Matplotlib axes.
 
-    arrows : bool (default=True)
-        For directed graphs, if True draw arrowheads by default.  Ignored
-        if *arrowstyle* is passed.
+    arrows : bool, optional (default=True)
+        For directed graphs, if True set default to drawing arrowheads.
+        Otherwise set default to no arrowheads. Ignored if `arrowstyle` is set.
 
         Note: Arrows will be the same color as edges.
 
@@ -629,13 +629,6 @@ def draw_networkx_edges(
     import matplotlib.path  # call as mpl.path
     import matplotlib.pyplot as plt
 
-    if arrowstyle is not None and arrows is not None:
-        warnings.warn(
-            f"You passed both arrowstyle={arrowstyle} and "
-            f"arrows={arrows}.  Because you set a non-default "
-            "*arrowstyle*, arrows will be ignored."
-        )
-
     if arrowstyle is None:
         if G.is_directed() and arrows:
             arrowstyle = "-|>"
@@ -707,13 +700,21 @@ def draw_networkx_edges(
 
     base_connection_style = mpl.patches.ConnectionStyle(connectionstyle)
 
+    # Fallback for self-loop scale. Left outside of _connectionstyle so it is
+    # only computed once
+    max_nodesize = np.array(node_size).max()
+
     def _connectionstyle(posA, posB, *args, **kwargs):
         # check if we need to do a self-loop
         if np.all(posA == posB):
+            # Self-loops are scaled by view extent, except in cases the extent
+            # is 0, e.g. for a single node. In this case, fall back to scaling
+            # by the maximum node size
+            selfloop_ht = 0.005 * max_nodesize if h == 0 else h
             # this is called with _screen space_ values so covert back
             # to data space
             data_loc = ax.transData.inverted().transform(posA)
-            v_shift = 0.1 * h
+            v_shift = 0.1 * selfloop_ht
             h_shift = v_shift * 0.5
             # put the top of the loop first so arrow is not hidden by node
             path = [
