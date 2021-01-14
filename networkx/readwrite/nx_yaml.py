@@ -94,7 +94,7 @@ def read_yaml(path):
     """
     msg = (
         "read_yaml is deprecated and will be removed in 3.0."
-        "Use ``yaml.load(path, Loader=yaml.FullLoader)``"
+        "Use ``yaml.load(path, Loader=yaml.SafeLoader)``"
     )
     warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
@@ -102,5 +102,5 @@ def read_yaml(path):
     except ImportError as e:
         raise ImportError("read_yaml() requires PyYAML: http://pyyaml.org/") from e
 
-    G = yaml.load(path, Loader=yaml.FullLoader)
+    G = yaml.load(path, Loader=yaml.SafeLoader)
     return G
