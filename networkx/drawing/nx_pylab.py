@@ -12,9 +12,9 @@ Examples
 
 See Also
 --------
- - matplotlib: http://matplotlib.org/
- - matplotlib's scatter: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.pyplot.scatter.html
- - matplotlib's FancyArrowPatch: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.patches.FancyArrowPatch.html
+ - :doc:`matplotlib <matplotlib:index>`
+ - :func:`matplotlib.pyplot.scatter`
+ - :obj:`matplotlib.patches.FancyArrowPatch`
 """
 from numbers import Number
 import networkx as nx
