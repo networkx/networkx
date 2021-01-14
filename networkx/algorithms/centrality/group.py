@@ -28,7 +28,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
 
     .. math::
 
-       c_B(C) =\sum_{s,t \in V-C; s<t} \frac{\sigma(s, t|C)}{\sigma(s, t)}
+       c_B(C) =\sum_{s,t \in V-C; s\neq t} \frac{\sigma(s, t|C)}{\sigma(s, t)}
 
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
     shortest $(s, t)$-paths, and $\sigma(s, t|C)$ is the number of
@@ -42,13 +42,12 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
       A NetworkX graph.
 
     C : list or set or list of lists or list of sets
-      C is a group or a list of groups containing nodes which belong to G, for which group betweenness
+      A group or a list of groups containing nodes which belong to G, for which group betweenness
       centrality is to be calculated.
 
     normalized : bool, optional
-      If True, group betweenness is normalized by `2/((|V|-|C|)(|V|-|C|-1))`
-      for graphs and `1/((|V|-|C|)(|V|-|C|-1))` for directed graphs where `|V|`
-      is the number of nodes in G and `|C|` is the number of nodes in C.
+      If True, group betweenness is normalized by `1/((|V|-|C|)(|V|-|C|-1))`
+      where `|V|` is the number of nodes in G and `|C|` is the number of nodes in C.
 
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
@@ -102,7 +101,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
        https://sites.cs.ucsb.edu/~arlei/pubs/sdm18.pdf
     .. [4] Rami Puzis, Yuval Elovici, and Shlomi Dolev.
        "Fast algorithm for successive computation of group betweenness centrality."
-        https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709?casa_token=YvH6xTIc6AUAAAAA%3A90BkxMRiQyOg9y7PEU_lrcf1FXPF_sqTCI_Y_2lD0QodSeyXAQtz-s0_e1Z0CtkZ1bWdVCkK9S5fXw
+        https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709
 
     """
     GBC = []  # initialize betweenness
@@ -138,30 +137,27 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                         sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[v][y] == 0
                     ):
                         if D[x][v] == D[x][y] + D[y][v]:
-                            dxyv = 1.0 * sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
+                            dxyv = sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
                         if D[x][y] == D[x][v] + D[v][y]:
-                            dxvy = 1.0 * sigma_m[x][v] * sigma_m[v][y] / sigma_m[x][y]
+                            dxvy = sigma_m[x][v] * sigma_m[v][y] / sigma_m[x][y]
                         if D[v][y] == D[v][x] + D[x][y]:
-                            dvxy = 1.0 * sigma_m[v][x] * sigma[x][y] / sigma[v][y]
+                            dvxy = sigma_m[v][x] * sigma[x][y] / sigma[v][y]
                     sigma_m_v[x][y] = sigma_m[x][y] * (1 - dxvy)
                     PB_m_v[x][y] = PB_m[x][y] - PB_m[x][y] * dxvy
                     if y != v:
                         PB_m_v[x][y] -= PB_m[x][v] * dxyv
                     if x != v:
                         PB_m_v[x][y] -= PB_m[v][y] * dvxy
-            tmp = PB_m
-            PB_m = PB_m_v
-            PB_m_v = tmp
-            tmp = sigma_m
-            sigma_m = sigma_m_v
-            sigma_m_v = tmp
+            sigma_m, sigma_m_v = sigma_m_v, sigma_m
+            PB_m, PB_m_v = PB_m_v, PB_m
 
         # endpoints
         v, c = len(G), len(group)
         if not endpoints:
             scale = 0
-            # if the graph is connected than deduce the endpoints of all the nodes in the graph. else find which nodes
-            # are connected to the group's nodes and deduce them
+            # if the graph is connected then subtract the endpoints from
+            # the count for all the nodes in the graph. else count how many
+            # nodes are connected to the group's nodes and subtract that.
             if nx.is_directed(G):
                 if nx.is_strongly_connected(G):
                     scale = c * (2 * v - c - 1)
@@ -180,8 +176,6 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
         # normalized
         if normalized:
             scale = 1 / ((v - c) * (v - c - 1))
-            if not G.is_directed():
-                scale *= 2
             GBC_group *= scale
 
         GBC.append(GBC_group)

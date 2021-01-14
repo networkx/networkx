@@ -30,7 +30,7 @@ class TestGroupBetweennessCentrality:
         b = nx.group_betweenness_centrality(
             G, C, weight=None, normalized=True, endpoints=False
         )
-        b_answer = 2.0
+        b_answer = 1.0
         assert b == b_answer
 
     def test_two_group_betweenness_value_zero(self):
