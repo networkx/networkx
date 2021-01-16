@@ -566,10 +566,8 @@ def draw_networkx_edges(
         Size of nodes. Though the nodes are not drawn with this function, the
         node size is used in determining edge positioning.
 
-    nodelist : list (default=list(G))
-        Only draw edges that are in `edgelist` and that lie between nodes in
-        `nodelist`. Any edges in `edgelist` incident on nodes that are *not* in
-        `nodelist` will not be drawn.
+    nodelist : list, optional (default=G.nodes())
+       This provides the node order for the `node_size` array (if it is an array).
 
     node_shape :  string (default='o')
         The marker used for nodes, used in determining edge positioning.
@@ -641,15 +639,11 @@ def draw_networkx_edges(
     if edgelist is None:
         edgelist = list(G.edges())
 
-    if nodelist is None:
-        nodelist = list(G.nodes())
-    else:
-        # Remove any edges where both endpoints are not in node list
-        nodeset = set(nodelist)
-        edgelist = [(u, v) for u, v in edgelist if (u in nodeset) and (v in nodeset)]
-
     if len(edgelist) == 0:  # no edges!
         return []
+
+    if nodelist is None:
+        nodelist = list(G.nodes())
 
     # FancyArrowPatch handles color=None different from LineCollection
     if edge_color is None:
