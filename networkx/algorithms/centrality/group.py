@@ -178,6 +178,10 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
             scale = 1 / ((v - c) * (v - c - 1))
             GBC_group *= scale
 
+        # If undirected than count only the undirected edged
+        elif not G.is_directed():
+            GBC_group /= 2
+
         GBC.append(GBC_group)
     if list_of_groups:
         return GBC
