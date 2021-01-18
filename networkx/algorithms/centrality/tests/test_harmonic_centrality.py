@@ -98,7 +98,7 @@ class TestClosenessCentrality:
     def test_cycle_c4_directed(self):
         c = harmonic_centrality(self.C4_directed, nbunch=[0, 1], sources=[1, 2])
         d = {0: 0.833, 1: 0.333}
-        for n in sorted([0, 1]):
+        for n in [0, 1]:
             assert almost_equal(c[n], d[n], places=3)
 
     def test_p3_harmonic_subset(self):
