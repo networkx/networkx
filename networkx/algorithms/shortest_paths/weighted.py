@@ -6,7 +6,6 @@ from collections import deque
 from heapq import heappush, heappop
 from itertools import count
 import networkx as nx
-from networkx.utils import generate_unique_node
 from networkx.algorithms.shortest_paths.generic import _build_paths_from_predecessors
 
 
@@ -1946,7 +1945,11 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
     every node, and starting bellman_ford_predecessor_and_distance on that
     node.  It then removes that extra node.
     """
-    newnode = generate_unique_node()
+    # find unused node to use temporarily
+    newnode = -1
+    while newnode in G:
+        newnode -= 1
+    # connect it to all nodes
     G.add_edges_from([(newnode, n) for n in G])
 
     try:

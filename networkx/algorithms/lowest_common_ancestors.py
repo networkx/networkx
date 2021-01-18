@@ -8,7 +8,6 @@ from networkx.utils import (
     arbitrary_element,
     not_implemented_for,
     UnionFind,
-    generate_unique_node,
 )
 
 __all__ = [
@@ -217,7 +216,12 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
         super_root = None
     else:
         G = G.copy()
-        super_root = root = generate_unique_node()
+        # find unused node
+        root = -1
+        while root in G:
+            root -= 1
+        # use that as the super_root below all sources
+        super_root = root
         for source in sources:
             G.add_edge(root, source)
 
