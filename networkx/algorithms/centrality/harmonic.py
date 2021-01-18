@@ -6,7 +6,7 @@ import networkx as nx
 __all__ = ["harmonic_centrality"]
 
 
-def harmonic_centrality(G, nbunch=None, sources=None, distance=None):
+def harmonic_centrality(G, nbunch=None, distance=None, sources=None):
     r"""Compute harmonic centrality for nodes.
 
     Harmonic centrality [1]_ of a node `u` is the sum of the reciprocal
