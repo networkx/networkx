@@ -8,17 +8,11 @@ to the user to check for that.
 from collections import deque
 from math import gcd
 from functools import partial
-from itertools import chain
-from itertools import product
-from itertools import starmap
+from itertools import chain, product, starmap
 import heapq
 
 import networkx as nx
-from networkx.algorithms.traversal.breadth_first_search import descendants_at_distance
-from networkx.generators.trees import NIL
-from networkx.utils import arbitrary_element
-from networkx.utils import pairwise
-from networkx.utils import not_implemented_for
+from networkx.utils import arbitrary_element, pairwise, not_implemented_for
 
 __all__ = [
     "descendants",
@@ -573,7 +567,7 @@ def transitive_closure_dag(G, topo_order=None):
     # idea: traverse vertices following a reverse topological order, connecting
     # each vertex to its descendants at distance 2 as we go
     for v in reversed(topo_order):
-        TC.add_edges_from((v, u) for u in descendants_at_distance(TC, v, 2))
+        TC.add_edges_from((v, u) for u in nx.descendants_at_distance(TC, v, 2))
 
     return TC
 
@@ -900,8 +894,8 @@ def dag_to_branching(G):
         msg = "dag_to_branching is only defined for acyclic graphs"
         raise nx.HasACycle(msg)
     paths = root_to_leaf_paths(G)
-    B, root = nx.prefix_tree(paths)
-    # Remove the synthetic `root` and `NIL` nodes in the prefix tree.
-    B.remove_node(root)
-    B.remove_node(NIL)
+    B = nx.prefix_tree(paths)
+    # Remove the synthetic `root`(0) and `NIL`(-1) nodes from the tree
+    B.remove_node(0)
+    B.remove_node(-1)
     return B
