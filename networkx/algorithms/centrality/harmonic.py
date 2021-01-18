@@ -18,10 +18,10 @@ def harmonic_centrality(G, nbunch=None, sources=None, distance=None):
 
     where `d(v, u)` is the shortest-path distance between `v` and `u`.
 
-    If 'sources' is given as an argument, the returned harmonic centrality
+    If `sources` is given as an argument, the returned harmonic centrality
     values are calculated as the sum of the reciprocals of the shortest
-    path distances from the nodes specified in 'sources' to 'u' instead
-    of from all nodes to 'u'.
+    path distances from the nodes specified in `sources` to `u` instead
+    of from all nodes to `u`.
 
     Notice that higher values indicate higher centrality.
 
