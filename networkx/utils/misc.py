@@ -134,7 +134,9 @@ def make_str(x):
 
 def generate_unique_node():
     """ Generate a unique node label."""
-    return str(uuid.uuid1())
+    msg = "generate_unique_node is deprecated and will be removed in 3.0. Use uuid.uuid4 instead."
+    warnings.warn(msg, DeprecationWarning)
+    return str(uuid.uuid4())
 
 
 def default_opener(filename):

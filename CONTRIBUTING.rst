@@ -154,9 +154,18 @@ For a more detailed discussion, read these :doc:`detailed documents
    If your change introduces any API modifications, please update
    ``doc/release/release_dev.rst``.
 
-   If your change introduces a deprecation, add a reminder to
-   ``doc/developer/deprecations.rst`` for the team to remove the
-   deprecated functionality in the future.
+   To set up a function for deprecation:
+   - Use warnings.warn(msg, DeprecationWarning) to warn users.
+     The message should say what version the change/removal is expected
+     and what should replace the function.
+   - Add a ``warnings.filterwarnings(
+         "ignore", category=DeprecationWarning, message=<start of message>
+     )``
+     to networkx/conftest.py
+   - Add a reminder to ``doc/developer/deprecations.rst`` for the team
+     to remove the deprecated functionality in the future. For example:
+     * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
+
 
    .. note::
    
