@@ -104,7 +104,7 @@ class TestClosenessCentrality:
     def test_p3_harmonic_subset(self):
         c = harmonic_centrality(self.P3, sources=[0, 1])
         d = {0: 1, 1: 1, 2: 1.5}
-        for n in sorted(self.P3):
+        for n in self.P3:
             assert almost_equal(c[n], d[n], places=3)
 
     def test_p4_harmonic_subset(self):
