@@ -4,7 +4,7 @@ communities).
 """
 
 from functools import wraps
-from itertools import product
+from itertools import product, combinations
 
 import networkx as nx
 from networkx import NetworkXError
@@ -394,10 +394,9 @@ def partition_quality(G, partition):
     # `performance` is not defined for multigraphs
     if not G.is_multigraph():
         # Iterate over the communities, quadratic, to calculate `possible_inter_community_edges`
-        possible_inter_community_edges = 0
-        for i in range(0, len(partition) - 1):
-            for j in range(i + 1, len(partition)):
-                possible_inter_community_edges += len(partition[i]) * len(partition[j])
+        possible_inter_community_edges = sum(
+            len(p1) * len(p2) for p1, p2 in combinations(partition, 2)
+        )
 
         if G.is_directed():
             possible_inter_community_edges *= 2
@@ -421,7 +420,7 @@ def partition_quality(G, partition):
         else:
             inter_community_non_edges -= 1
 
-    coverage = intra_community_edges / len(G.edges())
+    coverage = intra_community_edges / len(G.edges)
 
     if G.is_multigraph():
         performance = -1.0
