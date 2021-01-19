@@ -15,7 +15,7 @@ def prefix_tree(paths):
     A "prefix tree" represents the prefix structure of the strings.
     Each node represents a prefix of some string. The root represents
     the empty prefix with children for the single letter prefixes which
-    in turn have children for each double letter prefixes starting with
+    in turn have children for each double letter prefix starting with
     the single letter corresponding to the parent node, and so on.
 
     More generally the prefixes do not need to be strings. A prefix refers
@@ -24,12 +24,21 @@ def prefix_tree(paths):
     with the one element sequence of the parent, and so on.
 
     Note that this implementation uses integer nodes with an attribute.
-    Each node is associated with a prefix. But to save space the last
-    element of the prefix is stored as a node attribute named `source`.
-    The prefix can be constructed by traversing the tree up to the root.
+    Each node has an attribute "source" whose value is the original element
+    of the path to which this node corresponds. For example, suppose `paths`
+    consists of one path: "can". Then the nodes `[1, 2, 3]` which represent
+    this path have "source" values "c", "a" and "n".
 
-    All the descendants of a node have a common prefix in the sequence
-    associated with that node.
+    All the descendants of a node have a common prefix in the sequence/path
+    associated with that node. From the returned tree, ehe prefix for each
+    node can be constructed by traversing the tree up to the root and
+    accumulating the "source" values along the way.
+
+    The root node is always `0` and has "source" attribute `None`.
+    The root is the only node with in-degree zero.
+    The nil node is always `-1` and has "source" attribute `"NIL"`.
+    The nil node is the only node with out-degree zero.
+
 
     Parameters
     ----------
@@ -39,6 +48,7 @@ def prefix_tree(paths):
         nodes of the prefix tree. One leaf of the tree is associated
         with each path. (Identical paths are associated with the same
         leaf of the tree.)
+
 
     Returns
     -------
@@ -53,18 +63,11 @@ def prefix_tree(paths):
         arborescence but a directed acyclic graph; removing the nil node
         makes it an arborescence.)
 
-        Each node has an attribute 'source' whose value is the original
-        element of the path to which this node corresponds. The 'source'
-        of the root node is None, and the 'source' of the nil node is
-        :data:`.NIL`.
-
-        The root node, `0`, is the only node of in-degree zero in the graph,
-        and the nil node is the only node of out-degree zero.  For
-        convenience, the nil node is always `-1`.
 
     Notes
     -----
     The prefix tree is also known as a *trie*.
+
 
     Examples
     --------

@@ -85,7 +85,7 @@ Deprecations
   Deprecate ``consume``.
 - [`#4448 <https://github.com/networkx/networkx/pull/4448>`_]
   Deprecate ``iterable``.
-- [`#4537 <https://github.com/networkx/networkx/pull/4537>`_]
+- [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
   Deprecate ``generate_unique_node``.
 
 Contributors to this release
