@@ -249,7 +249,8 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight="weight"):
        Starting node for path.
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only return paths with length <= cutoff.
+       Length (sum of edge weights) at which the search is stopped.
+        If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -312,7 +313,8 @@ def single_source_dijkstra_path_length(G, source, cutoff=None, weight="weight"):
        Starting node for path
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only return paths with length <= cutoff.
+       Length (sum of edge weights) at which the search is stopped.
+        If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -388,7 +390,9 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight="weight")
        Ending node for path
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only return paths with length <= cutoff.
+        Length (sum of edge weights) at which the search is stopped.
+        If cutoff is provided, only return paths with summed weight <= cutoff.
+       
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -485,7 +489,8 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight="weight"):
         computed paths may begin from any one of the start nodes.
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only return paths with length <= cutoff.
+        Length (sum of edge weights) at which the search is stopped.
+        If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -557,8 +562,9 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None, weight="weight"):
         computed paths may begin from any one of the start nodes.
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only return paths with length <= cutoff.
-
+        Length (sum of edge weights) at which the search is stopped.
+        If cutoff is provided, only return paths with summed weight <= cutoff.
+       
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
@@ -638,7 +644,8 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None, weight="weight")
        Ending node for path
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only return paths with length <= cutoff.
+        Length (sum of edge weights) at which the search is stopped.
+        If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -776,7 +783,8 @@ def _dijkstra_multisource(
         Ending node for path. Search is halted when target is found.
 
     cutoff : integer or float, optional
-        Depth to stop the search. Only return paths with length <= cutoff.
+        Length (sum of edge weights) at which the search is stopped.
+        If cutoff is provided, only return paths with summed weight <= cutoff.
 
     Returns
     -------
@@ -863,7 +871,8 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
        Starting node for path
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only return paths with length <= cutoff.
+       Length (sum of edge weights) at which the search is stopped.
+        If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -928,7 +937,8 @@ def all_pairs_dijkstra(G, cutoff=None, weight="weight"):
     G : NetworkX graph
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only return paths with length <= cutoff.
+       Length (sum of edge weights) at which the search is stopped.
+        If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -995,7 +1005,8 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight="weight"):
     G : NetworkX graph
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only return paths with length <= cutoff.
+       Length (sum of edge weights) at which the search is stopped.
+        If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -1052,7 +1063,8 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
     G : NetworkX graph
 
     cutoff : integer or float, optional
-       Depth to stop the search. Only return paths with length <= cutoff.
+       Length (sum of edge weights) at which the search is stopped.
+        If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
