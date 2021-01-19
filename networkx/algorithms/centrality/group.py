@@ -74,7 +74,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     Notes
     -----
     Group betweenness centrality is described in [1]_ and its importance discussed in [3]_.
-    initial implementation of the algorithm is mentioned in [2]_. This function uses
+    The initial implementation of the algorithm is mentioned in [2]_. This function uses
      an improved algorithm presented in [4]_.
 
     The number of nodes in the group must be a maximum of n - 2 where `n`
@@ -178,7 +178,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
             scale = 1 / ((v - c) * (v - c - 1))
             GBC_group *= scale
 
-        # If undirected than count only the undirected edged
+        # If undirected than count only the undirected edges
         elif not G.is_directed():
             GBC_group /= 2
 
