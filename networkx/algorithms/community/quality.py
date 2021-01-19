@@ -11,7 +11,7 @@ from networkx import NetworkXError
 from networkx.utils import not_implemented_for
 from networkx.algorithms.community.community_utils import is_partition
 
-__all__ = ["coverage", "modularity", "performance", "fast_coverage_performance"]
+__all__ = ["coverage", "modularity", "performance", "partition_quality"]
 
 
 class NotAPartition(NetworkXError):
@@ -177,6 +177,7 @@ def performance(G, partition):
            *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
            <https://arxiv.org/abs/0906.0612>
 
+    .. deprecated:: 2.6
     """
     # Compute the number of intra-community edges and inter-community
     # edges.
@@ -232,6 +233,7 @@ def coverage(G, partition):
            *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
            <https://arxiv.org/abs/0906.0612>
 
+    .. deprecated:: 2.6
     """
     intra_edges = intra_community_edges(G, partition)
     total_edges = G.number_of_edges()
@@ -332,17 +334,16 @@ def modularity(G, communities, weight="weight"):
     return sum(map(community_contribution, communities))
 
 
-@not_implemented_for("multigraph")
 @require_partition
-def fast_coverage_performance(G, partition):
-    """Returns the coverage and performance of a partition.
+def partition_quality(G, partition):
+    """Returns the coverage and performance of a partition of G.
 
-    Yields the exact same result as the existing `coverage` and `performance` algorithms,
-    without calculating the complement graph (suitable for large graphs, too).
+    The *coverage* of a partition is the ratio of the number of
+    intra-community edges to the total number of edges in the graph.
 
-    Complexity: O(C^2 + L)
-        - C = number of communities
-        - L = links
+    The *performance* of a partition is the ratio of the number of
+    intra-community edges plus inter-community non-edges with the total
+    number of potential edges.
 
     Parameters
     ----------
@@ -353,10 +354,34 @@ def fast_coverage_performance(G, partition):
         sets of nodes. Each block of the partition represents a
         community.
 
+    Complexity
+    ----------
+    O(C^2 + L)
+        C = number of communities
+        L = links
+
     Returns
     -------
     (float, float)
-        - coverage, performance
+        The (coverage, performance) tuple of the partition, as defined above.
+
+    Raises
+    ------
+    NetworkXError
+        If `partition` is not a valid partition of the nodes of `G`.
+
+    Notes
+    -----
+    If `G` is a multigraph;
+        - for coverage, the multiplicity of edges is counted
+        - for performance, the result is -1 (total number of possible edges is not defined)
+
+    References
+    ----------
+    .. [1] Santo Fortunato.
+           "Community Detection in Graphs".
+           *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
+           <https://arxiv.org/abs/0906.0612>
     """
 
     node_community = {}
@@ -364,22 +389,28 @@ def fast_coverage_performance(G, partition):
         for node in community:
             node_community[node] = i
 
-    # Iterate over the communities, quadratic, to calculate `possible_inter_community_links`
-    possible_inter_community_links = 0
-    for i in range(0, len(partition) - 1):
-        for j in range(i + 1, len(partition)):
-            possible_inter_community_links += len(partition[i]) * len(partition[j])
+    # `performance` is not defined for multigraphs
+    if not G.is_multigraph():
+        # Iterate over the communities, quadratic, to calculate `possible_inter_community_edges`
+        possible_inter_community_edges = 0
+        for i in range(0, len(partition) - 1):
+            for j in range(i + 1, len(partition)):
+                possible_inter_community_edges += len(partition[i]) * len(partition[j])
 
-    if G.is_directed():
-        possible_inter_community_links *= 2
+        if G.is_directed():
+            possible_inter_community_edges *= 2
+    else:
+        possible_inter_community_edges = 0
 
+    # Compute the number of edges in the complete graph -- `n` nodes,
+    # directed or undirected, depending on `G`
     n = len(G)
     total_pairs = n * (n - 1)
     if not G.is_directed():
         total_pairs //= 2
 
     intra_community_edges = 0
-    inter_community_non_edges = possible_inter_community_links
+    inter_community_non_edges = possible_inter_community_edges
 
     # Iterate over the links to count `intra_community_edges` and `inter_community_non_edges`
     for e in G.edges():
@@ -389,6 +420,10 @@ def fast_coverage_performance(G, partition):
             inter_community_non_edges -= 1
 
     coverage = intra_community_edges / len(G.edges())
-    performance = (intra_community_edges + inter_community_non_edges) / total_pairs
+
+    if G.is_multigraph():
+        performance = -1.0
+    else:
+        performance = (intra_community_edges + inter_community_non_edges) / total_pairs
 
     return coverage, performance
