@@ -178,6 +178,7 @@ def performance(G, partition):
            <https://arxiv.org/abs/0906.0612>
 
     .. deprecated:: 2.6
+        See `nx.community.partition_quality`.
     """
     # Compute the number of intra-community edges and inter-community
     # edges.
@@ -234,6 +235,7 @@ def coverage(G, partition):
            <https://arxiv.org/abs/0906.0612>
 
     .. deprecated:: 2.6
+        See `nx.community.partition_quality`.
     """
     intra_edges = intra_community_edges(G, partition)
     total_edges = G.number_of_edges()
@@ -351,7 +353,7 @@ def partition_quality(G, partition):
 
     partition : sequence
         Partition of the nodes of `G`, represented as a sequence of
-        sets of nodes. Each block of the partition represents a
+        sets of nodes (blocks). Each block of the partition represents a
         community.
 
     Complexity
