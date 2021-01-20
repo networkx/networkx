@@ -102,5 +102,5 @@ def read_yaml(path):
     except ImportError as e:
         raise ImportError("read_yaml() requires PyYAML: http://pyyaml.org/") from e
 
-    G = yaml.load(path, Loader=yaml.FullLoader)
+    G = yaml.load(path, Loader=yaml.Loader)
     return G
