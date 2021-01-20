@@ -73,7 +73,7 @@ def generic_graph_view(G, create_using=None):
 
 
 def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
-    """ View of `G` applying a filter on nodes and edges.
+    """View of `G` applying a filter on nodes and edges.
 
     `subgraph_view` provides a read-only view of the input graph that excludes
     nodes and edges based on the outcome of two filter functions `filter_node`
@@ -173,7 +173,7 @@ def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
 
 @not_implemented_for("undirected")
 def reverse_view(G):
-    """ View of `G` with edge directions reversed
+    """View of `G` with edge directions reversed
 
     `reverse_view` returns a read-only view of the input graph where
     edge directions are reversed.

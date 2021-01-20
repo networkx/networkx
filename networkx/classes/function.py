@@ -540,7 +540,7 @@ def create_empty_copy(G, with_data=True):
        Propagate Graph and Nodes data to the new graph.
 
     See Also
-    -----
+    --------
     empty_graph
 
     """
@@ -576,23 +576,14 @@ def info(G, n=None):
 
     """
     if n is None:
-        n_nodes = G.number_of_nodes()
-        n_edges = G.number_of_edges()
-        return "".join(
-            [
-                type(G).__name__,
-                f" named '{G.name}'" if G.name else "",
-                f" with {n_nodes} nodes and {n_edges} edges",
-            ]
-        )
-    else:
-        if n not in G:
-            raise nx.NetworkXError(f"node {n} not in graph")
-        info = ""  # append this all to a string
-        info += f"Node {n} has the following properties:\n"
-        info += f"Degree: {G.degree(n)}\n"
-        info += "Neighbors: "
-        info += " ".join(str(nbr) for nbr in G.neighbors(n))
+        return str(G)
+    if n not in G:
+        raise nx.NetworkXError(f"node {n} not in graph")
+    info = ""  # append this all to a string
+    info += f"Node {n} has the following properties:\n"
+    info += f"Degree: {G.degree(n)}\n"
+    info += "Neighbors: "
+    info += " ".join(str(nbr) for nbr in G.neighbors(n))
     return info
 
 
@@ -664,6 +655,17 @@ def set_node_attributes(G, values, name=None):
         3
         >>> G.nodes[2]
         {}
+
+    Note that if the dictionary contains nodes that are not in `G`, the
+    values are silently ignored::
+
+        >>> G = nx.Graph()
+        >>> G.add_node(0)
+        >>> nx.set_node_attributes(G, {0: "red", 1: "blue"}, name="color")
+        >>> G.nodes[0]["color"]
+        'red'
+        >>> 1 in G.nodes
+        False
 
     """
     # Set node attributes based on type of `values`
@@ -773,6 +775,14 @@ def set_edge_attributes(G, values, name=None):
         'nothing'
         >>> G[1][2]["attr2"]
         3
+
+    Note that if the dict contains edges that are not in `G`, they are
+    silently ignored::
+
+        >>> G = nx.Graph([(0, 1)])
+        >>> nx.set_edge_attributes(G, {(1, 2): {"weight": 2.0}})
+        >>> (1, 2) in G.edges()
+        False
 
     """
     if name is not None:
@@ -1113,6 +1123,8 @@ def selfloop_edges(G, data=False, keys=False, default=None):
 
     Parameters
     ----------
+    G : graph
+        A NetworkX graph.
     data : string or bool, optional (default=False)
         Return selfloop edges as two tuples (u, v) (data=False)
         or three-tuples (u, v, datadict) (data=True)

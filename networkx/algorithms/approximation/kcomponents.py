@@ -14,9 +14,7 @@ from networkx.algorithms.approximation import local_node_connectivity
 __all__ = ["k_components"]
 
 
-not_implemented_for("directed")
-
-
+@not_implemented_for("directed")
 def k_components(G, min_density=0.95):
     r"""Returns the approximate k-component structure of a graph G.
 
@@ -46,6 +44,10 @@ def k_components(G, min_density=0.95):
         Dictionary with connectivity level `k` as key and a list of
         sets of nodes that form a k-component of level `k` as values.
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
 
     Examples
     --------
@@ -108,7 +110,6 @@ def k_components(G, min_density=0.95):
     k_core = nx.k_core
     core_number = nx.core_number
     biconnected_components = nx.biconnected_components
-    density = nx.density
     combinations = itertools.combinations
     # Exact solution for k = {1,2}
     # There is a linear time algorithm for triconnectivity, if we had an
@@ -235,7 +236,7 @@ class _AntiGraph(nx.Graph):
 
     def neighbors(self, n):
         """Returns an iterator over all neighbors of node n in the
-           dense graph.
+        dense graph.
         """
         try:
             return iter(set(self._adj) - set(self._adj[n]) - {n})

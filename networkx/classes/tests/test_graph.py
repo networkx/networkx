@@ -1,5 +1,6 @@
 import pickle
 import gc
+import platform
 
 import networkx as nx
 from networkx.testing.utils import (
@@ -51,6 +52,9 @@ class BaseGraphTester:
         with pytest.raises(nx.NetworkXError):
             G.neighbors(-1)
 
+    @pytest.mark.skipif(
+        platform.python_implementation() == "PyPy", reason="PyPy gc is different"
+    )
     def test_memory_leak(self):
         G = self.Graph()
 
@@ -109,12 +113,14 @@ class BaseGraphTester:
         # node not in graph doesn't get caught upon creation of iterator
         bunch = G.nbunch_iter(-1)
         # but gets caught when iterator used
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError, match="is not a node or a sequence"):
             list(bunch)
         # unhashable doesn't get caught upon creation of iterator
         bunch = G.nbunch_iter([0, 1, 2, {}])
         # but gets caught when iterator hits the unhashable
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(
+            nx.NetworkXError, match="in sequence nbunch is not a valid node"
+        ):
             list(bunch)
 
     def test_nbunch_iter_node_format_raise(self):
@@ -182,8 +188,17 @@ class BaseAttrGraphTester(BaseGraphTester):
         G = self.Graph(name="")
         assert G.name == ""
         G = self.Graph(name="test")
-        assert G.__str__() == "test"
         assert G.name == "test"
+
+    def test_str_unnamed(self):
+        G = self.Graph()
+        G.add_edges_from([(1, 2), (2, 3)])
+        assert str(G) == f"{type(G).__name__} with 3 nodes and 2 edges"
+
+    def test_str_named(self):
+        G = self.Graph(name="foo")
+        G.add_edges_from([(1, 2), (2, 3)])
+        assert str(G) == f"{type(G).__name__} named 'foo' with 3 nodes and 2 edges"
 
     def test_graph_chain(self):
         G = self.Graph([(0, 1), (1, 2)])

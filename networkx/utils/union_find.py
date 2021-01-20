@@ -22,7 +22,7 @@ class UnionFind:
       in X, it is added to X as one of the members of the merged set.
 
       Union-find data structure. Based on Josiah Carlson's code,
-      http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/215912
+      https://code.activestate.com/recipes/215912/
       with significant additional changes by D. Eppstein.
       http://www.ics.uci.edu/~eppstein/PADS/UnionFind.py
 
@@ -65,9 +65,7 @@ class UnionFind:
         return root
 
     def __iter__(self):
-        """Iterate through all items ever found or unioned by this structure.
-
-        """
+        """Iterate through all items ever found or unioned by this structure."""
         return iter(self.parents)
 
     def to_sets(self):

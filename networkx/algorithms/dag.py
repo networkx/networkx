@@ -17,7 +17,6 @@ import networkx as nx
 from networkx.algorithms.traversal.breadth_first_search import descendants_at_distance
 from networkx.generators.trees import NIL
 from networkx.utils import arbitrary_element
-from networkx.utils import consume
 from networkx.utils import pairwise
 from networkx.utils import not_implemented_for
 
@@ -84,7 +83,8 @@ def ancestors(G, source):
 def has_cycle(G):
     """Decides whether the directed graph has a cycle."""
     try:
-        consume(topological_sort(G))
+        # Feed the entire iterator into a zero-length deque.
+        deque(topological_sort(G), maxlen=0)
     except nx.NetworkXUnfeasible:
         return True
     else:
@@ -110,9 +110,10 @@ def is_directed_acyclic_graph(G):
 def topological_sort(G):
     """Returns a generator of nodes in topologically sorted order.
 
-    A topological sort is a nonunique permutation of the nodes such that an
-    edge from u to v implies that u appears before v in the topological sort
-    order.
+    A topological sort is a nonunique permutation of the nodes of a
+    directed graph such that an edge from u to v implies that u
+    appears before v in the topological sort order. This ordering is
+    valid only if the graph has no directed cycles.
 
     Parameters
     ----------
@@ -468,7 +469,7 @@ def is_aperiodic(G):
 
 @not_implemented_for("undirected")
 def transitive_closure(G, reflexive=False):
-    """ Returns transitive closure of a directed graph
+    """Returns transitive closure of a directed graph
 
     The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
     for all v, w in V there is an edge (v, w) in E+ if and only if there
@@ -530,7 +531,7 @@ def transitive_closure(G, reflexive=False):
 
 @not_implemented_for("undirected")
 def transitive_closure_dag(G, topo_order=None):
-    """ Returns the transitive closure of a directed acyclic graph.
+    """Returns the transitive closure of a directed acyclic graph.
 
     This function is faster than the function `transitive_closure`, but fails
     if the graph has a cycle.
@@ -579,7 +580,7 @@ def transitive_closure_dag(G, topo_order=None):
 
 @not_implemented_for("undirected")
 def transitive_reduction(G):
-    """ Returns transitive reduction of a directed graph
+    """Returns transitive reduction of a directed graph
 
     The transitive reduction of G = (V,E) is a graph G- = (V,E-) such that
     for all v,w in V there is an edge (v,w) in E- if and only if (v,w) is

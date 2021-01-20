@@ -44,8 +44,8 @@ GM.mapping stores the isomorphism mapping from G1 to G2.
 {0: 0, 1: 1, 2: 2, 3: 3}
 
 
-Suppose G1 and G2 are isomorphic directed graphs
-graphs. Verification is as follows:
+Suppose G1 and G2 are isomorphic directed graphs.
+Verification is as follows:
 
 >>> G1 = nx.path_graph(4, create_using=nx.DiGraph())
 >>> G2 = nx.path_graph(4, create_using=nx.DiGraph())

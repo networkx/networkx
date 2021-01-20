@@ -129,11 +129,12 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     .. [2] Foster, J.G., Foster, D.V., Grassberger, P. & Paczuski, M.
        Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
     """
-    import scipy.stats as stats
+    import scipy as sp
+    import scipy.stats  # call as sp.stats
 
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
-    return stats.pearsonr(x, y)[0]
+    return sp.stats.pearsonr(x, y)[0]
 
 
 def attribute_assortativity_coefficient(G, attribute, nodes=None):
@@ -217,7 +218,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
 
     Notes
     -----
-    This computes Eq. (21) in Ref. [1]_ , for the mixing matrix of
+    This computes Eq. (21) in Ref. [1]_ , for the mixing matrix
     of the specified attribute.
 
     References

@@ -51,7 +51,7 @@ def cuthill_mckee_ordering(G, heuristic=None):
 
     Notes
     -----
-    The optimal solution the the bandwidth reduction is NP-complete [2]_.
+    The optimal solution the bandwidth reduction is NP-complete [2]_.
 
 
     References
@@ -109,7 +109,7 @@ def reverse_cuthill_mckee_ordering(G, heuristic=None):
 
     Notes
     -----
-    The optimal solution the the bandwidth reduction is NP-complete [2]_.
+    The optimal solution the bandwidth reduction is NP-complete [2]_.
 
     References
     ----------

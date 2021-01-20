@@ -83,13 +83,14 @@ def subgraph_centrality_exp(G):
     ['1 3.90', '2 3.90', '3 3.64', '4 3.71', '5 3.64', '6 3.71', '7 3.64', '8 3.90']
     """
     # alternative implementation that calculates the matrix exponential
-    import scipy.linalg
+    import scipy as sp
+    import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
-    expA = scipy.linalg.expm(A)
+    expA = sp.linalg.expm(A)
     # convert diagonal to dictionary keyed by node
     sc = dict(zip(nodelist, map(float, expA.diagonal())))
     return sc
@@ -137,7 +138,7 @@ def subgraph_centrality(G):
        SC(u)=\sum_{j=1}^{N}(v_{j}^{u})^2 e^{\lambda_{j}},
 
     where `v_j` is an eigenvector of the adjacency matrix `A` of G
-    corresponding corresponding to the eigenvalue `\lambda_j`.
+    corresponding to the eigenvalue `\lambda_j`.
 
     Examples
     --------
@@ -171,16 +172,15 @@ def subgraph_centrality(G):
 
     """
     import numpy as np
-    import numpy.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[np.nonzero(A)] = 1
-    w, v = numpy.linalg.eigh(A)
+    w, v = np.linalg.eigh(A)
     vsquare = np.array(v) ** 2
     expw = np.exp(w)
-    xg = np.dot(vsquare, expw)
+    xg = vsquare @ expw
     # convert vector dictionary keyed by node
     sc = dict(zip(nodelist, map(float, xg)))
     return sc
@@ -254,14 +254,15 @@ def communicability_betweenness_centrality(G, normalized=True):
     ['0 0.03', '1 0.45', '2 0.51', '3 0.45', '4 0.40', '5 0.19', '6 0.03']
     """
     import numpy as np
-    import scipy.linalg
+    import scipy as sp
+    import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
     n = len(nodelist)
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[np.nonzero(A)] = 1
-    expA = scipy.linalg.expm(A)
+    expA = sp.linalg.expm(A)
     mapping = dict(zip(nodelist, range(n)))
     cbc = {}
     for v in G:
@@ -271,7 +272,7 @@ def communicability_betweenness_centrality(G, normalized=True):
         col = A[:, i].copy()
         A[i, :] = 0
         A[:, i] = 0
-        B = (expA - scipy.linalg.expm(A)) / expA
+        B = (expA - sp.linalg.expm(A)) / expA
         # sum with row/col of node v and diag set to zero
         B[i, :] = 0
         B[:, i] = 0

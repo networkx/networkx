@@ -40,13 +40,20 @@ True
 References
 ----------
 
-..  [1] Pearl, J.  (2009).  Causality.  Cambridge: Cambridge University Press.
+.. [1] Pearl, J.  (2009).  Causality.  Cambridge: Cambridge University Press.
 
-..  [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks.  Cambridge: Cambridge University Press.
+.. [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks. 
+   Cambridge: Cambridge University Press.
 
-..  [3] Shachter, R.  D.  (1998).  Bayes-ball: rational pastime (for determining irrelevance and requisite information in belief networks and influence diagrams).  In , Proceedings of the Fourteenth Conference on Uncertainty in Artificial Intelligence (pp.  480–487).  San Francisco, CA, USA: Morgan Kaufmann Publishers Inc.
+.. [3] Shachter, R.  D.  (1998).
+   Bayes-ball: rational pastime (for determining irrelevance and requisite
+   information in belief networks and influence diagrams).
+   In , Proceedings of the Fourteenth Conference on Uncertainty in Artificial
+   Intelligence (pp.  480–487).
+   San Francisco, CA, USA: Morgan Kaufmann Publishers Inc.
 
-..  [4] Koller, D., & Friedman, N. (2009). Probabilistic graphical models: principles and techniques. The MIT Press.
+.. [4] Koller, D., & Friedman, N. (2009).
+   Probabilistic graphical models: principles and techniques. The MIT Press.
 
 """
 

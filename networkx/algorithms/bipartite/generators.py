@@ -116,21 +116,17 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
         return G  # done if no edges
 
     # build lists of degree-repeated vertex numbers
-    stubs = []
-    stubs.extend([[v] * aseq[v] for v in range(0, lena)])
-    astubs = []
+    stubs = [[v] * aseq[v] for v in range(0, lena)]
     astubs = [x for subseq in stubs for x in subseq]
 
-    stubs = []
-    stubs.extend([[v] * bseq[v - lena] for v in range(lena, lena + lenb)])
-    bstubs = []
+    stubs = [[v] * bseq[v - lena] for v in range(lena, lena + lenb)]
     bstubs = [x for subseq in stubs for x in subseq]
 
     # shuffle lists
     seed.shuffle(astubs)
     seed.shuffle(bstubs)
 
-    G.add_edges_from([[astubs[i], bstubs[i]] for i in range(suma)])
+    G.add_edges_from([astubs[i], bstubs[i]] for i in range(suma))
 
     G.name = "bipartite_configuration_model"
     return G

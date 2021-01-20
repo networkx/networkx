@@ -1,5 +1,5 @@
 from datetime import date
-from sphinx_gallery.sorting import ExplicitOrder
+from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
 import sphinx_rtd_theme
 from warnings import filterwarnings
 
@@ -19,12 +19,12 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
-    "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
     "nb2plots",
     "texext",
+    "numpydoc",
 ]
 
 # https://github.com/sphinx-gallery/sphinx-gallery
@@ -35,21 +35,32 @@ sphinx_gallery_conf = {
         [
             "../examples/basic",
             "../examples/drawing",
+            "../examples/3d_drawing",
+            "../examples/graphviz_layout",
+            "../examples/graphviz_drawing",
             "../examples/graph",
             "../examples/algorithms",
             "../examples/advanced",
-            "../examples/3d_drawing",
-            "../examples/pygraphviz",
-            "../examples/javascript",
-            "../examples/jit",
-            "../examples/applications",
+            "../examples/external",
+            "../examples/geospatial",
             "../examples/subclass",
         ]
     ),
+    "within_subsection_order": FileNameSortKey,
     # path where to save gallery generated examples
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
+    "image_scrapers": ("matplotlib", "mayavi"),
 }
+# Add pygraphviz png scraper, if available
+try:
+    from pygraphviz.scraper import PNGScraper
+
+    scrapers = list(sphinx_gallery_conf["image_scrapers"])
+    scrapers.append(PNGScraper())
+    sphinx_gallery_conf["image_scrapers"] = tuple(scrapers)
+except ImportError:
+    pass
 
 # generate autosummary pages
 autosummary_generate = True
@@ -112,9 +123,6 @@ modindex_common_prefix = ["networkx."]
 
 doctest_global_setup = "import networkx as nx"
 
-# treat ``x, y : type`` as vars x and y instead of default ``y(x,) : type``
-napoleon_use_param = False
-
 # Options for HTML output
 # -----------------------
 
@@ -123,7 +131,7 @@ html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 html_theme_options = {
-    "canonical_url": "https://networkx.github.io/documentation/stable/",
+    "canonical_url": "https://networkx.org/documentation/stable/",
     "navigation_depth": 3,
     "logo_only": True,
 }
@@ -161,7 +169,7 @@ html_last_updated_fmt = "%b %d, %Y"
 # If true, the reST sources are included in the HTML build as _sources/<name>.
 html_copy_source = False
 
-html_use_opensearch = "http://networkx.github.io"
+html_use_opensearch = "https://networkx.org"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "NetworkX"
@@ -169,6 +177,8 @@ htmlhelp_basename = "NetworkX"
 # Options for LaTeX output
 # ------------------------
 
+# Use a latex engine that allows for unicode characters in docstrings
+latex_engine = "xelatex"
 # The paper size ('letter' or 'a4').
 latex_paper_size = "letter"
 
@@ -192,8 +202,13 @@ latex_appendices = ["tutorial"]
 
 # Intersphinx mapping
 intersphinx_mapping = {
-    "https://docs.python.org/3/": None,
-    "https://numpy.org/doc/stable/": None,
+    "python": ("https://docs.python.org/3/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "matplotlib": ("https://matplotlib.org", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
+    "geopandas": ("https://geopandas.org/", None),
+    "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
 }
 
 # The reST default role (used for this markup: `text`) to use for all

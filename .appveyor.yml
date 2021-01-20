@@ -11,10 +11,6 @@ environment:
     CACHE_DIR: "%LOCALAPPDATA%\\pip\\Cache"
 
   matrix:
-    - PYTHON: "C:\\Python36-x64"
-      PYTHON_VERSION: "3.6"
-      PYTHON_ARCH: "64"
-
     - PYTHON: "C:\\Python37-x64"
       PYTHON_VERSION: "3.7"
       PYTHON_ARCH: "64"
@@ -22,7 +18,10 @@ environment:
     - PYTHON: "C:\\Python38-x64"
       PYTHON_VERSION: "3.8"
       PYTHON_ARCH: "64"
-      PIP_FLAGS: "--pre"
+
+    - PYTHON: "C:\\Python39-x64"
+      PYTHON_VERSION: "3.9.0"
+      PYTHON_ARCH: "64"
 
 install:
   # Install Python (from the official .msi of http://python.org) and pip when

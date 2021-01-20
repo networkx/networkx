@@ -9,8 +9,7 @@ __all__ = ["edmonds_karp"]
 
 
 def edmonds_karp_core(R, s, t, cutoff):
-    """Implementation of the Edmonds-Karp algorithm.
-    """
+    """Implementation of the Edmonds-Karp algorithm."""
     R_nodes = R.nodes
     R_pred = R.pred
     R_succ = R.succ
@@ -18,8 +17,7 @@ def edmonds_karp_core(R, s, t, cutoff):
     inf = R.graph["inf"]
 
     def augment(path):
-        """Augment flow along a path from s to t.
-        """
+        """Augment flow along a path from s to t."""
         # Determine the path residual capacity.
         flow = inf
         it = iter(path)
@@ -40,8 +38,7 @@ def edmonds_karp_core(R, s, t, cutoff):
         return flow
 
     def bidirectional_bfs():
-        """Bidirectional breadth-first search for an augmenting path.
-        """
+        """Bidirectional breadth-first search for an augmenting path."""
         pred = {s: None}
         q_s = [s]
         succ = {t: None}
@@ -95,8 +92,7 @@ def edmonds_karp_core(R, s, t, cutoff):
 
 
 def edmonds_karp_impl(G, s, t, capacity, residual, cutoff):
-    """Implementation of the Edmonds-Karp algorithm.
-    """
+    """Implementation of the Edmonds-Karp algorithm."""
     if s not in G:
         raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:

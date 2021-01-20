@@ -135,11 +135,15 @@ def generate_multiline_adjlist(G, delimiter=" "):
 
 @open_file(1, mode="wb")
 def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-8"):
-    """ Write the graph G in multiline adjacency list format to path
+    """Write the graph G in multiline adjacency list format to path
 
     Parameters
     ----------
     G : NetworkX graph
+
+    path : string or file
+       Filename or file handle to write to.
+       Filenames ending in .gz or .bz2 will be compressed.
 
     comments : string, optional
        Marker for comment lines
@@ -202,6 +206,9 @@ def parse_multiline_adjlist(
 
     nodetype : Python type, optional
        Convert nodes to this type.
+
+    edgetype : Python type, optional
+       Convert edges to this type.
 
     comments : string, optional
        Marker for comment lines

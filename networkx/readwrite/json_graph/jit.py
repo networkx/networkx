@@ -27,6 +27,7 @@ var json = [
 """
 
 import json
+import warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -46,7 +47,14 @@ def jit_graph(data, create_using=None):
     Returns
     -------
     G : NetworkX Graph built from create_using if provided.
+
+    .. deprecated:: 2.6
     """
+    warnings.warn(
+        ("jit_graph is deprecated and will be removed in NetworkX 3.0."),
+        DeprecationWarning,
+    )
+
     if create_using is None:
         G = nx.Graph()
     else:
@@ -85,7 +93,13 @@ def jit_data(G, indent=None, default=None):
     Returns
     -------
     data: JIT JSON string
+
+    .. deprecated:: 2.6
     """
+    warnings.warn(
+        ("jit_data is deprecated and will be removed in NetworkX 3.0."),
+        DeprecationWarning,
+    )
     json_graph = []
     for node in G.nodes():
         json_node = {"id": node, "name": node}

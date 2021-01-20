@@ -112,12 +112,12 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
 
     See Also
     --------
-    all_pairs_shortest_path()
-    all_pairs_dijkstra_path()
-    all_pairs_bellman_ford_path()
-    single_source_shortest_path()
-    single_source_dijkstra_path()
-    single_source_bellman_ford_path()
+    all_pairs_shortest_path
+    all_pairs_dijkstra_path
+    all_pairs_bellman_ford_path
+    single_source_shortest_path
+    single_source_dijkstra_path
+    single_source_bellman_ford_path
     """
     if method not in ("dijkstra", "bellman-ford"):
         # so we don't need to check in each branch later
@@ -159,7 +159,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
             if method == "unweighted":
                 paths = nx.bidirectional_shortest_path(G, source, target)
             elif method == "dijkstra":
-                paths = nx.dijkstra_path(G, source, target, weight)
+                _, paths = nx.bidirectional_dijkstra(G, source, target, weight)
             else:  # method == 'bellman-ford':
                 paths = nx.bellman_ford_path(G, source, target, weight)
     return paths
@@ -247,12 +247,12 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
 
     See Also
     --------
-    all_pairs_shortest_path_length()
-    all_pairs_dijkstra_path_length()
-    all_pairs_bellman_ford_path_length()
-    single_source_shortest_path_length()
-    single_source_dijkstra_path_length()
-    single_source_bellman_ford_path_length()
+    all_pairs_shortest_path_length
+    all_pairs_dijkstra_path_length
+    all_pairs_bellman_ford_path_length
+    single_source_shortest_path_length
+    single_source_dijkstra_path_length
+    single_source_bellman_ford_path_length
     """
     if method not in ("dijkstra", "bellman-ford"):
         # so we don't need to check in each branch later
@@ -464,9 +464,9 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
 
     See Also
     --------
-    shortest_path()
-    single_source_shortest_path()
-    all_pairs_shortest_path()
+    shortest_path
+    single_source_shortest_path
+    all_pairs_shortest_path
     """
     method = "unweighted" if weight is None else method
     if method == "unweighted":
@@ -515,11 +515,11 @@ def _build_paths_from_predecessors(sources, target, pred):
 
     See Also
     --------
-    shortest_path()
-    single_source_shortest_path()
-    all_pairs_shortest_path()
-    all_shortest_paths()
-    bellman_ford_path()
+    shortest_path
+    single_source_shortest_path
+    all_pairs_shortest_path
+    all_shortest_paths
+    bellman_ford_path
     """
     if target not in pred:
         raise nx.NetworkXNoPath(

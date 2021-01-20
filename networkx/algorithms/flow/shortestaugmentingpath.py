@@ -11,8 +11,7 @@ __all__ = ["shortest_augmenting_path"]
 
 
 def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff):
-    """Implementation of the shortest augmenting path algorithm.
-    """
+    """Implementation of the shortest augmenting path algorithm."""
     if s not in G:
         raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:
@@ -67,8 +66,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff
     inf = R.graph["inf"]
 
     def augment(path):
-        """Augment flow along a path from s to t.
-        """
+        """Augment flow along a path from s to t."""
         # Determine the path residual capacity.
         flow = inf
         it = iter(path)
@@ -89,8 +87,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff
         return flow
 
     def relabel(u):
-        """Relabel a node to create an admissible edge.
-        """
+        """Relabel a node to create an admissible edge."""
         height = n - 1
         for v, attr in R_succ[u].items():
             if attr["flow"] < attr["capacity"]:

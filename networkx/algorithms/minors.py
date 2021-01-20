@@ -14,7 +14,7 @@ __all__ = [
     "contracted_nodes",
     "equivalence_classes",
     "identified_nodes",
-    "quotient_graph"
+    "quotient_graph",
 ]
 
 chaini = chain.from_iterable
@@ -62,13 +62,12 @@ def equivalence_classes(iterable, relation):
     `{2, 5, 8}`: `0`, `3`, `6`, `9` are all divisible by `3` and leave zero
     remainder; `1`, `4`, `7` leave remainder `1`; while `2`, `5` and `8` leave
     remainder `2`. We can see this by calling `equivalence_classes` with
-    with `X` and a function implementation of `R`.::
+    `X` and a function implementation of `R`.
 
-        >>> X = set(range(10))
-        >>> def mod3(x, y): return (x - y) % 3 == 0
-        >>> equivalence_classes(X, mod3)    # doctest: +SKIP
-        {frozenset({1, 4, 7}), frozenset({8, 2, 5}), frozenset({0, 9, 3, 6})} # doctest: +SKIP
-
+    >>> X = set(range(10))
+    >>> def mod3(x, y): return (x - y) % 3 == 0
+    >>> equivalence_classes(X, mod3)    # doctest: +SKIP
+    {frozenset({1, 4, 7}), frozenset({8, 2, 5}), frozenset({0, 9, 3, 6})}
     """
     # For simplicity of implementation, we initialize the return value as a
     # list of lists, then convert it to a set of sets at the end of the
@@ -192,83 +191,82 @@ def quotient_graph(
     --------
     The quotient graph of the complete bipartite graph under the "same
     neighbors" equivalence relation is `K_2`. Under this relation, two nodes
-    are equivalent if they are not adjacent but have the same neighbor set::
+    are equivalent if they are not adjacent but have the same neighbor set.
 
-        >>> G = nx.complete_bipartite_graph(2, 3)
-        >>> same_neighbors = lambda u, v: (
-        ...     u not in G[v] and v not in G[u] and G[u] == G[v]
-        ... )
-        >>> Q = nx.quotient_graph(G, same_neighbors)
-        >>> K2 = nx.complete_graph(2)
-        >>> nx.is_isomorphic(Q, K2)
-        True
+    >>> G = nx.complete_bipartite_graph(2, 3)
+    >>> same_neighbors = lambda u, v: (
+    ...     u not in G[v] and v not in G[u] and G[u] == G[v]
+    ... )
+    >>> Q = nx.quotient_graph(G, same_neighbors)
+    >>> K2 = nx.complete_graph(2)
+    >>> nx.is_isomorphic(Q, K2)
+    True
 
     The quotient graph of a directed graph under the "same strongly connected
     component" equivalence relation is the condensation of the graph (see
     :func:`condensation`). This example comes from the Wikipedia article
-    *`Strongly connected component`_*::
+    *`Strongly connected component`_*.
 
-        >>> G = nx.DiGraph()
-        >>> edges = [
-        ...     "ab",
-        ...     "be",
-        ...     "bf",
-        ...     "bc",
-        ...     "cg",
-        ...     "cd",
-        ...     "dc",
-        ...     "dh",
-        ...     "ea",
-        ...     "ef",
-        ...     "fg",
-        ...     "gf",
-        ...     "hd",
-        ...     "hf",
-        ... ]
-        >>> G.add_edges_from(tuple(x) for x in edges)
-        >>> components = list(nx.strongly_connected_components(G))
-        >>> sorted(sorted(component) for component in components)
-        [['a', 'b', 'e'], ['c', 'd', 'h'], ['f', 'g']]
-        >>>
-        >>> C = nx.condensation(G, components)
-        >>> component_of = C.graph["mapping"]
-        >>> same_component = lambda u, v: component_of[u] == component_of[v]
-        >>> Q = nx.quotient_graph(G, same_component)
-        >>> nx.is_isomorphic(C, Q)
-        True
+    >>> G = nx.DiGraph()
+    >>> edges = [
+    ...     "ab",
+    ...     "be",
+    ...     "bf",
+    ...     "bc",
+    ...     "cg",
+    ...     "cd",
+    ...     "dc",
+    ...     "dh",
+    ...     "ea",
+    ...     "ef",
+    ...     "fg",
+    ...     "gf",
+    ...     "hd",
+    ...     "hf",
+    ... ]
+    >>> G.add_edges_from(tuple(x) for x in edges)
+    >>> components = list(nx.strongly_connected_components(G))
+    >>> sorted(sorted(component) for component in components)
+    [['a', 'b', 'e'], ['c', 'd', 'h'], ['f', 'g']]
+    >>>
+    >>> C = nx.condensation(G, components)
+    >>> component_of = C.graph["mapping"]
+    >>> same_component = lambda u, v: component_of[u] == component_of[v]
+    >>> Q = nx.quotient_graph(G, same_component)
+    >>> nx.is_isomorphic(C, Q)
+    True
 
     Node identification can be represented as the quotient of a graph under the
     equivalence relation that places the two nodes in one block and each other
-    node in its own singleton block::
+    node in its own singleton block.
 
-        >>> K24 = nx.complete_bipartite_graph(2, 4)
-        >>> K34 = nx.complete_bipartite_graph(3, 4)
-        >>> C = nx.contracted_nodes(K34, 1, 2)
-        >>> nodes = {1, 2}
-        >>> is_contracted = lambda u, v: u in nodes and v in nodes
-        >>> Q = nx.quotient_graph(K34, is_contracted)
-        >>> nx.is_isomorphic(Q, C)
-        True
-        >>> nx.is_isomorphic(Q, K24)
-        True
+    >>> K24 = nx.complete_bipartite_graph(2, 4)
+    >>> K34 = nx.complete_bipartite_graph(3, 4)
+    >>> C = nx.contracted_nodes(K34, 1, 2)
+    >>> nodes = {1, 2}
+    >>> is_contracted = lambda u, v: u in nodes and v in nodes
+    >>> Q = nx.quotient_graph(K34, is_contracted)
+    >>> nx.is_isomorphic(Q, C)
+    True
+    >>> nx.is_isomorphic(Q, K24)
+    True
 
     The blockmodeling technique described in [1]_ can be implemented as a
-    quotient graph::
+    quotient graph.
 
-        >>> G = nx.path_graph(6)
-        >>> partition = [{0, 1}, {2, 3}, {4, 5}]
-        >>> M = nx.quotient_graph(G, partition, relabel=True)
-        >>> list(M.edges())
-        [(0, 1), (1, 2)]
+    >>> G = nx.path_graph(6)
+    >>> partition = [{0, 1}, {2, 3}, {4, 5}]
+    >>> M = nx.quotient_graph(G, partition, relabel=True)
+    >>> list(M.edges())
+    [(0, 1), (1, 2)]
 
     Here is the sample example but using partition as a dict of block sets.
-    ::
 
-        >>> G = nx.path_graph(6)
-        >>> partition = {0: {0, 1}, 2: {2, 3}, 4: {4, 5}}
-        >>> M = nx.quotient_graph(G, partition, relabel=True)
-        >>> list(M.edges())
-        [(0, 1), (1, 2)]
+    >>> G = nx.path_graph(6)
+    >>> partition = {0: {0, 1}, 2: {2, 3}, 4: {4, 5}}
+    >>> M = nx.quotient_graph(G, partition, relabel=True)
+    >>> list(M.edges())
+    [(0, 1), (1, 2)]
 
     Partitions can be represented in various ways:
     ::
@@ -413,31 +411,32 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
     Parameters
     ----------
     G : NetworkX graph
-       The graph whose nodes will be contracted.
+        The graph whose nodes will be contracted.
 
     u, v : nodes
-       Must be nodes in `G`.
+        Must be nodes in `G`.
 
     self_loops : Boolean
-       If this is True, any edges joining `u` and `v` in `G` become
-       self-loops on the new node in the returned graph.
+        If this is True, any edges joining `u` and `v` in `G` become
+        self-loops on the new node in the returned graph.
 
     copy : Boolean
         If this is True (default True), make a copy of
         `G` and return that instead of directly changing `G`.
 
+
     Returns
     -------
     Networkx graph
-       If Copy is True:
-       A new graph object of the same type as `G` (leaving `G` unmodified)
-       with `u` and `v` identified in a single node. The right node `v`
-       will be merged into the node `u`, so only `u` will appear in the
-       returned graph.
-       if Copy is False:
-       Modifies `G` with `u` and `v` identified in a single node.
-       The right node `v` will be merged into the node `u`, so
-       only `u` will appear in the returned graph.
+        If Copy is True,
+        A new graph object of the same type as `G` (leaving `G` unmodified)
+        with `u` and `v` identified in a single node. The right node `v`
+        will be merged into the node `u`, so only `u` will appear in the
+        returned graph.
+        If copy is False,
+        Modifies `G` with `u` and `v` identified in a single node.
+        The right node `v` will be merged into the node `u`, so
+        only `u` will appear in the returned graph.
 
     Notes
     -----
@@ -445,37 +444,40 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
     not be the same as the edge keys for the old edges. This is
     natural because edge keys are unique only within each pair of nodes.
 
+    For non-multigraphs where `u` and `v` are adjacent to a third node
+    `w`, the edge (`v`, `w`) will be contracted into the edge (`u`,
+    `w`) with its attributes stored into a "contraction" attribute.
+
+    This function is also available as `identified_nodes`.
+
     Examples
     --------
     Contracting two nonadjacent nodes of the cycle graph on four nodes `C_4`
-    yields the path graph (ignoring parallel edges)::
+    yields the path graph (ignoring parallel edges):
 
-        >>> G = nx.cycle_graph(4)
-        >>> M = nx.contracted_nodes(G, 1, 3)
-        >>> P3 = nx.path_graph(3)
-        >>> nx.is_isomorphic(M, P3)
-        True
+    >>> G = nx.cycle_graph(4)
+    >>> M = nx.contracted_nodes(G, 1, 3)
+    >>> P3 = nx.path_graph(3)
+    >>> nx.is_isomorphic(M, P3)
+    True
 
-        >>> G = nx.MultiGraph(P3)
-        >>> M = nx.contracted_nodes(G, 0, 2)
-        >>> M.edges
-        MultiEdgeView([(0, 1, 0), (0, 1, 1)])
+    >>> G = nx.MultiGraph(P3)
+    >>> M = nx.contracted_nodes(G, 0, 2)
+    >>> M.edges
+    MultiEdgeView([(0, 1, 0), (0, 1, 1)])
 
-        >>> G = nx.Graph([(1, 2), (2, 2)])
-        >>> H = nx.contracted_nodes(G, 1, 2, self_loops=False)
-        >>> list(H.nodes())
-        [1]
-        >>> list(H.edges())
-        [(1, 1)]
+    >>> G = nx.Graph([(1, 2), (2, 2)])
+    >>> H = nx.contracted_nodes(G, 1, 2, self_loops=False)
+    >>> list(H.nodes())
+    [1]
+    >>> list(H.edges())
+    [(1, 1)]
 
-    See also
+    See Also
     --------
     contracted_edge
     quotient_graph
 
-    Notes
-    -----
-    This function is also available as `identified_nodes`.
     """
     # Copying has significant overhead and can be disabled if needed
     if copy:
@@ -485,32 +487,32 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
 
     # edge code uses G.edges(v) instead of G.adj[v] to handle multiedges
     if H.is_directed():
-        in_edges = (
-            (w if w != v else u, u, d)
-            for w, x, d in G.in_edges(v, data=True)
-            if self_loops or w != u
-        )
-        out_edges = (
-            (u, w if w != v else u, d)
-            for x, w, d in G.out_edges(v, data=True)
-            if self_loops or w != u
-        )
-        new_edges = chain(in_edges, out_edges)
+        edges_to_remap = chain(G.in_edges(v, data=True), G.out_edges(v, data=True))
     else:
-        new_edges = (
-            (u, w if w != v else u, d)
-            for x, w, d in G.edges(v, data=True)
-            if self_loops or w != u
-        )
+        edges_to_remap = G.edges(v, data=True)
 
     # If the H=G, the generators change as H changes
-    # This makes the new_edges independent of H
+    # This makes the edges_to_remap independent of H
     if not copy:
-        new_edges = list(new_edges)
+        edges_to_remap = list(edges_to_remap)
 
     v_data = H.nodes[v]
     H.remove_node(v)
-    H.add_edges_from(new_edges)
+
+    for (prev_w, prev_x, d) in edges_to_remap:
+        w = prev_w if prev_w != v else u
+        x = prev_x if prev_x != v else u
+
+        if ({prev_w, prev_x} == {u, v}) and not self_loops:
+            continue
+
+        if not H.has_edge(w, x) or G.is_multigraph():
+            H.add_edge(w, x, **d)
+        else:
+            if "contraction" in H.edges[(w, x)]:
+                H.edges[(w, x)]["contraction"][(prev_w, prev_x)] = d
+            else:
+                H.edges[(w, x)]["contraction"] = {(prev_w, prev_x): d}
 
     if "contraction" in H.nodes[u]:
         H.nodes[u]["contraction"][v] = v_data
@@ -558,22 +560,22 @@ def contracted_edge(G, edge, self_loops=True):
 
     Examples
     --------
-    Attempting to contract two nonadjacent nodes yields an error::
+    Attempting to contract two nonadjacent nodes yields an error:
 
-        >>> G = nx.cycle_graph(4)
-        >>> nx.contracted_edge(G, (1, 3))
-        Traceback (most recent call last):
-          ...
-        ValueError: Edge (1, 3) does not exist in graph G; cannot contract it
+    >>> G = nx.cycle_graph(4)
+    >>> nx.contracted_edge(G, (1, 3))
+    Traceback (most recent call last):
+      ...
+    ValueError: Edge (1, 3) does not exist in graph G; cannot contract it
 
     Contracting two adjacent nodes in the cycle graph on *n* nodes yields the
-    cycle graph on *n - 1* nodes::
+    cycle graph on *n - 1* nodes:
 
-        >>> C5 = nx.cycle_graph(5)
-        >>> C4 = nx.cycle_graph(4)
-        >>> M = nx.contracted_edge(C5, (0, 1), self_loops=False)
-        >>> nx.is_isomorphic(M, C4)
-        True
+    >>> C5 = nx.cycle_graph(5)
+    >>> C4 = nx.cycle_graph(4)
+    >>> M = nx.contracted_edge(C5, (0, 1), self_loops=False)
+    >>> nx.is_isomorphic(M, C4)
+    True
 
     See also
     --------
@@ -581,6 +583,7 @@ def contracted_edge(G, edge, self_loops=True):
     quotient_graph
 
     """
-    if not G.has_edge(*edge):
+    u, v = edge[:2]
+    if not G.has_edge(u, v):
         raise ValueError(f"Edge {edge} does not exist in graph G; cannot contract it")
-    return contracted_nodes(G, *edge, self_loops=self_loops)
+    return contracted_nodes(G, u, v, self_loops=self_loops)

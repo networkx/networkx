@@ -287,8 +287,8 @@ def node_disjoint_paths(
     Examples
     --------
     We use in this example the platonic icosahedral graph, which has node
-    node connectivity 5, thus there are 5 node disjoint paths between any
-    pair of non neighbor nodes.
+    connectivity 5, thus there are 5 node disjoint paths between any pair
+    of non neighbor nodes.
 
     >>> G = nx.icosahedral_graph()
     >>> len(list(nx.node_disjoint_paths(G, 0, 6)))

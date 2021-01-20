@@ -49,8 +49,7 @@ class MappedQueue:
     """
 
     def __init__(self, data=[]):
-        """Priority queue class with updatable priorities.
-        """
+        """Priority queue class with updatable priorities."""
         self.h = list(data)
         self.d = dict()
         self._heapify()

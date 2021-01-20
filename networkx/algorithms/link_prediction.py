@@ -209,7 +209,7 @@ def adamic_adar_index(G, ebunch=None):
 @not_implemented_for("multigraph")
 def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
     r"""Return the CCPA score for each pair of nodes.
-    
+
     Compute the Common Neighbor and Centrality based Parameterized Algorithm(CCPA)
     score of all node pairs in ebunch.
 
@@ -244,10 +244,10 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
         2-tuples (u, v) where u and v are nodes in the graph. If ebunch
         is None then all non-existent edges in the graph will be used.
         Default value: None.
-    
-    alpha : Parameter defined for participation of Common Neighbor 
+
+    alpha : Parameter defined for participation of Common Neighbor
             and Centrality Algorithm share. Default value set to 0.8
-            because author found better performance at 0.8 for all the 
+            because author found better performance at 0.8 for all the
             dataset.
             Default value: 0.8
 
@@ -256,7 +256,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
     -------
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
-        pair of nodes and p is their Common Neighbor and Centrality based 
+        pair of nodes and p is their Common Neighbor and Centrality based
         Parameterized Algorithm(CCPA) score.
 
     Examples
@@ -270,9 +270,9 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
 
     References
     ----------
-    .. [1] Ahmad, I., Akhtar, M.U., Noor, S. et al. 
-           Missing Link Prediction using Common Neighbor and Centrality based Parameterized Algorithm. 
-           Sci Rep 10, 364 (2020). 
+    .. [1] Ahmad, I., Akhtar, M.U., Noor, S. et al.
+           Missing Link Prediction using Common Neighbor and Centrality based Parameterized Algorithm.
+           Sci Rep 10, 364 (2020).
            https://doi.org/10.1038/s41598-019-57304-y
     """
     shortest_path = nx.shortest_path(G)

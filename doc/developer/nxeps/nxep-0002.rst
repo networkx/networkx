@@ -1,3 +1,5 @@
+.. _NXEP2:
+
 ==================================
 NXEP 2 — API design of view slices
 ==================================
@@ -87,6 +89,7 @@ of that list could change from one call to the next if the adjacency structure c
 between calls.
 
 In more detail, in pre 2.0 NetworkX, there were 3 ways to access node information:
+
 - ``G.node`` was a dict keyed by node to that node's attribute dict as a value.
 - ``G.nodes()`` returned a list.
 - ``G.nodes_iter()`` returned an iterator over the nodes.
@@ -209,6 +212,7 @@ The listed alternatives are not mutually exclusive.
   This approach could be expanded to using a ``slice`` object directly but
   interfacing it with an independent ``slice`` method of G.nodes and G.edges
   instead of implementing it in getitem dunder method.
+
   - The nice colon syntax for slices is only available with subscript notation.
     To allow G.nodes.slice to use the nice colon syntax, we could make it a
     property that creates a subscriptable object. Syntax would be ``G.nodes.slice[4:9:2]``.
@@ -219,3 +223,83 @@ Discussion
 
 - https://github.com/networkx/networkx/pull/4086
 
+The motivating example for the NXEP is the use-case where users want to
+introspect a subset (usually the first few) of the nodes and/or edges.
+If we look at the changes proposed by this NXEP and the listed alternatives,
+there are several ways that this use-case might be improved.
+
+1. Add a descriptive error message when users try to access ``View`` objects
+   with a slice object.
+2. Add specialized methods to the slice object (e.g. ``head()`` and ``tail()``
+   or ``slice()`` that provide functionality useful for introspection.
+3. The approach this NXEP proposes - modify ``View.__getitem__`` to add
+   Sequence semantics.
+
+Option 1 (better error messages) changes neither API nor behavior and would
+help guide users to the correct solution for the introspection use-case.
+The downside is that it does not offer the same level of convenience that
+support for slicing does.
+
+Option 2 (``head``, ``tail``, and/or ``slice`` methods) would add new methods
+to view a subset of the nodes/edges.
+For example::
+
+   >>> G = nx.path_graph(10)
+   >>> G.nodes()
+   NodeView((0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
+   >>> G.nodes().head(3)   # Display the first three nodes
+   NodeView((0, 1, 2))
+
+One drawback of the approach is that is introduces new API, which has to be
+both discoverable and intuitive in order to make node/edge viewing more
+convenient.
+For example, is ``G.nodes().head(3)`` or ``G.nodes().slice(0, 10, 2)``
+more convenient than ``list(G.nodes())[:3]`` or ``list(G.nodes())[0:10:2]``,
+respectively?
+Another complication involves choosing the names for the new methods.
+``head`` and ``tail`` are intuitive for users coming from `*nix` backgrounds
+and have been adopted by other popular libraries like `pandas`.
+However, ``head`` and ``tail`` also have meaning in the context of network
+science pertaining to e.g. graph edges.
+For example, a user might reasonably assume that ``G.edges().tail()`` would
+give the set of source nodes in a directed graph, instead of the last `n`
+edges.
+
+Option 3 (add sequence semantics to `View` objects) is arguably the most
+convenient as it doesn't involve raising any error messages.
+However, overriding the behavior of `*View.__getitem__` to mix Mapping and
+Sequence semantics is a relatively pervasive change that may have
+unforeseen consequences for some use-cases.
+Furthermore there is precedent in Python itself for returning un-sliceable view
+objects from some mappings, a notable example being the `dict_keys` and
+`dict_values` objects returned when accessing components in dictionaries::
+
+   >>> d = {k:v for k, v in zip(range(10), range(10))}
+   >>> d.values()[3:6]
+   Traceback (most recent call last)
+      ...
+   TypeError: 'dict_values' object is not subscriptable
+   >>> list(d.values())[3:6]
+   [3, 4, 5]
+    
+Since Python dictionaries are now ordered by default (as of 3.6 in CPython),
+this behavior may change in the future.
+
+Given the considerations associated with the listed options, the following
+course of action is proposed:
+
+- **Adopt option 1** - more informative error messages for the motivating
+  use-case (e.g. ``G.edges()[0:10]``) alleviates the need for users to go
+  digging through the documentation to find/remember how to get the
+  desired behavior.
+  Since no new API is introduced nor are there any backwards compatibility
+  concerns, this change doesn't require any further design discussion.
+  It is possible that this change is enough to resolve the motivating
+  use-case satisfactorily - monitor user feedback.
+- Option 2 doesn't require any further discussion in a design doc (i.e. NXEP).
+  New methods along the lines discussed above can be proposed via PR.
+- Defer implementing option 3 for now, but reconsider if:
+
+   - The improved error message is not in itself a sufficient solution
+   - Other use-cases are identified for which adding slicing to the `*View`
+     objects would be a nice improvement (e.g. improved performance).

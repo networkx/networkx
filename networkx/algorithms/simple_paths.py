@@ -24,6 +24,8 @@ def is_simple_path(G, nodes):
 
     Parameters
     ----------
+    G : graph
+        A NetworkX graph.
     nodes : list
         A list of one or more nodes in the graph `G`.
 
@@ -645,9 +647,9 @@ def _bidirectional_shortest_path(
 
 def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=None):
     """Bidirectional shortest path helper.
-       Returns (pred,succ,w) where
-       pred is a dictionary of predecessors from w to the source, and
-       succ is a dictionary of successors from w to the target.
+    Returns (pred,succ,w) where
+    pred is a dictionary of predecessors from w to the source, and
+    succ is a dictionary of successors from w to the target.
     """
     # does BFS from both source and target and meets in the middle
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
@@ -933,7 +935,7 @@ def _bidirectional_dijkstra(
                 push(fringe[dir], (vwLength, next(c), w))
                 paths[dir][w] = paths[dir][v] + [w]
                 if w in seen[0] and w in seen[1]:
-                    # see if this path is better than than the already
+                    # see if this path is better than the already
                     # discovered shortest path
                     totaldist = seen[0][w] + seen[1][w]
                     if finalpath == [] or finaldist > totaldist:

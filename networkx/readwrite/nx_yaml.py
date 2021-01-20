@@ -16,6 +16,7 @@ http://pyyaml.org/wiki/PyYAML
 
 __all__ = ["read_yaml", "write_yaml"]
 
+import warnings
 from networkx.utils import open_file
 
 
@@ -28,9 +29,9 @@ def write_yaml(G_to_be_yaml, path_for_yaml_output, **kwds):
 
     Parameters
     ----------
-    G : graph
+    G_to_be_yaml : graph
        A NetworkX graph
-    path : file or string
+    path_for_yaml_output : file or string
        File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
 
@@ -47,7 +48,14 @@ def write_yaml(G_to_be_yaml, path_for_yaml_output, **kwds):
     References
     ----------
     .. [1] http://www.yaml.org
+
+    .. deprecated:: 2.6
     """
+    msg = (
+        "write_yaml is deprecated and will be removed in 3.0."
+        "Use ``yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)``"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         import yaml
     except ImportError as e:
@@ -82,11 +90,17 @@ def read_yaml(path):
     ----------
     .. [1] http://www.yaml.org
 
+    .. deprecated:: 2.6
     """
+    msg = (
+        "read_yaml is deprecated and will be removed in 3.0."
+        "Use ``yaml.load(path, Loader=yaml.FullLoader)``"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         import yaml
     except ImportError as e:
         raise ImportError("read_yaml() requires PyYAML: http://pyyaml.org/") from e
 
-    G = yaml.load(path, Loader=yaml.FullLoader)
+    G = yaml.load(path, Loader=yaml.Loader)
     return G

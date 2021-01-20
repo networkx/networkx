@@ -150,13 +150,13 @@ def test_pseudo_sequence():
 
 
 def test_numpy_degree_sequence():
-    numpy = pytest.importorskip("numpy")
-    ds = numpy.array([1, 2, 2, 2, 1], dtype=numpy.int64)
+    np = pytest.importorskip("numpy")
+    ds = np.array([1, 2, 2, 2, 1], dtype=np.int64)
     assert nx.is_graphical(ds, "eg")
     assert nx.is_graphical(ds, "hh")
-    ds = numpy.array([1, 2, 2, 2, 1], dtype=numpy.float64)
+    ds = np.array([1, 2, 2, 2, 1], dtype=np.float64)
     assert nx.is_graphical(ds, "eg")
     assert nx.is_graphical(ds, "hh")
-    ds = numpy.array([1.1, 2, 2, 2, 1], dtype=numpy.float64)
+    ds = np.array([1.1, 2, 2, 2, 1], dtype=np.float64)
     pytest.raises(nx.NetworkXException, nx.is_graphical, ds, "eg")
     pytest.raises(nx.NetworkXException, nx.is_graphical, ds, "hh")

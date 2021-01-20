@@ -6,6 +6,8 @@
   Default requirements
 - [`extra.txt`](extra.txt)
   Optional requirements that may require extra steps to install
+- [`example.txt`](example.txt)
+  Requirements for gallery examples
 - [`test.txt`](test.txt)
   Requirements for running test suite
 - [`doc.txt`](doc.txt)
