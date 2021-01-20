@@ -50,15 +50,20 @@ sphinx_gallery_conf = {
     # path where to save gallery generated examples
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
-    "image_scrapers": ("matplotlib", "mayavi"),
+    "image_scrapers": ("matplotlib",),
 }
+# Add mayavi scraper, if available
+try:
+    import mayavi
+
+    sphinx_gallery_conf["image_scrapers"] += ("mayavi",)
+except ImportError:
+    pass
 # Add pygraphviz png scraper, if available
 try:
     from pygraphviz.scraper import PNGScraper
 
-    scrapers = list(sphinx_gallery_conf["image_scrapers"])
-    scrapers.append(PNGScraper())
-    sphinx_gallery_conf["image_scrapers"] = tuple(scrapers)
+    sphinx_gallery_conf["image_scrapers"] += (PNGScraper(),)
 except ImportError:
     pass
 
