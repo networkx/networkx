@@ -249,7 +249,7 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight="weight"):
        Starting node for path.
 
     cutoff : integer or float, optional
-       Length (sum of edge weights) at which the search is stopped.
+        Length (sum of edge weights) at which the search is stopped.
         If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
@@ -313,7 +313,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None, weight="weight"):
        Starting node for path
 
     cutoff : integer or float, optional
-       Length (sum of edge weights) at which the search is stopped.
+        Length (sum of edge weights) at which the search is stopped.
         If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
@@ -871,7 +871,7 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
        Starting node for path
 
     cutoff : integer or float, optional
-       Length (sum of edge weights) at which the search is stopped.
+        Length (sum of edge weights) at which the search is stopped.
         If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
@@ -937,7 +937,7 @@ def all_pairs_dijkstra(G, cutoff=None, weight="weight"):
     G : NetworkX graph
 
     cutoff : integer or float, optional
-       Length (sum of edge weights) at which the search is stopped.
+        Length (sum of edge weights) at which the search is stopped.
         If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
@@ -1005,7 +1005,7 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight="weight"):
     G : NetworkX graph
 
     cutoff : integer or float, optional
-       Length (sum of edge weights) at which the search is stopped.
+        Length (sum of edge weights) at which the search is stopped.
         If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
@@ -1063,7 +1063,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
     G : NetworkX graph
 
     cutoff : integer or float, optional
-       Length (sum of edge weights) at which the search is stopped.
+        Length (sum of edge weights) at which the search is stopped.
         If cutoff is provided, only return paths with summed weight <= cutoff.
 
     weight : string or function
