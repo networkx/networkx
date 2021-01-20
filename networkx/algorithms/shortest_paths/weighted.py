@@ -392,7 +392,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight="weight")
     cutoff : integer or float, optional
         Length (sum of edge weights) at which the search is stopped.
         If cutoff is provided, only return paths with summed weight <= cutoff.
-       
+
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -564,7 +564,7 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None, weight="weight"):
     cutoff : integer or float, optional
         Length (sum of edge weights) at which the search is stopped.
         If cutoff is provided, only return paths with summed weight <= cutoff.
-       
+
     weight : string or function
        If this is a string, then edge weights will be accessed via the
        edge attribute with this key (that is, the weight of the edge
