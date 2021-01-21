@@ -155,26 +155,31 @@ For a more detailed discussion, read these :doc:`detailed documents
    ``doc/release/release_dev.rst``.
 
    To set up a function for deprecation:
+
    - Use a deprecation warning to warn users. For example::
 
-     msg = "curly_hair is deprecated and will be removed in v3.0. Use sum() instead."
-     warnings.warn(msg, DeprecationWarning)
+         msg = "curly_hair is deprecated and will be removed in v3.0. Use sum() instead."
+         warnings.warn(msg, DeprecationWarning)
 
    - Add a warning to ``networkx/conftest.py``::
 
-     warnings.filterwarnings(
-         "ignore", category=DeprecationWarning, message=<start of message>
-     )
+         warnings.filterwarnings(
+             "ignore", category=DeprecationWarning, message=<start of message>
+         )
 
    - Add a reminder to ``doc/developer/deprecations.rst`` for the team
-     to remove the deprecated functionality in the future. For example::
+     to remove the deprecated functionality in the future. For example:
 
-     * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
+     .. code-block:: rst
 
-   - Add a note (and a link to the PR) to ``doc/release/release_dev.rst``::
+        * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
 
-     [`#4281 <https://github.com/networkx/networkx/pull/4281>`_]
-     Deprecate ``read_yaml`` and ``write_yaml``.
+   - Add a note (and a link to the PR) to ``doc/release/release_dev.rst``:
+
+     .. code-block:: rst
+
+        [`#4281 <https://github.com/networkx/networkx/pull/4281>`_]
+        Deprecate ``read_yaml`` and ``write_yaml``.
 
 
    .. note::
