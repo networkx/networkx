@@ -699,9 +699,9 @@ def draw_networkx_edges(
             # check if we need to do a self-loop
             if np.all(posA == posB):
                 # Self-loops are scaled by node size or edge width
-                shell = 0.5*kwargs["shrinkA"]
-                vshift = 2*max(kwargs["shrinkA"], 3*esize)
-                hshift = 0.7*vshift
+                shell = 0.5 * kwargs["shrinkA"]
+                vshift = 2 * max(kwargs["shrinkA"], 3 * esize)
+                hshift = 0.7 * vshift
                 # this is called with _screen space_ values so covert back
                 # to data space
                 ds = np.asarray([-shell, shell])
@@ -782,7 +782,7 @@ def draw_networkx_edges(
 
     # update view
     padx, pady = 0.05 * w, 0.05 * h
-    corners = (minx - padx, miny - pady), (maxx + padx, maxy + 2*pady)
+    corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
     ax.update_datalim(corners)
     ax.autoscale_view()
 
