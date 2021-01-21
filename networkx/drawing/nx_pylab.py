@@ -694,27 +694,25 @@ def draw_networkx_edges(
 
     base_connection_style = mpl.patches.ConnectionStyle(connectionstyle)
 
-    # Fallback for self-loop scale. Left outside of _connectionstyle so it is
-    # only computed once
-    max_nodesize = np.array(node_size).max()
-
     def _connectionstyle(esize):
         def cs(posA, posB, *args, **kwargs):
             # check if we need to do a self-loop
             if np.all(posA == posB):
                 # Self-loops are scaled by node size or edge width
-                shell = 2*kwargs["shrinkA"]
+                shell = 0.5*kwargs["shrinkA"]
                 vshift = 2*max(kwargs["shrinkA"], 3*esize)
                 hshift = 0.7*vshift
                 # this is called with _screen space_ values so covert back
                 # to data space
+                ds = np.asarray([-shell, shell])
+                dt = np.asarray([shell, shell])
                 s1 = np.asarray([-hshift, vshift])
                 s2 = np.asarray([hshift, vshift])
 
-                p1 = ax.transData.inverted().transform(posA + np.asarray([-shell, shell]))
+                p1 = ax.transData.inverted().transform(posA + ds)
                 p2 = ax.transData.inverted().transform(posA + s1)
                 p3 = ax.transData.inverted().transform(posA + s2)
-                p4 = ax.transData.inverted().transform(posA + np.asarray([shell, shell]))
+                p4 = ax.transData.inverted().transform(posA + dt)
 
                 path = [p1, p2, p3, p4]
 
@@ -729,6 +727,7 @@ def draw_networkx_edges(
 
     # FancyArrowPatch doesn't handle color strings
     arrow_colors = mpl.colors.colorConverter.to_rgba_array(edge_color, alpha)
+
     for i, (src, dst) in enumerate(edge_pos):
         x1, y1 = src
         x2, y2 = dst
@@ -783,7 +782,7 @@ def draw_networkx_edges(
 
     # update view
     padx, pady = 0.05 * w, 0.05 * h
-    corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
+    corners = (minx - padx, miny - pady), (maxx + padx, maxy + 2*pady)
     ax.update_datalim(corners)
     ax.autoscale_view()
 
