@@ -698,38 +698,34 @@ def draw_networkx_edges(
     # only computed once
     max_nodesize = np.array(node_size).max()
 
-    def _connectionstyle(posA, posB, *args, **kwargs):
-        # check if we need to do a self-loop
-        if np.all(posA == posB):
-            # Self-loops are scaled by view extent, except in cases the extent
-            # is 0, e.g. for a single node. In this case, fall back to scaling
-            # by the maximum node size
-            selfloop_ht = 0.005 * max_nodesize if h == 0 else h
-            # this is called with _screen space_ values so covert back
-            # to data space
-            data_loc = ax.transData.inverted().transform(posA)
-            v_shift = 0.1 * selfloop_ht
-            h_shift = v_shift * 0.5
-            # put the top of the loop first so arrow is not hidden by node
-            path = [
-                # 1
-                data_loc + np.asarray([0, v_shift]),
-                # 4 4 4
-                data_loc + np.asarray([h_shift, v_shift]),
-                data_loc + np.asarray([h_shift, 0]),
-                data_loc,
-                # 4 4 4
-                data_loc + np.asarray([-h_shift, 0]),
-                data_loc + np.asarray([-h_shift, v_shift]),
-                data_loc + np.asarray([0, v_shift]),
-            ]
+    def _connectionstyle(esize):
+        def cs(posA, posB, *args, **kwargs):
+            # check if we need to do a self-loop
+            if np.all(posA == posB):
+                # Self-loops are scaled by node size or edge width
+                shell = 2*kwargs["shrinkA"]
+                vshift = 2*max(kwargs["shrinkA"], 3*esize)
+                hshift = 0.7*vshift
+                # this is called with _screen space_ values so covert back
+                # to data space
+                s1 = np.asarray([-hshift, vshift])
+                s2 = np.asarray([hshift, vshift])
 
-            ret = mpl.path.Path(ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4])
-        # if not, fall back to the user specified behavior
-        else:
-            ret = base_connection_style(posA, posB, *args, **kwargs)
+                p1 = ax.transData.inverted().transform(posA + np.asarray([-shell, shell]))
+                p2 = ax.transData.inverted().transform(posA + s1)
+                p3 = ax.transData.inverted().transform(posA + s2)
+                p4 = ax.transData.inverted().transform(posA + np.asarray([shell, shell]))
 
-        return ret
+                path = [p1, p2, p3, p4]
+
+                ret = mpl.path.Path(ax.transData.transform(path), [1, 2, 2, 2])
+            # if not, fall back to the user specified behavior
+            else:
+                ret = base_connection_style(posA, posB, *args, **kwargs)
+
+            return ret
+
+        return cs
 
     # FancyArrowPatch doesn't handle color strings
     arrow_colors = mpl.colors.colorConverter.to_rgba_array(edge_color, alpha)
@@ -777,7 +773,7 @@ def draw_networkx_edges(
             mutation_scale=mutation_scale,
             color=arrow_color,
             linewidth=line_width,
-            connectionstyle=_connectionstyle,
+            connectionstyle=_connectionstyle(line_width),
             linestyle=style,
             zorder=1,
         )  # arrows go behind nodes
