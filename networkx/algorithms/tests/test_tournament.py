@@ -8,7 +8,9 @@ from networkx.algorithms.tournament import is_strongly_connected
 from networkx.algorithms.tournament import is_tournament
 from networkx.algorithms.tournament import random_tournament
 from networkx.algorithms.tournament import hamiltonian_path
+"""**NEW**"""
 from networkx.algorithms.tournament import score_sequence
+from networkx.algorithms.tournament import tournament_matrix
 
 class TestIsTournament:
     """Unit tests for the :func:`networkx.tournament.is_tournament`
@@ -94,7 +96,7 @@ class TestHamiltonianPath:
         assert all(v in G[u] for u, v in zip(path, path[1:]))
         assert path[0] in G[path[-1]]
 
-class TestScoreSequence:
+class TestScoreSequence:##NEW
     """Unit tests for the :func:`networkx.tournament.score_sequence`
     function.
 
@@ -102,6 +104,17 @@ class TestScoreSequence:
     def test_score_sequence(self):
         G = DiGraph([(0, 1)])
         assert score_sequence(G) == [0, 1]
+
+
+
+class TestTournamentMatrix: ##NEW
+    """Unit tests for the :func:`networkx.tournament.tournament_matrix`
+    function.
+
+    """
+    def test_tournament_matrix(self):
+        G = DiGraph([(0, 1)])
+        assert tournament_matrix(G)== [[0, -1], [1, 0]] #???
 
 
 class TestReachability:
