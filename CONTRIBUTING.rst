@@ -3,6 +3,8 @@
 Contributor Guide
 =================
 
+.. _dev_workflow:
+
 Development Workflow
 --------------------
 

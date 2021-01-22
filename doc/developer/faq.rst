@@ -15,7 +15,7 @@ To contribute to NetworkX, you will need three things:
   2. a development environment
   3. an idea of what you'd like to contribute
 
-Steps 1 & 2 are covered extensively in :ref:`Development Workflow`.
+Steps 1 & 2 are covered extensively in :ref:`Development Workflow <dev_workflow>`.
 There is no generic answer for step 3. There are many ways that NetworkX can
 be improved, from adding new algorithms, improving existing algorithms,
 improving the test suite (e.g. increasing test coverage), and improving the
@@ -37,7 +37,7 @@ Example
 Let's say I'd like to contribute an example of visualizing a complete Graph
 using a circular layout.
 Assuming you have already followed the procedure for
-:ref:`setting up a development environment <Development Workflow`, start by
+:ref:`setting up a development environment <dev_workflow>`, start by
 creating a new branch:
 
 .. note:: It's generally a good idea to give your branch a descriptive name so
