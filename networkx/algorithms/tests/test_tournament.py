@@ -1,6 +1,8 @@
 """Unit tests for the :mod:`networkx.algorithms.tournament` module."""
 from itertools import combinations
-
+import pytest
+sp = pytest.importorskip("scipy")
+sparse = sp.sparse
 
 from networkx import DiGraph
 from networkx.algorithms.tournament import is_reachable
@@ -8,7 +10,6 @@ from networkx.algorithms.tournament import is_strongly_connected
 from networkx.algorithms.tournament import is_tournament
 from networkx.algorithms.tournament import random_tournament
 from networkx.algorithms.tournament import hamiltonian_path
-"""**NEW**"""
 from networkx.algorithms.tournament import score_sequence
 from networkx.algorithms.tournament import tournament_matrix
 
@@ -57,15 +58,22 @@ class TestRandomTournament:
     """
 
     def test_graph_is_tournament(self):
-        for n in range(10):
+        for _ in range(10):
             G = random_tournament(5)
             assert is_tournament(G)
 
     def test_graph_is_tournament_seed(self):
-        for n in range(10):
+        for _ in range(10):
             G = random_tournament(5, seed=1)
             assert is_tournament(G)
 
+    def test_graph_is_tournament_one_node(self):
+        G = random_tournament(1)
+        assert is_tournament(G)
+
+    def test_graph_is_tournament_zero_node(self):
+        G = random_tournament(0)
+        assert is_tournament(G)
 
 class TestHamiltonianPath:
     """Unit tests for the :func:`networkx.tournament.hamiltonian_path`
@@ -101,20 +109,22 @@ class TestScoreSequence:##NEW
     function.
 
     """
-    def test_score_sequence(self):
+    def test_score_sequence_edge(self):
         G = DiGraph([(0, 1)])
         assert score_sequence(G) == [0, 1]
 
+    def test_score_sequence_triangle(self):
+        G = DiGraph([(0, 1), (1, 2), (2, 0)])
+        assert score_sequence(G) == [1, 1, 1]
 
-
-class TestTournamentMatrix: ##NEW
+class TestTournamentMatrix:
     """Unit tests for the :func:`networkx.tournament.tournament_matrix`
     function.
 
     """
     def test_tournament_matrix(self):
         G = DiGraph([(0, 1)])
-        assert tournament_matrix(G)== [[0, -1], [1, 0]] #???
+        assert tournament_matrix(G) == sparse.coo_matrix([[0, 1], [-1, 0]])
 
 
 class TestReachability:
