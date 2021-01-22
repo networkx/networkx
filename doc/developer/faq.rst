@@ -66,22 +66,26 @@ with the following contents::
 At this point, your contribution is ready to be reviewed. You can make the
 changes on your ``complete-graph-circular-layout-example`` branch visible to
 other NetworkX developers by
-`creating a pull request <https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request`__.
+`creating a pull request`__. 
 
-.. seealso:: The `developer guide <Development Workflow>` has more details on
+.. _PR: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request
+
+__ PR_
+
+.. seealso:: The :ref:`developer guide <dev_workflow>` has more details on
    creating pull requests.
 
 Q: I want to work on a specific function. How do I find it in the source code?
 ------------------------------------------------------------------------------
 
 Assuming you have followed the instructions for
-`setting up the development workflow <Development Workflow>`, there are several
+:ref:`setting up the development workflow <dev_workflow>`, there are several
 ways of determining where the in the **source code** a particular function or
 class is defined.
 
 For example, let's say you are interested in making a change to the
-`~networkx.kamada_kawai_layout` function, so you need to know where it is
-defined. In an IPython terminal, you can use ``?``:
+`~networkx.drawing.layout.kamada_kawai_layout` function, so you need to know
+where it is defined. In an IPython terminal, you can use ``?``:
 
 .. nbplot::
 
