@@ -85,12 +85,20 @@ class is defined.
 
 For example, let's say you are interested in making a change to the
 `~networkx.drawing.layout.kamada_kawai_layout` function, so you need to know
-where it is defined. In an IPython terminal, you can use ``?``:
+where it is defined. In an IPython terminal, you can use ``?`` --- the source file is
+listed in the ``File:`` field:
 
-.. nbplot::
+.. code-block:: ipython
 
-   >>> import networkx as nx
-   >>> nx.kamada_kawai_layout?
+   In [1]: import networkx as nx
+   In [2]: nx.kamada_kawai_layout?
+
+.. code-block:: text
+
+   Signature: <clipped for brevity>
+   Docstring: <clipped for brevity>
+   File: ~/networkx/networkx/drawing/layout.py
+   Type: function
 
 The ``grep`` command-line utility is also very useful. For example, from the
 NetworkX source directory:
