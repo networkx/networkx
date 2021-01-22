@@ -28,8 +28,8 @@ Q: How do I contribute an example to the Gallery?
 
 The example gallery is great place to contribute, particularly if you have an
 interesting application or visualization that uses NetworkX.
-The gallery is generated using sphinx-gallery from Python scripts stored in
-the ``examples/`` directory.
+The gallery is generated using :doc:`sphinx-gallery <sphinx-gallery:index>`
+from Python scripts stored in the ``examples/`` directory.
 
 Example
 ~~~~~~~
