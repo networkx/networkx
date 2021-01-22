@@ -4,6 +4,8 @@ on:
     # Run this workflow once a day
     - cron: "0 0 * * *"
 
+jobs:
+
   randomize-test-order:
     runs-on: ubuntu-latest
     steps:
