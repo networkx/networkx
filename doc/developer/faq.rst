@@ -12,8 +12,8 @@ Q: I'm new to open source and would like to contribute to NetworkX. How do I get
 To contribute to NetworkX, you will need three things:
 
   1. The source code
-  2. a development environment
-  3. an idea of what you'd like to contribute
+  2. A development environment
+  3. An idea of what you'd like to contribute
 
 Steps 1 & 2 are covered extensively in :ref:`Development Workflow <dev_workflow>`.
 There is no generic answer for step 3. There are many ways that NetworkX can
@@ -34,18 +34,19 @@ from Python scripts stored in the ``examples/`` directory.
 Example
 ~~~~~~~
 
-Let's say I'd like to contribute an example of visualizing a complete Graph
-using a circular layout.
+Let's say I'd like to contribute an example of visualizing a
+`complete graph <networkx.generators.classic.complete_graph>` using a
+`circular layout <networkx.drawing.layout.circular_layout>`.
 Assuming you have already followed the procedure for
 :ref:`setting up a development environment <dev_workflow>`, start by
 creating a new branch:
 
-.. note:: It's generally a good idea to give your branch a descriptive name so
-   that it's easy to remember what you are working on.
-
 .. code-block:: bash
 
    git checkout -b complete-graph-circular-layout-example
+
+.. note:: It's generally a good idea to give your branch a descriptive name so
+   that it's easy to remember what you are working on.
 
 Now you can begin work on your example. Sticking with the circular layout idea,
 you might create a file in ``examples/drawing`` called ``circular_layout.py``
