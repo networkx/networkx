@@ -15,10 +15,27 @@ class TestCore:
         t1 = nx.convert_node_labels_to_integers(nx.tetrahedral_graph(), 1)
         t2 = nx.convert_node_labels_to_integers(t1, 5)
         G = nx.union(t1, t2)
-        G.add_edges_from([(3, 7), (2, 11), (11, 5), (11, 12), (5, 12),
-                          (12, 19), (12, 18), (3, 9), (7, 9), (7, 10),
-                          (9, 10), (9, 20), (17, 13), (13, 14), (14, 15),
-                          (15, 16), (16, 13)])
+        G.add_edges_from(
+            [
+                (3, 7),
+                (2, 11),
+                (11, 5),
+                (11, 12),
+                (5, 12),
+                (12, 19),
+                (12, 18),
+                (3, 9),
+                (7, 9),
+                (7, 10),
+                (9, 10),
+                (9, 20),
+                (17, 13),
+                (13, 14),
+                (14, 15),
+                (15, 16),
+                (16, 13),
+            ]
+        )
         G.add_node(21)
         cls.G = G
 
@@ -37,8 +54,9 @@ class TestCore:
 
     def test_find_cores(self):
         core = nx.find_cores(self.G)
-        nodes_by_core = [sorted([n for n in core if core[n] == val])
-                         for val in range(4)]
+        nodes_by_core = [
+            sorted([n for n in core if core[n] == val]) for val in range(4)
+        ]
         assert_nodes_equal(nodes_by_core[0], [21])
         assert_nodes_equal(nodes_by_core[1], [17, 18, 19, 20])
         assert_nodes_equal(nodes_by_core[2], [9, 10, 11, 12, 13, 14, 15, 16])
@@ -50,14 +68,15 @@ class TestCore:
 
     def test_find_cores2(self):
         core = nx.find_cores(self.H)
-        nodes_by_core = [sorted([n for n in core if core[n] == val])
-                         for val in range(3)]
+        nodes_by_core = [
+            sorted([n for n in core if core[n] == val]) for val in range(3)
+        ]
         assert_nodes_equal(nodes_by_core[0], [0])
         assert_nodes_equal(nodes_by_core[1], [1, 3])
         assert_nodes_equal(nodes_by_core[2], [2, 4, 5, 6])
 
     def test_directed_find_cores(self):
-        '''core number had a bug for directed graphs found in issue #1959'''
+        """core number had a bug for directed graphs found in issue #1959"""
         # small example where too timid edge removal can make cn[2] = 3
         G = nx.DiGraph()
         edges = [(1, 2), (2, 1), (2, 3), (2, 4), (3, 4), (4, 3)]
@@ -149,8 +168,9 @@ class TestCore:
 
     def test_onion_layers(self):
         layers = nx.onion_layers(self.G)
-        nodes_by_layer = [sorted([n for n in layers if layers[n] == val])
-                          for val in range(1, 7)]
+        nodes_by_layer = [
+            sorted([n for n in layers if layers[n] == val]) for val in range(1, 7)
+        ]
         assert_nodes_equal(nodes_by_layer[0], [21])
         assert_nodes_equal(nodes_by_layer[1], [17, 18, 19, 20])
         assert_nodes_equal(nodes_by_layer[2], [10, 12, 13, 14, 15, 16])

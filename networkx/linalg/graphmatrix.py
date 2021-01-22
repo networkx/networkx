@@ -13,8 +13,8 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
     For a standard incidence matrix a 1 appears wherever a row's node is
     incident on the column's edge.  For an oriented incidence matrix each
     edge is assigned an orientation (arbitrarily for undirected and aligning to
-    direction for directed).  A -1 appears for the tail of an edge and 1
-    for the head of the edge.  The elements are zero otherwise.
+    direction for directed).  A -1 appears for the source (tail) of an edge and
+    1 for the destination (head) of the edge.  The elements are zero otherwise.
 
     Parameters
     ----------
@@ -56,7 +56,8 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
     .. [1] Gil Strang, Network applications: A = incidence matrix,
        http://academicearth.org/lectures/network-applications-incidence-matrix
     """
-    import scipy.sparse
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
@@ -65,7 +66,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
             edgelist = list(G.edges(keys=True))
         else:
             edgelist = list(G.edges())
-    A = scipy.sparse.lil_matrix((len(nodelist), len(edgelist)))
+    A = sp.sparse.lil_matrix((len(nodelist), len(edgelist)))
     node_index = {node: i for i, node in enumerate(nodelist)}
     for ei, e in enumerate(edgelist):
         (u, v) = e[:2]
@@ -74,8 +75,10 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
         try:
             ui = node_index[u]
             vi = node_index[v]
-        except KeyError:
-            raise nx.NetworkXError(f"node {u} or {v} in edgelist but not in nodelist")
+        except KeyError as e:
+            raise nx.NetworkXError(
+                f"node {u} or {v} in edgelist " f"but not in nodelist"
+            ) from e
         if weight is None:
             wt = 1
         else:
@@ -124,7 +127,7 @@ def adjacency_matrix(G, nodelist=None, weight="weight"):
     sparse matrix.
 
     For MultiGraph/MultiDiGraph with parallel edges the weights are summed.
-    See to_numpy_matrix for other options.
+    See `to_numpy_array` for other options.
 
     The convention used for self-loop edges in graphs is to assign the
     diagonal matrix entry value to the edge weight attribute
@@ -132,18 +135,17 @@ def adjacency_matrix(G, nodelist=None, weight="weight"):
     alternate convention of doubling the edge weight is desired the
     resulting Scipy sparse matrix can be modified as follows:
 
-    >>> import scipy as sp
-    >>> G = nx.Graph([(1,1)])
+    >>> G = nx.Graph([(1, 1)])
     >>> A = nx.adjacency_matrix(G)
     >>> print(A.todense())
     [[1]]
-    >>> A.setdiag(A.diagonal()*2)
+    >>> A.setdiag(A.diagonal() * 2)
     >>> print(A.todense())
     [[2]]
 
     See Also
     --------
-    to_numpy_matrix
+    to_numpy_array
     to_scipy_sparse_matrix
     to_dict_of_dicts
     adjacency_spectrum

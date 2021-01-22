@@ -3,27 +3,26 @@ import networkx as nx
 
 from networkx.utils import not_implemented_for
 
-__all__ = ['trophic_levels', 'trophic_differences',
-           'trophic_incoherence_parameter']
+__all__ = ["trophic_levels", "trophic_differences", "trophic_incoherence_parameter"]
 
 
-@not_implemented_for('undirected')
-def trophic_levels(G, weight='weight'):
+@not_implemented_for("undirected")
+def trophic_levels(G, weight="weight"):
     r"""Compute the trophic levels of nodes.
 
     The trophic level of a node $i$ is
 
     .. math::
 
-        s_i = 1 + \frac{1}{k_^{in}_i \sum_{j} a_{ij} s_j
+        s_i = 1 + \frac{1}{k^{in}_i} \sum_{j} a_{ij} s_j
 
-    where $k_^{in}_i$ is the in-degree of i
+    where $k^{in}_i$ is the in-degree of i
 
     .. math::
 
         k^{in}_i = \sum_{j} a_{ij}
 
-    and nodes with $k_^{in}_i = 0$ have $s_i = 1$ by convention.
+    and nodes with $k^{in}_i = 0$ have $s_i = 1$ by convention.
 
     These are calculated using the method outlined in Levine [1]_.
 
@@ -41,11 +40,7 @@ def trophic_levels(G, weight='weight'):
     ----------
     .. [1] Stephen Levine (1980) J. theor. Biol. 83, 195-207
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-            "trophic_levels() requires NumPy: http://scipy.org/")
+    import numpy as np
 
     # find adjacency matrix
     a = nx.adjacency_matrix(G, weight=weight).T.toarray()
@@ -63,9 +58,11 @@ def trophic_levels(G, weight='weight'):
         n = np.linalg.inv(i - p)
     except np.linalg.LinAlgError as err:
         # LinAlgError is raised when there is a non-basal node
-        msg = "Trophic levels are only defined for graphs where every " + \
-              "node has a path from a basal node (basal nodes are nodes " + \
-              "with no incoming edges)."
+        msg = (
+            "Trophic levels are only defined for graphs where every "
+            + "node has a path from a basal node (basal nodes are nodes "
+            + "with no incoming edges)."
+        )
         raise nx.NetworkXError(msg) from err
     y = n.sum(axis=1) + 1
 
@@ -77,16 +74,15 @@ def trophic_levels(G, weight='weight'):
         levels[node_id] = 1
 
     # all other nodes have levels as calculated
-    nonzero_node_ids = (node_id for node_id, degree in G.in_degree
-                        if degree != 0)
+    nonzero_node_ids = (node_id for node_id, degree in G.in_degree if degree != 0)
     for i, node_id in enumerate(nonzero_node_ids):
         levels[node_id] = y[i]
 
     return levels
 
 
-@not_implemented_for('undirected')
-def trophic_differences(G, weight='weight'):
+@not_implemented_for("undirected")
+def trophic_differences(G, weight="weight"):
     r"""Compute the trophic differences of the edges of a directed graph.
 
     The trophic difference $x_ij$ for each edge is defined in Johnson et al.
@@ -119,8 +115,8 @@ def trophic_differences(G, weight='weight'):
     return diffs
 
 
-@not_implemented_for('undirected')
-def trophic_incoherence_parameter(G, weight='weight', cannibalism=False):
+@not_implemented_for("undirected")
+def trophic_incoherence_parameter(G, weight="weight", cannibalism=False):
     r"""Compute the trophic incoherence parameter of a graph.
 
     Trophic coherence is defined as the homogeneity of the distribution of
@@ -146,12 +142,7 @@ def trophic_incoherence_parameter(G, weight='weight', cannibalism=False):
     .. [1] Samuel Johnson, Virginia Dominguez-Garcia, Luca Donetti, Miguel A.
         Munoz (2014) PNAS "Trophic coherence determines food-web stability"
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-            "trophic_incoherence_parameter() requires NumPy: " +
-            "http://scipy.org/")
+    import numpy as np
 
     if cannibalism:
         diffs = trophic_differences(G, weight=weight)

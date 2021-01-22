@@ -213,8 +213,8 @@ class TestInducedSubGraph:
     @classmethod
     def setup_class(cls):
         cls.K3 = G = nx.complete_graph(3)
-        G.graph['foo'] = []
-        G.nodes[0]['foo'] = []
+        G.graph["foo"] = []
+        G.nodes[0]["foo"] = []
         G.remove_edge(1, 2)
         ll = []
         G.add_edge(1, 2, foo=ll)
@@ -237,15 +237,15 @@ class TestInducedSubGraph:
         assert dict(H.adj) == {0: {1: {}}, 1: {0: {}}}
 
     def same_attrdict(self, H, G):
-        old_foo = H[1][2]['foo']
-        H.edges[1, 2]['foo'] = 'baz'
+        old_foo = H[1][2]["foo"]
+        H.edges[1, 2]["foo"] = "baz"
         assert G.edges == H.edges
-        H.edges[1, 2]['foo'] = old_foo
+        H.edges[1, 2]["foo"] = old_foo
         assert G.edges == H.edges
-        old_foo = H.nodes[0]['foo']
-        H.nodes[0]['foo'] = 'baz'
+        old_foo = H.nodes[0]["foo"]
+        H.nodes[0]["foo"] = "baz"
         assert G.nodes == H.nodes
-        H.nodes[0]['foo'] = old_foo
+        H.nodes[0]["foo"] = old_foo
         assert G.nodes == H.nodes
 
     def graphs_equal(self, H, G):
@@ -277,10 +277,10 @@ class TestEdgeSubGraph:
         cls.G = G = nx.path_graph(5)
         # Add some node, edge, and graph attributes.
         for i in range(5):
-            G.nodes[i]['name'] = f'node{i}'
-        G.edges[0, 1]['name'] = 'edge01'
-        G.edges[3, 4]['name'] = 'edge34'
-        G.graph['name'] = 'graph'
+            G.nodes[i]["name"] = f"node{i}"
+        G.edges[0, 1]["name"] = "edge01"
+        G.edges[3, 4]["name"] = "edge34"
+        G.graph["name"] = "graph"
         # Get the subgraph induced by the first and last edges.
         cls.H = nx.edge_subgraph(G, [(0, 1), (3, 4)])
 
@@ -290,8 +290,7 @@ class TestEdgeSubGraph:
 
     def test_correct_edges(self):
         """Tests that the subgraph has the correct edges."""
-        assert ([(0, 1, 'edge01'), (3, 4, 'edge34')] ==
-                sorted(self.H.edges(data='name')))
+        assert [(0, 1, "edge01"), (3, 4, "edge34")] == sorted(self.H.edges(data="name"))
 
     def test_add_node(self):
         """Tests that adding a node to the original graph does not
@@ -319,9 +318,9 @@ class TestEdgeSubGraph:
         for v in self.H:
             assert self.G.nodes[v] == self.H.nodes[v]
         # Making a change to G should make a change in H and vice versa.
-        self.G.nodes[0]['name'] = 'foo'
+        self.G.nodes[0]["name"] = "foo"
         assert self.G.nodes[0] == self.H.nodes[0]
-        self.H.nodes[1]['name'] = 'bar'
+        self.H.nodes[1]["name"] = "bar"
         assert self.G.nodes[1] == self.H.nodes[1]
 
     def test_edge_attr_dict(self):
@@ -332,12 +331,10 @@ class TestEdgeSubGraph:
         for u, v in self.H.edges():
             assert self.G.edges[u, v] == self.H.edges[u, v]
         # Making a change to G should make a change in H and vice versa.
-        self.G.edges[0, 1]['name'] = 'foo'
-        assert (self.G.edges[0, 1]['name'] ==
-                self.H.edges[0, 1]['name'])
-        self.H.edges[3, 4]['name'] = 'bar'
-        assert (self.G.edges[3, 4]['name'] ==
-                self.H.edges[3, 4]['name'])
+        self.G.edges[0, 1]["name"] = "foo"
+        assert self.G.edges[0, 1]["name"] == self.H.edges[0, 1]["name"]
+        self.H.edges[3, 4]["name"] = "bar"
+        assert self.G.edges[3, 4]["name"] == self.H.edges[3, 4]["name"]
 
     def test_graph_attr_dict(self):
         """Tests that the graph attribute dictionary of the two graphs

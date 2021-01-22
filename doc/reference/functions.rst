@@ -73,6 +73,13 @@ Attributes
    set_edge_attributes
    get_edge_attributes
 
+Paths
+----------
+.. autosummary::
+   :toctree: generated/
+
+   is_path
+   path_weight
 
 Freezing graph structure
 ------------------------

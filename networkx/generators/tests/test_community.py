@@ -4,33 +4,32 @@ import pytest
 
 def test_random_partition_graph():
     G = nx.random_partition_graph([3, 3, 3], 1, 0, seed=42)
-    C = G.graph['partition']
+    C = G.graph["partition"]
     assert C == [{0, 1, 2}, {3, 4, 5}, {6, 7, 8}]
     assert len(G) == 9
     assert len(list(G.edges())) == 9
 
     G = nx.random_partition_graph([3, 3, 3], 0, 1)
-    C = G.graph['partition']
+    C = G.graph["partition"]
     assert C == [{0, 1, 2}, {3, 4, 5}, {6, 7, 8}]
     assert len(G) == 9
     assert len(list(G.edges())) == 27
 
     G = nx.random_partition_graph([3, 3, 3], 1, 0, directed=True)
-    C = G.graph['partition']
+    C = G.graph["partition"]
     assert C == [{0, 1, 2}, {3, 4, 5}, {6, 7, 8}]
     assert len(G) == 9
     assert len(list(G.edges())) == 18
 
     G = nx.random_partition_graph([3, 3, 3], 0, 1, directed=True)
-    C = G.graph['partition']
+    C = G.graph["partition"]
     assert C == [{0, 1, 2}, {3, 4, 5}, {6, 7, 8}]
     assert len(G) == 9
     assert len(list(G.edges())) == 54
 
     G = nx.random_partition_graph([1, 2, 3, 4, 5], 0.5, 0.1)
-    C = G.graph['partition']
-    assert C == [{0}, {1, 2}, {3, 4, 5},
-                 {6, 7, 8, 9}, {10, 11, 12, 13, 14}]
+    C = G.graph["partition"]
+    assert C == [{0}, {1, 2}, {3, 4, 5}, {6, 7, 8, 9}, {10, 11, 12, 13, 14}]
     assert len(G) == 15
 
     rpg = nx.random_partition_graph
@@ -42,36 +41,36 @@ def test_random_partition_graph():
 
 def test_planted_partition_graph():
     G = nx.planted_partition_graph(4, 3, 1, 0, seed=42)
-    C = G.graph['partition']
+    C = G.graph["partition"]
     assert len(C) == 4
     assert len(G) == 12
     assert len(list(G.edges())) == 12
 
     G = nx.planted_partition_graph(4, 3, 0, 1)
-    C = G.graph['partition']
+    C = G.graph["partition"]
     assert len(C) == 4
     assert len(G) == 12
     assert len(list(G.edges())) == 54
 
-    G = nx.planted_partition_graph(10, 4, .5, .1, seed=42)
-    C = G.graph['partition']
+    G = nx.planted_partition_graph(10, 4, 0.5, 0.1, seed=42)
+    C = G.graph["partition"]
     assert len(C) == 10
     assert len(G) == 40
 
     G = nx.planted_partition_graph(4, 3, 1, 0, directed=True)
-    C = G.graph['partition']
+    C = G.graph["partition"]
     assert len(C) == 4
     assert len(G) == 12
     assert len(list(G.edges())) == 24
 
     G = nx.planted_partition_graph(4, 3, 0, 1, directed=True)
-    C = G.graph['partition']
+    C = G.graph["partition"]
     assert len(C) == 4
     assert len(G) == 12
     assert len(list(G.edges())) == 108
 
-    G = nx.planted_partition_graph(10, 4, .5, .1, seed=42, directed=True)
-    C = G.graph['partition']
+    G = nx.planted_partition_graph(10, 4, 0.5, 0.1, seed=42, directed=True)
+    C = G.graph["partition"]
     assert len(C) == 10
     assert len(G) == 40
 
@@ -102,6 +101,9 @@ def test_connected_caveman_graph():
     K5.remove_edge(3, 4)
     assert nx.is_isomorphic(G, K5)
 
+    # need at least 2 nodes in each clique
+    pytest.raises(nx.NetworkXError, nx.connected_caveman_graph, 4, 1)
+
 
 def test_caveman_graph():
     G = nx.caveman_graph(4, 3)
@@ -115,17 +117,21 @@ def test_caveman_graph():
 def test_gaussian_random_partition_graph():
     G = nx.gaussian_random_partition_graph(100, 10, 10, 0.3, 0.01)
     assert len(G) == 100
-    G = nx.gaussian_random_partition_graph(100, 10, 10, 0.3, 0.01,
-                                           directed=True)
+    G = nx.gaussian_random_partition_graph(100, 10, 10, 0.3, 0.01, directed=True)
     assert len(G) == 100
-    G = nx.gaussian_random_partition_graph(100, 10, 10, 0.3, 0.01,
-                                           directed=False, seed=42)
+    G = nx.gaussian_random_partition_graph(
+        100, 10, 10, 0.3, 0.01, directed=False, seed=42
+    )
     assert len(G) == 100
-    G = nx.gaussian_random_partition_graph(100, 10, 10, 0.3, 0.01,
-                                           directed=True, seed=42)
+    assert not isinstance(G, nx.DiGraph)
+    G = nx.gaussian_random_partition_graph(
+        100, 10, 10, 0.3, 0.01, directed=True, seed=42
+    )
     assert len(G) == 100
-    pytest.raises(nx.NetworkXError,
-                  nx.gaussian_random_partition_graph, 100, 101, 10, 1, 0)
+    assert isinstance(G, nx.DiGraph)
+    pytest.raises(
+        nx.NetworkXError, nx.gaussian_random_partition_graph, 100, 101, 10, 1, 0
+    )
 
 
 def test_ring_of_cliques():
@@ -158,11 +164,9 @@ def test_windmill_graph():
 
 def test_stochastic_block_model():
     sizes = [75, 75, 300]
-    probs = [[0.25, 0.05, 0.02],
-             [0.05, 0.35, 0.07],
-             [0.02, 0.07, 0.40]]
+    probs = [[0.25, 0.05, 0.02], [0.05, 0.35, 0.07], [0.02, 0.07, 0.40]]
     G = nx.stochastic_block_model(sizes, probs, seed=0)
-    C = G.graph['partition']
+    C = G.graph["partition"]
     assert len(C) == 3
     assert len(G) == 450
     assert G.size() == 22160
@@ -173,20 +177,11 @@ def test_stochastic_block_model():
     # Test Exceptions
     sbm = nx.stochastic_block_model
     badnodelist = list(range(400))  # not enough nodes to match sizes
-    badprobs1 = [[0.25, 0.05, 1.02],
-                 [0.05, 0.35, 0.07],
-                 [0.02, 0.07, 0.40]]
-    badprobs2 = [[0.25, 0.05, 0.02],
-                 [0.05, -0.35, 0.07],
-                 [0.02, 0.07, 0.40]]
-    probs_rect1 = [[0.25, 0.05, 0.02],
-                   [0.05, -0.35, 0.07]]
-    probs_rect2 = [[0.25, 0.05],
-                   [0.05, -0.35],
-                   [0.02, 0.07]]
-    asymprobs = [[0.25, 0.05, 0.01],
-                 [0.05, -0.35, 0.07],
-                 [0.02, 0.07, 0.40]]
+    badprobs1 = [[0.25, 0.05, 1.02], [0.05, 0.35, 0.07], [0.02, 0.07, 0.40]]
+    badprobs2 = [[0.25, 0.05, 0.02], [0.05, -0.35, 0.07], [0.02, 0.07, 0.40]]
+    probs_rect1 = [[0.25, 0.05, 0.02], [0.05, -0.35, 0.07]]
+    probs_rect2 = [[0.25, 0.05], [0.05, -0.35], [0.02, 0.07]]
+    asymprobs = [[0.25, 0.05, 0.01], [0.05, -0.35, 0.07], [0.02, 0.07, 0.40]]
     pytest.raises(nx.NetworkXException, sbm, sizes, badprobs1)
     pytest.raises(nx.NetworkXException, sbm, sizes, badprobs2)
     pytest.raises(nx.NetworkXException, sbm, sizes, probs_rect1, directed=True)
@@ -210,10 +205,11 @@ def test_generator():
     tau1 = 3
     tau2 = 1.5
     mu = 0.1
-    G = nx.LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=5,
-                               min_community=20, seed=10)
+    G = nx.LFR_benchmark_graph(
+        n, tau1, tau2, mu, average_degree=5, min_community=20, seed=10
+    )
     assert len(G) == 250
-    C = {frozenset(G.nodes[v]['community']) for v in G}
+    C = {frozenset(G.nodes[v]["community"]) for v in G}
     assert nx.community.is_partition(G.nodes(), C)
 
 

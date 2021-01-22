@@ -5,9 +5,9 @@ We're happy to announce the release of NetworkX 2.X!
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
-For more information, please visit our `website <http://networkx.github.io/>`_
+For more information, please visit our `website <https://networkx.org/>`_
 and our `gallery of examples
-<https://networkx.github.io/documentation/latest/auto_examples/index.html>`_.
+<https://networkx.org/documentation/latest/auto_examples/index.html>`_.
 Please send comments and questions to the `networkx-discuss mailing list
 <http://groups.google.com/group/networkx-discuss>`_.
 

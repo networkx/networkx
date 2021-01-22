@@ -50,6 +50,8 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
        Encoding for text data.
     prettyprint : bool (optional, default: True)
        If True use line breaks and indenting in output XML.
+    version: string (optional, default: '1.2draft')
+       The version of GEXF to be used for nodes attributes checking
 
     Examples
     --------
@@ -57,9 +59,9 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
     >>> nx.write_gexf(G, "test.gexf")
 
     # visualization data
-    >>> G.nodes[0]['viz'] = {'size': 54}
-    >>> G.nodes[0]['viz']['position'] = {'x' : 0, 'y' : 1}
-    >>> G.nodes[0]['viz']['color'] = {'r' : 0, 'g' : 0, 'b' : 256}
+    >>> G.nodes[0]["viz"] = {"size": 54}
+    >>> G.nodes[0]["viz"]["position"] = {"x": 0, "y": 1}
+    >>> G.nodes[0]["viz"]["color"] = {"r": 0, "g": 0, "b": 256}
 
 
     Notes
@@ -103,10 +105,10 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> linefeed = chr(10) # linefeed=\n
-    >>> s = linefeed.join(nx.generate_gexf(G))  # doctest: +SKIP
+    >>> linefeed = chr(10)  # linefeed=\n
+    >>> s = linefeed.join(nx.generate_gexf(G))
     >>> for line in nx.generate_gexf(G):  # doctest: +SKIP
-    ...    print(line)
+    ...     print(line)
 
     Notes
     -----
@@ -136,8 +138,8 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     Parameters
     ----------
     path : file or string
-       File or file name to write.
-       File names ending in .gz or .bz2 will be compressed.
+       File or file name to read.
+       File names ending in .gz or .bz2 will be decompressed.
     node_type: Python type (default: None)
        Convert node ids to this type if not None.
     relabel : bool (default: False)
@@ -193,47 +195,48 @@ class GEXF:
     }
     versions["1.2draft"] = d
 
-    types = [
-        (int, "integer"),
-        (float, "float"),
-        (float, "double"),
-        (bool, "boolean"),
-        (list, "string"),
-        (dict, "string"),
-        (int, "long"),
-        (str, "liststring"),
-        (str, "anyURI"),
-        (str, "string"),
-    ]
-
-    # These additions to types allow writing numpy types
-    try:
-        import numpy as np
-    except ImportError:
-        pass
-    else:
-        # prepend so that python types are created upon read (last entry wins)
+    def construct_types(self):
         types = [
-            (np.float64, "float"),
-            (np.float32, "float"),
-            (np.float16, "float"),
-            (np.float_, "float"),
-            (np.int, "int"),
-            (np.int8, "int"),
-            (np.int16, "int"),
-            (np.int32, "int"),
-            (np.int64, "int"),
-            (np.uint8, "int"),
-            (np.uint16, "int"),
-            (np.uint32, "int"),
-            (np.uint64, "int"),
-            (np.int_, "int"),
-            (np.intc, "int"),
-            (np.intp, "int"),
-        ] + types
+            (int, "integer"),
+            (float, "float"),
+            (float, "double"),
+            (bool, "boolean"),
+            (list, "string"),
+            (dict, "string"),
+            (int, "long"),
+            (str, "liststring"),
+            (str, "anyURI"),
+            (str, "string"),
+        ]
 
-    xml_type = dict(types)
-    python_type = dict(reversed(a) for a in types)
+        # These additions to types allow writing numpy types
+        try:
+            import numpy as np
+        except ImportError:
+            pass
+        else:
+            # prepend so that python types are created upon read (last entry wins)
+            types = [
+                (np.float64, "float"),
+                (np.float32, "float"),
+                (np.float16, "float"),
+                (np.float_, "float"),
+                (np.int_, "int"),
+                (np.int8, "int"),
+                (np.int16, "int"),
+                (np.int32, "int"),
+                (np.int64, "int"),
+                (np.uint8, "int"),
+                (np.uint16, "int"),
+                (np.uint32, "int"),
+                (np.uint64, "int"),
+                (np.int_, "int"),
+                (np.intc, "int"),
+                (np.intp, "int"),
+            ] + types
+
+        self.xml_type = dict(types)
+        self.python_type = dict(reversed(a) for a in types)
 
     # http://www.w3.org/TR/xmlschema-2/#boolean
     convert_bool = {
@@ -265,6 +268,7 @@ class GEXFWriter(GEXF):
     def __init__(
         self, graph=None, encoding="utf-8", prettyprint=True, version="1.2draft"
     ):
+        self.construct_types()
         self.prettyprint = prettyprint
         self.encoding = encoding
         self.set_version(version)
@@ -400,6 +404,11 @@ class GEXFWriter(GEXF):
         edges_element = Element("edges")
         for u, v, key, edge_data in edge_key_data(G):
             kw = {"id": str(key)}
+            try:
+                edge_label = edge_data.pop("label")
+                kw["label"] = str(edge_label)
+            except KeyError:
+                pass
             try:
                 edge_weight = edge_data.pop("weight")
                 kw["weight"] = str(edge_weight)
@@ -669,6 +678,7 @@ class GEXFReader(GEXF):
     # Class to read GEXF format files
     # use read_gexf() function
     def __init__(self, node_type=None, version="1.2draft"):
+        self.construct_types()
         self.node_type = node_type
         # assume simple graph and test for multigraph on read
         self.simple_graph = True
@@ -950,8 +960,8 @@ class GEXFReader(GEXF):
                 key = a.get("for")  # for is required
                 try:  # should be in our gexf_keys dictionary
                     title = gexf_keys[key]["title"]
-                except KeyError:
-                    raise nx.NetworkXError(f"No attribute defined for={key}.")
+                except KeyError as e:
+                    raise nx.NetworkXError(f"No attribute defined for={key}.") from e
                 atype = gexf_keys[key]["type"]
                 value = a.get("value")
                 if atype == "boolean":
@@ -1005,7 +1015,7 @@ def relabel_gexf_graph(G):
     Returns
     -------
     H : graph
-      A NetworkX graph with relabed nodes
+      A NetworkX graph with relabeled nodes
 
     Raises
     ------
@@ -1021,12 +1031,10 @@ def relabel_gexf_graph(G):
     # build mapping of node labels, do some error checking
     try:
         mapping = [(u, G.nodes[u]["label"]) for u in G]
-    except KeyError:
+    except KeyError as e:
         raise nx.NetworkXError(
-            "Failed to relabel nodes: "
-            "missing node labels found. "
-            "Use relabel=False."
-        )
+            "Failed to relabel nodes: missing node labels found. Use relabel=False."
+        ) from e
     x, y = zip(*mapping)
     if len(set(y)) != len(G):
         raise nx.NetworkXError(

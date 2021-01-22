@@ -32,6 +32,7 @@ Adding and Removing Nodes and Edges
    MultiDiGraph.remove_edges_from
    MultiDiGraph.update
    MultiDiGraph.clear
+   MultiDiGraph.clear_edges
 
 
 

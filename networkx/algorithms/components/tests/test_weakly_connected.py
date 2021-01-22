@@ -4,13 +4,26 @@ from networkx import NetworkXNotImplemented
 
 
 class TestWeaklyConnected:
-
     @classmethod
     def setup_class(cls):
         cls.gc = []
         G = nx.DiGraph()
-        G.add_edges_from([(1, 2), (2, 3), (2, 8), (3, 4), (3, 7), (4, 5),
-                          (5, 3), (5, 6), (7, 4), (7, 6), (8, 1), (8, 7)])
+        G.add_edges_from(
+            [
+                (1, 2),
+                (2, 3),
+                (2, 8),
+                (3, 4),
+                (3, 7),
+                (4, 5),
+                (5, 3),
+                (5, 6),
+                (7, 4),
+                (7, 6),
+                (8, 1),
+                (8, 7),
+            ]
+        )
         C = [[3, 4, 5, 7], [1, 2, 8], [6]]
         cls.gc.append((G, C))
 
@@ -63,3 +76,12 @@ class TestWeaklyConnected:
         pytest.raises(NetworkXNotImplemented, nx.weakly_connected_components, G)
         pytest.raises(NetworkXNotImplemented, nx.number_weakly_connected_components, G)
         pytest.raises(NetworkXNotImplemented, nx.is_weakly_connected, G)
+
+    def test_connected_mutability(self):
+        DG = nx.path_graph(5, create_using=nx.DiGraph)
+        G = nx.disjoint_union(DG, DG)
+        seen = set()
+        for component in nx.weakly_connected_components(G):
+            assert len(seen & component) == 0
+            seen.update(component)
+            component.clear()

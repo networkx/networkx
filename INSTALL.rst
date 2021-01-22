@@ -1,21 +1,10 @@
 Install
 =======
 
-NetworkX requires Python 3.6, 3.7, or 3.8.  If you do not already
+NetworkX requires Python 3.7, 3.8, or 3.9.  If you do not already
 have a Python environment configured on your computer, please see the
 instructions for installing the full `scientific Python stack
 <https://scipy.org/install.html>`_.
-
-.. note::
-   If you are on Windows and want to install optional packages (e.g., `scipy`),
-   then you will need to install a Python distribution such as
-   `Anaconda <https://www.anaconda.com/download/>`_,
-   `Enthought Canopy <https://www.enthought.com/product/canopy>`_,
-   `Python(x,y) <http://python-xy.github.io/>`_,
-   `WinPython <https://winpython.github.io/>`_, or
-   `Pyzo <http://www.pyzo.org/>`_.
-   If you use one of these Python distribution, please refer to their online
-   documentation.
 
 Below we assume you have the default Python environment already configured on
 your computer and you intend to install ``networkx`` inside of it.  If you want
@@ -76,44 +65,36 @@ Then, if you want to update ``networkx`` at any time, in the same directory do::
 
     $ git pull
 
-Optional packages
------------------
+Extra packages
+--------------
 
 .. note::
-   Some optional packages (e.g., `scipy`, `gdal`) may require compiling
+   Some optional packages (e.g., `gdal`) may require compiling
    C or C++ code.  If you have difficulty installing these packages
-   with `pip`, please review the instructions for installing
-   the full `scientific Python stack <https://scipy.org/install.html>`_.
+   with `pip`, please consult the homepages of those packages.
 
-The following optional packages provide additional functionality.
+The following extra packages provide additional functionality. See the
+files in the ``requirements/`` directory for information about specific
+version requirements.
 
-- `NumPy <http://www.numpy.org/>`_ (>= 1.15.4) provides matrix representation of
-  graphs and is used in some graph algorithms for high-performance matrix
-  computations.
-- `SciPy <http://scipy.org/>`_ (>= 1.1.0) provides sparse matrix representation
-  of graphs and many numerical scientific tools.
-- `pandas <http://pandas.pydata.org/>`_ (>= 0.23.3) provides a DataFrame, which
-  is a tabular data structure with labeled axes.
-- `Matplotlib <http://matplotlib.org/>`_ (>= 3.0.2) provides flexible drawing of
-  graphs.
-- `PyGraphviz <http://pygraphviz.github.io/>`_ (>= 1.5) and
-  `pydot <https://github.com/erocarrera/pydot>`_ (>= 1.2.4) provide graph drawing
+- `PyGraphviz <http://pygraphviz.github.io/>`_ and
+  `pydot <https://github.com/erocarrera/pydot>`_ provide graph drawing
   and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
 - `PyYAML <http://pyyaml.org/>`_ provides YAML format reading and writing.
 - `gdal <http://www.gdal.org/>`_ provides shapefile format reading and writing.
 - `lxml <http://lxml.de/>`_ used for GraphML XML format.
 
-To install ``networkx`` and all optional packages, do::
+To install ``networkx`` and extra packages, do::
 
-    $ pip install networkx[all]
+    $ pip install networkx[extra]
 
 To explicitly install all optional packages, do::
 
-    $ pip install numpy scipy pandas matplotlib pygraphviz pydot pyyaml gdal
+    $ pip install pygraphviz pydot pyyaml gdal lxml
 
-Or, install any optional package (e.g., ``numpy``) individually::
+Or, install any optional package (e.g., ``pygraphviz``) individually::
 
-    $ pip install numpy
+    $ pip install pygraphviz
 
 Testing
 -------

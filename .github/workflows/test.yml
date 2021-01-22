@@ -1,0 +1,132 @@
+name: test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  default:
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      matrix:
+        os: [ubuntu, macos]
+        python-version: [3.7, 3.8, 3.9]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Before install
+      run: |
+        python3 -m venv ~/venv
+        source ~/venv/bin/activate
+
+    - name: Install packages
+      run: |
+        pip install --upgrade pip wheel setuptools
+        pip install -r requirements.txt
+        pip install .
+        pip list
+
+    - name: Test NetworkX
+      run: |
+        pytest --doctest-modules --durations=10 --pyargs networkx
+
+  pypy:
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      matrix:
+        os: [ubuntu, macos]
+        python-version: [pypy-3.7]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Before install
+      run: |
+        python3 -m venv ~/venv
+        source ~/venv/bin/activate
+
+    - name: Install packages
+      run: |
+        pip install --upgrade pip wheel setuptools
+        pip install -r requirements.txt
+        pip install .
+        pip list
+
+    - name: Test NetworkX
+      run: |
+        pytest --durations=10 --pyargs networkx
+
+  extra:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, macos-latest]
+        python-version: [3.7, 3.8, 3.9]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Before install
+      run: |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          sudo apt-get update
+          sudo apt-get install graphviz graphviz-dev
+        elif [ "$RUNNER_OS" == "macOS" ]; then
+          brew install graphviz pkg-config
+        fi
+        python3 -m venv ~/venv
+        source ~/venv/bin/activate
+
+    - name: Install packages
+      run: |
+        pip install --upgrade pip wheel setuptools
+        pip install -r requirements.txt
+        pip install -r requirements/extra.txt
+        pip install .
+        pip list
+
+    - name: Test NetworkX
+      run: |
+        pytest --doctest-modules --durations=10 --pyargs networkx
+
+  prerelease:
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      matrix:
+        os: [ubuntu, macos]
+        python-version: [3.7, 3.8, 3.9]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Before install
+      run: |
+        python3 -m venv ~/venv
+        source ~/venv/bin/activate
+
+    - name: Install packages
+      run: |
+        pip install --upgrade pip wheel setuptools
+        pip install --pre -r requirements.txt
+        pip install .
+        pip list
+
+    - name: Test NetworkX
+      run: |
+        pytest --doctest-modules --durations=10 --pyargs networkx

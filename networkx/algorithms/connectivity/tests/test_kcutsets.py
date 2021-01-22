@@ -195,12 +195,7 @@ def test_grid_2d_graph():
     # are the four pairs of nodes that are
     # neighbors of the four corner nodes.
     G = nx.grid_2d_graph(5, 5)
-    solution = [
-        {(0, 1), (1, 0)},
-        {(3, 0), (4, 1)},
-        {(3, 4), (4, 3)},
-        {(0, 3), (1, 4)},
-    ]
+    solution = [{(0, 1), (1, 0)}, {(3, 0), (4, 1)}, {(3, 4), (4, 3)}, {(0, 3), (1, 4)}]
     for cut in nx.all_node_cuts(G):
         assert cut in solution
 

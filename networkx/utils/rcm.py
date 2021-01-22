@@ -7,8 +7,7 @@ from operator import itemgetter
 import networkx as nx
 from ..utils import arbitrary_element
 
-__all__ = ['cuthill_mckee_ordering',
-           'reverse_cuthill_mckee_ordering']
+__all__ = ["cuthill_mckee_ordering", "reverse_cuthill_mckee_ordering"]
 
 
 def cuthill_mckee_ordering(G, heuristic=None):
@@ -52,7 +51,7 @@ def cuthill_mckee_ordering(G, heuristic=None):
 
     Notes
     -----
-    The optimal solution the the bandwidth reduction is NP-complete [2]_.
+    The optimal solution the bandwidth reduction is NP-complete [2]_.
 
 
     References
@@ -110,7 +109,7 @@ def reverse_cuthill_mckee_ordering(G, heuristic=None):
 
     Notes
     -----
-    The optimal solution the the bandwidth reduction is NP-complete [2]_.
+    The optimal solution the bandwidth reduction is NP-complete [2]_.
 
     References
     ----------
@@ -135,8 +134,7 @@ def connected_cuthill_mckee_ordering(G, heuristic=None):
     while queue:
         parent = queue.popleft()
         yield parent
-        nd = sorted(list(G.degree(set(G[parent]) - visited)),
-                    key=itemgetter(1))
+        nd = sorted(list(G.degree(set(G[parent]) - visited)), key=itemgetter(1))
         children = [n for n, d in nd]
         visited.update(children)
         queue.extend(children)
