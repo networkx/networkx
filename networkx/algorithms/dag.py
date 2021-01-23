@@ -46,7 +46,7 @@ def descendants(G, source):
     Parameters
     ----------
     G : NetworkX DiGraph
-        A directed acyclic graph (DAG)
+        A directed graph
     source : node in `G`
 
     Returns
@@ -66,7 +66,7 @@ def ancestors(G, source):
     Parameters
     ----------
     G : NetworkX DiGraph
-        A directed acyclic graph (DAG)
+        A directed graph
     source : node in `G`
 
     Returns
