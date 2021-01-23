@@ -108,9 +108,7 @@ class TestProminentGroup:
         """
         G = nx.path_graph(5)
         k = 1
-        b, g = nx.prominent_group(
-            G, k, normalized=False, endpoints=False
-        )
+        b, g = nx.prominent_group(G, k, normalized=False, endpoints=False)
         b_answer, g_answer = 4.0, [2]
         assert b == b_answer and g == g_answer
 
@@ -120,9 +118,7 @@ class TestProminentGroup:
         """
         G = nx.path_graph(5)
         k = 1
-        b, g = nx.prominent_group(
-            G, k, normalized=False, C=[2]
-        )
+        b, g = nx.prominent_group(G, k, normalized=False, C=[2])
         b_answer, g_answer = 3.0, [1]
         assert b == b_answer and g == g_answer
 
@@ -132,9 +128,7 @@ class TestProminentGroup:
         """
         G = nx.cycle_graph(7)
         k = 2
-        b, g = nx.prominent_group(
-            G, k, normalized=True, endpoints=True
-        )
+        b, g = nx.prominent_group(G, k, normalized=True, endpoints=True)
         b_answer, g_answer = 1.7, [2, 5]
         assert b == b_answer and g == g_answer
 
@@ -179,9 +173,7 @@ class TestProminentGroup:
         """
         G = nx.cycle_graph(7)
         k = 2
-        b, g = nx.prominent_group(
-            G, k, normalized=True, endpoints=True, greedy=True
-        )
+        b, g = nx.prominent_group(G, k, normalized=True, endpoints=True, greedy=True)
         b_answer, g_answer = 1.7, [6, 3]
         assert b == b_answer and g == g_answer
 

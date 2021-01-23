@@ -230,7 +230,9 @@ def _group_preprocessing(G, set_v, weight):
     return PB, sigma, D
 
 
-def prominent_group(G, k, weight=None, C=None, endpoints=False, normalized=True, greedy=False):
+def prominent_group(
+        G, k, weight=None, C=None, endpoints=False, normalized=True, greedy=False
+):
     r"""Find the prominent group of size $k$ in graph $G$. The prominence of the group is
      evaluated by the group betweenness centrality.
 
@@ -331,14 +333,21 @@ def prominent_group(G, k, weight=None, C=None, endpoints=False, normalized=True,
     PB, sigma, D = _group_preprocessing(G, nodes, weight)
     betweenness = pd.DataFrame.from_dict(PB)
     if C is not None:
-        for node in C:  # remove from the betweenness all the nodes not part of the group
+        for (
+                node
+        ) in C:  # remove from the betweenness all the nodes not part of the group
             betweenness.drop(index=node, inplace=True)
             betweenness.drop(columns=node, inplace=True)
     CL = [node for _, node in sorted(zip(np.diag(betweenness), nodes), reverse=True)]
     max_GBC = 0
     max_group = []
     DF_tree.add_node(
-        1, CL=CL, betweenness=betweenness, GBC=0, GM=[], sigma=sigma,
+        1,
+        CL=CL,
+        betweenness=betweenness,
+        GBC=0,
+        GM=[],
+        sigma=sigma,
         cont=dict(zip(nodes, np.diag(betweenness)))
     )
 
@@ -346,7 +355,9 @@ def prominent_group(G, k, weight=None, C=None, endpoints=False, normalized=True,
     DF_tree.nodes[1]["heu"] = 0
     for i in range(k):
         DF_tree.nodes[1]["heu"] += DF_tree.nodes[1]["cont"][DF_tree.nodes[1]["CL"][i]]
-    max_GBC, DF_tree, max_group = __dfbnb(G, k, DF_tree, max_GBC, 1, D, max_group, nodes, greedy)
+    max_GBC, DF_tree, max_group = __dfbnb(
+        G, k, DF_tree, max_GBC, 1, D, max_group, nodes, greedy
+    )
 
     v = len(G)
     if not endpoints:
@@ -388,9 +399,9 @@ def __dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
     # stopping condition - if the size of group members equal to k or there are less than k - |GM| in the
     # candidate list or the heuristic function plus the GBC is bellow the maximal GBC found then prune
     if (
-            len(DF_tree.nodes[root]["GM"]) == k or
-            len(DF_tree.nodes[root]["CL"]) <= k - len(DF_tree.nodes[root]["GM"]) or
-            DF_tree.nodes[root]["GBC"] + DF_tree.nodes[root]["heu"] <= max_GBC
+            len(DF_tree.nodes[root]["GM"]) == k
+            or len(DF_tree.nodes[root]["CL"]) <= k - len(DF_tree.nodes[root]["GM"])
+            or DF_tree.nodes[root]["GBC"] + DF_tree.nodes[root]["heu"] <= max_GBC
     ):
         return max_GBC, DF_tree, max_group
 
@@ -400,17 +411,27 @@ def __dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
     # finding the child with the bigger heuristic + GBC and expand that node first
     # if greedy then only expand the plus node
     if greedy:
-        max_GBC, DF_tree, max_group = __dfbnb(G, k, DF_tree, max_GBC, node_p, D, max_group, nodes, greedy)
+        max_GBC, DF_tree, max_group = __dfbnb(
+            G, k, DF_tree, max_GBC, node_p, D, max_group, nodes, greedy
+        )
 
     elif (
-            DF_tree.nodes[node_p]["GBC"] + DF_tree.nodes[node_p]["heu"] >
-            DF_tree.nodes[node_m]["GBC"] + DF_tree.nodes[node_m]["heu"]
+        DF_tree.nodes[node_p]["GBC"] + DF_tree.nodes[node_p]["heu"] >
+        DF_tree.nodes[node_m]["GBC"] + DF_tree.nodes[node_m]["heu"]
     ):
-        max_GBC, DF_tree, max_group = __dfbnb(G, k, DF_tree, max_GBC, node_p, D, max_group, nodes, greedy)
-        max_GBC, DF_tree, max_group = __dfbnb(G, k, DF_tree, max_GBC, node_m, D, max_group, nodes, greedy)
+        max_GBC, DF_tree, max_group = __dfbnb(
+            G, k, DF_tree, max_GBC, node_p, D, max_group, nodes, greedy
+        )
+        max_GBC, DF_tree, max_group = __dfbnb(
+            G, k, DF_tree, max_GBC, node_m, D, max_group, nodes, greedy
+        )
     else:
-        max_GBC, DF_tree, max_group = __dfbnb(G, k, DF_tree, max_GBC, node_m, D, max_group, nodes, greedy)
-        max_GBC, DF_tree, max_group = __dfbnb(G, k, DF_tree, max_GBC, node_p, D, max_group, nodes, greedy)
+        max_GBC, DF_tree, max_group = __dfbnb(
+            G, k, DF_tree, max_GBC, node_m, D, max_group, nodes, greedy
+        )
+        max_GBC, DF_tree, max_group = __dfbnb(
+            G, k, DF_tree, max_GBC, node_p, D, max_group, nodes, greedy
+        )
     return max_GBC, DF_tree, max_group
 
 
@@ -432,29 +453,56 @@ def __heuristic(k, root, DF_tree, D, nodes, greedy):
             dxyv = 0
             dvxy = 0
             if not (
-                    root_node["sigma"][x][y] == 0 or
-                    root_node["sigma"][x][added_node] == 0 or
-                    root_node["sigma"][added_node][y] == 0
+                root_node["sigma"][x][y] == 0 or
+                root_node["sigma"][x][added_node] == 0 or
+                root_node["sigma"][added_node][y] == 0
             ):
                 if D[x][added_node] == D[x][y] + D[y][added_node]:
-                    dxyv = root_node["sigma"][x][y] * root_node["sigma"][y][added_node] / root_node["sigma"][x][added_node]
+                    dxyv = (
+                            root_node["sigma"][x][y]
+                            * root_node["sigma"][y][added_node]
+                            / root_node["sigma"][x][added_node]
+                    )
                 if D[x][y] == D[x][added_node] + D[added_node][y]:
-                    dxvy = root_node["sigma"][x][added_node] * root_node["sigma"][added_node][y] / root_node["sigma"][x][y]
+                    dxvy = (
+                            root_node["sigma"][x][added_node]
+                            * root_node["sigma"][added_node][y]
+                            / root_node["sigma"][x][y]
+                    )
                 if D[added_node][y] == D[added_node][x] + D[x][y]:
-                    dvxy = root_node["sigma"][added_node][x] * root_node["sigma"][x][y] / root_node["sigma"][added_node][y]
+                    dvxy = (
+                            root_node["sigma"][added_node][x]
+                            * root_node["sigma"][x][y]
+                            / root_node["sigma"][added_node][y]
+                    )
             DF_tree.nodes[node_p]["sigma"][x][y] = root_node["sigma"][x][y] * (1 - dxvy)
-            DF_tree.nodes[node_p]["betweenness"][x][y] = root_node["betweenness"][x][y] - root_node["betweenness"][x][y] * dxvy
+            DF_tree.nodes[node_p]["betweenness"][x][y] = (
+                root_node["betweenness"][x][y] - root_node["betweenness"][x][y] * dxvy
+            )
             if y != added_node:
-                DF_tree.nodes[node_p]["betweenness"][x][y] -= root_node["betweenness"][x][added_node] * dxyv
+                DF_tree.nodes[node_p]["betweenness"][x][y] -= (
+                    root_node["betweenness"][x][added_node] * dxyv
+                )
             if x != added_node:
-                DF_tree.nodes[node_p]["betweenness"][x][y] -= root_node["betweenness"][added_node][y] * dvxy
-    CL = [node for _, node in sorted(zip(np.diag(DF_tree.nodes[node_p]["betweenness"]), nodes), reverse=True)]
+                DF_tree.nodes[node_p]["betweenness"][x][y] -= (
+                    root_node["betweenness"][added_node][y] * dvxy
+                )
+    CL = [
+        node
+        for _, node in sorted(
+            zip(np.diag(DF_tree.nodes[node_p]["betweenness"]), nodes), reverse=True
+        )
+    ]
     [CL.remove(m) for m in CL if m in DF_tree.nodes[node_p]["GM"]]
     DF_tree.nodes[node_p]["CL"] = CL
-    DF_tree.nodes[node_p]["cont"] = dict(zip(nodes, np.diag(DF_tree.nodes[node_p]["betweenness"])))
+    DF_tree.nodes[node_p]["cont"] = dict(
+        zip(nodes, np.diag(DF_tree.nodes[node_p]["betweenness"]))
+    )
     DF_tree.nodes[node_p]["heu"] = 0
     for i in range(k - len(DF_tree.nodes[node_p]["GM"])):
-        DF_tree.nodes[node_p]["heu"] += DF_tree.nodes[node_p]["cont"][DF_tree.nodes[node_p]["CL"][i]]
+        DF_tree.nodes[node_p]["heu"] += DF_tree.nodes[node_p]["cont"][
+            DF_tree.nodes[node_p]["CL"][i]
+        ]
 
     # adding the minus node - don't insert the first node in the CL to GM
     # Insert minus node only if isn't greedy type algorithm
@@ -464,7 +512,9 @@ def __heuristic(k, root, DF_tree, D, nodes, greedy):
         DF_tree.nodes[node_m]["cont"].pop(added_node)
         DF_tree.nodes[node_m]["heu"] = 0
         for i in range(k - len(DF_tree.nodes[node_m]["GM"])):
-            DF_tree.nodes[node_m]["heu"] += DF_tree.nodes[node_m]["cont"][DF_tree.nodes[node_m]["CL"][i]]
+            DF_tree.nodes[node_m]["heu"] += DF_tree.nodes[node_m]["cont"][
+                DF_tree.nodes[node_m]["CL"][i]
+            ]
     else:
         node_m = None
 
