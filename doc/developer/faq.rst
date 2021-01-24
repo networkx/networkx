@@ -49,7 +49,7 @@ creating a new branch:
    that it's easy to remember what you are working on.
 
 Now you can begin work on your example. Sticking with the circular layout idea,
-you might create a file in ``examples/drawing`` called ``circular_layout.py``
+you might create a file in ``examples/drawing`` called ``plot_circular_layout.py``
 with the following contents::
 
    import networkx as nx
