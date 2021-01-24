@@ -8,30 +8,56 @@ from networkx.testing.utils import assert_nodes_equal
 
 
 class TestSparseGraph6:
-
     def test_from_sparse6_bytes(self):
-        data = b':Q___eDcdFcDeFcE`GaJ`IaHbKNbLM'
+        data = b":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM"
         G = nx.from_sparse6_bytes(data)
-        assert_nodes_equal(sorted(G.nodes()),
-                           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-                            10, 11, 12, 13, 14, 15, 16, 17])
-        assert_edges_equal(G.edges(),
-                           [(0, 1), (0, 2), (0, 3), (1, 12), (1, 14), (2, 13),
-                            (2, 15), (3, 16), (3, 17), (4, 7), (4, 9), (4, 11),
-                            (5, 6), (5, 8), (5, 9), (6, 10), (6, 11), (7, 8),
-                            (7, 10), (8, 12), (9, 15), (10, 14), (11, 13),
-                            (12, 16), (13, 17), (14, 17), (15, 16)])
+        assert_nodes_equal(
+            sorted(G.nodes()),
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+        )
+        assert_edges_equal(
+            G.edges(),
+            [
+                (0, 1),
+                (0, 2),
+                (0, 3),
+                (1, 12),
+                (1, 14),
+                (2, 13),
+                (2, 15),
+                (3, 16),
+                (3, 17),
+                (4, 7),
+                (4, 9),
+                (4, 11),
+                (5, 6),
+                (5, 8),
+                (5, 9),
+                (6, 10),
+                (6, 11),
+                (7, 8),
+                (7, 10),
+                (8, 12),
+                (9, 15),
+                (10, 14),
+                (11, 13),
+                (12, 16),
+                (13, 17),
+                (14, 17),
+                (15, 16),
+            ],
+        )
 
     def test_from_bytes_multigraph_graph(self):
-        graph_data = b':An'
+        graph_data = b":An"
         G = nx.from_sparse6_bytes(graph_data)
         assert type(G) == nx.Graph
-        multigraph_data = b':Ab'
+        multigraph_data = b":Ab"
         M = nx.from_sparse6_bytes(multigraph_data)
         assert type(M) == nx.MultiGraph
 
     def test_read_sparse6(self):
-        data = b':Q___eDcdFcDeFcE`GaJ`IaHbKNbLM'
+        data = b":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM"
         G = nx.from_sparse6_bytes(data)
         fh = BytesIO(data)
         Gin = nx.read_sparse6(fh)
@@ -40,15 +66,15 @@ class TestSparseGraph6:
 
     def test_read_many_graph6(self):
         # Read many graphs into list
-        data = (b':Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n'
-                b':Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM')
+        data = b":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n" b":Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM"
         fh = BytesIO(data)
         glist = nx.read_sparse6(fh)
         assert len(glist) == 2
         for G in glist:
-            assert_nodes_equal(G.nodes(),
-                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-                                10, 11, 12, 13, 14, 15, 16, 17])
+            assert_nodes_equal(
+                G.nodes(),
+                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+            )
 
 
 class TestWriteSparse6:
@@ -62,58 +88,58 @@ class TestWriteSparse6:
         G = nx.null_graph()
         result = BytesIO()
         nx.write_sparse6(G, result)
-        assert result.getvalue() == b'>>sparse6<<:?\n'
+        assert result.getvalue() == b">>sparse6<<:?\n"
 
     def test_trivial_graph(self):
         G = nx.trivial_graph()
         result = BytesIO()
         nx.write_sparse6(G, result)
-        assert result.getvalue() == b'>>sparse6<<:@\n'
+        assert result.getvalue() == b">>sparse6<<:@\n"
 
     def test_empty_graph(self):
         G = nx.empty_graph(5)
         result = BytesIO()
         nx.write_sparse6(G, result)
-        assert result.getvalue() == b'>>sparse6<<:D\n'
+        assert result.getvalue() == b">>sparse6<<:D\n"
 
     def test_large_empty_graph(self):
         G = nx.empty_graph(68)
         result = BytesIO()
         nx.write_sparse6(G, result)
-        assert result.getvalue() == b'>>sparse6<<:~?@C\n'
+        assert result.getvalue() == b">>sparse6<<:~?@C\n"
 
     def test_very_large_empty_graph(self):
         G = nx.empty_graph(258049)
         result = BytesIO()
         nx.write_sparse6(G, result)
-        assert result.getvalue() == b'>>sparse6<<:~~???~?@\n'
+        assert result.getvalue() == b">>sparse6<<:~~???~?@\n"
 
     def test_complete_graph(self):
         G = nx.complete_graph(4)
         result = BytesIO()
         nx.write_sparse6(G, result)
-        assert result.getvalue() == b'>>sparse6<<:CcKI\n'
+        assert result.getvalue() == b">>sparse6<<:CcKI\n"
 
     def test_no_header(self):
         G = nx.complete_graph(4)
         result = BytesIO()
         nx.write_sparse6(G, result, header=False)
-        assert result.getvalue() == b':CcKI\n'
+        assert result.getvalue() == b":CcKI\n"
 
     def test_padding(self):
-        codes = (b':Cdv', b':DaYn', b':EaYnN', b':FaYnL', b':GaYnLz')
+        codes = (b":Cdv", b":DaYn", b":EaYnN", b":FaYnL", b":GaYnLz")
         for n, code in enumerate(codes, start=4):
             G = nx.path_graph(n)
             result = BytesIO()
             nx.write_sparse6(G, result, header=False)
-            assert result.getvalue() == code + b'\n'
+            assert result.getvalue() == code + b"\n"
 
     def test_complete_bipartite(self):
         G = nx.complete_bipartite_graph(6, 9)
         result = BytesIO()
         nx.write_sparse6(G, result)
         # Compared with sage
-        expected = b'>>sparse6<<:Nk' + b'?G`cJ' * 9 + b'\n'
+        expected = b">>sparse6<<:Nk" + b"?G`cJ" * 9 + b"\n"
         assert result.getvalue() == expected
 
     def test_read_write_inverse(self):
@@ -139,8 +165,9 @@ class TestWriteSparse6:
             fullfilename = f.name
         # file should be closed now, so write_sparse6 can open it
         nx.write_sparse6(nx.null_graph(), fullfilename)
-        fh = open(fullfilename, mode='rb')
-        assert fh.read() == b'>>sparse6<<:?\n'
+        fh = open(fullfilename, mode="rb")
+        assert fh.read() == b">>sparse6<<:?\n"
         fh.close()
         import os
+
         os.remove(fullfilename)

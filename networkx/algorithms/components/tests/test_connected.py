@@ -5,7 +5,6 @@ from networkx import NetworkXNotImplemented
 
 
 class TestConnected:
-
     @classmethod
     def setup_class(cls):
         G1 = cnlti(nx.grid_2d_graph(2, 2), first_label=0, ordering="sorted")
@@ -18,8 +17,22 @@ class TestConnected:
 
         cls.gc = []
         G = nx.DiGraph()
-        G.add_edges_from([(1, 2), (2, 3), (2, 8), (3, 4), (3, 7), (4, 5),
-                          (5, 3), (5, 6), (7, 4), (7, 6), (8, 1), (8, 7)])
+        G.add_edges_from(
+            [
+                (1, 2),
+                (2, 3),
+                (2, 8),
+                (3, 4),
+                (3, 7),
+                (4, 5),
+                (5, 3),
+                (5, 6),
+                (7, 4),
+                (7, 6),
+                (8, 1),
+                (8, 7),
+            ]
+        )
         C = [[3, 4, 5, 7], [1, 2, 8], [6]]
         cls.gc.append((G, C))
 
@@ -52,7 +65,7 @@ class TestConnected:
         C = {
             frozenset([0, 1, 2, 3]),
             frozenset([4, 5, 6, 7, 8, 9]),
-            frozenset([10, 11, 12, 13, 14])
+            frozenset([10, 11, 12, 13, 14]),
         }
         assert {frozenset(g) for g in cc(G)} == C
 
@@ -88,3 +101,11 @@ class TestConnected:
         pytest.raises(NetworkXNotImplemented, nx.node_connected_component, self.DG, 1)
         pytest.raises(NetworkXNotImplemented, nx.is_connected, self.DG)
         pytest.raises(nx.NetworkXPointlessConcept, nx.is_connected, nx.Graph())
+
+    def test_connected_mutability(self):
+        G = self.grid
+        seen = set()
+        for component in nx.connected_components(G):
+            assert len(seen & component) == 0
+            seen.update(component)
+            component.clear()

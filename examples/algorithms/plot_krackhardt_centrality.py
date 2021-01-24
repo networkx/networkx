@@ -26,5 +26,6 @@ c = nx.closeness_centrality(G)
 for v in G.nodes():
     print(f"{v:2} {c[v]:.3f}")
 
-nx.draw(G)
+pos = nx.spring_layout(G, seed=367)  # Seed layout for reproducibility
+nx.draw(G, pos)
 plt.show()

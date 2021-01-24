@@ -8,21 +8,21 @@ def test_union_attributes():
     g.add_node(0, x=4)
     g.add_node(1, x=5)
     g.add_edge(0, 1, size=5)
-    g.graph['name'] = 'g'
+    g.graph["name"] = "g"
 
     h = g.copy()
-    h.graph['name'] = 'h'
-    h.graph['attr'] = 'attr'
-    h.nodes[0]['x'] = 7
+    h.graph["name"] = "h"
+    h.graph["attr"] = "attr"
+    h.nodes[0]["x"] = 7
 
-    gh = nx.union(g, h, rename=('g', 'h'))
-    assert set(gh.nodes()) == {'h0', 'h1', 'g0', 'g1'}
+    gh = nx.union(g, h, rename=("g", "h"))
+    assert set(gh.nodes()) == {"h0", "h1", "g0", "g1"}
     for n in gh:
         graph, node = n
         assert gh.nodes[n] == eval(graph).nodes[int(node)]
 
-    assert gh.graph['attr'] == 'attr'
-    assert gh.graph['name'] == 'h'  # h graph attributes take precendent
+    assert gh.graph["attr"] == "attr"
+    assert gh.graph["name"] == "h"  # h graph attributes take precendent
 
 
 def test_intersection():
@@ -44,12 +44,12 @@ def test_intersection_attributes():
     g.add_node(0, x=4)
     g.add_node(1, x=5)
     g.add_edge(0, 1, size=5)
-    g.graph['name'] = 'g'
+    g.graph["name"] = "g"
 
     h = g.copy()
-    h.graph['name'] = 'h'
-    h.graph['attr'] = 'attr'
-    h.nodes[0]['x'] = 7
+    h.graph["name"] = "h"
+    h.graph["attr"] = "attr"
+    h.nodes[0]["x"] = 7
 
     gh = nx.intersection(g, h)
     assert set(gh.nodes()) == set(g.nodes())
@@ -120,12 +120,12 @@ def test_difference_attributes():
     g.add_node(0, x=4)
     g.add_node(1, x=5)
     g.add_edge(0, 1, size=5)
-    g.graph['name'] = 'g'
+    g.graph["name"] = "g"
 
     h = g.copy()
-    h.graph['name'] = 'h'
-    h.graph['attr'] = 'attr'
-    h.nodes[0]['x'] = 7
+    h.graph["name"] = "h"
+    h.graph["attr"] = "attr"
+    h.nodes[0]["x"] = 7
 
     gh = nx.difference(g, h)
     assert set(gh.nodes()) == set(g.nodes())
@@ -170,8 +170,11 @@ def test_symmetric_difference_multigraph():
     assert set(gh.nodes()) == set(g.nodes())
     assert set(gh.nodes()) == set(h.nodes())
     assert sorted(gh.edges()) == 3 * [(0, 1)]
-    assert (sorted(sorted(e) for e in gh.edges(keys=True)) ==
-            [[0, 1, 1], [0, 1, 2], [0, 1, 3]])
+    assert sorted(sorted(e) for e in gh.edges(keys=True)) == [
+        [0, 1, 1],
+        [0, 1, 2],
+        [0, 1, 3],
+    ]
 
 
 def test_union_and_compose():
@@ -179,40 +182,70 @@ def test_union_and_compose():
     P3 = nx.path_graph(3)
 
     G1 = nx.DiGraph()
-    G1.add_edge('A', 'B')
-    G1.add_edge('A', 'C')
-    G1.add_edge('A', 'D')
+    G1.add_edge("A", "B")
+    G1.add_edge("A", "C")
+    G1.add_edge("A", "D")
     G2 = nx.DiGraph()
-    G2.add_edge('1', '2')
-    G2.add_edge('1', '3')
-    G2.add_edge('1', '4')
+    G2.add_edge("1", "2")
+    G2.add_edge("1", "3")
+    G2.add_edge("1", "4")
 
     G = nx.union(G1, G2)
     H = nx.compose(G1, G2)
     assert_edges_equal(G.edges(), H.edges())
-    assert not G.has_edge('A', 1)
+    assert not G.has_edge("A", 1)
     pytest.raises(nx.NetworkXError, nx.union, K3, P3)
-    H1 = nx.union(H, G1, rename=('H', 'G1'))
-    assert (sorted(H1.nodes()) ==
-            ['G1A', 'G1B', 'G1C', 'G1D',
-             'H1', 'H2', 'H3', 'H4', 'HA', 'HB', 'HC', 'HD'])
+    H1 = nx.union(H, G1, rename=("H", "G1"))
+    assert sorted(H1.nodes()) == [
+        "G1A",
+        "G1B",
+        "G1C",
+        "G1D",
+        "H1",
+        "H2",
+        "H3",
+        "H4",
+        "HA",
+        "HB",
+        "HC",
+        "HD",
+    ]
 
     H2 = nx.union(H, G2, rename=("H", ""))
-    assert (sorted(H2.nodes()) ==
-            ['1', '2', '3', '4',
-                  'H1', 'H2', 'H3', 'H4', 'HA', 'HB', 'HC', 'HD'])
+    assert sorted(H2.nodes()) == [
+        "1",
+        "2",
+        "3",
+        "4",
+        "H1",
+        "H2",
+        "H3",
+        "H4",
+        "HA",
+        "HB",
+        "HC",
+        "HD",
+    ]
 
-    assert not H1.has_edge('NB', 'NA')
+    assert not H1.has_edge("NB", "NA")
 
     G = nx.compose(G, G)
     assert_edges_equal(G.edges(), H.edges())
 
-    G2 = nx.union(G2, G2, rename=('', 'copy'))
-    assert (sorted(G2.nodes()) ==
-            ['1', '2', '3', '4', 'copy1', 'copy2', 'copy3', 'copy4'])
+    G2 = nx.union(G2, G2, rename=("", "copy"))
+    assert sorted(G2.nodes()) == [
+        "1",
+        "2",
+        "3",
+        "4",
+        "copy1",
+        "copy2",
+        "copy3",
+        "copy4",
+    ]
 
-    assert sorted(G2.neighbors('copy4')) == []
-    assert sorted(G2.neighbors('copy1')) == ['copy2', 'copy3', 'copy4']
+    assert sorted(G2.neighbors("copy4")) == []
+    assert sorted(G2.neighbors("copy1")) == ["copy2", "copy3", "copy4"]
     assert len(G) == 8
     assert nx.number_of_edges(G) == 6
 
@@ -225,10 +258,10 @@ def test_union_and_compose():
 
     G = nx.Graph()
     H = nx.Graph()
-    G.add_nodes_from([(1, {'a1': 1})])
-    H.add_nodes_from([(1, {'b1': 1})])
+    G.add_nodes_from([(1, {"a1": 1})])
+    H.add_nodes_from([(1, {"b1": 1})])
     R = nx.compose(G, H)
-    assert R.nodes == {1: {'a1': 1, 'b1': 1}}
+    assert R.nodes == {1: {"a1": 1, "b1": 1}}
 
 
 def test_union_multigraph():
@@ -240,8 +273,7 @@ def test_union_multigraph():
     H.add_edge(3, 4, key=1)
     GH = nx.union(G, H)
     assert set(GH) == set(G) | set(H)
-    assert (set(GH.edges(keys=True)) ==
-            set(G.edges(keys=True)) | set(H.edges(keys=True)))
+    assert set(GH.edges(keys=True)) == set(G.edges(keys=True)) | set(H.edges(keys=True))
 
 
 def test_disjoint_union_multigraph():
@@ -253,8 +285,7 @@ def test_disjoint_union_multigraph():
     H.add_edge(2, 3, key=1)
     GH = nx.disjoint_union(G, H)
     assert set(GH) == set(G) | set(H)
-    assert (set(GH.edges(keys=True)) ==
-            set(G.edges(keys=True)) | set(H.edges(keys=True)))
+    assert set(GH.edges(keys=True)) == set(G.edges(keys=True)) | set(H.edges(keys=True))
 
 
 def test_compose_multigraph():
@@ -266,13 +297,11 @@ def test_compose_multigraph():
     H.add_edge(3, 4, key=1)
     GH = nx.compose(G, H)
     assert set(GH) == set(G) | set(H)
-    assert (set(GH.edges(keys=True)) ==
-            set(G.edges(keys=True)) | set(H.edges(keys=True)))
+    assert set(GH.edges(keys=True)) == set(G.edges(keys=True)) | set(H.edges(keys=True))
     H.add_edge(1, 2, key=2)
     GH = nx.compose(G, H)
     assert set(GH) == set(G) | set(H)
-    assert (set(GH.edges(keys=True)) ==
-            set(G.edges(keys=True)) | set(H.edges(keys=True)))
+    assert set(GH.edges(keys=True)) == set(G.edges(keys=True)) | set(H.edges(keys=True))
 
 
 def test_full_join_graph():
@@ -286,15 +315,13 @@ def test_full_join_graph():
     U = nx.full_join(G, H)
     assert set(U) == set(G) | set(H)
     assert len(U) == len(G) + len(H)
-    assert (len(U.edges()) ==
-            len(G.edges()) + len(H.edges()) + len(G) * len(H))
+    assert len(U.edges()) == len(G.edges()) + len(H.edges()) + len(G) * len(H)
 
     # Rename
-    U = nx.full_join(G, H, rename=('g', 'h'))
-    assert set(U) == {'g0', 'g1', 'g2', 'h3', 'h4'}
+    U = nx.full_join(G, H, rename=("g", "h"))
+    assert set(U) == {"g0", "g1", "g2", "h3", "h4"}
     assert len(U) == len(G) + len(H)
-    assert (len(U.edges()) ==
-            len(G.edges()) + len(H.edges()) + len(G) * len(H))
+    assert len(U.edges()) == len(G.edges()) + len(H.edges()) + len(G) * len(H)
 
     # Rename graphs with string-like nodes
     G = nx.Graph()
@@ -303,11 +330,10 @@ def test_full_join_graph():
     H = nx.Graph()
     H.add_edge("d", "e")
 
-    U = nx.full_join(G, H, rename=('g', 'h'))
-    assert set(U) == {'ga', 'gb', 'gc', 'hd', 'he'}
+    U = nx.full_join(G, H, rename=("g", "h"))
+    assert set(U) == {"ga", "gb", "gc", "hd", "he"}
     assert len(U) == len(G) + len(H)
-    assert (len(U.edges()) ==
-            len(G.edges()) + len(H.edges()) + len(G) * len(H))
+    assert len(U.edges()) == len(G.edges()) + len(H.edges()) + len(G) * len(H)
 
     # DiGraphs
     G = nx.DiGraph()
@@ -319,15 +345,13 @@ def test_full_join_graph():
     U = nx.full_join(G, H)
     assert set(U) == set(G) | set(H)
     assert len(U) == len(G) + len(H)
-    assert (len(U.edges()) ==
-            len(G.edges()) + len(H.edges()) + len(G)*len(H) * 2)
+    assert len(U.edges()) == len(G.edges()) + len(H.edges()) + len(G) * len(H) * 2
 
     # DiGraphs Rename
-    U = nx.full_join(G, H, rename=('g', 'h'))
-    assert set(U) == {'g0', 'g1', 'g2', 'h3', 'h4'}
+    U = nx.full_join(G, H, rename=("g", "h"))
+    assert set(U) == {"g0", "g1", "g2", "h3", "h4"}
     assert len(U) == len(G) + len(H)
-    assert (len(U.edges()) ==
-            len(G.edges()) + len(H.edges()) + len(G) * len(H) * 2)
+    assert len(U.edges()) == len(G.edges()) + len(H.edges()) + len(G) * len(H) * 2
 
 
 def test_full_join_multigraph():
@@ -341,15 +365,13 @@ def test_full_join_multigraph():
     U = nx.full_join(G, H)
     assert set(U) == set(G) | set(H)
     assert len(U) == len(G) + len(H)
-    assert (len(U.edges()) ==
-            len(G.edges()) + len(H.edges()) + len(G) * len(H))
+    assert len(U.edges()) == len(G.edges()) + len(H.edges()) + len(G) * len(H)
 
     # MultiGraphs rename
-    U = nx.full_join(G, H, rename=('g', 'h'))
-    assert set(U) == {'g0', 'g1', 'g2', 'h3', 'h4'}
+    U = nx.full_join(G, H, rename=("g", "h"))
+    assert set(U) == {"g0", "g1", "g2", "h3", "h4"}
     assert len(U) == len(G) + len(H)
-    assert (len(U.edges()) ==
-            len(G.edges()) + len(H.edges()) + len(G) * len(H))
+    assert len(U.edges()) == len(G.edges()) + len(H.edges()) + len(G) * len(H)
 
     # MultiDiGraphs
     G = nx.MultiDiGraph()
@@ -361,15 +383,13 @@ def test_full_join_multigraph():
     U = nx.full_join(G, H)
     assert set(U) == set(G) | set(H)
     assert len(U) == len(G) + len(H)
-    assert (len(U.edges()) ==
-            len(G.edges()) + len(H.edges()) + len(G) * len(H) * 2)
+    assert len(U.edges()) == len(G.edges()) + len(H.edges()) + len(G) * len(H) * 2
 
     # MultiDiGraphs rename
-    U = nx.full_join(G, H, rename=('g', 'h'))
-    assert set(U) == {'g0', 'g1', 'g2', 'h3', 'h4'}
+    U = nx.full_join(G, H, rename=("g", "h"))
+    assert set(U) == {"g0", "g1", "g2", "h3", "h4"}
     assert len(U) == len(G) + len(H)
-    assert (len(U.edges()) ==
-            len(G.edges()) + len(H.edges()) + len(G) * len(H) * 2)
+    assert len(U.edges()) == len(G.edges()) + len(H.edges()) + len(G) * len(H) * 2
 
 
 def test_mixed_type_union():

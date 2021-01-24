@@ -1,11 +1,10 @@
 """Unit tests for the :mod:`networkx.algorithms.community.kernighan_lin`
 module.
-
 """
 import pytest
-
 import networkx as nx
 from networkx.algorithms.community import kernighan_lin_bisection
+from itertools import permutations
 
 
 def assert_partition_equal(x, y):
@@ -16,6 +15,20 @@ def test_partition():
     G = nx.barbell_graph(3, 0)
     C = kernighan_lin_bisection(G)
     assert_partition_equal(C, [{0, 1, 2}, {3, 4, 5}])
+
+
+def test_partition_argument():
+    G = nx.barbell_graph(3, 0)
+    partition = [{0, 1, 2}, {3, 4, 5}]
+    C = kernighan_lin_bisection(G, partition)
+    assert_partition_equal(C, partition)
+
+
+def test_partition_argument_non_integer_nodes():
+    G = nx.Graph([("A", "B"), ("A", "C"), ("B", "C"), ("C", "D")])
+    partition = ({"A", "B"}, {"C", "D"})
+    C = kernighan_lin_bisection(G, partition)
+    assert_partition_equal(C, partition)
 
 
 def test_seed_argument():
@@ -43,5 +56,9 @@ def test_multigraph():
     M = nx.MultiGraph(G.edges())
     M.add_edges_from(G.edges())
     M.remove_edge(1, 2)
-    A, B = kernighan_lin_bisection(M)
-    assert_partition_equal([A, B], [{0, 1}, {2, 3}])
+    for labels in permutations(range(4)):
+        mapping = dict(zip(M, labels))
+        A, B = kernighan_lin_bisection(nx.relabel_nodes(M, mapping), seed=0)
+        assert_partition_equal(
+            [A, B], [{mapping[0], mapping[1]}, {mapping[2], mapping[3]}]
+        )

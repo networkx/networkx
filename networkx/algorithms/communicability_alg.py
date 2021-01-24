@@ -4,18 +4,16 @@ Communicability.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['communicability',
-           'communicability_exp',
-           ]
+__all__ = ["communicability", "communicability_exp"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def communicability(G):
     r"""Returns communicability between all pairs of nodes in G.
 
     The communicability between pairs of nodes in G is the sum of
-    closed walks of different lengths starting at node u and ending at node v.
+    walks of different lengths starting at node u and ending at node v.
 
     Parameters
     ----------
@@ -64,17 +62,17 @@ def communicability(G):
 
     Examples
     --------
-    >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
     >>> c = nx.communicability(G)
     """
-    import numpy
-    import scipy.linalg
+    import numpy as np
+
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
-    w, vec = numpy.linalg.eigh(A)
-    expw = numpy.exp(w)
+    w, vec = np.linalg.eigh(A)
+    expw = np.exp(w)
     mapping = dict(zip(nodelist, range(len(nodelist))))
     c = {}
     # computing communicabilities
@@ -90,13 +88,13 @@ def communicability(G):
     return c
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def communicability_exp(G):
     r"""Returns communicability between all pairs of nodes in G.
 
     Communicability between pair of node (u,v) of node in G is the sum of
-    closed walks of different lengths starting at node u and ending at node v.
+    walks of different lengths starting at node u and ending at node v.
 
     Parameters
     ----------
@@ -142,16 +140,18 @@ def communicability_exp(G):
 
     Examples
     --------
-    >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
     >>> c = nx.communicability_exp(G)
     """
-    import scipy.linalg
+    import scipy as sp
+    import scipy.linalg  # call as sp.linalg
+
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
     # communicability matrix
-    expA = scipy.linalg.expm(A)
+    expA = sp.linalg.expm(A)
     mapping = dict(zip(nodelist, range(len(nodelist))))
     c = {}
     for u in G:

@@ -22,7 +22,7 @@ subgraphs and replace with code similar to:
 .. code-block:: python
 
     # instead of SG = G.subgraph(ordered_nodes)
-    SG=nx.OrderedGraph()
+    SG = nx.OrderedGraph()
     SG.add_nodes_from(ordered_nodes)
     SG.add_edges_from((u, v) for (u, v) in G.edges() if u in SG if v in SG)
 
@@ -36,16 +36,14 @@ from .multidigraph import MultiDiGraph
 
 __all__ = []
 
-__all__.extend([
-    'OrderedGraph',
-    'OrderedDiGraph',
-    'OrderedMultiGraph',
-    'OrderedMultiDiGraph',
-])
+__all__.extend(
+    ["OrderedGraph", "OrderedDiGraph", "OrderedMultiGraph", "OrderedMultiDiGraph"]
+)
 
 
 class OrderedGraph(Graph):
     """Consistently ordered variant of :class:`~networkx.Graph`."""
+
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict
@@ -54,6 +52,7 @@ class OrderedGraph(Graph):
 
 class OrderedDiGraph(DiGraph):
     """Consistently ordered variant of :class:`~networkx.DiGraph`."""
+
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict
@@ -62,6 +61,7 @@ class OrderedDiGraph(DiGraph):
 
 class OrderedMultiGraph(MultiGraph):
     """Consistently ordered variant of :class:`~networkx.MultiGraph`."""
+
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict
@@ -71,6 +71,7 @@ class OrderedMultiGraph(MultiGraph):
 
 class OrderedMultiDiGraph(MultiDiGraph):
     """Consistently ordered variant of :class:`~networkx.MultiDiGraph`."""
+
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict

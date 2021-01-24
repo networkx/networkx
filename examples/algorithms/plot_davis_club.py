@@ -38,5 +38,6 @@ print("#Friend meetings, Member")
 for w in women:
     print(f"{W.degree(w, weight='weight')} {w}")
 
-nx.draw(G)
+pos = nx.spring_layout(G, seed=648)  # Seed layout for reproducible node positions
+nx.draw(G, pos)
 plt.show()

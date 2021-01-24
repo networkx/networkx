@@ -55,6 +55,8 @@ G = mbox_graph()
 for (u, v, d) in G.edges(data=True):
     print(f"From: {u} To: {v} Subject: {d['message']['Subject']}")
 
-pos = nx.spring_layout(G, iterations=10)
+pos = nx.spring_layout(G, iterations=10, seed=227)
 nx.draw(G, pos, node_size=0, alpha=0.4, edge_color="r", font_size=16, with_labels=True)
+ax = plt.gca()
+ax.margins(0.08)
 plt.show()
