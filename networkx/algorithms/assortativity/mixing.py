@@ -160,7 +160,7 @@ def degree_mixing_matrix(G, x="out", y="in", weight=None, nodes=None, normalized
     return a
 
 
-def numeric_mixing_matrix(G, attribute, nodes=None, normalized=True):
+def numeric_mixing_matrix(G, attribute, nodes=None, normalized=True, compressed=False):
     """Returns numeric mixing matrix for attribute.
 
     The attribute must be an integer.
@@ -179,6 +179,9 @@ def numeric_mixing_matrix(G, attribute, nodes=None, normalized=True):
     normalized : bool (default=True)
        Return counts if False or probabilities if True.
 
+    compressed: bool (default=False)
+        Build the matrix without empty lines and columns
+
     Returns
     -------
     m: numpy array
@@ -188,8 +191,11 @@ def numeric_mixing_matrix(G, attribute, nodes=None, normalized=True):
     s = set(d.keys())
     for k, v in d.items():
         s.update(v.keys())
-    m = max(s)
-    mapping = {x: x for x in range(m + 1)}
+    if compressed:
+        mapping = {x: i for x, i in zip(s, range(len(s)))}
+    else:
+        m = max(s)
+        mapping = {x: x for x in range(m + 1)}
     a = dict_to_numpy_array(d, mapping=mapping)
     if normalized:
         a = a / a.sum()

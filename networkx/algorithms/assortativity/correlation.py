@@ -226,7 +226,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
     .. [1] M. E. J. Newman, Mixing patterns in networks
            Physical Review E, 67 026126, 2003
     """
-    a = numeric_mixing_matrix(G, attribute, nodes)
+    a = numeric_mixing_matrix(G, attribute, nodes, compressed=True)
     return numeric_ac(a)
 
 
