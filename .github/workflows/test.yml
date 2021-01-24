@@ -87,8 +87,6 @@ jobs:
         elif [ "$RUNNER_OS" == "macOS" ]; then
           brew install graphviz pkg-config
         fi
-        python3 -m venv ~/venv
-        source ~/venv/bin/activate
 
     - name: Install packages
       run: |
@@ -100,6 +98,64 @@ jobs:
 
     - name: Test NetworkX
       run: |
+        pytest --doctest-modules --durations=10 --pyargs networkx
+
+  graphviz:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        python-version: [3.7, 3.8, 3.9]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    # This and the following step need to be changed when Graphviz has new releases.
+    - name: Download graphviz source
+      run: |
+        Invoke-WebRequest `
+          -Uri "https://gitlab.com/graphviz/graphviz/-/package_files/6164164/download" `
+          -OutFile "C:\Temp\graphviz-install-2.46.0-win64.exe"
+
+    - name: Install exe
+      run: |
+        Start-Process -Wait `
+          -FilePath "C:\Temp\graphviz-install-2.46.0-win64.exe" `
+          -ArgumentList '/S' -PassThru
+
+    # The first three lines are necessary to add the bin directory to the PATH.
+    # We need ``python -m pip install --upgrade pip`` because Windows doesn't
+    # allow running programs to be modified.
+    - name: Install packages
+      run: |
+        $PATH = [Environment]::GetEnvironmentVariable("PATH")
+        $graphviz_path = "C:\Program Files\Graphviz\bin"
+        [Environment]::SetEnvironmentVariable("PATH", "$graphviz_path;$PATH")
+        python -m pip install --upgrade pip wheel setuptools
+        python -m pip install --global-option=build_ext `
+          --global-option="-IC:\Program Files\Graphviz\include" `
+          --global-option="-LC:\Program Files\Graphviz\lib" `
+          pygraphviz==1.7rc2
+        python -m pip install -r requirements.txt
+        python -m pip install .
+        python -m pip list
+
+    # We are leaving this in to help us remember some useful PowerShell syntax.
+    # The following commands are also helpful for debugging:  Copy-Item, Get-Content
+    - name: List
+      run: |
+        Get-ChildItem "C:\Program Files\Graphviz\bin"
+
+    # Need to update PATH for each step that needs it and ignore PY_IGNORE_IMPORTMISMATCH
+    # b/c otherwise --doctest-modules is confused.
+    - name: Test NetworkX
+      run: |
+        $PATH = [Environment]::GetEnvironmentVariable("PATH")
+        $graphviz_path = "C:\Program Files\Graphviz\bin"
+        [Environment]::SetEnvironmentVariable("PATH", "$graphviz_path;$PATH")
         pytest --doctest-modules --durations=10 --pyargs networkx
 
   prerelease:
