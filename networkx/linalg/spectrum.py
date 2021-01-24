@@ -12,8 +12,7 @@ __all__ = [
 ]
 
 
-def laplacian_spectrum(G, weight="weight", 
-                       =False):
+def laplacian_spectrum(G, weight="weight", signless=False):
     """Returns eigenvalues of the Laplacian of G
 
     Parameters
