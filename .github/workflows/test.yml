@@ -10,6 +10,9 @@ env:
   WIN_GRAPHVIZ_URL: "https://gitlab.com/graphviz/graphviz/-/package_files/6164164/download"
   WIN_GRAPHVIZ_EXE: "C:\\Temp\\graphviz-install-2.46.0-win64.exe"
   WIN_GRAPHVIZ_DIR: "C:\\Program Files\\Graphviz"
+  WIN_GRAPHVIZ_INC: "$($env:WIN_GRAPHVIZ_DIR)\\include"
+  WIN_GRAPHVIZ_LIB: "$($env:WIN_GRAPHVIZ_DIR)\\lib"
+  WIN_GRAPHVIZ_OPT: "--global-option='-I$WIN_GRAPHVIZ_INC' --global-option='L$WIN_GRAPHVIZ_LIB'"
 
 jobs:
 
@@ -65,7 +68,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04, macos-latest]
+        os: [ubuntu-20.04, macos-latest, windows-latest]
         python-version: [3.7, 3.8, 3.9]
     steps:
     - uses: actions/checkout@v2
@@ -81,49 +84,28 @@ jobs:
           sudo apt-get install graphviz graphviz-dev
         elif [ "$RUNNER_OS" == "macOS" ]; then
           brew install graphviz pkg-config
+        elif [ "$RUNNER_OS" == "Windows" ]; then
+          Invoke-WebRequest -Uri $env:WIN_GRAPHVIZ_URL -OutFile $env:WIN_GRAPHVIZ_EXE
+          Start-Process -Wait -FilePath $env:WIN_GRAPHVIZ_EXE -ArgumentList '/S' -PassThru
+          echo "$($env:WIN_GRAPHVIZ_DIR)\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         fi
 
     - name: Install packages
       run: |
-        pip install --upgrade pip wheel setuptools
-        pip install -r requirements.txt
-        pip install -r requirements/extra.txt
-        pip install .
-        pip list
-
-    - name: Test NetworkX
-      run: |
-        pytest --doctest-modules --durations=10 --pyargs networkx
-
-  graphviz:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest]
-        python-version: [3.7, 3.8, 3.9]
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Before install
-      run: |
-        Invoke-WebRequest -Uri $env:WIN_GRAPHVIZ_URL -OutFile $env:WIN_GRAPHVIZ_EXE
-        Start-Process -Wait -FilePath $env:WIN_GRAPHVIZ_EXE -ArgumentList '/S' -PassThru
-        echo "$($env:WIN_GRAPHVIZ_DIR)\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-    - name: Install packages
-      run: |
-        python -m pip install --upgrade pip wheel setuptools
-        python -m pip install -r requirements.txt
-        python -m pip install --global-option=build_ext `
-          --global-option="-I$($env:WIN_GRAPHVIZ_DIR)\include" `
-          --global-option="-L$($env:WIN_GRAPHVIZ_DIR)\lib" `
-          pygraphviz==1.7rc2
-        python -m pip install .
-        python -m pip list
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          echo $env:WIN_OPTIONS
+          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install -r requirements.txt
+          python -m pip install --global-option=build_ext $env:WIN_GRAPHVIZ_OPT pygraphviz==1.7rc2
+          python -m pip install .
+          python -m pip list
+        else
+          pip install --upgrade pip wheel setuptools
+          pip install -r requirements.txt
+          pip install -r requirements/extra.txt
+          pip install .
+          pip list
+        fi
 
     - name: Test NetworkX
       run: |
