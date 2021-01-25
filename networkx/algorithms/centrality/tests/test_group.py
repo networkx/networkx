@@ -5,6 +5,8 @@ Tests for Group Centrality Measures
 
 import pytest
 import networkx as nx
+np = pytest.importorskip("numpy")
+pd = pytest.importorskip("pandas")
 
 
 class TestGroupBetweennessCentrality:
@@ -102,6 +104,7 @@ class TestGroupBetweennessCentrality:
 
 
 class TestProminentGroup:
+
     def test_prominent_group_single_node(self):
         """
         Prominent group for single node

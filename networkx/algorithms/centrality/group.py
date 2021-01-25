@@ -2,9 +2,7 @@
 from copy import deepcopy
 
 import networkx as nx
-import pandas as pd
 from networkx.utils.decorators import not_implemented_for
-import numpy as np
 from networkx.algorithms.centrality.betweenness import (
     _single_source_shortest_path_basic,
     _single_source_dijkstra_path_basic,
@@ -167,8 +165,8 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                 scale = c * (2 * v - c - 1)
             if scale == 0:
                 for group_node1 in group:
-                    for node in G:
-                        if node in D[group_node1] and node != group_node1:
+                    for node in D[group_node1]:
+                        if node != group_node1:
                             if node in group:
                                 scale += 1
                             else:
@@ -233,8 +231,8 @@ def _group_preprocessing(G, set_v, weight):
 def prominent_group(
     G, k, weight=None, C=None, endpoints=False, normalized=True, greedy=False
 ):
-    r"""Find the prominent group of size $k$ in graph $G$. The prominence of the group is
-     evaluated by the group betweenness centrality.
+    r"""Find the prominent group of size $k$ in graph $G$. The prominence of the
+     group is evaluated by the group betweenness centrality.
 
     Group betweenness centrality of a group of nodes $C$ is the sum of the
     fraction of all-pairs shortest paths that pass through any vertex in $C$
@@ -271,8 +269,9 @@ def prominent_group(
         list of nodes which won't be candidates of the prominent group.
 
     greedy : bool, optional (default=False)
-        Using a naive greedy algorithm in order to find non-optimal prominent group. For scale free
-        networks the results are negligibly below the optimal results.
+        Using a naive greedy algorithm in order to find non-optimal prominent
+        group. For scale free networks the results are negligibly below the optimal
+         results.
 
     Raises
     ------
@@ -321,7 +320,8 @@ def prominent_group(
        "Fast algorithm for successive computation of group betweenness centrality."
         https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709
     """
-
+    import pandas as pd
+    import numpy as np
     if C is not None:
         C = set(C)
         if C - G.nodes:  # element(s) of C not in G
@@ -335,7 +335,8 @@ def prominent_group(
     if C is not None:
         for (
             node
-        ) in C:  # remove from the betweenness all the nodes not part of the group
+        ) in C:
+            # remove from the betweenness all the nodes not part of the group
             betweenness.drop(index=node, inplace=True)
             betweenness.drop(columns=node, inplace=True)
     CL = [node for _, node in sorted(zip(np.diag(betweenness), nodes), reverse=True)]
@@ -372,8 +373,8 @@ def prominent_group(
             scale = k * (2 * v - k - 1)
         if scale == 0:
             for group_node1 in max_group:
-                for node in G:
-                    if node in D[group_node1] and node != group_node1:
+                for node in D[group_node1]:
+                    if node != group_node1:
                         if node in max_group:
                             scale += 1
                         else:
@@ -396,8 +397,9 @@ def __dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
     # stopping condition - if we found a group of size k and with higher GBC then prune
     if len(DF_tree.nodes[root]["GM"]) == k and DF_tree.nodes[root]["GBC"] > max_GBC:
         return DF_tree.nodes[root]["GBC"], DF_tree, DF_tree.nodes[root]["GM"]
-    # stopping condition - if the size of group members equal to k or there are less than k - |GM| in the
-    # candidate list or the heuristic function plus the GBC is bellow the maximal GBC found then prune
+    # stopping condition - if the size of group members equal to k or there are less than
+    # k - |GM| in the candidate list or the heuristic function plus the GBC is bellow the
+    # maximal GBC found then prune
     if (
         len(DF_tree.nodes[root]["GM"]) == k
         or len(DF_tree.nodes[root]["CL"]) <= k - len(DF_tree.nodes[root]["GM"])
@@ -408,8 +410,8 @@ def __dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
     # finding the heuristic of both children
     node_p, node_m, DF_tree = __heuristic(k, root, DF_tree, D, nodes, greedy)
 
-    # finding the child with the bigger heuristic + GBC and expand that node first
-    # if greedy then only expand the plus node
+    # finding the child with the bigger heuristic + GBC and expand
+    # that node first if greedy then only expand the plus node
     if greedy:
         max_GBC, DF_tree, max_group = __dfbnb(
             G, k, DF_tree, max_GBC, node_p, D, max_group, nodes, greedy
@@ -436,8 +438,9 @@ def __dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
 
 
 def __heuristic(k, root, DF_tree, D, nodes, greedy):
-    # This helper function add two nodes to DF_tree - one left son and the other right son,
-    # finds their heuristic, CL, GBC, and GM
+    import numpy as np
+    # This helper function add two nodes to DF_tree - one left son and the
+    # other right son, finds their heuristic, CL, GBC, and GM
     node_p = DF_tree.number_of_nodes() + 1
     node_m = DF_tree.number_of_nodes() + 2
     added_node = DF_tree.nodes[root]["CL"][0]
