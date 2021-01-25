@@ -105,7 +105,6 @@ class TestGroupBetweennessCentrality:
 
 
 class TestProminentGroup:
-
     def test_prominent_group_single_node(self):
         """
         Prominent group for single node
