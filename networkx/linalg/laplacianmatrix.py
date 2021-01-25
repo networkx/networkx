@@ -12,7 +12,7 @@ __all__ = [
 
 
 @not_implemented_for("directed")
-def laplacian_matrix(G, nodelist=None, weight="weight"):
+def laplacian_matrix(G, nodelist=None, weight="weight", signless=False):
     """Returns the Laplacian matrix of G.
 
     The graph Laplacian is the matrix L = D - A, where
@@ -30,6 +30,9 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     weight : string or None, optional (default='weight')
        The edge data key used to compute each value in the matrix.
        If None, then each edge has weight 1.
+
+    signless : boolean, optional (default=False)
+       If True, then it return a signless Laplacian matrix L = D + A.
 
     Returns
     -------
@@ -55,11 +58,11 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     n, m = A.shape
     diags = A.sum(axis=1)
     D = sp.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
-    return D - A
+    return D - A if not signless else D + A
 
 
 @not_implemented_for("directed")
-def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
+def normalized_laplacian_matrix(G, nodelist=None, weight="weight", signless=False):
     r"""Returns the normalized Laplacian matrix of G.
 
     The normalized graph Laplacian is the matrix
@@ -83,6 +86,9 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     weight : string or None, optional (default='weight')
        The edge data key used to compute each value in the matrix.
        If None, then each edge has weight 1.
+
+    signless : boolean, optional (default=False)
+       If True, then it return a signless Laplacian matrix L = D + A.
 
     Returns
     -------
@@ -120,7 +126,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     n, m = A.shape
     diags = A.sum(axis=1).flatten()
     D = sp.sparse.spdiags(diags, [0], m, n, format="csr")
-    L = D - A
+    L = D - A if not signless else D + A
     with sp.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
