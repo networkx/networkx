@@ -322,6 +322,7 @@ def prominent_group(
     """
     import pandas as pd
     import numpy as np
+
     if C is not None:
         C = set(C)
         if C - G.nodes:  # element(s) of C not in G
@@ -437,6 +438,7 @@ def __dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
 
 def __heuristic(k, root, DF_tree, D, nodes, greedy):
     import numpy as np
+
     # This helper function add two nodes to DF_tree - one left son and the
     # other right son, finds their heuristic, CL, GBC, and GM
     node_p = DF_tree.number_of_nodes() + 1
