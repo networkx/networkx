@@ -301,5 +301,6 @@ class TestGraphMatrix:
 
     def test_normalized_adjacency_matrix(self):
         "Conversion to normalized adjacency matrix"
-        np.testing.assert_almost_equal(nx.normalized_adjacency_matrix(self.G).todense(),
-                                self.AN)
+        np.testing.assert_almost_equal(
+            nx.normalized_adjacency_matrix(self.G).todense(), self.AN
+        )

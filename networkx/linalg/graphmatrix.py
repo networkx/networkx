@@ -7,7 +7,7 @@ __all__ = [
     "incidence_matrix",
     "adj_matrix",
     "adjacency_matrix",
-    "normalized_adjacency_matrix"
+    "normalized_adjacency_matrix",
 ]
 
 
@@ -224,10 +224,10 @@ def normalized_adjacency_matrix(G, nodelist=None, weight="weight"):
 
     A = adjacency_matrix(G, nodelist, weight)
     diags = A.sum(axis=1).A1
-    with scipy.errstate(divide='ignore'):
+    with scipy.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
-    diags_sqrt[np.isinf(diags_sqrt)] = 0.
-    D_sqrt = sp.diags(diags_sqrt, format='csr')
+    diags_sqrt[np.isinf(diags_sqrt)] = 0.0
+    D_sqrt = sp.diags(diags_sqrt, format="csr")
     return D_sqrt @ A @ D_sqrt
 
 
