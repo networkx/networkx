@@ -23,17 +23,10 @@ jobs:
 
     - name: Install packages
       run: |
-        if [ "$RUNNER_OS" == "Windows" ]; then 
-          python -m pip install --upgrade pip wheel setuptools
-          python -m pip install -r requirements.txt
-          python -m pip install .
-          python -m pip list
-        else
-          pip install --upgrade pip wheel setuptools
-          pip install -r requirements.txt
-          pip install .
-          pip list
-        fi
+        python -m pip install --upgrade pip wheel setuptools
+        python -m pip install -r requirements.txt
+        python -m pip install .
+        python -m pip list
 
     - name: Test NetworkX
       run: |
