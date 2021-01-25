@@ -333,9 +333,7 @@ def prominent_group(
     PB, sigma, D = _group_preprocessing(G, nodes, weight)
     betweenness = pd.DataFrame.from_dict(PB)
     if C is not None:
-        for (
-            node
-        ) in C:
+        for node in C:
             # remove from the betweenness all the nodes not part of the group
             betweenness.drop(index=node, inplace=True)
             betweenness.drop(columns=node, inplace=True)
