@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
-        os: [ubuntu, macos]
+        os: [ubuntu, macos, windows]
         python-version: [3.7, 3.8, 3.9]
     steps:
     - uses: actions/checkout@v2
@@ -21,17 +21,12 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Before install
-      run: |
-        python3 -m venv ~/venv
-        source ~/venv/bin/activate
-
     - name: Install packages
       run: |
-        pip install --upgrade pip wheel setuptools
-        pip install -r requirements.txt
-        pip install .
-        pip list
+        python -m pip install --upgrade pip wheel setuptools
+        python -m pip install -r requirements.txt
+        python -m pip install .
+        python -m pip list
 
     - name: Test NetworkX
       run: |
@@ -49,11 +44,6 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-
-    - name: Before install
-      run: |
-        python3 -m venv ~/venv
-        source ~/venv/bin/activate
 
     - name: Install packages
       run: |
@@ -87,8 +77,6 @@ jobs:
         elif [ "$RUNNER_OS" == "macOS" ]; then
           brew install graphviz pkg-config
         fi
-        python3 -m venv ~/venv
-        source ~/venv/bin/activate
 
     - name: Install packages
       run: |
@@ -114,11 +102,6 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-
-    - name: Before install
-      run: |
-        python3 -m venv ~/venv
-        source ~/venv/bin/activate
 
     - name: Install packages
       run: |

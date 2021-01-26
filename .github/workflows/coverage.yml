@@ -23,8 +23,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install libgdal-dev graphviz graphviz-dev
-        python3 -m venv ~/venv
-        source ~/venv/bin/activate
 
     - name: Install packages
       run: |
