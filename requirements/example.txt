@@ -4,7 +4,6 @@ Cartopy>=0.18
 shapely
 # Required for Cartopy
 osmnx>=0.16
-geopandas>=0.8.2
 momepy>=0.4
 contextily>=1.0
 mayavi>=4.7
