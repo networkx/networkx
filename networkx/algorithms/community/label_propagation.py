@@ -1,7 +1,7 @@
 """
 Label propagation community detection algorithms.
 """
-from collections import Counter
+from collections import Counter, defaultdict
 
 import networkx as nx
 from networkx.utils import groups
@@ -135,8 +135,10 @@ def label_propagation_communities(G):
             for n in nodes:
                 _update_label(n, labeling, G)
 
-    for label in set(labeling.values()):
-        yield {x for x in labeling if labeling[x] == label}
+    clusters = defaultdict(set)
+    for node, label in labeling.items():
+        clusters[label].add(node)
+    return clusters.values()
 
 
 def _color_network(G):
