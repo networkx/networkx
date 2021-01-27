@@ -28,7 +28,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
 
     .. math::
 
-       c_B(C) =\sum_{s,t \in V-C; s<t} \frac{\sigma(s, t|C)}{\sigma(s, t)}
+       c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|v)}{\sigma(s, t)}
 
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
     shortest $(s, t)$-paths, and $\sigma(s, t|C)$ is the number of
@@ -83,6 +83,12 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     For weighted graphs the edge weights must be greater than zero.
     Zero edge weights can produce an infinite number of equal length
     paths between pairs of nodes.
+
+    The total number of paths between source and target is counted
+    differently for directed and undirected graphs. Directed paths
+    from "u" to "v" are counted as two directed paths and undirected
+    paths are counted as one paths.
+
 
     References
     ----------
@@ -239,7 +245,7 @@ def prominent_group(
 
     .. math::
 
-       c_B(C) =\sum_{s,t \in V-C; s<t} \frac{\sigma(s, t|C)}{\sigma(s, t)}
+       c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|v)}{\sigma(s, t)}
 
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
     shortest $(s, t)$-paths, and $\sigma(s, t|C)$ is the number of
@@ -301,6 +307,11 @@ def prominent_group(
     For weighted graphs the edge weights must be greater than zero.
     Zero edge weights can produce an infinite number of equal length
     paths between pairs of nodes.
+
+    The total number of paths between source and target is counted
+    differently for directed and undirected graphs. Directed paths
+    from "u" to "v" are counted as two directed paths and undirected
+    paths are counted as one paths.
 
     References
     ----------
