@@ -416,15 +416,20 @@ def test_labels_and_colors():
     # plt.show()
 
 
+@pytest.mark.mpl_image_compare
 def test_axes():
     fig, ax = plt.subplots()
-    nx.draw(barbell, ax=ax)
+    nx.draw(barbell, pos=nx.spring_layout(barbell, seed=42), ax=ax)
     nx.draw_networkx_edge_labels(barbell, nx.circular_layout(barbell), ax=ax)
+    return fig
 
 
+@pytest.mark.mpl_image_compare
 def test_empty_graph():
+    fig, ax = plt.subplots()
     G = nx.Graph()
     nx.draw(G)
+    return fig
 
 
 def test_draw_empty_nodes_return_values():
@@ -449,11 +454,14 @@ def test_draw_empty_nodes_return_values():
     assert nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=True) == []
 
 
+@pytest.mark.mpl_image_compare
 def test_multigraph_edgelist_tuples():
     # See Issue #3295
+    fig, ax = plt.subplots()
     G = nx.path_graph(3, create_using=nx.MultiDiGraph)
     nx.draw_networkx(G, edgelist=[(0, 1, 0)])
     nx.draw_networkx(G, edgelist=[(0, 1, 0)], node_size=[10, 20, 0])
+    return fig
 
 
 def test_alpha_iter():
