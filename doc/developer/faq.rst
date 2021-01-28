@@ -31,10 +31,7 @@ interesting application or visualization that uses NetworkX.
 The gallery is generated using :doc:`sphinx-gallery <sphinx-gallery:index>`
 from Python scripts stored in the ``examples/`` directory.
 
-Example
-~~~~~~~
-
-Let's say I'd like to contribute an example of visualizing a
+For instance, let's say I'd like to contribute an example of visualizing a
 `complete graph <networkx.generators.classic.complete_graph>` using a
 `circular layout <networkx.drawing.layout.circular_layout>`.
 Assuming you have already followed the procedure for
