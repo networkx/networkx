@@ -98,8 +98,8 @@ listed in the ``File:`` field:
    File: ~/networkx/networkx/drawing/layout.py
    Type: function
 
-The ``grep`` command-line utility is also very useful. For example, from the
-NetworkX source directory:
+Command line utilities like ``grep`` or ``git grep`` are also very useful.
+For example, from the NetworkX source directory:
 
 .. code-block:: bash
 
