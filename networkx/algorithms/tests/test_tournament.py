@@ -1,8 +1,8 @@
 """Unit tests for the :mod:`networkx.algorithms.tournament` module."""
 from itertools import combinations
 import pytest
-#sp = pytest.importorskip("scipy")
-#sparse = sp.sparse
+sp = pytest.importorskip("scipy")
+sparse = sp.sparse
 
 from networkx import DiGraph
 from networkx.algorithms.tournament import is_reachable
@@ -133,14 +133,14 @@ class TestScoreSequence:##NEW
         G = DiGraph([(0, 1), (1, 2), (2, 0)])
         assert score_sequence(G) == [1, 1, 1]
 
-#class TestTournamentMatrix:
-#    """Unit tests for the :func:`networkx.tournament.tournament_matrix`
-#    function.
+class TestTournamentMatrix:
+    """Unit tests for the :func:`networkx.tournament.tournament_matrix`
+    function.
 
-#    """
-#    def test_tournament_matrix(self):
-#        G = DiGraph([(0, 1)])
-#        assert tournament_matrix(G) == sparse.coo_matrix([[0, 1], [-1, 0]])
+    """
+    def test_tournament_matrix(self):
+        G = DiGraph([(0, 1)])
+        assert tournament_matrix(G) == sparse.coo_matrix([[0, 1], [-1, 0]])
 
 
 class TestReachability:
