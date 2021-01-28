@@ -22,6 +22,19 @@ improving the test suite (e.g. increasing test coverage), and improving the
 documentation.
 The "best" way to find a place to start is to follow your own personal
 interests!
+That said, a few places to check for ideas on where to get started:
+ - `The issue tracker <https://github.com/networkx/networkx/issues>`_ lists
+   known bugs and feature requests. Of particular interest for first-time
+   contributors are issues that have been tagged with the `Good First Issue`_
+   or `Sprint`_ labels.
+ - The `Algorithms discussion`_ includes a listing of algorithms that users
+   would like to have but that are not yet included in NetworkX.
+
+.. _Good First Issue: https://github.com/networkx/networkx/issues?q=is%3Aopen+is%3Aissue+label%3A%22Good+First+Issue%22
+
+.. _Sprint: https://github.com/networkx/networkx/issues?q=is%3Aopen+is%3Aissue+label%3ASprint
+
+.. _Algorithms discussion: https://github.com/networkx/networkx/discussions/categories/algorithms
 
 Q: How do I contribute an example to the Gallery?
 -------------------------------------------------
