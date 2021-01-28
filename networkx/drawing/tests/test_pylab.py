@@ -10,6 +10,8 @@ plt.rcParams["text.usetex"] = False
 
 import networkx as nx
 
+barbell = nx.barbell_graph(4, 6)
+
 
 class TestPylab:
     @classmethod
@@ -29,7 +31,7 @@ class TestPylab:
             ]
             options = [{"node_color": "black", "node_size": 100, "width": 3}]
             for function, option in itertools.product(functions, options):
-                function(self.G, **option)
+                function(barbell, **option)
                 plt.savefig("test.ps")
 
         finally:
@@ -41,7 +43,7 @@ class TestPylab:
     def test_draw_shell_nlist(self):
         try:
             nlist = [list(range(4)), list(range(4, 10)), list(range(10, 14))]
-            nx.draw_shell(self.G, nlist=nlist)
+            nx.draw_shell(barbell, nlist=nlist)
             plt.savefig("test.ps")
         finally:
             try:
@@ -50,19 +52,23 @@ class TestPylab:
                 pass
 
     def test_edge_colormap(self):
-        colors = range(self.G.number_of_edges())
+        colors = range(barbell.number_of_edges())
         nx.draw_spring(
-            self.G, edge_color=colors, width=4, edge_cmap=plt.cm.Blues, with_labels=True
+            barbell,
+            edge_color=colors,
+            width=4,
+            edge_cmap=plt.cm.Blues,
+            with_labels=True,
         )
         # plt.show()
 
     def test_arrows(self):
-        nx.draw_spring(self.G.to_directed())
+        nx.draw_spring(barbell.to_directed())
         # plt.show()
 
     def test_edge_colors_and_widths(self):
-        pos = nx.circular_layout(self.G)
-        for G in (self.G, self.G.to_directed()):
+        pos = nx.circular_layout(barbell)
+        for G in (barbell, barbell.to_directed()):
             nx.draw_networkx_nodes(G, pos, node_color=[(1.0, 1.0, 0.2, 0.5)])
             nx.draw_networkx_labels(G, pos)
             # edge with default color and width
@@ -197,8 +203,8 @@ class TestPylab:
 
     def test_axes(self):
         fig, ax = plt.subplots()
-        nx.draw(self.G, ax=ax)
-        nx.draw_networkx_edge_labels(self.G, nx.circular_layout(self.G), ax=ax)
+        nx.draw(barbell, ax=ax)
+        nx.draw_networkx_edge_labels(barbell, nx.circular_layout(barbell), ax=ax)
 
     def test_empty_graph(self):
         G = nx.Graph()
@@ -232,29 +238,29 @@ class TestPylab:
         nx.draw_networkx(G, edgelist=[(0, 1, 0)], node_size=[10, 20, 0])
 
     def test_alpha_iter(self):
-        pos = nx.random_layout(self.G)
+        pos = nx.random_layout(barbell)
         # with fewer alpha elements than nodes
         plt.subplot(131)
-        nx.draw_networkx_nodes(self.G, pos, alpha=[0.1, 0.2])
+        nx.draw_networkx_nodes(barbell, pos, alpha=[0.1, 0.2])
         # with equal alpha elements and nodes
-        num_nodes = len(self.G.nodes)
+        num_nodes = len(barbell.nodes)
         alpha = [x / num_nodes for x in range(num_nodes)]
         colors = range(num_nodes)
         plt.subplot(132)
-        nx.draw_networkx_nodes(self.G, pos, node_color=colors, alpha=alpha)
+        nx.draw_networkx_nodes(barbell, pos, node_color=colors, alpha=alpha)
         # with more alpha elements than nodes
         alpha.append(1)
         plt.subplot(133)
-        nx.draw_networkx_nodes(self.G, pos, alpha=alpha)
+        nx.draw_networkx_nodes(barbell, pos, alpha=alpha)
 
     def test_error_invalid_kwds(self):
         with pytest.raises(ValueError, match="Received invalid argument"):
-            nx.draw(self.G, foo="bar")
+            nx.draw(barbell, foo="bar")
 
     def test_np_edgelist(self):
         # see issue #4129
         np = pytest.importorskip("numpy")
-        nx.draw_networkx(self.G, edgelist=np.array([(0, 2), (0, 3)]))
+        nx.draw_networkx(barbell, edgelist=np.array([(0, 2), (0, 3)]))
 
 
 def test_draw_nodes_missing_node_from_position():
