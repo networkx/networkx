@@ -17,12 +17,10 @@ Community Detection Algorithms
 - Abstract: Community detection is a set of algorithms in network science which
   deals with grouping nodes in a network according to related properties or
   dense clusters. NetworkX already contains a
-  `variety of algorithms <https://networkx.org/documentation/latest/reference/algorithms/community.html>`__
+  :mod:`variety of algorithms <networkx.algorithms.community>`
   dealing with computing the community structure of a network. There are
   multiple PRs/issues which deals with adding the Louvain algorithm to
-  NetworkX https://github.com/networkx/networkx/pull/1090,
-  https://github.com/networkx/networkx/pull/1092,
-  https://github.com/networkx/networkx/issues/951. Users who want to work with
+  NetworkX, e.g. `#1090`_, `#1092`_ `#951`_. Users who want to work with
   NetworkX and Louvain Community Detection usually use
   https://github.com/taynaud/python-louvain.
 
@@ -34,15 +32,18 @@ Community Detection Algorithms
 
 - Complexity: Moderate
 
-- Interested Mentors: `@dschult<https://github.com/dschult/>`__,
-  `@MridulS<https://github.com/MridulS/>`__, 
+- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
+  `@MridulS <https://github.com/MridulS/>`__, 
+
+.. _#1090: https://github.com/networkx/networkx/pull/1090
+.. _#1092: https://github.com/networkx/networkx/pull/1092
+.. _#951: https://github.com/networkx/networkx/issues/951
 
 
 Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 ------------------------------------------------------------------------
 
-- Abstract: NetworkX has a
-  `wide variety of algorithms <https://networkx.org/documentation/latest/reference/algorithms/index.html>`__
+- Abstract: NetworkX has a :ref:`wide variety of algorithms <Algorithms>`
   impelemented. Even though the algorithms well documented, the explainations
   behind the algorithms are missing and we would like to collect these
   notebooks and host them at https://github.com/networkx/notebooks which gives
@@ -58,8 +59,8 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 
 - Complexity: Depending on the algorithms you are interested to work on.
 
-- Interested Mentors: `@dschult<https://github.com/dschult/>`__,
-  `@MridulS<https://github.com/MridulS/>`__, 
+- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
+  `@MridulS <https://github.com/MridulS/>`__, 
 
 Project Idea Template
 ---------------------
