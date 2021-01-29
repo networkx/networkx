@@ -46,11 +46,15 @@ API Changes
   large graphs.
 - [`#4384 <https://github.com/networkx/networkx/pull/4384>`_]
   Added edge_key parameter for MultiGraphs in to_pandas_edgelist
-
 - [`#4466 <https://github.com/networkx/networkx/pull/4466>`_]
   `relabel_nodes` used to raise a KeyError for a key in `mapping` that is not
   a node in the graph, but it only did this when `copy` was `False`. Now
   any keys in `mapping` which are not in the graph are ignored.
+- [`#4573 <https://github.com/networkx/networkx/pull/4573>`_]
+  `label_propagation_communities` returns a `dict_values` object of community
+  sets of nodes instead of a generator of community sets. It is still iterable,
+  so likely will still work in most user code and a simple fix otherwise:
+  e.g., add `iter( ... )` surrounding the function call.
 
 Deprecations
 ------------
