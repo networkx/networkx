@@ -111,8 +111,8 @@ def label_propagation_communities(G):
 
     Yields
     ------
-    communities : generator
-        Yields sets of the nodes in each community.
+    communities : iterator
+        A dict_values object that yields a set of nodes for each community.
 
     Raises
     ------
