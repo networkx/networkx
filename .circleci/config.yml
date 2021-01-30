@@ -3,7 +3,7 @@
 version: 2.1
 jobs:
 
-  build:
+  documentation:
     docker:
       - image: cimg/python:3.8
 
@@ -103,7 +103,7 @@ jobs:
 
 
 workflows:
-  build_and_test:
+  documentation_and_image_comparison:
     jobs:
+      - documentation
       - image
-      - build
