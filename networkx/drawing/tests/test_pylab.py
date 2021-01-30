@@ -459,8 +459,9 @@ def test_multigraph_edgelist_tuples():
     # See Issue #3295
     fig, ax = plt.subplots()
     G = nx.path_graph(3, create_using=nx.MultiDiGraph)
-    nx.draw_networkx(G, edgelist=[(0, 1, 0)])
-    nx.draw_networkx(G, edgelist=[(0, 1, 0)], node_size=[10, 20, 0])
+    pos = nx.spring_layout(G, seed=42)
+    nx.draw_networkx(G, pos=pos, edgelist=[(0, 1, 0)])
+    nx.draw_networkx(G, pos=pos, edgelist=[(0, 1, 0)], node_size=[10, 20, 0])
     return fig
 
 
