@@ -86,8 +86,10 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
 
     The total number of paths between source and target is counted
     differently for directed and undirected graphs. Directed paths
-    from "u" to "v" are counted as two directed paths and undirected
-    paths are counted as one paths.
+    between "u" and "v" are counted as two possible paths (one each
+    direction) while undirected paths between "u" and "v" are counted
+    as one path. Said another way, the sum in the expression above is
+    over all `s != t` for directed graphs and for `s < t` for undirected graphs.
 
 
     References
@@ -310,8 +312,10 @@ def prominent_group(
 
     The total number of paths between source and target is counted
     differently for directed and undirected graphs. Directed paths
-    from "u" to "v" are counted as two directed paths and undirected
-    paths are counted as one paths.
+    between "u" and "v" are counted as two possible paths (one each
+    direction) while undirected paths between "u" and "v" are counted
+    as one path. Said another way, the sum in the expression above is
+    over all `s != t` for directed graphs and for `s < t` for undirected graphs.
 
     References
     ----------
