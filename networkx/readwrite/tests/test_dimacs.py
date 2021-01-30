@@ -1,5 +1,5 @@
 """
-    Unit tests for edgelists.
+    Unit tests for dimacs.
 """
 import io
 
