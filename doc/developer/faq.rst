@@ -1,10 +1,10 @@
 .. _contributing_faq:
 
-Contributing FAQ
-****************
+New Contributor FAQ
+*******************
 
-A collection of frequently-asked questions related to open-source development
-and contributing to NetworkX.
+A collection of frequently-asked questions by newcomers to
+open-source development and first-time contributors to NetworkX.
 
 Q: I'm new to open source and would like to contribute to NetworkX. How do I get started?
 -----------------------------------------------------------------------------------------
