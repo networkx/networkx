@@ -10,7 +10,7 @@ Developer Guide
    values
    contribute
    projects
-   faq
+   new_contributor_faq
    core_developer
    gitwash/index
    release
