@@ -72,7 +72,7 @@ jobs:
 
   image:
     docker:
-      - image: circleci/python:3.8.5-buster
+      - image: cimg/python:3.9.1
 
     steps:
       - checkout
@@ -80,7 +80,7 @@ jobs:
       - run:
           name: Install Python dependencies
           command: |
-            python3 -m venv venv
+            python -m venv venv
             source venv/bin/activate
             pip install --upgrade pip wheel setuptools
             pip install -r requirements.txt

@@ -1,8 +1,10 @@
+name: circleci
+
 on: [status]
 jobs:
-  image_comparison_redirector_job:
+  image:
     runs-on: ubuntu-latest
-    name: Run CircleCI artifact redirector
+    name: Run CircleCI image artifact redirector
     steps:
       - name: GitHub Action step
         uses: larsoner/circleci-artifacts-redirector-action@master
@@ -11,9 +13,9 @@ jobs:
           artifact-path: 0/results/fig_comparison.html
           circleci-jobs: image
 
-  circleci_artifacts_redirector_job:
+  documentation:
     runs-on: ubuntu-latest
-    name: Run CircleCI artifact redirector
+    name: Run CircleCI build artifact redirector
     steps:
       - name: GitHub Action step
         uses: larsoner/circleci-artifacts-redirector-action@master
