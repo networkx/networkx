@@ -1,0 +1,27 @@
+name: style
+
+on: [push, pull_request]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install packages
+        run: |
+          pip install --upgrade pip wheel setuptools
+          pip install -r requirements/developer.txt
+          pip list
+
+      - name: Lint
+        run: pre-commit run --all-files --show-diff-on-failure --color always

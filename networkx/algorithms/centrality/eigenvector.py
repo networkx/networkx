@@ -214,14 +214,14 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     """
     import numpy as np
     import scipy as sp
-    from scipy.sparse import linalg
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
             "cannot compute centrality for the null graph"
         )
     M = nx.to_scipy_sparse_matrix(G, nodelist=list(G), weight=weight, dtype=float)
-    eigenvalue, eigenvector = linalg.eigs(
+    eigenvalue, eigenvector = sp.sparse.linalg.eigs(
         M.T, k=1, which="LR", maxiter=max_iter, tol=tol
     )
     largest = eigenvector.flatten().real

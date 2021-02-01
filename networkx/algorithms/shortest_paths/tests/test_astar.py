@@ -112,8 +112,8 @@ class TestAStar:
         answer = ["n5", "n2", "n1", "n0"]
         assert nx.astar_path(graph, "n5", "n0", h) == answer
 
-    """ Tests that that parent is not wrongly overridden when a
-        node is re-explored multiple times.
+    """ Tests that parent is not wrongly overridden when a node
+        is re-explored multiple times.
     """
 
     def test_astar_directed4(self):

@@ -2,7 +2,7 @@ import math
 import pytest
 
 np = pytest.importorskip("numpy")
-scipy = pytest.importorskip("scipy")
+pytest.importorskip("scipy")
 
 
 import networkx as nx

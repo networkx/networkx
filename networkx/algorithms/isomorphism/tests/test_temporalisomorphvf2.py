@@ -65,7 +65,7 @@ def put_time_config_2(G, att_name):
 
 class TestTimeRespectingGraphMatcher:
     """
-        A test class for the undirected temporal graph matcher.
+    A test class for the undirected temporal graph matcher.
     """
 
     def provide_g1_topology(self):
@@ -148,7 +148,7 @@ class TestTimeRespectingGraphMatcher:
 
 class TestDiTimeRespectingGraphMatcher:
     """
-        A test class for the directed time-respecting graph matcher.
+    A test class for the directed time-respecting graph matcher.
     """
 
     def provide_g1_topology(self):

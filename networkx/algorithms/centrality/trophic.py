@@ -14,15 +14,15 @@ def trophic_levels(G, weight="weight"):
 
     .. math::
 
-        s_i = 1 + \frac{1}{k_^{in}_i \sum_{j} a_{ij} s_j
+        s_i = 1 + \frac{1}{k^{in}_i} \sum_{j} a_{ij} s_j
 
-    where $k_^{in}_i$ is the in-degree of i
+    where $k^{in}_i$ is the in-degree of i
 
     .. math::
 
         k^{in}_i = \sum_{j} a_{ij}
 
-    and nodes with $k_^{in}_i = 0$ have $s_i = 1$ by convention.
+    and nodes with $k^{in}_i = 0$ have $s_i = 1$ by convention.
 
     These are calculated using the method outlined in Levine [1]_.
 
@@ -40,10 +40,7 @@ def trophic_levels(G, weight="weight"):
     ----------
     .. [1] Stephen Levine (1980) J. theor. Biol. 83, 195-207
     """
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError("trophic_levels() requires NumPy: http://numpy.org/") from e
+    import numpy as np
 
     # find adjacency matrix
     a = nx.adjacency_matrix(G, weight=weight).T.toarray()
@@ -145,12 +142,7 @@ def trophic_incoherence_parameter(G, weight="weight", cannibalism=False):
     .. [1] Samuel Johnson, Virginia Dominguez-Garcia, Luca Donetti, Miguel A.
         Munoz (2014) PNAS "Trophic coherence determines food-web stability"
     """
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError(
-            "trophic_incoherence_parameter() requires NumPy: " "http://scipy.org/"
-        ) from e
+    import numpy as np
 
     if cannibalism:
         diffs = trophic_differences(G, weight=weight)

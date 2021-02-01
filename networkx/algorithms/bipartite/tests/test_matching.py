@@ -207,8 +207,7 @@ def test_eppstein_matching():
 class TestMinimumWeightFullMatching:
     @classmethod
     def setup_class(cls):
-        global scipy
-        scipy = pytest.importorskip("scipy")
+        pytest.importorskip("scipy")
 
     def test_minimum_weight_full_matching_incomplete_graph(self):
         B = nx.Graph()

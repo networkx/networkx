@@ -36,7 +36,7 @@ def adjacency_data(G, attrs=_attrs):
     Examples
     --------
     >>> from networkx.readwrite import json_graph
-    >>> G = nx.Graph([(1,2)])
+    >>> G = nx.Graph([(1, 2)])
     >>> data = json_graph.adjacency_data(G)
 
     To serialize with json
@@ -90,11 +90,6 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
     data : dict
         Adjacency list formatted graph data
 
-    Returns
-    -------
-    G : NetworkX graph
-       A NetworkX graph object
-
     directed : bool
         If True, and direction not specified in data, return a directed graph.
 
@@ -107,10 +102,15 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
         data. The values should be unique. Default value:
         :samp:`dict(id='id', key='key')`.
 
+    Returns
+    -------
+    G : NetworkX graph
+       A NetworkX graph object
+
     Examples
     --------
     >>> from networkx.readwrite import json_graph
-    >>> G = nx.Graph([(1,2)])
+    >>> G = nx.Graph([(1, 2)])
     >>> data = json_graph.adjacency_data(G)
     >>> H = json_graph.adjacency_graph(data)
 

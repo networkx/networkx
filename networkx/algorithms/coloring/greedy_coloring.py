@@ -306,7 +306,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
     Examples
     --------
     >>> G = nx.cycle_graph(4)
-    >>> d = nx.coloring.greedy_color(G, strategy='largest_first')
+    >>> d = nx.coloring.greedy_color(G, strategy="largest_first")
     >>> d in [{0: 0, 1: 1, 2: 0, 3: 1}, {0: 1, 1: 0, 2: 1, 3: 0}]
     True
 

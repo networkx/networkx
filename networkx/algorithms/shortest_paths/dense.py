@@ -32,16 +32,13 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
         will be Inf.
 
     Notes
-    ------
+    -----
     Floyd's algorithm is appropriate for finding shortest paths in
     dense graphs or graphs with negative weights when Dijkstra's
     algorithm fails. This algorithm can still fail if there are negative
     cycles.  It has running time $O(n^3)$ with running space of $O(n^2)$.
     """
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError("to_numpy_array() requires numpy: http://numpy.org/ ") from e
+    import numpy as np
 
     # To handle cases when an edge has weight=0, we must make sure that
     # nonedges are not given the value 0 as well.
@@ -75,15 +72,26 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from([('s', 'u', 10), ('s', 'x', 5),
-    ...     ('u', 'v', 1), ('u', 'x', 2), ('v', 'y', 1), ('x', 'u', 3),
-    ...     ('x', 'v', 5), ('x', 'y', 2), ('y', 's', 7), ('y', 'v', 6)])
+    >>> G.add_weighted_edges_from(
+    ...     [
+    ...         ("s", "u", 10),
+    ...         ("s", "x", 5),
+    ...         ("u", "v", 1),
+    ...         ("u", "x", 2),
+    ...         ("v", "y", 1),
+    ...         ("x", "u", 3),
+    ...         ("x", "v", 5),
+    ...         ("x", "y", 2),
+    ...         ("y", "s", 7),
+    ...         ("y", "v", 6),
+    ...     ]
+    ... )
     >>> predecessors, _ = nx.floyd_warshall_predecessor_and_distance(G)
-    >>> print(nx.reconstruct_path('s', 'v', predecessors))
+    >>> print(nx.reconstruct_path("s", "v", predecessors))
     ['s', 'x', 'u', 'v']
 
     Notes
-    ------
+    -----
     Floyd's algorithm is appropriate for finding shortest paths
     in dense graphs or graphs with negative weights when Dijkstra's algorithm
     fails.  This algorithm can still fail if there are negative cycles.
@@ -151,7 +159,7 @@ def reconstruct_path(source, target, predecessors):
        If source and target are the same, an empty list is returned
 
     Notes
-    ------
+    -----
     This function is meant to give more applicability to the
     floyd_warshall_predecessor_and_distance function
 
@@ -188,7 +196,7 @@ def floyd_warshall(G, weight="weight"):
        between nodes.
 
     Notes
-    ------
+    -----
     Floyd's algorithm is appropriate for finding shortest paths
     in dense graphs or graphs with negative weights when Dijkstra's algorithm
     fails.  This algorithm can still fail if there are negative cycles.

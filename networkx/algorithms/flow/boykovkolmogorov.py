@@ -105,7 +105,6 @@ def boykov_kolmogorov(
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.flow import boykov_kolmogorov
 
     The functions that implement flow algorithms and output a residual
@@ -113,19 +112,19 @@ def boykov_kolmogorov(
     namespace, so you have to explicitly import them from the flow package.
 
     >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> R = boykov_kolmogorov(G, 'x', 'y')
-    >>> flow_value = nx.maximum_flow_value(G, 'x', 'y')
+    >>> G.add_edge("x", "a", capacity=3.0)
+    >>> G.add_edge("x", "b", capacity=1.0)
+    >>> G.add_edge("a", "c", capacity=3.0)
+    >>> G.add_edge("b", "c", capacity=5.0)
+    >>> G.add_edge("b", "d", capacity=4.0)
+    >>> G.add_edge("d", "e", capacity=2.0)
+    >>> G.add_edge("c", "y", capacity=2.0)
+    >>> G.add_edge("e", "y", capacity=3.0)
+    >>> R = boykov_kolmogorov(G, "x", "y")
+    >>> flow_value = nx.maximum_flow_value(G, "x", "y")
     >>> flow_value
     3.0
-    >>> flow_value == R.graph['flow_value']
+    >>> flow_value == R.graph["flow_value"]
     True
 
     A nice feature of the Boykov-Kolmogorov algorithm is that a partition
@@ -133,7 +132,7 @@ def boykov_kolmogorov(
     on the search trees used during the algorithm. These trees are stored
     in the graph attribute `trees` of the residual network.
 
-    >>> source_tree, target_tree = R.graph['trees']
+    >>> source_tree, target_tree = R.graph["trees"]
     >>> partition = (set(source_tree), set(G) - set(source_tree))
 
     Or equivalently:
@@ -192,11 +191,11 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     def grow():
         """Bidirectional breadth-first search for the growth stage.
 
-           Returns a connecting edge, that is and edge that connects
-           a node from the source search tree with a node from the
-           target search tree.
-           The first node in the connecting edge is always from the
-           source tree and the last node from the target tree.
+        Returns a connecting edge, that is and edge that connects
+        a node from the source search tree with a node from the
+        target search tree.
+        The first node in the connecting edge is always from the
+        source tree and the last node from the target tree.
         """
         while active:
             u = active[0]
@@ -227,11 +226,11 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     def augment(u, v):
         """Augmentation stage.
 
-           Reconstruct path and determine its residual capacity.
-           We start from a connecting edge, which links a node
-           from the source tree to a node from the target tree.
-           The connecting edge is the output of the grow function
-           and the input of this function.
+        Reconstruct path and determine its residual capacity.
+        We start from a connecting edge, which links a node
+        from the source tree to a node from the target tree.
+        The connecting edge is the output of the grow function
+        and the input of this function.
         """
         attr = R_succ[u][v]
         flow = min(INF, attr["capacity"] - attr["flow"])
@@ -275,12 +274,12 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     def adopt():
         """Adoption stage.
 
-           Reconstruct search trees by adopting or discarding orphans.
-           During augmentation stage some edges got saturated and thus
-           the source and target search trees broke down to forests, with
-           orphans as roots of some of its trees. We have to reconstruct
-           the search trees rooted to source and target before we can grow
-           them again.
+        Reconstruct search trees by adopting or discarding orphans.
+        During augmentation stage some edges got saturated and thus
+        the source and target search trees broke down to forests, with
+        orphans as roots of some of its trees. We have to reconstruct
+        the search trees rooted to source and target before we can grow
+        them again.
         """
         while orphans:
             u = orphans.popleft()

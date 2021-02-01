@@ -11,8 +11,7 @@ __all__ = ["shortest_augmenting_path"]
 
 
 def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff):
-    """Implementation of the shortest augmenting path algorithm.
-    """
+    """Implementation of the shortest augmenting path algorithm."""
     if s not in G:
         raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:
@@ -67,8 +66,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff
     inf = R.graph["inf"]
 
     def augment(path):
-        """Augment flow along a path from s to t.
-        """
+        """Augment flow along a path from s to t."""
         # Determine the path residual capacity.
         flow = inf
         it = iter(path)
@@ -89,8 +87,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff
         return flow
 
     def relabel(u):
-        """Relabel a node to create an admissible edge.
-        """
+        """Relabel a node to create an admissible edge."""
         height = n - 1
         for v, attr in R_succ[u].items():
             if attr["flow"] < attr["capacity"]:
@@ -271,7 +268,6 @@ def shortest_augmenting_path(
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.flow import shortest_augmenting_path
 
     The functions that implement flow algorithms and output a residual
@@ -279,19 +275,19 @@ def shortest_augmenting_path(
     namespace, so you have to explicitly import them from the flow package.
 
     >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> R = shortest_augmenting_path(G, 'x', 'y')
-    >>> flow_value = nx.maximum_flow_value(G, 'x', 'y')
+    >>> G.add_edge("x", "a", capacity=3.0)
+    >>> G.add_edge("x", "b", capacity=1.0)
+    >>> G.add_edge("a", "c", capacity=3.0)
+    >>> G.add_edge("b", "c", capacity=5.0)
+    >>> G.add_edge("b", "d", capacity=4.0)
+    >>> G.add_edge("d", "e", capacity=2.0)
+    >>> G.add_edge("c", "y", capacity=2.0)
+    >>> G.add_edge("e", "y", capacity=3.0)
+    >>> R = shortest_augmenting_path(G, "x", "y")
+    >>> flow_value = nx.maximum_flow_value(G, "x", "y")
     >>> flow_value
     3.0
-    >>> flow_value == R.graph['flow_value']
+    >>> flow_value == R.graph["flow_value"]
     True
 
     """

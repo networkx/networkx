@@ -33,14 +33,14 @@ def attribute_mixing_dict(G, attribute, nodes=None, normalized=False):
 
     Examples
     --------
-    >>> G=nx.Graph()
-    >>> G.add_nodes_from([0,1],color='red')
-    >>> G.add_nodes_from([2,3],color='blue')
-    >>> G.add_edge(1,3)
-    >>> d=nx.attribute_mixing_dict(G,'color')
-    >>> print(d['red']['blue'])
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([0, 1], color="red")
+    >>> G.add_nodes_from([2, 3], color="blue")
+    >>> G.add_edge(1, 3)
+    >>> d = nx.attribute_mixing_dict(G, "color")
+    >>> print(d["red"]["blue"])
     1
-    >>> print(d['blue']['red']) # d symmetric for undirected graphs
+    >>> print(d["blue"]["red"])  # d symmetric for undirected graphs
     1
 
     Returns

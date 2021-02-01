@@ -81,8 +81,8 @@ match : function
 Examples
 --------
 >>> import networkx.algorithms.isomorphism as iso
->>> nm = iso.categorical_node_match('size', 1)
->>> nm = iso.categorical_node_match(['color', 'size'], ['red', 2])
+>>> nm = iso.categorical_node_match("size", 1)
+>>> nm = iso.categorical_node_match(["color", "size"], ["red", 2])
 
 """
 
@@ -102,14 +102,7 @@ def categorical_node_match(attr, default):
     return match
 
 
-try:
-    categorical_edge_match = copyfunc(categorical_node_match, "categorical_edge_match")
-except NotImplementedError:
-    # IronPython lacks support for types.FunctionType.
-    # https://github.com/networkx/networkx/issues/949
-    # https://github.com/networkx/networkx/issues/1127
-    def categorical_edge_match(*args, **kwargs):
-        return categorical_node_match(*args, **kwargs)
+categorical_edge_match = copyfunc(categorical_node_match, "categorical_edge_match")
 
 
 def categorical_multiedge_match(attr, default):
@@ -173,8 +166,8 @@ match : function
 Examples
 --------
 >>> import networkx.algorithms.isomorphism as iso
->>> nm = iso.numerical_node_match('weight', 1.0)
->>> nm = iso.numerical_node_match(['weight', 'linewidth'], [.25, .5])
+>>> nm = iso.numerical_node_match("weight", 1.0)
+>>> nm = iso.numerical_node_match(["weight", "linewidth"], [0.25, 0.5])
 
 """
 
@@ -198,14 +191,7 @@ def numerical_node_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08)
     return match
 
 
-try:
-    numerical_edge_match = copyfunc(numerical_node_match, "numerical_edge_match")
-except NotImplementedError:
-    # IronPython lacks support for types.FunctionType.
-    # https://github.com/networkx/networkx/issues/949
-    # https://github.com/networkx/networkx/issues/1127
-    def numerical_edge_match(*args, **kwargs):
-        return numerical_node_match(*args, **kwargs)
+numerical_edge_match = copyfunc(numerical_node_match, "numerical_edge_match")
 
 
 def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08):
@@ -276,9 +262,9 @@ Examples
 >>> from operator import eq
 >>> from networkx.algorithms.isomorphism.matchhelpers import close
 >>> from networkx.algorithms.isomorphism import generic_node_match
->>> nm = generic_node_match('weight', 1.0, close)
->>> nm = generic_node_match('color', 'red', eq)
->>> nm = generic_node_match(['weight', 'color'], [1.0, 'red'], [close, eq])
+>>> nm = generic_node_match("weight", 1.0, close)
+>>> nm = generic_node_match("color", "red", eq)
+>>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [close, eq])
 
 """
 
@@ -302,14 +288,7 @@ def generic_node_match(attr, default, op):
     return match
 
 
-try:
-    generic_edge_match = copyfunc(generic_node_match, "generic_edge_match")
-except NotImplementedError:
-    # IronPython lacks support for types.FunctionType.
-    # https://github.com/networkx/networkx/issues/949
-    # https://github.com/networkx/networkx/issues/1127
-    def generic_edge_match(*args, **kwargs):
-        return generic_node_match(*args, **kwargs)
+generic_edge_match = copyfunc(generic_node_match, "generic_edge_match")
 
 
 def generic_multiedge_match(attr, default, op):
@@ -343,11 +322,9 @@ def generic_multiedge_match(attr, default, op):
     >>> from operator import eq
     >>> from networkx.algorithms.isomorphism.matchhelpers import close
     >>> from networkx.algorithms.isomorphism import generic_node_match
-    >>> nm = generic_node_match('weight', 1.0, close)
-    >>> nm = generic_node_match('color', 'red', eq)
-    >>> nm = generic_node_match(['weight', 'color'],
-    ...                         [1.0, 'red'],
-    ...                         [close, eq])
+    >>> nm = generic_node_match("weight", 1.0, close)
+    >>> nm = generic_node_match("color", "red", eq)
+    >>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [close, eq])
     ...
 
     """

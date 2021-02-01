@@ -8,7 +8,7 @@ __all__ = ["spectral_graph_forge"]
 
 
 def _mat_spect_approx(A, level, sorteigs=True, reverse=False, absolute=True):
-    """ Returns the low-rank approximation of the given matrix A
+    """Returns the low-rank approximation of the given matrix A
 
     Parameters
     ----------
@@ -44,7 +44,6 @@ def _mat_spect_approx(A, level, sorteigs=True, reverse=False, absolute=True):
     ..  [2] L. Mirsky, Symmetric gauge functions and unitarily invariant norms
 
     """
-
     import numpy as np
 
     d, V = np.linalg.eigh(A)
@@ -137,14 +136,13 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.karate_club_graph()
     >>> H = nx.spectral_graph_forge(G, 0.3)
     >>>
     """
-
     import numpy as np
-    import scipy.stats as stats
+    import scipy as sp
+    import scipy.stats  # call as sp.stats
 
     available_transformations = ["identity", "modularity"]
     alpha = np.clip(alpha, 0, 1)
@@ -153,7 +151,7 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     level = int(round(n * alpha))
 
     if transformation not in available_transformations:
-        msg = f"'{transformation}' is not a valid transformation. "
+        msg = f"{transformation!r} is not a valid transformation. "
         msg += f"Transformations: {available_transformations}"
         raise nx.NetworkXError(msg)
 
@@ -172,7 +170,7 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     np.fill_diagonal(B, 0)
 
     for i in range(n - 1):
-        B[i, i + 1 :] = stats.bernoulli.rvs(B[i, i + 1 :], random_state=seed)
+        B[i, i + 1 :] = sp.stats.bernoulli.rvs(B[i, i + 1 :], random_state=seed)
         B[i + 1 :, i] = np.transpose(B[i, i + 1 :])
 
     H = nx.from_numpy_array(B)

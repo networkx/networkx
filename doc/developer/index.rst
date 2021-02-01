@@ -9,6 +9,7 @@ Developer Guide
    code_of_conduct
    values
    contribute
+   projects
    core_developer
    gitwash/index
    release

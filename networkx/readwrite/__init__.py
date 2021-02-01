@@ -17,3 +17,4 @@ from networkx.readwrite.nx_shp import *
 from networkx.readwrite.nx_yaml import *
 from networkx.readwrite.pajek import *
 from networkx.readwrite.sparse6 import *
+from networkx.readwrite.text import *

@@ -34,6 +34,19 @@ def test_unionfind_weights():
     assert uf.weights[uf[1]] == 9
 
 
+def test_unbalanced_merge_weights():
+    # Tests if the largest set's root is used as the new root when merging
+    uf = nx.utils.UnionFind()
+    uf.union(1, 2, 3)
+    uf.union(4, 5, 6, 7, 8, 9)
+    assert uf.weights[uf[1]] == 3
+    assert uf.weights[uf[4]] == 6
+    largest_root = uf[4]
+    uf.union(1, 4)
+    assert uf[1] == largest_root
+    assert uf.weights[largest_root] == 9
+
+
 def test_empty_union():
     # Tests if a null-union does nothing.
     uf = nx.utils.UnionFind((0, 1))

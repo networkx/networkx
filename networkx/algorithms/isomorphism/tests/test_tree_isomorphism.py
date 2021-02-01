@@ -250,14 +250,9 @@ def test_trivial_2():
 
     print("trivial test 2")
 
-    edges_1 = [
-        ("a", "b"),
-        ("a", "c"),
-    ]
+    edges_1 = [("a", "b"), ("a", "c")]
 
-    edges_2 = [
-        ("v", "y"),
-    ]
+    edges_2 = [("v", "y")]
 
     t1 = nx.Graph()
     t1.add_edges_from(edges_1)

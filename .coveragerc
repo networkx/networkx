@@ -1,4 +1,4 @@
 [run]
 branch = True
 source = networkx
-omit = */tests/*, conftest.py, *release.py, *testing/test.py
+omit = */tests/*, conftest.py, *testing/test.py

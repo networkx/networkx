@@ -1,7 +1,7 @@
 import pytest
 
-numpy = pytest.importorskip("numpy")
-scipy = pytest.importorskip("scipy")
+pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 import networkx as nx
 from networkx.algorithms import node_classification

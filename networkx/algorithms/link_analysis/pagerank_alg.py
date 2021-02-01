@@ -1,11 +1,10 @@
 """PageRank analysis of graph structure. """
+from warnings import warn
 import networkx as nx
-from networkx.utils import not_implemented_for
 
 __all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
 
 
-@not_implemented_for("multigraph")
 def pagerank(
     G,
     alpha=0.85,
@@ -59,6 +58,7 @@ def pagerank(
       matrix (see notes under google_matrix). It may be common to have the
       dangling dict to be the same as the personalization dict.
 
+
     Returns
     -------
     pagerank : dictionary
@@ -104,6 +104,21 @@ def pagerank(
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
 
     """
+    return pagerank_scipy(
+        G, alpha, personalization, max_iter, tol, nstart, weight, dangling
+    )
+
+
+def _pagerank_python(
+    G,
+    alpha=0.85,
+    personalization=None,
+    max_iter=100,
+    tol=1.0e-6,
+    nstart=None,
+    weight="weight",
+    dangling=None,
+):
     if len(G) == 0:
         return {}
 
@@ -147,8 +162,8 @@ def pagerank(
         for n in x:
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W
-            for nbr in W[n]:
-                x[nbr] += alpha * xlast[n] * W[n][nbr][weight]
+            for _, nbr, wt in W.edges(n, data=weight):
+                x[nbr] += alpha * xlast[n] * wt
             x[n] += danglesum * dangling_weights.get(n, 0) + (1.0 - alpha) * p.get(n, 0)
         # check convergence, l1 norm
         err = sum([abs(x[n] - xlast[n]) for n in x])
@@ -221,7 +236,7 @@ def google_matrix(
     if nodelist is None:
         nodelist = list(G)
 
-    M = nx.to_numpy_matrix(G, nodelist=nodelist, weight=weight)
+    M = np.asmatrix(nx.to_numpy_array(G, nodelist=nodelist, weight=weight))
     N = len(G)
     if N == 0:
         return M
@@ -231,6 +246,8 @@ def google_matrix(
         p = np.repeat(1.0 / N, N)
     else:
         p = np.array([personalization.get(n, 0) for n in nodelist], dtype=float)
+        if p.sum() == 0:
+            raise ZeroDivisionError
         p /= p.sum()
 
     # Dangling nodes
@@ -319,6 +336,8 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
+    msg = "networkx.pagerank_numpy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
+    warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
 
     if len(G) == 0:
@@ -427,8 +446,11 @@ def pagerank_scipy(
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
+    msg = "networkx.pagerank_scipy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
+    warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
-    import scipy.sparse
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     N = len(G)
     if N == 0:
@@ -438,7 +460,7 @@ def pagerank_scipy(
     M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
     S = np.array(M.sum(axis=1)).flatten()
     S[S != 0] = 1.0 / S[S != 0]
-    Q = scipy.sparse.spdiags(S.T, 0, *M.shape, format="csr")
+    Q = sp.sparse.spdiags(S.T, 0, *M.shape, format="csr")
     M = Q * M
 
     # initial vector
@@ -453,8 +475,9 @@ def pagerank_scipy(
         p = np.repeat(1.0 / N, N)
     else:
         p = np.array([personalization.get(n, 0) for n in nodelist], dtype=float)
+        if p.sum() == 0:
+            raise ZeroDivisionError
         p = p / p.sum()
-
     # Dangling nodes
     if dangling is None:
         dangling_weights = p

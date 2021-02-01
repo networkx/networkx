@@ -2,10 +2,7 @@ import networkx as nx
 import itertools as it
 import pytest
 from networkx.utils import pairwise
-from networkx.algorithms.connectivity import (
-    bridge_components,
-    EdgeComponentAuxGraph,
-)
+from networkx.algorithms.connectivity import bridge_components, EdgeComponentAuxGraph
 from networkx.algorithms.connectivity.edge_kcomponents import general_k_edge_subgraphs
 
 
@@ -59,7 +56,7 @@ def _assert_local_cc_edge_connectivity(G, ccs_local, k, memo):
     """
     tests properties of k-edge-connected components
 
-    the local edge connectivity between each pair of nodes in the the original
+    the local edge connectivity between each pair of nodes in the original
     graph should be no less than k unless the cc is a single node.
     """
     for cc in ccs_local:
@@ -324,10 +321,7 @@ def test_local_subgraph_difference():
 
 
 def test_local_subgraph_difference_directed():
-    dipaths = [
-        (1, 2, 3, 4, 1),
-        (1, 3, 1),
-    ]
+    dipaths = [(1, 2, 3, 4, 1), (1, 3, 1)]
     G = nx.DiGraph(it.chain(*[pairwise(path) for path in dipaths]))
 
     assert fset(nx.k_edge_components(G, k=1)) == fset(nx.k_edge_subgraphs(G, k=1))

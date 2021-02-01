@@ -1,7 +1,7 @@
 Install
 =======
 
-NetworkX requires Python 3.6, 3.7, or 3.8.  If you do not already
+NetworkX requires Python 3.7, 3.8, or 3.9.  If you do not already
 have a Python environment configured on your computer, please see the
 instructions for installing the full `scientific Python stack
 <https://scipy.org/install.html>`_.
@@ -65,28 +65,18 @@ Then, if you want to update ``networkx`` at any time, in the same directory do::
 
     $ git pull
 
-Optional packages
------------------
+Extra packages
+--------------
 
 .. note::
    Some optional packages (e.g., `gdal`) may require compiling
    C or C++ code.  If you have difficulty installing these packages
-   with `pip`, please review the instructions for installing
-   the full `scientific Python stack <https://scipy.org/install.html>`_.
+   with `pip`, please consult the homepages of those packages.
 
-The following optional packages provide additional functionality. See the
+The following extra packages provide additional functionality. See the
 files in the ``requirements/`` directory for information about specific
 version requirements.
 
-- `NumPy <http://www.numpy.org/>`_ provides array-based dense 
-  matrix representations of graphs and high-performance array math and linear
-  algebra which is used in some graph algorithms.
-- `SciPy <http://scipy.org/>`_ provides sparse matrix representation
-  of graphs and many numerical scientific tools.
-- `pandas <http://pandas.pydata.org/>`_ provides a DataFrame, which
-  is a tabular data structure with labeled axes.
-- `Matplotlib <http://matplotlib.org/>`_ provides flexible drawing of
-  graphs.
 - `PyGraphviz <http://pygraphviz.github.io/>`_ and
   `pydot <https://github.com/erocarrera/pydot>`_ provide graph drawing
   and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
@@ -94,17 +84,17 @@ version requirements.
 - `gdal <http://www.gdal.org/>`_ provides shapefile format reading and writing.
 - `lxml <http://lxml.de/>`_ used for GraphML XML format.
 
-To install ``networkx`` and all optional packages, do::
+To install ``networkx`` and extra packages, do::
 
-    $ pip install networkx[all]
+    $ pip install networkx[extra]
 
 To explicitly install all optional packages, do::
 
-    $ pip install numpy scipy pandas matplotlib pygraphviz pydot pyyaml gdal
+    $ pip install pygraphviz pydot pyyaml gdal lxml
 
-Or, install any optional package (e.g., ``numpy``) individually::
+Or, install any optional package (e.g., ``pygraphviz``) individually::
 
-    $ pip install numpy
+    $ pip install pygraphviz
 
 Testing
 -------
