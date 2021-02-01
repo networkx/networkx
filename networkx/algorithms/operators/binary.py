@@ -137,7 +137,7 @@ def disjoint_union(G, H):
 
 
 def intersection(G, H):
-    """Returns a new graph that contains only the edges and the nodes that exist in
+    """Returns a new graph that contains only the nodes and the edges that exist in
     both G and H.
 
     Parameters
@@ -162,7 +162,6 @@ def intersection(G, H):
     >>> R.remove_nodes_from(n for n in G if n not in H)
     >>> R.remove_edges_from(e for e in G.edges if e not in H.egdes)
     """
-
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
 
