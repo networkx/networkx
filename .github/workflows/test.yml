@@ -69,7 +69,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Before install (non-windows)
+    - name: Before install (Linux)
       if: runner.os == 'Linux'
       run: sudo apt-get update && sudo apt-get install graphviz graphviz-dev
 
@@ -77,7 +77,7 @@ jobs:
       if: runner.os == 'macOS'
       run: brew install graphviz
 
-    - name: Before install (windows)
+    - name: Before install (Windows)
       if: runner.os == 'Windows'
       run: choco install graphviz
 
@@ -99,7 +99,7 @@ jobs:
         python -m pip install --global-option=build_ext `
                               --global-option="-IC:\Program Files\Graphviz\include" `
                               --global-option="-LC:\Program Files\Graphviz\lib" `
-                              pygraphviz==1.7rc2
+                              pygraphviz
         python -m pip install -r requirements/extra.txt
         python -m pip install .
         python -m pip list
