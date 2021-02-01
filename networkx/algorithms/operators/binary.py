@@ -163,13 +163,17 @@ def intersection(G, H):
     >>> R = G.copy()
     >>> R.remove_nodes_from(n for n in G if n not in H)
     """
-    # create new graph
-    R = nx.create_empty_copy(G)
 
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
+
+    # create new graph
     if set(G) != set(H):
-        raise nx.NetworkXError("Node sets of graphs are not equal")
+        R = G.__class__()
+
+        R.add_nodes_from(set(G.nodes).intersection(set(H.nodes)))
+    else:
+        R = nx.create_empty_copy(G)
 
     if G.number_of_edges() <= H.number_of_edges():
         if G.is_multigraph():
