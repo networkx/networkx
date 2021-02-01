@@ -84,5 +84,6 @@ def read_dimacs(
     )
 
 
-def write_dimacs():
+@open_file(1, mode="wb")
+def write_dimacs(G, path):
     raise NotImplementedError("Writing of DIMACS not implemented yet.")
