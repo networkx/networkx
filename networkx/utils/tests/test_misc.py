@@ -1,13 +1,17 @@
+from copy import copy
+
 import pytest
 import networkx as nx
 import random
 from networkx.utils import (
+    arbitrary_element,
     create_py_random_state,
     create_random_state,
     discrete_sequence,
     dict_to_numpy_array,
     dict_to_numpy_array1,
     dict_to_numpy_array2,
+    flatten,
     is_string_like,
     iterable,
     groups,
@@ -18,6 +22,56 @@ from networkx.utils import (
     PythonRandomInterface,
     to_tuple,
 )
+
+nested_depth = (
+    1,
+    2,
+    (
+        3,
+        4,
+        (
+            (5, 6, (7,), (8, (9, 10), 11), (12, 13, (14, 15)), 16),
+            17,
+        ),
+        18,
+        19,
+    ),
+    20,
+)
+
+nested_set = {
+    (1, 2, 3, 4),
+    (5, 6, 7, 8, 9),
+    (10, 11, (12, 13, 14), (15, 16, 17, 18)),
+    19,
+    20,
+}
+
+nested_mixed = [
+    1,
+    (2, 3, {4, (5, 6), 7}, [8, 9]),
+    {10: "foo", 11: "bar", (12, 13): "baz"},
+    {(14, 15): "qwe", 16: "asd"},
+    (17, (18, "19"), 20),
+]
+
+
+@pytest.mark.parametrize("result", [None, [], ["existing"], ["existing1", "existing2"]])
+@pytest.mark.parametrize(
+    "nested",
+    [nested_depth, nested_mixed, nested_set],
+)
+def test_flatten(nested, result):
+    if result is None:
+        val = flatten(nested, result)
+        assert len(val) == 20
+    else:
+        _result = copy(result)  # because pytest passes parameters as is
+        nexisting = len(_result)
+        val = flatten(nested, _result)
+        assert len(val) == len(_result) == 20 + nexisting
+
+    assert issubclass(type(val), tuple)
 
 
 def test_is_string_like():
@@ -74,15 +128,13 @@ def test_make_str_with_unicode():
 class TestNumpyArray:
     @classmethod
     def setup_class(cls):
-        global numpy
-        global assert_allclose
-        numpy = pytest.importorskip("numpy")
-        assert_allclose = numpy.testing.assert_allclose
+        global np
+        np = pytest.importorskip("numpy")
 
     def test_numpy_to_list_of_ints(self):
-        a = numpy.array([1, 2, 3], dtype=numpy.int64)
-        b = numpy.array([1.0, 2, 3])
-        c = numpy.array([1.1, 2, 3])
+        a = np.array([1, 2, 3], dtype=np.int64)
+        b = np.array([1.0, 2, 3])
+        c = np.array([1.1, 2, 3])
         assert type(make_list_of_ints(a)) == list
         assert make_list_of_ints(b) == list(b)
         B = make_list_of_ints(b)
@@ -92,46 +144,46 @@ class TestNumpyArray:
     def test_dict_to_numpy_array1(self):
         d = {"a": 1, "b": 2}
         a = dict_to_numpy_array1(d, mapping={"a": 0, "b": 1})
-        assert_allclose(a, numpy.array([1, 2]))
+        np.testing.assert_allclose(a, np.array([1, 2]))
         a = dict_to_numpy_array1(d, mapping={"b": 0, "a": 1})
-        assert_allclose(a, numpy.array([2, 1]))
+        np.testing.assert_allclose(a, np.array([2, 1]))
 
         a = dict_to_numpy_array1(d)
-        assert_allclose(a.sum(), 3)
+        np.testing.assert_allclose(a.sum(), 3)
 
     def test_dict_to_numpy_array2(self):
         d = {"a": {"a": 1, "b": 2}, "b": {"a": 10, "b": 20}}
 
         mapping = {"a": 1, "b": 0}
         a = dict_to_numpy_array2(d, mapping=mapping)
-        assert_allclose(a, numpy.array([[20, 10], [2, 1]]))
+        np.testing.assert_allclose(a, np.array([[20, 10], [2, 1]]))
 
         a = dict_to_numpy_array2(d)
-        assert_allclose(a.sum(), 33)
+        np.testing.assert_allclose(a.sum(), 33)
 
     def test_dict_to_numpy_array_a(self):
         d = {"a": {"a": 1, "b": 2}, "b": {"a": 10, "b": 20}}
 
         mapping = {"a": 0, "b": 1}
         a = dict_to_numpy_array(d, mapping=mapping)
-        assert_allclose(a, numpy.array([[1, 2], [10, 20]]))
+        np.testing.assert_allclose(a, np.array([[1, 2], [10, 20]]))
 
         mapping = {"a": 1, "b": 0}
         a = dict_to_numpy_array(d, mapping=mapping)
-        assert_allclose(a, numpy.array([[20, 10], [2, 1]]))
+        np.testing.assert_allclose(a, np.array([[20, 10], [2, 1]]))
 
         a = dict_to_numpy_array2(d)
-        assert_allclose(a.sum(), 33)
+        np.testing.assert_allclose(a.sum(), 33)
 
     def test_dict_to_numpy_array_b(self):
         d = {"a": 1, "b": 2}
 
         mapping = {"a": 0, "b": 1}
         a = dict_to_numpy_array(d, mapping=mapping)
-        assert_allclose(a, numpy.array([1, 2]))
+        np.testing.assert_allclose(a, np.array([1, 2]))
 
         a = dict_to_numpy_array1(d)
-        assert_allclose(a.sum(), 3)
+        np.testing.assert_allclose(a.sum(), 3)
 
 
 def test_pairwise():
@@ -220,3 +272,30 @@ def test_PythonRandomInterface():
     )
     assert rng.randint(3, 5) == rs42.randint(3, 6)
     assert rng.random() == rs42.random_sample()
+
+
+@pytest.mark.parametrize(
+    ("iterable_type", "expected"),
+    (
+        (list, 1),
+        (tuple, 1),
+        (str, "["),
+        (set, 1),
+    ),
+)
+def test_arbitrary_element(iterable_type, expected):
+    iterable = iterable_type([1, 2, 3])
+    assert arbitrary_element(iterable) == expected
+
+
+@pytest.mark.parametrize(
+    "iterator",
+    (
+        (i for i in range(3)),  # generator
+        iter([1, 2, 3]),
+    ),
+)
+def test_arbitrary_element_raises(iterator):
+    """Value error is raised when input is an iterator."""
+    with pytest.raises(ValueError, match="from an iterator"):
+        arbitrary_element(iterator)

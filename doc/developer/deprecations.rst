@@ -44,8 +44,30 @@ Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 Version 3.0
 ~~~~~~~~~~~
 
-* In ``networkx/readwrite/gml.py`` remove ``literal_stringizer`` and related tests.
-* In ``networkx/readwrite/gml.py`` remove ``literal_destringizer`` and related tests.
-* In ``networkx/utils/misc.py`` remove ``is_string_like`` and related tests.
-* In ``networkx/utils/misc.py`` remove ``make_str`` and related tests.
-* Remove ``networkx/utils/contextmanagers.py`` and related tests.
+* In ``readwrite/gml.py`` remove ``literal_stringizer`` and related tests.
+* In ``readwrite/gml.py`` remove ``literal_destringizer`` and related tests.
+* In ``utils/misc.py`` remove ``is_string_like`` and related tests.
+* In ``utils/misc.py`` remove ``make_str`` and related tests.
+* In ``utils/misc.py`` remove ``is_iterator``.
+* In ``utils/misc.py`` remove ``iterable``.
+* In ``utils/misc.py`` remove ``is_list_of_ints``.
+* In ``utils/misc.py`` remove ``consume``.
+* Remove ``utils/contextmanagers.py`` and related tests.
+* In ``drawing/nx_agraph.py`` remove ``display_pygraphviz`` and related tests.
+* In ``algorithms/chordal.py`` replace ``chordal_graph_cliques`` with ``_chordal_graph_cliques``.
+* In ``algorithms/centrality/betweenness_centrality_subset.py`` remove ``betweenness_centrality_source``.
+* In ``algorithms/centrality/betweenness.py`` remove ``edge_betweeness``.
+* In ``algorithms/community_modularity_max.py`` remove old name ``_naive_greedy_modularity_communities``.
+* In ``linalg/algebraicconnectivity.py`` remove ``_CholeskySolver`` and related code.
+* In ``convert_matrix.py`` remove ``to_numpy_matrix`` and ``from_numpy_matrix``.
+* In ``readwrite/json_graph/cytoscape.py``, change function signature for
+  ``cytoscape_graph`` and ``cytoscape_data`` to replace the ``attrs`` keyword.
+  argument with explicit ``name`` and ``ident`` keyword args.
+* Remove ``readwrite/nx_yaml.py`` and related tests.
+* Remove ``readwrite/gpickle.py`` and related tests.
+* Remove ``readwrite/nx_shp.py`` and related tests (add info in alternatives).
+* Remove ``copy`` method in the coreview Filtered-related classes and related tests.
+* In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
+* In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.
+* In ``convert_matrix.py`` remove ``order`` kwarg from ``to_pandas_edgelist`` and docstring
+* Remove ``readwrite/json_graph/jit.py`` and related tests.

@@ -26,6 +26,7 @@ __all__ = ["read_gpickle", "write_gpickle"]
 from networkx.utils import open_file
 
 import pickle
+import warnings
 
 
 @open_file(1, mode="wb")
@@ -55,7 +56,14 @@ def write_gpickle(G, path, protocol=pickle.HIGHEST_PROTOCOL):
     References
     ----------
     .. [1] https://docs.python.org/3/library/pickle.html
+
+    .. deprecated:: 2.6
     """
+    msg = (
+        "write_gpickle is deprecated and will be removed in 3.0."
+        "Use ``pickle.dump(G, path, protocol)``"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     pickle.dump(G, path, protocol)
 
 
@@ -86,5 +94,12 @@ def read_gpickle(path):
     References
     ----------
     .. [1] https://docs.python.org/3/library/pickle.html
+
+    .. deprecated:: 2.6
     """
+    msg = (
+        "read_gpickle is deprecated and will be removed in 3.0."
+        "Use ``pickle.load(path)``"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     return pickle.load(path)

@@ -40,7 +40,7 @@ def k_edge_components(G, k):
        will have k-edge-connectivity in the graph G.
 
     See Also
-    -------
+    --------
     :func:`local_edge_connectivity`
     :func:`k_edge_subgraphs` : similar to this function, but the subgraph
         defined by the nodes must also have k-edge-connectivity.
@@ -58,14 +58,14 @@ def k_edge_components(G, k):
     Notes
     -----
     Attempts to use the most efficient implementation available based on k.
-    If k=1, this is simply simply connected components for directed graphs and
+    If k=1, this is simply connected components for directed graphs and
     connected components for undirected graphs.
     If k=2 on an efficient bridge connected component algorithm from _[1] is
     run based on the chain decomposition.
     Otherwise, the algorithm from _[2] is used.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import itertools as it
     >>> from networkx.utils import pairwise
     >>> paths = [
@@ -124,7 +124,7 @@ def k_edge_subgraphs(G, k):
         of G that is k-edge-connected.
 
     See Also
-    -------
+    --------
     :func:`edge_connectivity`
     :func:`k_edge_components` : similar to this function, but nodes only
         need to have k-edge-connctivity within the graph G and the subgraphs
@@ -144,8 +144,8 @@ def k_edge_subgraphs(G, k):
     If k=1, or k=2 and the graph is undirected, then this simply calls
     `k_edge_components`.  Otherwise the algorithm from _[1] is used.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import itertools as it
     >>> from networkx.utils import pairwise
     >>> paths = [
@@ -223,8 +223,8 @@ def bridge_components(G):
     -----
     Bridge-connected components are also known as 2-edge-connected components.
 
-    Example
-    -------
+    Examples
+    --------
     >>> # The barbell graph with parameter zero has a single bridge
     >>> G = nx.barbell_graph(5, 0)
     >>> from networkx.algorithms.connectivity.edge_kcomponents import bridge_components
@@ -261,8 +261,8 @@ class EdgeComponentAuxGraph:
         k-edge-connected components.
         http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0136264
 
-    Example
-    -------
+    Examples
+    --------
     >>> import itertools as it
     >>> from networkx.utils import pairwise
     >>> from networkx.algorithms.connectivity import EdgeComponentAuxGraph
@@ -288,11 +288,10 @@ class EdgeComponentAuxGraph:
     >>> sorted(map(sorted, aux_graph.k_edge_components(k=4)))
     [[0], [1], [2], [3], [4], [5], [6], [7]]
 
-    Example
-    -------
-    >>> # The auxiliary graph is primarilly used for k-edge-ccs but it
-    >>> # can also speed up the queries of k-edge-subgraphs by refining the
-    >>> # search space.
+    The auxiliary graph is primarilly used for k-edge-ccs but it
+    can also speed up the queries of k-edge-subgraphs by refining the
+    search space.
+
     >>> import itertools as it
     >>> from networkx.utils import pairwise
     >>> from networkx.algorithms.connectivity import EdgeComponentAuxGraph
@@ -320,7 +319,7 @@ class EdgeComponentAuxGraph:
         Choose an arbitrary source node s.  Initialize a set N of available
         nodes (that can be used as the sink). The algorithm picks an
         arbitrary node t from N - {s}, and then computes the minimum st-cut
-        (S, T) with value w. If G is directed the the minimum of the st-cut or
+        (S, T) with value w. If G is directed the minimum of the st-cut or
         the ts-cut is used instead. Then, the edge (s, t) is added to the
         auxiliary graph with weight w. The algorithm is called recursively
         first using S as the available nodes and s as the source, and then
@@ -372,7 +371,7 @@ class EdgeComponentAuxGraph:
             _recursive_build(H, A, source, avail)
 
         # This class is a container the holds the auxiliary graph A and
-        # provides access the the k_edge_components function.
+        # provides access the k_edge_components function.
         self = EdgeComponentAuxGraph()
         self.A = A
         self.H = H
@@ -532,8 +531,8 @@ def general_k_edge_subgraphs(G, k):
         Technology 2012 480-–491.
         https://openproceedings.org/2012/conf/edbt/ZhouLYLCL12.pdf
 
-    Example
-    -------
+    Examples
+    --------
     >>> from networkx.utils import pairwise
     >>> paths = [
     ...     (11, 12, 13, 14, 11, 13, 14, 12),  # a 4-clique

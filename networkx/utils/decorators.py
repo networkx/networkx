@@ -45,11 +45,11 @@ def not_implemented_for(*graph_types):
     --------
     Decorate functions like this::
 
-       @not_implemnted_for('directed')
+       @not_implemented_for('directed')
        def sp_function(G):
            pass
 
-       @not_implemnted_for('directed','multigraph')
+       @not_implemented_for('directed','multigraph')
        def sp_np_function(G):
            pass
     """
@@ -306,7 +306,7 @@ def nodes_or_number(which_args):
 
 
 def preserve_random_state(func):
-    """ Decorator to preserve the numpy.random state during a function.
+    """Decorator to preserve the numpy.random state during a function.
 
     Parameters
     ----------
@@ -332,19 +332,19 @@ def preserve_random_state(func):
     If numpy.random is not importable, the state is not saved or restored.
     """
     try:
-        from numpy.random import get_state, seed, set_state
+        import numpy as np
 
         @contextmanager
         def save_random_state():
-            state = get_state()
+            state = np.random.get_state()
             try:
                 yield
             finally:
-                set_state(state)
+                np.random.set_state(state)
 
         def wrapper(*args, **kwargs):
             with save_random_state():
-                seed(1234567890)
+                np.random.seed(1234567890)
                 return func(*args, **kwargs)
 
         wrapper.__name__ = func.__name__

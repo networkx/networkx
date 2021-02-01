@@ -2,7 +2,6 @@
 from collections import defaultdict
 
 import networkx as nx
-from networkx.utils import generate_unique_node
 from networkx.utils import py_random_state
 
 __all__ = ["prefix_tree", "random_tree"]
@@ -51,7 +50,7 @@ def prefix_tree(paths):
         attribute; for example::
 
             >>> from networkx.generators.trees import NIL
-            >>> paths = ['ab', 'abs', 'ad']
+            >>> paths = ["ab", "abs", "ad"]
             >>> T, root = nx.prefix_tree(paths)
             >>> T.predecessors(NIL)
             <dict_keyiterator object at 0x...>
@@ -68,7 +67,7 @@ def prefix_tree(paths):
     Create a prefix tree from a list of strings with some common
     prefixes::
 
-        >>> strings = ['ab', 'abs', 'ad']
+        >>> strings = ["ab", "abs", "ad"]
         >>> T, root = nx.prefix_tree(strings)
 
     Continuing the above example, to recover the original paths that
@@ -77,14 +76,14 @@ def prefix_tree(paths):
 
         >>> from networkx.generators.trees import NIL
         >>>
-        >>> strings = ['ab', 'abs', 'ad']
+        >>> strings = ["ab", "abs", "ad"]
         >>> T, root = nx.prefix_tree(strings)
         >>> recovered = []
         >>> for v in T.predecessors(NIL):
-        ...     s = ''
+        ...     s = ""
         ...     while v != root:
         ...         # Prepend the character `v` to the accumulator `s`.
-        ...         s = str(T.nodes[v]['source']) + s
+        ...         s = str(T.nodes[v]["source"]) + s
         ...         # Each non-nil, non-root node has exactly one parent.
         ...         v = next(T.predecessors(v))
         ...     recovered.append(s)
@@ -128,7 +127,7 @@ def prefix_tree(paths):
             # We need to relabel each child with a unique name. To do
             # this we simply change each key in the dictionary to be a
             # (key, uuid) pair.
-            new_head = generate_unique_node()
+            new_head = len(B)
             # Ensure the new child knows the name of the old child so
             # that the user can recover the mapping to the original
             # nodes.
@@ -138,9 +137,9 @@ def prefix_tree(paths):
 
     # Initialize the prefix tree with a root node and a nil node.
     T = nx.DiGraph()
-    root = generate_unique_node()
-    T.add_node(root, source=None)
     T.add_node(NIL, source=NIL)
+    root = len(T)
+    T.add_node(root, source=None)
     # Populate the tree.
     _helper(paths, root, T)
     return T, root
@@ -153,7 +152,7 @@ def prefix_tree(paths):
 # > method of generating uniformly distributed random labelled trees.
 #
 @py_random_state(1)
-def random_tree(n, seed=None):
+def random_tree(n, seed=None, create_using=None):
     """Returns a uniformly random tree on `n` nodes.
 
     Parameters
@@ -163,6 +162,8 @@ def random_tree(n, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
@@ -184,11 +185,55 @@ def random_tree(n, seed=None):
     *n* nodes, the tree is chosen uniformly at random from the set of
     all trees on *n* nodes.
 
+    Example
+    -------
+    >>> tree = nx.random_tree(n=10, seed=0)
+    >>> print(nx.forest_str(tree, sources=[0]))
+    ╙── 0
+        ├── 3
+        └── 4
+            ├── 6
+            │   ├── 1
+            │   ├── 2
+            │   └── 7
+            │       └── 8
+            │           └── 5
+            └── 9
+
+    >>> tree = nx.random_tree(n=10, seed=0, create_using=nx.DiGraph)
+    >>> print(nx.forest_str(tree))
+    ╙── 0
+        ├─╼ 3
+        └─╼ 4
+            ├─╼ 6
+            │   ├─╼ 1
+            │   ├─╼ 2
+            │   └─╼ 7
+            │       └─╼ 8
+            │           └─╼ 5
+            └─╼ 9
     """
     if n == 0:
         raise nx.NetworkXPointlessConcept("the null graph is not a tree")
     # Cannot create a Prüfer sequence unless `n` is at least two.
     if n == 1:
-        return nx.empty_graph(1)
-    sequence = [seed.choice(range(n)) for i in range(n - 2)]
-    return nx.from_prufer_sequence(sequence)
+        utree = nx.empty_graph(1, create_using)
+    else:
+        sequence = [seed.choice(range(n)) for i in range(n - 2)]
+        utree = nx.from_prufer_sequence(sequence)
+
+    if create_using is None:
+        tree = utree
+    else:
+        tree = nx.empty_graph(0, create_using)
+        if tree.is_directed():
+            # Use a arbitrary root node and dfs to define edge directions
+            edges = nx.dfs_edges(utree, source=0)
+        else:
+            edges = utree.edges
+
+        # Populate the specified graph type
+        tree.add_nodes_from(utree.nodes)
+        tree.add_edges_from(edges)
+
+    return tree

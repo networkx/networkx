@@ -73,7 +73,8 @@ def biadjacency_matrix(
     .. [2] Scipy Dev. References, "Sparse Matrices",
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
-    from scipy import sparse
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     nlen = len(row_order)
     if nlen == 0:
@@ -101,12 +102,10 @@ def biadjacency_matrix(
                 if u in row_index and v in col_index
             )
         )
-    M = sparse.coo_matrix((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
+    M = sp.sparse.coo_matrix((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
     try:
         return M.asformat(format)
-    # From Scipy 1.1.0, asformat will throw a ValueError instead of an
-    # AttributeError if the format if not recognized.
-    except (AttributeError, ValueError) as e:
+    except ValueError as e:
         raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from e
 
 

@@ -4,34 +4,6 @@ import math
 import networkx as nx
 from networkx.utils import py_random_state
 
-# Accommodates for both SciPy and non-SciPy implementations..
-try:
-    from scipy.special import zeta as _zeta
-
-    def zeta(x, q, tolerance):
-        return _zeta(x, q)
-
-
-except ImportError:
-
-    def zeta(x, q, tolerance):
-        """The Hurwitz zeta function, or the Riemann zeta function of two
-        arguments.
-
-        ``x`` must be greater than one and ``q`` must be positive.
-
-        This function repeatedly computes subsequent partial sums until
-        convergence, as decided by ``tolerance``.
-        """
-        z = 0
-        z_prev = -float("inf")
-        k = 0
-        while abs(z - z_prev) > tolerance:
-            z_prev = z
-            z += 1 / ((k + q) ** x)
-            k += 1
-        return z
-
 
 __all__ = [
     "caveman_graph",
@@ -232,10 +204,10 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
 
     Examples
     --------
-    >>> G = nx.random_partition_graph([10,10,10],.25,.01)
+    >>> G = nx.random_partition_graph([10, 10, 10], 0.25, 0.01)
     >>> len(G)
     30
-    >>> partition = G.graph['partition']
+    >>> partition = G.graph["partition"]
     >>> len(partition)
     3
 
@@ -380,7 +352,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=N
 
     Examples
     --------
-    >>> G = nx.gaussian_random_partition_graph(100,10,10,.25,.1)
+    >>> G = nx.gaussian_random_partition_graph(100, 10, 10, 0.25, 0.1)
     >>> len(G)
     100
 
@@ -563,21 +535,19 @@ def stochastic_block_model(
     Examples
     --------
     >>> sizes = [75, 75, 300]
-    >>> probs = [[0.25, 0.05, 0.02],
-    ...          [0.05, 0.35, 0.07],
-    ...          [0.02, 0.07, 0.40]]
+    >>> probs = [[0.25, 0.05, 0.02], [0.05, 0.35, 0.07], [0.02, 0.07, 0.40]]
     >>> g = nx.stochastic_block_model(sizes, probs, seed=0)
     >>> len(g)
     450
-    >>> H = nx.quotient_graph(g, g.graph['partition'], relabel=True)
+    >>> H = nx.quotient_graph(g, g.graph["partition"], relabel=True)
     >>> for v in H.nodes(data=True):
-    ...     print(round(v[1]['density'], 3))
+    ...     print(round(v[1]["density"], 3))
     ...
     0.245
     0.348
     0.405
     >>> for v in H.edges(data=True):
-    ...     print(round(1.0 * v[2]['weight'] / (sizes[v[0]] * sizes[v[1]]), 3))
+    ...     print(round(1.0 * v[2]["weight"] / (sizes[v[0]] * sizes[v[1]]), 3))
     ...
     0.051
     0.022
@@ -727,9 +697,34 @@ def _powerlaw_sequence(gamma, low, high, condition, length, max_iters, seed):
     raise nx.ExceededMaxIterations("Could not create power law sequence")
 
 
-# TODO Needs documentation.
+def _hurwitz_zeta(x, q, tolerance):
+    """The Hurwitz zeta function, or the Riemann zeta function of two arguments.
+
+    ``x`` must be greater than one and ``q`` must be positive.
+
+    This function repeatedly computes subsequent partial sums until
+    convergence, as decided by ``tolerance``.
+    """
+    z = 0
+    z_prev = -float("inf")
+    k = 0
+    while abs(z - z_prev) > tolerance:
+        z_prev = z
+        z += 1 / ((k + q) ** x)
+        k += 1
+    return z
+
+
 def _generate_min_degree(gamma, average_degree, max_degree, tolerance, max_iters):
     """Returns a minimum degree from the given average degree."""
+    # Defines zeta function whether or not Scipy is available
+    try:
+        from scipy.special import zeta
+    except ImportError:
+
+        def zeta(x, q):
+            return _hurwitz_zeta(x, q, tolerance)
+
     min_deg_top = max_degree
     min_deg_bot = 1
     min_deg_mid = (min_deg_top - min_deg_bot) / 2 + min_deg_bot
@@ -740,7 +735,7 @@ def _generate_min_degree(gamma, average_degree, max_degree, tolerance, max_iters
             raise nx.ExceededMaxIterations("Could not match average_degree")
         mid_avg_deg = 0
         for x in range(int(min_deg_mid), max_degree + 1):
-            mid_avg_deg += (x ** (-gamma + 1)) / zeta(gamma, min_deg_mid, tolerance)
+            mid_avg_deg += (x ** (-gamma + 1)) / zeta(gamma, min_deg_mid)
         if mid_avg_deg > average_degree:
             min_deg_top = min_deg_mid
             min_deg_mid = (min_deg_top - min_deg_bot) / 2 + min_deg_bot
@@ -864,7 +859,7 @@ def LFR_benchmark_graph(
         created graph. This value must be strictly greater than one.
 
     mu : float
-        Fraction of intra-community edges incident to each node. This
+        Fraction of inter-community edges incident to each node. This
         value must be in the interval [0, 1].
 
     average_degree : float
@@ -949,13 +944,14 @@ def LFR_benchmark_graph(
         >>> tau1 = 3
         >>> tau2 = 1.5
         >>> mu = 0.1
-        >>> G = LFR_benchmark_graph(n, tau1, tau2, mu, average_degree=5,
-        ...                         min_community=20, seed=10)
+        >>> G = LFR_benchmark_graph(
+        ...     n, tau1, tau2, mu, average_degree=5, min_community=20, seed=10
+        ... )
 
     Continuing the example above, you can get the communities from the
     node attributes of the graph::
 
-        >>> communities = {frozenset(G.nodes[v]['community']) for v in G}
+        >>> communities = {frozenset(G.nodes[v]["community"]) for v in G}
 
     Notes
     -----

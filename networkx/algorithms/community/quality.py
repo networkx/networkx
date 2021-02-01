@@ -15,9 +15,7 @@ __all__ = ["coverage", "modularity", "performance"]
 
 
 class NotAPartition(NetworkXError):
-    """Raised if a given collection is not a partition.
-
-    """
+    """Raised if a given collection is not a partition."""
 
     def __init__(self, G, collection):
         msg = f"{G} is not a valid partition of the graph {collection}"
@@ -35,7 +33,7 @@ def require_partition(func):
 
         >>> @require_partition
         ... def foo(G, partition):
-        ...     print('partition is valid!')
+        ...     print("partition is valid!")
         ...
         >>> G = nx.complete_graph(5)
         >>> partition = [{0, 1}, {2, 3}, {4}]

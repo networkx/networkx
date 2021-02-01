@@ -45,8 +45,9 @@ Current Flow Closeness
    :toctree: generated/
 
    betweenness_centrality
-   edge_betweenness_centrality
+   betweenness_centrality_source
    betweenness_centrality_subset
+   edge_betweenness_centrality
    edge_betweenness_centrality_subset
 
 
@@ -137,10 +138,12 @@ Trophic
 .. autosummary::
    :toctree: generated/
 
-   trophic
+   trophic_levels
+   trophic_differences
+   trophic_incoherence_parameter
 
 VoteRank
------------
+--------
 .. autosummary::
    :toctree: generated/
 

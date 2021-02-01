@@ -67,21 +67,21 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> G.edges[0, 1]['weight'] = 5
-    >>> G.edges[2, 3]['weight'] = 3
+    >>> G = nx.path_graph(4)
+    >>> G.edges[0, 1]["weight"] = 5
+    >>> G.edges[2, 3]["weight"] = 3
 
     >>> nx.average_neighbor_degree(G)
     {0: 2.0, 1: 1.5, 2: 1.5, 3: 2.0}
-    >>> nx.average_neighbor_degree(G, weight='weight')
+    >>> nx.average_neighbor_degree(G, weight="weight")
     {0: 2.0, 1: 1.1666666666666667, 2: 1.25, 3: 2.0}
 
-    >>> G=nx.DiGraph()
+    >>> G = nx.DiGraph()
     >>> nx.add_path(G, [0, 1, 2, 3])
-    >>> nx.average_neighbor_degree(G, source='in', target='in')
+    >>> nx.average_neighbor_degree(G, source="in", target="in")
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0}
 
-    >>> nx.average_neighbor_degree(G, source='out', target='out')
+    >>> nx.average_neighbor_degree(G, source="out", target="out")
     {0: 1.0, 1: 1.0, 2: 0.0, 3: 0.0}
 
     Notes

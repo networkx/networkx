@@ -48,6 +48,7 @@ from networkx.algorithms.smallworld import *
 from networkx.algorithms.smetric import *
 from networkx.algorithms.structuralholes import *
 from networkx.algorithms.sparsifiers import *
+from networkx.algorithms.summarization import *
 from networkx.algorithms.swap import *
 from networkx.algorithms.traversal import *
 from networkx.algorithms.triads import *
@@ -119,6 +120,7 @@ from networkx.algorithms.tree.branchings import maximum_spanning_arborescence
 from networkx.algorithms.tree.branchings import minimum_branching
 from networkx.algorithms.tree.branchings import minimum_spanning_arborescence
 from networkx.algorithms.tree.coding import *
+from networkx.algorithms.tree.decomposition import *
+from networkx.algorithms.tree.mst import *
 from networkx.algorithms.tree.operations import *
 from networkx.algorithms.tree.recognition import *
-from networkx.algorithms.tree.mst import *

@@ -55,7 +55,6 @@ def wiener_index(G, weight=None):
     equals the number of pairs of the *n* nodes, since each pair of
     nodes is at distance one::
 
-        >>> import networkx as nx
         >>> n = 10
         >>> G = nx.complete_graph(n)
         >>> nx.wiener_index(G) == n * (n - 1) / 2

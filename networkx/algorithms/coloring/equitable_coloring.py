@@ -395,44 +395,44 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
 
 def equitable_color(G, num_colors):
     """Provides equitable (r + 1)-coloring for nodes of G in O(r * n^2) time
-     if deg(G) <= r. The algorithm is described in [1]_.
+    if deg(G) <= r. The algorithm is described in [1]_.
 
-     Attempts to color a graph using r colors, where no neighbors of a node
-     can have same color as the node itself and the number of nodes with each
-     color differ by at most 1.
+    Attempts to color a graph using r colors, where no neighbors of a node
+    can have same color as the node itself and the number of nodes with each
+    color differ by at most 1.
 
-     Parameters
-     ----------
-     G : networkX graph
-        The nodes of this graph will be colored.
+    Parameters
+    ----------
+    G : networkX graph
+       The nodes of this graph will be colored.
 
-     num_colors : number of colors to use
-        This number must be at least one more than the maximum degree of nodes
-        in the graph.
+    num_colors : number of colors to use
+       This number must be at least one more than the maximum degree of nodes
+       in the graph.
 
-     Returns
-     -------
-     A dictionary with keys representing nodes and values representing
-     corresponding coloring.
+    Returns
+    -------
+    A dictionary with keys representing nodes and values representing
+    corresponding coloring.
 
-     Examples
-     --------
-     >>> G = nx.cycle_graph(4)
-     >>> d = nx.coloring.equitable_color(G, num_colors=3)
-     >>> nx.algorithms.coloring.equitable_coloring.is_equitable(G, d)
-     True
+    Examples
+    --------
+    >>> G = nx.cycle_graph(4)
+    >>> d = nx.coloring.equitable_color(G, num_colors=3)
+    >>> nx.algorithms.coloring.equitable_coloring.is_equitable(G, d)
+    True
 
-     Raises
-     ------
-     NetworkXAlgorithmError
-         If the maximum degree of the graph ``G`` is greater than
-         ``num_colors``.
+    Raises
+    ------
+    NetworkXAlgorithmError
+        If the maximum degree of the graph ``G`` is greater than
+        ``num_colors``.
 
-     References
-     ----------
-     .. [1] Kierstead, H. A., Kostochka, A. V., Mydlarz, M., & Szemerédi, E.
-         (2010). A fast algorithm for equitable coloring. Combinatorica, 30(2),
-         217-224.
+    References
+    ----------
+    .. [1] Kierstead, H. A., Kostochka, A. V., Mydlarz, M., & Szemerédi, E.
+        (2010). A fast algorithm for equitable coloring. Combinatorica, 30(2),
+        217-224.
     """
 
     # Map nodes to integers for simplicity later.

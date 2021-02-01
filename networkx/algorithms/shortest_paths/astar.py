@@ -53,12 +53,12 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
     >>> print(nx.astar_path(G, 0, 4))
     [0, 1, 2, 3, 4]
     >>> G = nx.grid_graph(dim=[3, 3])  # nodes are two-tuples (x,y)
-    >>> nx.set_edge_attributes(G, {e: e[1][0]*2 for e in G.edges()}, 'cost')
+    >>> nx.set_edge_attributes(G, {e: e[1][0] * 2 for e in G.edges()}, "cost")
     >>> def dist(a, b):
-    ...    (x1, y1) = a
-    ...    (x2, y2) = b
-    ...    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
-    >>> print(nx.astar_path(G, (0, 0), (2, 2), heuristic=dist, weight='cost'))
+    ...     (x1, y1) = a
+    ...     (x2, y2) = b
+    ...     return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+    >>> print(nx.astar_path(G, (0, 0), (2, 2), heuristic=dist, weight="cost"))
     [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2)]
 
 
@@ -157,6 +157,17 @@ def astar_path_length(G, source, target, heuristic=None, weight="weight"):
        from the a node to the target.  The function takes
        two nodes arguments and must return a number.
 
+    weight : string or function
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number.
     Raises
     ------
     NetworkXNoPath

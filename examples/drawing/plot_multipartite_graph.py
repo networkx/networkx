@@ -8,8 +8,6 @@ import itertools
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from networkx.utils import pairwise
-
 subset_sizes = [5, 5, 4, 3, 2, 4, 4, 3]
 subset_color = [
     "gold",
@@ -24,12 +22,12 @@ subset_color = [
 
 
 def multilayered_graph(*subset_sizes):
-    extents = pairwise(itertools.accumulate((0,) + subset_sizes))
+    extents = nx.utils.pairwise(itertools.accumulate((0,) + subset_sizes))
     layers = [range(start, end) for start, end in extents]
     G = nx.Graph()
     for (i, layer) in enumerate(layers):
         G.add_nodes_from(layer, layer=i)
-    for layer1, layer2 in pairwise(layers):
+    for layer1, layer2 in nx.utils.pairwise(layers):
         G.add_edges_from(itertools.product(layer1, layer2))
     return G
 

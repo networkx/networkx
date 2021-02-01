@@ -21,14 +21,11 @@ http://crypto.cs.mcgill.ca/~crepeau/CS250/2004/HW5+.pdf
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
-__all__ = [
-    "rooted_tree_isomorphism",
-    "tree_isomorphism",
-]
+__all__ = ["rooted_tree_isomorphism", "tree_isomorphism"]
 
 
 def root_trees(t1, root1, t2, root2):
-    """ Create a single digraph dT of free trees t1 and t2
+    """Create a single digraph dT of free trees t1 and t2
     #   with roots root1 and root2 respectively
     # rename the nodes with consecutive integers
     # so that all nodes get a unique name between both trees

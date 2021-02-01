@@ -62,8 +62,8 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     Raises
     ------
     NetworkXError
-        This exception is raised if the input graph is not directed,
-        not connected or is a multigraph.
+        This exception is raised if the input graph is not directed or
+        not connected.
 
     NetworkXUnfeasible
         This exception is raised in the following situations:
@@ -93,19 +93,18 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     --------
     A simple example of a min cost flow problem.
 
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
-    >>> G.add_node('a', demand=-5)
-    >>> G.add_node('d', demand=5)
-    >>> G.add_edge('a', 'b', weight=3, capacity=4)
-    >>> G.add_edge('a', 'c', weight=6, capacity=10)
-    >>> G.add_edge('b', 'd', weight=1, capacity=9)
-    >>> G.add_edge('c', 'd', weight=2, capacity=5)
+    >>> G.add_node("a", demand=-5)
+    >>> G.add_node("d", demand=5)
+    >>> G.add_edge("a", "b", weight=3, capacity=4)
+    >>> G.add_edge("a", "c", weight=6, capacity=10)
+    >>> G.add_edge("b", "d", weight=1, capacity=9)
+    >>> G.add_edge("c", "d", weight=2, capacity=5)
     >>> flowCost, flowDict = nx.network_simplex(G)
     >>> flowCost
     24
-    >>> flowDict # doctest: +SKIP
-    {'a': {'c': 1, 'b': 4}, 'c': {'d': 1}, 'b': {'d': 4}, 'd': {}}
+    >>> flowDict
+    {'a': {'b': 4, 'c': 1}, 'd': {}, 'b': {'d': 4}, 'c': {'d': 1}}
 
     The mincost flow algorithm can also be used to solve shortest path
     problems. To find the shortest path between two nodes u and v,
@@ -114,46 +113,55 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     min cost flow will be the distance between u and v and edges
     carrying positive flow will indicate the path.
 
-    >>> G=nx.DiGraph()
-    >>> G.add_weighted_edges_from([('s', 'u' ,10), ('s' ,'x' ,5),
-    ...                            ('u', 'v' ,1), ('u' ,'x' ,2),
-    ...                            ('v', 'y' ,1), ('x' ,'u' ,3),
-    ...                            ('x', 'v' ,5), ('x' ,'y' ,2),
-    ...                            ('y', 's' ,7), ('y' ,'v' ,6)])
-    >>> G.add_node('s', demand = -1)
-    >>> G.add_node('v', demand = 1)
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from(
+    ...     [
+    ...         ("s", "u", 10),
+    ...         ("s", "x", 5),
+    ...         ("u", "v", 1),
+    ...         ("u", "x", 2),
+    ...         ("v", "y", 1),
+    ...         ("x", "u", 3),
+    ...         ("x", "v", 5),
+    ...         ("x", "y", 2),
+    ...         ("y", "s", 7),
+    ...         ("y", "v", 6),
+    ...     ]
+    ... )
+    >>> G.add_node("s", demand=-1)
+    >>> G.add_node("v", demand=1)
     >>> flowCost, flowDict = nx.network_simplex(G)
-    >>> flowCost == nx.shortest_path_length(G, 's', 'v', weight='weight')
+    >>> flowCost == nx.shortest_path_length(G, "s", "v", weight="weight")
     True
     >>> sorted([(u, v) for u in flowDict for v in flowDict[u] if flowDict[u][v] > 0])
     [('s', 'x'), ('u', 'v'), ('x', 'u')]
-    >>> nx.shortest_path(G, 's', 'v', weight = 'weight')
+    >>> nx.shortest_path(G, "s", "v", weight="weight")
     ['s', 'x', 'u', 'v']
 
     It is possible to change the name of the attributes used for the
     algorithm.
 
     >>> G = nx.DiGraph()
-    >>> G.add_node('p', spam=-4)
-    >>> G.add_node('q', spam=2)
-    >>> G.add_node('a', spam=-2)
-    >>> G.add_node('d', spam=-1)
-    >>> G.add_node('t', spam=2)
-    >>> G.add_node('w', spam=3)
-    >>> G.add_edge('p', 'q', cost=7, vacancies=5)
-    >>> G.add_edge('p', 'a', cost=1, vacancies=4)
-    >>> G.add_edge('q', 'd', cost=2, vacancies=3)
-    >>> G.add_edge('t', 'q', cost=1, vacancies=2)
-    >>> G.add_edge('a', 't', cost=2, vacancies=4)
-    >>> G.add_edge('d', 'w', cost=3, vacancies=4)
-    >>> G.add_edge('t', 'w', cost=4, vacancies=1)
-    >>> flowCost, flowDict = nx.network_simplex(G, demand='spam',
-    ...                                         capacity='vacancies',
-    ...                                         weight='cost')
+    >>> G.add_node("p", spam=-4)
+    >>> G.add_node("q", spam=2)
+    >>> G.add_node("a", spam=-2)
+    >>> G.add_node("d", spam=-1)
+    >>> G.add_node("t", spam=2)
+    >>> G.add_node("w", spam=3)
+    >>> G.add_edge("p", "q", cost=7, vacancies=5)
+    >>> G.add_edge("p", "a", cost=1, vacancies=4)
+    >>> G.add_edge("q", "d", cost=2, vacancies=3)
+    >>> G.add_edge("t", "q", cost=1, vacancies=2)
+    >>> G.add_edge("a", "t", cost=2, vacancies=4)
+    >>> G.add_edge("d", "w", cost=3, vacancies=4)
+    >>> G.add_edge("t", "w", cost=4, vacancies=1)
+    >>> flowCost, flowDict = nx.network_simplex(
+    ...     G, demand="spam", capacity="vacancies", weight="cost"
+    ... )
     >>> flowCost
     37
-    >>> flowDict  # doctest: +SKIP
-    {'a': {'t': 4}, 'd': {'w': 2}, 'q': {'d': 1}, 'p': {'q': 2, 'a': 2}, 't': {'q': 1, 'w': 1}, 'w': {}}
+    >>> flowDict
+    {'p': {'q': 2, 'a': 2}, 'q': {'d': 1}, 'a': {'t': 4}, 'd': {'w': 2}, 't': {'q': 1, 'w': 1}, 'w': {}}
 
     References
     ----------
@@ -284,14 +292,12 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     ###########################################################################
 
     def reduced_cost(i):
-        """Returns the reduced cost of an edge i.
-        """
+        """Returns the reduced cost of an edge i."""
         c = C[i] - pi[S[i]] + pi[T[i]]
         return c if x[i] == 0 else -c
 
     def find_entering_edges():
-        """Yield entering edges until none can be found.
-        """
+        """Yield entering edges until none can be found."""
         if e == 0:
             return
 
@@ -391,8 +397,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
         return U[i] - x[i] if S[i] == p else x[i]
 
     def find_leaving_edge(Wn, We):
-        """Returns the leaving edge in a cycle represented by Wn and We.
-        """
+        """Returns the leaving edge in a cycle represented by Wn and We."""
         j, s = min(
             zip(reversed(We), reversed(Wn)), key=lambda i_p: residual_capacity(*i_p)
         )
@@ -400,8 +405,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
         return j, s, t
 
     def augment_flow(Wn, We, f):
-        """Augment f units of flow along a cycle represented by Wn and We.
-        """
+        """Augment f units of flow along a cycle represented by Wn and We."""
         for i, p in zip(We, Wn):
             if S[i] == p:
                 x[i] += f
@@ -409,8 +413,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
                 x[i] -= f
 
     def trace_subtree(p):
-        """Yield the nodes in the subtree rooted at a node p.
-        """
+        """Yield the nodes in the subtree rooted at a node p."""
         yield p
         l = last[p]
         while p != l:
@@ -418,8 +421,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
             yield p
 
     def remove_edge(s, t):
-        """Remove an edge (s, t) where parent[t] == s from the spanning tree.
-        """
+        """Remove an edge (s, t) where parent[t] == s from the spanning tree."""
         size_t = size[t]
         prev_t = prev[t]
         last_t = last[t]
@@ -441,8 +443,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
             s = parent[s]
 
     def make_root(q):
-        """Make a node q the root of its containing subtree.
-        """
+        """Make a node q the root of its containing subtree."""
         ancestors = []
         while q is not None:
             ancestors.append(q)
@@ -552,8 +553,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     flow_dict = {n: {} for n in N}
 
     def add_entry(e):
-        """Add a flow dict entry.
-        """
+        """Add a flow dict entry."""
         d = flow_dict[e[0]]
         for k in e[1:-2]:
             try:

@@ -5,7 +5,6 @@ The functions in this class are not imported into the top-level
 the :mod:`networkx.algorithms.community` module, then accessing the
 functions as attributes of ``community``. For example::
 
-    >>> import networkx as nx
     >>> from networkx.algorithms import community
     >>> G = nx.barbell_graph(5, 1)
     >>> communities_generator = community.girvan_newman(G)

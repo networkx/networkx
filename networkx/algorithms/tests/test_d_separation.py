@@ -81,7 +81,7 @@ def asia_graph_fixture():
 
 @pytest.mark.parametrize(
     "graph",
-    [path_graph(), fork_graph(), collider_graph(), naive_bayes_graph(), asia_graph(),],
+    [path_graph(), fork_graph(), collider_graph(), naive_bayes_graph(), asia_graph()],
 )
 def test_markov_condition(graph):
     """Test that the Markov condition holds for each PGM graph."""

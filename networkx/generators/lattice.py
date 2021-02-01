@@ -16,11 +16,9 @@ be found about `Triangular Tiling`_, and `Square, Hex and Triangle Grids`_
 from math import sqrt
 
 from networkx.classes import set_node_attributes
-from networkx.algorithms.minors import contracted_nodes
-from networkx.algorithms.operators.product import cartesian_product
 from networkx.exception import NetworkXError
 from networkx.relabel import relabel_nodes
-from networkx.utils import flatten, nodes_or_number, pairwise, iterable
+from networkx.utils import flatten, nodes_or_number, pairwise
 from networkx.generators.classic import cycle_graph
 from networkx.generators.classic import empty_graph
 from networkx.generators.classic import path_graph
@@ -69,9 +67,9 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
     G.add_edges_from(((i, j), (pi, j)) for pi, i in pairwise(rows) for j in cols)
     G.add_edges_from(((i, j), (i, pj)) for i in rows for pj, j in pairwise(cols))
 
-    if iterable(periodic):
+    try:
         periodic_r, periodic_c = periodic
-    else:
+    except TypeError:
         periodic_r = periodic_c = periodic
 
     if periodic_r and len(rows) > 2:
@@ -125,12 +123,14 @@ def grid_graph(dim, periodic=False):
     >>> len(G)
     6
     """
+    from networkx.algorithms.operators.product import cartesian_product
+
     if not dim:
         return empty_graph(0)
 
-    if iterable(periodic):
+    try:
         func = (cycle_graph if p else path_graph for p in periodic)
-    else:
+    except TypeError:
         func = repeat(cycle_graph if periodic else path_graph)
 
     G = next(func)(dim[0])
@@ -242,6 +242,8 @@ def triangular_lattice_graph(
     H.add_edges_from(((i, j), (i + 1, j + 1)) for j in rows[1:m:2] for i in cols[:N])
     H.add_edges_from(((i + 1, j), (i, j + 1)) for j in rows[:m:2] for i in cols[:N])
     # identify boundary nodes if periodic
+    from networkx.algorithms.minors import contracted_nodes
+
     if periodic is True:
         for i in cols:
             H = contracted_nodes(H, (i, 0), (i, m))
@@ -335,6 +337,8 @@ def hexagonal_lattice_graph(
     G.remove_node((n, (M + 1) * (n % 2)))
 
     # identify boundary nodes if periodic
+    from networkx.algorithms.minors import contracted_nodes
+
     if periodic:
         for i in cols[:n]:
             G = contracted_nodes(G, (i, 0), (i, M))

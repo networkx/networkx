@@ -1,7 +1,7 @@
 import random
 
 import networkx as nx
-import networkx.algorithms.approximation as a
+from networkx.algorithms.approximation import maxcut
 
 
 def _is_valid_cut(G, set1, set2):
@@ -13,36 +13,38 @@ def _is_valid_cut(G, set1, set2):
 def _cut_is_locally_optimal(G, cut_size, set1):
     # test if cut can be locally improved
     for i, node in enumerate(set1):
-        cut_size_without_node = nx.algorithms.cut_size(G, set1 - {node},
-                                                       weight='weight')
+        cut_size_without_node = nx.algorithms.cut_size(
+            G, set1 - {node}, weight="weight"
+        )
         assert cut_size_without_node <= cut_size
 
 
 def test_random_partitioning():
-    G = nx.generators.complete_graph(5)
-    _, (set1, set2) = a.maxcut.randomized_partitioning(G)
+    G = nx.complete_graph(5)
+    _, (set1, set2) = maxcut.randomized_partitioning(G, seed=5)
     _is_valid_cut(G, set1, set2)
 
 
 def test_random_partitioning_all_to_one():
-    G = nx.generators.complete_graph(5)
-    _, (set1, set2) = a.maxcut.randomized_partitioning(G, p=1)
+    G = nx.complete_graph(5)
+    _, (set1, set2) = maxcut.randomized_partitioning(G, p=1)
     _is_valid_cut(G, set1, set2)
     assert len(set1) == G.number_of_nodes()
     assert len(set2) == 0
 
 
 def test_one_exchange_basic():
-    G = nx.generators.complete_graph(5)
+    G = nx.complete_graph(5)
+    random.seed(5)
     for (u, v, w) in G.edges(data=True):
-        w['weight'] = random.randrange(-100, 100, 1)/10
+        w["weight"] = random.randrange(-100, 100, 1) / 10
 
     initial_cut = set(random.sample(G.nodes(), k=5))
-    cut_size, (set1, set2) = a.maxcut.one_exchange(G, initial_cut, weight='weight')
+    cut_size, (set1, set2) = maxcut.one_exchange(
+        G, initial_cut, weight="weight", seed=5
+    )
 
-    # make sure it is a valid cut
     _is_valid_cut(G, set1, set2)
-    # check local optimality
     _cut_is_locally_optimal(G, cut_size, set1)
 
 
@@ -55,11 +57,26 @@ def test_one_exchange_optimal():
     G.add_edge(1, 5, weight=3)
     G.add_edge(2, 3, weight=5)
 
-    cut_size, (set1, set2) = a.maxcut.one_exchange(G, weight='weight')
+    cut_size, (set1, set2) = maxcut.one_exchange(G, weight="weight", seed=5)
+
+    _is_valid_cut(G, set1, set2)
+    _cut_is_locally_optimal(G, cut_size, set1)
+    # check global optimality
+    assert cut_size == 14
+
+
+def test_negative_weights():
+    G = nx.complete_graph(5)
+    random.seed(5)
+    for (u, v, w) in G.edges(data=True):
+        w["weight"] = -1 * random.random()
+
+    initial_cut = set(random.sample(G.nodes(), k=5))
+    cut_size, (set1, set2) = maxcut.one_exchange(G, initial_cut, weight="weight")
 
     # make sure it is a valid cut
     _is_valid_cut(G, set1, set2)
     # check local optimality
     _cut_is_locally_optimal(G, cut_size, set1)
-    # check global optimality
-    assert cut_size == 14
+    # test that all nodes are in the same partition
+    assert len(set1) == len(G.nodes) or len(set2) == len(G.nodes)

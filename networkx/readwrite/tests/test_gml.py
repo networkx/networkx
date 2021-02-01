@@ -336,10 +336,7 @@ graph
             '"&&amp;&&#34;"',
             [{(b"\xfd",): "\x7f", chr(0x4444): (1, 2)}, (2, "3")],
         ]
-        try:  # fails under IronPython
-            data.append(chr(0x14444))
-        except ValueError:
-            data.append(chr(0x1444))
+        data.append(chr(0x14444))
         data.append(literal_eval("{2.3j, 1 - 2.3j, ()}"))
         G = nx.Graph()
         G.name = data
@@ -589,7 +586,7 @@ class TestPropertyLists:
             )
             f.seek(0)
             graph = nx.read_gml(f)
-        assert graph.nodes(data=True)["n1"] == {"properties": ["element", 0, 1, 2.5,]}
+        assert graph.nodes(data=True)["n1"] == {"properties": ["element", 0, 1, 2.5]}
 
     def test_reading_graph_with_single_element_list_property(self):
         with byte_file() as f:
@@ -609,4 +606,4 @@ class TestPropertyLists:
             )
             f.seek(0)
             graph = nx.read_gml(f)
-        assert graph.nodes(data=True)["n1"] == {"properties": ["element",]}
+        assert graph.nodes(data=True)["n1"] == {"properties": ["element"]}
