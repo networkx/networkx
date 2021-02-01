@@ -160,7 +160,7 @@ def intersection(G, H):
     >>> H = nx.path_graph(5)
     >>> R = G.copy()
     >>> R.remove_nodes_from(n for n in G if n not in H)
-    >>> R.remove_edges_from(e for e in G.edges if e not in H.egdes)
+    >>> R.remove_edges_from(e for e in G.edges if e not in H.edges)
     """
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
