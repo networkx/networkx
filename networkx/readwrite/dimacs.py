@@ -84,6 +84,12 @@ def read_dimacs(
     )
 
 
-@open_file(1, mode="wb")
-def write_dimacs(G, path):
+def generate_dimacs(G):
     raise NotImplementedError("Writing of DIMACS not implemented yet.")
+
+
+@open_file(1, mode="wb")
+def write_dimacs(G, path, encoding="utf-8"):
+    for line in generate_dimacs(G):
+        line += "\n"
+        path.write(line.encode(encoding))
