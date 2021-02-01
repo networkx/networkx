@@ -1,17 +1,30 @@
+"""
+*******
+DIMACS
+*******
+Read and write graphs in DIMACS Format
+
+Format
+------
+The DIMACS graph format is a human readable text fromat.  See
+http://archive.dimacs.rutgers.edu/pub/challenge/graph/doc/ccformat.dvi
+"""
+
 import networkx as nx
 from networkx.utils import open_file
 
 __all__ = [
     "parse_dimacs",
     "read_dimacs",
+    "write_dimacs"
 ]
 
 
 def parse_dimacs(lines, create_using=None):
     g = create_using if create_using else nx.Graph()
 
-    expected_num_nodes = -1
-    expected_num_edges = -1
+    expected_num_nodes = None
+    expected_num_edges = None
 
     for line in lines:
         if len(line) > 1:
@@ -28,7 +41,7 @@ def parse_dimacs(lines, create_using=None):
                 _, id_u, id_v = line.strip().split(" ")
                 g.add_edge(int(id_u), int(id_v))
             else:
-                raise ValueError(f"Unknown line start {line[0]}")
+                raise ValueError(f"Unknown line start: {line[0]}")
 
     assert expected_num_nodes == g.number_of_nodes(), f"{expected_num_nodes} {g.number_of_nodes()}"
     assert expected_num_edges == g.number_of_edges(), f"{expected_num_edges} {g.number_of_edges()}"
@@ -69,3 +82,7 @@ def read_dimacs(
         lines,
         create_using=create_using,
     )
+
+
+def write_dimacs():
+    raise NotImplementedError("Writing of DIMACS not implemented yet.")
