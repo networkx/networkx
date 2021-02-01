@@ -65,16 +65,11 @@ def test_intersection_attributes():
     h.graph["name"] = "h"
     h.graph["attr"] = "attr"
     h.nodes[0]["x"] = 7
-
     gh = nx.intersection(g, h)
+
     assert set(gh.nodes()) == set(g.nodes())
     assert set(gh.nodes()) == set(h.nodes())
     assert sorted(gh.edges()) == sorted(g.edges())
-
-    h.remove_node(0)
-
-
-#   pytest.raises(nx.NetworkXError, nx.intersection, g, h)
 
 
 def test_intersection_attributes_node_sets_different():
@@ -183,9 +178,6 @@ def test_difference_attributes():
     assert set(gh.nodes()) == set(g.nodes())
     assert set(gh.nodes()) == set(h.nodes())
     assert sorted(gh.edges()) == []
-
-    h.remove_node(0)
-    # pytest.raises(nx.NetworkXError, nx.intersection, g, h)
 
 
 def test_difference_multigraph_attributes():

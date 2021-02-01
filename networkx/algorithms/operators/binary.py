@@ -137,15 +137,13 @@ def disjoint_union(G, H):
 
 
 def intersection(G, H):
-    """Returns a new graph that contains only the edges that exist in
+    """Returns a new graph that contains only the edges and the nodes that exist in
     both G and H.
-
-    The node sets of H and G must be the same.
 
     Parameters
     ----------
     G,H : graph
-       A NetworkX graph.  G and H must have the same node sets.
+       A NetworkX graph. G and H can have different node sets but must be both graphs or both multigraphs.
 
     Returns
     -------
@@ -162,6 +160,7 @@ def intersection(G, H):
     >>> H = nx.path_graph(5)
     >>> R = G.copy()
     >>> R.remove_nodes_from(n for n in G if n not in H)
+    >>> R.remove_edges_from(e for e in G.edges if e not in H.egdes)
     """
 
     if not G.is_multigraph() == H.is_multigraph():
@@ -170,7 +169,6 @@ def intersection(G, H):
     # create new graph
     if set(G) != set(H):
         R = G.__class__()
-
         R.add_nodes_from(set(G.nodes).intersection(set(H.nodes)))
     else:
         R = nx.create_empty_copy(G)
