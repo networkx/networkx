@@ -55,11 +55,10 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
 
     if nodelist is not None:
         if not (len(nodelist) == len(G) == len(set(nodelist))):
-            msg = (
+            raise nx.NetworkXError(
                 "nodelist must contain every node in G with no repeats."
                 "If you wanted a subgraph of G use G.subgraph(nodelist)"
             )
-            raise nx.NetworkXError(msg)
 
     # To handle cases when an edge has weight=0, we must make sure that
     # nonedges are not given the value 0 as well.
