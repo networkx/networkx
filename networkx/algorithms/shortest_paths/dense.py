@@ -15,42 +15,41 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
 
     This algorithm for finding shortest paths takes advantage of
     matrix representations of a graph and works well for dense
-    graphs where all-pairs shortest path is desired. The results
-    are returns in a numpy array with each column and row
-    representing a node and entries providing the distance along
-    the shortest path between that row's node and column's node.
-    If no path exists the distance is Inf.
+    graphs where all-pairs shortest path lengths are desired.
+    The results are returned as a NumPy array, distance[i, j],
+    where i and j are the indexes of two nodes in nodelist.
+    The entry distance[i, j] is the distance along a shortest
+    path from i to j. If no path exists the distance is Inf.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    nodelist : list, optional (default= the order of G.nodes)
+    nodelist : list, optional (default=G.nodes)
        The rows and columns are ordered by the nodes in nodelist.
        If nodelist is None then the ordering is produced by G.nodes.
        Nodelist should include all nodes in G.
 
-    weight: string, optional (default= 'weight')
+    weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight.
 
     Returns
     -------
     distance : NumPy matrix
         A matrix of shortest path distances between nodes.
-        If there is no path between to nodes the corresponding matrix entry
-        will be Inf.
+        If there is no path between two nodes the value is Inf.
 
     Notes
     -----
     Floyd's algorithm is appropriate for finding shortest paths in
     dense graphs or graphs with negative weights when Dijkstra's
     algorithm fails. This algorithm can still fail if there are negative
-    cycles.  It has running time $O(n^3)$ with running space of $O(n^2)$.
+    cycles. It has running time $O(n^3)$ with running space of $O(n^2)$.
 
     Raises
     ------
     NetworkXError
-        If nodelist does not contain all nodes in G.
+        If nodelist is not a list of the nodes in G.
     """
     import numpy as np
 
@@ -65,7 +64,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     # To handle cases when an edge has weight=0, we must make sure that
     # nonedges are not given the value 0 as well.
     A = nx.to_numpy_array(
-        G, nodelist=nodelist, multigraph_weight=min, weight=weight, nonedge=np.inf
+        G, nodelist, multigraph_weight=min, weight=weight, nonedge=np.inf
     )
     n, m = A.shape
     np.fill_diagonal(A, 0)  # diagonal elements should be zero
