@@ -145,6 +145,11 @@ def intersection(G, H):
     G,H : graph
        A NetworkX graph. G and H can have different node sets but must be both graphs or both multigraphs.
 
+    Raises
+    ------
+    NetworkXError
+        If one is a MultiGraph and the other one is a graph.
+
     Returns
     -------
     GH : A new graph with the same type as G.
