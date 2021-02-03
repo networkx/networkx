@@ -6,7 +6,7 @@ Read and write graphs in DIMACS Format
 
 Format
 ------
-The DIMACS graph format is a human readable text fromat.  See
+The DIMACS graph format is a human readable text format.  See
 http://archive.dimacs.rutgers.edu/pub/challenge/graph/doc/ccformat.dvi
 """
 
