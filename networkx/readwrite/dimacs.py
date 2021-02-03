@@ -17,6 +17,24 @@ __all__ = ["parse_dimacs", "read_dimacs", "write_dimacs"]
 
 
 def parse_dimacs(lines, create_using=None):
+    """Parse lines of a DIMACS representation of a graph.
+
+    Parameters
+    ----------
+    lines : list or iterator of strings
+        Input data in edgelist format
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : graph
+       A networkx Graph or other type specified with create_using
+
+    See Also
+    --------
+    read_dimacs
+    """
     g = create_using if create_using else nx.Graph()
 
     expected_num_nodes = None
@@ -54,7 +72,7 @@ def read_dimacs(
     create_using=None,
     encoding="utf-8",
 ):
-    """Read a graph from a list of edges.
+    """Read a graph from a file in DIMACS format.
 
     Parameters
     ----------
@@ -73,9 +91,6 @@ def read_dimacs(
     --------
     parse_dimacs
     write_dimacs
-
-    Notes
-    -----
     """
     lines = (line if isinstance(line, str) else line.decode(encoding) for line in path)
     return parse_dimacs(
@@ -85,6 +100,22 @@ def read_dimacs(
 
 
 def generate_dimacs(G):
+    """Generate a single line of the graph G in DIMACS format.
+
+    Parameters
+    ----------
+    G : graph
+        A networkx graph.
+
+    Returns
+    -------
+    G : graph
+       A networkx Graph or other type specified with create_using
+
+    See Also
+    --------
+    write_dimacs
+    """
     yield f"p edge {G.number_of_nodes()} {G.number_of_edges()}"
     for node, data in G.nodes(data=True):
         if data and data["value"]:
@@ -95,6 +126,30 @@ def generate_dimacs(G):
 
 @open_file(1, mode="wb")
 def write_dimacs(G, path, encoding="utf-8"):
+    """Write a graph as a file in DIMACS format.
+
+    Parameters
+    ----------
+    G : graph
+        A networkx graph.
+    path : file or string
+       File or filename to read. If a file is provided, it must be
+       opened in 'rb' mode.
+       Filenames ending in .gz or .bz2 will be uncompressed.
+    encoding: string, optional
+       Specify which encoding to use when writing file.
+
+
+    Returns
+    -------
+    G : graph
+       A networkx Graph or other type specified with create_using
+
+    See Also
+    --------
+    generate_dimacs
+    read_dimacs
+    """
     for line in generate_dimacs(G):
         line += "\n"
         path.write(line.encode(encoding))
