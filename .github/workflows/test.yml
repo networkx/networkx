@@ -60,7 +60,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04, macos-latest]
+        os: [ubuntu-20.04, macos-latest, windows-latest]
         python-version: [3.7, 3.8, 3.9]
     steps:
     - uses: actions/checkout@v2
@@ -69,22 +69,40 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Before install
-      run: |
-        if [ "$RUNNER_OS" == "Linux" ]; then
-          sudo apt-get update
-          sudo apt-get install graphviz graphviz-dev
-        elif [ "$RUNNER_OS" == "macOS" ]; then
-          brew install graphviz pkg-config
-        fi
+    - name: Before install (Linux)
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install graphviz graphviz-dev
 
-    - name: Install packages
+    - name: Before install (macOS)
+      if: runner.os == 'macOS'
+      run: brew install graphviz
+
+    - name: Before install (Windows)
+      if: runner.os == 'Windows'
+      run: choco install graphviz
+
+    - name: Install packages (Linux and macOS)
+      if: runner.os == 'Linux' || runner.os == 'macOS'
       run: |
         pip install --upgrade pip wheel setuptools
         pip install -r requirements.txt
         pip install -r requirements/extra.txt
         pip install .
         pip list
+
+    - name: Install packages (windows)
+      if: runner.os == 'Windows'
+      run: |
+        echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        python -m pip install --upgrade pip wheel setuptools
+        python -m pip install -r requirements.txt
+        python -m pip install --global-option=build_ext `
+                              --global-option="-IC:\Program Files\Graphviz\include" `
+                              --global-option="-LC:\Program Files\Graphviz\lib" `
+                              pygraphviz
+        python -m pip install -r requirements/extra.txt
+        python -m pip install .
+        python -m pip list
 
     - name: Test NetworkX
       run: |
