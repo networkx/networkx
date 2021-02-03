@@ -48,6 +48,26 @@ def test_intersection_all():
     assert sorted(I.edges()) == [(2, 3)]
 
 
+def test_intersection_all_different_node_sets():
+    G = nx.Graph()
+    H = nx.Graph()
+    R = nx.Graph()
+    G.add_nodes_from([1, 2, 3, 4, 6, 7])
+    G.add_edge(1, 2)
+    G.add_edge(2, 3)
+    G.add_edge(6, 7)
+    H.add_nodes_from([1, 2, 3, 4])
+    H.add_edge(2, 3)
+    H.add_edge(3, 4)
+    R.add_nodes_from([1, 2, 3, 4, 8, 9])
+    R.add_edge(2, 3)
+    R.add_edge(4, 1)
+    R.add_edge(8, 9)
+    I = nx.intersection_all([G, H, R])
+    assert set(I.nodes()) == {1, 2, 3, 4}
+    assert sorted(I.edges()) == [(2, 3)]
+
+
 def test_intersection_all_attributes():
     g = nx.Graph()
     g.add_node(0, x=4)
@@ -65,8 +85,23 @@ def test_intersection_all_attributes():
     assert set(gh.nodes()) == set(h.nodes())
     assert sorted(gh.edges()) == sorted(g.edges())
 
-    h.remove_node(0)
-    pytest.raises(nx.NetworkXError, nx.intersection, g, h)
+
+def test_intersection_all_attributes_different_node_sets():
+    g = nx.Graph()
+    g.add_node(0, x=4)
+    g.add_node(1, x=5)
+    g.add_edge(0, 1, size=5)
+    g.graph["name"] = "g"
+
+    h = g.copy()
+    g.add_node(2)
+    h.graph["name"] = "h"
+    h.graph["attr"] = "attr"
+    h.nodes[0]["x"] = 7
+
+    gh = nx.intersection_all([g, h])
+    assert set(gh.nodes()) == set(h.nodes())
+    assert sorted(gh.edges()) == sorted(g.edges())
 
 
 def test_intersection_all_multigraph_attributes():
@@ -79,6 +114,22 @@ def test_intersection_all_multigraph_attributes():
     h.add_edge(0, 1, key=3)
     gh = nx.intersection_all([g, h])
     assert set(gh.nodes()) == set(g.nodes())
+    assert set(gh.nodes()) == set(h.nodes())
+    assert sorted(gh.edges()) == [(0, 1)]
+    assert sorted(gh.edges(keys=True)) == [(0, 1, 0)]
+
+
+def test_intersection_all_multigraph_attributes_different_node_sets():
+    g = nx.MultiGraph()
+    g.add_edge(0, 1, key=0)
+    g.add_edge(0, 1, key=1)
+    g.add_edge(0, 1, key=2)
+    g.add_edge(1, 2, key=1)
+    g.add_edge(1, 2, key=2)
+    h = nx.MultiGraph()
+    h.add_edge(0, 1, key=0)
+    h.add_edge(0, 1, key=3)
+    gh = nx.intersection_all([g, h])
     assert set(gh.nodes()) == set(h.nodes())
     assert sorted(gh.edges()) == [(0, 1)]
     assert sorted(gh.edges(keys=True)) == [(0, 1, 0)]

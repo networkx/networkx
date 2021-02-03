@@ -42,6 +42,7 @@ class TestAGraph:
 
         with open(fname) as fh:
             Hin = nx.nx_agraph.read_dot(fh)
+        os.close(fd)
         os.unlink(fname)
         self.assert_equal(H, Hin)
 
