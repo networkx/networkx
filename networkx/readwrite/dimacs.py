@@ -13,7 +13,7 @@ http://archive.dimacs.rutgers.edu/pub/challenge/graph/doc/ccformat.dvi
 import networkx as nx
 from networkx.utils import open_file
 
-__all__ = ["parse_dimacs", "read_dimacs", "write_dimacs"]
+__all__ = ["parse_dimacs", "read_dimacs", "generate_dimacs", "write_dimacs"]
 
 
 def parse_dimacs(lines, create_using=None):
