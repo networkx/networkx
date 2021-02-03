@@ -85,7 +85,12 @@ def read_dimacs(
 
 
 def generate_dimacs(G):
-    raise NotImplementedError("Writing of DIMACS not implemented yet.")
+    yield f"p edge {len(G.nodes)} {len(G.edges)}"
+    for node, data in G.nodes(data=True):
+        if data and data["value"]:
+            yield f"n {node} {data['value']}"
+    for u, v in G.edges:
+        yield f"e {u} {v}"
 
 
 @open_file(1, mode="wb")
