@@ -32,6 +32,7 @@ Breadth First Search
    bfs_tree
    bfs_predecessors
    bfs_successors
+   descendants_at_distance
 
 Beam search
 -----------

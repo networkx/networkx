@@ -16,8 +16,7 @@ __all__ = ["preflow_push"]
 
 
 def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_only):
-    """Implementation of the highest-label preflow-push algorithm.
-    """
+    """Implementation of the highest-label preflow-push algorithm."""
     if s not in G:
         raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:
@@ -85,8 +84,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
         R_nodes[u]["curr_edge"] = CurrentEdge(R_succ[u])
 
     def push(u, v, flow):
-        """Push flow units of flow from u to v.
-        """
+        """Push flow units of flow from u to v."""
         R_succ[u][v]["flow"] += flow
         R_succ[v][u]["flow"] -= flow
         R_nodes[u]["excess"] -= flow
@@ -110,8 +108,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
                 level.inactive.add(u)
 
     def activate(v):
-        """Move a node from the inactive set to the active set of its level.
-        """
+        """Move a node from the inactive set to the active set of its level."""
         if v != s and v != t:
             level = levels[R_nodes[v]["height"]]
             if v in level.inactive:
@@ -119,8 +116,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
                 level.active.add(v)
 
     def relabel(u):
-        """Relabel a node to create an admissible edge.
-        """
+        """Relabel a node to create an admissible edge."""
         grt.add_work(len(R_succ[u]))
         return (
             min(
@@ -173,8 +169,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
         return next_height
 
     def gap_heuristic(height):
-        """Apply the gap heuristic.
-        """
+        """Apply the gap heuristic."""
         # Move all nodes at levels (height + 1) to max_height to level n + 1.
         for level in islice(levels, height + 1, max_height + 1):
             for u in level.active:
@@ -187,8 +182,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
             level.inactive.clear()
 
     def global_relabel(from_sink):
-        """Apply the global relabeling heuristic.
-        """
+        """Apply the global relabeling heuristic."""
         src = t if from_sink else s
         heights = reverse_bfs(src)
         if not from_sink:
@@ -388,7 +382,6 @@ def preflow_push(
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.flow import preflow_push
 
     The functions that implement flow algorithms and output a residual
@@ -396,28 +389,28 @@ def preflow_push(
     namespace, so you have to explicitly import them from the flow package.
 
     >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> R = preflow_push(G, 'x', 'y')
-    >>> flow_value = nx.maximum_flow_value(G, 'x', 'y')
-    >>> flow_value == R.graph['flow_value']
+    >>> G.add_edge("x", "a", capacity=3.0)
+    >>> G.add_edge("x", "b", capacity=1.0)
+    >>> G.add_edge("a", "c", capacity=3.0)
+    >>> G.add_edge("b", "c", capacity=5.0)
+    >>> G.add_edge("b", "d", capacity=4.0)
+    >>> G.add_edge("d", "e", capacity=2.0)
+    >>> G.add_edge("c", "y", capacity=2.0)
+    >>> G.add_edge("e", "y", capacity=3.0)
+    >>> R = preflow_push(G, "x", "y")
+    >>> flow_value = nx.maximum_flow_value(G, "x", "y")
+    >>> flow_value == R.graph["flow_value"]
     True
     >>> # preflow_push also stores the maximum flow value
     >>> # in the excess attribute of the sink node t
-    >>> flow_value == R.nodes['y']['excess']
+    >>> flow_value == R.nodes["y"]["excess"]
     True
     >>> # For some problems, you might only want to compute a
     >>> # maximum preflow.
-    >>> R = preflow_push(G, 'x', 'y', value_only=True)
-    >>> flow_value == R.graph['flow_value']
+    >>> R = preflow_push(G, "x", "y", value_only=True)
+    >>> flow_value == R.graph["flow_value"]
     True
-    >>> flow_value == R.nodes['y']['excess']
+    >>> flow_value == R.nodes["y"]["excess"]
     True
 
     """

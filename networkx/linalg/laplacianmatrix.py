@@ -46,14 +46,15 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     normalized_laplacian_matrix
     laplacian_spectrum
     """
-    import scipy.sparse
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
     diags = A.sum(axis=1)
-    D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
+    D = sp.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
     return D - A
 
 
@@ -110,21 +111,21 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
        March 2007.
     """
     import numpy as np
-    import scipy
-    import scipy.sparse
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
     diags = A.sum(axis=1).flatten()
-    D = scipy.sparse.spdiags(diags, [0], m, n, format="csr")
+    D = sp.sparse.spdiags(diags, [0], m, n, format="csr")
     L = D - A
-    with scipy.errstate(divide="ignore"):
+    with sp.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
-    DH = scipy.sparse.spdiags(diags_sqrt, [0], m, n, format="csr")
-    return DH.dot(L.dot(DH))
+    DH = sp.sparse.spdiags(diags_sqrt, [0], m, n, format="csr")
+    return DH @ (L @ DH)
 
 
 ###############################################################################
@@ -193,7 +194,8 @@ def directed_laplacian_matrix(
        Annals of Combinatorics, 9(1), 2005
     """
     import numpy as np
-    from scipy.sparse import spdiags, linalg
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
@@ -201,11 +203,15 @@ def directed_laplacian_matrix(
 
     n, m = P.shape
 
-    evals, evecs = linalg.eigs(P.T, k=1)
+    evals, evecs = sp.sparse.linalg.eigs(P.T, k=1)
     v = evecs.flatten().real
     p = v / v.sum()
     sqrtp = np.sqrt(p)
-    Q = spdiags(sqrtp, [0], n, n) * P * spdiags(1.0 / sqrtp, [0], n, n)
+    Q = (
+        sp.sparse.spdiags(sqrtp, [0], n, n)
+        * P
+        * sp.sparse.spdiags(1.0 / sqrtp, [0], n, n)
+    )
     I = np.identity(len(G))
 
     return I - (Q + Q.T) / 2.0
@@ -224,7 +230,7 @@ def directed_combinatorial_laplacian_matrix(
 
         L = \Phi - (\Phi P + P^T \Phi) / 2
 
-    where `P` is the transition matrix of the graph and and `\Phi` a matrix
+    where `P` is the transition matrix of the graph and `\Phi` a matrix
     with the Perron vector of `P` in the diagonal and zeros elsewhere.
 
     Depending on the value of walk_type, `P` can be the transition matrix
@@ -270,7 +276,8 @@ def directed_combinatorial_laplacian_matrix(
        Laplacians and the Cheeger inequality for directed graphs.
        Annals of Combinatorics, 9(1), 2005
     """
-    from scipy.sparse import spdiags, linalg
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
@@ -278,10 +285,10 @@ def directed_combinatorial_laplacian_matrix(
 
     n, m = P.shape
 
-    evals, evecs = linalg.eigs(P.T, k=1)
+    evals, evecs = sp.sparse.linalg.eigs(P.T, k=1)
     v = evecs.flatten().real
     p = v / v.sum()
-    Phi = spdiags(p, [0], n, n)
+    Phi = sp.sparse.spdiags(p, [0], n, n)
 
     Phi = Phi.todense()
 
@@ -327,7 +334,8 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
         If walk_type not specified or alpha not in valid range
     """
     import numpy as np
-    from scipy.sparse import identity, spdiags
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     if walk_type is None:
         if nx.is_strongly_connected(G):
@@ -341,11 +349,11 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
     M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
     n, m = M.shape
     if walk_type in ["random", "lazy"]:
-        DI = spdiags(1.0 / np.array(M.sum(axis=1).flat), [0], n, n)
+        DI = sp.sparse.spdiags(1.0 / np.array(M.sum(axis=1).flat), [0], n, n)
         if walk_type == "random":
             P = DI * M
         else:
-            I = identity(n)
+            I = sp.sparse.identity(n)
             P = (I + DI * M) / 2.0
 
     elif walk_type == "pagerank":

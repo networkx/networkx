@@ -26,12 +26,12 @@ def is_isolate(G, n):
 
     Examples
     --------
-    >>> G=nx.Graph()
-    >>> G.add_edge(1,2)
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2)
     >>> G.add_node(3)
-    >>> nx.is_isolate(G,2)
+    >>> nx.is_isolate(G, 2)
     False
-    >>> nx.is_isolate(G,3)
+    >>> nx.is_isolate(G, 3)
     True
     """
     return G.degree(n) == 0

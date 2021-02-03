@@ -66,6 +66,11 @@ class TestVolume:
         G = nx.MultiDiGraph(edges * 2)
         assert nx.volume(G, {0, 1}) == 4
 
+    def test_barbell(self):
+        G = nx.barbell_graph(3, 0)
+        assert nx.volume(G, {0, 1, 2}) == 7
+        assert nx.volume(G, {3, 4, 5}) == 7
+
 
 class TestNormalizedCutSize:
     """Unit tests for the :func:`~networkx.normalized_cut_size`
@@ -81,6 +86,8 @@ class TestNormalizedCutSize:
         # The cut looks like this: o-{-o--o-}-o
         expected = 2 * ((1 / 4) + (1 / 2))
         assert expected == size
+        # Test with no input T
+        assert expected == nx.normalized_cut_size(G, S)
 
     def test_directed(self):
         G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
@@ -90,6 +97,8 @@ class TestNormalizedCutSize:
         # The cut looks like this: o-{->o-->o-}->o
         expected = 2 * ((1 / 2) + (1 / 1))
         assert expected == size
+        # Test with no input T
+        assert expected == nx.normalized_cut_size(G, S)
 
 
 class TestConductance:
@@ -104,6 +113,11 @@ class TestConductance:
         conductance = nx.conductance(G, S, T)
         expected = 1 / 5
         assert expected == conductance
+        # Test with no input T
+        G2 = nx.barbell_graph(3, 0)
+        # There is only one cut edge, and each set has volume seven.
+        S2 = {0, 1, 2}
+        assert nx.conductance(G2, S2) == 1 / 7
 
 
 class TestEdgeExpansion:
@@ -116,12 +130,12 @@ class TestEdgeExpansion:
         expansion = nx.edge_expansion(G, S, T)
         expected = 1 / 5
         assert expected == expansion
+        # Test with no input T
+        assert expected == nx.edge_expansion(G, S)
 
 
 class TestNodeExpansion:
-    """Unit tests for the :func:`~networkx.node_expansion` function.
-
-    """
+    """Unit tests for the :func:`~networkx.node_expansion` function."""
 
     def test_graph(self):
         G = nx.path_graph(8)
@@ -134,9 +148,7 @@ class TestNodeExpansion:
 
 
 class TestBoundaryExpansion:
-    """Unit tests for the :func:`~networkx.boundary_expansion` function.
-
-    """
+    """Unit tests for the :func:`~networkx.boundary_expansion` function."""
 
     def test_graph(self):
         G = nx.complete_graph(10)
@@ -149,9 +161,7 @@ class TestBoundaryExpansion:
 
 
 class TestMixingExpansion:
-    """Unit tests for the :func:`~networkx.mixing_expansion` function.
-
-    """
+    """Unit tests for the :func:`~networkx.mixing_expansion` function."""
 
     def test_graph(self):
         G = nx.barbell_graph(5, 0)

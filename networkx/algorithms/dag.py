@@ -8,18 +8,11 @@ to the user to check for that.
 from collections import deque
 from math import gcd
 from functools import partial
-from itertools import chain
-from itertools import product
-from itertools import starmap
+from itertools import chain, product, starmap
 import heapq
 
 import networkx as nx
-from networkx.algorithms.traversal.breadth_first_search import descendants_at_distance
-from networkx.generators.trees import NIL
-from networkx.utils import arbitrary_element
-from networkx.utils import consume
-from networkx.utils import pairwise
-from networkx.utils import not_implemented_for
+from networkx.utils import arbitrary_element, pairwise, not_implemented_for
 
 __all__ = [
     "descendants",
@@ -47,7 +40,7 @@ def descendants(G, source):
     Parameters
     ----------
     G : NetworkX DiGraph
-        A directed acyclic graph (DAG)
+        A directed graph
     source : node in `G`
 
     Returns
@@ -67,7 +60,7 @@ def ancestors(G, source):
     Parameters
     ----------
     G : NetworkX DiGraph
-        A directed acyclic graph (DAG)
+        A directed graph
     source : node in `G`
 
     Returns
@@ -84,7 +77,8 @@ def ancestors(G, source):
 def has_cycle(G):
     """Decides whether the directed graph has a cycle."""
     try:
-        consume(topological_sort(G))
+        # Feed the entire iterator into a zero-length deque.
+        deque(topological_sort(G), maxlen=0)
     except nx.NetworkXUnfeasible:
         return True
     else:
@@ -110,9 +104,10 @@ def is_directed_acyclic_graph(G):
 def topological_sort(G):
     """Returns a generator of nodes in topologically sorted order.
 
-    A topological sort is a nonunique permutation of the nodes such that an
-    edge from u to v implies that u appears before v in the topological sort
-    order.
+    A topological sort is a nonunique permutation of the nodes of a
+    directed graph such that an edge from u to v implies that u
+    appears before v in the topological sort order. This ordering is
+    valid only if the graph has no directed cycles.
 
     Parameters
     ----------
@@ -468,7 +463,7 @@ def is_aperiodic(G):
 
 @not_implemented_for("undirected")
 def transitive_closure(G, reflexive=False):
-    """ Returns transitive closure of a directed graph
+    """Returns transitive closure of a directed graph
 
     The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
     for all v, w in V there is an edge (v, w) in E+ if and only if there
@@ -530,7 +525,7 @@ def transitive_closure(G, reflexive=False):
 
 @not_implemented_for("undirected")
 def transitive_closure_dag(G, topo_order=None):
-    """ Returns the transitive closure of a directed acyclic graph.
+    """Returns the transitive closure of a directed acyclic graph.
 
     This function is faster than the function `transitive_closure`, but fails
     if the graph has a cycle.
@@ -572,14 +567,14 @@ def transitive_closure_dag(G, topo_order=None):
     # idea: traverse vertices following a reverse topological order, connecting
     # each vertex to its descendants at distance 2 as we go
     for v in reversed(topo_order):
-        TC.add_edges_from((v, u) for u in descendants_at_distance(TC, v, 2))
+        TC.add_edges_from((v, u) for u in nx.descendants_at_distance(TC, v, 2))
 
     return TC
 
 
 @not_implemented_for("undirected")
 def transitive_reduction(G):
-    """ Returns transitive reduction of a directed graph
+    """Returns transitive reduction of a directed graph
 
     The transitive reduction of G = (V,E) is a graph G- = (V,E-) such that
     for all v,w in V there is an edge (v,w) in E- if and only if (v,w) is
@@ -862,16 +857,16 @@ def dag_to_branching(G):
         >>> from collections import defaultdict
         >>> from operator import itemgetter
         >>>
-        >>> G = nx.DiGraph(nx.utils.pairwise('abd'))
-        >>> G.add_edges_from(nx.utils.pairwise('acd'))
+        >>> G = nx.DiGraph(nx.utils.pairwise("abd"))
+        >>> G.add_edges_from(nx.utils.pairwise("acd"))
         >>> B = nx.dag_to_branching(G)
         >>>
         >>> sources = defaultdict(set)
-        >>> for v, source in B.nodes(data='source'):
+        >>> for v, source in B.nodes(data="source"):
         ...     sources[source].add(v)
-        >>> len(sources['a'])
+        >>> len(sources["a"])
         1
-        >>> len(sources['d'])
+        >>> len(sources["d"])
         2
 
     To copy node attributes from the original graph to the new graph,
@@ -899,8 +894,8 @@ def dag_to_branching(G):
         msg = "dag_to_branching is only defined for acyclic graphs"
         raise nx.HasACycle(msg)
     paths = root_to_leaf_paths(G)
-    B, root = nx.prefix_tree(paths)
-    # Remove the synthetic `root` and `NIL` nodes in the prefix tree.
-    B.remove_node(root)
-    B.remove_node(NIL)
+    B = nx.prefix_tree(paths)
+    # Remove the synthetic `root`(0) and `NIL`(-1) nodes from the tree
+    B.remove_node(0)
+    B.remove_node(-1)
     return B

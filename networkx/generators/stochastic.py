@@ -33,7 +33,7 @@ def stochastic_graph(G, copy=True, weight="weight"):
         Edge attribute key used for reading the existing weight and
         setting the new weight.  If no attribute with this key is found
         for an edge, then the edge weight is assumed to be 1. If an edge
-        has a weight, it must be a a positive number.
+        has a weight, it must be a positive number.
 
     """
     if copy:

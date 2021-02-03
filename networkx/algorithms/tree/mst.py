@@ -361,7 +361,7 @@ def minimum_spanning_edges(
 
     >>> G = nx.cycle_graph(4)
     >>> G.add_edge(0, 3, weight=2)
-    >>> mst = tree.minimum_spanning_edges(G, algorithm='kruskal', data=False)
+    >>> mst = tree.minimum_spanning_edges(G, algorithm="kruskal", data=False)
     >>> edgelist = list(mst)
     >>> sorted(sorted(e) for e in edgelist)
     [[0, 1], [1, 2], [2, 3]]
@@ -370,7 +370,7 @@ def minimum_spanning_edges(
 
     >>> G = nx.cycle_graph(4)
     >>> G.add_edge(0, 3, weight=2)
-    >>> mst = tree.minimum_spanning_edges(G, algorithm='prim', data=False)
+    >>> mst = tree.minimum_spanning_edges(G, algorithm="prim", data=False)
     >>> edgelist = list(mst)
     >>> sorted(sorted(e) for e in edgelist)
     [[0, 1], [1, 2], [2, 3]]
@@ -455,7 +455,7 @@ def maximum_spanning_edges(
 
     >>> G = nx.cycle_graph(4)
     >>> G.add_edge(0, 3, weight=2)
-    >>> mst = tree.maximum_spanning_edges(G, algorithm='kruskal', data=False)
+    >>> mst = tree.maximum_spanning_edges(G, algorithm="kruskal", data=False)
     >>> edgelist = list(mst)
     >>> sorted(sorted(e) for e in edgelist)
     [[0, 1], [0, 3], [1, 2]]
@@ -463,8 +463,8 @@ def maximum_spanning_edges(
     Find maximum spanning edges by Prim's algorithm
 
     >>> G = nx.cycle_graph(4)
-    >>> G.add_edge(0, 3, weight=2) # assign weight 2 to edge 0-3
-    >>> mst = tree.maximum_spanning_edges(G, algorithm='prim', data=False)
+    >>> G.add_edge(0, 3, weight=2)  # assign weight 2 to edge 0-3
+    >>> mst = tree.maximum_spanning_edges(G, algorithm="prim", data=False)
     >>> edgelist = list(mst)
     >>> sorted(sorted(e) for e in edgelist)
     [[0, 1], [0, 3], [2, 3]]

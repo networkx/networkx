@@ -44,3 +44,12 @@ Mixing
    attribute_mixing_dict
    degree_mixing_dict
    mixing_dict
+
+Pairs
+-----
+.. autosummary::
+   :toctree: generated/
+
+   node_attribute_xy
+   node_degree_xy
+

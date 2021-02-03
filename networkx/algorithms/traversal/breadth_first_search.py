@@ -50,7 +50,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(list(nx.bfs_edges(G,0)))
+    >>> print(list(nx.bfs_edges(G, 0)))
     [(0, 1), (1, 2)]
     >>> print(list(nx.bfs_edges(G, source=0, depth_limit=1)))
     [(0, 1)]
@@ -193,7 +193,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(list(nx.bfs_tree(G,1).edges()))
+    >>> print(list(nx.bfs_tree(G, 1).edges()))
     [(1, 0), (1, 2)]
     >>> H = nx.Graph()
     >>> nx.add_path(H, [0, 1, 2, 3, 4, 5, 6])
@@ -250,8 +250,8 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     Returns
     -------
     pred: iterator
-        (node, predecessors) iterator where predecessors is the list of
-        predecessors of the node.
+        (node, predecessor) iterator where `predecessor` is the predecessor of
+        `node` in a breadth first search starting from `source`.
 
     Examples
     --------
@@ -267,7 +267,11 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     >>> nx.add_path(M, [2, 7, 8, 9, 10])
     >>> print(sorted(nx.bfs_predecessors(M, source=1, depth_limit=3)))
     [(0, 1), (2, 1), (3, 2), (4, 3), (7, 2), (8, 7)]
-
+    >>> N = nx.DiGraph()
+    >>> nx.add_path(N, [0, 1, 2, 3, 4, 7])
+    >>> nx.add_path(N, [3, 5, 6, 7])
+    >>> print(sorted(nx.bfs_predecessors(N, source=2)))
+    [(3, 2), (4, 3), (5, 3), (6, 5), (7, 4)]
 
     Notes
     -----
@@ -310,13 +314,14 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     Returns
     -------
     succ: iterator
-       (node, successors) iterator where successors is the list of
-       successors of the node.
+       (node, successors) iterator where `successors` is the non-empty list of
+       successors of `node` in a breadth first search from `source`.
+       To appear in the iterator, `node` must have successors.
 
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(dict(nx.bfs_successors(G,0)))
+    >>> print(dict(nx.bfs_successors(G, 0)))
     {0: [1], 1: [2]}
     >>> H = nx.Graph()
     >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
@@ -327,7 +332,10 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     >>> nx.add_path(G, [2, 7, 8, 9, 10])
     >>> print(dict(nx.bfs_successors(G, source=1, depth_limit=3)))
     {1: [0, 2], 2: [3, 7], 3: [4], 7: [8]}
-
+    >>> G = nx.DiGraph()
+    >>> nx.add_path(G, [0, 1, 2, 3, 4, 5])
+    >>> print(dict(nx.bfs_successors(G, source=3)))
+    {3: [4], 4: [5]}
 
     Notes
     -----

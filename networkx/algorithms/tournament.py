@@ -10,7 +10,6 @@ graph.
 To access the functions in this module, you must access them through the
 :mod:`networkx.algorithms.tournament` module::
 
-    >>> import networkx as nx
     >>> from networkx.algorithms import tournament
     >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
     >>> tournament.is_tournament(G)
@@ -112,8 +111,8 @@ def hamiltonian_path(G):
 
     Returns
     -------
-    bool
-        Whether the given graph is a tournament graph.
+    path : list
+        A list of nodes which form a Hamiltonian path in `G`.
 
     Notes
     -----
@@ -149,8 +148,9 @@ def random_tournament(n, seed=None):
 
     Returns
     -------
-    bool
-        Whether the given graph is a tournament graph.
+    G : DiGraph
+        A tournament on `n` nodes, with exactly one directed edge joining
+        each pair of distinct nodes.
 
     Notes
     -----

@@ -61,6 +61,14 @@ Spanning Trees
    minimum_spanning_edges
    maximum_spanning_edges
 
+Decomposition
+-------------
+.. automodule:: networkx.algorithms.tree.decomposition
+.. autosummary::
+   :toctree: generated/
+
+   junction_tree
+
 Exceptions
 ----------
 .. automodule:: networkx.algorithms.tree.coding

@@ -358,12 +358,10 @@ class TestAverageShortestPathLength:
 class TestAverageShortestPathLengthNumpy:
     @classmethod
     def setup_class(cls):
-        global numpy
-        global npt
+        global np
         import pytest
 
-        numpy = pytest.importorskip("numpy")
-        npt = pytest.importorskip("numpy.testing")
+        np = pytest.importorskip("numpy")
 
     def test_specified_methods_numpy(self):
         G = nx.Graph()
@@ -371,11 +369,11 @@ class TestAverageShortestPathLengthNumpy:
         ans = nx.average_shortest_path_length(
             G, weight="weight", method="floyd-warshall-numpy"
         )
-        npt.assert_almost_equal(ans, 4)
+        np.testing.assert_almost_equal(ans, 4)
 
         G = nx.Graph()
         nx.add_path(G, range(5), weight=2)
         ans = nx.average_shortest_path_length(
             G, weight="weight", method="floyd-warshall-numpy"
         )
-        npt.assert_almost_equal(ans, 4)
+        np.testing.assert_almost_equal(ans, 4)

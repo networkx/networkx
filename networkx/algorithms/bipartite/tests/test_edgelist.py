@@ -64,13 +64,18 @@ class TestEdgelist:
 2 3 {'weight':3.0}
 """
         bytesIO = io.BytesIO(s)
-        G = bipartite.read_edgelist(bytesIO, nodetype=int, data=False, check_information_line=True)
+        G = bipartite.read_edgelist(
+            bytesIO, nodetype=int, data=False, check_information_line=True
+        )
         assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
 
         bytesIO = io.BytesIO(s)
-        G = bipartite.read_edgelist(bytesIO, nodetype=int, data=True, check_information_line=True)
-        assert_edges_equal(G.edges(data=True),
-                           [(1, 2, {'weight': 2.0}), (2, 3, {'weight': 3.0})])
+        G = bipartite.read_edgelist(
+            bytesIO, nodetype=int, data=True, check_information_line=True
+        )
+        assert_edges_equal(
+            G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
+        )
 
     def test_write_edgelist_1(self):
         fh = io.BytesIO()

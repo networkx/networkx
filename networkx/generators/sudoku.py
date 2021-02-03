@@ -65,7 +65,6 @@ def sudoku_graph(n=3):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.sudoku_graph()
     >>> G.number_of_nodes()
     81

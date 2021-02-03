@@ -134,6 +134,32 @@ class TestHasEulerianPath:
         G = nx.path_graph(6, create_using=nx.DiGraph)
         assert nx.has_eulerian_path(G)
 
+    def test_has_eulerian_path_directed_graph(self):
+        # Test directed graphs and returns False
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2), (0, 2)])
+        assert not nx.has_eulerian_path(G)
+
+    def test_has_eulerian_path_isolated_node(self):
+        # Test directed graphs without isolated node returns True
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2), (2, 0)])
+        assert nx.has_eulerian_path(G)
+
+        # Test directed graphs with isolated node returns True
+        G.add_node(3)
+        assert nx.has_eulerian_path(G)
+
+    @pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
+    def test_has_eulerian_path_not_weakly_connected(self, G):
+        G.add_edges_from([(0, 1), (2, 3), (3, 2)])
+        assert not nx.has_eulerian_path(G)
+
+    @pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
+    def test_has_eulerian_path_unbalancedins_more_than_one(self, G):
+        G.add_edges_from([(0, 1), (2, 3)])
+        assert not nx.has_eulerian_path(G)
+
 
 class TestFindPathStart:
     def testfind_path_start(self):
@@ -154,6 +180,65 @@ class TestEulerianPath:
         x = [(4, 0), (0, 1), (1, 2), (2, 0)]
         for e1, e2 in zip(x, nx.eulerian_path(nx.DiGraph(x))):
             assert e1 == e2
+
+    def test_eulerian_path_straight_link(self):
+        G = nx.DiGraph()
+        result = [(1, 2), (2, 3), (3, 4), (4, 5)]
+        G.add_edges_from(result)
+        assert result == list(nx.eulerian_path(G))
+        assert result == list(nx.eulerian_path(G, source=1))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=3))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=4))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=5))
+
+    def test_eulerian_path_multigraph(self):
+        G = nx.MultiDiGraph()
+        result = [(2, 1), (1, 2), (2, 1), (1, 2), (2, 3), (3, 4), (4, 3)]
+        G.add_edges_from(result)
+        assert result == list(nx.eulerian_path(G))
+        assert result == list(nx.eulerian_path(G, source=2))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=3))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=4))
+
+    def test_eulerian_path_eulerian_circuit(self):
+        G = nx.DiGraph()
+        result = [(1, 2), (2, 3), (3, 4), (4, 1)]
+        result2 = [(2, 3), (3, 4), (4, 1), (1, 2)]
+        result3 = [(3, 4), (4, 1), (1, 2), (2, 3)]
+        G.add_edges_from(result)
+        assert result == list(nx.eulerian_path(G))
+        assert result == list(nx.eulerian_path(G, source=1))
+        assert result2 == list(nx.eulerian_path(G, source=2))
+        assert result3 == list(nx.eulerian_path(G, source=3))
+
+    def test_eulerian_path_undirected(self):
+        G = nx.Graph()
+        result = [(1, 2), (2, 3), (3, 4), (4, 5)]
+        result2 = [(5, 4), (4, 3), (3, 2), (2, 1)]
+        G.add_edges_from(result)
+        assert list(nx.eulerian_path(G)) in (result, result2)
+        assert result == list(nx.eulerian_path(G, source=1))
+        assert result2 == list(nx.eulerian_path(G, source=5))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=3))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=2))
+
+    def test_eulerian_path_multigraph_undirected(self):
+        G = nx.MultiGraph()
+        result = [(2, 1), (1, 2), (2, 1), (1, 2), (2, 3), (3, 4)]
+        G.add_edges_from(result)
+        assert result == list(nx.eulerian_path(G))
+        assert result == list(nx.eulerian_path(G, source=2))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=3))
+        with pytest.raises(nx.NetworkXError):
+            list(nx.eulerian_path(G, source=1))
 
 
 class TestEulerize:
