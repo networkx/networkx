@@ -41,10 +41,10 @@ def parse_dimacs(lines, create_using=None):
 
     assert (
         expected_num_nodes == g.number_of_nodes()
-    ), f"{expected_num_nodes} {g.number_of_nodes()}"
+    ), f"Expected to read {expected_num_nodes} nodes but found {g.number_of_nodes()}"
     assert (
         expected_num_edges == g.number_of_edges()
-    ), f"{expected_num_edges} {g.number_of_edges()}"
+    ), f"Expected to read {expected_num_edges} edges but found {g.number_of_edges()}"
     return g
 
 
