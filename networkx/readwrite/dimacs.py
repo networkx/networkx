@@ -50,7 +50,9 @@ def parse_dimacs(lines, create_using=None):
 
 @open_file(0, mode="rb")
 def read_dimacs(
-    path, create_using=None, encoding="utf-8",
+    path,
+    create_using=None,
+    encoding="utf-8",
 ):
     """Read a graph from a list of edges.
 
@@ -76,7 +78,10 @@ def read_dimacs(
     -----
     """
     lines = (line if isinstance(line, str) else line.decode(encoding) for line in path)
-    return parse_dimacs(lines, create_using=create_using,)
+    return parse_dimacs(
+        lines,
+        create_using=create_using,
+    )
 
 
 def generate_dimacs(G):
