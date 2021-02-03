@@ -85,7 +85,7 @@ def read_dimacs(
 
 
 def generate_dimacs(G):
-    yield f"p edge {len(G.nodes)} {len(G.edges)}"
+    yield f"p edge {G.number_of_nodes()} {G.number_of_edges()}"
     for node, data in G.nodes(data=True):
         if data and data["value"]:
             yield f"n {node} {data['value']}"
