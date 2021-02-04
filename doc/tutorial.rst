@@ -637,6 +637,6 @@ using pyyaml.
 ...     G = yaml.load(f, Loader=yaml.FullLoader)
 ... 
 
-See :doc:`/reference/readwrite` for additional details.
+See :doc:`/reference/readwrite/index` for additional details.
 
 .. code-links::
