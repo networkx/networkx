@@ -86,7 +86,6 @@ class TestSelfIsomorphism:
         ismags_answer = list(ismags.find_isomorphisms(True))
         assert ismags_answer == [{n: n for n in graph.nodes}]
 
-    @pytest.mark.skip()
     def test_directed_self_isomorphism(self):
         """
         For some small, directed, symmetric graphs, make sure that 1) they are

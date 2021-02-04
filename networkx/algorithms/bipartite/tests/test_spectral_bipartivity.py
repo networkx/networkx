@@ -1,5 +1,7 @@
 import pytest
 
+pytest.importorskip("scipy")
+
 import networkx as nx
 from networkx.algorithms.bipartite import spectral_bipartivity as sb
 from networkx.testing import almost_equal
@@ -10,11 +12,6 @@ from networkx.testing import almost_equal
 
 
 class TestSpectralBipartivity:
-    @classmethod
-    def setup_class(cls):
-        global scipy
-        scipy = pytest.importorskip("scipy")
-
     def test_star_like(self):
         # star-like
 

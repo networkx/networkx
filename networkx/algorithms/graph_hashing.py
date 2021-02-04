@@ -91,7 +91,7 @@ def weisfeiler_lehman_graph_hash(
     'f9e9cb01c6d2f3b17f83ffeaa24e5986'
 
     References
-    -------
+    ----------
     .. [1] Shervashidze, Nino, Pascal Schweitzer, Erik Jan Van Leeuwen,
        Kurt Mehlhorn, and Karsten M. Borgwardt. Weisfeiler Lehman
        Graph Kernels. Journal of Machine Learning Research. 2011.

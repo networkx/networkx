@@ -22,6 +22,11 @@ a format that can be read by those tools. For example, Cytoscape can read the
 GraphML format, and so, ``networkx.write_graphml(G, path)`` might be an appropriate
 choice.
 
+More information on the features provided here are available at
+ - matplotlib:  http://matplotlib.org/
+ - pygraphviz:  http://pygraphviz.github.io/
+
+
 Matplotlib
 ==========
 .. automodule:: networkx.drawing.nx_pylab

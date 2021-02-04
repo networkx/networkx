@@ -237,8 +237,7 @@ class Graph:
         Class to create a new graph structure in the `to_undirected` method.
         If `None`, a NetworkX class (Graph or MultiGraph) is used.
 
-    Examples
-    --------
+    **Subclassing Example**
 
     Create a low memory graph class that effectively disallows edge
     attributes by using a single attribute dict for all edges.
@@ -391,7 +390,7 @@ class Graph:
         return "".join(
             [
                 type(self).__name__,
-                f" named '{self.name}'" if self.name else "",
+                f" named {self.name!r}" if self.name else "",
                 f" with {self.number_of_nodes()} nodes and {self.number_of_edges()} edges",
             ]
         )
@@ -438,7 +437,8 @@ class Graph:
 
         See Also
         --------
-        number_of_nodes, order  which are identical
+        number_of_nodes: identical method
+        order: identical method
 
         Examples
         --------
@@ -591,7 +591,7 @@ class Graph:
            A node in the graph
 
         Raises
-        -------
+        ------
         NetworkXError
            If n is not in the graph.
 
@@ -762,7 +762,8 @@ class Graph:
 
         See Also
         --------
-        order, __len__  which are identical
+        order: identical method
+        __len__: identical method
 
         Examples
         --------
@@ -782,7 +783,8 @@ class Graph:
 
         See Also
         --------
-        number_of_nodes, __len__  which are identical
+        number_of_nodes: identical method
+        __len__: identical method
 
         Examples
         --------
@@ -829,7 +831,7 @@ class Graph:
 
         Parameters
         ----------
-        u, v : nodes
+        u_of_edge, v_of_edge : nodes
             Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
         attr : keyword arguments, optional
@@ -889,7 +891,7 @@ class Graph:
         ----------
         ebunch_to_add : container of edges
             Each edge given in the container will be added to the
-            graph. The edges must be given as as 2-tuples (u, v) or
+            graph. The edges must be given as 2-tuples (u, v) or
             3-tuples (u, v, d) where d is a dictionary containing edge data.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
@@ -1737,7 +1739,7 @@ class Graph:
         To create a full graph version of the subgraph with its own copy
         of the edge or node attributes, use::
 
-            >>> G.edge_subgraph(edges).copy()  # doctest: +SKIP
+            G.edge_subgraph(edges).copy()
 
         Examples
         --------
@@ -1867,7 +1869,7 @@ class Graph:
         Raises
         ------
         NetworkXError
-            If nbunch is not a node or or sequence of nodes.
+            If nbunch is not a node or sequence of nodes.
             If a node in nbunch is not hashable.
 
         See Also

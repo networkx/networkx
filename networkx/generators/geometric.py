@@ -33,11 +33,12 @@ def geometric_edges(G, radius, p):
     """Returns edge list of node pairs within `radius` of each other
 
     Radius uses Minkowski distance metric `p`.
-    If scipy available, use scipy KDTree to speed computation.
+    If scipy available, use scipy cKDTree to speed computation.
     """
     nodes_pos = G.nodes(data="pos")
     try:
-        from scipy.spatial import cKDTree as KDTree
+        import scipy as sp
+        import scipy.spatial  # call as sp.spatial
     except ImportError:
         # no scipy KDTree so compute by for-loop
         radius_p = radius ** p
@@ -49,7 +50,7 @@ def geometric_edges(G, radius, p):
         return edges
     # scipy KDTree is available
     nodes, coords = list(zip(*nodes_pos))
-    kdtree = KDTree(coords)  # Cannot provide generator.
+    kdtree = sp.spatial.cKDTree(coords)  # Cannot provide generator.
     edge_indexes = kdtree.query_pairs(radius, p)
     edges = [(nodes[u], nodes[v]) for u, v in edge_indexes]
     return edges
@@ -246,7 +247,7 @@ def soft_random_geometric_graph(
     ----------
     .. [1] Penrose, Mathew D. "Connectivity of soft random geometric graphs."
            The Annals of Applied Probability 26.2 (2016): 986-1028.
-       [2] scipy.stats -
+    .. [2] scipy.stats -
            https://docs.scipy.org/doc/scipy/reference/tutorial/stats.html
 
     """

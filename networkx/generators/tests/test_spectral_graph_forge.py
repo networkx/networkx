@@ -1,5 +1,9 @@
 import pytest
 
+pytest.importorskip("numpy")
+pytest.importorskip("scipy")
+
+
 from networkx import is_isomorphic
 from networkx.exception import NetworkXError
 from networkx.testing import assert_nodes_equal
@@ -8,9 +12,6 @@ from networkx.generators import karate_club_graph
 
 
 def test_spectral_graph_forge():
-    numpy = pytest.importorskip("numpy")
-    scipy = pytest.importorskip("scipy")
-
     G = karate_club_graph()
 
     seed = 54321

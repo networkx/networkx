@@ -35,7 +35,7 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
 
     See Also
     --------
-    betweenness_centrality()
+    betweenness_centrality
 
     Notes
     -----

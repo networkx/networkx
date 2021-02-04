@@ -15,12 +15,12 @@ and biconnected_components algorithms but might also work for other
 algorithms.
 
 """
-import networkx as nx
-from networkx.exception import NetworkXError
 import matplotlib.pyplot as plt
+import networkx as nx
+from networkx import Graph
 
 
-class AntiGraph(nx.Graph):
+class AntiGraph(Graph):
     """
     Class for complement graphs.
 
@@ -66,7 +66,7 @@ class AntiGraph(nx.Graph):
         try:
             return iter(set(self.adj) - set(self.adj[n]) - {n})
         except KeyError as e:
-            raise NetworkXError(f"The node {n} is not in the graph.") from e
+            raise nx.NetworkXError(f"The node {n} is not in the graph.") from e
 
     def degree(self, nbunch=None, weight=None):
         """Return an iterator for (node, degree) in the dense graph.
@@ -137,7 +137,7 @@ class AntiGraph(nx.Graph):
                 for n, nbrs in nodes_nbrs
             )
 
-    def adjacency_iter(self):
+    def adjacency(self):
         """Return an iterator of (node, adjacency set) tuples for all nodes
            in the dense graph.
 
@@ -149,10 +149,10 @@ class AntiGraph(nx.Graph):
         adj_iter : iterator
            An iterator of (node, adjacency set) for all nodes in
            the graph.
-
         """
-        for n in self.adj:
-            yield (n, set(self.adj) - set(self.adj[n]) - {n})
+        nodes = set(self.adj)
+        for n, nbrs in self.adj.items():
+            yield (n, nodes - set(nbrs) - {n})
 
 
 # Build several pairs of graphs, a regular graph

@@ -111,8 +111,8 @@ def hamiltonian_path(G):
 
     Returns
     -------
-    bool
-        Whether the given graph is a tournament graph.
+    path : list
+        A list of nodes which form a Hamiltonian path in `G`.
 
     Notes
     -----
@@ -148,8 +148,9 @@ def random_tournament(n, seed=None):
 
     Returns
     -------
-    bool
-        Whether the given graph is a tournament graph.
+    G : DiGraph
+        A tournament on `n` nodes, with exactly one directed edge joining
+        each pair of distinct nodes.
 
     Notes
     -----

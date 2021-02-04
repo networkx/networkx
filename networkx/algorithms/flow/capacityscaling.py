@@ -8,14 +8,12 @@ from itertools import chain
 from math import log
 import networkx as nx
 from ...utils import BinaryHeap
-from ...utils import generate_unique_node
 from ...utils import not_implemented_for
 from ...utils import arbitrary_element
 
 
 def _detect_unboundedness(R):
     """Detect infinite-capacity negative cycles."""
-    s = generate_unique_node()
     G = nx.DiGraph()
     G.add_nodes_from(R)
 
@@ -253,8 +251,8 @@ def capacity_scaling(
     >>> flowCost, flowDict = nx.capacity_scaling(G)
     >>> flowCost
     24
-    >>> flowDict  # doctest: +SKIP
-    {'a': {'c': 1, 'b': 4}, 'c': {'d': 1}, 'b': {'d': 4}, 'd': {}}
+    >>> flowDict
+    {'a': {'b': 4, 'c': 1}, 'd': {}, 'b': {'d': 4}, 'c': {'d': 1}}
 
     It is possible to change the name of the attributes used for the
     algorithm.
@@ -278,8 +276,8 @@ def capacity_scaling(
     ... )
     >>> flowCost
     37
-    >>> flowDict  # doctest: +SKIP
-    {'a': {'t': 4}, 'd': {'w': 2}, 'q': {'d': 1}, 'p': {'q': 2, 'a': 2}, 't': {'q': 1, 'w': 1}, 'w': {}}
+    >>> flowDict
+    {'p': {'q': 2, 'a': 2}, 'q': {'d': 1}, 'a': {'t': 4}, 'd': {'w': 2}, 't': {'q': 1, 'w': 1}, 'w': {}}
     """
     R = _build_residual_network(G, demand, capacity, weight)
 

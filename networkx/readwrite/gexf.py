@@ -50,6 +50,8 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
        Encoding for text data.
     prettyprint : bool (optional, default: True)
        If True use line breaks and indenting in output XML.
+    version: string (optional, default: '1.2draft')
+       The version of GEXF to be used for nodes attributes checking
 
     Examples
     --------
@@ -104,7 +106,7 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
     --------
     >>> G = nx.path_graph(4)
     >>> linefeed = chr(10)  # linefeed=\n
-    >>> s = linefeed.join(nx.generate_gexf(G))  # doctest: +SKIP
+    >>> s = linefeed.join(nx.generate_gexf(G))
     >>> for line in nx.generate_gexf(G):  # doctest: +SKIP
     ...     print(line)
 

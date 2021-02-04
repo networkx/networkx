@@ -44,7 +44,7 @@ def girvan_newman(G, most_valuable_edge=None):
         >>> k = 2
         >>> comp = girvan_newman(G)
         >>> for communities in itertools.islice(comp, k):
-        ...     print(tuple(sorted(c) for c in communities))  # doctest: +SKIP
+        ...     print(tuple(sorted(c) for c in communities))
         ...
         ([0, 1, 2, 3], [4, 5, 6, 7])
         ([0, 1], [2, 3], [4, 5, 6, 7])
@@ -58,7 +58,7 @@ def girvan_newman(G, most_valuable_edge=None):
         >>> comp = girvan_newman(G)
         >>> limited = itertools.takewhile(lambda c: len(c) <= k, comp)
         >>> for communities in limited:
-        ...     print(tuple(sorted(c) for c in communities))  # doctest: +SKIP
+        ...     print(tuple(sorted(c) for c in communities))
         ...
         ([0, 1, 2, 3], [4, 5, 6, 7])
         ([0, 1], [2, 3], [4, 5, 6, 7])

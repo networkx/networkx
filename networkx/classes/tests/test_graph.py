@@ -1,5 +1,6 @@
 import pickle
 import gc
+import platform
 
 import networkx as nx
 from networkx.testing.utils import (
@@ -51,6 +52,9 @@ class BaseGraphTester:
         with pytest.raises(nx.NetworkXError):
             G.neighbors(-1)
 
+    @pytest.mark.skipif(
+        platform.python_implementation() == "PyPy", reason="PyPy gc is different"
+    )
     def test_memory_leak(self):
         G = self.Graph()
 

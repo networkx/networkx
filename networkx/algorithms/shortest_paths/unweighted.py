@@ -451,7 +451,7 @@ def all_pairs_shortest_path(G, cutoff=None):
 
     See Also
     --------
-    floyd_warshall()
+    floyd_warshall
 
     """
     # TODO This can be trivially parallelized.

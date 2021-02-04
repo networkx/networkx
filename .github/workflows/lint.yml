@@ -1,9 +1,9 @@
-name: style and format
+name: style
 
 on: [push, pull_request]
 
 jobs:
-  build:
+  format:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -16,11 +16,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Before install
-        run: |
-          python3 -m venv ~/venv
-          source ~/venv/bin/activate
 
       - name: Install packages
         run: |

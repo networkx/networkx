@@ -1,8 +1,7 @@
 import pytest
 
 np = pytest.importorskip("numpy")
-npt = pytest.importorskip("numpy.testing")
-scipy = pytest.importorskip("scipy")
+pytest.importorskip("scipy")
 
 
 import networkx as nx
@@ -13,27 +12,27 @@ from networkx.algorithms.assortativity.correlation import attribute_ac
 class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
     def test_degree_assortativity_undirected(self):
         r = nx.degree_assortativity_coefficient(self.P4)
-        npt.assert_almost_equal(r, -1.0 / 2, decimal=4)
+        np.testing.assert_almost_equal(r, -1.0 / 2, decimal=4)
 
     def test_degree_assortativity_directed(self):
         r = nx.degree_assortativity_coefficient(self.D)
-        npt.assert_almost_equal(r, -0.57735, decimal=4)
+        np.testing.assert_almost_equal(r, -0.57735, decimal=4)
 
     def test_degree_assortativity_multigraph(self):
         r = nx.degree_assortativity_coefficient(self.M)
-        npt.assert_almost_equal(r, -1.0 / 7.0, decimal=4)
+        np.testing.assert_almost_equal(r, -1.0 / 7.0, decimal=4)
 
     def test_degree_pearson_assortativity_undirected(self):
         r = nx.degree_pearson_correlation_coefficient(self.P4)
-        npt.assert_almost_equal(r, -1.0 / 2, decimal=4)
+        np.testing.assert_almost_equal(r, -1.0 / 2, decimal=4)
 
     def test_degree_pearson_assortativity_directed(self):
         r = nx.degree_pearson_correlation_coefficient(self.D)
-        npt.assert_almost_equal(r, -0.57735, decimal=4)
+        np.testing.assert_almost_equal(r, -0.57735, decimal=4)
 
     def test_degree_pearson_assortativity_multigraph(self):
         r = nx.degree_pearson_correlation_coefficient(self.M)
-        npt.assert_almost_equal(r, -1.0 / 7.0, decimal=4)
+        np.testing.assert_almost_equal(r, -1.0 / 7.0, decimal=4)
 
 
 class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
@@ -58,7 +57,7 @@ class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
                       [0.005, 0.007, 0.024, 0.016]])
         # fmt: on
         r = attribute_ac(a)
-        npt.assert_almost_equal(r, 0.623, decimal=3)
+        np.testing.assert_almost_equal(r, 0.623, decimal=3)
 
     def test_attribute_assortativity_coefficient2(self):
         # fmt: off
@@ -68,9 +67,9 @@ class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
                       [0.03, 0.02, 0.01, 0.22]])
         # fmt: on
         r = attribute_ac(a)
-        npt.assert_almost_equal(r, 0.68, decimal=2)
+        np.testing.assert_almost_equal(r, 0.68, decimal=2)
 
     def test_attribute_assortativity(self):
         a = np.array([[50, 50, 0], [50, 50, 0], [0, 0, 2]])
         r = attribute_ac(a)
-        npt.assert_almost_equal(r, 0.029, decimal=3)
+        np.testing.assert_almost_equal(r, 0.029, decimal=3)

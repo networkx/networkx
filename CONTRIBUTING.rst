@@ -27,11 +27,11 @@ Development Workflow
 
    * Next, you need to set up your build environment.
      Here are instructions for two popular environment managers:
-   
+
      * ``venv`` (pip based)
-     
+
        ::
-     
+
          # Create a virtualenv named ``networkx-dev`` that lives in the directory of
          # the same name
          python -m venv networkx-dev
@@ -49,11 +49,11 @@ Development Workflow
          pip install -e .
          # Test your installation
          PYTHONPATH=. pytest networkx
-     
+
      * ``conda`` (Anaconda or Miniconda)
-    
+
        ::
- 
+
          # Create a conda environment named ``networkx-dev``
          conda create --name networkx-dev
          # Activate it
@@ -121,8 +121,15 @@ For a more detailed discussion, read these :doc:`detailed documents
 
 5. Review process:
 
+   * Every Pull Request (PR) update triggers a set of `continuous integration
+     <https://en.wikipedia.org/wiki/Continuous_integration>`_ services
+     that check that the code is up to standards and passes all our tests.
+     These checks must pass before your PR can be merged.  If one of the
+     checks fails, you can find out why by clicking on the "failed" icon (red
+     cross) and inspecting the build and test log.
+
    * Reviewers (the other developers and interested community members) will
-     write inline and/or general comments on your Pull Request (PR) to help
+     write inline and/or general comments on your PR to help
      you improve its implementation, documentation, and style.  Every single
      developer working on the project has their code reviewed, and we've come
      to see it as friendly conversation from which we all learn and the
@@ -131,19 +138,9 @@ For a more detailed discussion, read these :doc:`detailed documents
      of project, not to criticize (we are, after all, very grateful for the
      time you're donating!).
 
-   * To update your pull request, make your changes on your local repository
+   * To update your PR, make your changes on your local repository
      and commit. As soon as those changes are pushed up (to the same branch as
-     before) the pull request will update automatically.
-
-   * `Travis-CI <https://travis-ci.org/>`_, a continuous integration service,
-     is triggered after each Pull Request update to build the code and run unit
-     tests of your branch. The Travis tests must pass before your PR can be merged.
-     If Travis fails, you can find out why by clicking on the "failed" icon (red
-     cross) and inspecting the build and test log.
-
-   * `AppVeyor <http://ci.appveyor.com>`_, is another continuous integration
-     service that we use.  You will also need to make sure that the AppVeyor
-     tests pass.
+     before) the PR will update automatically.
 
    .. note::
 
@@ -157,12 +154,36 @@ For a more detailed discussion, read these :doc:`detailed documents
    If your change introduces any API modifications, please update
    ``doc/release/release_dev.rst``.
 
-   If your change introduces a deprecation, add a reminder to
-   ``doc/developer/deprecations.rst`` for the team to remove the
-   deprecated functionality in the future.
+   To set up a function for deprecation:
+
+   - Use a deprecation warning to warn users. For example::
+
+         msg = "curly_hair is deprecated and will be removed in v3.0. Use sum() instead."
+         warnings.warn(msg, DeprecationWarning)
+
+   - Add a warning to ``networkx/conftest.py``::
+
+         warnings.filterwarnings(
+             "ignore", category=DeprecationWarning, message=<start of message>
+         )
+
+   - Add a reminder to ``doc/developer/deprecations.rst`` for the team
+     to remove the deprecated functionality in the future. For example:
+
+     .. code-block:: rst
+
+        * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
+
+   - Add a note (and a link to the PR) to ``doc/release/release_dev.rst``:
+
+     .. code-block:: rst
+
+        [`#4281 <https://github.com/networkx/networkx/pull/4281>`_]
+        Deprecate ``read_yaml`` and ``write_yaml``.
+
 
    .. note::
-   
+
       To reviewers: make sure the merge message has a brief description of the
       change(s) and if the PR closes an issue add, for example, "Closes #123"
       where 123 is the issue number.
@@ -243,8 +264,24 @@ Guidelines
    import scipy as sp
    import matplotlib as mpl
    import matplotlib.pyplot as plt
-   import pandas as pd 
+   import pandas as pd
    import networkx as nx
+
+  After importing `sp`` for ``scipy``::
+
+   import scipy as sp
+
+  use the following imports::
+
+   import scipy.linalg  # call as sp.linalg
+   import scipy.sparse  # call as sp.sparse
+   import scipy.sparse.linalg  # call as sp.sparse.linalg
+   import scipy.stats  # call as sp.stats
+   import scipy.optimize  # call as sp.optimize
+
+  For example, many libraries have a ``linalg`` subpackage: ``nx.linalg``,
+  ``np.linalg``, ``sp.linalg``, ``sp.sparse.linalg``. The above import
+  pattern makes the origin of any particular instance of ``linalg`` explicit.
 
 * Use the decorator ``not_implemented_for`` in ``networkx/utils/decorators.py``
   to designate that a function doesn't accept 'directed', 'undirected',
@@ -252,12 +289,12 @@ Guidelines
   be the graph object to be checked.
 
   .. code-block:: python
-  
+
       @nx.not_implemented_for('directed', 'multigraph')
       def function_not_for_MultiDiGraph(G, others):
           # function not for graphs that are directed *and* multigraph
           pass
-  
+
       @nx.not_implemented_for('directed')
       @nx.not_implemented_for('multigraph')
       def function_only_for_Graph(G, others):

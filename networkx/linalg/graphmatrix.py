@@ -56,7 +56,8 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
     .. [1] Gil Strang, Network applications: A = incidence matrix,
        http://academicearth.org/lectures/network-applications-incidence-matrix
     """
-    import scipy.sparse
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
@@ -65,7 +66,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
             edgelist = list(G.edges(keys=True))
         else:
             edgelist = list(G.edges())
-    A = scipy.sparse.lil_matrix((len(nodelist), len(edgelist)))
+    A = sp.sparse.lil_matrix((len(nodelist), len(edgelist)))
     node_index = {node: i for i, node in enumerate(nodelist)}
     for ei, e in enumerate(edgelist):
         (u, v) = e[:2]
@@ -134,7 +135,6 @@ def adjacency_matrix(G, nodelist=None, weight="weight"):
     alternate convention of doubling the edge weight is desired the
     resulting Scipy sparse matrix can be modified as follows:
 
-    >>> import scipy as sp
     >>> G = nx.Graph([(1, 1)])
     >>> A = nx.adjacency_matrix(G)
     >>> print(A.todense())

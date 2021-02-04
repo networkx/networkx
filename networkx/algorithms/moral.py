@@ -23,7 +23,7 @@ def moral_graph(G):
         The undirected moralized graph of G
 
     Notes
-    ------
+    -----
     A moral graph is an undirected graph H = (V, E) generated from a
     directed Graph, where if a node has more than one parent node, edges
     between these parent nodes are inserted and all directed edges become

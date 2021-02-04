@@ -1,6 +1,12 @@
-Cython>=0.29
-pyshp>=2.1
-six>=1.15
+Cartopy>=0.18
+# Required for Cartopy
 --no-binary shapely
-shapely>=1.5.17
-Cartopy>=0.18.0
+shapely
+# Required for Cartopy
+osmnx>=0.16
+momepy>=0.4
+contextily>=1.0
+mayavi>=4.7
+seaborn>=0.11
+cairocffi>=1.2
+python-igraph>=0.8.3

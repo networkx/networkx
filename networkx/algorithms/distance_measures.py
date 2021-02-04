@@ -545,7 +545,8 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     Available: `Link to thesis <https://www.universiteitleiden.nl/binaries/content/assets/science/mi/scripties/master/vos_vaya_master.pdf>`_
     """
     import numpy as np
-    import scipy.sparse
+    import scipy as sp
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if not nx.is_connected(G):
         msg = "Graph G must be strongly connected."
@@ -582,7 +583,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     # Factorize Laplacian submatrixes and extract diagonals
     # Order the diagonals to minimize the likelihood over overflows
     # during computing the determinant
-    lu_a = scipy.sparse.linalg.splu(Lsub_a, options=dict(SymmetricMode=True))
+    lu_a = sp.sparse.linalg.splu(Lsub_a, options=dict(SymmetricMode=True))
     LdiagA = lu_a.U.diagonal()
     LdiagA_s = np.product(np.sign(LdiagA)) * np.product(lu_a.L.diagonal())
     LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_r)
@@ -590,7 +591,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     LdiagA = np.absolute(LdiagA)
     LdiagA = np.sort(LdiagA)
 
-    lu_ab = scipy.sparse.linalg.splu(Lsub_ab, options=dict(SymmetricMode=True))
+    lu_ab = sp.sparse.linalg.splu(Lsub_ab, options=dict(SymmetricMode=True))
     LdiagAB = lu_ab.U.diagonal()
     LdiagAB_s = np.product(np.sign(LdiagAB)) * np.product(lu_ab.L.diagonal())
     LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_r)

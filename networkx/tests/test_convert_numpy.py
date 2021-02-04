@@ -1,7 +1,6 @@
 import pytest
 
 np = pytest.importorskip("numpy")
-npt = np.testing
 
 import networkx as nx
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
@@ -121,32 +120,34 @@ class TestConvertNumpyMatrix:
         WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_numpy_matrix(P4)
-        npt.assert_equal(A, nx.to_numpy_matrix(WP4, weight=None))
-        npt.assert_equal(0.5 * A, nx.to_numpy_matrix(WP4))
-        npt.assert_equal(0.3 * A, nx.to_numpy_matrix(WP4, weight="other"))
+        np.testing.assert_equal(A, nx.to_numpy_matrix(WP4, weight=None))
+        np.testing.assert_equal(0.5 * A, nx.to_numpy_matrix(WP4))
+        np.testing.assert_equal(0.3 * A, nx.to_numpy_matrix(WP4, weight="other"))
 
     def test_from_numpy_matrix_type(self):
+        pytest.importorskip("scipy")
+
         A = np.matrix([[1]])
         G = nx.from_numpy_matrix(A)
         assert type(G[0][0]["weight"]) == int
 
-        A = np.matrix([[1]]).astype(np.float)
+        A = np.matrix([[1]]).astype(float)
         G = nx.from_numpy_matrix(A)
         assert type(G[0][0]["weight"]) == float
 
-        A = np.matrix([[1]]).astype(np.str)
+        A = np.matrix([[1]]).astype(str)
         G = nx.from_numpy_matrix(A)
         assert type(G[0][0]["weight"]) == str
 
-        A = np.matrix([[1]]).astype(np.bool)
+        A = np.matrix([[1]]).astype(bool)
         G = nx.from_numpy_matrix(A)
         assert type(G[0][0]["weight"]) == bool
 
-        A = np.matrix([[1]]).astype(np.complex)
+        A = np.matrix([[1]]).astype(complex)
         G = nx.from_numpy_matrix(A)
         assert type(G[0][0]["weight"]) == complex
 
-        A = np.matrix([[1]]).astype(np.object)
+        A = np.matrix([[1]]).astype(object)
         pytest.raises(TypeError, nx.from_numpy_matrix, A)
 
         G = nx.cycle_graph(3)
@@ -323,32 +324,32 @@ class TestConvertNumpyArray:
         WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_numpy_array(P4)
-        npt.assert_equal(A, nx.to_numpy_array(WP4, weight=None))
-        npt.assert_equal(0.5 * A, nx.to_numpy_array(WP4))
-        npt.assert_equal(0.3 * A, nx.to_numpy_array(WP4, weight="other"))
+        np.testing.assert_equal(A, nx.to_numpy_array(WP4, weight=None))
+        np.testing.assert_equal(0.5 * A, nx.to_numpy_array(WP4))
+        np.testing.assert_equal(0.3 * A, nx.to_numpy_array(WP4, weight="other"))
 
     def test_from_numpy_array_type(self):
         A = np.array([[1]])
         G = nx.from_numpy_array(A)
         assert type(G[0][0]["weight"]) == int
 
-        A = np.array([[1]]).astype(np.float)
+        A = np.array([[1]]).astype(float)
         G = nx.from_numpy_array(A)
         assert type(G[0][0]["weight"]) == float
 
-        A = np.array([[1]]).astype(np.str)
+        A = np.array([[1]]).astype(str)
         G = nx.from_numpy_array(A)
         assert type(G[0][0]["weight"]) == str
 
-        A = np.array([[1]]).astype(np.bool)
+        A = np.array([[1]]).astype(bool)
         G = nx.from_numpy_array(A)
         assert type(G[0][0]["weight"]) == bool
 
-        A = np.array([[1]]).astype(np.complex)
+        A = np.array([[1]]).astype(complex)
         G = nx.from_numpy_array(A)
         assert type(G[0][0]["weight"]) == complex
 
-        A = np.array([[1]]).astype(np.object)
+        A = np.array([[1]]).astype(object)
         pytest.raises(TypeError, nx.from_numpy_array, A)
 
     def test_from_numpy_array_dtype(self):
@@ -461,8 +462,8 @@ def test_to_numpy_recarray_directed(recarray_test_graph):
     G = recarray_test_graph.to_directed()
     G.remove_edge(2, 1)
     A = nx.to_numpy_recarray(G, dtype=[("weight", float), ("cost", int)])
-    npt.assert_array_equal(A.weight, np.array([[0, 7.0], [0, 0]]))
-    npt.assert_array_equal(A.cost, np.array([[0, 5], [0, 0]]))
+    np.testing.assert_array_equal(A.weight, np.array([[0, 7.0], [0, 0]]))
+    np.testing.assert_array_equal(A.cost, np.array([[0, 5], [0, 0]]))
 
 
 def test_to_numpy_recarray_default_dtype_no_weight():
@@ -489,7 +490,7 @@ def recarray_nodelist_test_graph():
 
 def test_to_numpy_recarray_nodelist(recarray_nodelist_test_graph):
     A = nx.to_numpy_recarray(recarray_nodelist_test_graph, nodelist=[0, 1])
-    npt.assert_array_equal(A.weight, np.array([[0, 1], [1, 0]]))
+    np.testing.assert_array_equal(A.weight, np.array([[0, 1], [1, 0]]))
 
 
 @pytest.mark.parametrize(

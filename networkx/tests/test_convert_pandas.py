@@ -200,6 +200,14 @@ class TestConvertPandas:
             nx.NetworkXError, nx.to_pandas_edgelist, G, target="target_col_name"
         )
 
+    def test_to_edgelist_edge_key_col_exists(self):
+        G = nx.path_graph(10, create_using=nx.MultiGraph)
+        G.add_weighted_edges_from((u, v, u) for u, v in list(G.edges()))
+        nx.set_edge_attributes(G, 0, name="edge_key_name")
+        pytest.raises(
+            nx.NetworkXError, nx.to_pandas_edgelist, G, edge_key="edge_key_name"
+        )
+
     def test_from_adjacency(self):
         nodelist = [1, 2]
         dftrue = pd.DataFrame(
@@ -209,17 +217,18 @@ class TestConvertPandas:
         df = nx.to_pandas_adjacency(G, dtype=int)
         pd.testing.assert_frame_equal(df, dftrue)
 
-    def test_roundtrip(self):
+    @pytest.mark.parametrize("graph", [nx.Graph, nx.MultiGraph])
+    def test_roundtrip(self, graph):
         # edgelist
-        Gtrue = nx.Graph([(1, 1), (1, 2)])
+        Gtrue = graph([(1, 1), (1, 2)])
         df = nx.to_pandas_edgelist(Gtrue)
-        G = nx.from_pandas_edgelist(df)
+        G = nx.from_pandas_edgelist(df, create_using=graph)
         assert_graphs_equal(Gtrue, G)
         # adjacency
         adj = {1: {1: {"weight": 1}, 2: {"weight": 1}}, 2: {1: {"weight": 1}}}
-        Gtrue = nx.Graph(adj)
+        Gtrue = graph(adj)
         df = nx.to_pandas_adjacency(Gtrue, dtype=int)
-        G = nx.from_pandas_adjacency(df)
+        G = nx.from_pandas_adjacency(df, create_using=graph)
         assert_graphs_equal(Gtrue, G)
 
     def test_from_adjacency_named(self):
@@ -238,18 +247,19 @@ class TestConvertPandas:
     def test_edgekey_with_multigraph(self):
         df = pd.DataFrame(
             {
-                "attr1": {"A": "F1", "B": "F2", "C": "F3"},
-                "attr2": {"A": 1, "B": 0, "C": 0},
-                "attr3": {"A": 0, "B": 1, "C": 0},
-                "source": {"A": "N1", "B": "N2", "C": "N1"},
-                "target": {"A": "N2", "B": "N3", "C": "N1"},
+                "source": {"A": "N1", "B": "N2", "C": "N1", "D": "N1"},
+                "target": {"A": "N2", "B": "N3", "C": "N1", "D": "N2"},
+                "attr1": {"A": "F1", "B": "F2", "C": "F3", "D": "F4"},
+                "attr2": {"A": 1, "B": 0, "C": 0, "D": 0},
+                "attr3": {"A": 0, "B": 1, "C": 0, "D": 1},
             }
         )
-        Gtrue = nx.Graph(
+        Gtrue = nx.MultiGraph(
             [
-                ("N1", "N2", {"F1": {"attr2": 1, "attr3": 0}}),
-                ("N2", "N3", {"F2": {"attr2": 0, "attr3": 1}}),
-                ("N1", "N1", {"F3": {"attr2": 0, "attr3": 0}}),
+                ("N1", "N2", "F1", {"attr2": 1, "attr3": 0}),
+                ("N2", "N3", "F2", {"attr2": 0, "attr3": 1}),
+                ("N1", "N1", "F3", {"attr2": 0, "attr3": 0}),
+                ("N1", "N2", "F4", {"attr2": 0, "attr3": 1}),
             ]
         )
         # example from issue #4065
@@ -262,6 +272,13 @@ class TestConvertPandas:
             create_using=nx.MultiGraph(),
         )
         assert_graphs_equal(G, Gtrue)
+
+        df_roundtrip = nx.to_pandas_edgelist(G, edge_key="attr1")
+        df_roundtrip = df_roundtrip.sort_values("attr1")
+        df_roundtrip.index = ["A", "B", "C", "D"]
+        pd.testing.assert_frame_equal(
+            df, df_roundtrip[["source", "target", "attr1", "attr2", "attr3"]]
+        )
 
     def test_edgekey_with_normal_graph_no_action(self):
         Gtrue = nx.Graph(

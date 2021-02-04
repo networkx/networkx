@@ -130,10 +130,8 @@ def compose_all(graphs):
 
 
 def intersection_all(graphs):
-    """Returns a new graph that contains only the edges that exist in
+    """Returns a new graph that contains only the nodes and the edges that exist in
     all graphs.
-
-    All supplied graphs must have the same node set.
 
     Parameters
     ----------

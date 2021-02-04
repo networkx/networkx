@@ -126,7 +126,7 @@ API Changes
       >>> nx.minimum_spanning_tree(G, 'mass')  # old
       >>> nx.minimum_spanning_tree(G, weight='mass') # new
 
-  In the above, we are still relying on the the functions being imported into the
+  In the above, we are still relying on the functions being imported into the
   top-level  namespace. We do not have immediate plans to deprecate this approach,
   but we recommend the following instead::
 
