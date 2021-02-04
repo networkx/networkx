@@ -11,6 +11,16 @@ jobs:
       - checkout
 
       - run:
+          name: Check whether docs modified
+          command: |
+            git remote add origin https://github.com/networkx/networkx
+            git fetch origin master --depth=1
+            COUNT=$(git diff --name-status origin/master.. | grep 'doc/' | wc -l)
+            if [[ $ct -eq 0 ]];
+              circleci-agent step halt
+            fi
+
+      - run:
           name: Update apt-get
           command: |
             sudo apt-get update
@@ -34,7 +44,7 @@ jobs:
           name: Install pysal dependencies
           command: |
             sudo apt-get install libspatialindex-dev
-      
+
       - run:
           name: Install mayavi dependencies
           command : |
