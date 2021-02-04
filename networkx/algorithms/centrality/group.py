@@ -75,7 +75,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     -----
     Group betweenness centrality is described in [1]_ and its importance discussed in [3]_.
     The initial implementation of the algorithm is mentioned in [2]_. This function uses
-     an improved algorithm presented in [4]_.
+    an improved algorithm presented in [4]_.
 
     The number of nodes in the group must be a maximum of n - 2 where `n`
     is the total number of nodes in the graph.
@@ -109,7 +109,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
        https://sites.cs.ucsb.edu/~arlei/pubs/sdm18.pdf
     .. [4] Rami Puzis, Yuval Elovici, and Shlomi Dolev.
        "Fast algorithm for successive computation of group betweenness centrality."
-        https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709
+       https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709
 
     """
     GBC = []  # initialize betweenness
@@ -240,7 +240,7 @@ def prominent_group(
     G, k, weight=None, C=None, endpoints=False, normalized=True, greedy=False
 ):
     r"""Find the prominent group of size $k$ in graph $G$. The prominence of the
-     group is evaluated by the group betweenness centrality.
+    group is evaluated by the group betweenness centrality.
 
     Group betweenness centrality of a group of nodes $C$ is the sum of the
     fraction of all-pairs shortest paths that pass through any vertex in $C$
@@ -333,7 +333,7 @@ def prominent_group(
        https://sites.cs.ucsb.edu/~arlei/pubs/sdm18.pdf
     .. [4] Rami Puzis, Yuval Elovici, and Shlomi Dolev.
        "Fast algorithm for successive computation of group betweenness centrality."
-        https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709
+       https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709
     """
     import pandas as pd
     import numpy as np
