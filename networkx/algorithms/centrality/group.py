@@ -89,7 +89,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     between "u" and "v" are counted as two possible paths (one each
     direction) while undirected paths between "u" and "v" are counted
     as one path. Said another way, the sum in the expression above is
-    over all `s != t` for directed graphs and for `s < t` for undirected graphs.
+    over all ``s != t`` for directed graphs and for ``s < t`` for undirected graphs.
 
 
     References
