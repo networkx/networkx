@@ -23,6 +23,7 @@ def parse_dimacs(lines, create_using=None):
     ----------
     lines : list or iterator of strings
         Input data in edgelist format
+
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -76,10 +77,15 @@ def read_dimacs(
 
     Parameters
     ----------
-    path : file or string
-       File or filename to read. If a file is provided, it must be
-       opened in 'rb' mode.
+    path : string or file
+       Filename or file handle to read.
        Filenames ending in .gz or .bz2 will be uncompressed.
+
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    encoding: string, optional
+       Specify which encoding to use when reading file.
 
     Returns
     -------
@@ -109,8 +115,8 @@ def generate_dimacs(G):
 
     Returns
     -------
-    G : graph
-       A networkx Graph or other type specified with create_using
+    lines : string
+        Lines of data in DIMACS format.
 
     See Also
     --------
