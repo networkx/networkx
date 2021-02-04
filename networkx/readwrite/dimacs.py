@@ -51,8 +51,16 @@ def parse_dimacs(lines, create_using=None):
                 expected_num_nodes = int(num_nodes)
                 expected_num_edges = int(num_edges)
             elif line.startswith("n"):
-                _, id_u, value_u = line.strip().split(" ")
-                g.add_node(int(id_u), value=value_u)
+                line_split = line.strip().split(" ")
+                if len(line_split) == 3:
+                    _, id_u, value_u = line_split
+                    g.add_node(int(id_u), value=value_u)
+                elif len(line_split) == 2:
+                    _, id_u = line_split
+                    # Add node with default value of 1
+                    g.add_node(int(id_u), value=1)
+                else:
+                    raise ValueError(f"Found node line of illegal format: {line}")
             elif line.startswith("e"):
                 _, id_u, id_v = line.strip().split(" ")
                 g.add_edge(int(id_u), int(id_v))
@@ -60,19 +68,19 @@ def parse_dimacs(lines, create_using=None):
                 raise ValueError(f"Unknown line start: {line[0]}")
 
     assert (
-        expected_num_nodes == g.number_of_nodes()
+            expected_num_nodes == g.number_of_nodes()
     ), f"Expected to read {expected_num_nodes} nodes but found {g.number_of_nodes()}"
     assert (
-        expected_num_edges == g.number_of_edges()
+            expected_num_edges == g.number_of_edges()
     ), f"Expected to read {expected_num_edges} edges but found {g.number_of_edges()}"
     return g
 
 
 @open_file(0, mode="rb")
 def read_dimacs(
-    path,
-    create_using=None,
-    encoding="utf-8",
+        path,
+        create_using=None,
+        encoding="utf-8",
 ):
     """Read a graph from a file in DIMACS format.
 

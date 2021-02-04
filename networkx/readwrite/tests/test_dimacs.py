@@ -28,6 +28,8 @@ e 1 2
 e 2 3
 
 e 3 1
+
+n 1
 """
         bytesIO = io.BytesIO(s)
         G = nx.read_dimacs(bytesIO)
