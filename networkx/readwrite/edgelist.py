@@ -292,10 +292,10 @@ def parse_edgelist(
                     f"Failed to convert nodes {u},{v} to type {nodetype}."
                 ) from e
 
-        if len(d) == 0 or not data:
+        if len(d) == 0 or data is False:
             # no data or data type specified
             edgedata = {}
-        elif data:
+        elif data is True:
             # no edge types specified
             try:  # try to evaluate as dictionary
                 if delimiter == ",":

@@ -99,7 +99,7 @@ def test_read_edgelist_with_data(data, extra_kwargs, expected):
     assert_edges_equal(G.edges(data=True), expected)
 
 
-def test_read_edgelist_with_information_line(self):
+def test_read_edgelist_with_information_line():
     s = """\
 # number of nodes, number of edges
 3 2
@@ -109,19 +109,17 @@ def test_read_edgelist_with_information_line(self):
 2 3 {'weight':3.0}
 """
     StringIO = io.StringIO(s)
-    G = nx.read_edgelist(
-        StringIO, nodetype=int, data=False, check_information_line=True
-    )
+    G = nx.read_edgelist(StringIO, nodetype=int, data=False, information_line=True)
     assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
 
     StringIO = io.StringIO(s)
-    G = nx.read_edgelist(StringIO, nodetype=int, data=True, check_information_line=True)
+    G = nx.read_edgelist(StringIO, nodetype=int, data=True, information_line=True)
     assert_edges_equal(
         G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
     )
 
 
-def test_read_edgelist_without_information_line(self):
+def test_read_edgelist_without_information_line():
     s = """\
 # comment line
 1 2 {'weight':2.0}
@@ -130,22 +128,18 @@ def test_read_edgelist_without_information_line(self):
 """
     with pytest.raises(nx.NetworkXError):
         StringIO = io.StringIO(s)
-        G = nx.read_edgelist(
-            StringIO, nodetype=int, data=False, check_information_line=True
-        )
+        G = nx.read_edgelist(StringIO, nodetype=int, data=False, information_line=True)
         assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
 
     with pytest.raises(nx.NetworkXError):
         StringIO = io.StringIO(s)
-        G = nx.read_edgelist(
-            StringIO, nodetype=int, data=True, check_information_line=True
-        )
+        G = nx.read_edgelist(StringIO, nodetype=int, data=True, information_line=True)
         assert_edges_equal(
             G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
         )
 
 
-def test_read_edgelist_information_line_warning(self):
+def test_read_edgelist_information_line_warning():
     s = """\
 # number of nodes, number of edges
 2 2
@@ -156,16 +150,12 @@ def test_read_edgelist_information_line_warning(self):
 """
     StringIO = io.StringIO(s)
     with pytest.warns(UserWarning):
-        G = nx.read_edgelist(
-            StringIO, nodetype=int, data=False, check_information_line=True
-        )
+        G = nx.read_edgelist(StringIO, nodetype=int, data=False, information_line=True)
     assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
 
     StringIO = io.StringIO(s)
     with pytest.warns(UserWarning):
-        G = nx.read_edgelist(
-            StringIO, nodetype=int, data=True, check_information_line=True
-        )
+        G = nx.read_edgelist(StringIO, nodetype=int, data=True, information_line=True)
     assert_edges_equal(
         G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
     )
