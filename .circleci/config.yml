@@ -13,10 +13,8 @@ jobs:
       - run:
           name: Check whether docs modified
           command: |
-            git branch -a
-            git fetch origin master --depth=1
             COUNT=$(git diff --name-status origin/master.. | grep 'doc/' | wc -l)
-            if [[ $COUNT -eq 0 ]];
+            if [[ $COUNT -eq 0 ]]; then
               circleci-agent step halt
             fi
 
