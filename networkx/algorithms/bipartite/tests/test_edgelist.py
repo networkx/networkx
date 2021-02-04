@@ -1,14 +1,15 @@
 """
     Unit tests for bipartite edgelists.
 """
-import pytest
 import io
-import tempfile
 import os
+import tempfile
+
+import pytest
 
 import networkx as nx
-from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
 from networkx.algorithms import bipartite
+from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
 
 
 class TestEdgelist:
@@ -50,29 +51,6 @@ class TestEdgelist:
 
         bytesIO = io.BytesIO(s)
         G = bipartite.read_edgelist(bytesIO, nodetype=int, data=True)
-        assert_edges_equal(
-            G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
-        )
-
-    def test_read_edgelist_4(self):
-        s = b"""\
-# number of nodes, number of edges
-3 2
-# comment line
-1 2 {'weight':2.0}
-# comment line
-2 3 {'weight':3.0}
-"""
-        bytesIO = io.BytesIO(s)
-        G = bipartite.read_edgelist(
-            bytesIO, nodetype=int, data=False, check_information_line=True
-        )
-        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
-
-        bytesIO = io.BytesIO(s)
-        G = bipartite.read_edgelist(
-            bytesIO, nodetype=int, data=True, check_information_line=True
-        )
         assert_edges_equal(
             G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
         )
