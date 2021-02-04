@@ -12,11 +12,11 @@ from networkx.algorithms.centrality.betweenness import (
 
 __all__ = [
     "group_betweenness_centrality",
-    "prominent_group",
     "group_closeness_centrality",
     "group_degree_centrality",
     "group_in_degree_centrality",
     "group_out_degree_centrality",
+    "prominent_group",
 ]
 
 
