@@ -634,7 +634,7 @@ using pyyaml.
 ...     yaml.dump(G, f)
 ... 
 >>> with open('test.yaml', 'r') as f:
-...     G = yaml.load(f, Loader=yaml.FullLoader)
+...     G = yaml.load(f, Loader=yaml.Loader)
 ... 
 
 See :doc:`/reference/readwrite/index` for additional details.
