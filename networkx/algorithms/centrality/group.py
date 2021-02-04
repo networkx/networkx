@@ -254,32 +254,34 @@ def prominent_group(
     those paths passing through some node in group $C$. Note that
     $(s, t)$ are not members of the group ($V-C$ is the set of nodes
     in $V$ that are not in $C$).
+
     Parameters
     ----------
     G : graph
-      A NetworkX graph.
+       A NetworkX graph.
 
     k : int
-      The number of nodes in the group.
+       The number of nodes in the group.
 
     normalized : bool, optional (default=True)
-      If True, group betweenness is normalized by `1/((|V|-|C|)(|V|-|C|-1))`
-      where `|V|` is the number of nodes in G and `|C|` is the number of nodes in C.
+       If True, group betweenness is normalized by ``1/((|V|-|C|)(|V|-|C|-1))``
+       where ``|V|`` is the number of nodes in G and ``|C|`` is the number of
+       nodes in C.
 
     weight : None or string, optional (default=None)
-      If None, all edge weights are considered equal.
-      Otherwise holds the name of the edge attribute used as weight.
+       If None, all edge weights are considered equal.
+       Otherwise holds the name of the edge attribute used as weight.
 
     endpoints : bool, optional (default=False)
-      If True include the endpoints in the shortest path counts.
+       If True include the endpoints in the shortest path counts.
 
     C : list or set, optional (default=None)
-        list of nodes which won't be candidates of the prominent group.
+       list of nodes which won't be candidates of the prominent group.
 
     greedy : bool, optional (default=False)
-        Using a naive greedy algorithm in order to find non-optimal prominent
-        group. For scale free networks the results are negligibly below the optimal
-         results.
+       Using a naive greedy algorithm in order to find non-optimal prominent
+       group. For scale free networks the results are negligibly below the optimal
+       results.
 
     Raises
     ------
