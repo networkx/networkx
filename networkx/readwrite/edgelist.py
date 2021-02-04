@@ -37,8 +37,9 @@ __all__ = [
 ]
 
 import warnings
-from networkx.utils import open_file
+
 import networkx as nx
+from networkx.utils import open_file
 
 
 def generate_edgelist(G, delimiter=" ", data=True):
@@ -125,7 +126,15 @@ def generate_edgelist(G, delimiter=" ", data=True):
 
 
 @open_file(1, mode="wb")
-def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="utf-8"):
+def write_edgelist(
+    G,
+    path,
+    comments="#",
+    delimiter=" ",
+    data=True,
+    encoding="utf-8",
+    information_line=False,
+):
     """Write graph as a list of edges.
 
     Parameters
@@ -146,6 +155,8 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
        in the list.
     encoding: string, optional
        Specify which encoding to use when writing file.
+    information_line : bool, optional
+       If True the firt line consist of '#nodes #edges'
 
     Examples
     --------
@@ -168,7 +179,9 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
     read_edgelist
     write_weighted_edgelist
     """
-
+    if information_line:
+        line = f"{G.number_of_nodes()} {G.number_of_edges()}\n"
+        path.write(line.encode(encoding))
     for line in generate_edgelist(G, delimiter, data):
         line += "\n"
         path.write(line.encode(encoding))
@@ -421,7 +434,9 @@ def read_edgelist(
     )
 
 
-def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
+def write_weighted_edgelist(
+    G, path, comments="#", delimiter=" ", encoding="utf-8", information_line=False
+):
     """Write graph G as a list of edges with numeric weights.
 
     Parameters
@@ -438,6 +453,8 @@ def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-
        The string used to separate values.  The default is whitespace.
     encoding: string, optional
        Specify which encoding to use when writing file.
+    information_line : bool, optional
+       If True the firt line consist of '#nodes #edges'
 
     Examples
     --------
@@ -458,6 +475,7 @@ def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-
         delimiter=delimiter,
         data=("weight",),
         encoding=encoding,
+        information_line=False,
     )
 
 
