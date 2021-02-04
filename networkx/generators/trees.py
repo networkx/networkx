@@ -13,6 +13,31 @@ __all__ = ["prefix_tree", "random_tree"]
 #: used to generate the prefix tree.
 NIL = "NIL"
 
+def iterative_prefix_tree(paths):
+    tree = nx.DiGraph()
+    root = 0
+    tree.add_node(root, source=None)
+    NIL = -1
+    tree.add_node(NIL, source="NIL")
+    stack = []
+    stack.append((paths, root, tree))
+    while stack:
+        children = defaultdict(list)
+        paths, root, tree = stack.pop()
+        for path in paths:
+            if not path:
+                tree.add_edge(root, NIL)
+                continue
+            child, *rest = path
+            children[child].append(rest)
+
+        for child, remaining_paths in children.items():
+            new_name = len(tree) - 1
+            tree.add_node(new_name, source=child)
+            tree.add_edge(root, new_name)
+            stack.append(remaining_paths, new_name, tree)
+
+
 
 def prefix_tree(paths):
     """Creates a directed prefix tree from the given list of iterables.
