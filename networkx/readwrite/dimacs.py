@@ -46,6 +46,7 @@ def parse_dimacs(lines, create_using=None):
             if line.startswith("c"):
                 pass
             elif line.startswith("p"):
+                # The p line contains meta information about the graph
                 _, file_type, num_nodes, num_edges = line.strip().split(" ")
                 expected_num_nodes = int(num_nodes)
                 expected_num_edges = int(num_edges)
