@@ -146,6 +146,9 @@ def inter_community_non_edges(G, partition):
 def performance(G, partition):
     """Returns the performance of a partition.
 
+    .. deprecated:: 2.6
+       Use `partition_quality` instead.
+
     The *performance* of a partition is the ratio of the number of
     intra-community edges plus inter-community non-edges with the total
     number of potential edges.
@@ -177,8 +180,6 @@ def performance(G, partition):
            *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
            <https://arxiv.org/abs/0906.0612>
 
-    .. deprecated:: 2.6
-        See `nx.community.partition_quality`.
     """
     # Compute the number of intra-community edges and inter-community
     # edges.
@@ -200,6 +201,9 @@ def performance(G, partition):
 @require_partition
 def coverage(G, partition):
     """Returns the coverage of a partition.
+
+    .. deprecated:: 2.6
+       Use `partition_quality` instead.
 
     The *coverage* of a partition is the ratio of the number of
     intra-community edges to the total number of edges in the graph.
@@ -234,8 +238,6 @@ def coverage(G, partition):
            *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
            <https://arxiv.org/abs/0906.0612>
 
-    .. deprecated:: 2.6
-        See `nx.community.partition_quality`.
     """
     intra_edges = intra_community_edges(G, partition)
     total_edges = G.number_of_edges()
