@@ -5,7 +5,7 @@ import networkx as nx
 from networkx.utils import generate_unique_node
 from networkx.utils import py_random_state
 
-__all__ = ["prefix_tree", "random_tree"]
+__all__ = ["prefix_tree", "random_tree", "iterative_prefix_tree"]
 
 #: The nil node, the only leaf node in a prefix tree.
 #:
@@ -35,7 +35,8 @@ def iterative_prefix_tree(paths):
             new_name = len(tree) - 1
             tree.add_node(new_name, source=child)
             tree.add_edge(root, new_name)
-            stack.append(remaining_paths, new_name, tree)
+            stack.append((remaining_paths, new_name, tree))
+    return tree
 
 
 
