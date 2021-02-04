@@ -8,6 +8,7 @@ Reading and writing graphs
    :maxdepth: 2
 
    adjlist
+   dimacs
    multiline_adjlist
    edgelist
    gexf
