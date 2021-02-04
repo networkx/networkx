@@ -181,7 +181,7 @@ def parse_edgelist(
     create_using=None,
     nodetype=None,
     data=True,
-    check_information_line=False,
+    information_line=False,
 ):
     """Parse lines of an edge list representation of a graph.
 
@@ -202,7 +202,7 @@ def parse_edgelist(
        If `False` generate no edge data or if `True` use a dictionary
        representation of edge data or a list tuples specifying dictionary
        key names and types for edge data.
-    check_information_line : bool, optional
+    information_line : bool, optional
        If True checks first line of input for number of nodes
        and number of edges (rudy format), throws an error if it can't find it and
        prints a warning if they don't match the rest of the lines.
@@ -235,7 +235,7 @@ def parse_edgelist(
     Edgelist with data in a list and information line:
 
     >>> lines = ["1 2 3", "2 3 27", "3 4 3.0"]
-    >>> G = nx.parse_edgelist(lines, nodetype = int, data=(('weight',float),), check_information_line=True)
+    >>> G = nx.parse_edgelist(lines, nodetype = int, data=(('weight',float),), information_line=True)
     >>> list(G)
     [1, 2, 3, 4]
     >>> list(G.edges(data=True))
@@ -259,7 +259,7 @@ def parse_edgelist(
         # split line, should have 2 or more
         s = line.strip().split(delimiter)
         # if file contains information line and no information line was read yet
-        if check_information_line and not information_line_content:
+        if information_line and not information_line_content:
             information_line_content = list(s)
             # TODO (JC): why?
             if len(information_line_content) == 2:
@@ -312,7 +312,7 @@ def parse_edgelist(
                 edgedata.update({edge_key: edge_value})
         G.add_edge(u, v, **edgedata)
 
-    if check_information_line:
+    if information_line:
         if len(information_line_content) == 2:
             expected_nodes, expected_edges = map(int, information_line_content)
             if (
@@ -339,7 +339,7 @@ def read_edgelist(
     data=True,
     edgetype=None,
     encoding="utf-8",
-    check_information_line=False,
+    information_line=False,
 ):
     """Read a graph from a list of edges.
 
@@ -363,7 +363,7 @@ def read_edgelist(
        Convert edge data from strings to specified type and use as 'weight'
     encoding: string, optional
        Specify which encoding to use when reading file.
-    check_information_line : bool, optional
+    information_line : bool, optional
        If True checks first line of input for number of nodes
        and number of edges, and prints a warning if they don't match
        the rest of the lines.
@@ -417,7 +417,7 @@ def read_edgelist(
         create_using=create_using,
         nodetype=nodetype,
         data=data,
-        check_information_line=check_information_line,
+        information_line=information_line,
     )
 
 
@@ -468,7 +468,7 @@ def read_weighted_edgelist(
     create_using=None,
     nodetype=None,
     encoding="utf-8",
-    check_information_line=False,
+    information_line=False,
 ):
     """Read a graph as list of edges with numeric weights.
 
@@ -488,7 +488,7 @@ def read_weighted_edgelist(
        Convert node data from strings to specified type
     encoding: string, optional
        Specify which encoding to use when reading file.
-    check_information_line : bool, optional
+    information_line : bool, optional
        If True checks first line of input for number of nodes
        and number of edges, and prints a warning if they don't match
        the rest of the lines.
@@ -526,5 +526,5 @@ def read_weighted_edgelist(
         nodetype=nodetype,
         data=(("weight", float),),
         encoding=encoding,
-        check_information_line=check_information_line,
+        information_line=information_line,
     )
