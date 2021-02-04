@@ -248,7 +248,7 @@ def parse_edgelist(
     Edgelist with data in a list and information line:
 
     >>> lines = ["1 2 3", "2 3 27", "3 4 3.0"]
-    >>> G = nx.parse_edgelist(lines, nodetype = int, data=(('weight',float),), information_line=True)
+    >>> G = nx.parse_edgelist(lines, nodetype = int, data=(('weight',float),))
     >>> list(G)
     [1, 2, 3, 4]
     >>> list(G.edges(data=True))
@@ -475,7 +475,7 @@ def write_weighted_edgelist(
         delimiter=delimiter,
         data=("weight",),
         encoding=encoding,
-        information_line=False,
+        information_line=information_line,
     )
 
 
