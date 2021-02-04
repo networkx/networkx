@@ -13,9 +13,10 @@ jobs:
       - run:
           name: Check whether docs modified
           command: |
-            git remote add origin https://github.com/networkx/networkx
-            git fetch origin master --depth=1
-            COUNT=$(git diff --name-status origin/master.. | grep 'doc/' | wc -l)
+            git remote -v
+            git remote add upstream https://github.com/networkx/networkx
+            git fetch upstream master --depth=1
+            COUNT=$(git diff --name-status upstream/master.. | grep 'doc/' | wc -l)
             if [[ $ct -eq 0 ]];
               circleci-agent step halt
             fi
