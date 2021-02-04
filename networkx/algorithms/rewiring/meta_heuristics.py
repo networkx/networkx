@@ -6,13 +6,35 @@ import numpy as np
 
 def hill_climb_optimize(G, R, modify_graph, n_iter):
     """
-    Optimize graph for a rewiring rule encapsulated by `modify_graph` through
-    the hill climb metaheuristic.
+    Optimize graph through a rewiring rule by using a
+    hill climbing metaheuristic.
 
-    Arguments
-    G: Graph to optimize
-    R: Utility function
-    n_iter: Max number of temperature drops
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+    R : Function
+        Utility function that takes a graph and returns a float
+    modify_graph : Function
+        Rewiring function that takes a graph and returns a graph
+    n_iter : int
+        Max number of temperature drops
+
+
+    Returns
+    ----------
+    R_temp : float
+        R value of the optimized graph
+    G_temp : NetworkX Graph
+        Graph optimized through the Simulated Annealing algorithm + params
+
+
+    References
+    ----------
+    James Paterson, Beatrice Ombuki-Berman (2020).
+    A Hybrid Approach to Network Robustness Optimization using Edge Rewiring and Edge Addition
+    2020 IEEE International Conference on Systems, Man, and Cybernetics (SMC), Toronto, ON, 2020, pp. 4051-4057
+    doi: 10.1109/SMC42975.2020.9283269.
     """
     return simulated_annealing_optimize(G,
                                         R,
@@ -32,16 +54,42 @@ def simulated_annealing_optimize(G: nx.Graph,
                                  T_decay: float = 0.1,
                                  max_no_improve: int = 10) -> Tuple[float, nx.Graph]:
     """
-    Optimize graph for a rewiring rule encapsulated by `modify_graph` through
-    the simulated annealing metaheuristic.
+    Optimize graph through a rewiring rule by using a
+    simulated annealing metaheuristic.
 
-    Arguments
-    G: Graph to optimize
-    R: Utility function
-    n_iter: Max number of temperature drops
-    T_max: Initial temperature (above zero)
-    T_decay: Decay on each temperature drop (between 0 and 1)
-    max_no_improve: How much inner iterations on each annealing step (above 0)
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+    R : Function
+        Utility function that takes a graph and returns a float
+    modify_graph : Function
+        Rewiring function that takes a graph and returns a graph
+    n_iter : int
+        Max number of temperature drops
+    T_max : float
+        Initial temperature (above zero)
+    T_decay : flota
+        Decay on each temperature drop (between 0 and 1)
+    max_no_improve : int
+        How much inner iterations on each annealing step (above 0)
+
+
+    Returns
+    ----------
+    R_temp : float
+        R value of the optimized graph
+    G_temp : NetworkX Graph
+        Graph optimized through the Simulated Annealing algorithm + params
+
+
+    References
+    ----------
+    James Paterson, Beatrice Ombuki-Berman (2020).
+    A Hybrid Approach to Network Robustness Optimization using Edge Rewiring and Edge Addition
+    2020 IEEE International Conference on Systems, Man, and Cybernetics (SMC), Toronto, ON, 2020, pp. 4051-4057
+    doi: 10.1109/SMC42975.2020.9283269.
+
     """
     # Initial checks
     if T_max <= 0:
