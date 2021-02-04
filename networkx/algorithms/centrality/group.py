@@ -305,7 +305,7 @@ def prominent_group(
     Group betweenness centrality is described in [1]_ and its importance discussed in [3]_.
     The algorithm is described in [2]_ and is based on techniques mentioned in [4]_.
 
-    The number of nodes in the group must be a maximum of n - 2 where `n`
+    The number of nodes in the group must be a maximum of ``n - 2`` where ``n``
     is the total number of nodes in the graph.
 
     For weighted graphs the edge weights must be greater than zero.
@@ -317,7 +317,7 @@ def prominent_group(
     between "u" and "v" are counted as two possible paths (one each
     direction) while undirected paths between "u" and "v" are counted
     as one path. Said another way, the sum in the expression above is
-    over all `s != t` for directed graphs and for `s < t` for undirected graphs.
+    over all ``s != t`` for directed graphs and for ``s < t`` for undirected graphs.
 
     References
     ----------
