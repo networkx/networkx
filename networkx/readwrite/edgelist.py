@@ -248,8 +248,9 @@ def parse_edgelist(
     from ast import literal_eval
 
     G = nx.empty_graph(0, create_using)
-    information_line_found = False
+    information_line_content = None
     for line in lines:
+        # remove comment from line, if line becomes empty skip it
         p = line.find(comments)
         if p >= 0:
             line = line[:p]
@@ -257,11 +258,13 @@ def parse_edgelist(
             continue
         # split line, should have 2 or more
         s = line.strip().split(delimiter)
-        if check_information_line and not information_line_found:
-            information_line_items = list(s)
-            information_line_found = True
-            if len(s) == 2:
+        # if file contains information line and no information line was read yet
+        if check_information_line and not information_line_content:
+            information_line_content = list(s)
+            # TODO (JC): why?
+            if len(information_line_content) == 2:
                 continue
+
         if len(s) < 2:
             continue
         u = s.pop(0)
@@ -310,8 +313,8 @@ def parse_edgelist(
         G.add_edge(u, v, **edgedata)
 
     if check_information_line:
-        if len(information_line_items) == 2:
-            expected_nodes, expected_edges = map(int, information_line_items)
+        if len(information_line_content) == 2:
+            expected_nodes, expected_edges = map(int, information_line_content)
             if (
                 G.number_of_edges() != expected_edges
                 or G.number_of_nodes() != expected_nodes
