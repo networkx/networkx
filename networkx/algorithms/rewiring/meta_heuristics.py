@@ -1,6 +1,5 @@
 import networkx as nx
 from typing import Callable, Tuple
-from tqdm.auto import tqdm
 import numpy as np
 
 
@@ -105,7 +104,7 @@ def simulated_annealing_optimize(G: nx.Graph,
     R_last = R(G_temp)
 
     # Temperature drop loop
-    for _ in tqdm(range(n_iter)):
+    for _ in range(n_iter):
         no_improve = 0
         R_new = R_last
 
