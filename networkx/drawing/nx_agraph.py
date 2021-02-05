@@ -19,7 +19,6 @@ See Also
 """
 import os
 import tempfile
-from PIL import Image
 import networkx as nx
 
 __all__ = [
@@ -435,6 +434,8 @@ def view_pygraphviz(
 
     # Show graph in a new window (depends on platform configuration)
     if show:
+        from PIL import Image
+
         Image.open(path.name).show()
 
     return path.name, A
@@ -464,6 +465,7 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=""):
     calls if you experience problems.
 
     """
+    from PIL import Image
     import warnings
 
     warnings.warn(
