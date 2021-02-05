@@ -3,6 +3,7 @@ from typing import Callable, Tuple
 import random
 import math
 
+
 def hill_climb_optimize(G, R, modify_graph, n_iter):
     """
     Optimize graph through a rewiring rule by using a
@@ -35,23 +36,20 @@ def hill_climb_optimize(G, R, modify_graph, n_iter):
     2020 IEEE International Conference on Systems, Man, and Cybernetics (SMC), Toronto, ON, 2020, pp. 4051-4057
     doi: 10.1109/SMC42975.2020.9283269.
     """
-    return simulated_annealing_optimize(G,
-                                        R,
-                                        modify_graph,
-                                        n_iter=n_iter,
-                                        T_max=np.infty,
-                                        T_decay=0.0,
-                                        max_no_improve=1
-                                        )
+    return simulated_annealing_optimize(
+        G, R, modify_graph, n_iter=n_iter, T_max=np.infty, T_decay=0.0, max_no_improve=1
+    )
 
 
-def simulated_annealing_optimize(G: nx.Graph,
-                                 R: Callable[[nx.Graph], float],
-                                 modify_graph: Callable[[nx.Graph], nx.Graph],
-                                 n_iter: int = 3000,
-                                 T_max: float = 300,
-                                 T_decay: float = 0.1,
-                                 max_no_improve: int = 10) -> Tuple[float, nx.Graph]:
+def simulated_annealing_optimize(
+    G: nx.Graph,
+    R: Callable[[nx.Graph], float],
+    modify_graph: Callable[[nx.Graph], nx.Graph],
+    n_iter: int = 3000,
+    T_max: float = 300,
+    T_decay: float = 0.1,
+    max_no_improve: int = 10,
+) -> Tuple[float, nx.Graph]:
     """
     Optimize graph through a rewiring rule by using a
     simulated annealing metaheuristic.
@@ -92,13 +90,13 @@ def simulated_annealing_optimize(G: nx.Graph,
     """
     # Initial checks
     if T_max <= 0:
-        raise ValueError('T_max should be a floating number above zero')
+        raise ValueError("T_max should be a floating number above zero")
     if T_decay < 0 or T_decay > 1:
-        raise ValueError('T_decay should be between 0.0 and 1.0')
+        raise ValueError("T_decay should be between 0.0 and 1.0")
     if max_no_improve < 1:
-        raise ValueError('max_no_improve should be above 1')
+        raise ValueError("max_no_improve should be above 1")
 
-    # Set initial state 
+    # Set initial state
     G_temp = G.copy()
     T = T_max
     R_last = R(G_temp)
@@ -111,7 +109,7 @@ def simulated_annealing_optimize(G: nx.Graph,
         # Iterate on the same temperature until we don't have more improvements
         # bounded by max_no_improve.
         while no_improve < max_no_improve:
-          
+
             # Try to rewire edge
             G_attempt = modify_graph(G_temp.copy())
             R_attempt = R(G_attempt)

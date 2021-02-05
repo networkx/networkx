@@ -1,6 +1,7 @@
 import networkx as nx
 import random
 
+
 def rearrange_edge_nodes(G: nx.Graph, seed=None) -> nx.Graph:
     r = random.Random(seed)
     if len(G.nodes) > 2 and len(G.edges) > 1:
@@ -12,7 +13,7 @@ def rearrange_edge_nodes(G: nx.Graph, seed=None) -> nx.Graph:
         G_temp.add_edge(node_1, node_2)
         return G_temp
     else:
-        raise ValueError('Graph must have more than two nodes & one edge')    
+        raise ValueError("Graph must have more than two nodes & one edge")
 
 
 def test_simulated_annealing():
@@ -23,4 +24,3 @@ def test_simulated_annealing():
     (m, nG) = nx.algorithms.rewiring.simulated_annealing_optimize(*args, **kwargs)
     assert m == 1.0
     assert list(nG.edges) == [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3), (2, 4)]
-    
