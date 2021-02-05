@@ -68,7 +68,7 @@ def empty_generator():
         "empty_generator is deprecated and will be removed in v3.0.",
         DeprecationWarning,
     )
-    yield from ()
+    return (i for i in ())
 
 
 def flatten(obj, result=None):
