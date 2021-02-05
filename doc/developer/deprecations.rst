@@ -52,6 +52,7 @@ Version 3.0
 * In ``utils/misc.py`` remove ``iterable``.
 * In ``utils/misc.py`` remove ``is_list_of_ints``.
 * In ``utils/misc.py`` remove ``consume``.
+* In ``utils/misc.py`` remove ``default_opener``.
 * Remove ``utils/contextmanagers.py`` and related tests.
 * In ``drawing/nx_agraph.py`` remove ``display_pygraphviz`` and related tests.
 * In ``algorithms/chordal.py`` replace ``chordal_graph_cliques`` with ``_chordal_graph_cliques``.
