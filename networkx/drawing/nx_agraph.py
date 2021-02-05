@@ -19,6 +19,7 @@ See Also
 """
 import os
 import tempfile
+from PIL import Image
 import networkx as nx
 
 __all__ = [
@@ -324,7 +325,7 @@ def view_pygraphviz(
         The filename used to save the image.  If None, save to a temporary
         file.  File formats are the same as those from pygraphviz.agraph.draw.
     show : bool, default = True
-        Whether to display the graph with `networkx.utils.default_opener`,
+        Whether to display the graph with :mod:`PIL.Image.show`,
         default is `True`. If `False`, the rendered graph is still available
         at `path`.
 
@@ -434,7 +435,7 @@ def view_pygraphviz(
 
     # Show graph in a new window (depends on platform configuration)
     if show:
-        nx.utils.default_opener(path.name)
+        Image.open(path.name).show()
 
     return path.name, A
 
@@ -468,7 +469,8 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=""):
     warnings.warn(
         "display_pygraphviz is deprecated and will be removed in NetworkX 3.0. "
         "To view a graph G using pygraphviz, use nx.nx_agraph.view_pygraphviz(G). "
-        "To view a graph from file, consider nx.utils.default_opener(filename).",
+        "To view a graph from file, consider an image processing libary like "
+        "`Pillow`, e.g. ``PIL.Image.open(path.name).show()``",
         DeprecationWarning,
     )
     if format is None:
@@ -482,4 +484,4 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=""):
     # We must close the file before viewing it.
     graph.draw(path, format, prog, args)
     path.close()
-    nx.utils.default_opener(filename)
+    Image.open(filename).show()

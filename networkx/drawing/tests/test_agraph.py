@@ -239,12 +239,3 @@ class TestAGraph:
         pos = list(pos.values())
         assert len(pos) == 5
         assert len(pos[0]) == 3
-
-    def test_display_pygraphviz_deprecation_warning(self):
-        G = nx.complete_graph(2)
-        path_name, A = nx.nx_agraph.view_pygraphviz(G, show=False)
-        # Monkeypatch default_opener to prevent window opening
-        nx.utils.default_opener = lambda x: None
-        with pytest.warns(DeprecationWarning, match="display_pygraphviz is deprecated"):
-            with open(path_name, "wb") as fh:
-                nx.nx_agraph.display_pygraphviz(A, fh, prog="dot")
