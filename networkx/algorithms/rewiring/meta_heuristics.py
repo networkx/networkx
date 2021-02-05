@@ -1,7 +1,7 @@
 import networkx as nx
 from typing import Callable, Tuple
-import numpy as np
-
+import math
+import random
 
 def hill_climb_optimize(G, R, modify_graph, n_iter):
     """
@@ -36,7 +36,7 @@ def hill_climb_optimize(G, R, modify_graph, n_iter):
     doi: 10.1109/SMC42975.2020.9283269.
     """
     return simulated_annealing_optimize(
-        G, R, modify_graph, n_iter=n_iter, T_max=np.infty, T_decay=0.0, max_no_improve=1
+        G, R, modify_graph, n_iter=n_iter, T_max=math.inf, T_decay=0.0, max_no_improve=1
     )
 
 
@@ -120,8 +120,8 @@ def simulated_annealing_optimize(
                 R_new = R_attempt
             else:
                 # Accept a worse attempt with a given probability
-                y = np.random.rand()  # Unif[0, 1]
-                value = np.exp(-delta_R / T)
+                y = random.random()  # Unif[0, 1]
+                value = math.exp(-delta_R / T)
                 if y < value:
                     temp_G = G_attempt
                     R_new = R_attempt
