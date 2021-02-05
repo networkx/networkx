@@ -12,11 +12,11 @@ from networkx.algorithms.centrality.betweenness import (
 
 __all__ = [
     "group_betweenness_centrality",
-    "prominent_group",
     "group_closeness_centrality",
     "group_degree_centrality",
     "group_in_degree_centrality",
     "group_out_degree_centrality",
+    "prominent_group",
 ]
 
 
@@ -75,7 +75,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     -----
     Group betweenness centrality is described in [1]_ and its importance discussed in [3]_.
     The initial implementation of the algorithm is mentioned in [2]_. This function uses
-     an improved algorithm presented in [4]_.
+    an improved algorithm presented in [4]_.
 
     The number of nodes in the group must be a maximum of n - 2 where `n`
     is the total number of nodes in the graph.
@@ -89,7 +89,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     between "u" and "v" are counted as two possible paths (one each
     direction) while undirected paths between "u" and "v" are counted
     as one path. Said another way, the sum in the expression above is
-    over all `s != t` for directed graphs and for `s < t` for undirected graphs.
+    over all ``s != t`` for directed graphs and for ``s < t`` for undirected graphs.
 
 
     References
@@ -109,7 +109,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
        https://sites.cs.ucsb.edu/~arlei/pubs/sdm18.pdf
     .. [4] Rami Puzis, Yuval Elovici, and Shlomi Dolev.
        "Fast algorithm for successive computation of group betweenness centrality."
-        https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709
+       https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709
 
     """
     GBC = []  # initialize betweenness
@@ -240,7 +240,7 @@ def prominent_group(
     G, k, weight=None, C=None, endpoints=False, normalized=True, greedy=False
 ):
     r"""Find the prominent group of size $k$ in graph $G$. The prominence of the
-     group is evaluated by the group betweenness centrality.
+    group is evaluated by the group betweenness centrality.
 
     Group betweenness centrality of a group of nodes $C$ is the sum of the
     fraction of all-pairs shortest paths that pass through any vertex in $C$
@@ -254,32 +254,34 @@ def prominent_group(
     those paths passing through some node in group $C$. Note that
     $(s, t)$ are not members of the group ($V-C$ is the set of nodes
     in $V$ that are not in $C$).
+
     Parameters
     ----------
     G : graph
-      A NetworkX graph.
+       A NetworkX graph.
 
     k : int
-      The number of nodes in the group.
+       The number of nodes in the group.
 
     normalized : bool, optional (default=True)
-      If True, group betweenness is normalized by `1/((|V|-|C|)(|V|-|C|-1))`
-      where `|V|` is the number of nodes in G and `|C|` is the number of nodes in C.
+       If True, group betweenness is normalized by ``1/((|V|-|C|)(|V|-|C|-1))``
+       where ``|V|`` is the number of nodes in G and ``|C|`` is the number of
+       nodes in C.
 
     weight : None or string, optional (default=None)
-      If None, all edge weights are considered equal.
-      Otherwise holds the name of the edge attribute used as weight.
+       If None, all edge weights are considered equal.
+       Otherwise holds the name of the edge attribute used as weight.
 
     endpoints : bool, optional (default=False)
-      If True include the endpoints in the shortest path counts.
+       If True include the endpoints in the shortest path counts.
 
     C : list or set, optional (default=None)
-        list of nodes which won't be candidates of the prominent group.
+       list of nodes which won't be candidates of the prominent group.
 
     greedy : bool, optional (default=False)
-        Using a naive greedy algorithm in order to find non-optimal prominent
-        group. For scale free networks the results are negligibly below the optimal
-         results.
+       Using a naive greedy algorithm in order to find non-optimal prominent
+       group. For scale free networks the results are negligibly below the optimal
+       results.
 
     Raises
     ------
@@ -303,7 +305,7 @@ def prominent_group(
     Group betweenness centrality is described in [1]_ and its importance discussed in [3]_.
     The algorithm is described in [2]_ and is based on techniques mentioned in [4]_.
 
-    The number of nodes in the group must be a maximum of n - 2 where `n`
+    The number of nodes in the group must be a maximum of ``n - 2`` where ``n``
     is the total number of nodes in the graph.
 
     For weighted graphs the edge weights must be greater than zero.
@@ -315,7 +317,7 @@ def prominent_group(
     between "u" and "v" are counted as two possible paths (one each
     direction) while undirected paths between "u" and "v" are counted
     as one path. Said another way, the sum in the expression above is
-    over all `s != t` for directed graphs and for `s < t` for undirected graphs.
+    over all ``s != t`` for directed graphs and for ``s < t`` for undirected graphs.
 
     References
     ----------
@@ -333,7 +335,7 @@ def prominent_group(
        https://sites.cs.ucsb.edu/~arlei/pubs/sdm18.pdf
     .. [4] Rami Puzis, Yuval Elovici, and Shlomi Dolev.
        "Fast algorithm for successive computation of group betweenness centrality."
-        https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709
+       https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709
     """
     import pandas as pd
     import numpy as np
