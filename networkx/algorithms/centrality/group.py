@@ -372,7 +372,7 @@ def prominent_group(
     DF_tree.nodes[1]["heu"] = 0
     for i in range(k):
         DF_tree.nodes[1]["heu"] += DF_tree.nodes[1]["cont"][DF_tree.nodes[1]["CL"][i]]
-    max_GBC, DF_tree, max_group = __dfbnb(
+    max_GBC, DF_tree, max_group = _dfbnb(
         G, k, DF_tree, max_GBC, 1, D, max_group, nodes, greedy
     )
 
@@ -409,7 +409,7 @@ def prominent_group(
     return max_GBC, max_group
 
 
-def __dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
+def _dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
     # stopping condition - if we found a group of size k and with higher GBC then prune
     if len(DF_tree.nodes[root]["GM"]) == k and DF_tree.nodes[root]["GBC"] > max_GBC:
         return DF_tree.nodes[root]["GBC"], DF_tree, DF_tree.nodes[root]["GM"]
@@ -424,12 +424,12 @@ def __dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
         return max_GBC, DF_tree, max_group
 
     # finding the heuristic of both children
-    node_p, node_m, DF_tree = __heuristic(k, root, DF_tree, D, nodes, greedy)
+    node_p, node_m, DF_tree = _heuristic(k, root, DF_tree, D, nodes, greedy)
 
     # finding the child with the bigger heuristic + GBC and expand
     # that node first if greedy then only expand the plus node
     if greedy:
-        max_GBC, DF_tree, max_group = __dfbnb(
+        max_GBC, DF_tree, max_group = _dfbnb(
             G, k, DF_tree, max_GBC, node_p, D, max_group, nodes, greedy
         )
 
@@ -437,23 +437,23 @@ def __dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
         DF_tree.nodes[node_p]["GBC"] + DF_tree.nodes[node_p]["heu"]
         > DF_tree.nodes[node_m]["GBC"] + DF_tree.nodes[node_m]["heu"]
     ):
-        max_GBC, DF_tree, max_group = __dfbnb(
+        max_GBC, DF_tree, max_group = _dfbnb(
             G, k, DF_tree, max_GBC, node_p, D, max_group, nodes, greedy
         )
-        max_GBC, DF_tree, max_group = __dfbnb(
+        max_GBC, DF_tree, max_group = _dfbnb(
             G, k, DF_tree, max_GBC, node_m, D, max_group, nodes, greedy
         )
     else:
-        max_GBC, DF_tree, max_group = __dfbnb(
+        max_GBC, DF_tree, max_group = _dfbnb(
             G, k, DF_tree, max_GBC, node_m, D, max_group, nodes, greedy
         )
-        max_GBC, DF_tree, max_group = __dfbnb(
+        max_GBC, DF_tree, max_group = _dfbnb(
             G, k, DF_tree, max_GBC, node_p, D, max_group, nodes, greedy
         )
     return max_GBC, DF_tree, max_group
 
 
-def __heuristic(k, root, DF_tree, D, nodes, greedy):
+def _heuristic(k, root, DF_tree, D, nodes, greedy):
     import numpy as np
 
     # This helper function add two nodes to DF_tree - one left son and the
