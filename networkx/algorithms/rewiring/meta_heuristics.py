@@ -3,6 +3,7 @@ from typing import Callable, Tuple
 import math
 import random
 
+
 def hill_climb_optimize(G, R, modify_graph, n_iter):
     """
     Optimize graph through a rewiring rule by using a
