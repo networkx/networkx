@@ -14,12 +14,12 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 
-def atlas6():
-    """Return the atlas of all connected graphs of 6 nodes or less.
+def atlas5():
+    """Return the atlas of all connected graphs of 5 nodes or less.
     Attempt to check for isomorphisms and remove.
     """
 
-    Atlas = nx.graph_atlas_g()[0:208]  # 208
+    Atlas = nx.graph_atlas_g()[0:52]
     # remove isolated nodes, only connected graphs are left
     U = nx.Graph()  # graph for union of all graphs in atlas
     for G in Atlas:
@@ -50,7 +50,7 @@ def iso(G1, glist):
     return False
 
 
-G = atlas6()
+G = atlas5()
 
 print(G)
 print(nx.number_connected_components(G), "connected components")

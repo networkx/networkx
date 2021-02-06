@@ -9,7 +9,7 @@ using WormNet v.3-GS.
 Data from: https://www.inetbio.org/wormnet/downloadnetwork.php
 """
 
-from random import sample
+import random
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -18,8 +18,9 @@ import matplotlib.pyplot as plt
 G = nx.read_edgelist("WormNet.v3.benchmark.txt")
 
 # remove randomly selected nodes (to make example fast)
-num_to_remove = int(len(G) / 1.5)
-nodes = sample(list(G.nodes), num_to_remove)
+num_to_remove = int(len(G) / 1.3)
+random.seed(8572312)
+nodes = random.sample(list(G.nodes), num_to_remove)
 G.remove_nodes_from(nodes)
 
 # remove low-degree nodes

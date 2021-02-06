@@ -15,7 +15,7 @@ import igraph as ig
 # NetworkX to igraph
 # ------------------
 
-G = nx.dense_gnm_random_graph(1000, 2000)
+G = nx.dense_gnm_random_graph(100, 200)
 
 # largest connected component
 components = nx.connected_components(G)
