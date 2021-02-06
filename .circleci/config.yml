@@ -10,6 +10,9 @@ jobs:
     steps:
       - checkout
 
+      - restore_cache:
+          key: deps1-{{ checksum "requirements/example.txt" }}
+
       - run:
           name: Update apt-get
           command: |
@@ -64,6 +67,11 @@ jobs:
           command: |
             source venv/bin/activate
             pip install -e .
+
+      - save_cache:
+          key: deps1-{{ checksum "requirements/example.txt" }}
+          paths:
+            - "venv"
 
       - run:
           name: Build docs
