@@ -362,14 +362,6 @@ If you're not sure how to do this or are having trouble, submit your pull reques
 anyway.
 We will help you create the tests and sort out any kind of problem during code review.
 
-General guidelines for writing good tests:
-
-- doctests always assume ``import networkx as nx`` so don't add that
-- Prefer pytest fixtures over classes with setup methods.
-- use the following decorators (``@pytest.mark.parametrize``, ``@pytest.mark.skipif``, ``@pytest.mark.xfail``, ``@pytest.mark.slow``)
-- use ``pytest.importskip`` for numpy, scipy, pandas, and matplotlib b/c of PyPy.
-- something about ``networkx/conftest.py``
-
 Adding examples
 ---------------
 
@@ -391,7 +383,6 @@ General guidelines for making a good gallery plot:
 * Add comments to explain things are aren't obvious from reading the code.
 * Describe the feature that you're showcasing and link to other relevant parts of the
   documentation.
-
 
 Bugs
 ----
