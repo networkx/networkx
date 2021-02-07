@@ -349,6 +349,8 @@ def partition_quality(G, partition):
     intra-community edges plus inter-community non-edges with the total
     number of potential edges.
 
+    This algorithm has complexity $O(C^2 + L)$ where C is the number of communities and L is the number of links.
+
     Parameters
     ----------
     G : NetworkX graph
@@ -357,12 +359,6 @@ def partition_quality(G, partition):
         Partition of the nodes of `G`, represented as a sequence of
         sets of nodes (blocks). Each block of the partition represents a
         community.
-
-    Complexity
-    ----------
-    O(C^2 + L)
-        C = number of communities
-        L = links
 
     Returns
     -------
