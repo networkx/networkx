@@ -46,14 +46,12 @@ def hill_climb_optimize(G: nx.Graph,
 
     # Monte Carlo Loop
     for _ in range(n_iter):
-        R_new = R_last
-
         # Try to rewire edge
         G_attempt = modify_graph(G_last.copy())
         R_attempt = R(G_attempt)
 
         # Try to perform a local optimization
-        delta_R = R_attempt - R_new
+        delta_R = R_attempt - R_last
         if delta_R > 0:
             R_last = R_attempt
             G_last = G_attempt
