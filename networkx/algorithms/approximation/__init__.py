@@ -20,6 +20,5 @@ from networkx.algorithms.approximation.ramsey import *
 from networkx.algorithms.approximation.steinertree import *
 from networkx.algorithms.approximation.traveling_salesman import *
 from networkx.algorithms.approximation.treewidth import *
-from networkx.algorithms.approximation.tsp import *
 from networkx.algorithms.approximation.vertex_cover import *
 from networkx.algorithms.approximation.maxcut import *
