@@ -265,7 +265,7 @@ def greedy_tsp(G, weight="weight", source=None):
     as Simulated Annealing, or Threshold Accepting.
 
     Time complexity:
-    It has a running time O(|E||V|^2)   ??This requires a complete graph. |E|==|V^2|
+    It has a running time $O(|E||V|^2)$   ??This requires a complete graph. $|E|==|V^2|$
     """
     if any(v not in G[u] for u in G for v in G if u != v):
         raise nx.NetworkXError("Not a complete graph. All node pairs must have edges.")
@@ -427,9 +427,9 @@ def simulated_annealing_tsp(
 
     Time complexity:
     For N_i iterations of the inner loop and N_o iterations of the
-    outer loop, this algorithm has running time O(|E||V|^2 + N_i * N_o * |V|)
+    outer loop, this algorithm has running time $O(|E||V|^2 + N_i * N_o * |V|)$
     when a greedy algorithm is used to construct an initial solution.
-    Otherwise it has a running time O(N_i * N_o * |V|).
+    Otherwise it has a running time $O(N_i * N_o * |V|)$.
 
     For more information and how algorithm is inspired see:
     http://en.wikipedia.org/wiki/Simulated_annealing
@@ -621,9 +621,9 @@ def threshold_accepting_tsp(
     be accepting with probability p.
 
     Time complexity:
-    It has a running time 0(|E||V|^2 + m * n * |V|) when a greedy
+    It has a running time $O(|E||V|^2 + m * n * |V|)$ when a greedy
     algorithm is used to construct an initial solution, otherwise
-    it has a running time O(m * n * |V|) where m and n are the number
+    it has a running time $O(m * n * |V|)$ where m and n are the number
     of iterations of outer and inner loop respectively.
 
     For more information and how algorithm is inspired see:
