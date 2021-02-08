@@ -53,7 +53,7 @@ def christofides(G, weight="weight", tree=None):
     """Approximate a solution of the traveling salesman problem
 
     Compute a 3/2-approximation of the traveling salesman problem
-    in a complete undirected graph using Christofides [1] algorithm.
+    in a complete undirected graph using Christofides [1]_ algorithm.
 
     Parameters
     ----------
@@ -70,14 +70,15 @@ def christofides(G, weight="weight", tree=None):
 
     Returns
     -------
-    Generator of edges forming a 3/2-approximation of the minimal
-    Hamiltonian cycle.
+    Generator
+        Generator of edges forming a 3/2-approximation of the minimal
+        Hamiltonian cycle.
 
     References
     ----------
     .. [1] Christofides, Nicos. "Worst-case analysis of a new heuristic for
-      the travelling salesman problem." No. RR-388. Carnegie-Mellon Univ
-      Pittsburgh Pa Management Sciences Research Group, 1976.
+       the travelling salesman problem." No. RR-388. Carnegie-Mellon Univ
+       Pittsburgh Pa Management Sciences Research Group, 1976.
     """
     # Check that G is a complete graph
     for e in nx.selfloop_edges(G):
