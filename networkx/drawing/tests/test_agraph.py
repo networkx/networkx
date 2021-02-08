@@ -30,11 +30,12 @@ class TestAGraph:
         H = nx.nx_agraph.from_agraph(A)
         self.assert_equal(G, H)
 
-        fname = tempfile.mktemp()
+        fd, fname = tempfile.mkstemp()
         nx.drawing.nx_agraph.write_dot(H, fname)
         Hin = nx.nx_agraph.read_dot(fname)
-        os.unlink(fname)
         self.assert_equal(H, Hin)
+        os.close(fd)
+        os.unlink(fname)
 
         (fd, fname) = tempfile.mkstemp()
         with open(fname, "w") as fh:
