@@ -13,7 +13,9 @@ Examples
 
 See Also
 --------
-Pygraphviz: http://pygraphviz.github.io/
+ - Pygraphviz: http://pygraphviz.github.io/
+ - Graphviz:      https://www.graphviz.org
+ - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
 import os
 import tempfile

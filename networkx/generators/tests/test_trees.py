@@ -1,5 +1,4 @@
 import networkx as nx
-from networkx.generators.trees import NIL
 from networkx.utils import arbitrary_element
 
 
@@ -10,7 +9,8 @@ class TestPrefixTree:
         # This example is from the Wikipedia article "Trie"
         # <https://en.wikipedia.org/wiki/Trie>.
         strings = ["a", "to", "tea", "ted", "ten", "i", "in", "inn"]
-        T, root = nx.prefix_tree(strings)
+        T = nx.prefix_tree(strings)
+        root, NIL = 0, -1
 
         def source_label(v):
             return T.nodes[v]["source"]
@@ -65,7 +65,7 @@ class TestPrefixTree:
         assert source_label(tea) == "a"
         assert source_label(ted) == "d"
         assert source_label(ten) == "n"
-        assert source_label(NIL) == NIL
+        assert source_label(NIL) == "NIL"
 
 
 def test_random_tree():
