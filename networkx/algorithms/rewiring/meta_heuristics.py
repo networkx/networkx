@@ -4,7 +4,10 @@ import math
 import random
 
 
-def hill_climb_optimize(G, R, modify_graph, n_iter):
+def hill_climb_optimize(G: nx.Graph,
+                        R: Callable[[nx.Graph], float],
+                        modify_graph: Callable[[nx.Graph], nx.Graph],
+                        n_iter=100):
     """
     Optimize graph through a rewiring rule by using a
     hill climbing metaheuristic.
@@ -36,9 +39,26 @@ def hill_climb_optimize(G, R, modify_graph, n_iter):
     2020 IEEE International Conference on Systems, Man, and Cybernetics (SMC), Toronto, ON, 2020, pp. 4051-4057
     doi: 10.1109/SMC42975.2020.9283269.
     """
-    return simulated_annealing_optimize(
-        G, R, modify_graph, n_iter=n_iter, T_max=math.inf, T_decay=0.0, max_no_improve=1
-    )
+
+    # Set initial state
+    G_last = G.copy()
+    R_last = R(G_last)
+
+    # Monte Carlo Loop
+    for _ in range(n_iter):
+        R_new = R_last
+
+        # Try to rewire edge
+        G_attempt = modify_graph(G_last.copy())
+        R_attempt = R(G_attempt)
+
+        # Try to perform a local optimization
+        delta_R = R_attempt - R_new
+        if delta_R > 0:
+            R_last = R_attempt
+            G_last = G_attempt
+
+    return (R_last, G_last)
 
 
 def simulated_annealing_optimize(
