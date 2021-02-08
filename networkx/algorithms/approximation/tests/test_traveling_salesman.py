@@ -20,13 +20,13 @@ def test_christofides_hamiltonian():
         G[u][v]["weight"] = random.randint(0, 10)
 
     H = nx.Graph()
-    H.add_edges_from(nx_app.christofides(G))
+    H.add_edges_from(pairwise(nx_app.christofides(G)))
     H.remove_edges_from(nx.find_cycle(H))
     assert len(H.edges) == 0
 
     tree = nx.minimum_spanning_tree(G, weight="weight")
     H = nx.Graph()
-    H.add_edges_from(nx_app.christofides(G, tree))
+    H.add_edges_from(pairwise(nx_app.christofides(G, tree)))
     H.remove_edges_from(nx.find_cycle(H))
     assert len(H.edges) == 0
 
@@ -357,3 +357,12 @@ def test_TSP_weighted():
         [6, 7, 8, 0, 1, 2, 3, 2, 1, 0, 8, 7, 6],
     )
     assert cycle in expected
+
+    cycle_christofides = tsp(G, [3, 6], weight="weight", method=nx_app.christofides)
+    assert cycle == cycle_christofides
+    cycle_greedy = tsp(G, [3, 6], weight="weight", method=nx_app.greedy_tsp)
+    assert cycle == cycle_greedy
+    cycle_SA = tsp(G, [3, 6], weight="weight", method=nx_app.simulated_annealing_tsp)
+    assert cycle == cycle_SA
+    cycle_TA = tsp(G, [3, 6], weight="weight", method=nx_app.threshold_accepting_tsp)
+    assert cycle == cycle_TA

@@ -1,7 +1,7 @@
 """
-================================
+=================================
 Travelling Salesman Problem (TSP)
-================================
+=================================
 
 Implementation of approximate algorithms
 for solving and approximating the TSP problem.
@@ -104,11 +104,11 @@ def _shortcutting(circuit):
     for u, v in circuit:
         if v in nodes:
             continue
-        yield (nodes[-1] if nodes else u, v)
         if not nodes:
             nodes.append(u)
         nodes.append(v)
-    yield (nodes[-1], nodes[0])
+    nodes.append(nodes[0])
+    return nodes
 
 
 @not_implemented_for("directed")
@@ -178,22 +178,25 @@ def traveling_salesman_problem(
             if u == v:
                 continue
             GG.add_edge(u, v, weight=dist[u][v])
-    best_GG = list(christofides(GG, weight=weight))
+    best_GG = method(GG, weight=weight)
 
     if not cycle:
         # find and remove the biggest edge
         biggest_edge = None
         length_biggest = float("-inf")
-        for edge in best_GG:
-            u, v = edge[:2]
+        u = best_GG[0]
+        for v in best_GG[1:]:
             if dist[u][v] > length_biggest:
-                biggest_edge = edge
+                biggest_edge = (u, v)
                 length_biggest = dist[u][v]
-        pos = best_GG.index(biggest_edge)
-        best_GG = best_GG[pos + 1 :] + best_GG[:pos]
+        u, v = biggest_edge
+        pos = best_GG.index(u) + 1
+        while best_GG[pos] != v:
+            pos = best_GG[pos:].index(u) + 1
+        best_GG = best_GG[pos:] + best_GG[:pos]
 
     best_path = []
-    for u, v in best_GG:
+    for u, v in nx.utils.pairwise(best_GG):
         best_path.extend(path[u][v][:-1])
     best_path.append(v)
     return best_path
@@ -628,7 +631,7 @@ def threshold_accepting_tsp(
 
     See Also
     --------
-    simulated_annealing_tsp()
+    simulated_annealing_tsp
 
     """
     if cycle is None:
