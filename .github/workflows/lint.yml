@@ -17,11 +17,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Before install
-        run: |
-          python3 -m venv ~/venv
-          source ~/venv/bin/activate
-
       - name: Install packages
         run: |
           pip install --upgrade pip wheel setuptools

@@ -10,9 +10,6 @@ NetworkX
 .. image:: https://github.com/networkx/networkx/workflows/test/badge.svg?branch=master
   :target: https://github.com/networkx/networkx/actions?query=workflow%3A%22test%22
 
-.. image:: https://ci.appveyor.com/api/projects/status/github/networkx/networkx?branch=master&svg=true
-   :target: https://ci.appveyor.com/project/dschult/networkx-pqott
-
 .. image:: https://codecov.io/gh/networkx/networkx/branch/master/graph/badge.svg
    :target: https://app.codecov.io/gh/networkx/networkx/branch/master
 

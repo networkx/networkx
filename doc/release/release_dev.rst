@@ -46,11 +46,15 @@ API Changes
   large graphs.
 - [`#4384 <https://github.com/networkx/networkx/pull/4384>`_]
   Added edge_key parameter for MultiGraphs in to_pandas_edgelist
-
 - [`#4466 <https://github.com/networkx/networkx/pull/4466>`_]
   `relabel_nodes` used to raise a KeyError for a key in `mapping` that is not
   a node in the graph, but it only did this when `copy` was `False`. Now
   any keys in `mapping` which are not in the graph are ignored.
+- [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
+  `prefix_tree` used to return `tree, root` but root is now always 0
+  instead of a UUID generate string. So the function returns `tree`.
+- [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
+  The variable `NIL` ="NIL" has been removed from `networkx.generators.trees`
 
 Deprecations
 ------------
@@ -81,6 +85,8 @@ Deprecations
   Deprecate ``consume``.
 - [`#4448 <https://github.com/networkx/networkx/pull/4448>`_]
   Deprecate ``iterable``.
+- [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
+  Deprecate ``generate_unique_node``.
 
 Contributors to this release
 ----------------------------

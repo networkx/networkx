@@ -11,6 +11,7 @@ Helper Functions
 .. autosummary::
    :toctree: generated/
 
+   arbitrary_element
    is_string_like
    flatten
    iterable

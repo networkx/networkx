@@ -26,7 +26,11 @@ import networkx as nx
 
 
 def is_string_like(obj):  # from John Hunter, types-free version
-    """Check if obj is string."""
+    """Check if obj is string.
+
+    .. deprecated:: 2.6
+        This is deprecated and will be removed in NetworkX v3.0.
+    """
     msg = (
         "is_string_like is deprecated and will be removed in 3.0."
         "Use isinstance(obj, str) instead."
@@ -36,7 +40,11 @@ def is_string_like(obj):  # from John Hunter, types-free version
 
 
 def iterable(obj):
-    """ Return True if obj is iterable with a well-defined len()."""
+    """Return True if obj is iterable with a well-defined len().
+
+    .. deprecated:: 2.6
+        This is deprecated and will be removed in NetworkX v3.0.
+    """
     msg = (
         "iterable is deprecated and will be removed in 3.0."
         "Use isinstance(obj, (collections.abc.Iterable, collections.abc.Sized)) instead."
@@ -107,10 +115,10 @@ def make_list_of_ints(sequence):
 
 
 def is_list_of_ints(intlist):
-    """
-    Return True if list is a list of ints.
+    """Return True if list is a list of ints.
 
     .. deprecated:: 2.6
+        This is deprecated and will be removed in NetworkX v3.0.
     """
     msg = (
         "is_list_of_ints is deprecated and will be removed in 3.0."
@@ -126,15 +134,25 @@ def is_list_of_ints(intlist):
 
 
 def make_str(x):
-    """Returns the string representation of t."""
+    """Returns the string representation of t.
+
+    .. deprecated:: 2.6
+        This is deprecated and will be removed in NetworkX v3.0.
+    """
     msg = "make_str is deprecated and will be removed in 3.0. Use str instead."
     warnings.warn(msg, DeprecationWarning)
     return str(x)
 
 
 def generate_unique_node():
-    """ Generate a unique node label."""
-    return str(uuid.uuid1())
+    """Generate a unique node label.
+
+    .. deprecated:: 2.6
+        This is deprecated and will be removed in NetworkX v3.0.
+    """
+    msg = "generate_unique_node is deprecated and will be removed in 3.0. Use uuid.uuid4 instead."
+    warnings.warn(msg, DeprecationWarning)
+    return str(uuid.uuid4())
 
 
 def default_opener(filename):
@@ -211,13 +229,10 @@ def dict_to_numpy_array1(d, mapping=None):
 
 
 def is_iterator(obj):
-    """Returns True if and only if the given object is an iterator
-    object.
+    """Returns True if and only if the given object is an iterator object.
 
     .. deprecated:: 2.6.0
-
-       Deprecated in favor of ``isinstance(obj, collections.abc.Iterator)``
-
+        Deprecated in favor of ``isinstance(obj, collections.abc.Iterator)``
     """
     msg = (
         "is_iterator is deprecated and will be removed in version 3.0. "
@@ -232,22 +247,63 @@ def arbitrary_element(iterable):
     """Returns an arbitrary element of `iterable` without removing it.
 
     This is most useful for "peeking" at an arbitrary element of a set,
-    but can be used for any list, dictionary, etc., as well::
+    but can be used for any list, dictionary, etc., as well.
 
-        >>> arbitrary_element({3, 2, 1})
+    Parameters
+    ----------
+    iterable : `abc.collections.Iterable` instance
+        Any object that implements ``__iter__``, e.g. set, dict, list, tuple,
+        etc.
+
+    Returns
+    -------
+    The object that results from ``next(iter(iterable))``
+
+    Raises
+    ------
+    ValueError
+        If `iterable` is an iterator (because the current implementation of
+        this function would consume an element from the iterator).
+
+    Examples
+    --------
+    Arbitrary elements from common Iterable objects:
+
+    >>> arbitrary_element([1, 2, 3])  # list
+    1
+    >>> arbitrary_element((1, 2, 3))  # tuple
+    1
+    >>> arbitrary_element({1, 2, 3})  # set
+    1
+    >>> d = {k: v for k, v in zip([1, 2, 3], [3, 2, 1])}
+    >>> arbitrary_element(d)  # dict_keys
+    1
+    >>> arbitrary_element(d.values())   # dict values
+    3
+
+    `str` is also an Iterable:
+
+    >>> arbitrary_element("hello")
+    'h'
+
+    :exc:`ValueError` is raised if `iterable` is an iterator:
+
+    >>> iterator = iter([1, 2, 3])  # Iterator, *not* Iterable
+    >>> arbitrary_element(iterator)
+    Traceback (most recent call last):
+        ...
+    ValueError: cannot return an arbitrary item from an iterator
+
+    Notes
+    -----
+    This function does not return a *random* element. If `iterable` is
+    ordered, sequential calls will return the same value::
+
+        >>> l = [1, 2, 3]
+        >>> arbitrary_element(l)
         1
-        >>> arbitrary_element("hello")
-        'h'
-
-    This function raises a :exc:`ValueError` if `iterable` is an
-    iterator (because the current implementation of this function would
-    consume an element from the iterator)::
-
-        >>> iterator = iter([1, 2, 3])
-        >>> arbitrary_element(iterator)
-        Traceback (most recent call last):
-            ...
-        ValueError: cannot return an arbitrary item from an iterator
+        >>> arbitrary_element(l)
+        1
 
     """
     if isinstance(iterable, Iterator):
@@ -258,7 +314,11 @@ def arbitrary_element(iterable):
 
 # Recipe from the itertools documentation.
 def consume(iterator):
-    "Consume the iterator entirely."
+    """Consume the iterator entirely.
+
+    .. deprecated:: 2.6
+        This is deprecated and will be removed in NetworkX v3.0.
+    """
     # Feed the entire iterator into a zero-length deque.
     msg = (
         "consume is deprecated and will be removed in version 3.0. "
