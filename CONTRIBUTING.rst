@@ -3,6 +3,13 @@
 Contributor Guide
 =================
 
+.. note::
+   This document assumes some familiarity with contributing to open source
+   scientific Python projects using GitHub pull requests. If this does not
+   describe you, you may first want to see the :ref:`contributing_faq`.
+
+.. _dev_workflow:
+
 Development Workflow
 --------------------
 
