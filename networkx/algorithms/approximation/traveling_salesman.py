@@ -514,15 +514,15 @@ def threshold_accepting_tsp(
 
     Parameters
     ----------
-    G: Graph
-        The Graph should be a complete weighted undirected graph.
+    G : Graph
+        `G` should be a complete weighted undirected graph.
         The distance between all pairs of nodes should be included.
 
     weight: string, optional (default="weight")
         Edge data key corresponding to the edge weight
 
     source : node, optional (default: first node in list(G))
-        Starting node.  If None, defaults to `next(iter(G))`
+        Starting node.  If None, defaults to ``next(iter(G))``
 
     threshold : int, optional (default=1)
         The algorithm's threshold parameter. It represents the initial
@@ -533,18 +533,19 @@ def threshold_accepting_tsp(
         new (neighbor) solution. The algorithm checks if this
         neighbor solution is better than the best solution so far.
         Two moves are available:
+
         - 1-1 exchange which transposes the position
-        of two elements of the current solution.
-        For example if we apply 1-1 exchange in the solution
-        A = [3, 2, 1, 4, 3]
-        we can get the following by the transposition of 1 and 4 elements.
-        A' = [3, 2, 4, 1, 3]
+          of two elements of the current solution.
+          For example if we apply 1-1 exchange in the solution
+          ``A = [3, 2, 1, 4, 3]``
+          we can get the following by the transposition of 1 and 4 elements:
+          ``A' = [3, 2, 4, 1, 3]``
         - 1-0 exchange which moves an element of solution
-        in a new position.
-        For example if we apply 1-0 exchange in the solution
-        A = [3, 2, 1, 4, 3]
-        we can transfer the fourth element to the second position.
-        A' = [3, 4, 2, 1, 3]
+          in a new position.
+          For example if we apply 1-0 exchange in the solution
+          ``A = [3, 2, 1, 4, 3]``
+          we can transfer the fourth element to the second position:
+          ``A' = [3, 4, 2, 1, 3]``
 
     tolerance : int, optional (default=10)
         The stopping condition for number of consecutive iterations of
@@ -575,7 +576,7 @@ def threshold_accepting_tsp(
     Raises
     ------
     NetworkXError
-        If G is either not complete or not weighted,
+        If `G` is either not complete or not weighted,
         the algorithm raises an exception.
 
     Examples
@@ -611,21 +612,21 @@ def threshold_accepting_tsp(
     This algorithm needs an initial solution. This solution can be
     constructed by a simple greedy algorithm. At every iteration, it
     selects thoughtfully a neighbor solution.
-    Consider c(x) cost of current solution and c(x') cost of
+    Consider $c(x)$ cost of current solution and $c(x')$ cost of
     neighbor solution.
-    If c(x') - c(x) <= threshold then neighbor solution becomes current
-    solution for the next iteration, where threshold is named threshold.
+    If $c(x') - c(x) <= threshold$ then the neighbor solution becomes the current
+    solution for the next iteration, where the threshold is named threshold.
 
-    In comparison to Simulated Annealing algorithm, Threshold
-    Accepting algorithm does not accept very low quality solutions.
-    (due to the presence of the threshold value.) In case of
+    In comparison to the Simulated Annealing algorithm, the Threshold
+    Accepting algorithm does not accept very low quality solutions
+    (due to the presence of the threshold value). In the case of
     Simulated Annealing, even a very low quality solution can
-    be accepting with probability p.
+    be accepted with probability $p$.
 
     Time complexity:
     It has a running time $O(|E||V|^2 + m * n * |V|)$ when a greedy
     algorithm is used to construct an initial solution, otherwise
-    it has a running time $O(m * n * |V|)$ where m and n are the number
+    it has a running time $O(m * n * |V|)$ where $m$ and $n$ are the number
     of iterations of outer and inner loop respectively.
 
     For more information and how algorithm is inspired see:
