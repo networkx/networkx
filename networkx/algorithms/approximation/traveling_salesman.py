@@ -222,7 +222,7 @@ def greedy_tsp(G, weight="weight", source=None):
         Edge data key corresponding to the edge weight
 
     source : node, optional (default: first node in list(G))
-        Starting node.  If None, defaults to `next(iter(G))`
+        Starting node.  If None, defaults to ``next(iter(G))``
 
     Returns
     -------
@@ -233,7 +233,7 @@ def greedy_tsp(G, weight="weight", source=None):
     Raises
     ------
     NetworkXError
-        If G is either not complete or not weighted,
+        If `G` is either not complete or not weighted,
         the algorithm raises an exception.
 
     Examples
@@ -255,9 +255,10 @@ def greedy_tsp(G, weight="weight", source=None):
     Notes
     -----
     This implementation of a greedy algorithm is based on the following:
+
     - The algorithm adds a node to the solution at every iteration.
     - The algorithm selects a node not already in the cycle whose connection
-    to the previous node adds the least cost to the cycle.
+      to the previous node adds the least cost to the cycle.
 
     A greedy algorithm does not always give the best solution.
     However, it can construct a first feasible solution which can
