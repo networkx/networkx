@@ -308,9 +308,9 @@ def simulated_annealing_tsp(
 
     This function uses simulated annealing to approximate the minimal cost
     cycle through the nodes. Starting from a suboptimal solution, simulated
-    annealing perturbs that solution, occasionally accepting changes the make
+    annealing perturbs that solution, occasionally accepting changes that make
     the solution worse to escape from a locally optimal solution. The chance
-    of accepting such changes decrease over the iterations to encourage
+    of accepting such changes decreases over the iterations to encourage
     an optimal result.  In summary, the function returns a cycle starting
     at `source` for which the total cost is minimized. It also returns the cost.
 
@@ -321,15 +321,15 @@ def simulated_annealing_tsp(
 
     Parameters
     ----------
-    G: Graph
-        The Graph should be a complete weighted undirected graph.
+    G : Graph
+        `G` should be a complete weighted undirected graph.
         The distance between all pairs of nodes should be included.
 
-    weight: string, optional (default="weight")
+    weight : string, optional (default="weight")
         Edge data key corresponding to the edge weight
 
     source : node, optional (default: first node in list(G))
-        Starting node.  If None, defaults to `next(iter(G))`
+        Starting node.  If None, defaults to ``next(iter(G))``
 
     temp : int, optional (default=100)
         The algorithm's temperature parameter. It represents the initial
@@ -340,18 +340,19 @@ def simulated_annealing_tsp(
         new (neighbor) solution. The algorithm checks if this
         neighbor solution is better than the best solution so far.
         Two moves are available:
+
         - 1-1 exchange which transposes the position
-        of two elements of the current solution.
-        For example if we apply 1-1 exchange in the solution
-        A = [3, 2, 1, 4, 3]
-        we can get the following by the transposition of 1 and 4 elements.
-        A' = [3, 2, 4, 1, 3]
+          of two elements of the current solution.
+          For example if we apply 1-1 exchange in the solution
+          ``A = [3, 2, 1, 4, 3]``
+          we can get the following by the transposition of 1 and 4 elements:
+          ``A' = [3, 2, 4, 1, 3]``
         - 1-0 exchange which moves an element of solution
-        in a new position.
-        For example if we apply 1-0 exchange in the solution
-        A = [3, 2, 1, 4, 3]
-        we can transfer the fourth element to the second position.
-        A' = [3, 4, 2, 1, 3]
+          in a new position.
+          For example if we apply 1-0 exchange in the solution
+          ``A = [3, 2, 1, 4, 3]``
+          we can transfer the fourth element to the second position:
+          ``A' = [3, 4, 2, 1, 3]``
 
     tolerance : int, optional (default=10)
         The stopping condition for number of consecutive iterations of
@@ -381,7 +382,7 @@ def simulated_annealing_tsp(
     Raises
     ------
     NetworkXError
-        If G is either not complete or not weighted,
+        If `G` is either not complete or not weighted,
         the algorithm raises an exception.
 
     Examples
@@ -417,14 +418,14 @@ def simulated_annealing_tsp(
     This algorithm needs an initial solution. If not provided, it is
     constructed by a simple greedy algorithm. At every iteration, the
     algorithm selects thoughtfully a neighbor solution.
-    Consider c(x) cost of current solution and c(x') cost of
+    Consider c(x) cost of current solution and c(x') cost of a
     neighbor solution.
-    If c(x') - c(x) <= 0 then neighbor solution becomes current
-    solution for the next iteration. Otherwise, algorithm accepts
+    If c(x') - c(x) <= 0 then the neighbor solution becomes the current
+    solution for the next iteration. Otherwise, the algorithm accepts
     the neighbor solution with probability p = exp - ([c(x') - c(x)] / temp).
     Otherwise the current solution is retained.
 
-    Temp is a parameter of the algorithm and represents temperature.
+    `temp` is a parameter of the algorithm and represents temperature.
 
     Time complexity:
     For N_i iterations of the inner loop and N_o iterations of the
