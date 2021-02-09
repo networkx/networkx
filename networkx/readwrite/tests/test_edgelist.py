@@ -265,6 +265,14 @@ class TestEdgelist:
         fh.seek(0)
         assert fh.read() == b"1 2 2.0\n2 3 3.0\n"
 
+    def test_write_edgelist_with_information_line(self):
+        fh = io.BytesIO()
+        G = nx.OrderedGraph()
+        G.add_edges_from([(1, 2), (2, 3)])
+        nx.write_edgelist(G, fh, data=False, information_line=True)
+        fh.seek(0)
+        assert fh.read() == b"3 2\n1 2\n2 3\n"
+
     def test_unicode(self):
         G = nx.Graph()
         name1 = chr(2344) + chr(123) + chr(6543)
