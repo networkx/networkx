@@ -418,17 +418,17 @@ def simulated_annealing_tsp(
     This algorithm needs an initial solution. If not provided, it is
     constructed by a simple greedy algorithm. At every iteration, the
     algorithm selects thoughtfully a neighbor solution.
-    Consider c(x) cost of current solution and c(x') cost of a
+    Consider $c(x)$ cost of current solution and $c(x')$ cost of a
     neighbor solution.
-    If c(x') - c(x) <= 0 then the neighbor solution becomes the current
+    If $c(x') - c(x) <= 0$ then the neighbor solution becomes the current
     solution for the next iteration. Otherwise, the algorithm accepts
-    the neighbor solution with probability p = exp - ([c(x') - c(x)] / temp).
+    the neighbor solution with probability $p = exp - ([c(x') - c(x)] / temp)$.
     Otherwise the current solution is retained.
 
     `temp` is a parameter of the algorithm and represents temperature.
 
     Time complexity:
-    For N_i iterations of the inner loop and N_o iterations of the
+    For $N_i$ iterations of the inner loop and $N_o$ iterations of the
     outer loop, this algorithm has running time $O(|E||V|^2 + N_i * N_o * |V|)$
     when a greedy algorithm is used to construct an initial solution.
     Otherwise it has a running time $O(N_i * N_o * |V|)$.
