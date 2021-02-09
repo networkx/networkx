@@ -3,7 +3,6 @@ A package for reading and writing graphs in various formats.
 
 """
 from networkx.readwrite.adjlist import *
-from networkx.readwrite.dimacs import *
 from networkx.readwrite.edgelist import *
 from networkx.readwrite.gexf import *
 from networkx.readwrite.gml import *
