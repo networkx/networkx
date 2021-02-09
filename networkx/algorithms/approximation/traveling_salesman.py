@@ -32,11 +32,6 @@ important in operations research and theoretical computer science.
 
 http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """
-"""Approximate solutions to Traveling Salesman Problems
-
-The Christofides algorithm provides a 3/2-approximation of TSP.
-
-"""
 import math
 import networkx as nx
 from networkx.utils import py_random_state, not_implemented_for
