@@ -7,6 +7,7 @@ Implementation of approximate algorithms
 for solving and approximating the TSP problem.
 
 Categories of algorithms which are implemented:
+
 - Christofides (provides a 3/2-approximation of TSP)
 - Greedy
 - Simulated Annealing (SA)
@@ -15,13 +16,14 @@ Categories of algorithms which are implemented:
 The Travelling Salesman Problem tries to find, given the weight
 (distance) between all points where a salesman has to visit, the
 route so that:
+
 - The total distance (cost) which the salesman travels is minimized.
 - The salesman returns to the starting point.
-- Not that for a complete graph, the salesman visits each point once.
+- Note that for a complete graph, the salesman visits each point once.
 
 The function `travelling_salesman_problem` allows for incomplete
 graphs by finding all-pairs shortest paths, effectively converting
-the problem toa complete graph problem. It calls one of the
+the problem to a complete graph problem. It calls one of the
 approximate methods on that problem and then converts the result
 back to the original graph using the previously found shortest paths.
 
@@ -33,6 +35,7 @@ http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """Approximate solutions to Traveling Salesman Problems
 
 The Christofides algorithm provides a 3/2-approximation of TSP.
+
 """
 import math
 import networkx as nx
