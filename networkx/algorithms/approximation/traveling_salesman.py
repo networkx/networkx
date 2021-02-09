@@ -114,7 +114,7 @@ def _shortcutting(circuit):
 def traveling_salesman_problem(
     G, nodes=None, weight=None, cycle=True, method=christofides
 ):
-    """Find the shortest path in G connecting specified nodes
+    """Find the shortest path in `G` connecting specified nodes
 
     This function allows approximate solution to the traveling salesman
     problem on networks that are not complete graphs and/or where the
@@ -122,45 +122,46 @@ def traveling_salesman_problem(
 
     This function proceeds in two steps. First, it creates a complete
     graph using the all-pairs shortest_paths between nodes in `nodes`.
-    Edges weights in the new graph are the lengths of the paths
+    Edge weights in the new graph are the lengths of the paths
     between each pair of nodes in the original graph.
-    Second, an algorithm (default: christofides) is used to approximate
-    the minimal hamiltonian cycle on this new graph.
+    Second, an algorithm (default: `christofides`) is used to approximate
+    the minimal Hamiltonian cycle on this new graph.
 
-    This function then turns that hamiltonian cycle through `nodes`
+    This function then turns that Hamiltonian cycle through `nodes`
     into a cycle on the original graph using shortest paths between
     nodes. It then returns the minimal cycle through `nodes` in `G`.
-    If `cycle is False`, the biggest weight edge is removed to make a path.
+    If `cycle` is ``False``, the biggest weight edge is removed to make a path.
 
     Parameters
     ----------
     G : NetworkX graph
       Undirected possibly weighted graph
 
-    nodes : sequence of nodes (default=G.nodes)
-      sequence (list, set, etc) of nodes to visit
+    nodes : collection of nodes (default=G.nodes)
+      collection (list, set, etc.) of nodes to visit
 
-    weight : string optional (default=None)
+    weight : string, optional (default=None)
       The name of the edge attribute to use for edge weights.
       Edge weights default to 1 if the weight attribute is not present.
       If None, every edge has weight 1.
 
     cycle : bool (default: True)
-      Indicates whether a cycle should be returned, or a path
+      Indicates whether a cycle should be returned, or a path.
       Note: the cycle is the approximate minimal cycle.
       The path simply removes the biggest edge in that cycle.
 
     method : function (default: christofides)
       A function that returns a cycle on all nodes and approximates
-      the solution to the transeling salesman problem on a complete
+      the solution to the traveling salesman problem on a complete
       graph. The returned cycle is then used to find a corresponding
-      solution on `G`. The function `method` should take inputs
-      `G`, and `weight` and return a list of nodes along the cycle.
+      solution on `G`. `method` should be callable; take inputs
+      `G`, and `weight`; and return a list of nodes along the cycle.
 
     Returns
     -------
-    list of nodes in `G` along a path with a
-    3/2-approximation of the minimal path through `nodes`.
+    list
+        List of nodes in `G` along a path with a 3/2-approximation of the minimal
+        path through `nodes`.
     """
     if nodes is None:
         nodes = list(G.nodes)
