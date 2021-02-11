@@ -39,6 +39,13 @@ def non_randomness(G, k=None):
         Non-randomness, Relative non-randomness w.r.t.
         Erdos Renyi random graphs.
 
+    Raises
+    ------
+    NetworkXException
+        if the input graph is not connected.
+    NetworkXError
+        if the input graph contains self-loops.
+
     Examples
     --------
     >>> G = nx.karate_club_graph()
