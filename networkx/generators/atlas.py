@@ -21,7 +21,7 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 #: The path to the data file containing the graph edge lists.
 #:
-#: This is the absolute filename of the gzipped text file containing the
+#: This is the absolute path of the gzipped text file containing the
 #: edge list for each graph in the atlas. The file contains one entry
 #: per graph in the atlas, in sequential order, starting from graph
 #: number 0 and extending through graph number 1252 (see

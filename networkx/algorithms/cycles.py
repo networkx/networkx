@@ -21,7 +21,7 @@ __all__ = [
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def cycle_basis(G, root=None):
-    """ Returns a list of cycles which form a basis for cycles of G.
+    """Returns a list of cycles which form a basis for cycles of G.
 
     A basis for cycles of a network is a minimal collection of
     cycles such that any cycle in the network can be written
@@ -499,7 +499,7 @@ def find_cycle(G, source=None, orientation=None):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def minimum_cycle_basis(G, weight=None):
-    """ Returns a minimum weight cycle basis for G
+    """Returns a minimum weight cycle basis for G
 
     Minimum weight means a cycle basis for which the total weight
     (length for unweighted graphs) of all the cycles is minimum.

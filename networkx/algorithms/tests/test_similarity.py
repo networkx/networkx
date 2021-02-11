@@ -5,6 +5,7 @@ from networkx.algorithms.similarity import (
     graph_edit_distance,
     optimal_edit_paths,
     optimize_graph_edit_distance,
+    _n_choose_k,
 )
 from networkx.generators.classic import (
     circular_ladder_graph,
@@ -37,10 +38,9 @@ def getCanonical():
 class TestSimilarity:
     @classmethod
     def setup_class(cls):
-        global numpy
-        global scipy
-        numpy = pytest.importorskip("numpy")
-        scipy = pytest.importorskip("scipy")
+        global np
+        np = pytest.importorskip("numpy")
+        pytest.importorskip("scipy")
 
     def test_graph_edit_distance_roots_and_timeout(self):
         G0 = nx.star_graph(5)
@@ -652,7 +652,7 @@ class TestSimilarity:
 
     def test_simrank_numpy_no_source_no_target(self):
         G = nx.cycle_graph(5)
-        expected = numpy.array(
+        expected = np.array(
             [
                 [
                     1.0,
@@ -692,11 +692,11 @@ class TestSimilarity:
             ]
         )
         actual = nx.simrank_similarity_numpy(G)
-        numpy.testing.assert_allclose(expected, actual, atol=1e-7)
+        np.testing.assert_allclose(expected, actual, atol=1e-7)
 
     def test_simrank_numpy_source_no_target(self):
         G = nx.cycle_graph(5)
-        expected = numpy.array(
+        expected = np.array(
             [
                 1.0,
                 0.3947180735764555,
@@ -706,10 +706,127 @@ class TestSimilarity:
             ]
         )
         actual = nx.simrank_similarity_numpy(G, source=0)
-        numpy.testing.assert_allclose(expected, actual, atol=1e-7)
+        np.testing.assert_allclose(expected, actual, atol=1e-7)
 
     def test_simrank_numpy_source_and_target(self):
         G = nx.cycle_graph(5)
         expected = 1.0
         actual = nx.simrank_similarity_numpy(G, source=0, target=0)
-        numpy.testing.assert_allclose(expected, actual, atol=1e-7)
+        np.testing.assert_allclose(expected, actual, atol=1e-7)
+
+    def test_n_choose_k_small_k(self):
+        assert _n_choose_k(10, 4) == 210
+
+    def test_n_choose_k_big_k(self):
+        assert _n_choose_k(10, 8) == 45
+
+    def test_n_choose_k_same(self):
+        assert _n_choose_k(10, 10) == 1
+
+    def test_n_choose_k_k_bigger_than_n(self):
+        assert _n_choose_k(5, 10) == 0
+
+    def test_panther_similarity_unweighted(self):
+        np.random.seed(42)
+
+        G = nx.Graph()
+        G.add_edge(0, 1)
+        G.add_edge(0, 2)
+        G.add_edge(0, 3)
+        G.add_edge(1, 2)
+        G.add_edge(2, 4)
+        expected = {3: 0.5, 2: 0.5, 1: 0.5, 4: 0.125}
+        sim = nx.panther_similarity(G, 0, path_length=2)
+        assert sim == expected
+
+    def test_panther_similarity_weighted(self):
+        np.random.seed(42)
+
+        G = nx.Graph()
+        G.add_edge("v1", "v2", weight=5)
+        G.add_edge("v1", "v3", weight=1)
+        G.add_edge("v1", "v4", weight=2)
+        G.add_edge("v2", "v3", weight=0.1)
+        G.add_edge("v3", "v5", weight=1)
+        expected = {"v3": 0.75, "v4": 0.5, "v2": 0.5, "v5": 0.25}
+        sim = nx.panther_similarity(G, "v1", path_length=2)
+        assert sim == expected
+
+    def test_generate_random_paths_unweighted(self):
+        np.random.seed(42)
+
+        index_map = {}
+        num_paths = 10
+        path_length = 2
+        G = nx.Graph()
+        G.add_edge(0, 1)
+        G.add_edge(0, 2)
+        G.add_edge(0, 3)
+        G.add_edge(1, 2)
+        G.add_edge(2, 4)
+        paths = nx.generate_random_paths(
+            G, num_paths, path_length=path_length, index_map=index_map
+        )
+        expected_paths = [
+            [3, 0, 3],
+            [4, 2, 1],
+            [2, 1, 0],
+            [2, 0, 3],
+            [3, 0, 1],
+            [3, 0, 1],
+            [4, 2, 0],
+            [2, 1, 0],
+            [3, 0, 2],
+            [2, 1, 2],
+        ]
+        expected_map = {
+            0: {0, 2, 3, 4, 5, 6, 7, 8},
+            1: {1, 2, 4, 5, 7, 9},
+            2: {1, 2, 3, 6, 7, 8, 9},
+            3: {0, 3, 4, 5, 8},
+            4: {1, 6},
+        }
+
+        assert expected_paths == list(paths)
+        assert expected_map == index_map
+
+    def test_generate_random_paths_weighted(self):
+        np.random.seed(42)
+
+        index_map = {}
+        num_paths = 10
+        path_length = 6
+        G = nx.Graph()
+        G.add_edge("a", "b", weight=0.6)
+        G.add_edge("a", "c", weight=0.2)
+        G.add_edge("c", "d", weight=0.1)
+        G.add_edge("c", "e", weight=0.7)
+        G.add_edge("c", "f", weight=0.9)
+        G.add_edge("a", "d", weight=0.3)
+        paths = nx.generate_random_paths(
+            G, num_paths, path_length=path_length, index_map=index_map
+        )
+
+        expected_paths = [
+            ["d", "c", "f", "c", "d", "a", "b"],
+            ["e", "c", "f", "c", "f", "c", "e"],
+            ["d", "a", "b", "a", "b", "a", "c"],
+            ["b", "a", "d", "a", "b", "a", "b"],
+            ["d", "a", "b", "a", "b", "a", "d"],
+            ["d", "a", "b", "a", "b", "a", "c"],
+            ["d", "a", "b", "a", "b", "a", "b"],
+            ["f", "c", "f", "c", "f", "c", "e"],
+            ["d", "a", "d", "a", "b", "a", "b"],
+            ["e", "c", "f", "c", "e", "c", "d"],
+        ]
+        expected_map = {
+            "d": {0, 2, 3, 4, 5, 6, 8, 9},
+            "c": {0, 1, 2, 5, 7, 9},
+            "f": {0, 1, 9, 7},
+            "a": {0, 2, 3, 4, 5, 6, 8},
+            "b": {0, 2, 3, 4, 5, 6, 8},
+            "e": {1, 9, 7},
+        }
+
+        assert expected_paths == list(paths)
+        assert expected_map == index_map

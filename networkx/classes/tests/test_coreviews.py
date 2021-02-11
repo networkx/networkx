@@ -315,10 +315,10 @@ class TestUnionMultiAdjacency(TestUnionAdjacency):
 class TestFilteredGraphs:
     def setup(self):
         self.Graphs = [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
-        self.SubGraphs = [nx.graphviews.subgraph_view] * 4
 
     def test_hide_show_nodes(self):
-        for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):
+        SubGraph = nx.graphviews.subgraph_view
+        for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
             RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
@@ -330,7 +330,8 @@ class TestFilteredGraphs:
             assert SGC.edges == RGC.edges
 
     def test_str_repr(self):
-        for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):
+        SubGraph = nx.graphviews.subgraph_view
+        for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
             RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
@@ -344,13 +345,86 @@ class TestFilteredGraphs:
             repr(RG.adj[2])
 
     def test_copy(self):
-        for Graph, SubGraph in zip(self.Graphs, self.SubGraphs):
+        SubGraph = nx.graphviews.subgraph_view
+        for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
             RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
+            RsG = SubGraph(G, nx.filters.show_nodes([2, 3]))
             assert G.adj.copy() == G.adj
             assert G.adj[2].copy() == G.adj[2]
             assert SG.adj.copy() == SG.adj
             assert SG.adj[2].copy() == SG.adj[2]
             assert RG.adj.copy() == RG.adj
             assert RG.adj[2].copy() == RG.adj[2]
+            assert RsG.adj.copy() == RsG.adj
+            assert RsG.adj[2].copy() == RsG.adj[2]
+
+    def test_filtered_copy(self):
+        # TODO: This function can be removed when filtered.copy()
+        # deprecation expires
+        SubGraph = nx.graphviews.subgraph_view
+        for Graph in self.Graphs:
+            G = nx.path_graph(4, Graph)
+            SG = G.subgraph([2, 3])
+            RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
+            RsG = SubGraph(G, nx.filters.show_nodes([2, 3]))
+            # test FilterAtlas & co in these subgraphs
+            assert SG._node.copy() == SG._node
+            assert SG.adj._atlas.copy() == SG.adj._atlas
+            assert SG.adj[2]._atlas.copy() == SG.adj[2]._atlas
+            assert SG.adj[2]._atlas[3].copy() == SG.adj[2]._atlas[3]
+            assert RG.adj._atlas.copy() == RG.adj._atlas
+            assert RG.adj[2]._atlas.copy() == RG.adj[2]._atlas
+            assert RG.adj[2]._atlas[3].copy() == RG.adj[2]._atlas[3]
+            assert RG._node.copy() == RG._node
+            assert RsG.adj._atlas.copy() == RsG.adj._atlas
+            assert RsG.adj[2]._atlas.copy() == RsG.adj[2]._atlas
+            assert RsG.adj[2]._atlas[3].copy() == RsG.adj[2]._atlas[3]
+            assert RsG._node.copy() == RsG._node
+            # test MultiFilterInner
+            if G.is_multigraph():
+                assert SG.adj[2]._atlas[3][0].copy() == SG.adj[2]._atlas[3][0]
+                assert RG.adj[2]._atlas[3][0].copy() == RG.adj[2]._atlas[3][0]
+                assert RsG.adj[2]._atlas[3][0].copy() == RsG.adj[2]._atlas[3][0]
+
+            # test deprecation
+            # FilterAtlas.copy()
+            pytest.deprecated_call(SG._node.copy)
+            # FilterAdjacency.copy()
+            pytest.deprecated_call(SG.adj._atlas.copy)
+            # FilterMultiAdjacency.copy()
+            if G.is_multigraph():
+                pytest.deprecated_call(SG.adj._atlas.copy)
+            # FilterMultiInner.copy()
+            if G.is_multigraph():
+                pytest.deprecated_call(SG.adj[2]._atlas.copy)
+
+            SSG = SG.subgraph([2])
+            assert list(SSG) == [2]
+
+            # check case when node_ok is small
+            G = nx.complete_graph(9, Graph)
+            SG = G.subgraph([2, 3])
+            RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
+            RsG = SubGraph(G, nx.filters.show_nodes([2, 3, 4, 5, 6, 7, 8]))
+            assert SG.adj._atlas.copy() == SG.adj._atlas
+            assert SG.adj[2]._atlas.copy() == SG.adj[2]._atlas
+            assert SG.adj[2]._atlas[3].copy() == SG.adj[2]._atlas[3]
+            assert SG._node.copy() == SG._node
+            assert RG.adj._atlas.copy() == RG.adj._atlas
+            assert RG.adj[2]._atlas.copy() == RG.adj[2]._atlas
+            assert RG.adj[2]._atlas[3].copy() == RG.adj[2]._atlas[3]
+            assert RG._node.copy() == RG._node
+            assert RsG.adj._atlas.copy() == RsG.adj._atlas
+            assert RsG.adj[2]._atlas.copy() == RsG.adj[2]._atlas
+            assert RsG.adj[2]._atlas[3].copy() == RsG.adj[2]._atlas[3]
+            assert RsG._node.copy() == RsG._node
+            # test MultiFilterInner
+            if G.is_multigraph():
+                assert SG.adj[2][3]._atlas.copy() == SG.adj[2][3]._atlas
+                assert RG.adj[2][3]._atlas.copy() == RG.adj[2][3]._atlas
+                assert RsG.adj[2][3]._atlas.copy() == RsG.adj[2][3]._atlas
+
+            SSG = SG.subgraph([2])
+            assert list(SSG) == [2]

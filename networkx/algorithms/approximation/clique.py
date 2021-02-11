@@ -1,11 +1,68 @@
-"""Functions for computing large cliques."""
+"""Functions for computing large cliques and maximum independent sets."""
 import networkx as nx
-from networkx.utils import not_implemented_for
 from networkx.algorithms.approximation import ramsey
+from networkx.utils import not_implemented_for
 
-__all__ = ["clique_removal", "max_clique", "large_clique_size"]
+__all__ = [
+    "clique_removal",
+    "max_clique",
+    "large_clique_size",
+    "maximum_independent_set",
+]
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+def maximum_independent_set(G):
+    """Returns an approximate maximum independent set.
+
+    Independent set or stable set is a set of vertices in a graph, no two of
+    which are adjacent. That is, it is a set I of vertices such that for every
+    two vertices in I, there is no edge connecting the two. Equivalently, each
+    edge in the graph has at most one endpoint in I. The size of an independent
+    set is the number of vertices it contains [1]_.
+
+    A maximum independent set is a largest independent set for a given graph G
+    and its size is denoted $\\alpha(G)$. The problem of finding such a set is called
+    the maximum independent set problem and is an NP-hard optimization problem.
+    As such, it is unlikely that there exists an efficient algorithm for finding
+    a maximum independent set of a graph.
+
+    The Independent Set algorithm is based on [2]_.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+
+    Returns
+    -------
+    iset : Set
+        The apx-maximum independent set
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph is directed or is a multigraph.
+
+    Notes
+    -----
+    Finds the $O(|V|/(log|V|)^2)$ apx of independent set in the worst case.
+
+    References
+    ----------
+    .. [1] `Wikipedia: Independent set
+        <https://en.wikipedia.org/wiki/Independent_set_(graph_theory)>`_
+    .. [2] Boppana, R., & Halldórsson, M. M. (1992).
+       Approximating maximum independent sets by excluding subgraphs.
+       BIT Numerical Mathematics, 32(2), 180–196. Springer.
+    """
+    iset, _ = clique_removal(G)
+    return iset
+
+
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def max_clique(G):
     r"""Find the Maximum Clique
 
@@ -22,8 +79,13 @@ def max_clique(G):
     clique : set
         The apx-maximum clique of the graph
 
-    Notes
+    Raises
     ------
+    NetworkXNotImplemented
+        If the graph is directed or is a multigraph.
+
+    Notes
+    -----
     A clique in an undirected graph G = (V, E) is a subset of the vertex set
     `C \subseteq V` such that for every two vertices in C there exists an edge
     connecting the two. This is equivalent to saying that the subgraph
@@ -54,8 +116,10 @@ def max_clique(G):
     return iset
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def clique_removal(G):
-    r""" Repeatedly remove cliques from the graph.
+    r"""Repeatedly remove cliques from the graph.
 
     Results in a $O(|V|/(\log |V|)^2)$ approximation of maximum clique
     and independent set. Returns the largest independent set found, along
@@ -70,6 +134,11 @@ def clique_removal(G):
     -------
     max_ind_cliques : (set, list) tuple
         2-tuple of Maximal Independent Set and list of maximal cliques (sets).
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph is directed or is a multigraph.
 
     References
     ----------
@@ -108,8 +177,13 @@ def large_clique_size(G):
 
     Returns
     -------
-    int
+    k: integer
        The size of a large clique in the graph.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph is directed or is a multigraph.
 
     Notes
     -----

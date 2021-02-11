@@ -14,6 +14,8 @@ class TestClosenessCentrality:
         cls.K5 = nx.complete_graph(5)
 
         cls.C4 = nx.cycle_graph(4)
+        cls.C4_directed = nx.cycle_graph(4, create_using=nx.DiGraph)
+
         cls.C5 = nx.cycle_graph(5)
 
         cls.T = nx.balanced_tree(r=2, h=2)
@@ -92,3 +94,21 @@ class TestClosenessCentrality:
         c = harmonic_centrality(G, distance="weight")
         d = {0: 0}
         assert c == d
+
+    def test_cycle_c4_directed(self):
+        c = harmonic_centrality(self.C4_directed, nbunch=[0, 1], sources=[1, 2])
+        d = {0: 0.833, 1: 0.333}
+        for n in [0, 1]:
+            assert almost_equal(c[n], d[n], places=3)
+
+    def test_p3_harmonic_subset(self):
+        c = harmonic_centrality(self.P3, sources=[0, 1])
+        d = {0: 1, 1: 1, 2: 1.5}
+        for n in self.P3:
+            assert almost_equal(c[n], d[n], places=3)
+
+    def test_p4_harmonic_subset(self):
+        c = harmonic_centrality(self.P4, nbunch=[2, 3], sources=[0, 1])
+        d = {2: 1.5, 3: 0.8333333}
+        for n in [2, 3]:
+            assert almost_equal(c[n], d[n], places=3)

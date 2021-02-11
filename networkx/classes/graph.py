@@ -237,8 +237,7 @@ class Graph:
         Class to create a new graph structure in the `to_undirected` method.
         If `None`, a NetworkX class (Graph or MultiGraph) is used.
 
-    Examples
-    --------
+    **Subclassing Example**
 
     Create a low memory graph class that effectively disallows edge
     attributes by using a single attribute dict for all edges.
@@ -246,10 +245,10 @@ class Graph:
 
     >>> class ThinGraph(nx.Graph):
     ...     all_edge_dict = {"weight": 1}
-    ... 
+    ...
     ...     def single_edge_dict(self):
     ...         return self.all_edge_dict
-    ... 
+    ...
     ...     edge_attr_dict_factory = single_edge_dict
     >>> G = ThinGraph()
     >>> G.add_edge(2, 1)
@@ -370,20 +369,31 @@ class Graph:
         self.graph["name"] = s
 
     def __str__(self):
-        """Returns the graph name.
+        """Returns a short summary of the graph.
 
         Returns
         -------
-        name : string
-            The name of the graph.
+        info : string
+            Graph information as provided by `nx.info`
 
         Examples
         --------
         >>> G = nx.Graph(name="foo")
         >>> str(G)
-        'foo'
+        "Graph named 'foo' with 0 nodes and 0 edges"
+
+        >>> G = nx.path_graph(3)
+        >>> str(G)
+        'Graph with 3 nodes and 2 edges'
+
         """
-        return self.name
+        return "".join(
+            [
+                type(self).__name__,
+                f" named {self.name!r}" if self.name else "",
+                f" with {self.number_of_nodes()} nodes and {self.number_of_edges()} edges",
+            ]
+        )
 
     def __iter__(self):
         """Iterate over the nodes. Use: 'for n in G'.
@@ -427,7 +437,8 @@ class Graph:
 
         See Also
         --------
-        number_of_nodes, order  which are identical
+        number_of_nodes: identical method
+        order: identical method
 
         Examples
         --------
@@ -580,7 +591,7 @@ class Graph:
            A node in the graph
 
         Raises
-        -------
+        ------
         NetworkXError
            If n is not in the graph.
 
@@ -751,7 +762,8 @@ class Graph:
 
         See Also
         --------
-        order, __len__  which are identical
+        order: identical method
+        __len__: identical method
 
         Examples
         --------
@@ -771,7 +783,8 @@ class Graph:
 
         See Also
         --------
-        number_of_nodes, __len__  which are identical
+        number_of_nodes: identical method
+        __len__: identical method
 
         Examples
         --------
@@ -818,7 +831,7 @@ class Graph:
 
         Parameters
         ----------
-        u, v : nodes
+        u_of_edge, v_of_edge : nodes
             Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
         attr : keyword arguments, optional
@@ -878,7 +891,7 @@ class Graph:
         ----------
         ebunch_to_add : container of edges
             Each edge given in the container will be added to the
-            graph. The edges must be given as as 2-tuples (u, v) or
+            graph. The edges must be given as 2-tuples (u, v) or
             3-tuples (u, v, d) where d is a dictionary containing edge data.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
@@ -1726,7 +1739,7 @@ class Graph:
         To create a full graph version of the subgraph with its own copy
         of the edge or node attributes, use::
 
-            >>> G.edge_subgraph(edges).copy()  # doctest: +SKIP
+            G.edge_subgraph(edges).copy()
 
         Examples
         --------
@@ -1856,7 +1869,7 @@ class Graph:
         Raises
         ------
         NetworkXError
-            If nbunch is not a node or or sequence of nodes.
+            If nbunch is not a node or sequence of nodes.
             If a node in nbunch is not hashable.
 
         See Also
@@ -1887,17 +1900,18 @@ class Graph:
                         if n in adj:
                             yield n
                 except TypeError as e:
-                    message = e.args[0]
+                    exc, message = e, e.args[0]
                     # capture error for non-sequence/iterator nbunch.
                     if "iter" in message:
-                        msg = "nbunch is not a node or a sequence of nodes."
-                        raise NetworkXError(msg) from e
+                        exc = NetworkXError(
+                            "nbunch is not a node or a sequence of nodes."
+                        )
                     # capture error for unhashable node.
-                    elif "hashable" in message:
-                        msg = f"Node {n} in sequence nbunch is not a valid node."
-                        raise NetworkXError(msg) from e
-                    else:
-                        raise
+                    if "hashable" in message:
+                        exc = NetworkXError(
+                            f"Node {n} in sequence nbunch is not a valid node."
+                        )
+                    raise exc
 
             bunch = bunch_iter(nbunch, self._adj)
         return bunch

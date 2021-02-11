@@ -61,7 +61,8 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
        "Estimating the number of communities in networks by spectral methods"
        arXiv:1507.00827, 2015.
     """
-    import scipy.sparse
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
@@ -73,6 +74,6 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format="csr")
     n, m = A.shape
     diags = A.sum(axis=1)
-    D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
-    I = scipy.sparse.eye(m, n, format="csr")
+    D = sp.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
+    I = sp.sparse.eye(m, n, format="csr")
     return (r ** 2 - 1) * I - r * A + D

@@ -13,40 +13,57 @@ __all__ = [
 def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 
+    This algorithm for finding shortest paths takes advantage of
+    matrix representations of a graph and works well for dense
+    graphs where all-pairs shortest path lengths are desired.
+    The results are returned as a NumPy array, distance[i, j],
+    where i and j are the indexes of two nodes in nodelist.
+    The entry distance[i, j] is the distance along a shortest
+    path from i to j. If no path exists the distance is Inf.
+
     Parameters
     ----------
     G : NetworkX graph
 
-    nodelist : list, optional
+    nodelist : list, optional (default=G.nodes)
        The rows and columns are ordered by the nodes in nodelist.
-       If nodelist is None then the ordering is produced by G.nodes().
+       If nodelist is None then the ordering is produced by G.nodes.
+       Nodelist should include all nodes in G.
 
-    weight: string, optional (default= 'weight')
+    weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight.
 
     Returns
     -------
     distance : NumPy matrix
         A matrix of shortest path distances between nodes.
-        If there is no path between to nodes the corresponding matrix entry
-        will be Inf.
+        If there is no path between two nodes the value is Inf.
 
     Notes
-    ------
+    -----
     Floyd's algorithm is appropriate for finding shortest paths in
     dense graphs or graphs with negative weights when Dijkstra's
     algorithm fails. This algorithm can still fail if there are negative
-    cycles.  It has running time $O(n^3)$ with running space of $O(n^2)$.
+    cycles. It has running time $O(n^3)$ with running space of $O(n^2)$.
+
+    Raises
+    ------
+    NetworkXError
+        If nodelist is not a list of the nodes in G.
     """
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError("to_numpy_array() requires numpy: http://numpy.org/ ") from e
+    import numpy as np
+
+    if nodelist is not None:
+        if not (len(nodelist) == len(G) == len(set(nodelist))):
+            raise nx.NetworkXError(
+                "nodelist must contain every node in G with no repeats."
+                "If you wanted a subgraph of G use G.subgraph(nodelist)"
+            )
 
     # To handle cases when an edge has weight=0, we must make sure that
     # nonedges are not given the value 0 as well.
     A = nx.to_numpy_array(
-        G, nodelist=nodelist, multigraph_weight=min, weight=weight, nonedge=np.inf
+        G, nodelist, multigraph_weight=min, weight=weight, nonedge=np.inf
     )
     n, m = A.shape
     np.fill_diagonal(A, 0)  # diagonal elements should be zero
@@ -94,7 +111,7 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     ['s', 'x', 'u', 'v']
 
     Notes
-    ------
+    -----
     Floyd's algorithm is appropriate for finding shortest paths
     in dense graphs or graphs with negative weights when Dijkstra's algorithm
     fails.  This algorithm can still fail if there are negative cycles.
@@ -162,7 +179,7 @@ def reconstruct_path(source, target, predecessors):
        If source and target are the same, an empty list is returned
 
     Notes
-    ------
+    -----
     This function is meant to give more applicability to the
     floyd_warshall_predecessor_and_distance function
 
@@ -199,7 +216,7 @@ def floyd_warshall(G, weight="weight"):
        between nodes.
 
     Notes
-    ------
+    -----
     Floyd's algorithm is appropriate for finding shortest paths
     in dense graphs or graphs with negative weights when Dijkstra's algorithm
     fails.  This algorithm can still fail if there are negative cycles.

@@ -34,7 +34,7 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
         Name of target labels to predict
 
     Returns
-    ----------
+    -------
     predicted : array, shape = [n_samples]
         Array of predicted labels
 
@@ -64,18 +64,9 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     Learning with local and global consistency.
     Advances in neural information processing systems, 16(16), 321-328.
     """
-    try:
-        import numpy as np
-    except ImportError as e:
-        raise ImportError(
-            "local_and_global_consistency() requires numpy: ", "http://numpy.org/ "
-        ) from e
-    try:
-        from scipy import sparse
-    except ImportError as e:
-        raise ImportError(
-            "local_and_global_consistensy() requires scipy: ", "http://scipy.org/ "
-        ) from e
+    import numpy as np
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
 
     def _build_propagation_matrix(X, labels, alpha):
         """Build propagation matrix of Local and global consistency
@@ -90,15 +81,15 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
             Clamping factor
 
         Returns
-        ----------
+        -------
         S : scipy sparse matrix, shape = [n_samples, n_samples]
             Propagation matrix
 
         """
         degrees = X.sum(axis=0).A[0]
         degrees[degrees == 0] = 1  # Avoid division by 0
-        D2 = np.sqrt(sparse.diags((1.0 / degrees), offsets=0))
-        S = alpha * D2.dot(X).dot(D2)
+        D2 = np.sqrt(sp.sparse.diags((1.0 / degrees), offsets=0))
+        S = alpha * ((D2 @ X) @ D2)
         return S
 
     def _build_base_matrix(X, labels, alpha, n_classes):
@@ -116,7 +107,7 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
             The number of classes (distinct labels) on the input graph
 
         Returns
-        ----------
+        -------
         B : array, shape = [n_samples, n_classes]
             Base matrix
         """

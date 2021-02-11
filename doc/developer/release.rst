@@ -57,15 +57,16 @@ Release Process
 - Publish on PyPi::
 
    git clean -fxd
+   pip install -r requirements/release.txt
    python setup.py sdist bdist_wheel
    twine upload -s dist/*
 
 - Update documentation on the web:
   The documentation is kept in a separate repo: networkx/documentation
 
-  - Wait for the NetworkX Travis Bot to deploy to GitHub Pages
+  - Wait for the CI service to deploy to GitHub Pages
   - Sync your branch with the remote repo: ``git pull``.
-  - Copy the documentation built by Travis.
+  - Copy the documentation built by the CI service.
     Assuming you are at the top-level of the ``documentation`` repo::
 
       # FIXME - use eol_banner.html

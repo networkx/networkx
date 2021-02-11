@@ -1,5 +1,8 @@
+"""Views of core data structures such as nested Mappings (e.g. dict-of-dicts).
+These ``Views`` often restrict element access, with either the entire view or
+layers of nested mappings being read-only.
 """
-"""
+import warnings
 from collections.abc import Mapping
 
 __all__ = [
@@ -26,8 +29,8 @@ class AtlasView(Mapping):
 
     See Also
     ========
-    AdjacencyView - View into dict-of-dict-of-dict
-    MultiAdjacencyView - View into dict-of-dict-of-dict-of-dict
+    AdjacencyView: View into dict-of-dict-of-dict
+    MultiAdjacencyView: View into dict-of-dict-of-dict-of-dict
     """
 
     __slots__ = ("_atlas",)
@@ -69,8 +72,8 @@ class AdjacencyView(AtlasView):
 
     See Also
     ========
-    AtlasView - View into dict-of-dict
-    MultiAdjacencyView - View into dict-of-dict-of-dict-of-dict
+    AtlasView: View into dict-of-dict
+    MultiAdjacencyView: View into dict-of-dict-of-dict-of-dict
     """
 
     __slots__ = ()  # Still uses AtlasView slots names _atlas
@@ -91,8 +94,8 @@ class MultiAdjacencyView(AdjacencyView):
 
     See Also
     ========
-    AtlasView - View into dict-of-dict
-    AdjacencyView - View into dict-of-dict-of-dict
+    AtlasView: View into dict-of-dict
+    AdjacencyView: View into dict-of-dict-of-dict
     """
 
     __slots__ = ()  # Still uses AtlasView slots names _atlas
@@ -114,8 +117,8 @@ class UnionAtlas(Mapping):
 
     See Also
     ========
-    UnionAdjacency - View into dict-of-dict-of-dict
-    UnionMultiAdjacency - View into dict-of-dict-of-dict-of-dict
+    UnionAdjacency: View into dict-of-dict-of-dict
+    UnionMultiAdjacency: View into dict-of-dict-of-dict-of-dict
     """
 
     __slots__ = ("_succ", "_pred")
@@ -173,8 +176,8 @@ class UnionAdjacency(Mapping):
 
     See Also
     ========
-    UnionAtlas - View into dict-of-dict
-    UnionMultiAdjacency - View into dict-of-dict-of-dict-of-dict
+    UnionAtlas: View into dict-of-dict
+    UnionMultiAdjacency: View into dict-of-dict-of-dict-of-dict
     """
 
     __slots__ = ("_succ", "_pred")
@@ -221,9 +224,9 @@ class UnionMultiInner(UnionAtlas):
 
     See Also
     ========
-    UnionAtlas - View into dict-of-dict
-    UnionAdjacency - View into dict-of-dict-of-dict
-    UnionMultiAdjacency - View into dict-of-dict-of-dict-of-dict
+    UnionAtlas: View into dict-of-dict
+    UnionAdjacency:  View into dict-of-dict-of-dict
+    UnionMultiAdjacency:  View into dict-of-dict-of-dict-of-dict
     """
 
     __slots__ = ()  # Still uses UnionAtlas slots names _succ, _pred
@@ -251,8 +254,8 @@ class UnionMultiAdjacency(UnionAdjacency):
 
     See Also
     ========
-    UnionAtlas - View into dict-of-dict
-    UnionMultiInner - View into dict-of-dict-of-dict
+    UnionAtlas:  View into dict-of-dict
+    UnionMultiInner:  View into dict-of-dict-of-dict
     """
 
     __slots__ = ()  # Still uses UnionAdjacency slots names _succ, _pred
@@ -283,7 +286,17 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
             return self._atlas[key]
         raise KeyError(f"Key {key} not found")
 
+    # FIXME should this just be removed? we don't use it, but someone might
     def copy(self):
+        warnings.warn(
+            (
+                "FilterAtlas.copy is deprecated.\n"
+                "It will be removed in NetworkX 3.0.\n"
+                "Please open an Issue on https://github.com/networkx/networkx/issues\n"
+                "if you use this feature. We think that no one does use it."
+            ),
+            DeprecationWarning,
+        )
         try:  # check that NODE_OK has attr 'nodes'
             node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
         except AttributeError:
@@ -326,7 +339,17 @@ class FilterAdjacency(Mapping):  # edgedict
             return FilterAtlas(self._atlas[node], new_node_ok)
         raise KeyError(f"Key {node} not found")
 
+    # FIXME should this just be removed? we don't use it, but someone might
     def copy(self):
+        warnings.warn(
+            (
+                "FilterAdjacency.copy is deprecated.\n"
+                "It will be removed in NetworkX 3.0.\n"
+                "Please open an Issue on https://github.com/networkx/networkx/issues\n"
+                "if you use this feature. We think that no one does use it."
+            ),
+            DeprecationWarning,
+        )
         try:  # check that NODE_OK has attr 'nodes'
             node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
         except AttributeError:
@@ -384,7 +407,17 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
             return FilterAtlas(self._atlas[nbr], new_node_ok)
         raise KeyError(f"Key {nbr} not found")
 
+    # FIXME should this just be removed? we don't use it, but someone might
     def copy(self):
+        warnings.warn(
+            (
+                "FilterMultiInner.copy is deprecated.\n"
+                "It will be removed in NetworkX 3.0.\n"
+                "Please open an Issue on https://github.com/networkx/networkx/issues\n"
+                "if you use this feature. We think that no one does use it."
+            ),
+            DeprecationWarning,
+        )
         try:  # check that NODE_OK has attr 'nodes'
             node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
         except AttributeError:
@@ -412,7 +445,17 @@ class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
             return FilterMultiInner(self._atlas[node], self.NODE_OK, edge_ok)
         raise KeyError(f"Key {node} not found")
 
+    # FIXME should this just be removed? we don't use it, but someone might
     def copy(self):
+        warnings.warn(
+            (
+                "FilterMultiAdjacency.copy is deprecated.\n"
+                "It will be removed in NetworkX 3.0.\n"
+                "Please open an Issue on https://github.com/networkx/networkx/issues\n"
+                "if you use this feature. We think that no one does use it."
+            ),
+            DeprecationWarning,
+        )
         try:  # check that NODE_OK has attr 'nodes'
             node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
         except AttributeError:

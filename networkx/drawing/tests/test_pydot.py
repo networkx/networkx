@@ -1,6 +1,7 @@
 """Unit tests for pydot drawing functions."""
 from io import StringIO
 import tempfile
+import os
 import networkx as nx
 from networkx.testing import assert_graphs_equal
 
@@ -37,8 +38,9 @@ class TestPydot:
         # Validate the original and resulting graphs to be the same.
         assert_graphs_equal(G, G2)
 
+        fd, fname = tempfile.mkstemp()
+
         # Serialize this "pydot.Dot" instance to a temporary file in dot format
-        fname = tempfile.mktemp()
         P.write_raw(fname)
 
         # Deserialize a list of new "pydot.Dot" instances back from this file.
@@ -76,6 +78,9 @@ class TestPydot:
 
         # Validate the original and resulting graphs to be the same.
         assert_graphs_equal(G, Hin)
+
+        os.close(fd)
+        os.unlink(fname)
 
     def test_undirected(self):
         self.pydot_checks(nx.Graph(), prog="neato")

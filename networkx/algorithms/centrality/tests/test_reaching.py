@@ -1,7 +1,7 @@
 """Unit tests for the :mod:`networkx.algorithms.centrality.reaching` module."""
 import pytest
 
-from networkx import nx
+import networkx as nx
 from networkx.testing import almost_equal
 
 

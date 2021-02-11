@@ -79,6 +79,7 @@ Group Centrality
    group_degree_centrality
    group_in_degree_centrality
    group_out_degree_centrality
+   prominent_group
 
 Load
 ----

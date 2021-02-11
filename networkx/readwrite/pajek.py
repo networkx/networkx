@@ -176,7 +176,7 @@ def parse_pajek(lines):
 
     See Also
     --------
-    read_pajek()
+    read_pajek
 
     """
     import shlex

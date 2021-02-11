@@ -32,11 +32,11 @@ def cut_size(G, S, T=None, weight=None):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
-    T : sequence
-        A sequence of nodes in `G`. If not specified, this is taken to
+    T : collection
+        A collection of nodes in `G`. If not specified, this is taken to
         be the set complement of `S`.
 
     weight : object
@@ -93,8 +93,8 @@ def volume(G, S, weight=None):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -135,11 +135,11 @@ def normalized_cut_size(G, S, T=None, weight=None):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
-    T : sequence
-        A sequence of nodes in `G`.
+    T : collection
+        A collection of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -187,11 +187,11 @@ def conductance(G, S, T=None, weight=None):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
-    T : sequence
-        A sequence of nodes in `G`.
+    T : collection
+        A collection of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -234,11 +234,11 @@ def edge_expansion(G, S, T=None, weight=None):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
-    T : sequence
-        A sequence of nodes in `G`.
+    T : collection
+        A collection of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -280,11 +280,11 @@ def mixing_expansion(G, S, T=None, weight=None):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
-    T : sequence
-        A sequence of nodes in `G`.
+    T : collection
+        A collection of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -327,8 +327,8 @@ def node_expansion(G, S):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
     Returns
     -------
@@ -366,8 +366,8 @@ def boundary_expansion(G, S):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
     Returns
     -------

@@ -101,7 +101,7 @@ Other
 * degree connectivity
 
   average_in_degree_connectivity and average_out_degree_connectivity have
-  have been replaced with
+  been replaced with
 
   average_degree_connectivity(G, source='in', target='in')
 

@@ -4,7 +4,7 @@ __all__ = ["convert_node_labels_to_integers", "relabel_nodes"]
 
 
 def relabel_nodes(G, mapping, copy=True):
-    """Relabel the nodes of the graph G.
+    """Relabel the nodes of the graph G according to a given mapping.
 
     Parameters
     ----------
@@ -14,6 +14,7 @@ def relabel_nodes(G, mapping, copy=True):
     mapping : dictionary
        A dictionary with the old labels as keys and new labels as values.
        A partial mapping is allowed. Mapping 2 nodes to a single node is allowed.
+       Any non-node keys in the mapping are ignored.
 
     copy : bool (optional, default=True)
        If True return a copy, or if False relabel the nodes in place.
@@ -88,6 +89,7 @@ def relabel_nodes(G, mapping, copy=True):
     Notes
     -----
     Only the nodes specified in the mapping will be relabeled.
+    Any non-node keys in the mapping are ignored.
 
     The keyword setting copy=False modifies the graph in place.
     Relabel_nodes avoids naming collisions by building a
@@ -144,16 +146,14 @@ def _relabel_inplace(G, mapping):
     directed = G.is_directed()
 
     for old in nodes:
+        # Test that old is in both mapping and G, otherwise ignore.
         try:
             new = mapping[old]
+            G.add_node(new, **G.nodes[old])
         except KeyError:
             continue
         if new == old:
             continue
-        try:
-            G.add_node(new, **G.nodes[old])
-        except KeyError as e:
-            raise KeyError(f"Node {old} is not in the graph") from e
         if multigraph:
             new_edges = [
                 (new, new if old == target else target, key, data)

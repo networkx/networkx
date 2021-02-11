@@ -129,13 +129,12 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     .. [2] Foster, J.G., Foster, D.V., Grassberger, P. & Paczuski, M.
        Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
     """
-    try:
-        import scipy.stats as stats
-    except ImportError as e:
-        raise ImportError("Assortativity requires SciPy:" "http://scipy.org/ ") from e
+    import scipy as sp
+    import scipy.stats  # call as sp.stats
+
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
-    return stats.pearsonr(x, y)[0]
+    return sp.stats.pearsonr(x, y)[0]
 
 
 def attribute_assortativity_coefficient(G, attribute, nodes=None):
@@ -219,7 +218,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
 
     Notes
     -----
-    This computes Eq. (21) in Ref. [1]_ , for the mixing matrix of
+    This computes Eq. (21) in Ref. [1]_ , for the mixing matrix
     of the specified attribute.
 
     References
@@ -250,12 +249,6 @@ def attribute_ac(M):
     .. [1] M. E. J. Newman, Mixing patterns in networks,
        Physical Review E, 67 026126, 2003
     """
-    try:
-        import numpy
-    except ImportError as e:
-        raise ImportError(
-            "attribute_assortativity requires " "NumPy: http://scipy.org/"
-        ) from e
     if M.sum() != 1.0:
         M = M / M.sum()
     s = (M @ M).sum()
@@ -267,21 +260,17 @@ def attribute_ac(M):
 def numeric_ac(M):
     # M is a numpy matrix or array
     # numeric assortativity coefficient, pearsonr
-    try:
-        import numpy
-    except ImportError as e:
-        raise ImportError(
-            "numeric_assortativity requires " "NumPy: http://scipy.org/"
-        ) from e
+    import numpy as np
+
     if M.sum() != 1.0:
         M = M / float(M.sum())
     nx, ny = M.shape  # nx=ny
-    x = numpy.arange(nx)
-    y = numpy.arange(ny)
+    x = np.arange(nx)
+    y = np.arange(ny)
     a = M.sum(axis=0)
     b = M.sum(axis=1)
     vara = (a * x ** 2).sum() - ((a * x).sum()) ** 2
     varb = (b * x ** 2).sum() - ((b * x).sum()) ** 2
-    xy = numpy.outer(x, y)
-    ab = numpy.outer(a, b)
-    return (xy * (M - ab)).sum() / numpy.sqrt(vara * varb)
+    xy = np.outer(x, y)
+    ab = np.outer(a, b)
+    return (xy * (M - ab)).sum() / np.sqrt(vara * varb)

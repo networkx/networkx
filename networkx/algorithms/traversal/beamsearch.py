@@ -44,15 +44,32 @@ def bfs_beam_edges(G, source, value, width=None):
     --------
     To give nodes with, for example, a higher centrality precedence
     during the search, set the `value` function to return the centrality
-    value of the node::
+    value of the node:
 
-        >>> G = nx.karate_club_graph()
-        >>> centrality = nx.eigenvector_centrality(G)
-        >>> source = 0
-        >>> width = 5
-        >>> for u, v in nx.bfs_beam_edges(G, source, centrality.get, width):
-        ...     print((u, v))  # doctest: +SKIP
-
+    >>> G = nx.karate_club_graph()
+    >>> centrality = nx.eigenvector_centrality(G)
+    >>> source = 0
+    >>> width = 5
+    >>> for u, v in nx.bfs_beam_edges(G, source, centrality.get, width):
+    ...     print((u, v))
+    ...
+    (0, 2)
+    (0, 1)
+    (0, 8)
+    (0, 13)
+    (0, 3)
+    (2, 32)
+    (1, 30)
+    (8, 33)
+    (3, 7)
+    (32, 31)
+    (31, 28)
+    (31, 25)
+    (25, 23)
+    (25, 24)
+    (23, 29)
+    (23, 27)
+    (29, 26)
     """
 
     if width is None:

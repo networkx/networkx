@@ -90,8 +90,6 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
             # choose target uniformly from neighbors
             b = seed.choice(list(G.neighbors(a)))
             d = seed.choice(list(G.neighbors(c)))
-            bi = keys.index(b)
-            di = keys.index(d)
             if b in [a, c, d] or d in [a, b, c]:
                 continue  # all vertices should be different
 

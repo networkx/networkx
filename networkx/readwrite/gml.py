@@ -282,8 +282,7 @@ LIST_START_VALUE = "_networkx_list_start"
 
 
 def parse_gml_lines(lines, label, destringizer):
-    """Parse GML `lines` into a graph.
-    """
+    """Parse GML `lines` into a graph."""
 
     def tokenize():
         patterns = [
@@ -423,7 +422,7 @@ def parse_gml_lines(lines, label, destringizer):
         try:
             return dct.pop(attr)
         except KeyError as e:
-            raise NetworkXError(f"{category} #{i} has no '{attr}' attribute") from e
+            raise NetworkXError(f"{category} #{i} has no {attr!r} attribute") from e
 
     nodes = graph.get("node", [])
     mapping = {}

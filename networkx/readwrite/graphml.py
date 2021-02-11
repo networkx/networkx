@@ -37,12 +37,6 @@ for examples.
 import warnings
 from collections import defaultdict
 
-from xml.etree.ElementTree import Element, ElementTree, tostring, fromstring
-
-try:
-    import lxml.etree as lxmletree
-except ImportError:
-    lxmletree = None
 
 import networkx as nx
 from networkx.utils import open_file
@@ -143,13 +137,20 @@ def write_graphml_lxml(
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.write_graphml_lxml(G, "fourpath.graphml")  # doctest: +SKIP
+    >>> nx.write_graphml_lxml(G, "fourpath.graphml")
 
     Notes
     -----
     This implementation does not support mixed graphs (directed
     and unidirected edges together) hyperedges, nested graphs, or ports.
     """
+    try:
+        import lxml.etree as lxmletree
+    except ImportError:
+        return write_graphml_xml(
+            G, path, encoding, prettyprint, infer_numeric_types, named_key_ids
+        )
+
     writer = GraphMLWriterLxml(
         path,
         graph=G,
@@ -179,7 +180,7 @@ def generate_graphml(G, encoding="utf-8", prettyprint=True, named_key_ids=False)
     --------
     >>> G = nx.path_graph(4)
     >>> linefeed = chr(10)  # linefeed = \n
-    >>> s = linefeed.join(nx.generate_graphml(G))  # doctest: +SKIP
+    >>> s = linefeed.join(nx.generate_graphml(G))
     >>> for line in nx.generate_graphml(G):  # doctest: +SKIP
     ...     print(line)
 
@@ -353,45 +354,46 @@ class GraphML:
         ]
     )
 
-    types = [
-        (int, "integer"),  # for Gephi GraphML bug
-        (str, "yfiles"),
-        (str, "string"),
-        (int, "int"),
-        (int, "long"),
-        (float, "float"),
-        (float, "double"),
-        (bool, "boolean"),
-    ]
-
-    # These additions to types allow writing numpy types
-    try:
-        import numpy as np
-    except:
-        pass
-    else:
-        # prepend so that python types are created upon read (last entry wins)
+    def construct_types(self):
         types = [
-            (np.float64, "float"),
-            (np.float32, "float"),
-            (np.float16, "float"),
-            (np.float_, "float"),
-            (np.int_, "int"),
-            (np.int8, "int"),
-            (np.int16, "int"),
-            (np.int32, "int"),
-            (np.int64, "int"),
-            (np.uint8, "int"),
-            (np.uint16, "int"),
-            (np.uint32, "int"),
-            (np.uint64, "int"),
-            (np.int_, "int"),
-            (np.intc, "int"),
-            (np.intp, "int"),
-        ] + types
+            (int, "integer"),  # for Gephi GraphML bug
+            (str, "yfiles"),
+            (str, "string"),
+            (int, "int"),
+            (int, "long"),
+            (float, "float"),
+            (float, "double"),
+            (bool, "boolean"),
+        ]
 
-    xml_type = dict(types)
-    python_type = dict(reversed(a) for a in types)
+        # These additions to types allow writing numpy types
+        try:
+            import numpy as np
+        except:
+            pass
+        else:
+            # prepend so that python types are created upon read (last entry wins)
+            types = [
+                (np.float64, "float"),
+                (np.float32, "float"),
+                (np.float16, "float"),
+                (np.float_, "float"),
+                (np.int_, "int"),
+                (np.int8, "int"),
+                (np.int16, "int"),
+                (np.int32, "int"),
+                (np.int64, "int"),
+                (np.uint8, "int"),
+                (np.uint16, "int"),
+                (np.uint32, "int"),
+                (np.uint64, "int"),
+                (np.int_, "int"),
+                (np.intc, "int"),
+                (np.intp, "int"),
+            ] + types
+
+        self.xml_type = dict(types)
+        self.python_type = dict(reversed(a) for a in types)
 
     # This page says that data types in GraphML follow Java(TM).
     #  http://graphml.graphdrawing.org/primer/graphml-primer.html#AttributesDefinition
@@ -418,6 +420,9 @@ class GraphMLWriter(GraphML):
         infer_numeric_types=False,
         named_key_ids=False,
     ):
+        self.construct_types()
+        from xml.etree.ElementTree import Element
+
         self.myElement = Element
 
         self.infer_numeric_types = infer_numeric_types
@@ -440,6 +445,8 @@ class GraphMLWriter(GraphML):
             self.add_graph_element(graph)
 
     def __str__(self):
+        from xml.etree.ElementTree import tostring
+
         if self.prettyprint:
             self.indent(self.xml)
         s = tostring(self.xml).decode(self.encoding)
@@ -502,8 +509,9 @@ class GraphMLWriter(GraphML):
         type in the keys table.
         """
         if element_type not in self.xml_type:
-            msg = f"GraphML writer does not support {element_type} as data values."
-            raise nx.NetworkXError(msg)
+            raise nx.NetworkXError(
+                f"GraphML writer does not support {element_type} as data values."
+            )
         keyid = self.get_key(name, self.xml_type[element_type], scope, default)
         data_element = self.myElement("data", key=keyid)
         data_element.text = str(value)
@@ -585,6 +593,8 @@ class GraphMLWriter(GraphML):
             self.add_graph_element(G)
 
     def dump(self, stream):
+        from xml.etree.ElementTree import ElementTree
+
         if self.prettyprint:
             self.indent(self.xml)
         document = ElementTree(self.xml)
@@ -632,6 +642,9 @@ class GraphMLWriterLxml(GraphMLWriter):
         infer_numeric_types=False,
         named_key_ids=False,
     ):
+        self.construct_types()
+        import lxml.etree as lxmletree
+
         self.myElement = lxmletree.Element
 
         self._encoding = encoding
@@ -750,23 +763,23 @@ class GraphMLWriterLxml(GraphMLWriter):
         self._xml_base.__exit__(None, None, None)
 
 
-# Choose a writer function for default
-if lxmletree is None:
-    write_graphml = write_graphml_xml
-else:
-    write_graphml = write_graphml_lxml
+# default is lxml is present.
+write_graphml = write_graphml_lxml
 
 
 class GraphMLReader(GraphML):
     """Read a GraphML document.  Produces NetworkX graph objects."""
 
     def __init__(self, node_type=str, edge_key_type=int, force_multigraph=False):
+        self.construct_types()
         self.node_type = node_type
         self.edge_key_type = edge_key_type
         self.multigraph = force_multigraph  # If False, test for multiedges
         self.edge_ids = {}  # dict mapping (u,v) tuples to edge id attributes
 
     def __call__(self, path=None, string=None):
+        from xml.etree.ElementTree import ElementTree, fromstring
+
         if path is not None:
             self.xml = ElementTree(file=path)
         elif string is not None:
@@ -820,8 +833,7 @@ class GraphMLReader(GraphML):
         return G
 
     def add_node(self, G, node_xml, graphml_keys, defaults):
-        """Add a node to the graph.
-        """
+        """Add a node to the graph."""
         # warn on finding unsupported ports tag
         ports = node_xml.find(f"{{{self.NS_GRAPHML}}}port")
         if ports is not None:
@@ -837,8 +849,7 @@ class GraphMLReader(GraphML):
             self.make_graph(graph_xml, graphml_keys, defaults, G)
 
     def add_edge(self, G, edge_element, graphml_keys):
-        """Add an edge to the graph.
-        """
+        """Add an edge to the graph."""
         # warn on finding unsupported ports tag
         ports = edge_element.find(f"{{{self.NS_GRAPHML}}}port")
         if ports is not None:
@@ -930,8 +941,7 @@ class GraphMLReader(GraphML):
         return data
 
     def find_graphml_keys(self, graph_element):
-        """Extracts all the keys and key defaults from the xml.
-        """
+        """Extracts all the keys and key defaults from the xml."""
         graphml_keys = {}
         graphml_key_defaults = {}
         for k in graph_element.findall(f"{{{self.NS_GRAPHML}}}key"):

@@ -82,7 +82,7 @@ def color(G):
 
 
 def is_bipartite(G):
-    """ Returns True if graph G is bipartite, False if not.
+    """Returns True if graph G is bipartite, False if not.
 
     Parameters
     ----------
@@ -210,7 +210,7 @@ def density(B, nodes):
 
     Parameters
     ----------
-    G : NetworkX graph
+    B : NetworkX graph
 
     nodes: list or container
       Nodes in one node set of the bipartite graph.
@@ -262,7 +262,7 @@ def degrees(B, nodes, weight=None):
 
     Parameters
     ----------
-    G : NetworkX graph
+    B : NetworkX graph
 
     nodes: list or container
       Nodes in one node set of the bipartite graph.
