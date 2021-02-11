@@ -202,9 +202,9 @@ def test_all_simple_paths_weighted_graph_with_weight_cutoff():
     n = 5
     G = nx.complete_graph(n, create_using=nx.Graph)
     distances = list(range(1, (n ** 2) + 1))
-    d = {e: {'Distance': dist} for e, dist in zip(G.edges(), distances)}
+    d = {e: {"Distance": dist} for e, dist in zip(G.edges(), distances)}
     nx.set_edge_attributes(G, d)
-    paths = list(nx.all_simple_paths(G, 0, 4, cutoff={'Distance': 10}))
+    paths = list(nx.all_simple_paths(G, 0, 4, cutoff={"Distance": 10}))
     assert len(paths) == 2
     assert paths[0] == [0, 1, 4]
     assert paths[1] == [0, 4]
@@ -215,14 +215,14 @@ def test_all_simple_paths_weighted_multigraph_with_weight_cutoff():
     G = nx.complete_graph(n, create_using=nx.MultiGraph)
     distances = list(range(1, (n ** 2) + 1))
     edges = G.edges(keys=True)
-    d = {e: {'Distance': dist} for e, dist in zip(edges, distances)}
+    d = {e: {"Distance": dist} for e, dist in zip(edges, distances)}
     nx.set_edge_attributes(G, d)
 
     # Add a by-pass link
     G.add_edge(0, 4, 1)
-    G[0][4][1]['Distance'] = 1
+    G[0][4][1]["Distance"] = 1
 
-    paths = list(nx.all_simple_paths(G, 0, 4, cutoff={'Distance': 3}))
+    paths = list(nx.all_simple_paths(G, 0, 4, cutoff={"Distance": 3}))
     assert len(paths) == 1
     assert paths[0] == [0, 4]
 
@@ -233,10 +233,10 @@ def test_all_simple_paths_weighted_multigraph_with_multiple_cutoffs():
     distances = list(range(1, (n ** 2) + 1))
     edges = G.edges(keys=True)
 
-    d = {e: {'Distance': dist} for e, dist in zip(edges, distances)}
+    d = {e: {"Distance": dist} for e, dist in zip(edges, distances)}
     nx.set_edge_attributes(G, d)
 
-    paths = list(nx.all_simple_paths(G, 0, 4, cutoff={None: 3, 'Distance': 20}))
+    paths = list(nx.all_simple_paths(G, 0, 4, cutoff={None: 3, "Distance": 20}))
 
     assert len(paths) == 4
     assert paths[0] == [0, 1, 4]
