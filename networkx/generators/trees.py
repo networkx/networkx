@@ -14,10 +14,10 @@ def iterative_prefix_tree(paths):
     NIL = -1
     tree.add_node(NIL, source="NIL")
     stack = []
-    stack.append((paths, root, tree))
+    stack.append((paths, root))
     while stack:
         children = defaultdict(list)
-        paths, root, tree = stack.pop()
+        paths, root = stack.pop()
         for path in paths:
             if not path:
                 tree.add_edge(root, NIL)
@@ -29,7 +29,7 @@ def iterative_prefix_tree(paths):
             new_name = len(tree) - 1
             tree.add_node(new_name, source=child)
             tree.add_edge(root, new_name)
-            stack.append((remaining_paths, new_name, tree))
+            stack.append((remaining_paths, new_name))
     return tree
 
 
