@@ -73,6 +73,20 @@ def run_all_random_functions(seed):
     t(approx.average_clustering, G, seed=seed)
     t(approx.simulated_annealing_tsp, H, source=1, seed=seed)
     t(approx.threshold_accepting_tsp, H, source=1, seed=seed)
+    t(
+        approx.traveling_salesman_problem,
+        H,
+        source=1,
+        method=approx.simulated_annealing_tsp,
+        seed=seed,
+    )
+    t(
+        approx.traveling_salesman_problem,
+        H,
+        source=1,
+        method=approx.threshold_accepting_tsp,
+        seed=seed,
+    )
     t(nx.betweenness_centrality, G, seed=seed)
     t(nx.edge_betweenness_centrality, G, seed=seed)
     t(nx.edge_betweenness, G, seed=seed)

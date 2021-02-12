@@ -34,7 +34,7 @@ http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """
 import math
 import networkx as nx
-from networkx.utils import py_random_state, not_implemented_for
+from networkx.utils import py_random_state, not_implemented_for, pairwise
 
 __all__ = [
     "traveling_salesman_problem",
@@ -59,8 +59,8 @@ def christofides(G, weight="weight", tree=None):
       Undirected complete graph
 
     weight : string, optional (default="weight")
-      Edge data key corresponding to the edge weight.
-      If key not found, uses 1 as weight.
+        Edge data key corresponding to the edge weight.
+        If any edge does not have this attribute the weight is set to 1.
 
     tree : NetworkX graph or None (default: computed)
       A minimum spanning tree of G. Or, if None, the minimum spanning
@@ -112,7 +112,7 @@ def _shortcutting(circuit):
 
 @not_implemented_for("directed")
 def traveling_salesman_problem(
-    G, nodes=None, weight=None, cycle=True, method=christofides
+    G, nodes=None, weight="weight", cycle=True, method=christofides, **kwargs
 ):
     """Find the shortest path in `G` connecting specified nodes
 
@@ -125,12 +125,18 @@ def traveling_salesman_problem(
     Edge weights in the new graph are the lengths of the paths
     between each pair of nodes in the original graph.
     Second, an algorithm (default: `christofides`) is used to approximate
-    the minimal Hamiltonian cycle on this new graph.
+    the minimal Hamiltonian cycle on this new graph. The available
+    algorithms are:
+     - christofides
+     - greedy_tsp
+     - simulated_annealing_tsp
+     - threshold_accepting_tsp
 
-    This function then turns that Hamiltonian cycle through `nodes`
-    into a cycle on the original graph using shortest paths between
-    nodes. It then returns the minimal cycle through `nodes` in `G`.
-    If `cycle` is ``False``, the biggest weight edge is removed to make a path.
+    Once the Hamiltonian Cycle is found, this function post-processes to
+    accommodate the structure of the original graph. If `cycle` is ``False``,
+    the biggest weight edge is removed to make a Hamiltonian path.
+    Then each edge on the new complete graph used for that analysis is
+    replaced by the shortest_path between those nodes on the original graph.
 
     Parameters
     ----------
@@ -140,10 +146,9 @@ def traveling_salesman_problem(
     nodes : collection of nodes (default=G.nodes)
       collection (list, set, etc.) of nodes to visit
 
-    weight : string, optional (default=None)
-      The name of the edge attribute to use for edge weights.
-      Edge weights default to 1 if the weight attribute is not present.
-      If None, every edge has weight 1.
+    weight : string, optional (default="weight")
+        Edge data key corresponding to the edge weight.
+        If any edge does not have this attribute the weight is set to 1.
 
     cycle : bool (default: True)
       Indicates whether a cycle should be returned, or a path.
@@ -215,12 +220,13 @@ def greedy_tsp(G, weight="weight", source=None):
 
     Parameters
     ----------
-    G: Graph
+    G : Graph
         The Graph should be a complete weighted undirected graph.
         The distance between all pairs of nodes should be included.
 
-    weight: string, optional (default="weight")
-        Edge data key corresponding to the edge weight
+    weight : string, optional (default="weight")
+        Edge data key corresponding to the edge weight.
+        If any edge does not have this attribute the weight is set to 1.
 
     source : node, optional (default: first node in list(G))
         Starting node.  If None, defaults to ``next(iter(G))``
@@ -234,8 +240,7 @@ def greedy_tsp(G, weight="weight", source=None):
     Raises
     ------
     NetworkXError
-        If `G` is either not complete or not weighted,
-        the algorithm raises an exception.
+        If `G` is not complete, the algorithm raises an exception.
 
     Examples
     --------
@@ -266,28 +271,26 @@ def greedy_tsp(G, weight="weight", source=None):
     be passed as a parameter to an iterative improvement algorithm such
     as Simulated Annealing, or Threshold Accepting.
 
-    Time complexity:
-    It has a running time $O(|E||V|^2)$   ??This requires a complete graph. $|E|==|V^2|$
+    Time complexity: It has a running time $O(|V|^2)$
     """
     if any(v not in G[u] for u in G for v in G if u != v):
         raise nx.NetworkXError("Not a complete graph. All node pairs must have edges.")
-    if not nx.is_weighted(G, weight=weight):
-        raise nx.NetworkXError(f"Given graph is not weighted with attribute {weight}")
     if source is None:
         source = nx.utils.arbitrary_element(G)
 
     if G.number_of_nodes() == 2:
-        neighbor = list(G.neighbors(source))[0]
+        neighbor = next(iter(G.neighbors(source)))
         return [source, neighbor, source]
 
     nodeset = set(G)
     nodeset.remove(source)
     cycle = [source]
+    next_node = source
     while nodeset:
-        next_visitor = min(nodeset, key=lambda v: G[source][v][weight])
-        cycle.append(next_visitor)
-        nodeset.remove(next_visitor)
-        source = next_visitor
+        nbrdict = G[next_node]
+        next_node = min(nodeset, key=lambda n: nbrdict[n].get(weight, 1))
+        cycle.append(next_node)
+        nodeset.remove(next_node)
     cycle.append(cycle[0])
     return cycle
 
@@ -299,8 +302,8 @@ def simulated_annealing_tsp(
     source=None,
     temp=100,
     move="1-1",
-    tolerance=10,
-    iterations=100,
+    max_iterations=10,
+    N_inner=100,
     alpha=0.01,
     cycle=None,
     seed=None,
@@ -327,7 +330,8 @@ def simulated_annealing_tsp(
         The distance between all pairs of nodes should be included.
 
     weight : string, optional (default="weight")
-        Edge data key corresponding to the edge weight
+        Edge data key corresponding to the edge weight.
+        If any edge does not have this attribute the weight is set to 1.
 
     source : node, optional (default: first node in list(G))
         Starting node.  If None, defaults to ``next(iter(G))``
@@ -355,13 +359,12 @@ def simulated_annealing_tsp(
           we can transfer the fourth element to the second position:
           ``A' = [3, 4, 2, 1, 3]``
 
-    tolerance : int, optional (default=10)
-        The stopping condition for number of consecutive iterations of
-        the outer loop for which the best cost solution has not decreased.
+    max_iterations : int, optional (default=10)
+        Declared done when this number of consecutive iterations of
+        the outer loop occurs without any change in the best cost solution.
 
-    iterations : int, optional (default=100)
-        The stopping condition for the total number of iterations
-        of the inner loop.
+    N_inner : int, optional (default=100)
+        The number of iterations of the inner loop.
 
     alpha : float between (0, 1), optional (default=0.01)
         Percentage of temperature decrease in each iteration
@@ -383,8 +386,7 @@ def simulated_annealing_tsp(
     Raises
     ------
     NetworkXError
-        If `G` is either not complete or not weighted,
-        the algorithm raises an exception.
+        If `G` is not complete the algorithm raises an exception.
 
     Examples
     --------
@@ -443,30 +445,27 @@ def simulated_annealing_tsp(
         if G.number_of_nodes() == 2:
             return cycle
 
-        cost = sum(G[u][v][weight] for u, v in zip(cycle, cycle[1:]))
     else:
-        # Find the cost of initial solution and make the essential checks for graph.
         if any(v not in G[u] for u in G for v in G if u != v):
             raise nx.NetworkXError(
                 "Not a complete graph. All node pairs must have edges."
             )
-        if not nx.is_weighted(G, weight=weight):
-            raise nx.NetworkXError("Given graph is not weighted.")
 
         if G.number_of_nodes() == 2:
-            neighbor = list(G.neighbors(source))[0]
+            neighbor = next(iter(G.neighbors(source)))
             return [source, neighbor, source]
 
-        cost = sum(G[u][v][weight] for u, v in zip(cycle, cycle[1:]))
+    # Find the cost of initial solution
+    cost = sum(G[u][v].get(weight, 1) for u, v in pairwise(cycle))
 
     count = 0
-    best_cycle = cycle[:]
+    best_cycle = cycle.copy()
     best_cost = cost
-    while count <= tolerance and temp > 0:
+    while count <= max_iterations and temp > 0:
         count += 1
-        for i in range(iterations):
+        for i in range(N_inner):
             adj_sol = _apply_move(cycle, move, seed)
-            adj_cost = sum(G[u][v][weight] for u, v in nx.utils.pairwise(adj_sol))
+            adj_cost = sum(G[u][v].get(weight, 1) for u, v in pairwise(adj_sol))
             delta = adj_cost - cost
             if delta <= 0:
                 # Set current solution the adjacent solution.
@@ -475,7 +474,7 @@ def simulated_annealing_tsp(
 
                 if cost < best_cost:
                     count = 0
-                    best_cycle = cycle[:]
+                    best_cycle = cycle.copy()
                     best_cost = cost
             else:
                 # Accept even a worse solution with probability p.
@@ -495,8 +494,8 @@ def threshold_accepting_tsp(
     source=None,
     threshold=1,
     move="1-1",
-    tolerance=10,
-    iterations=100,
+    max_iterations=10,
+    N_inner=100,
     alpha=0.1,
     cycle=None,
     seed=None,
@@ -519,8 +518,9 @@ def threshold_accepting_tsp(
         `G` should be a complete weighted undirected graph.
         The distance between all pairs of nodes should be included.
 
-    weight: string, optional (default="weight")
-        Edge data key corresponding to the edge weight
+    weight : string, optional (default="weight")
+        Edge data key corresponding to the edge weight.
+        If any edge does not have this attribute the weight is set to 1.
 
     source : node, optional (default: first node in list(G))
         Starting node.  If None, defaults to ``next(iter(G))``
@@ -548,13 +548,12 @@ def threshold_accepting_tsp(
           we can transfer the fourth element to the second position:
           ``A' = [3, 4, 2, 1, 3]``
 
-    tolerance : int, optional (default=10)
-        The stopping condition for number of consecutive iterations of
-        the outer loop for which the best cost solution has not decreased.
+    max_iterations : int, optional (default=10)
+        Declared done when this number of consecutive iterations of
+        the outer loop occurs without any change in the best cost solution.
 
-    iterations : int, optional (default=100)
-        The stopping condition for the total number of iterations
-        of the inner loop.
+    N_inner : int, optional (default=100)
+        The number of iterations of the inner loop.
 
     alpha : float between (0, 1), optional (default=0.1)
         Percentage of threshold decrease when there is at
@@ -577,8 +576,7 @@ def threshold_accepting_tsp(
     Raises
     ------
     NetworkXError
-        If `G` is either not complete or not weighted,
-        the algorithm raises an exception.
+        If `G` is not complete the algorithm raises an exception.
 
     Examples
     --------
@@ -628,7 +626,7 @@ def threshold_accepting_tsp(
     It has a running time $O(|E||V|^2 + m * n * |V|)$ when a greedy
     algorithm is used to construct an initial solution, otherwise
     it has a running time $O(m * n * |V|)$ where $m$ and $n$ are the number
-    of iterations of outer and inner loop respectively.
+    of loops of outer and inner loop respectively.
 
     For more information and how algorithm is inspired see:
     http://en.wikipedia.org/wiki/Threshold_accepting
@@ -644,31 +642,29 @@ def threshold_accepting_tsp(
         if G.number_of_nodes() == 2:
             return cycle
 
-        cost = sum(G[u][v][weight] for u, v in zip(cycle, cycle[1:]))
+        cost = sum(G[u][v].get(weight, 1) for u, v in zip(cycle, cycle[1:]))
     else:
         # Find the cost of initial solution and make the essential checks for graph.
         if any(v not in G[u] for u in G for v in G if u != v):
             raise nx.NetworkXError(
                 "Not a complete graph. All node pairs must have edges."
             )
-        if not nx.is_weighted(G, weight=weight):
-            raise nx.NetworkXError("Given graph is not weighted.")
 
         if G.number_of_nodes() == 2:
             neighbor = list(G.neighbors(source))[0]
             return [source, neighbor, source]
 
-        cost = sum(G[u][v][weight] for u, v in zip(cycle, cycle[1:]))
+        cost = sum(G[u][v].get(weight, 1) for u, v in zip(cycle, cycle[1:]))
 
     count = 0
-    best_cycle = cycle[:]
+    best_cycle = cycle.copy()
     best_cost = cost
-    while count <= tolerance:
+    while count <= max_iterations:
         count += 1
         accepted = False
-        for i in range(iterations):
+        for i in range(N_inner):
             adj_sol = _apply_move(cycle, move, seed)
-            adj_cost = sum(G[u][v][weight] for u, v in zip(cycle, cycle[1:]))
+            adj_cost = sum(G[u][v].get(weight, 1) for u, v in pairwise(adj_sol))
             delta = adj_cost - cost
             if delta <= threshold:
                 accepted = True
@@ -679,7 +675,7 @@ def threshold_accepting_tsp(
 
                 if cost < best_cost:
                     count = 0
-                    best_cycle = cycle[:]
+                    best_cycle = cycle.copy()
                     best_cost = cost
         if accepted:
             threshold -= threshold * alpha

@@ -7,12 +7,6 @@ import networkx.algorithms.approximation as nx_app
 pairwise = nx.utils.pairwise
 
 
-def test_christofides_exception():
-    G = nx.complete_graph(10)
-    G.remove_edge(0, 1)
-    pytest.raises(ValueError, nx_app.christofides, G)
-
-
 def test_christofides_hamiltonian():
     random.seed(42)
     G = nx.complete_graph(20)
@@ -31,12 +25,19 @@ def test_christofides_hamiltonian():
     assert len(H.edges) == 0
 
 
+def test_christofides_incomplete_graph():
+    G = nx.complete_graph(10)
+    G.remove_edge(0, 1)
+    pytest.raises(ValueError, nx_app.christofides, G)
+
+
 def test_christofides_selfloop():
     G = nx.complete_graph(10)
     G.add_edge(3, 3)
     pytest.raises(ValueError, nx_app.christofides, G)
 
 
+# set up graphs for other tests
 @classmethod
 def _setup_class(cls):
     cls.DG = nx.DiGraph()
@@ -56,6 +57,9 @@ def _setup_class(cls):
             ("D", "C", 2),
         }
     )
+    cls.DG_cycle = ["D", "C", "B", "A", "D"]
+    cls.DG_cost = 31.0
+
     cls.DG2 = nx.DiGraph()
     cls.DG2.add_weighted_edges_from(
         {
@@ -73,12 +77,17 @@ def _setup_class(cls):
             ("D", "C", 2),
         }
     )
+    cls.DG2_cycle = ["D", "A", "B", "C", "D"]
+    cls.DG2_cost = 53.0
+
     cls.unweightedUG = nx.complete_graph(5, nx.Graph())
     cls.unweightedDG = nx.complete_graph(5, nx.DiGraph())
+
     cls.incompleteUG = nx.Graph()
     cls.incompleteUG.add_weighted_edges_from({(0, 1, 1), (1, 2, 3)})
     cls.incompleteDG = nx.DiGraph()
     cls.incompleteDG.add_weighted_edges_from({(0, 1, 1), (1, 2, 3)})
+
     cls.UG = nx.Graph()
     cls.UG.add_weighted_edges_from(
         {
@@ -90,6 +99,9 @@ def _setup_class(cls):
             ("C", "D", 4),
         }
     )
+    cls.UG_cycle = ["D", "C", "B", "A", "D"]
+    cls.UG_cost = 33.0
+
     cls.UG2 = nx.Graph()
     cls.UG2.add_weighted_edges_from(
         {
@@ -101,6 +113,8 @@ def _setup_class(cls):
             ("C", "D", 3),
         }
     )
+    cls.UG2_cycle = ["D", "C", "B", "A", "D"]
+    cls.UG2_cost = 25.0
 
 
 def validate_solution(soln, cost, exp_soln, exp_cost):
@@ -138,8 +152,8 @@ class TestGreedyTSP:
         pytest.raises(nx.NetworkXError, nx_app.greedy_tsp, self.incompleteDG)
 
     def test_not_weighted_graph(self):
-        pytest.raises(nx.NetworkXError, nx_app.greedy_tsp, self.unweightedUG)
-        pytest.raises(nx.NetworkXError, nx_app.greedy_tsp, self.unweightedDG)
+        nx_app.greedy_tsp(self.unweightedUG)
+        nx_app.greedy_tsp(self.unweightedDG)
 
     def test_two_nodes(self):
         G = nx.Graph()
@@ -151,39 +165,43 @@ class TestGreedyTSP:
 
 class TestSimulatedAnnealingTSP:
     setup_class = _setup_class
+    tsp = staticmethod(nx_app.simulated_annealing_tsp)
 
-    def test_simulated_annealing(self):
-        cycle = nx_app.simulated_annealing_tsp(self.DG, source="D")
+    def test_simulated_annealing_directed(self):
+        cycle = self.tsp(self.DG, source="D", seed=42)
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 31.0)
-
-        cycle = nx_app.simulated_annealing_tsp(self.DG2, source="D")
-        cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, ["D", "A", "B", "C", "D"], 53.0)
-        cycle = nx_app.simulated_annealing_tsp(self.DG2, move="1-0", source="D")
-        cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, ["D", "A", "B", "C", "D"], 53.0)
-        cycle = nx_app.simulated_annealing_tsp(self.UG2, source="D")
-        cost = sum(self.UG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_symmetric_solution(cycle, cost, ["D", "C", "B", "A", "D"], 25.0)
-        cycle = nx_app.simulated_annealing_tsp(self.UG2, move="1-0", source="D")
-        cost = sum(self.UG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_symmetric_solution(cycle, cost, ["D", "C", "B", "A", "D"], 25.0)
+        validate_solution(cycle, cost, self.DG_cycle, self.DG_cost)
 
         initial_sol = ["D", "B", "A", "C", "D"]
-        cycle = nx_app.simulated_annealing_tsp(self.DG, cycle=initial_sol, source="D")
+        cycle = self.tsp(self.DG, cycle=initial_sol, source="D", seed=42)
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 31.0)
-        initial_sol = ["D", "A", "C", "B", "D"]
-        cycle = nx_app.simulated_annealing_tsp(
-            self.DG, move="1-0", cycle=initial_sol, source="D"
-        )
-        cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 31.0)
+        validate_solution(cycle, cost, self.DG_cycle, self.DG_cost)
 
-        cycle = nx_app.simulated_annealing_tsp(self.UG, source="D")
+        initial_sol = ["D", "A", "C", "B", "D"]
+        cycle = self.tsp(self.DG, move="1-0", cycle=initial_sol, source="D", seed=42)
+        cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, self.DG_cycle, self.DG_cost)
+
+        cycle = self.tsp(self.DG2, source="D", seed=42)
+        cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, self.DG2_cycle, self.DG2_cost)
+
+        cycle = self.tsp(self.DG2, move="1-0", source="D", seed=42)
+        cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, self.DG2_cycle, self.DG2_cost)
+
+    def test_simulated_annealing_undirected(self):
+        cycle = self.tsp(self.UG, source="D", seed=42)
         cost = sum(self.UG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 33.0)
+        validate_solution(cycle, cost, self.UG_cycle, self.UG_cost)
+
+        cycle = self.tsp(self.UG2, source="D", seed=42)
+        cost = sum(self.UG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_symmetric_solution(cycle, cost, self.UG2_cycle, self.UG2_cost)
+
+        cycle = self.tsp(self.UG2, move="1-0", source="D", seed=42)
+        cost = sum(self.UG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_symmetric_solution(cycle, cost, self.UG2_cycle, self.UG2_cost)
 
     def test_not_complete_graph(self):
         pytest.raises(
@@ -202,129 +220,80 @@ class TestSimulatedAnnealingTSP:
         )
 
     def test_not_weighted_graph(self):
-        pytest.raises(
-            nx.NetworkXError,
-            nx_app.simulated_annealing_tsp,
-            self.unweightedUG,
-            source=0,
-            cycle=[],
-        )
-        pytest.raises(
-            nx.NetworkXError,
-            nx_app.simulated_annealing_tsp,
-            self.unweightedDG,
-            source=0,
-            cycle=[],
-        )
+        nx_app.simulated_annealing_tsp(self.unweightedUG)
+        nx_app.simulated_annealing_tsp(self.unweightedDG)
 
-    def test_simulated_annealing_fails(self):
-        cycle = nx_app.simulated_annealing_tsp(
-            self.DG2, source="D", move="1-0", alpha=1, iterations=1, tolerance=1
-        )
+    def test_two_nodes(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from({(1, 2, 1)})
+
+        cycle = nx_app.simulated_annealing_tsp(G, source=1, seed=42)
+        cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, [1, 2, 1], 2)
+
+        cycle = nx_app.simulated_annealing_tsp(G, source=1, cycle=[1, 2, 1], seed=42)
+        cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, [1, 2, 1], 2)
+
+    def test_failure_of_costs_too_high_when_iterations_low(self):
+        # Simulated Annealing Version:
+        # set number of moves low and alpha high
+        cycle = self.tsp(self.DG2, source="D", move="1-0", alpha=1, N_inner=1, seed=42)
         cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        assert cost > 53.0
+        print(cycle, cost)
+        assert cost > self.DG2_cost
 
+        # Try with an incorrect initial guess
         initial_sol = ["D", "A", "B", "C", "D"]
-        cycle = nx_app.simulated_annealing_tsp(
+        cycle = self.tsp(
             self.DG,
             source="D",
             move="1-0",
-            alpha=1,
-            iterations=1,
-            tolerance=1,
+            alpha=0.1,
+            N_inner=1,
+            max_iterations=1,
+            seed=42,
             cycle=initial_sol,
         )
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        assert cost > 31.0
-
-    def test_two_nodes(self):
-        G = nx.Graph()
-        G.add_weighted_edges_from({(1, 2, 1)})
-        cycle = nx_app.simulated_annealing_tsp(G, source=1)
-        cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, [1, 2, 1], 2)
-        cycle = nx_app.simulated_annealing_tsp(G, source=1, cycle=[1, 2, 1])
-        cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, [1, 2, 1], 2)
+        print(cycle, cost)
+        assert cost > self.DG_cost
 
 
-class TestThresholdAcceptingTSP:
-    setup_class = _setup_class
+class TestThresholdAcceptingTSP(TestSimulatedAnnealingTSP):
+    tsp = staticmethod(nx_app.threshold_accepting_tsp)
 
-    def test_threshold_accepting(self):
-        cycle = nx_app.threshold_accepting_tsp(self.DG, source="D")
-        cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 31.0)
-
-        cycle = nx_app.threshold_accepting_tsp(self.DG2, source="D")
+    def test_failure_of_costs_too_high_when_iterations_low(self):
+        # Threshold Version:
+        # set number of moves low and number of iterations low
+        cycle = self.tsp(
+            self.DG2, source="D", move="1-0", N_inner=1, max_iterations=1, seed=42
+        )
         cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, ["D", "A", "B", "C", "D"], 53.0)
-        cycle = nx_app.threshold_accepting_tsp(self.DG2, source="D", move="1-0")
-        cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, ["D", "A", "B", "C", "D"], 53.0)
-        cycle = nx_app.threshold_accepting_tsp(self.UG2, source="D")
-        cost = sum(self.UG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_symmetric_solution(cycle, cost, ["D", "C", "B", "A", "D"], 25.0)
-        cycle = nx_app.threshold_accepting_tsp(self.UG2, source="D", move="1-0")
-        cost = sum(self.UG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_symmetric_solution(cycle, cost, ["D", "C", "B", "A", "D"], 25.0)
+        print(cycle, cost)
+        assert cost > self.DG2_cost
 
-        initial_sol = ["D", "B", "A", "C", "D"]
-        cycle = nx_app.threshold_accepting_tsp(self.DG, source="D", cycle=initial_sol)
-        cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 31.0)
-        initial_sol = ["D", "A", "C", "B", "D"]
-        cycle = nx_app.threshold_accepting_tsp(
-            self.DG, source="D", move="1-0", cycle=initial_sol
+        # set threshold too low
+        initial_sol = ["D", "A", "B", "C", "D"]
+        cycle = self.tsp(
+            self.DG,
+            source="D",
+            move="1-0",
+            threshold=-3,
+            seed=42,
+            cycle=initial_sol,
         )
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 31.0)
+        print(cycle, cost)
+        assert cost > self.DG_cost
 
-        cycle = nx_app.threshold_accepting_tsp(self.UG, source="D")
-        cost = sum(self.UG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 33.0)
 
-    def test_not_completed_graph(self):
-        pytest.raises(
-            nx.NetworkXError,
-            nx_app.threshold_accepting_tsp,
-            self.incompleteUG,
-            source=0,
-            cycle=[],
-        )
-        pytest.raises(
-            nx.NetworkXError,
-            nx_app.threshold_accepting_tsp,
-            self.incompleteDG,
-            source=0,
-            cycle=[],
-        )
-
-    def test_not_weighted_graph(self):
-        pytest.raises(
-            nx.NetworkXError,
-            nx_app.threshold_accepting_tsp,
-            self.unweightedUG,
-            source=0,
-            cycle=[],
-        )
-        pytest.raises(
-            nx.NetworkXError,
-            nx_app.threshold_accepting_tsp,
-            self.unweightedDG,
-            source=0,
-            cycle=[],
-        )
-
-    def test_two_nodes(self):
-        G = nx.Graph()
-        G.add_weighted_edges_from({(1, 2, 1)})
-        cycle = nx_app.threshold_accepting_tsp(G, source=1)
-        cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, [1, 2, 1], 2)
-        cycle = nx_app.threshold_accepting_tsp(G, source=1, cycle=[1, 2, 1])
-        cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        validate_solution(cycle, cost, [1, 2, 1], 2)
+# Tests for function traveling_salesman_problem
+def test_kwarg_passthrough():
+    G = nx.cycle_graph(9)
+    nx_app.traveling_salesman_problem(G, method=nx_app.simulated_annealing_tsp, temp=5)
+    nx_app.traveling_salesman_problem(G, method=nx_app.threshold_accepting_tsp, alpha=1)
+    nx_app.traveling_salesman_problem(G, method=nx_app.greedy_tsp, source=1)
 
 
 def test_TSP_unweighted():
@@ -365,8 +334,10 @@ def test_TSP_weighted():
     # Check default method
     cycle = tsp(G, [3, 6], weight="weight")
     assert cycle in expected_cycles
+
     path = tsp(G, [3, 6], weight="weight", cycle=False)
     assert path in expected_paths
+
     tourpath = tsp(G, weight="weight", cycle=False)
     assert tourpath in expected_tourpaths
 
@@ -380,7 +351,9 @@ def test_TSP_weighted():
     for method in methods:
         cycle = tsp(G, [3, 6], weight="weight", method=method)
         assert cycle in expected_cycles
+
         path = tsp(G, [3, 6], weight="weight", method=method, cycle=False)
         assert path in expected_paths
+
         tourpath = tsp(G, weight="weight", method=method, cycle=False)
         assert tourpath in expected_tourpaths
