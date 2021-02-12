@@ -348,21 +348,39 @@ def test_TSP_weighted():
     G[7][8]["weight"] = 2
     G[8][0]["weight"] = 2
     tsp = nx_app.traveling_salesman_problem
-    path = tsp(G, [3, 6], weight="weight", cycle=False)
-    assert path in ([3, 2, 1, 0, 8, 7, 6], [6, 7, 8, 0, 1, 2, 3])
 
-    cycle = tsp(G, [3, 6], weight="weight")
-    expected = (
+    # path between 3 and 6
+    expected_paths = ([3, 2, 1, 0, 8, 7, 6], [6, 7, 8, 0, 1, 2, 3])
+    # cycle between 3 and 6
+    expected_cycles = (
         [3, 2, 1, 0, 8, 7, 6, 7, 8, 0, 1, 2, 3],
         [6, 7, 8, 0, 1, 2, 3, 2, 1, 0, 8, 7, 6],
     )
-    assert cycle in expected
+    # path through all nodes
+    expected_tourpaths = (
+        [5, 6, 7, 8, 0, 1, 2, 3, 4],
+        [4, 3, 2, 1, 0, 8, 7, 6, 5],
+    )
 
-    cycle_christofides = tsp(G, [3, 6], weight="weight", method=nx_app.christofides)
-    assert cycle == cycle_christofides
-    cycle_greedy = tsp(G, [3, 6], weight="weight", method=nx_app.greedy_tsp)
-    assert cycle == cycle_greedy
-    cycle_SA = tsp(G, [3, 6], weight="weight", method=nx_app.simulated_annealing_tsp)
-    assert cycle == cycle_SA
-    cycle_TA = tsp(G, [3, 6], weight="weight", method=nx_app.threshold_accepting_tsp)
-    assert cycle == cycle_TA
+    # Check default method
+    cycle = tsp(G, [3, 6], weight="weight")
+    assert cycle in expected_cycles
+    path = tsp(G, [3, 6], weight="weight", cycle=False)
+    assert path in expected_paths
+    tourpath = tsp(G, weight="weight", cycle=False)
+    assert tourpath in expected_tourpaths
+
+    # Check all methods
+    methods = [
+        nx_app.christofides,
+        nx_app.greedy_tsp,
+        nx_app.simulated_annealing_tsp,
+        nx_app.threshold_accepting_tsp,
+    ]
+    for method in methods:
+        cycle = tsp(G, [3, 6], weight="weight", method=method)
+        assert cycle in expected_cycles
+        path = tsp(G, [3, 6], weight="weight", method=method, cycle=False)
+        assert path in expected_paths
+        tourpath = tsp(G, weight="weight", method=method, cycle=False)
+        assert tourpath in expected_tourpaths

@@ -189,6 +189,7 @@ def traveling_salesman_problem(
             if dist[u][v] > length_biggest:
                 biggest_edge = (u, v)
                 length_biggest = dist[u][v]
+            u = v
         u, v = biggest_edge
         pos = best_GG.index(u) + 1
         while best_GG[pos] != v:
