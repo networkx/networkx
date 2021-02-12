@@ -109,10 +109,10 @@ def label_propagation_communities(G):
     G : graph
         An undirected NetworkX graph.
 
-    Yields
-    ------
-    communities : iterator
-        A dict_values object that yields a set of nodes for each community.
+    Returns
+    -------
+    communities : iterable
+        A dict_values object that contains a set of nodes for each community.
 
     Raises
     ------
