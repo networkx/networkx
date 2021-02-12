@@ -5,7 +5,7 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.utils import pairwise
 from networkx.utils import empty_generator
-from networkx.algorithms.shortest_paths.weighted import _weight_function
+from networkx.utils.decorators import edge_attribute
 
 __all__ = [
     "all_simple_paths",
@@ -413,6 +413,7 @@ def _all_simple_edge_paths_multigraph(G, source, targets, cutoff):
             visited.pop()
 
 
+@edge_attribute("weight")
 @not_implemented_for("multigraph")
 def shortest_simple_paths(G, source, target, weight=None):
     """Generate all simple paths in the graph G from source to target,
@@ -511,11 +512,9 @@ def shortest_simple_paths(G, source, target, weight=None):
         length_func = len
         shortest_path_func = _bidirectional_shortest_path
     else:
-        wt = _weight_function(G, weight)
-
         def length_func(path):
             return sum(
-                wt(u, v, G.get_edge_data(u, v)) for (u, v) in zip(path, path[1:])
+                weight(u, v, G.get_edge_data(u, v)) for (u, v) in zip(path, path[1:])
             )
 
         shortest_path_func = _bidirectional_dijkstra
@@ -583,7 +582,7 @@ class PathBuffer:
 
 
 def _bidirectional_shortest_path(
-    G, source, target, ignore_nodes=None, ignore_edges=None, weight=None
+        G, source, target, ignore_nodes=None, ignore_edges=None, weight=None
 ):
     """Returns the shortest path between source and target ignoring
        nodes and edges in the containers ignore_nodes and ignore_edges.
@@ -750,8 +749,9 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
     raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 
+@edge_attribute("weight")
 def _bidirectional_dijkstra(
-    G, source, target, weight="weight", ignore_nodes=None, ignore_edges=None
+        G, source, target, weight="weight", ignore_nodes=None, ignore_edges=None
 ):
     """Dijkstra's algorithm for shortest paths using bidirectional search.
 
@@ -917,13 +917,12 @@ def _bidirectional_dijkstra(
             # we have now discovered the shortest path
             return (finaldist, finalpath)
 
-        wt = _weight_function(G, weight)
         for w in neighs[dir](v):
             if dir == 0:  # forward
-                minweight = wt(v, w, G.get_edge_data(v, w))
+                minweight = weight(v, w, G.get_edge_data(v, w))
                 vwLength = dists[dir][v] + minweight
             else:  # back, must remember to change v,w->w,v
-                minweight = wt(w, v, G.get_edge_data(w, v))
+                minweight = weight(w, v, G.get_edge_data(w, v))
                 vwLength = dists[dir][v] + minweight
 
             if w in dists[dir]:
