@@ -3,6 +3,13 @@
 Contributor Guide
 =================
 
+.. note::
+   This document assumes some familiarity with contributing to open source
+   scientific Python projects using GitHub pull requests. If this does not
+   describe you, you may first want to see the :ref:`contributing_faq`.
+
+.. _dev_workflow:
+
 Development Workflow
 --------------------
 
@@ -27,11 +34,11 @@ Development Workflow
 
    * Next, you need to set up your build environment.
      Here are instructions for two popular environment managers:
-   
+
      * ``venv`` (pip based)
-     
+
        ::
-     
+
          # Create a virtualenv named ``networkx-dev`` that lives in the directory of
          # the same name
          python -m venv networkx-dev
@@ -49,11 +56,11 @@ Development Workflow
          pip install -e .
          # Test your installation
          PYTHONPATH=. pytest networkx
-     
+
      * ``conda`` (Anaconda or Miniconda)
-    
+
        ::
- 
+
          # Create a conda environment named ``networkx-dev``
          conda create --name networkx-dev
          # Activate it
@@ -154,12 +161,36 @@ For a more detailed discussion, read these :doc:`detailed documents
    If your change introduces any API modifications, please update
    ``doc/release/release_dev.rst``.
 
-   If your change introduces a deprecation, add a reminder to
-   ``doc/developer/deprecations.rst`` for the team to remove the
-   deprecated functionality in the future.
+   To set up a function for deprecation:
+
+   - Use a deprecation warning to warn users. For example::
+
+         msg = "curly_hair is deprecated and will be removed in v3.0. Use sum() instead."
+         warnings.warn(msg, DeprecationWarning)
+
+   - Add a warning to ``networkx/conftest.py``::
+
+         warnings.filterwarnings(
+             "ignore", category=DeprecationWarning, message=<start of message>
+         )
+
+   - Add a reminder to ``doc/developer/deprecations.rst`` for the team
+     to remove the deprecated functionality in the future. For example:
+
+     .. code-block:: rst
+
+        * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
+
+   - Add a note (and a link to the PR) to ``doc/release/release_dev.rst``:
+
+     .. code-block:: rst
+
+        [`#4281 <https://github.com/networkx/networkx/pull/4281>`_]
+        Deprecate ``read_yaml`` and ``write_yaml``.
+
 
    .. note::
-   
+
       To reviewers: make sure the merge message has a brief description of the
       change(s) and if the PR closes an issue add, for example, "Closes #123"
       where 123 is the issue number.
@@ -240,15 +271,15 @@ Guidelines
    import scipy as sp
    import matplotlib as mpl
    import matplotlib.pyplot as plt
-   import pandas as pd 
+   import pandas as pd
    import networkx as nx
 
   After importing `sp`` for ``scipy``::
 
    import scipy as sp
 
-  use the following imports:: 
- 
+  use the following imports::
+
    import scipy.linalg  # call as sp.linalg
    import scipy.sparse  # call as sp.sparse
    import scipy.sparse.linalg  # call as sp.sparse.linalg
@@ -265,12 +296,12 @@ Guidelines
   be the graph object to be checked.
 
   .. code-block:: python
-  
+
       @nx.not_implemented_for('directed', 'multigraph')
       def function_not_for_MultiDiGraph(G, others):
           # function not for graphs that are directed *and* multigraph
           pass
-  
+
       @nx.not_implemented_for('directed')
       @nx.not_implemented_for('multigraph')
       def function_only_for_Graph(G, others):

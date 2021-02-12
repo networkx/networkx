@@ -4,6 +4,7 @@ import pytest
 import networkx as nx
 import random
 from networkx.utils import (
+    arbitrary_element,
     create_py_random_state,
     create_random_state,
     discrete_sequence,
@@ -271,3 +272,30 @@ def test_PythonRandomInterface():
     )
     assert rng.randint(3, 5) == rs42.randint(3, 6)
     assert rng.random() == rs42.random_sample()
+
+
+@pytest.mark.parametrize(
+    ("iterable_type", "expected"),
+    (
+        (list, 1),
+        (tuple, 1),
+        (str, "["),
+        (set, 1),
+    ),
+)
+def test_arbitrary_element(iterable_type, expected):
+    iterable = iterable_type([1, 2, 3])
+    assert arbitrary_element(iterable) == expected
+
+
+@pytest.mark.parametrize(
+    "iterator",
+    (
+        (i for i in range(3)),  # generator
+        iter([1, 2, 3]),
+    ),
+)
+def test_arbitrary_element_raises(iterator):
+    """Value error is raised when input is an iterator."""
+    with pytest.raises(ValueError, match="from an iterator"):
+        arbitrary_element(iterator)

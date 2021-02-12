@@ -64,6 +64,7 @@ Measuring partitions
 
    coverage
    modularity
+   partition_quality
    performance
 
 Partitions via centrality measures

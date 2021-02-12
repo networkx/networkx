@@ -8,6 +8,7 @@ from networkx import barbell_graph
 from networkx.algorithms.community import coverage
 from networkx.algorithms.community import modularity
 from networkx.algorithms.community import performance
+from networkx.algorithms.community import partition_quality
 from networkx.algorithms.community.quality import inter_community_edges
 from networkx.testing import almost_equal
 
@@ -20,12 +21,14 @@ class TestPerformance:
         G = barbell_graph(3, 0)
         partition = [{0, 1, 4}, {2, 3, 5}]
         assert almost_equal(8 / 15, performance(G, partition))
+        assert almost_equal(8 / 15, partition_quality(G, partition)[1])
 
     def test_good_partition(self):
         """Tests that a good partition has a high performance measure."""
         G = barbell_graph(3, 0)
         partition = [{0, 1, 2}, {3, 4, 5}]
         assert almost_equal(14 / 15, performance(G, partition))
+        assert almost_equal(14 / 15, partition_quality(G, partition)[1])
 
 
 class TestCoverage:
@@ -36,12 +39,14 @@ class TestCoverage:
         G = barbell_graph(3, 0)
         partition = [{0, 1, 4}, {2, 3, 5}]
         assert almost_equal(3 / 7, coverage(G, partition))
+        assert almost_equal(3 / 7, partition_quality(G, partition)[0])
 
     def test_good_partition(self):
         """Tests that a good partition has a high coverage measure."""
         G = barbell_graph(3, 0)
         partition = [{0, 1, 2}, {3, 4, 5}]
         assert almost_equal(6 / 7, coverage(G, partition))
+        assert almost_equal(6 / 7, partition_quality(G, partition)[0])
 
 
 def test_modularity():

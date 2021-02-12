@@ -55,6 +55,11 @@ API Changes
   sets of nodes instead of a generator of community sets. It is still iterable,
   so likely will still work in most user code and a simple fix otherwise:
   e.g., add `iter( ... )` surrounding the function call.
+- [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
+  `prefix_tree` used to return `tree, root` but root is now always 0
+  instead of a UUID generate string. So the function returns `tree`.
+- [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
+  The variable `NIL` ="NIL" has been removed from `networkx.generators.trees`
 
 Deprecations
 ------------
@@ -85,6 +90,8 @@ Deprecations
   Deprecate ``consume``.
 - [`#4448 <https://github.com/networkx/networkx/pull/4448>`_]
   Deprecate ``iterable``.
+- [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
+  Deprecate ``generate_unique_node``.
 
 Contributors to this release
 ----------------------------

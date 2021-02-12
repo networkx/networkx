@@ -214,6 +214,7 @@ intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "geopandas": ("https://geopandas.org/", None),
     "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
+    "sphinx-gallery": ("https://sphinx-gallery.github.io/stable/", None),
 }
 
 # The reST default role (used for this markup: `text`) to use for all
