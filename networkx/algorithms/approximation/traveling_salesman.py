@@ -556,11 +556,9 @@ def simulated_annealing_tsp(
 
     Time complexity:
     For $N_i$ iterations of the inner loop and $N_o$ iterations of the
-    outer loop, this algorithm has running time $O(|E||V|^2 + N_i * N_o * |V|)$
-    when a greedy algorithm is used to construct an initial solution.
-    Otherwise it has a running time $O(N_i * N_o * |V|)$.
+    outer loop, this algorithm has running time $O(N_i * N_o * |V|)$.
 
-    For more information and how algorithm is inspired see:
+    For more information and how the algorithm is inspired see:
     http://en.wikipedia.org/wiki/Simulated_annealing
     """
     if move == "1-1":
@@ -768,10 +766,8 @@ def threshold_accepting_tsp(
     be accepted with probability $p$.
 
     Time complexity:
-    It has a running time $O(|E||V|^2 + m * n * |V|)$ when a greedy
-    algorithm is used to construct an initial solution, otherwise
-    it has a running time $O(m * n * |V|)$ where $m$ and $n$ are the number
-    of loops of outer and inner loop respectively.
+    It has a running time $O(m * n * |V|)$ where $m$ and $n$ are the number
+    of times the outer and inner loop run respectively.
 
     For more information and how algorithm is inspired see:
     http://en.wikipedia.org/wiki/Threshold_accepting
