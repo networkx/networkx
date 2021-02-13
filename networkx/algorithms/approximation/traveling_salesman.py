@@ -163,10 +163,10 @@ def christofides(G, weight="weight", tree=None):
         G.remove_edge(node, node)
         G.remove_edges_from((n, n) for n in loop_nodes)
     # Check that G is a complete graph
-    n = len(G)
-    # G.size() counts multiedges. So we sum neighbors instead.
-    if sum(len(nbrdict) for n, nbrdict in G.adj.items()) != n * (n - 1):
-        raise ValueError("Christofides' algorithm needs a complete graph")
+    N = len(G) - 1
+    # This check ignores selfloops which is what we want here.
+    if any(len(nbrdict) != N for n, nbrdict in G.adj.items()):
+        raise nx.NetworkXError("G must be a complete graph.")
 
     if tree is None:
         tree = nx.minimum_spanning_tree(G, weight=weight)
@@ -385,8 +385,12 @@ def greedy_tsp(G, weight="weight", source=None):
 
     Time complexity: It has a running time $O(|V|^2)$
     """
-    if any(v not in G[u] for u in G for v in G if u != v):
-        raise nx.NetworkXError("Not a complete graph. All node pairs must have edges.")
+    # Check that G is a complete graph
+    N = len(G) - 1
+    # This check ignores selfloops which is what we want here.
+    if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
+        raise nx.NetworkXError("G must be a complete graph.")
+
     if source is None:
         source = nx.utils.arbitrary_element(G)
 
@@ -483,8 +487,9 @@ def simulated_annealing_tsp(
         one solution to a neighbor solution. The function must take
         the solution as input along with a `seed` input to control
         random number generation (see the `seed` input here).
-        Your function should treat the input solution as a cycle with
-        fixed first and last node. The new solution should be returned.
+        Your function should maintain the solution as a cycle with
+        equal first and last node and all others appearing once.
+        Your function should return the new solution.
 
     max_iterations : int, optional (default=10)
         Declared done when this number of consecutive iterations of
@@ -583,10 +588,11 @@ def simulated_annealing_tsp(
         if len(cycle) - 1 != len(G) or len(set(G.nbunch_iter(cycle))) != len(G):
             raise nx.NetworkXError("init_cycle should be a cycle over all nodes in G.")
 
-        if any(v not in G[u] for u in G for v in G if u != v):
-            raise nx.NetworkXError(
-                "Not a complete graph. All node pairs must have edges."
-            )
+        # Check that G is a complete graph
+        N = len(G) - 1
+        # This check ignores selfloops which is what we want here.
+        if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
+            raise nx.NetworkXError("G must be a complete graph.")
 
         if G.number_of_nodes() == 2:
             neighbor = next(G.neighbors(source))
@@ -688,8 +694,9 @@ def threshold_accepting_tsp(
         one solution to a neighbor solution. The function must take
         the solution as input along with a `seed` input to control
         random number generation (see the `seed` input here).
-        Your function should treat the input solution as a cycle with
-        fixed first and last node. The new solution should be returned.
+        Your function should maintain the solution as a cycle with
+        equal first and last node and all others appearing once.
+        Your function should return the new solution.
 
     max_iterations : int, optional (default=10)
         Declared done when this number of consecutive iterations of
@@ -799,11 +806,11 @@ def threshold_accepting_tsp(
         if len(cycle) - 1 != len(G) or len(set(G.nbunch_iter(cycle))) != len(G):
             raise nx.NetworkXError("init_cycle is not all and only nodes.")
 
-        # Find the cost of initial solution and check for complete graph.
-        if any(v not in G[u] for u in G for v in G if u != v):
-            raise nx.NetworkXError(
-                "Not a complete graph. All node pairs must have edges."
-            )
+        # Check that G is a complete graph
+        N = len(G) - 1
+        # This check ignores selfloops which is what we want here.
+        if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
+            raise nx.NetworkXError("G must be a complete graph.")
 
         if G.number_of_nodes() == 2:
             neighbor = list(G.neighbors(source))[0]

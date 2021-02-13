@@ -28,17 +28,14 @@ def test_christofides_hamiltonian():
 def test_christofides_incomplete_graph():
     G = nx.complete_graph(10)
     G.remove_edge(0, 1)
-    pytest.raises(ValueError, nx_app.christofides, G)
+    pytest.raises(nx.NetworkXError, nx_app.christofides, G)
 
 
-def test_christofides_selfloop():
-    # set up to ignore selfloops
+def test_christofides_ignore_selfloops():
     G = nx.complete_graph(5)
     G.add_edge(3, 3)
-    tree = nx.minimum_spanning_tree(G, weight="weight")
-    H = nx.Graph(pairwise(nx_app.christofides(G, tree)))
-    H.remove_edges_from(nx.find_cycle(H))
-    assert len(H.edges) == 0
+    cycle = nx_app.christofides(G)
+    assert len(cycle) - 1 == len(G) == len(set(cycle))
 
 
 # set up graphs for other tests
@@ -166,6 +163,12 @@ class TestGreedyTSP:
         cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_solution(cycle, cost, [1, 2, 1], 2)
 
+    def test_ignore_selfloops(self):
+        G = nx.complete_graph(5)
+        G.add_edge(3, 3)
+        cycle = nx_app.greedy_tsp(G)
+        assert len(cycle) - 1 == len(G) == len(set(cycle))
+
 
 class TestSimulatedAnnealingTSP:
     setup_class = _setup_class
@@ -210,32 +213,38 @@ class TestSimulatedAnnealingTSP:
     def test_not_complete_graph(self):
         pytest.raises(
             nx.NetworkXError,
-            nx_app.simulated_annealing_tsp,
+            self.tsp,
             self.incompleteUG,
             "greedy",
             source=0,
         )
         pytest.raises(
             nx.NetworkXError,
-            nx_app.simulated_annealing_tsp,
+            self.tsp,
             self.incompleteDG,
             "greedy",
             source=0,
         )
 
+    def test_ignore_selfloops(self):
+        G = nx.complete_graph(5)
+        G.add_edge(3, 3)
+        cycle = self.tsp(G, "greedy")
+        assert len(cycle) - 1 == len(G) == len(set(cycle))
+
     def test_not_weighted_graph(self):
-        nx_app.simulated_annealing_tsp(self.unweightedUG, "greedy")
-        nx_app.simulated_annealing_tsp(self.unweightedDG, "greedy")
+        self.tsp(self.unweightedUG, "greedy")
+        self.tsp(self.unweightedDG, "greedy")
 
     def test_two_nodes(self):
         G = nx.Graph()
         G.add_weighted_edges_from({(1, 2, 1)})
 
-        cycle = nx_app.simulated_annealing_tsp(G, "greedy", source=1, seed=42)
+        cycle = self.tsp(G, "greedy", source=1, seed=42)
         cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_solution(cycle, cost, [1, 2, 1], 2)
 
-        cycle = nx_app.simulated_annealing_tsp(G, [1, 2, 1], source=1, seed=42)
+        cycle = self.tsp(G, [1, 2, 1], source=1, seed=42)
         cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_solution(cycle, cost, [1, 2, 1], 2)
 
