@@ -112,7 +112,7 @@ def is_matching(G, matching):
 
 
 def is_maximal_matching(G, matching):
-    """Return True if ``matching`` is a mximal matching of ``G``
+    """Return True if ``matching`` is a maximal matching of ``G``
 
     A *maximal matching* in a graph is a matching in which adding any
     edge would cause the set to no longer be a valid matching.
@@ -155,7 +155,7 @@ def is_maximal_matching(G, matching):
 
 
 def is_perfect_matching(G, matching):
-    """Return True is ``matching`` is a perfect matching for ``G``
+    """Return True if ``matching`` is a perfect matching for ``G``
 
     A *perfect matching* in a graph is a matching in which exactly one edge
     is incident upon each vertex.
@@ -195,7 +195,7 @@ def min_weight_matching(G, maxcardinality=False, weight="weight"):
     """Use reciprocal edge weights to find max reciprocal weight matching.
 
     This method replaces the weights with their reciprocal and
-    then runs :func:``max_weight_matching``.
+    then runs :func:`max_weight_matching`.
     Read the documentation of max_weight_matching for more information.
 
     Parameters

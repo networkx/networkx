@@ -32,9 +32,13 @@ def test_christofides_incomplete_graph():
 
 
 def test_christofides_selfloop():
-    G = nx.complete_graph(10)
+    # set up to ignore selfloops
+    G = nx.complete_graph(5)
     G.add_edge(3, 3)
-    pytest.raises(ValueError, nx_app.christofides, G)
+    tree = nx.minimum_spanning_tree(G, weight="weight")
+    H = nx.Graph(pairwise(nx_app.christofides(G, tree)))
+    H.remove_edges_from(nx.find_cycle(H))
+    assert len(H.edges) == 0
 
 
 # set up graphs for other tests
@@ -267,10 +271,9 @@ class TestThresholdAcceptingTSP(TestSimulatedAnnealingTSP):
         # Threshold Version:
         # set number of moves low and number of iterations low
         cycle = self.tsp(
-            self.DG2, source="D", move="1-0", N_inner=1, max_iterations=1, seed=42
+            self.DG2, source="D", move="1-0", N_inner=1, max_iterations=1, seed=4
         )
         cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        print(cycle, cost)
         assert cost > self.DG2_cost
 
         # set threshold too low
@@ -284,16 +287,20 @@ class TestThresholdAcceptingTSP(TestSimulatedAnnealingTSP):
             cycle=initial_sol,
         )
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        print(cycle, cost)
         assert cost > self.DG_cost
 
 
 # Tests for function traveling_salesman_problem
-def test_kwarg_passthrough():
+def test_TSP_method():
     G = nx.cycle_graph(9)
-    nx_app.traveling_salesman_problem(G, method=nx_app.simulated_annealing_tsp, temp=5)
-    nx_app.traveling_salesman_problem(G, method=nx_app.threshold_accepting_tsp, alpha=1)
-    nx_app.traveling_salesman_problem(G, method=nx_app.greedy_tsp, source=1)
+    G[4][5]["weight"] = 10
+
+    def my_tsp_method(G, weight):
+        return nx_app.simulated_annealing_tsp(G, weight, source=4, seed=1)
+
+    path = nx_app.traveling_salesman_problem(G, method=my_tsp_method, cycle=False)
+    print(path)
+    assert path == [4, 3, 2, 1, 0, 8, 7, 6, 5]
 
 
 def test_TSP_unweighted():

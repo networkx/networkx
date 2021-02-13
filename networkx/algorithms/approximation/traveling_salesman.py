@@ -45,8 +45,81 @@ __all__ = [
 ]
 
 
+def swap_two_nodes(soln, seed):
+    """Swap two nodes in `soln` to give a neighbor solution.
+
+    Parameters
+    ----------
+    soln : list of nodes
+        Current cycle of nodes
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    list
+        The solution after move is applied. (A neighbor solution.)
+
+    Notes
+    -----
+        This function assumes that the incoming list `soln` is a cycle
+        (that the first and last element are the same) and also that
+        we don't want any move to change the first node in the list
+        (and thus not the last node either).
+
+        The input list is changed as well as returned. Make a copy if needed.
+
+    See Also
+    --------
+        move_one_node
+    """
+    a, b = seed.sample(range(1, len(soln) - 1), k=2)
+    soln[a], soln[b] = soln[b], soln[a]
+    return soln
+
+
+def move_one_node(soln, seed):
+    """Move one node to another position to give a neighbor solution.
+
+    The node to move and the position to move to are chosen randomly.
+    The first and last nodes are left untouched as soln must be a cycle
+    starting at that node.
+
+    Parameters
+    ----------
+    soln : list of nodes
+        Current cycle of nodes
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    list
+        The solution after move is applied. (A neighbor solution.)
+
+    Notes
+    -----
+        This function assumes that the incoming list `soln` is a cycle
+        (that the first and last element are the same) and also that
+        we don't want any move to change the first node in the list
+        (and thus not the last node either).
+
+        The input list is changed as well as returned. Make a copy if needed.
+
+    See Also
+    --------
+        swap_two_nodes
+    """
+    a, b = seed.sample(range(1, len(soln) - 1), k=2)
+    soln.insert(b, soln.pop(a))
+    return soln
+
+
 @not_implemented_for("directed")
-@not_implemented_for("multigraph")
 def christofides(G, weight="weight", tree=None):
     """Approximate a solution of the traveling salesman problem
 
@@ -56,21 +129,22 @@ def christofides(G, weight="weight", tree=None):
     Parameters
     ----------
     G : Graph
-      Undirected complete graph
+        `G` should be a complete weighted undirected graph.
+        The distance between all pairs of nodes should be included.
 
     weight : string, optional (default="weight")
         Edge data key corresponding to the edge weight.
         If any edge does not have this attribute the weight is set to 1.
 
-    tree : NetworkX graph or None (default: computed)
-      A minimum spanning tree of G. Or, if None, the minimum spanning
-      tree is computed using :func:`networkx.minimum_spanning_tree`
+    tree : NetworkX graph or None (default: None)
+        A minimum spanning tree of G. Or, if None, the minimum spanning
+        tree is computed using :func:`networkx.minimum_spanning_tree`
 
     Returns
     -------
-    Generator
-        Generator of edges forming a 3/2-approximation of the minimal
-        Hamiltonian cycle.
+    list
+        List of nodes in `G` along a cycle with a 3/2-approximation of
+        the minimal Hamiltonian cycle.
 
     References
     ----------
@@ -78,17 +152,25 @@ def christofides(G, weight="weight", tree=None):
        the travelling salesman problem." No. RR-388. Carnegie-Mellon Univ
        Pittsburgh Pa Management Sciences Research Group, 1976.
     """
+    # Remove selfloops if necessary
+    loop_nodes = nx.nodes_with_selfloops(G)
+    try:
+        node = next(loop_nodes)
+    except StopIteration:
+        pass
+    else:
+        G = G.copy()
+        G.remove_edge(node, node)
+        G.remove_edges_from((n, n) for n in loop_nodes)
     # Check that G is a complete graph
-    for e in nx.selfloop_edges(G):
-        raise ValueError("Christofides algorithm does not allow selfloops")
     n = len(G)
-    m = G.size()
-    if (n * (n - 1) // 2) != m:
-        raise ValueError("Christofides algorithm needs a complete graph")
+    # G.size() counts multiedges. So we sum neighbors instead.
+    if sum(len(nbrdict) for n, nbrdict in G.adj.items()) != n * (n - 1):
+        raise ValueError("Christofides' algorithm needs a complete graph")
 
     if tree is None:
         tree = nx.minimum_spanning_tree(G, weight=weight)
-    L = nx.Graph(G)
+    L = G.copy()
     L.remove_nodes_from([v for v, degree in tree.degree if not (degree % 2)])
     MG = nx.MultiGraph()
     MG.add_edges_from(tree.edges)
@@ -110,10 +192,7 @@ def _shortcutting(circuit):
     return nodes
 
 
-@not_implemented_for("directed")
-def traveling_salesman_problem(
-    G, nodes=None, weight="weight", cycle=True, method=christofides, **kwargs
-):
+def traveling_salesman_problem(G, nodes=None, weight="weight", cycle=True, method=None):
     """Find the shortest path in `G` connecting specified nodes
 
     This function allows approximate solution to the traveling salesman
@@ -141,33 +220,64 @@ def traveling_salesman_problem(
     Parameters
     ----------
     G : NetworkX graph
-      Undirected possibly weighted graph
+        Undirected possibly weighted graph
 
     nodes : collection of nodes (default=G.nodes)
-      collection (list, set, etc.) of nodes to visit
+        collection (list, set, etc.) of nodes to visit
 
     weight : string, optional (default="weight")
         Edge data key corresponding to the edge weight.
         If any edge does not have this attribute the weight is set to 1.
 
     cycle : bool (default: True)
-      Indicates whether a cycle should be returned, or a path.
-      Note: the cycle is the approximate minimal cycle.
-      The path simply removes the biggest edge in that cycle.
+        Indicates whether a cycle should be returned, or a path.
+        Note: the cycle is the approximate minimal cycle.
+        The path simply removes the biggest edge in that cycle.
 
-    method : function (default: christofides)
-      A function that returns a cycle on all nodes and approximates
-      the solution to the traveling salesman problem on a complete
-      graph. The returned cycle is then used to find a corresponding
-      solution on `G`. `method` should be callable; take inputs
-      `G`, and `weight`; and return a list of nodes along the cycle.
+    method : function (default: None)
+        A function that returns a cycle on all nodes and approximates
+        the solution to the traveling salesman problem on a complete
+        graph. The returned cycle is then used to find a corresponding
+        solution on `G`. `method` should be callable; take inputs
+        `G`, and `weight`; and return a list of nodes along the cycle.
+
+        Provided options include :func:`christofides`, :func:`greedy_tsp`,
+        :func:`simulated_annealing_tsp` and :func:`threshold_accepting_tsp`.
+
+        If `method is None`: use :func:`christofides` for undirected `G` and
+        :func:`threshold_accepting_tsp` for directed `G`.
+
+        To specify parameters for these provided functions, construct lambda
+        functions that state the specific value. `method` must have 2 inputs.
+        (See examples).
 
     Returns
     -------
     list
         List of nodes in `G` along a path with a 3/2-approximation of the minimal
         path through `nodes`.
+
+    Examples
+    --------
+    >>> tsp = nx.approximation.traveling_salesman_problem
+    >>> G = nx.cycle_graph(9)
+    >>> G[4][5]["weight"] = 5  # all other weights are 1
+    >>> tsp(G, [3, 6])
+    [3, 2, 1, 0, 8, 7, 6, 7, 8, 0, 1, 2, 3]
+    >>> path = tsp(G, cycle=False)
+    >>> path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])
+    True
+
+    Build (curry) your own function to provide parameter values to the methods.
+
+    >>> SA_tsp = nx.approximation.simulated_annealing_tsp
+    >>> path = tsp(G, cycle=False, method=lambda G, wt: SA_tsp(G, weight=wt, temp=500))
+    >>> path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])
+    True
+
     """
+    if method is None:
+        method = threshold_accepting_tsp if G.is_directed() else christofides
     if nodes is None:
         nodes = list(G.nodes)
 
@@ -183,7 +293,7 @@ def traveling_salesman_problem(
             if u == v:
                 continue
             GG.add_edge(u, v, weight=dist[u][v])
-    best_GG = method(GG, weight=weight)
+    best_GG = method(GG, weight)
 
     if not cycle:
         # find and remove the biggest edge
@@ -340,24 +450,30 @@ def simulated_annealing_tsp(
         The algorithm's temperature parameter. It represents the initial
         value of temperature
 
-    move : string, optional (default="1-1")
-        Move to be applied in a solution to generate a
-        new (neighbor) solution. The algorithm checks if this
-        neighbor solution is better than the best solution so far.
-        Two moves are available:
-
-        - 1-1 exchange which transposes the position
+    move : "1-1" or "1-0" or function, optional (default="1-1")
+        Indicator of what move to use when finding new trial solutions.
+        Strings indicate two special built-in moves:
+        - "1-1": 1-1 exchange which transposes the position
           of two elements of the current solution.
+          The function called is :func:`swap_two_nodes`.
           For example if we apply 1-1 exchange in the solution
           ``A = [3, 2, 1, 4, 3]``
           we can get the following by the transposition of 1 and 4 elements:
           ``A' = [3, 2, 4, 1, 3]``
-        - 1-0 exchange which moves an element of solution
-          in a new position.
+        - "1-0": 1-0 exchange which moves an node in the solution
+          to a new position.
+          The function called is :func:`move_one_node`.
           For example if we apply 1-0 exchange in the solution
           ``A = [3, 2, 1, 4, 3]``
           we can transfer the fourth element to the second position:
           ``A' = [3, 4, 2, 1, 3]``
+
+        You may provide your own functions to enact a move from
+        one solution to a neighbor solution. The function must take
+        the solution as input along with a `seed` input to control
+        random number generation (see the `seed` input here).
+        Your function should treat the input solution as a cycle with
+        fixed first and last node. The new solution should be returned.
 
     max_iterations : int, optional (default=10)
         Declared done when this number of consecutive iterations of
@@ -371,7 +487,7 @@ def simulated_annealing_tsp(
         of outer loop
 
     cycle : list, optional (default=compute using greedy algorithm)
-        The initial solution (a cycle all nodes).
+        The initial solution (a cycle through all nodes).
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
@@ -439,6 +555,10 @@ def simulated_annealing_tsp(
     For more information and how algorithm is inspired see:
     http://en.wikipedia.org/wiki/Simulated_annealing
     """
+    if move == "1-1":
+        move = swap_two_nodes
+    elif move == "1-0":
+        move = move_one_node
     if cycle is None:
         # Construct an initial solution using a greedy algorithm.
         cycle = greedy_tsp(G, weight=weight, source=source)
@@ -464,7 +584,7 @@ def simulated_annealing_tsp(
     while count <= max_iterations and temp > 0:
         count += 1
         for i in range(N_inner):
-            adj_sol = _apply_move(cycle, move, seed)
+            adj_sol = move(cycle, seed)
             adj_cost = sum(G[u][v].get(weight, 1) for u, v in pairwise(adj_sol))
             delta = adj_cost - cost
             if delta <= 0:
@@ -529,24 +649,30 @@ def threshold_accepting_tsp(
         The algorithm's threshold parameter. It represents the initial
         threshold's value
 
-    move : string, optional (default="1-1")
-        Move to be applied in a solution to generate a
-        new (neighbor) solution. The algorithm checks if this
-        neighbor solution is better than the best solution so far.
-        Two moves are available:
-
-        - 1-1 exchange which transposes the position
+    move : "1-1" or "1-0" or function, optional (default="1-1")
+        Indicator of what move to use when finding new trial solutions.
+        Strings indicate two special built-in moves:
+        - "1-1": 1-1 exchange which transposes the position
           of two elements of the current solution.
+          The function called is :func:`swap_two_nodes`.
           For example if we apply 1-1 exchange in the solution
           ``A = [3, 2, 1, 4, 3]``
           we can get the following by the transposition of 1 and 4 elements:
           ``A' = [3, 2, 4, 1, 3]``
-        - 1-0 exchange which moves an element of solution
-          in a new position.
+        - "1-0": 1-0 exchange which moves an node in the solution
+          to a new position.
+          The function called is :func:`move_one_node`.
           For example if we apply 1-0 exchange in the solution
           ``A = [3, 2, 1, 4, 3]``
           we can transfer the fourth element to the second position:
           ``A' = [3, 4, 2, 1, 3]``
+
+        You may provide your own functions to enact a move from
+        one solution to a neighbor solution. The function must take
+        the solution as input along with a `seed` input to control
+        random number generation (see the `seed` input here).
+        Your function should treat the input solution as a cycle with
+        fixed first and last node. The new solution should be returned.
 
     max_iterations : int, optional (default=10)
         Declared done when this number of consecutive iterations of
@@ -636,6 +762,10 @@ def threshold_accepting_tsp(
     simulated_annealing_tsp
 
     """
+    if move == "1-1":
+        move = swap_two_nodes
+    elif move == "1-0":
+        move = move_one_node
     if cycle is None:
         # Construct an initial solution using a greedy algorithm.
         cycle = greedy_tsp(G, weight=weight, source=source)
@@ -663,7 +793,7 @@ def threshold_accepting_tsp(
         count += 1
         accepted = False
         for i in range(N_inner):
-            adj_sol = _apply_move(cycle, move, seed)
+            adj_sol = move(cycle, seed)
             adj_cost = sum(G[u][v].get(weight, 1) for u, v in pairwise(adj_sol))
             delta = adj_cost - cost
             if delta <= threshold:
@@ -681,33 +811,3 @@ def threshold_accepting_tsp(
             threshold -= threshold * alpha
 
     return best_cycle
-
-
-def _apply_move(soln, move, seed):
-    """
-    Apply a move to a solution to generate a neighbor solution.
-
-    Parameters
-    ----------
-    soln : list of nodes
-        Current solution (list of nodes)
-
-    move : string
-        Move to be applied
-
-    seed : integer, random_state, or None (default)
-        Indicator of random number generation state.
-        See :ref:`Randomness<randomness>`.
-
-    Returns
-    -------
-    The solution after move is applied. (A neighbor solution.)
-    """
-    a = seed.randint(1, len(soln) - 2)
-    listb = list(range(1, a)) + list(range(a + 1, len(soln) - 1))
-    b = seed.choice(listb)
-    if move == "1-1":
-        soln[a], soln[b] = soln[b], soln[a]
-    elif move == "1-0":
-        soln.insert(b, soln.pop(a))
-    return soln
