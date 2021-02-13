@@ -92,6 +92,8 @@ Deprecations
   Deprecate ``iterable``.
 - [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
   Deprecate ``generate_unique_node``.
+- [`#4599 <https://github.com/networkx/networkx/pull/4599>`_]
+  Deprecate ``empty_generator``.
 
 Contributors to this release
 ----------------------------
