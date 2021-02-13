@@ -71,21 +71,17 @@ def run_all_random_functions(seed):
     t(nx.spectral_ordering, G, seed=seed)
     # print('starting average_clustering')
     t(approx.average_clustering, G, seed=seed)
-    t(approx.simulated_annealing_tsp, H, source=1, seed=seed)
-    t(approx.threshold_accepting_tsp, H, source=1, seed=seed)
+    t(approx.simulated_annealing_tsp, H, "greedy", source=1, seed=seed)
+    t(approx.threshold_accepting_tsp, H, "greedy", source=1, seed=seed)
     t(
         approx.traveling_salesman_problem,
         H,
-        source=1,
-        method=approx.simulated_annealing_tsp,
-        seed=seed,
+        method=lambda G, wt: approx.simulated_annealing_tsp(G, "greedy", wt, seed=seed),
     )
     t(
         approx.traveling_salesman_problem,
         H,
-        source=1,
-        method=approx.threshold_accepting_tsp,
-        seed=seed,
+        method=lambda G, wt: approx.threshold_accepting_tsp(G, "greedy", wt, seed=seed),
     )
     t(nx.betweenness_centrality, G, seed=seed)
     t(nx.edge_betweenness_centrality, G, seed=seed)

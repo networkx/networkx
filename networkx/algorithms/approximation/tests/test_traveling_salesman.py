@@ -172,38 +172,38 @@ class TestSimulatedAnnealingTSP:
     tsp = staticmethod(nx_app.simulated_annealing_tsp)
 
     def test_simulated_annealing_directed(self):
-        cycle = self.tsp(self.DG, source="D", seed=42)
+        cycle = self.tsp(self.DG, "greedy", source="D", seed=42)
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_solution(cycle, cost, self.DG_cycle, self.DG_cost)
 
         initial_sol = ["D", "B", "A", "C", "D"]
-        cycle = self.tsp(self.DG, cycle=initial_sol, source="D", seed=42)
+        cycle = self.tsp(self.DG, initial_sol, source="D", seed=42)
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_solution(cycle, cost, self.DG_cycle, self.DG_cost)
 
         initial_sol = ["D", "A", "C", "B", "D"]
-        cycle = self.tsp(self.DG, move="1-0", cycle=initial_sol, source="D", seed=42)
+        cycle = self.tsp(self.DG, initial_sol, move="1-0", source="D", seed=42)
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_solution(cycle, cost, self.DG_cycle, self.DG_cost)
 
-        cycle = self.tsp(self.DG2, source="D", seed=42)
+        cycle = self.tsp(self.DG2, "greedy", source="D", seed=42)
         cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_solution(cycle, cost, self.DG2_cycle, self.DG2_cost)
 
-        cycle = self.tsp(self.DG2, move="1-0", source="D", seed=42)
+        cycle = self.tsp(self.DG2, "greedy", move="1-0", source="D", seed=42)
         cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_solution(cycle, cost, self.DG2_cycle, self.DG2_cost)
 
     def test_simulated_annealing_undirected(self):
-        cycle = self.tsp(self.UG, source="D", seed=42)
+        cycle = self.tsp(self.UG, "greedy", source="D", seed=42)
         cost = sum(self.UG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_solution(cycle, cost, self.UG_cycle, self.UG_cost)
 
-        cycle = self.tsp(self.UG2, source="D", seed=42)
+        cycle = self.tsp(self.UG2, "greedy", source="D", seed=42)
         cost = sum(self.UG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_symmetric_solution(cycle, cost, self.UG2_cycle, self.UG2_cost)
 
-        cycle = self.tsp(self.UG2, move="1-0", source="D", seed=42)
+        cycle = self.tsp(self.UG2, "greedy", move="1-0", source="D", seed=42)
         cost = sum(self.UG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_symmetric_solution(cycle, cost, self.UG2_cycle, self.UG2_cost)
 
@@ -212,37 +212,39 @@ class TestSimulatedAnnealingTSP:
             nx.NetworkXError,
             nx_app.simulated_annealing_tsp,
             self.incompleteUG,
+            "greedy",
             source=0,
-            cycle=[],
         )
         pytest.raises(
             nx.NetworkXError,
             nx_app.simulated_annealing_tsp,
             self.incompleteDG,
+            "greedy",
             source=0,
-            cycle=[],
         )
 
     def test_not_weighted_graph(self):
-        nx_app.simulated_annealing_tsp(self.unweightedUG)
-        nx_app.simulated_annealing_tsp(self.unweightedDG)
+        nx_app.simulated_annealing_tsp(self.unweightedUG, "greedy")
+        nx_app.simulated_annealing_tsp(self.unweightedDG, "greedy")
 
     def test_two_nodes(self):
         G = nx.Graph()
         G.add_weighted_edges_from({(1, 2, 1)})
 
-        cycle = nx_app.simulated_annealing_tsp(G, source=1, seed=42)
+        cycle = nx_app.simulated_annealing_tsp(G, "greedy", source=1, seed=42)
         cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_solution(cycle, cost, [1, 2, 1], 2)
 
-        cycle = nx_app.simulated_annealing_tsp(G, source=1, cycle=[1, 2, 1], seed=42)
+        cycle = nx_app.simulated_annealing_tsp(G, [1, 2, 1], source=1, seed=42)
         cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_solution(cycle, cost, [1, 2, 1], 2)
 
     def test_failure_of_costs_too_high_when_iterations_low(self):
         # Simulated Annealing Version:
         # set number of moves low and alpha high
-        cycle = self.tsp(self.DG2, source="D", move="1-0", alpha=1, N_inner=1, seed=42)
+        cycle = self.tsp(
+            self.DG2, "greedy", source="D", move="1-0", alpha=1, N_inner=1, seed=42
+        )
         cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         print(cycle, cost)
         assert cost > self.DG2_cost
@@ -251,13 +253,13 @@ class TestSimulatedAnnealingTSP:
         initial_sol = ["D", "A", "B", "C", "D"]
         cycle = self.tsp(
             self.DG,
+            initial_sol,
             source="D",
             move="1-0",
             alpha=0.1,
             N_inner=1,
             max_iterations=1,
             seed=42,
-            cycle=initial_sol,
         )
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         print(cycle, cost)
@@ -271,7 +273,13 @@ class TestThresholdAcceptingTSP(TestSimulatedAnnealingTSP):
         # Threshold Version:
         # set number of moves low and number of iterations low
         cycle = self.tsp(
-            self.DG2, source="D", move="1-0", N_inner=1, max_iterations=1, seed=4
+            self.DG2,
+            "greedy",
+            source="D",
+            move="1-0",
+            N_inner=1,
+            max_iterations=1,
+            seed=4,
         )
         cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         assert cost > self.DG2_cost
@@ -280,11 +288,11 @@ class TestThresholdAcceptingTSP(TestSimulatedAnnealingTSP):
         initial_sol = ["D", "A", "B", "C", "D"]
         cycle = self.tsp(
             self.DG,
+            initial_sol,
             source="D",
             move="1-0",
             threshold=-3,
             seed=42,
-            cycle=initial_sol,
         )
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         assert cost > self.DG_cost
@@ -296,7 +304,7 @@ def test_TSP_method():
     G[4][5]["weight"] = 10
 
     def my_tsp_method(G, weight):
-        return nx_app.simulated_annealing_tsp(G, weight, source=4, seed=1)
+        return nx_app.simulated_annealing_tsp(G, "greedy", weight, source=4, seed=1)
 
     path = nx_app.traveling_salesman_problem(G, method=my_tsp_method, cycle=False)
     print(path)
@@ -305,10 +313,10 @@ def test_TSP_method():
 
 def test_TSP_unweighted():
     G = nx.cycle_graph(9)
-    path = nx_app.traveling_salesman_problem(G, [3, 6], cycle=False)
+    path = nx_app.traveling_salesman_problem(G, nodes=[3, 6], cycle=False)
     assert path in ([3, 4, 5, 6], [6, 5, 4, 3])
 
-    cycle = nx_app.traveling_salesman_problem(G, [3, 6])
+    cycle = nx_app.traveling_salesman_problem(G, nodes=[3, 6])
     assert cycle in ([3, 4, 5, 6, 5, 4, 3], [6, 5, 4, 3, 4, 5, 6])
 
 
@@ -339,10 +347,10 @@ def test_TSP_weighted():
     )
 
     # Check default method
-    cycle = tsp(G, [3, 6], weight="weight")
+    cycle = tsp(G, nodes=[3, 6], weight="weight")
     assert cycle in expected_cycles
 
-    path = tsp(G, [3, 6], weight="weight", cycle=False)
+    path = tsp(G, nodes=[3, 6], weight="weight", cycle=False)
     assert path in expected_paths
 
     tourpath = tsp(G, weight="weight", cycle=False)
@@ -352,14 +360,14 @@ def test_TSP_weighted():
     methods = [
         nx_app.christofides,
         nx_app.greedy_tsp,
-        nx_app.simulated_annealing_tsp,
-        nx_app.threshold_accepting_tsp,
+        lambda G, wt: nx_app.simulated_annealing_tsp(G, "greedy", weight=wt),
+        lambda G, wt: nx_app.threshold_accepting_tsp(G, "greedy", weight=wt),
     ]
     for method in methods:
-        cycle = tsp(G, [3, 6], weight="weight", method=method)
+        cycle = tsp(G, nodes=[3, 6], weight="weight", method=method)
         assert cycle in expected_cycles
 
-        path = tsp(G, [3, 6], weight="weight", method=method, cycle=False)
+        path = tsp(G, nodes=[3, 6], weight="weight", method=method, cycle=False)
         assert path in expected_paths
 
         tourpath = tsp(G, weight="weight", method=method, cycle=False)
@@ -369,7 +377,7 @@ def test_TSP_weighted():
 def test_TSP_incomplete_graph_short_path():
     G = nx.cycle_graph(9)
     G.add_edges_from([(4, 9), (9, 10), (10, 11), (11, 0)])
-    G[4][5]["weight"] = 20
+    G[4][5]["weight"] = 5
 
     cycle = nx_app.traveling_salesman_problem(G)
     print(cycle)

@@ -192,7 +192,7 @@ def _shortcutting(circuit):
     return nodes
 
 
-def traveling_salesman_problem(G, nodes=None, weight="weight", cycle=True, method=None):
+def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, method=None):
     """Find the shortest path in `G` connecting specified nodes
 
     This function allows approximate solution to the traveling salesman
@@ -262,7 +262,7 @@ def traveling_salesman_problem(G, nodes=None, weight="weight", cycle=True, metho
     >>> tsp = nx.approximation.traveling_salesman_problem
     >>> G = nx.cycle_graph(9)
     >>> G[4][5]["weight"] = 5  # all other weights are 1
-    >>> tsp(G, [3, 6])
+    >>> tsp(G, nodes=[3, 6])
     [3, 2, 1, 0, 8, 7, 6, 7, 8, 0, 1, 2, 3]
     >>> path = tsp(G, cycle=False)
     >>> path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])
@@ -271,13 +271,21 @@ def traveling_salesman_problem(G, nodes=None, weight="weight", cycle=True, metho
     Build (curry) your own function to provide parameter values to the methods.
 
     >>> SA_tsp = nx.approximation.simulated_annealing_tsp
-    >>> path = tsp(G, cycle=False, method=lambda G, wt: SA_tsp(G, weight=wt, temp=500))
+    >>> method = lambda G, wt: SA_tsp(G, "greedy", weight=wt, temp=500)
+    >>> path = tsp(G, cycle=False, method=method)
     >>> path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])
     True
 
     """
     if method is None:
-        method = threshold_accepting_tsp if G.is_directed() else christofides
+        if G.is_directed():
+
+            def threshold_tsp(G, weight):
+                return threshold_accepting_tsp(G, "greedy", weight)
+
+            method = threshold_tsp
+        else:
+            method = christofides
     if nodes is None:
         nodes = list(G.nodes)
 
@@ -299,20 +307,14 @@ def traveling_salesman_problem(G, nodes=None, weight="weight", cycle=True, metho
         # find and remove the biggest edge
         biggest_edge = None
         length_biggest = float("-inf")
-        u = best_GG[0]
-        for v in best_GG[1:]:
-            if dist[u][v] > length_biggest:
-                biggest_edge = (u, v)
-                length_biggest = dist[u][v]
-            u = v
-        u, v = biggest_edge
+        (u, v) = max(pairwise(best_GG), key=lambda x: dist[x[0]][x[1]])
         pos = best_GG.index(u) + 1
         while best_GG[pos] != v:
             pos = best_GG[pos:].index(u) + 1
-        best_GG = best_GG[pos:] + best_GG[:pos]
+        best_GG = best_GG[pos:-1] + best_GG[:pos]
 
     best_path = []
-    for u, v in nx.utils.pairwise(best_GG):
+    for u, v in pairwise(best_GG):
         best_path.extend(path[u][v][:-1])
     best_path.append(v)
     return best_path
@@ -389,7 +391,7 @@ def greedy_tsp(G, weight="weight", source=None):
         source = nx.utils.arbitrary_element(G)
 
     if G.number_of_nodes() == 2:
-        neighbor = next(iter(G.neighbors(source)))
+        neighbor = next(G.neighbors(source))
         return [source, neighbor, source]
 
     nodeset = set(G)
@@ -408,6 +410,7 @@ def greedy_tsp(G, weight="weight", source=None):
 @py_random_state(9)
 def simulated_annealing_tsp(
     G,
+    init_cycle,
     weight="weight",
     source=None,
     temp=100,
@@ -415,7 +418,6 @@ def simulated_annealing_tsp(
     max_iterations=10,
     N_inner=100,
     alpha=0.01,
-    cycle=None,
     seed=None,
 ):
     """Returns an approximate solution to the traveling salesman problem.
@@ -438,6 +440,15 @@ def simulated_annealing_tsp(
     G : Graph
         `G` should be a complete weighted undirected graph.
         The distance between all pairs of nodes should be included.
+
+    init_cycle : list of all nodes or "greedy"
+        The initial solution (a cycle through all nodes).
+        Usually you should use `greedy_tsp(G, weight)`.
+        But you can start with `list(G)` or the final result
+        of `simulated_annealing_tsp` when doing `threshold_accepting_tsp`.
+
+        This argument is required. A shortcut if you don't want to think
+        about it is to use the string "greedy" which calls `greedy_tsp`.
 
     weight : string, optional (default="weight")
         Edge data key corresponding to the edge weight.
@@ -486,9 +497,6 @@ def simulated_annealing_tsp(
         Percentage of temperature decrease in each iteration
         of outer loop
 
-    cycle : list, optional (default=compute using greedy algorithm)
-        The initial solution (a cycle through all nodes).
-
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -513,14 +521,14 @@ def simulated_annealing_tsp(
     ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
     ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2)
     ... })
-    >>> cycle = approx.simulated_annealing_tsp(G, source="D")
+    >>> cycle = approx.simulated_annealing_tsp(G, "greedy", source="D")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
     >>> cost
     31
     >>> incycle = ["D", "B", "A", "C", "D"]
-    >>> cycle = approx.simulated_annealing_tsp(G, source="D", cycle=incycle)
+    >>> cycle = approx.simulated_annealing_tsp(G, incycle, source="D")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
@@ -559,20 +567,31 @@ def simulated_annealing_tsp(
         move = swap_two_nodes
     elif move == "1-0":
         move = move_one_node
-    if cycle is None:
+    if init_cycle == "greedy":
         # Construct an initial solution using a greedy algorithm.
         cycle = greedy_tsp(G, weight=weight, source=source)
         if G.number_of_nodes() == 2:
             return cycle
 
     else:
+        cycle = list(init_cycle)
+        if source is None:
+            source = cycle[0]
+        elif source != cycle[0]:
+            raise nx.NetworkXError("source must be first node in init_cycle")
+        if cycle[0] != cycle[-1]:
+            raise nx.NetworkXError("init_cycle must be a cycle. (return to start)")
+
+        if len(cycle) - 1 != len(G) or len(set(G.nbunch_iter(cycle))) != len(G):
+            raise nx.NetworkXError("init_cycle should be a cycle over all nodes in G.")
+
         if any(v not in G[u] for u in G for v in G if u != v):
             raise nx.NetworkXError(
                 "Not a complete graph. All node pairs must have edges."
             )
 
         if G.number_of_nodes() == 2:
-            neighbor = next(iter(G.neighbors(source)))
+            neighbor = next(G.neighbors(source))
             return [source, neighbor, source]
 
     # Find the cost of initial solution
@@ -610,6 +629,7 @@ def simulated_annealing_tsp(
 @py_random_state(9)
 def threshold_accepting_tsp(
     G,
+    init_cycle,
     weight="weight",
     source=None,
     threshold=1,
@@ -617,7 +637,6 @@ def threshold_accepting_tsp(
     max_iterations=10,
     N_inner=100,
     alpha=0.1,
-    cycle=None,
     seed=None,
 ):
     """Returns an approximate solution to the traveling salesman problem.
@@ -713,14 +732,14 @@ def threshold_accepting_tsp(
     ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
     ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2)
     ... })
-    >>> cycle = approx.threshold_accepting_tsp(G, source="D")
+    >>> cycle = approx.threshold_accepting_tsp(G, "greedy", source="D")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
     >>> cost
     31
     >>> incycle = ["D", "B", "A", "C", "D"]
-    >>> cycle = approx.threshold_accepting_tsp(G, source="D", cycle=incycle)
+    >>> cycle = approx.threshold_accepting_tsp(G, incycle, source="D")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
@@ -766,15 +785,25 @@ def threshold_accepting_tsp(
         move = swap_two_nodes
     elif move == "1-0":
         move = move_one_node
-    if cycle is None:
+    if init_cycle == "greedy":
         # Construct an initial solution using a greedy algorithm.
         cycle = greedy_tsp(G, weight=weight, source=source)
         if G.number_of_nodes() == 2:
             return cycle
 
-        cost = sum(G[u][v].get(weight, 1) for u, v in zip(cycle, cycle[1:]))
     else:
-        # Find the cost of initial solution and make the essential checks for graph.
+        cycle = list(init_cycle)
+        if source is None:
+            source = cycle[0]
+        elif source != cycle[0]:
+            raise nx.NetworkXError("source must be first node in init_cycle")
+        if cycle[0] != cycle[-1]:
+            raise nx.NetworkXError("init_cycle must be a cycle. (return to start)")
+
+        if len(cycle) - 1 != len(G) or len(set(G.nbunch_iter(cycle))) != len(G):
+            raise nx.NetworkXError("init_cycle is not all and only nodes.")
+
+        # Find the cost of initial solution and check for complete graph.
         if any(v not in G[u] for u in G for v in G if u != v):
             raise nx.NetworkXError(
                 "Not a complete graph. All node pairs must have edges."
@@ -784,7 +813,8 @@ def threshold_accepting_tsp(
             neighbor = list(G.neighbors(source))[0]
             return [source, neighbor, source]
 
-        cost = sum(G[u][v].get(weight, 1) for u, v in zip(cycle, cycle[1:]))
+    # Find the cost of initial solution
+    cost = sum(G[u][v].get(weight, 1) for u, v in pairwise(cycle))
 
     count = 0
     best_cycle = cycle.copy()
