@@ -184,13 +184,11 @@ def hits_numpy(G, normalized=True):
     # Hub matrix
     H = adj_ary @ adj_ary.T
     e, ev = np.linalg.eig(H)
-    m = e.argsort()[-1]  # index of maximum eigenvalue
-    h = np.array(ev[:, m]).flatten()
+    h = ev[:, np.argmax(e)]  # eigenvector corresponding to the maximum eigenvalue
     # Authority matrix
     A = adj_ary.T @ adj_ary
     e, ev = np.linalg.eig(A)
-    m = e.argsort()[-1]  # index of maximum eigenvalue
-    a = np.array(ev[:, m]).flatten()
+    a = ev[:, np.argmax(e)]  # eigenvector corresponding to the maximum eigenvalue
     if normalized:
         h = h / h.sum()
         a = a / a.sum()
