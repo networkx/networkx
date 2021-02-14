@@ -188,7 +188,7 @@ def hits_numpy(G, normalized=True):
     The ``hubs`` and ``authority`` matrices are computed from the adjancency
     matrix:
 
-    >>> adj_ary = nx.to_numpy_adjacency(G)
+    >>> adj_ary = nx.to_numpy_array(G)
     >>> hubs_matrix = adj_ary @ adj_ary.T
     >>> authority_matrix = adj_ary.T @ adj_ary
 
