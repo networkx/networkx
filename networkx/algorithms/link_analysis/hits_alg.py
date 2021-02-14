@@ -120,13 +120,39 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
 
 
 def authority_matrix(G, nodelist=None):
-    """Returns the HITS authority matrix."""
+    """Returns the HITS authority matrix.
+
+    .. deprecated:: 2.6
+    """
+    import warnings
+
+    msg = (
+        "\nauthority_matrix is deprecated as of version 2.6 and will be removed "
+        "in version 3.0.\n"
+        "The authority matrix can be computed by::\n"
+        "    >>> M = nx.to_numpy_array(G, nodelist=nodelist)\n"
+        "    >>> M.T @ M"
+    )
+    warnings.warn(msg, UserWarning)
     M = nx.to_numpy_array(G, nodelist=nodelist)
     return M.T @ M
 
 
 def hub_matrix(G, nodelist=None):
-    """Returns the HITS hub matrix."""
+    """Returns the HITS hub matrix.
+
+    .. deprecated:: 2.6
+    """
+    import warnings
+
+    msg = (
+        "\nhub_matrix is deprecated as of version 2.6 and will be removed "
+        "in version 3.0.\n"
+        "The hub matrix can be computed by::\n"
+        "    >>> M = nx.to_numpy_array(G, nodelist=nodelist)\n"
+        "    >>> M @ M.T"
+    )
+    warnings.warn(msg, UserWarning)
     M = nx.to_numpy_array(G, nodelist=nodelist)
     return M @ M.T
 
