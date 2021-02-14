@@ -155,7 +155,21 @@ def hits_numpy(G, normalized=True):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> h, a = nx.hits(G)
+
+    The `hubs` and `authorities` are given by the eigenvectors corresponding to the
+    maximum eigenvalues of the hubs_matrix and the authority_matrix, respectively.
+
+    The ``hubs`` and ``authority`` matrices are computed from the adjancency
+    matrix:
+
+    >>> adj_ary = nx.to_numpy_adjacency(G)
+    >>> hubs_matrix = adj_ary @ adj_ary.T
+    >>> authority_matrix = adj_ary.T @ adj_ary
+
+    `hits_numpy` maps the eigenvector corresponding to the maximum eigenvalue
+    of the respective matrices to the nodes in `G`:
+
+    >>> hubs, authority = hits_numpy(G)
 
     Notes
     -----
