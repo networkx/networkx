@@ -180,11 +180,14 @@ def hits_numpy(G, normalized=True):
 
     if len(G) == 0:
         return {}, {}
-    H = nx.hub_matrix(G, list(G))
+    adj_ary = nx.to_numpy_array(G)
+    # Hub matrix
+    H = adj_ary @ adj_ary.T
     e, ev = np.linalg.eig(H)
     m = e.argsort()[-1]  # index of maximum eigenvalue
     h = np.array(ev[:, m]).flatten()
-    A = nx.authority_matrix(G, list(G))
+    # Authority matrix
+    A = adj_ary.T @ adj_ary
     e, ev = np.linalg.eig(A)
     m = e.argsort()[-1]  # index of maximum eigenvalue
     a = np.array(ev[:, m]).flatten()
