@@ -1,13 +1,4 @@
-# wiener.py - functions related to the Wiener index of a graph
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions related to the Wiener index of a graph."""
-from __future__ import division
 
 from itertools import chain
 
@@ -15,7 +6,7 @@ from .components import is_connected
 from .components import is_strongly_connected
 from .shortest_paths import shortest_path_length as spl
 
-__all__ = ['wiener_index']
+__all__ = ["wiener_index"]
 
 #: Rename the :func:`chain.from_iterable` function for the sake of
 #: brevity.
@@ -64,7 +55,6 @@ def wiener_index(G, weight=None):
     equals the number of pairs of the *n* nodes, since each pair of
     nodes is at distance one::
 
-        >>> import networkx as nx
         >>> n = 10
         >>> G = nx.complete_graph(n)
         >>> nx.wiener_index(G) == n * (n - 1) / 2
@@ -78,9 +68,10 @@ def wiener_index(G, weight=None):
 
     """
     is_directed = G.is_directed()
-    if (is_directed and not is_strongly_connected(G)) or \
-            (not is_directed and not is_connected(G)):
-        return float('inf')
+    if (is_directed and not is_strongly_connected(G)) or (
+        not is_directed and not is_connected(G)
+    ):
+        return float("inf")
     total = sum(chaini(p.values() for v, p in spl(G, weight=weight)))
     # Need to account for double counting pairs of nodes in undirected graphs.
     return total if is_directed else total / 2

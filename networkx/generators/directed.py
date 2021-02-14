@@ -1,20 +1,8 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2006-2018 by
-#   Aric Hagberg <hagberg@lanl.gov>
-#   Dan Schult <dschult@colgate.edu>
-#   Pieter Swart <swart@lanl.gov>
-# Copyright (C) 2009 by Willem Ligtenberg <W.P.A.Ligtenberg@tue.nl>
-# All rights reserved.
-# BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Willem Ligtenberg (W.P.A.Ligtenberg@tue.nl)
 """
 Generators for some directed graphs, including growing network (GN) graphs and
 scale-free graphs.
 
 """
-from __future__ import division
 
 from collections import Counter
 
@@ -24,13 +12,18 @@ from networkx.utils import discrete_sequence
 from networkx.utils import weighted_choice
 from networkx.utils import py_random_state
 
-__all__ = ['gn_graph', 'gnc_graph', 'gnr_graph', 'random_k_out_graph',
-           'scale_free_graph']
+__all__ = [
+    "gn_graph",
+    "gnc_graph",
+    "gnr_graph",
+    "random_k_out_graph",
+    "scale_free_graph",
+]
 
 
 @py_random_state(3)
 def gn_graph(n, kernel=None, create_using=None, seed=None):
-    """Return the growing network (GN) digraph with `n` nodes.
+    """Returns the growing network (GN) digraph with `n` nodes.
 
     The GN graph is built by adding nodes one at a time with a link to one
     previously added node.  The target node for the link is chosen with
@@ -74,7 +67,9 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
         raise nx.NetworkXError("create_using must indicate a Directed Graph")
 
     if kernel is None:
-        def kernel(x): return x
+
+        def kernel(x):
+            return x
 
     if n == 1:
         return G
@@ -95,7 +90,7 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
 
 @py_random_state(3)
 def gnr_graph(n, p, create_using=None, seed=None):
-    """Return the growing network with redirection (GNR) digraph with `n`
+    """Returns the growing network with redirection (GNR) digraph with `n`
     nodes and redirection probability `p`.
 
     The GNR graph is built by adding nodes one at a time with a link to one
@@ -148,7 +143,7 @@ def gnr_graph(n, p, create_using=None, seed=None):
 
 @py_random_state(2)
 def gnc_graph(n, create_using=None, seed=None):
-    """Return the growing network with copying (GNC) digraph with `n` nodes.
+    """Returns the growing network with copying (GNC) digraph with `n` nodes.
 
     The GNC graph is built by adding nodes one at a time with a link to one
     previously added node (chosen uniformly at random) and to all of that
@@ -186,8 +181,16 @@ def gnc_graph(n, create_using=None, seed=None):
 
 
 @py_random_state(7)
-def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
-                     delta_out=0, create_using=None, seed=None):
+def scale_free_graph(
+    n,
+    alpha=0.41,
+    beta=0.54,
+    gamma=0.05,
+    delta_in=0.2,
+    delta_out=0,
+    create_using=None,
+    seed=None,
+):
     """Returns a scale-free directed graph.
 
     Parameters
@@ -206,9 +209,9 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
         Probability for adding a new node connected to an existing node
         chosen randomly according to the out-degree distribution.
     delta_in : float
-        Bias for choosing ndoes from in-degree distribution.
+        Bias for choosing nodes from in-degree distribution.
     delta_out : float
-        Bias for choosing ndoes from out-degree distribution.
+        Bias for choosing nodes from out-degree distribution.
     create_using : NetworkX graph constructor, optional
         The default is a MultiDiGraph 3-cycle.
         If a graph instance, use it without clearing first.
@@ -245,7 +248,7 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
                 break
         return n
 
-    if create_using is None or not hasattr(create_using, '_adj'):
+    if create_using is None or not hasattr(create_using, "_adj"):
         # start with 3-cycle
         G = nx.empty_graph(3, create_using, default=nx.MultiDiGraph)
         G.add_edges_from([(0, 1), (1, 2), (2, 0)])
@@ -255,14 +258,14 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
         raise nx.NetworkXError("MultiDiGraph required in create_using")
 
     if alpha <= 0:
-        raise ValueError('alpha must be >= 0.')
+        raise ValueError("alpha must be > 0.")
     if beta <= 0:
-        raise ValueError('beta must be >= 0.')
+        raise ValueError("beta must be > 0.")
     if gamma <= 0:
-        raise ValueError('beta must be >= 0.')
+        raise ValueError("gamma must be > 0.")
 
     if abs(alpha + beta + gamma - 1.0) >= 1e-9:
-        raise ValueError('alpha+beta+gamma must equal 1.')
+        raise ValueError("alpha+beta+gamma must equal 1.")
 
     number_of_edges = G.number_of_edges()
     while len(G) < n:
@@ -294,8 +297,7 @@ def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
 
 
 @py_random_state(4)
-def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True,
-                               seed=None):
+def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True, seed=None):
     """Returns a random `k`-out graph with uniform attachment.
 
     A random `k`-out graph with uniform attachment is a multidigraph
@@ -443,7 +445,7 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
 
     """
     if alpha < 0:
-        raise ValueError('alpha must be positive')
+        raise ValueError("alpha must be positive")
     G = nx.empty_graph(n, create_using=nx.MultiDiGraph)
     weights = Counter({v: alpha for v in G})
     for i in range(k * n):

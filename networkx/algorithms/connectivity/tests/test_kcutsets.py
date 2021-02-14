@@ -1,7 +1,7 @@
 # Jordi Torrents
 # Test for k-cutsets
 import itertools
-from nose.tools import assert_equal, assert_false, assert_true, assert_raises
+import pytest
 
 import networkx as nx
 from networkx.algorithms import flow
@@ -22,15 +22,18 @@ flow_funcs = [
 # Some nice synthetic graphs
 ##
 def graph_example_1():
-    G = nx.convert_node_labels_to_integers(nx.grid_graph([5, 5]),
-                                           label_attribute='labels')
-    rlabels = nx.get_node_attributes(G, 'labels')
+    G = nx.convert_node_labels_to_integers(
+        nx.grid_graph([5, 5]), label_attribute="labels"
+    )
+    rlabels = nx.get_node_attributes(G, "labels")
     labels = {v: k for k, v in rlabels.items()}
 
-    for nodes in [(labels[(0, 0)], labels[(1, 0)]),
-                  (labels[(0, 4)], labels[(1, 4)]),
-                  (labels[(3, 0)], labels[(4, 0)]),
-                  (labels[(3, 4)], labels[(4, 4)])]:
+    for nodes in [
+        (labels[(0, 0)], labels[(1, 0)]),
+        (labels[(0, 4)], labels[(1, 4)]),
+        (labels[(3, 0)], labels[(4, 0)]),
+        (labels[(3, 4)], labels[(4, 4)]),
+    ]:
         new_node = G.order() + 1
         # Petersen graph is triconnected
         P = nx.petersen_graph()
@@ -56,13 +59,13 @@ def graph_example_1():
 
 
 def torrents_and_ferraro_graph():
-    G = nx.convert_node_labels_to_integers(nx.grid_graph([5, 5]),
-                                           label_attribute='labels')
-    rlabels = nx.get_node_attributes(G, 'labels')
+    G = nx.convert_node_labels_to_integers(
+        nx.grid_graph([5, 5]), label_attribute="labels"
+    )
+    rlabels = nx.get_node_attributes(G, "labels")
     labels = {v: k for k, v in rlabels.items()}
 
-    for nodes in [(labels[(0, 4)], labels[(1, 4)]),
-                  (labels[(3, 4)], labels[(4, 4)])]:
+    for nodes in [(labels[(0, 4)], labels[(1, 4)]), (labels[(3, 4)], labels[(4, 4)])]:
         new_node = G.order() + 1
         # Petersen graph is triconnected
         P = nx.petersen_graph()
@@ -87,8 +90,7 @@ def torrents_and_ferraro_graph():
         # This stupid mistake make one reviewer very angry :P
         G.add_edge(new_node + 16, new_node + 8)
 
-    for nodes in [(labels[(0, 0)], labels[(1, 0)]),
-                  (labels[(3, 0)], labels[(4, 0)])]:
+    for nodes in [(labels[(0, 0)], labels[(1, 0)]), (labels[(3, 0)], labels[(4, 0)])]:
         new_node = G.order() + 1
         # Petersen graph is triconnected
         P = nx.petersen_graph()
@@ -126,10 +128,11 @@ def _check_separating_sets(G):
         all_cuts = nx.all_node_cuts(Gc)
         # Only test a limited number of cut sets to reduce test time.
         for cut in itertools.islice(all_cuts, MAX_CUTSETS_TO_TEST):
-            assert_equal(node_conn, len(cut))
-            assert_false(nx.is_connected(nx.restricted_view(G, cut, [])))
+            assert node_conn == len(cut)
+            assert not nx.is_connected(nx.restricted_view(G, cut, []))
 
 
+@pytest.mark.slow
 def test_torrents_and_ferraro_graph():
     G = torrents_and_ferraro_graph()
     _check_separating_sets(G)
@@ -172,8 +175,8 @@ def _generate_no_biconnected(max_attempts=50):
             yield G
         else:
             if attempts >= max_attempts:
-                msg = "Tried %d times: no suitable Graph." % attempts
-                raise Exception(msg % max_attempts)
+                msg = f"Tried {attempts} times: no suitable Graph."
+                raise Exception(msg)
             else:
                 attempts += 1
 
@@ -184,7 +187,7 @@ def test_articulation_points():
         G = next(Ggen)
         articulation_points = list({a} for a in nx.articulation_points(G))
         for cut in nx.all_node_cuts(G):
-            assert_true(cut in articulation_points)
+            assert cut in articulation_points
 
 
 def test_grid_2d_graph():
@@ -192,82 +195,72 @@ def test_grid_2d_graph():
     # are the four pairs of nodes that are
     # neighbors of the four corner nodes.
     G = nx.grid_2d_graph(5, 5)
-    solution = [
-        set([(0, 1), (1, 0)]),
-        set([(3, 0), (4, 1)]),
-        set([(3, 4), (4, 3)]),
-        set([(0, 3), (1, 4)]),
-    ]
+    solution = [{(0, 1), (1, 0)}, {(3, 0), (4, 1)}, {(3, 4), (4, 3)}, {(0, 3), (1, 4)}]
     for cut in nx.all_node_cuts(G):
-        assert_true(cut in solution)
+        assert cut in solution
 
 
 def test_disconnected_graph():
     G = nx.fast_gnp_random_graph(100, 0.01, seed=42)
     cuts = nx.all_node_cuts(G)
-    assert_raises(nx.NetworkXError, next, cuts)
+    pytest.raises(nx.NetworkXError, next, cuts)
 
 
+@pytest.mark.slow
 def test_alternative_flow_functions():
-    graphs = [nx.grid_2d_graph(4, 4),
-              nx.cycle_graph(5)]
+    graphs = [nx.grid_2d_graph(4, 4), nx.cycle_graph(5)]
     for G in graphs:
         node_conn = nx.node_connectivity(G)
         for flow_func in flow_funcs:
             all_cuts = nx.all_node_cuts(G, flow_func=flow_func)
             # Only test a limited number of cut sets to reduce test time.
             for cut in itertools.islice(all_cuts, MAX_CUTSETS_TO_TEST):
-                assert_equal(node_conn, len(cut))
-                assert_false(nx.is_connected(nx.restricted_view(G, cut, [])))
+                assert node_conn == len(cut)
+                assert not nx.is_connected(nx.restricted_view(G, cut, []))
 
 
 def test_is_separating_set_complete_graph():
     G = nx.complete_graph(5)
-    assert_true(_is_separating_set(G, {0, 1, 2, 3}))
+    assert _is_separating_set(G, {0, 1, 2, 3})
 
 
 def test_is_separating_set():
     for i in [5, 10, 15]:
         G = nx.star_graph(i)
         max_degree_node = max(G, key=G.degree)
-        assert_true(_is_separating_set(G, {max_degree_node}))
+        assert _is_separating_set(G, {max_degree_node})
 
 
 def test_non_repeated_cuts():
     # The algorithm was repeating the cut {0, 1} for the giant biconnected
     # component of the Karate club graph.
     K = nx.karate_club_graph()
-    G = max(list(nx.biconnected_component_subgraphs(K)), key=len)
+    bcc = max(list(nx.biconnected_components(K)), key=len)
+    G = K.subgraph(bcc)
     solution = [{32, 33}, {2, 33}, {0, 3}, {0, 1}, {29, 33}]
     cuts = list(nx.all_node_cuts(G))
     if len(solution) != len(cuts):
         print(nx.info(G))
-        print("Solution: {}".format(solution))
-        print("Result: {}".format(cuts))
-    assert_true(len(solution) == len(cuts))
+        print(f"Solution: {solution}")
+        print(f"Result: {cuts}")
+    assert len(solution) == len(cuts)
     for cut in cuts:
-        assert_true(cut in solution)
+        assert cut in solution
 
 
 def test_cycle_graph():
     G = nx.cycle_graph(5)
     solution = [{0, 2}, {0, 3}, {1, 3}, {1, 4}, {2, 4}]
     cuts = list(nx.all_node_cuts(G))
-    assert_true(len(solution) == len(cuts))
+    assert len(solution) == len(cuts)
     for cut in cuts:
-        assert_true(cut in solution)
+        assert cut in solution
 
 
 def test_complete_graph():
     G = nx.complete_graph(5)
-    solution = [
-        {0, 1, 2, 3},
-        {0, 1, 2, 4},
-        {0, 1, 3, 4},
-        {0, 2, 3, 4},
-        {1, 2, 3, 4},
-    ]
+    solution = [{0, 1, 2, 3}, {0, 1, 2, 4}, {0, 1, 3, 4}, {0, 2, 3, 4}, {1, 2, 3, 4}]
     cuts = list(nx.all_node_cuts(G))
-    assert_true(len(solution) == len(cuts))
+    assert len(solution) == len(cuts)
     for cut in cuts:
-        assert_true(cut in solution)
+        assert cut in solution

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Maximum flow (and minimum cut) algorithms on capacitated graphs.
 """
@@ -10,6 +9,7 @@ from .edmondskarp import edmonds_karp
 from .preflowpush import preflow_push
 from .shortestaugmentingpath import shortest_augmenting_path
 from .utils import build_flow_dict
+
 # Define the default flow function for computing maximum flow.
 default_flow_func = preflow_push
 # Functions that don't support cutoff for minimum cut computations.
@@ -21,14 +21,10 @@ flow_funcs = [
     shortest_augmenting_path,
 ]
 
-__all__ = ['maximum_flow',
-           'maximum_flow_value',
-           'minimum_cut',
-           'minimum_cut_value']
+__all__ = ["maximum_flow", "maximum_flow_value", "minimum_cut", "minimum_cut_value"]
 
 
-def maximum_flow(flowG, _s, _t,
-                 capacity='capacity', flow_func=None, **kwargs):
+def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Find a maximum single-commodity flow.
 
     Parameters
@@ -128,39 +124,41 @@ def maximum_flow(flowG, _s, _t,
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
+    >>> G.add_edge("x", "a", capacity=3.0)
+    >>> G.add_edge("x", "b", capacity=1.0)
+    >>> G.add_edge("a", "c", capacity=3.0)
+    >>> G.add_edge("b", "c", capacity=5.0)
+    >>> G.add_edge("b", "d", capacity=4.0)
+    >>> G.add_edge("d", "e", capacity=2.0)
+    >>> G.add_edge("c", "y", capacity=2.0)
+    >>> G.add_edge("e", "y", capacity=3.0)
 
     maximum_flow returns both the value of the maximum flow and a
     dictionary with all flows.
 
-    >>> flow_value, flow_dict = nx.maximum_flow(G, 'x', 'y')
+    >>> flow_value, flow_dict = nx.maximum_flow(G, "x", "y")
     >>> flow_value
     3.0
-    >>> print(flow_dict['x']['b'])
+    >>> print(flow_dict["x"]["b"])
     1.0
 
     You can also use alternative algorithms for computing the
     maximum flow by using the flow_func parameter.
 
     >>> from networkx.algorithms.flow import shortest_augmenting_path
-    >>> flow_value == nx.maximum_flow(G, 'x', 'y',
-    ...                         flow_func=shortest_augmenting_path)[0]
+    >>> flow_value == nx.maximum_flow(G, "x", "y", flow_func=shortest_augmenting_path)[
+    ...     0
+    ... ]
     True
 
     """
     if flow_func is None:
         if kwargs:
-            raise nx.NetworkXError("You have to explicitly set a flow_func if"
-                                   " you need to pass parameters via kwargs.")
+            raise nx.NetworkXError(
+                "You have to explicitly set a flow_func if"
+                " you need to pass parameters via kwargs."
+            )
         flow_func = default_flow_func
 
     if not callable(flow_func):
@@ -169,11 +167,10 @@ def maximum_flow(flowG, _s, _t,
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=False, **kwargs)
     flow_dict = build_flow_dict(flowG, R)
 
-    return (R.graph['flow_value'], flow_dict)
+    return (R.graph["flow_value"], flow_dict)
 
 
-def maximum_flow_value(flowG, _s, _t,
-                       capacity='capacity', flow_func=None, **kwargs):
+def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Find the value of maximum single-commodity flow.
 
     Parameters
@@ -269,21 +266,20 @@ def maximum_flow_value(flowG, _s, _t,
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
+    >>> G.add_edge("x", "a", capacity=3.0)
+    >>> G.add_edge("x", "b", capacity=1.0)
+    >>> G.add_edge("a", "c", capacity=3.0)
+    >>> G.add_edge("b", "c", capacity=5.0)
+    >>> G.add_edge("b", "d", capacity=4.0)
+    >>> G.add_edge("d", "e", capacity=2.0)
+    >>> G.add_edge("c", "y", capacity=2.0)
+    >>> G.add_edge("e", "y", capacity=3.0)
 
     maximum_flow_value computes only the value of the
     maximum flow:
 
-    >>> flow_value = nx.maximum_flow_value(G, 'x', 'y')
+    >>> flow_value = nx.maximum_flow_value(G, "x", "y")
     >>> flow_value
     3.0
 
@@ -291,15 +287,18 @@ def maximum_flow_value(flowG, _s, _t,
     maximum flow by using the flow_func parameter.
 
     >>> from networkx.algorithms.flow import shortest_augmenting_path
-    >>> flow_value == nx.maximum_flow_value(G, 'x', 'y',
-    ...                                     flow_func=shortest_augmenting_path)
+    >>> flow_value == nx.maximum_flow_value(
+    ...     G, "x", "y", flow_func=shortest_augmenting_path
+    ... )
     True
 
     """
     if flow_func is None:
         if kwargs:
-            raise nx.NetworkXError("You have to explicitly set a flow_func if"
-                                   " you need to pass parameters via kwargs.")
+            raise nx.NetworkXError(
+                "You have to explicitly set a flow_func if"
+                " you need to pass parameters via kwargs."
+            )
         flow_func = default_flow_func
 
     if not callable(flow_func):
@@ -307,11 +306,10 @@ def maximum_flow_value(flowG, _s, _t,
 
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
 
-    return R.graph['flow_value']
+    return R.graph["flow_value"]
 
 
-def minimum_cut(flowG, _s, _t,
-                capacity='capacity', flow_func=None, **kwargs):
+def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Compute the value and the node partition of a minimum (s, t)-cut.
 
     Use the max-flow min-cut theorem, i.e., the capacity of a minimum
@@ -407,21 +405,20 @@ def minimum_cut(flowG, _s, _t,
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity = 3.0)
-    >>> G.add_edge('x','b', capacity = 1.0)
-    >>> G.add_edge('a','c', capacity = 3.0)
-    >>> G.add_edge('b','c', capacity = 5.0)
-    >>> G.add_edge('b','d', capacity = 4.0)
-    >>> G.add_edge('d','e', capacity = 2.0)
-    >>> G.add_edge('c','y', capacity = 2.0)
-    >>> G.add_edge('e','y', capacity = 3.0)
+    >>> G.add_edge("x", "a", capacity=3.0)
+    >>> G.add_edge("x", "b", capacity=1.0)
+    >>> G.add_edge("a", "c", capacity=3.0)
+    >>> G.add_edge("b", "c", capacity=5.0)
+    >>> G.add_edge("b", "d", capacity=4.0)
+    >>> G.add_edge("d", "e", capacity=2.0)
+    >>> G.add_edge("c", "y", capacity=2.0)
+    >>> G.add_edge("e", "y", capacity=3.0)
 
     minimum_cut computes both the value of the
     minimum cut and the node partition:
 
-    >>> cut_value, partition = nx.minimum_cut(G, 'x', 'y')
+    >>> cut_value, partition = nx.minimum_cut(G, "x", "y")
     >>> reachable, non_reachable = partition
 
     'partition' here is a tuple with the two sets of nodes that define
@@ -433,34 +430,34 @@ def minimum_cut(flowG, _s, _t,
     ...     cutset.update((u, v) for v in nbrs if v in non_reachable)
     >>> print(sorted(cutset))
     [('c', 'y'), ('x', 'b')]
-    >>> cut_value == sum(G.edges[u, v]['capacity'] for (u, v) in cutset)
+    >>> cut_value == sum(G.edges[u, v]["capacity"] for (u, v) in cutset)
     True
 
     You can also use alternative algorithms for computing the
     minimum cut by using the flow_func parameter.
 
     >>> from networkx.algorithms.flow import shortest_augmenting_path
-    >>> cut_value == nx.minimum_cut(G, 'x', 'y',
-    ...                             flow_func=shortest_augmenting_path)[0]
+    >>> cut_value == nx.minimum_cut(G, "x", "y", flow_func=shortest_augmenting_path)[0]
     True
 
     """
     if flow_func is None:
         if kwargs:
-            raise nx.NetworkXError("You have to explicitly set a flow_func if"
-                                   " you need to pass parameters via kwargs.")
+            raise nx.NetworkXError(
+                "You have to explicitly set a flow_func if"
+                " you need to pass parameters via kwargs."
+            )
         flow_func = default_flow_func
 
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    if kwargs.get('cutoff') is not None and flow_func in flow_funcs:
+    if kwargs.get("cutoff") is not None and flow_func in flow_funcs:
         raise nx.NetworkXError("cutoff should not be specified.")
 
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
     # Remove saturated edges from the residual network
-    cutset = [(u, v, d) for u, v, d in R.edges(data=True)
-              if d['flow'] == d['capacity']]
+    cutset = [(u, v, d) for u, v, d in R.edges(data=True) if d["flow"] == d["capacity"]]
     R.remove_edges_from(cutset)
 
     # Then, reachable and non reachable nodes from source in the
@@ -472,11 +469,10 @@ def minimum_cut(flowG, _s, _t,
     # sure that it is reusable.
     if cutset is not None:
         R.add_edges_from(cutset)
-    return (R.graph['flow_value'], partition)
+    return (R.graph["flow_value"], partition)
 
 
-def minimum_cut_value(flowG, _s, _t,
-                      capacity='capacity', flow_func=None, **kwargs):
+def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Compute the value of a minimum (s, t)-cut.
 
     Use the max-flow min-cut theorem, i.e., the capacity of a minimum
@@ -569,21 +565,20 @@ def minimum_cut_value(flowG, _s, _t,
 
     Examples
     --------
-    >>> import networkx as nx
     >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity = 3.0)
-    >>> G.add_edge('x','b', capacity = 1.0)
-    >>> G.add_edge('a','c', capacity = 3.0)
-    >>> G.add_edge('b','c', capacity = 5.0)
-    >>> G.add_edge('b','d', capacity = 4.0)
-    >>> G.add_edge('d','e', capacity = 2.0)
-    >>> G.add_edge('c','y', capacity = 2.0)
-    >>> G.add_edge('e','y', capacity = 3.0)
+    >>> G.add_edge("x", "a", capacity=3.0)
+    >>> G.add_edge("x", "b", capacity=1.0)
+    >>> G.add_edge("a", "c", capacity=3.0)
+    >>> G.add_edge("b", "c", capacity=5.0)
+    >>> G.add_edge("b", "d", capacity=4.0)
+    >>> G.add_edge("d", "e", capacity=2.0)
+    >>> G.add_edge("c", "y", capacity=2.0)
+    >>> G.add_edge("e", "y", capacity=3.0)
 
     minimum_cut_value computes only the value of the
     minimum cut:
 
-    >>> cut_value = nx.minimum_cut_value(G, 'x', 'y')
+    >>> cut_value = nx.minimum_cut_value(G, "x", "y")
     >>> cut_value
     3.0
 
@@ -591,23 +586,26 @@ def minimum_cut_value(flowG, _s, _t,
     minimum cut by using the flow_func parameter.
 
     >>> from networkx.algorithms.flow import shortest_augmenting_path
-    >>> cut_value == nx.minimum_cut_value(G, 'x', 'y',
-    ...                                   flow_func=shortest_augmenting_path)
+    >>> cut_value == nx.minimum_cut_value(
+    ...     G, "x", "y", flow_func=shortest_augmenting_path
+    ... )
     True
 
     """
     if flow_func is None:
         if kwargs:
-            raise nx.NetworkXError("You have to explicitly set a flow_func if"
-                                   " you need to pass parameters via kwargs.")
+            raise nx.NetworkXError(
+                "You have to explicitly set a flow_func if"
+                " you need to pass parameters via kwargs."
+            )
         flow_func = default_flow_func
 
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    if kwargs.get('cutoff') is not None and flow_func in flow_funcs:
+    if kwargs.get("cutoff") is not None and flow_func in flow_funcs:
         raise nx.NetworkXError("cutoff should not be specified.")
 
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
 
-    return R.graph['flow_value']
+    return R.graph["flow_value"]

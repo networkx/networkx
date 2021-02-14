@@ -1,14 +1,3 @@
-# Copyright (C) 2010 by
-#   Aric Hagberg (hagberg@lanl.gov)
-#   Renato Fabbri
-# Copyright (C) 2012 by
-#   Aric Hagberg <hagberg@lanl.gov>
-#   Dan Schult <dschult@colgate.edu>
-#   Pieter Swart <swart@lanl.gov>
-# Copyright (C) 2016-2018 by NetworkX developers.
-#
-# All rights reserved.
-# BSD license.
 """
 Vitality measures.
 """
@@ -16,7 +5,7 @@ from functools import partial
 
 import networkx as nx
 
-__all__ = ['closeness_vitality']
+__all__ = ["closeness_vitality"]
 
 
 def closeness_vitality(G, node=None, weight=None, wiener_index=None):
@@ -81,7 +70,6 @@ def closeness_vitality(G, node=None, weight=None, wiener_index=None):
     if node is not None:
         after = nx.wiener_index(G.subgraph(set(G) - {node}), weight=weight)
         return wiener_index - after
-    vitality = partial(closeness_vitality, G, weight=weight,
-                       wiener_index=wiener_index)
+    vitality = partial(closeness_vitality, G, weight=weight, wiener_index=wiener_index)
     # TODO This can be trivially parallelized.
     return {v: vitality(node=v) for v in G}

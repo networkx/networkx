@@ -1,15 +1,7 @@
 """
 Ego graph.
 """
-#    Copyright (C) 2010 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-__author__ = """\n""".join(['Drew Conway <drew.conway@nyu.edu>',
-                            'Aric Hagberg <hagberg@lanl.gov>'])
-__all__ = ['ego_graph']
+__all__ = ["ego_graph"]
 
 import networkx as nx
 
@@ -51,17 +43,18 @@ def ego_graph(G, n, radius=1, center=True, undirected=False, distance=None):
     """
     if undirected:
         if distance is not None:
-            sp, _ = nx.single_source_dijkstra(G.to_undirected(),
-                                              n, cutoff=radius,
-                                              weight=distance)
+            sp, _ = nx.single_source_dijkstra(
+                G.to_undirected(), n, cutoff=radius, weight=distance
+            )
         else:
-            sp = dict(nx.single_source_shortest_path_length(G.to_undirected(),
-                                                            n, cutoff=radius))
+            sp = dict(
+                nx.single_source_shortest_path_length(
+                    G.to_undirected(), n, cutoff=radius
+                )
+            )
     else:
         if distance is not None:
-            sp, _ = nx.single_source_dijkstra(G,
-                                              n, cutoff=radius,
-                                              weight=distance)
+            sp, _ = nx.single_source_dijkstra(G, n, cutoff=radius, weight=distance)
         else:
             sp = dict(nx.single_source_shortest_path_length(G, n, cutoff=radius))
 

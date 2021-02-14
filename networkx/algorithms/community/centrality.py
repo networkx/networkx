@@ -1,17 +1,8 @@
-# -*- coding: utf-8 -*-
-# centrality.py - functions for computing communities using centrality notions
-#
-# Copyright 2015, 2016 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for computing communities based on centrality notions."""
 
 import networkx as nx
 
-__all__ = ['girvan_newman']
+__all__ = ["girvan_newman"]
 
 
 def girvan_newman(G, most_valuable_edge=None):
@@ -53,7 +44,7 @@ def girvan_newman(G, most_valuable_edge=None):
         >>> k = 2
         >>> comp = girvan_newman(G)
         >>> for communities in itertools.islice(comp, k):
-        ...     print(tuple(sorted(c) for c in communities)) # doctest: +SKIP
+        ...     print(tuple(sorted(c) for c in communities))
         ...
         ([0, 1, 2, 3], [4, 5, 6, 7])
         ([0, 1], [2, 3], [4, 5, 6, 7])
@@ -67,7 +58,7 @@ def girvan_newman(G, most_valuable_edge=None):
         >>> comp = girvan_newman(G)
         >>> limited = itertools.takewhile(lambda c: len(c) <= k, comp)
         >>> for communities in limited:
-        ...     print(tuple(sorted(c) for c in communities)) # doctest: +SKIP
+        ...     print(tuple(sorted(c) for c in communities))
         ...
         ([0, 1, 2, 3], [4, 5, 6, 7])
         ([0, 1], [2, 3], [4, 5, 6, 7])
@@ -78,9 +69,9 @@ def girvan_newman(G, most_valuable_edge=None):
         >>> from operator import itemgetter
         >>> G = nx.path_graph(10)
         >>> edges = G.edges()
-        >>> nx.set_edge_attributes(G, {(u, v): v for u, v in edges}, 'weight')
+        >>> nx.set_edge_attributes(G, {(u, v): v for u, v in edges}, "weight")
         >>> def heaviest(G):
-        ...     u, v, w = max(G.edges(data='weight'), key=itemgetter(2))
+        ...     u, v, w = max(G.edges(data="weight"), key=itemgetter(2))
         ...     return (u, v)
         ...
         >>> comp = girvan_newman(G, most_valuable_edge=heaviest)
@@ -92,7 +83,7 @@ def girvan_newman(G, most_valuable_edge=None):
 
         >>> from networkx import edge_betweenness_centrality as betweenness
         >>> def most_central_edge(G):
-        ...     centrality = betweenness(G, weight='weight')
+        ...     centrality = betweenness(G, weight="weight")
         ...     return max(centrality, key=centrality.get)
         ...
         >>> G = nx.path_graph(10)
@@ -136,6 +127,7 @@ def girvan_newman(G, most_valuable_edge=None):
     # If no function is provided for computing the most valuable edge,
     # use the edge betweenness centrality.
     if most_valuable_edge is None:
+
         def most_valuable_edge(G):
             """Returns the edge with the highest betweenness centrality
             in the graph `G`.
@@ -145,6 +137,7 @@ def girvan_newman(G, most_valuable_edge=None):
             # dictionary will never be empty.
             betweenness = nx.edge_betweenness_centrality(G)
             return max(betweenness, key=betweenness.get)
+
     # The copy of G here must include the edge weight data.
     g = G.copy().to_undirected()
     # Self-loops must be removed because their removal has no effect on

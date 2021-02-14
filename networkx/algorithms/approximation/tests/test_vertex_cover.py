@@ -1,5 +1,3 @@
-from nose.tools import assert_equals
-from nose.tools import ok_
 import networkx as nx
 from networkx.algorithms.approximation import min_weighted_vertex_cover
 
@@ -8,7 +6,7 @@ def is_cover(G, node_cover):
     return all({u, v} & node_cover for u, v in G.edges())
 
 
-class TestMWVC(object):
+class TestMWVC:
     """Unit tests for the approximate minimum weighted vertex cover
     function,
     :func:`~networkx.algorithms.approximation.vertex_cover.min_weighted_vertex_cover`.
@@ -22,16 +20,16 @@ class TestMWVC(object):
         G.add_edges_from((0, v) for v in range(1, 26))
         G.add_edges_from((v, 0) for v in range(26, 51))
         cover = min_weighted_vertex_cover(G)
-        assert_equals(2, len(cover))
-        ok_(is_cover(G, cover))
+        assert 2 == len(cover)
+        assert is_cover(G, cover)
 
     def test_unweighted_undirected(self):
         # create a simple star graph
         size = 50
         sg = nx.star_graph(size)
         cover = min_weighted_vertex_cover(sg)
-        assert_equals(2, len(cover))
-        ok_(is_cover(sg, cover))
+        assert 2 == len(cover)
+        assert is_cover(sg, cover)
 
     def test_weighted(self):
         wg = nx.Graph()
@@ -53,5 +51,5 @@ class TestMWVC(object):
 
         cover = min_weighted_vertex_cover(wg, weight="weight")
         csum = sum(wg.nodes[node]["weight"] for node in cover)
-        assert_equals(4, csum)
-        ok_(is_cover(wg, cover))
+        assert 4 == csum
+        assert is_cover(wg, cover)

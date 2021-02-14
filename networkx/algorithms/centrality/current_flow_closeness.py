@@ -1,23 +1,19 @@
-#    Copyright (C) 2010-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """Current-flow closeness centrality measures."""
 import networkx as nx
 
 from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
-from networkx.algorithms.centrality.flow_matrix import *
+from networkx.algorithms.centrality.flow_matrix import (
+    CGInverseLaplacian,
+    FullInverseLaplacian,
+    laplacian_sparse_matrix,
+    SuperLUInverseLaplacian,
+)
 
-__all__ = ['current_flow_closeness_centrality', 'information_centrality']
+__all__ = ["current_flow_closeness_centrality", "information_centrality"]
 
 
-@not_implemented_for('directed')
-def current_flow_closeness_centrality(G, weight=None,
-                                      dtype=float, solver='lu'):
+@not_implemented_for("directed")
+def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     """Compute current-flow closeness centrality for nodes.
 
     Current-flow closeness centrality is variant of closeness
@@ -70,13 +66,13 @@ def current_flow_closeness_centrality(G, weight=None,
        Social Networks 11(1):1-37, 1989.
        https://doi.org/10.1016/0378-8733(89)90016-6
     """
-    import numpy as np
-    import scipy
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
-    solvername = {"full": FullInverseLaplacian,
-                  "lu": SuperLUInverseLaplacian,
-                  "cg": CGInverseLaplacian}
+    solvername = {
+        "full": FullInverseLaplacian,
+        "lu": SuperLUInverseLaplacian,
+        "cg": CGInverseLaplacian,
+    }
     n = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
@@ -84,8 +80,9 @@ def current_flow_closeness_centrality(G, weight=None,
     H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
     betweenness = dict.fromkeys(H, 0.0)  # b[v]=0 for v in H
     n = H.number_of_nodes()
-    L = laplacian_sparse_matrix(H, nodelist=range(n), weight=weight,
-                                dtype=dtype, format='csc')
+    L = laplacian_sparse_matrix(
+        H, nodelist=range(n), weight=weight, dtype=dtype, format="csc"
+    )
     C2 = solvername[solver](L, width=1, dtype=dtype)  # initialize solver
     for v in H:
         col = C2.get_row(v)
@@ -94,16 +91,7 @@ def current_flow_closeness_centrality(G, weight=None,
             betweenness[w] += col[v]
     for v in H:
         betweenness[v] = 1.0 / (betweenness[v])
-    return dict((ordering[k], float(v)) for k, v in betweenness.items())
+    return {ordering[k]: float(v) for k, v in betweenness.items()}
 
 
 information_centrality = current_flow_closeness_centrality
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")

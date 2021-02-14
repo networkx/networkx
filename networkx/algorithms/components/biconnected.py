@@ -1,32 +1,18 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2011-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Jordi Torrents (jtorrents@milnou.net)
-#          Dan Schult (dschult@colgate.edu)
-#          Aric Hagberg (aric.hagberg@gmail.com)
 """Biconnected components and articulation points."""
-import warnings as _warnings
 from itertools import chain
-import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
-    'biconnected_components',
-    'biconnected_component_edges',
-    'biconnected_component_subgraphs',
-    'is_biconnected',
-    'articulation_points',
+    "biconnected_components",
+    "biconnected_component_edges",
+    "is_biconnected",
+    "articulation_points",
 ]
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def is_biconnected(G):
-    """Return True if the graph is biconnected, False otherwise.
+    """Returns True if the graph is biconnected, False otherwise.
 
     A graph is biconnected if, and only if, it cannot be disconnected by
     removing only one node (and all edges incident on that node).  If
@@ -46,7 +32,7 @@ def is_biconnected(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is not undirected.
 
     Examples
@@ -92,14 +78,16 @@ def is_biconnected(G):
     if len(bcc) == 1:
         return len(bcc[0]) == len(G)
     return False  # Multiple bicomponents or No bicomponents (empty graph?)
+
+
 #    if len(bcc) == 0:  # No bicomponents (it could be an empty graph)
 #        return False
 #    return len(bcc[0]) == len(G)
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def biconnected_component_edges(G):
-    """Return a generator of lists of edges, one list for each biconnected
+    """Returns a generator of lists of edges, one list for each biconnected
     component of the input graph.
 
     Biconnected components are maximal subgraphs such that the removal of a
@@ -122,7 +110,7 @@ def biconnected_component_edges(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is not undirected.
 
     Examples
@@ -166,13 +154,12 @@ def biconnected_component_edges(G):
            Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
 
     """
-    for comp in _biconnected_dfs(G, components=True):
-        yield comp
+    yield from _biconnected_dfs(G, components=True)
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def biconnected_components(G):
-    """Return a generator of sets of nodes, one set for each biconnected
+    """Returns a generator of sets of nodes, one set for each biconnected
     component of the graph
 
     Biconnected components are maximal subgraphs such that the removal of a
@@ -196,15 +183,8 @@ def biconnected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is not undirected.
-
-    See Also
-    --------
-    k_components : this function is a special case where k=2
-    bridge_components : similar to this function, but is defined using
-        2-edge-connectivity instead of 2-node-connectivity.
-
 
     Examples
     --------
@@ -233,11 +213,17 @@ def biconnected_components(G):
 
     >>> Gc = max(nx.biconnected_components(G), key=len)
 
+    To create the components as subgraphs use:
+    ``(G.subgraph(c).copy() for c in biconnected_components(G))``
+
     See Also
     --------
     is_biconnected
     articulation_points
     biconnected_component_edges
+    k_components : this function is a special case where k=2
+    bridge_components : similar to this function, but is defined using
+        2-edge-connectivity instead of 2-node-connectivity.
 
     Notes
     -----
@@ -263,23 +249,7 @@ def biconnected_components(G):
         yield set(chain.from_iterable(comp))
 
 
-@not_implemented_for('directed')
-def biconnected_component_subgraphs(G, copy=True):
-    """DEPRECATED: Use ``(G.subgraph(c) for c in biconnected_components(G))``
-
-           Or ``(G.subgraph(c).copy() for c in biconnected_components(G))``
-    """
-    msg = "connected_component_subgraphs is deprecated and will be removed" \
-        "in 2.2. Use (G.subgraph(c).copy() for c in biconnected_components(G))"
-    _warnings.warn(msg, DeprecationWarning)
-    for c in biconnected_components(G):
-        if copy:
-            yield G.subgraph(c).copy()
-        else:
-            yield G.subgraph(c)
-
-
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def articulation_points(G):
     """Yield the articulation points, or cut vertices, of a graph.
 
@@ -303,7 +273,7 @@ def articulation_points(G):
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If the input graph is not undirected.
 
     Examples
@@ -353,7 +323,7 @@ def articulation_points(G):
             yield articulation
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def _biconnected_dfs(G, components=True):
     # depth-first search algorithm to generate articulation points
     # and biconnected components

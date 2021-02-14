@@ -1,13 +1,3 @@
-# dinitz.py - Dinitz' algorithm for maximum flow problems.
-#
-# Copyright 2016-2018 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Author: Jordi Torrents <jordi.t21@gmail.com>
 """
 Dinitz' algorithm for maximum flow problems.
 """
@@ -17,10 +7,10 @@ import networkx as nx
 from networkx.algorithms.flow.utils import build_residual_network
 from networkx.utils import pairwise
 
-__all__ = ['dinitz']
+__all__ = ["dinitz"]
 
 
-def dinitz(G, s, t, capacity='capacity', residual=None, value_only=False, cutoff=None):
+def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff=None):
     """Find a maximum single-commodity flow using Dinitz' algorithm.
 
     This function returns the residual network resulting after computing
@@ -112,7 +102,6 @@ def dinitz(G, s, t, capacity='capacity', residual=None, value_only=False, cutoff
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.flow import dinitz
 
     The functions that implement flow algorithms and output a residual
@@ -120,19 +109,19 @@ def dinitz(G, s, t, capacity='capacity', residual=None, value_only=False, cutoff
     namespace, so you have to explicitly import them from the flow package.
 
     >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> R = dinitz(G, 'x', 'y')
-    >>> flow_value = nx.maximum_flow_value(G, 'x', 'y')
+    >>> G.add_edge("x", "a", capacity=3.0)
+    >>> G.add_edge("x", "b", capacity=1.0)
+    >>> G.add_edge("a", "c", capacity=3.0)
+    >>> G.add_edge("b", "c", capacity=5.0)
+    >>> G.add_edge("b", "d", capacity=4.0)
+    >>> G.add_edge("d", "e", capacity=2.0)
+    >>> G.add_edge("c", "y", capacity=2.0)
+    >>> G.add_edge("e", "y", capacity=3.0)
+    >>> R = dinitz(G, "x", "y")
+    >>> flow_value = nx.maximum_flow_value(G, "x", "y")
     >>> flow_value
     3.0
-    >>> flow_value == R.graph['flow_value']
+    >>> flow_value == R.graph["flow_value"]
     True
 
     References
@@ -144,17 +133,17 @@ def dinitz(G, s, t, capacity='capacity', residual=None, value_only=False, cutoff
 
     """
     R = dinitz_impl(G, s, t, capacity, residual, cutoff)
-    R.graph['algorithm'] = 'dinitz'
+    R.graph["algorithm"] = "dinitz"
     return R
 
 
 def dinitz_impl(G, s, t, capacity, residual, cutoff):
     if s not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(s))
+        raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(t))
+        raise nx.NetworkXError(f"node {str(t)} not in graph")
     if s == t:
-        raise nx.NetworkXError('source and sink are the same node')
+        raise nx.NetworkXError("source and sink are the same node")
 
     if residual is None:
         R = build_residual_network(G, capacity)
@@ -164,11 +153,11 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
     # Initialize/reset the residual network.
     for u in R:
         for e in R[u].values():
-            e['flow'] = 0
+            e["flow"] = 0
 
     # Use an arbitrary high value as infinite. It is computed
     # when building the residual network.
-    INF = R.graph['inf']
+    INF = R.graph["inf"]
 
     if cutoff is None:
         cutoff = INF
@@ -185,7 +174,7 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
             u = queue.popleft()
             for v in R_succ[u]:
                 attr = R_succ[u][v]
-                if v not in parents and attr['capacity'] - attr['flow'] > 0:
+                if v not in parents and attr["capacity"] - attr["flow"] > 0:
                     parents[v] = u
                     queue.append(v)
         return parents
@@ -198,14 +187,14 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
         while u != s:
             path.append(u)
             v = parents[u]
-            flow = min(flow, R_pred[u][v]['capacity'] - R_pred[u][v]['flow'])
+            flow = min(flow, R_pred[u][v]["capacity"] - R_pred[u][v]["flow"])
             u = v
         path.append(s)
         # Augment the flow along the path found
         if flow > 0:
             for u, v in pairwise(path):
-                R_pred[u][v]['flow'] += flow
-                R_pred[v][u]['flow'] -= flow
+                R_pred[u][v]["flow"] += flow
+                R_pred[v][u]["flow"] -= flow
         return flow
 
     flow_value = 0
@@ -215,9 +204,8 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
             break
         this_flow = depth_first_search(parents)
         if this_flow * 2 > INF:
-            raise nx.NetworkXUnbounded(
-                'Infinite capacity path, flow unbounded above.')
+            raise nx.NetworkXUnbounded("Infinite capacity path, flow unbounded above.")
         flow_value += this_flow
 
-    R.graph['flow_value'] = flow_value
+    R.graph["flow_value"] = flow_value
     return R

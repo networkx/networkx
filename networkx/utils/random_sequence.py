@@ -1,27 +1,16 @@
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Dan Schult (dschult@colgate.edu)
-#          Ben Edwards (bedwards@cs.unm.edu)
 """
 Utilities for generating random numbers, random sequences, and
 random selections.
 """
 
-import random
-import sys
 import networkx as nx
 from networkx.utils import py_random_state
 
 
 # The same helpers for choosing random sequences from distributions
 # uses Python's random module
-# https://docs.python.org/2/library/random.html
+# https://docs.python.org/3/library/random.html
+
 
 @py_random_state(2)
 def powerlaw_sequence(n, exponent=2.0, seed=None):
@@ -33,7 +22,7 @@ def powerlaw_sequence(n, exponent=2.0, seed=None):
 
 @py_random_state(2)
 def zipf_rv(alpha, xmin=1, seed=None):
-    r"""Return a random value chosen from the Zipf distribution.
+    r"""Returns a random value chosen from the Zipf distribution.
 
     The return value is an integer drawn from the probability distribution
 
@@ -72,7 +61,8 @@ def zipf_rv(alpha, xmin=1, seed=None):
 
     Examples
     --------
-    >>> nx.zipf_rv(alpha=2, xmin=3, seed=42)  # doctest: +SKIP
+    >>> nx.utils.zipf_rv(alpha=2, xmin=3, seed=42)
+    8
 
     References
     ----------
@@ -84,19 +74,19 @@ def zipf_rv(alpha, xmin=1, seed=None):
     if alpha <= 1:
         raise ValueError("a <= 1.0")
     a1 = alpha - 1.0
-    b = 2**a1
+    b = 2 ** a1
     while True:
         u = 1.0 - seed.random()  # u in (0,1]
         v = seed.random()  # v in [0,1)
-        x = int(xmin * u**-(1.0 / a1))
-        t = (1.0 + (1.0 / x))**a1
+        x = int(xmin * u ** -(1.0 / a1))
+        t = (1.0 + (1.0 / x)) ** a1
         if v * x * (t - 1.0) / (b - 1.0) <= t / b:
             break
     return x
 
 
 def cumulative_distribution(distribution):
-    """Return normalized cumulative distribution from discrete distribution."""
+    """Returns normalized cumulative distribution from discrete distribution."""
 
     cdf = [0.0]
     psum = float(sum(distribution))
@@ -126,7 +116,8 @@ def discrete_sequence(n, distribution=None, cdistribution=None, seed=None):
         cdf = cumulative_distribution(distribution)
     else:
         raise nx.NetworkXError(
-            "discrete_sequence: distribution or cdistribution missing")
+            "discrete_sequence: distribution or cdistribution missing"
+        )
 
     # get a uniform random number
     inputseq = [seed.random() for i in range(n)]
@@ -138,7 +129,7 @@ def discrete_sequence(n, distribution=None, cdistribution=None, seed=None):
 
 @py_random_state(2)
 def random_weighted_sample(mapping, k, seed=None):
-    """Return k items without replacement from a weighted sample.
+    """Returns k items without replacement from a weighted sample.
 
     The input is a dictionary of items with weights as values.
     """
@@ -152,7 +143,7 @@ def random_weighted_sample(mapping, k, seed=None):
 
 @py_random_state(1)
 def weighted_choice(mapping, seed=None):
-    """Return a single element from a weighted sample.
+    """Returns a single element from a weighted sample.
 
     The input is a dictionary of items with weights as values.
     """

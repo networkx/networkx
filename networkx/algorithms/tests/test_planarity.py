@@ -1,5 +1,5 @@
+import pytest
 import networkx as nx
-from nose.tools import assert_equals, assert_true, raises
 from networkx.algorithms.planarity import get_counterexample
 from networkx.algorithms.planarity import get_counterexample_recursive
 from networkx.algorithms.planarity import check_planarity_recursive
@@ -40,8 +40,8 @@ class TestLRPlanarity:
                 msg = "Wrong planarity check result. Should be non-planar."
 
             # check if the result is as expected
-            assert_equals(is_planar, is_planar_lr, msg)
-            assert_equals(is_planar, is_planar_lr_rec, msg)
+            assert is_planar == is_planar_lr, msg
+            assert is_planar == is_planar_lr_rec, msg
 
         if is_planar_lr:
             # check embedding
@@ -53,13 +53,37 @@ class TestLRPlanarity:
             check_counterexample(G, result_rec)
 
     def test_simple_planar_graph(self):
-        e = [(1, 2), (2, 3), (3, 4), (4, 6), (6, 7), (7, 1), (1, 5),
-             (5, 2), (2, 4), (4, 5), (5, 7)]
+        e = [
+            (1, 2),
+            (2, 3),
+            (3, 4),
+            (4, 6),
+            (6, 7),
+            (7, 1),
+            (1, 5),
+            (5, 2),
+            (2, 4),
+            (4, 5),
+            (5, 7),
+        ]
         self.check_graph(nx.Graph(e), is_planar=True)
 
     def test_planar_with_selfloop(self):
-        e = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (1, 2), (1, 3),
-             (1, 5), (2, 5), (2, 4), (3, 4), (3, 5), (4, 5)]
+        e = [
+            (1, 1),
+            (2, 2),
+            (3, 3),
+            (4, 4),
+            (5, 5),
+            (1, 2),
+            (1, 3),
+            (1, 5),
+            (2, 5),
+            (2, 4),
+            (3, 4),
+            (3, 5),
+            (4, 5),
+        ]
         self.check_graph(nx.Graph(e), is_planar=True)
 
     def test_k3_3(self):
@@ -88,8 +112,18 @@ class TestLRPlanarity:
 
     def test_non_planar1(self):
         # tests a graph that has no subgraph directly isomorph to K5 or K3_3
-        e = [(1, 5), (1, 6), (1, 7), (2, 6), (2, 3), (3, 5), (3, 7), (4, 5),
-             (4, 6), (4, 7)]
+        e = [
+            (1, 5),
+            (1, 6),
+            (1, 7),
+            (2, 6),
+            (2, 3),
+            (3, 5),
+            (3, 7),
+            (4, 5),
+            (4, 6),
+            (4, 7),
+        ]
         self.check_graph(nx.Graph(e), is_planar=False)
 
     def test_loop(self):
@@ -108,10 +142,33 @@ class TestLRPlanarity:
     def test_goldner_harary(self):
         # test goldner-harary graph (a maximal planar graph)
         e = [
-            (1, 2), (1, 3), (1, 4), (1, 5), (1, 7), (1, 8), (1, 10),
-            (1, 11), (2, 3), (2, 4), (2, 6), (2, 7), (2, 9), (2, 10),
-            (2, 11), (3, 4), (4, 5), (4, 6), (4, 7), (5, 7), (6, 7),
-            (7, 8), (7, 9), (7, 10), (8, 10), (9, 10), (10, 11)
+            (1, 2),
+            (1, 3),
+            (1, 4),
+            (1, 5),
+            (1, 7),
+            (1, 8),
+            (1, 10),
+            (1, 11),
+            (2, 3),
+            (2, 4),
+            (2, 6),
+            (2, 7),
+            (2, 9),
+            (2, 10),
+            (2, 11),
+            (3, 4),
+            (4, 5),
+            (4, 6),
+            (4, 7),
+            (5, 7),
+            (6, 7),
+            (7, 8),
+            (7, 9),
+            (7, 10),
+            (8, 10),
+            (9, 10),
+            (10, 11),
         ]
         G = nx.Graph(e)
         self.check_graph(G, is_planar=True)
@@ -122,13 +179,11 @@ class TestLRPlanarity:
 
     def test_non_planar_multigraph(self):
         G = nx.MultiGraph(nx.complete_graph(5))
-        G.add_edges_from([(1, 2)]*5)
+        G.add_edges_from([(1, 2)] * 5)
         self.check_graph(G, is_planar=False)
 
     def test_planar_digraph(self):
-        G = nx.DiGraph([
-            (1, 2), (2, 3), (2, 4), (4, 1), (4, 2), (1, 4), (3, 2)
-        ])
+        G = nx.DiGraph([(1, 2), (2, 3), (2, 4), (4, 1), (4, 2), (1, 4), (3, 2)])
         self.check_graph(G, is_planar=True)
 
     def test_non_planar_digraph(self):
@@ -144,40 +199,80 @@ class TestLRPlanarity:
         self.check_graph(G, is_planar=True)
 
     def test_graph1(self):
-        G = nx.OrderedGraph([
-            (3, 10), (2, 13), (1, 13), (7, 11), (0, 8), (8, 13), (0, 2),
-            (0, 7), (0, 10), (1, 7)
-        ])
+        G = nx.OrderedGraph(
+            [
+                (3, 10),
+                (2, 13),
+                (1, 13),
+                (7, 11),
+                (0, 8),
+                (8, 13),
+                (0, 2),
+                (0, 7),
+                (0, 10),
+                (1, 7),
+            ]
+        )
         self.check_graph(G, is_planar=True)
 
     def test_graph2(self):
-        G = nx.OrderedGraph([
-            (1, 2), (4, 13), (0, 13), (4, 5), (7, 10), (1, 7), (0, 3), (2, 6),
-            (5, 6), (7, 13), (4, 8), (0, 8), (0, 9), (2, 13), (6, 7), (3, 6),
-            (2, 8)
-        ])
+        G = nx.OrderedGraph(
+            [
+                (1, 2),
+                (4, 13),
+                (0, 13),
+                (4, 5),
+                (7, 10),
+                (1, 7),
+                (0, 3),
+                (2, 6),
+                (5, 6),
+                (7, 13),
+                (4, 8),
+                (0, 8),
+                (0, 9),
+                (2, 13),
+                (6, 7),
+                (3, 6),
+                (2, 8),
+            ]
+        )
         self.check_graph(G, is_planar=False)
 
     def test_graph3(self):
-        G = nx.OrderedGraph([
-            (0, 7), (3, 11), (3, 4), (8, 9), (4, 11), (1, 7), (1, 13), (1, 11),
-            (3, 5), (5, 7), (1, 3), (0, 4), (5, 11), (5, 13)
-        ])
+        G = nx.OrderedGraph(
+            [
+                (0, 7),
+                (3, 11),
+                (3, 4),
+                (8, 9),
+                (4, 11),
+                (1, 7),
+                (1, 13),
+                (1, 11),
+                (3, 5),
+                (5, 7),
+                (1, 3),
+                (0, 4),
+                (5, 11),
+                (5, 13),
+            ]
+        )
         self.check_graph(G, is_planar=False)
 
-    @raises(nx.NetworkXException)
     def test_counterexample_planar(self):
-        # Try to get a counterexample of a planar graph
-        G = nx.Graph()
-        G.add_node(1)
-        get_counterexample(G)
+        with pytest.raises(nx.NetworkXException):
+            # Try to get a counterexample of a planar graph
+            G = nx.Graph()
+            G.add_node(1)
+            get_counterexample(G)
 
-    @raises(nx.NetworkXException)
     def test_counterexample_planar_recursive(self):
-        # Try to get a counterexample of a planar graph
-        G = nx.Graph()
-        G.add_node(1)
-        get_counterexample_recursive(G)
+        with pytest.raises(nx.NetworkXException):
+            # Try to get a counterexample of a planar graph
+            G = nx.Graph()
+            G.add_node(1)
+            get_counterexample_recursive(G)
 
 
 def check_embedding(G, embedding):
@@ -200,16 +295,16 @@ def check_embedding(G, embedding):
     """
 
     if not isinstance(embedding, nx.PlanarEmbedding):
-        raise nx.NetworkXException(
-            "Bad embedding. Not of type nx.PlanarEmbedding")
+        raise nx.NetworkXException("Bad embedding. Not of type nx.PlanarEmbedding")
 
     # Check structure
     embedding.check_structure()
 
     # Check that graphs are equivalent
 
-    assert_equals(set(G.nodes), set(embedding.nodes),
-                  "Bad embedding. Nodes don't match the original graph.")
+    assert set(G.nodes) == set(
+        embedding.nodes
+    ), "Bad embedding. Nodes don't match the original graph."
 
     # Check that the edges are equal
     g_edges = set()
@@ -217,8 +312,9 @@ def check_embedding(G, embedding):
         if edge[0] != edge[1]:
             g_edges.add((edge[0], edge[1]))
             g_edges.add((edge[1], edge[0]))
-    assert_equals(g_edges, set(embedding.edges),
-                  "Bad embedding. Edges don't match the original graph.")
+    assert g_edges == set(
+        embedding.edges
+    ), "Bad embedding. Edges don't match the original graph."
 
 
 def check_counterexample(G, sub_graph):
@@ -277,44 +373,44 @@ class TestPlanarEmbeddingClass:
         embedding = self.get_star_embedding(3)
         data = embedding.get_data()
         data_cmp = {0: [2, 1], 1: [0], 2: [0]}
-        assert_equals(data, data_cmp)
+        assert data == data_cmp
 
-    @raises(nx.NetworkXException)
     def test_missing_edge_orientation(self):
-        embedding = nx.PlanarEmbedding()
-        embedding.add_edge(1, 2)
-        embedding.add_edge(2, 1)
-        # Invalid structure because the orientation of the edge was not set
-        embedding.check_structure()
+        with pytest.raises(nx.NetworkXException):
+            embedding = nx.PlanarEmbedding()
+            embedding.add_edge(1, 2)
+            embedding.add_edge(2, 1)
+            # Invalid structure because the orientation of the edge was not set
+            embedding.check_structure()
 
-    @raises(nx.NetworkXException)
     def test_invalid_edge_orientation(self):
-        embedding = nx.PlanarEmbedding()
-        embedding.add_half_edge_first(1, 2)
-        embedding.add_half_edge_first(2, 1)
-        embedding.add_edge(1, 3)
-        embedding.check_structure()
+        with pytest.raises(nx.NetworkXException):
+            embedding = nx.PlanarEmbedding()
+            embedding.add_half_edge_first(1, 2)
+            embedding.add_half_edge_first(2, 1)
+            embedding.add_edge(1, 3)
+            embedding.check_structure()
 
-    @raises(nx.NetworkXException)
     def test_missing_half_edge(self):
-        embedding = nx.PlanarEmbedding()
-        embedding.add_half_edge_first(1, 2)
-        # Invalid structure because other half edge is missing
-        embedding.check_structure()
+        with pytest.raises(nx.NetworkXException):
+            embedding = nx.PlanarEmbedding()
+            embedding.add_half_edge_first(1, 2)
+            # Invalid structure because other half edge is missing
+            embedding.check_structure()
 
-    @raises(nx.NetworkXException)
     def test_not_fulfilling_euler_formula(self):
-        embedding = nx.PlanarEmbedding()
-        for i in range(5):
-            for j in range(5):
-                if i != j:
-                    embedding.add_half_edge_first(i, j)
-        embedding.check_structure()
+        with pytest.raises(nx.NetworkXException):
+            embedding = nx.PlanarEmbedding()
+            for i in range(5):
+                for j in range(5):
+                    if i != j:
+                        embedding.add_half_edge_first(i, j)
+            embedding.check_structure()
 
-    @raises(nx.NetworkXException)
     def test_missing_reference(self):
-        embedding = nx.PlanarEmbedding()
-        embedding.add_half_edge_cw(1, 2, 3)
+        with pytest.raises(nx.NetworkXException):
+            embedding = nx.PlanarEmbedding()
+            embedding.add_half_edge_cw(1, 2, 3)
 
     def test_connect_components(self):
         embedding = nx.PlanarEmbedding()
@@ -325,14 +421,14 @@ class TestPlanarEmbeddingClass:
         embedding.add_half_edge_first(1, 2)
         embedding.add_half_edge_first(2, 1)
         face = embedding.traverse_face(1, 2)
-        assert_equals(face, [1, 2])
+        assert face == [1, 2]
 
-    @raises(nx.NetworkXException)
     def test_unsuccessful_face_traversal(self):
-        embedding = nx.PlanarEmbedding()
-        embedding.add_edge(1, 2, ccw=2, cw=3)
-        embedding.add_edge(2, 1, ccw=1, cw=3)
-        embedding.traverse_face(1, 2)
+        with pytest.raises(nx.NetworkXException):
+            embedding = nx.PlanarEmbedding()
+            embedding.add_edge(1, 2, ccw=2, cw=3)
+            embedding.add_edge(2, 1, ccw=1, cw=3)
+            embedding.traverse_face(1, 2)
 
     @staticmethod
     def get_star_embedding(n):

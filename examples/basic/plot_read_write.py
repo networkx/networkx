@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 ======================
 Read and write graphs.
@@ -6,16 +5,6 @@ Read and write graphs.
 
 Read and write graphs.
 """
-# Author: Aric Hagberg (hagberg@lanl.gov)
-
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-
-import sys
 
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -30,5 +19,6 @@ nx.write_edgelist(G, path="grid.edgelist", delimiter=":")
 # read edgelist from grid.edgelist
 H = nx.read_edgelist(path="grid.edgelist", delimiter=":")
 
-nx.draw(H)
+pos = nx.spring_layout(H, seed=200)
+nx.draw(H, pos)
 plt.show()

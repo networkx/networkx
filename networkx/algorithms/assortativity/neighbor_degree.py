@@ -1,12 +1,3 @@
-#-*- coding: utf-8 -*-
-#    Copyright (C) 2011 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
 __all__ = ["average_neighbor_degree"]
 
 
@@ -21,13 +12,13 @@ def _average_nbr_deg(G, source_degree, target_degree, nodes=None, weight=None):
         if weight is None:
             avg[n] = sum(d for n, d in nbrdeg) / float(deg)
         else:
-            avg[n] = sum((G[n][nbr].get(weight, 1) * d
-                          for nbr, d in nbrdeg)) / float(deg)
+            avg[n] = sum((G[n][nbr].get(weight, 1) * d for nbr, d in nbrdeg)) / float(
+                deg
+            )
     return avg
 
 
-def average_neighbor_degree(G, source='out', target='out',
-                            nodes=None, weight=None):
+def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=None):
     r"""Returns the average degree of the neighborhood of each node.
 
     The average neighborhood degree of a node `i` is
@@ -37,7 +28,7 @@ def average_neighbor_degree(G, source='out', target='out',
         k_{nn,i} = \frac{1}{|N(i)|} \sum_{j \in N(i)} k_j
 
     where `N(i)` are the neighbors of node `i` and `k_j` is
-    the degree of node `j` which belongs to `N(i)`. For weighted 
+    the degree of node `j` which belongs to `N(i)`. For weighted
     graphs, an analogous measure can be defined [1]_,
 
     .. math::
@@ -55,13 +46,13 @@ def average_neighbor_degree(G, source='out', target='out',
 
     source : string ("in"|"out")
        Directed graphs only.
-       Use "in"- or "out"-degree for source node.  
+       Use "in"- or "out"-degree for source node.
 
     target : string ("in"|"out")
        Directed graphs only.
        Use "in"- or "out"-degree for target node.
 
-    nodes : list or iterable, optional 
+    nodes : list or iterable, optional
         Compute neighbor degree for specified nodes.  The default is
         all nodes in the graph.
 
@@ -76,47 +67,46 @@ def average_neighbor_degree(G, source='out', target='out',
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> G.edges[0, 1]['weight'] = 5
-    >>> G.edges[2, 3]['weight'] = 3
+    >>> G = nx.path_graph(4)
+    >>> G.edges[0, 1]["weight"] = 5
+    >>> G.edges[2, 3]["weight"] = 3
 
     >>> nx.average_neighbor_degree(G)
     {0: 2.0, 1: 1.5, 2: 1.5, 3: 2.0}
-    >>> nx.average_neighbor_degree(G, weight='weight')
+    >>> nx.average_neighbor_degree(G, weight="weight")
     {0: 2.0, 1: 1.1666666666666667, 2: 1.25, 3: 2.0}
 
-    >>> G=nx.DiGraph()
+    >>> G = nx.DiGraph()
     >>> nx.add_path(G, [0, 1, 2, 3])
-    >>> nx.average_neighbor_degree(G, source='in', target='in')
+    >>> nx.average_neighbor_degree(G, source="in", target="in")
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0}
 
-    >>> nx.average_neighbor_degree(G, source='out', target='out')
+    >>> nx.average_neighbor_degree(G, source="out", target="out")
     {0: 1.0, 1: 1.0, 2: 0.0, 3: 0.0}
 
     Notes
     -----
-    For directed graphs you can also specify in-degree or out-degree 
+    For directed graphs you can also specify in-degree or out-degree
     by passing keyword arguments.
 
     See Also
     --------
-    average_degree_connectivity 
+    average_degree_connectivity
 
     References
-    ----------    
-    .. [1] A. Barrat, M. Barthélemy, R. Pastor-Satorras, and A. Vespignani, 
-       "The architecture of complex weighted networks". 
+    ----------
+    .. [1] A. Barrat, M. Barthélemy, R. Pastor-Satorras, and A. Vespignani,
+       "The architecture of complex weighted networks".
        PNAS 101 (11): 3747–3752 (2004).
     """
     source_degree = G.degree
     target_degree = G.degree
     if G.is_directed():
-        direction = {'out': G.out_degree,
-                     'in': G.in_degree}
+        direction = {"out": G.out_degree, "in": G.in_degree}
         source_degree = direction[source]
         target_degree = direction[target]
-    return _average_nbr_deg(G, source_degree, target_degree,
-                            nodes=nodes, weight=weight)
+    return _average_nbr_deg(G, source_degree, target_degree, nodes=nodes, weight=weight)
+
 
 # obsolete
 # def average_neighbor_in_degree(G, nodes=None, weight=None):

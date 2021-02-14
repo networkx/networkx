@@ -1,17 +1,8 @@
-# beamsearch.py - breadth-first search with limited queueing
-#
-# Copyright 2016-2018 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Basic algorithms for breadth-first searching the nodes of a graph."""
 
-import networkx as nx
 from .breadth_first_search import generic_bfs_edges
 
-__all__ = ['bfs_beam_edges']
+__all__ = ["bfs_beam_edges"]
 
 
 def bfs_beam_edges(G, source, value, width=None):
@@ -53,15 +44,32 @@ def bfs_beam_edges(G, source, value, width=None):
     --------
     To give nodes with, for example, a higher centrality precedence
     during the search, set the `value` function to return the centrality
-    value of the node::
+    value of the node:
 
-        >>> G = nx.karate_club_graph()
-        >>> centrality = nx.eigenvector_centrality(G)
-        >>> source = 0
-        >>> width = 5
-        >>> for u, v in nx.bfs_beam_edges(G, source, centrality.get, width):
-        ...     print((u, v))  # doctest: +SKIP
-
+    >>> G = nx.karate_club_graph()
+    >>> centrality = nx.eigenvector_centrality(G)
+    >>> source = 0
+    >>> width = 5
+    >>> for u, v in nx.bfs_beam_edges(G, source, centrality.get, width):
+    ...     print((u, v))
+    ...
+    (0, 2)
+    (0, 1)
+    (0, 8)
+    (0, 13)
+    (0, 3)
+    (2, 32)
+    (1, 30)
+    (8, 33)
+    (3, 7)
+    (32, 31)
+    (31, 28)
+    (31, 25)
+    (25, 23)
+    (25, 24)
+    (23, 29)
+    (23, 27)
+    (29, 26)
     """
 
     if width is None:
@@ -93,6 +101,4 @@ def bfs_beam_edges(G, source, value, width=None):
         # `bfs_edges(G, source)` but with a sorted enqueue step.
         return iter(sorted(G.neighbors(v), key=value, reverse=True)[:width])
 
-    # TODO In Python 3.3+, this should be `yield from ...`
-    for e in generic_bfs_edges(G, source, successors):
-        yield e
+    yield from generic_bfs_edges(G, source, successors)

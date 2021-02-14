@@ -1,29 +1,19 @@
-# -*- coding: utf-8 -*-
 """
 Generators for random intersection graphs.
 """
-#    Copyright (C) 2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-import random
 import networkx as nx
-from networkx.algorithms import bipartite
 from networkx.utils import py_random_state
 
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)'])
-
-__all__ = ['uniform_random_intersection_graph',
-           'k_random_intersection_graph',
-           'general_random_intersection_graph',
-           ]
+__all__ = [
+    "uniform_random_intersection_graph",
+    "k_random_intersection_graph",
+    "general_random_intersection_graph",
+]
 
 
 @py_random_state(3)
 def uniform_random_intersection_graph(n, m, p, seed=None):
-    """Return a uniform random intersection graph.
+    """Returns a uniform random intersection graph.
 
     Parameters
     ----------
@@ -50,13 +40,15 @@ def uniform_random_intersection_graph(n, m, p, seed=None):
        An equivalence theorem relating the evolution of the g(n, m, p)
        and g(n, p) models. Random Struct. Algorithms 16, 2 (2000), 156–176.
     """
+    from networkx.algorithms import bipartite
+
     G = bipartite.random_graph(n, m, p, seed)
     return nx.projected_graph(G, range(n))
 
 
 @py_random_state(3)
 def k_random_intersection_graph(n, m, k, seed=None):
-    """Return a intersection graph with randomly chosen attribute sets for
+    """Returns a intersection graph with randomly chosen attribute sets for
     each node that are of equal size (k).
 
     Parameters
@@ -91,7 +83,7 @@ def k_random_intersection_graph(n, m, k, seed=None):
 
 @py_random_state(3)
 def general_random_intersection_graph(n, m, p, seed=None):
-    """Return a random intersection graph with independent probabilities
+    """Returns a random intersection graph with independent probabilities
     for connections between node and attribute sets.
 
     Parameters

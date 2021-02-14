@@ -3,16 +3,16 @@
 Breadth First Search on Edges
 =============================
 
-Algorithms for a depth-first traversal of edges in a graph.
+Algorithms for a breadth-first traversal of edges in a graph.
 
 """
 from collections import deque
 import networkx as nx
 
-FORWARD = 'forward'
-REVERSE = 'reverse'
+FORWARD = "forward"
+REVERSE = "reverse"
 
-__all__ = ['edge_bfs']
+__all__ = ["edge_bfs"]
 
 
 def edge_bfs(G, source=None, orientation=None):
@@ -56,7 +56,6 @@ def edge_bfs(G, source=None, orientation=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> nodes = [0, 1, 2, 3]
     >>> edges = [(0, 1), (1, 0), (1, 0), (2, 0), (2, 1), (3, 1)]
 
@@ -72,10 +71,10 @@ def edge_bfs(G, source=None, orientation=None):
     >>> list(nx.edge_bfs(nx.MultiDiGraph(edges), nodes))
     [(0, 1, 0), (1, 0, 0), (1, 0, 1), (2, 0, 0), (2, 1, 0), (3, 1, 0)]
 
-    >>> list(nx.edge_bfs(nx.DiGraph(edges), nodes, orientation='ignore'))
+    >>> list(nx.edge_bfs(nx.DiGraph(edges), nodes, orientation="ignore"))
     [(0, 1, 'forward'), (1, 0, 'reverse'), (2, 0, 'reverse'), (2, 1, 'reverse'), (3, 1, 'reverse')]
 
-    >>> list(nx.edge_bfs(nx.MultiDiGraph(edges), nodes, orientation='ignore'))
+    >>> list(nx.edge_bfs(nx.MultiDiGraph(edges), nodes, orientation="ignore"))
     [(0, 1, 0, 'forward'), (1, 0, 0, 'reverse'), (1, 0, 1, 'reverse'), (2, 0, 0, 'reverse'), (2, 1, 0, 'reverse'), (3, 1, 0, 'reverse')]
 
     Notes
@@ -86,6 +85,15 @@ def edge_bfs(G, source=None, orientation=None):
     that it does not stop once every node has been visited. In a directed graph
     with edges [(0, 1), (1, 2), (2, 1)], the edge (2, 1) would not be visited
     if not for the functionality provided by this function.
+
+    The naming of this function is very similar to bfs_edges. The difference
+    is that 'edge_bfs' yields edges even if they extend back to an already
+    explored node while 'bfs_edges' yields the edges of the tree that results
+    from a breadth-first-search (BFS) so no edges are reported if they extend
+    to already explored nodes. That means 'edge_bfs' reports all edges while
+    'bfs_edges' only report those traversed by a node-based BFS. Yet another
+    description is that 'bfs_edges' reports the edges traversed during BFS
+    while 'edge_bfs' reports all edges in the order they are explored.
 
     See Also
     --------
@@ -99,42 +107,53 @@ def edge_bfs(G, source=None, orientation=None):
         return
 
     directed = G.is_directed()
-    kwds = {'data': False}
+    kwds = {"data": False}
     if G.is_multigraph() is True:
-        kwds['keys'] = True
+        kwds["keys"] = True
 
     # set up edge lookup
     if orientation is None:
+
         def edges_from(node):
             return iter(G.edges(node, **kwds))
-    elif not directed or orientation == 'original':
+
+    elif not directed or orientation == "original":
+
         def edges_from(node):
             for e in G.edges(node, **kwds):
                 yield e + (FORWARD,)
-    elif orientation == 'reverse':
+
+    elif orientation == "reverse":
+
         def edges_from(node):
             for e in G.in_edges(node, **kwds):
                 yield e + (REVERSE,)
-    elif orientation == 'ignore':
+
+    elif orientation == "ignore":
+
         def edges_from(node):
             for e in G.edges(node, **kwds):
                 yield e + (FORWARD,)
             for e in G.in_edges(node, **kwds):
                 yield e + (REVERSE,)
+
     else:
         raise nx.NetworkXError("invalid orientation argument.")
 
     if directed:
         neighbors = G.successors
+
         def edge_id(edge):
             # remove direction indicator
             return edge[:-1] if orientation is not None else edge
+
     else:
         neighbors = G.neighbors
-        def edge_id(edge):
-            return (frozenset(edge[:2]),) +edge[2:]
 
-    check_reverse = directed and orientation in ('reverse', 'ignore')
+        def edge_id(edge):
+            return (frozenset(edge[:2]),) + edge[2:]
+
+    check_reverse = directed and orientation in ("reverse", "ignore")
 
     # start BFS
     visited_nodes = {n for n in nodes}

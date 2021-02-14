@@ -1,26 +1,11 @@
-# -*- coding: utf-8 -*-
-#
-#    Copyright (C) 2011 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-#
-# Authors: Jordi Torrents <jtorrents@milnou.net>
-#          Aric Hagberg <hagberg@lanl.gov>
-from __future__ import division
-
 from collections import defaultdict
 
-import networkx as nx
-
-__all__ = ['average_degree_connectivity',
-           'k_nearest_neighbors']
+__all__ = ["average_degree_connectivity", "k_nearest_neighbors"]
 
 
-def average_degree_connectivity(G, source="in+out", target="in+out",
-                                nodes=None, weight=None):
+def average_degree_connectivity(
+    G, source="in+out", target="in+out", nodes=None, weight=None
+):
     r"""Compute the average degree connectivity of graph.
 
     The average degree connectivity is the average nearest neighbor degree of
@@ -67,11 +52,11 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> G.edges[1, 2]['weight'] = 3
+    >>> G = nx.path_graph(4)
+    >>> G.edges[1, 2]["weight"] = 3
     >>> nx.k_nearest_neighbors(G)
     {1: 2.0, 2: 1.5}
-    >>> nx.k_nearest_neighbors(G, weight='weight')
+    >>> nx.k_nearest_neighbors(G, weight="weight")
     {1: 2.0, 2: 1.75}
 
     See also
@@ -91,22 +76,22 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     """
     # First, determine the type of neighbors and the type of degree to use.
     if G.is_directed():
-        if source not in ('in', 'out', 'in+out'):
+        if source not in ("in", "out", "in+out"):
             raise ValueError('source must be one of "in", "out", or "in+out"')
-        if target not in ('in', 'out', 'in+out'):
+        if target not in ("in", "out", "in+out"):
             raise ValueError('target must be one of "in", "out", or "in+out"')
-        direction = {'out': G.out_degree,
-                     'in': G.in_degree,
-                     'in+out': G.degree}
-        neighbor_funcs = {'out': G.successors,
-                          'in': G.predecessors,
-                          'in+out': G.neighbors}
+        direction = {"out": G.out_degree, "in": G.in_degree, "in+out": G.degree}
+        neighbor_funcs = {
+            "out": G.successors,
+            "in": G.predecessors,
+            "in+out": G.neighbors,
+        }
         source_degree = direction[source]
         target_degree = direction[target]
         neighbors = neighbor_funcs[source]
         # `reverse` indicates whether to look at the in-edge when
         # computing the weight of an edge.
-        reverse = (source == 'in')
+        reverse = source == "in"
     else:
         source_degree = G.degree
         target_degree = G.degree

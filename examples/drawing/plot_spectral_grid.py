@@ -25,10 +25,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 
-options = {
-    'node_color': 'C0',
-    'node_size': 100,
-}
+options = {"node_color": "C0", "node_size": 100}
 
 G = nx.grid_2d_graph(6, 6)
 plt.subplot(332)

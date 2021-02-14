@@ -1,25 +1,14 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2018 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Ben Edwards (bedwards@cs.unm.edu)
-#          Aric Hagberg (hagberg@lanl.gov)
 """Functions for computing rich-club coefficients."""
-from __future__ import division
 
 import networkx as nx
-from networkx.utils import accumulate
+from itertools import accumulate
 from networkx.utils import not_implemented_for
 
-__all__ = ['rich_club_coefficient']
+__all__ = ["rich_club_coefficient"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     r"""Returns the rich-club coefficient of the graph `G`.
 
@@ -56,8 +45,8 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (1, 4), (4, 5)])
-    >>> rc = nx.rich_club_coefficient(G, normalized=False)
-    >>> rc[0] # doctest: +SKIP
+    >>> rc = nx.rich_club_coefficient(G, normalized=False, seed=42)
+    >>> rc[0]
     0.4
 
     Notes
@@ -80,8 +69,9 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
        sequences", 2006. https://arxiv.org/abs/cond-mat/0312028
     """
     if nx.number_of_selfloops(G) > 0:
-        raise Exception('rich_club_coefficient is not implemented for '
-                        'graphs with self loops.')
+        raise Exception(
+            "rich_club_coefficient is not implemented for " "graphs with self loops."
+        )
     rc = _compute_rc(G)
     if normalized:
         # make R a copy of G, randomize with Q*|E| double edge swaps
@@ -114,8 +104,7 @@ def _compute_rc(G):
     # The list is sorted in reverse order so that we can pop from the
     # right side of the list later, instead of popping from the left
     # side of the list, which would have a linear time cost.
-    edge_degrees = sorted((sorted(map(G.degree, e)) for e in G.edges()),
-                          reverse=True)
+    edge_degrees = sorted((sorted(map(G.degree, e)) for e in G.edges()), reverse=True)
     ek = G.number_of_edges()
     k1, k2 = edge_degrees.pop()
     rc = {}

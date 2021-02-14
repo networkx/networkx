@@ -1,4 +1,3 @@
-#-*- coding: utf-8 -*-
 """
 Recognition Tests
 =================
@@ -76,16 +75,11 @@ becomes a useful notion.
 
 import networkx as nx
 
-__author__ = """\n""".join([
-    'Ferdinando Papale <ferdinando.papale@gmail.com>',
-    'chebee7i <chebee7i@gmail.com>',
-])
+
+__all__ = ["is_arborescence", "is_branching", "is_forest", "is_tree"]
 
 
-__all__ = ['is_arborescence', 'is_branching', 'is_forest', 'is_tree']
-
-
-@nx.utils.not_implemented_for('undirected')
+@nx.utils.not_implemented_for("undirected")
 def is_arborescence(G):
     """
     Returns True if `G` is an arborescence.
@@ -114,7 +108,7 @@ def is_arborescence(G):
     return is_tree(G) and max(d for n, d in G.in_degree()) <= 1
 
 
-@nx.utils.not_implemented_for('undirected')
+@nx.utils.not_implemented_for("undirected")
 def is_branching(G):
     """
     Returns True if `G` is a branching.
@@ -174,14 +168,14 @@ def is_forest(G):
 
     """
     if len(G) == 0:
-        raise nx.exception.NetworkXPointlessConcept('G has no nodes.')
+        raise nx.exception.NetworkXPointlessConcept("G has no nodes.")
 
     if G.is_directed():
-        components = nx.weakly_connected_component_subgraphs
+        components = (G.subgraph(c) for c in nx.weakly_connected_components(G))
     else:
-        components = nx.connected_component_subgraphs
+        components = (G.subgraph(c) for c in nx.connected_components(G))
 
-    return all(len(c) - 1 == c.number_of_edges() for c in components(G))
+    return all(len(c) - 1 == c.number_of_edges() for c in components)
 
 
 def is_tree(G):
@@ -215,7 +209,7 @@ def is_tree(G):
 
     """
     if len(G) == 0:
-        raise nx.exception.NetworkXPointlessConcept('G has no nodes.')
+        raise nx.exception.NetworkXPointlessConcept("G has no nodes.")
 
     if G.is_directed():
         is_connected = nx.is_weakly_connected

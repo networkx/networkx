@@ -1,39 +1,39 @@
-from nose.tools import raises
+import pytest
 import networkx as nx
 
 # smoke tests for exceptions
 
 
-@raises(nx.NetworkXException)
 def test_raises_networkxexception():
-    raise nx.NetworkXException
+    with pytest.raises(nx.NetworkXException):
+        raise nx.NetworkXException
 
 
-@raises(nx.NetworkXError)
 def test_raises_networkxerr():
-    raise nx.NetworkXError
+    with pytest.raises(nx.NetworkXError):
+        raise nx.NetworkXError
 
 
-@raises(nx.NetworkXPointlessConcept)
 def test_raises_networkx_pointless_concept():
-    raise nx.NetworkXPointlessConcept
+    with pytest.raises(nx.NetworkXPointlessConcept):
+        raise nx.NetworkXPointlessConcept
 
 
-@raises(nx.NetworkXAlgorithmError)
 def test_raises_networkxalgorithmerr():
-    raise nx.NetworkXAlgorithmError
+    with pytest.raises(nx.NetworkXAlgorithmError):
+        raise nx.NetworkXAlgorithmError
 
 
-@raises(nx.NetworkXUnfeasible)
 def test_raises_networkx_unfeasible():
-    raise nx.NetworkXUnfeasible
+    with pytest.raises(nx.NetworkXUnfeasible):
+        raise nx.NetworkXUnfeasible
 
 
-@raises(nx.NetworkXNoPath)
 def test_raises_networkx_no_path():
-    raise nx.NetworkXNoPath
+    with pytest.raises(nx.NetworkXNoPath):
+        raise nx.NetworkXNoPath
 
 
-@raises(nx.NetworkXUnbounded)
 def test_raises_networkx_unbounded():
-    raise nx.NetworkXUnbounded
+    with pytest.raises(nx.NetworkXUnbounded):
+        raise nx.NetworkXUnbounded

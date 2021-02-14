@@ -31,20 +31,12 @@ edges. Observe that node labeled "c" has an outgoing edge to
 itself. Indeed, self-loops are allowed. Node index starts from 0.
 
 """
-#    Copyright (C) 2008-2012 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx
-from networkx.utils import is_string_like, open_file
-__author__ = '\n'.join(['Willem Ligtenberg (w.p.a.ligtenberg@tue.nl)',
-                        'Aric Hagberg (aric.hagberg@gmail.com)'])
+from networkx.utils import open_file
 
 
-@open_file(1, mode='w')
-def write_p2g(G, path, encoding='utf-8'):
+@open_file(1, mode="w")
+def write_p2g(G, path, encoding="utf-8"):
     """Write NetworkX graph in p2g format.
 
     Notes
@@ -52,20 +44,20 @@ def write_p2g(G, path, encoding='utf-8'):
     This format is meant to be used with directed graphs with
     possible self loops.
     """
-    path.write(("%s\n" % G.name).encode(encoding))
-    path.write(("%s %s\n" % (G.order(), G.size())).encode(encoding))
+    path.write((f"{G.name}\n").encode(encoding))
+    path.write((f"{G.order()} {G.size()}\n").encode(encoding))
     nodes = list(G)
     # make dictionary mapping nodes to integers
     nodenumber = dict(zip(nodes, range(len(nodes))))
     for n in nodes:
-        path.write(("%s\n" % n).encode(encoding))
+        path.write((f"{n}\n").encode(encoding))
         for nbr in G.neighbors(n):
-            path.write(("%s " % nodenumber[nbr]).encode(encoding))
+            path.write((f"{nodenumber[nbr]} ").encode(encoding))
         path.write("\n".encode(encoding))
 
 
-@open_file(0, mode='r')
-def read_p2g(path, encoding='utf-8'):
+@open_file(0, mode="r")
+def read_p2g(path, encoding="utf-8"):
     """Read graph in p2g format from path.
 
     Returns

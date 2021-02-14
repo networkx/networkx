@@ -1,19 +1,11 @@
-# operations.py - binary operations on trees
-#
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Operations on trees."""
 from functools import partial
 from itertools import chain
 
 import networkx as nx
-from networkx.utils import accumulate
+from itertools import accumulate
 
-__all__ = ['join']
+__all__ = ["join"]
 
 
 def join(rooted_trees, label_attribute=None):
@@ -74,22 +66,27 @@ def join(rooted_trees, label_attribute=None):
 
     # Relabel the nodes so that their union is the integers starting at 1.
     if label_attribute is None:
-        label_attribute = '_old'
-    relabel = partial(nx.convert_node_labels_to_integers,
-                      label_attribute=label_attribute)
+        label_attribute = "_old"
+    relabel = partial(
+        nx.convert_node_labels_to_integers, label_attribute=label_attribute
+    )
     lengths = (len(tree) for tree in trees[:-1])
     first_labels = chain([0], accumulate(lengths))
-    trees = [relabel(tree, first_label=first_label + 1)
-             for tree, first_label in zip(trees, first_labels)]
+    trees = [
+        relabel(tree, first_label=first_label + 1)
+        for tree, first_label in zip(trees, first_labels)
+    ]
 
     # Get the relabeled roots.
-    roots = [next(v for v, d in tree.nodes(data=True) if d.get('_old') == root)
-             for tree, root in zip(trees, roots)]
+    roots = [
+        next(v for v, d in tree.nodes(data=True) if d.get("_old") == root)
+        for tree, root in zip(trees, roots)
+    ]
 
     # Remove the old node labels.
     for tree in trees:
         for v in tree:
-            tree.nodes[v].pop('_old')
+            tree.nodes[v].pop("_old")
 
     # Add all sets of nodes and edges, with data.
     nodes = (tree.nodes(data=True) for tree in trees)

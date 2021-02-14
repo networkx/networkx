@@ -1,19 +1,14 @@
-# Copyright (C) 2018
-# Robert Gmyr <robert@gmyr.net>
-# All rights reserved.
-# BSD license.
 """Functions for computing sparsifiers of graphs."""
-from __future__ import division
 import math
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
 
-__all__ = ['spanner']
+__all__ = ["spanner"]
 
 
 @py_random_state(3)
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def spanner(G, stretch, weight=None, seed=None):
     """Returns a spanner of the given graph with the given stretch.
 
@@ -67,7 +62,7 @@ def spanner(G, stretch, weight=None, seed=None):
     Random Struct. Algorithms 30(4): 532-563 (2007).
     """
     if stretch < 1:
-        raise ValueError('stretch must be at least 1')
+        raise ValueError("stretch must be at least 1")
 
     k = (stretch + 1) // 2
 
@@ -82,7 +77,7 @@ def spanner(G, stretch, weight=None, seed=None):
     # clustering is a dictionary that maps nodes in a cluster to the
     # cluster center
     clustering = {v: v for v in G.nodes}
-    sample_prob = math.pow(G.number_of_nodes(), - 1 / k)
+    sample_prob = math.pow(G.number_of_nodes(), -1 / k)
     size_limit = 2 * math.pow(G.number_of_nodes(), 1 + 1 / k)
 
     i = 0
@@ -103,10 +98,12 @@ def spanner(G, stretch, weight=None, seed=None):
 
             # step 2: find neighboring (sampled) clusters and
             # lightest edges to them
-            lightest_edge_neighbor, lightest_edge_weight =\
-                _lightest_edge_dicts(residual_graph, clustering, v)
-            neighboring_sampled_centers =\
+            lightest_edge_neighbor, lightest_edge_weight = _lightest_edge_dicts(
+                residual_graph, clustering, v
+            )
+            neighboring_sampled_centers = (
                 set(lightest_edge_weight.keys()) & sampled_centers
+            )
 
             # step 3: add edges to spanner
             if not neighboring_sampled_centers:
@@ -118,11 +115,11 @@ def spanner(G, stretch, weight=None, seed=None):
                     edges_to_remove.add((v, neighbor))
 
             else:  # there is a neighboring sampled center
-                closest_center = min(neighboring_sampled_centers,
-                                     key=lightest_edge_weight.get)
+                closest_center = min(
+                    neighboring_sampled_centers, key=lightest_edge_weight.get
+                )
                 closest_center_weight = lightest_edge_weight[closest_center]
-                closest_center_neighbor =\
-                    lightest_edge_neighbor[closest_center]
+                closest_center_neighbor = lightest_edge_neighbor[closest_center]
 
                 edges_to_add.add((v, closest_center_neighbor))
                 new_clustering[v] = closest_center
@@ -139,7 +136,10 @@ def spanner(G, stretch, weight=None, seed=None):
                 for neighbor in residual_graph.adj[v]:
                     neighbor_cluster = clustering[neighbor]
                     neighbor_weight = lightest_edge_weight[neighbor_cluster]
-                    if neighbor_cluster == closest_center or neighbor_weight < closest_center_weight:
+                    if (
+                        neighbor_cluster == closest_center
+                        or neighbor_weight < closest_center_weight
+                    ):
                         edges_to_remove.add((v, neighbor))
 
         # check whether iteration added too many edges to spanner,
@@ -177,8 +177,7 @@ def spanner(G, stretch, weight=None, seed=None):
 
     # phase 2: vertex-cluster joining
     for v in residual_graph.nodes:
-        lightest_edge_neighbor, _ =\
-            _lightest_edge_dicts(residual_graph, clustering, v)
+        lightest_edge_neighbor, _ = _lightest_edge_dicts(residual_graph, clustering, v)
         for neighbor in lightest_edge_neighbor.values():
             _add_edge_to_spanner(H, residual_graph, v, neighbor, weight)
 
@@ -214,9 +213,9 @@ def _setup_residual_graph(G, weight):
     # establish unique edge weights, even for unweighted graphs
     for u, v in G.edges():
         if not weight:
-            residual_graph[u][v]['weight'] = (id(u), id(v))
+            residual_graph[u][v]["weight"] = (id(u), id(v))
         else:
-            residual_graph[u][v]['weight'] = (G[u][v][weight], id(u), id(v))
+            residual_graph[u][v]["weight"] = (G[u][v][weight], id(u), id(v))
 
     return residual_graph
 
@@ -257,9 +256,11 @@ def _lightest_edge_dicts(residual_graph, clustering, node):
     lightest_edge_weight = {}
     for neighbor in residual_graph.adj[node]:
         neighbor_center = clustering[neighbor]
-        weight = residual_graph[node][neighbor]['weight']
-        if neighbor_center not in lightest_edge_weight or\
-                weight < lightest_edge_weight[neighbor_center]:
+        weight = residual_graph[node][neighbor]["weight"]
+        if (
+            neighbor_center not in lightest_edge_weight
+            or weight < lightest_edge_weight[neighbor_center]
+        ):
             lightest_edge_neighbor[neighbor_center] = neighbor
             lightest_edge_weight[neighbor_center] = weight
     return lightest_edge_neighbor, lightest_edge_weight
@@ -289,4 +290,4 @@ def _add_edge_to_spanner(H, residual_graph, u, v, weight):
     """
     H.add_edge(u, v)
     if weight:
-        H[u][v][weight] = residual_graph[u][v]['weight'][0]
+        H[u][v][weight] = residual_graph[u][v]["weight"][0]
