@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-def greedy_modularity_communities(G, weight=None, resolution=1.):
+def greedy_modularity_communities(G, weight=None, resolution=1):
     """Find communities in graph using Clauset-Newman-Moore greedy modularity
     maximization. This method currently supports the Graph class and does not
     consider edge weights.
@@ -24,7 +24,8 @@ def greedy_modularity_communities(G, weight=None, resolution=1.):
     and joins the pair of communities that most increases modularity until no
     such pair exists.
 
-    This function is able to maximize the generalized modularity with resolution parameter $\gamma$.
+    This function is able to maximize the generalized modularity with
+    resolution parameter $\gamma$.
 
     Parameters
     ----------
@@ -213,11 +214,11 @@ def greedy_modularity_communities(G, weight=None, resolution=1.):
     return sorted(communities, key=len, reverse=True)
 
 
-def naive_greedy_modularity_communities(G, resolution = 1):
+def naive_greedy_modularity_communities(G, resolution=1):
     """Find communities in G using the greedy modularity maximization.
 
     This implementation is O(n^4), much slower than alternatives, but it is
-    provided as an easy-to-understand reference implementation. 
+    provided as an easy-to-understand reference implementation.
     Generalized modularity with a resolution parameter is supported.
     """
     # First create one community for each node
