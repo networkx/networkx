@@ -133,7 +133,7 @@ def authority_matrix(G, nodelist=None):
         "    >>> M = nx.to_numpy_array(G, nodelist=nodelist)\n"
         "    >>> M.T @ M"
     )
-    warnings.warn(msg, UserWarning)
+    warnings.warn(msg, DeprecationWarning)
     M = nx.to_numpy_array(G, nodelist=nodelist)
     return M.T @ M
 
@@ -152,7 +152,7 @@ def hub_matrix(G, nodelist=None):
         "    >>> M = nx.to_numpy_array(G, nodelist=nodelist)\n"
         "    >>> M @ M.T"
     )
-    warnings.warn(msg, UserWarning)
+    warnings.warn(msg, DeprecationWarning)
     M = nx.to_numpy_array(G, nodelist=nodelist)
     return M @ M.T
 
