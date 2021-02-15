@@ -64,6 +64,7 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
   `@MridulS <https://github.com/MridulS/>`__,
+  `@rossbar <https://github.com/rossbar/>`__
 
 Directed Version of Traveling Salesman Problem
 ----------------------------------------------
