@@ -73,7 +73,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
 
     # Initial modularity
     partition = [[label_for_node[x] for x in c] for c in communities.values()]
-    q_cnm = modularity(G, partition)
+    q_cnm = modularity(G, partition, resolution=resolution)
 
     # Initialize data structures
     # CNM Eq 8-9 (Eq 8 was missing a factor of 2 (from A_ij + A_ji)
@@ -227,7 +227,7 @@ def naive_greedy_modularity_communities(G, resolution=1):
     merges = []
     # Greedily merge communities until no improvement is possible
     old_modularity = None
-    new_modularity = modularity(G, communities, resolution)
+    new_modularity = modularity(G, communities, resolution=resolution)
     while old_modularity is None or new_modularity > old_modularity:
         # Save modularity for comparison
         old_modularity = new_modularity
@@ -242,7 +242,9 @@ def naive_greedy_modularity_communities(G, resolution=1):
                 # Merge communities u and v
                 trial_communities[j] = u | v
                 trial_communities[i] = frozenset([])
-                trial_modularity = modularity(G, trial_communities, resolution)
+                trial_modularity = modularity(
+                    G, trial_communities, resolution=resolution
+                )
                 if trial_modularity >= new_modularity:
                     # Check if strictly better or tie
                     if trial_modularity > new_modularity:
