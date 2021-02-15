@@ -75,9 +75,6 @@ Directed Version of Traveling Salesman Problem
   The goal of this project is to learn the API used for implemented methods
   and then implement the Asadpour method for directed graphs with similar API.
 
-.. _#1090: https://github.com/networkx/networkx/pull/1090
-.. _Asapour: http://www.cs.cmu.edu/~odonnell/hits09/asadpour-goemans-madry-oveis-gharan-saberi-ATSP.pdf
-
 - Recommended Skills: Python, graph algorithms
 
 - Expected Outcome: A new function in NetworkX which implements the Asapour algorithm.
@@ -87,8 +84,33 @@ Directed Version of Traveling Salesman Problem
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
   `@MridulS <https://github.com/MridulS/>`__,
 
-.. _#1090: https://github.com/networkx/networkx/pull/1090
-.. _Asapour: http://www.cs.cmu.edu/~odonnell/hits09/asadpour-goemans-madry-oveis-gharan-saberi-ATSP.pdf
+.. _#4607: https://github.com/networkx/networkx/pull/4607
+.. _Asapour: https://pubsonline.informs.org/doi/pdf/10.1287/opre.2017.1603
+
+
+Implement the VF2++ Graph Isomorphism Algorithm
+-----------------------------------------------
+
+- Abstract: The `Graph Isomorphism Problem`_ is a famous difficult network problem at
+  the boundary between P and NP-Complete. The VF2 algorithm is included with NetworkX
+  in a recursive formulation. There is an improved version of this algorithm called
+  `VF2++`_ which we intend to implement. We have early attempts at a nonrecursive version
+  of the main algorithm that also address subgraph isomorphism and subgraph monomorphism.
+  This project involves fully implementing them and extending to directed and multigraph
+  settings.
+
+- Recommended Skills: Python, graph algorithms
+
+- Expected Outcome: A new set of functions in NetworkX that implement the VF2++
+  algorithm for all problem and graph types in a nonrecursive manner.
+
+- Complexity: Moderate
+
+- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
+  `@MridulS <https://github.com/MridulS/>`__,
+
+.. _`Graph Isomorphism Problem`: https://en.wikipedia.org/wiki/Graph_isomorphism_problem
+.. _VF2++: https://doi.org/10.1016/j.dam.2018.02.018
 
 
 Project Idea Template
