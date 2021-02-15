@@ -65,6 +65,32 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
   `@MridulS <https://github.com/MridulS/>`__,
 
+Directed Version of Traveling Salesman Problem
+----------------------------------------------
+
+- Abstract: NetworkX has recently added a couple methods for solving
+  the Traveling Salesman Problem (see `#4607`_). The best approximation
+  for undirected graphs is the Christofides method. But the best algorithm
+  for directed graphs is by `Asapour`_ et.al. and has not yet been implemented.
+  The goal of this project is to learn the API used for implemented methods
+  and then implement the Asadpour method for directed graphs with similar API.
+
+.. _#1090: https://github.com/networkx/networkx/pull/1090
+.. _Asapour: http://www.cs.cmu.edu/~odonnell/hits09/asadpour-goemans-madry-oveis-gharan-saberi-ATSP.pdf
+
+- Recommended Skills: Python, graph algorithms
+
+- Expected Outcome: A new function in NetworkX which implements the Asapour algorithm.
+
+- Complexity: Moderate
+
+- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
+  `@MridulS <https://github.com/MridulS/>`__,
+
+.. _#1090: https://github.com/networkx/networkx/pull/1090
+.. _Asapour: http://www.cs.cmu.edu/~odonnell/hits09/asadpour-goemans-madry-oveis-gharan-saberi-ATSP.pdf
+
+
 Project Idea Template
 ---------------------
 
