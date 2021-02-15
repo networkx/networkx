@@ -52,8 +52,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
-      The weight of an edge is considered as the length or distances between the to
-      sides.
+      The weight of an edge is treated as the length or distance between the two sides.
 
     endpoints : bool, optional (default=False)
       If True include the endpoints in the shortest path counts.
@@ -273,8 +272,7 @@ def prominent_group(
     weight : None or string, optional (default=None)
        If None, all edge weights are considered equal.
        Otherwise holds the name of the edge attribute used as weight.
-       The weight of an edge is considered as the length or distances between the to
-       sides.
+       The weight of an edge is treated as the length or distance between the two sides.
 
     endpoints : bool, optional (default=False)
        If True include the endpoints in the shortest path counts.
@@ -573,8 +571,7 @@ def group_closeness_centrality(G, S, weight=None):
     weight : None or string, optional (default=None)
        If None, all edge weights are considered equal.
        Otherwise holds the name of the edge attribute used as weight.
-       The weight of an edge is considered as the length or distances
-       between the to sides.
+       The weight of an edge is treated as the length or distance between the two sides.
 
     Raises
     ------

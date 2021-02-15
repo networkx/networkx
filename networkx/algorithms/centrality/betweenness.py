@@ -48,7 +48,7 @@ def betweenness_centrality(
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
       Weights are used to calculate weighted shortest paths, so they are
-       interpreted as distances.
+      interpreted as distances.
 
     endpoints : bool, optional
       If True include the endpoints in the shortest path counts.
