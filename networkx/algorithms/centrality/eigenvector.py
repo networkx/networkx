@@ -43,6 +43,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
       In this measure the weight is interpreted as the connection strength.
+
     Returns
     -------
     nodes : dictionary
