@@ -266,11 +266,13 @@ def modularity(G, communities, weight="weight", resolution=1):
     where the sum iterates over all communities $c$, $m$ is the number of edges,
     $L_c$ is the number of intra-community links for community $c$,
     $k_c$ is the sum of degrees of the nodes in community $c$,
-    and $\gamma$ is the resolution parameter. The resolution parameter sets an
-    arbitrary tradeoffs between intra-group edges and intergroup edges. More
-    complex grouping patterns can be discovered analyzing the same setting
-    with multiple values of gamma and then combining the results [3]_.
-    That said, it is very common to simply use gamma=1.
+    and $\gamma$ is the resolution parameter.
+
+    The resolution parameter sets an arbitrary tradeoff between intra-group
+    edges and inter-group edges. More complex grouping patterns can be
+    discovered by analyzing the same network with multiple values of gamma
+    and then combining the results [3]_. That said, it is very common to
+    simply use gamma=1. More on the choice of gamma is in [4]_.
 
     The second formula is the one actually used in calculation of the modularity.
 
@@ -311,13 +313,17 @@ def modularity(G, communities, weight="weight", resolution=1):
 
     References
     ----------
-    .. [1] M. E. J. Newman *Networks: An Introduction*, page 224.
+    .. [1] M. E. J. Newman "Networks: An Introduction", page 224.
        Oxford University Press, 2011.
     .. [2] Clauset, Aaron, Mark EJ Newman, and Cristopher Moore.
        "Finding community structure in very large networks."
-       Physical review E 70.6 (2004). <https://arxiv.org/abs/cond-mat/0408187>
-    .. [3] Reichardt and Bornholdt *Statistical Mechanics of Community
-       Detection* Phys. Rev. E74, 016110, 2006. https://doi.org/10.1103/PhysRevE.74.016110
+       Phys. Rev. E 70.6 (2004). <https://arxiv.org/abs/cond-mat/0408187>
+    .. [3] Reichardt and Bornholdt "Statistical Mechanics of Community Detection"
+       Phys. Rev. E 74, 016110, 2006. https://doi.org/10.1103/PhysRevE.74.016110
+    .. [4] M. E. J. Newman, "Equivalence between modularity optimization and
+       maximum likelihood methods for community detection"
+       Phys. Rev. E 94, 052315, 2016. https://doi.org/10.1103/PhysRevE.94.052315
+
     """
     if not isinstance(communities, list):
         communities = list(communities)
