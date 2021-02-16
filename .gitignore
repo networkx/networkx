@@ -53,3 +53,6 @@ networkx.egg-info/
 
 # PyTest Cache
 .pytest_cache
+
+# Development build
+networkx-dev/
