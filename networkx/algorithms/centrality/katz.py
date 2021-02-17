@@ -75,6 +75,7 @@ def katz_centrality(
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      In this measure the weight is interpreted as the connection strength.
 
     Returns
     -------
@@ -242,6 +243,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     weight : None or string, optional
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      In this measure the weight is interpreted as the connection strength.
 
     Returns
     -------
