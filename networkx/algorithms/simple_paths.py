@@ -5,7 +5,6 @@ import collections
 import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.utils import pairwise
-from networkx.utils import empty_generator
 from networkx.algorithms.shortest_paths.weighted import _weight_function
 
 __all__ = [
@@ -234,7 +233,7 @@ def all_simple_paths(G, source, target, cutoff=None):
         except TypeError as e:
             raise nx.NodeNotFound(f"target node {target} not in graph") from e
     if source in targets:
-        return empty_generator()
+        return _empty_generator()
     if cutoff is None:
         cutoff = len(G) - 1
 
@@ -245,7 +244,7 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     if isinstance(cutoff, int):
         if cutoff < 1:
-            return empty_generator()
+            return _empty_generator()
 
         if G.is_multigraph():
             return _all_simple_paths_multigraph(G, source, targets, cutoff)
@@ -257,7 +256,11 @@ def all_simple_paths(G, source, target, cutoff=None):
         else:
             return _all_simple_paths_weighted_graph(G, source, targets, cutoff)
     else:
-        raise TypeError('cutoff is neither int nor dict')
+        raise TypeError("cutoff is neither int nor dict")
+
+
+def _empty_generator():
+    yield from ()
 
 
 def _is_path_under_cutoff(G, path, cutoff):
