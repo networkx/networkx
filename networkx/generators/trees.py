@@ -6,6 +6,28 @@ from networkx.utils import py_random_state
 
 __all__ = ["prefix_tree", "random_tree", "iterative_prefix_tree"]
 
+#G, source=None, depth_limit=None
+def dfs_prefix_tree(paths):
+        tree = nx.DiGraph()
+        root = 0
+        tree.add_node(root, source=None)
+        NIL = -1
+        tree.add_node(NIL, source="NIL")
+        stack = []
+        visited = set()
+        stack.append((paths, root, iter([])))
+        visited = set()
+        while stack:
+        paths, root, remaining_children = stack[-1]
+            try:
+                child = next(children)
+                if child not in visited:
+                    yield parent, child
+                    visited.add(child)
+                    if depth_now > 1:
+                        stack.append((child, depth_now - 1, iter(G[child])))
+            except StopIteration:
+                stack.pop()
 
 def iterative_prefix_tree(paths):
     tree = nx.DiGraph()
