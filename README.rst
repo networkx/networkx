@@ -6,7 +6,7 @@ NetworkX
 
 .. image:: https://img.shields.io/pypi/pyversions/networkx.svg
    :target: https://pypi.org/project/networkx/
-   
+
 .. image:: https://github.com/networkx/networkx/workflows/test/badge.svg?branch=master
   :target: https://github.com/networkx/networkx/actions?query=workflow%3A%22test%22
 
