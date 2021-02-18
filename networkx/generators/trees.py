@@ -4,30 +4,48 @@ from collections import defaultdict
 import networkx as nx
 from networkx.utils import py_random_state
 
-__all__ = ["prefix_tree", "random_tree", "iterative_prefix_tree"]
+__all__ = ["prefix_tree", "random_tree", "iterative_prefix_tree", "dfs_prefix_tree"]
 
 #G, source=None, depth_limit=None
 def dfs_prefix_tree(paths):
-        tree = nx.DiGraph()
-        root = 0
-        tree.add_node(root, source=None)
-        NIL = -1
-        tree.add_node(NIL, source="NIL")
-        stack = []
-        visited = set()
-        stack.append((paths, root, iter([])))
-        visited = set()
-        while stack:
-        paths, root, remaining_children = stack[-1]
-            try:
-                child = next(children)
-                if child not in visited:
-                    yield parent, child
-                    visited.add(child)
-                    if depth_now > 1:
-                        stack.append((child, depth_now - 1, iter(G[child])))
-            except StopIteration:
-                stack.pop()
+    tree = nx.DiGraph()
+    root = 0
+    tree.add_node(root, source=None)
+    NIL = -1
+    tree.add_node(NIL, source="NIL")
+    stack = []
+    visited = set()
+    children = defaultdict(list)
+    for path in paths:
+        if not path:
+            tree.add_edge(root, NIL)
+            continue
+        child, *rest = path
+        children[child].append(rest)
+    stack.append((root, iter(children.items())))
+
+    while stack:
+        root, remaining_children = stack[-1]
+
+        try:
+            child, remaining_paths = next(remaining_children) ##pops off iter
+        except StopIteration:
+            stack.pop()
+            continue
+
+        new_name = len(tree) - 1
+        tree.add_node(new_name, source=child)
+        tree.add_edge(root, new_name)
+        children = defaultdict(list)
+        for path in remaining_paths:
+            if not path:
+                tree.add_edge(new_name, NIL)
+                continue
+            child, *rest = path
+            children[child].append(rest)
+        stack.append((new_name, iter(children.items())))
+    return tree
+
 
 def iterative_prefix_tree(paths):
     tree = nx.DiGraph()

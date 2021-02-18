@@ -5,11 +5,13 @@ from networkx.utils import arbitrary_element
 class TestPrefixTree:
     """Unit tests for the prefix tree generator function."""
 
-    def test_basic_iterative(self):
+    ##nx.testing.assert_graphs_equal
+
+    def test_basic_dfs_iterative(self):
         # This example is from the Wikipedia article "Trie"
         # <https://en.wikipedia.org/wiki/Trie>.
         strings = ["a", "to", "tea", "ted", "ten", "i", "in", "inn"]
-        T = nx.iterative_prefix_tree(strings)
+        T = nx.dfs_prefix_tree(strings)
         root, NIL = 0, -1
 
         def source_label(v):
