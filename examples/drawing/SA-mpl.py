@@ -18,6 +18,7 @@ df = pd.DataFrame(
     }
 )
 
+# Initialise networkX graph
 G = nx.Graph()
 
 G.add_edge("a", "b", weight=0.6)
@@ -35,9 +36,10 @@ df_layout = pd.DataFrame(
         "projection": np.array(list(pos.values())).astype(float)[:, 0],
     }
 )
+
 df = df.merge(df_layout, how="inner", on="item")
-print(df)
-# normalise projection according to feature
+
+# Normalise projection according to feature
 max_ = df.projection.max()
 min_ = df.projection.min()
 df["projection"] = (df["projection"] - min_) / (max_ - min_) * (
