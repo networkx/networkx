@@ -24,6 +24,7 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
     weight : None or string, optional (default=None)
       If None, edge weights are ignored.
       Otherwise holds the name of the edge attribute used as weight.
+      The weight of an edge is treated as the length or distance between the two sides.
 
     cutoff : bool, optional (default=None)
       If specified, only consider paths of length <= cutoff.

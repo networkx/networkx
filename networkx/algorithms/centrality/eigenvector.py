@@ -42,6 +42,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      In this measure the weight is interpreted as the connection strength.
 
     Returns
     -------
@@ -160,7 +161,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     weight : None or string, optional (default=None)
       The name of the edge attribute used as weight.
       If None, all edge weights are considered equal.
-
+      In this measure the weight is interpreted as the connection strength.
     max_iter : integer, optional (default=100)
       Maximum number of iterations in power method.
 
