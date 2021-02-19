@@ -62,46 +62,6 @@ class DiGraphEnhanced(nx.DiGraph):
         """
         return nx.to_pandas_edgelist(self)
 
-    def complete_node_attr(self, attr: str) -> bool:
-        """Check if all nodes in the graph have the given attribute.
-
-        Args:
-            attr: name of the attribute.
-
-        Returns:
-            bool: true if all nodes in the graph have the given attribute.
-        """
-        res = True
-        num_nodes = len(self.nodes)
-        dict_node_attr = nx.get_node_attributes(self, attr)
-        if len(dict_node_attr) < num_nodes:
-            logger.exception(
-                f"There are {num_nodes - len(dict_node_attr)} nodes "
-                f'without the attribute "{attr}".'
-            )
-            res = False
-        return res
-
-    def complete_edge_attr(self, attr: str) -> bool:
-        """Check if all edges in the graph have the given attribute.
-
-        Args:
-            attr: name of the attribute.
-
-        Returns:
-            bool: true if all nodes in the graph have the given attribute.
-        """
-        res = True
-        num_edges = len(self.edges)
-        dict_edge_attr = nx.get_edge_attributes(self, attr)
-        if len(dict_edge_attr) < num_edges:
-            logger.exception(
-                f"There are {num_edges - len(dict_edge_attr)} edges "
-                f'without the attribute "{attr}".'
-            )
-            res = False
-        return res
-
 
 class DiGraphMap(DiGraphEnhanced):
     """Simple directed graph defined by mapping functions."""
