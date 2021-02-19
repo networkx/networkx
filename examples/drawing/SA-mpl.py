@@ -6,30 +6,35 @@ Matplotlib annotations with networkx
 Draw a graph with matplotlib.
 """
 
-# import matplotlib.pyplot as plt
-import networkx as nx
-import pandas as pd
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import scipy.stats as stats
 
+import networkx as nx
+
+# Create a dataset with normally distributed feature data (for a nicer final output)
+points = 20
 df = pd.DataFrame(
     {
-        "item": np.array(["a", "b", "c", "d", "e", "f"]).astype(str),
-        "feature": np.array([1, 2, 1.5, 3, 0.5, 3.2]).astype(float),
+        "item": np.arange(points).astype(str),
+        "feature": np.random.normal(5, 0.1, points),
     }
 )
 
 # Initialise networkX graph
 G = nx.Graph()
 
-G.add_edge("a", "b", weight=0.6)
-G.add_edge("a", "c", weight=0.2)
-G.add_edge("c", "d", weight=0.1)
-G.add_edge("c", "e", weight=0.7)
-G.add_edge("c", "f", weight=0.9)
-G.add_edge("a", "d", weight=0.3)
+# Generate random sparse connections
+for a in range(points):
+    for b in range(points):
+        if a == b:
+            continue
+        # G.add_edge(str(a), str(b), weight=np.random.uniform(1, 10))
+        G.add_edge(str(a), str(b), weight=np.random.uniform(1, 10) ** 3)
 
-pos = nx.kamada_kawai_layout(G, dim=1)  # Seed layout for reproducibility
-# nx.draw(G, pos=pos)
+# Seed layout for reproducibility and retrieve the node positions
+pos = nx.kamada_kawai_layout(G, dim=1)
 df_layout = pd.DataFrame(
     {
         "item": np.array(list(pos.keys())).astype(str),
@@ -45,10 +50,40 @@ min_ = df.projection.min()
 df["projection"] = (df["projection"] - min_) / (max_ - min_) * (
     df.feature.max() - df.feature.min()
 ) + df.feature.min()
-print(df)
 
-pos = df[["feature", "projection"]].values.tolist()
-print(pos)
+# make pos as array of feature and projection
+# df["pos"] = df.apply(lambda x: [x[1], x[2]], axis=1)
+df["pos"] = np.array([df["feature"], df["projection"]]).T.tolist()
 
-# nx.draw(G, pos=pos)
-# plt.show()
+
+pos = {}
+for index, row in df[["item", "pos"]].iterrows():
+    pos[str(row[0])] = row[1]
+
+# Generate figure
+plt.figure(figsize=(10, 10))
+
+# Define the bounding rectangles for the histogram and network
+left, width = 0.1, 0.8
+bottom, height = 0.1, 0.65
+spacing = 0.005
+rect_net = [left, bottom, width, height]
+rect_histx = [left, bottom + height + spacing, width, 0.2]
+
+# Define the network axes and labels
+ax_net = plt.axes(rect_net)
+# Draw the network graph
+nx.draw_networkx(G, pos=pos, ax=ax_net)
+
+ax_net.set_xlabel("feature axis")
+ax_net.set_ylabel("projection axis")
+ax_net.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
+
+# Define the histogram axes and labels
+ax_histx = plt.axes(rect_histx)
+
+ax_histx.tick_params(direction="in", labelbottom=False)
+n, x, _ = ax_histx.hist(df["feature"], bins=points)
+ax_histx.plot(x, stats.gaussian_kde(df["feature"])(x))
+
+plt.show()
