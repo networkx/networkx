@@ -75,3 +75,5 @@ Version 3.0
 * Remove ``readwrite/json_graph/jit.py`` and related tests.
 * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
 * In ``algorithms/link_analysis/hits_alg.py`` remove ``hub_matrix`` and ``authority_matrix``
+* In ``networkx.classes`` remove the ``ordered`` module and the four ``Ordered``
+  classes defined therein.
