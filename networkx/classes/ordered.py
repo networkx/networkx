@@ -49,7 +49,14 @@ __all__.extend(
 
 
 class OrderedGraph(Graph):
-    """Consistently ordered variant of :class:`~networkx.Graph`."""
+    """Consistently ordered variant of :class:`~networkx.Graph`.
+
+    .. deprecated:: 2.6
+
+       OrderedGraph is deprecated and will be removed in version 3.0.
+       Use `Graph` instead, which guarantees order is preserved for
+       Python >= 3.7
+    """
 
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
@@ -57,13 +64,6 @@ class OrderedGraph(Graph):
     edge_attr_dict_factory = OrderedDict
 
     def __init__(self, incoming_graph_data=None, **attr):
-        """
-        .. deprecated:: 2.6
-
-           OrderedGraph is deprecated and will be removed in version 3.0.
-           Use `Graph` instead, which guarantees order is preserved for
-           Python >= 3.7
-        """
         warnings.warn(
             (
                 "OrderedGraph is deprecated and will be removed in version 3.0.\n"
@@ -77,7 +77,14 @@ class OrderedGraph(Graph):
 
 
 class OrderedDiGraph(DiGraph):
-    """Consistently ordered variant of :class:`~networkx.DiGraph`."""
+    """Consistently ordered variant of :class:`~networkx.DiGraph`.
+
+    .. deprecated:: 2.6
+
+       OrderedDiGraph is deprecated and will be removed in version 3.0.
+       Use `DiGraph` instead, which guarantees order is preserved for
+       Python >= 3.7
+    """
 
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
@@ -85,13 +92,6 @@ class OrderedDiGraph(DiGraph):
     edge_attr_dict_factory = OrderedDict
 
     def __init__(self, incoming_graph_data=None, **attr):
-        """
-        .. deprecated:: 2.6
-
-           OrderedDiGraph is deprecated and will be removed in version 3.0.
-           Use `DiGraph` instead, which guarantees order is preserved for
-           Python >= 3.7
-        """
         warnings.warn(
             (
                 "OrderedDiGraph is deprecated and will be removed in version 3.0.\n"
@@ -105,7 +105,14 @@ class OrderedDiGraph(DiGraph):
 
 
 class OrderedMultiGraph(MultiGraph):
-    """Consistently ordered variant of :class:`~networkx.MultiGraph`."""
+    """Consistently ordered variant of :class:`~networkx.MultiGraph`.
+
+    .. deprecated:: 2.6
+
+       OrderedMultiGraph is deprecated and will be removed in version 3.0.
+       Use `MultiGraph` instead, which guarantees order is preserved for
+       Python >= 3.7
+    """
 
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
@@ -114,13 +121,6 @@ class OrderedMultiGraph(MultiGraph):
     edge_attr_dict_factory = OrderedDict
 
     def __init__(self, incoming_graph_data=None, **attr):
-        """
-        .. deprecated:: 2.6
-
-           OrderedMultiGraph is deprecated and will be removed in version 3.0.
-           Use `MultiGraph` instead, which guarantees order is preserved for
-           Python >= 3.7
-        """
         warnings.warn(
             (
                 "OrderedMultiGraph is deprecated and will be removed in version 3.0.\n"
@@ -134,7 +134,14 @@ class OrderedMultiGraph(MultiGraph):
 
 
 class OrderedMultiDiGraph(MultiDiGraph):
-    """Consistently ordered variant of :class:`~networkx.MultiDiGraph`."""
+    """Consistently ordered variant of :class:`~networkx.MultiDiGraph`.
+
+    .. deprecated:: 2.6
+
+       OrderedMultiDiGraph is deprecated and will be removed in version 3.0.
+       Use `MultiDiGraph` instead, which guarantees order is preserved for
+       Python >= 3.7
+    """
 
     node_dict_factory = OrderedDict
     adjlist_outer_dict_factory = OrderedDict
@@ -143,13 +150,6 @@ class OrderedMultiDiGraph(MultiDiGraph):
     edge_attr_dict_factory = OrderedDict
 
     def __init__(self, incoming_graph_data=None, **attr):
-        """
-        .. deprecated:: 2.6
-
-           OrderedMultiDiGraph is deprecated and will be removed in version 3.0.
-           Use `MultiDiGraph` instead, which guarantees order is preserved for
-           Python >= 3.7
-        """
         warnings.warn(
             (
                 "OrderedMultiDiGraph is deprecated and will be removed in version 3.0.\n"
