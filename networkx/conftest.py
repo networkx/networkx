@@ -41,6 +41,12 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="is_string_like is deprecated"
     )
     warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\nauthority_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\nhub_matrix"
+    )
+    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="default_opener is deprecated"
     )
     warnings.filterwarnings(
