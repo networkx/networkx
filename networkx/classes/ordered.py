@@ -1,4 +1,10 @@
 """
+
+.. deprecated:: 2.6
+
+   The ordered variants of graph classes in this module are deprecated and
+   will be removed in version 3.0.
+
 Consistently ordered variants of the default base classes.
 Note that if you are using Python 3.6+, you shouldn't need these classes
 because the dicts in Python 3.6+ are ordered.
@@ -28,6 +34,7 @@ subgraphs and replace with code similar to:
 
 """
 from collections import OrderedDict
+import warnings
 
 from .graph import Graph
 from .multigraph import MultiGraph
@@ -49,6 +56,25 @@ class OrderedGraph(Graph):
     adjlist_inner_dict_factory = OrderedDict
     edge_attr_dict_factory = OrderedDict
 
+    def __init__(self, incoming_graph_data=None, **attr):
+        """
+        .. deprecated:: 2.6
+
+           OrderedGraph is deprecated and will be removed in version 3.0.
+           Use `Graph` instead, which guarantees order is preserved for
+           Python >= 3.7
+        """
+        warnings.warn(
+            (
+                "OrderedGraph is deprecated and will be removed in version 3.0.\n"
+                "Use `Graph` instead, which guarantees order is preserved for\n"
+                "Python >= 3.7\n"
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        super(OrderedGraph, self).__init__(incoming_graph_data, **attr)
+
 
 class OrderedDiGraph(DiGraph):
     """Consistently ordered variant of :class:`~networkx.DiGraph`."""
@@ -57,6 +83,25 @@ class OrderedDiGraph(DiGraph):
     adjlist_outer_dict_factory = OrderedDict
     adjlist_inner_dict_factory = OrderedDict
     edge_attr_dict_factory = OrderedDict
+
+    def __init__(self, incoming_graph_data=None, **attr):
+        """
+        .. deprecated:: 2.6
+
+           OrderedDiGraph is deprecated and will be removed in version 3.0.
+           Use `DiGraph` instead, which guarantees order is preserved for
+           Python >= 3.7
+        """
+        warnings.warn(
+            (
+                "OrderedDiGraph is deprecated and will be removed in version 3.0.\n"
+                "Use `DiGraph` instead, which guarantees order is preserved for\n"
+                "Python >= 3.7\n"
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        super(OrderedDiGraph, self).__init__(incoming_graph_data, **attr)
 
 
 class OrderedMultiGraph(MultiGraph):
@@ -68,6 +113,25 @@ class OrderedMultiGraph(MultiGraph):
     edge_key_dict_factory = OrderedDict
     edge_attr_dict_factory = OrderedDict
 
+    def __init__(self, incoming_graph_data=None, **attr):
+        """
+        .. deprecated:: 2.6
+
+           OrderedMultiGraph is deprecated and will be removed in version 3.0.
+           Use `MultiGraph` instead, which guarantees order is preserved for
+           Python >= 3.7
+        """
+        warnings.warn(
+            (
+                "OrderedMultiGraph is deprecated and will be removed in version 3.0.\n"
+                "Use `MultiGraph` instead, which guarantees order is preserved for\n"
+                "Python >= 3.7\n"
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        super(OrderedMultiGraph, self).__init__(incoming_graph_data, **attr)
+
 
 class OrderedMultiDiGraph(MultiDiGraph):
     """Consistently ordered variant of :class:`~networkx.MultiDiGraph`."""
@@ -77,3 +141,22 @@ class OrderedMultiDiGraph(MultiDiGraph):
     adjlist_inner_dict_factory = OrderedDict
     edge_key_dict_factory = OrderedDict
     edge_attr_dict_factory = OrderedDict
+
+    def __init__(self, incoming_graph_data=None, **attr):
+        """
+        .. deprecated:: 2.6
+
+           OrderedMultiDiGraph is deprecated and will be removed in version 3.0.
+           Use `MultiDiGraph` instead, which guarantees order is preserved for
+           Python >= 3.7
+        """
+        warnings.warn(
+            (
+                "OrderedMultiDiGraph is deprecated and will be removed in version 3.0.\n"
+                "Use `MultiDiGraph` instead, which guarantees order is preserved for\n"
+                "Python >= 3.7\n"
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        super(OrderedMultiDiGraph, self).__init__(incoming_graph_data, **attr)
