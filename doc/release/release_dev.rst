@@ -96,6 +96,8 @@ Deprecations
   Deprecate ``empty_generator``.
 - [`#4617 <https://github.com/networkx/networkx/pull/4617>`_]
   Deprecate ``hub_matrix`` and ``authority_matrix``
+- [`#4629 <https://github.com/networkx/networkx/pull/4629>`_]
+  Deprecate the ``Ordered`` graph classes.
 
 Contributors to this release
 ----------------------------
