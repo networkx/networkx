@@ -24,15 +24,20 @@ def test_modularity_communities(func):
     assert set(func(G)) == expected
 
 
-def test_generalized_modularity_max_resolution():
-    G = nx.karate_club_graph()
-    gamma = 0.99
-    c1 = list(greedy_modularity_communities(G, gamma))
-    c2 = list(naive_greedy_modularity_communities(G, gamma))
-    assert sorted([len(cc) for cc in c1]) == sorted([len(cc) for cc in c2])
-    assert modularity(G, c1, resolution=gamma) == 0.38442800788954634
+def test_resolution_parameter_impact():
+    G = nx.barbell_graph(5, 3)
 
-    gamma = 0.9
-    c1 = list(greedy_modularity_communities(G, gamma))
-    c2 = list(naive_greedy_modularity_communities(G, gamma))
-    assert sorted([len(cc) for cc in c1]) != sorted([len(cc) for cc in c2])
+    gamma = 1
+    expected = [frozenset(range(5)), frozenset(range(8,13)), frozenset(range(5, 8))]
+    assert greedy_modularity_communities(G, resolution=gamma) == expected
+    assert naive_greedy_modularity_communities(G, resolution=gamma) == expected
+
+    gamma = 2.5
+    expected = [{0, 1, 2, 3}, {9, 10, 11, 12}, {5, 6, 7}, {4}, {8}]
+    assert greedy_modularity_communities(G, resolution=gamma) == expected
+    assert naive_greedy_modularity_communities(G, resolution=gamma) == expected
+
+    gamma = 0.3
+    expected = [frozenset(range(8)), frozenset(range(8,13))]
+    assert greedy_modularity_communities(G, resolution=gamma) == expected
+    assert naive_greedy_modularity_communities(G, resolution=gamma) == expected
