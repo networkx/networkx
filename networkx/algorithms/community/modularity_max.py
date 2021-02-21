@@ -16,8 +16,10 @@ __all__ = [
 
 
 def greedy_modularity_communities(G, weight=None, resolution=1):
-    """Find communities in graph using Clauset-Newman-Moore greedy modularity
-    maximization. This method currently supports the Graph class and does not
+    """Find communities in G using greedy modularity maximization.
+    
+    This function uses Clauset-Newman-Moore greedy modularity maximization [2]_.
+    This method currently supports the Graph class and does not
     consider edge weights.
 
     Greedy modularity maximization begins with each node in its own community
@@ -25,7 +27,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     such pair exists.
 
     This function is able to maximize the generalized modularity with
-    resolution parameter $\gamma$.
+    resolution parameter $\gamma$. See :func:`modularity`.
 
     Parameters
     ----------
@@ -33,7 +35,9 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
 
     Returns
     -------
-    Yields sets of nodes, one for each community.
+    list
+        A list of sets of nodes, one for each community.
+        Sorted by length with largest communities first.
 
     Examples
     --------
@@ -215,11 +219,39 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
 
 
 def naive_greedy_modularity_communities(G, resolution=1):
-    """Find communities in G using the greedy modularity maximization.
+    """Find communities in G using greedy modularity maximization.
 
     This implementation is O(n^4), much slower than alternatives, but it is
     provided as an easy-to-understand reference implementation.
-    Generalized modularity with a resolution parameter is supported.
+
+    Greedy modularity maximization begins with each node in its own community
+    and joins the pair of communities that most increases modularity until no
+    such pair exists.
+
+    This function is able to maximize the generalized modularity with
+    resolution parameter $\gamma$.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    Returns
+    -------
+    list
+        A list of sets of nodes, one for each community.
+        Sorted by length with largest communities first.
+
+    Examples
+    --------
+    >>> from networkx.algorithms.community import greedy_modularity_communities
+    >>> G = nx.karate_club_graph()
+    >>> c = list(greedy_modularity_communities(G))
+    >>> sorted(c[0])
+    [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+
+    See Also
+    --------
+    greedy_modularity_communities
     """
     # First create one community for each node
     communities = list([frozenset([u]) for u in G.nodes()])
@@ -236,7 +268,7 @@ def naive_greedy_modularity_communities(G, resolution=1):
         to_merge = None
         for i, u in enumerate(communities):
             for j, v in enumerate(communities):
-                # Skip i=j and empty communities
+                # Skip i==j and empty communities
                 if j <= i or len(u) == 0 or len(v) == 0:
                     continue
                 # Merge communities u and v
@@ -266,8 +298,7 @@ def naive_greedy_modularity_communities(G, resolution=1):
             communities[j] = u | v
             communities[i] = frozenset([])
     # Remove empty communities and sort
-    communities = [c for c in communities if len(c) > 0]
-    yield from sorted(communities, key=lambda x: len(x), reverse=True)
+    return sorted((c for c in communities if len(c) > 0), key=len, reverse=True)
 
 
 # old name
