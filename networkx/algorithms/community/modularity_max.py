@@ -17,7 +17,7 @@ __all__ = [
 
 def greedy_modularity_communities(G, weight=None, resolution=1):
     """Find communities in G using greedy modularity maximization.
-    
+
     This function uses Clauset-Newman-Moore greedy modularity maximization [2]_.
     This method currently supports the Graph class and does not
     consider edge weights.

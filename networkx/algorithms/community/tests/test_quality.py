@@ -100,7 +100,7 @@ def test_modularity_resolution():
     assert result == pytest.approx(6 / 7 - gamma * 98 / 14 ** 2)
 
     G = nx.barbell_graph(5, 3)
-    C = [frozenset(range(5)), frozenset(range(8,13)), frozenset(range(5, 8))]
+    C = [frozenset(range(5)), frozenset(range(8, 13)), frozenset(range(5, 8))]
     gamma = 1
     result = modularity(G, C, resolution=gamma)
     print(result)
@@ -124,13 +124,13 @@ def test_modularity_resolution():
     result = modularity(G, C, resolution=gamma)
     print(result)
     assert result == pytest.approx((14 / 24) - gamma * (598 / (48 ** 2)))
-    assert result == pytest.approx( -0.06553819)  # This C is maximal for gamma=2.5
+    assert result == pytest.approx(-0.06553819)  # This C is maximal for gamma=2.5
     gamma = 0.2
     result = modularity(G, C, resolution=gamma)
     print(result)
     assert result == pytest.approx((14 / 24) - gamma * (598 / (48 ** 2)))
 
-    C = [frozenset(range(8)), frozenset(range(8,13))]
+    C = [frozenset(range(8)), frozenset(range(8, 13))]
     gamma = 1
     result = modularity(G, C, resolution=gamma)
     print(result)

@@ -28,7 +28,7 @@ def test_resolution_parameter_impact():
     G = nx.barbell_graph(5, 3)
 
     gamma = 1
-    expected = [frozenset(range(5)), frozenset(range(8,13)), frozenset(range(5, 8))]
+    expected = [frozenset(range(5)), frozenset(range(8, 13)), frozenset(range(5, 8))]
     assert greedy_modularity_communities(G, resolution=gamma) == expected
     assert naive_greedy_modularity_communities(G, resolution=gamma) == expected
 
@@ -38,6 +38,6 @@ def test_resolution_parameter_impact():
     assert naive_greedy_modularity_communities(G, resolution=gamma) == expected
 
     gamma = 0.3
-    expected = [frozenset(range(8)), frozenset(range(8,13))]
+    expected = [frozenset(range(8)), frozenset(range(8, 13))]
     assert greedy_modularity_communities(G, resolution=gamma) == expected
     assert naive_greedy_modularity_communities(G, resolution=gamma) == expected
