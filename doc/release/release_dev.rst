@@ -60,6 +60,10 @@ API Changes
   instead of a UUID generate string. So the function returns `tree`.
 - [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
   The variable `NIL` ="NIL" has been removed from `networkx.generators.trees`
+- [`#3620 <https://github.com/networkx/networkx/pull/3620>`_]
+  The function `naive_greedy_modularity_communities` now returns a
+  list of communities (like `greedy_modularity_communities`) instead
+  of a generator of communities.
 
 Deprecations
 ------------
@@ -94,6 +98,8 @@ Deprecations
   Deprecate ``generate_unique_node``.
 - [`#4599 <https://github.com/networkx/networkx/pull/4599>`_]
   Deprecate ``empty_generator``.
+
+
 
 Contributors to this release
 ----------------------------
