@@ -12,6 +12,10 @@ NetworkX
 
 .. image:: https://codecov.io/gh/networkx/networkx/branch/master/graph/badge.svg
    :target: https://app.codecov.io/gh/networkx/networkx/branch/master
+   
+.. image:: https://img.shields.io/github/labels/networkx/networkx/Good%20First%20Issue?color=green&label=Contribute%20&style=flat-square
+   :target: https://github.com/networkx/networkx/issues?q=is%3Aopen+is%3Aissue+label%3A%22Good+First+Issue%22
+   
 
 NetworkX is a Python package for the creation, manipulation,
 and study of the structure, dynamics, and functions
