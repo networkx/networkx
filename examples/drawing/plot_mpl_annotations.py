@@ -3,7 +3,7 @@
 Annotations with Matplotlib
 =================
 
-Use matplotlib to annotate on top of a network
+Example of using matplotlib to place annotations on top of a network
 """
 
 import matplotlib.pyplot as plt
@@ -12,7 +12,7 @@ import networkx as nx
 import urllib.request
 import io
 
-# Image URLs for graph images
+# Image URLs for graph nodes
 URLs = [
     {'type': 'router', 'URL': 'https://www.materialui.co/materialIcons/hardware/router_black_144x144.png'},
     {'type': 'switch', 'URL': 'https://www.materialui.co/materialIcons/action/dns_black_144x144.png'},
@@ -54,8 +54,8 @@ icon_size = 0.05
 icon_center = icon_size / 2.0
 
 for n in G.nodes:
-    xf, yf = tr_figure(pos[n])  # figure coordinates
-    xa, ya = tr_axes((xf, yf))  # axes coordinates
+    xf, yf = tr_figure(pos[n])
+    xa, ya = tr_axes((xf, yf))
     a = plt.axes([xa - icon_center, ya - icon_center, icon_size, icon_size])
     a.imshow(G.nodes[n]['image'])
     a.axis('off')
