@@ -20,7 +20,6 @@ from networkx.algorithms.distance_measures import *
 from networkx.algorithms.distance_regular import *
 from networkx.algorithms.dominance import *
 from networkx.algorithms.dominating import *
-from networkx.algorithms.rewiring import *
 from networkx.algorithms.efficiency_measures import *
 from networkx.algorithms.euler import *
 from networkx.algorithms.graphical import *
@@ -75,6 +74,7 @@ import networkx.algorithms.isomorphism
 import networkx.algorithms.link_analysis
 import networkx.algorithms.lowest_common_ancestors
 import networkx.algorithms.operators
+import networkx.algorithms.rewiring
 import networkx.algorithms.shortest_paths
 import networkx.algorithms.tournament
 import networkx.algorithms.traversal
