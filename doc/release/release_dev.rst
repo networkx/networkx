@@ -94,6 +94,8 @@ Deprecations
   Deprecate ``generate_unique_node``.
 - [`#4599 <https://github.com/networkx/networkx/pull/4599>`_]
   Deprecate ``empty_generator``.
+- [`#4617 <https://github.com/networkx/networkx/pull/4617>`_]
+  Deprecate ``hub_matrix`` and ``authority_matrix``
 
 Contributors to this release
 ----------------------------
