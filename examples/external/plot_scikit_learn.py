@@ -1,6 +1,6 @@
 """
 ===========
-Erdos Renyi
+Mantas Zdanavičius
 ===========
 Create an G{n,m} random graph with n nodes and m edges.
 Similar to Erdos Renyi example.
@@ -13,6 +13,7 @@ from sklearn.cluster import SpectralClustering
 
 n = 10  # 10 nodes
 m = 20  # 20 edges
+cluster_nr = 2 # Number of clusters to identify
 seed = 20160  # seed random number generators for reproducibility
 
 # Generate random graph
@@ -22,12 +23,12 @@ G = nx.gnm_random_graph(n, m, seed=seed)
 adj_matrix = nx.to_numpy_matrix(G)
 
 # Cluster nodes based on adjacency  matrix and extract labels
-clustering = SpectralClustering(n_clusters=2, affinity="precomputed", assign_labels="discretize", random_state=0).fit(adj_matrix)
+clustering = SpectralClustering(n_clusters=cluster_nr, affinity="precomputed", assign_labels="discretize", random_state=0).fit(adj_matrix)
 labels = clustering.labels_
 
 # Generate color map based on the number of clusters
 get_colors = lambda n: list(map(lambda i: "#" + "%06x" % np.random.randint(0, 0xFFFFFF), range(n)))
-colors = get_colors(2)
+colors = get_colors(cluster_nr)
 color_map = []
 for i in range(len(G.nodes)):
     color_map.append(colors[labels[i]])
