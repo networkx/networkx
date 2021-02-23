@@ -27,7 +27,8 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     such pair exists.
 
     This function is able to maximize the generalized modularity with
-    resolution parameter $\gamma$. See :func:`modularity`.
+    resolution parameter $\gamma$.
+    See :func:`~networkx.algorithms.community.quality.modularity`.
 
     Parameters
     ----------
