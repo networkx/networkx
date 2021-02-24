@@ -36,6 +36,7 @@ for u in range(1, 4):
     for v in range(1, 4):
         G.add_edge("switch_" + str(u), "PC_" + str(u) + "_" + str(v))
 
+# get layout and draw edges
 pos = nx.spring_layout(G)
 fig, ax = plt.subplots()
 nx.draw_networkx_edges(G, pos=pos, ax=ax)
