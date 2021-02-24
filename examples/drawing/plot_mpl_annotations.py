@@ -18,9 +18,7 @@ icon_urls = {
 }
 
 # Load images from web
-images = {
-    k: mpimg.imread(url) for k, url in icon_urls.items()
-}
+images = {k: mpimg.imread(url) for k, url in icon_urls.items()}
 
 # Generate the computer network graph
 G = nx.Graph()
@@ -42,17 +40,20 @@ pos = nx.spring_layout(G)
 fig, ax = plt.subplots()
 nx.draw_networkx_edges(G, pos=pos, ax=ax)
 
+# Get the coordinate system for the whole plot (scaled between xlim and ylim). Then take the Transform.
 tr_figure = ax.transData.transform
+# Get the coordinate system for the whole plot (scaled between 0 and 1). Then take the Transform.
 tr_axes = fig.transFigure.inverted().transform
 
-# Draw the images on top of the graph
-icon_size = 0.05
+# Select the size of the image (relative to the X axis)
+icon_size = (ax.get_xlim()[1] - ax.get_xlim()[0]) * 0.025
 icon_center = icon_size / 2.0
 
 # Add the respective image to each node
 for n in G.nodes:
     xf, yf = tr_figure(pos[n])
     xa, ya = tr_axes((xf, yf))
+    # get overlapped axes and plot icon
     a = plt.axes([xa - icon_center, ya - icon_center, icon_size, icon_size])
     a.imshow(G.nodes[n]["image"])
     a.axis("off")
