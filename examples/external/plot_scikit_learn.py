@@ -11,8 +11,8 @@ import networkx as nx
 import numpy as np
 from sklearn.cluster import SpectralClustering
 
-n = 10  # 10 nodes
-m = 20  # 20 edges
+n = 100  # 10 nodes
+m = 320  # 20 edges
 cluster_nr = 2 # Number of clusters to identify
 seed = 20160  # seed random number generators for reproducibility
 
