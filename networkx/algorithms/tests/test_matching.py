@@ -408,6 +408,10 @@ class TestIsMatching:
         G = nx.path_graph(4)
         assert not nx.is_matching(G, {(0, 1), (1, 2), (2, 3)})
 
+    def test_invalid_edge(self):
+        G = nx.path_graph(4)
+        assert not nx.is_matching(G, {(0, 3), (1, 2)})
+
 
 class TestIsMaximalMatching:
     """Unit tests for the
