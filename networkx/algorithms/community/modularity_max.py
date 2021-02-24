@@ -26,8 +26,8 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     and joins the pair of communities that most increases modularity until no
     such pair exists.
 
-    This function is able to maximize the generalized modularity with
-    resolution parameter $\gamma$.
+    This function maximizes the generalized modularity, where `resolution`
+    is the resolution parameter, often expressed as $\gamma$.
     See :func:`~networkx.algorithms.community.quality.modularity`.
 
     Parameters
@@ -47,6 +47,10 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     >>> c = list(greedy_modularity_communities(G))
     >>> sorted(c[0])
     [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+
+    See Also
+    --------
+    modularity
 
     References
     ----------
@@ -229,8 +233,9 @@ def naive_greedy_modularity_communities(G, resolution=1):
     and joins the pair of communities that most increases modularity until no
     such pair exists.
 
-    This function is able to maximize the generalized modularity with
-    resolution parameter $\gamma$.
+    This function maximizes the generalized modularity, where `resolution`
+    is the resolution parameter, often expressed as $\gamma$.
+    See :func:`~networkx.algorithms.community.quality.modularity`.
 
     Parameters
     ----------
@@ -253,6 +258,7 @@ def naive_greedy_modularity_communities(G, resolution=1):
     See Also
     --------
     greedy_modularity_communities
+    modularity
     """
     # First create one community for each node
     communities = list([frozenset([u]) for u in G.nodes()])

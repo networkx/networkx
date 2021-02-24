@@ -275,6 +275,7 @@ def modularity(G, communities, weight="weight", resolution=1):
     simply use gamma=1. More on the choice of gamma is in [4]_.
 
     The second formula is the one actually used in calculation of the modularity.
+    For directed graphs the second formula replaces $k_c$ with $k^{in}_c k^{out}_c$.
 
     Parameters
     ----------

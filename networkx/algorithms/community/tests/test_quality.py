@@ -98,8 +98,8 @@ def test_modularity_resolution():
     C = [frozenset(range(5)), frozenset(range(8, 13)), frozenset(range(5, 8))]
     gamma = 1
     result = modularity(G, C, resolution=gamma)
+    # This C is maximal for gamma=1:  modularity = 0.518229
     assert result == pytest.approx((22 / 24) - gamma * (918 / (48 ** 2)))
-    assert result == pytest.approx(0.518229)  # This C is maximal for gamma=1
     gamma = 2
     result = modularity(G, C, resolution=gamma)
     assert result == pytest.approx((22 / 24) - gamma * (918 / (48 ** 2)))
@@ -113,8 +113,8 @@ def test_modularity_resolution():
     assert result == pytest.approx((14 / 24) - gamma * (598 / (48 ** 2)))
     gamma = 2.5
     result = modularity(G, C, resolution=gamma)
+    # This C is maximal for gamma=2.5:  modularity = -0.06553819
     assert result == pytest.approx((14 / 24) - gamma * (598 / (48 ** 2)))
-    assert result == pytest.approx(-0.06553819)  # This C is maximal for gamma=2.5
     gamma = 0.2
     result = modularity(G, C, resolution=gamma)
     assert result == pytest.approx((14 / 24) - gamma * (598 / (48 ** 2)))
@@ -128,8 +128,8 @@ def test_modularity_resolution():
     assert result == pytest.approx((23 / 24) - gamma * (1170 / (48 ** 2)))
     gamma = 0.3
     result = modularity(G, C, resolution=gamma)
+    # This C is maximal for gamma=0.3:  modularity = 0.805990
     assert result == pytest.approx((23 / 24) - gamma * (1170 / (48 ** 2)))
-    assert result == pytest.approx(0.805990)  # This C is maximal for gamma=0.3
 
 
 def test_inter_community_edges_with_digraphs():
