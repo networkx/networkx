@@ -27,7 +27,7 @@ G = nx.Graph()
 
 G.add_node("router", image=images["router"])
 for i in range(1, 4):
-    G.add_node("switch_" + str(i), image=images["switch"])
+    G.add_node(f"switch_{i}", image=images["switch"])
     for j in range(1, 4):
         G.add_node("PC_" + str(i) + "_" + str(j), image=images["PC"])
 
