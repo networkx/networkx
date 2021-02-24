@@ -1,9 +1,9 @@
 """
 =================
-Annotations with Matplotlib
+Custom node icons
 =================
 
-Example of using matplotlib to place annotations on top of a network
+Example of using custom icons to represent nodes with matplotlib.
 """
 
 import matplotlib.pyplot as plt
