@@ -142,34 +142,11 @@ def prefix_tree(paths):
     return tree
 
 
-def iterative_prefix_tree(paths):
-    tree = nx.DiGraph()
-    root = 0
-    tree.add_node(root, source=None)
-    NIL = -1
-    tree.add_node(NIL, source="NIL")
-    stack = []
-    stack.append((paths, root))
-    while stack:
-        children = defaultdict(list)
-        paths, root = stack.pop()
-        for path in paths:
-            if not path:
-                tree.add_edge(root, NIL)
-                continue
-            child, *rest = path
-            children[child].append(rest)
-
-        for child, remaining_paths in children.items():
-            new_name = len(tree) - 1
-            tree.add_node(new_name, source=child)
-            tree.add_edge(root, new_name)
-            stack.append((remaining_paths, new_name))
-    return tree
-
-
 def prefix_tree_recursive(paths):
-    """Creates a directed prefix tree from a list of paths.
+    """Recursively creates a directed prefix tree from a list of paths.
+
+    The original recursive version of prefix_tree for comparison. It is
+    the same algorithm but the recursion is unrolled onto a stack.
 
     Usually the paths are described as strings or lists of integers.
 
