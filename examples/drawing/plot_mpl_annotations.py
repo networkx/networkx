@@ -41,9 +41,9 @@ pos = nx.spring_layout(G)
 fig, ax = plt.subplots()
 nx.draw_networkx_edges(G, pos=pos, ax=ax, min_source_margin=15, min_target_margin=15)
 
-# Get the coordinate system for the whole plot (scaled between xlim and ylim). Then take the Transform.
+# Transform from data coordinates (scaled between xlim and ylim) to display coordinates
 tr_figure = ax.transData.transform
-# Get the coordinate system for the whole plot (scaled between 0 and 1). Then take the Transform.
+# Transform from display to figure coordinates
 tr_axes = fig.transFigure.inverted().transform
 
 # Select the size of the image (relative to the X axis)
