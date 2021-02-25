@@ -39,7 +39,7 @@ for u in range(1, 4):
 # get layout and draw edges
 pos = nx.spring_layout(G)
 fig, ax = plt.subplots()
-nx.draw_networkx_edges(G, pos=pos, ax=ax)
+nx.draw_networkx_edges(G, pos=pos, ax=ax, min_source_margin=15, min_target_margin=15)
 
 # Get the coordinate system for the whole plot (scaled between xlim and ylim). Then take the Transform.
 tr_figure = ax.transData.transform
