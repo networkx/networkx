@@ -4,6 +4,7 @@ from networkx.utils import arbitrary_element
 
 class TestPrefixTree:
     """Unit tests for the prefix tree generator function."""
+
     def test_basic_prefix_tree(self):
         # This example is from the Wikipedia article "Trie"
         # <https://en.wikipedia.org/wiki/Trie>.

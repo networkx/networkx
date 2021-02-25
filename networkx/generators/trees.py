@@ -120,7 +120,7 @@ def prefix_tree(paths):
         parent, remaining_children = stack[-1]
         try:
             child, remaining_paths = next(remaining_children)
-        # Pop item of stack if there are no remaining children
+        # Pop item off stack if there are no remaining children
         except StopIteration:
             stack.pop()
             continue
