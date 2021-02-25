@@ -1,5 +1,4 @@
 import pytest
-from collections.abc import Iterator
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 
@@ -33,11 +32,6 @@ class TestCliques:
     def test_find_cliques2(self):
         hcl = list(nx.find_cliques(self.H))
         assert sorted(map(sorted, hcl)) == [[1, 2], [1, 4, 5, 6], [2, 3], [3, 4, 6]]
-
-    def test_find_cliques3(self): ##NeW
-        H = nx.Graph()
-        assert isinstance(nx.find_cliques_recursive(H), Iterator)
-        assert list(nx.find_cliques_recursive(H)) == []
 
     def test_clique_number(self):
         G = self.G
@@ -149,7 +143,6 @@ class TestCliques:
             10: 2,
             11: 2,
         }
-        assert nx.node_clique_number(G, nodes=1, cliques=self.cl) == 4 ##NEW
 
     def test_cliques_containing_node(self):
         G = self.G
@@ -198,9 +191,7 @@ class TestCliques:
         # 0.
         H1 = nx.relabel_nodes(H1, {-v: v - 1 for v in range(1, 6)})
         H2 = nx.make_max_clique_graph(G)
-        H3 = nx.make_max_clique_graph(G, nx.Graph)#NEW
         assert H1.adj == H2.adj
-        assert H1.adj == H3.adj ##NEW
 
     def test_directed(self):
         with pytest.raises(nx.NetworkXNotImplemented):
