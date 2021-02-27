@@ -45,13 +45,13 @@ def spectral_clustering_to_graph(n_clusters, sc: SpectralClustering, true_labels
     fig.suptitle("Features Space to Spectral Clustering based Graph", fontsize=20)
 
     ax = plt.subplot(gs[0, 0])
-    ax.set_title("True Data")
+    ax.set_title("Step 1. True Data")
     ax.scatter(X[:, 0], X[:, 1], s=26, c=true_labels, cmap="Spectral")
     ax.set_xlabel("feature 0")
     ax.set_ylabel("feature 1")
 
     ax = plt.subplot(gs[0, 1])
-    ax.set_title("Clustering Output")
+    ax.set_title("Step 2. Clustering Output")
     ax.scatter(X[:, 0], X[:, 1], s=26, c=pred_labels, cmap="copper")
     ax.set_xlabel("feature 0")
     ax.set_ylabel("feature 1")
@@ -59,7 +59,7 @@ def spectral_clustering_to_graph(n_clusters, sc: SpectralClustering, true_labels
     # draw resulting network according to Force directed layout to keep relative node separations
     # in the visualizations close to the feature space
     ax = plt.subplot(gs[1, :])
-    ax.set_title("Resulting Network")
+    ax.set_title("Step 3. Resulting Network")
     nx.draw_networkx(
         G,
         node_color=color_map,
