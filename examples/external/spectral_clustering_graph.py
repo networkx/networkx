@@ -42,7 +42,7 @@ def spectral_clustering_to_graph(n_clusters, sc: SpectralClustering, true_labels
     # Create 2x2 sub plots
     gs = gridspec.GridSpec(2, 2)
     fig = plt.figure(figsize=(15, 10))
-    fig.suptitle("Features Space to Spectral Clustering based Graph", fontsize=20)
+    fig.suptitle("Feature Space to Spectral Clustering based Graph", fontsize=20)
 
     ax = plt.subplot(gs[0, 0])
     ax.set_title("Step 1. True Data")
