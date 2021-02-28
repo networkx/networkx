@@ -20,6 +20,7 @@ def spectral_clustering_to_graph(n_clusters, sc: SpectralClustering, true_labels
     # get affinity matrix from spectral clustering
     clusters = sc.fit(X)
     cluster_affinity_matrix = clusters.affinity_matrix_
+    # print(cluster_affinity_matrix)
 
     pred_labels = clusters.labels_.astype(int)
     G = nx.from_scipy_sparse_matrix(cluster_affinity_matrix)
