@@ -85,7 +85,9 @@ if __name__ == "__main__":
         n_clusters=num_clusters,
         affinity="nearest_neighbors",
         random_state=4242,
+        n_neighbors=10,
         assign_labels="discretize",
+        n_jobs=-1,
     )
 
     G_output = spectral_clustering_to_graph(num_clusters, spectralClustering, y)
