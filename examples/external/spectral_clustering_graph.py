@@ -17,9 +17,8 @@ np.random.seed(0)
 
 
 def spectral_clustering_to_graph(n_clusters, sc: SpectralClustering, true_labels):
-    clusters = sc.fit(X)
     # get affinity matrix from spectral clustering
-    clusters = clusters
+    clusters = sc.fit(X)
     cluster_affinity_matrix = clusters.affinity_matrix_
 
     pred_labels = clusters.labels_.astype(int)
