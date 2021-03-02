@@ -10,20 +10,6 @@ References
 .. [1] https://en.wikipedia.org/wiki/Graph_minor
 """
 
-__devnotes__ = """
-CommandLine
------------
-# Run all tests in this subpackage
-pytest networkx/algorithms/minors --doctest-modules
-
-# Autogenerate the `__init__.py` file for this subpackage with `mkinit`.
-mkinit ~/code/networkx/networkx/algorithms/minors/__init__.py -w
-"""
-
-__submodules__ = [
-    "contraction",
-]
-
 from networkx.algorithms.minors import contraction
 
 from networkx.algorithms.minors.contraction import (
