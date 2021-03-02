@@ -45,7 +45,7 @@ Development Workflow
          # Activate it
          source networkx-dev/bin/activate
          # Install main development and runtime dependencies of networkx
-         pip install -r <(cat requirements/{default,developer,doc,optional,test}.txt)
+         pip install -r <(cat requirements/{default,developer,test}.txt)
          #
          # (Optional) Install pygraphviz, pydot, and gdal packages
          # These packages require that you have your system properly configured
@@ -66,7 +66,7 @@ Development Workflow
          # Activate it
          conda activate networkx-dev
          # Install main development and runtime dependencies of networkx
-         conda install -c conda-forge `for i in requirements/{default,developer,doc,optional,test}.txt; do echo -n " --file $i "; done`
+         conda install -c conda-forge `for i in requirements/{default,developer,test}.txt; do echo -n " --file $i "; done`
          #
          # (Optional) Install pygraphviz, pydot, and gdal packages
          # These packages require that you have your system properly configured
