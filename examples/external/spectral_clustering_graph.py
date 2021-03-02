@@ -6,18 +6,19 @@ Scikit-Learn Spectral Clustering based Graph
 Example of writing creating a graph from a dataset with 2 features using SpectralClustering from scikit-learn
 
 """
-import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import gridspec
-from sklearn.datasets import make_blobs
+import matplotlib.pyplot as plt
 from sklearn.cluster import SpectralClustering
+from sklearn.datasets import make_blobs
 
 import networkx as nx
+import seaborn as sns
 
 np.random.seed(0)
 
 
-def spectral_clustering_to_graph(X, sc: SpectralClustering):
+def spectral_clustering_to_graph(X, n_clusters: int, sc: SpectralClustering):
     # get affinity matrix from spectral clustering
     clusters = sc.fit(X)
     cluster_affinity_matrix = clusters.affinity_matrix_
@@ -31,10 +32,13 @@ def spectral_clustering_to_graph(X, sc: SpectralClustering):
     for u in G.nodes:
         cluser_member.append(pred_labels[u])
 
+    # compute clustering quality
+    clustering_quality = get_cluster_quality(G, n_clusters, cluser_member)
+
     # plot two subplots, one for predicted sample labels, one for predicted sample graph
     # Create 2x2 sub plots
     gs = gridspec.GridSpec(2, 2)
-    fig = plt.figure(figsize=(15, 15))
+    fig = plt.figure(figsize=(10, 10))
     fig.suptitle("Feature Space to Spectral Clustering based Graph", fontsize=20)
 
     ax = plt.subplot(gs[0, 0], projection="3d")
@@ -53,27 +57,56 @@ def spectral_clustering_to_graph(X, sc: SpectralClustering):
 
     # draw resulting network according to Force directed layout to keep relative node separations
     # in the visualizations close to the feature space
-    ax = plt.subplot(gs[1, :])
+    ax = plt.subplot(gs[1, 0])
     ax.set_title("Step 3. Resulting Graph from Affinity Matrix")
-    pos = nx.spring_layout(G, seed=19, iterations=100)
+    pos = nx.spring_layout(G, seed=2020, iterations=100)
     nx.draw_networkx(
         G,
         node_color=cluser_member,
         cmap=plt.cm.cool,
         pos=pos,
         alpha=0.5,
-        node_size=100,
+        node_size=50,
         with_labels=False,
         ax=ax,
     )
+
+    # draw the confusion matrix for the cut sizes
+    ax = plt.subplot(gs[1, 1])
+    ax.set_title(
+        "Step 4. Clustering quality: cut-sizes for cluster pairs.\n(lower is better)"
+    )
+    sns.heatmap(clustering_quality, cmap="Blues", vmin=0, annot=True, ax=ax)
+
     plt.tight_layout()
     plt.show()
     return G
 
 
+def get_cluster_quality(G, n_clusters: int, labels):
+    out = np.zeros((n_clusters, n_clusters), int)
+    labels = np.array(labels)
+    for i in range(n_clusters):
+        S = np.where(labels == i)[0]
+        for j in range(n_clusters):
+            if i == j:
+                continue
+            T = np.where(labels == j)[0]
+            out[i, j] = nx.cut_size(G, S, T, weight="weight")
+    print(out)
+    return out
+
+
 if __name__ == "__main__":
     n_samples = 500
-    X, Y = make_blobs(n_samples=n_samples, centers=3, n_features=3, random_state=4242)
+    X, Y = make_blobs(
+        n_samples=n_samples,
+        centers=3,
+        n_features=3,
+        center_box=(-1, 1),
+        cluster_std=0.2,
+        random_state=4242,
+    )
 
     num_clusters = 3
     spectralClustering = SpectralClustering(
@@ -85,6 +118,4 @@ if __name__ == "__main__":
         n_jobs=-1,
     )
 
-    G_output = spectral_clustering_to_graph(X, spectralClustering)
-
-    print(G_output.edges.data())
+    G_output = spectral_clustering_to_graph(X, num_clusters, spectralClustering)
