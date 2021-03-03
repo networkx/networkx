@@ -1,5 +1,5 @@
 """
-Utilities for connectivity package
+Utilities for hierarchy coordinates
 """
 import numpy as np
 

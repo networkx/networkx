@@ -1,16 +1,16 @@
+"""
+Implementation of the hierarchy coordinates via networkX from
+Hierarchy in Complex Networks: The Possible and the Actual [B Corominas-Murtra - 2013]  [*] - Supporting Information
+
+Though implemented for unweighted networkX graphs, in the context of its original application,
+these are applied to weighted graphs by averaging over the unweighted graphs resulting from
+applying thresholds to normalized weighted graphs.
+"""
+
 import numpy as np
 import networkx as nx
 import copy
-from utils import distribute, matrix_normalize
-
-"""
-Implementation of the hierarchy coordinates via networkX from 
-Hierarchy in Complex Networks: The Possible and the Actual [B Corominas-Murtra - 2013]  [*] - Supporting Information
-
-Though implemented for unweighted networkX graphs, in the context of its original application, 
-these are applied to weighted graphs by averaging over the unweighted graphs resulting from 
-applying thresholds to normalized weighted graphs. 
-"""
+from .utils import distribute, matrix_normalize
 
 
 # Hierarchy Coordinate Functions
@@ -867,26 +867,3 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
     f /= len(condensed_graphs)
     o /= len(condensed_graphs)
     return t, f, o
-
-
-########################################################################################################################
-
-
-if __name__ == "__main__":
-    # CHECK VERSIONS
-    vers_python0 = "3.7.3"
-    vers_numpy0 = "1.17.3"
-    vers_netx0 = "2.4"
-
-    from sys import version_info
-    from networkx import __version__ as vers_netx
-
-    vers_python = "%s.%s.%s" % version_info[:3]
-    vers_numpy = np.__version__
-
-    print("\n------------------- Hierarchy Coordinates -----------------------\n")
-    print("Required modules:")
-    print("Python:        tested for: %s.  Yours: %s" % (vers_python0, vers_python))
-    print("numpy:         tested for: %s.  Yours: %s" % (vers_numpy0, vers_numpy))
-    print("networkx:      tested for: %s.   Yours: %s" % (vers_netx0, vers_netx))
-    print("\n------------------------------------------------------------------\n")
