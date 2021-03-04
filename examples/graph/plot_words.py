@@ -13,7 +13,7 @@ letter, resulting in 14,135 edges. This example is described in Section 1.1 of
 
 The data file can be found at:
 
-- https://github.com/networkx/networkx/blob/master/examples/graph/words_dat.txt.gz
+- https://github.com/networkx/networkx/blob/main/examples/graph/words_dat.txt.gz
 """
 
 import gzip

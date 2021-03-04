@@ -26,7 +26,6 @@ help:
 	@echo "  changes   to make an overview of all changed/added/deprecated items"
 	@echo "  linkcheck to check all external links for integrity"
 	@echo "  doctest   to run all doctests embedded in the documentation (if enabled)"
-	@echo "  gitwash   to update the gitwash documentation"
 
 
 clean:
@@ -115,9 +114,3 @@ latexpdf: latex
 
 docs: clean html latexpdf
 	cp build/latex/networkx_reference.pdf build/html/_downloads/.
-
-gitwash-update:
-	python ../tools/gitwash_dumper.py developer networkx \
-	--project-url=https://networkx.org \
-	--project-ml-url=https://groups.google.com/group/networkx-discuss/ \
-	--gitwash-url git@github.com:matthew-brett/gitwash.git
