@@ -15,7 +15,7 @@ This example is described in Section 1.1 of
 
 The data file can be found at:
 
-- https://github.com/networkx/networkx/blob/master/examples/drawing/knuth_miles.txt.gz
+- https://github.com/networkx/networkx/blob/main/examples/drawing/knuth_miles.txt.gz
 """
 
 import gzip

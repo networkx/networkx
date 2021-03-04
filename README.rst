@@ -7,11 +7,11 @@ NetworkX
 .. image:: https://img.shields.io/pypi/pyversions/networkx.svg
    :target: https://pypi.org/project/networkx/
 
-.. image:: https://github.com/networkx/networkx/workflows/test/badge.svg?branch=master
+.. image:: https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main
   :target: https://github.com/networkx/networkx/actions?query=workflow%3A%22test%22
 
-.. image:: https://codecov.io/gh/networkx/networkx/branch/master/graph/badge.svg
-   :target: https://app.codecov.io/gh/networkx/networkx/branch/master
+.. image:: https://codecov.io/gh/networkx/networkx/branch/main/graph/badge.svg
+   :target: https://app.codecov.io/gh/networkx/networkx/branch/main
    
 .. image:: https://img.shields.io/github/labels/networkx/networkx/Good%20First%20Issue?color=green&label=Contribute%20&style=flat-square
    :target: https://github.com/networkx/networkx/issues?q=is%3Aopen+is%3Aissue+label%3A%22Good+First+Issue%22

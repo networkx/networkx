@@ -87,8 +87,8 @@ Development Workflow
 
    * Pull the latest changes from upstream::
 
-      git checkout master
-      git pull upstream master
+      git checkout main
+      git pull upstream main
 
    * Create a branch for the feature you want to work on. Since the
      branch name will appear in the merge message, use a sensible name
@@ -196,14 +196,14 @@ For a more detailed discussion, read these :doc:`detailed documents
       where 123 is the issue number.
 
 
-Divergence from ``upstream master``
+Divergence from ``upstream main``
 -----------------------------------
 
 If GitHub indicates that the branch of your Pull Request can no longer
-be merged automatically, merge the master branch into yours::
+be merged automatically, merge the main branch into yours::
 
-   git fetch upstream master
-   git merge upstream/master
+   git fetch upstream main
+   git merge upstream/main
 
 If any conflicts occur, they need to be fixed before continuing.  See
 which files are in conflict using::
@@ -222,8 +222,8 @@ Inside the conflicted file, you'll find sections like these::
    <<<<<<< HEAD
    The way the text looks in your branch
    =======
-   The way the text looks in the master branch
-   >>>>>>> master
+   The way the text looks in the main branch
+   >>>>>>> main
 
 Choose one version of the text that should be kept, and delete the
 rest::
@@ -251,7 +251,7 @@ Guidelines
 
 * All code should have tests.
 * All code should be documented, to the same
-  `standard <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt#docstring-standard>`_
+  `standard <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`_
   as NumPy and SciPy.
 * All changes are reviewed.  Ask on the
   `mailing list <http://groups.google.com/group/networkx-discuss>`_ if
