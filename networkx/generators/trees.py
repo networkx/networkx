@@ -4,7 +4,7 @@ from collections import defaultdict
 import networkx as nx
 from networkx.utils import py_random_state
 
-__all__ = ["prefix_tree", "random_tree", "prefix_tree_recursive", "prefix_tree_test"]
+__all__ = ["prefix_tree", "random_tree", "prefix_tree_recursive", "prefix_tree_alt"]
 
 
 def prefix_tree(paths):
@@ -141,7 +141,7 @@ def prefix_tree(paths):
         stack.append((new_name, iter(children.items())))
     return tree
 
-def prefix_tree_test(paths):
+def prefix_tree_alt(paths):
     """Creates a directed prefix tree from a list of paths.
 
     Usually the paths are described as strings or lists of integers.
@@ -233,26 +233,26 @@ def prefix_tree_test(paths):
     """
     # Initialize the prefix tree with a root node and a nil node.
     tree = nx.DiGraph()
-    parent = 0
-    tree.add_node(parent, source=None)
+    new_name = 0
+    tree.add_node(new_name, source=None)
     NIL = -1
     tree.add_node(NIL, source="NIL")
     stack = []
-    checkpaths = True
-    while checkpaths:
-        children = defaultdict(list)
-        # Populate dictionary with the key(s) as the child/children of the root and
-        # the value(s) as the remaining paths of the corresponding child/children
-        for path in paths:
-            # If path is empty, we add an edge to the NIL node.
-            if not path:
-                tree.add_edge(parent, NIL)
-                continue
-            child, *rest = path
-            # `child` may exist as the head of more than one path in `paths`.
-            children[child].append(rest)
-        stack.append((parent, iter(children.items())))
-
+    addpaths = True
+    while True:
+        if addpaths:
+            children = defaultdict(list)
+            # Populate dictionary with the key(s) as the child/children of the root and
+            # the value(s) as the remaining paths of the corresponding child/children
+            for path in paths:
+                # If path is empty, we add an edge to the NIL node.
+                if not path:
+                    tree.add_edge(new_name, NIL)
+                    continue
+                child, *rest = path
+                # `child` may exist as the head of more than one path in `paths`.
+                children[child].append(rest)
+            stack.append((new_name, iter(children.items()))) """maybe not add empty dict"""
         parent, remaining_children = stack[-1]
         try:
             child, paths = next(remaining_children)
@@ -260,14 +260,15 @@ def prefix_tree_test(paths):
         except StopIteration:
             stack.pop()
             if len(stack) == 0:
-                checkpaths = False
+                break
+            addpaths = False
             continue
         # We relabel each child with an unused name.
+        addpaths = True
         new_name = len(tree) - 1
         # The "source" node attribute stores the original node name.
         tree.add_node(new_name, source=child)
         tree.add_edge(parent, new_name)
-        #parent = new_name
 
     return tree
 
