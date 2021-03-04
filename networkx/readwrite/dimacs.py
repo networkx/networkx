@@ -36,7 +36,7 @@ def parse_dimacs(lines, create_using=None):
     --------
     read_dimacs
     """
-    g = create_using if create_using else nx.Graph()
+    g = nx.empty_graph(0, create_using=create_using)
 
     expected_num_nodes = None
     expected_num_edges = None
