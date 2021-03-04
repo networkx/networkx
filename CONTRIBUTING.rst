@@ -108,7 +108,6 @@ Development Workflow
      problems early and reduces the load on the continuous integration
      system.
 
-
 4. Submit your contribution:
 
    * Push your changes back to your fork on GitHub::
@@ -121,10 +120,6 @@ Development Workflow
    * If you want, post on the `mailing list
      <http://groups.google.com/group/networkx-discuss>`_ to explain your changes or
      to ask for review.
-
-For a more detailed discussion, read these :doc:`detailed documents
-<gitwash/index>` on how to use Git with ``networkx``
-(`<https://networkx.org/documentation/latest/developer/gitwash/index.html>`_).
 
 5. Review process:
 
@@ -197,7 +192,7 @@ For a more detailed discussion, read these :doc:`detailed documents
 
 
 Divergence from ``upstream main``
------------------------------------
+---------------------------------
 
 If GitHub indicates that the branch of your Pull Request can no longer
 be merged automatically, merge the main branch into yours::
@@ -241,9 +236,8 @@ Once you've fixed all merge conflicts, do::
 
 .. note::
 
-   Advanced Git users are encouraged to `rebase instead of merge
-   <https://networkx.org/documentation/stable/developer/gitwash/development_workflow.html#rebase-on-trunk>`__,
-   but we squash and merge most PRs either way.
+   Advanced Git users may want to rebase instead of merge,
+   but we squash and merge PRs either way.
 
 
 Guidelines
