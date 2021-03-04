@@ -2,7 +2,7 @@ name: deploy
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   documentation:
@@ -58,13 +58,13 @@ jobs:
     #   - Settings -> Secrets -> New Repository Secret
     #   - Make sure the name is the same as below: CI_DEPLOY_KEY
     - name: Install SSH agent
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/main'
       uses: webfactory/ssh-agent@v0.4.1
       with:
         ssh-private-key: ${{ secrets.CI_DEPLOY_KEY }}
 
     - name: Build docs
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/main'
       run: |
         export DISPLAY=:99
         make -C doc/ html
@@ -72,7 +72,7 @@ jobs:
         cp -a doc/build/latex/networkx_reference.pdf doc/build/html/_downloads/.
 
     - name: Deploy docs
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/main'
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
         GIT_CONFIG_NAME: nx-doc-deploy-bot
