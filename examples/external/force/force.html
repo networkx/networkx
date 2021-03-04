@@ -4,9 +4,23 @@
     <title>Force-Directed Layout</title>
     <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
     <link type="text/css" rel="stylesheet" href="force/force.css"/>
+    <style>
+     .nodes circle {
+       cursor: pointer;
+       fill: #ff3399;
+       stroke: #000;
+       stroke-width: .5px;
+     }
+
+     .links line {
+       fill: none;
+       stroke: #9ecae1;
+       stroke-width: .5px;
+     }
+    </style>
   </head>
   <body>
-    <svg width="960" height="600"></svg>
-    <script type="text/javascript" src="force/force.js"></script>
+    <svg width="700" height="300"></svg>
+    <!-- "force.js" script is injected here -->
   </body>
 </html>

@@ -1,4 +1,10 @@
-// This is adapted from https://bl.ocks.org/mbostock/2675ff61ea5e063ede2b5d63c08020c7
+/*
+
+var graph = ...;
+
+is injected here, with JSON from `nx.json_graph.node_link_data`.
+
+*/
 
 var svg = d3.select("svg"),
     width = +svg.attr("width"),
@@ -10,9 +16,6 @@ var simulation = d3.forceSimulation()
     }))
     .force("charge", d3.forceManyBody())
     .force("center", d3.forceCenter(width / 2, height / 2));
-
-d3.json("force/force.json", function (error, graph) {
-    if (error) throw error;
 
     var link = svg.append("g")
         .attr("class", "links")
@@ -66,7 +69,6 @@ d3.json("force/force.json", function (error, graph) {
                 return d.y;
             });
     }
-});
 
 function dragstarted(d) {
     if (!d3.event.active) simulation.alphaTarget(0.3).restart();
