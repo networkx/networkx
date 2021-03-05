@@ -1081,6 +1081,10 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     """
     import numpy as np
 
+    if align not in ("vertical", "horizontal"):
+        msg = "align must be either vertical or horizontal."
+        raise ValueError(msg)
+
     G, center = _process_params(G, center=center, dim=2)
     if len(G) == 0:
         return {}
@@ -1096,42 +1100,24 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
 
     pos = None
     nodes = []
-    if align == "vertical":
-        width = len(layers)
-        for i, layer in layers.items():
-            height = len(layer)
-            xs = np.repeat(i, height)
-            ys = np.arange(0, height, dtype=float)
-            offset = ((width - 1) / 2, (height - 1) / 2)
-            layer_pos = np.column_stack([xs, ys]) - offset
-            if pos is None:
-                pos = layer_pos
-            else:
-                pos = np.concatenate([pos, layer_pos])
-            nodes.extend(layer)
-        pos = rescale_layout(pos, scale=scale) + center
-        pos = dict(zip(nodes, pos))
-        return pos
 
+    width = len(layers)
+    for i, layer in layers.items():
+        height = len(layer)
+        xs = np.repeat(i, height)
+        ys = np.arange(0, height, dtype=float)
+        offset = ((width - 1) / 2, (height - 1) / 2)
+        layer_pos = np.column_stack([xs, ys]) - offset
+        if pos is None:
+            pos = layer_pos
+        else:
+            pos = np.concatenate([pos, layer_pos])
+        nodes.extend(layer)
+    pos = rescale_layout(pos, scale=scale) + center
     if align == "horizontal":
-        height = len(layers)
-        for i, layer in layers.items():
-            width = len(layer)
-            xs = np.arange(0, width, dtype=float)
-            ys = np.repeat(i, width)
-            offset = ((width - 1) / 2, (height - 1) / 2)
-            layer_pos = np.column_stack([xs, ys]) - offset
-            if pos is None:
-                pos = layer_pos
-            else:
-                pos = np.concatenate([pos, layer_pos])
-            nodes.extend(layer)
-        pos = rescale_layout(pos, scale=scale) + center
-        pos = dict(zip(nodes, pos))
-        return pos
-
-    msg = "align must be either vertical or horizontal."
-    raise ValueError(msg)
+        pos = np.flip(pos, 1)
+    pos = dict(zip(nodes, pos))
+    return pos
 
 
 def rescale_layout(pos, scale=1):
