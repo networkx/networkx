@@ -1,28 +1,30 @@
 """Unit tests for the :mod:`networkx.generators.random_graphs` module.
 
 """
+import networkx as nx
 import pytest
-
 from networkx.exception import NetworkXError
-from networkx.generators.random_graphs import barabasi_albert_graph
-from networkx.generators.random_graphs import dual_barabasi_albert_graph
-from networkx.generators.random_graphs import extended_barabasi_albert_graph
-from networkx.generators.random_graphs import binomial_graph
-from networkx.generators.random_graphs import connected_watts_strogatz_graph
-from networkx.generators.random_graphs import dense_gnm_random_graph
-from networkx.generators.random_graphs import erdos_renyi_graph
-from networkx.generators.random_graphs import fast_gnp_random_graph
-from networkx.generators.random_graphs import gnm_random_graph
-from networkx.generators.random_graphs import gnp_random_graph
-from networkx.generators.random_graphs import newman_watts_strogatz_graph
-from networkx.generators.random_graphs import powerlaw_cluster_graph
-from networkx.generators.random_graphs import random_kernel_graph
-from networkx.generators.random_graphs import random_lobster
-from networkx.generators.random_graphs import random_powerlaw_tree
-from networkx.generators.random_graphs import random_powerlaw_tree_sequence
-from networkx.generators.random_graphs import random_regular_graph
-from networkx.generators.random_graphs import random_shell_graph
-from networkx.generators.random_graphs import watts_strogatz_graph
+from networkx.generators.random_graphs import (
+    barabasi_albert_graph,
+    binomial_graph,
+    connected_watts_strogatz_graph,
+    dense_gnm_random_graph,
+    dual_barabasi_albert_graph,
+    erdos_renyi_graph,
+    extended_barabasi_albert_graph,
+    fast_gnp_random_graph,
+    gnm_random_graph,
+    gnp_random_graph,
+    newman_watts_strogatz_graph,
+    powerlaw_cluster_graph,
+    random_kernel_graph,
+    random_lobster,
+    random_powerlaw_tree,
+    random_powerlaw_tree_sequence,
+    random_regular_graph,
+    random_shell_graph,
+    watts_strogatz_graph,
+)
 
 
 class TestGeneratorsRandom:
@@ -64,6 +66,9 @@ class TestGeneratorsRandom:
         G = barabasi_albert_graph(100, 1, seed)
         G = barabasi_albert_graph(100, 3, seed)
         assert G.number_of_edges() == (97 * 3)
+
+        G = barabasi_albert_graph(100, 3, seed, initial=nx.complete_graph(5))
+        assert G.number_of_edges() == (10 + 95 * 3)
 
         G = extended_barabasi_albert_graph(100, 1, 0, 0, seed)
         assert G.number_of_edges() == 99
@@ -137,21 +142,19 @@ class TestGeneratorsRandom:
         The graphs generation are repeated several times to prevent lucky shots
 
         """
-        seed = 42
-        repeats = 2
+        seeds = [42, 314, 2718]
 
-        while repeats:
-            repeats -= 1
+        for seed in seeds:
 
             # This should be BA with m = m1
             BA1 = barabasi_albert_graph(100, m1, seed)
             DBA1 = dual_barabasi_albert_graph(100, m1, m2, 1, seed)
-            assert BA1.size() == DBA1.size()
+            assert BA1.edges() == DBA1.edges()
 
             # This should be BA with m = m2
             BA2 = barabasi_albert_graph(100, m2, seed)
             DBA2 = dual_barabasi_albert_graph(100, m1, m2, 0, seed)
-            assert BA2.size() == DBA2.size()
+            assert BA2.edges() == DBA2.edges()
 
         # Testing exceptions
         dbag = dual_barabasi_albert_graph
@@ -169,13 +172,11 @@ class TestGeneratorsRandom:
         The graphs generation are repeated several times to prevent lucky-shots
 
         """
-        seed = 42
-        repeats = 2
-        BA_model = barabasi_albert_graph(100, m, seed)
-        BA_model_edges = BA_model.number_of_edges()
+        seeds = [42, 314, 2718]
 
-        while repeats:
-            repeats -= 1
+        for seed in seeds:
+            BA_model = barabasi_albert_graph(100, m, seed)
+            BA_model_edges = BA_model.number_of_edges()
 
             # This behaves just like BA, the number of edges must be the same
             G1 = extended_barabasi_albert_graph(100, m, 0, 0, seed)
