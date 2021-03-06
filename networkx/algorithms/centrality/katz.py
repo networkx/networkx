@@ -142,7 +142,7 @@ def katz_centrality(
     .. [2] Leo Katz:
        A New Status Index Derived from Sociometric Index.
        Psychometrika 18(1):39–43, 1953
-       http://phya.snu.ac.kr/~dkim/PRL87278701.pdf
+       https://link.springer.com/content/pdf/10.1007/BF02289026.pdf
     """
     if len(G) == 0:
         return {}
@@ -302,7 +302,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     .. [2] Leo Katz:
        A New Status Index Derived from Sociometric Index.
        Psychometrika 18(1):39–43, 1953
-       http://phya.snu.ac.kr/~dkim/PRL87278701.pdf
+       https://link.springer.com/content/pdf/10.1007/BF02289026.pdf
     """
     import numpy as np
 
