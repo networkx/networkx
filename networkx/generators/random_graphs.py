@@ -658,7 +658,7 @@ def barabasi_albert_graph(n, m, seed=None, initial=None):
 
     if initial is None:
         # Default initial graph : star graph on (m + 1) nodes
-        G = star_graph(m + 1)
+        G = star_graph(m)
     else:
         if len(initial) < m or len(initial) > n:
             raise nx.NetworkXError(
