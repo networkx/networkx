@@ -156,6 +156,17 @@ class TestGeneratorsRandom:
             DBA2 = dual_barabasi_albert_graph(100, m1, m2, 0, seed)
             assert BA2.edges() == DBA2.edges()
 
+            BA3 = barabasi_albert_graph(100, m1, seed)
+            DBA3 = dual_barabasi_albert_graph(100, m1, m1, p, seed)
+            # We can't compare edges here since randomness is "consumed" when drawing
+            # between m1 and m2
+            assert BA3.size() == DBA3.size()
+
+            DBA = dual_barabasi_albert_graph(100, m1, m2, p, seed)
+            assert (
+                min(BA2.size(), BA1.size()) <= DBA.size() <= max(BA2.size(), BA1.size())
+            )
+
         # Testing exceptions
         dbag = dual_barabasi_albert_graph
         pytest.raises(NetworkXError, dbag, m1, m1, m2, 0)

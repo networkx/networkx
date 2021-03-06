@@ -747,7 +747,7 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial=None):
 
     if initial is None:
         # Default initial graph : empty graph on max(m1, m2) nodes
-        G = empty_graph(max(m1, m2))
+        G = star_graph(max(m1, m2))
     else:
         if len(initial) < max(m1, m2) or len(initial) > n:
             raise nx.NetworkXError(
