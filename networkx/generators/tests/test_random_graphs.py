@@ -176,15 +176,8 @@ class TestGeneratorsRandom:
         pytest.raises(NetworkXError, dbag, m2, m1, m2, 0)
         pytest.raises(NetworkXError, dbag, 100, m1, m2, -0.5)
         pytest.raises(NetworkXError, dbag, 100, m1, m2, 1.5)
-        pytest.raises(
-            NetworkXError,
-            dbag,
-            100,
-            m1,
-            m2,
-            p,
-            initial=nx.complete_graph(max(m1, m2) - 1),
-        )
+        initial = nx.complete_graph(max(m1, m2) - 1)
+        pytest.raises(NetworkXError, dbag, 100, m1, m2, p, initial=initial)
 
     def test_extended_barabasi_albert(self, m=2):
         """
