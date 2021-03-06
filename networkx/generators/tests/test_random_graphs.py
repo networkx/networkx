@@ -143,6 +143,7 @@ class TestGeneratorsRandom:
 
         """
         seeds = [42, 314, 2718]
+        initial = nx.complete_graph(10)
 
         for seed in seeds:
 
@@ -162,9 +163,11 @@ class TestGeneratorsRandom:
             # between m1 and m2
             assert BA3.size() == DBA3.size()
 
-            DBA = dual_barabasi_albert_graph(100, m1, m2, p, seed)
+            DBA = dual_barabasi_albert_graph(100, m1, m2, p, seed, initial=initial)
+            BA1 = barabasi_albert_graph(100, m1, seed, initial=initial)
+            BA2 = barabasi_albert_graph(100, m1, seed, initial=initial)
             assert (
-                min(BA2.size(), BA1.size()) <= DBA.size() <= max(BA2.size(), BA1.size())
+                min(BA1.size(), BA2.size()) <= DBA.size() <= max(BA1.size(), BA2.size())
             )
 
         # Testing exceptions
@@ -173,6 +176,15 @@ class TestGeneratorsRandom:
         pytest.raises(NetworkXError, dbag, m2, m1, m2, 0)
         pytest.raises(NetworkXError, dbag, 100, m1, m2, -0.5)
         pytest.raises(NetworkXError, dbag, 100, m1, m2, 1.5)
+        pytest.raises(
+            NetworkXError,
+            dbag,
+            100,
+            m1,
+            m2,
+            p,
+            initial=nx.complete_graph(max(m1, m2) - 1),
+        )
 
     def test_extended_barabasi_albert(self, m=2):
         """
