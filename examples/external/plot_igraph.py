@@ -29,10 +29,9 @@ plt.show()
 # convert to igraph
 g = ig.Graph.from_networkx(G)
 
-## TODO: uncomment this once python-igraph 0.9 is released
 # igraph draw
-# layout = g.layout()
-# ig.plot(g, layout=layout)
+layout = g.layout()
+ig.plot(g, layout=layout)
 
 # %%
 # igraph to NetworkX
