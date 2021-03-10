@@ -1,4 +1,6 @@
+import itertools
 from collections import defaultdict
+
 import networkx as nx
 
 __all__ = ["check_planarity", "PlanarEmbedding"]
@@ -1041,6 +1043,34 @@ class PlanarEmbedding(nx.DiGraph):
             # If we removed the edge to the first neighbour, update first_nbr to a new adjacent vertex
             if end_node == self.nodes[start_node]['first_nbr']:
                 self.nodes[start_node]['first_nbr'] = cw_node
+
+    def remove_planar_node(self, n):
+        """Remove node n, preserving the embedding structure.
+
+        Removes the node n and all adjacent edges.
+        Attempting to remove a non-existent node will raise an exception.
+
+        Parameters
+        ----------
+        n : node
+           A node in the graph
+
+        Raises
+        ------
+        NetworkXError
+           If n is not in the graph.
+
+        See Also
+        --------
+        remove_node
+
+        """
+        if not self.has_node(n):
+            raise nx.NetworkXError(f"The node {n} not in graph.")
+        adj_edges = list(itertools.chain(self.out_edges(n), self.in_edges(n)))
+        for (u, v) in adj_edges:
+            self.remove_half_edge(u, v)
+        self.remove_node(n)
 
     def connect_components(self, v, w):
         """Adds half-edges for (v, w) and (w, v) at some position.
