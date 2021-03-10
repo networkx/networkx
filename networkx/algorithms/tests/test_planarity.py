@@ -1,9 +1,8 @@
 import pytest
-
 import networkx as nx
-from networkx.algorithms.planarity import check_planarity_recursive
 from networkx.algorithms.planarity import get_counterexample
 from networkx.algorithms.planarity import get_counterexample_recursive
+from networkx.algorithms.planarity import check_planarity_recursive
 
 
 class TestLRPlanarity:
@@ -421,11 +420,11 @@ class TestPlanarEmbeddingClass:
         embedding.check_structure()
         assert set(embedding.edges) == {(0, 1), (1, 0)}
         assert set(embedding.nodes) == {0, 1, 2}
-        assert embedding.nodes[2]['first_nbr'] is None
-        assert embedding.nodes[1]['first_nbr'] == 0
-        assert embedding.nodes[0]['first_nbr'] == 1
-        assert embedding.get_edge_data(0, 1) == {'cw': 1, 'ccw': 1}
-        assert embedding.get_edge_data(1, 0) == {'cw': 0, 'ccw': 0}
+        assert embedding.nodes[2]["first_nbr"] is None
+        assert embedding.nodes[1]["first_nbr"] == 0
+        assert embedding.nodes[0]["first_nbr"] == 1
+        assert embedding.get_edge_data(0, 1) == {"cw": 1, "ccw": 1}
+        assert embedding.get_edge_data(1, 0) == {"cw": 0, "ccw": 0}
 
     def test_removal_never_existing_node(self):
         with pytest.raises(nx.NetworkXError):
@@ -448,8 +447,8 @@ class TestPlanarEmbeddingClass:
         embedding.check_structure()
         assert set(embedding.edges) == set([])
         assert set(embedding.nodes) == {1, 2}
-        assert embedding.nodes[2]['first_nbr'] is None
-        assert embedding.nodes[1]['first_nbr'] is None
+        assert embedding.nodes[2]["first_nbr"] is None
+        assert embedding.nodes[1]["first_nbr"] is None
 
     def test_not_fulfilling_euler_formula(self):
         with pytest.raises(nx.NetworkXException):
