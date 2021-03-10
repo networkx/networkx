@@ -1038,7 +1038,7 @@ class PlanarEmbedding(nx.DiGraph):
             # and update the clockwise and counter-clockwise edges to remove references to the edge.
             self[start_node][cw_node]['ccw'] = ccw_node
             self[start_node][ccw_node]['cw'] = cw_node
-            # If we removed the edge to the first neighbour to a new adjacent vertex
+            # If we removed the edge to the first neighbour, update first_nbr to a new adjacent vertex
             if end_node == self.nodes[start_node]['first_nbr']:
                 self.nodes[start_node]['first_nbr'] = cw_node
 
