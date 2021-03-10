@@ -75,7 +75,7 @@ def test_basic_prefix_tree(prefix_tree_fn):
         ["a", "to", "tea", "ted", "ten", "i", "in", "inn"],
         ["ab", "abs", "ad"],
         ["distant", "disparaging", "distant", "diamond", "ruby"],
-    )
+    ),
 )
 def test_implementations_consistent(strings):
     """Ensure results are consistent between prefix_tree implementations."""
