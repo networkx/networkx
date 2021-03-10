@@ -98,15 +98,13 @@ def is_matching(G, matching):
     """
     if isinstance(matching, dict):
         matching = matching_dict_to_set(matching)
-    for e in matching:
-        if len(e) == 1:  # self-loop
-            if next(iter(e)) not in G:
-                msg = f"Matching includes edge {e} not in G"
-                raise nx.NetworkXNotImplemented(msg)
-            continue
-        if not G.has_edge(*e):
-            msg = f"Matching includes edge {e} not in G"
-            raise nx.NetworkXNotImplemented(msg)
+
+    for edge in matching:
+        if len(edge) != 2:
+            return False
+        if not G.has_edge(*edge):
+            return False
+
     # TODO This is parallelizable.
     return all(len(set(e1) & set(e2)) == 0 for e1, e2 in combinations(matching, 2))
 
