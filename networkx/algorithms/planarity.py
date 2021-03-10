@@ -1031,18 +1031,18 @@ class PlanarEmbedding(nx.DiGraph):
             raise nx.NetworkXError(f"The edge {start_node}-{end_node} not in graph.")
         if self.out_degree(start_node) == 1:
             self.remove_edge(start_node, end_node)
-            self.nodes[start_node]['first_nbr'] = None
+            self.nodes[start_node]["first_nbr"] = None
         else:
-            cw_node = self[start_node][end_node]['cw']
-            ccw_node = self[start_node][end_node]['ccw']
+            cw_node = self[start_node][end_node]["cw"]
+            ccw_node = self[start_node][end_node]["ccw"]
             # Remove the edge
             self.remove_edge(start_node, end_node)
             # and update the clockwise and counter-clockwise edges to remove references to the edge.
-            self[start_node][cw_node]['ccw'] = ccw_node
-            self[start_node][ccw_node]['cw'] = cw_node
+            self[start_node][cw_node]["ccw"] = ccw_node
+            self[start_node][ccw_node]["cw"] = cw_node
             # If we removed the edge to the first neighbour, update first_nbr to a new adjacent vertex
-            if end_node == self.nodes[start_node]['first_nbr']:
-                self.nodes[start_node]['first_nbr'] = cw_node
+            if end_node == self.nodes[start_node]["first_nbr"]:
+                self.nodes[start_node]["first_nbr"] = cw_node
 
     def remove_planar_node(self, n):
         """Remove node n, preserving the embedding structure.
@@ -1063,7 +1063,6 @@ class PlanarEmbedding(nx.DiGraph):
         See Also
         --------
         remove_node
-
         """
         if not self.has_node(n):
             raise nx.NetworkXError(f"The node {n} not in graph.")
