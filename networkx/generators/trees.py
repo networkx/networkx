@@ -139,7 +139,9 @@ def prefix_tree(paths):
             # `child` may exist as the head of more than one path in `paths`.
             children[child].append(rest)
         stack.append((new_name, iter(children.items())))
+
     return tree
+
 
 def prefix_tree_alt(paths):
     """Creates a directed prefix tree from a list of paths.
@@ -242,8 +244,8 @@ def prefix_tree_alt(paths):
     while True:
         if addpaths:
             children = defaultdict(list)
-            # Populate dictionary with the key(s) as the child/children of the root and
-            # the value(s) as the remaining paths of the corresponding child/children
+            # Populate dictionary with key(s) as the child/children of the root and
+            # value(s) as the remaining paths of the corresponding child/children
             for path in paths:
                 # If path is empty, we add an edge to the NIL node.
                 if not path:
@@ -252,7 +254,7 @@ def prefix_tree_alt(paths):
                 child, *rest = path
                 # `child` may exist as the head of more than one path in `paths`.
                 children[child].append(rest)
-            stack.append((new_name, iter(children.items()))) """maybe not add empty dict"""
+            stack.append((new_name, iter(children.items())))
         parent, remaining_children = stack[-1]
         try:
             child, paths = next(remaining_children)
@@ -263,15 +265,14 @@ def prefix_tree_alt(paths):
                 break
             addpaths = False
             continue
-        # We relabel each child with an unused name.
         addpaths = True
+        # We relabel each child with an unused name.
         new_name = len(tree) - 1
         # The "source" node attribute stores the original node name.
         tree.add_node(new_name, source=child)
         tree.add_edge(parent, new_name)
 
     return tree
-
 
 
 def prefix_tree_recursive(paths):
