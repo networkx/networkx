@@ -47,6 +47,8 @@ def betweenness_centrality(
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     endpoints : bool, optional
       If True include the endpoints in the shortest path counts.
@@ -177,6 +179,8 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.

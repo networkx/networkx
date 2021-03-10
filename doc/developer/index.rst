@@ -10,8 +10,8 @@ Developer Guide
    values
    contribute
    projects
+   new_contributor_faq
    core_developer
-   gitwash/index
    release
    deprecations
    roadmap

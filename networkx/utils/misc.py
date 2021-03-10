@@ -60,8 +60,15 @@ def iterable(obj):
 
 
 def empty_generator():
-    """ Return a generator with no members """
-    yield from ()
+    """Return a generator with no members.
+
+    .. deprecated:: 2.6
+    """
+    warnings.warn(
+        "empty_generator is deprecated and will be removed in v3.0.",
+        DeprecationWarning,
+    )
+    return (i for i in ())
 
 
 def flatten(obj, result=None):
@@ -158,12 +165,23 @@ def generate_unique_node():
 def default_opener(filename):
     """Opens `filename` using system's default program.
 
+    .. deprecated:: 2.6
+       default_opener is deprecated and will be removed in version 3.0.
+       Consider an image processing library to open images, such as Pillow::
+
+           from PIL import Image
+           Image.open(filename).show()
+
     Parameters
     ----------
     filename : str
         The path of the file to be opened.
 
     """
+    warnings.warn(
+        "default_opener is deprecated and will be removed in version 3.0. ",
+        DeprecationWarning,
+    )
     from subprocess import call
 
     cmds = {

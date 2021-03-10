@@ -50,6 +50,8 @@ def approximate_current_flow_betweenness_centrality(
     weight : string or None, optional (default=None)
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype : data type (float)
       Default data type for internal matrices.
@@ -167,6 +169,8 @@ def current_flow_betweenness_centrality(
     weight : string or None, optional (default=None)
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype : data type (float)
       Default data type for internal matrices.
@@ -261,6 +265,8 @@ def edge_current_flow_betweenness_centrality(
     weight : string or None, optional (default=None)
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype : data type (default=float)
       Default data type for internal matrices.

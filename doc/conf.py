@@ -81,9 +81,6 @@ source_suffix = ".rst"
 # The encoding of source files.
 source_encoding = "utf-8"
 
-# The master toctree document.
-master_doc = "index"
-
 # Do not include release announcement template
 exclude_patterns = ["release/release_template.rst"]
 
@@ -214,6 +211,7 @@ intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "geopandas": ("https://geopandas.org/", None),
     "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
+    "sphinx-gallery": ("https://sphinx-gallery.github.io/stable/", None),
 }
 
 # The reST default role (used for this markup: `text`) to use for all

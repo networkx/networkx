@@ -29,7 +29,7 @@ Modularity-based communities
    :toctree: generated/
 
    greedy_modularity_communities
-   _naive_greedy_modularity_communities
+   naive_greedy_modularity_communities
 
 Tree partitioning
 -----------------
@@ -64,6 +64,7 @@ Measuring partitions
 
    coverage
    modularity
+   partition_quality
    performance
 
 Partitions via centrality measures
