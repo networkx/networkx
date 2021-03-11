@@ -20,6 +20,7 @@ class TestIndexSatisfying:
     function.
 
     """
+
     def test_condition_not_satisfied(self):
         condition = lambda x: x > 0
         assert index_satisfying([0], condition) == 1
@@ -98,6 +99,7 @@ class TestHamiltonianPath:
     function.
 
     """
+
     def test_hamiltonian_empty_graph(self):
         path = hamiltonian_path(DiGraph())
         assert len(path) == 0
@@ -128,6 +130,7 @@ class TestScoreSequence:
     function.
 
     """
+
     def test_score_sequence_edge(self):
         G = DiGraph([(0, 1)])
         assert score_sequence(G) == [0, 1]
@@ -142,6 +145,7 @@ class TestTournamentMatrix:
     function.
 
     """
+
     def test_tournament_matrix(self):
         G = DiGraph([(0, 1)])
         assert tournament_matrix(G) == sparse.coo_matrix([[0, 1], [-1, 0]])
