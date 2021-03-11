@@ -347,13 +347,15 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges, targ
 
         """
         if along_matched:
-            edges = itertools.cycle([matched_edges, unmatched_edges])
+            get_valid_edge = lambda depth: [matched_edges, unmatched_edges][depth % 2]
         else:
-            edges = itertools.cycle([unmatched_edges, matched_edges])
+            get_valid_edge = lambda depth: [unmatched_edges, matched_edges][depth % 2]
+
         visited = set()
-        stack = [(u, iter(G[u]), next(edges))]
+        stack = [(u, iter(G[u]), 0)]
         while stack:
-            parent, children, valid_edges = stack[-1]
+            parent, children, depth = stack[-1]
+            valid_edges = get_valid_edge(depth)
             try:
                 child = next(children)
                 if child not in visited:
@@ -361,7 +363,7 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges, targ
                         if child in targets:
                             return True
                         visited.add(child)
-                        stack.append((child, iter(G[child]), next(edges)))
+                        stack.append((child, iter(G[child]), depth + 1))
             except StopIteration:
                 stack.pop()
         return False
