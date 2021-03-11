@@ -1,9 +1,6 @@
 """Unit tests for the :mod:`networkx.algorithms.tournament` module."""
 from itertools import combinations
 import pytest
-sp = pytest.importorskip("scipy")
-sparse = sp.sparse
-
 from networkx import DiGraph
 from networkx.algorithms.tournament import is_reachable
 from networkx.algorithms.tournament import is_strongly_connected
@@ -14,17 +11,21 @@ from networkx.algorithms.tournament import score_sequence
 from networkx.algorithms.tournament import tournament_matrix
 from networkx.algorithms.tournament import index_satisfying
 
+sp = pytest.importorskip("scipy")
+sparse = sp.sparse
+
+
 class TestIndexSatisfying:
     """Unit tests for the :func:`networkx.tournament.index_satisfying`
     function.
 
     """
     def test_condition_not_satisfied(self):
-        condition = lambda x : x > 0
+        condition = lambda x: x > 0
         assert index_satisfying([0], condition) == 1
 
     def test_empty_iterable(self):
-        condition = lambda x : x > 0
+        condition = lambda x: x > 0
         with pytest.raises(ValueError):
             index_satisfying([], condition)
 
@@ -91,12 +92,13 @@ class TestRandomTournament:
         G = random_tournament(0)
         assert is_tournament(G)
 
+
 class TestHamiltonianPath:
     """Unit tests for the :func:`networkx.tournament.hamiltonian_path`
     function.
 
     """
-    def test_hamiltonian_empty_graph(self):##NEW
+    def test_hamiltonian_empty_graph(self):
         path = hamiltonian_path(DiGraph())
         assert len(path) == 0
 
@@ -120,7 +122,8 @@ class TestHamiltonianPath:
         assert all(v in G[u] for u, v in zip(path, path[1:]))
         assert path[0] in G[path[-1]]
 
-class TestScoreSequence:##NEW
+
+class TestScoreSequence:
     """Unit tests for the :func:`networkx.tournament.score_sequence`
     function.
 
@@ -132,6 +135,7 @@ class TestScoreSequence:##NEW
     def test_score_sequence_triangle(self):
         G = DiGraph([(0, 1), (1, 2), (2, 0)])
         assert score_sequence(G) == [1, 1, 1]
+
 
 class TestTournamentMatrix:
     """Unit tests for the :func:`networkx.tournament.tournament_matrix`
