@@ -10,7 +10,23 @@ applying thresholds to normalized weighted graphs.
 import numpy as np
 import networkx as nx
 import copy
-from .utils import distribute, matrix_normalize
+
+# from sklearn.preprocessing import normalize
+
+__all__ = [
+    "weakly_connected_component_subgraphs",
+    "node_weighted_condense",
+    "weight_nodes_by_condensation",
+    "max_min_layers",
+    "leaf_removal",
+    "recursive_leaf_removal",
+    "orderability",
+    "feedforwardness",
+    "graph_entropy",
+    "infographic_graph_entropy",
+    "treeness",
+    "hierarchy_coordinates",
+]
 
 
 # Hierarchy Coordinate Functions
@@ -29,7 +45,6 @@ def weakly_connected_component_subgraphs(G, copy=True):
     Notes
     -----
     Simply brought in from earlier version of NetworkX to ensure compatibility with later versions.
-    Not sure why it was dropped...
     """
     for comp in nx.weakly_connected_components(G):
         if copy:
@@ -68,7 +83,7 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
         [0, 0, 0.1, 0, 1.0],
         [0, 0, 0, 0, 0],
     ])
-    condensed_networks, base_binary_networks = hc.node_weighted_condense(a)
+    condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
     for network in condensed_networks:
         print(nx.to_numpy_array(network))
 
@@ -85,6 +100,11 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
     """
+
+    if np.array_equal(np.unique(A), [0, 1]):  # binary check
+        num_thresholds = 1
+    else:
+        num_thresholds = num_thresholds
 
     # Establishing Thresholds
     if num_thresholds == 1 or np.isclose(np.max(A) - np.min(A), 0, 1e-2):
@@ -105,7 +125,7 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
             except:
                 thresholds = [np.max(A)] * num_thresholds
         else:
-            thresholds = distribute(
+            thresholds = _distribute(
                 dist=threshold_distribution,
                 end_value_range=(np.min(A), np.max(A)),
                 n=num_thresholds,
@@ -115,6 +135,10 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
             nx.from_numpy_matrix(np.where(A > threshold, 1, 0), create_using=nx.DiGraph)
             for threshold in thresholds
         ]
+    # removes isolated nodes (0 in & out degree) from binary nodes. (not needed for consolidation)
+    for index in range(len(nx_graphs)):
+        nx_graphs[index].remove_nodes_from(list(nx.isolates(nx_graphs[index])))
+
     nx_graphs = [
         graph for graph in nx_graphs if not nx.is_empty(graph)
     ]  # eliminates empty graphs
@@ -171,7 +195,7 @@ def weight_nodes_by_condensation(condensed_graph):
     ])
 
     num_thresholds = 2
-    condensed_networks, _ = hc.node_weighted_condense(b, num_thresholds=num_thresholds)
+    condensed_networks, _ = nx.node_weighted_condense(b, num_thresholds=num_thresholds)
     for network_index in range(num_thresholds):
         print(f"Network {network_index}:")
         for node_index in range(len(condensed_networks[network_index].nodes)):
@@ -185,6 +209,11 @@ def weight_nodes_by_condensation(condensed_graph):
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
     """
+    if not nx.is_directed_acyclic_graph(condensed_graph):
+        raise nx.NetworkXError(
+            "G must be a directed acyclic graph for node weighted condensation"
+        )
+
     node_weights = [
         len(w) for w in nx.get_node_attributes(condensed_graph, "members").values()
     ]
@@ -223,20 +252,22 @@ def max_min_layers(G, max_layer=True):
     ])
 
     G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
-    print(hc.max_min_layers(G))
-    print(hc.max_min_layers(G, max_layer=False))
+    print(nx.max_min_layers(G))
+    print(nx.max_min_layers(G, max_layer=False))
 
     Notes:
     -------
     TODO: Should be two functions?
     """
+    if not G.is_directed():
+        raise nx.NetworkXError("G must be a DiGraph for min/max layer evaluation")
     if max_layer:
         return [node for node in G.nodes() if G.in_degree(node) == 0]
     else:
         return [node for node in G.nodes() if G.out_degree(node) == 0]
 
 
-def leaf_removal(G, forward=True):
+def leaf_removal(G, top=True):
     """Returns a pruned network, with either maximal (k_in=0)
     or minimal (k_out = 0) nodes removed upon call.
 
@@ -245,7 +276,7 @@ def leaf_removal(G, forward=True):
     G: NetworkX Graph
         A directed graph.
 
-    forward: bool, default: True
+    top: bool, default: True
         if True, prunes from k_in=0 nodes
 
     Return
@@ -266,8 +297,8 @@ def leaf_removal(G, forward=True):
     ])
 
     G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
-    print(nx.to_numpy_array(hc.leaf_removal(G)))
-    print(nx.to_numpy_array(hc.leaf_removal(G, forward=False)))
+    print(nx.to_numpy_array(nx.leaf_removal(G)))
+    print(nx.to_numpy_array(nx.leaf_removal(G, forward=False)))
 
     Raises
     ------
@@ -282,7 +313,9 @@ def leaf_removal(G, forward=True):
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
 
     """
-    layer = max_min_layers(G, max_layer=forward)
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXError("G must be a directed, acyclic graph for leaf removal")
+    layer = max_min_layers(G, max_layer=top)
     peeled_graph = copy.deepcopy(G)
     for node in layer:
         peeled_graph.remove_node(node)
@@ -317,8 +350,8 @@ def recursive_leaf_removal(G, from_top=True, keep_linkless_layer=False):
         [0, 0, 0, 0, 0, 0, 0],
     ])
     G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
-    pruned_to_ground = hc.recursive_leaf_removal(G, from_top=True)
-    pruned_from_ground = hc.recursive_leaf_removal(G, from_top=False)
+    pruned_to_ground = nx.recursive_leaf_removal(G, from_top=True)
+    pruned_from_ground = nx.recursive_leaf_removal(G, from_top=False)
     print("Pruned from top:")
     for pruned_tree in pruned_to_ground:
         print(nx.to_numpy_array(pruned_tree))
@@ -327,9 +360,11 @@ def recursive_leaf_removal(G, from_top=True, keep_linkless_layer=False):
         print(nx.to_numpy_array(pruned_tree))
 
     """
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXError("G must be a directed, acyclic graph for leaf removal")
     dissected_graphs = [copy.deepcopy(G)]
     while len(dissected_graphs[-1].nodes()) > 1:
-        dissected_graphs.append(leaf_removal(dissected_graphs[-1], forward=from_top))
+        dissected_graphs.append(leaf_removal(dissected_graphs[-1], top=from_top))
     if not keep_linkless_layer:
         while (
             nx.is_empty(dissected_graphs[-1]) and len(dissected_graphs) > 1
@@ -374,7 +409,7 @@ def orderability(
     ])
 
     G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
-    print(hc.orderability(G))
+    print(nx.orderability(G))
 
 
     Notes
@@ -384,6 +419,10 @@ def orderability(
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
     """
+    if not G.is_directed():
+        raise nx.NetworkXError(
+            "G must be a directed graph for any hierarchy coordinate evaluation"
+        )
 
     if not np.array_equal(
         np.unique(nx.to_numpy_array(G)), [0, 1]
@@ -415,7 +454,7 @@ def orderability(
     return len(non_cyclic_nodes) / total_acyclic_node_weight
 
 
-def feedforwardness_iteration(G):
+def _feedforwardness_iteration(G):
     """Performs a single iteration of the feedforward algorithm described in [1]_
 
     Parameters
@@ -439,10 +478,10 @@ def feedforwardness_iteration(G):
         [0, 0, 0.1, 0, 1.0],
         [0, 0, 0, 0, 0],
     ])
-    condensed_networks, base_binary_networks = hc.node_weighted_condense(a)
+    condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
     for network in condensed_networks:
         print(nx.to_numpy_array(network))
-        g, paths = hc.feedforwardness_iteration(network)
+        g, paths = nx.feedforwardness_iteration(network)
         print('g: {0}, # paths: {1}'.format(g, paths))
 
     Notes
@@ -452,8 +491,12 @@ def feedforwardness_iteration(G):
     .. [1] "On the origins of hierarchy in complex networks."
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
-
     """
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXError(
+            "G must be a directed acyclic graph for feedforwardness evaluation"
+        )
+
     max_layer = max_min_layers(G, max_layer=True)
     min_layer = max_min_layers(G, max_layer=False)
     weights = nx.get_node_attributes(G, "weight")
@@ -490,10 +533,10 @@ def feedforwardness(DAG):
         [0, 0, 0.1, 0, 1.0],
         [0, 0, 0, 0, 0],
     ])
-    condensed_networks, base_binary_networks = hc.node_weighted_condense(a)
+    condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
     for network in condensed_networks:
         print("\nDAG: \n", nx.to_numpy_array(network))
-        print("Feedforwardness: {0}".format(hc.feedforwardness(network)))
+        print("Feedforwardness: {0}".format(nx.feedforwardness(network)))
 
     Notes
     ______
@@ -501,6 +544,17 @@ def feedforwardness(DAG):
     over subsequent feedforwardness calculations.
     """
     # Must be fed the set of graphs with nodes lower on the hierarchy eliminated first
+    if not nx.is_directed_acyclic_graph(DAG):
+        raise nx.NetworkXError(
+            "DAG must be a directed acyclic graph for feedforwardness evaluation"
+        )
+
+    if nx.get_node_attributes(DAG, "weight") == {}:
+        raise nx.NetworkXError(
+            "Ensure feedforwardness is fed nodes weighted by consdensation"
+            ", e.g. G = nx.weight_nodes_by_condensation(nx.condensation(G))"
+        )
+
     successively_peeled_nx_graphs = recursive_leaf_removal(DAG, from_top=False)
     if (
         len(successively_peeled_nx_graphs) == 1
@@ -511,7 +565,7 @@ def feedforwardness(DAG):
     f = 0
     total_num_paths = 0
     for nx_graph in successively_peeled_nx_graphs:
-        g, paths = feedforwardness_iteration(nx_graph)
+        g, paths = _feedforwardness_iteration(nx_graph)
         f += g
         total_num_paths += paths
     return f / total_num_paths
@@ -544,9 +598,9 @@ def graph_entropy(DAG, forward_entropy=False):
         [0, 0, 0, 0, 0, 0, 0],
     ])
 
-    condensed_network_layers = hc.recursive_leaf_removal(nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph)))
-    fwd_graph_entropy = [round(hc.graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
-    bkwd_graph_entropy = [round(hc.graph_entropy(net), 3) for net in condensed_network_layers]
+    condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph)))
+    fwd_graph_entropy = [round(nx.graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
+    bkwd_graph_entropy = [round(nx.graph_entropy(net), 3) for net in condensed_network_layers]
     print("fwd graph entropy (from top | bottom): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
 
     Notes
@@ -569,19 +623,27 @@ def graph_entropy(DAG, forward_entropy=False):
 
 
     """
+    if not nx.is_directed_acyclic_graph(DAG):
+        raise nx.NetworkXError(
+            "G must be a directed acyclic graph for graph entropy evaluation"
+        )
+
     dag = nx.convert_node_labels_to_integers(DAG)
     L_GC = len(
         recursive_leaf_removal(DAG)
     )  # Could be passed in most contexts to reduce redundant computation
 
     if forward_entropy:
-        B_prime = matrix_normalize(nx.to_numpy_array(dag), row_normalize=True)
+        # as w sklearn: B_prime = normalize(nx.to_numpy_array(dag), axis=1, norm='max')  # Row normalization
+        B_prime = _matrix_normalize(nx.to_numpy_array(dag), row_normalize=True)
         P = sum(
             [np.power(B_prime, k) for k in range(1, L_GC + 1)]
         )  # +1 as k \in ( 1, L(G_C) )
         # TODO: Not so sure about this unless k coincides with the number of steps already taken (and the sum is odd)
+        # (Presently awaiting response from original authors for clarification)
     else:
-        B = matrix_normalize(nx.to_numpy_array(dag), row_normalize=False)
+        # as w sklearn: B = normalize(nx.to_numpy_array(dag), axis=0, norm='max')  # Column normalization
+        B = _matrix_normalize(nx.to_numpy_array(dag), row_normalize=False)
         P = sum([np.power(B, k) for k in range(1, L_GC + 1)])
 
     boundary_layer = max_min_layers(dag, max_layer=forward_entropy)
@@ -628,9 +690,9 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
         [0, 0, 0, 0, 0, 0, 0],
     ])
 
-    condensed_network_layers = hc.recursive_leaf_removal(nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph)))
-    fwd_graph_entropy = [round(hc.infographic_graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
-    bkwd_graph_entropy = [round(hc.infographic_graph_entropy(net), 3) for net in condensed_network_layers]
+    condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph)))
+    fwd_graph_entropy = [round(nx.infographic_graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
+    bkwd_graph_entropy = [round(nx.infographic_graph_entropy(net), 3) for net in condensed_network_layers]
     print("fwd graph entropy (from top | bottom): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
 
     Notes
@@ -651,6 +713,11 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
     Corominas-Murtra, Bernat, Carlos Rodríguez-Caso, Joaquin Goni, and Ricard Solé.
     Chaos: An Interdisciplinary Journal of Nonlinear Science 21, no. 1 (2011): pg 016108.
     """
+    if not nx.is_directed_acyclic_graph(DAG):
+        raise nx.NetworkXError(
+            "G must be a directed acyclic graph for graph entropy evaluation"
+        )
+
     dag = nx.convert_node_labels_to_integers(DAG)
     start_layer = max_min_layers(dag, max_layer=forward_entropy)
     end_layer = max_min_layers(dag, max_layer=not forward_entropy)
@@ -694,8 +761,9 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
     return entropy
 
 
-def single_graph_treeness(DAG):
-    """
+def _single_graph_treeness(DAG):
+    """Evaluates treeness of a directed, acyclic, unweighted graph.
+
     Parameters
     ----------
     DAG: NetworkX Graph
@@ -717,7 +785,7 @@ def single_graph_treeness(DAG):
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
     ])
-    print("treeness (single graph): {0}".format(hc.single_graph_treeness(condensed_networks)))
+    print("treeness (single graph): {0}".format(nx.single_graph_treeness(condensed_networks)))
 
     Notes
     ______
@@ -759,7 +827,7 @@ def treeness(DAG):
         [0, 0, 0, 0, 0, 0, 0],
     ])
     dag = nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph))
-    print("treeness (b): {0}".format(hc.treeness(dag)))
+    print("treeness (b): {0}".format(nx.treeness(dag)))
 
     Notes
     ______
@@ -767,17 +835,22 @@ def treeness(DAG):
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
     """
+    if not nx.is_directed_acyclic_graph(DAG):
+        raise nx.NetworkXError(
+            "DAG must be a directed acyclic graph for treeness evaluation"
+        )
+
     pruned_from_top = recursive_leaf_removal(G=DAG, from_top=True)
     pruned_from_bottom = recursive_leaf_removal(G=DAG, from_top=False)
     # removal of original graphs from subsets:
     pruned_from_top = pruned_from_top[1:]
     pruned_from_bottom = pruned_from_bottom[1:]
 
-    entropy_sum = single_graph_treeness(DAG)
+    entropy_sum = _single_graph_treeness(DAG)
     for index in range(len(pruned_from_top)):
-        entropy_sum += single_graph_treeness(pruned_from_top[index])
+        entropy_sum += _single_graph_treeness(pruned_from_top[index])
     for index in range(len(pruned_from_bottom)):
-        entropy_sum += single_graph_treeness(pruned_from_bottom[index])
+        entropy_sum += _single_graph_treeness(pruned_from_bottom[index])
     return entropy_sum / (1 + len(pruned_from_bottom) + len(pruned_from_top))
 
 
@@ -820,8 +893,8 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
         [0, 0, 0, 1, 0, 0, 1],
         [0, 0, 0, 0, 0, 0, 0],
     ])
-    print('(a) Treeness: {0} | Feedforwardness: {1}  | Orderability: {2}'.format(*np.round(hc.hierarchy_coordinates(a), 2)))
-    print('(b) Treeness: {0} | Feedforwardness: {1}  | Orderability: {2}'.format(*np.round(hc.hierarchy_coordinates(b), 2)))
+    print('(a) Treeness: {0} | Feedforwardness: {1}  | Orderability: {2}'.format(*np.round(nx.hierarchy_coordinates(a), 2)))
+    print('(b) Treeness: {0} | Feedforwardness: {1}  | Orderability: {2}'.format(*np.round(nx.hierarchy_coordinates(b), 2)))
 
     Notes
     ______
@@ -848,10 +921,10 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
     if np.array_equal(np.unique(np_A), [0]):  # null check
         # raise Exception("Unconnected graph; trivially 0 hierarchy")  # TODO: Raise exception if undefined instead
         return 0, 0, 0
-    if np.array_equal(np.unique(np_A), [0, 1]):  # binary check
-        num_thresholds = 1
-    else:
-        num_thresholds = num_thresholds
+    # if np.array_equal(np.unique(np_A), [0, 1]):  # binary check
+    #     num_thresholds = 1
+    # else:
+    #     num_thresholds = num_thresholds
 
     o, f, t = 0, 0, 0
     condensed_graphs, original_graphs = node_weighted_condense(
@@ -867,3 +940,104 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
     f /= len(condensed_graphs)
     o /= len(condensed_graphs)
     return t, f, o
+
+
+# Utilities for hierarchy coordinates
+def _distribute(n, end_value_range=None, dist=1, sampled_range_of_dist=(0, 1)):
+    """Returns n floats distributed as within the sampled range of provided distribution, rescaled to end_value_range
+    Defaults to an exponential distribution e^x, x = (0, 1), where int/float values of dist modify the coefficient on x
+
+    Parameters
+    ----------
+    n : int
+        Number of exponentially distributed points returned
+    end_value_range : tuple, optional
+        Range which final values of the distributed points occupy.
+        Defaults to the distribution's native range
+    dist : float, default: 1
+       A in np.exp(A*x)
+    dist: overloaded: types.FunctionType, optional
+        Alternate distribution yielding single samples from 1d input
+    sampled_range_of_dist: tuple, default: (0, 1)
+        Range of distribution sampled
+
+    Returns
+    -------
+    pts: numpy array
+        numpy array of n floats
+
+    Examples
+    --------
+    n, Max, Min = 100, 10, -10
+    exp_dist_0 = nx.distribute(n=n, end_value_range=(Min, Max))
+    exp_dist_1 = nx.distribute(n=n, dist=-2, end_value_range=(Min, Max), sampled_range_of_dist=(1, 2))
+
+    dist = lambda x: 4*x*x - 3*x*x*x
+    parabolic_dist = nx.distribute(n=n, dist=dist, end_value_range=(Min, Max), sampled_range_of_dist=(0, 2))
+
+    # Visualization of sampling
+    plt.xlabel('# samples')
+    plt.ylabel('sampled value')
+    plt.plot(exp_dist_0, label='e^x: (0, 1)')
+    plt.plot(exp_dist_1, label='e^-2x: (1, 2)')
+    plt.plot(parabolic_dist, label='4x^2 - 3x^3: (0, 2)')
+    plt.legend()
+    plt.show()
+    """
+    if isinstance(dist, float) or isinstance(dist, int):
+        distribution = lambda x: np.exp(dist * x)
+    else:
+        distribution = dist
+
+    x_increment = np.abs(max(sampled_range_of_dist) - min(sampled_range_of_dist)) / n
+    pts = np.array([distribution(x_increment * i) for i in range(n)])
+    pts /= abs(max(pts) - min(pts))
+
+    if end_value_range is not None:
+        pts = pts * (max(end_value_range) - min(end_value_range)) + min(end_value_range)
+    return pts
+
+
+def _matrix_normalize(matrix, row_normalize=False):
+    """normalizes 2d matrices.
+    Parameters
+    ----------
+    matrix: square 2d numpy array, nested list,
+        matrix to be normalized
+    row_normalize: bool
+        normalizes row *instead* of default columns if True
+    Returns
+    -------
+    numpy array:
+        column or row normalized array
+    Examples
+    --------
+    a = np.repeat(np.arange(1, 5), 4).reshape(4, 4)
+    print(a)
+    print(np.round(hc.matrix_normalize(a), 2))
+    print(np.round(hc.matrix_normalize(a, row_normalize=True), 2))
+    Notes
+    -----
+    Should be replaced with appropriate generalized, efficient version
+    """
+
+    if row_normalize:
+        row_sums = matrix.sum(axis=1)
+        return np.array(
+            [
+                matrix[index, :] / row_sums[index]
+                if row_sums[index] != 0
+                else [0] * row_sums.size
+                for index in range(row_sums.size)
+            ]
+        )
+    else:
+        column_sums = matrix.sum(axis=0)
+        return np.array(
+            [
+                matrix[:, index] / column_sums[index]
+                if column_sums[index] != 0
+                else [0] * column_sums.size
+                for index in range(column_sums.size)
+            ]
+        ).T
