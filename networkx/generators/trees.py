@@ -97,12 +97,13 @@ def prefix_tree(paths):
         >>> sorted(recovered)
         ['ab', 'abs', 'ad']
     """
+
     def get_children(parent, paths):
         children = defaultdict(list)
         # Populate dictionary with key(s) as the child/children of the root and
         # value(s) as the remaining paths of the corresponding child/children
         for path in paths:
-        # If path is empty, we add an edge to the NIL node.
+            # If path is empty, we add an edge to the NIL node.
             if not path:
                 tree.add_edge(parent, NIL)
                 continue
