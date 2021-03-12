@@ -4,7 +4,7 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "prefix_tree_fn", (nx.prefix_tree, nx.prefix_tree_recursive, nx.prefix_tree_alt)
+    "prefix_tree_fn", (nx.prefix_tree, nx.prefix_tree_recursive)
 )
 def test_basic_prefix_tree(prefix_tree_fn):
     # This example is from the Wikipedia article "Trie"
@@ -74,6 +74,7 @@ def test_basic_prefix_tree(prefix_tree_fn):
     (
         ["a", "to", "tea", "ted", "ten", "i", "in", "inn"],
         ["ab", "abs", "ad"],
+        ["ab", "abs", "ad", ""],
         ["distant", "disparaging", "distant", "diamond", "ruby"],
     ),
 )
@@ -82,10 +83,6 @@ def test_implementations_consistent(strings):
     nx.testing.assert_graphs_equal(
         nx.prefix_tree(strings),
         nx.prefix_tree_recursive(strings),
-    )
-    nx.testing.assert_graphs_equal(
-        nx.prefix_tree(strings),
-        nx.prefix_tree_alt(strings),
     )
 
 
