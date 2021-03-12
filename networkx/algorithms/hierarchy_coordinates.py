@@ -1,20 +1,33 @@
 """
-Implementation of the hierarchy coordinates via networkX from
-Hierarchy in Complex Networks: The Possible and the Actual [B Corominas-Murtra - 2013]  [*] - Supporting Information
+========================
+Hierarchy Coordinates
+========================
+Functions to calculate hierarchy coordinates for directed networks.
 
-Though implemented for unweighted networkX graphs, in the context of its original application,
-these are applied to weighted graphs by averaging over the unweighted graphs resulting from
-applying thresholds to normalized weighted graphs.
+Hierarchy coordinates consist of treeness, feedforwardness, and orderability, which collectively create a
+'hierarchy morphospace' classifying all network structures. In loose terms, treeness describes how consistently
+nodes higher on the hierarchy (maximal nodes) branch into more nodes, while feedforwardness considers the extent
+information passes vertically (vs horizontally) within a hierarchy, and orderability considers what fraction of the
+network is vertically hierarchical.
+
+Originally from [1]_, adapted implementation accommodates weighted network. For details, see _[2]
+
+.. [1] "On the origins of hierarchy in complex networks."
+ Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
+ Proceedings of the National Academy of Sciences 110, no. 33 (2013)
+
+.. [2] Appendix of 2013 paper: https://www.pnas.org/highwire/filestream/613265/field_highwire_adjunct_files/0/sapp.pdf
+
 """
 
-import numpy as np
 import networkx as nx
+from networkx.utils import not_implemented_for
+import numpy as np
 import copy
 
 # from sklearn.preprocessing import normalize
 
 __all__ = [
-    "weakly_connected_component_subgraphs",
     "node_weighted_condense",
     "weight_nodes_by_condensation",
     "max_min_layers",
@@ -30,31 +43,13 @@ __all__ = [
 
 
 # Hierarchy Coordinate Functions
-def weakly_connected_component_subgraphs(G, copy=True):
-    """Generate weakly connected components as subgraphs. Re-imported to ensure later NetworkX compatibility
-
-    Parameters
-    ----------
-    G : NetworkX Graph
-       A directed graph.
-
-    copy : bool
-        If copy is True, graph, node, and edge attributes are copied to the
-        subgraphs.
-
-    Notes
-    -----
-    Simply brought in from earlier version of NetworkX to ensure compatibility with later versions.
-    """
-    for comp in nx.weakly_connected_components(G):
-        if copy:
-            yield G.subgraph(comp).copy()
-        else:
-            yield G.subgraph(comp)
-
-
 def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
-    """Returns a series of node_weighted condensed graphs (DAGs) [1]_ and their original nx_graphs.
+    """Creates a series of networkx graphs based on generated edge weight thresholds, and returns their node weighted
+    condensed and original graphs.
+
+    Unweighted graphs will always lead to single graph outputs, whereas weighted graphs output a series of graphs
+     according to the number of thresholds and the distribution. Empty graphs are dropped.
+    Node weighted condense simply assigns the number of nodes in a cycle as the weight of the resultant node in the DAG[1]_.
 
     Parameters
     ----------
@@ -64,6 +59,7 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
         Number of thresholds and resultant sets of node-weighted Directed Acyclic Graphs
     threshold_distribution: float, optional
         If true or float, distributes the thresholds exponentially, with an exponent equal to the float input.
+        Alternatively, a (lambda) function may be passed for custom distributions.
 
     Returns
     -------
@@ -76,20 +72,32 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
     --------
     Graphing the resultant network is recommended, as otherwise this is difficult to visualize...
 
-    a = np.array([
-        [0, 0.2, 0, 0, 0],
-        [0, 0, 0, 0.7, 0],
-        [0, 0.4, 0, 0, 0],
-        [0, 0, 0.1, 0, 1.0],
-        [0, 0, 0, 0, 0],
-    ])
-    condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
-    for network in condensed_networks:
-        print(nx.to_numpy_array(network))
+    See Also
+    --------
+    weight_nodes_by_condensation, graph_entropy, treeness
+
+    >>> a = np.array([
+    >>>     [0, 0.2, 0, 0, 0],
+    >>>     [0, 0, 0, 0.7, 0],
+    >>>     [0, 0.4, 0, 0, 0],
+    >>>     [0, 0, 0.1, 0, 1.0],
+    >>>     [0, 0, 0, 0, 0],
+    >>> ])
+    >>> condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
+    >>> for network in condensed_networks:
+    >>>     print(f'{network}, total weight: {nx.get_node_attributes(network, "weight")}')
+    DiGraph with 3 nodes and 2 edges, total weight: {0: 1, 1: 3, 2: 1}
+    DiGraph with 5 nodes and 4 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1, 4: 1}
+    DiGraph with 4 nodes and 3 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1}
+    DiGraph with 4 nodes and 3 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1}
+    DiGraph with 3 nodes and 2 edges, total weight: {0: 1, 1: 1, 2: 1}
+    DiGraph with 3 nodes and 2 edges, total weight: {0: 1, 1: 1, 2: 1}
+    DiGraph with 2 nodes and 1 edges, total weight: {0: 1, 1: 1}
+    DiGraph with 2 nodes and 1 edges, total weight: {0: 1, 1: 1}
 
     Notes
     ------
-    TODO: As multiple independent graphs may form from applying threshold cutoffs to a weighted graph,
+    WIP TODO: As multiple independent graphs may form from applying threshold cutoffs to a weighted graph,
     only the largest is considered. This might be worth considering in re-evaluating the meaning of
     weighted network hierarchy coordinate evaluations. (See pages 7, 8 of [1]_, supplementary material)
 
@@ -150,13 +158,14 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
         largest_condensed_graphs.append(
             nx.convert_node_labels_to_integers(
                 max(
-                    weakly_connected_component_subgraphs(condensed_graph, copy=True),
+                    [
+                        condensed_graph.subgraph(cc).copy()
+                        for cc in nx.weakly_connected_components(condensed_graph)
+                    ],
                     key=len,
                 )
             )
         )
-        # networkx.weakly_connected_component_subgraphs comes from networkx 1.10 documentation, and has sense been discontinued.
-        # For ease of access and future networkx compatibility, it was copied directly to this file before the class declaration.
         members = nx.get_node_attributes(largest_condensed_graphs[-1], "members")
         node_weights = [len(w) for w in members.values()]
         for node_index in range(len(node_weights)):
@@ -167,10 +176,13 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
     return largest_condensed_graphs, nx_graphs
 
 
+@not_implemented_for("undirected")
 def weight_nodes_by_condensation(condensed_graph):
-    """Weights nodes according to the integer number of other nodes they condensed. Proposed in _[1]
-    e.g. if a cycle contained 3 nodes (and became one in condensation)
+    """Weights nodes according to the number of other nodes they condensed (sum of constituent cycle of DAG node).
+
+    As, proposed in _[1]:  e.g. if a cycle contained 3 nodes (and became one in condensation)
     the resulting node of the condensed graph would then gain weight = 3.
+    Single (non-cyclic) nodes are weighted as 1.
 
     Parameters
     ----------
@@ -186,28 +198,48 @@ def weight_nodes_by_condensation(condensed_graph):
     Examples
     --------
     Visualization also recommended here (with node size prop. weighting)
-    b = np.array([
-        [0, 0.2, 0, 0, 0],
-        [0, 0, 0, 0.7, 0],
-        [0, 0.4, 0, 0, 0],
-        [0, 0, 0.1, 0, 1.0],
-        [0, 0, 0, 0, 0],
-    ])
+    >>> b = np.array([
+    ...     [0, 0.2, 0, 0, 0],
+    ...     [0, 0, 0, 0.7, 0],
+    ...     [0, 0.4, 0, 0, 0],
+    ...     [0, 0, 0.1, 0, 1.0],
+    ...     [0, 0, 0, 0, 0],
+    ... ])
 
-    num_thresholds = 2
-    condensed_networks, _ = nx.node_weighted_condense(b, num_thresholds=num_thresholds)
-    for network_index in range(num_thresholds):
-        print(f"Network {network_index}:")
-        for node_index in range(len(condensed_networks[network_index].nodes)):
-            print(f"Node {node_index}, new weight:", condensed_networks[network_index].nodes[node_index]["weight"])
-        print()
+    >>> num_thresholds = 2
+    >>> condensed_networks, _ = nx.node_weighted_condense(b, num_thresholds=num_thresholds)
+    >>> for network_index in range(num_thresholds):
+    ...     print(f"Network {network_index}:")
+    >>>     for node_index in range(len(condensed_networks[network_index].nodes)):
+    ...         print(f"Node {node_index}, new weight:", condensed_networks[network_index].nodes[node_index]["weight"])
+    >>>     print()
+
+    Network 0:
+    Node 0, new weight: 1
+    Node 1, new weight: 3
+    Node 2, new weight: 1
+
+    Network 1:
+    Node 0, new weight: 1
+    Node 1, new weight: 1
+    Node 2, new weight: 1
+
+    Raises
+    ------
+    NetworkXError
+        If input not a directed acyclic graph
 
     Note:
     ------
     TODO: Might wish to eliminate return, or enable copying?
+
     .. [1] "On the origins of hierarchy in complex networks."
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
+
+    See Also
+    --------
+    node_weighted_condense, graph_entropy
     """
     if not nx.is_directed_acyclic_graph(condensed_graph):
         raise nx.NetworkXError(
@@ -219,14 +251,15 @@ def weight_nodes_by_condensation(condensed_graph):
     ]
     for node_index in range(len(node_weights)):
         condensed_graph.nodes[node_index]["weight"] = node_weights[node_index]
-    return (
-        condensed_graph  # Not be necessary, as the graph itself is updated (not copied)
-    )
+    return condensed_graph  # WIP TODO: May not be necessary, as the graph itself is updated (not copied)?
 
 
+@not_implemented_for("undirected")
 def max_min_layers(G, max_layer=True):
-    """
-    Returns the maximal (k_in = 0, highest in hierarchy) layer (those nodes with in degree = 0) or the minimal layer (k_out = 0)
+    """Returns the maximal (k_in = 0) layer or the minimal layer (k_out = 0)
+
+    Returns the maximal (k_in = 0, highest in hierarchy) layer (those nodes with in degree = 0)
+     or the minimal layer (k_out = 0) of a directed network.
 
     Parameters
     ----------
@@ -241,23 +274,30 @@ def max_min_layers(G, max_layer=True):
         list of node indices as ints
 
     Examples:
-    a = np.array([
-        [0, 0, 1, 1, 0, 0, 0],
-        [0, 0, 1, 1, 0, 0, 0],
-        [0, 0, 0, 0, 1, 1, 0],
-        [0, 0, 0, 0, 0, 1, 1],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-    ])
+    >>> a = np.array([
+    ...     [0, 0, 1, 1, 0, 0, 0],
+    ...     [0, 0, 1, 1, 0, 0, 0],
+    ...     [0, 0, 0, 0, 1, 1, 0],
+    ...     [0, 0, 0, 0, 0, 1, 1],
+    ...     [0, 0, 0, 0, 0, 0, 0],
+    ...     [0, 0, 0, 0, 0, 0, 0],
+    ...     [0, 0, 0, 0, 0, 0, 0],
+    ... ])
 
-    G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
-    print(nx.max_min_layers(G))
-    print(nx.max_min_layers(G, max_layer=False))
+    >>> G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
+    >>> print(nx.max_min_layers(G))
+    [0, 1]
+    >>> print(nx.max_min_layers(G, max_layer=False))
+    [4, 5, 6]
+
+    Raises
+    ------
+    NetworkXError
+        If input not a directed graph
 
     Notes:
     -------
-    TODO: Should be two functions?
+
     """
     if not G.is_directed():
         raise nx.NetworkXError("G must be a DiGraph for min/max layer evaluation")
@@ -267,6 +307,7 @@ def max_min_layers(G, max_layer=True):
         return [node for node in G.nodes() if G.out_degree(node) == 0]
 
 
+@not_implemented_for("undirected")
 def leaf_removal(G, top=True):
     """Returns a pruned network, with either maximal (k_in=0)
     or minimal (k_out = 0) nodes removed upon call.
@@ -286,23 +327,33 @@ def leaf_removal(G, top=True):
 
     Examples:
     ---------
-    a = np.array([
-        [0, 0, 1, 1, 0, 0, 0],
-        [0, 0, 1, 1, 0, 0, 0],
-        [0, 0, 0, 0, 1, 1, 0],
-        [0, 0, 0, 0, 0, 1, 1],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-    ])
+    >>> a = np.array([
+    ...   [0, 0, 1, 1, 0, 0, 0],
+    ...   [0, 0, 1, 1, 0, 0, 0],
+    ...   [0, 0, 0, 0, 1, 1, 0],
+    ...   [0, 0, 0, 0, 0, 1, 1],
+    ...   [0, 0, 0, 0, 0, 0, 0],
+    ...   [0, 0, 0, 0, 0, 0, 0],
+    ...   [0, 0, 0, 0, 0, 0, 0],
+    ... ])
+    >>> G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
+    >>> print(nx.to_numpy_array(nx.leaf_removal(G)))
+    [[0. 0. 1. 1. 0.]
+     [0. 0. 0. 1. 1.]
+     [0. 0. 0. 0. 0.]
+     [0. 0. 0. 0. 0.]
+     [0. 0. 0. 0. 0.]]
 
-    G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
-    print(nx.to_numpy_array(nx.leaf_removal(G)))
-    print(nx.to_numpy_array(nx.leaf_removal(G, forward=False)))
+    >>> print(nx.to_numpy_array(nx.leaf_removal(G, top=False)))
+    [[0. 0. 1. 1.]
+     [0. 0. 1. 1.]
+     [0. 0. 0. 0.]
+     [0. 0. 0. 0.]]
 
     Raises
     ------
-    TODO: NonDAG: will loop infinitely for cyclic input
+    NetworkXError
+        If input not a directed acyclic graph
 
     Notes
     ------
@@ -312,6 +363,10 @@ def leaf_removal(G, top=True):
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
 
+
+    See Also
+    --------
+    recursive_leaf_removal, max_min_layers
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("G must be a directed, acyclic graph for leaf removal")
@@ -322,8 +377,12 @@ def leaf_removal(G, top=True):
     return peeled_graph
 
 
+@not_implemented_for("undirected")
 def recursive_leaf_removal(G, from_top=True, keep_linkless_layer=False):
     """Prunes nodes from top (maximal) or bottom (minimal) recursively. Original DAG is given as first element
+
+    Useful for examinations of hierarchy layer by layer. Note that the *remaining* graph is returned, not the layers
+
     Parameters
     ----------
     G: NetworkX graph
@@ -340,24 +399,39 @@ def recursive_leaf_removal(G, from_top=True, keep_linkless_layer=False):
 
     Examples
     ---------
-    a = np.array([
-        [0, 0, 1, 1, 0, 0, 0],
-        [0, 0, 1, 1, 0, 0, 0],
-        [0, 0, 0, 0, 1, 1, 0],
-        [0, 0, 0, 0, 0, 1, 1],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-    ])
-    G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
-    pruned_to_ground = nx.recursive_leaf_removal(G, from_top=True)
-    pruned_from_ground = nx.recursive_leaf_removal(G, from_top=False)
-    print("Pruned from top:")
-    for pruned_tree in pruned_to_ground:
-        print(nx.to_numpy_array(pruned_tree))
-    print("Pruned from bottom:")
-    for pruned_tree in pruned_from_ground:
-        print(nx.to_numpy_array(pruned_tree))
+    >>> a = np.array([
+    ...     [0, 0, 1, 1, 0, 0, 0],
+    ...     [0, 0, 1, 1, 0, 0, 0],
+    ...     [0, 0, 0, 0, 1, 1, 0],
+    ...     [0, 0, 0, 0, 0, 1, 1],
+    ...     [0, 0, 0, 0, 0, 0, 0],
+    ...     [0, 0, 0, 0, 0, 0, 0],
+    ...     [0, 0, 0, 0, 0, 0, 0],
+    ... ])
+    >>> G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
+    >>> pruned_to_ground = nx.recursive_leaf_removal(G, from_top=True)
+    >>> pruned_from_ground = nx.recursive_leaf_removal(G, from_top=False)
+    >>> print("Pruned from top:")
+    >>> for pruned_tree in pruned_to_ground:
+    ...     print(pruned_tree)
+    >>> print("Pruned from bottom:")
+    >>> for pruned_tree in pruned_from_ground:
+    >>>     print(pruned_tree)
+    Pruned from top:
+    DiGraph with 7 nodes and 8 edges
+    DiGraph with 5 nodes and 4 edges
+    Pruned from bottom:
+    DiGraph with 7 nodes and 8 edges
+    DiGraph with 4 nodes and 4 edges
+
+    Raises
+    ------
+    NetworkXError
+        If input not a directed acyclic graph
+
+    See Also
+    --------
+    leaf_removal, max_min_layers
 
     """
     if not nx.is_directed_acyclic_graph(G):
@@ -375,11 +449,16 @@ def recursive_leaf_removal(G, from_top=True, keep_linkless_layer=False):
     return dissected_graphs
 
 
+@not_implemented_for("undirected")
 def orderability(
     G, condensed_nx_graph=None, num_thresholds=8, threshold_distribution=None
 ):
-    """Evaluates orderability, or number of nodes which were not condensed
-     over total number of nodes in original uncondensed graph. Evaluated as in [1]_
+    """Evaluates orderability, a measure of how vertically hierarchical a network is.
+
+    Given as intersection of the nodes inside the consdensed and original network,
+    divided by the total number of nodes in the original network.
+
+    Adapted for weighted networks from the original algorithm found here: [1]_.
 
     Parameters
     ----------
@@ -400,17 +479,17 @@ def orderability(
 
     Examples
     ---------
-    a = np.array([
-        [0, 0.2, 0, 0, 0],
-        [0, 0, 0, 0.7, 0],
-        [0, 0.4, 0, 0, 0],
-        [0, 0, 0.1, 0, 1.0],
-        [0, 0, 0, 0, 0],
-    ])
+    >>> a = np.array([
+    ...     [0, 0.2, 0, 0, 0],
+    ...     [0, 0, 0, 0.7, 0],
+    ...     [0, 0.4, 0, 0, 0],
+    ...     [0, 0, 0.1, 0, 1.0],
+    ...     [0, 0, 0, 0, 0],
+    ... ])
 
-    G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
-    print(nx.orderability(G))
-
+    >>> G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
+    >>> print(nx.orderability(G))
+    0.925
 
     Notes
     ______
@@ -418,6 +497,10 @@ def orderability(
     .. [1] "On the origins of hierarchy in complex networks."
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
+
+    See Also
+    --------
+    treeness, feedforwardness, hierarchy_coordinates
     """
     if not G.is_directed():
         raise nx.NetworkXError(
@@ -454,6 +537,7 @@ def orderability(
     return len(non_cyclic_nodes) / total_acyclic_node_weight
 
 
+@not_implemented_for("undirected")
 def _feedforwardness_iteration(G):
     """Performs a single iteration of the feedforward algorithm described in [1]_
 
@@ -471,18 +555,22 @@ def _feedforwardness_iteration(G):
 
     Examples
     ---------
-    a = np.array([
-        [0, 0.2, 0, 0, 0],
-        [0, 0, 0, 0.7, 0],
-        [0, 0.4, 0, 0, 0],
-        [0, 0, 0.1, 0, 1.0],
-        [0, 0, 0, 0, 0],
-    ])
-    condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
-    for network in condensed_networks:
-        print(nx.to_numpy_array(network))
-        g, paths = nx.feedforwardness_iteration(network)
-        print('g: {0}, # paths: {1}'.format(g, paths))
+
+    >>> a = np.array([
+    ...     [0, 0.2, 0, 0, 0],
+    ...     [0, 0, 0, 0.7, 0],
+    ...     [0, 0.4, 0, 0, 0],
+    ...     [0, 0, 0.1, 0, 1.0],
+    ...     [0, 0, 0, 0, 0],
+    ... ])
+    >>> condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
+    >>> for network in condensed_networks:
+    ...     print(nx.to_numpy_array(network))
+    ...     g, paths = nx._feedforwardness_iteration(network)  # obv. doesn't work as private member
+    ...     print('g: {0}, # paths: {1}'.format(g, paths))
+    [[0. 0. 0.]
+     [1. 0. 0.]
+     [0. 1. 0.]]
 
     Notes
     ______
@@ -491,6 +579,10 @@ def _feedforwardness_iteration(G):
     .. [1] "On the origins of hierarchy in complex networks."
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
+
+    See Also
+    --------
+    feedforwardness
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError(
@@ -512,8 +604,18 @@ def _feedforwardness_iteration(G):
     return g, num_paths
 
 
+@not_implemented_for("undirected")
 def feedforwardness(DAG):
-    """
+    """Returns feedforwardness hierarchy coordinates, ~extent information passes vertically
+    (vs horizontally) within a hierarchy.
+
+    Based on a weighted sum which considers how much each path from every maximal node to every minimal node
+    traverses through cyclic (flat hierarchy) components. This calculation is then repeated for every subgraph
+    produced through maximal layer removal.
+
+    The original algorithm was given in "On the origins of hierarchy in complex networks."[1]_ and with details
+    given in their appendix.[2]_
+
     Parameters
     ----------
     DAG: NetworkX Graph
@@ -526,22 +628,49 @@ def feedforwardness(DAG):
 
     Examples
     ---------
-    a = np.array([
-        [0, 0.2, 0, 0, 0],
-        [0.4, 0, 0, 0.7, 0],
-        [0, 0.4, 0, 0, 0],
-        [0, 0, 0.1, 0, 1.0],
-        [0, 0, 0, 0, 0],
-    ])
-    condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
-    for network in condensed_networks:
-        print("\nDAG: \n", nx.to_numpy_array(network))
-        print("Feedforwardness: {0}".format(nx.feedforwardness(network)))
+    >>> a = np.array([
+    ...     [0, 0.2, 0, 0, 0],
+    ...     [0.4, 0, 0, 0.7, 0],
+    ...     [0, 0.4, 0, 0, 0],
+    ...     [0, 0, 0.1, 0, 1.0],
+    ...     [0, 0, 0, 0, 0],
+    ... ])
+    >>> condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
+    >>> for network in condensed_networks:
+    ...     print("DAG: ", network)
+    ...     print("Feedforwardness: {0}".format(nx.feedforwardness(network)))
+    DAG: DiGraph with 2 nodes and 1 edges
+    Feedforwardness: 0.4
+    DAG: DiGraph with 4 nodes and 3 edges
+    Feedforwardness: 0.7388888888888889
+    DAG: DiGraph with 5 nodes and 4 edges
+    Feedforwardness: 1.0
+    DAG: DiGraph with 5 nodes and 4 edges
+    Feedforwardness: 1.0
+    DAG: DiGraph with 3 nodes and 2 edges
+    Feedforwardness: 1.0
+    DAG: DiGraph with 3 nodes and 2 edges
+    Feedforwardness: 1.0
+    DAG: DiGraph with 2 nodes and 1 edges
+    Feedforwardness: 1.0
+    DAG: DiGraph with 2 nodes and 1 edges
+    Feedforwardness: 1.0
 
     Notes
     ______
     feedforwardness is calculated by pruning layers of the original graph and averaging
     over subsequent feedforwardness calculations.
+
+    TODO: Not sure what's proper re: optional num_thresholds and threshold_distribution parameter
+    .. [1] "On the origins of hierarchy in complex networks."
+     Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
+     Proceedings of the National Academy of Sciences 110, no. 33 (2013)
+    .. [2] Appendix of 2013 paper:
+    https://www.pnas.org/highwire/filestream/613265/field_highwire_adjunct_files/0/sapp.pdf
+
+    See Also
+    --------
+    treeness, orderability, hierarchy_coordinates
     """
     # Must be fed the set of graphs with nodes lower on the hierarchy eliminated first
     if not nx.is_directed_acyclic_graph(DAG):
@@ -571,8 +700,11 @@ def feedforwardness(DAG):
     return f / total_num_paths
 
 
+@not_implemented_for("undirected")
 def graph_entropy(DAG, forward_entropy=False):
-    """
+    """WIP: Detail after confirmation of methodology from Prof. Sole
+
+
     Parameters
     ----------
     DAG: NetworkX Graph
@@ -663,8 +795,11 @@ def graph_entropy(DAG, forward_entropy=False):
     return entropy
 
 
+@not_implemented_for("undirected")
 def infographic_graph_entropy(DAG, forward_entropy=False):
-    """
+    """WIP: Detail after confirmation of methodology from Prof. Sole
+
+
     Parameters
     ----------
     DAG: NetworkX Graph
@@ -761,6 +896,7 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
     return entropy
 
 
+@not_implemented_for("undirected")
 def _single_graph_treeness(DAG):
     """Evaluates treeness of a directed, acyclic, unweighted graph.
 
@@ -803,8 +939,17 @@ def _single_graph_treeness(DAG):
     return (forward_entropy - backward_entropy) / max(forward_entropy, backward_entropy)
 
 
+@not_implemented_for("undirected")
 def treeness(DAG):
-    """
+    """Treeness describes how consistently nodes higher on the hierarchy (maximal nodes) branch into more nodes.
+
+    Based on `graph_entropy` a measure dependant on the probability of transitioning between any two given nodes,
+     Treeness measures the expansion or contraction of paths from maximal nodes, yielding positive or negative
+      values respectively.
+
+    The original algorithm was given in "On the origins of hierarchy in complex networks."[1]_ and with details
+    given in their appendix.[2]_
+
     Parameters
     ----------
     DAG: NetworkX Graph
@@ -817,23 +962,30 @@ def treeness(DAG):
 
     Examples
     ---------
-    b = np.array([
-        [0, 0, 1, 0, 0, 0, 1],
-        [0, 0, 1, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0],
-        [0, 0, 1, 0, 1, 0, 0],
-        [0, 0, 0, 0, 0, 1, 0],
-        [0, 0, 0, 1, 0, 0, 1],
-        [0, 0, 0, 0, 0, 0, 0],
-    ])
-    dag = nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph))
-    print("treeness (b): {0}".format(nx.treeness(dag)))
+    >>> a = np.array([
+    ...     [0, 0, 1, 0, 0, 0, 1],
+    ...     [0, 0, 1, 0, 0, 0, 0],
+    ...     [0, 0, 0, 0, 1, 0, 0],
+    ...     [0, 0, 1, 0, 1, 0, 0],
+    ...     [0, 0, 0, 0, 0, 1, 0],
+    ...     [0, 0, 0, 1, 0, 0, 1],
+    ...     [0, 0, 0, 0, 0, 0, 0],
+    ... ])
+    >>> dag = nx.condensation(nx.from_numpy_matrix(a, create_using=nx.DiGraph))
+    >>> print("treeness: {0}".format(nx.treeness(dag)))
+    treeness: -0.5
 
     Notes
     ______
     .. [1] "On the origins of hierarchy in complex networks."
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
+    .. [2] Appendix of 2013 paper:
+    https://www.pnas.org/highwire/filestream/613265/field_highwire_adjunct_files/0/sapp.pdf
+
+    See Also
+    --------
+    feedforwardness, orderability, hierarchy_coordinates
     """
     if not nx.is_directed_acyclic_graph(DAG):
         raise nx.NetworkXError(
@@ -855,7 +1007,15 @@ def treeness(DAG):
 
 
 def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
-    """
+    """Returns hierarchy coordinates: treeness, feedforwardness & orderability.
+
+    Hierarchy coordinates can classifying all network structures, and their respective hierarchy,
+     though certain combinations are theoretically impossible to acheive.
+
+    Adapted for weighted networks from "On the origins of hierarchy in complex networks."[1]_ and with details
+    given in their appendix.[2]_
+
+
     Parameters
     ----------
     A: 2d numpy array or networkX graph
@@ -877,24 +1037,26 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
 
     Examples
     ---------
-    a = np.array([
-        [0, 0.2, 0, 0, 0],
-        [0, 0, 0, 0.7, 0],
-        [0, 0.4, 0, 0, 0],
-        [0, 0.3, 0.1, 0, 1.0],
-        [0, 0, 0, 0, 0],
-    ])
-    b = np.array([
-        [0, 0, 1, 0, 0, 0, 1],
-        [0, 0, 1, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0],
-        [0, 0, 1, 0, 1, 0, 0],
-        [0, 0, 0, 0, 0, 1, 0],
-        [0, 0, 0, 1, 0, 0, 1],
-        [0, 0, 0, 0, 0, 0, 0],
-    ])
-    print('(a) Treeness: {0} | Feedforwardness: {1}  | Orderability: {2}'.format(*np.round(nx.hierarchy_coordinates(a), 2)))
-    print('(b) Treeness: {0} | Feedforwardness: {1}  | Orderability: {2}'.format(*np.round(nx.hierarchy_coordinates(b), 2)))
+    >>> a = np.array([
+    ...     [0, 0.2, 0, 0, 0],
+    ...     [0, 0, 0, 0.7, 0],
+    ...     [0, 0.4, 0, 0, 0],
+    ...     [0, 0.3, 0.1, 0, 1.0],
+    ...     [0, 0, 0, 0, 0],
+    ... ])
+    >>> b = np.array([
+    ...     [0, 0, 1, 0, 0, 0, 1],
+    ...     [0, 0, 1, 0, 0, 0, 0],
+    ...     [0, 0, 0, 0, 1, 0, 0],
+    ...     [0, 0, 1, 0, 1, 0, 0],
+    ...     [0, 0, 0, 0, 0, 1, 0],
+    ...     [0, 0, 0, 1, 0, 0, 1],
+    ...     [0, 0, 0, 0, 0, 0, 0],
+    ... ])
+    >>> print('(a) Treeness: {0} | Feedforwardness: {1}  | Orderability: {2}'.format(*np.round(nx.hierarchy_coordinates(a), 2)))
+    (a) Treeness: -0.04 | Feedforwardness: 0.87 | Orderability: 0.81
+    >>> print('(b) Treeness: {0} | Feedforwardness: {1}  | Orderability: {2}'.format(*np.round(nx.hierarchy_coordinates(b), 2)))
+    (b) Treeness: -0.5 | Feedforwardness: 0.56 | Orderability: 0.43
 
     Notes
     ______
@@ -902,6 +1064,10 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
     returns the averaged hierarchy coordinates given the adjacency matrix A
+
+    See Also
+    --------
+    feedforwardness, orderability, treeness
     """
     np_A = []
     if (
@@ -921,10 +1087,6 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
     if np.array_equal(np.unique(np_A), [0]):  # null check
         # raise Exception("Unconnected graph; trivially 0 hierarchy")  # TODO: Raise exception if undefined instead
         return 0, 0, 0
-    # if np.array_equal(np.unique(np_A), [0, 1]):  # binary check
-    #     num_thresholds = 1
-    # else:
-    #     num_thresholds = num_thresholds
 
     o, f, t = 0, 0, 0
     condensed_graphs, original_graphs = node_weighted_condense(
