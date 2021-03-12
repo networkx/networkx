@@ -97,25 +97,28 @@ def prefix_tree(paths):
         >>> sorted(recovered)
         ['ab', 'abs', 'ad']
     """
+    def get_children(parent, paths):
+        children = defaultdict(list)
+        # Populate dictionary with key(s) as the child/children of the root and
+        # value(s) as the remaining paths of the corresponding child/children
+        for path in paths:
+        # If path is empty, we add an edge to the NIL node.
+            if not path:
+                tree.add_edge(parent, NIL)
+                continue
+            child, *rest = path
+            # `child` may exist as the head of more than one path in `paths`.
+            children[child].append(rest)
+        return children
+
     # Initialize the prefix tree with a root node and a nil node.
     tree = nx.DiGraph()
     root = 0
     tree.add_node(root, source=None)
     NIL = -1
     tree.add_node(NIL, source="NIL")
-    stack = []
-    children = defaultdict(list)
-    # Populate dictionary with the key(s) as the child/children of the root and
-    # the value(s) as the remaining paths of the corresponding child/children
-    for path in paths:
-        # If path is empty, we add an edge to the NIL node.
-        if not path:
-            tree.add_edge(root, NIL)
-            continue
-        child, *rest = path
-        # `child` may exist as the head of more than one path in `paths`.
-        children[child].append(rest)
-    stack.append((root, iter(children.items())))
+    children = get_children(root, paths)
+    stack = [(root, iter(children.items()))]
     while stack:
         parent, remaining_children = stack[-1]
         try:
@@ -129,15 +132,7 @@ def prefix_tree(paths):
         # The "source" node attribute stores the original node name.
         tree.add_node(new_name, source=child)
         tree.add_edge(parent, new_name)
-        children = defaultdict(list)
-        for path in remaining_paths:
-            # If path is empty, we add an edge to the NIL node.
-            if not path:
-                tree.add_edge(new_name, NIL)
-                continue
-            child, *rest = path
-            # `child` may exist as the head of more than one path in `paths`.
-            children[child].append(rest)
+        children = get_children(new_name, remaining_paths)
         stack.append((new_name, iter(children.items())))
 
     return tree
