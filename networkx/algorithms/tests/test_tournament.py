@@ -11,9 +11,6 @@ from networkx.algorithms.tournament import score_sequence
 from networkx.algorithms.tournament import tournament_matrix
 from networkx.algorithms.tournament import index_satisfying
 
-np = pytest.importorskip("numpy")
-npt = pytest.importorskip("numpy.testing")
-
 
 def test_condition_not_satisfied():
     condition = lambda x: x > 0
@@ -32,8 +29,8 @@ def test_is_tournament():
     assert is_tournament(G)
 
 
-def test__loops():
-    """A tournament must have no -loops."""
+def test_self_loops():
+    """A tournament must have no self-loops."""
     G = DiGraph()
     G.add_edges_from([(0, 1), (1, 2), (2, 3), (3, 0), (1, 3), (0, 2)])
     G.add_edge(0, 0)
@@ -121,6 +118,8 @@ def test_score_sequence_triangle():
 
 
 def test_tournament_matrix():
+    np = pytest.importorskip("numpy")
+    npt = pytest.importorskip("numpy.testing")
     G = DiGraph([(0, 1)])
     m = tournament_matrix(G)
     npt.assert_array_equal(m.todense(), np.array([[0, 1], [-1, 0]]))
