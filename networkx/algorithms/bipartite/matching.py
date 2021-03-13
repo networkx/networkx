@@ -346,13 +346,11 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges, targ
         will continue only through edges *not* in the given matching.
 
         """
-        if along_matched:
-            get_valid_edge = lambda depth: [matched_edges, unmatched_edges][depth % 2]
-        else:
-            get_valid_edge = lambda depth: [unmatched_edges, matched_edges][depth % 2]
+        get_valid_edge = lambda depth: matched_edges if (depth % 2) else unmatched_edges
 
         visited = set()
-        stack = [(u, iter(G[u]), 0)]
+        initial_depth = 0 if along_matched else 1
+        stack = [(u, iter(G[u]), initial_depth)]
         while stack:
             parent, children, depth = stack[-1]
             valid_edges = get_valid_edge(depth)
