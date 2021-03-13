@@ -346,14 +346,14 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges, targ
         will continue only through edges *not* in the given matching.
 
         """
-        get_valid_edge = lambda depth: matched_edges if (depth % 2) else unmatched_edges
-
         visited = set()
+        # Follow matched edges when depth is even,
+        # and follow unmatched edges when depth is odd.
         initial_depth = 0 if along_matched else 1
         stack = [(u, iter(G[u]), initial_depth)]
         while stack:
             parent, children, depth = stack[-1]
-            valid_edges = get_valid_edge(depth)
+            valid_edges = matched_edges if depth % 2 else unmatched_edges
             try:
                 child = next(children)
                 if child not in visited:
