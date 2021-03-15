@@ -77,15 +77,15 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
     weight_nodes_by_condensation, graph_entropy, treeness
 
     >>> a = np.array([
-    >>>     [0, 0.2, 0, 0, 0],
-    >>>     [0, 0, 0, 0.7, 0],
-    >>>     [0, 0.4, 0, 0, 0],
-    >>>     [0, 0, 0.1, 0, 1.0],
-    >>>     [0, 0, 0, 0, 0],
-    >>> ])
+    ...     [0, 0.2, 0, 0, 0],
+    ...     [0, 0, 0, 0.7, 0],
+    ...     [0, 0.4, 0, 0, 0],
+    ...     [0, 0, 0.1, 0, 1.0],
+    ...     [0, 0, 0, 0, 0],
+    ... ])
     >>> condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
     >>> for network in condensed_networks:
-    >>>     print(f'{network}, total weight: {nx.get_node_attributes(network, "weight")}')
+    ...     print(f'{network}, total weight: {nx.get_node_attributes(network, "weight")}')
     DiGraph with 3 nodes and 2 edges, total weight: {0: 1, 1: 3, 2: 1}
     DiGraph with 5 nodes and 4 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1, 4: 1}
     DiGraph with 4 nodes and 3 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1}
@@ -209,17 +209,11 @@ def weight_nodes_by_condensation(condensed_graph):
     >>> num_thresholds = 2
     >>> condensed_networks, _ = nx.node_weighted_condense(b, num_thresholds=num_thresholds)
     >>> for network_index in range(num_thresholds):
-    ...     print(f"Network {network_index}:")
-    >>>     for node_index in range(len(condensed_networks[network_index].nodes)):
+    ...     for node_index in range(len(condensed_networks[network_index].nodes)):
     ...         print(f"Node {node_index}, new weight:", condensed_networks[network_index].nodes[node_index]["weight"])
-    >>>     print()
-
-    Network 0:
     Node 0, new weight: 1
     Node 1, new weight: 3
     Node 2, new weight: 1
-
-    Network 1:
     Node 0, new weight: 1
     Node 1, new weight: 1
     Node 2, new weight: 1
@@ -411,16 +405,12 @@ def recursive_leaf_removal(G, from_top=True, keep_linkless_layer=False):
     >>> G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
     >>> pruned_to_ground = nx.recursive_leaf_removal(G, from_top=True)
     >>> pruned_from_ground = nx.recursive_leaf_removal(G, from_top=False)
-    >>> print("Pruned from top:")
     >>> for pruned_tree in pruned_to_ground:
     ...     print(pruned_tree)
-    >>> print("Pruned from bottom:")
-    >>> for pruned_tree in pruned_from_ground:
-    >>>     print(pruned_tree)
-    Pruned from top:
     DiGraph with 7 nodes and 8 edges
     DiGraph with 5 nodes and 4 edges
-    Pruned from bottom:
+    >>> for pruned_tree in pruned_from_ground:
+    ...     print(pruned_tree)
     DiGraph with 7 nodes and 8 edges
     DiGraph with 4 nodes and 4 edges
 
@@ -553,25 +543,6 @@ def _feedforwardness_iteration(G):
     num_paths: int
         sum total paths considered
 
-    Examples
-    ---------
-
-    >>> a = np.array([
-    ...     [0, 0.2, 0, 0, 0],
-    ...     [0, 0, 0, 0.7, 0],
-    ...     [0, 0.4, 0, 0, 0],
-    ...     [0, 0, 0.1, 0, 1.0],
-    ...     [0, 0, 0, 0, 0],
-    ... ])
-    >>> condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
-    >>> for network in condensed_networks:
-    ...     print(nx.to_numpy_array(network))
-    ...     g, paths = nx._feedforwardness_iteration(network)  # obv. doesn't work as private member
-    ...     print('g: {0}, # paths: {1}'.format(g, paths))
-    [[0. 0. 0.]
-     [1. 0. 0.]
-     [0. 1. 0.]]
-
     Notes
     ______
     g(G) = sum of F over all paths from maximal to minimal nodes
@@ -639,22 +610,23 @@ def feedforwardness(DAG):
     >>> for network in condensed_networks:
     ...     print("DAG: ", network)
     ...     print("Feedforwardness: {0}".format(nx.feedforwardness(network)))
-    DAG: DiGraph with 2 nodes and 1 edges
+    DAG:  DiGraph with 2 nodes and 1 edges
     Feedforwardness: 0.4
-    DAG: DiGraph with 4 nodes and 3 edges
+    DAG:  DiGraph with 4 nodes and 3 edges
     Feedforwardness: 0.7388888888888889
-    DAG: DiGraph with 5 nodes and 4 edges
+    DAG:  DiGraph with 5 nodes and 4 edges
     Feedforwardness: 1.0
-    DAG: DiGraph with 5 nodes and 4 edges
+    DAG:  DiGraph with 5 nodes and 4 edges
     Feedforwardness: 1.0
-    DAG: DiGraph with 3 nodes and 2 edges
+    DAG:  DiGraph with 3 nodes and 2 edges
     Feedforwardness: 1.0
-    DAG: DiGraph with 3 nodes and 2 edges
+    DAG:  DiGraph with 3 nodes and 2 edges
     Feedforwardness: 1.0
-    DAG: DiGraph with 2 nodes and 1 edges
+    DAG:  DiGraph with 2 nodes and 1 edges
     Feedforwardness: 1.0
-    DAG: DiGraph with 2 nodes and 1 edges
+    DAG:  DiGraph with 2 nodes and 1 edges
     Feedforwardness: 1.0
+
 
     Notes
     ______
@@ -1053,9 +1025,9 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
     ...     [0, 0, 0, 1, 0, 0, 1],
     ...     [0, 0, 0, 0, 0, 0, 0],
     ... ])
-    >>> print('(a) Treeness: {0} | Feedforwardness: {1}  | Orderability: {2}'.format(*np.round(nx.hierarchy_coordinates(a), 2)))
+    >>> print('(a) Treeness: {0} | Feedforwardness: {1} | Orderability: {2}'.format(*np.round(nx.hierarchy_coordinates(a), 2)))
     (a) Treeness: -0.04 | Feedforwardness: 0.87 | Orderability: 0.81
-    >>> print('(b) Treeness: {0} | Feedforwardness: {1}  | Orderability: {2}'.format(*np.round(nx.hierarchy_coordinates(b), 2)))
+    >>> print('(b) Treeness: {0} | Feedforwardness: {1} | Orderability: {2}'.format(*np.round(nx.hierarchy_coordinates(b), 2)))
     (b) Treeness: -0.5 | Feedforwardness: 0.56 | Orderability: 0.43
 
     Notes
