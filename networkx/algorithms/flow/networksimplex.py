@@ -9,13 +9,18 @@ from math import ceil, sqrt
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+
 class _DataEssentialsAndFunctions:
-    def __init__( self, G, multigraph, demand="demand", capacity="capacity", weight="weight" ):
+    def __init__(
+        self, G, multigraph, demand="demand", capacity="capacity", weight="weight"
+    ):
 
         # Number all nodes and edges and hereafter reference them using ONLY their numbers
         self.node_list = list(G)  # nodes
         self.node_indices = {u: i for i, u in enumerate(self.node_list)}  # node indices
-        self.node_demands = [ G.nodes[u].get(demand, 0) for u in self.node_list ]  # node demands
+        self.node_demands = [
+            G.nodes[u].get(demand, 0) for u in self.node_list
+        ]  # node demands
 
         self.edge_sources = []  # edge sources
         self.edge_targets = []  # edge targets
@@ -52,7 +57,9 @@ class _DataEssentialsAndFunctions:
         self.next_node_dft = None  # next nodes in depth-first thread
         self.prev_node_dft = None  # previous nodes in depth-first thread
         self.last_descendent_dft = None  # last descendants in depth-first thread
-        self._spanning_tree_initilized = False  # False untill _initilize_spanning_tree() is called
+        self._spanning_tree_initilized = (
+            False  # False untill _initilize_spanning_tree() is called
+        )
 
     def _initilize_spanning_tree(self, n, faux_inf):
         self.edge_count = len(self.edge_indices)  # number of edges
@@ -316,6 +323,7 @@ class _DataEssentialsAndFunctions:
         )
         t = self.edge_targets[j] if self.edge_sources[j] == s else self.edge_sources[j]
         return j, s, t
+
 
 @not_implemented_for("undirected")
 def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
@@ -660,4 +668,3 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
                 add_entry(e[:-1] + (c,))
 
     return flow_cost, flow_dict
-    
