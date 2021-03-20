@@ -58,10 +58,10 @@ class _DataEssentialsAndFunctions:
         self.prev_node_dft = None  # previous nodes in depth-first thread
         self.last_descendent_dft = None  # last descendants in depth-first thread
         self._spanning_tree_initilized = (
-            False  # False untill _initilize_spanning_tree() is called
+            False  # False untill initilize_spanning_tree() is called
         )
 
-    def _initilize_spanning_tree(self, n, faux_inf):
+    def initilize_spanning_tree(self, n, faux_inf):
         self.edge_count = len(self.edge_indices)  # number of edges
         self.edge_flow = list(
             chain(repeat(0, self.edge_count), (abs(d) for d in self.node_demands))
@@ -83,7 +83,7 @@ class _DataEssentialsAndFunctions:
         )  # last descendants in depth-first thread
         self._spanning_tree_initilized = True  # True only if all the assignments pass
 
-    def _find_apex(self, p, q):
+    def find_apex(self, p, q):
         """
         Find the lowest common ancestor of nodes p and q in the spanning tree.
         """
@@ -105,7 +105,7 @@ class _DataEssentialsAndFunctions:
                 else:
                     return p
 
-    def _trace_path(self, p, w):
+    def trace_path(self, p, w):
         """
         Returns the nodes and edges on the path from node p to its ancestor w.
         """
@@ -117,26 +117,26 @@ class _DataEssentialsAndFunctions:
             Wn.append(p)
         return Wn, We
 
-    def _find_cycle(self, i, p, q):
+    def find_cycle(self, i, p, q):
         """
         Returns the nodes and edges on the cycle containing edge i == (p, q)
         when the latter is added to the spanning tree.
 
         The cycle is oriented in the direction from p to q.
         """
-        w = self._find_apex(p, q)
-        Wn, We = self._trace_path(p, w)
+        w = self.find_apex(p, q)
+        Wn, We = self.trace_path(p, w)
         Wn.reverse()
         We.reverse()
         if We != [i]:
             We.append(i)
-        WnR, WeR = self._trace_path(q, w)
+        WnR, WeR = self.trace_path(q, w)
         del WnR[-1]
         Wn += WnR
         We += WeR
         return Wn, We
 
-    def _augment_flow(self, Wn, We, f):
+    def augment_flow(self, Wn, We, f):
         """
         Augment f units of flow along a cycle represented by Wn and We.
         """
@@ -146,7 +146,7 @@ class _DataEssentialsAndFunctions:
             else:
                 self.edge_flow[i] -= f
 
-    def _trace_subtree(self, p):
+    def trace_subtree(self, p):
         """
         Yield the nodes in the subtree rooted at a node p.
         """
@@ -156,7 +156,7 @@ class _DataEssentialsAndFunctions:
             p = self.next_node_dft[p]
             yield p
 
-    def _remove_edge(self, s, t):
+    def remove_edge(self, s, t):
         """
         Remove an edge (s, t) where parent[t] == s from the spanning tree.
         """
@@ -180,7 +180,7 @@ class _DataEssentialsAndFunctions:
                 self.last_descendent_dft[s] = prev_t
             s = self.parent[s]
 
-    def _make_root(self, q):
+    def make_root(self, q):
         """
         Make a node q the root of its containing subtree.
         """
@@ -218,7 +218,7 @@ class _DataEssentialsAndFunctions:
             self.prev_node_dft[q] = last_p
             self.last_descendent_dft[q] = last_p
 
-    def _add_edge(self, i, p, q):
+    def add_edge(self, i, p, q):
         """
         Add an edge (p, q) to the spanning tree where q is the root of a subtree.
         """
@@ -242,7 +242,7 @@ class _DataEssentialsAndFunctions:
                 self.last_descendent_dft[p] = last_q
             p = self.parent[p]
 
-    def _update_potentials(self, i, p, q):
+    def update_potentials(self, i, p, q):
         """
         Update the potentials of the nodes in the subtree rooted at a node
         q connected to its parent p by an edge i.
@@ -251,10 +251,10 @@ class _DataEssentialsAndFunctions:
             d = self.node_potentials[p] - self.edge_weights[i] - self.node_potentials[q]
         else:
             d = self.node_potentials[p] + self.edge_weights[i] - self.node_potentials[q]
-        for q in self._trace_subtree(q):
+        for q in self.trace_subtree(q):
             self.node_potentials[q] += d
 
-    def _reduced_cost(self, i):
+    def reduced_cost(self, i):
         """Returns the reduced cost of an edge i."""
         c = (
             self.edge_weights[i]
@@ -263,7 +263,7 @@ class _DataEssentialsAndFunctions:
         )
         return c if self.edge_flow[i] == 0 else -c
 
-    def _find_entering_edges(self):
+    def find_entering_edges(self):
         """Yield entering edges until none can be found."""
         if self.edge_count == 0:
             return
@@ -287,8 +287,8 @@ class _DataEssentialsAndFunctions:
                 edges = chain(range(f, self.edge_count), range(l))
             f = l
             # Find the first edge with the lowest reduced cost.
-            i = min(edges, key=self._reduced_cost)
-            c = self._reduced_cost(i)
+            i = min(edges, key=self.reduced_cost)
+            c = self.reduced_cost(i)
             if c >= 0:
                 # No entering edge found in the current block.
                 m += 1
@@ -305,7 +305,7 @@ class _DataEssentialsAndFunctions:
         # All edges have nonnegative reduced costs. The current flow is
         # optimal.
 
-    def _residual_capacity(self, i, p):
+    def residual_capacity(self, i, p):
         """Returns the residual capacity of an edge i in the direction away
         from its endpoint p.
         """
@@ -315,11 +315,11 @@ class _DataEssentialsAndFunctions:
             else self.edge_flow[i]
         )
 
-    def _find_leaving_edge(self, Wn, We):
+    def find_leaving_edge(self, Wn, We):
         """Returns the leaving edge in a cycle represented by Wn and We."""
         j, s = min(
             zip(reversed(We), reversed(Wn)),
-            key=lambda i_p: self._residual_capacity(*i_p),
+            key=lambda i_p: self.residual_capacity(*i_p),
         )
         t = self.edge_targets[j] if self.edge_sources[j] == s else self.edge_sources[j]
         return j, s, t
@@ -575,16 +575,16 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     DEAF.edge_capacities.extend(repeat(faux_inf, n))
 
     # Construct the initial spanning tree.
-    DEAF._initilize_spanning_tree(n, faux_inf)
+    DEAF.initilize_spanning_tree(n, faux_inf)
 
     ###########################################################################
     # Pivot loop
     ###########################################################################
 
-    for i, p, q in DEAF._find_entering_edges():
-        Wn, We = DEAF._find_cycle(i, p, q)
-        j, s, t = DEAF._find_leaving_edge(Wn, We)
-        DEAF._augment_flow(Wn, We, DEAF._residual_capacity(j, s))
+    for i, p, q in DEAF.find_entering_edges():
+        Wn, We = DEAF.find_cycle(i, p, q)
+        j, s, t = DEAF.find_leaving_edge(Wn, We)
+        DEAF.augment_flow(Wn, We, DEAF.residual_capacity(j, s))
         # Do nothing more if the entering edge is the same as the leaving edge.
         if i != j:
             if DEAF.parent[t] != s:
@@ -593,10 +593,10 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
             if We.index(i) > We.index(j):
                 # Ensure that q is in the subtree rooted at t.
                 p, q = q, p
-            DEAF._remove_edge(s, t)
-            DEAF._make_root(q)
-            DEAF._add_edge(i, p, q)
-            DEAF._update_potentials(i, p, q)
+            DEAF.remove_edge(s, t)
+            DEAF.make_root(q)
+            DEAF.add_edge(i, p, q)
+            DEAF.update_potentials(i, p, q)
 
     ###########################################################################
     # Infeasibility and unboundedness detection
