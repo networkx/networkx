@@ -605,7 +605,7 @@ def transitive_reduction(G):
         msg = "Directed Acyclic Graph required for transitive_reduction"
         raise nx.NetworkXError(msg)
     TR = nx.DiGraph()
-    TR.add_nodes_from(G.nodes())
+    TR.add_nodes_from(G.nodes(data=True))
     descendants = {}
     # count before removing set stored in descendants
     check_count = dict(G.in_degree)
@@ -619,7 +619,7 @@ def transitive_reduction(G):
             check_count[v] -= 1
             if check_count[v] == 0:
                 del descendants[v]
-        TR.add_edges_from((u, v) for v in u_nbrs)
+        TR.add_edges_from((u, v, G.edges[u, v]) for v in u_nbrs)
     return TR
 
 
