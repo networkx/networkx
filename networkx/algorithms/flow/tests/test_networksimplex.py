@@ -2,13 +2,14 @@ import pytest
 import networkx as nx
 import os
 
+
 class TestNetworkSimplex:
-    def get_flowcost_from_flowdict(self,G,flowDict):
+    def get_flowcost_from_flowdict(self, G, flowDict):
         """Returns flow cost calculated from flow dictionary"""
         flowCost = 0
         for u in flowDict.keys():
             for v in flowDict[u].keys():
-                flowCost+=flowDict[u][v]*G[u][v]['weight']
+                flowCost += flowDict[u][v] * G[u][v]["weight"]
         return flowCost
 
     def test_infinite_demand_raise(self):
@@ -62,7 +63,7 @@ class TestNetworkSimplex:
             G.add_edge("b", "d", weight=1, capacity=9)
             G.add_edge("c", "d", weight=2, capacity=5)
             flowCost, flowDict = nx.network_simplex(G)
-    
+
     def test_negative_capacity_raise(self):
         with pytest.raises(nx.NetworkXUnfeasible):
             G = nx.DiGraph()
@@ -105,22 +106,27 @@ class TestNetworkSimplex:
         https://developers.google.com/optimization/flow/mincostflow
         """
         G = nx.DiGraph()
-        start_nodes = [ 0, 0,  1, 1,  1,  2, 2,  3, 4]
-        end_nodes   = [ 1, 2,  2, 3,  4,  3, 4,  4, 2]
-        capacities  = [15, 8, 20, 4, 10, 15, 4, 20, 5]
-        unit_costs  = [ 4, 4,  2, 2,  6,  1, 3,  2, 3]
+        start_nodes = [0, 0, 1, 1, 1, 2, 2, 3, 4]
+        end_nodes = [1, 2, 2, 3, 4, 3, 4, 4, 2]
+        capacities = [15, 8, 20, 4, 10, 15, 4, 20, 5]
+        unit_costs = [4, 4, 2, 2, 6, 1, 3, 2, 3]
         supplies = [20, 0, 0, -5, -15]
         answer = 150
 
         for i in range(len(supplies)):
-            G.add_node(i,demand=(-1)*supplies[i]) # supplies are negative of demand
+            G.add_node(i, demand=(-1) * supplies[i])  # supplies are negative of demand
 
         for i in range(len(start_nodes)):
-            G.add_edge(start_nodes[i], end_nodes[i], weight=unit_costs[i], capacity=capacities[i])
-        
+            G.add_edge(
+                start_nodes[i],
+                end_nodes[i],
+                weight=unit_costs[i],
+                capacity=capacities[i],
+            )
+
         flowCost, flowDict = nx.network_simplex(G)
         assert flowCost == answer
-        assert flowCost == self.get_flowcost_from_flowdict(G,flowDict)
+        assert flowCost == self.get_flowcost_from_flowdict(G, flowDict)
 
     def test_google_or_tools_example2(self):
         """
@@ -135,14 +141,19 @@ class TestNetworkSimplex:
         answer = 183
 
         for i in range(len(supplies)):
-            G.add_node(i,demand=(-1)*supplies[i]) # supplies are negative of demand
+            G.add_node(i, demand=(-1) * supplies[i])  # supplies are negative of demand
 
         for i in range(len(start_nodes)):
-            G.add_edge(start_nodes[i], end_nodes[i], weight=unit_costs[i], capacity=capacities[i])
-        
+            G.add_edge(
+                start_nodes[i],
+                end_nodes[i],
+                weight=unit_costs[i],
+                capacity=capacities[i],
+            )
+
         flowCost, flowDict = nx.network_simplex(G)
         assert flowCost == answer
-        assert flowCost == self.get_flowcost_from_flowdict(G,flowDict)
+        assert flowCost == self.get_flowcost_from_flowdict(G, flowDict)
 
     def test_large(self):
         fname = os.path.join(os.path.dirname(__file__), "netgen-2.gpickle.bz2")
@@ -365,26 +376,26 @@ class TestNetworkSimplex:
         assert H == {0: {1: 2, 2: 2, 3: 0}, 1: {}, 2: {}, 3: {}, 4: {3: 2}, 5: {3: 2}}
 
     def test_exceptions(self):
-        G = nx.Graph() 
-        pytest.raises(nx.NetworkXNotImplemented, nx.network_simplex, G) # undirected graph
-        G = nx.MultiGraph() 
-        pytest.raises(nx.NetworkXNotImplemented, nx.network_simplex, G) # Multigraph
-        G = nx.DiGraph() 
-        pytest.raises(nx.NetworkXError, nx.network_simplex, G) # Empty graph
-        G.add_node(0, demand=float("inf")) 
-        pytest.raises(nx.NetworkXError, nx.network_simplex, G) # infinity demand
+        G = nx.Graph()
+        pytest.raises(nx.NetworkXNotImplemented, nx.network_simplex, G)
+        G = nx.MultiGraph()
+        pytest.raises(nx.NetworkXNotImplemented, nx.network_simplex, G)
+        G = nx.DiGraph()
+        pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+        G.add_node(0, demand=float("inf"))
+        pytest.raises(nx.NetworkXError, nx.network_simplex, G)
         G.nodes[0]["demand"] = -float("inf")
-        pytest.raises(nx.NetworkXError, nx.network_simplex, G)  # negative infinity demand
+        pytest.raises(nx.NetworkXError, nx.network_simplex, G)
         G.nodes[0]["demand"] = 0
         G.add_node(1, demand=0)
-        G.add_edge(0, 1, weight=-float("inf")) 
-        pytest.raises(nx.NetworkXError, nx.network_simplex, G) # negative infinity weight
+        G.add_edge(0, 1, weight=-float("inf"))
+        pytest.raises(nx.NetworkXError, nx.network_simplex, G)
         G[0][1]["weight"] = 0
         G.add_edge(0, 0, weight=float("inf"))
-        pytest.raises(nx.NetworkXError, nx.network_simplex, G) # infinity weight
+        pytest.raises(nx.NetworkXError, nx.network_simplex, G)
         G[0][0]["weight"] = 0
         G[0][1]["capacity"] = -1
-        pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G) # negative capacity
+        pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
         G[0][1]["capacity"] = 0
         G[0][0]["capacity"] = -1
-        pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G) # negative capacity
+        pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
