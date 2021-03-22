@@ -32,7 +32,7 @@ def test_modularity_communities_weighted():
         else:
             G[a][b]["weight"] = 1.0
 
-    expected = [frozenset({0, 1, 3, 4, 7, 8, 9, 10}), frozenset({2, 5, 6, 11, 12, 13, 14})]
+    expected = [{0, 1, 3, 4, 7, 8, 9, 10}, {2, 5, 6, 11, 12, 13, 14}]
     
     assert greedy_modularity_communities(G, weight="weight") == expected
 
