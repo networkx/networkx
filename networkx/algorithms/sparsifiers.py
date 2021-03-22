@@ -289,5 +289,7 @@ def _add_edge_to_spanner(H, residual_graph, u, v, weight):
         The edge attribute to use as distance.
     """
     H.add_edge(u, v)
+    for attr, value in residual_graph[u][v].items():
+        H[u][v][attr] = value
     if weight:
         H[u][v][weight] = residual_graph[u][v]["weight"][0]
