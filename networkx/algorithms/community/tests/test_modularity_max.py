@@ -28,13 +28,13 @@ def test_modularity_communities_weighted():
     G = nx.balanced_tree(2, 3)
     for (a, b) in G.edges:
         if ((a == 1) | (a == 2)) & (b != 0):
-            G[a][b]['weight'] = 10.
+            G[a][b]["weight"] = 10.0
         else:
-            G[a][b]['weight'] = 1.
+            G[a][b]["weight"] = 1.0
 
     expected = [frozenset({0, 1, 3, 4, 7, 8, 9, 10}), frozenset({2, 5, 6, 11, 12, 13, 14})]
     
-    assert greedy_modularity_communities(G, weight='weight') == expected
+    assert greedy_modularity_communities(G, weight="weight") == expected
 
 
 def test_resolution_parameter_impact():
