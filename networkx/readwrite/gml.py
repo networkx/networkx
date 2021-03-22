@@ -288,7 +288,7 @@ def parse_gml_lines(lines, label, destringizer):
         patterns = [
             r"[A-Za-z][0-9A-Za-z_]*\b",  # keys
             # reals
-            r"[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*|INF)(?:[Ee][+-]?[0-9]+)?|_NAN",
+            r"[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*|INF)(?:[Ee][+-]?[0-9]+)?",
             r"[+-]?[0-9]+",  # ints
             r'".*?"',  # strings
             r"\[",  # dict start
@@ -311,8 +311,7 @@ def parse_gml_lines(lines, label, destringizer):
                         if i == 0:  # keys
                             value = group.rstrip()
                         elif i == 1:  # reals
-                            value = group.replace("_", "")  # handle incoming nan
-                            value = float(value)
+                            value = float(group)
                         elif i == 2:  # ints
                             value = int(group)
                         else:
@@ -371,6 +370,15 @@ def parse_gml_lines(lines, label, destringizer):
                             + " convertable ASCII value for node id or label"
                         )
                         unexpected(curr_token, msg)
+                # Special handling for nan and infinity.  Since the gml language
+                # defines unquoted strings as keys, the numeric and string branches
+                # are skipped and we end up in this special branch, so we need to
+                # convert the current token value to a float for NAN and plain INF.
+                # +/-INF are handled in the pattern for 'reals' in tokenize().  This
+                # allows labels and values to be nan or infinity, but not keys.
+                elif curr_token.value in {"NAN", "INF"}:
+                    value = float(curr_token.value)
+                    curr_token = next(tokens)
                 else:  # Otherwise error out
                     unexpected(curr_token, "an int, float, string or '['")
             dct[key].append(value)
@@ -681,12 +689,9 @@ def generate_gml(G, stringizer=None):
                     yield indent + key + " " + str(value)
             elif isinstance(value, float):
                 text = repr(value).upper()
-                # GML matches INF and NAN to keys, so prepend + to INF and _ to NAN
-                # so they can be correctly detected.  Use repr(float(*)) instead of
-                # string literal to future proof against changes to repr.
-                if text == repr(float("nan")).upper():
-                    text = "_" + text
-                elif text == repr(float("inf")).upper():
+                # GML matches INF to keys, so prepend + to INF. Use repr(float(*))
+                # instead of string literal to future proof against changes to repr.
+                if text == repr(float("inf")).upper():
                     text = "+" + text
                 else:
                     # GML requires that a real literal contain a decimal point, but
