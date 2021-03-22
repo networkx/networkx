@@ -674,8 +674,10 @@ def feedforwardness(DAG):
 
 @not_implemented_for("undirected")
 def graph_entropy(DAG, forward_entropy=False):
-    """WIP: Detail after confirmation of methodology from Prof. Sole
+    """Measures uncertainty in following all directed paths through the network.
 
+    computed by summing over the probability of transition from every maximal (minimal) node to all others,
+    to yield forward (backward) entropy. transition probabilities are calculated via powers of the modified adjacency matrix.
 
     Parameters
     ----------
@@ -692,26 +694,35 @@ def graph_entropy(DAG, forward_entropy=False):
 
     Examples
     ---------
-    b = np.array([
-        [0, 0, 1, 0, 0, 0, 1],
-        [0, 0, 1, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0],
-        [0, 0, 1, 0, 1, 0, 0],
-        [0, 0, 0, 0, 0, 1, 0],
-        [0, 0, 0, 1, 0, 0, 1],
-        [0, 0, 0, 0, 0, 0, 0],
-    ])
+    >>> b = np.array([
+    ...     [0, 0, 1, 0, 0, 0, 1],
+    ...     [0, 0, 1, 0, 0, 0, 0],
+    ...     [0, 0, 0, 0, 1, 0, 0],
+    ...     [0, 0, 1, 0, 1, 0, 0],
+    ...     [0, 0, 0, 0, 0, 1, 0],
+    ...     [0, 0, 0, 1, 0, 0, 1],
+    ...     [0, 0, 0, 0, 0, 0, 0],
+    ... ])
 
-    condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph)))
-    fwd_graph_entropy = [round(nx.graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
-    bkwd_graph_entropy = [round(nx.graph_entropy(net), 3) for net in condensed_network_layers]
-    print("fwd graph entropy (from top | bottom): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
+    >>> condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph)))
+    >>> fwd_graph_entropy = [round(nx.graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
+    >>> bkwd_graph_entropy = [round(nx.graph_entropy(net), 3) for net in condensed_network_layers]
+    >>> print("graph entropy (from top | bottom): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
+    graph entropy (from top | bottom): [0.52, 0.0] | [1.04, 0.0]
 
     Notes
     ______
-    As described in the text of _[1]:
-    Graph Entropy, B(G)_ij, is measure of probability of crossing a node n_j when following a path from n_i.
-    Found in _[1], proposed and developed in _[2], _[3].
+    WIP: Detail after confirmation of methodology from Prof. Sole.
+
+    As described in the text of _[1], proposed and developed in _[2], _[3]:
+    Graph Entropy, is measure of probability of crossing a node n_j when following a path from n_i.
+
+    _Forward_ entropy:
+    .. math:: H_f(G_C) = \frac{1}{|M|} \sum_{v_i \in M} \sum_{v_k \in V \setminus \mu} P(v_i \right v_k) \cdot log k_{out}(v_k)
+    _Backward_ entropy:
+    .. math:: H_b(G_C) = \frac{1}{|\mu|} \sum_{v_i \in \mu} \sum_{v_k \in V_C \setminus M} P(v_i \leftarrow v_k) \cdot log k_{in}(v_k)
+    where :math:`\mu` (M) is the set of minimal (maximal) nodes, and :math:`P(v_i \leftarrow v_k)` indicates
+    the probability of transition between :math:`v_k` and :math:`v_i`.
 
     .. [1] "On the origins of hierarchy in complex networks."
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
@@ -724,7 +735,6 @@ def graph_entropy(DAG, forward_entropy=False):
     .. [3] "Measuring the hierarchy of feedforward networks."
     Corominas-Murtra, Bernat, Carlos Rodríguez-Caso, Joaquin Goni, and Ricard Solé.
     Chaos: An Interdisciplinary Journal of Nonlinear Science 21, no. 1 (2011): pg 016108.
-
 
     """
     if not nx.is_directed_acyclic_graph(DAG):
@@ -769,8 +779,11 @@ def graph_entropy(DAG, forward_entropy=False):
 
 @not_implemented_for("undirected")
 def infographic_graph_entropy(DAG, forward_entropy=False):
-    """WIP: Detail after confirmation of methodology from Prof. Sole
+    """Measures uncertainty in following all directed paths through the network.
 
+    Computed by summing over the probability of transition from every maximal (minimal) node to all others,
+    to yield forward (backward) entropy. Transition probabilities are calculated via brute force computation
+    considering the number of branches along each path.
 
     Parameters
     ----------
@@ -783,30 +796,39 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
     Return
     -------
     entropy: float
-        graph entropy, in [1]_, eq.14/16 ( H_b/f (G_C) )
+        graph entropy
 
     Examples
     ---------
-    b = np.array([
-        [0, 0, 1, 0, 0, 0, 1],
-        [0, 0, 1, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0],
-        [0, 0, 1, 0, 1, 0, 0],
-        [0, 0, 0, 0, 0, 1, 0],
-        [0, 0, 0, 1, 0, 0, 1],
-        [0, 0, 0, 0, 0, 0, 0],
-    ])
+    >>> b = np.array([
+    ...     [0, 0, 1, 0, 0, 0, 0],
+    ...     [0, 0, 1, 0, 0, 0, 1],
+    ...     [0, 0, 0, 0, 1, 0, 0],
+    ...     [0, 0, 1, 0, 1, 0, 0],
+    ...     [0, 0, 0, 0, 0, 1, 0],
+    ...     [0, 0, 0, 1, 0, 0, 1],
+    ...     [0, 0, 0, 0, 0, 0, 0],
+    ... ])
 
-    condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph)))
-    fwd_graph_entropy = [round(nx.infographic_graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
-    bkwd_graph_entropy = [round(nx.infographic_graph_entropy(net), 3) for net in condensed_network_layers]
-    print("fwd graph entropy (from top | bottom): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
+    >>> condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph)))
+    >>> fwd_graph_entropy = [round(nx.infographic_graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
+    >>> bkwd_graph_entropy = [round(nx.infographic_graph_entropy(net), 3) for net in condensed_network_layers]
+    >>> print("graph entropy (from top | bottom): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
+    graph entropy (from top | bottom): [0.347, 0.0] | [1.04, 0.0]
 
     Notes
     ______
-    As described in the infographic of _[1] (figure 14):
-    Graph Entropy, B(G)_ij, is measure of probability of crossing a node n_j when following a path from n_i.
-    Found in _[1], proposed and developed in _[2], _[3].
+    WIP: Detail after confirmation of methodology from Prof. Sole.
+
+    As described in the text of _[1], proposed and developed in _[2], _[3]:
+    Graph Entropy, is measure of probability of crossing a node n_j when following a path from n_i.
+
+    _Forward_ entropy:
+    .. math:: H_f(G_C) = \frac{1}{|M|} \sum_{v_i \in M} \sum_{v_k \in V \setminus \mu} P(v_i \right v_k) \cdot log k_{out}(v_k)
+    _Backward_ entropy:
+    .. math:: H_b(G_C) = \frac{1}{|\mu|} \sum_{v_i \in \mu} \sum_{v_k \in V_C \setminus M} P(v_i \leftarrow v_k) \cdot log k_{in}(v_k)
+    where :math:`\mu` (M) is the set of minimal (maximal) nodes, and :math:`P(v_i \leftarrow v_k)` indicates
+    the probability of transition between :math:`v_k` and :math:`v_i`, as the inverse of the sum of non-binary branchings.
 
     .. [1] "On the origins of hierarchy in complex networks."
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
@@ -872,6 +894,10 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
 def _single_graph_treeness(DAG):
     """Evaluates treeness of a directed, acyclic, unweighted graph.
 
+    Treeness measures how consistently the network branches along the directed connections.
+    Alternatively, how maximal nodes feed to otherwise maximal nodes;
+    do edges connect to nodes with more edges further down the hierarchy?
+
     Parameters
     ----------
     DAG: NetworkX Graph
@@ -884,16 +910,18 @@ def _single_graph_treeness(DAG):
 
     Examples
     ---------
-    a = np.array([
-        [0, 0, 1, 1, 0, 0, 0],
-        [0, 0, 1, 1, 0, 0, 0],
-        [0, 0, 0, 0, 1, 1, 0],
-        [0, 0, 0, 0, 0, 1, 1],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-    ])
-    print("treeness (single graph): {0}".format(nx.single_graph_treeness(condensed_networks)))
+    >>> a = np.array([
+    ...     [0, 0, 1, 1, 0, 0, 0],
+    ...     [0, 0, 1, 1, 0, 0, 0],
+    ...     [0, 0, 0, 0, 1, 1, 0],
+    ...     [0, 0, 0, 0, 0, 1, 1],
+    ...     [0, 0, 0, 0, 0, 0, 0],
+    ...     [0, 0, 0, 0, 0, 0, 0],
+    ...     [0, 0, 0, 0, 0, 0, 0],
+    ... ])
+    >>> condensed_network = nx.node_weighted_condense(a)[0][0]
+    >>> print("treeness (single graph): {0}".format(np.round(_single_graph_treeness(condensed_network), 3)))
+    treeness (single graph): 0.667
 
     Notes
     ______
