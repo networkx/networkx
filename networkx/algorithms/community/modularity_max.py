@@ -1,6 +1,3 @@
-# TODO:
-#   - Alter equations for weighted case
-#   - Write tests for weighted case
 """Functions for detecting communities based on modularity.
 """
 
