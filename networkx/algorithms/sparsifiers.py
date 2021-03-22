@@ -68,7 +68,7 @@ def spanner(G, stretch, weight=None, seed=None):
 
     # initialize spanner H with empty edge set
     H = nx.empty_graph()
-    H.add_nodes_from(G.nodes)
+    H.add_nodes_from(G.nodes.items())
 
     # phase 1: forming the clusters
     # the residual graph has V' from the paper as its node set
