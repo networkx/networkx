@@ -10,8 +10,6 @@ References
 .. [1] https://en.wikipedia.org/wiki/Graph_minor
 """
 
-from networkx.algorithms.minors import contraction
-
 from networkx.algorithms.minors.contraction import (
     contracted_edge,
     contracted_nodes,
@@ -23,7 +21,6 @@ from networkx.algorithms.minors.contraction import (
 __all__ = [
     "contracted_edge",
     "contracted_nodes",
-    "contraction",
     "equivalence_classes",
     "identified_nodes",
     "quotient_graph",
