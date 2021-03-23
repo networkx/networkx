@@ -1,6 +1,5 @@
 import pytest
 import networkx as nx
-import numpy as np
 
 
 def compare_hashed_graphs(*Gs):
@@ -95,6 +94,8 @@ def test_weight_nodes_by_condensation():
 
 
 def test_node_weighted_condense():
+    import numpy as np
+
     center_cycle_A = np.array(
         [
             [0, 1, 0, 0, 0, 0, 0],
@@ -109,7 +110,7 @@ def test_node_weighted_condense():
     center_cycle = [(0, 1), (1, 2), (2, 3), (3, 1), (3, 4), (5, 6), (6, 5)]
     G = nx.DiGraph(center_cycle)  # unit weights by default
     compare_hashed_graphs(
-        nx.from_numpy_matrix(A=center_cycle_A, create_using=nx.DiGraph), G
+        nx.from_numpy_array(A=center_cycle_A, create_using=nx.DiGraph), G
     )
 
     condensed_G, original_G = nx.node_weighted_condense(A=center_cycle_A)
@@ -156,6 +157,8 @@ def test_orderability():
 
 
 def test_feedforwardness():
+    import numpy as np
+
     infographic_network = [
         (0, 2),
         (1, 2),
@@ -187,12 +190,23 @@ def test_infographic_graph_entropy():
 
 
 def test_treeness():
-    pass
-    # awaits response from Professor Solé regarding graph entropy evaluation
+    import numpy as np
 
-    # infographic_network = [(0, 2), (1, 2), (1, 6), (2, 4), (3, 2), (3, 4), (4, 5), (5, 3), (5, 6)]
-    # G = nx.weight_nodes_by_condensation(nx.condensation(nx.DiGraph(infographic_network)))
-    # assert np.round(nx.feedforwardness(G), 2) == 0.55
+    infographic_network = [
+        (0, 2),
+        (1, 2),
+        (1, 6),
+        (2, 4),
+        (3, 2),
+        (3, 4),
+        (4, 5),
+        (5, 3),
+        (5, 6),
+    ]
+    G = nx.weight_nodes_by_condensation(
+        nx.condensation(nx.DiGraph(infographic_network))
+    )
+    assert np.round(nx.feedforwardness(G), 2) == 0.56
 
 
 def test_hierarchy_coordinate():
