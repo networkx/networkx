@@ -22,7 +22,6 @@ Originally from [1]_, adapted implementation accommodates weighted network. For 
 
 import networkx as nx
 from networkx.utils import not_implemented_for
-import numpy as np
 import copy
 
 # from sklearn.preprocessing import normalize
@@ -76,6 +75,7 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
     --------
     weight_nodes_by_condensation, graph_entropy, treeness
 
+    >>> import numpy as np
     >>> a = np.array([
     ...     [0, 0.2, 0, 0, 0],
     ...     [0, 0, 0, 0.7, 0],
@@ -108,6 +108,7 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
     """
+    import numpy as np
 
     if np.array_equal(np.unique(A), [0, 1]):  # binary check
         num_thresholds = 1
@@ -198,6 +199,7 @@ def weight_nodes_by_condensation(condensed_graph):
     Examples
     --------
     Visualization also recommended here (with node size prop. weighting)
+    >>> import numpy as np
     >>> b = np.array([
     ...     [0, 0.2, 0, 0, 0],
     ...     [0, 0, 0, 0.7, 0],
@@ -268,6 +270,7 @@ def max_min_layers(G, max_layer=True):
         list of node indices as ints
 
     Examples:
+    >>> import numpy as np
     >>> a = np.array([
     ...     [0, 0, 1, 1, 0, 0, 0],
     ...     [0, 0, 1, 1, 0, 0, 0],
@@ -321,6 +324,7 @@ def leaf_removal(G, top=True):
 
     Examples:
     ---------
+    >>> import numpy as np
     >>> a = np.array([
     ...   [0, 0, 1, 1, 0, 0, 0],
     ...   [0, 0, 1, 1, 0, 0, 0],
@@ -393,6 +397,7 @@ def recursive_leaf_removal(G, from_top=True, keep_linkless_layer=False):
 
     Examples
     ---------
+    >>> import numpy as np
     >>> a = np.array([
     ...     [0, 0, 1, 1, 0, 0, 0],
     ...     [0, 0, 1, 1, 0, 0, 0],
@@ -469,6 +474,7 @@ def orderability(
 
     Examples
     ---------
+    >>> import numpy as np
     >>> a = np.array([
     ...     [0, 0.2, 0, 0, 0],
     ...     [0, 0, 0, 0.7, 0],
@@ -492,13 +498,15 @@ def orderability(
     --------
     treeness, feedforwardness, hierarchy_coordinates
     """
+    from numpy import array_equal, unique
+
     if not G.is_directed():
         raise nx.NetworkXError(
             "G must be a directed graph for any hierarchy coordinate evaluation"
         )
 
-    if not np.array_equal(
-        np.unique(nx.to_numpy_array(G)), [0, 1]
+    if not array_equal(
+        unique(nx.to_numpy_array(G)), [0, 1]
     ):  # unweighted (non-binary) check
         o = 0
         condensed_graphs, original_graphs = node_weighted_condense(
@@ -599,6 +607,7 @@ def feedforwardness(DAG):
 
     Examples
     ---------
+    >>> import numpy as np
     >>> a = np.array([
     ...     [0, 0.2, 0, 0, 0],
     ...     [0.4, 0, 0, 0.7, 0],
@@ -694,6 +703,7 @@ def graph_entropy(DAG, forward_entropy=False):
 
     Examples
     ---------
+    >>> import numpy as np
     >>> b = np.array([
     ...     [0, 0, 1, 0, 0, 0, 1],
     ...     [0, 0, 1, 0, 0, 0, 0],
@@ -737,6 +747,8 @@ def graph_entropy(DAG, forward_entropy=False):
     Chaos: An Interdisciplinary Journal of Nonlinear Science 21, no. 1 (2011): pg 016108.
 
     """
+    from numpy import power, log
+
     if not nx.is_directed_acyclic_graph(DAG):
         raise nx.NetworkXError(
             "G must be a directed acyclic graph for graph entropy evaluation"
@@ -751,14 +763,14 @@ def graph_entropy(DAG, forward_entropy=False):
         # as w sklearn: B_prime = normalize(nx.to_numpy_array(dag), axis=1, norm='max')  # Row normalization
         B_prime = _matrix_normalize(nx.to_numpy_array(dag), row_normalize=True)
         P = sum(
-            [np.power(B_prime, k) for k in range(1, L_GC + 1)]
+            [power(B_prime, k) for k in range(1, L_GC + 1)]
         )  # +1 as k \in ( 1, L(G_C) )
         # TODO: Not so sure about this unless k coincides with the number of steps already taken (and the sum is odd)
         # (Presently awaiting response from original authors for clarification)
     else:
         # as w sklearn: B = normalize(nx.to_numpy_array(dag), axis=0, norm='max')  # Column normalization
         B = _matrix_normalize(nx.to_numpy_array(dag), row_normalize=False)
-        P = sum([np.power(B, k) for k in range(1, L_GC + 1)])
+        P = sum([power(B, k) for k in range(1, L_GC + 1)])
 
     boundary_layer = max_min_layers(dag, max_layer=forward_entropy)
     non_extremal_nodes = set(dag.nodes() - boundary_layer)
@@ -766,11 +778,11 @@ def graph_entropy(DAG, forward_entropy=False):
     for layer_node in boundary_layer:
         for non_extremal_node in non_extremal_nodes:
             if forward_entropy:
-                entropy += P[layer_node][non_extremal_node] * np.log(
+                entropy += P[layer_node][non_extremal_node] * log(
                     dag.out_degree(layer_node)
                 )  # nan for 0 outdegree
             else:
-                entropy += P[non_extremal_node][layer_node] * np.log(
+                entropy += P[non_extremal_node][layer_node] * log(
                     dag.in_degree(layer_node)
                 )
     entropy /= len(boundary_layer)
@@ -800,6 +812,7 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
 
     Examples
     ---------
+    >>> import numpy as np
     >>> b = np.array([
     ...     [0, 0, 1, 0, 0, 0, 0],
     ...     [0, 0, 1, 0, 0, 0, 1],
@@ -842,6 +855,8 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
     Corominas-Murtra, Bernat, Carlos Rodríguez-Caso, Joaquin Goni, and Ricard Solé.
     Chaos: An Interdisciplinary Journal of Nonlinear Science 21, no. 1 (2011): pg 016108.
     """
+    from numpy import log
+
     if not nx.is_directed_acyclic_graph(DAG):
         raise nx.NetworkXError(
             "G must be a directed acyclic graph for graph entropy evaluation"
@@ -885,7 +900,7 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
                     )
                     if n == 0:
                         n = 1
-                entropy += np.log(n) / n
+                entropy += log(n) / n
     entropy /= len(start_layer)
     return entropy
 
@@ -910,6 +925,7 @@ def _single_graph_treeness(DAG):
 
     Examples
     ---------
+    >>> import numpy as np
     >>> a = np.array([
     ...     [0, 0, 1, 1, 0, 0, 0],
     ...     [0, 0, 1, 1, 0, 0, 0],
@@ -962,6 +978,7 @@ def treeness(DAG):
 
     Examples
     ---------
+    >>> import numpy as np
     >>> a = np.array([
     ...     [0, 0, 1, 0, 0, 0, 1],
     ...     [0, 0, 1, 0, 0, 0, 0],
@@ -1037,6 +1054,7 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
 
     Examples
     ---------
+    >>> import numpy as np
     >>> a = np.array([
     ...     [0, 0.2, 0, 0, 0],
     ...     [0, 0, 0, 0.7, 0],
@@ -1069,6 +1087,8 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
     --------
     feedforwardness, orderability, treeness
     """
+    from numpy import ndarray, array_equal, unique
+
     np_A = []
     if (
         isinstance(A, nx.DiGraph)
@@ -1077,14 +1097,14 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
         or isinstance(A, nx.MultiDiGraph)
     ):
         np_A = nx.to_numpy_array(A)
-    elif isinstance(A, np.ndarray):
+    elif isinstance(A, ndarray):
         np_A = A
     else:
         print(
             "A must be given as either a networkx graph or adjacency matrix (as nested list or 2d numpy array)"
         )
 
-    if np.array_equal(np.unique(np_A), [0]):  # null check
+    if array_equal(unique(np_A), [0]):  # null check
         # raise Exception("Unconnected graph; trivially 0 hierarchy")  # TODO: Raise exception if undefined instead
         return 0, 0, 0
 
@@ -1146,13 +1166,15 @@ def _distribute(n, end_value_range=None, dist=1, sampled_range_of_dist=(0, 1)):
     plt.legend()
     plt.show()
     """
+    from numpy import exp, array
+
     if isinstance(dist, float) or isinstance(dist, int):
-        distribution = lambda x: np.exp(dist * x)
+        distribution = lambda x: exp(dist * x)
     else:
         distribution = dist
 
-    x_increment = np.abs(max(sampled_range_of_dist) - min(sampled_range_of_dist)) / n
-    pts = np.array([distribution(x_increment * i) for i in range(n)])
+    x_increment = abs(max(sampled_range_of_dist) - min(sampled_range_of_dist)) / n
+    pts = array([distribution(x_increment * i) for i in range(n)])
     pts /= abs(max(pts) - min(pts))
 
     if end_value_range is not None:
@@ -1182,10 +1204,11 @@ def _matrix_normalize(matrix, row_normalize=False):
     -----
     Should be replaced with appropriate generalized, efficient version
     """
+    from numpy import array
 
     if row_normalize:
         row_sums = matrix.sum(axis=1)
-        return np.array(
+        return array(
             [
                 matrix[index, :] / row_sums[index]
                 if row_sums[index] != 0
@@ -1195,7 +1218,7 @@ def _matrix_normalize(matrix, row_normalize=False):
         )
     else:
         column_sums = matrix.sum(axis=0)
-        return np.array(
+        return array(
             [
                 matrix[:, index] / column_sums[index]
                 if column_sums[index] != 0
