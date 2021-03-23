@@ -920,6 +920,9 @@ class GraphMLReader(GraphML):
                         data["y"] = geometry.get("y")
                     if node_label is None:
                         node_label = data_element.find(f"{pref}NodeLabel")
+                    shape = data_element.find(f"{pref}Shape")
+                    if shape is not None:
+                        data["shape_type"] = shape.get("type")
                 if node_label is not None:
                     data["label"] = node_label.text
 

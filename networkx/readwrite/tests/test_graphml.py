@@ -588,12 +588,16 @@ class TestReadGraphML(BaseGraphML):
         assert G.has_edge("n0", "n1", key="e0")
         assert G.nodes["n0"]["label"] == "1"
         assert G.nodes["n1"]["label"] == "2"
+        assert G.nodes["n0"]["shape_type"] == "rectangle"
+        assert G.nodes["n1"]["shape_type"] == "rectangle"
         fh.seek(0)
         G = nx.read_graphml(fh)
         assert list(G.edges()) == [("n0", "n1")]
         assert G["n0"]["n1"]["id"] == "e0"
         assert G.nodes["n0"]["label"] == "1"
         assert G.nodes["n1"]["label"] == "2"
+        assert G.nodes["n0"]["shape_type"] == "rectangle"
+        assert G.nodes["n1"]["shape_type"] == "rectangle"
 
         H = nx.parse_graphml(data, force_multigraph=True)
         assert list(H.edges()) == [("n0", "n1")]
