@@ -22,8 +22,6 @@ __all__ = ["read_ete", "write_ete"]
 from networkx.utils import open_file
 import networkx as nx
 
-RESERVED_ETE3_TREE_NODE_NAME = ""
-
 
 @open_file(1, mode="w")
 def write_ete(G_to_be_ete, path_for_ete_output, root_node=None):
@@ -74,11 +72,12 @@ def write_ete(G_to_be_ete, path_for_ete_output, root_node=None):
     for parent, child in G_tree.edges:
         node2tree[parent].add_child(child=node2tree[child])
 
-    tree = ete3.Tree(name=RESERVED_ETE3_TREE_NODE_NAME)
-    tree.add_child(child=node2tree[root_node])
+    tree = node2tree[root_node]
 
     path_for_ete_output.write(
-        tree.write(features=list(tree.features - {"dist", "support"}))
+        tree.write(
+            features=list(tree.features - {"dist", "support"}), format_root_node=True
+        )
     )
 
 
@@ -121,9 +120,6 @@ def read_ete(path):
     G = nx.Graph()
 
     for tree_node in tree.iter_search_nodes():
-        if tree_node.name == RESERVED_ETE3_TREE_NODE_NAME:
-            continue
-
         node_name = tree_node.name
         node_features = {
             k: getattr(tree_node, k) for k in tree_node.features - {"dist", "support"}
@@ -137,10 +133,7 @@ def read_ete(path):
         parent = queue.pop(0)
 
         for child in parent.children:
-            if child.name != RESERVED_ETE3_TREE_NODE_NAME:
-                queue.append(child)
-
-                if parent.name != RESERVED_ETE3_TREE_NODE_NAME:
-                    G.add_edge(parent.name, child.name)
+            queue.append(child)
+            G.add_edge(parent.name, child.name)
 
     return G
