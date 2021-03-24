@@ -27,7 +27,7 @@ def test_modularity_communities(func):
 def test_modularity_communities_weighted():
     G = nx.balanced_tree(2, 3)
     for (a, b) in G.edges:
-        if ((a == 1) | (a == 2)) & (b != 0):
+        if ((a == 1) or (a == 2)) and (b != 0):
             G[a][b]["weight"] = 10.0
         else:
             G[a][b]["weight"] = 1.0
