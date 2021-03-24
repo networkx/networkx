@@ -498,15 +498,15 @@ def orderability(
     --------
     treeness, feedforwardness, hierarchy_coordinates
     """
-    from numpy import array_equal, unique
+    import numpy as np
 
     if not G.is_directed():
         raise nx.NetworkXError(
             "G must be a directed graph for any hierarchy coordinate evaluation"
         )
 
-    if not array_equal(
-        unique(nx.to_numpy_array(G)), [0, 1]
+    if not np.array_equal(
+        np.unique(nx.to_numpy_array(G)), [0, 1]
     ):  # unweighted (non-binary) check
         o = 0
         condensed_graphs, original_graphs = node_weighted_condense(
@@ -747,7 +747,7 @@ def graph_entropy(DAG, forward_entropy=False):
     Chaos: An Interdisciplinary Journal of Nonlinear Science 21, no. 1 (2011): pg 016108.
 
     """
-    from numpy import power, log
+    import numpy as np
 
     if not nx.is_directed_acyclic_graph(DAG):
         raise nx.NetworkXError(
@@ -763,14 +763,14 @@ def graph_entropy(DAG, forward_entropy=False):
         # as w sklearn: B_prime = normalize(nx.to_numpy_array(dag), axis=1, norm='max')  # Row normalization
         B_prime = _matrix_normalize(nx.to_numpy_array(dag), row_normalize=True)
         P = sum(
-            [power(B_prime, k) for k in range(1, L_GC + 1)]
+            [np.power(B_prime, k) for k in range(1, L_GC + 1)]
         )  # +1 as k \in ( 1, L(G_C) )
         # TODO: Not so sure about this unless k coincides with the number of steps already taken (and the sum is odd)
         # (Presently awaiting response from original authors for clarification)
     else:
         # as w sklearn: B = normalize(nx.to_numpy_array(dag), axis=0, norm='max')  # Column normalization
         B = _matrix_normalize(nx.to_numpy_array(dag), row_normalize=False)
-        P = sum([power(B, k) for k in range(1, L_GC + 1)])
+        P = sum([np.power(B, k) for k in range(1, L_GC + 1)])
 
     boundary_layer = max_min_layers(dag, max_layer=forward_entropy)
     non_extremal_nodes = set(dag.nodes() - boundary_layer)
@@ -778,11 +778,11 @@ def graph_entropy(DAG, forward_entropy=False):
     for layer_node in boundary_layer:
         for non_extremal_node in non_extremal_nodes:
             if forward_entropy:
-                entropy += P[layer_node][non_extremal_node] * log(
+                entropy += P[layer_node][non_extremal_node] * np.log(
                     dag.out_degree(layer_node)
                 )  # nan for 0 outdegree
             else:
-                entropy += P[non_extremal_node][layer_node] * log(
+                entropy += P[non_extremal_node][layer_node] * np.log(
                     dag.in_degree(layer_node)
                 )
     entropy /= len(boundary_layer)
@@ -855,7 +855,7 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
     Corominas-Murtra, Bernat, Carlos Rodríguez-Caso, Joaquin Goni, and Ricard Solé.
     Chaos: An Interdisciplinary Journal of Nonlinear Science 21, no. 1 (2011): pg 016108.
     """
-    from numpy import log
+    import numpy as np
 
     if not nx.is_directed_acyclic_graph(DAG):
         raise nx.NetworkXError(
@@ -900,7 +900,7 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
                     )
                     if n == 0:
                         n = 1
-                entropy += log(n) / n
+                entropy += np.log(n) / n
     entropy /= len(start_layer)
     return entropy
 
@@ -1087,7 +1087,7 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
     --------
     feedforwardness, orderability, treeness
     """
-    from numpy import ndarray, array_equal, unique
+    import numpy as np
 
     np_A = []
     if (
@@ -1097,14 +1097,14 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
         or isinstance(A, nx.MultiDiGraph)
     ):
         np_A = nx.to_numpy_array(A)
-    elif isinstance(A, ndarray):
+    elif isinstance(A, np.ndarray):
         np_A = A
     else:
         print(
             "A must be given as either a networkx graph or adjacency matrix (as nested list or 2d numpy array)"
         )
 
-    if array_equal(unique(np_A), [0]):  # null check
+    if np.array_equal(np.unique(np_A), [0]):  # null check
         # raise Exception("Unconnected graph; trivially 0 hierarchy")  # TODO: Raise exception if undefined instead
         return 0, 0, 0
 
@@ -1166,15 +1166,15 @@ def _distribute(n, end_value_range=None, dist=1, sampled_range_of_dist=(0, 1)):
     plt.legend()
     plt.show()
     """
-    from numpy import exp, array
+    import numpy as np
 
     if isinstance(dist, float) or isinstance(dist, int):
-        distribution = lambda x: exp(dist * x)
+        distribution = lambda x: np.exp(dist * x)
     else:
         distribution = dist
 
     x_increment = abs(max(sampled_range_of_dist) - min(sampled_range_of_dist)) / n
-    pts = array([distribution(x_increment * i) for i in range(n)])
+    pts = np.array([distribution(x_increment * i) for i in range(n)])
     pts /= abs(max(pts) - min(pts))
 
     if end_value_range is not None:
@@ -1204,11 +1204,11 @@ def _matrix_normalize(matrix, row_normalize=False):
     -----
     Should be replaced with appropriate generalized, efficient version
     """
-    from numpy import array
+    import numpy as np
 
     if row_normalize:
         row_sums = matrix.sum(axis=1)
-        return array(
+        return np.array(
             [
                 matrix[index, :] / row_sums[index]
                 if row_sums[index] != 0
@@ -1218,7 +1218,7 @@ def _matrix_normalize(matrix, row_normalize=False):
         )
     else:
         column_sums = matrix.sum(axis=0)
-        return array(
+        return np.array(
             [
                 matrix[:, index] / column_sums[index]
                 if column_sums[index] != 0

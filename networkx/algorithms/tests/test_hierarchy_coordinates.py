@@ -1,4 +1,6 @@
 import pytest
+
+np = pytest.importorskip("numpy")
 import networkx as nx
 
 
@@ -94,8 +96,6 @@ def test_weight_nodes_by_condensation():
 
 
 def test_node_weighted_condense():
-    import numpy as np
-
     center_cycle_A = np.array(
         [
             [0, 1, 0, 0, 0, 0, 0],
@@ -157,8 +157,6 @@ def test_orderability():
 
 
 def test_feedforwardness():
-    import numpy as np
-
     infographic_network = [
         (0, 2),
         (1, 2),
@@ -190,8 +188,6 @@ def test_infographic_graph_entropy():
 
 
 def test_treeness():
-    import numpy as np
-
     infographic_network = [
         (0, 2),
         (1, 2),
