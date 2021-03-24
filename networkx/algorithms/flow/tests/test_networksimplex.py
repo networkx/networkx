@@ -2,6 +2,7 @@ import pytest
 import networkx as nx
 import os
 
+
 @pytest.fixture
 def simple_flow_graph():
     G = nx.DiGraph()
@@ -14,6 +15,7 @@ def simple_flow_graph():
     G.add_edge("b", "d", weight=1, capacity=9)
     G.add_edge("c", "d", weight=2, capacity=5)
     return G
+
 
 @pytest.fixture
 def simple_no_flow_graph():
@@ -28,6 +30,7 @@ def simple_no_flow_graph():
     G.add_edge("d", "t", weight=1, capacity=3)
     return G
 
+
 def get_flowcost_from_flowdict(G, flowDict):
     """Returns flow cost calculated from flow dictionary"""
     flowCost = 0
@@ -36,11 +39,13 @@ def get_flowcost_from_flowdict(G, flowDict):
             flowCost += flowDict[u][v] * G[u][v]["weight"]
     return flowCost
 
+
 def test_infinite_demand_raise(simple_flow_graph):
     G = simple_flow_graph
     inf = float("inf")
     nx.set_node_attributes(G, {"a": {"demand": inf}})
     pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+
 
 def test_neg_infinite_demand_raise(simple_flow_graph):
     G = simple_flow_graph
@@ -48,30 +53,38 @@ def test_neg_infinite_demand_raise(simple_flow_graph):
     nx.set_node_attributes(G, {"a": {"demand": -inf}})
     pytest.raises(nx.NetworkXError, nx.network_simplex, G)
 
+
 def test_infinite_weight_raise(simple_flow_graph):
     G = simple_flow_graph
     inf = float("inf")
-    nx.set_edge_attributes(G, {("a","b"): {"weight": inf},("b","d"): {"weight": inf}})
+    nx.set_edge_attributes(
+        G, {("a", "b"): {"weight": inf}, ("b", "d"): {"weight": inf}}
+    )
     pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+
 
 def test_nonzero_net_demand_raise(simple_flow_graph):
     G = simple_flow_graph
-    nx.set_node_attributes(G, {"b":{"demand":-4}})
+    nx.set_node_attributes(G, {"b": {"demand": -4}})
     pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+
 
 def test_negative_capacity_raise(simple_flow_graph):
     G = simple_flow_graph
-    nx.set_edge_attributes(G, {("a","b"): {"weight": 1},("b","d"): {"capacity": -9}})
+    nx.set_edge_attributes(G, {("a", "b"): {"weight": 1}, ("b", "d"): {"capacity": -9}})
     pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+
 
 def test_no_flow_satisfying_demands(simple_no_flow_graph):
     G = simple_no_flow_graph
     pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
 
+
 def test_sum_demands_not_zero(simple_no_flow_graph):
     G = simple_no_flow_graph
     nx.set_node_attributes(G, {"t": {"demand": 4}})
     pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+
 
 def test_google_or_tools_example():
     """
@@ -100,6 +113,7 @@ def test_google_or_tools_example():
     assert flowCost == answer
     assert flowCost == get_flowcost_from_flowdict(G, flowDict)
 
+
 def test_google_or_tools_example2():
     """
     https://developers.google.com/optimization/flow/mincostflow
@@ -127,12 +141,14 @@ def test_google_or_tools_example2():
     assert flowCost == answer
     assert flowCost == get_flowcost_from_flowdict(G, flowDict)
 
+
 def test_large():
     fname = os.path.join(os.path.dirname(__file__), "netgen-2.gpickle.bz2")
     G = nx.read_gpickle(fname)
     flowCost, flowDict = nx.network_simplex(G)
     assert 6749969302 == flowCost
     assert 6749969302 == nx.cost_of_flow(G, flowDict)
+
 
 def test_simple_digraph():
     G = nx.DiGraph()
@@ -148,6 +164,7 @@ def test_simple_digraph():
     assert nx.min_cost_flow_cost(G) == 24
     assert H == soln
 
+
 def test_negcycle_infcap():
     G = nx.DiGraph()
     G.add_node("s", demand=-5)
@@ -159,6 +176,7 @@ def test_negcycle_infcap():
     G.add_edge("d", "c", weight=-2)
     G.add_edge("d", "t", weight=1, capacity=3)
     pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+
 
 def test_transshipment():
     G = nx.DiGraph()
@@ -200,6 +218,7 @@ def test_transshipment():
     assert flowCost == 41
     assert H == soln
 
+
 def test_digraph1():
     # From Bradley, S. P., Hax, A. C. and Magnanti, T. L. Applied
     # Mathematical Programming. Addison-Wesley, 1977.
@@ -232,6 +251,7 @@ def test_digraph1():
     assert nx.min_cost_flow_cost(G) == 150
     assert H == soln
 
+
 def test_zero_capacity_edges():
     """Address issue raised in ticket #617 by arv."""
     G = nx.DiGraph()
@@ -256,6 +276,7 @@ def test_zero_capacity_edges():
     assert nx.min_cost_flow_cost(G) == 6
     assert H == soln
 
+
 def test_digon():
     """Check if digons are handled properly. Taken from ticket
     #618 by arv."""
@@ -272,6 +293,7 @@ def test_digon():
     soln = {1: {2: 0}, 2: {1: 0, 3: 4}, 3: {2: 0}}
     assert flowCost == 2857140
 
+
 def test_deadend():
     """Check if one-node cycles are handled properly. Taken from ticket
     #2906 from @sshraven."""
@@ -283,6 +305,7 @@ def test_deadend():
 
     G.add_edges_from([(0, 2), (0, 3), (2, 1)], capacity=20, weight=0.1)
     pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+
 
 def test_infinite_capacity_neg_digon():
     """An infinite capacity negative cost digon results in an unbounded
@@ -298,6 +321,7 @@ def test_infinite_capacity_neg_digon():
     G.add_nodes_from(nodes)
     pytest.raises(nx.NetworkXUnbounded, nx.network_simplex, G)
 
+
 def test_multidigraph():
     """Multidigraphs are acceptable."""
     G = nx.MultiDiGraph()
@@ -305,6 +329,7 @@ def test_multidigraph():
     flowCost, H = nx.network_simplex(G)
     assert flowCost == 0
     assert H == {1: {2: {0: 0}}, 2: {3: {0: 0}}, 3: {}}
+
 
 def test_negative_selfloops():
     """Negative selfloops should cause an exception if uncapacitated and
@@ -329,6 +354,7 @@ def test_negative_selfloops():
     assert flowCost == -2
     assert H == {1: {1: {"x": 2, "y": 0}}}
 
+
 def test_bone_shaped():
     # From #1283
     G = nx.DiGraph()
@@ -346,6 +372,7 @@ def test_bone_shaped():
     flowCost, H = nx.network_simplex(G)
     assert flowCost == 0
     assert H == {0: {1: 2, 2: 2, 3: 0}, 1: {}, 2: {}, 3: {}, 4: {3: 2}, 5: {3: 2}}
+
 
 def test_graphs_type_exceptions():
     G = nx.Graph()
