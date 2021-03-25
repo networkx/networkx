@@ -2,12 +2,12 @@
 ****
 ETE
 ****
-Read and write NetworkX graphs in ETE standard tree representation format.
+Read and write NetworkX graphs in the New Hampshire Newick format.
 
 "ETE (Environment for Tree Exploration) is a Python programming toolkit
 that assists in the automated manipulation,
 analysis and visualization of phylogenetic trees.
-It uses the Newick format as one of the most widely used
+It uses the New Hampshire Newick format as one of the most widely used
 standard representation of trees in bioinformatics."
 See http://etetoolkit.org/ for documentation.
 
@@ -19,21 +19,21 @@ http://etetoolkit.org/docs/latest/tutorial/tutorial_trees.html#reading-and-writi
 
 __all__ = ["read_ete", "write_ete"]
 
-from networkx.utils import open_file
 import networkx as nx
+from networkx.utils import open_file, deque
 
 
 @open_file(1, mode="w")
-def write_ete(G_to_be_ete, path_for_ete_output, root_node=None):
-    """Write graph G in Newick format to path.
+def write_ete(G, path_for_ete_output, root_node=None):
+    """Write graph G in the New Hampshire Newick format.
 
-    The Newick format is one of the most widely used
+    The New Hampshire Newick format is one of the most widely used
     standard representation of trees in bioinformatics [1]_.
 
 
     Parameters
     ----------
-    G_to_be_ete : graph
+    G : graph
        A NetworkX graph
     path_for_ete_output : file or string
        File or filename to write.
@@ -47,9 +47,7 @@ def write_ete(G_to_be_ete, path_for_ete_output, root_node=None):
     ----------
     .. [1] http://etetoolkit.org/docs/latest/tutorial/tutorial_trees.html#reading-and-writing-newick-trees
     """
-    assert nx.is_tree(
-        G_to_be_ete
-    ), "write_ete() requires `G_to_be_ete` be a tree: %s" % (
+    assert nx.is_tree(G), "write_ete() requires `G` to be a tree: %s" % (
         "https://networkx.org/documentation/stable/reference/algorithms/tree.html"
     )
 
@@ -59,9 +57,9 @@ def write_ete(G_to_be_ete, path_for_ete_output, root_node=None):
         raise ImportError("to_ete() requires ete3: http://etetoolkit.org/") from e
 
     if root_node is None:
-        root_node = list(G_to_be_ete.nodes)[0]
+        root_node = list(G.nodes)[0]
 
-    G_tree = nx.dfs_tree(G_to_be_ete, source=root_node)
+    G_tree = nx.dfs_tree(G, source=root_node)
 
     node2tree = dict()
 
@@ -70,7 +68,7 @@ def write_ete(G_to_be_ete, path_for_ete_output, root_node=None):
         node2tree[node_name].add_features(**node_features)
 
     for parent, child in G_tree.edges:
-        node2tree[parent].add_child(child=node2tree[child])
+        node2tree[parent].add_child(node2tree[child])
 
     tree = node2tree[root_node]
 
@@ -83,9 +81,9 @@ def write_ete(G_to_be_ete, path_for_ete_output, root_node=None):
 
 @open_file(0, mode="r")
 def read_ete(path):
-    """Read graph in Newick format from path.
+    """Read graph in the New Hampshire Newick format.
 
-    The Newick format is one of the most widely used
+    The New Hampshire Newick format is one of the most widely used
     standard representation of trees in bioinformatics [1]_.
 
     Parameters
@@ -101,7 +99,7 @@ def read_ete(path):
     --------
     >>> G = nx.path_graph(42)
     >>> nx.write_ete(G, "test_ete.txt")
-    >>> G = nx.read_yaml("test_ete.txt")
+    >>> G = nx.read_ete("test_ete.txt")
 
     References
     ----------
@@ -127,10 +125,10 @@ def read_ete(path):
 
         G.add_node(node_name, **node_features)
 
-    queue = [tree]
+    queue = deque([tree])
 
     while queue:
-        parent = queue.pop(0)
+        parent = queue.popleft()
 
         for child in parent.children:
             queue.append(child)
