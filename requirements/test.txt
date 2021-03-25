@@ -4,3 +4,6 @@ codecov>=2.1
 ete3>=3.1
 six>=1.15
 numpy>=1.19
+scipy>=1.5,!=1.6.1
+matplotlib>=3.3
+pandas>=1.1
