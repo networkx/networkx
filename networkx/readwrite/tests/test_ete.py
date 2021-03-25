@@ -17,7 +17,7 @@ class TestETE:
 
     @classmethod
     def build_graphs(cls):
-        e = [("a", "b"), ("b", "c"), ("c", "d"), ("d", "e"), ("e", "f")]
+        e = [("a", "b"), ("a", "c"), ("b", "d"), ("b", "e"), ("c", "f")]
         cls.G = nx.Graph(name="test_undirected_graph")
         cls.DG = nx.DiGraph(name="test_directed_graph")
         cls.MG = nx.MultiGraph(name="test_multi_graph")
