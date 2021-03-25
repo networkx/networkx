@@ -367,7 +367,7 @@ def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True, see
         def sample(v, nodes):
             if not self_loops:
                 nodes = nodes - {v}
-            return seed.sample(nodes, k)
+            return seed.sample(list(nodes), k)
 
     G = nx.empty_graph(n, create_using)
     nodes = set(G)
