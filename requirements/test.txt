@@ -3,3 +3,4 @@ pytest-cov>=2.10
 codecov>=2.1
 ete3>=3.1
 six>=1.15
+numpy>=1.19
