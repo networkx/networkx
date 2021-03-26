@@ -605,6 +605,8 @@ def transitive_reduction(G):
     >>> list(TR.edges)
     [(1, 2), (2, 3)]
 
+    To avoid unnecessary data copies, this implementation does not return a
+    DiGraph with node/edge data.
     To perform transitive reduction on a DiGraph and transfer node/edge data:
 
     >>> DG = nx.DiGraph()
@@ -614,11 +616,6 @@ def transitive_reduction(G):
     >>> TR.add_edges_from((u, v, DG.edges[u, v]) for u, v in TR.edges)
     >>> list(TR.edges(data=True))
     [(1, 2, {'color': 'red'}), (2, 3, {'color': 'red'})]
-
-    Notes
-    -----
-    To avoid unnecessary data copies, this implementation does not return a
-    DiGraph with node/edge data.
 
     References
     ----------
