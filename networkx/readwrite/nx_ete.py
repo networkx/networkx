@@ -100,7 +100,7 @@ def from_ete(T):
 
     Examples
     --------
-    >>> T = ete3.Tree(name=42)
+    >>> T = nx.to_ete(nx.path_graph(42))
     >>> G = nx.from_ete(T)
 
     References
