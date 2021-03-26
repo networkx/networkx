@@ -46,7 +46,7 @@ class _DataEssentialsAndFunctions:
             self.edge_capacities.append(e[-1].get(capacity, inf))
             self.edge_weights.append(e[-1].get(weight, 0))
 
-        # spanning tree specific data to be initilized
+        # spanning tree specific data to be initialized
 
         self.edge_count = None  # number of edges
         self.edge_flow = None  # edge flows
@@ -57,11 +57,11 @@ class _DataEssentialsAndFunctions:
         self.next_node_dft = None  # next nodes in depth-first thread
         self.prev_node_dft = None  # previous nodes in depth-first thread
         self.last_descendent_dft = None  # last descendants in depth-first thread
-        self._spanning_tree_initilized = (
-            False  # False untill initilize_spanning_tree() is called
+        self._spanning_tree_initialized = (
+            False  # False untill initialize_spanning_tree() is called
         )
 
-    def initilize_spanning_tree(self, n, faux_inf):
+    def initialize_spanning_tree(self, n, faux_inf):
         self.edge_count = len(self.edge_indices)  # number of edges
         self.edge_flow = list(
             chain(repeat(0, self.edge_count), (abs(d) for d in self.node_demands))
@@ -81,7 +81,7 @@ class _DataEssentialsAndFunctions:
         self.last_descendent_dft = list(
             chain(range(n), [n - 1])
         )  # last descendants in depth-first thread
-        self._spanning_tree_initilized = True  # True only if all the assignments pass
+        self._spanning_tree_initialized = True  # True only if all the assignments pass
 
     def find_apex(self, p, q):
         """
@@ -575,7 +575,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     DEAF.edge_capacities.extend(repeat(faux_inf, n))
 
     # Construct the initial spanning tree.
-    DEAF.initilize_spanning_tree(n, faux_inf)
+    DEAF.initialize_spanning_tree(n, faux_inf)
 
     ###########################################################################
     # Pivot loop
