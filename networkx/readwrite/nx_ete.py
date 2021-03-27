@@ -46,7 +46,7 @@ def to_ete(G):
 
     Examples
     --------
-    >>> G = nx.path_graph(42)
+    >>> G = nx.path_graph(42, create_using=nx.DiGraph)
     >>> T = nx.to_ete(G)
 
     References
@@ -103,7 +103,7 @@ def from_ete(T):
 
     Examples
     --------
-    >>> T = nx.to_ete(nx.path_graph(42))
+    >>> T = nx.to_ete(nx.path_graph(42, create_using=nx.DiGraph))
     >>> G = nx.from_ete(T)
 
     References
@@ -160,7 +160,7 @@ def write_ete(G, path_for_ete_output):
 
     Examples
     --------
-    >>> G = nx.path_graph(42)
+    >>> G = nx.path_graph(42, create_using=nx.DiGraph)
     >>> nx.write_ete(G, "test_ete.txt")
 
     References
@@ -200,7 +200,7 @@ def read_ete(path):
 
     Examples
     --------
-    >>> nx.write_ete(nx.path_graph(42), "test_ete.txt")
+    >>> nx.write_ete(nx.path_graph(42, create_using=nx.DiGraph), "test_ete.txt")
     >>> G = nx.read_ete("test_ete.txt")
 
     References
