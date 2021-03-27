@@ -177,6 +177,13 @@ except ImportError:
     has_yaml = False
 
 try:
+    import ete3
+
+    has_ete = True
+except ImportError:
+    has_ete = False
+
+try:
     import pydot
 
     has_pydot = True
@@ -189,7 +196,6 @@ try:
     has_ogr = True
 except ImportError:
     has_ogr = False
-
 
 # List of files that pytest should ignore
 
@@ -235,6 +241,7 @@ needs_scipy = [
 needs_matplotlib = ["drawing/nx_pylab.py"]
 needs_pandas = ["convert_matrix.py"]
 needs_yaml = ["readwrite/nx_yaml.py"]
+needs_ete = ["readwrite/nx_ete.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
 needs_ogr = ["readwrite/nx_shp.py"]
@@ -249,6 +256,8 @@ if not has_pandas:
     collect_ignore += needs_pandas
 if not has_yaml:
     collect_ignore += needs_yaml
+if not has_ete:
+    collect_ignore += needs_ete
 if not has_pygraphviz:
     collect_ignore += needs_pygraphviz
 if not has_pydot:
