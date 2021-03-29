@@ -2,7 +2,11 @@ import networkx as nx
 from collections import defaultdict
 
 
-__all__ = ["combinatorial_embedding_to_pos", "triangulate_embedding", "triangulated_embedding_to_pos"]
+__all__ = [
+    "combinatorial_embedding_to_pos",
+    "triangulate_embedding",
+    "triangulated_embedding_to_pos"
+]
 
 
 def too_small_combinatorial_embedding_to_pos(embedding):
