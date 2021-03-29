@@ -664,7 +664,7 @@ def barabasi_albert_graph(n, m, seed=None, initial=None):
             raise nx.NetworkXError(
                 f"Barabási–Albert initial graph must have between m = {m} and n = {n} nodes"
             )
-        G = initial
+        G = initial.copy()
 
     # List of existing nodes, with nodes repeated once for each adjacent edge
     repeated_nodes = [n for n, d in G.degree() for _ in range(d)]
@@ -754,7 +754,7 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial=None):
                 f"Barabási–Albert initial graph must have between "
                 f"max(m1, m2) = {max(m1, m2)} and n = {n} nodes"
             )
-        G = initial
+        G = initial.copy()
 
     # Target nodes for new edges
     targets = list(G.nodes())

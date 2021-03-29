@@ -165,7 +165,7 @@ class TestGeneratorsRandom:
 
             DBA = dual_barabasi_albert_graph(100, m1, m2, p, seed, initial=initial)
             BA1 = barabasi_albert_graph(100, m1, seed, initial=initial)
-            BA2 = barabasi_albert_graph(100, m1, seed, initial=initial)
+            BA2 = barabasi_albert_graph(100, m2, seed, initial=initial)
             assert (
                 min(BA1.size(), BA2.size()) <= DBA.size() <= max(BA1.size(), BA2.size())
             )
