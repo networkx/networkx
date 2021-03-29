@@ -110,7 +110,8 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
     """
     import numpy as np
 
-    if np.array_equal(np.unique(A), [0, 1]):  # binary check
+    # binary check
+    if np.array_equal(np.unique(A), [0, 1]):
         num_thresholds = 1
     else:
         num_thresholds = num_thresholds
@@ -145,15 +146,12 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
             for threshold in thresholds
         ]
     # removes isolated nodes (0 in & out degree) from binary nodes. (not needed for consolidation)
-    for index in range(len(nx_graphs)):
-        nx_graphs[index].remove_nodes_from(list(nx.isolates(nx_graphs[index])))
+    for G in nx_graphs:
+        G.remove_nodes_from(list(nx.isolates(G)))
 
-    nx_graphs = [
-        graph for graph in nx_graphs if not nx.is_empty(graph)
-    ]  # eliminates empty graphs
-    condensed_graphs = [
-        nx.condensation(nx_graphs[index]) for index in range(len(nx_graphs))
-    ]
+    # eliminates empty graphs
+    nx_graphs = [graph for graph in nx_graphs if not nx.is_empty(graph)]
+    condensed_graphs = [nx.condensation(G) for G in nx_graphs]
     largest_condensed_graphs = []
     for condensed_graph in condensed_graphs:
         largest_condensed_graphs.append(
@@ -247,7 +245,8 @@ def weight_nodes_by_condensation(condensed_graph):
     ]
     for node_index in range(len(node_weights)):
         condensed_graph.nodes[node_index]["weight"] = node_weights[node_index]
-    return condensed_graph  # WIP TODO: May not be necessary, as the graph itself is updated (not copied)?
+    # WIP TODO: May not be necessary, as the graph itself is updated (not copied)?
+    return condensed_graph
 
 
 @not_implemented_for("undirected")
@@ -435,12 +434,10 @@ def recursive_leaf_removal(G, from_top=True, keep_linkless_layer=False):
     while len(dissected_graphs[-1].nodes()) > 1:
         dissected_graphs.append(leaf_removal(dissected_graphs[-1], top=from_top))
     if not keep_linkless_layer:
-        while (
-            nx.is_empty(dissected_graphs[-1]) and len(dissected_graphs) > 1
-        ):  # catches empty graphs, which are eliminated in node condense
-            dissected_graphs = dissected_graphs[
-                :-1
-            ]  # removes empty or single node layer
+        # catches empty graphs, which are eliminated in node condense
+        while nx.is_empty(dissected_graphs[-1]) and len(dissected_graphs) > 1:
+            dissected_graphs = dissected_graphs[:-1]
+    # removes empty or single node layer
     return dissected_graphs
 
 
@@ -504,13 +501,11 @@ def orderability(
         raise nx.NetworkXError(
             "G must be a directed graph for any hierarchy coordinate evaluation"
         )
-
-    if not np.array_equal(
-        np.unique(nx.to_numpy_array(G)), [0, 1]
-    ):  # unweighted (non-binary) check
+    # unweighted (non-binary) check
+    if not np.array_equal(np.unique(nx.to_numpy_array(G)), [0, 1]):
         o = 0
         condensed_graphs, original_graphs = node_weighted_condense(
-            nx.to_numpy_array(G),  # creates binary graphs
+            nx.to_numpy_array(G),
             num_thresholds=num_thresholds,
             threshold_distribution=threshold_distribution,
         )
@@ -576,9 +571,8 @@ def _feedforwardness_iteration(G):
     for max_node in max_layer:
         for min_node in min_layer:
             for path in nx.all_simple_paths(G, source=max_node, target=min_node):
-                g += len(path) / sum(
-                    [weights[node] for node in path]
-                )  # where each path calculation is F(path)
+                # where each path calculation is F(path)
+                g += len(path) / sum([weights[node] for node in path])
                 num_paths += 1
     return g, num_paths
 
@@ -755,16 +749,14 @@ def graph_entropy(DAG, forward_entropy=False):
         )
 
     dag = nx.convert_node_labels_to_integers(DAG)
-    L_GC = len(
-        recursive_leaf_removal(DAG)
-    )  # Could be passed in most contexts to reduce redundant computation
+    # Could be passed in most contexts to reduce redundant computation
+    L_GC = len(recursive_leaf_removal(DAG))
 
     if forward_entropy:
         # as w sklearn: B_prime = normalize(nx.to_numpy_array(dag), axis=1, norm='max')  # Row normalization
         B_prime = _matrix_normalize(nx.to_numpy_array(dag), row_normalize=True)
-        P = sum(
-            [np.power(B_prime, k) for k in range(1, L_GC + 1)]
-        )  # +1 as k \in ( 1, L(G_C) )
+        # +1 as k \in ( 1, L(G_C) )
+        P = sum([np.power(B_prime, k) for k in range(1, L_GC + 1)])
         # TODO: Not so sure about this unless k coincides with the number of steps already taken (and the sum is odd)
         # (Presently awaiting response from original authors for clarification)
     else:
@@ -1016,10 +1008,10 @@ def treeness(DAG):
     pruned_from_bottom = pruned_from_bottom[1:]
 
     entropy_sum = _single_graph_treeness(DAG)
-    for index in range(len(pruned_from_top)):
-        entropy_sum += _single_graph_treeness(pruned_from_top[index])
-    for index in range(len(pruned_from_bottom)):
-        entropy_sum += _single_graph_treeness(pruned_from_bottom[index])
+    for pruned_tree in pruned_from_top:
+        entropy_sum += _single_graph_treeness(pruned_tree)
+    for pruned_tree in pruned_from_bottom:
+        entropy_sum += _single_graph_treeness(pruned_tree)
     return entropy_sum / (1 + len(pruned_from_bottom) + len(pruned_from_top))
 
 
