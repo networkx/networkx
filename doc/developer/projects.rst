@@ -83,7 +83,7 @@ Directed Version of Traveling Salesman Problem
 - Complexity: Moderate
 
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
-  `@MridulS <https://github.com/MridulS/>`__,
+  `@MridulS <https://github.com/MridulS/>`__, `@boothby <https://github.com/boothby/>`__,
 
 .. _#4607: https://github.com/networkx/networkx/pull/4607
 .. _Asapour: https://pubsonline.informs.org/doi/pdf/10.1287/opre.2017.1603
@@ -108,7 +108,7 @@ Implement the VF2++ Graph Isomorphism Algorithm
 - Complexity: Moderate
 
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
-  `@MridulS <https://github.com/MridulS/>`__,
+  `@MridulS <https://github.com/MridulS/>`__, `@boothby <https://github.com/boothby/>`__,
 
 .. _`Graph Isomorphism Problem`: https://en.wikipedia.org/wiki/Graph_isomorphism_problem
 .. _VF2++: https://doi.org/10.1016/j.dam.2018.02.018

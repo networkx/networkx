@@ -338,6 +338,12 @@ class TestWeightedPath(WeightedTestBase):
         G.add_edge(9, 10)
         pytest.raises(ValueError, nx.bidirectional_dijkstra, G, 8, 10)
 
+    def test_negative_edge_cycle_custom_weight_key(self):
+        d = nx.DiGraph()
+        d.add_edge("a", "b", w=-2)
+        d.add_edge("b", "a", w=-1)
+        assert nx.negative_edge_cycle(d, weight="w")
+
     def test_weight_function(self):
         """Tests that a callable weight is interpreted as a weight
         function instead of an edge attribute.
@@ -349,6 +355,7 @@ class TestWeightedPath(WeightedTestBase):
         G.adj[0][2]["weight"] = 10
         G.adj[0][1]["weight"] = 1
         G.adj[1][2]["weight"] = 1
+
         # The weight function will take the multiplicative inverse of
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
@@ -414,6 +421,7 @@ class TestDijkstraPathLength:
         G.adj[0][2]["weight"] = 10
         G.adj[0][1]["weight"] = 1
         G.adj[1][2]["weight"] = 1
+
         # The weight function will take the multiplicative inverse of
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
