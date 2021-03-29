@@ -56,3 +56,5 @@ networkx.egg-info/
 
 # Virtual environment directory
 networkx-dev/
+.vs/PythonSettings.json
+.vs/slnx.sqlite
