@@ -5,7 +5,7 @@ from collections import defaultdict
 __all__ = [
     "combinatorial_embedding_to_pos",
     "triangulate_embedding",
-    "triangulated_embedding_to_pos"
+    "triangulated_embedding_to_pos",
 ]
 
 
