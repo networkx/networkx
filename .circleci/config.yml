@@ -46,18 +46,27 @@ jobs:
             echo "export DISPLAY=:99" >> $BASH_ENV
             /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1400x200x24 -ac +extension GLX +render -noreset;
 
+      - restore_cache:
+        keys:
+          - pip-cache-v1
+
       - run:
           name: Install Python dependencies
           command: |
             python3 -m venv venv
             source venv/bin/activate
             pip install --upgrade pip wheel setuptools
-            pip install -r requirements.txt
-            pip install -r requirements/extra.txt
-            pip install -r requirements/example-requirements.txt
-            pip install -r requirements/example.txt
+            pip install -U -r requirements.txt
+            pip install -U -r requirements/extra.txt
+            pip install -U -r requirements/example-requirements.txt
+            pip install -U -r requirements/example.txt
             pip install -U -r requirements/doc.txt
             pip list
+
+      - save_cache:
+          key: pip-cache-v1
+          paths:
+            - ~/.cache/pip
 
       - run:
           name: Install
