@@ -47,8 +47,8 @@ jobs:
             /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1400x200x24 -ac +extension GLX +render -noreset;
 
       - restore_cache:
-        keys:
-          - pip-cache-v1
+          keys:
+            - pip-cache-v1
 
       - run:
           name: Install Python dependencies
