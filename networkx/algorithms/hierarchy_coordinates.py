@@ -111,29 +111,28 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
     import numpy as np
 
     # binary check
-    if np.array_equal(np.unique(A), [0, 1]):
+    A_elements = set(A.flat)
+    if len(A_elements) == 2 and 0 in A_elements:
         num_thresholds = 1
     else:
         num_thresholds = num_thresholds
 
     # Establishing Thresholds
-    if num_thresholds == 1 or np.isclose(np.max(A) - np.min(A), 0, 1e-2):
+    if num_thresholds == 1 or np.isclose(np.max(A) - np.min(A), 0, 1e-15):
         nx_graphs = [nx.from_numpy_matrix(A, create_using=nx.DiGraph)]
     else:
         if threshold_distribution is None:
-            try:
-                thresholds = list(
-                    np.round(
-                        np.arange(
-                            np.min(A),
-                            np.max(A),
-                            (np.max(A - np.min(A))) / num_thresholds,
-                        ),
-                        4,
-                    )
-                )  # linear distribution
-            except:
-                thresholds = [np.max(A)] * num_thresholds
+            # try:
+            thresholds = list(
+                np.round(
+                    np.arange(
+                        np.min(A),
+                        np.max(A),
+                        (np.max(A - np.min(A))) / num_thresholds,
+                    ),
+                    4,
+                )
+            )  # linear distribution
         else:
             thresholds = _distribute(
                 dist=threshold_distribution,
@@ -165,12 +164,8 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
                 )
             )
         )
-        members = nx.get_node_attributes(largest_condensed_graphs[-1], "members")
-        node_weights = [len(w) for w in members.values()]
-        for node_index in range(len(node_weights)):
-            largest_condensed_graphs[-1].nodes[node_index]["weight"] = node_weights[
-                node_index
-            ]
+        for node, attrs in largest_condensed_graphs[-1].nodes.data():
+            attrs["weight"] = len(attrs["members"])
 
     return largest_condensed_graphs, nx_graphs
 
@@ -240,11 +235,8 @@ def weight_nodes_by_condensation(condensed_graph):
             "G must be a directed acyclic graph for node weighted condensation"
         )
 
-    node_weights = [
-        len(w) for w in nx.get_node_attributes(condensed_graph, "members").values()
-    ]
-    for node_index in range(len(node_weights)):
-        condensed_graph.nodes[node_index]["weight"] = node_weights[node_index]
+    for node, attrs in condensed_graph.nodes.data():
+        attrs["weight"] = len(attrs["members"])
     # WIP TODO: May not be necessary, as the graph itself is updated (not copied)?
     return condensed_graph
 
@@ -298,9 +290,9 @@ def max_min_layers(G, max_layer=True):
     if not G.is_directed():
         raise nx.NetworkXError("G must be a DiGraph for min/max layer evaluation")
     if max_layer:
-        return [node for node in G.nodes() if G.in_degree(node) == 0]
+        return [node for node, deg in G.in_degree if deg == 0]
     else:
-        return [node for node in G.nodes() if G.out_degree(node) == 0]
+        return [node for node, deg in G.out_degree if deg == 0]
 
 
 @not_implemented_for("undirected")
@@ -503,31 +495,22 @@ def orderability(
         )
     # unweighted (non-binary) check
     if not np.array_equal(np.unique(nx.to_numpy_array(G)), [0, 1]):
-        o = 0
         condensed_graphs, original_graphs = node_weighted_condense(
             nx.to_numpy_array(G),
-            num_thresholds=num_thresholds,
-            threshold_distribution=threshold_distribution,
+            num_thresholds,
+            threshold_distribution,
         )
-
-        for index in range(len(condensed_graphs)):
-            o += orderability(original_graphs[index], condensed_graphs[index])
+        o = sum(
+            orderability(OG, CG) for CG, OG in zip(condensed_graphs, original_graphs)
+        )
         return o / len(condensed_graphs)
 
     if condensed_nx_graph is None:
         condensed_nx_graph = weight_nodes_by_condensation(nx.condensation(G))
-    non_cyclic_nodes = [
-        node[0]
-        for node in nx.get_node_attributes(condensed_nx_graph, "weight").items()
-        if node[1] == 1
-    ]
-    total_acyclic_node_weight = sum(
-        [
-            weight
-            for weight in nx.get_node_attributes(condensed_nx_graph, "weight").values()
-        ]
-    )
-    return len(non_cyclic_nodes) / total_acyclic_node_weight
+    weights = nx.get_node_attributes(condensed_nx_graph, "weight").values()
+    total_acyclic_node_weight = sum(weights)
+    number_non_cyclic_nodes = sum(1 for wt in weights if wt == 1)
+    return number_non_cyclic_nodes / total_acyclic_node_weight
 
 
 @not_implemented_for("undirected")
@@ -766,18 +749,12 @@ def graph_entropy(DAG, forward_entropy=False):
 
     boundary_layer = max_min_layers(dag, max_layer=forward_entropy)
     non_extremal_nodes = set(dag.nodes() - boundary_layer)
-    entropy = 0
-    for layer_node in boundary_layer:
-        for non_extremal_node in non_extremal_nodes:
-            if forward_entropy:
-                entropy += P[layer_node][non_extremal_node] * np.log(
-                    dag.out_degree(layer_node)
-                )  # nan for 0 outdegree
-            else:
-                entropy += P[non_extremal_node][layer_node] * np.log(
-                    dag.in_degree(layer_node)
-                )
-    entropy /= len(boundary_layer)
+    deg = dag.out_degree if forward_entropy else dag.in_degree
+    P = P if forward_entropy else P.T
+    e = sum(
+        P[u][v] * np.log(deg(u)) for u in boundary_layer for v in non_extremal_nodes
+    )
+    entropy = e / len(boundary_layer)
     return entropy
 
 
@@ -858,40 +835,16 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
     start_layer = max_min_layers(dag, max_layer=forward_entropy)
     end_layer = max_min_layers(dag, max_layer=not forward_entropy)
     entropy = 0
+    if not forward_entropy:
+        dag = dag.reverse(copy=True)
     for start_node in start_layer:
         for end_node in end_layer:
-            if forward_entropy:
-                paths = list(
-                    nx.all_simple_paths(dag, source=start_node, target=end_node)
-                )
-            else:
-                paths = list(
-                    nx.all_simple_paths(
-                        dag.reverse(copy=True), source=start_node, target=end_node
-                    )
-                )
+            paths = list(nx.all_simple_paths(dag, source=start_node, target=end_node))
             for path in paths:
-                if forward_entropy:
-                    n = sum(
-                        [
-                            dag.out_degree(node)
-                            for node in path[:-1]
-                            if dag.out_degree(node) != 1
-                        ]
-                    )
-                    # Except ones as they don't indicate further possible paths
-                    if n == 0:
-                        n = 1
-                else:
-                    n = sum(
-                        [
-                            dag.in_degree(node)
-                            for node in path[:-1]
-                            if dag.in_degree(node) != 1
-                        ]
-                    )
-                    if n == 0:
-                        n = 1
+                n = sum(d for _, d in dag.out_degree(path[:-1]) if d != 1)
+                # Except ones as they don't indicate further possible paths
+                if n == 0:
+                    n = 1
                 entropy += np.log(n) / n
     entropy /= len(start_layer)
     return entropy
@@ -1082,19 +1035,12 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
     import numpy as np
 
     np_A = []
-    if (
-        isinstance(A, nx.DiGraph)
-        or isinstance(A, nx.Graph)
-        or isinstance(A, nx.MultiGraph)
-        or isinstance(A, nx.MultiDiGraph)
-    ):
+    if isinstance(A, nx.DiGraph):
         np_A = nx.to_numpy_array(A)
     elif isinstance(A, np.ndarray):
         np_A = A
     else:
-        print(
-            "A must be given as either a networkx graph or adjacency matrix (as nested list or 2d numpy array)"
-        )
+        raise nx.NetworkXError("A must be a networkx graph or numpy adjacency array")
 
     if np.array_equal(np.unique(np_A), [0]):  # null check
         # raise Exception("Unconnected graph; trivially 0 hierarchy")  # TODO: Raise exception if undefined instead
