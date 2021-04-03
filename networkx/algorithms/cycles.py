@@ -392,11 +392,10 @@ def find_cycle(G, source=None, orientation=None):
     is also known as a polytree).
 
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
-    >>> try:
-    ...     nx.find_cycle(G, orientation="original")
-    ... except:
-    ...     pass
-    ...
+    >>> nx.find_cycle(G, orientation="original")
+    Traceback (most recent call last):
+        ...
+    networkx.exception.NetworkXNoCycle: No cycle found.
     >>> list(nx.find_cycle(G, orientation="ignore"))
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 

@@ -39,7 +39,7 @@ def test_one_exchange_basic():
     for (u, v, w) in G.edges(data=True):
         w["weight"] = random.randrange(-100, 100, 1) / 10
 
-    initial_cut = set(random.sample(G.nodes(), k=5))
+    initial_cut = set(random.sample(sorted(G.nodes()), k=5))
     cut_size, (set1, set2) = maxcut.one_exchange(
         G, initial_cut, weight="weight", seed=5
     )
@@ -71,7 +71,7 @@ def test_negative_weights():
     for (u, v, w) in G.edges(data=True):
         w["weight"] = -1 * random.random()
 
-    initial_cut = set(random.sample(G.nodes(), k=5))
+    initial_cut = set(random.sample(sorted(G.nodes()), k=5))
     cut_size, (set1, set2) = maxcut.one_exchange(G, initial_cut, weight="weight")
 
     # make sure it is a valid cut

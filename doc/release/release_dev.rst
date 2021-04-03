@@ -28,6 +28,9 @@ Improvements
 - [`#4317 <https://github.com/networkx/networkx/pull/4317>`_]
   New ``source`` argument to ``has_eulerian_path`` to look for path starting at
   source.
+- [`#4640 <https://github.com/networkx/networkx/pull/4640>`_]
+  ``prefix_tree`` now uses a non-recursive algorithm. The original recursive
+  algorithm is still available via ``prefix_tree_recursive``.
 
 API Changes
 -----------
@@ -100,6 +103,8 @@ Deprecations
   Deprecate ``empty_generator``.
 - [`#4617 <https://github.com/networkx/networkx/pull/4617>`_]
   Deprecate ``hub_matrix`` and ``authority_matrix``
+- [`#4629 <https://github.com/networkx/networkx/pull/4629>`_]
+  Deprecate the ``Ordered`` graph classes.
 
 
 
