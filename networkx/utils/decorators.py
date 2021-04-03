@@ -1,3 +1,4 @@
+import inspect
 from collections import defaultdict
 from os.path import splitext
 from contextlib import contextmanager
@@ -282,6 +283,17 @@ def nodes_or_number(which_args):
 
     @decorator
     def _nodes_or_number(func_to_be_decorated, *args, **kw):
+        # get all arguments and, where applicable, their default values
+        default_args_kw = {
+            p.name: p.default
+            for p in inspect.signature(func_to_be_decorated).parameters.values()
+        }
+        # replace defaults with supplied keyword argument
+        kw = dict(default_args_kw, **kw)
+        n_args = len(args)
+        # convert all arguments into a tuple
+        args += tuple(kw.values())[n_args:]
+
         # form tuple of arg positions to be converted.
         try:
             iter_wa = iter(which_args)
@@ -300,7 +312,11 @@ def nodes_or_number(which_args):
                     msg = "Negative number of nodes not valid: {n}"
                     raise nx.NetworkXError(msg)
             new_args[i] = (n, nodes)
-        return func_to_be_decorated(*new_args, **kw)
+
+        # to account for keyword-only arguments, convert back to dict
+        new_kw = dict(zip(list(kw.keys())[n_args:], new_args[n_args:]))
+        new_args = new_args[:n_args]
+        return func_to_be_decorated(*new_args, **new_kw)
 
     return _nodes_or_number
 
