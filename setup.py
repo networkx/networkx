@@ -124,7 +124,7 @@ package_data = {
     "networkx.utils": ["tests/*.py"],
 }
 
-install_requires = ["decorator>=4.3.0"]
+install_requires = ["decorator>=4.3,<5"]
 extras_require = {
     "all": [
         "numpy",
