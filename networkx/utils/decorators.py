@@ -106,7 +106,7 @@ def open_file(path_arg, mode="r"):
 
     Parameters
     ----------
-    path_arg : int
+    path_arg : Union[int, str]
         Location of the path argument in args.  Even if the argument is a
         named positional argument (with a default value), you must specify its
         index as a positional argument.
@@ -170,15 +170,32 @@ def open_file(path_arg, mode="r"):
 
     @decorator
     def _open_file(func_to_be_decorated, *args, **kwargs):
+        # get all arguments and, where applicable, their default values
+        sig = inspect.signature(func_to_be_decorated).parameters
+        default_args_kw = {
+            p.name: p.default
+            for p in sig.values()
+            if p.kind
+            not in [inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD]
+        }
 
-        # Note that since we have used @decorator, *args, and **kwargs have
-        # already been resolved to match the function signature of func. This
-        # means default values have been propagated. For example,  the function
-        # func(x, y, a=1, b=2, **kwargs) if called as func(0,1,b=5,c=10) would
-        # have args=(0,1,1,5) and kwargs={'c':10}.
+        try:
+            i_kw_only = next(
+                i
+                for i, k in enumerate(default_args_kw.keys())
+                if sig[k].kind == inspect.Parameter.KEYWORD_ONLY
+            )
+        except StopIteration:
+            i_kw_only = len(default_args_kw)
+
+        # replace defaults with supplied keyword argument
+        kw = dict(default_args_kw, **kwargs)
+
+        # convert all arguments into a tuple
+        args += tuple(kw.values())[len(args) :]
 
         # First we parse the arguments of the decorator. The path_arg could
-        # be an positional argument or a keyword argument.  Even if it is
+        # be a positional argument or a keyword argument.  Even if it is
         try:
             # path_arg is a required positional argument
             # This works precisely because we are using @decorator
@@ -189,7 +206,9 @@ def open_file(path_arg, mode="r"):
             # It can exist in `kwargs` by a developer specified default value
             # or it could have been explicitly set by the user.
             try:
-                path = kwargs[path_arg]
+                i_path, path = next(
+                    (i, v) for i, (k, v) in enumerate(kw.items()) if k == path_arg
+                )
             except KeyError as e:
                 # Could not find the keyword. Thus, no default was specified
                 # in the function signature and the user did not provide it.
@@ -226,18 +245,22 @@ def open_file(path_arg, mode="r"):
             fobj = path
             close_fobj = False
 
+        # to account for keyword-only arguments, convert back to dict
+        new_kw = dict(zip(list(kw.keys())[i_kw_only:], args[i_kw_only:]))
+        new_args = list(args[:i_kw_only])
+
         # Insert file object into args or kwargs.
         if is_kwarg:
-            new_args = args
-            kwargs[path_arg] = fobj
+            if i_path >= i_kw_only:
+                new_kw[path_arg] = fobj
+            else:
+                new_args[i_path] = fobj
         else:
-            # args is a tuple, so we must convert to list before modifying it.
-            new_args = list(args)
             new_args[path_arg] = fobj
 
         # Finally, we call the original function, making sure to close the fobj
         try:
-            result = func_to_be_decorated(*new_args, **kwargs)
+            result = func_to_be_decorated(*new_args, **new_kw)
         finally:
             if close_fobj:
                 fobj.close()
@@ -282,17 +305,30 @@ def nodes_or_number(which_args):
     """
 
     @decorator
-    def _nodes_or_number(func_to_be_decorated, *args, **kw):
+    def _nodes_or_number(func_to_be_decorated, *args, **kwargs):
         # get all arguments and, where applicable, their default values
+        sig = inspect.signature(func_to_be_decorated).parameters
         default_args_kw = {
             p.name: p.default
-            for p in inspect.signature(func_to_be_decorated).parameters.values()
+            for p in sig.values()
+            if p.kind
+            not in [inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD]
         }
+
+        try:
+            i_kw_only = next(
+                i
+                for i, k in enumerate(default_args_kw.keys())
+                if sig[k].kind == inspect.Parameter.KEYWORD_ONLY
+            )
+        except StopIteration:
+            i_kw_only = len(default_args_kw)
+
         # replace defaults with supplied keyword argument
-        kw = dict(default_args_kw, **kw)
-        n_args = len(args)
+        kw = dict(default_args_kw, **kwargs)
+
         # convert all arguments into a tuple
-        args += tuple(kw.values())[n_args:]
+        args += tuple(kw.values())[len(args) :]
 
         # form tuple of arg positions to be converted.
         try:
@@ -314,8 +350,8 @@ def nodes_or_number(which_args):
             new_args[i] = (n, nodes)
 
         # to account for keyword-only arguments, convert back to dict
-        new_kw = dict(zip(list(kw.keys())[n_args:], new_args[n_args:]))
-        new_args = new_args[:n_args]
+        new_kw = dict(zip(list(kw.keys())[i_kw_only:], new_args[i_kw_only:]))
+        new_args = new_args[:i_kw_only]
         return func_to_be_decorated(*new_args, **new_kw)
 
     return _nodes_or_number
@@ -406,7 +442,31 @@ def random_state(random_state_index):
     """
 
     @decorator
-    def _random_state(func, *args, **kwargs):
+    def _random_state(func_to_be_decorated, *args, **kwargs):
+        # get all arguments and, where applicable, their default values
+        sig = inspect.signature(func_to_be_decorated).parameters
+        default_args_kw = {
+            p.name: p.default
+            for p in sig.values()
+            if p.kind
+            not in [inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD]
+        }
+
+        try:
+            i_kw_only = next(
+                i
+                for i, k in enumerate(default_args_kw.keys())
+                if sig[k].kind == inspect.Parameter.KEYWORD_ONLY
+            )
+        except StopIteration:
+            i_kw_only = len(default_args_kw)
+
+        # replace defaults with supplied keyword argument
+        kw = dict(default_args_kw, **kwargs)
+
+        # convert all arguments into a tuple
+        args += tuple(kw.values())[len(args) :]
+
         # Parse the decorator arguments.
         try:
             random_state_arg = args[random_state_index]
@@ -421,7 +481,11 @@ def random_state(random_state_index):
         # args is a tuple, so we must convert to list before modifying it.
         new_args = list(args)
         new_args[random_state_index] = random_state
-        return func(*new_args, **kwargs)
+
+        # to account for keyword-only arguments, convert back to dict
+        new_kw = dict(zip(list(kw.keys())[i_kw_only:], new_args[i_kw_only:]))
+        new_args = new_args[:i_kw_only]
+        return func_to_be_decorated(*new_args, **new_kw)
 
     return _random_state
 
@@ -467,7 +531,31 @@ def py_random_state(random_state_index):
     """
 
     @decorator
-    def _random_state(func, *args, **kwargs):
+    def _random_state(func_to_be_decorated, *args, **kwargs):
+        # get all arguments and, where applicable, their default values
+        sig = inspect.signature(func_to_be_decorated).parameters
+        default_args_kw = {
+            p.name: p.default
+            for p in sig.values()
+            if p.kind
+            not in [inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD]
+        }
+
+        try:
+            i_kw_only = next(
+                i
+                for i, k in enumerate(default_args_kw.keys())
+                if sig[k].kind == inspect.Parameter.KEYWORD_ONLY
+            )
+        except StopIteration:
+            i_kw_only = len(default_args_kw)
+
+        # replace defaults with supplied keyword argument
+        kw = dict(default_args_kw, **kwargs)
+
+        # convert all arguments into a tuple
+        args += tuple(kw.values())[len(args) :]
+
         # Parse the decorator arguments.
         try:
             random_state_arg = args[random_state_index]
@@ -482,6 +570,10 @@ def py_random_state(random_state_index):
         # args is a tuple, so we must convert to list before modifying it.
         new_args = list(args)
         new_args[random_state_index] = random_state
-        return func(*new_args, **kwargs)
+
+        # to account for keyword-only arguments, convert back to dict
+        new_kw = dict(zip(list(kw.keys())[i_kw_only:], new_args[i_kw_only:]))
+        new_args = new_args[:i_kw_only]
+        return func_to_be_decorated(*new_args, **new_kw)
 
     return _random_state
