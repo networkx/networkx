@@ -19,6 +19,47 @@ __all__ = [
 ]
 
 
+def _make_args_tuple(func, args, kwargs):
+    """
+
+    Returns
+    -------
+    i_kw_only : int
+        values in the args tuple must only be supplied as positional
+        arguments for indices < i_kw_only.
+    args : Tuple[Any]
+        all argument values as tuple
+    kw : Tuple[Any]
+        all named arguments as dict
+
+    """
+    # get all arguments and, where applicable, their default values
+    sig = inspect.signature(func).parameters
+    default_args_kw = {
+        p.name: p.default
+        for p in sig.values()
+        if p.kind
+        not in [inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD]
+    }
+
+    try:
+        i_kw_only = next(
+            i
+            for i, k in enumerate(default_args_kw.keys())
+            if sig[k].kind == inspect.Parameter.KEYWORD_ONLY
+        )
+    except StopIteration:
+        i_kw_only = len(default_args_kw)
+
+    # replace defaults with supplied keyword argument
+    kw = dict(default_args_kw, **kwargs)
+
+    # convert all arguments into a tuple
+    args += tuple(kw.values())[len(args) :]
+
+    return i_kw_only, args, kw
+
+
 def not_implemented_for(*graph_types):
     """Decorator to mark algorithms as not implemented
 
@@ -170,29 +211,7 @@ def open_file(path_arg, mode="r"):
 
     @decorator
     def _open_file(func_to_be_decorated, *args, **kwargs):
-        # get all arguments and, where applicable, their default values
-        sig = inspect.signature(func_to_be_decorated).parameters
-        default_args_kw = {
-            p.name: p.default
-            for p in sig.values()
-            if p.kind
-            not in [inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD]
-        }
-
-        try:
-            i_kw_only = next(
-                i
-                for i, k in enumerate(default_args_kw.keys())
-                if sig[k].kind == inspect.Parameter.KEYWORD_ONLY
-            )
-        except StopIteration:
-            i_kw_only = len(default_args_kw)
-
-        # replace defaults with supplied keyword argument
-        kw = dict(default_args_kw, **kwargs)
-
-        # convert all arguments into a tuple
-        args += tuple(kw.values())[len(args) :]
+        i_kw_only, args, kw = _make_args_tuple(func_to_be_decorated, args, kwargs)
 
         # First we parse the arguments of the decorator. The path_arg could
         # be a positional argument or a keyword argument.  Even if it is
@@ -306,29 +325,7 @@ def nodes_or_number(which_args):
 
     @decorator
     def _nodes_or_number(func_to_be_decorated, *args, **kwargs):
-        # get all arguments and, where applicable, their default values
-        sig = inspect.signature(func_to_be_decorated).parameters
-        default_args_kw = {
-            p.name: p.default
-            for p in sig.values()
-            if p.kind
-            not in [inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD]
-        }
-
-        try:
-            i_kw_only = next(
-                i
-                for i, k in enumerate(default_args_kw.keys())
-                if sig[k].kind == inspect.Parameter.KEYWORD_ONLY
-            )
-        except StopIteration:
-            i_kw_only = len(default_args_kw)
-
-        # replace defaults with supplied keyword argument
-        kw = dict(default_args_kw, **kwargs)
-
-        # convert all arguments into a tuple
-        args += tuple(kw.values())[len(args) :]
+        i_kw_only, args, kw = _make_args_tuple(func_to_be_decorated, args, kwargs)
 
         # form tuple of arg positions to be converted.
         try:
@@ -443,29 +440,7 @@ def random_state(random_state_index):
 
     @decorator
     def _random_state(func_to_be_decorated, *args, **kwargs):
-        # get all arguments and, where applicable, their default values
-        sig = inspect.signature(func_to_be_decorated).parameters
-        default_args_kw = {
-            p.name: p.default
-            for p in sig.values()
-            if p.kind
-            not in [inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD]
-        }
-
-        try:
-            i_kw_only = next(
-                i
-                for i, k in enumerate(default_args_kw.keys())
-                if sig[k].kind == inspect.Parameter.KEYWORD_ONLY
-            )
-        except StopIteration:
-            i_kw_only = len(default_args_kw)
-
-        # replace defaults with supplied keyword argument
-        kw = dict(default_args_kw, **kwargs)
-
-        # convert all arguments into a tuple
-        args += tuple(kw.values())[len(args) :]
+        i_kw_only, args, kw = _make_args_tuple(func_to_be_decorated, args, kwargs)
 
         # Parse the decorator arguments.
         try:
@@ -532,29 +507,7 @@ def py_random_state(random_state_index):
 
     @decorator
     def _random_state(func_to_be_decorated, *args, **kwargs):
-        # get all arguments and, where applicable, their default values
-        sig = inspect.signature(func_to_be_decorated).parameters
-        default_args_kw = {
-            p.name: p.default
-            for p in sig.values()
-            if p.kind
-            not in [inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD]
-        }
-
-        try:
-            i_kw_only = next(
-                i
-                for i, k in enumerate(default_args_kw.keys())
-                if sig[k].kind == inspect.Parameter.KEYWORD_ONLY
-            )
-        except StopIteration:
-            i_kw_only = len(default_args_kw)
-
-        # replace defaults with supplied keyword argument
-        kw = dict(default_args_kw, **kwargs)
-
-        # convert all arguments into a tuple
-        args += tuple(kw.values())[len(args) :]
+        i_kw_only, args, kw = _make_args_tuple(func_to_be_decorated, args, kwargs)
 
         # Parse the decorator arguments.
         try:
