@@ -238,15 +238,13 @@ def scale_free_graph(
            Discrete Algorithms, 132--139, 2003.
     """
 
-    def _choose_node(G, distribution, delta, psum):
-        cumsum = 0.0
-        # normalization
-        r = seed.random()
-        for n, d in distribution:
-            cumsum += (d + delta) / psum
-            if r < cumsum:
-                break
-        return n
+    def _choose_node(candidates, n_nodes, delta):
+        if delta > 0:
+            bias_sum = n_nodes * delta
+            p_delta = bias_sum / (bias_sum + len(candidates))
+            if seed.random() < p_delta:
+                return seed.randint(0, n_nodes)
+        return seed.choice(candidates)
 
     if create_using is None or not hasattr(create_using, "_adj"):
         # start with 3-cycle
@@ -267,10 +265,17 @@ def scale_free_graph(
     if abs(alpha + beta + gamma - 1.0) >= 1e-9:
         raise ValueError("alpha+beta+gamma must equal 1.")
 
-    number_of_edges = G.number_of_edges()
+    if delta_in < 0:
+        raise ValueError("delta_in must be >= 0.")
+
+    if delta_out < 0:
+        raise ValueError("delta_out must be >= 0.")
+
+    # pre-populate degree states
+    vs = sum([count * [idx] for idx, count in G.out_degree()], [])
+    ws = sum([count * [idx] for idx, count in G.in_degree()], [])
+
     while len(G) < n:
-        psum_in = number_of_edges + delta_in * len(G)
-        psum_out = number_of_edges + delta_out * len(G)
         r = seed.random()
         # random choice in alpha,beta,gamma ranges
         if r < alpha:
@@ -278,21 +283,26 @@ def scale_free_graph(
             # add new node v
             v = len(G)
             # choose w according to in-degree and delta_in
-            w = _choose_node(G, G.in_degree(), delta_in, psum_in)
+            w = _choose_node(ws, len(G), delta_in)
         elif r < alpha + beta:
             # beta
             # choose v according to out-degree and delta_out
-            v = _choose_node(G, G.out_degree(), delta_out, psum_out)
+            v = _choose_node(vs, len(G), delta_out)
             # choose w according to in-degree and delta_in
-            w = _choose_node(G, G.in_degree(), delta_in, psum_in)
+            w = _choose_node(ws, len(G), delta_in)
         else:
             # gamma
             # choose v according to out-degree and delta_out
-            v = _choose_node(G, G.out_degree(), delta_out, psum_out)
+            v = _choose_node(vs, len(G), delta_out)
             # add new node w
             w = len(G)
+
+        # add edge to graph
         G.add_edge(v, w)
-        number_of_edges += 1
+
+        # update degree states
+        vs.append(v)
+        ws.append(w)
     return G
 
 
