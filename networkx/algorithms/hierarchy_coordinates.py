@@ -155,14 +155,10 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
     for condensed_graph in condensed_graphs:
         largest_condensed_graphs.append(
             nx.convert_node_labels_to_integers(
-                max(
-                    [
-                        condensed_graph.subgraph(cc).copy()
-                        for cc in nx.weakly_connected_components(condensed_graph)
-                    ],
-                    key=len,
+                condensed_graph.subgraph(
+                    max(nx.weakly_connected_components(condensed_graph), key=len)
                 )
-            )
+            ).copy()
         )
         for node, attrs in largest_condensed_graphs[-1].nodes.data():
             attrs["weight"] = len(attrs["members"])
@@ -736,15 +732,14 @@ def graph_entropy(DAG, forward_entropy=False):
     L_GC = len(recursive_leaf_removal(DAG))
 
     if forward_entropy:
-        # as w sklearn: B_prime = normalize(nx.to_numpy_array(dag), axis=1, norm='max')  # Row normalization
-        B_prime = _matrix_normalize(nx.to_numpy_array(dag), row_normalize=True)
+        B_prime = _matrix_normalize(nx.to_numpy_array(dag), axis=1)
         # +1 as k \in ( 1, L(G_C) )
         P = sum([np.power(B_prime, k) for k in range(1, L_GC + 1)])
         # TODO: Not so sure about this unless k coincides with the number of steps already taken (and the sum is odd)
         # (Presently awaiting response from original authors for clarification)
     else:
         # as w sklearn: B = normalize(nx.to_numpy_array(dag), axis=0, norm='max')  # Column normalization
-        B = _matrix_normalize(nx.to_numpy_array(dag), row_normalize=False)
+        B = _matrix_normalize(nx.to_numpy_array(dag), axis=0)
         P = sum([np.power(B, k) for k in range(1, L_GC + 1)])
 
     boundary_layer = max_min_layers(dag, max_layer=forward_entropy)
@@ -1034,7 +1029,6 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
     """
     import numpy as np
 
-    np_A = []
     if isinstance(A, nx.DiGraph):
         np_A = nx.to_numpy_array(A)
     elif isinstance(A, np.ndarray):
@@ -1046,19 +1040,14 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
         # raise Exception("Unconnected graph; trivially 0 hierarchy")  # TODO: Raise exception if undefined instead
         return 0, 0, 0
 
-    o, f, t = 0, 0, 0
     condensed_graphs, original_graphs = node_weighted_condense(
-        A=np_A,
-        num_thresholds=num_thresholds,
-        threshold_distribution=threshold_distribution,
+        np_A, num_thresholds, threshold_distribution
     )
-    for index in range(len(condensed_graphs)):
-        t += treeness(condensed_graphs[index])
-        f += feedforwardness(condensed_graphs[index])
-        o += orderability(original_graphs[index], condensed_graphs[index])
-    t /= len(condensed_graphs)
-    f /= len(condensed_graphs)
-    o /= len(condensed_graphs)
+    t = sum(treeness(G) for G in condensed_graphs) / len(condensed_graphs)
+    f = sum(feedforwardness(G) for G in condensed_graphs) / len(condensed_graphs)
+    o = sum(
+        orderability(OG, CG) for OG, CG in zip(original_graphs, condensed_graphs)
+    ) / len(condensed_graphs)
     return t, f, o
 
 
@@ -1120,14 +1109,15 @@ def _distribute(n, end_value_range=None, dist=1, sampled_range_of_dist=(0, 1)):
     return pts
 
 
-def _matrix_normalize(matrix, row_normalize=False):
-    """normalizes 2d matrices.
+def _matrix_normalize(matrix, axis=0):
+    """normalizes 2d matrices. row sums mean axis=1. column sums have axis=0
+
     Parameters
     ----------
     matrix: square 2d numpy array, nested list,
         matrix to be normalized
-    row_normalize: bool
-        normalizes row *instead* of default columns if True
+    axis: int
+        normalizes row for axis=1, columns for axis=0
     Returns
     -------
     numpy array:
@@ -1136,31 +1126,14 @@ def _matrix_normalize(matrix, row_normalize=False):
     --------
     a = np.repeat(np.arange(1, 5), 4).reshape(4, 4)
     print(a)
-    print(np.round(hc.matrix_normalize(a), 2))
-    print(np.round(hc.matrix_normalize(a, row_normalize=True), 2))
-    Notes
-    -----
-    Should be replaced with appropriate generalized, efficient version
+    print(np.round(_matrix_normalize(a), 2))
+    print(np.round(_matrix_normalize(a, axis=1), 2))
     """
     import numpy as np
 
-    if row_normalize:
-        row_sums = matrix.sum(axis=1)
-        return np.array(
-            [
-                matrix[index, :] / row_sums[index]
-                if row_sums[index] != 0
-                else [0] * row_sums.size
-                for index in range(row_sums.size)
-            ]
-        )
-    else:
-        column_sums = matrix.sum(axis=0)
-        return np.array(
-            [
-                matrix[:, index] / column_sums[index]
-                if column_sums[index] != 0
-                else [0] * column_sums.size
-                for index in range(column_sums.size)
-            ]
-        ).T
+    # row sums mean axis = 1. column sums have axis = 0
+
+    sums = matrix.sum(axis=axis, keepdims=True)
+    # For sum of 0, set to 1 so division leaves values the same
+    sums[sums == 0] = 1
+    return matrix / sums

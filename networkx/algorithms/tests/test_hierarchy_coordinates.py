@@ -65,9 +65,8 @@ def test_recursive_leaf_removal():
     pruned_from_top = nx.recursive_leaf_removal(G, from_top=True)
     pruned_from_bottom = nx.recursive_leaf_removal(G, from_top=False)
 
-    compare_hashed_graphs(
-        pruned_from_top[0], pruned_from_bottom[0]
-    )  # As the original graph is always the first element
+    # As the original graph is always the first element
+    compare_hashed_graphs(pruned_from_top[0], pruned_from_bottom[0])
     compare_hashed_graphs(pruned_from_top[1], nx.DiGraph(layer_1 + layer_2 + layer_3))
     compare_hashed_graphs(pruned_from_top[2], nx.DiGraph(layer_2 + layer_3))
     compare_hashed_graphs(pruned_from_top[3], nx.DiGraph(layer_3))
@@ -76,17 +75,17 @@ def test_recursive_leaf_removal():
     )
     compare_hashed_graphs(pruned_from_bottom[2], nx.DiGraph(layer_1 + layer_0))
     compare_hashed_graphs(pruned_from_bottom[3], nx.DiGraph(layer_0))
-
-    G = nx.cycle_graph(5, create_using=nx.DiGraph)  # No cycles
+    # No cycles
+    G = nx.cycle_graph(5, create_using=nx.DiGraph)
     pytest.raises(nx.NetworkXError, nx.recursive_leaf_removal, G)
 
 
 def test_weight_nodes_by_condensation():
     center_cycle = [(0, 1), (1, 2), (2, 3), (3, 1), (3, 4)]
-    G = nx.DiGraph(center_cycle)  # unit weights by default
-    pytest.raises(
-        nx.NetworkXError, nx.weight_nodes_by_condensation, G
-    )  # Must be condensed (acyclic)
+    # unit weights by default
+    G = nx.DiGraph(center_cycle)
+    # Must be condensed (acyclic)
+    pytest.raises(nx.NetworkXError, nx.weight_nodes_by_condensation, G)
 
     condensed_G = nx.condensation(G)
     nodes_w_cycle_weight = nx.weight_nodes_by_condensation(condensed_G)
@@ -108,20 +107,20 @@ def test_node_weighted_condense():
         ]
     )  # this condensation eliminates the smaller, unconnected cycles, e.g. {(5, 6), (6, 5)}
     center_cycle = [(0, 1), (1, 2), (2, 3), (3, 1), (3, 4), (5, 6), (6, 5)]
-    G = nx.DiGraph(center_cycle)  # unit weights by default
+    # unit weights by default
+    G = nx.DiGraph(center_cycle)
     compare_hashed_graphs(
         nx.from_numpy_array(A=center_cycle_A, create_using=nx.DiGraph), G
     )
 
     condensed_G, original_G = nx.node_weighted_condense(A=center_cycle_A)
-    assert (
-        len(condensed_G) == 1 == len(original_G)
-    )  # single threshold for binary graphs
+    # single threshold for binary graphs
+    assert len(condensed_G) == 1 == len(original_G)
     assert condensed_G[0].nodes[0]["weight"] == 1
     assert condensed_G[0].nodes[1]["weight"] == 3
     assert condensed_G[0].nodes[2]["weight"] == 1
 
-    # Weighted network condense:
+    # Weighted network condense: this condensation eliminates the smaller, unconnected cycles, e.g. {(5, 6), (6, 5)}
     weighted_center_cycle_A = np.array(
         [
             [0, 0.9, 0, 0, 0, 0, 0],
@@ -132,19 +131,17 @@ def test_node_weighted_condense():
             [0, 0, 0, 0, 0, 0, 0.4],
             [0, 0, 0, 0, 0, 0.2, 0],
         ]
-    )  # this condensation eliminates the smaller, unconnected cycles, e.g. {(5, 6), (6, 5)}
+    )
 
     condensed_Gs, binary_Gs = nx.node_weighted_condense(
         A=weighted_center_cycle_A, num_thresholds=5, threshold_distribution=None
     )
-    assert len(condensed_Gs) == len(
-        binary_Gs
-    )  # Not necessarily equal to num thresholds, as empty graphs are dropped
-    for index in range(len(binary_Gs)):
-        assert np.array_equal(
-            np.unique(nx.to_numpy_array(binary_Gs[index])), [0, 1]
-        )  # binary checks
-        assert np.array_equal(np.unique(nx.to_numpy_array(condensed_Gs[index])), [0, 1])
+    # Not necessarily equal to num thresholds, as empty graphs are dropped
+    assert len(condensed_Gs) == len(binary_Gs)
+    for binaryG, condensedG in zip(binary_Gs, condensed_Gs):
+        # binary checks
+        assert np.array_equal(np.unique(nx.to_numpy_array(binaryG)), [0, 1])
+        assert np.array_equal(np.unique(nx.to_numpy_array(condensedG)), [0, 1])
 
 
 def test_orderability():
@@ -172,11 +169,10 @@ def test_feedforwardness():
         nx.condensation(nx.DiGraph(infographic_network))
     )
     assert np.round(nx.feedforwardness(G), 2) == 0.56
-
-    cyclic_G = nx.DiGraph(infographic_network)  # unit weights by default
-    pytest.raises(
-        nx.NetworkXError, nx.feedforwardness, cyclic_G
-    )  # Must be condensed (acyclic)
+    # unit weights by default
+    cyclic_G = nx.DiGraph(infographic_network)
+    # Must be condensed (acyclic)
+    pytest.raises(nx.NetworkXError, nx.feedforwardness, cyclic_G)
 
 
 def test_graph_entropy():
