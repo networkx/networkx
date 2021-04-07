@@ -199,9 +199,9 @@ def weight_nodes_by_condensation(condensed_graph):
 
     >>> num_thresholds = 2
     >>> condensed_networks, _ = nx.node_weighted_condense(b, num_thresholds=num_thresholds)
-    >>> for network_index in range(num_thresholds):
-    ...     for node_index in range(len(condensed_networks[network_index].nodes)):
-    ...         print(f"Node {node_index}, new weight:", condensed_networks[network_index].nodes[node_index]["weight"])
+    >>> for cG in condensed_networks:
+    ...     for node, weight in cG.nodes.data("weight"):
+    ...         print(f"Node {node}, new weight: {weight}")
     Node 0, new weight: 1
     Node 1, new weight: 3
     Node 2, new weight: 1
@@ -558,12 +558,25 @@ def _feedforwardness_iteration(G):
 
 @not_implemented_for("undirected")
 def feedforwardness(DAG):
-    """Returns feedforwardness hierarchy coordinates, ~extent information passes vertically
-    (vs horizontally) within a hierarchy.
+    """Returns feedforwardness hierarchy coordinate.
+
+    The feedforwardness heierarchy coordinate represents the extent information passes vertically,
+    as opposed to horizontally, within a hierarchy. That is, how much does information pass
+    through unreciprocated connections versus how much through cyclic (reciprocated) connections.
 
     Based on a weighted sum which considers how much each path from every maximal node to every minimal node
-    traverses through cyclic (flat hierarchy) components. This calculation is then repeated for every subgraph
-    produced through maximal layer removal.
+    traverses through cyclic (flat hierarchy) components. As this is performed over a DAG whose node weights
+    represent the number of cyclic nodes so condensed, the ratio of nodes to their total weight in a given path
+    yields precisely this measure. Feedforwardness is then given by the mean of this ratio for all paths on a
+    given layer, and then summing over all layers pruned through repeated removal of maximal nodes.
+
+    More formally, total feedfowardness is given by
+    .. math:: F(G) = \frac{g(G_C) + \sum_{k < L(G_C)} g(G_k)}{|\prod_{M \mu}(G_c)| + \sum_{k < L_{G_C}} |\prod_{M \mu} (G_k)|}
+    where :math:`\mu` (M) is the set of minimal (maximal) nodes, :math:`G_C` is the DAG, :math:`\prod_{M \mu}` is the
+    set of paths from maximal to minimal nodes, :math:`L_{G_C}` is the set of layers produced by removing maximal nodes,
+    and :math:`g(G_k) = \sum_{\pi_i \in \prod_{M \mu}(G_k)} F(\pi_i)` where
+    :math:`F(\pi_k) = \frac{|v(\pi_k)|}{\sum_{v_i \in v(\pi_k)} \alpha_i}`, with :math:`v_k` and :math:`\alpha_k` being
+    the k-ths node and its weight, respectively.
 
     The original algorithm was given in "On the origins of hierarchy in complex networks."[1]_ and with details
     given in their appendix.[2]_
@@ -580,35 +593,21 @@ def feedforwardness(DAG):
 
     Examples
     ---------
-    >>> import numpy as np
-    >>> a = np.array([
-    ...     [0, 0.2, 0, 0, 0],
-    ...     [0.4, 0, 0, 0.7, 0],
-    ...     [0, 0.4, 0, 0, 0],
-    ...     [0, 0, 0.1, 0, 1.0],
-    ...     [0, 0, 0, 0, 0],
-    ... ])
-    >>> condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
-    >>> for network in condensed_networks:
-    ...     print("DAG: ", network)
-    ...     print("Feedforwardness: {0}".format(nx.feedforwardness(network)))
-    DAG:  DiGraph with 2 nodes and 1 edges
-    Feedforwardness: 0.4
-    DAG:  DiGraph with 4 nodes and 3 edges
-    Feedforwardness: 0.7388888888888889
-    DAG:  DiGraph with 5 nodes and 4 edges
-    Feedforwardness: 1.0
-    DAG:  DiGraph with 5 nodes and 4 edges
-    Feedforwardness: 1.0
-    DAG:  DiGraph with 3 nodes and 2 edges
-    Feedforwardness: 1.0
-    DAG:  DiGraph with 3 nodes and 2 edges
-    Feedforwardness: 1.0
-    DAG:  DiGraph with 2 nodes and 1 edges
-    Feedforwardness: 1.0
-    DAG:  DiGraph with 2 nodes and 1 edges
-    Feedforwardness: 1.0
-
+    >>> infographic_network = [
+    ...     (0, 2),
+    ...     (1, 2),
+    ...     (1, 6),
+    ...     (2, 4),
+    ...     (3, 2),
+    ...     (3, 4),
+    ...     (4, 5),
+    ...     (5, 3),
+    ...     (5, 6),
+    ... ]
+    >>> # requires a node weighted directed acyclic graph
+    >>> G = nx.weight_nodes_by_condensation(nx.condensation(nx.DiGraph(infographic_network)))
+    >>> print(round(nx.feedforwardness(G), 2))
+    0.56
 
     Notes
     ______
@@ -731,16 +730,12 @@ def graph_entropy(DAG, forward_entropy=False):
     # Could be passed in most contexts to reduce redundant computation
     L_GC = len(recursive_leaf_removal(DAG))
 
-    if forward_entropy:
-        B_prime = _matrix_normalize(nx.to_numpy_array(dag), axis=1)
-        # +1 as k \in ( 1, L(G_C) )
-        P = sum([np.power(B_prime, k) for k in range(1, L_GC + 1)])
-        # TODO: Not so sure about this unless k coincides with the number of steps already taken (and the sum is odd)
-        # (Presently awaiting response from original authors for clarification)
-    else:
-        # as w sklearn: B = normalize(nx.to_numpy_array(dag), axis=0, norm='max')  # Column normalization
-        B = _matrix_normalize(nx.to_numpy_array(dag), axis=0)
-        P = sum([np.power(B, k) for k in range(1, L_GC + 1)])
+    axis = 1 if forward_entropy else 0
+    B = _matrix_normalize(nx.to_numpy_array(dag), axis=axis)
+    # +1 as k \in ( 1, L(G_C) )
+    P = sum([np.power(B, k) for k in range(1, L_GC + 1)])
+    # TODO: Not so sure about this unless k coincides with the number of steps already taken (and the sum is odd)
+    # (Presently awaiting response from original authors for clarification)
 
     boundary_layer = max_min_layers(dag, max_layer=forward_entropy)
     non_extremal_nodes = set(dag.nodes() - boundary_layer)
@@ -1132,7 +1127,6 @@ def _matrix_normalize(matrix, axis=0):
     import numpy as np
 
     # row sums mean axis = 1. column sums have axis = 0
-
     sums = matrix.sum(axis=axis, keepdims=True)
     # For sum of 0, set to 1 so division leaves values the same
     sums[sums == 0] = 1
