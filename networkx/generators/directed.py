@@ -238,12 +238,12 @@ def scale_free_graph(
            Discrete Algorithms, 132--139, 2003.
     """
 
-    def _choose_node(candidates, n_nodes, delta):
+    def _choose_node(candidates, node_list, delta):
         if delta > 0:
-            bias_sum = n_nodes * delta
+            bias_sum = len(node_list) * delta
             p_delta = bias_sum / (bias_sum + len(candidates))
             if seed.random() < p_delta:
-                return seed.randint(0, n_nodes)
+                return seed.choice(node_list)
         return seed.choice(candidates)
 
     if create_using is None or not hasattr(create_using, "_adj"):
@@ -275,27 +275,48 @@ def scale_free_graph(
     vs = sum([count * [idx] for idx, count in G.out_degree()], [])
     ws = sum([count * [idx] for idx, count in G.in_degree()], [])
 
+    # pre-populate node state
+    node_list = list(G.nodes())
+
+    # see if there already are int-based nodes
+    int_nodes = [n for n in node_list if type(n) == int]
+    if len(int_nodes) > 0:
+        # set cursor for new nodes appropriately
+        cursor = max(int_nodes) + 1
+    else:
+        # or start at zero
+        cursor = 0
+
     while len(G) < n:
         r = seed.random()
+
         # random choice in alpha,beta,gamma ranges
         if r < alpha:
             # alpha
             # add new node v
-            v = len(G)
+            v = cursor
+            cursor += 1
+            # also add to node state
+            node_list.append(v)
             # choose w according to in-degree and delta_in
-            w = _choose_node(ws, len(G), delta_in)
+            w = _choose_node(ws, node_list, delta_in)
+
         elif r < alpha + beta:
             # beta
             # choose v according to out-degree and delta_out
-            v = _choose_node(vs, len(G), delta_out)
+            v = _choose_node(vs, node_list, delta_out)
             # choose w according to in-degree and delta_in
-            w = _choose_node(ws, len(G), delta_in)
+            w = _choose_node(ws, node_list, delta_in)
+
         else:
             # gamma
             # choose v according to out-degree and delta_out
-            v = _choose_node(vs, len(G), delta_out)
+            v = _choose_node(vs, node_list, delta_out)
             # add new node w
-            w = len(G)
+            w = cursor
+            cursor += 1
+            # also add to node state
+            node_list.append(w)
 
         # add edge to graph
         G.add_edge(v, w)
@@ -303,6 +324,7 @@ def scale_free_graph(
         # update degree states
         vs.append(v)
         ws.append(w)
+
     return G
 
 
