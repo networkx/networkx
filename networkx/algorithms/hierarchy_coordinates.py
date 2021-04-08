@@ -731,7 +731,11 @@ def graph_entropy(DAG, forward_entropy=False):
     L_GC = len(recursive_leaf_removal(DAG))
 
     axis = 1 if forward_entropy else 0
-    B = _matrix_normalize(nx.to_numpy_array(dag), axis=axis)
+    B = nx.to_numpy_array(dag)
+    # normalize so rows (forward_entropy) or columns (backward_entropy) sum to 1.
+    sums = B.sum(axis=axis, keepdims=True)
+    sums[sums == 0] = 1
+    B = B / sums
     # +1 as k \in ( 1, L(G_C) )
     P = sum([np.power(B, k) for k in range(1, L_GC + 1)])
     # TODO: Not so sure about this unless k coincides with the number of steps already taken (and the sum is odd)
@@ -1102,32 +1106,3 @@ def _distribute(n, end_value_range=None, dist=1, sampled_range_of_dist=(0, 1)):
     if end_value_range is not None:
         pts = pts * (max(end_value_range) - min(end_value_range)) + min(end_value_range)
     return pts
-
-
-def _matrix_normalize(matrix, axis=0):
-    """normalizes 2d matrices. row sums mean axis=1. column sums have axis=0
-
-    Parameters
-    ----------
-    matrix: square 2d numpy array, nested list,
-        matrix to be normalized
-    axis: int
-        normalizes row for axis=1, columns for axis=0
-    Returns
-    -------
-    numpy array:
-        column or row normalized array
-    Examples
-    --------
-    a = np.repeat(np.arange(1, 5), 4).reshape(4, 4)
-    print(a)
-    print(np.round(_matrix_normalize(a), 2))
-    print(np.round(_matrix_normalize(a, axis=1), 2))
-    """
-    import numpy as np
-
-    # row sums mean axis = 1. column sums have axis = 0
-    sums = matrix.sum(axis=axis, keepdims=True)
-    # For sum of 0, set to 1 so division leaves values the same
-    sums[sums == 0] = 1
-    return matrix / sums
