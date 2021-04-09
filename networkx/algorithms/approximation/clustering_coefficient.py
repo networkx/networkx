@@ -39,7 +39,9 @@ def average_clustering(G, trials=1000, seed=None):
 
     Examples
     --------
+    >>> import networkx as nx
     >>> from networkx.algorithms import approximation
+    >>> G = nx.erdos_renyi_graph(10, 0.2)
     >>> approximation.average_clustering(G, trials=1000, seed=None)
 
     References
