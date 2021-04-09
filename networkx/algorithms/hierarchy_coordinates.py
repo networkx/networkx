@@ -637,12 +637,10 @@ def feedforwardness(DAG):
             ", e.g. G = nx.weight_nodes_by_condensation(nx.condensation(G))"
         )
 
-    successively_peeled_nx_graphs = recursive_leaf_removal(DAG, from_top=False)
-    if (
-        len(successively_peeled_nx_graphs) == 1
-        and len(successively_peeled_nx_graphs[0].nodes()) == 1
-    ):
+    if len(DAG) == 1:
         return 0
+
+    successively_peeled_nx_graphs = recursive_leaf_removal(DAG, from_top=False)
 
     f = 0
     total_num_paths = 0
