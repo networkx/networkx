@@ -37,6 +37,11 @@ def average_clustering(G, trials=1000, seed=None):
     c : float
         Approximated average clustering coefficient.
 
+    Examples
+    --------
+    >>> from networkx.algorithms import approximation
+    >>> approximation.average_clustering(G, trials=1000, seed=None)
+
     References
     ----------
     .. [1] Schank, Thomas, and Dorothea Wagner. Approximating clustering
