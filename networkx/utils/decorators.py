@@ -7,6 +7,8 @@ import networkx as nx
 from decorator import decorator
 from networkx.utils import create_random_state, create_py_random_state
 
+import inspect, itertools, collections
+
 __all__ = [
     "not_implemented_for",
     "open_file",
@@ -15,6 +17,7 @@ __all__ = [
     "random_state",
     "np_random_state",
     "py_random_state",
+    "argmap",
 ]
 
 
@@ -469,3 +472,172 @@ def py_random_state(random_state_index):
         return func(*new_args, **kwargs)
 
     return _random_state
+
+
+class argmap:
+    """A decorating class which calls specified functions on a function's
+    arguments before calling it.  We currently support two call syntaxes.
+    One is used to call a single function on multiple arguments,
+    
+    @argmap(sum, 'x', 2)
+    def foo(x, y, z):
+        return x, y, z
+        
+    is equivalent to
+    
+    def foo(x, y, z):
+        x = sum(x)
+        z = sum(z)
+        return x, y, z
+    
+    The other is used to call multiple functions on multiple arguments.
+    With this syntax, we can avoid quoting the parameters, but can't refer
+    to them with indices.
+    
+    @argmap(x = sum, z = any)
+    def foo(x, y, z):
+        return (x, y, z)
+ 
+    is equivalent to
+ 
+    def foo(x, y, z):
+        x = sum(x)
+        z = any(z)
+        return (x, y, z)
+
+    This is a draft, not proper documentation, and we might only support
+    one syntax in the final version.
+    """
+
+    ArgmapSignature = collections.namedtuple('ArgmapSignature',
+        ['signature', 'def_sig', 'call_sig', 'names', 'defaults'])
+
+    def __init__(self, *args, **argmapping):
+        self._args = args
+        self._argmapping = argmapping
+
+    def __call__(self, f):
+        """decorate f with the specified argmapping"""
+        if hasattr(f, '_argmap'):
+            sig, callblock, functions = f._argmap
+        else:
+            sig = self.signature(f)
+            callblock, functions = [], {id(f): ('f', f)}
+
+        if self._args:
+            argf, args = self._args
+            simple_argmap = zip(args, itertools.repeat(argf))
+        else:
+            simple_argmap = ()
+
+        applied = set()
+        callblock = list(callblock)
+        for a, f_a in itertools.chain(simple_argmap, self._argmapping.items()):
+            if id(f_a) in functions:
+                fname, _ = functions[id(f_a)]
+            else:
+                fname, _ = functions[id(f_a)] = f'func{len(functions)}', f_a
+            try:
+                name = sig.names[a]
+            except KeyError:
+                raise ValueError(f'argument {a} is not a parameter or parameter index of {f.__name__}')
+            if name in applied:
+                raise ValueError(f'argument {name} is specified multiple times')
+            else:
+                applied.add(name)
+            callblock.append(f'    {name} = {fname}({name})')
+        
+        code = '\n'.join([sig.def_sig, *callblock, sig.call_sig])
+        locl = {}
+        globl = {fname: f_a for fname, f_a in functions.values()}
+        globl['defaults'] = sig.defaults
+        compiled = compile(code, "partial_argmapper_compile", 'exec')
+        exec(compiled, globl, locl)
+
+        wrapper = locl['argmapped']
+        wrapper._argmap = sig, callblock, functions
+        wrapper._code = code
+        return self.wrap(wrapper, f, sig)
+
+    @staticmethod
+    def wrap(wrapper, wrapped, sig):
+        """emulate functools.wraps: copied almost verbatim from `decorator`"""
+        wrapper.__name__ = wrapped.__name__
+        wrapper.__doc__ = wrapped.__doc__
+        wrapper.__defaults__ = wrapped.__defaults__
+        wrapper.__kwdefaults__ = wrapped.__kwdefaults__
+        # TODO: we delete annotations here.  instead, it would be better to
+        #   update these annotations with ones taken from the argmap functions
+        #   and -- the real reason I'm not implementing this now -- check for
+        #   compatibility of wrapped parameter annotations with the function
+        #   return annotations?
+        # wrapper.__annotations__ = wrapped.__annotations__
+        wrapper.__module__ = wrapped.__module__
+        wrapper.__signature__ = sig.signature
+        wrapper.__wrapped__ = wrapped
+        wrapper.__qualname__ = wrapped.__qualname__
+        wrapper.__dict__.update(wrapped.__dict__)
+
+        return wrapper
+
+    @classmethod
+    def signature(cls, f):
+        """compute a signature for wrapping f"""
+        sig = inspect.signature(f, follow_wrapped = False)            
+        defaults = []
+        def_sig = []
+        call_sig = []
+        names = {}
+
+        kind = None
+        for i, param in enumerate(sig.parameters.values()):
+            names[i] = names[param.name] = param.name
+
+            # parameters can be position-only, keyword-or-position, keyword-only
+            # in any combination, but only in the order as above.  we do edge
+            # detection to add the appropriate punctuation
+            prev = kind
+            kind = param.kind
+            if prev == param.POSITIONAL_ONLY != kind:
+                # the last token was position-only, but this one isn't
+                def_sig.append('/')
+            if prev != param.KEYWORD_ONLY == kind != param.VAR_POSITIONAL:
+                # param is the first keyword-only arg and isn't starred
+                def_sig.append('*')
+
+            # star arguments as appropriate
+            if kind == param.VAR_POSITIONAL:
+                name = '*' + param.name
+            elif kind == param.VAR_KEYWORD:
+                name = '**' + param.name
+            else:
+                name = param.name
+
+            # assign to keyword-only args in the function call
+            if kind == param.KEYWORD_ONLY:
+                call_sig.append(f'{name} = {name}')
+            else:
+                call_sig.append(name)
+
+            # handle defaults here -- keep them around for exec globals
+            if param.default != param.empty:
+                def_sig.append(f'{name} = defaults[{len(defaults)}]')
+                defaults.append(param.default)
+            else:
+                def_sig.append(name)
+
+        coroutine = inspect.iscoroutinefunction(f)
+        _async = "async " if coroutine else ''
+        def_sig = f'{_asyn}def argmapped({", ".join(def_sig)}):'
+
+        if coroutine:
+            _return = "async return"
+        elif inspect.isgeneratorfunction(f):
+            _return = "yield from"
+        else:
+            _return = "return"
+
+        call_sig = f"    {_return} f({', '.join(call_sig)})"
+
+        return cls.ArgmapSignature(sig, def_sig, call_sig, names, defaults)
+
