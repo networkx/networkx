@@ -8,7 +8,7 @@ from itertools import combinations
 __all__ = ["junction_tree"]
 
 
-@not_implemented_for("multigraph", "MultiDiGraph")
+@not_implemented_for("multigraph")
 def junction_tree(G):
     r"""Returns a junction tree of a given graph.
 

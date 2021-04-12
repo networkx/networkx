@@ -18,8 +18,10 @@ def test_random_reference():
     Cr = nx.average_clustering(Gr)
     assert C > Cr
 
-    pytest.raises(nx.NetworkXError, random_reference, nx.Graph())
-    pytest.raises(nx.NetworkXNotImplemented, random_reference, nx.DiGraph())
+    with pytest.raises(nx.NetworkXError):
+        next(random_reference(nx.Graph()))
+    with pytest.raises(nx.NetworkXNotImplemented):
+        next(random_reference(nx.DiGraph()))
 
     H = nx.Graph(((0, 1), (2, 3)))
     Hl = random_reference(H, niter=1, seed=rng)

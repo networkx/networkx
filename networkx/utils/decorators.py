@@ -56,31 +56,23 @@ def not_implemented_for(*graph_types):
        def sp_np_function(G):
            pass
     """
+    if 'directed' in graph_types:
+        assert 'undirected' not in graph_types, "Function not implemented on graph AND multigraphs?"
+    if 'multigraph' in graph_types:
+        assert 'graph' not in graph_types, "Function not implemented on graph AND multigraphs?"
+    if not set(graph_types) < {'directed', 'undirected', 'multigraph', 'graph'}:
+        raise KeyError("use one or more of " f"directed, undirected, multigraph, graph, {graph_types}")
 
-    @decorator
-    def _not_implemented_for(not_implement_for_func, *args, **kwargs):
-        graph = args[0]
-        terms = {
-            "directed": graph.is_directed(),
-            "undirected": not graph.is_directed(),
-            "multigraph": graph.is_multigraph(),
-            "graph": not graph.is_multigraph(),
-        }
-        match = True
-        try:
-            for t in graph_types:
-                match = match and terms[t]
-        except KeyError as e:
-            raise KeyError(
-                "use one or more of " "directed, undirected, multigraph, graph"
-            ) from e
-        if match:
-            msg = f"not implemented for {' '.join(graph_types)} type"
-            raise nx.NetworkXNotImplemented(msg)
-        else:
-            return not_implement_for_func(*args, **kwargs)
+    dval = ('directed' in graph_types) or not ('undirected' in graph_types) and None
+    mval = ('multigraph' in graph_types) or not ('graph' in graph_types) and None
+    errmsg = f"not implemented for {' '.join(graph_types)} type"
+    def _not_implemented_for(g):
+        if (mval is not None and mval == g.is_multigraph()) or (
+            dval is not None and dval == g.is_directed()):
+            raise nx.NetworkXNotImplemented(errmsg)
+        return g
 
-    return _not_implemented_for
+    return argmap(_not_implemented_for, 0)
 
 
 def _open_gz(path, mode):
@@ -282,31 +274,23 @@ def nodes_or_number(which_args):
            # r is a number. n can be a number of a list of nodes
            pass
     """
-
-    @decorator
-    def _nodes_or_number(func_to_be_decorated, *args, **kw):
-        # form tuple of arg positions to be converted.
+    def _nodes_or_number(n):
         try:
-            iter_wa = iter(which_args)
+            nodes = list(range(n))
         except TypeError:
-            iter_wa = (which_args,)
-        # change each argument in turn
-        new_args = list(args)
-        for i in iter_wa:
-            n = args[i]
-            try:
-                nodes = list(range(n))
-            except TypeError:
-                nodes = tuple(n)
-            else:
-                if n < 0:
-                    msg = "Negative number of nodes not valid: {n}"
-                    raise nx.NetworkXError(msg)
-            new_args[i] = (n, nodes)
-        return func_to_be_decorated(*new_args, **kw)
+            nodes = tuple(n)
+        else:
+            if n < 0:
+                msg = "Negative number of nodes not valid: {n}"
+                raise nx.NetworkXError(msg)
+        return (n, nodes)
 
-    return _nodes_or_number
+    try:
+        iter_wa = iter(which_args)
+    except TypeError:
+        iter_wa = (which_args,)
 
+    return argmap(_nodes_or_number, *iter_wa)
 
 def preserve_random_state(func):
     """Decorator to preserve the numpy.random state during a function.
@@ -391,6 +375,8 @@ def random_state(random_state_index):
     --------
     py_random_state
     """
+    return argmap(create_random_state, random_state_index)
+
 
     @decorator
     def _random_state(func, *args, **kwargs):
@@ -453,26 +439,7 @@ def py_random_state(random_state_index):
     np_random_state
     """
 
-    @decorator
-    def _random_state(func, *args, **kwargs):
-        # Parse the decorator arguments.
-        try:
-            random_state_arg = args[random_state_index]
-        except TypeError as e:
-            raise nx.NetworkXError("random_state_index must be an integer") from e
-        except IndexError as e:
-            raise nx.NetworkXError("random_state_index is incorrect") from e
-
-        # Create a numpy.random.RandomState instance
-        random_state = create_py_random_state(random_state_arg)
-
-        # args is a tuple, so we must convert to list before modifying it.
-        new_args = list(args)
-        new_args[random_state_index] = random_state
-        return func(*new_args, **kwargs)
-
-    return _random_state
-
+    return argmap(create_py_random_state, random_state_index)
 
 class argmap:
     """A decorating class which calls specified functions on a function's
@@ -519,13 +486,15 @@ class argmap:
     def __call__(self, f):
         """decorate f with the specified argmapping"""
         if hasattr(f, '_argmap'):
-            sig, callblock, functions = f._argmap
+            sig, functions, callblock = f._argmap
+            callblock = list(callblock)
         else:
             sig = self.signature(f)
-            callblock, functions = [], {id(f): ('f', f)}
+            callblock = []
+            functions = {id(f): ('func0', f)}
 
         if self._args:
-            argf, args = self._args
+            argf, *args = self._args
             simple_argmap = zip(args, itertools.repeat(argf))
         else:
             simple_argmap = ()
@@ -538,11 +507,15 @@ class argmap:
             else:
                 fname, _ = functions[id(f_a)] = f'func{len(functions)}', f_a
             try:
-                name = sig.names[a]
+                if isinstance(a, tuple):
+                    #we're attempting to call this function on multiple arguments
+                    name = ", ".join(sig.names[x] for x in a)
+                else:
+                    name = sig.names[a]
             except KeyError:
-                raise ValueError(f'argument {a} is not a parameter or parameter index of {f.__name__}')
+                raise nx.NetworkXError(f'argument {a} is not a parameter or parameter index of {f.__name__}')
             if name in applied:
-                raise ValueError(f'argument {name} is specified multiple times')
+                raise nx.NetworkXError(f'argument {name} is specified multiple times')
             else:
                 applied.add(name)
             callblock.append(f'    {name} = {fname}({name})')
@@ -554,10 +527,10 @@ class argmap:
         compiled = compile(code, "partial_argmapper_compile", 'exec')
         exec(compiled, globl, locl)
 
-        wrapper = locl['argmapped']
-        wrapper._argmap = sig, callblock, functions
+        wrapper = self.wrap(locl['argmapped'], f, sig)
+        wrapper._argmap = sig, functions, callblock
         wrapper._code = code
-        return self.wrap(wrapper, f, sig)
+        return wrapper
 
     @staticmethod
     def wrap(wrapper, wrapped, sig):
@@ -628,7 +601,7 @@ class argmap:
 
         coroutine = inspect.iscoroutinefunction(f)
         _async = "async " if coroutine else ''
-        def_sig = f'{_asyn}def argmapped({", ".join(def_sig)}):'
+        def_sig = f'{_async}def argmapped({", ".join(def_sig)}):'
 
         if coroutine:
             _return = "async return"
@@ -637,7 +610,7 @@ class argmap:
         else:
             _return = "return"
 
-        call_sig = f"    {_return} f({', '.join(call_sig)})"
+        call_sig = f"    {_return} func0({', '.join(call_sig)})"
 
         return cls.ArgmapSignature(sig, def_sig, call_sig, names, defaults)
 
