@@ -59,6 +59,7 @@ def _require_partition(G, partition):
             "`partition` is not a valid partition of" " the nodes of G"
         )
 
+
 require_partition = argmap(_require_partition, (0, 1))
 
 

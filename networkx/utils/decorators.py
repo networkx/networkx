@@ -4,7 +4,6 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import networkx as nx
-from decorator import decorator
 from networkx.utils import create_random_state, create_py_random_state
 
 import inspect, itertools, collections
@@ -56,19 +55,28 @@ def not_implemented_for(*graph_types):
        def sp_np_function(G):
            pass
     """
-    if 'directed' in graph_types:
-        assert 'undirected' not in graph_types, "Function not implemented on graph AND multigraphs?"
-    if 'multigraph' in graph_types:
-        assert 'graph' not in graph_types, "Function not implemented on graph AND multigraphs?"
-    if not set(graph_types) < {'directed', 'undirected', 'multigraph', 'graph'}:
-        raise KeyError("use one or more of " f"directed, undirected, multigraph, graph, {graph_types}")
+    if "directed" in graph_types:
+        assert (
+            "undirected" not in graph_types
+        ), "Function not implemented on graph AND multigraphs?"
+    if "multigraph" in graph_types:
+        assert (
+            "graph" not in graph_types
+        ), "Function not implemented on graph AND multigraphs?"
+    if not set(graph_types) < {"directed", "undirected", "multigraph", "graph"}:
+        raise KeyError(
+            "use one or more of "
+            f"directed, undirected, multigraph, graph, {graph_types}"
+        )
 
-    dval = ('directed' in graph_types) or not ('undirected' in graph_types) and None
-    mval = ('multigraph' in graph_types) or not ('graph' in graph_types) and None
+    dval = ("directed" in graph_types) or not ("undirected" in graph_types) and None
+    mval = ("multigraph" in graph_types) or not ("graph" in graph_types) and None
     errmsg = f"not implemented for {' '.join(graph_types)} type"
+
     def _not_implemented_for(g):
         if (mval is not None and mval == g.is_multigraph()) or (
-            dval is not None and dval == g.is_directed()):
+            dval is not None and dval == g.is_directed()
+        ):
             raise nx.NetworkXNotImplemented(errmsg)
         return g
 
@@ -78,13 +86,17 @@ def not_implemented_for(*graph_types):
 def _open_gz(path, mode):
     import gzip
 
-    return gzip.open(path, mode=mode)
+    file = gzip.open(path, mode=mode)
+    file._close_argmap = True
+    return file
 
 
 def _open_bz2(path, mode):
     import bz2
 
-    return bz2.BZ2File(path, mode=mode)
+    file = bz2.BZ2File(path, mode=mode)
+    file._close_argmap = True
+    return file
 
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
@@ -162,83 +174,36 @@ def open_file(path_arg, mode="r"):
     # you use a try block, as shown above. When we exit the function, fobj will
     # be closed, if it should be, by the decorator.
 
-    @decorator
-    def _open_file(func_to_be_decorated, *args, **kwargs):
-
-        # Note that since we have used @decorator, *args, and **kwargs have
-        # already been resolved to match the function signature of func. This
-        # means default values have been propagated. For example,  the function
-        # func(x, y, a=1, b=2, **kwargs) if called as func(0,1,b=5,c=10) would
-        # have args=(0,1,1,5) and kwargs={'c':10}.
-
-        # First we parse the arguments of the decorator. The path_arg could
-        # be an positional argument or a keyword argument.  Even if it is
-        try:
-            # path_arg is a required positional argument
-            # This works precisely because we are using @decorator
-            path = args[path_arg]
-        except TypeError:
-            # path_arg is a keyword argument. It is "required" in the sense
-            # that it must exist, according to the decorator specification,
-            # It can exist in `kwargs` by a developer specified default value
-            # or it could have been explicitly set by the user.
-            try:
-                path = kwargs[path_arg]
-            except KeyError as e:
-                # Could not find the keyword. Thus, no default was specified
-                # in the function signature and the user did not provide it.
-                msg = f"Missing required keyword argument: {path_arg}"
-                raise nx.NetworkXError(msg) from e
-            else:
-                is_kwarg = True
-        except IndexError as e:
-            # A "required" argument was missing. This can only happen if
-            # the decorator of the function was incorrectly specified.
-            # So this probably is not a user error, but a developer error.
-            msg = "path_arg of open_file decorator is incorrect"
-            raise nx.NetworkXError(msg) from e
-        else:
-            is_kwarg = False
-
+    def _open_file(path):
         # Now we have the path_arg. There are two types of input to consider:
         #   1) string representing a path that should be opened
         #   2) an already opened file object
         if isinstance(path, str):
             ext = splitext(path)[1]
             fobj = _dispatch_dict[ext](path, mode=mode)
-            close_fobj = True
         elif hasattr(path, "read"):
             # path is already a file-like object
             fobj = path
-            close_fobj = False
         elif isinstance(path, Path):
             # path is a pathlib reference to a filename
             fobj = _dispatch_dict[path.suffix](str(path), mode=mode)
-            close_fobj = True
         else:
             # could be None, in which case the algorithm will deal with it
             fobj = path
-            close_fobj = False
 
-        # Insert file object into args or kwargs.
-        if is_kwarg:
-            new_args = args
-            kwargs[path_arg] = fobj
-        else:
-            # args is a tuple, so we must convert to list before modifying it.
-            new_args = list(args)
-            new_args[path_arg] = fobj
+        return fobj
 
-        # Finally, we call the original function, making sure to close the fobj
-        try:
-            result = func_to_be_decorated(*new_args, **kwargs)
-        finally:
-            if close_fobj:
-                fobj.close()
+    def _close_file(f):
+        if hasattr(f, "_close_argmap"):
+            f.close()
 
-        return result
+    map_outer = argmap.call_finally(_close_file, path_arg)
+    map_inner = argmap(_open_file, path_arg)
 
-    return _open_file
+    def decorate(f):
+        return map_outer(map_inner(f))
+
+    return decorate
 
 
 def nodes_or_number(which_args):
@@ -274,6 +239,7 @@ def nodes_or_number(which_args):
            # r is a number. n can be a number of a list of nodes
            pass
     """
+
     def _nodes_or_number(n):
         try:
             nodes = list(range(n))
@@ -291,6 +257,7 @@ def nodes_or_number(which_args):
         iter_wa = (which_args,)
 
     return argmap(_nodes_or_number, *iter_wa)
+
 
 def preserve_random_state(func):
     """Decorator to preserve the numpy.random state during a function.
@@ -378,27 +345,6 @@ def random_state(random_state_index):
     return argmap(create_random_state, random_state_index)
 
 
-    @decorator
-    def _random_state(func, *args, **kwargs):
-        # Parse the decorator arguments.
-        try:
-            random_state_arg = args[random_state_index]
-        except TypeError as e:
-            raise nx.NetworkXError("random_state_index must be an integer") from e
-        except IndexError as e:
-            raise nx.NetworkXError("random_state_index is incorrect") from e
-
-        # Create a numpy.random.RandomState instance
-        random_state = create_random_state(random_state_arg)
-
-        # args is a tuple, so we must convert to list before modifying it.
-        new_args = list(args)
-        new_args[random_state_index] = random_state
-        return func(*new_args, **kwargs)
-
-    return _random_state
-
-
 np_random_state = random_state
 
 
@@ -441,32 +387,33 @@ def py_random_state(random_state_index):
 
     return argmap(create_py_random_state, random_state_index)
 
+
 class argmap:
     """A decorating class which calls specified functions on a function's
     arguments before calling it.  We currently support two call syntaxes.
     One is used to call a single function on multiple arguments,
-    
+
     @argmap(sum, 'x', 2)
     def foo(x, y, z):
         return x, y, z
-        
+
     is equivalent to
-    
+
     def foo(x, y, z):
         x = sum(x)
         z = sum(z)
         return x, y, z
-    
+
     The other is used to call multiple functions on multiple arguments.
     With this syntax, we can avoid quoting the parameters, but can't refer
     to them with indices.
-    
+
     @argmap(x = sum, z = any)
     def foo(x, y, z):
         return (x, y, z)
- 
+
     is equivalent to
- 
+
     def foo(x, y, z):
         x = sum(x)
         z = any(z)
@@ -476,61 +423,97 @@ class argmap:
     one syntax in the final version.
     """
 
-    ArgmapSignature = collections.namedtuple('ArgmapSignature',
-        ['signature', 'def_sig', 'call_sig', 'names', 'defaults'])
-
-    def __init__(self, *args, **argmapping):
+    def __init__(self, func, *args):
+        self._func = func
         self._args = args
-        self._argmapping = argmapping
+        self._finally = False
+
+    __count = 0
+
+    @classmethod
+    def _count(self):
+        self.__count += 1
+        return self.__count
+
+    @classmethod
+    def call_finally(cls, func, *args):
+        dec = cls(func, *args)
+        dec._finally = True
+        return dec
 
     def __call__(self, f):
-        """decorate f with the specified argmapping"""
-        if hasattr(f, '_argmap'):
-            sig, functions, callblock = f._argmap
-            callblock = list(callblock)
-        else:
-            sig = self.signature(f)
-            callblock = []
-            functions = {id(f): ('func0', f)}
+        body = sig, functions, mapblock, finallys = self.assemble(f)
 
-        if self._args:
-            argf, *args = self._args
-            simple_argmap = zip(args, itertools.repeat(argf))
-        else:
-            simple_argmap = ()
-
-        applied = set()
-        callblock = list(callblock)
-        for a, f_a in itertools.chain(simple_argmap, self._argmapping.items()):
-            if id(f_a) in functions:
-                fname, _ = functions[id(f_a)]
-            else:
-                fname, _ = functions[id(f_a)] = f'func{len(functions)}', f_a
-            try:
-                if isinstance(a, tuple):
-                    #we're attempting to call this function on multiple arguments
-                    name = ", ".join(sig.names[x] for x in a)
+        def flatten(lines, depth=[0], tabs=" " * 512, dtab={":": 1, "#": -1}):
+            tab = tabs[: depth[0]]
+            for line in lines:
+                if isinstance(line, list):
+                    yield from flatten(line)
                 else:
-                    name = sig.names[a]
-            except KeyError:
-                raise nx.NetworkXError(f'argument {a} is not a parameter or parameter index of {f.__name__}')
-            if name in applied:
-                raise nx.NetworkXError(f'argument {name} is specified multiple times')
-            else:
-                applied.add(name)
-            callblock.append(f'    {name} = {fname}({name})')
-        
-        code = '\n'.join([sig.def_sig, *callblock, sig.call_sig])
+                    yield f"{tabs[:depth[0]]}{line}"
+                    depth[0] += dtab.get(line[-1], 0)
+
+        code = "\n".join(
+            flatten([sig.def_sig, *mapblock, f"{sig.call_sig}#", *finallys])
+        )
+
         locl = {}
-        globl = {fname: f_a for fname, f_a in functions.values()}
-        globl['defaults'] = sig.defaults
-        compiled = compile(code, "partial_argmapper_compile", 'exec')
+        globl = dict(functions.values(), defaults=sig.defaults)
+        filename = f"{self.__class__} compilation {self.__class__._count()}"
+        compiled = compile(code, filename, "exec")
         exec(compiled, globl, locl)
 
-        wrapper = self.wrap(locl['argmapped'], f, sig)
-        wrapper._argmap = sig, functions, callblock
+        wrapper = self.wrap(locl["argmapped"], f, sig)
+        wrapper._argmap = body
         wrapper._code = code
         return wrapper
+
+    def assemble(self, f):
+        if hasattr(f, "_argmap"):
+            sig, functions, mapblock, finallys = f._argmap
+            mapblock = mapblock[:]
+        else:
+            sig = self.signature(f)
+            mapblock, trys, finallys = [], [], []
+            functions = {id(f): ("func0", f)}
+
+        if id(self._func) in functions:
+            fname, _ = functions[id(self._func)]
+        else:
+            fname, _ = functions[id(self._func)] = f"func{len(functions)}", self._func
+
+        def get_name(arg, first=True, applied=set()):
+            if isinstance(arg, tuple):
+                name = ", ".join(get_name(x, False) for x in arg)
+                return name if first else f"({name})"
+            if arg in applied:
+                raise nx.NetworkXError(f"argument {name} is specified multiple times")
+            applied.add(arg)
+            if arg in sig.names:
+                return sig.names[arg]
+            elif isinstance(arg, str):
+                if sig.kwargs is None:
+                    raise nx.NetworkXError(
+                        f"name {arg} is not a named parameter and this function doesn't have kwargs"
+                    )
+                return f"{sig.kwargs}[{arg!r}]"
+            else:
+                if sig.kwargs is None:
+                    raise nx.NetworkXError(
+                        f"index {arg} not a parameter index and this function doesn't have args"
+                    )
+                return f"{sig.args}[{arg}-{sig.n_positional}]"
+
+        if self._finally:
+            mapblock.extend("try:" for a in self._args)
+            for name in map(get_name, self._args):
+                finallys = ["finally:", f"{name} = {fname}({name})#", "#", finallys]
+        else:
+            mapblock.extend(
+                f"{name} = {fname}({name})" for name in map(get_name, self._args)
+            )
+
+        return sig, functions, mapblock, finallys
 
     @staticmethod
     def wrap(wrapper, wrapped, sig):
@@ -556,13 +539,16 @@ class argmap:
     @classmethod
     def signature(cls, f):
         """compute a signature for wrapping f"""
-        sig = inspect.signature(f, follow_wrapped = False)            
+        sig = inspect.signature(f, follow_wrapped=False)
         defaults = []
         def_sig = []
         call_sig = []
         names = {}
 
         kind = None
+        star = None
+        kwar = None
+        npos = 0
         for i, param in enumerate(sig.parameters.values()):
             names[i] = names[param.name] = param.name
 
@@ -573,34 +559,40 @@ class argmap:
             kind = param.kind
             if prev == param.POSITIONAL_ONLY != kind:
                 # the last token was position-only, but this one isn't
-                def_sig.append('/')
+                def_sig.append("/")
             if prev != param.KEYWORD_ONLY == kind != param.VAR_POSITIONAL:
                 # param is the first keyword-only arg and isn't starred
-                def_sig.append('*')
+                def_sig.append("*")
 
             # star arguments as appropriate
             if kind == param.VAR_POSITIONAL:
-                name = '*' + param.name
+                name = "*" + param.name
+                star = param.name
+                count = 0
             elif kind == param.VAR_KEYWORD:
-                name = '**' + param.name
+                name = "**" + param.name
+                kwar = param.name
+                count = 0
             else:
                 name = param.name
+                count = 1
 
             # assign to keyword-only args in the function call
             if kind == param.KEYWORD_ONLY:
-                call_sig.append(f'{name} = {name}')
+                call_sig.append(f"{name} = {name}")
             else:
+                npos += count
                 call_sig.append(name)
 
             # handle defaults here -- keep them around for exec globals
             if param.default != param.empty:
-                def_sig.append(f'{name} = defaults[{len(defaults)}]')
+                def_sig.append(f"{name} = defaults[{len(defaults)}]")
                 defaults.append(param.default)
             else:
                 def_sig.append(name)
 
         coroutine = inspect.iscoroutinefunction(f)
-        _async = "async " if coroutine else ''
+        _async = "async " if coroutine else ""
         def_sig = f'{_async}def argmapped({", ".join(def_sig)}):'
 
         if coroutine:
@@ -610,7 +602,20 @@ class argmap:
         else:
             _return = "return"
 
-        call_sig = f"    {_return} func0({', '.join(call_sig)})"
+        call_sig = f"{_return} func0({', '.join(call_sig)})"
 
-        return cls.ArgmapSignature(sig, def_sig, call_sig, names, defaults)
+        return cls.Signature(sig, def_sig, call_sig, names, defaults, npos, star, kwar)
 
+    Signature = collections.namedtuple(
+        "Signature",
+        [
+            "signature",
+            "def_sig",
+            "call_sig",
+            "names",
+            "defaults",
+            "n_positional",
+            "args",
+            "kwargs",
+        ],
+    )

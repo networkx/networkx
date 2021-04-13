@@ -167,6 +167,7 @@ def test_not_implemented():
     with pytest.raises(nx.NetworkXNotImplemented):
         next(bridge_components(nx.DiGraph()))
 
+
 def test_general_k_edge_subgraph_quick_return():
     # tests quick return optimization
     G = nx.Graph()

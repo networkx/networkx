@@ -156,6 +156,7 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
     """
     import numpy as np
     from networkx.utils import cumulative_distribution, discrete_sequence
+
     print(lattice_reference._code)
 
     local_conn = nx.connectivity.local_edge_connectivity
@@ -226,6 +227,7 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
             n += 1
 
     return G
+
 
 @py_random_state(3)
 @not_implemented_for("directed")

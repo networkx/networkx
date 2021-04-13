@@ -20,6 +20,7 @@ def test_not_implemented_decorator():
     @not_implemented_for("directed")
     def test_d(G):
         pass
+
     test_d(nx.Graph())
     with pytest.raises(nx.NetworkXNotImplemented):
         test_d(nx.DiGraph())
@@ -27,6 +28,7 @@ def test_not_implemented_decorator():
     @not_implemented_for("undirected")
     def test_u(G):
         pass
+
     test_u(nx.DiGraph())
     with pytest.raises(nx.NetworkXNotImplemented):
         test_u(nx.Graph())
@@ -34,6 +36,7 @@ def test_not_implemented_decorator():
     @not_implemented_for("multigraph")
     def test_m(G):
         pass
+
     test_m(nx.Graph())
     with pytest.raises(nx.NetworkXNotImplemented):
         test_m(nx.MultiGraph())
@@ -41,6 +44,7 @@ def test_not_implemented_decorator():
     @not_implemented_for("graph")
     def test_g(G):
         pass
+
     test_g(nx.MultiGraph())
     with pytest.raises(nx.NetworkXNotImplemented):
         test_g(nx.Graph())
