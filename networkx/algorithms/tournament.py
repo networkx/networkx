@@ -276,7 +276,6 @@ def is_reachable(G, s, t):
            tournaments."
            *Electronic Colloquium on Computational Complexity*. 2001.
            <http://eccc.hpi-web.de/report/2001/092/>
-
     """
 
     def two_neighborhood(G, v):

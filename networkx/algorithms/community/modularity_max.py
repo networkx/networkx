@@ -1,8 +1,4 @@
-# TODO:
-#   - Alter equations for weighted case
-#   - Write tests for weighted case
-"""Functions for detecting communities based on modularity.
-"""
+"""Functions for detecting communities based on modularity."""
 
 from networkx.algorithms.community.quality import modularity
 
@@ -19,8 +15,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     """Find communities in G using greedy modularity maximization.
 
     This function uses Clauset-Newman-Moore greedy modularity maximization [2]_.
-    This method currently supports the Graph class and does not
-    consider edge weights.
+    This method currently supports the Graph class.
 
     Greedy modularity maximization begins with each node in its own community
     and joins the pair of communities that most increases modularity until no
@@ -33,6 +28,10 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     Parameters
     ----------
     G : NetworkX graph
+    weight : string or None, optional (default=None)
+       The name of an edge attribute that holds the numerical value used
+       as a weight.  If None, then each edge has weight 1.
+       The degree is the sum of the edge weights adjacent to the node.
 
     Returns
     -------
@@ -93,7 +92,8 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     a = [k[i] * q0 for i in range(N)]
     dq_dict = {
         i: {
-            j: 2 * q0 - 2 * resolution * k[i] * k[j] * q0 * q0
+            j: 2 * q0 * G.get_edge_data(i, j).get(weight, 1.0)
+            - 2 * resolution * k[i] * k[j] * q0 * q0
             for j in [node_for_label[u] for u in G.neighbors(label_for_node[i])]
             if j != i
         }

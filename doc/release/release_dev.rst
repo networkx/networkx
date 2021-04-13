@@ -28,6 +28,9 @@ Improvements
 - [`#4317 <https://github.com/networkx/networkx/pull/4317>`_]
   New ``source`` argument to ``has_eulerian_path`` to look for path starting at
   source.
+- [`#4640 <https://github.com/networkx/networkx/pull/4640>`_]
+  ``prefix_tree`` now uses a non-recursive algorithm. The original recursive
+  algorithm is still available via ``prefix_tree_recursive``.
 
 API Changes
 -----------

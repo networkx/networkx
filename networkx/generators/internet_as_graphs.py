@@ -308,7 +308,7 @@ class AS_graph_generator:
                 node_options.remove(j)
 
         if len(node_options) > 0:
-            j = self.seed.sample(node_options, 1)[0]
+            j = self.seed.sample(list(node_options), 1)[0]
             self.add_edge(cp, j, "peer")
             self.G.nodes[cp]["peers"] += 1
             self.G.nodes[j]["peers"] += 1
