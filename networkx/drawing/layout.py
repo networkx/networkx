@@ -1207,11 +1207,11 @@ def layered_layout(G, align="vertical", center=None, scale=1):
         * 'vertical' yields horizontal layers and top-to-bottom edges.
         * 'horizontal' yields vertical layers and left-to-right edges.
 
-    scale : number (default: 1)
-        Scale factor for positions.
-
     center : array-like or None
         Coordinate pair around which to center the layout.
+
+    scale : number (default: 1)
+        Scale factor for positions.
 
     Returns
     -------
@@ -1232,33 +1232,59 @@ def layered_layout(G, align="vertical", center=None, scale=1):
     -----
     This algorithm only works for Directed Acyclic Graphs.
 
-    TODO:
+    dim parameter omitted because nly dim=2 is supported.
 
+    TODO
+    ----
+    * Write tests
     * Compute edges path before removing dummy nodes
         The idea is to return a dictionary of edge paths keyed by edge alongside pos.
+        To be used by a clever edge drawing routine.
     * Layer width minimization:
         If wanted, an additional "max_width" parameter will be set by the caller.
         This requires another algorithm than current _layer_assignment.
-    * Handle scale and center parameters
     * Handling disconnected components
     * Cycle removal (will allow non-DAG DiGraphs to be laid out)
     * Accept weighted edges
         * Accept MultiDiGraphs (by increasing weight of multi-edges)
     """
 
-    G, center = _process_params(G, center, dim=2)
+    if align not in ("vertical", "horizontal"):
+        raise ValueError("align must be either vertical or horizontal.")
 
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXNotImplemented(
             "layered_layout is only implemented for directed acyclic graphs"
         )
 
+    G, center = _process_params(G, center, dim=2)
+
     nodes_layer = _layer_assignment(G)
     Gd, nodes_layer = _new_graph_with_dummy_nodes(G, nodes_layer)
     layers_order = _nodes_layer_dict_to_layers_order(nodes_layer)
     layers_order = _vertex_ordering(Gd, layers_order)
-    pos = _coordinate_assignmnent(Gd, layers_order, align, scale, center)
-    return pos
+    # layers_pos: list[layer_id]list[node_id](node_pos_in_layer, node_name)
+    layers_pos = _coordinate_assignmnent(Gd, layers_order)
+
+    # Lastly convert positions to output types, rescale, center, and return!
+    # pos: list[node_id](xpos, ypos)
+    # nodes_name: list[node_id]node_name
+    pos, nodes_name = [None] * len(G), [None] * len(G)
+    n_layers = len(layers_pos)
+    idx = 0
+    for d1 in range(n_layers):
+        for (d2, u) in layers_pos[d1]:
+            # Skip dummy vertices
+            if G.nodes[u].get(DUMMY_KEY, False):
+                continue
+            # Add node's pos and name to output lists
+            pos[idx] = (d1, d2) if align == "horizontal" else (d2, n_layers - d1 - 1)
+            nodes_name[idx] = u
+            idx += 1
+    # Rescale and center pos array
+    pos = rescale_layout(pos, scale=scale) + center
+    # Convert to output type and return
+    return dict(zip(nodes_name, pos))
 
 
 def _layer_assignment(G):
@@ -1270,10 +1296,6 @@ def _layer_assignment(G):
     * p. 14: https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v7-added-proofs.pdf
     * https://networkx.org/documentation/stable/_modules/networkx/algorithms/dag.html#topological_sort
 
-    Parameters
-    ----------
-    G : networkx.DiGraph
-        A Directed **Acyclic** Graph.
     Returns
     -------
     nodes_layer : dict[node]int
@@ -1348,7 +1370,16 @@ def _new_graph_with_dummy_nodes(G, nodes_layer):
 
 
 def _nodes_layer_dict_to_layers_order(nodes_layer):
-    """From dict[node]layer to list[][]node: one ordered list of nodes per layer."""
+    """Conversion of node-to-layer data representation.
+    Parameters
+    -------
+    nodes_layer : dict[node]int
+        Layer number for each node in G
+    Returns
+    -------
+    layers_order: list[][]node
+        ordered list of nodes in each layer
+    """
     layers_order = [None] * max(nodes_layer.values()) + 1
     for u, l in nodes_layer.items():
         if layers_order[l] is None:
@@ -1364,13 +1395,6 @@ def _vertex_ordering(G, layers_order):
     Based off:
     * Gansner, Koutsofios, North & Vo, "A technique for drawing directed graphs," pp. 13-17, IIEEE Trans. Software Eng., 1993, doi: 10.1109/32.221135.
     * pp. 8-11: https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v8.pdf
-
-    Returns
-    -------
-    networkx.DiGraph
-        Input G with dummy nodes added.
-    layers_order: list[][]node
-        ordered list of nodes in each layer
     """
 
     from copy import copy
@@ -1524,31 +1548,7 @@ def _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot):
     return layers_order
 
 
-def _coordinate_assignmnent(G, layers_order, align, scale, center):
-    """Finds aesthetical coordinates respecting the previous constraints."""
-
-    if align != "horizontal" and align != "vertical":
-        raise ValueError("align must be either 'vertical' or 'horizontal'")
-
-    layers_pos = _do_assign_coordinates(G, layers_order)
-
-    # layers_pos: list[layer_id]list[node_id](node_pos_in_layer, node_name)
-    # to pos: dict[node_name](xpos, ypos)
-    pos = {}
-    n_layers = len(layers_pos)
-    for d1 in range(n_layers):
-        for (d2, u) in layers_pos[d1]:
-            # Skip dummy vertices
-            if G.nodes[u].get(DUMMY_KEY, False):
-                continue
-            if align == "vertical":
-                pos[u] = (d2, n_layers - d1 - 1)
-            elif align == "horizontal":
-                pos[u] = (d1, d2)
-    return pos
-
-
-def _do_assign_coordinates(G, layers_order):
+def _coordinate_assignmnent(G, layers_order):
     """Set in-layer node positions according to the priority heuristic from Sugiyama."""
 
     def node_priority(G, u, direction):
@@ -1693,6 +1693,8 @@ def _do_assign_coordinates(G, layers_order):
             if target_pos == prev_pos:
                 continue
 
+            # TODO: Maybe try all positions between target_pos and prev_pos?
+            # ~ np.linspace(target_pos, prev_pos, abs(target_pos-prev_pos)-1)
             try:
                 layers_pos[l] = move_node(
                     G, p, u, target_pos, layer_priorities, layers_pos[l]
