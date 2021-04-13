@@ -15,6 +15,7 @@ For the other layout routines, the extent is
 Warning: Most layout routines have only been tested in 2-dimensions.
 
 """
+import numpy as np
 import networkx as nx
 from networkx.utils import random_state
 
@@ -38,7 +39,6 @@ __all__ = [
 
 def _process_params(G, center, dim):
     # Some boilerplate code.
-    import numpy as np
 
     if not isinstance(G, nx.Graph):
         empty_graph = nx.Graph()
@@ -96,7 +96,6 @@ def random_layout(G, center=None, dim=2, seed=None):
     >>> pos = nx.random_layout(G)
 
     """
-    import numpy as np
 
     G, center = _process_params(G, center, dim)
     pos = seed.rand(len(G), dim) + center
@@ -148,7 +147,6 @@ def circular_layout(G, scale=1, center=None, dim=2):
     try to minimize edge crossings.
 
     """
-    import numpy as np
 
     if dim < 2:
         raise ValueError("cannot handle dimensions < 2")
@@ -222,7 +220,6 @@ def shell_layout(G, nlist=None, rotate=None, scale=1, center=None, dim=2):
     try to minimize edge crossings.
 
     """
-    import numpy as np
 
     if dim != 2:
         raise ValueError("can only handle 2 dimensions")
@@ -308,8 +305,6 @@ def bipartite_layout(
     try to minimize edge crossings.
 
     """
-
-    import numpy as np
 
     if align not in ("vertical", "horizontal"):
         msg = "align must be either vertical or horizontal."
@@ -436,7 +431,6 @@ def fruchterman_reingold_layout(
     # The same using longer but equivalent function name
     >>> pos = nx.fruchterman_reingold_layout(G)
     """
-    import numpy as np
 
     G, center = _process_params(G, center, dim)
 
@@ -504,7 +498,6 @@ def _fruchterman_reingold(
 ):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
-    import numpy as np
 
     try:
         nnodes, _ = A.shape
@@ -568,7 +561,7 @@ def _sparse_fruchterman_reingold(
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     # Sparse version
-    import numpy as np
+
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
@@ -679,7 +672,6 @@ def kamada_kawai_layout(
     >>> G = nx.path_graph(4)
     >>> pos = nx.kamada_kawai_layout(G)
     """
-    import numpy as np
 
     G, center = _process_params(G, center, dim)
     nNodes = len(G)
@@ -718,7 +710,6 @@ def _kamada_kawai_solve(dist_mtx, pos_arr, dim):
     # using the supplied matrix of preferred inter-node distances,
     # and starting locations.
 
-    import numpy as np
     import scipy as sp
     import scipy.optimize  # call as sp.optimize
 
@@ -806,7 +797,6 @@ def spectral_layout(G, weight="weight", scale=1, center=None, dim=2):
     eigenvalue solver (ARPACK).
     """
     # handle some special cases that break the eigensolvers
-    import numpy as np
 
     G, center = _process_params(G, center, dim)
 
@@ -843,7 +833,6 @@ def spectral_layout(G, weight="weight", scale=1, center=None, dim=2):
 def _spectral(A, dim=2):
     # Input adjacency matrix A
     # Uses dense eigenvalue solver from numpy
-    import numpy as np
 
     try:
         nnodes, _ = A.shape
@@ -865,7 +854,7 @@ def _sparse_spectral(A, dim=2):
     # Input adjacency matrix A
     # Uses sparse eigenvalue solver from scipy
     # Could use multilevel methods here, see Koren "On spectral graph drawing"
-    import numpy as np
+
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
     import scipy.sparse.linalg  # call as sp.sparse.linalg
@@ -923,7 +912,6 @@ def planar_layout(G, scale=1, center=None, dim=2):
     >>> G = nx.path_graph(4)
     >>> pos = nx.planar_layout(G)
     """
-    import numpy as np
 
     if dim != 2:
         raise ValueError("can only handle 2 dimensions")
@@ -987,7 +975,6 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
     This algorithm currently only works in two dimensions.
 
     """
-    import numpy as np
 
     if dim != 2:
         raise ValueError("can only handle 2 dimensions")
@@ -1068,7 +1055,6 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     have subset_key data, they will be placed in the corresponding layers.
 
     """
-    import numpy as np
 
     if align not in ("vertical", "horizontal"):
         msg = "align must be either vertical or horizontal."
@@ -1178,7 +1164,6 @@ def rescale_layout_dict(pos, scale=1):
     --------
     rescale_layout
     """
-    import numpy as np
 
     if not pos:  # empty_graph
         return {}
