@@ -1,6 +1,5 @@
 from datetime import date
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
-import sphinx_rtd_theme
 from warnings import filterwarnings
 
 filterwarnings(
@@ -128,17 +127,24 @@ doctest_global_setup = "import networkx as nx"
 # Options for HTML output
 # -----------------------
 
-
-html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
+html_baseurl = "https://networkx.org/documentation/stable/"
+html_theme = "pydata_sphinx_theme"
 html_theme_options = {
-    "canonical_url": "https://networkx.org/documentation/stable/",
-    "navigation_depth": 3,
-    "logo_only": True,
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/networkx/networkx",
+            "icon": "fab fa-github-square",
+        },
+        {
+            "name": "Home Page",
+            "url": "https://networkx.org",
+            "icon": "fas fa-home",
+        },
+    ],
 }
 
-html_logo = "_static/networkx_logo.svg"
+html_logo = "_static/networkx_banner.svg"
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
@@ -175,6 +181,14 @@ html_use_opensearch = "https://networkx.org"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "NetworkX"
+
+html_context = {
+    "versions_dropdown": {
+        "latest": "v2.6 (devel)",
+        "stable": "v2.5 (stable)",
+        "networkx-2.4": "v2.4",
+    },
+}
 
 # Options for LaTeX output
 # ------------------------
