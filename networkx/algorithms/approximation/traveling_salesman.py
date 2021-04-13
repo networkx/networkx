@@ -319,6 +319,8 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     best_path.append(v)
     return best_path
 
+def asadpour_tsp(G, weight="weight"):
+    pass
 
 def greedy_tsp(G, weight="weight", source=None):
     """Return a low cost cycle starting at `source` and its cost.
