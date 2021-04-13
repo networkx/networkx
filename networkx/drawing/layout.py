@@ -1260,7 +1260,7 @@ def layered_layout(G, align="vertical", center=None, scale=1):
     for d1 in range(n_layers):
         for (d2, u) in layers_pos[d1]:
             # Skip dummy vertices
-            if G.nodes[u].get(DUMMY_KEY, False):
+            if Gd.nodes[u].get(DUMMY_KEY, False):
                 continue
             # Add node's pos and name to output lists
             pos[idx] = (d1, d2) if align == "horizontal" else (d2, n_layers - d1 - 1)
@@ -1365,7 +1365,7 @@ def _nodes_layer_dict_to_layers_order(nodes_layer):
     layers_order: list[][]node
         ordered list of nodes in each layer
     """
-    layers_order = [None] * max(nodes_layer.values()) + 1
+    layers_order = [None] * (max(nodes_layer.values()) + 1)
     for u, l in nodes_layer.items():
         if layers_order[l] is None:
             layers_order[l] = [u]
