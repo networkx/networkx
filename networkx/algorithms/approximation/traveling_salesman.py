@@ -319,8 +319,10 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     best_path.append(v)
     return best_path
 
+
 def asadpour_tsp(G, weight="weight"):
     pass
+
 
 def greedy_tsp(G, weight="weight", source=None):
     """Return a low cost cycle starting at `source` and its cost.
@@ -415,16 +417,16 @@ def greedy_tsp(G, weight="weight", source=None):
 
 @py_random_state(9)
 def simulated_annealing_tsp(
-    G,
-    init_cycle,
-    weight="weight",
-    source=None,
-    temp=100,
-    move="1-1",
-    max_iterations=10,
-    N_inner=100,
-    alpha=0.01,
-    seed=None,
+        G,
+        init_cycle,
+        weight="weight",
+        source=None,
+        temp=100,
+        move="1-1",
+        max_iterations=10,
+        N_inner=100,
+        alpha=0.01,
+        seed=None,
 ):
     """Returns an approximate solution to the traveling salesman problem.
 
@@ -634,16 +636,16 @@ def simulated_annealing_tsp(
 
 @py_random_state(9)
 def threshold_accepting_tsp(
-    G,
-    init_cycle,
-    weight="weight",
-    source=None,
-    threshold=1,
-    move="1-1",
-    max_iterations=10,
-    N_inner=100,
-    alpha=0.1,
-    seed=None,
+        G,
+        init_cycle,
+        weight="weight",
+        source=None,
+        threshold=1,
+        move="1-1",
+        max_iterations=10,
+        N_inner=100,
+        alpha=0.1,
+        seed=None,
 ):
     """Returns an approximate solution to the traveling salesman problem.
 
