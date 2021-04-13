@@ -15,16 +15,17 @@ For the other layout routines, the extent is
 Warning: Most layout routines have only been tested in 2-dimensions.
 
 """
+import numpy as np
 import networkx as nx
 from networkx.utils import random_state
 
 __all__ = [
+    "rescale_layout",
+    "rescale_layout_dict",
     "bipartite_layout",
     "circular_layout",
     "kamada_kawai_layout",
     "random_layout",
-    "rescale_layout",
-    "rescale_layout_dict",
     "shell_layout",
     "spring_layout",
     "spectral_layout",
@@ -38,7 +39,6 @@ __all__ = [
 
 def _process_params(G, center, dim):
     # Some boilerplate code.
-    import numpy as np
 
     if not isinstance(G, nx.Graph):
         empty_graph = nx.Graph()
@@ -55,6 +55,83 @@ def _process_params(G, center, dim):
         raise ValueError(msg)
 
     return G, center
+
+
+def rescale_layout(pos, scale=1):
+    """Returns scaled position array to (-scale, scale) in all axes.
+
+    The function acts on NumPy arrays which hold position information.
+    Each position is one row of the array. The dimension of the space
+    equals the number of columns. Each coordinate in one column.
+
+    To rescale, the mean (center) is subtracted from each axis separately.
+    Then all values are scaled so that the largest magnitude value
+    from all axes equals `scale` (thus, the aspect ratio is preserved).
+    The resulting NumPy Array is returned (order of rows unchanged).
+
+    Parameters
+    ----------
+    pos : numpy array
+        positions to be scaled. Each row is a position.
+
+    scale : number (default: 1)
+        The size of the resulting extent in all directions.
+
+    Returns
+    -------
+    pos : numpy array
+        scaled positions. Each row is a position.
+
+    See Also
+    --------
+    rescale_layout_dict
+    """
+    # Find max length over all dimensions
+    lim = 0  # max coordinate for all axes
+    for i in range(pos.shape[1]):
+        pos[:, i] -= pos[:, i].mean()
+        lim = max(abs(pos[:, i]).max(), lim)
+    # rescale to (-scale, scale) in all directions, preserves aspect
+    if lim > 0:
+        for i in range(pos.shape[1]):
+            pos[:, i] *= scale / lim
+    return pos
+
+
+def rescale_layout_dict(pos, scale=1):
+    """Return a dictionary of scaled positions keyed by node
+
+    Parameters
+    ----------
+    pos : A dictionary of positions keyed by node
+
+    scale : number (default: 1)
+        The size of the resulting extent in all directions.
+
+    Returns
+    -------
+    pos : A dictionary of positions keyed by node
+
+    Examples
+    --------
+    >>> pos = {0: (0, 0), 1: (1, 1), 2: (0.5, 0.5)}
+    >>> nx.rescale_layout_dict(pos)
+    {0: (-1.0, -1.0), 1: (1.0, 1.0), 2: (0.0, 0.0)}
+
+    >>> pos = {0: (0, 0), 1: (-1, 1), 2: (-0.5, 0.5)}
+    >>> nx.rescale_layout_dict(pos, scale=2)
+    {0: (2.0, -2.0), 1: (-2.0, 2.0), 2: (0.0, 0.0)}
+
+    See Also
+    --------
+    rescale_layout
+    """
+
+    if not pos:  # empty_graph
+        return {}
+    pos_v = np.array(list(pos.values()))
+    pos_v = rescale_layout(pos_v, scale=scale)
+    return {k: tuple(v) for k, v in zip(pos.keys(), pos_v)}
 
 
 @random_state(3)
@@ -96,7 +173,6 @@ def random_layout(G, center=None, dim=2, seed=None):
     >>> pos = nx.random_layout(G)
 
     """
-    import numpy as np
 
     G, center = _process_params(G, center, dim)
     pos = seed.rand(len(G), dim) + center
@@ -148,7 +224,6 @@ def circular_layout(G, scale=1, center=None, dim=2):
     try to minimize edge crossings.
 
     """
-    import numpy as np
 
     if dim < 2:
         raise ValueError("cannot handle dimensions < 2")
@@ -222,7 +297,6 @@ def shell_layout(G, nlist=None, rotate=None, scale=1, center=None, dim=2):
     try to minimize edge crossings.
 
     """
-    import numpy as np
 
     if dim != 2:
         raise ValueError("can only handle 2 dimensions")
@@ -308,8 +382,6 @@ def bipartite_layout(
     try to minimize edge crossings.
 
     """
-
-    import numpy as np
 
     if align not in ("vertical", "horizontal"):
         msg = "align must be either vertical or horizontal."
@@ -436,7 +508,6 @@ def fruchterman_reingold_layout(
     # The same using longer but equivalent function name
     >>> pos = nx.fruchterman_reingold_layout(G)
     """
-    import numpy as np
 
     G, center = _process_params(G, center, dim)
 
@@ -504,7 +575,6 @@ def _fruchterman_reingold(
 ):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
-    import numpy as np
 
     try:
         nnodes, _ = A.shape
@@ -568,7 +638,7 @@ def _sparse_fruchterman_reingold(
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     # Sparse version
-    import numpy as np
+
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
@@ -679,7 +749,6 @@ def kamada_kawai_layout(
     >>> G = nx.path_graph(4)
     >>> pos = nx.kamada_kawai_layout(G)
     """
-    import numpy as np
 
     G, center = _process_params(G, center, dim)
     nNodes = len(G)
@@ -718,7 +787,6 @@ def _kamada_kawai_solve(dist_mtx, pos_arr, dim):
     # using the supplied matrix of preferred inter-node distances,
     # and starting locations.
 
-    import numpy as np
     import scipy as sp
     import scipy.optimize  # call as sp.optimize
 
@@ -806,7 +874,6 @@ def spectral_layout(G, weight="weight", scale=1, center=None, dim=2):
     eigenvalue solver (ARPACK).
     """
     # handle some special cases that break the eigensolvers
-    import numpy as np
 
     G, center = _process_params(G, center, dim)
 
@@ -843,7 +910,6 @@ def spectral_layout(G, weight="weight", scale=1, center=None, dim=2):
 def _spectral(A, dim=2):
     # Input adjacency matrix A
     # Uses dense eigenvalue solver from numpy
-    import numpy as np
 
     try:
         nnodes, _ = A.shape
@@ -865,7 +931,7 @@ def _sparse_spectral(A, dim=2):
     # Input adjacency matrix A
     # Uses sparse eigenvalue solver from scipy
     # Could use multilevel methods here, see Koren "On spectral graph drawing"
-    import numpy as np
+
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
     import scipy.sparse.linalg  # call as sp.sparse.linalg
@@ -923,7 +989,6 @@ def planar_layout(G, scale=1, center=None, dim=2):
     >>> G = nx.path_graph(4)
     >>> pos = nx.planar_layout(G)
     """
-    import numpy as np
 
     if dim != 2:
         raise ValueError("can only handle 2 dimensions")
@@ -987,7 +1052,6 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
     This algorithm currently only works in two dimensions.
 
     """
-    import numpy as np
 
     if dim != 2:
         raise ValueError("can only handle 2 dimensions")
@@ -1068,7 +1132,6 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     have subset_key data, they will be placed in the corresponding layers.
 
     """
-    import numpy as np
 
     if align not in ("vertical", "horizontal"):
         msg = "align must be either vertical or horizontal."
@@ -1109,84 +1172,6 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     return pos
 
 
-def rescale_layout(pos, scale=1):
-    """Returns scaled position array to (-scale, scale) in all axes.
-
-    The function acts on NumPy arrays which hold position information.
-    Each position is one row of the array. The dimension of the space
-    equals the number of columns. Each coordinate in one column.
-
-    To rescale, the mean (center) is subtracted from each axis separately.
-    Then all values are scaled so that the largest magnitude value
-    from all axes equals `scale` (thus, the aspect ratio is preserved).
-    The resulting NumPy Array is returned (order of rows unchanged).
-
-    Parameters
-    ----------
-    pos : numpy array
-        positions to be scaled. Each row is a position.
-
-    scale : number (default: 1)
-        The size of the resulting extent in all directions.
-
-    Returns
-    -------
-    pos : numpy array
-        scaled positions. Each row is a position.
-
-    See Also
-    --------
-    rescale_layout_dict
-    """
-    # Find max length over all dimensions
-    lim = 0  # max coordinate for all axes
-    for i in range(pos.shape[1]):
-        pos[:, i] -= pos[:, i].mean()
-        lim = max(abs(pos[:, i]).max(), lim)
-    # rescale to (-scale, scale) in all directions, preserves aspect
-    if lim > 0:
-        for i in range(pos.shape[1]):
-            pos[:, i] *= scale / lim
-    return pos
-
-
-def rescale_layout_dict(pos, scale=1):
-    """Return a dictionary of scaled positions keyed by node
-
-    Parameters
-    ----------
-    pos : A dictionary of positions keyed by node
-
-    scale : number (default: 1)
-        The size of the resulting extent in all directions.
-
-    Returns
-    -------
-    pos : A dictionary of positions keyed by node
-
-    Examples
-    --------
-    >>> pos = {0: (0, 0), 1: (1, 1), 2: (0.5, 0.5)}
-    >>> nx.rescale_layout_dict(pos)
-    {0: (-1.0, -1.0), 1: (1.0, 1.0), 2: (0.0, 0.0)}
-
-    >>> pos = {0: (0, 0), 1: (-1, 1), 2: (-0.5, 0.5)}
-    >>> nx.rescale_layout_dict(pos, scale=2)
-    {0: (2.0, -2.0), 1: (-2.0, 2.0), 2: (0.0, 0.0)}
-
-    See Also
-    --------
-    rescale_layout
-    """
-    import numpy as np
-
-    if not pos:  # empty_graph
-        return {}
-    pos_v = np.array(list(pos.values()))
-    pos_v = rescale_layout(pos_v, scale=scale)
-    return {k: tuple(v) for k, v in zip(pos.keys(), pos_v)}
-
-
 @nx.not_implemented_for("undirected")
 @nx.not_implemented_for("multigraph")
 def layered_layout(G, align="vertical", center=None, scale=1):
@@ -1199,7 +1184,7 @@ def layered_layout(G, align="vertical", center=None, scale=1):
 
     Parameters
     ----------
-    G : NetworkX graph or list of nodes
+    G : NetworkX DiGraph
         A position will be assigned to every node in G.
 
     align : string (default='vertical')
@@ -1207,17 +1192,18 @@ def layered_layout(G, align="vertical", center=None, scale=1):
         * 'vertical' yields horizontal layers and top-to-bottom edges.
         * 'horizontal' yields vertical layers and left-to-right edges.
 
-    scale : number (default: 1)
-        Scale factor for positions.
-
     center : array-like or None
         Coordinate pair around which to center the layout.
 
+    scale : number (default: 1)
+        Scale factor for positions.
+
     Returns
     -------
-    pos : dict
+    pos : dict[node](xpos, ypos)
         A dictionary of positions keyed by node
-
+    edges_path: dict[edge]list[](xpos, ypos)
+        Paths taken by multi-layer edges to minimise crossings
     Raises
     ------
     NetworkXNotImplemented
@@ -1225,40 +1211,85 @@ def layered_layout(G, align="vertical", center=None, scale=1):
 
     Examples
     --------
-    >>> G = nx.DiGraph()
-    >>> # TODO
+    >>> G = nx.gn_graph(24)
+    >>> pos, edges_path = nx.layered_layout(G)
+    >>> nx.draw(G, pos, edges_path=edges_path)
 
     Notes
     -----
     This algorithm only works for Directed Acyclic Graphs.
 
-    TODO:
+    `dim` parameter omitted because only dim==2 is supported.
 
-    * Compute edges path before removing dummy nodes
-        The idea is to return a dictionary of edge paths keyed by edge alongside pos.
-    * Layer width minimization:
+    TODO
+    ----
+    * Write tests
+    * Layer width minimization
         If wanted, an additional "max_width" parameter will be set by the caller.
         This requires another algorithm than current _layer_assignment.
-    * Handle scale and center parameters
     * Handling disconnected components
     * Cycle removal (will allow non-DAG DiGraphs to be laid out)
     * Accept weighted edges
         * Accept MultiDiGraphs (by increasing weight of multi-edges)
     """
 
-    G, center = _process_params(G, center, dim=2)
+    if align not in ("vertical", "horizontal"):
+        raise ValueError("align must be either vertical or horizontal.")
 
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXNotImplemented(
             "layered_layout is only implemented for directed acyclic graphs"
         )
 
+    G, center = _process_params(G, center, dim=2)
+
+    # print("\n_layer_assignment...")
     nodes_layer = _layer_assignment(G)
-    Gd, nodes_layer = _new_graph_with_dummy_nodes(G, nodes_layer)
+    # print("nodes_layer", nodes_layer)
+
+    # print("\n_new_graph_with_dummy_nodes...")
+    Gd, nodes_layer, dummy_paths = _new_graph_with_dummy_nodes(G, nodes_layer)
+    # print("nodes_layer", nodes_layer)
+    # print("dummy_paths", dummy_paths)
+
+    # print("\n_nodes_layer_dict_to_layers_order...")
     layers_order = _nodes_layer_dict_to_layers_order(nodes_layer)
+    # print("layers_order", layers_order)
+
+    print("\n_vertex_ordering...")
     layers_order = _vertex_ordering(Gd, layers_order)
-    pos = _coordinate_assignmnent(Gd, layers_order, align, scale, center)
-    return pos
+    print("layers_order", layers_order)
+
+    print("\n_coordinate_assignmnent...")
+    # layers_pos: list[layer_id]list[node_id](node_pos_in_layer, node_name)
+    layers_pos = _coordinate_assignmnent(Gd, layers_order)
+    print("layers_pos", layers_pos)
+
+    # print("\nPreparing output...")
+    # Build output data for all nodes (including dummies)
+    # pos: list[node_id](xpos, ypos)
+    # nodes_name: list[node_id]node_name
+    pos, nodes_name = [None] * len(Gd), [None] * len(Gd)
+    n_layers = len(layers_pos)
+    idx = 0
+    for d1 in range(n_layers):
+        for (d2, u) in layers_pos[d1]:
+            pos[idx] = (d2, n_layers - d1 - 1) if align == "vertical" else (d1, d2)
+            nodes_name[idx] = u
+            idx += 1
+
+    # Rescale, center and convert pos to output type
+    pos = rescale_layout(np.array(pos, dtype=float), scale=scale) + center
+    pos = dict(zip(nodes_name, pos))
+    # Add dummy_nodes' positions to edges_path and prune them from pos
+    edges_path = {}
+    for e, path_nodes in dummy_paths.items():
+        # print(e, path_nodes)
+        edges_path[e] = [None] * len(path_nodes)
+        for i, u in enumerate(path_nodes):
+            edges_path[e][i] = pos[u]
+            del pos[u]
+    return pos, edges_path
 
 
 def _layer_assignment(G):
@@ -1270,10 +1301,6 @@ def _layer_assignment(G):
     * p. 14: https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v7-added-proofs.pdf
     * https://networkx.org/documentation/stable/_modules/networkx/algorithms/dag.html#topological_sort
 
-    Parameters
-    ----------
-    G : networkx.DiGraph
-        A Directed **Acyclic** Graph.
     Returns
     -------
     nodes_layer : dict[node]int
@@ -1304,15 +1331,24 @@ def _layer_assignment(G):
     return nodes_layer
 
 
-DUMMY_KEY = "_dummy_node"
+DUMMY_KEY = "_dummy_node_for_edge"
 
 
 def _new_graph_with_dummy_nodes(G, nodes_layer):
-    """Split each edge spanning several layers into several edges separated by dummy edges.
-    Return a copy of G with dummy nodes and the updated nodes_layer dict.
+    """Split each edge spanning several layers into a path with one dummy node per layer.
+
+    Returns
+    -------
+    Gd : nx.DiGraph
+        Copy of G with dummy nodes and paths added
+    nodes_layer : dict[node]int
+        Layer number for each node in Gd
+    dummy_paths : list
+        New paths replacing the ones spanning several layers in Gd
     """
     Gd = G.copy()
 
+    dummy_paths = {}
     dummy_node_id = 0
     for e in G.edges:
         from_pos = nodes_layer[e[0]]
@@ -1323,33 +1359,36 @@ def _new_graph_with_dummy_nodes(G, nodes_layer):
 
         # Remove existing edge from Gd
         Gd.remove_edge(*e)
-
-        # Iteratively add one dummy node per layer from e[0] to e[1]
-        dummy_node, prev_dummy_node = None, None
+        # Compute new path passing through dummy nodes
+        dummy_path = [None] * (e_length - 1)
+        # dummy_path[0] = e[0]
+        # dummy_path[-1] = e[1]
         for i in range(e_length - 1):
+            # Add dummy node to path, nodes_layer & Gd (with dummy annotation)
             dummy_node = f"dummy_{dummy_node_id}"
-
-            # Add dummy node to Gd
-            Gd.add_node(dummy_node, **{DUMMY_KEY: True})
-            # Add dummy node layer's to nodes_layer
+            dummy_path[i] = dummy_node
             nodes_layer[dummy_node] = from_pos + i + 1
-            # Create path from previous node to dummy node
-            if i == 0:
-                Gd.add_edge(e[0], dummy_node)
-            else:
-                Gd.add_edge(prev_dummy_node, dummy_node)
-            # Iteration stuff
-            prev_dummy_node = dummy_node
+            Gd.add_node(dummy_node, **{DUMMY_KEY: e})
             dummy_node_id += 1
-        # Create edge from last dummy node to successor node
-        Gd.add_edge(dummy_node, e[1])
+        # Add new path to Gd and dummy_paths
+        nx.add_path(Gd, [e[0]] + dummy_path + [e[1]])
+        dummy_paths[e] = dummy_path
 
-    return Gd, nodes_layer
+    return Gd, nodes_layer, dummy_paths
 
 
 def _nodes_layer_dict_to_layers_order(nodes_layer):
-    """From dict[node]layer to list[][]node: one ordered list of nodes per layer."""
-    layers_order = [None] * max(nodes_layer.values()) + 1
+    """Conversion of node-to-layer data representation.
+    Parameters
+    -------
+    nodes_layer : dict[node]int
+        Layer number for each node in G
+    Returns
+    -------
+    layers_order: list[][]node
+        ordered list of nodes in each layer
+    """
+    layers_order = [None] * (max(nodes_layer.values()) + 1)
     for u, l in nodes_layer.items():
         if layers_order[l] is None:
             layers_order[l] = [u]
@@ -1364,13 +1403,6 @@ def _vertex_ordering(G, layers_order):
     Based off:
     * Gansner, Koutsofios, North & Vo, "A technique for drawing directed graphs," pp. 13-17, IIEEE Trans. Software Eng., 1993, doi: 10.1109/32.221135.
     * pp. 8-11: https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v8.pdf
-
-    Returns
-    -------
-    networkx.DiGraph
-        Input G with dummy nodes added.
-    layers_order: list[][]node
-        ordered list of nodes in each layer
     """
 
     from copy import copy
@@ -1379,11 +1411,21 @@ def _vertex_ordering(G, layers_order):
     for it in range(24):
         # Depending on the parity of the current iteration number,
         # the ranks are traversed from top to bottom or from bottom to top
-        top_to_bot = it % 2 == 1
+        top_to_bot = it % 2 == 0
+
+        # print(f"\nit{it:02d} top_to_bot={top_to_bot}")
+        # print("layers_order", layers_order)
+
         layers_order = _order_layers_by_weighted_median(G, layers_order, top_to_bot)
+        # print("median_order", layers_order)
         layers_order = _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot)
-        if _edge_crossings(G, layers_order) < _edge_crossings(G, best_layers_order):
-            best_layers_order = layers_order
+        # print("transpose", layers_order)
+
+        if it >= 1 and layers_order == best_layers_order:
+            # print("Equal layers_order and best_layers_order: vertex ordering converged")
+            break
+        elif _edge_crossings(G, layers_order) < _edge_crossings(G, best_layers_order):
+            best_layers_order = copy(layers_order)
 
     return best_layers_order
 
@@ -1419,7 +1461,10 @@ def _order_layers_by_weighted_median(G, layers_order, top_to_bot):
         ) / (left_range + right_range)
 
     def _sort_layer(layer_order, nodes_median):
-        # TODO: optimizable
+        """Sort the layer by node median.
+        Except for nodes having median == -1 that must not change position.
+        Optimizable?
+        """
 
         # OrderedDict remembers order of insertion
         # => correct inserts in layer_order afterwards
@@ -1443,7 +1488,7 @@ def _order_layers_by_weighted_median(G, layers_order, top_to_bot):
         node_neighbours = lambda u: [v for v, _ in G.in_edges(u)]
         next_layer_id = lambda l: l - 1
     else:
-        layers_iterator = range(len(layers_order) - 2, 0, -1)
+        layers_iterator = range(len(layers_order) - 2, -1, -1)
         node_neighbours = lambda u: [v for _, v in G.out_edges(u)]
         next_layer_id = lambda l: l + 1
 
@@ -1456,6 +1501,36 @@ def _order_layers_by_weighted_median(G, layers_order, top_to_bot):
 
         layers_order[l] = _sort_layer(layers_order[l], nodes_median)
 
+    return layers_order
+
+
+def _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot):
+    improved = True
+    if top_to_bot:
+        layers_iterator = range(len(layers_order))
+    else:
+        layers_iterator = range(len(layers_order) - 1, -1, -1)
+
+    while improved:
+        improved = False
+        for l in layers_iterator:
+            for i in range(len(layers_order[l]) - 1):
+                # for i, u in enumerate(layers_order[l][:-1]):
+                u = layers_order[l][i]
+                v = layers_order[l][i + 1]
+                uv_crossings = _edge_crossings_local(
+                    G, layers_order, u, v, l, top_to_bot
+                )
+                vu_crossings = _edge_crossings_local(
+                    G, layers_order, v, u, l, top_to_bot
+                )
+                # print(f"\tl={l:02d} u={u} v={v}, uv_cross={uv_crossings}, vu_cross={vu_crossings}")
+                if uv_crossings > vu_crossings:
+                    improved = True
+                    # print(f"swap happening b/w l={l} & i={i}")
+                    # print("before:", layers_order[l][i], layers_order[l][i + 1])
+                    layers_order[l][i], layers_order[l][i + 1] = v, u
+                    # print("after:", layers_order[l][i], layers_order[l][i + 1])
     return layers_order
 
 
@@ -1504,57 +1579,13 @@ def _edge_crossings(G, layers_order):
     return crossings
 
 
-def _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot):
-    improved = True
-    if top_to_bot:
-        layers_iterator = range(len(layers_order))
-    else:
-        layers_iterator = range(len(layers_order) - 1, -1, -1)
-
-    while improved:
-        improved = False
-        for l in layers_iterator:
-            for i, u in enumerate(layers_order[l][:-1]):
-                v = layers_order[l][i + 1]
-                if _edge_crossings_local(
-                    G, layers_order, u, v, l, top_to_bot
-                ) > _edge_crossings_local(G, layers_order, v, u, l, top_to_bot):
-                    improved = True
-                    layers_order[l][i], layers_order[l][i + 1] = v, u
-    return layers_order
-
-
-def _coordinate_assignmnent(G, layers_order, align, scale, center):
-    """Finds aesthetical coordinates respecting the previous constraints."""
-
-    if align != "horizontal" and align != "vertical":
-        raise ValueError("align must be either 'vertical' or 'horizontal'")
-
-    layers_pos = _do_assign_coordinates(G, layers_order)
-
-    # layers_pos: list[layer_id]list[node_id](node_pos_in_layer, node_name)
-    # to pos: dict[node_name](xpos, ypos)
-    pos = {}
-    n_layers = len(layers_pos)
-    for d1 in range(n_layers):
-        for (d2, u) in layers_pos[d1]:
-            # Skip dummy vertices
-            if G.nodes[u].get(DUMMY_KEY, False):
-                continue
-            if align == "vertical":
-                pos[u] = (d2, n_layers - d1 - 1)
-            elif align == "horizontal":
-                pos[u] = (d1, d2)
-    return pos
-
-
-def _do_assign_coordinates(G, layers_order):
+def _coordinate_assignmnent(G, layers_order):
     """Set in-layer node positions according to the priority heuristic from Sugiyama."""
 
     def node_priority(G, u, direction):
-        if G.nodes[u].get(DUMMY_KEY):
+        if G.nodes[u].get(DUMMY_KEY, False):
             return np.inf
-        if direction == 1:
+        elif direction == 1:
             return G.out_degree(u)
         else:
             return G.in_degree(u)
@@ -1591,6 +1622,9 @@ def _do_assign_coordinates(G, layers_order):
         prev_node_pos = layer_pos[u_id - 1] if u_id != 0 else None
         next_node_pos = layer_pos[u_id + 1] if u_id != len(layer_pos) - 1 else None
 
+        # If trying to move in a single direction (recursive call) and
+        # we have no neighbour in this direction OR it is far away
+        # Success: update layer_pos and return
         if (
             direction == "next" or (prev_node_pos is None or prev_node_pos[0] < target)
         ) and (
@@ -1604,20 +1638,24 @@ def _do_assign_coordinates(G, layers_order):
             and prev_node_pos is not None
             and prev_node_pos[0] >= target
         ):
+            # If there is a position conflict with the previous node
             prev_node = prev_node_pos[1]
             prev_node_priority_id = index_in_list_of_tuples(
                 layer_priorities, t2=prev_node
             )
-            assert prev_node_priority_id != -1
             prev_node_priority = layer_priorities[prev_node_priority_id][0]
-            if p > prev_node_priority:
+            # If we have higher priority than the previous node
+            if p >= prev_node_priority and target != 0:
+                # Try moving the previous node in the "prev" direction
                 try:
                     layer_pos = move_node(
                         G, p, prev_node, target - 1, layer_priorities, layer_pos, "prev"
                     )
                 except RuntimeError:
+                    # Continue if failed
                     pass
                 else:
+                    # Else, success: update layer_pos and return
                     layer_pos[u_id] = (target, u)
                     return layer_pos
         if (
@@ -1625,23 +1663,29 @@ def _do_assign_coordinates(G, layers_order):
             and next_node_pos is not None
             and next_node_pos[0] <= target
         ):
+            # If there is a position conflict with the next node
             next_node = next_node_pos[1]
             next_node_priority_id = index_in_list_of_tuples(
                 layer_priorities, t2=next_node
             )
             assert next_node_priority_id != -1
             next_node_priority = layer_priorities[next_node_priority_id][0]
-            if p > next_node_priority:
+            # If we have higher priority than the next node
+            if p >= next_node_priority:
+                # Try moving the next node in the "next" direction
                 try:
                     layer_pos = move_node(
                         G, p, next_node, target + 1, layer_priorities, layer_pos, "next"
                     )
                 except RuntimeError:
+                    # Continue if failed
                     pass
                 else:
+                    # Else, success: update layer_pos and return
                     layer_pos[u_id] = (target, u)
                     return layer_pos
 
+        # If nothing worked, raise RuntimeError
         raise RuntimeError(f"Node {u} (p={p}) could not move to position {target}.")
 
     # pos: list[layer_id]list[node_id](node_pos_in_layer, node)
@@ -1653,6 +1697,7 @@ def _do_assign_coordinates(G, layers_order):
         layers_pos[l] = [None] * len(layer_order)
         for i, u in enumerate(layer_order):
             layers_pos[l][i] = (i, u)
+    # print("initial layer_pos:", layers_pos)
 
     # Loop:
     # downwards: L_1 to L_n
@@ -1666,6 +1711,8 @@ def _do_assign_coordinates(G, layers_order):
     directions = [-1] * (n_layers - 1) + [1] * (n_layers - 1) + [-1] * (n_layers - 1)
 
     for l, direction in zip(r, directions):
+        # print(f"layer {l:02d} direction {direction}")
+        # print(f"layer_pos[{l}]:", layers_pos[l])
         # L_j = L_(i-1) if direction = downwards
         #       L_(i+1) if direction = upwards
         prev_layer_pos = layers_pos[l + direction]
@@ -1679,13 +1726,18 @@ def _do_assign_coordinates(G, layers_order):
         )
 
         # for u in L_i in order of descending priority:
-        for p, u in layer_priorities:
+        # We try to move each layer twice in a row, which lets more moves succeed
+        for p, u in layer_priorities * 2:
             # place u at median(u's L_j neighbours' positions),
             # possibly moving other nodes with lower priority.
             neigh_pos = neighbours_pos(G, u, direction, prev_layer_pos)
             if len(neigh_pos) == 0:
                 continue
             target_pos = int(round(np.mean(neigh_pos)))
+            # Using the floor of the mean looks nearly the same
+            # target_pos = int(np.floor(np.mean(neigh_pos)))
+            # Using float positions is really ugly (no minimum space b/w nodes)
+            # target_pos = np.mean(neigh_pos)
 
             # Skip if already at desired pos
             u_id = index_in_list_of_tuples(layers_pos[l], t2=u)
@@ -1693,11 +1745,15 @@ def _do_assign_coordinates(G, layers_order):
             if target_pos == prev_pos:
                 continue
 
+            # print(f"Node {u} (p={p}) to move from {prev_pos} to {target_pos}...")
             try:
                 layers_pos[l] = move_node(
                     G, p, u, target_pos, layer_priorities, layers_pos[l]
                 )
             except RuntimeError:
+                # print("Move failed:", layers_pos[l])
                 pass
+            # else:
+            # print("Move succeeded:", layers_pos[l])
 
     return layers_pos
