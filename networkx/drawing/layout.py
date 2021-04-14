@@ -1252,23 +1252,23 @@ def layered_layout(G, align="vertical", center=None, scale=1):
 
     # print("\n_new_graph_with_dummy_nodes...")
     Gd, nodes_layer, dummy_paths = _new_graph_with_dummy_nodes(G, nodes_layer)
-    print("nodes_layer", nodes_layer)
-    print("dummy_paths", dummy_paths)
+    # print("nodes_layer", nodes_layer)
+    # print("dummy_paths", dummy_paths)
 
-    print("\n_nodes_layer_dict_to_layers_order...")
+    # print("\n_nodes_layer_dict_to_layers_order...")
     layers_order = _nodes_layer_dict_to_layers_order(nodes_layer)
-    print("layers_order", layers_order)
+    # print("layers_order", layers_order)
 
     print("\n_vertex_ordering...")
     layers_order = _vertex_ordering(Gd, layers_order)
     print("layers_order", layers_order)
 
-    # print("\n_coordinate_assignmnent...")
+    print("\n_coordinate_assignmnent...")
     # layers_pos: list[layer_id]list[node_id](node_pos_in_layer, node_name)
     layers_pos = _coordinate_assignmnent(Gd, layers_order)
-    # print("layers_pos", layers_pos)
+    print("layers_pos", layers_pos)
 
-    print("\nPreparing output...")
+    # print("\nPreparing output...")
     # Build output data for all nodes (including dummies)
     # pos: list[node_id](xpos, ypos)
     # nodes_name: list[node_id]node_name
@@ -1287,7 +1287,7 @@ def layered_layout(G, align="vertical", center=None, scale=1):
     # Add dummy_nodes' positions to edges_path and prune them from pos
     edges_path = {}
     for e, path_nodes in dummy_paths.items():
-        print(e, path_nodes)
+        # print(e, path_nodes)
         edges_path[e] = [None] * len(path_nodes)
         for i, u in enumerate(path_nodes):
             edges_path[e][i] = pos[u]
@@ -1416,13 +1416,13 @@ def _vertex_ordering(G, layers_order):
         # the ranks are traversed from top to bottom or from bottom to top
         top_to_bot = it % 2 == 0
 
-        print(f"\nit{it:02d} top_to_bot={top_to_bot}")
-        print("layers_order", layers_order)
+        # print(f"\nit{it:02d} top_to_bot={top_to_bot}")
+        # print("layers_order", layers_order)
 
         layers_order = _order_layers_by_weighted_median(G, layers_order, top_to_bot)
-        print("median_order", layers_order)
+        # print("median_order", layers_order)
         layers_order = _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot)
-        print("transpose", layers_order)
+        # print("transpose", layers_order)
 
         if it >= 1 and layers_order == best_layers_order:
             # print("Equal layers_order and best_layers_order: vertex ordering converged")
@@ -1527,15 +1527,13 @@ def _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot):
                 vu_crossings = _edge_crossings_local(
                     G, layers_order, v, u, l, top_to_bot
                 )
-                print(
-                    f"\tl={l:02d} u={u} v={v}, uv_cross={uv_crossings}, vu_cross={vu_crossings}"
-                )
+                # print(f"\tl={l:02d} u={u} v={v}, uv_cross={uv_crossings}, vu_cross={vu_crossings}")
                 if uv_crossings > vu_crossings:
                     improved = True
-                    print(f"swap happening b/w l={l} & i={i}")
-                    print("before:", layers_order[l][i], layers_order[l][i + 1])
+                    # print(f"swap happening b/w l={l} & i={i}")
+                    # print("before:", layers_order[l][i], layers_order[l][i + 1])
                     layers_order[l][i], layers_order[l][i + 1] = v, u
-                    print("after:", layers_order[l][i], layers_order[l][i + 1])
+                    # print("after:", layers_order[l][i], layers_order[l][i + 1])
     return layers_order
 
 
@@ -1544,9 +1542,7 @@ def _edge_crossings_local(G, layers_order, u, v, l, top_to_bot):
     Assuming u's rank (in the layer) is lower than v's.
     """
     # Discard first/last layer depending on search direction
-    print(f"\t\t_edge_crossings_local u={u} v={v} l={l} top_to_bot={top_to_bot}")
     if top_to_bot and l == len(layers_order) - 1 or not top_to_bot and l == 0:
-        print("\t\t\tdiscarded")
         return 0
 
     if top_to_bot:
@@ -1564,15 +1560,12 @@ def _edge_crossings_local(G, layers_order, u, v, l, top_to_bot):
             u_neigh_ranks.append(r)
         elif w in v_neighbours:
             v_neigh_ranks.append(r)
-    print(f"\t\t\tu_neighbours={u_neighbours} v_neighbours={v_neighbours}")
-    print(f"\t\t\tu_neigh_ranks={u_neigh_ranks} v_neigh_ranks={v_neigh_ranks}")
 
     # Computing number of edge crossings
     uv_edge_crossings = 0
     for u_neigh_rank in u_neigh_ranks:
         for v_neigh_rank in v_neigh_ranks:
             uv_edge_crossings += int(u_neigh_rank > v_neigh_rank)
-    print(f"\t\t\tuv_edge_crossings={uv_edge_crossings}")
     return uv_edge_crossings
 
 
