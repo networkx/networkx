@@ -1184,7 +1184,7 @@ def layered_layout(G, align="vertical", center=None, scale=1):
 
     Parameters
     ----------
-    G : NetworkX graph or list of nodes
+    G : NetworkX DiGraph
         A position will be assigned to every node in G.
 
     align : string (default='vertical')
@@ -1200,9 +1200,10 @@ def layered_layout(G, align="vertical", center=None, scale=1):
 
     Returns
     -------
-    pos : dict
+    pos : dict[node](xpos, ypos)
         A dictionary of positions keyed by node
-
+    edges_path: dict[edge]list[](xpos, ypos)
+        Paths taken by multi-layer edges to minimise crossings
     Raises
     ------
     NetworkXNotImplemented
@@ -1210,14 +1211,15 @@ def layered_layout(G, align="vertical", center=None, scale=1):
 
     Examples
     --------
-    >>> G = nx.DiGraph()
-    >>> # TODO
+    >>> G = nx.gn_graph(24)
+    >>> pos, _ = nx.layered_layout(G)
+    >>> nx.draw(G, pos)
 
     Notes
     -----
     This algorithm only works for Directed Acyclic Graphs.
 
-    dim parameter omitted because nly dim=2 is supported.
+    `dim` parameter omitted because only dim==2 is supported.
 
     TODO
     ----
@@ -1225,7 +1227,7 @@ def layered_layout(G, align="vertical", center=None, scale=1):
     * Compute edges path before removing dummy nodes
         The idea is to return a dictionary of edge paths keyed by edge alongside pos.
         To be used by a clever edge drawing routine.
-    * Layer width minimization:
+    * Layer width minimization
         If wanted, an additional "max_width" parameter will be set by the caller.
         This requires another algorithm than current _layer_assignment.
     * Handling disconnected components
@@ -1249,7 +1251,7 @@ def layered_layout(G, align="vertical", center=None, scale=1):
     # print("nodes_layer", nodes_layer)
 
     # print("\n_new_graph_with_dummy_nodes...")
-    Gd, nodes_layer = _new_graph_with_dummy_nodes(G, nodes_layer)
+    Gd, nodes_layer, dummy_paths = _new_graph_with_dummy_nodes(G, nodes_layer)
     # print("nodes_layer", nodes_layer)
 
     # print("\n_nodes_layer_dict_to_layers_order...")
@@ -1266,30 +1268,31 @@ def layered_layout(G, align="vertical", center=None, scale=1):
     # print("layers_pos", layers_pos)
     # print()
 
-    # Lastly convert positions to output types, rescale, center, and return!
+    # Build output data
     # pos: list[node_id](xpos, ypos)
     # nodes_name: list[node_id]node_name
     pos, nodes_name = [None] * len(G), [None] * len(G)
+    edges_path = {}
     n_layers = len(layers_pos)
     idx = 0
     for d1 in range(n_layers):
         for (d2, u) in layers_pos[d1]:
-            # Skip dummy vertices
-            if G.nodes.get(u) is None:
-                continue
-            # print(f"layer {d1:02d} idx {idx:03d} name {u}")
-            # Add node's pos and name to output lists
-            pos[idx] = (d1, d2) if align == "horizontal" else (d2, n_layers - d1 - 1)
-            nodes_name[idx] = u
-            idx += 1
+            node_pos = (d2, n_layers - d1 - 1) if align == "vertical" else (d1, d2)
+            original_edge = Gd.nodes[u].get(DUMMY_KEY)
+            if original_edge is not None:
+                # If dummy node, add its position to the edge it belongs to
+                edges_path[e] = edges_path.get(original_edge, [])
+                edges_path[e].append(node_pos)
+            else:
+                # Else, add node's pos and name to output lists
+                pos[idx] = node_pos
+                nodes_name[idx] = u
+                idx += 1
 
-    # if idx != len(G):
-    #     print("nodes_name", nodes_name)
-    #     print("difference", set(G.nodes).difference(nodes_name))
-    # Rescale and center pos array
+    # Rescale, center and convert pos to output type
     pos = rescale_layout(np.array(pos, dtype=float), scale=scale) + center
-    # Convert to output type and return
-    return dict(zip(nodes_name, pos))
+    pos = dict(zip(nodes_name, pos))
+    return pos, edges_path
 
 
 def _layer_assignment(G):
@@ -1331,15 +1334,24 @@ def _layer_assignment(G):
     return nodes_layer
 
 
-DUMMY_KEY = "_dummy_node"
+DUMMY_KEY = "_dummy_node_for_edge"
 
 
 def _new_graph_with_dummy_nodes(G, nodes_layer):
-    """Split each edge spanning several layers into several edges separated by dummy edges.
-    Return a copy of G with dummy nodes and the updated nodes_layer dict.
+    """Split each edge spanning several layers into a path with one dummy node per layer.
+
+    Returns
+    -------
+    Gd : nx.DiGraph
+        Copy of G with dummy nodes and paths added
+    nodes_layer : dict[node]int
+        Layer number for each node in Gd
+    dummy_paths : list
+        New paths replacing the ones spanning several layers in Gd
     """
     Gd = G.copy()
 
+    dummy_paths = []
     dummy_node_id = 0
     for e in G.edges:
         from_pos = nodes_layer[e[0]]
@@ -1350,28 +1362,21 @@ def _new_graph_with_dummy_nodes(G, nodes_layer):
 
         # Remove existing edge from Gd
         Gd.remove_edge(*e)
-
-        # Iteratively add one dummy node per layer from e[0] to e[1]
-        dummy_node, prev_dummy_node = None, None
-        for i in range(e_length - 1):
+        # Compute new path passing through dummy nodes
+        dummy_path = [None] * (e_length + 1)
+        dummy_path[0] = e[0]
+        dummy_path[-1] = e[1]
+        for i in range(1, e_length):
+            # Add dummy node to path and Gd (with dummy annotation)
             dummy_node = f"dummy_{dummy_node_id}"
-
-            # Add dummy node to Gd
-            Gd.add_node(dummy_node, **{DUMMY_KEY: True})
-            # Add dummy node layer's to nodes_layer
-            nodes_layer[dummy_node] = from_pos + i + 1
-            # Create path from previous node to dummy node
-            if i == 0:
-                Gd.add_edge(e[0], dummy_node)
-            else:
-                Gd.add_edge(prev_dummy_node, dummy_node)
-            # Iteration stuff
-            prev_dummy_node = dummy_node
+            dummy_path[i] = dummy_node
+            Gd.add_node(dummy_node, **{DUMMY_KEY: e})
             dummy_node_id += 1
-        # Create edge from last dummy node to successor node
-        Gd.add_edge(dummy_node, e[1])
+        # Add new path to Gd and returned list
+        nx.add_path(Gd, dummy_path)
+        dummy_paths.append(dummy_path)
 
-    return Gd, nodes_layer
+    return Gd, nodes_layer, dummy_paths
 
 
 def _nodes_layer_dict_to_layers_order(nodes_layer):
@@ -1573,7 +1578,7 @@ def _coordinate_assignmnent(G, layers_order):
     """Set in-layer node positions according to the priority heuristic from Sugiyama."""
 
     def node_priority(G, u, direction):
-        if G.nodes[u].get(DUMMY_KEY) is not None:
+        if G.nodes[u].get(DUMMY_KEY, False):
             return np.inf
         elif direction == 1:
             return G.out_degree(u)
