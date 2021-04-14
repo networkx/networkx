@@ -1252,47 +1252,46 @@ def layered_layout(G, align="vertical", center=None, scale=1):
 
     # print("\n_new_graph_with_dummy_nodes...")
     Gd, nodes_layer, dummy_paths = _new_graph_with_dummy_nodes(G, nodes_layer)
-    # print("nodes_layer", nodes_layer)
-    # print("dummy_paths", dummy_paths)
+    print("nodes_layer", nodes_layer)
+    print("dummy_paths", dummy_paths)
 
-    # print("\n_nodes_layer_dict_to_layers_order...")
+    print("\n_nodes_layer_dict_to_layers_order...")
     layers_order = _nodes_layer_dict_to_layers_order(nodes_layer)
-    # print("layers_order", layers_order)
+    print("layers_order", layers_order)
 
-    # print("\n_vertex_ordering...")
+    print("\n_vertex_ordering...")
     layers_order = _vertex_ordering(Gd, layers_order)
-    # print("layers_order", layers_order)
+    print("layers_order", layers_order)
 
     # print("\n_coordinate_assignmnent...")
     # layers_pos: list[layer_id]list[node_id](node_pos_in_layer, node_name)
     layers_pos = _coordinate_assignmnent(Gd, layers_order)
     # print("layers_pos", layers_pos)
-    # print()
 
-    # Build output data
+    print("\nPreparing output...")
+    # Build output data for all nodes (including dummies)
     # pos: list[node_id](xpos, ypos)
     # nodes_name: list[node_id]node_name
-    pos, nodes_name = [None] * len(G), [None] * len(G)
-    edges_path = {}
+    pos, nodes_name = [None] * len(Gd), [None] * len(Gd)
     n_layers = len(layers_pos)
     idx = 0
     for d1 in range(n_layers):
         for (d2, u) in layers_pos[d1]:
-            node_pos = (d2, n_layers - d1 - 1) if align == "vertical" else (d1, d2)
-            original_edge = Gd.nodes[u].get(DUMMY_KEY)
-            if original_edge is not None:
-                # If dummy node, add its position to the edge_path it belongs to
-                edges_path[original_edge] = edges_path.get(original_edge, [])
-                edges_path[original_edge].append(node_pos)
-            else:
-                # Else, add node's pos and name to output lists
-                pos[idx] = node_pos
-                nodes_name[idx] = u
-                idx += 1
+            pos[idx] = (d2, n_layers - d1 - 1) if align == "vertical" else (d1, d2)
+            nodes_name[idx] = u
+            idx += 1
 
     # Rescale, center and convert pos to output type
     pos = rescale_layout(np.array(pos, dtype=float), scale=scale) + center
     pos = dict(zip(nodes_name, pos))
+    # Add dummy_nodes' positions to edges_path and prune them from pos
+    edges_path = {}
+    for e, path_nodes in dummy_paths.items():
+        print(e, path_nodes)
+        edges_path[e] = [None] * len(path_nodes)
+        for i, u in enumerate(path_nodes):
+            edges_path[e][i] = pos[u]
+            del pos[u]
     return pos, edges_path
 
 
@@ -1352,7 +1351,7 @@ def _new_graph_with_dummy_nodes(G, nodes_layer):
     """
     Gd = G.copy()
 
-    dummy_paths = []
+    dummy_paths = {}
     dummy_node_id = 0
     for e in G.edges:
         from_pos = nodes_layer[e[0]]
@@ -1364,19 +1363,19 @@ def _new_graph_with_dummy_nodes(G, nodes_layer):
         # Remove existing edge from Gd
         Gd.remove_edge(*e)
         # Compute new path passing through dummy nodes
-        dummy_path = [None] * (e_length + 1)
-        dummy_path[0] = e[0]
-        dummy_path[-1] = e[1]
-        for i in range(1, e_length):
+        dummy_path = [None] * (e_length - 1)
+        # dummy_path[0] = e[0]
+        # dummy_path[-1] = e[1]
+        for i in range(e_length - 1):
             # Add dummy node to path, nodes_layer & Gd (with dummy annotation)
             dummy_node = f"dummy_{dummy_node_id}"
             dummy_path[i] = dummy_node
             nodes_layer[dummy_node] = from_pos + i + 1
             Gd.add_node(dummy_node, **{DUMMY_KEY: e})
             dummy_node_id += 1
-        # Add new path to Gd and returned list
-        nx.add_path(Gd, dummy_path)
-        dummy_paths.append(dummy_path)
+        # Add new path to Gd and dummy_paths
+        nx.add_path(Gd, [e[0]] + dummy_path + [e[1]])
+        dummy_paths[e] = dummy_path
 
     return Gd, nodes_layer, dummy_paths
 
@@ -1413,17 +1412,19 @@ def _vertex_ordering(G, layers_order):
 
     best_layers_order = copy(layers_order)
     for it in range(24):
-        # print(f"\nit{it:02d}")
-        # print("layers_order", layers_order)
         # Depending on the parity of the current iteration number,
         # the ranks are traversed from top to bottom or from bottom to top
-        top_to_bot = it % 2 == 1
-        layers_order = _order_layers_by_weighted_median(G, layers_order, top_to_bot)
-        # print("median_order", layers_order)
-        layers_order = _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot)
-        # print("transpose", layers_order)
+        top_to_bot = it % 2 == 0
 
-        if layers_order == best_layers_order:
+        print(f"\nit{it:02d} top_to_bot={top_to_bot}")
+        print("layers_order", layers_order)
+
+        layers_order = _order_layers_by_weighted_median(G, layers_order, top_to_bot)
+        print("median_order", layers_order)
+        layers_order = _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot)
+        print("transpose", layers_order)
+
+        if it >= 1 and layers_order == best_layers_order:
             # print("Equal layers_order and best_layers_order: vertex ordering converged")
             break
         elif _edge_crossings(G, layers_order) < _edge_crossings(G, best_layers_order):
@@ -1520,14 +1521,21 @@ def _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot):
                 # for i, u in enumerate(layers_order[l][:-1]):
                 u = layers_order[l][i]
                 v = layers_order[l][i + 1]
-                if _edge_crossings_local(
+                uv_crossings = _edge_crossings_local(
                     G, layers_order, u, v, l, top_to_bot
-                ) > _edge_crossings_local(G, layers_order, v, u, l, top_to_bot):
+                )
+                vu_crossings = _edge_crossings_local(
+                    G, layers_order, v, u, l, top_to_bot
+                )
+                print(
+                    f"\tl={l:02d} u={u} v={v}, uv_cross={uv_crossings}, vu_cross={vu_crossings}"
+                )
+                if uv_crossings > vu_crossings:
                     improved = True
-                    # print(f"swap happening b/w l={l} & i={i}")
-                    # print("before:", layers_order[l][i], layers_order[l][i + 1])
+                    print(f"swap happening b/w l={l} & i={i}")
+                    print("before:", layers_order[l][i], layers_order[l][i + 1])
                     layers_order[l][i], layers_order[l][i + 1] = v, u
-                    # print("after:", layers_order[l][i], layers_order[l][i + 1])
+                    print("after:", layers_order[l][i], layers_order[l][i + 1])
     return layers_order
 
 
@@ -1536,7 +1544,9 @@ def _edge_crossings_local(G, layers_order, u, v, l, top_to_bot):
     Assuming u's rank (in the layer) is lower than v's.
     """
     # Discard first/last layer depending on search direction
+    print(f"\t\t_edge_crossings_local u={u} v={v} l={l} top_to_bot={top_to_bot}")
     if top_to_bot and l == len(layers_order) - 1 or not top_to_bot and l == 0:
+        print("\t\t\tdiscarded")
         return 0
 
     if top_to_bot:
@@ -1554,12 +1564,15 @@ def _edge_crossings_local(G, layers_order, u, v, l, top_to_bot):
             u_neigh_ranks.append(r)
         elif w in v_neighbours:
             v_neigh_ranks.append(r)
+    print(f"\t\t\tu_neighbours={u_neighbours} v_neighbours={v_neighbours}")
+    print(f"\t\t\tu_neigh_ranks={u_neigh_ranks} v_neigh_ranks={v_neigh_ranks}")
 
     # Computing number of edge crossings
     uv_edge_crossings = 0
     for u_neigh_rank in u_neigh_ranks:
         for v_neigh_rank in v_neigh_ranks:
             uv_edge_crossings += int(u_neigh_rank > v_neigh_rank)
+    print(f"\t\t\tuv_edge_crossings={uv_edge_crossings}")
     return uv_edge_crossings
 
 

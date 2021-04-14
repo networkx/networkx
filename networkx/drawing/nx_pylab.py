@@ -656,9 +656,9 @@ def draw_networkx_edges(
     if edge_color is None:
         edge_color = "k"
 
-    if edges_path is not None:
-        # If edges_path is given, replace keys by edge start/end positions
-        edges_path = {(pos[e[0]], pos[e[1]]): v for e, v in edges_path.items()}
+    # if edges_path is not None:
+    #     # If edges_path is given, replace keys by edge start/end positions
+    #     edges_path = {(pos[e[0]], pos[e[1]]): v for e, v in edges_path.items()}
 
     # set edge positions
     edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
@@ -710,20 +710,15 @@ def draw_networkx_edges(
     max_nodesize = np.array(node_size).max()
 
     def _connectionstyle(posA, posB, *args, **kwargs):
-        # print("== _connectionstyle:", posA, posB)
-        # print("type of posA:", type(posA))
         # check if we need to do a self-loop
         if np.all(posA == posB):
-            print("Self-loop")
             # Self-loops are scaled by view extent, except in cases the extent
             # is 0, e.g. for a single node. In this case, fall back to scaling
             # by the maximum node size
             selfloop_ht = 0.005 * max_nodesize if h == 0 else h
             # this is called with _screen space_ values so convert back
             # to data space
-            print("posA", posA)
             data_loc = ax.transData.inverted().transform(posA)
-            print("data_loc", data_loc)
             v_shift = 0.1 * selfloop_ht
             h_shift = v_shift * 0.5
             # put the top of the loop first so arrow is not hidden by node
@@ -739,7 +734,6 @@ def draw_networkx_edges(
                 data_loc + np.asarray([-h_shift, v_shift]),
                 data_loc + np.asarray([0, v_shift]),
             ]
-            print("path", path)
 
             ret = mpl.path.Path(
                 ax.transData.transform(path),
@@ -753,16 +747,6 @@ def draw_networkx_edges(
                     mpl.path.Path.CURVE4,
                 ],
             )
-            print("ret", ret)
-        # elif edges_path is not None and edges_path.get((posA, posB), False):
-        #     print("Edge path", (posA, posB))
-        #     # This edge needs to be drawn passing through each point in edge_path
-        #     start_pos = ax.transData.inverted().transform(posA)
-        #     end_pos = ax.transData.inverted().transform(posB)
-        #     path = [start_pos] + edges_path[(posA, posB)] + [end_pos]
-        #     codes = [mpl.path.Path.MOVETO] + [mpl.path.Path.LINETO] * (len(path) - 1)
-        #     ret = mpl.path.Path(path, codes)
-        #     print(ret)
         else:
             # else, fall back to the user specified behavior
             ret = base_connection_style(posA, posB, *args, **kwargs)
@@ -771,9 +755,9 @@ def draw_networkx_edges(
 
     # FancyArrowPatch doesn't handle color strings
     arrow_colors = mpl.colors.colorConverter.to_rgba_array(edge_color, alpha)
-    for i, (src, dst) in enumerate(edge_pos):
-        x1, y1 = src
-        x2, y2 = dst
+    for (i, (src, dst)), e in zip(enumerate(edge_pos), edgelist):
+        # x1, y1 = src
+        # x2, y2 = dst
         shrink_source = 0  # space from source to tail
         shrink_target = 0  # space from  head to target
         if np.iterable(node_size):  # many node sizes
@@ -806,15 +790,27 @@ def draw_networkx_edges(
         else:
             line_width = width
 
+        path = None
+        if edges_path is not None and e in edges_path:
+            # TODO: apply shrink_source and shrink_target to path because shrinkA
+            # and shrinkB are ignored by FancyArrowPatch when path is not None.
+            path = [src] + edges_path[e] + [dst]
+            codes = [mpl.path.Path.MOVETO] + [mpl.path.Path.LINETO] * (len(path) - 1)
+            path = mpl.path.Path(path, codes)
+            # Set src and dst to None because FancyArrowPatch expects either path or
+            # the src & dst parameters
+            src = dst = None
+
         arrow = mpl.patches.FancyArrowPatch(
-            (x1, y1),
-            (x2, y2),
+            src,
+            dst,
             arrowstyle=arrowstyle,
             shrinkA=shrink_source,
             shrinkB=shrink_target,
             mutation_scale=mutation_scale,
             color=arrow_color,
             linewidth=line_width,
+            path=path,
             connectionstyle=_connectionstyle,
             linestyle=style,
             zorder=1,
