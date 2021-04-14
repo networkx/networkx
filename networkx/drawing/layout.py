@@ -1253,6 +1253,7 @@ def layered_layout(G, align="vertical", center=None, scale=1):
     # print("\n_new_graph_with_dummy_nodes...")
     Gd, nodes_layer, dummy_paths = _new_graph_with_dummy_nodes(G, nodes_layer)
     # print("nodes_layer", nodes_layer)
+    # print("dummy_paths", dummy_paths)
 
     # print("\n_nodes_layer_dict_to_layers_order...")
     layers_order = _nodes_layer_dict_to_layers_order(nodes_layer)
@@ -1280,9 +1281,9 @@ def layered_layout(G, align="vertical", center=None, scale=1):
             node_pos = (d2, n_layers - d1 - 1) if align == "vertical" else (d1, d2)
             original_edge = Gd.nodes[u].get(DUMMY_KEY)
             if original_edge is not None:
-                # If dummy node, add its position to the edge it belongs to
-                edges_path[e] = edges_path.get(original_edge, [])
-                edges_path[e].append(node_pos)
+                # If dummy node, add its position to the edge_path it belongs to
+                edges_path[original_edge] = edges_path.get(original_edge, [])
+                edges_path[original_edge].append(node_pos)
             else:
                 # Else, add node's pos and name to output lists
                 pos[idx] = node_pos
@@ -1367,9 +1368,10 @@ def _new_graph_with_dummy_nodes(G, nodes_layer):
         dummy_path[0] = e[0]
         dummy_path[-1] = e[1]
         for i in range(1, e_length):
-            # Add dummy node to path and Gd (with dummy annotation)
+            # Add dummy node to path, nodes_layer & Gd (with dummy annotation)
             dummy_node = f"dummy_{dummy_node_id}"
             dummy_path[i] = dummy_node
+            nodes_layer[dummy_node] = from_pos + i + 1
             Gd.add_node(dummy_node, **{DUMMY_KEY: e})
             dummy_node_id += 1
         # Add new path to Gd and returned list

@@ -289,6 +289,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
         "edge_cmap",
         "edge_vmin",
         "edge_vmax",
+        "edges_path",
         "ax",
         "label",
         "node_size",
@@ -487,6 +488,7 @@ def draw_networkx_edges(
     edge_cmap=None,
     edge_vmin=None,
     edge_vmax=None,
+    edges_path=None,
     ax=None,
     arrows=True,
     label=None,
@@ -535,6 +537,10 @@ def draw_networkx_edges(
 
     edge_vmin,edge_vmax : floats, optional
         Minimum and maximum for edge colormap scaling
+
+    edges_path: dictionary of lists of pos keyed by edge, optional
+        Paths that must be taken by the keyed edges
+        See `networkx.drawing.layered_layout`
 
     ax : Matplotlib Axes object, optional
         Draw the graph in the specified Matplotlib axes.
@@ -625,7 +631,17 @@ def draw_networkx_edges(
     import matplotlib.colors  # call as mpl.colors
     import matplotlib.patches  # call as mpl.patches
     import matplotlib.path  # call as mpl.path
-    import matplotlib.pyplot as plt
+    import matplotlib.pyplot as pltpath
+
+    print("=== draw_networkx_edges ===")
+
+    if edgelist is None:
+        edgelist = list(G.edges())
+    elif len(edgelist) == 0:  # no edges!
+        return []
+
+    if nodelist is None:
+        nodelist = list(G.nodes())
 
     if arrowstyle is None:
         if G.is_directed() and arrows:
@@ -636,18 +652,13 @@ def draw_networkx_edges(
     if ax is None:
         ax = plt.gca()
 
-    if edgelist is None:
-        edgelist = list(G.edges())
-
-    if len(edgelist) == 0:  # no edges!
-        return []
-
-    if nodelist is None:
-        nodelist = list(G.nodes())
-
     # FancyArrowPatch handles color=None different from LineCollection
     if edge_color is None:
         edge_color = "k"
+
+    if edges_path is not None:
+        # If edges_path is given, replace keys by edge start/end positions
+        edges_path = {(pos[e[0]], pos[e[1]]): v for e, v in edges_path.items()}
 
     # set edge positions
     edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
@@ -699,34 +710,61 @@ def draw_networkx_edges(
     max_nodesize = np.array(node_size).max()
 
     def _connectionstyle(posA, posB, *args, **kwargs):
+        # print("== _connectionstyle:", posA, posB)
+        # print("type of posA:", type(posA))
         # check if we need to do a self-loop
         if np.all(posA == posB):
+            print("Self-loop")
             # Self-loops are scaled by view extent, except in cases the extent
             # is 0, e.g. for a single node. In this case, fall back to scaling
             # by the maximum node size
             selfloop_ht = 0.005 * max_nodesize if h == 0 else h
-            # this is called with _screen space_ values so covert back
+            # this is called with _screen space_ values so convert back
             # to data space
+            print("posA", posA)
             data_loc = ax.transData.inverted().transform(posA)
+            print("data_loc", data_loc)
             v_shift = 0.1 * selfloop_ht
             h_shift = v_shift * 0.5
             # put the top of the loop first so arrow is not hidden by node
             path = [
-                # 1
+                # MOVETO
                 data_loc + np.asarray([0, v_shift]),
-                # 4 4 4
+                # CURVE4: 2 control points, 1 endpoint
                 data_loc + np.asarray([h_shift, v_shift]),
                 data_loc + np.asarray([h_shift, 0]),
                 data_loc,
-                # 4 4 4
+                # CURVE4: 2 control points, 1 endpoint
                 data_loc + np.asarray([-h_shift, 0]),
                 data_loc + np.asarray([-h_shift, v_shift]),
                 data_loc + np.asarray([0, v_shift]),
             ]
+            print("path", path)
 
-            ret = mpl.path.Path(ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4])
-        # if not, fall back to the user specified behavior
+            ret = mpl.path.Path(
+                ax.transData.transform(path),
+                [
+                    mpl.path.Path.MOVETO,
+                    mpl.path.Path.CURVE4,
+                    mpl.path.Path.CURVE4,
+                    mpl.path.Path.CURVE4,
+                    mpl.path.Path.CURVE4,
+                    mpl.path.Path.CURVE4,
+                    mpl.path.Path.CURVE4,
+                ],
+            )
+            print("ret", ret)
+        # elif edges_path is not None and edges_path.get((posA, posB), False):
+        #     print("Edge path", (posA, posB))
+        #     # This edge needs to be drawn passing through each point in edge_path
+        #     start_pos = ax.transData.inverted().transform(posA)
+        #     end_pos = ax.transData.inverted().transform(posB)
+        #     path = [start_pos] + edges_path[(posA, posB)] + [end_pos]
+        #     codes = [mpl.path.Path.MOVETO] + [mpl.path.Path.LINETO] * (len(path) - 1)
+        #     ret = mpl.path.Path(path, codes)
+        #     print(ret)
         else:
+            # else, fall back to the user specified behavior
             ret = base_connection_style(posA, posB, *args, **kwargs)
 
         return ret
