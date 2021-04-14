@@ -1244,12 +1244,27 @@ def layered_layout(G, align="vertical", center=None, scale=1):
 
     G, center = _process_params(G, center, dim=2)
 
+    # print("\n_layer_assignment...")
     nodes_layer = _layer_assignment(G)
+    # print("nodes_layer", nodes_layer)
+
+    # print("\n_new_graph_with_dummy_nodes...")
     Gd, nodes_layer = _new_graph_with_dummy_nodes(G, nodes_layer)
+    # print("nodes_layer", nodes_layer)
+
+    # print("\n_nodes_layer_dict_to_layers_order...")
     layers_order = _nodes_layer_dict_to_layers_order(nodes_layer)
+    # print("layers_order", layers_order)
+
+    # print("\n_vertex_ordering...")
     layers_order = _vertex_ordering(Gd, layers_order)
+    # print("layers_order", layers_order)
+
+    # print("\n_coordinate_assignmnent...")
     # layers_pos: list[layer_id]list[node_id](node_pos_in_layer, node_name)
     layers_pos = _coordinate_assignmnent(Gd, layers_order)
+    # print("layers_pos", layers_pos)
+    # print()
 
     # Lastly convert positions to output types, rescale, center, and return!
     # pos: list[node_id](xpos, ypos)
@@ -1260,12 +1275,17 @@ def layered_layout(G, align="vertical", center=None, scale=1):
     for d1 in range(n_layers):
         for (d2, u) in layers_pos[d1]:
             # Skip dummy vertices
-            if Gd.nodes[u].get(DUMMY_KEY, False):
+            if G.nodes.get(u) is None:
                 continue
+            # print(f"layer {d1:02d} idx {idx:03d} name {u}")
             # Add node's pos and name to output lists
             pos[idx] = (d1, d2) if align == "horizontal" else (d2, n_layers - d1 - 1)
             nodes_name[idx] = u
             idx += 1
+
+    # if idx != len(G):
+    #     print("nodes_name", nodes_name)
+    #     print("difference", set(G.nodes).difference(nodes_name))
     # Rescale and center pos array
     pos = rescale_layout(np.array(pos, dtype=float), scale=scale) + center
     # Convert to output type and return
@@ -1386,13 +1406,21 @@ def _vertex_ordering(G, layers_order):
 
     best_layers_order = copy(layers_order)
     for it in range(24):
+        # print(f"\nit{it:02d}")
+        # print("layers_order", layers_order)
         # Depending on the parity of the current iteration number,
         # the ranks are traversed from top to bottom or from bottom to top
         top_to_bot = it % 2 == 1
         layers_order = _order_layers_by_weighted_median(G, layers_order, top_to_bot)
+        # print("median_order", layers_order)
         layers_order = _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot)
-        if _edge_crossings(G, layers_order) < _edge_crossings(G, best_layers_order):
-            best_layers_order = layers_order
+        # print("transpose", layers_order)
+
+        if layers_order == best_layers_order:
+            # print("Equal layers_order and best_layers_order: vertex ordering converged")
+            break
+        elif _edge_crossings(G, layers_order) < _edge_crossings(G, best_layers_order):
+            best_layers_order = copy(layers_order)
 
     return best_layers_order
 
@@ -1428,7 +1456,10 @@ def _order_layers_by_weighted_median(G, layers_order, top_to_bot):
         ) / (left_range + right_range)
 
     def _sort_layer(layer_order, nodes_median):
-        # TODO: optimizable
+        """Sort the layer by node median.
+        Except for nodes having median == -1 that must not change position.
+        Optimizable?
+        """
 
         # OrderedDict remembers order of insertion
         # => correct inserts in layer_order afterwards
@@ -1452,7 +1483,7 @@ def _order_layers_by_weighted_median(G, layers_order, top_to_bot):
         node_neighbours = lambda u: [v for v, _ in G.in_edges(u)]
         next_layer_id = lambda l: l - 1
     else:
-        layers_iterator = range(len(layers_order) - 2, 0, -1)
+        layers_iterator = range(len(layers_order) - 2, -1, -1)
         node_neighbours = lambda u: [v for _, v in G.out_edges(u)]
         next_layer_id = lambda l: l + 1
 
@@ -1465,6 +1496,31 @@ def _order_layers_by_weighted_median(G, layers_order, top_to_bot):
 
         layers_order[l] = _sort_layer(layers_order[l], nodes_median)
 
+    return layers_order
+
+
+def _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot):
+    improved = True
+    if top_to_bot:
+        layers_iterator = range(len(layers_order))
+    else:
+        layers_iterator = range(len(layers_order) - 1, -1, -1)
+
+    while improved:
+        improved = False
+        for l in layers_iterator:
+            for i in range(len(layers_order[l]) - 1):
+                # for i, u in enumerate(layers_order[l][:-1]):
+                u = layers_order[l][i]
+                v = layers_order[l][i + 1]
+                if _edge_crossings_local(
+                    G, layers_order, u, v, l, top_to_bot
+                ) > _edge_crossings_local(G, layers_order, v, u, l, top_to_bot):
+                    improved = True
+                    # print(f"swap happening b/w l={l} & i={i}")
+                    # print("before:", layers_order[l][i], layers_order[l][i + 1])
+                    layers_order[l][i], layers_order[l][i + 1] = v, u
+                    # print("after:", layers_order[l][i], layers_order[l][i + 1])
     return layers_order
 
 
@@ -1513,33 +1569,13 @@ def _edge_crossings(G, layers_order):
     return crossings
 
 
-def _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot):
-    improved = True
-    if top_to_bot:
-        layers_iterator = range(len(layers_order))
-    else:
-        layers_iterator = range(len(layers_order) - 1, -1, -1)
-
-    while improved:
-        improved = False
-        for l in layers_iterator:
-            for i, u in enumerate(layers_order[l][:-1]):
-                v = layers_order[l][i + 1]
-                if _edge_crossings_local(
-                    G, layers_order, u, v, l, top_to_bot
-                ) > _edge_crossings_local(G, layers_order, v, u, l, top_to_bot):
-                    improved = True
-                    layers_order[l][i], layers_order[l][i + 1] = v, u
-    return layers_order
-
-
 def _coordinate_assignmnent(G, layers_order):
     """Set in-layer node positions according to the priority heuristic from Sugiyama."""
 
     def node_priority(G, u, direction):
-        if G.nodes[u].get(DUMMY_KEY):
+        if G.nodes[u].get(DUMMY_KEY) is not None:
             return np.inf
-        if direction == 1:
+        elif direction == 1:
             return G.out_degree(u)
         else:
             return G.in_degree(u)
@@ -1576,6 +1612,9 @@ def _coordinate_assignmnent(G, layers_order):
         prev_node_pos = layer_pos[u_id - 1] if u_id != 0 else None
         next_node_pos = layer_pos[u_id + 1] if u_id != len(layer_pos) - 1 else None
 
+        # If trying to move in a single direction (recursive call) and
+        # we have no neighbour in this direction OR it is far away
+        # Success: update layer_pos and return
         if (
             direction == "next" or (prev_node_pos is None or prev_node_pos[0] < target)
         ) and (
@@ -1589,20 +1628,24 @@ def _coordinate_assignmnent(G, layers_order):
             and prev_node_pos is not None
             and prev_node_pos[0] >= target
         ):
+            # If there is a position conflict with the previous node
             prev_node = prev_node_pos[1]
             prev_node_priority_id = index_in_list_of_tuples(
                 layer_priorities, t2=prev_node
             )
-            assert prev_node_priority_id != -1
             prev_node_priority = layer_priorities[prev_node_priority_id][0]
+            # If we have higher priority than the previous node
             if p > prev_node_priority:
+                # Try moving the previous node in the "prev" direction
                 try:
                     layer_pos = move_node(
                         G, p, prev_node, target - 1, layer_priorities, layer_pos, "prev"
                     )
                 except RuntimeError:
+                    # Continue if failed
                     pass
                 else:
+                    # Else, success: update layer_pos and return
                     layer_pos[u_id] = (target, u)
                     return layer_pos
         if (
@@ -1610,23 +1653,29 @@ def _coordinate_assignmnent(G, layers_order):
             and next_node_pos is not None
             and next_node_pos[0] <= target
         ):
+            # If there is a position conflict with the next node
             next_node = next_node_pos[1]
             next_node_priority_id = index_in_list_of_tuples(
                 layer_priorities, t2=next_node
             )
             assert next_node_priority_id != -1
             next_node_priority = layer_priorities[next_node_priority_id][0]
+            # If we have higher priority than the next node
             if p > next_node_priority:
+                # Try moving the next node in the "next" direction
                 try:
                     layer_pos = move_node(
                         G, p, next_node, target + 1, layer_priorities, layer_pos, "next"
                     )
                 except RuntimeError:
+                    # Continue if failed
                     pass
                 else:
+                    # Else, success: update layer_pos and return
                     layer_pos[u_id] = (target, u)
                     return layer_pos
 
+        # If nothing worked, raise RuntimeError
         raise RuntimeError(f"Node {u} (p={p}) could not move to position {target}.")
 
     # pos: list[layer_id]list[node_id](node_pos_in_layer, node)
@@ -1651,6 +1700,8 @@ def _coordinate_assignmnent(G, layers_order):
     directions = [-1] * (n_layers - 1) + [1] * (n_layers - 1) + [-1] * (n_layers - 1)
 
     for l, direction in zip(r, directions):
+        # print(f"layer {l:02d} direction {direction}")
+        # print("layer_pos:", layers_pos[l])
         # L_j = L_(i-1) if direction = downwards
         #       L_(i+1) if direction = upwards
         prev_layer_pos = layers_pos[l + direction]
@@ -1664,13 +1715,18 @@ def _coordinate_assignmnent(G, layers_order):
         )
 
         # for u in L_i in order of descending priority:
-        for p, u in layer_priorities:
+        # We try to move each layer twice in a row, which lets more moves succeed
+        for p, u in layer_priorities * 2:
             # place u at median(u's L_j neighbours' positions),
             # possibly moving other nodes with lower priority.
             neigh_pos = neighbours_pos(G, u, direction, prev_layer_pos)
             if len(neigh_pos) == 0:
                 continue
             target_pos = int(round(np.mean(neigh_pos)))
+            # Using the floor of the mean looks nearly the same
+            # target_pos = int(np.floor(np.mean(neigh_pos)))
+            # Using float positions is really ugly (no minimum space b/w nodes)
+            # target_pos = np.mean(neigh_pos)
 
             # Skip if already at desired pos
             u_id = index_in_list_of_tuples(layers_pos[l], t2=u)
@@ -1678,13 +1734,15 @@ def _coordinate_assignmnent(G, layers_order):
             if target_pos == prev_pos:
                 continue
 
-            # TODO: Maybe try all positions between target_pos and prev_pos?
-            # ~ np.linspace(target_pos, prev_pos, abs(target_pos-prev_pos)-1)
+            # print(f"Node {u} (p={p}) to move from {prev_pos} to {target_pos}...")
             try:
                 layers_pos[l] = move_node(
                     G, p, u, target_pos, layer_priorities, layers_pos[l]
                 )
             except RuntimeError:
+                # print("Move failed")
                 pass
+            # else:
+            # print("Move succeeded:", layers_pos[l])
 
     return layers_pos
