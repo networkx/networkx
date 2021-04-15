@@ -1256,30 +1256,13 @@ def layered_layout(G, align="vertical", center=None, scale=1):
         )
 
     G, center = _process_params(G, center, dim=2)
-
-    # print("\n_layer_assignment...")
     nodes_layer = _layer_assignment(G)
-    # print("nodes_layer", nodes_layer)
-
-    # print("\n_new_graph_with_dummy_nodes...")
     Gd, nodes_layer, dummy_paths = _new_graph_with_dummy_nodes(G, nodes_layer)
-    # print("nodes_layer", nodes_layer)
-    # print("dummy_paths", dummy_paths)
-
-    # print("\n_nodes_layer_dict_to_layers_order...")
     layers_order = _nodes_layer_dict_to_layers_order(nodes_layer)
-    # print("layers_order", layers_order)
-
-    print("\n_vertex_ordering...")
     layers_order = _vertex_ordering(Gd, layers_order)
-    print("layers_order", layers_order)
-
-    print("\n_coordinate_assignmnent...")
     # layers_pos: list[layer_id]list[node_id](node_pos_in_layer, node_name)
     layers_pos = _coordinate_assignmnent(Gd, layers_order)
-    print("layers_pos", layers_pos)
 
-    # print("\nPreparing output...")
     # Build output data for all nodes (including dummies)
     # pos: list[node_id](xpos, ypos)
     # nodes_name: list[node_id]node_name
@@ -1291,18 +1274,18 @@ def layered_layout(G, align="vertical", center=None, scale=1):
             pos[idx] = (d2, n_layers - d1 - 1) if align == "vertical" else (d1, d2)
             nodes_name[idx] = u
             idx += 1
-
     # Rescale, center and convert pos to output type
     pos = rescale_layout(np.array(pos, dtype=float), scale=scale) + center
     pos = dict(zip(nodes_name, pos))
+
     # Add dummy_nodes' positions to edges_path and prune them from pos
     edges_path = {}
     for e, path_nodes in dummy_paths.items():
-        # print(e, path_nodes)
         edges_path[e] = [None] * len(path_nodes)
         for i, u in enumerate(path_nodes):
             edges_path[e][i] = pos[u]
             del pos[u]
+
     return pos, edges_path
 
 
@@ -1427,16 +1410,10 @@ def _vertex_ordering(G, layers_order):
         # the ranks are traversed from top to bottom or from bottom to top
         top_to_bot = it % 2 == 0
 
-        # print(f"\nit{it:02d} top_to_bot={top_to_bot}")
-        # print("layers_order", layers_order)
-
         layers_order = _order_layers_by_weighted_median(G, layers_order, top_to_bot)
-        # print("median_order", layers_order)
         layers_order = _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot)
-        # print("transpose", layers_order)
 
         if it >= 1 and layers_order == best_layers_order:
-            # print("Equal layers_order and best_layers_order: vertex ordering converged")
             break
         elif _edge_crossings(G, layers_order) < _edge_crossings(G, best_layers_order):
             best_layers_order = copy(layers_order)
@@ -1538,13 +1515,9 @@ def _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot):
                 vu_crossings = _edge_crossings_local(
                     G, layers_order, v, u, l, top_to_bot
                 )
-                # print(f"\tl={l:02d} u={u} v={v}, uv_cross={uv_crossings}, vu_cross={vu_crossings}")
                 if uv_crossings > vu_crossings:
                     improved = True
-                    # print(f"swap happening b/w l={l} & i={i}")
-                    # print("before:", layers_order[l][i], layers_order[l][i + 1])
                     layers_order[l][i], layers_order[l][i + 1] = v, u
-                    # print("after:", layers_order[l][i], layers_order[l][i + 1])
     return layers_order
 
 
@@ -1712,7 +1685,6 @@ def _coordinate_assignmnent(G, layers_order):
         layers_pos[l] = [None] * len(layer_order)
         for i, u in enumerate(layer_order):
             layers_pos[l][i] = (i, u)
-    # print("initial layer_pos:", layers_pos)
 
     # Loop:
     # downwards: L_1 to L_n
@@ -1726,8 +1698,6 @@ def _coordinate_assignmnent(G, layers_order):
     directions = [-1] * (n_layers - 1) + [1] * (n_layers - 1) + [-1] * (n_layers - 1)
 
     for l, direction in zip(r, directions):
-        # print(f"layer {l:02d} direction {direction}")
-        # print(f"layer_pos[{l}]:", layers_pos[l])
         # L_j = L_(i-1) if direction = downwards
         #       L_(i+1) if direction = upwards
         prev_layer_pos = layers_pos[l + direction]
@@ -1760,15 +1730,11 @@ def _coordinate_assignmnent(G, layers_order):
             if target_pos == prev_pos:
                 continue
 
-            # print(f"Node {u} (p={p}) to move from {prev_pos} to {target_pos}...")
             try:
                 layers_pos[l] = move_node(
                     G, p, u, target_pos, layer_priorities, layers_pos[l]
                 )
             except RuntimeError:
-                # print("Move failed:", layers_pos[l])
                 pass
-            # else:
-            # print("Move succeeded:", layers_pos[l])
 
     return layers_pos
