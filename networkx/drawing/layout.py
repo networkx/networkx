@@ -1217,6 +1217,7 @@ def layered_layout(G, align="vertical", center=None, scale=1):
         A dictionary of positions keyed by node
     edges_path: dict[edge]list[](xpos, ypos)
         Paths taken by multi-layer edges to minimise crossings
+
     Raises
     ------
     NetworkXNotImplemented
@@ -1236,7 +1237,7 @@ def layered_layout(G, align="vertical", center=None, scale=1):
 
     TODO
     ----
-    * Write tests
+    * Give all documentation references
     * Layer width minimization
         If wanted, an additional "max_width" parameter will be set by the caller.
         This requires another algorithm than current _layer_assignment.
@@ -1404,7 +1405,6 @@ def _vertex_ordering(G, layers_order):
     * Gansner, Koutsofios, North & Vo, "A technique for drawing directed graphs," pp. 13-17, IIEEE Trans. Software Eng., 1993, doi: 10.1109/32.221135.
     * pp. 8-11: https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v8.pdf
     """
-
     from copy import copy
 
     best_layers_order = copy(layers_order)
@@ -1459,7 +1459,6 @@ def _order_layers_by_weighted_median(G, layers_order, top_to_bot):
         Except for nodes having median == -1 that must not change position.
         Optimizable?
         """
-
         # OrderedDict remembers order of insertion
         # => correct inserts in layer_order afterwards
         fixed_nodes = collections.OrderedDict()
@@ -1601,81 +1600,90 @@ def _coordinate_assignmnent(G, layers_order):
 
         return [prev_layer_pos[i][0] for i in neighbours_ids if i != -1]
 
-    def move_node(G, p, u, target, layer_priorities, layer_pos, direction="both"):
-        """direction = ['both', 'prev' or 'next']
-        layer_priorities is sorted desc.
-        layer_pos is sorted asc.
+    def move_node(G, p, u, prev_pos, target_pos, layer_priorities, layer_pos):
+        """
+        layer_priorities is sorted by desc. priority.
+        layer_pos is sorted by asc. position.
+
+        Returns
+        -------
+        layer_pos: list of tuples
+            List of nodes' position in layer
+            Modified if success == True
+        success: bool
+            Did the move succeed?
         """
 
+        pos_diff = target_pos - prev_pos
+        if pos_diff == 0:
+            # We are already at the desired position
+            return layer_pos, True
+        if target_pos <= 0:
+            return layer_pos, False
+
         u_id = index_in_list_of_tuples(layer_pos, t2=u)
-        prev_node_pos = layer_pos[u_id - 1] if u_id != 0 else None
-        next_node_pos = layer_pos[u_id + 1] if u_id != len(layer_pos) - 1 else None
-
-        # If trying to move in a single direction (recursive call) and
-        # we have no neighbour in this direction OR it is far away
-        # Success: update layer_pos and return
-        if (
-            direction == "next" or (prev_node_pos is None or prev_node_pos[0] < target)
-        ) and (
-            direction == "prev" or (next_node_pos is None or next_node_pos[0] > target)
-        ):
-            layer_pos[u_id] = (target, u)
-            return layer_pos
-
-        if (
-            direction != "next"
-            and prev_node_pos is not None
-            and prev_node_pos[0] >= target
-        ):
-            # If there is a position conflict with the previous node
-            prev_node = prev_node_pos[1]
-            prev_node_priority_id = index_in_list_of_tuples(
-                layer_priorities, t2=prev_node
-            )
-            prev_node_priority = layer_priorities[prev_node_priority_id][0]
-            # If we have higher priority than the previous node
-            if p > prev_node_priority and target != 0:
-                # Try moving the previous node in the "prev" direction
-                try:
-                    layer_pos = move_node(
-                        G, p, prev_node, target - 1, layer_priorities, layer_pos, "prev"
+        success = False
+        if pos_diff < 0:
+            # Trying to move left ...
+            if u_id == 0:
+                # ... when you're the leftmost node always succeeds
+                layer_pos[u_id] = (target_pos, u)
+                return layer_pos, True
+            prev_node_pos_tuple = layer_pos[u_id - 1]  # (pos, name)
+            if prev_node_pos_tuple[0] >= target_pos:
+                # The previous node's position conflicts
+                prev_node_priority_id = index_in_list_of_tuples(
+                    layer_priorities, t2=prev_node_pos_tuple[1]
+                )
+                prev_node_priority = layer_priorities[prev_node_priority_id][0]
+                if p > prev_node_priority:
+                    # And we have higher priority: try to move it left
+                    layer_pos, success = move_node(
+                        G,
+                        p,  # OUR priority
+                        prev_node_pos_tuple[1],  # prev node name
+                        prev_node_pos_tuple[0],  # prev node current pos
+                        target_pos - 1,
+                        layer_priorities,
+                        layer_pos,
                     )
-                except RuntimeError:
-                    # Continue if failed
-                    pass
-                else:
-                    # Else, success: update layer_pos and return
-                    layer_pos[u_id] = (target, u)
-                    return layer_pos
-        if (
-            direction != "prev"
-            and next_node_pos is not None
-            and next_node_pos[0] <= target
-        ):
-            # If there is a position conflict with the next node
-            next_node = next_node_pos[1]
-            next_node_priority_id = index_in_list_of_tuples(
-                layer_priorities, t2=next_node
-            )
-            assert next_node_priority_id != -1
-            next_node_priority = layer_priorities[next_node_priority_id][0]
-            # If we have higher priority than the next node
-            if p > next_node_priority:
-                # Try moving the next node in the "next" direction
-                try:
-                    layer_pos = move_node(
-                        G, p, next_node, target + 1, layer_priorities, layer_pos, "next"
+                    if success:
+                        # Only move if success
+                        layer_pos[u_id] = (target_pos, u)
+            else:
+                # The previous node's position is ok, we move
+                layer_pos[u_id] = (target_pos, u)
+        else:
+            # Trying to move right ...
+            if u_id == len(layer_pos) - 1:
+                # ... when you're the rightmost node always succeeds
+                layer_pos[u_id] = (target_pos, u)
+                return layer_pos, True
+            next_node_pos_tuple = layer_pos[u_id + 1]  # (pos, name)
+            if next_node_pos_tuple[0] <= target_pos:
+                # The next node's position conflicts
+                next_node_priority_id = index_in_list_of_tuples(
+                    layer_priorities, t2=next_node_pos_tuple[1]
+                )
+                next_node_priority = layer_priorities[next_node_priority_id][0]
+                if p > next_node_priority:
+                    # And we have higher priority: try to move it right
+                    layer_pos, success = move_node(
+                        G,
+                        p,  # OUR priority
+                        next_node_pos_tuple[1],  # next node name
+                        next_node_pos_tuple[0],  # next node current pos
+                        target_pos + 1,
+                        layer_priorities,
+                        layer_pos,
                     )
-                except RuntimeError:
-                    # Continue if failed
-                    pass
-                else:
-                    # Else, success: update layer_pos and return
-                    layer_pos[u_id] = (target, u)
-                    return layer_pos
-
-        # If nothing worked, raise RuntimeError
-        raise RuntimeError(f"Node {u} (p={p}) could not move to position {target}.")
+                    if success:
+                        # Only move if success
+                        layer_pos[u_id] = (target_pos, u)
+            else:
+                # The next node's position is ok, we move
+                layer_pos[u_id] = (target_pos, u)
+        return layer_pos, success
 
     # pos: list[layer_id]list[node_id](node_pos_in_layer, node)
     # pos <- init_order()
@@ -1688,9 +1696,9 @@ def _coordinate_assignmnent(G, layers_order):
             layers_pos[l][i] = (i, u)
 
     # Loop:
-    # downwards: L_1 to L_n
-    # upwards: L_(n-1) to L_0
-    # downwards: L_1 to L_n
+    # downwards: L_1 to L_n (looking at in-degrees)
+    # upwards: L_(n-1) to L_0 (looking at out-degrees)
+    # downwards: L_1 to L_n (looking at in-degrees)
     r = (
         list(range(1, n_layers))
         + list(range(n_layers - 2, -1, -1))
@@ -1713,29 +1721,28 @@ def _coordinate_assignmnent(G, layers_order):
 
         # for u in L_i in order of descending priority:
         # We try to move each layer twice in a row, which lets more moves succeed
-        for p, u in layer_priorities * 2:
-            # place u at median(u's L_j neighbours' positions),
+        # CONTRARY TO LITERATURE:
+        # We loop ( len(layers_pos[l]) * len(layers_pos[l]) / 2 ) times
+        # This is the only way I see to ensure that some moves are not stupidly blocked
+        # by nodes with same priority, that will move to our desired location
+        # right after us.
+        # If performances become a problem, consider `for p, u in layer_priorities:`
+        # although it will introduce glitches. Or ditch the priority method altogether.
+        for p, u in layer_priorities * (len(layers_pos[l]) // 2 + 1):
+            # Place u at mean(u's L_j neighbours' positions),
             # possibly moving other nodes with lower priority.
             neigh_pos = neighbours_pos(G, u, direction, prev_layer_pos)
             if len(neigh_pos) == 0:
                 continue
             target_pos = int(round(np.mean(neigh_pos)))
-            # Using the floor of the mean looks nearly the same
-            # target_pos = int(np.floor(np.mean(neigh_pos)))
-            # Using float positions is really ugly (no minimum space b/w nodes)
-            # target_pos = np.mean(neigh_pos)
 
-            # Skip if already at desired pos
             u_id = index_in_list_of_tuples(layers_pos[l], t2=u)
             prev_pos = layers_pos[l][u_id][0]
-            if target_pos == prev_pos:
-                continue
 
-            try:
-                layers_pos[l] = move_node(
-                    G, p, u, target_pos, layer_priorities, layers_pos[l]
-                )
-            except RuntimeError:
-                pass
+            layers_pos[l], success = move_node(
+                G, p, u, prev_pos, target_pos, layer_priorities, layers_pos[l]
+            )
+
+        # TODO: break early depending on successes?
 
     return layers_pos
