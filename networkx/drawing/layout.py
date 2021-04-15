@@ -1255,6 +1255,10 @@ def layered_layout(G, align="vertical", center=None, scale=1):
             "layered_layout is only implemented for directed acyclic graphs"
         )
 
+    # Graph has no vertices
+    if len(G) == 0:
+        return {}, {}
+
     G, center = _process_params(G, center, dim=2)
     nodes_layer = _layer_assignment(G)
     Gd, nodes_layer, dummy_paths = _new_graph_with_dummy_nodes(G, nodes_layer)
@@ -1328,7 +1332,7 @@ def _layer_assignment(G):
     return nodes_layer
 
 
-DUMMY_KEY = "_dummy_node_for_edge"
+DUMMY_KEY = "_dummy_node"
 
 
 def _new_graph_with_dummy_nodes(G, nodes_layer):
@@ -1358,17 +1362,16 @@ def _new_graph_with_dummy_nodes(G, nodes_layer):
         Gd.remove_edge(*e)
         # Compute new path passing through dummy nodes
         dummy_path = [None] * (e_length - 1)
-        # dummy_path[0] = e[0]
-        # dummy_path[-1] = e[1]
         for i in range(e_length - 1):
             # Add dummy node to path, nodes_layer & Gd (with dummy annotation)
             dummy_node = f"dummy_{dummy_node_id}"
             dummy_path[i] = dummy_node
             nodes_layer[dummy_node] = from_pos + i + 1
-            Gd.add_node(dummy_node, **{DUMMY_KEY: e})
+            Gd.add_node(dummy_node, **{DUMMY_KEY: True})
             dummy_node_id += 1
-        # Add new path to Gd and dummy_paths
+        # Add full path to Gd
         nx.add_path(Gd, [e[0]] + dummy_path + [e[1]])
+        # And only the dummies in the path to dummy_paths
         dummy_paths[e] = dummy_path
 
     return Gd, nodes_layer, dummy_paths
@@ -1506,7 +1509,6 @@ def _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot):
         improved = False
         for l in layers_iterator:
             for i in range(len(layers_order[l]) - 1):
-                # for i, u in enumerate(layers_order[l][:-1]):
                 u = layers_order[l][i]
                 v = layers_order[l][i + 1]
                 uv_crossings = _edge_crossings_local(
@@ -1542,9 +1544,8 @@ def _edge_crossings_local(G, layers_order, u, v, l, top_to_bot):
     for r, w in enumerate(layer):
         if w in u_neighbours:
             u_neigh_ranks.append(r)
-        elif w in v_neighbours:
+        if w in v_neighbours:
             v_neigh_ranks.append(r)
-
     # Computing number of edge crossings
     uv_edge_crossings = 0
     for u_neigh_rank in u_neigh_ranks:
@@ -1633,7 +1634,7 @@ def _coordinate_assignmnent(G, layers_order):
             )
             prev_node_priority = layer_priorities[prev_node_priority_id][0]
             # If we have higher priority than the previous node
-            if p >= prev_node_priority and target != 0:
+            if p > prev_node_priority and target != 0:
                 # Try moving the previous node in the "prev" direction
                 try:
                     layer_pos = move_node(
@@ -1659,7 +1660,7 @@ def _coordinate_assignmnent(G, layers_order):
             assert next_node_priority_id != -1
             next_node_priority = layer_priorities[next_node_priority_id][0]
             # If we have higher priority than the next node
-            if p >= next_node_priority:
+            if p > next_node_priority:
                 # Try moving the next node in the "next" direction
                 try:
                     layer_pos = move_node(
