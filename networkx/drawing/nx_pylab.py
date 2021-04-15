@@ -631,13 +631,12 @@ def draw_networkx_edges(
     import matplotlib.colors  # call as mpl.colors
     import matplotlib.patches  # call as mpl.patches
     import matplotlib.path  # call as mpl.path
-    import matplotlib.pyplot as pltpath
-
-    print("=== draw_networkx_edges ===")
+    import matplotlib.pyplot as plt
 
     if edgelist is None:
         edgelist = list(G.edges())
-    elif len(edgelist) == 0:  # no edges!
+
+    if len(edgelist) == 0:  # no edges!
         return []
 
     if nodelist is None:
