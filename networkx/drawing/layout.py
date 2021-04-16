@@ -509,8 +509,7 @@ def fruchterman_reingold_layout(
     --------
     >>> G = nx.path_graph(4)
     >>> pos = nx.spring_layout(G)
-
-    # The same using longer but equivalent function name
+    >>> # The same using longer but equivalent function name
     >>> pos = nx.fruchterman_reingold_layout(G)
     """
     import numpy as np
@@ -1188,12 +1187,13 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
 @nx.not_implemented_for("undirected")
 @nx.not_implemented_for("multigraph")
 def layered_layout(G, align="vertical", center=None, scale=1):
-    """Position nodes in layers, using Sugiyama's method.
+    """Position directed acyclic graphs in layers, using Sugiyama's method.
 
     Nodes are positioned in layers according to their order in the graph.
-    Additionally, they are placed in layers so as to minimise edge crossings.
 
-    Drawing edges so as to avoid unnecessary crossings is not yet implemented.
+    The order of the nodes in each layer is computed so as to emphasize nodes' relationships.
+
+    Edges are positioned and drawn so as to minimise crossings.
 
     Parameters
     ----------
@@ -1202,7 +1202,8 @@ def layered_layout(G, align="vertical", center=None, scale=1):
 
     align : string (default='vertical')
         The alignment of the drawn graph:
-        * 'vertical' yields horizontal layers and top-to-bottom edges.
+
+        * 'vertical' yields horizontal layers and top-to-bottom edges;
         * 'horizontal' yields vertical layers and left-to-right edges.
 
     center : array-like or None
@@ -1213,15 +1214,18 @@ def layered_layout(G, align="vertical", center=None, scale=1):
 
     Returns
     -------
-    pos : dict[node](xpos, ypos)
+    pos : dict
         A dictionary of positions keyed by node
-    edges_path: dict[edge]list[](xpos, ypos)
-        Paths taken by multi-layer edges to minimise crossings
+    edges_path: dict
+        A dictionary of paths keyed by edge. Allows `draw_networkx_edges` to draw
+        complex edges as segmented lines, minimising edge crossings.
 
     Raises
     ------
     NetworkXNotImplemented
-        If G is not a directed acyclic graph.
+        If G is not a directed acyclic graph
+    ValueError
+        Invalid `align` parameter (can only be 'vertical' or 'horizontal')
 
     Examples
     --------
@@ -1231,25 +1235,48 @@ def layered_layout(G, align="vertical", center=None, scale=1):
 
     Notes
     -----
-    This algorithm only works for Directed Acyclic Graphs.
+    This algorithm only works for Directed Acyclic Graphs (DAGs).
 
-    `dim` parameter omitted because only dim==2 is supported.
+    The behaviour is undefined when drawing a graph with disconnected components.
+
+    `dim` parameter omitted because only `dim==2` is supported.
 
     TODO
     ----
-    * Give all documentation references
-    * Layer width minimization
-        If wanted, an additional "max_width" parameter will be set by the caller.
-        This requires another algorithm than current _layer_assignment.
-    * Handling disconnected components
+
     * Cycle removal (will allow non-DAG DiGraphs to be laid out)
+    * Handling disconnected components
     * Accept weighted edges
+
         * Accept MultiDiGraphs (by increasing weight of multi-edges)
+
+    * Layer width minimization
+        If wanted, an additional `max_width` parameter would be set by the caller.
+        This requires another algorithm than current `_layer_assignment`.
+
+    * Optimise computation time
+        The `_coordinate_assignmnent` algorithm makes use of the "priority method",
+        which is a heuristic producing good looking graphs at the expense of time
+        complexity. Could be replaced.
+
+    References
+    ----------
+
+    * K. Sugiyama, S. Tagawa, and M. Toda, “Methods for Visual Understanding of Hierarchical System Structures,” IEEE Transactions on Systems, Man, and Cybernetics, vol. 11, no. 2, pp. 109–125, Feb. 1981, doi: 10.1109/TSMC.1981.4308636.
+
+    * Tamara Mchedlidze, “Algorithms for Graph Visualization“, University Course, Institut für theoretische informatik, Karlsruhe Institute of Technology, Dec. 2016.
+
+        * https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v7-added-proofs.pdf
+        * https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v8.pdf
+
+    * E. R. Gansner, E. Koutsofios, S. C. North, and K.-P. Vo, “A technique for drawing directed graphs,” IIEEE Trans. Software Eng., vol. 19, no. 3, pp. 214–230, Mar. 1993, doi: 10.1109/32.221135.
+    * V. Mazetti and H. Sörensson, “Visualisation of state machines using the Sugiyama framework,” Master of Science Thesis in Computer Science, Chalmers University of Technology, University of Gothenburg, Göteborg, Sweden, June 2012.
+    * K. Sugiyama, “Graph Drawing and Applications for Software and Knowledge Engineers,“ World Scientific, section 4.2, 2002, ISBN-10: 9810248792.
     """
     import numpy as np
 
     if align not in ("vertical", "horizontal"):
-        raise ValueError("align must be either vertical or horizontal.")
+        raise ValueError("align must be either 'vertical' or 'horizontal'.")
 
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXNotImplemented(
@@ -1299,12 +1326,15 @@ def _layer_assignment(G):
 
     layer(u) = 1 + max{layer(v) for v, _ in in_edges(u)}
 
-    Based off:
+    References
+    ----------
+
     * p. 14: https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v7-added-proofs.pdf
     * https://networkx.org/documentation/stable/_modules/networkx/algorithms/dag.html#topological_sort
 
     Returns
     -------
+
     nodes_layer : dict[node]int
         Layer number for each node in G
     """
@@ -1341,6 +1371,7 @@ def _new_graph_with_dummy_nodes(G, nodes_layer):
 
     Returns
     -------
+
     Gd : nx.DiGraph
         Copy of G with dummy nodes and paths added
     nodes_layer : dict[node]int
@@ -1380,12 +1411,16 @@ def _new_graph_with_dummy_nodes(G, nodes_layer):
 
 def _nodes_layer_dict_to_layers_order(nodes_layer):
     """Conversion of node-to-layer data representation.
+
     Parameters
-    -------
+    ----------
+
     nodes_layer : dict[node]int
         Layer number for each node in G
+
     Returns
     -------
+
     layers_order: list[][]node
         ordered list of nodes in each layer
     """
@@ -1401,7 +1436,9 @@ def _nodes_layer_dict_to_layers_order(nodes_layer):
 def _vertex_ordering(G, layers_order):
     """Orders vertices in each layer to minimise edge crossings.
 
-    Based off:
+    References
+    ----------
+
     * Gansner, Koutsofios, North & Vo, "A technique for drawing directed graphs," pp. 13-17, IIEEE Trans. Software Eng., 1993, doi: 10.1109/32.221135.
     * pp. 8-11: https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v8.pdf
     """
@@ -1567,7 +1604,7 @@ def _edge_crossings(G, layers_order):
 
 
 def _coordinate_assignmnent(G, layers_order):
-    """Set in-layer node positions according to the priority heuristic from Sugiyama."""
+    """Set in-layer node positions according to the Sugiyama's priority heuristic."""
     import numpy as np
 
     def node_priority(G, u, direction):
