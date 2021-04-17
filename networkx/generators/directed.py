@@ -4,13 +4,12 @@ scale-free graphs.
 
 """
 
+import numbers
 from collections import Counter
 
 import networkx as nx
 from networkx.generators.classic import empty_graph
-from networkx.utils import discrete_sequence
-from networkx.utils import weighted_choice
-from networkx.utils import py_random_state
+from networkx.utils import discrete_sequence, py_random_state, weighted_choice
 
 __all__ = [
     "gn_graph",
@@ -278,11 +277,11 @@ def scale_free_graph(
     # pre-populate node state
     node_list = list(G.nodes())
 
-    # see if there already are int-based nodes
-    int_nodes = [n for n in node_list if type(n) == int]
-    if len(int_nodes) > 0:
+    # see if there already are number-based nodes
+    numeric_nodes = [n for n in node_list if isinstance(n, numbers.Number)]
+    if len(numeric_nodes) > 0:
         # set cursor for new nodes appropriately
-        cursor = max(int_nodes) + 1
+        cursor = max([int(n.real) for n in numeric_nodes]) + 1
     else:
         # or start at zero
         cursor = 0
