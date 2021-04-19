@@ -19,12 +19,12 @@ import networkx as nx
 from networkx.utils import random_state
 
 __all__ = [
-    "rescale_layout",
-    "rescale_layout_dict",
     "bipartite_layout",
     "circular_layout",
     "kamada_kawai_layout",
     "random_layout",
+    "rescale_layout",
+    "rescale_layout_dict",
     "shell_layout",
     "spring_layout",
     "spectral_layout",
@@ -55,84 +55,6 @@ def _process_params(G, center, dim):
         raise ValueError(msg)
 
     return G, center
-
-
-def rescale_layout(pos, scale=1):
-    """Returns scaled position array to (-scale, scale) in all axes.
-
-    The function acts on NumPy arrays which hold position information.
-    Each position is one row of the array. The dimension of the space
-    equals the number of columns. Each coordinate in one column.
-
-    To rescale, the mean (center) is subtracted from each axis separately.
-    Then all values are scaled so that the largest magnitude value
-    from all axes equals `scale` (thus, the aspect ratio is preserved).
-    The resulting NumPy Array is returned (order of rows unchanged).
-
-    Parameters
-    ----------
-    pos : numpy array
-        positions to be scaled. Each row is a position.
-
-    scale : number (default: 1)
-        The size of the resulting extent in all directions.
-
-    Returns
-    -------
-    pos : numpy array
-        scaled positions. Each row is a position.
-
-    See Also
-    --------
-    rescale_layout_dict
-    """
-    # Find max length over all dimensions
-    lim = 0  # max coordinate for all axes
-    for i in range(pos.shape[1]):
-        pos[:, i] -= pos[:, i].mean()
-        lim = max(abs(pos[:, i]).max(), lim)
-    # rescale to (-scale, scale) in all directions, preserves aspect
-    if lim > 0:
-        for i in range(pos.shape[1]):
-            pos[:, i] *= scale / lim
-    return pos
-
-
-def rescale_layout_dict(pos, scale=1):
-    """Return a dictionary of scaled positions keyed by node
-
-    Parameters
-    ----------
-    pos : A dictionary of positions keyed by node
-
-    scale : number (default: 1)
-        The size of the resulting extent in all directions.
-
-    Returns
-    -------
-    pos : A dictionary of positions keyed by node
-
-    Examples
-    --------
-    >>> pos = {0: (0, 0), 1: (1, 1), 2: (0.5, 0.5)}
-    >>> nx.rescale_layout_dict(pos)
-    {0: (-1.0, -1.0), 1: (1.0, 1.0), 2: (0.0, 0.0)}
-
-    >>> pos = {0: (0, 0), 1: (-1, 1), 2: (-0.5, 0.5)}
-    >>> nx.rescale_layout_dict(pos, scale=2)
-    {0: (2.0, -2.0), 1: (-2.0, 2.0), 2: (0.0, 0.0)}
-
-    See Also
-    --------
-    rescale_layout
-    """
-    import numpy as np
-
-    if not pos:  # empty_graph
-        return {}
-    pos_v = np.array(list(pos.values()))
-    pos_v = rescale_layout(pos_v, scale=scale)
-    return {k: tuple(v) for k, v in zip(pos.keys(), pos_v)}
 
 
 @random_state(3)
@@ -386,6 +308,7 @@ def bipartite_layout(
     try to minimize edge crossings.
 
     """
+
     import numpy as np
 
     if align not in ("vertical", "horizontal"):
@@ -1147,7 +1070,8 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     import numpy as np
 
     if align not in ("vertical", "horizontal"):
-        raise ValueError("align must be either vertical or horizontal.")
+        msg = "align must be either vertical or horizontal."
+        raise ValueError(msg)
 
     G, center = _process_params(G, center=center, dim=2)
     if len(G) == 0:
@@ -1182,6 +1106,84 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
         pos = np.flip(pos, 1)
     pos = dict(zip(nodes, pos))
     return pos
+
+
+def rescale_layout(pos, scale=1):
+    """Returns scaled position array to (-scale, scale) in all axes.
+
+    The function acts on NumPy arrays which hold position information.
+    Each position is one row of the array. The dimension of the space
+    equals the number of columns. Each coordinate in one column.
+
+    To rescale, the mean (center) is subtracted from each axis separately.
+    Then all values are scaled so that the largest magnitude value
+    from all axes equals `scale` (thus, the aspect ratio is preserved).
+    The resulting NumPy Array is returned (order of rows unchanged).
+
+    Parameters
+    ----------
+    pos : numpy array
+        positions to be scaled. Each row is a position.
+
+    scale : number (default: 1)
+        The size of the resulting extent in all directions.
+
+    Returns
+    -------
+    pos : numpy array
+        scaled positions. Each row is a position.
+
+    See Also
+    --------
+    rescale_layout_dict
+    """
+    # Find max length over all dimensions
+    lim = 0  # max coordinate for all axes
+    for i in range(pos.shape[1]):
+        pos[:, i] -= pos[:, i].mean()
+        lim = max(abs(pos[:, i]).max(), lim)
+    # rescale to (-scale, scale) in all directions, preserves aspect
+    if lim > 0:
+        for i in range(pos.shape[1]):
+            pos[:, i] *= scale / lim
+    return pos
+
+
+def rescale_layout_dict(pos, scale=1):
+    """Return a dictionary of scaled positions keyed by node
+
+    Parameters
+    ----------
+    pos : A dictionary of positions keyed by node
+
+    scale : number (default: 1)
+        The size of the resulting extent in all directions.
+
+    Returns
+    -------
+    pos : A dictionary of positions keyed by node
+
+    Examples
+    --------
+    >>> pos = {0: (0, 0), 1: (1, 1), 2: (0.5, 0.5)}
+    >>> nx.rescale_layout_dict(pos)
+    {0: (-1.0, -1.0), 1: (1.0, 1.0), 2: (0.0, 0.0)}
+
+    >>> pos = {0: (0, 0), 1: (-1, 1), 2: (-0.5, 0.5)}
+    >>> nx.rescale_layout_dict(pos, scale=2)
+    {0: (2.0, -2.0), 1: (-2.0, 2.0), 2: (0.0, 0.0)}
+
+    See Also
+    --------
+    rescale_layout
+    """
+    import numpy as np
+
+    if not pos:  # empty_graph
+        return {}
+    pos_v = np.array(list(pos.values()))
+    pos_v = rescale_layout(pos_v, scale=scale)
+    return {k: tuple(v) for k, v in zip(pos.keys(), pos_v)}
 
 
 @nx.not_implemented_for("undirected")

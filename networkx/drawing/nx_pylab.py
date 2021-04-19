@@ -633,15 +633,6 @@ def draw_networkx_edges(
     import matplotlib.path  # call as mpl.path
     import matplotlib.pyplot as plt
 
-    if edgelist is None:
-        edgelist = list(G.edges())
-
-    if len(edgelist) == 0:  # no edges!
-        return []
-
-    if nodelist is None:
-        nodelist = list(G.nodes())
-
     if arrowstyle is None:
         if G.is_directed() and arrows:
             arrowstyle = "-|>"
@@ -651,13 +642,18 @@ def draw_networkx_edges(
     if ax is None:
         ax = plt.gca()
 
+    if edgelist is None:
+        edgelist = list(G.edges())
+
+    if len(edgelist) == 0:  # no edges!
+        return []
+
+    if nodelist is None:
+        nodelist = list(G.nodes())
+
     # FancyArrowPatch handles color=None different from LineCollection
     if edge_color is None:
         edge_color = "k"
-
-    # if edges_path is not None:
-    #     # If edges_path is given, replace keys by edge start/end positions
-    #     edges_path = {(pos[e[0]], pos[e[1]]): v for e, v in edges_path.items()}
 
     # set edge positions
     edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
@@ -722,30 +718,19 @@ def draw_networkx_edges(
             h_shift = v_shift * 0.5
             # put the top of the loop first so arrow is not hidden by node
             path = [
-                # MOVETO
+                # MOVETO(=1)
                 data_loc + np.asarray([0, v_shift]),
-                # CURVE4: 2 control points, 1 endpoint
+                # CURVE4(=4): 2 control points, 1 endpoint
                 data_loc + np.asarray([h_shift, v_shift]),
                 data_loc + np.asarray([h_shift, 0]),
                 data_loc,
-                # CURVE4: 2 control points, 1 endpoint
+                # CURVE4(=4): 2 control points, 1 endpoint
                 data_loc + np.asarray([-h_shift, 0]),
                 data_loc + np.asarray([-h_shift, v_shift]),
                 data_loc + np.asarray([0, v_shift]),
             ]
 
-            ret = mpl.path.Path(
-                ax.transData.transform(path),
-                [
-                    mpl.path.Path.MOVETO,
-                    mpl.path.Path.CURVE4,
-                    mpl.path.Path.CURVE4,
-                    mpl.path.Path.CURVE4,
-                    mpl.path.Path.CURVE4,
-                    mpl.path.Path.CURVE4,
-                    mpl.path.Path.CURVE4,
-                ],
-            )
+            ret = mpl.path.Path(ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4])
         else:
             # else, fall back to the user specified behavior
             ret = base_connection_style(posA, posB, *args, **kwargs)
@@ -789,13 +774,18 @@ def draw_networkx_edges(
 
         path = None
         if edges_path is not None and e in edges_path:
+            # Edge e must be drawn using a user-defined path of intermediary positions.
+            # Passing a non-null path is incompatible with src & dst parameters,
+            # and ignores shirnkA & shrinkB. Is the arrowhead even drawn?
+            # This feature is not documented much in Matplotlib...
+
             # TODO: apply shrink_source and shrink_target to path because shrinkA
             # and shrinkB are ignored by FancyArrowPatch when path is not None.
             path = [src] + edges_path[e] + [dst]
             codes = [mpl.path.Path.MOVETO] + [mpl.path.Path.LINETO] * (len(path) - 1)
             path = mpl.path.Path(path, codes)
-            # Set src and dst to None because FancyArrowPatch expects either path or
-            # the src & dst parameters
+            # Set src & dst to None because FancyArrowPatch expects either path or
+            # the src & dst parameters, not both.
             src = dst = None
 
         arrow = mpl.patches.FancyArrowPatch(
