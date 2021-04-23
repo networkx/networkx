@@ -1,4 +1,4 @@
-Cartopy>=0.18
+Cartopy==0.18
 # Required for Cartopy
 --no-binary shapely
 shapely
