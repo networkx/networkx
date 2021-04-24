@@ -182,8 +182,8 @@ def topological_sort(G, with_depth=False):
     zero_indegree = deque(v for v, d in G.in_degree() if d == 0)
 
     depth = 0
+    last_node_at_depth = zero_indegree[-1]
     while zero_indegree:
-        last_node_at_depth = zero_indegree[-1]
         node = zero_indegree.popleft()
         if node not in G:
             raise RuntimeError("Graph changed during iteration")
@@ -198,8 +198,9 @@ def topological_sort(G, with_depth=False):
 
         yield (node, depth) if with_depth else node
 
-        if node == last_node_at_depth:
+        if zero_indegree and node == last_node_at_depth:
             depth += 1
+            last_node_at_depth = zero_indegree[-1]
 
     if indegree_map:
         raise nx.NetworkXUnfeasible(
