@@ -114,9 +114,9 @@ def topological_sort(G, with_depth=False):
     ----------
     G : NetworkX digraph
         A directed acyclic graph (DAG)
-    with_bf_depth : bool
-        Whether to return the depth, as determined by a BFS of the node in
-        the DAG as well.
+    with_depth : bool
+        Whether to return the depth, as determined by a BFS of the nodes in
+        the DAG.
 
     Returns
     -------
