@@ -20,6 +20,7 @@ __all__ = [
     "topological_sort",
     "lexicographical_topological_sort",
     "all_topological_sorts",
+    "topological_stratify",
     "is_directed_acyclic_graph",
     "is_aperiodic",
     "transitive_closure",
@@ -101,7 +102,7 @@ def is_directed_acyclic_graph(G):
     return G.is_directed() and not has_cycle(G)
 
 
-def topological_sort(G):
+def topological_sort(G, with_depth=False):
     """Returns a generator of nodes in topologically sorted order.
 
     A topological sort is a nonunique permutation of the nodes of a
@@ -113,11 +114,19 @@ def topological_sort(G):
     ----------
     G : NetworkX digraph
         A directed acyclic graph (DAG)
+    with_bf_depth : bool
+        Whether to return the depth, as determined by a BFS of the node in
+        the DAG as well.
 
     Returns
     -------
     iterable
         An iterable of node names in topological sorted order.
+
+    iterable[tuples[node, int]]
+        If with_depth, returns an iterable of tuples where the first
+        element is the node and the second element is the depth. In
+        topologically sorted order.
 
     Raises
     ------
@@ -170,10 +179,12 @@ def topological_sort(G):
 
     indegree_map = {v: d for v, d in G.in_degree() if d > 0}
     # These nodes have zero indegree and ready to be returned.
-    zero_indegree = [v for v, d in G.in_degree() if d == 0]
+    zero_indegree = deque(v for v, d in G.in_degree() if d == 0)
 
+    depth = 0
     while zero_indegree:
-        node = zero_indegree.pop()
+        last_node_at_depth = zero_indegree[-1]
+        node = zero_indegree.popleft()
         if node not in G:
             raise RuntimeError("Graph changed during iteration")
         for _, child in G.edges(node):
@@ -185,7 +196,10 @@ def topological_sort(G):
                 zero_indegree.append(child)
                 del indegree_map[child]
 
-        yield node
+        yield (node, depth) if with_depth else node
+
+        if node == last_node_at_depth:
+            depth += 1
 
     if indegree_map:
         raise nx.NetworkXUnfeasible(
@@ -400,6 +414,66 @@ def all_topological_sorts(G):
 
         if len(bases) == 0:
             break
+
+
+def topological_stratify(G):
+    """Stratifies a DAG into levels, such that any ancestors of a node in each
+    level are guaranteed to be in a previous level. Additionally each level
+    contains all nodes that are in the same generation.
+
+    Parameters
+    ----------
+    G : NetworkX digraph
+        A directed acyclic graph (DAG)
+
+    Returns
+    -------
+    iterable
+        An iterable of lists of node names.
+
+    Raises
+    ------
+    NetworkXError
+        Topological stratification is defined for directed graphs only. If the graph
+        `G` is undirected, a :exc:`NetworkXError` is raised.
+
+    NetworkXUnfeasible
+        If `G` is not a directed acyclic graph (DAG) no topological stratification
+        exists and a :exc:`NetworkXUnfeasible` exception is raised.  This can also
+        be raised if `G` is changed while the returned iterator is being processed
+
+    RuntimeError
+        If `G` is changed while the returned iterator is being processed.
+
+    Examples
+    --------
+    To get the reverse order of the topological sort:
+
+    >>> DG = nx.DiGraph([(2, 1), (3, 1)])
+    >>> list(nx.topological_stratify(DG))
+    [[2, 3], [1]]
+
+    Notes
+    -----
+    The level in which a node resides can also be determined by taking the
+    max-path-distance from the node to the farthest leaf node.
+
+    See also
+    --------
+    topological_sort
+    """
+    topo_sorted = topological_sort(G, with_depth=True)
+    current_depth = 0
+    level = []
+    for node, depth in topo_sorted:
+        if depth == current_depth:
+            level.append(node)
+        else:
+            yield level
+            level = [node]
+            current_depth = depth
+    yield level 
+
 
 
 def is_aperiodic(G):
