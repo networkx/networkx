@@ -633,8 +633,8 @@ def barabasi_albert_graph(n, m, seed=None, initial=None):
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
     initial : Graph or None (default)
-        Initial network for Barabási–Albert algorithm.
-        If None, starts from an star graph on (m+1) nodes.
+        Initial network for Barabási–Albert algorithm. A copy of `initial` is used.
+        If None, starts from a star graph on (m+1) nodes.
 
     Returns
     -------
@@ -708,7 +708,7 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial=None):
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
     initial : Graph or None (default)
-        Initial network for Barabási–Albert algorithm.
+        Initial network for Barabási–Albert algorithm. A copy of `initial` is used.
         If None, starts from an star graph on max(m1, m2) + 1 nodes.
 
     Returns
@@ -757,7 +757,7 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial=None):
         G = initial.copy()
 
     # Target nodes for new edges
-    targets = list(G.nodes())
+    targets = list(G)
     # List of existing nodes, with nodes repeated once for each adjacent edge
     repeated_nodes = [n for n, d in G.degree() for _ in range(d)]
     # Start adding the remaining nodes.
