@@ -8,6 +8,8 @@ from networkx.utils import create_random_state, create_py_random_state
 
 import inspect, itertools, collections
 
+import re
+
 __all__ = [
     "not_implemented_for",
     "open_file",
@@ -388,6 +390,13 @@ def py_random_state(random_state_index):
     return argmap(create_py_random_state, random_state_index)
 
 
+def compile_argmap(func):
+    real_func = func.__argmap_compile__()
+    func.__code__ = real_func.__code__
+    func.__globals__.update(real_func.__globals__)
+    func.__dict__.update(real_func.__dict__)
+    return func
+
 class argmap:
     """A decorating class which calls specified functions on a function's
     arguments before calling it.  We currently support two call syntaxes.
@@ -432,17 +441,53 @@ class argmap:
 
     @classmethod
     def _count(self):
+        """Maintain a globally-unique identifier for function names and "file" names"""
         self.__count += 1
         return self.__count
 
+    __bad_chars = re.compile('[^a-zA-Z0-9_]')
+    @classmethod
+    def name(self, f):
+        """Mangle the name of a function to be unique but somewhat human-readable"""
+        fname = re.sub(self.__bad_chars, '_', f.__name__)
+        return f"argmap_{fname}_{self._count()}"
+
     @classmethod
     def call_finally(cls, func, *args):
+        """Alternative decorator-constructor which calls func in a finally block"""
         dec = cls(func, *args)
         dec._finally = True
         return dec
 
     def __call__(self, f):
-        body = sig, functions, mapblock, finallys = self.assemble(f)
+        """Construct a lazily decorated wrapper of f.  The decorated function
+        will be compiled when it is called for the first time, and it will
+        replace its own __code__ object so subsequent calls are fast."""
+        if inspect.iscoroutinefunction(f):
+            async def func(*args, __wrapper = None, **kwargs):
+                return await compile_argmap(__wrapper)(*args, **kwargs)
+        elif inspect.isgeneratorfunction(f):
+            def func(*args, __wrapper = None, **kwargs):
+                yield from compile_argmap(__wrapper)(*args, **kwargs)
+        else:
+            def func(*args, __wrapper = None, **kwargs):
+                return compile_argmap(__wrapper)(*args, **kwargs)
+        func.__name__ = f.__name__
+        func.__doc__ = f.__doc__
+        func.__defaults__ = f.__defaults__
+        func.__kwdefaults__.update(f.__kwdefaults__ or {})
+        func.__module__ = f.__module__ 
+        func.__qualname__ = f.__qualname__
+        func.__dict__.update(f.__dict__)        
+        func.__kwdefaults__['_argmap__wrapper'] = func
+        func.__argmap_assemble__ = lambda: self.assemble(f)
+        func.__argmap_compile__ = lambda: self.compile(f)
+        return func
+
+    def compile(self, f):
+        """Called once for a given decorated function -- collects the code from all
+        argmap decorators in the stack, and compiles the decorated function."""
+        body = sig, wrapped_name, functions, mapblock, finallys = self.assemble(f)
 
         def flatten(lines, depth=[0], tabs=" " * 512, dtab={":": 1, "#": -1}):
             tab = tabs[: depth[0]]
@@ -454,33 +499,34 @@ class argmap:
                     depth[0] += dtab.get(line[-1], 0)
 
         code = "\n".join(
-            flatten([sig.def_sig, *mapblock, f"{sig.call_sig}#", *finallys])
+            flatten([sig.def_sig, *mapblock, f"{sig.call_sig.format(wrapped_name)}#", *finallys])
         )
 
         locl = {}
-        globl = dict(functions.values(), defaults=sig.defaults)
+        globl = dict(functions.values())
         filename = f"{self.__class__} compilation {self.__class__._count()}"
         compiled = compile(code, filename, "exec")
         exec(compiled, globl, locl)
-
-        wrapper = self.wrap(locl["argmapped"], f, sig)
-        wrapper._argmap = body
+        wrapper = locl[sig.name]
         wrapper._code = code
         return wrapper
 
     def assemble(self, f):
-        if hasattr(f, "_argmap"):
-            sig, functions, mapblock, finallys = f._argmap
-            mapblock = mapblock[:]
+        """Collects the requisite data to compile the decorated version of f.
+        Note, this is recursive, and all argmap-decorators will be flattened
+        into a single function call"""
+        if hasattr(f, '__argmap_assemble__'):
+             sig, wrapped_name, functions, mapblock, finallys = f.__argmap_assemble__()
         else:
             sig = self.signature(f)
+            wrapped_name = self.name(f)
             mapblock, trys, finallys = [], [], []
-            functions = {id(f): ("func0", f)}
+            functions = {id(f): (wrapped_name, f)}
 
         if id(self._func) in functions:
             fname, _ = functions[id(self._func)]
         else:
-            fname, _ = functions[id(self._func)] = f"func{len(functions)}", self._func
+            fname, _ = functions[id(self._func)] = self.name(self._func), self._func
 
         def get_name(arg, first=True, applied=set()):
             if isinstance(arg, tuple):
@@ -513,34 +559,12 @@ class argmap:
                 f"{name} = {fname}({name})" for name in map(get_name, self._args)
             )
 
-        return sig, functions, mapblock, finallys
-
-    @staticmethod
-    def wrap(wrapper, wrapped, sig):
-        """emulate functools.wraps: copied almost verbatim from `decorator`"""
-        wrapper.__name__ = wrapped.__name__
-        wrapper.__doc__ = wrapped.__doc__
-        wrapper.__defaults__ = wrapped.__defaults__
-        wrapper.__kwdefaults__ = wrapped.__kwdefaults__
-        # TODO: we delete annotations here.  instead, it would be better to
-        #   update these annotations with ones taken from the argmap functions
-        #   and -- the real reason I'm not implementing this now -- check for
-        #   compatibility of wrapped parameter annotations with the function
-        #   return annotations?
-        # wrapper.__annotations__ = wrapped.__annotations__
-        wrapper.__module__ = wrapped.__module__
-        wrapper.__signature__ = sig.signature
-        wrapper.__wrapped__ = wrapped
-        wrapper.__qualname__ = wrapped.__qualname__
-        wrapper.__dict__.update(wrapped.__dict__)
-
-        return wrapper
+        return sig, wrapped_name, functions, mapblock, finallys
 
     @classmethod
     def signature(cls, f):
         """compute a signature for wrapping f"""
         sig = inspect.signature(f, follow_wrapped=False)
-        defaults = []
         def_sig = []
         call_sig = []
         names = {}
@@ -584,36 +608,32 @@ class argmap:
                 npos += count
                 call_sig.append(name)
 
-            # handle defaults here -- keep them around for exec globals
-            if param.default != param.empty:
-                def_sig.append(f"{name} = defaults[{len(defaults)}]")
-                defaults.append(param.default)
-            else:
-                def_sig.append(name)
+            def_sig.append(name)
 
+        fname = cls.name(f)
         coroutine = inspect.iscoroutinefunction(f)
         _async = "async " if coroutine else ""
-        def_sig = f'{_async}def argmapped({", ".join(def_sig)}):'
+        def_sig = f'{_async}def {fname}({", ".join(def_sig)}):'
 
         if coroutine:
-            _return = "async return"
+            _return = "return await"
         elif inspect.isgeneratorfunction(f):
             _return = "yield from"
         else:
             _return = "return"
 
-        call_sig = f"{_return} func0({', '.join(call_sig)})"
+        call_sig = f"{_return} {{}}({', '.join(call_sig)})"
 
-        return cls.Signature(sig, def_sig, call_sig, names, defaults, npos, star, kwar)
+        return cls.Signature(fname, sig, def_sig, call_sig, names, npos, star, kwar)
 
     Signature = collections.namedtuple(
         "Signature",
         [
+            "name",
             "signature",
             "def_sig",
             "call_sig",
             "names",
-            "defaults",
             "n_positional",
             "args",
             "kwargs",
