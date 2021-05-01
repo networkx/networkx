@@ -49,7 +49,6 @@ def dgm_attr() -> nx.MultiDiGraph:
     dg.add_edge("b2", "b4", label="e5", distance=12)
     dg.add_edge("b4", "b3", label="e6", distance=8)
 
-    # res = rank.MultiDiGraphMap.from_nx(dg, "distance")
     return dg
 
 
@@ -59,26 +58,29 @@ def test_descend_sa_attr(dgm_attr: nx.MultiDiGraph):
     Args:
         dg: case in [camerini1980ranking] with 4 buses and 6 edges.
     """
-    res = rank.DescendSpanningArborescences(dgm_attr, root="b1", attr="distance")
+    solver = rank.DescendSpanningArborescences(dgm_attr, root="b1", attr="distance")
 
-    assert set(res.msa.df_edges["label"]) == {"e1", "e3", "e5"}
-    assert res.msa.size(weight="distance") == 28
+    assert set(solver.msa.df_edges["label"]) == {"e1", "e3", "e5"}
+    assert solver.msa.size(weight="distance") == 28
 
-    res2 = next(res)[0]
+    res2 = next(solver)[0]
     assert set(res2.df_edges["label"]) == {"e1", "e5", "e6"}
     assert res2.size(weight="distance") == 26
 
-    res3 = next(res)[0]
+    res3 = next(solver)[0]
     assert set(res3.df_edges["label"]) == {"e2", "e4", "e6"}
     assert res3.size(weight="distance") == 19
 
-    res4 = next(res)[0]
+    res4 = next(solver)[0]
     assert set(res4.df_edges["label"]) == {"e1", "e2", "e3"}
     assert res3.size(weight="distance") == 19
 
-    res5 = next(res)[0]
+    res5 = next(solver)[0]
     assert set(res5.df_edges["label"]) == {"e1", "e2", "e6"}
     assert res3.size(weight="distance") == 19
+
+    assert not nx.is_frozen(dgm_attr)
+    assert nx.is_frozen(solver.raw)
 
 
 @pytest.fixture(scope="module")
