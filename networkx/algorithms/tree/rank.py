@@ -7,7 +7,7 @@ This implementation is based on:
     arborescences in O (Km log n) time. European Journal of Operational
     Research, 4(4), 235-242.
 
-Proof can be found in:
+The proof and more details can be found in:
 
     Camerini, P. M., Fratta, L., & Maffioli, F. (1980). The k best spanning
     arborescences of a network. Networks, 10(2), 91-109.
@@ -26,7 +26,7 @@ import numpy as np
 
 __all__ = [
     "DescendSpanningArborescences",
-    "AscendSpanningArborescences",
+    # "AscendSpanningArborescences",
 ]
 
 
@@ -125,11 +125,12 @@ class DiGraphMap(DiGraphEnhanced):
         self.weight_map = {e: weight_map[e] for e in edges}
 
     @classmethod
-    def from_nx(cls, dg: nx.DiGraph):
+    def from_nx(cls, dg: nx.DiGraph, attr: Optional[str] = "weight"):
         """Init by extracting dictionaries from a multi directed graph.
 
         Args:
             dg: an ordinary multi directed graph.
+            attr: The edge attribute used to in determining optimality.
 
         Returns:
             DiGraphMap: directed graph defined by maps.
@@ -146,7 +147,7 @@ class DiGraphMap(DiGraphEnhanced):
                 edges.add(label)
                 source_map[label] = edge[0]
                 target_map[label] = edge[1]
-                weight_map[label] = edge[2]["weight"]
+                weight_map[label] = edge[2][attr]
             except KeyError:
                 logger.error(f'Edge "{edge[0]}, {edge[1]}" is incorrect.')
         return cls(dg.nodes, edges, source_map, target_map, weight_map)
@@ -288,11 +289,12 @@ class MultiDiGraphMap(nx.MultiDiGraph):
         self.name = "?"
 
     @classmethod
-    def from_nx(cls, dg: nx.MultiDiGraph):
+    def from_nx(cls, dg: nx.MultiDiGraph, attr: Optional[str] = "weight"):
         """Init by extracting dictionaries from a multi directed graph.
 
         Args:
             dg: a multi directed graph.
+            attr: The edge attribute used to in determining optimality.
 
         Returns:
             MultiDiGraphMap: multi directed graph defined by maps.
@@ -309,7 +311,7 @@ class MultiDiGraphMap(nx.MultiDiGraph):
                 edges.add(label)
                 source_map[label] = edge[0]
                 target_map[label] = edge[1]
-                weight_map[label] = edge[2]["weight"]
+                weight_map[label] = edge[2][attr]
             except KeyError:
                 logger.error(f'Edge "{edge[0]}, {edge[1]}" is incorrect.')
         return cls(dg.nodes, edges, source_map, target_map, weight_map)
@@ -1248,7 +1250,7 @@ def _next_sa(
 def _max_sa(
     n_raw: nx.DiGraph, root: str, branch: Set[str], edges: Set[str]
 ) -> Arborescence:
-    """Find the min spanning arborescence of a directed graph.
+    """Find the max spanning arborescence of a directed graph.
 
     As summarised in [gabow1986efficient]_, there are two stages in this
     algorithm:
@@ -1260,7 +1262,8 @@ def _max_sa(
     Warning:
         - This is not an efficient implementation, but will be used in
           the generator for ranking spanning arborescences according to
-          their weights.
+          their weights. There are more efficient implementations in
+          ``networkx``.
         - All the edges in the graph must have attribute ``weight``.
         - A different attribute cannot be specified as weights.
 
@@ -1272,8 +1275,9 @@ def _max_sa(
             not contained in the branching.
 
     Returns:
-        The min spanning rooted tree.
+        The max spanning arborescence.
     """
+
     logger.debug(f"The pass branching is {branch}.")
     logger.debug(f"The pass edges are {edges}.")
 
@@ -1380,7 +1384,6 @@ class DescendSpanningArborescences:
 
     Attributes:
 
-        root (str): name of the node which is set as root.
         raw (MultiDiGraphMap): the original directed graph.
         msa (Arborescence): the max spanning arborescence.
         rank (int): rank of the current spanning arborescence.
@@ -1392,14 +1395,19 @@ class DescendSpanningArborescences:
 
     _threshold = 1e-4
 
-    def __init__(self, g: nx.DiGraph, root: str):
+    def __init__(self, g: nx.DiGraph, root: str, attr: Optional[str] = "weight"):
         """Init a generator to descend weighted spanning arborescences.
+
         Args:
             g: a directed graph with weighted edges.
             root: specified root of spanning arborescences.
+            attr: the edge attribute used to in determining optimality.
         """
         self.root = root
-        self.raw = MultiDiGraphMap.from_nx(g)
+        """str: name of the node which is set as root."""
+        self.attr = attr
+        """str: the edge attribute used to in determining optimality."""
+        self.raw = MultiDiGraphMap.from_nx(g, attr)
         nx.freeze(self.raw)
 
         _is_reachable(self.raw, self.root)
@@ -1410,19 +1418,19 @@ class DescendSpanningArborescences:
             logger.error(f"There are edges, {edges_to_root}, directed into root.")
 
         self.msa = _max_sa(self.raw, self.root, set(), set())
+        print(nx.to_pandas_edgelist(self.msa))
         logger.success(
-            "Min spanning arborescence has weight "
-            f'{self.msa.size(weight="weight")}.'
-            # f'It has edges {self.msa.df_edges.loc[:, "label"].to_list()} .'
+            "The max spanning arborescence (SA) has weight "
+            f"{self.msa.size(weight=self.attr)}."
         )
 
         e, d = _next_sa(self.raw, self.msa, set(), set())
         self.p_list = [
-            _ResultRank(self.msa.size(weight="weight") - d, e, self.msa, set(), set())
+            _ResultRank(self.msa.size(weight=self.attr) - d, e, self.msa, set(), set())
         ]  # Index will be used later, so a list is required.
 
         self.rank = 1
-        self._last = self.msa.size(weight="weight")
+        self._last = self.msa.size(weight=self.attr)
         """float: graph weight of the SA with lower rank."""
 
     def __iter__(self):  # noqa: D105
@@ -1437,7 +1445,7 @@ class DescendSpanningArborescences:
         Returns:
             A spanning arborescence and its rank.
         """
-        # Select a _ResultRank with max w.
+        # Select a `_ResultRank` with max w.
         idx_max = np.argmax([rr.w for rr in self.p_list])
         pre = self.p_list.pop(idx_max)
 
@@ -1454,20 +1462,19 @@ class DescendSpanningArborescences:
             self.rank += 1
             logger.success(
                 f"SA ranks {self.rank} with weight "
-                f'{a_current.size(weight="weight")}.'
-                # f'Edges {a_current[j].df_edges.loc[:, "label"].to_list()} .'
+                f"{a_current.size(weight=self.attr)}."
             )
 
             # Check if the total weight is decreased.
-            if a_current.size(weight="weight") > self._last:
+            if a_current.size(weight=self.attr) > self._last:
                 logger.error("Increasing total weight.")
-            self._last = a_current.size(weight="weight")
+            self._last = a_current.size(weight=self.attr)
 
             # Check if the total weight is the same as expected.
-            if abs(a_current.size(weight="weight") - pre.w) >= self._threshold:
+            if abs(a_current.size(weight=self.attr) - pre.w) >= self._threshold:
                 logger.error(
-                    f'Weight of the SA, {a_current.size(weight="weight")}, is '
-                    f"different from the expected value, {pre.w}."
+                    f"Weight of the SA, {a_current.size(weight=self.attr)}, "
+                    f"is different from the expected value, {pre.w}."
                 )
 
             # Check if there is edge directed into the root.
@@ -1478,7 +1485,7 @@ class DescendSpanningArborescences:
             e, d = _next_sa(self.raw, pre.a, y_prime, pre.z)
             self.p_list.append(
                 _ResultRank(
-                    pre.a.size(weight="weight") - d,
+                    pre.a.size(weight=self.attr) - d,
                     e,
                     pre.a,
                     y_prime,
