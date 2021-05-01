@@ -397,6 +397,7 @@ def compile_argmap(func):
     func.__dict__.update(real_func.__dict__)
     return func
 
+
 class argmap:
     """A decorating class which calls specified functions on a function's
     arguments before calling it.  We currently support two call syntaxes.
@@ -445,11 +446,12 @@ class argmap:
         self.__count += 1
         return self.__count
 
-    __bad_chars = re.compile('[^a-zA-Z0-9_]')
+    __bad_chars = re.compile("[^a-zA-Z0-9_]")
+
     @classmethod
     def name(self, f):
         """Mangle the name of a function to be unique but somewhat human-readable"""
-        fname = re.sub(self.__bad_chars, '_', f.__name__)
+        fname = re.sub(self.__bad_chars, "_", f.__name__)
         return f"argmap_{fname}_{self._count()}"
 
     @classmethod
@@ -464,22 +466,28 @@ class argmap:
         will be compiled when it is called for the first time, and it will
         replace its own __code__ object so subsequent calls are fast."""
         if inspect.iscoroutinefunction(f):
-            async def func(*args, __wrapper = None, **kwargs):
+
+            async def func(*args, __wrapper=None, **kwargs):
                 return await compile_argmap(__wrapper)(*args, **kwargs)
+
         elif inspect.isgeneratorfunction(f):
-            def func(*args, __wrapper = None, **kwargs):
+
+            def func(*args, __wrapper=None, **kwargs):
                 yield from compile_argmap(__wrapper)(*args, **kwargs)
+
         else:
-            def func(*args, __wrapper = None, **kwargs):
+
+            def func(*args, __wrapper=None, **kwargs):
                 return compile_argmap(__wrapper)(*args, **kwargs)
+
         func.__name__ = f.__name__
         func.__doc__ = f.__doc__
         func.__defaults__ = f.__defaults__
         func.__kwdefaults__.update(f.__kwdefaults__ or {})
-        func.__module__ = f.__module__ 
+        func.__module__ = f.__module__
         func.__qualname__ = f.__qualname__
-        func.__dict__.update(f.__dict__)        
-        func.__kwdefaults__['_argmap__wrapper'] = func
+        func.__dict__.update(f.__dict__)
+        func.__kwdefaults__["_argmap__wrapper"] = func
         func.__argmap_assemble__ = lambda: self.assemble(f)
         func.__argmap_compile__ = lambda: self.compile(f)
         return func
@@ -499,7 +507,14 @@ class argmap:
                     depth[0] += dtab.get(line[-1], 0)
 
         code = "\n".join(
-            flatten([sig.def_sig, *mapblock, f"{sig.call_sig.format(wrapped_name)}#", *finallys])
+            flatten(
+                [
+                    sig.def_sig,
+                    *mapblock,
+                    f"{sig.call_sig.format(wrapped_name)}#",
+                    *finallys,
+                ]
+            )
         )
 
         locl = {}
@@ -515,8 +530,8 @@ class argmap:
         """Collects the requisite data to compile the decorated version of f.
         Note, this is recursive, and all argmap-decorators will be flattened
         into a single function call"""
-        if hasattr(f, '__argmap_assemble__'):
-             sig, wrapped_name, functions, mapblock, finallys = f.__argmap_assemble__()
+        if hasattr(f, "__argmap_assemble__"):
+            sig, wrapped_name, functions, mapblock, finallys = f.__argmap_assemble__()
         else:
             sig = self.signature(f)
             wrapped_name = self.name(f)
@@ -548,7 +563,7 @@ class argmap:
                     raise nx.NetworkXError(
                         f"index {arg} not a parameter index and this function doesn't have args"
                     )
-                return f"{sig.args}[{arg}-{sig.n_positional}]"
+                return f"{sig.args}[{arg-sig.n_positional}]"
 
         if self._finally:
             mapblock.extend("try:" for a in self._args)

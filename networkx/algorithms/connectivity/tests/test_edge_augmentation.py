@@ -249,7 +249,7 @@ def test_gnp_augmentation():
 
 
 def _assert_solution_properties(G, aug_edges, avail_dict=None):
-    """ Checks that aug_edges are consistently formatted """
+    """Checks that aug_edges are consistently formatted"""
     if avail_dict is not None:
         assert all(
             e in avail_dict for e in aug_edges
@@ -392,7 +392,7 @@ def _augment_and_check(
 
 
 def _check_augmentations(G, avail=None, max_k=None, weight=None, verbose=False):
-    """ Helper to check weighted/unweighted cases with multiple values of k """
+    """Helper to check weighted/unweighted cases with multiple values of k"""
     # Using all available edges, find the maximum edge-connectivity
     try:
         orig_k = nx.edge_connectivity(G)

@@ -76,7 +76,7 @@ class TestFlowBetweennessCentrality:
             assert almost_equal(b[n], b_answer[n])
 
     def test_star(self):
-        """Betweenness centrality: star """
+        """Betweenness centrality: star"""
         G = nx.Graph()
         nx.add_star(G, ["a", "b", "c", "d"])
         b = nx.current_flow_betweenness_centrality_subset(

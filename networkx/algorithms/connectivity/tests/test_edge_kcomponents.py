@@ -12,7 +12,7 @@ from networkx.algorithms.connectivity.edge_kcomponents import general_k_edge_sub
 
 
 def fset(list_of_sets):
-    """ allows == to be used for list of sets """
+    """allows == to be used for list of sets"""
     return set(map(frozenset, list_of_sets))
 
 
