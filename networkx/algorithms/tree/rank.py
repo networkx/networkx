@@ -1389,6 +1389,29 @@ def _is_reachable(g: nx.DiGraph, root: str) -> bool:
     return res
 
 
+def label_edges(g: nx.DiGraph) -> nx.DiGraph:
+    """Check if label attribute exists and label all edges if not.
+
+    Args:
+        g: the original directed graph.
+
+    Returns:
+        The original directed graph with all edges labelled.
+    """
+    g_labelled = nx.DiGraph(g)
+    i = 1
+    for edge in g_labelled.edges.data():
+        if "label" in edge[2]:
+            raise Exception(
+                f'The edge {edge[0]}-{edge[1]} already has the "label" attribute.'
+            )
+        else:
+            edge[2]["label"] = f"e{i}"
+            i += 1
+
+    return g_labelled
+
+
 class DescendSpanningArborescences:
     """
     Generator to descend spanning arborescences by total edge weights.
@@ -1418,19 +1441,35 @@ class DescendSpanningArborescences:
 
     _threshold = 1e-4
 
-    def __init__(self, g: nx.DiGraph, root: str, attr: Optional[str] = "weight"):
+    def __init__(
+        self,
+        g: nx.DiGraph,
+        root: str,
+        attr: Optional[str] = "weight",
+        labelled: Optional[bool] = True,
+    ):
         """Init a generator to descend weighted spanning arborescences.
 
-        Args:
-            g: a directed graph with weighted edges.
-            root: specified root of spanning arborescences.
-            attr: the edge attribute used to in determining optimality.
+        Note:
+            If all the edges have "label" attribute, there is no need
+            to label them automatically.
+
+        Args: g: a directed graph with weighted edges. root: specified
+            root of spanning arborescences. attr: the edge attribute
+            used to in determining optimality. labelled: if the graph
+            has been labelled.
         """
         self.root = root
         """str: name of the node which is set as root."""
         self.attr = attr
         """str: the edge attribute used to in determining optimality."""
-        self.raw = MultiDiGraphMap.from_nx(g, attr)
+
+        if labelled:
+            g_label = g
+        else:
+            g_label = label_edges(g)
+
+        self.raw = MultiDiGraphMap.from_nx(g_label, attr)
         nx.freeze(self.raw)
 
         _is_reachable(self.raw, self.root)

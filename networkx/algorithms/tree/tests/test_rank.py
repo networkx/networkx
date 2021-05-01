@@ -39,48 +39,78 @@ def dg() -> nx.MultiDiGraph:
 
 
 @pytest.fixture(scope="module")
-def dgm_attr() -> nx.MultiDiGraph:
+def dg_attr() -> nx.DiGraph:
     """Init the page 237 case with edge attributes named "distance"."""
-    dg = nx.MultiDiGraph()
+    dg = nx.DiGraph()
     dg.add_edge("b1", "b2", label="e1", distance=6)
     dg.add_edge("b1", "b4", label="e2", distance=1)
     dg.add_edge("b2", "b3", label="e3", distance=10)
     dg.add_edge("b3", "b2", label="e4", distance=10)
     dg.add_edge("b2", "b4", label="e5", distance=12)
     dg.add_edge("b4", "b3", label="e6", distance=8)
-
     return dg
 
 
-def test_descend_sa_attr(dgm_attr: nx.MultiDiGraph):
-    """Check the generator to rank spanning arborescences.
+@pytest.fixture(scope="module")
+def dg_label() -> nx.DiGraph:
+    """Init the page 237 case without edge label."""
+    dg = nx.DiGraph()
+    dg.add_edge("b1", "b2", weight=6)
+    dg.add_edge("b1", "b4", weight=1)
+    dg.add_edge("b2", "b3", weight=10)
+    dg.add_edge("b3", "b2", weight=10)
+    dg.add_edge("b2", "b4", weight=12)
+    dg.add_edge("b4", "b3", weight=8)
+    return dg
+
+
+def check_example_camerini1980ranking(g: nx.DiGraph, attr: str):
+    """Test the example in [camerini1980ranking]_ for ranking SAs.
 
     Args:
-        dg: case in [camerini1980ranking] with 4 buses and 6 edges.
+        dg: case in [camerini1980ranking]_ with 4 buses and 6 edges.
+        attr: the edge attribute used to in determining optimality.
     """
-    solver = rank.DescendSpanningArborescences(dgm_attr, root="b1", attr="distance")
+    solver = rank.DescendSpanningArborescences(g, root="b1", attr=attr)
 
     assert set(solver.msa.df_edges["label"]) == {"e1", "e3", "e5"}
-    assert solver.msa.size(weight="distance") == 28
+    assert solver.msa.size(weight=attr) == 28
 
     res2 = next(solver)[0]
     assert set(res2.df_edges["label"]) == {"e1", "e5", "e6"}
-    assert res2.size(weight="distance") == 26
+    assert res2.size(weight=attr) == 26
 
     res3 = next(solver)[0]
     assert set(res3.df_edges["label"]) == {"e2", "e4", "e6"}
-    assert res3.size(weight="distance") == 19
+    assert res3.size(weight=attr) == 19
 
     res4 = next(solver)[0]
     assert set(res4.df_edges["label"]) == {"e1", "e2", "e3"}
-    assert res3.size(weight="distance") == 19
+    assert res3.size(weight=attr) == 19
 
     res5 = next(solver)[0]
     assert set(res5.df_edges["label"]) == {"e1", "e2", "e6"}
-    assert res3.size(weight="distance") == 19
+    assert res3.size(weight=attr) == 19
 
-    assert not nx.is_frozen(dgm_attr)
+    assert not nx.is_frozen(g)
     assert nx.is_frozen(solver.raw)
+
+
+def test_descend_sa_attr(dg_attr: nx.DiGraph):
+    """Check if another attribute can be used to in determining optimality."""
+    check_example_camerini1980ranking(dg_attr, "distance")
+
+
+def test_descend_sa_label(dg_label: nx.DiGraph):
+    """Check if the graph is labelled automatically."""
+    attr = "weight"
+    solver = rank.DescendSpanningArborescences(
+        dg_label,
+        root="b1",
+        attr=attr,
+        labelled=False,
+    )
+    assert solver.msa.size(weight=attr) == 28
 
 
 @pytest.fixture(scope="module")
@@ -169,26 +199,9 @@ def test_descend_sa(dg: nx.MultiDiGraph):
     """Check the generator to rank spanning arborescences.
 
     Args:
-        dg: case in [camerini1980ranking] with 4 buses and 6 edges.
+        dg: case in [camerini1980ranking]_ with 4 buses and 6 edges.
     """
-    res = rank.DescendSpanningArborescences(dg, root="b1")
-
-    assert set(res.msa.df_edges["label"]) == {"e1", "e3", "e5"}
-    assert res.msa.size(weight="weight") == 28
-
-    res2 = next(res)[0]
-    assert set(res2.df_edges["label"]) == {"e1", "e5", "e6"}
-    assert res2.size(weight="weight") == 26
-
-    res3 = next(res)[0]
-    assert set(res3.df_edges["label"]) == {"e2", "e4", "e6"}
-    assert res3.size(weight="weight") == 19
-
-    res4 = next(res)[0]
-    assert set(res4.df_edges["label"]) == {"e1", "e2", "e3"}
-
-    res5 = next(res)[0]
-    assert set(res5.df_edges["label"]) == {"e1", "e2", "e6"}
+    check_example_camerini1980ranking(dg, "weight")
 
 
 @pytest.fixture(scope="module")
