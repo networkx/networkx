@@ -62,23 +62,23 @@ def test_descend_sa_attr(dgm_attr: nx.MultiDiGraph):
     res = rank.DescendSpanningArborescences(dgm_attr, root="b1", attr="distance")
 
     assert set(res.msa.df_edges["label"]) == {"e1", "e3", "e5"}
-    # assert res.msa.size(weight="distance") == 28
+    assert res.msa.size(weight="distance") == 28
 
     res2 = next(res)[0]
     assert set(res2.df_edges["label"]) == {"e1", "e5", "e6"}
-    # assert res2.size(weight="weight") == 26
-    # print(nx.to_pandas_edgelist(res2))
+    assert res2.size(weight="distance") == 26
 
     res3 = next(res)[0]
     assert set(res3.df_edges["label"]) == {"e2", "e4", "e6"}
-    # assert res3.size(weight="weight") == 19
-    # print(nx.to_pandas_edgelist(res3))
+    assert res3.size(weight="distance") == 19
 
     res4 = next(res)[0]
     assert set(res4.df_edges["label"]) == {"e1", "e2", "e3"}
+    assert res3.size(weight="distance") == 19
 
     res5 = next(res)[0]
     assert set(res5.df_edges["label"]) == {"e1", "e2", "e6"}
+    assert res3.size(weight="distance") == 19
 
 
 @pytest.fixture(scope="module")
