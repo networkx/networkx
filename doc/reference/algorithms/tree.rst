@@ -31,6 +31,14 @@ Branchings and Spanning Arborescences
    minimum_spanning_arborescence
    Edmonds
 
+Ranking
+-------
+.. automodule:: networkx.algorithms.tree.rank
+.. autosummary::
+   :toctree: generated/
+
+   DescendSpanningArborescences
+
 Encoding and decoding
 ---------------------
 .. automodule:: networkx.algorithms.tree.coding
