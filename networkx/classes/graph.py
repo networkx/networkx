@@ -1847,6 +1847,66 @@ class Graph:
         if v in self._adj[u]:
             return 1
         return 0
+    def k_path_Laplacian(self,k):
+ 
+        """
+        Notes
+        -----
+        k_path_Laplacian is the generalization of standard Laplacian, this one is 1-degree or
+        local or direct neighbors or distance 1. Unlike k_path_Laplacian where k means the distance
+        two consider. You put 1 in the Adjacency matrix if the distance between two nodes is k.
+        We call this adjacency matrix k-Path Adjacency matrix.
+
+        From this Adjacency matrix, you compute the Degree and Laplacian Matrix. You need to know the
+        diameter of your graph (Maximum distance of nodes in a graph.)
+
+        Parameters
+        ----------
+        * k: int
+            Is used to precise distance that you want to use.
+        If k= 2, you put 1 in the matrix if the distance between two nodes is 2. And so on.
+
+        Returns
+        -------
+        * P: k-Path Adjacency matrix
+        * Deg: k Degree matrix
+        * Deg-P: k-path Laplacian
+
+        Example
+        -------
+
+        >>> k= 2
+        >>> k_path_Laplacian(G,k)[0]
+
+        array([[0., 0., 1., 0., 1.],
+           [0., 0., 0., 1., 0.],
+           [1., 0., 0., 0., 1.],
+           [0., 1., 0., 0., 0.],
+           [1., 0., 1., 0., 0.]])
+
+        """
+#         G=self.graph
+        I=np.ones(len(self._node))
+        Deg=np.zeros((len(self._node),len(self._node)))
+        P=np.zeros((len(self._node),len(self._node)))
+        G_diam= nx.diameter(self.graph)
+    
+        if k>G_diam:
+            print('{} is greater than {} which is the diameter of your graph'.format(k, G_diam))
+
+            return None, None, None
+        else:
+            for i in range(len(self._node)):
+                for j in range(len(self._node)):
+                    if Dis[i,j]==k:
+                        P[i,j]=1
+                    else:
+                        P[i,j]=0
+            Result= np.dot(I.T,P)
+            for t in range(len(self._node)):
+                Deg[t,t]=Result[t]
+
+            return P,Deg,Deg-P
 
     def nbunch_iter(self, nbunch=None):
         """Returns an iterator over nodes contained in nbunch that are
