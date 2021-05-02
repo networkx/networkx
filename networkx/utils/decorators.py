@@ -88,17 +88,13 @@ def not_implemented_for(*graph_types):
 def _open_gz(path, mode):
     import gzip
 
-    file = gzip.open(path, mode=mode)
-    file._close_argmap = True
-    return file
+    return gzip.open(path, mode=mode)
 
 
 def _open_bz2(path, mode):
     import bz2
 
-    file = bz2.BZ2File(path, mode=mode)
-    file._close_argmap = True
-    return file
+    return bz2.BZ2File(path, mode=mode)
 
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
@@ -175,6 +171,7 @@ def open_file(path_arg, mode="r"):
     # us, and using "with" would undesirably close that file object. Instead,
     # you use a try block, as shown above. When we exit the function, fobj will
     # be closed, if it should be, by the decorator.
+    file_collector = {}
 
     def _open_file(path):
         # Now we have the path_arg. There are two types of input to consider:
@@ -182,30 +179,20 @@ def open_file(path_arg, mode="r"):
         #   2) an already opened file object
         if isinstance(path, str):
             ext = splitext(path)[1]
-            fobj = _dispatch_dict[ext](path, mode=mode)
-        elif hasattr(path, "read"):
-            # path is already a file-like object
-            fobj = path
         elif isinstance(path, Path):
             # path is a pathlib reference to a filename
-            fobj = _dispatch_dict[path.suffix](str(path), mode=mode)
+            ext = path.suffix
+            path = str(path)
         else:
-            # could be None, in which case the algorithm will deal with it
-            fobj = path
+            # could be None, or a file handle, in which case the algorithm will deal with it
+            return path, lambda: None
 
-        return fobj
+        fobj = _dispatch_dict[ext](path, mode=mode)
+        file_collector[id(fobj)] = fobj
 
-    def _close_file(f):
-        if hasattr(f, "_close_argmap"):
-            f.close()
+        return fobj, lambda: fobj.close()
 
-    map_outer = argmap.call_finally(_close_file, path_arg)
-    map_inner = argmap(_open_file, path_arg)
-
-    def decorate(f):
-        return map_outer(map_inner(f))
-
-    return decorate
+    return argmap.try_finally(_open_file, path_arg)
 
 
 def nodes_or_number(which_args):
@@ -390,14 +377,6 @@ def py_random_state(random_state_index):
     return argmap(create_py_random_state, random_state_index)
 
 
-def compile_argmap(func):
-    real_func = func.__argmap_compile__()
-    func.__code__ = real_func.__code__
-    func.__globals__.update(real_func.__globals__)
-    func.__dict__.update(real_func.__dict__)
-    return func
-
-
 class argmap:
     """A decorating class which calls specified functions on a function's
     arguments before calling it.  We currently support two call syntaxes.
@@ -451,15 +430,24 @@ class argmap:
     @classmethod
     def name(self, f):
         """Mangle the name of a function to be unique but somewhat human-readable"""
-        fname = re.sub(self.__bad_chars, "_", f.__name__)
+        f = f.__name__ if hasattr(f, "__name__") else f
+        fname = re.sub(self.__bad_chars, "_", f)
         return f"argmap_{fname}_{self._count()}"
 
     @classmethod
-    def call_finally(cls, func, *args):
+    def try_finally(cls, func, *args):
         """Alternative decorator-constructor which calls func in a finally block"""
         dec = cls(func, *args)
         dec._finally = True
         return dec
+
+    @staticmethod
+    def lazy_compile(func):
+        real_func = func.__argmap_compile__()
+        func.__code__ = real_func.__code__
+        func.__globals__.update(real_func.__globals__)
+        func.__dict__.update(real_func.__dict__)
+        return func
 
     def __call__(self, f):
         """Construct a lazily decorated wrapper of f.  The decorated function
@@ -468,17 +456,17 @@ class argmap:
         if inspect.iscoroutinefunction(f):
 
             async def func(*args, __wrapper=None, **kwargs):
-                return await compile_argmap(__wrapper)(*args, **kwargs)
+                return await argmap.lazy_compile(__wrapper)(*args, **kwargs)
 
         elif inspect.isgeneratorfunction(f):
 
             def func(*args, __wrapper=None, **kwargs):
-                yield from compile_argmap(__wrapper)(*args, **kwargs)
+                yield from argmap.lazy_compile(__wrapper)(*args, **kwargs)
 
         else:
 
             def func(*args, __wrapper=None, **kwargs):
-                return compile_argmap(__wrapper)(*args, **kwargs)
+                return argmap.lazy_compile(__wrapper)(*args, **kwargs)
 
         func.__name__ = f.__name__
         func.__doc__ = f.__doc__
@@ -497,22 +485,28 @@ class argmap:
         argmap decorators in the stack, and compiles the decorated function."""
         body = sig, wrapped_name, functions, mapblock, finallys = self.assemble(f)
 
-        def flatten(lines, depth=[0], tabs=" " * 512, dtab={":": 1, "#": -1}):
-            tab = tabs[: depth[0]]
-            for line in lines:
-                if isinstance(line, list):
-                    yield from flatten(line)
+        def flatten(nestlist):
+            for thing in nestlist:
+                if isinstance(thing, str):
+                    yield thing
                 else:
-                    yield f"{tabs[:depth[0]]}{line}"
-                    depth[0] += dtab.get(line[-1], 0)
+                    yield from flatten(thing)
 
+        def indent(lines):
+            depth = 0
+            tabs = " " * 512
+            for line in flatten(lines):
+                yield f"{tabs[:depth]}{line}"
+                depth += (line[-1] == ":") - (line[-1] == "#")
+
+        call = f"{sig.call_sig.format(wrapped_name)}#"
         code = "\n".join(
-            flatten(
+            indent(
                 [
                     sig.def_sig,
-                    *mapblock,
-                    f"{sig.call_sig.format(wrapped_name)}#",
-                    *finallys,
+                    mapblock,
+                    call,
+                    finallys,
                 ]
             )
         )
@@ -566,9 +560,12 @@ class argmap:
                 return f"{sig.args}[{arg-sig.n_positional}]"
 
         if self._finally:
-            mapblock.extend("try:" for a in self._args)
-            for name in map(get_name, self._args):
-                finallys = ["finally:", f"{name} = {fname}({name})#", "#", finallys]
+            for a in self._args:
+                mapblock.append("try:")
+                name = get_name(a)
+                closer = self.name(name)
+                mapblock.append(f"{name}, {closer} = {fname}({name})")
+                finallys = ["finally:", f"{closer}()#", "#", finallys]
         else:
             mapblock.extend(
                 f"{name} = {fname}({name})" for name in map(get_name, self._args)
