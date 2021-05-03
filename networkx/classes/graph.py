@@ -8,6 +8,7 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 For directed graphs see DiGraph and MultiDiGraph.
 """
 from copy import deepcopy
+import numpy as np
 
 import networkx as nx
 from networkx.classes.coreviews import AdjacencyView
@@ -1944,9 +1945,9 @@ class Graph:
 
         """
 #         G=self.graph
-        I=np.ones(len(self._node))
-        Deg=np.zeros((len(self._node),len(self._node)))
-        P=np.zeros((len(self._node),len(self._node)))
+        I=np.ones(self._node)
+        Deg=np.zeros((self._node,self._node))
+        P=np.zeros((self._node,self._node))
         G_diam= nx.diameter(self.graph)
         Dis= self.distance_matrix(self.graph)
     
@@ -1955,14 +1956,14 @@ class Graph:
 
             return None, None, None
         else:
-            for i in range(len(self._node)):
-                for j in range(len(self._node)):
+            for i in range(self._node):
+                for j in range(self._node):
                     if Dis[i,j]==k:
                         P[i,j]=1
                     else:
                         P[i,j]=0
             Result= np.dot(I.T,P)
-            for t in range(len(self._node)):
+            for t in range(self._node):
                 Deg[t,t]=Result[t]
 
             return P,Deg,Deg-P
