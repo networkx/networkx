@@ -1929,7 +1929,7 @@ class Graph:
         -------
         * P: k-Path Adjacency matrix
         * Deg: k Degree matrix
-        * Deg-P: k-path Laplacian
+        * Deg-P: k-path Laplacian.
 
         Example
         -------
