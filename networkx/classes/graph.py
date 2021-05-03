@@ -1948,7 +1948,7 @@ class Graph:
         Deg=np.zeros((len(self._node),len(self._node)))
         P=np.zeros((len(self._node),len(self._node)))
         G_diam= nx.diameter(self.graph)
-        Dis= self.distance_matrix(elf.graph)
+        Dis= self.distance_matrix(self.graph)
     
         if k>G_diam:
             print('{} is greater than {} which is the diameter of your graph. Check it please'.format(k, G_diam))
