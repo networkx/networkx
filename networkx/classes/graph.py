@@ -1847,6 +1847,64 @@ class Graph:
         if v in self._adj[u]:
             return 1
         return 0
+        
+    def distance_matrix(self):
+    
+    """
+    Notes
+    --------
+    A distance between two nodes is the length of the shortest path between these nodes.
+    Is 0 if is between node with itself and infinity if there is no path joining these two nodes
+    (In case of disconected graph).
+    
+    This is a distance function. Given a graph, it return a pairwise distance matrix
+    between nodes. The graph structure is created through networkx library.
+    
+    
+    Parameters
+    ----------
+    G: Graph (Undirected)
+    
+    Return
+    ------
+    Pairwise matrix of distance Between Node
+    
+    Raises
+    ------
+    When The graph is disconnected or directed.
+    
+    
+    Example
+    -------
+    A graph of 5 nodes and 5 edges.
+    
+    >>> G=nx.Graph() # create an empty graph
+    >>> Edges=[(1,2),(2,3),(2,5),(3,4),(4,5)] # Create a list of edges
+    >>> G.add_edges_from(Edges) # Add these edges to the empty graph G.
+    
+
+    >>> print(distance_matrix(G))
+    array([[0, 1, 2, 3, 2],
+       [1, 0, 1, 2, 1],
+       [2, 1, 0, 1, 2],
+       [3, 2, 1, 0, 1],
+       [2, 1, 2, 1, 0]])
+    """
+    
+    D=list(nx.shortest_path_length(self.graph))
+    D=sorted(D,reverse=False)
+    m=list()
+    for i in range(len(D)):
+        k=sorted(D[i][1].items())
+        for l in range(len(k)):
+            b=k[l][1]
+            m.append(b)
+    D1=np.array(m)
+    D1=D1.reshape(len(D),len(D))
+    D1=np.array(m)
+    D1=D1.reshape(len(D),len(D))
+    return D1
+    
     def k_path_Laplacian(self,k):
  
         """
@@ -1890,9 +1948,10 @@ class Graph:
         Deg=np.zeros((len(self._node),len(self._node)))
         P=np.zeros((len(self._node),len(self._node)))
         G_diam= nx.diameter(self.graph)
+        Dis= self.distance_matrix(elf.graph)
     
         if k>G_diam:
-            print('{} is greater than {} which is the diameter of your graph'.format(k, G_diam))
+            print('{} is greater than {} which is the diameter of your graph. Check it please'.format(k, G_diam))
 
             return None, None, None
         else:
