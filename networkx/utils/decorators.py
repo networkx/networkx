@@ -8,7 +8,7 @@ from networkx.utils import create_random_state, create_py_random_state
 
 import inspect, itertools, collections
 
-import re
+import re, gzip, bz2
 
 __all__ = [
     "not_implemented_for",
@@ -85,24 +85,12 @@ def not_implemented_for(*graph_types):
     return argmap(_not_implemented_for, 0)
 
 
-def _open_gz(path, mode):
-    import gzip
-
-    return gzip.open(path, mode=mode)
-
-
-def _open_bz2(path, mode):
-    import bz2
-
-    return bz2.BZ2File(path, mode=mode)
-
-
 # To handle new extensions, define a function accepting a `path` and `mode`.
 # Then add the extension to _dispatch_dict.
 _dispatch_dict = defaultdict(lambda: open)
-_dispatch_dict[".gz"] = _open_gz
-_dispatch_dict[".bz2"] = _open_bz2
-_dispatch_dict[".gzip"] = _open_gz
+_dispatch_dict[".gz"] = gzip.open
+_dispatch_dict[".bz2"] = bz2.BZ2File
+_dispatch_dict[".gzip"] = gzip.open
 
 
 def open_file(path_arg, mode="r"):
@@ -171,7 +159,6 @@ def open_file(path_arg, mode="r"):
     # us, and using "with" would undesirably close that file object. Instead,
     # you use a try block, as shown above. When we exit the function, fobj will
     # be closed, if it should be, by the decorator.
-    file_collector = {}
 
     def _open_file(path):
         # Now we have the path_arg. There are two types of input to consider:
@@ -188,8 +175,6 @@ def open_file(path_arg, mode="r"):
             return path, lambda: None
 
         fobj = _dispatch_dict[ext](path, mode=mode)
-        file_collector[id(fobj)] = fobj
-
         return fobj, lambda: fobj.close()
 
     return argmap.try_finally(_open_file, path_arg)
@@ -377,39 +362,60 @@ def py_random_state(random_state_index):
     return argmap(create_py_random_state, random_state_index)
 
 
+_tabs = " " * 512
+
+
 class argmap:
-    """A decorating class which calls specified functions on a function's
-    arguments before calling it.  We currently support two call syntaxes.
-    One is used to call a single function on multiple arguments,
+    """A decorating class which calls specified transformations on a function's
+    arguments before calling it.  Arguments can be specified either as strings,
+    numerical indices, or (in the next example) tuples thereof
 
-    @argmap(sum, 'x', 2)
-    def foo(x, y, z):
-        return x, y, z
-
-    is equivalent to
-
-    def foo(x, y, z):
-        x = sum(x)
-        z = sum(z)
-        return x, y, z
-
-    The other is used to call multiple functions on multiple arguments.
-    With this syntax, we can avoid quoting the parameters, but can't refer
-    to them with indices.
-
-    @argmap(x = sum, z = any)
-    def foo(x, y, z):
-        return (x, y, z)
+        @argmap(sum, 'x', 2)
+        def foo(x, y, z):
+            return x, y, z
 
     is equivalent to
 
-    def foo(x, y, z):
-        x = sum(x)
-        z = any(z)
-        return (x, y, z)
+        def foo(x, y, z):
+            x = sum(x)
+            z = sum(z)
+            return x, y, z
 
-    This is a draft, not proper documentation, and we might only support
-    one syntax in the final version.
+    Transforming functions can be applied to multiple arguments, such as
+
+        def swap(x, y):
+            return y, x
+
+        @argmap(swap, ('a', 'b')):
+        def foo(a, b, c):
+            return a, b, c
+
+    is equivalent to
+
+        def foo(a, b, c):
+            a, b = swap(a, b)
+            return a, b, z
+
+    Also, transforming functions can preceed a try-finally block, if they both
+    transform an argument and return a closing function:
+
+        def open_file(fn):
+            f = open(fn)
+            return f, lambda: f.close()
+
+        @argmap.try_finally(open_file, 'file')
+        def foo(file):
+            print(file.read())
+
+    is equivalent to
+
+        def foo(file):
+            file, close_file = open_file(file)
+            try:
+                print(file.read())
+            finally:
+                close_file()
+
     """
 
     def __init__(self, func, *args):
@@ -417,33 +423,42 @@ class argmap:
         self._args = args
         self._finally = False
 
-    __count = 0
-
-    @classmethod
-    def _count(self):
-        """Maintain a globally-unique identifier for function names and "file" names"""
-        self.__count += 1
-        return self.__count
-
-    __bad_chars = re.compile("[^a-zA-Z0-9_]")
-
-    @classmethod
-    def name(self, f):
-        """Mangle the name of a function to be unique but somewhat human-readable"""
-        f = f.__name__ if hasattr(f, "__name__") else f
-        fname = re.sub(self.__bad_chars, "_", f)
-        return f"argmap_{fname}_{self._count()}"
-
     @classmethod
     def try_finally(cls, func, *args):
-        """Alternative decorator-constructor which calls func in a finally block"""
+        """Alternative decorator-constructor which first transforms one or more
+        arguments with func, executes the function to be decorated in a try
+        block, and then calls a cleanup function in the associated finally
+        block.  The cleanup function takes no arguments, and is expected to be
+        the second value returned by func.  Hopefully this will be clear with a
+        simple example:
+
+            def open_close(filename):
+                file = open(filename)
+                return file, lambda: file.close()
+
+            @argmap.try_finally(open_close, 0)
+            def print_file(file):
+                print(file.read())
+
+        generates a decorated function
+
+            def print_file(filename):
+                file, close = open_close(filename)
+                try:
+                    print(file.read())
+                finally:
+                    close()
+
+        """
         dec = cls(func, *args)
         dec._finally = True
         return dec
 
     @staticmethod
-    def lazy_compile(func):
-        real_func = func.__argmap_compile__()
+    def _lazy_compile(func):
+        """Assemble and compile the source of our optimized decorator, and
+        intrusively replace its code with the compiled version's."""
+        real_func = func.__argmap__.compile(func.__wrapped__)
         func.__code__ = real_func.__code__
         func.__globals__.update(real_func.__globals__)
         func.__dict__.update(real_func.__dict__)
@@ -453,21 +468,18 @@ class argmap:
         """Construct a lazily decorated wrapper of f.  The decorated function
         will be compiled when it is called for the first time, and it will
         replace its own __code__ object so subsequent calls are fast."""
-        if inspect.iscoroutinefunction(f):
 
-            async def func(*args, __wrapper=None, **kwargs):
-                return await argmap.lazy_compile(__wrapper)(*args, **kwargs)
-
-        elif inspect.isgeneratorfunction(f):
+        if inspect.isgeneratorfunction(f):
 
             def func(*args, __wrapper=None, **kwargs):
-                yield from argmap.lazy_compile(__wrapper)(*args, **kwargs)
+                yield from argmap._lazy_compile(__wrapper)(*args, **kwargs)
 
         else:
 
             def func(*args, __wrapper=None, **kwargs):
-                return argmap.lazy_compile(__wrapper)(*args, **kwargs)
+                return argmap._lazy_compile(__wrapper)(*args, **kwargs)
 
+        # standard function-wrapping stuff
         func.__name__ = f.__name__
         func.__doc__ = f.__doc__
         func.__defaults__ = f.__defaults__
@@ -475,45 +487,60 @@ class argmap:
         func.__module__ = f.__module__
         func.__qualname__ = f.__qualname__
         func.__dict__.update(f.__dict__)
+        func.__wrapped__ = f
+
+        # now that we've wrapped f, we may have picked up some __dict__ or
+        # __kwdefaults__ items that were set by a previous argmap.  thus, we set
+        # these values after those update() calls.
+
+        # If we attempt to access func from within  itself, that happens through
+        # a closure -- which trips an error when we replace func.__code__.  The
+        # standard workaround for functions which can't see themselves is to use
+        # a Y-combinator, as we do here.
         func.__kwdefaults__["_argmap__wrapper"] = func
-        func.__argmap_assemble__ = lambda: self.assemble(f)
-        func.__argmap_compile__ = lambda: self.compile(f)
+
+        # this self-reference is here because functools.wraps preserves
+        # everything in __dict__, and we don't want to mistake a non-argmap
+        # wrapper for an argmap wrapper
+        func.__self__ = func
+
+        # this is used to variously call self.assemble and self.compile
+        func.__argmap__ = self
+
         return func
+
+    __count = 0
+
+    @classmethod
+    def _count(cls):
+        """Maintain a globally-unique identifier for function names and "file" names"""
+        cls.__count += 1
+        return cls.__count
+
+    _bad_chars = re.compile("[^a-zA-Z0-9_]")
+
+    @classmethod
+    def name(cls, f):
+        """Mangle the name of a function to be unique but somewhat human-readable"""
+        f = f.__name__ if hasattr(f, "__name__") else f
+        fname = re.sub(cls._bad_chars, "_", f)
+        return f"argmap_{fname}_{cls._count()}"
 
     def compile(self, f):
         """Called once for a given decorated function -- collects the code from all
         argmap decorators in the stack, and compiles the decorated function."""
-        body = sig, wrapped_name, functions, mapblock, finallys = self.assemble(f)
-
-        def flatten(nestlist):
-            for thing in nestlist:
-                if isinstance(thing, str):
-                    yield thing
-                else:
-                    yield from flatten(thing)
-
-        def indent(lines):
-            depth = 0
-            tabs = " " * 512
-            for line in flatten(lines):
-                yield f"{tabs[:depth]}{line}"
-                depth += (line[-1] == ":") - (line[-1] == "#")
+        sig, wrapped_name, functions, mapblock, finallys, mutable_args = self.assemble(
+            f
+        )
 
         call = f"{sig.call_sig.format(wrapped_name)}#"
-        code = "\n".join(
-            indent(
-                [
-                    sig.def_sig,
-                    mapblock,
-                    call,
-                    finallys,
-                ]
-            )
-        )
+        mut_args = f"{sig.args} = list({sig.args})" if mutable_args else ""
+        body = argmap._indent(sig.def_sig, mut_args, mapblock, call, finallys)
+        code = "\n".join(body)
 
         locl = {}
         globl = dict(functions.values())
-        filename = f"{self.__class__} compilation {self.__class__._count()}"
+        filename = f"{self.__class__} compilation {self._count()}"
         compiled = compile(code, filename, "exec")
         exec(compiled, globl, locl)
         wrapper = locl[sig.name]
@@ -524,20 +551,49 @@ class argmap:
         """Collects the requisite data to compile the decorated version of f.
         Note, this is recursive, and all argmap-decorators will be flattened
         into a single function call"""
-        if hasattr(f, "__argmap_assemble__"):
-            sig, wrapped_name, functions, mapblock, finallys = f.__argmap_assemble__()
+
+        # first, we check if f is already argmapped -- if that's the case,
+        # build up the function recursively.
+        # > mapblock is generally a list of function calls of the sort
+        #     arg = func(arg)
+        # in addition to some try-blocks.
+        # > finallys is a recursive list of finally blocks of the sort
+        #         finally:
+        #             close_func_1()
+        #     finally:
+        #         close_func_2()
+        # > functions is a dict of functions used in the scope of our decorated
+        # function.  It will be used to construct globals used in compilation.
+        # We make functions[id(f)] = name_of_f, f to ensure that a given
+        # function is stored and named exactly once.
+        if hasattr(f, "__argmap__") and f.__self__ is f:
+            (
+                sig,
+                wrapped_name,
+                functions,
+                mapblock,
+                finallys,
+                mutable_args,
+            ) = f.__argmap__.assemble(f.__wrapped__)
+            functions = dict(functions)  # shallow-copy just in case
         else:
             sig = self.signature(f)
             wrapped_name = self.name(f)
-            mapblock, trys, finallys = [], [], []
+            mapblock, finallys = [], []
             functions = {id(f): (wrapped_name, f)}
+            mutable_args = False
 
         if id(self._func) in functions:
             fname, _ = functions[id(self._func)]
         else:
             fname, _ = functions[id(self._func)] = self.name(self._func), self._func
 
-        def get_name(arg, first=True, applied=set()):
+        # this is a bit complicated -- we can call functions with a variety of
+        # arguments, so long as their input and output are tuples with the same
+        # structure
+        applied = set()
+
+        def get_name(arg, first=True):
             if isinstance(arg, tuple):
                 name = ", ".join(get_name(x, False) for x in arg)
                 return name if first else f"({name})"
@@ -553,37 +609,39 @@ class argmap:
                     )
                 return f"{sig.kwargs}[{arg!r}]"
             else:
-                if sig.kwargs is None:
+                if sig.args is None:
                     raise nx.NetworkXError(
                         f"index {arg} not a parameter index and this function doesn't have args"
                     )
+                mutable_args = True
                 return f"{sig.args}[{arg-sig.n_positional}]"
 
         if self._finally:
             for a in self._args:
-                mapblock.append("try:")
                 name = get_name(a)
-                closer = self.name(name)
-                mapblock.append(f"{name}, {closer} = {fname}({name})")
-                finallys = ["finally:", f"{closer}()#", "#", finallys]
+                final = self.name(name)
+                mapblock.append(f"{name}, {final} = {fname}({name})")
+                mapblock.append("try:")
+                finallys = ["finally:", f"{final}()#", "#", finallys]
         else:
             mapblock.extend(
                 f"{name} = {fname}({name})" for name in map(get_name, self._args)
             )
 
-        return sig, wrapped_name, functions, mapblock, finallys
+        return sig, wrapped_name, functions, mapblock, finallys, mutable_args
 
     @classmethod
     def signature(cls, f):
-        """compute a signature for wrapping f"""
+        """Compute a Signature so that we can write a function wrapping f with
+        the same signature and call-type."""
         sig = inspect.signature(f, follow_wrapped=False)
         def_sig = []
         call_sig = []
         names = {}
 
         kind = None
-        star = None
-        kwar = None
+        args = None
+        kwargs = None
         npos = 0
         for i, param in enumerate(sig.parameters.values()):
             names[i] = names[param.name] = param.name
@@ -603,11 +661,11 @@ class argmap:
             # star arguments as appropriate
             if kind == param.VAR_POSITIONAL:
                 name = "*" + param.name
-                star = param.name
+                args = param.name
                 count = 0
             elif kind == param.VAR_KEYWORD:
                 name = "**" + param.name
-                kwar = param.name
+                kwargs = param.name
                 count = 0
             else:
                 name = param.name
@@ -623,20 +681,16 @@ class argmap:
             def_sig.append(name)
 
         fname = cls.name(f)
-        coroutine = inspect.iscoroutinefunction(f)
-        _async = "async " if coroutine else ""
-        def_sig = f'{_async}def {fname}({", ".join(def_sig)}):'
+        def_sig = f'def {fname}({", ".join(def_sig)}):'
 
-        if coroutine:
-            _return = "return await"
-        elif inspect.isgeneratorfunction(f):
+        if inspect.isgeneratorfunction(f):
             _return = "yield from"
         else:
             _return = "return"
 
         call_sig = f"{_return} {{}}({', '.join(call_sig)})"
 
-        return cls.Signature(fname, sig, def_sig, call_sig, names, npos, star, kwar)
+        return cls.Signature(fname, sig, def_sig, call_sig, names, npos, args, kwargs)
 
     Signature = collections.namedtuple(
         "Signature",
@@ -651,3 +705,42 @@ class argmap:
             "kwargs",
         ],
     )
+
+    @staticmethod
+    def _flatten(nestlist, visited):
+        """flattens a recursive list of lists that doesn't have cyclic references"""
+        for thing in nestlist:
+            if visited.get(id(thing)) is None:
+                visited[id(thing)] = True
+            else:
+                raise ValueError("A cycle was found in nestlist.  Be a tree.")
+            if isinstance(thing, list):
+                yield from argmap._flatten(thing, visited)
+            else:
+                yield thing
+
+    _tabs = " " * 64
+
+    @staticmethod
+    def _indent(*lines):
+        """indents a tree-recursive list of strings, following the rule that one
+        space is added to the tab after a line that ends in a colon, and one is
+        removed after a line that ends in an hashmark, for example
+
+            ["try:", "try:", "pass#", "finally":", "pass#", "#", "finally:", "pass#"]
+
+        renders to
+
+            try:
+             try:
+              pass#
+             finally:
+              pass#
+             #
+            finally:
+             pass#
+        """
+        depth = 0
+        for line in argmap._flatten(lines, {}):
+            yield f"{argmap._tabs[:depth]}{line}"
+            depth += (line[-1:] == ":") - (line[-1:] == "#")
