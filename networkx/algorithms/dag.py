@@ -114,9 +114,9 @@ def topological_sort(G, with_generation=False):
     ----------
     G : NetworkX digraph
         A directed acyclic graph (DAG)
-    with_generation : bool
-        Whether to also return the generation of the node, such that all
-        ancestors are in a previous generation, and all descendants
+    with_generation : bool, optional
+        Whether to also yield the earliest possible generation of the node, such
+        that all ancestors are in a previous generation, and all descendants
         are in a following generation.
 
     Returns
@@ -183,7 +183,11 @@ def topological_sort(G, with_generation=False):
     zero_indegree = deque(v for v, d in G.in_degree() if d == 0)
 
     generation = 0
-    last_node_in_generation = zero_indegree[-1]
+    if zero_indegree:
+        last_node_in_generation = zero_indegree[-1]
+    else:
+        raise nx.NetworkXUnfeasible("Graph contains a cycle.")
+
     while zero_indegree:
         node = zero_indegree.popleft()
         if node not in G:
@@ -421,7 +425,8 @@ def all_topological_sorts(G):
 def topological_generations(G):
     """Stratifies a DAG into generations, such that any ancestors of a node in each
     generation are guaranteed to be in a previous generation, and any descendants of
-    a node are guaranteed to be in a following generation.
+    a node are guaranteed to be in a following generation. Nodes are guaranteed to
+    be in the earliest possible generation that they can belong to.
 
     Parameters
     ----------
@@ -441,7 +446,7 @@ def topological_generations(G):
 
     NetworkXUnfeasible
         If `G` is not a directed acyclic graph (DAG) no topological generations
-        exists and a :exc:`NetworkXUnfeasible` exception is raised.  This can also
+        exist and a :exc:`NetworkXUnfeasible` exception is raised.  This can also
         be raised if `G` is changed while the returned iterator is being processed
 
     RuntimeError
@@ -449,8 +454,6 @@ def topological_generations(G):
 
     Examples
     --------
-    To get the reverse order of the topological sort:
-
     >>> DG = nx.DiGraph([(2, 1), (3, 1)])
     >>> list(nx.topological_generations(DG))
     [[2, 3], [1]]
