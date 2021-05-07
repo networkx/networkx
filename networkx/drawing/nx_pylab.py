@@ -347,7 +347,7 @@ def draw_networkx_nodes(
     linewidths=None,
     edgecolors=None,
     label=None,
-    auto_margins=True,
+    margins=None,
 ):
     """Draw the nodes of the graph G.
 
@@ -403,9 +403,8 @@ def draw_networkx_nodes(
     label : [None | string]
         Label for legend
 
-    auto_margins : bool (default=True)
-        Indicates whether to calculate plot margins based on nodes closest to
-        edges.
+    margins : [None | list] (default=None)
+        Horizontal and vertical plot margins
 
     Returns
     -------
@@ -476,39 +475,7 @@ def draw_networkx_nodes(
         labelleft=False,
     )
 
-    if auto_margins:
-        try:  # sets x and y margins separately if node_size is iterable
-            node_coords_sizes = list(zip(pos.items(), node_size))
-
-            x_min = sorted(node_coords_sizes, key=lambda a: a[0][1][0], reverse=False)[
-                0
-            ]
-            x_max = sorted(node_coords_sizes, key=lambda a: a[0][1][0], reverse=True)[0]
-            x_node_size = max([x_min, x_max], key=itemgetter(1))[1]
-
-            if x_node_size >= 500:
-                x_margin = (x_node_size / 100) / 72
-            else:
-                x_margin = (x_node_size / 50) / 72
-
-            y_min = sorted(node_coords_sizes, key=lambda a: a[0][1][1], reverse=False)[
-                0
-            ]
-            y_max = sorted(node_coords_sizes, key=lambda a: a[0][1][1], reverse=True)[0]
-            y_node_size = max([y_min, y_max], key=itemgetter(1))[1]
-
-            if y_node_size >= 500:
-                y_margin = (y_node_size / 100) / 72
-            else:
-                y_margin = (y_node_size / 50) / 72
-
-        except:  # if node_size is not iterable, sets margins uniformly
-            if node_size >= 500:
-                x_margin, y_margin = (node_size / 100) / 72, (node_size / 100) / 72
-            else:
-                x_margin, y_margin = (node_size / 50) / 72, (node_size / 50) / 72
-
-        ax.margins(x_margin, y_margin)
+    ax.margins(margins[0], margins[1])
 
     node_collection.set_zorder(2)
     return node_collection
