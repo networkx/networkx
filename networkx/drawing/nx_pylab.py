@@ -404,7 +404,7 @@ def draw_networkx_nodes(
         Label for legend
 
     margins : [None | list] (default=None)
-        Horizontal and vertical plot margins
+        Horizontal and vertical plot margins. List should contain exactly two elements.
 
     Returns
     -------
