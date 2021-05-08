@@ -475,7 +475,7 @@ def draw_networkx_nodes(
     )
 
     if margins is not None:
-        ax.margins(margins[0], margins[1])
+        ax.margins(*margins) if isinstance(Iterable, margins) else ax.margins(margins)
 
     node_collection.set_zorder(2)
     return node_collection
