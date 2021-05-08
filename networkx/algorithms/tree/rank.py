@@ -31,6 +31,9 @@ __all__ = [
 
 
 _ResultRank = namedtuple("_ResultRank", ["w", "e", "a", "y", "z"])
+_ATTR_LABEL = "label_"
+"""str: name of the additional edge attribute used as unique ID."""
+_ATTR = "weight"
 
 logger.remove(0)
 handler_id = logger.add(sys.stderr, level="SUCCESS")
@@ -73,7 +76,8 @@ class DiGraphMap(DiGraphEnhanced):
         source_map: Dict[str, str],
         target_map: Dict[str, str],
         weight_map: Dict[str, float],
-        attr: Optional[str] = "weight",
+        attr: str,
+        attr_label: str,
     ):
         """Init a directed graph according to lists and maps.
 
@@ -84,12 +88,14 @@ class DiGraphMap(DiGraphEnhanced):
             target_map: the target node of any edge keyed by edge.
             weight_map: the weight of any edge keyed by edge.
             attr: the edge attribute used to in determining optimality.
-
+            attr_label: the edge attribute used as unique ID for edge.
         """
         super().__init__()
 
         self.attr = attr
         """str: the edge attribute used to in determining optimality."""
+        self.attr_label = attr_label
+        """str: the edge attribute used as unique ID for edge."""
 
         # Add all the edges based on maps.
         edge_dict = {}
@@ -103,8 +109,7 @@ class DiGraphMap(DiGraphEnhanced):
                 self.add_edge(
                     u_of_edge=source_map[edge],
                     v_of_edge=target_map[edge],
-                    label=edge,
-                    **{self.attr: weight_map[edge]},
+                    **{self.attr: weight_map[edge], self.attr_label: edge},
                 )
                 edge_dict[edge] = (source_map[edge], target_map[edge])
             except KeyError:
@@ -130,7 +135,12 @@ class DiGraphMap(DiGraphEnhanced):
         self.weight_map = {e: weight_map[e] for e in edges}
 
     @classmethod
-    def from_nx(cls, dg: nx.DiGraph, attr: Optional[str] = "weight"):
+    def from_nx(
+        cls,
+        dg: nx.DiGraph,
+        attr: str,
+        attr_label: str,
+    ):
         """Init by extracting dictionaries from a multi directed graph.
 
         Args:
@@ -148,14 +158,16 @@ class DiGraphMap(DiGraphEnhanced):
         # Tuples with three entries are returned.
         for edge in dg.edges.data():
             try:
-                label = edge[2]["label"]
+                label = edge[2][attr_label]
                 edges.add(label)
                 source_map[label] = edge[0]
                 target_map[label] = edge[1]
                 weight_map[label] = edge[2][attr]
             except KeyError:
                 logger.error(f'Edge "{edge[0]}, {edge[1]}" is incorrect.')
-        return cls(dg.nodes, edges, source_map, target_map, weight_map)
+        return cls(
+            dg.nodes, edges, source_map, target_map, weight_map, attr, attr_label
+        )
 
     def edges_inv_map(
         self, value: str, attrname: Optional[str] = "target"
@@ -187,21 +199,6 @@ class DiGraphMap(DiGraphEnhanced):
                 res.append(edge_label)
         return res
 
-    # @property
-    # def maps(self) -> Tuple[Dict[str, str], Dict[str, str]]:
-    #     """Get two mapping functions for the graph.
-
-    #     Returns:
-    #         Two maps, ``sources`` and ``targets``.
-    #     """
-    #     sources = {}
-    #     targets = {}
-    #     for e in self.edges.data():
-    #         label = e[2]["label"]
-    #         sources[label] = e[0]
-    #         targets[label] = e[1]
-    #     return sources, targets
-
 
 class MultiDiGraphMap(nx.MultiDiGraph):
     """Connected multi directed graph defined by lists and maps.
@@ -225,7 +222,8 @@ class MultiDiGraphMap(nx.MultiDiGraph):
         source_map: Dict[str, str],
         target_map: Dict[str, str],
         weight_map: Dict[str, float],
-        attr: Optional[str] = "weight",
+        attr: str,
+        attr_label: str,
     ):
         """Init a multi directed graph according to lists and maps.
 
@@ -257,11 +255,15 @@ class MultiDiGraphMap(nx.MultiDiGraph):
             target_map: the target node of any edge keyed by edge.
             weight_map: the weight of any edge keyed by edge.
             attr: the edge attribute used to in determining optimality.
+            attr_label: the edge attribute used as unique ID for any
+                edge.
         """
         super().__init__()
 
         self.attr = attr
         """str: the edge attribute used to in determining optimality."""
+        self.attr_label = attr_label
+        """str: the edge attribute used as unique ID for any edge."""
 
         # Add all the edges based on maps.
         edge_dict = {}
@@ -270,8 +272,7 @@ class MultiDiGraphMap(nx.MultiDiGraph):
                 idx = self.add_edge(
                     u_for_edge=source_map[edge],
                     v_for_edge=target_map[edge],
-                    label=edge,
-                    **{self.attr: weight_map[edge]},
+                    **{self.attr: weight_map[edge], self.attr_label: edge},
                 )
                 edge_dict[edge] = (source_map[edge], target_map[edge], idx)
             except KeyError:
@@ -299,12 +300,18 @@ class MultiDiGraphMap(nx.MultiDiGraph):
         self.name = "?"
 
     @classmethod
-    def from_nx(cls, dg: nx.MultiDiGraph, attr: Optional[str] = "weight"):
+    def from_nx(
+        cls,
+        dg: nx.MultiDiGraph,
+        attr: str,
+        attr_label: str,
+    ):
         """Init by extracting dictionaries from a multi directed graph.
 
         Args:
             dg: a multi directed graph.
             attr: the edge attribute used to in determining optimality.
+            attr_label: the edge attribute used as unique ID for edge.
 
         Returns:
             MultiDiGraphMap: multi directed graph defined by maps.
@@ -317,14 +324,19 @@ class MultiDiGraphMap(nx.MultiDiGraph):
         # Tuples with three entries are returned.
         for edge in dg.edges.data():
             try:
-                label = edge[2]["label"]
+                label = edge[2][attr_label]
                 edges.add(label)
                 source_map[label] = edge[0]
                 target_map[label] = edge[1]
                 weight_map[label] = edge[2][attr]
             except KeyError:
-                logger.error(f'Edge "{edge[0]}, {edge[1]}" is incorrect.')
-        return cls(dg.nodes, edges, source_map, target_map, weight_map, attr)
+                logger.error(
+                    f'Edge "{edge[0]}, {edge[1]}" is incorrect. There are key-errors '
+                    f"associated with attributes {attr} or(and) {attr_label}."
+                )
+        return cls(
+            dg.nodes, edges, source_map, target_map, weight_map, attr, attr_label
+        )
 
     @property
     def maps(self) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, float]]:
@@ -337,7 +349,7 @@ class MultiDiGraphMap(nx.MultiDiGraph):
         targets = {}
         weights = {}
         for e in self.edges.data():
-            label = e[2]["label"]
+            label = e[2][self.attr_label]
             sources[label] = e[0]
             targets[label] = e[1]
             weights[label] = e[2][self.attr]
@@ -387,7 +399,7 @@ class MultiDiGraphMap(nx.MultiDiGraph):
         if v in self.nodes:
             in_edges_v = list(self.in_edges(v, data=True))
 
-            data = {edge[2]["label"]: edge[2][self.attr] for edge in in_edges_v}
+            data = {edge[2][self.attr_label]: edge[2][self.attr] for edge in in_edges_v}
             res = max(data, key=lambda k: data[k])
             logger.info(
                 f'Edge "{res}" is the in-edge of node "{v}" '
@@ -502,7 +514,7 @@ class MultiDiGraphMap(nx.MultiDiGraph):
             ]
             edge_keys[i] = weights.index(max(weights))
             e_i = self.edges[(nodes_cycle[i], nodes_cycle[i + 1], edge_keys[i])][
-                "label"
+                self.attr_label
             ]
 
             edges = self.edges_inv_map(i)
@@ -572,11 +584,13 @@ class MultiDiGraphMap(nx.MultiDiGraph):
             res.add_edge(
                 nodes_cycle[i],
                 nodes_cycle[i + 1],
-                label=edge_in_g["label"],
-                **{self.attr: edge_in_g[self.attr]},
+                **{
+                    self.attr: edge_in_g[self.attr],
+                    self.attr_label: edge_in_g[self.attr_label],
+                },
             )
 
-        res = DiGraphMap.from_nx(res, self.attr)
+        res = DiGraphMap.from_nx(res, self.attr, self.attr_label)
         return res
 
     def get_subgraph(self, edges: Set[str]):
@@ -594,8 +608,7 @@ class MultiDiGraphMap(nx.MultiDiGraph):
                 res.add_edge(
                     self.source_map[edge],
                     self.target_map[edge],
-                    label=edge,
-                    **{self.attr: self.weight_map[edge]},
+                    **{self.attr: self.weight_map[edge], self.attr_label: edge},
                 )
             except KeyError:
                 logger.error(f'Edge "{edge}" is not in the {self.name} graph.')
@@ -603,7 +616,7 @@ class MultiDiGraphMap(nx.MultiDiGraph):
                 break
 
         if res:
-            res = MultiDiGraphMap.from_nx(res, self.attr)
+            res = MultiDiGraphMap.from_nx(res, self.attr, self.attr_label)
         return res
 
     def constrain_subgraph(self, branch: Set[str], edges: Set[str]):
@@ -710,6 +723,8 @@ def collapse_into_cycle(
     g: MultiDiGraphMap,
     cycle: DiGraphMap,
     root: str,
+    attr: str,
+    attr_label: str,
     node_corresponding: Optional[str] = None,
 ) -> Tuple[MultiDiGraphMap, str]:
     """Collapse a multi directed graph into a deep cycle.
@@ -733,6 +748,8 @@ def collapse_into_cycle(
         g: the original graph.
         cycle: a deep cycle.
         root: the specified root node in the graph.
+        attr: the edge attribute used to in determining optimality.
+        attr_label: the edge attribute used as unique ID for edge.
         node_corresponding: which node in the deep cycle to be kept.
             Default to be None, then the first node will be chosen. It
             is referred to as the node corresponding to the deep cycle.
@@ -765,8 +782,8 @@ def collapse_into_cycle(
     else:
         if node_corresponding not in cycle.nodes:
             raise KeyError(
-                f"The corresponding node {node_corresponding} must be "
-                f"in the deep cycle {cycle};"
+                f'The corresponding node "{node_corresponding}"" must be '
+                f'in the deep cycle "{cycle}";'
             )
         else:
             node_dict_c[n_c] = node_corresponding
@@ -824,7 +841,13 @@ def collapse_into_cycle(
             weight_map_c[e_label] = g.weight_map[e_label]
 
     res = MultiDiGraphMap(
-        list(node_dict_c.values()), edges_c, source_map_c, target_map_c, weight_map_c
+        list(node_dict_c.values()),
+        edges_c,
+        source_map_c,
+        target_map_c,
+        weight_map_c,
+        attr,
+        attr_label,
     )
 
     logger.info(
@@ -857,6 +880,8 @@ class MinSpanSolver:
         lbd: Dict[str, str],
         forest: nx.DiGraph,
         root: str,
+        attr: str,
+        attr_label: str,
     ):
         """Init using current values.
 
@@ -868,7 +893,11 @@ class MinSpanSolver:
             lbd: the current lbd. Keys are nodes, and edges are values.
             forest: the current facilitating forest.
             root: the specified root node in the graph.
+            attr: the edge attribute used to in determining optimality.
+            attr_label: the edge attribute used as unique ID for edge.
         """
+        self.attr = attr
+        self.attr_label = attr_label
         self.original = deepcopy(m)
         self.original.name = "original"
         nx.freeze(self.original)
@@ -887,12 +916,14 @@ class MinSpanSolver:
         self.e = None
 
     @classmethod
-    def from_map(cls, m: MultiDiGraphMap, root: str):
+    def from_map(cls, m: MultiDiGraphMap, root: str, attr: str, attr_label: str):
         """Init a solver from a multi directed graph with maps.
 
         Args:
             m: a mapped directed graph.
             root: the specified root node in the graph.
+            attr: the edge attribute used to in determining optimality.
+            attr_label: the edge attribute used as unique ID for edge.
 
         Returns:
             An initiated solver for min spanning rooted tree.
@@ -909,7 +940,7 @@ class MinSpanSolver:
         lbd = {}
         forest = nx.DiGraph()
 
-        res = cls(m, branch, cycles, lbd, forest, root)
+        res = cls(m, branch, cycles, lbd, forest, root, attr, attr_label)
         logger.info("A solver for max span arborescence has been initiated.")
         return res
 
@@ -1011,7 +1042,7 @@ class MinSpanSolver:
 
         if u and a_deep_cycle:
             self.cycles[u] = {
-                data["label"] for _, _, data in a_deep_cycle.edges(data=True)
+                data[self.attr_label] for _, _, data in a_deep_cycle.edges(data=True)
             }
 
         logger.debug(f'Node "{v}" has been processed.')
@@ -1167,7 +1198,12 @@ class MinSpanSolver:
             logger.debug(f"The branching has been slimmed to {self.branch}.")
 
             self.m, u = collapse_into_cycle(
-                self.m, a_deep_cycle, self.root, node_corresponding=node_corresponding
+                self.m,
+                a_deep_cycle,
+                self.root,
+                self.attr,
+                self.attr_label,
+                node_corresponding=node_corresponding,
             )
         else:
             u = None
@@ -1229,7 +1265,8 @@ def _next_sa(
     a: Arborescence,
     y: Set[str],
     z: Set[str],
-    attr: Optional[str] = "weight",
+    attr: str,
+    attr_label: str,
 ) -> Tuple[str, float]:
     """Find ``e`` and ``d`` based on a given spanning arborescence.
 
@@ -1240,20 +1277,21 @@ def _next_sa(
         z: a set of edges of the original graph, and these edges are not
             contained in the branching.
         attr: the edge attribute used to in determining optimality.
+        attr_label: the edge attribute used as unique ID for edge.
 
     Returns:
         ``e`` and ``d``.
     """
     logger.debug(f"Branching {y} and edges subset {z} are passed.")
 
-    n = MultiDiGraphMap.from_nx(raw, attr)
+    n = MultiDiGraphMap.from_nx(raw, attr, attr_label)
     m = n.constrain_subgraph(y, z)
 
     if not a.root:
         logger.error("Root of the previous spanning arborescence is not specified.")
-    mss = MinSpanSolver.from_map(m, a.root)
+    mss = MinSpanSolver.from_map(m, a.root, attr, attr_label)
 
-    a = DiGraphMap.from_nx(a, attr)
+    a = DiGraphMap.from_nx(a, attr, attr_label)
 
     v = mss.first_node_exposed
     while v:
@@ -1270,7 +1308,8 @@ def _max_sa(
     root: str,
     branch: Set[str],
     edges: Set[str],
-    attr: Optional[str] = "weight",
+    attr: str,
+    attr_label: str,
 ) -> Arborescence:
     """Find the max spanning arborescence of a directed graph.
 
@@ -1296,6 +1335,7 @@ def _max_sa(
         edges: a set of edges of the original graph, and these edges are
             not contained in the branching.
         attr: the edge attribute used to in determining optimality.
+        attr_label: the edge attribute used as unique ID for edge.
 
     Returns:
         The max spanning arborescence.
@@ -1304,11 +1344,11 @@ def _max_sa(
     logger.debug(f"The pass branching is {branch}.")
     logger.debug(f"The pass edges are {edges}.")
 
-    n = MultiDiGraphMap.from_nx(n_raw, attr)
+    n = MultiDiGraphMap.from_nx(n_raw, attr, attr_label)
     m = n.constrain_subgraph(branch, edges)
 
     # MSA
-    mss = MinSpanSolver.from_map(m, root)
+    mss = MinSpanSolver.from_map(m, root, attr, attr_label)
     v = mss.first_node_exposed
     while v:
         mss.process(v)
@@ -1319,11 +1359,11 @@ def _max_sa(
 
     res = Arborescence(res)
 
-    if any(edge not in res.df_edges["label"].tolist() for edge in branch):
+    if any(edge not in res.df_edges[attr_label].tolist() for edge in branch):
         logger.error("All edges in the branching should be found in the SA.")
     if any(
         edge not in {e for e in n.edge_dict.keys() if e not in edges}
-        for edge in res.df_edges["label"]
+        for edge in res.df_edges[attr_label]
     ):
         logger.error(
             "All edges in the SA should be found in original edge set "
@@ -1390,10 +1430,13 @@ def _is_reachable(g: nx.DiGraph, root: str) -> bool:
 
 
 def label_edges(g: nx.DiGraph) -> nx.DiGraph:
-    """Check if label attribute exists and label all edges if not.
+    """Label all the edges automatically.
 
     Args:
         g: the original directed graph.
+
+    Raises:
+        Exception: when some edge already has attribute "label_".
 
     Returns:
         The original directed graph with all edges labelled.
@@ -1401,13 +1444,13 @@ def label_edges(g: nx.DiGraph) -> nx.DiGraph:
     g_labelled = nx.DiGraph(g)
     i = 1
     for edge in g_labelled.edges.data():
-        if "label" in edge[2]:
+        if _ATTR_LABEL in edge[2]:
             raise Exception(
-                f'The edge {edge[0]}-{edge[1]} already has the "label" attribute.'
+                f"The edge {edge[0]}-{edge[1]} already has the {_ATTR_LABEL} attribute."
             )
         else:
-            edge[2]["label"] = f"e{i}"
-            i += 1
+            edge[2][_ATTR_LABEL] = f"e{i}"
+        i += 1
 
     return g_labelled
 
@@ -1445,8 +1488,8 @@ class DescendSpanningArborescences:
         self,
         g: nx.DiGraph,
         root: str,
-        attr: Optional[str] = "weight",
-        labelled: Optional[bool] = True,
+        attr: Optional[str] = _ATTR,
+        attr_label: Optional[str] = _ATTR_LABEL,
     ):
         """Init a generator to descend weighted spanning arborescences.
 
@@ -1454,22 +1497,27 @@ class DescendSpanningArborescences:
             If all the edges have "label" attribute, there is no need
             to label them automatically.
 
-        Args: g: a directed graph with weighted edges. root: specified
-            root of spanning arborescences. attr: the edge attribute
-            used to in determining optimality. labelled: if the graph
-            has been labelled.
+        Args:
+            g: a directed graph with weighted edges.
+            root: specified root of spanning arborescences.
+            attr: the edge attribute used to in determining optimality.
+            attr_label: the edge attribute used as unique ID for edge.
+                Default to be "label_", which will be automatically
+                created uniquely for every edge.
         """
         self.root = root
         """str: name of the node which is set as root."""
         self.attr = attr
         """str: the edge attribute used to in determining optimality."""
+        self.attr_label = attr_label
+        """str: the edge attribute used as unique ID for edge."""
 
-        if labelled:
-            g_label = g
-        else:
+        if self.attr_label == _ATTR_LABEL:
             g_label = label_edges(g)
+        else:
+            g_label = g
 
-        self.raw = MultiDiGraphMap.from_nx(g_label, attr)
+        self.raw = MultiDiGraphMap.from_nx(g_label, self.attr, self.attr_label)
         nx.freeze(self.raw)
 
         _is_reachable(self.raw, self.root)
@@ -1479,14 +1527,16 @@ class DescendSpanningArborescences:
         if edges_to_root:
             logger.error(f"There are edges, {edges_to_root}, directed into root.")
 
-        self.msa = _max_sa(self.raw, self.root, set(), set(), self.attr)
+        self.msa = _max_sa(
+            self.raw, self.root, set(), set(), self.attr, self.attr_label
+        )
         print(nx.to_pandas_edgelist(self.msa))
         logger.success(
             "The max spanning arborescence (SA) has weight "
             f"{self.msa.size(weight=self.attr)}."
         )
 
-        e, d = _next_sa(self.raw, self.msa, set(), set(), self.attr)
+        e, d = _next_sa(self.raw, self.msa, set(), set(), self.attr, self.attr_label)
         self.p_list = [
             _ResultRank(self.msa.size(weight=self.attr) - d, e, self.msa, set(), set())
         ]  # Index will be used later, so a list is required.
@@ -1520,7 +1570,9 @@ class DescendSpanningArborescences:
             z_prime = pre.z.copy()
             z_prime.add(pre.e)
 
-            a_current = _max_sa(self.raw, self.root, pre.y, z_prime, self.attr)
+            a_current = _max_sa(
+                self.raw, self.root, pre.y, z_prime, self.attr, self.attr_label
+            )
             self.rank += 1
             logger.success(
                 f"SA ranks {self.rank} with weight "
@@ -1544,7 +1596,7 @@ class DescendSpanningArborescences:
             if edges_to_root:
                 logger.error(f"There are edges, {edges_to_root}, directed into root.")
 
-            e, d = _next_sa(self.raw, pre.a, y_prime, pre.z, self.attr)
+            e, d = _next_sa(self.raw, pre.a, y_prime, pre.z, self.attr, self.attr_label)
             self.p_list.append(
                 _ResultRank(
                     pre.a.size(weight=self.attr) - d,
@@ -1555,7 +1607,9 @@ class DescendSpanningArborescences:
                 )
             )
 
-            e, d = _next_sa(self.raw, a_current, pre.y, z_prime, self.attr)
+            e, d = _next_sa(
+                self.raw, a_current, pre.y, z_prime, self.attr, self.attr_label
+            )
             self.p_list.append(
                 _ResultRank(
                     pre.w - d,
