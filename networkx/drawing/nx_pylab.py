@@ -474,7 +474,8 @@ def draw_networkx_nodes(
         labelleft=False,
     )
 
-    ax.margins(margins[0], margins[1])
+    if margins is not None:
+        ax.margins(margins[0], margins[1])
 
     node_collection.set_zorder(2)
     return node_collection
