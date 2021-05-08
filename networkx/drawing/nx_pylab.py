@@ -432,7 +432,6 @@ def draw_networkx_nodes(
     import matplotlib as mpl
     import matplotlib.collections  # call as mpl.collections
     import matplotlib.pyplot as plt
-    from operator import itemgetter
 
     if ax is None:
         ax = plt.gca()
