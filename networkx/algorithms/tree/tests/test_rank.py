@@ -23,6 +23,8 @@ TARGET_MAP = {"e1": "b2", "e2": "b4", "e3": "b3", "e4": "b2", "e5": "b4", "e6": 
 WEIGHT_MAP = {"e1": 6, "e2": 1, "e3": 10, "e4": 10, "e5": 12, "e6": 8}
 DEEP_CYCLES = [{"e3", "e4"}, {"e4", "e5", "e6"}]
 EM = generic_edge_match(["weight", "label"], [0, "b1"], [close, eq])
+_ATTR_LABEL = "label"
+_ATTR = "weight"
 
 
 @pytest.fixture(scope="module")
@@ -64,32 +66,35 @@ def dg_label() -> nx.DiGraph:
     return dg
 
 
-def check_example_camerini1980ranking(g: nx.DiGraph, attr: str):
+def check_example_camerini1980ranking(g: nx.DiGraph, attr: str, attr_label: str):
     """Test the example in [camerini1980ranking]_ for ranking SAs.
 
     Args:
         dg: case in [camerini1980ranking]_ with 4 buses and 6 edges.
         attr: the edge attribute used to in determining optimality.
+        attr_label: the edge attribute used as unique ID for edge.
     """
-    solver = rank.DescendSpanningArborescences(g, root="b1", attr=attr)
+    solver = rank.DescendSpanningArborescences(
+        g, root="b1", attr=attr, attr_label=attr_label
+    )
 
-    assert set(solver.msa.df_edges["label"]) == {"e1", "e3", "e5"}
+    assert set(solver.msa.df_edges[attr_label]) == {"e1", "e3", "e5"}
     assert solver.msa.size(weight=attr) == 28
 
     res2 = next(solver)[0]
-    assert set(res2.df_edges["label"]) == {"e1", "e5", "e6"}
+    assert set(res2.df_edges[attr_label]) == {"e1", "e5", "e6"}
     assert res2.size(weight=attr) == 26
 
     res3 = next(solver)[0]
-    assert set(res3.df_edges["label"]) == {"e2", "e4", "e6"}
+    assert set(res3.df_edges[attr_label]) == {"e2", "e4", "e6"}
     assert res3.size(weight=attr) == 19
 
     res4 = next(solver)[0]
-    assert set(res4.df_edges["label"]) == {"e1", "e2", "e3"}
+    assert set(res4.df_edges[attr_label]) == {"e1", "e2", "e3"}
     assert res3.size(weight=attr) == 19
 
     res5 = next(solver)[0]
-    assert set(res5.df_edges["label"]) == {"e1", "e2", "e6"}
+    assert set(res5.df_edges[attr_label]) == {"e1", "e2", "e6"}
     assert res3.size(weight=attr) == 19
 
     assert not nx.is_frozen(g)
@@ -98,17 +103,16 @@ def check_example_camerini1980ranking(g: nx.DiGraph, attr: str):
 
 def test_descend_sa_attr(dg_attr: nx.DiGraph):
     """Check if another attribute can be used to in determining optimality."""
-    check_example_camerini1980ranking(dg_attr, "distance")
+    check_example_camerini1980ranking(dg_attr, "distance", _ATTR_LABEL)
 
 
-def test_descend_sa_label(dg_label: nx.DiGraph):
+def test_descend_sa_label_auto(dg_label: nx.DiGraph):
     """Check if the graph is labelled automatically."""
     attr = "weight"
     solver = rank.DescendSpanningArborescences(
         dg_label,
         root="b1",
         attr=attr,
-        labelled=False,
     )
     assert solver.msa.size(weight=attr) == 28
 
@@ -116,7 +120,7 @@ def test_descend_sa_label(dg_label: nx.DiGraph):
 @pytest.fixture(scope="module")
 def dgm(dg: nx.MultiDiGraph) -> rank.MultiDiGraphMap:
     """Init the case in [camerini1980ranking]. """
-    res = rank.MultiDiGraphMap.from_nx(dg, "weight")
+    res = rank.MultiDiGraphMap.from_nx(dg, _ATTR, _ATTR_LABEL)
     return res
 
 
@@ -125,14 +129,13 @@ def test_collapse_into_cycle(dgm: rank.DiGraphMap):
 
     Note:
         There is only one deep cycle in this case.
-
     """
     cycle = nx.DiGraph()
     cycle.add_edge("b3", "b2", label="e4", weight=10)
     cycle.add_edge("b2", "b3", label="e3", weight=10)
-    cycle = rank.DiGraphMap.from_nx(cycle)
+    cycle = rank.DiGraphMap.from_nx(cycle, _ATTR, _ATTR_LABEL)
 
-    g, n = rank.collapse_into_cycle(dgm, cycle, "b1", node_corresponding="b2")
+    g, n = rank.collapse_into_cycle(dgm, cycle, "b1", _ATTR, _ATTR_LABEL, "b2")
     assert set(g.nodes) == {"b1", "b2", "b4"} and n == "b2"
 
 
@@ -162,11 +165,11 @@ def a3() -> rank.Arborescence:
 def msa() -> rank.DiGraphMap:
     """Init min spanning arborescence of case in [camerini1980ranking]."""
     g = nx.DiGraph()
-    g.add_edge("b1", "b2", weight=6, label="e1")
-    g.add_edge("b2", "b3", weight=10, label="e3")
-    g.add_edge("b2", "b4", weight=12, label="e5")
+    g.add_edge("b1", "b2", **{_ATTR: 6, _ATTR_LABEL: "e1"})
+    g.add_edge("b2", "b3", **{_ATTR: 10, _ATTR_LABEL: "e3"})
+    g.add_edge("b2", "b4", **{_ATTR: 12, _ATTR_LABEL: "e5"})
 
-    res = rank.DiGraphMap.from_nx(g)
+    res = rank.DiGraphMap.from_nx(g, _ATTR, _ATTR_LABEL)
     return res
 
 
@@ -188,11 +191,14 @@ def test_next_sa(
         a3: the third spanning arborescence in [camerini1980ranking].
     """
     msa.root = "b1"
-    assert rank._next_sa(dg, msa, set(), set()) == ("e3", 2)
-    assert rank._next_sa(dg, msa, {"e3"}, set()) == ("e5", 11)
-    assert rank._next_sa(dg, a2, set(), {"e3"}) == ("e1", 7)
-    assert rank._next_sa(dg, a2, {"e1"}, {"e3"}) == ("e5", 11)
-    assert rank._next_sa(dg, a3, set(), {"e1", "e3"}) == (None, math.inf)
+    assert rank._next_sa(dg, msa, set(), set(), _ATTR, _ATTR_LABEL) == ("e3", 2)
+    assert rank._next_sa(dg, msa, {"e3"}, set(), _ATTR, _ATTR_LABEL) == ("e5", 11)
+    assert rank._next_sa(dg, a2, set(), {"e3"}, _ATTR, _ATTR_LABEL) == ("e1", 7)
+    assert rank._next_sa(dg, a2, {"e1"}, {"e3"}, _ATTR, _ATTR_LABEL) == ("e5", 11)
+    assert rank._next_sa(dg, a3, set(), {"e1", "e3"}, _ATTR, _ATTR_LABEL) == (
+        None,
+        math.inf,
+    )
 
 
 def test_descend_sa(dg: nx.MultiDiGraph):
@@ -201,7 +207,7 @@ def test_descend_sa(dg: nx.MultiDiGraph):
     Args:
         dg: case in [camerini1980ranking]_ with 4 buses and 6 edges.
     """
-    check_example_camerini1980ranking(dg, "weight")
+    check_example_camerini1980ranking(dg, _ATTR, _ATTR_LABEL)
 
 
 @pytest.fixture(scope="module")
@@ -232,7 +238,6 @@ def m2() -> nx.MultiDiGraph:
     return res
 
 
-@pytest.mark.usefixtures("dg")
 def test_init_map(dg: nx.MultiDiGraph):
     """Check if multi directed graph can be defined by lists and maps.
 
@@ -242,7 +247,7 @@ def test_init_map(dg: nx.MultiDiGraph):
     """
     graphs = {}
     graphs["full"] = rank.MultiDiGraphMap(
-        NODES, EDGES, SOURCE_MAP, TARGET_MAP, WEIGHT_MAP
+        NODES, EDGES, SOURCE_MAP, TARGET_MAP, WEIGHT_MAP, _ATTR, _ATTR_LABEL
     )
     for node in graphs["full"].node_set:
         assert node in dg.nodes
@@ -253,7 +258,13 @@ def test_init_map(dg: nx.MultiDiGraph):
     _nodes_without_1 = ["b2", "b3", "b4"]
     _edges_without_12 = ["e3", "e4", "e5", "e6"]
     graphs["small"] = rank.MultiDiGraphMap(
-        _nodes_without_1, _edges_without_12, SOURCE_MAP, TARGET_MAP, WEIGHT_MAP
+        _nodes_without_1,
+        _edges_without_12,
+        SOURCE_MAP,
+        TARGET_MAP,
+        WEIGHT_MAP,
+        _ATTR,
+        _ATTR_LABEL,
     )
     for node in graphs["small"].node_set:
         assert node in _nodes_without_1
@@ -264,7 +275,7 @@ def test_init_map(dg: nx.MultiDiGraph):
     # There is an extra node called 'b1', but it is not considered.
     _edges_without_12 = ["e3", "e4", "e5", "e6"]
     graphs["extra_node"] = rank.MultiDiGraphMap(
-        NODES, _edges_without_12, SOURCE_MAP, TARGET_MAP, WEIGHT_MAP
+        NODES, _edges_without_12, SOURCE_MAP, TARGET_MAP, WEIGHT_MAP, _ATTR, _ATTR_LABEL
     )
     assert "b1" not in graphs["extra_node"].node_set
 
@@ -295,11 +306,11 @@ def test_deep_cycles(dgm: rank.MultiDiGraphMap):
         len(res) == 2
         and type(list(res)[0]) is rank.DiGraphMap
         and (
-            set(data["label"] for _, _, data in list(res)[0].edges(data=True))
+            set(data[_ATTR_LABEL] for _, _, data in list(res)[0].edges(data=True))
             in DEEP_CYCLES
         )
         and (
-            set(data["label"] for _, _, data in list(res)[1].edges(data=True))
+            set(data[_ATTR_LABEL] for _, _, data in list(res)[1].edges(data=True))
             in DEEP_CYCLES
         )
     )
@@ -329,7 +340,7 @@ def test_mss(dgm: rank.MultiDiGraphMap, m1: nx.MultiDiGraph, m2: nx.MultiDiGraph
         m2: the second resulted graph of the test case in
             [camerini1980ranking].
     """
-    mss = rank.MinSpanSolver.from_map(dgm, "b1")
+    mss = rank.MinSpanSolver.from_map(dgm, "b1", _ATTR, _ATTR_LABEL)
 
     mss.process(v="b2")
 
@@ -408,13 +419,13 @@ def test_seek(
         m2: the second resulted graph of the test case in
             [camerini1980ranking].
     """
-    mss = rank.MinSpanSolver.from_map(dgm, "b1")
+    mss = rank.MinSpanSolver.from_map(dgm, "b1", _ATTR, _ATTR_LABEL)
     assert mss._seek("e3", msa) == ("e6", 2)
 
-    mss.m = rank.MultiDiGraphMap.from_nx(m1)
+    mss.m = rank.MultiDiGraphMap.from_nx(m1, _ATTR, _ATTR_LABEL)
     assert mss._seek("e5", msa)[0] == "e2"
 
-    mss.m = rank.MultiDiGraphMap.from_nx(m2)
+    mss.m = rank.MultiDiGraphMap.from_nx(m2, _ATTR, _ATTR_LABEL)
     assert mss._seek("e1", msa)[0] == "e2"
 
 
@@ -436,7 +447,7 @@ def test_process_next(
         m2: the second resulted graph of the test case
             in [camerini1980ranking].
     """
-    mss = rank.MinSpanSolver.from_map(dgm, "b1")
+    mss = rank.MinSpanSolver.from_map(dgm, "b1", _ATTR, _ATTR_LABEL)
     mss.process_next(msa, "b2")
 
     assert set(mss.branch) == {"e4"}
@@ -468,6 +479,6 @@ def test_max_sa(dg: nx.MultiDiGraph, msa: rank.DiGraphMap):
         msa (DiGraphMap): the max spanning arborescence of the test case
             in [camerini1980ranking].
     """
-    msa_result = rank._max_sa(dg, "b1", set(), set())
+    msa_result = rank._max_sa(dg, "b1", set(), set(), _ATTR, _ATTR_LABEL)
     assert type(msa_result) is rank.Arborescence
     assert nx.is_isomorphic(msa_result, msa, edge_match=EM)
