@@ -183,10 +183,7 @@ def topological_sort(G, with_generation=False):
     zero_indegree = deque(v for v, d in G.in_degree() if d == 0)
 
     generation = 0
-    if zero_indegree:
-        last_node_in_generation = zero_indegree[-1]
-    else:
-        raise nx.NetworkXUnfeasible("Graph contains a cycle.")
+    last_node_in_generation = zero_indegree[-1] if zero_indegree else None
 
     while zero_indegree:
         node = zero_indegree.popleft()
@@ -476,8 +473,8 @@ def topological_generations(G):
             yield level
             level = [node]
             current_generation = generation
-    yield level 
-
+    if level:
+        yield level 
 
 
 def is_aperiodic(G):

@@ -477,6 +477,58 @@ class TestDAG:
         sorting = list(nx.lexicographical_topological_sort(G, key=sorting_key))
         assert sorting == test_nodes
 
+    def test_topological_sort_with_generation(self):
+        G = nx.DiGraph({
+            1: [2, 3],
+            2: [4, 5],
+            3: [7],
+            4: [],
+            5: [6, 7],
+            6: [],
+            7: [],
+        }).reverse()
+        result = sorted(nx.topological_sort(G, with_generation=True),
+                        key=lambda x: (x[1], x[0]))
+        expected = [(4, 0), (6, 0), (7, 0), (3, 1), (5, 1), (2, 2), (1, 3)]
+        assert result == expected
+
+    def test_empty_topological_sort_with_generation(self):
+        G = nx.DiGraph()
+        result = sorted(nx.topological_sort(G, with_generation=True),
+                        key=lambda x: (x[1], x[0]))
+        assert result == []
+
+    def test_topological_sort_with_generation_cycle(self):
+        G = nx.DiGraph([[2, 1], [3, 1], [1, 2]])
+        pytest.raises(
+            nx.NetworkXUnfeasible,
+            lambda: list(nx.topological_sort(G, with_generation=True))
+        )
+
+    def test_topological_generations(self):
+        G = nx.DiGraph({
+            1: [2, 3],
+            2: [4, 5],
+            3: [7],
+            4: [],
+            5: [6, 7],
+            6: [],
+            7: [],
+        }).reverse()
+        # order within each generation is inconsequential
+        generations = [sorted(gen) for gen in nx.topological_generations(G)]
+        expected = [[4, 6, 7], [3, 5], [2], [1]]
+        assert generations == expected
+
+    def test_topological_generations_empty(self):
+        G = nx.DiGraph()
+        assert list(nx.topological_generations(G)) == []
+
+    def test_topological_generations_cycle(self):
+        G = nx.DiGraph([[2, 1], [3, 1], [1, 2]])
+        pytest.raises(nx.NetworkXUnfeasible,
+                      lambda: list(nx.topological_generations(G)))
+
 
 def test_is_aperiodic_cycle():
     G = nx.DiGraph()
