@@ -403,8 +403,8 @@ def draw_networkx_nodes(
     label : [None | string]
         Label for legend
 
-    margins : [None | list] (default=None)
-        Horizontal and vertical plot margins. List should contain exactly two elements.
+    margins : Sequence of 2 numbers or None (default=None)
+        The sequence contains horizontal and vertical axis margins. Adjust to avoid image being clipped.
 
     Returns
     -------
