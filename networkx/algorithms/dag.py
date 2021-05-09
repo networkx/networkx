@@ -474,7 +474,7 @@ def topological_generations(G):
             level = [node]
             current_generation = generation
     if level:
-        yield level 
+        yield level
 
 
 def is_aperiodic(G):
