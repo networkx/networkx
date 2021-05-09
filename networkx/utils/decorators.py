@@ -67,19 +67,22 @@ def not_implemented_for(*graph_types):
         ), "Function not implemented on graph AND multigraphs?"
     if not set(graph_types) < {"directed", "undirected", "multigraph", "graph"}:
         raise KeyError(
-            "use one or more of "
-            f"directed, undirected, multigraph, graph, {graph_types}"
+            "use one or more of directed, undirected, multigraph, graph.  "
+            f"You used {graph_types}"
         )
 
+
+    # 3-way logic: True if "directed" input, False if "undirected" input, else None
     dval = ("directed" in graph_types) or not ("undirected" in graph_types) and None
     mval = ("multigraph" in graph_types) or not ("graph" in graph_types) and None
     errmsg = f"not implemented for {' '.join(graph_types)} type"
 
     def _not_implemented_for(g):
-        if (mval is not None and mval == g.is_multigraph()) or (
-            dval is not None and dval == g.is_directed()
+        if (mval is None or mval == g.is_multigraph()) and (
+            dval is None or dval == g.is_directed()
         ):
             raise nx.NetworkXNotImplemented(errmsg)
+
         return g
 
     return argmap(_not_implemented_for, 0)
@@ -366,8 +369,8 @@ _tabs = " " * 512
 
 
 class argmap:
-    """A decorating class which calls specified transformations on a function's
-    arguments before calling it.  Arguments can be specified either as strings,
+    """A decorating class which applies a map to a function's arguments before
+    calling it.  Arguments can be specified either as strings,
     numerical indices, or (in the next example) tuples thereof
 
         @argmap(sum, 'x', 2)

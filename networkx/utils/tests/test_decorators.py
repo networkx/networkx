@@ -49,6 +49,37 @@ def test_not_implemented_decorator():
     with pytest.raises(nx.NetworkXNotImplemented):
         test_g(nx.Graph())
 
+    # not MultiDiGraph  (multiple arguments => AND)
+    @not_implemented_for("directed", "multigraph")
+    def test_not_md(G):
+        pass
+
+    test_not_md(nx.Graph())
+    test_not_md(nx.DiGraph())
+    test_not_md(nx.MultiGraph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_not_md(nx.MultiDiGraph())
+
+    # Graph only      (multiple decorators =>  OR)
+    @not_implemented_for("directed")
+    @not_implemented_for("multigraph")
+    def test_graph_only(G):
+        pass
+
+    test_graph_only(nx.Graph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_graph_only(nx.DiGraph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_graph_only(nx.MultiGraph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_graph_only(nx.MultiDiGraph())
+
+    with pytest.raises(AssertionError):
+        not_implemented_for("directed", "undirected")
+
+    with pytest.raises(AssertionError):
+        not_implemented_for("multigraph", "graph")
+
 
 def test_not_implemented_decorator_key():
     with pytest.raises(KeyError):
