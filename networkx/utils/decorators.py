@@ -71,7 +71,6 @@ def not_implemented_for(*graph_types):
             f"You used {graph_types}"
         )
 
-
     # 3-way logic: True if "directed" input, False if "undirected" input, else None
     dval = ("directed" in graph_types) or not ("undirected" in graph_types) and None
     mval = ("multigraph" in graph_types) or not ("graph" in graph_types) and None
@@ -370,14 +369,32 @@ _tabs = " " * 512
 
 class argmap:
     """A decorating class which applies a map to a function's arguments before
-    calling it.  Arguments can be specified either as strings,
-    numerical indices, or (in the next example) tuples thereof
+    calling it.
+
+    Parameters
+    ----------
+    func : callable
+        The function to apply to arguments
+
+    *params: iterable of (int, str or tuple)
+        A list of parameters, specified either as strings (their names), ints
+        (numerical indices) or arbitrarily nested tuples thereof.
+
+    Examples
+    --------
+    The decorated function
 
         @argmap(sum, 'x', 2)
         def foo(x, y, z):
             return x, y, z
 
     is equivalent to
+
+        @argmap(sum, 'z', 0)
+        def foo(x, y, z):
+            return x, y, z
+
+    or
 
         def foo(x, y, z):
             x = sum(x)
@@ -432,8 +449,19 @@ class argmap:
         arguments with func, executes the function to be decorated in a try
         block, and then calls a cleanup function in the associated finally
         block.  The cleanup function takes no arguments, and is expected to be
-        the second value returned by func.  Hopefully this will be clear with a
-        simple example:
+        the second value returned by func.
+
+        Parameters
+        ----------
+        func : callable
+            The function to apply to arguments
+
+        *params: iterable of (int, str or tuple)
+            A list of parameters, specified either as strings (their names),
+            ints (numerical indices) or arbitrarily nested tuples thereof.
+
+        Examples
+        --------
 
             def open_close(filename):
                 file = open(filename)
@@ -460,7 +488,20 @@ class argmap:
     @staticmethod
     def _lazy_compile(func):
         """Assemble and compile the source of our optimized decorator, and
-        intrusively replace its code with the compiled version's."""
+        intrusively replace its code with the compiled version's.
+
+        Parameters
+        ----------
+        func : callable
+            A function returned by argmap.__call__ which is in the process
+            of being called for the first time.
+
+        Returns
+        -------
+        func : callable
+            The same function, with a new __code__ object.
+
+        """
         real_func = func.__argmap__.compile(func.__wrapped__)
         func.__code__ = real_func.__code__
         func.__globals__.update(real_func.__globals__)
@@ -470,7 +511,20 @@ class argmap:
     def __call__(self, f):
         """Construct a lazily decorated wrapper of f.  The decorated function
         will be compiled when it is called for the first time, and it will
-        replace its own __code__ object so subsequent calls are fast."""
+        replace its own __code__ object so subsequent calls are fast.
+
+        Parameters
+        ----------
+        f : callable
+            A function to be decorated.
+
+        Returns
+        -------
+        func : callable
+            The decorated function.
+
+
+        """
 
         if inspect.isgeneratorfunction(f):
 
@@ -516,22 +570,50 @@ class argmap:
 
     @classmethod
     def _count(cls):
-        """Maintain a globally-unique identifier for function names and "file" names"""
+        """Maintain a globally-unique identifier for function names and "file" names
+
+        Returns
+        -------
+        count : int
+        """
         cls.__count += 1
         return cls.__count
 
     _bad_chars = re.compile("[^a-zA-Z0-9_]")
 
     @classmethod
-    def name(cls, f):
-        """Mangle the name of a function to be unique but somewhat human-readable"""
+    def _name(cls, f):
+        """Mangle the name of a function to be unique but somewhat human-readable
+
+        Parameters
+        ----------
+        f : str or object
+
+        Returns
+        -------
+        name : str
+            The mangled version of f.__name__ (if f.__name__ exists) or f
+
+        """
         f = f.__name__ if hasattr(f, "__name__") else f
         fname = re.sub(cls._bad_chars, "_", f)
         return f"argmap_{fname}_{cls._count()}"
 
     def compile(self, f):
         """Called once for a given decorated function -- collects the code from all
-        argmap decorators in the stack, and compiles the decorated function."""
+        argmap decorators in the stack, and compiles the decorated function.
+
+        Parameters
+        ----------
+        f : callable
+            The function to be decorated
+
+        Returns
+        -------
+        func : callable
+            The decorated file
+
+        """
         sig, wrapped_name, functions, mapblock, finallys, mutable_args = self.assemble(
             f
         )
@@ -546,14 +628,38 @@ class argmap:
         filename = f"{self.__class__} compilation {self._count()}"
         compiled = compile(code, filename, "exec")
         exec(compiled, globl, locl)
-        wrapper = locl[sig.name]
-        wrapper._code = code
-        return wrapper
+        func = locl[sig.name]
+        func._code = code
+        return func
 
     def assemble(self, f):
         """Collects the requisite data to compile the decorated version of f.
         Note, this is recursive, and all argmap-decorators will be flattened
-        into a single function call"""
+        into a single function call
+
+        Parameters
+        ----------
+        f : callable
+            The function to be assembled
+
+        Returns
+        -------
+        sig : argmap.Signature
+            The function signature.
+        wrapped_name : str
+            The mangled name used to represent the wrapped function in the code
+            being assembled.
+        functions : dict
+            A dictionary mapping id(g) -> (mangled_name(g), g) for functions g
+            referred to in the code being assembled
+        mapblock : list of lists and/or strings
+            Code that implements mapping of parameters including try blocks
+        finallys : list of lists and/or strings
+            Code that implements the closing-functions in finally blocks
+        mutable_args : bool
+            True if the compiled function will attempt to modify positional
+            arguments via their indices.
+        """
 
         # first, we check if f is already argmapped -- if that's the case,
         # build up the function recursively.
@@ -581,7 +687,7 @@ class argmap:
             functions = dict(functions)  # shallow-copy just in case
         else:
             sig = self.signature(f)
-            wrapped_name = self.name(f)
+            wrapped_name = self._name(f)
             mapblock, finallys = [], []
             functions = {id(f): (wrapped_name, f)}
             mutable_args = False
@@ -589,7 +695,7 @@ class argmap:
         if id(self._func) in functions:
             fname, _ = functions[id(self._func)]
         else:
-            fname, _ = functions[id(self._func)] = self.name(self._func), self._func
+            fname, _ = functions[id(self._func)] = self._name(self._func), self._func
 
         # this is a bit complicated -- we can call functions with a variety of
         # arguments, so long as their input and output are tuples with the same
@@ -622,7 +728,7 @@ class argmap:
         if self._finally:
             for a in self._args:
                 name = get_name(a)
-                final = self.name(name)
+                final = self._name(name)
                 mapblock.append(f"{name}, {final} = {fname}({name})")
                 mapblock.append("try:")
                 finallys = ["finally:", f"{final}()#", "#", finallys]
@@ -636,7 +742,19 @@ class argmap:
     @classmethod
     def signature(cls, f):
         """Compute a Signature so that we can write a function wrapping f with
-        the same signature and call-type."""
+        the same signature and call-type.
+
+        Parameters
+        ----------
+        f : callable
+            A function to be decorated
+
+        Returns
+        -------
+        sig : argmap.Signature
+            The Signature of f
+
+        """
         sig = inspect.signature(f, follow_wrapped=False)
         def_sig = []
         call_sig = []
@@ -683,7 +801,7 @@ class argmap:
 
             def_sig.append(name)
 
-        fname = cls.name(f)
+        fname = cls._name(f)
         def_sig = f'def {fname}({", ".join(def_sig)}):'
 
         if inspect.isgeneratorfunction(f):
@@ -711,13 +829,28 @@ class argmap:
 
     @staticmethod
     def _flatten(nestlist, visited):
-        """flattens a recursive list of lists that doesn't have cyclic references"""
+        """flattens a recursive list of lists that doesn't have cyclic references
+
+        Parameters
+        ----------
+        nestlist : iterable
+            A recursive list of objects to be flattened into a single iterable
+
+        visited : set
+            A set of object ids which have been walked -- initialize with an
+            empty set
+
+        Yields
+        ------
+        Non-list objects contained in nestlist
+
+        """
         for thing in nestlist:
-            if visited.get(id(thing)) is None:
-                visited[id(thing)] = True
-            else:
-                raise ValueError("A cycle was found in nestlist.  Be a tree.")
             if isinstance(thing, list):
+                if id(thing) in visited:
+                    raise ValueError("A cycle was found in nestlist.  Be a tree.")
+                else:
+                    visited.add(id(thing))
                 yield from argmap._flatten(thing, visited)
             else:
                 yield thing
@@ -728,13 +861,27 @@ class argmap:
     def _indent(*lines):
         """indents a tree-recursive list of strings, following the rule that one
         space is added to the tab after a line that ends in a colon, and one is
-        removed after a line that ends in an hashmark, for example
+        removed after a line that ends in an hashmark.
 
-            ["try:", "try:", "pass#", "finally":", "pass#", "#", "finally:", "pass#"]
+        Parameters
+        ----------
+        *lines : lists and/or strings
+            A recursive list of strings to be assembled into properly indented
+            code.
+
+        Returns
+        -------
+        code : str
+
+        Examples
+        --------
+
+            argmap._indent(*["try:", "try:", "pass#", "finally":", "pass#", "#",
+                             "finally:", "pass#"])
 
         renders to
 
-            try:
+            '''try:
              try:
               pass#
              finally:
@@ -742,8 +889,9 @@ class argmap:
              #
             finally:
              pass#
+            '''
         """
         depth = 0
-        for line in argmap._flatten(lines, {}):
+        for line in argmap._flatten(lines, set()):
             yield f"{argmap._tabs[:depth]}{line}"
             depth += (line[-1:] == ":") - (line[-1:] == "#")
