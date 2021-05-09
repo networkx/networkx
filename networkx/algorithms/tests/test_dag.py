@@ -492,7 +492,7 @@ class TestDAG:
         expected = [(4, 0), (6, 0), (7, 0), (3, 1), (5, 1), (2, 2), (1, 3)]
         assert result == expected
 
-    def test_empty_topological_sort_with_generation(self):
+    def test_topological_sort_with_generation_empty(self):
         G = nx.DiGraph()
         result = sorted(nx.topological_sort(G, with_generation=True),
                         key=lambda x: (x[1], x[0]))
