@@ -26,7 +26,7 @@ import numpy as np
 
 __all__ = [
     "DescendSpanningArborescences",
-    # "AscendSpanningArborescences",
+    "AscendSpanningArborescences",
 ]
 
 
@@ -1449,32 +1449,6 @@ def label_edges(g: nx.DiGraph) -> nx.DiGraph:
 
 
 class DescendSpanningArborescences:
-    """
-    Generator to descend spanning arborescences by total edge weights.
-
-    A tuple for a spanning arborescence and its rank every time is
-    returned in each iteration.
-
-    A list of tuples, ``p_list``, is maintained during the iteration.
-    There are two steps in each iteration:
-
-        - Take out the tuple with the max weight and find the max
-          spanning arborescence based on the graph constrained by
-          parameters in this tuple. The weight of this tuple is the
-          weight of the max spanning arborescence.
-        - Append two new tuples to the list.
-
-    Attributes:
-
-        raw (MultiDiGraphMap): the original directed graph.
-        msa (Arborescence): the max spanning arborescence.
-        rank (int): rank of the current spanning arborescence.
-        p_list (List[tuple]): sorted list of tuples storing candidate
-            spanning arborescences that might be used in future
-            iteration.
-
-    """
-
     _threshold = 1e-4
 
     def __init__(
@@ -1484,20 +1458,6 @@ class DescendSpanningArborescences:
         attr: Optional[str] = _ATTR,
         attr_label: Optional[str] = _ATTR_LABEL,
     ):
-        """Init a generator to descend weighted spanning arborescences.
-
-        Note:
-            If all the edges have "label" attribute, there is no need
-            to label them automatically.
-
-        Args:
-            g: a directed graph with weighted edges.
-            root: specified root of spanning arborescences.
-            attr: the edge attribute used to in determining optimality.
-            attr_label: the edge attribute used as unique ID for edge.
-                Default to be "label_", which will be automatically
-                created uniquely for every edge.
-        """
         self.root = root
         """str: name of the node which is set as root."""
         self.attr = attr
@@ -1524,9 +1484,8 @@ class DescendSpanningArborescences:
         self.msa = _max_sa(
             self.raw, self.root, set(), set(), self.attr, self.attr_label
         )
-        print(nx.to_pandas_edgelist(self.msa))
         logger.success(
-            "The max spanning arborescence (SA) has weight "
+            "The max/min spanning arborescence (SA) has weight "
             f"{self.msa.size(weight=self.attr)}."
         )
 
@@ -1543,7 +1502,7 @@ class DescendSpanningArborescences:
         return self
 
     def __next__(self) -> Tuple[Arborescence, int]:
-        """Get a spanning arborescence with higher rank and less weight.
+        """Get a spanning arborescence with a higher rank.
 
         Raises:
             StopIteration: when there is no more spanning arborescence.
@@ -1615,3 +1574,82 @@ class DescendSpanningArborescences:
             )
 
             return a_current, self.rank
+
+
+class AscendSpanningArborescences(DescendSpanningArborescences):
+    def __init__(
+        self, g: nx.DiGraph, root: str, attr: Optional[str], attr_label: Optional[str]
+    ):
+        self.attr_max = max(nx.get_edge_attributes(g, attr).values())
+        self.attr = attr  # Will be overridden when init, but essential here.
+        g_inv = self.inverse_attr(g)
+
+        super().__init__(g_inv, root, attr=attr, attr_label=attr_label)
+        self.msa = self.inverse_attr(self.msa)
+
+    def inverse_attr(self, g: nx.DiGraph) -> nx.DiGraph:
+        """Use max numerical weight minus all the edge weight.
+
+        Args:
+            g: a given directed graph.
+
+        Returns:
+            A directed graph with all the edge weights inversed.
+        """
+        g_inv = nx.DiGraph(g)
+        for u, v in g_inv.edges():
+            g_inv.edges[u, v][self.attr] = self.attr_max - g_inv.edges[u, v][self.attr]
+        return g_inv
+
+    def __next__(self) -> Tuple[Arborescence, int]:
+        a_current, _ = super().__next__()
+        a_current_inv = self.inverse_attr(a_current)
+        return a_current_inv, self.rank
+
+
+docstring_cls = """
+    Generator to {direction} weighted spanning arborescences.
+
+    A tuple for a spanning arborescence and its rank every time is
+    returned in each iteration.
+
+    A list of tuples, ``p_list``, is maintained during the iteration.
+    There are two steps in each iteration:
+
+        - Take out the tuple with the {end} total weight and find the
+            {end} spanning arborescence based on the graph constrained by
+            parameters in this tuple. The weight of this tuple is the
+            weight of the {end} spanning arborescence.
+        - Append two new tuples to the list.
+
+    Attributes:
+
+        raw (MultiDiGraphMap): the original directed graph.
+        msa (Arborescence): the {end} spanning arborescence.
+        rank (int): rank of the current spanning arborescence.
+        p_list (List[tuple]): sorted list of tuples storing candidate
+            spanning arborescences that might be used in future
+            iteration.
+"""
+docstring_init = """
+    Init a generator to {direction} weighted spanning arborescences.
+
+    Args:
+        g: a directed graph with all its edges having numerical weight.
+        root: specified root of spanning arborescences.
+        attr: the edge attribute used to in determining optimality.
+        attr_label: the edge attribute used as unique ID for edge.
+            Default to be "label_", which will be automatically
+            created uniquely for every edge.
+"""
+
+DescendSpanningArborescences.__doc__ = docstring_cls.format(
+    direction="descend", end="max"
+)
+AscendSpanningArborescences.__doc__ = docstring_cls.format(
+    direction="ascend", end="min"
+)
+DescendSpanningArborescences.__init__.__doc__ = docstring_init.format(
+    direction="descend"
+)
+AscendSpanningArborescences.__init__.__doc__ = docstring_init.format(direction="ascend")

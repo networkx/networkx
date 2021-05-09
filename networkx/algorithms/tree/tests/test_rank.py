@@ -9,7 +9,7 @@ Test functions and generators in ``rank.py``.
 """
 import math
 from operator import eq
-from typing import Union
+from typing import Set, Union
 
 import networkx as nx
 from networkx.algorithms.isomorphism import generic_edge_match
@@ -67,6 +67,19 @@ def dg_label() -> nx.DiGraph:
     return dg
 
 
+def get_labels(g: nx.DiGraph, attr_label: str) -> Set[str]:
+    """Get labels of a given directed graph.
+
+    Args:
+        g: some directed graph.
+        attr_label: the edge attribute used as unique ID for edge.
+
+    Returns:
+        A set of edge IDs.
+    """
+    return set(nx.get_edge_attributes(g, attr_label).values())
+
+
 def check_example_camerini1980ranking(
     solver: rank.DescendSpanningArborescences,
     attr: str,
@@ -88,21 +101,18 @@ def check_example_camerini1980ranking(
     assert res3.size(weight=attr) == 19
 
     res4 = next(solver)[0]
-    assert res3.size(weight=attr) == 19
+    assert res4.size(weight=attr) == 17
 
     res5 = next(solver)[0]
-    assert res3.size(weight=attr) == 19
+    assert res5.size(weight=attr) == 15
 
     if attr_label:
-
-        def get_labels(g):
-            return set(nx.get_edge_attributes(g, attr_label).values())
-
-        assert get_labels(solver.msa) == {"e1", "e3", "e5"}
-        assert get_labels(res2) == {"e1", "e5", "e6"}
-        assert get_labels(res3) == {"e2", "e4", "e6"}
-        assert get_labels(res4) == {"e1", "e2", "e3"}
-        assert get_labels(res5) == {"e1", "e2", "e6"}
+        labels = lambda g: get_labels(g, attr_label)
+        assert labels(solver.msa) == {"e1", "e3", "e5"}
+        assert labels(res2) == {"e1", "e5", "e6"}
+        assert labels(res3) == {"e2", "e4", "e6"}
+        assert labels(res4) == {"e1", "e2", "e3"}
+        assert labels(res5) == {"e1", "e2", "e6"}
 
     assert nx.is_frozen(solver.raw)
 
@@ -213,7 +223,7 @@ def test_next_sa(
 
 
 def test_descend_sa(dg: nx.MultiDiGraph):
-    """Check the generator to rank spanning arborescences.
+    """Check the generator to descend spanning arborescences.
 
     Args:
         dg: case in [camerini1980ranking]_ with 4 buses and 6 edges.
@@ -223,6 +233,41 @@ def test_descend_sa(dg: nx.MultiDiGraph):
     )
     check_example_camerini1980ranking(solver, _ATTR, _ATTR_LABEL)
     assert not nx.is_frozen(dg)
+
+
+def test_ascend_sa(dg: nx.MultiDiGraph):
+    """Check the generator to ascend spanning arborescences."""
+    solver = rank.AscendSpanningArborescences(
+        dg, root="b1", attr=_ATTR, attr_label=_ATTR_LABEL
+    )
+    assert solver.msa.size(weight=_ATTR) == 15
+    assert (
+        solver.msa.edges["b1", "b2"]["weight"] == 6
+        and solver.msa.edges["b1", "b4"]["weight"] == 1
+        and solver.msa.edges["b4", "b3"]["weight"] == 8
+    )
+
+    res2 = next(solver)[0]
+    assert res2.size(weight=_ATTR) == 17
+
+    res3 = next(solver)[0]
+    assert res3.size(weight=_ATTR) == 19
+
+    res4 = next(solver)[0]
+    assert res4.size(weight=_ATTR) == 26
+
+    res5 = next(solver)[0]
+    assert res5.size(weight=_ATTR) == 28
+
+    # Check if all the SAs are correct.
+    labels = lambda x: get_labels(x, _ATTR_LABEL)
+    assert labels(res5) == {"e1", "e3", "e5"}
+    assert labels(res4) == {"e1", "e5", "e6"}
+    assert labels(res3) == {"e2", "e4", "e6"}
+    assert labels(res2) == {"e1", "e2", "e3"}
+    assert labels(solver.msa) == {"e1", "e2", "e6"}
+
+    assert nx.is_frozen(solver.raw)
 
 
 @pytest.fixture(scope="module")
