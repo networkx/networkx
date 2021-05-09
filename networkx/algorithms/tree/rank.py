@@ -1517,6 +1517,7 @@ class DescendSpanningArborescences:
         else:
             g_label = g
 
+        # A copy of the original graph is initiated and frozen.
         self.raw = MultiDiGraphMap.from_nx(g_label, self.attr, self.attr_label)
         nx.freeze(self.raw)
 

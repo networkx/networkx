@@ -9,6 +9,7 @@ Test functions and generators in ``rank.py``.
 """
 import math
 from operator import eq
+from typing import Union
 
 import networkx as nx
 from networkx.algorithms.isomorphism import generic_edge_match
@@ -66,55 +67,61 @@ def dg_label() -> nx.DiGraph:
     return dg
 
 
-def check_example_camerini1980ranking(g: nx.DiGraph, attr: str, attr_label: str):
+def check_example_camerini1980ranking(
+    solver: rank.DescendSpanningArborescences,
+    attr: str,
+    attr_label: Union[str, None],
+):
     """Test the example in [camerini1980ranking]_ for ranking SAs.
 
     Args:
-        dg: case in [camerini1980ranking]_ with 4 buses and 6 edges.
+        solver: the generator to return SAs.
         attr: the edge attribute used to in determining optimality.
         attr_label: the edge attribute used as unique ID for edge.
     """
-    solver = rank.DescendSpanningArborescences(
-        g, root="b1", attr=attr, attr_label=attr_label
-    )
-
-    assert set(solver.msa.df_edges[attr_label]) == {"e1", "e3", "e5"}
     assert solver.msa.size(weight=attr) == 28
 
     res2 = next(solver)[0]
-    assert set(res2.df_edges[attr_label]) == {"e1", "e5", "e6"}
     assert res2.size(weight=attr) == 26
 
     res3 = next(solver)[0]
-    assert set(res3.df_edges[attr_label]) == {"e2", "e4", "e6"}
     assert res3.size(weight=attr) == 19
 
     res4 = next(solver)[0]
-    assert set(res4.df_edges[attr_label]) == {"e1", "e2", "e3"}
     assert res3.size(weight=attr) == 19
 
     res5 = next(solver)[0]
-    assert set(res5.df_edges[attr_label]) == {"e1", "e2", "e6"}
     assert res3.size(weight=attr) == 19
 
-    assert not nx.is_frozen(g)
+    if attr_label:
+        assert set(solver.msa.df_edges[attr_label]) == {"e1", "e3", "e5"}
+        assert set(res2.df_edges[attr_label]) == {"e1", "e5", "e6"}
+        assert set(res3.df_edges[attr_label]) == {"e2", "e4", "e6"}
+        assert set(res4.df_edges[attr_label]) == {"e1", "e2", "e3"}
+        assert set(res5.df_edges[attr_label]) == {"e1", "e2", "e6"}
+
     assert nx.is_frozen(solver.raw)
 
 
 def test_descend_sa_attr(dg_attr: nx.DiGraph):
     """Check if another attribute can be used to in determining optimality."""
-    check_example_camerini1980ranking(dg_attr, "distance", _ATTR_LABEL)
+    attr = "distance"
+    solver = rank.DescendSpanningArborescences(
+        dg_attr, root="b1", attr=attr, attr_label=_ATTR_LABEL
+    )
+    check_example_camerini1980ranking(solver, attr, _ATTR_LABEL)
 
 
 def test_descend_sa_label_auto(dg_label: nx.DiGraph):
     """Check if the graph is labelled automatically."""
-    attr = "weight"
     solver = rank.DescendSpanningArborescences(
         dg_label,
         root="b1",
-        attr=attr,
+        attr=_ATTR,
     )
-    assert solver.msa.size(weight=attr) == 28
+    assert solver.msa.size(weight=_ATTR) == 28
+    check_example_camerini1980ranking(solver, _ATTR, None)
+    assert not nx.is_frozen(dg_label)
 
 
 @pytest.fixture(scope="module")
@@ -207,7 +214,11 @@ def test_descend_sa(dg: nx.MultiDiGraph):
     Args:
         dg: case in [camerini1980ranking]_ with 4 buses and 6 edges.
     """
-    check_example_camerini1980ranking(dg, _ATTR, _ATTR_LABEL)
+    solver = rank.DescendSpanningArborescences(
+        dg, root="b1", attr=_ATTR, attr_label=_ATTR_LABEL
+    )
+    check_example_camerini1980ranking(solver, _ATTR, _ATTR_LABEL)
+    assert not nx.is_frozen(dg)
 
 
 @pytest.fixture(scope="module")
