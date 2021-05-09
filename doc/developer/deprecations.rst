@@ -65,6 +65,8 @@ Version 3.0
 * In ``readwrite/json_graph/cytoscape.py``, change function signature for
   ``cytoscape_graph`` and ``cytoscape_data`` to replace the ``attrs`` keyword.
   argument with explicit ``name`` and ``ident`` keyword args.
+* In ``readwrite/json_graph/tree.py``, remove ``attrs`` kwarg from ``tree_graph``
+  and ``tree_data``.
 * Remove ``readwrite/nx_yaml.py`` and related tests.
 * Remove ``readwrite/gpickle.py`` and related tests.
 * Remove ``readwrite/nx_shp.py`` and related tests (add info in alternatives).
