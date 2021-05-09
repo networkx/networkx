@@ -12,6 +12,7 @@ from networkx.utils.decorators import (
     py_random_state,
     np_random_state,
     random_state,
+    argmap,
 )
 from networkx.utils.misc import PythonRandomInterface
 
@@ -355,3 +356,137 @@ def test_py_random_state_invalid_arg_index():
             pass
 
         rstate = make_random_state(1)
+
+
+class TestArgmap:
+    class ArgmapError(RuntimeError):
+        pass
+
+    def test_trivial_function(self):
+        def do_not_call(x):
+            raise ArgmapError("do not call this function")
+
+        @argmap(do_not_call)
+        def trivial_argmap():
+            return 1
+
+        assert trivial_argmap() == 1
+
+    def test_trivial_iterator(self):
+        def do_not_call(x):
+            raise ArgmapError("do not call this function")
+
+        @argmap(do_not_call)
+        def trivial_argmap():
+            yield from (1, 2, 3)
+
+        assert tuple(trivial_argmap()) == (1, 2, 3)
+
+    def test_contextmanager(self):
+        container = []
+
+        def contextmanager(x):
+            nonlocal container
+            return x, lambda: container.append(x)
+
+        @argmap.try_finally(contextmanager, 0, 1, 2)
+        def do_not_much(x, y, z):
+            return x, y, z
+
+        x, y, z = do_not_much("a", "b", "c")
+        print(do_not_much._code)
+
+        # context exits are called in reverse
+        assert container == ["c", "b", "a"]
+
+    def test_contextmanager_iterator(self):
+        container = []
+
+        def contextmanager(x):
+            nonlocal container
+            return x, lambda: container.append(x)
+
+        @argmap.try_finally(contextmanager, 0, 1, 2)
+        def do_not_much(x, y, z):
+            yield from (x, y, z)
+
+        q = do_not_much("a", "b", "c")
+        assert next(q) == "a"
+        assert container == []
+        assert next(q) == "b"
+        assert container == []
+        assert next(q) == "c"
+        assert container == []
+        with pytest.raises(StopIteration):
+            next(q)
+
+        # context exits are called in reverse
+        assert container == ["c", "b", "a"]
+
+    def test_actual_vararg(self):
+        @argmap(lambda x: -x, 4)
+        def foo(x, y, *args):
+            return (x, y) + tuple(args)
+
+        assert foo(1, 2, 3, 4, 5, 6) == (1, 2, 3, 4, -5, 6)
+
+    def test_actual_kwarg(self):
+        @argmap(lambda x: -x, "arg")
+        def foo(*, arg):
+            return arg
+
+        assert foo(arg=3) == -3
+
+    def test_nested_tuple(self):
+        def xform(x, y):
+            u, v = y
+            return x + u + v, (x + u, x + v)
+
+        # we're testing args and kwargs here, too
+        @argmap(xform, (0, ("t", 2)))
+        def foo(a, *args, **kwargs):
+            return a, args, kwargs
+
+        a, args, kwargs = foo(1, 2, 3, t=4)
+
+        assert a == 1 + 4 + 3
+        assert args == (2, 3 + 1)
+        assert kwargs == {"t": 4 + 1}
+
+    def test_flatten(self):
+        assert tuple(argmap._flatten([[[[[], []], [], []], [], [], []]], set())) == ()
+
+        rlist = ["a", ["b", "c"], [["d"], "e"], "f"]
+        assert "".join(argmap._flatten(rlist, set())) == "abcdef"
+
+    def test_indent(self):
+        code = "\n".join(
+            argmap._indent(
+                *[
+                    "try:",
+                    "try:",
+                    "pass#",
+                    "finally:",
+                    "pass#",
+                    "#",
+                    "finally:",
+                    "pass#",
+                ]
+            )
+        )
+        assert (
+            code
+            == """try:
+ try:
+  pass#
+ finally:
+  pass#
+ #
+finally:
+ pass#"""
+        )
+
+    def nop(self):
+        print(foo.__argmap__.assemble(foo.__wrapped__))
+        argmap._lazy_compile(foo)
+        print(foo._code)

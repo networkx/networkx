@@ -56,6 +56,7 @@ Decorators
    nodes_or_number
    preserve_random_state
    random_state
+   argmap
 
 Cuthill-Mckee Ordering
 ----------------------

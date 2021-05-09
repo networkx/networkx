@@ -703,6 +703,7 @@ class argmap:
         applied = set()
 
         def get_name(arg, first=True):
+            nonlocal mutable_args
             if isinstance(arg, tuple):
                 name = ", ".join(get_name(x, False) for x in arg)
                 return name if first else f"({name})"
@@ -765,8 +766,6 @@ class argmap:
         kwargs = None
         npos = 0
         for i, param in enumerate(sig.parameters.values()):
-            names[i] = names[param.name] = param.name
-
             # parameters can be position-only, keyword-or-position, keyword-only
             # in any combination, but only in the order as above.  we do edge
             # detection to add the appropriate punctuation
@@ -789,6 +788,7 @@ class argmap:
                 kwargs = param.name
                 count = 0
             else:
+                names[i] = names[param.name] = param.name
                 name = param.name
                 count = 1
 
@@ -876,7 +876,7 @@ class argmap:
         Examples
         --------
 
-            argmap._indent(*["try:", "try:", "pass#", "finally":", "pass#", "#",
+            argmap._indent(*["try:", "try:", "pass#", "finally:", "pass#", "#",
                              "finally:", "pass#"])
 
         renders to
@@ -888,8 +888,7 @@ class argmap:
               pass#
              #
             finally:
-             pass#
-            '''
+             pass#'''
         """
         depth = 0
         for line in argmap._flatten(lines, set()):
