@@ -94,11 +94,15 @@ def check_example_camerini1980ranking(
     assert res3.size(weight=attr) == 19
 
     if attr_label:
-        assert set(solver.msa.df_edges[attr_label]) == {"e1", "e3", "e5"}
-        assert set(res2.df_edges[attr_label]) == {"e1", "e5", "e6"}
-        assert set(res3.df_edges[attr_label]) == {"e2", "e4", "e6"}
-        assert set(res4.df_edges[attr_label]) == {"e1", "e2", "e3"}
-        assert set(res5.df_edges[attr_label]) == {"e1", "e2", "e6"}
+
+        def get_labels(g):
+            return set(nx.get_edge_attributes(g, attr_label).values())
+
+        assert get_labels(solver.msa) == {"e1", "e3", "e5"}
+        assert get_labels(res2) == {"e1", "e5", "e6"}
+        assert get_labels(res3) == {"e2", "e4", "e6"}
+        assert get_labels(res4) == {"e1", "e2", "e3"}
+        assert get_labels(res5) == {"e1", "e2", "e6"}
 
     assert nx.is_frozen(solver.raw)
 

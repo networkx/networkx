@@ -56,15 +56,6 @@ class DiGraphEnhanced(nx.DiGraph):
         else:
             super().__init__(g)
 
-    @property
-    def df_edges(self):
-        """Collect all edges and their attributes in a data frame.
-
-        Returns:
-            All the edges and their attributes in RDF.
-        """
-        return nx.to_pandas_edgelist(self)
-
 
 class DiGraphMap(DiGraphEnhanced):
     """Simple directed graph defined by mapping functions."""
@@ -1359,11 +1350,13 @@ def _max_sa(
 
     res = Arborescence(res)
 
-    if any(edge not in res.df_edges[attr_label].tolist() for edge in branch):
+    if any(
+        edge not in nx.get_edge_attributes(res, attr_label).values() for edge in branch
+    ):
         logger.error("All edges in the branching should be found in the SA.")
     if any(
         edge not in {e for e in n.edge_dict.keys() if e not in edges}
-        for edge in res.df_edges[attr_label]
+        for edge in nx.get_edge_attributes(res, attr_label).values()
     ):
         logger.error(
             "All edges in the SA should be found in original edge set "
