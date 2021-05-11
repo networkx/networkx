@@ -7,8 +7,9 @@ Example of using custom icons to represent nodes with matplotlib.
 """
 
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import networkx as nx
+import PIL
+import urllib
 
 # Image URLs for graph nodes
 icon_urls = {
@@ -18,7 +19,9 @@ icon_urls = {
 }
 
 # Load images from web
-images = {k: mpimg.imread(url) for k, url in icon_urls.items()}
+images = {
+    k: PIL.Image.open(urllib.request.urlopen(url)) for k, url in icon_urls.items()
+}
 
 # Generate the computer network graph
 G = nx.Graph()
