@@ -125,7 +125,7 @@ def draw(G, pos=None, ax=None, **kwds):
 
 
 def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
-    """Draw the graph G using Matplotlib.
+    r"""Draw the graph G using Matplotlib.
 
     Draw the graph with Matplotlib with options for node positions,
     labeling, titles, and many other drawing features.
@@ -497,7 +497,7 @@ def draw_networkx_edges(
     min_source_margin=0,
     min_target_margin=0,
 ):
-    """Draw the edges of the graph G.
+    r"""Draw the edges of the graph G.
 
     This draws only the edges of the graph G.
 
