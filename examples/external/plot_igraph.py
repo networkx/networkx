@@ -27,12 +27,12 @@ nx.draw(H)
 plt.show()
 
 # convert to igraph
-g = ig.Graph.from_networkx(G)
+h = ig.Graph.from_networkx(H)
 
 # igraph draw
-layout = g.layout()
+layout = h.layout()
 fig, ax = plt.subplots()
-ig.plot(g, layout=layout, target=ax)
+ig.plot(h, layout=layout, target=ax)
 plt.axis("off")
 plt.show()
 
