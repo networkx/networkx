@@ -477,6 +477,12 @@ def greedy_tsp_minimum_insertions(G, weight="weight", source=None):
     Time complexity: It has a running time $O(|V|^2*log2(|V|)$ ???
     """
 
+    # Check that G is a complete graph
+    N = len(G) - 1
+    # This check ignores selfloops which is what we want here.
+    if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
+        raise nx.NetworkXError("G must be a complete graph.")
+
     if source is None:
         source = nx.utils.arbitrary_element(G)
 
