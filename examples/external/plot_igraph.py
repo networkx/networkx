@@ -31,7 +31,10 @@ g = ig.Graph.from_networkx(G)
 
 # igraph draw
 layout = g.layout()
-ig.plot(g, layout=layout)
+fig, ax = plt.subplots()
+ig.plot(g, layout=layout, target=ax)
+plt.axis('off')
+plt.show()
 
 # %%
 # igraph to NetworkX
