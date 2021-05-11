@@ -56,11 +56,11 @@ jobs:
             python3 -m venv venv
             source venv/bin/activate
             pip install --upgrade pip wheel setuptools
-            pip install -U -r requirements.txt
-            pip install -U -r requirements/extra.txt
-            pip install -U -r requirements/example-requirements.txt
-            pip install -U -r requirements/example.txt
-            pip install -U -r requirements/doc.txt
+            pip install -r requirements.txt
+            pip install -r requirements/extra.txt
+            pip install -r requirements/example-requirements.txt
+            pip install -r requirements/example.txt
+            pip install -r requirements/doc.txt
             pip list
 
       - save_cache:
