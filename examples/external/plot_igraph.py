@@ -33,7 +33,7 @@ g = ig.Graph.from_networkx(G)
 layout = g.layout()
 fig, ax = plt.subplots()
 ig.plot(g, layout=layout, target=ax)
-plt.axis('off')
+plt.axis("off")
 plt.show()
 
 # %%
