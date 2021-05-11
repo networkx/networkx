@@ -404,8 +404,10 @@ def draw_networkx_nodes(
         Label for legend
 
     margins : float or 2-tuple, optional
-        Sets the padding for axis autoscaling. Increase margin to prevent clipping for nodes that are near the edges of an image.
-        Values should be in the range ``[0, 1]``. See :meth:`matplotlib.axes.Axes.margins` for details. The default is `None`, which uses the Matplotlib default.
+        Sets the padding for axis autoscaling. Increase margin to prevent
+        clipping for nodes that are near the edges of an image. Values should
+        be in the range ``[0, 1]``. See :meth:`matplotlib.axes.Axes.margins`
+        for details. The default is `None`, which uses the Matplotlib default.
 
     Returns
     -------
