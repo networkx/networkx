@@ -347,6 +347,7 @@ def draw_networkx_nodes(
     linewidths=None,
     edgecolors=None,
     label=None,
+    margins=None,
 ):
     """Draw the nodes of the graph G.
 
@@ -401,6 +402,12 @@ def draw_networkx_nodes(
 
     label : [None | string]
         Label for legend
+
+    margins : float or 2-tuple, optional
+        Sets the padding for axis autoscaling. Increase margin to prevent
+        clipping for nodes that are near the edges of an image. Values should
+        be in the range ``[0, 1]``. See :meth:`matplotlib.axes.Axes.margins`
+        for details. The default is `None`, which uses the Matplotlib default.
 
     Returns
     -------
@@ -469,6 +476,12 @@ def draw_networkx_nodes(
         labelbottom=False,
         labelleft=False,
     )
+
+    if margins is not None:
+        if isinstance(margins, Iterable):
+            ax.margins(*margins)
+        else:
+            ax.margins(margins)
 
     node_collection.set_zorder(2)
     return node_collection
