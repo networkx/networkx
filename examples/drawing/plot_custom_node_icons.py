@@ -9,7 +9,7 @@ Example of using custom icons to represent nodes with matplotlib.
 import matplotlib.pyplot as plt
 import networkx as nx
 import PIL
-import urllib
+import urllib.request
 
 # Image URLs for graph nodes
 icon_urls = {
