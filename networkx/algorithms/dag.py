@@ -121,11 +121,10 @@ def topological_sort(G, with_generation=False):
 
     Returns
     -------
-    iterable
-        An iterable of node names in topological sorted order.
+    iterable | iterable[tuple[node, int]]
+        If with_generation=False: An iterable of node names in topological sorted order.
 
-    iterable[tuples[node, int]]
-        If with_generation=True, returns an iterable of tuples where the first
+        If with_generation=True: An iterable of tuples where the first
         element is the node and the second element is the generation. In
         topologically sorted order.
 
@@ -432,8 +431,8 @@ def topological_generations(G):
 
     Returns
     -------
-    iterable
-        An iterable of lists of node names.
+    iterable[set]
+        An iterable of sets of nodes.
 
     Raises
     ------
@@ -452,7 +451,7 @@ def topological_generations(G):
     Examples
     --------
     >>> DG = nx.DiGraph([(2, 1), (3, 1)])
-    >>> list(nx.topological_generations(DG))
+    >>> [sorted(generation) for generation in nx.topological_generations(DG)]
     [[2, 3], [1]]
 
     Notes
@@ -465,13 +464,13 @@ def topological_generations(G):
     topological_sort
     """
     current_generation = 0
-    level = []
+    level = set()
     for node, generation in topological_sort(G, with_generation=True):
         if generation == current_generation:
-            level.append(node)
+            level.add(node)
         else:
             yield level
-            level = [node]
+            level = {node}
             current_generation = generation
     if level:
         yield level
