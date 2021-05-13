@@ -1492,7 +1492,7 @@ def _n_choose_k(n, k):
 
 
 def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
-    """Returns the Panther similarity of nodes in the graph `G` to node ``v``.
+    r"""Returns the Panther similarity of nodes in the graph `G` to node ``v``.
 
     Panther is a similarity metric that says "two objects are considered
     to be similar if they frequently appear on the same paths." [1]_.
