@@ -96,7 +96,7 @@ def cycle_basis(G, root=None):
 
 
 @not_implemented_for("undirected")
-def simple_cycles(G):
+def simple_cycles(G, max_len=None):
     """Find simple cycles (elementary circuits) of a directed graph.
 
     A `simple cycle`, or `elementary circuit`, is a closed path where
@@ -166,6 +166,11 @@ def simple_cycles(G):
                 stack.update(B[node])
                 B[node].clear()
 
+    def _check_len(path):
+        if max_len:
+            return len(path) < max_len
+        return True
+
     # Johnson's algorithm requires some ordering of the nodes.
     # We assign the arbitrary ordering given by the strongly connected comps
     # There is no need to track the ordering as each node removed as processed.
@@ -196,7 +201,7 @@ def simple_cycles(G):
         stack = [(startnode, list(sccG[startnode]))]  # sccG gives comp nbrs
         while stack:
             thisnode, nbrs = stack[-1]
-            if nbrs:
+            if nbrs and _check_len(path):
                 nextnode = nbrs.pop()
                 if nextnode == startnode:
                     yield path[:]
@@ -209,7 +214,7 @@ def simple_cycles(G):
                     blocked.add(nextnode)
                     continue
             # done with nextnode... look for more neighbors
-            if not nbrs:  # no more nbrs
+            else:  # no more nbrs or path got too long
                 if thisnode in closed:
                     _unblock(thisnode, blocked, B)
                 else:
