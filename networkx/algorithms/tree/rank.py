@@ -25,8 +25,8 @@ import numpy as np
 
 
 __all__ = [
-    "DescendSpanningArborescences",
-    "AscendSpanningArborescences",
+    "descend_spanning_arborescences",
+    "ascend_spanning_arborescences",
 ]
 
 
@@ -1449,15 +1449,10 @@ def label_edges(g: nx.DiGraph) -> nx.DiGraph:
 
 
 class DescendSpanningArborescences:
-    _threshold = 1e-4
+    _THRESHOLD = 1e-4
+    """float: threshold used to check if the total weight is the same as expected."""
 
-    def __init__(
-        self,
-        g: nx.DiGraph,
-        root: str,
-        attr: Optional[str] = _ATTR,
-        attr_label: Optional[str] = _ATTR_LABEL,
-    ):
+    def __init__(self, g: nx.DiGraph, root: str, attr: str, attr_label: str):
         self.root = root
         """str: name of the node which is set as root."""
         self.attr = attr
@@ -1538,7 +1533,7 @@ class DescendSpanningArborescences:
             self._last = a_current.size(weight=self.attr)
 
             # Check if the total weight is the same as expected.
-            if abs(a_current.size(weight=self.attr) - pre.w) >= self._threshold:
+            if abs(a_current.size(weight=self.attr) - pre.w) >= self._THRESHOLD:
                 logger.error(
                     f"Weight of the SA, {a_current.size(weight=self.attr)}, "
                     f"is different from the expected value, {pre.w}."
@@ -1577,9 +1572,7 @@ class DescendSpanningArborescences:
 
 
 class AscendSpanningArborescences(DescendSpanningArborescences):
-    def __init__(
-        self, g: nx.DiGraph, root: str, attr: Optional[str], attr_label: Optional[str]
-    ):
+    def __init__(self, g: nx.DiGraph, root: str, attr: str, attr_label: str):
         self.attr_max = max(nx.get_edge_attributes(g, attr).values())
         self.attr = attr  # Will be overridden when init, but essential here.
         g_inv = self.inverse_attr(g)
@@ -1605,6 +1598,26 @@ class AscendSpanningArborescences(DescendSpanningArborescences):
         a_current, _ = super().__next__()
         a_current_inv = self.inverse_attr(a_current)
         return a_current_inv, self.rank
+
+
+@nx.not_implemented_for("undirected", "multigraph")
+def ascend_spanning_arborescences(
+    g: nx.DiGraph,
+    root: str,
+    attr: Optional[str] = _ATTR,
+    attr_label: Optional[str] = _ATTR_LABEL,
+):
+    return AscendSpanningArborescences(g, root, attr, attr_label)
+
+
+@nx.not_implemented_for("undirected", "multigraph")
+def descend_spanning_arborescences(
+    g: nx.DiGraph,
+    root: str,
+    attr: Optional[str] = _ATTR,
+    attr_label: Optional[str] = _ATTR_LABEL,
+):
+    return DescendSpanningArborescences(g, root, attr, attr_label)
 
 
 docstring_cls = """
@@ -1636,7 +1649,7 @@ docstring_init = """
 
     Args:
         g: a directed graph with all its edges having numerical weight.
-        root: specified root of spanning arborescences.
+        root: a node specified as the root of spanning arborescences.
         attr: the edge attribute used to in determining optimality.
         attr_label: the edge attribute used as unique ID for edge.
             Default to be "label_", which will be automatically
@@ -1653,3 +1666,5 @@ DescendSpanningArborescences.__init__.__doc__ = docstring_init.format(
     direction="descend"
 )
 AscendSpanningArborescences.__init__.__doc__ = docstring_init.format(direction="ascend")
+ascend_spanning_arborescences.__doc__ = docstring_init.format(direction="ascend")
+ascend_spanning_arborescences.__doc__ = docstring_init.format(direction="descend")

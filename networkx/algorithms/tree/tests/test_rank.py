@@ -118,7 +118,7 @@ def check_example_camerini1980ranking(
 
 
 def test_descend_sa_attr(dg_attr: nx.DiGraph):
-    """Check if another attribute can be used to in determining optimality."""
+    """Check if another attribute can be used to determine optimality."""
     attr = "distance"
     solver = rank.DescendSpanningArborescences(
         dg_attr, root="b1", attr=attr, attr_label=_ATTR_LABEL
@@ -127,11 +127,20 @@ def test_descend_sa_attr(dg_attr: nx.DiGraph):
 
 
 def test_descend_sa_label_auto(dg_label: nx.DiGraph):
-    """Check if the graph is labelled automatically."""
+    """Check if the graph is labelled automatically.
+
+    Note:
+        ``label_`` is the default label name in the algorithm, no matter
+        if there are existing attribute values. That is, if there are
+        values for the ``label_`` attribute and ``attr_label`` is set to
+        ``label_``, those values will be updated by automatically
+        generated values.
+    """
     solver = rank.DescendSpanningArborescences(
         dg_label,
         root="b1",
         attr=_ATTR,
+        attr_label="label_",
     )
     assert solver.msa.size(weight=_ATTR) == 28
     check_example_camerini1980ranking(solver, _ATTR, None)
