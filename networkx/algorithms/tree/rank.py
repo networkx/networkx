@@ -15,11 +15,10 @@ The proof and more details can be found in:
 """
 from collections import namedtuple
 from copy import deepcopy
+import logging
 import math
-import sys
 from typing import Dict, List, Optional, Set, Tuple
 
-from loguru import logger
 import networkx as nx
 import numpy as np
 
@@ -29,14 +28,10 @@ __all__ = [
     "ascend_spanning_arborescences",
 ]
 
-
 _ResultRank = namedtuple("_ResultRank", ["w", "e", "a", "y", "z"])
 _ATTR_LABEL = "label_"
 """str: name of the additional edge attribute used as unique ID."""
 _ATTR = "weight"
-
-logger.remove(0)
-handler_id = logger.add(sys.stderr, level="SUCCESS")
 
 
 class DiGraphEnhanced(nx.DiGraph):
@@ -93,7 +88,7 @@ class DiGraphMap(DiGraphEnhanced):
         for edge in edges:
             try:
                 if self.has_edge(source_map[edge], target_map[edge]):
-                    logger.warning(
+                    logging.warning(
                         f'Edge "{source_map[edge]}, {target_map[edge]}" '
                         f"already exist."
                     )
@@ -119,7 +114,7 @@ class DiGraphMap(DiGraphEnhanced):
         # Extra node in nodes are not considered
         for node in nodes:
             if node not in self.nodes:
-                logger.warning(f'Node "{node}" is not connected.')
+                logging.warning(f'Node "{node}" is not connected.')
 
         self.node_set = node_set  # Set[str]
         self.edge_dict = edge_dict  # Dict[str, Tuple[str, str, int]]
@@ -289,7 +284,7 @@ class MultiDiGraphMap(nx.MultiDiGraph):
         # Extra node in nodes are not considered
         for node in nodes:
             if node not in self.nodes:
-                logger.warning(f'Node "{node}" is not connected.')
+                logging.warning(f'Node "{node}" is not connected.')
 
         self.node_set = node_set  # Set[str]
         self.edge_dict = edge_dict  # Dict[str, Tuple[str, str, int]]
@@ -403,7 +398,7 @@ class MultiDiGraphMap(nx.MultiDiGraph):
 
             data = {edge[2][self.attr_label]: edge[2][self.attr] for edge in in_edges_v}
             res = max(data, key=lambda k: data[k])
-            logger.info(
+            logging.info(
                 f'Edge "{res}" is the in-edge of node "{v}" '
                 f"with max weight {data[res]}."
             )
@@ -431,7 +426,7 @@ class MultiDiGraphMap(nx.MultiDiGraph):
             res.add(self.source_map[edge])
             res.add(self.target_map[edge])
 
-        logger.info(f"Nodes {res} are in the branching {branch}.")
+        logging.info(f"Nodes {res} are in the branching {branch}.")
         return res
 
     def _validate(self, root: str):
@@ -477,11 +472,13 @@ class MultiDiGraphMap(nx.MultiDiGraph):
                     if node_to_remove in nodes:
                         nodes.remove(node_to_remove)
                 else:
-                    logger.warning(f'Edge "{edge}" in branching is not found in graph.')
+                    logging.warning(
+                        f'Edge "{edge}" in branching is not found in graph.'
+                    )
 
         if nodes:
             res = nodes[0]
-            logger.info(
+            logging.info(
                 f'Node "{res}" is exposed with respect to ' f"branching {branch}."
             )
         else:
@@ -659,13 +656,13 @@ class MultiDiGraphMap(nx.MultiDiGraph):
                 res = None
             else:
                 res = self.get_subgraph(edges_left)
-                logger.debug(
+                logging.debug(
                     f"Edges {set(self.edge_dict.keys()) - edges_left} have "
                     "been removed."
                 )
 
         if not res:
-            logger.warning("Empty sub-graph has been returned")
+            logging.warning("Empty sub-graph has been returned")
         elif not nx.is_connected(nx.Graph(res)):
             raise nx.NetworkXAlgorithmError(
                 "The constrained sub-graph is not connected."
@@ -793,7 +790,7 @@ def collapse_into_cycle(
             )
         else:
             node_dict_c[n_c] = node_corresponding
-            logger.info(
+            logging.info(
                 "The corresponding node is specified to be " f"{node_corresponding};"
             )
 
@@ -856,7 +853,7 @@ def collapse_into_cycle(
         attr_label,
     )
 
-    logger.info(
+    logging.info(
         f"A collapsed graph with edges {list(res.edge_dict.keys())} is "
         f"created. The corresponding node is {node_corresponding};"
     )
@@ -947,7 +944,7 @@ class MinSpanSolver:
         forest = nx.DiGraph()
 
         res = cls(m, branch, cycles, lbd, forest, root, attr, attr_label)
-        logger.info("A solver for max span arborescence has been initiated.")
+        logging.info("A solver for max span arborescence has been initiated.")
         return res
 
     @property
@@ -971,7 +968,7 @@ class MinSpanSolver:
                 break
 
         if res:
-            logger.debug(
+            logging.debug(
                 f"A deep cycle {set(res.edge_dict.keys())} is "
                 f"contained by branching {self.branch}"
             )
@@ -988,11 +985,11 @@ class MinSpanSolver:
         """
         if not v:
             v = self.m.first_node_exposed(self.branch, self.root)
-            logger.debug(f'Node "{v}" is to be processed.')
+            logging.debug(f'Node "{v}" is to be processed.')
 
         b = self.m.get_in_edge_with_max_weight(v)
         self.branch.append(b)
-        logger.info(f"The branching has been appended, becoming {self.branch};")
+        logging.info(f"The branching has been appended, becoming {self.branch};")
         return b
 
     def _update_forest(self, v: str, b: str):
@@ -1051,7 +1048,7 @@ class MinSpanSolver:
                 data[self.attr_label] for _, _, data in a_deep_cycle.edges(data=True)
             }
 
-        logger.debug(f'Node "{v}" has been processed.')
+        logging.debug(f'Node "{v}" has been processed.')
 
     @property
     def first_node_exposed(self) -> str:
@@ -1080,7 +1077,7 @@ class MinSpanSolver:
         end = self.lbd[self.original.target_map[b]]
 
         res_list = nx.shortest_path(self.forest, begin, end)
-        logger.info(f"The path is {res_list};")
+        logging.info(f"The path is {res_list};")
         res_dict = {i: res_list[i - 1] for i in range(1, len(res_list) + 1)}
         return res_dict
 
@@ -1107,11 +1104,11 @@ class MinSpanSolver:
 
                 self.branch.extend(res)
 
-            logger.debug(f"The branching has been updated to {self.branch}.")
-            logger.debug(f"The forest has been updated to {list(self.forest.nodes)}.")
+            logging.debug(f"The branching has been updated to {self.branch}.")
+            logging.debug(f"The forest has been updated to {list(self.forest.nodes)}.")
         else:
             b = None
-            logger.info("The branching is already empty.")
+            logging.info("The branching is already empty.")
 
         return b
 
@@ -1175,7 +1172,7 @@ class MinSpanSolver:
                 res = None
                 delta = math.inf
 
-            logger.debug(
+            logging.debug(
                 f'An edge "{res}" is found next to {b} and ' f"delta is {delta}."
             )
         else:
@@ -1198,7 +1195,7 @@ class MinSpanSolver:
         if a_deep_cycle:
             for edge in a_deep_cycle.edge_dict.keys():
                 self.branch.remove(edge)
-            logger.debug(f"The branching has been slimmed to {self.branch}.")
+            logging.debug(f"The branching has been slimmed to {self.branch}.")
 
             self.m, u = collapse_into_cycle(
                 self.m,
@@ -1260,7 +1257,7 @@ class MinSpanSolver:
 
         self._update_with_deep_cycle(node_corresponding)
 
-        logger.debug(f'Node "{v}" has been processed.')
+        logging.debug(f'Node "{v}" has been processed.')
 
 
 def _next_sa(
@@ -1285,7 +1282,7 @@ def _next_sa(
     Returns:
         ``e`` and ``d``.
     """
-    logger.debug(f"Branching {y} and edges subset {z} are passed.")
+    logging.debug(f"Branching {y} and edges subset {z} are passed.")
 
     n = MultiDiGraphMap.from_nx(raw, attr, attr_label)
     m = n.constrain_subgraph(y, z)
@@ -1304,7 +1301,7 @@ def _next_sa(
         v = mss.first_node_exposed
 
     if mss.d < 0:
-        logger.warning('There is a negative "d".')
+        logging.warning('There is a negative "d".')
     return mss.e, mss.d
 
 
@@ -1346,8 +1343,8 @@ def _max_sa(
         The max spanning arborescence.
     """
 
-    logger.debug(f"The pass branching is {branch}.")
-    logger.debug(f"The pass edges are {edges}.")
+    logging.debug(f"The pass branching is {branch}.")
+    logging.debug(f"The pass edges are {edges}.")
 
     n = MultiDiGraphMap.from_nx(n_raw, attr, attr_label)
     m = n.constrain_subgraph(branch, edges)
@@ -1496,8 +1493,8 @@ class DescendSpanningArborescences:
         self.msa = _max_sa(
             self.raw, self.root, set(), set(), self.attr, self.attr_label
         )
-        logger.success(
-            "The max/min spanning arborescence (SA) has weight "
+        logging.info(
+            "Success! The max/min spanning arborescence (SA) has weight "
             f"{self.msa.size(weight=self.attr)}."
         )
 
@@ -1527,7 +1524,7 @@ class DescendSpanningArborescences:
         pre = self.p_list.pop(idx_max)
 
         if pre.w == -math.inf:
-            logger.warning("All the spanning arborescences have been returned.")
+            logging.warning("All the spanning arborescences have been returned.")
             raise StopIteration()
         else:
             y_prime = pre.y.copy()
@@ -1539,8 +1536,8 @@ class DescendSpanningArborescences:
                 self.raw, self.root, pre.y, z_prime, self.attr, self.attr_label
             )
             self.rank += 1
-            logger.success(
-                f"SA ranks {self.rank} with weight "
+            logging.debug(
+                f"Success! SA ranks {self.rank} with weight "
                 f"{a_current.size(weight=self.attr)}."
             )
 
