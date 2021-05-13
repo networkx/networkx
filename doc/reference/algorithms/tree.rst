@@ -37,7 +37,8 @@ Ranking
 .. autosummary::
    :toctree: generated/
 
-   DescendSpanningArborescences
+   descend_spanning_arborescences
+   ascend_spanning_arborescences
 
 Encoding and decoding
 ---------------------

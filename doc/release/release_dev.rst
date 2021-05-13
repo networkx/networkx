@@ -31,6 +31,11 @@ Improvements
 - [`#4640 <https://github.com/networkx/networkx/pull/4640>`_]
   ``prefix_tree`` now uses a non-recursive algorithm. The original recursive
   algorithm is still available via ``prefix_tree_recursive``.
+- [`#4322 <https://github.com/networkx/networkx/pull/4322>`_]
+  New algorithms, ``descend_spanning_arborescences`` and
+  ``ascend_spanning_arborescences``, returns a generator for spanning
+  arborescences of a weighted directed graph in descending or ascending
+  order respectively.
 
 API Changes
 -----------
