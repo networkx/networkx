@@ -536,7 +536,8 @@ def test_topological_generations_empty():
 
 def test_topological_generations_cycle():
     G = nx.DiGraph([[2, 1], [3, 1], [1, 2]])
-    pytest.raises(nx.NetworkXUnfeasible, lambda: list(nx.topological_generations(G)))
+    with pytest.raises(nx.NetworkXUnfeasible):
+        list(nx.topological_generations(G))
 
 
 def test_is_aperiodic_cycle():
