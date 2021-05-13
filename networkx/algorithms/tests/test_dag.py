@@ -507,10 +507,8 @@ def test_topological_sort_with_generation_empty():
 
 def test_topological_sort_with_generation_cycle():
     G = nx.DiGraph([[2, 1], [3, 1], [1, 2]])
-    pytest.raises(
-        nx.NetworkXUnfeasible,
-        lambda: list(nx.topological_sort(G, with_generation=True)),
-    )
+    with pytest.raises(nx.NetworkXUnfeasible):
+        list(nx.topological_sort(G, with_generation=True))
 
 
 def test_topological_generations():
