@@ -51,13 +51,6 @@ sphinx_gallery_conf = {
     "backreferences_dir": "modules/generated",
     "image_scrapers": ("matplotlib",),
 }
-# Add mayavi scraper, if available
-try:
-    import mayavi
-
-    sphinx_gallery_conf["image_scrapers"] += ("mayavi",)
-except ImportError:
-    pass
 # Add pygraphviz png scraper, if available
 try:
     from pygraphviz.scraper import PNGScraper
