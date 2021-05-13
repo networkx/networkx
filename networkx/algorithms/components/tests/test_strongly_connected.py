@@ -203,30 +203,3 @@ class TestStronglyConnected:
             assert len(seen & component) == 0
             seen.update(component)
             component.clear()
-
-
-#    Commented out due to variability on Travis-CI hardware/operating systems
-#    def test_linear_time(self):
-#        # See Issue #2831
-#        count = 100  # base case
-#        dg = nx.DiGraph()
-#        dg.add_nodes_from([0, 1])
-#        for i in range(2, count):
-#            dg.add_node(i)
-#            dg.add_edge(i, 1)
-#            dg.add_edge(0, i)
-#        t = time.time()
-#        ret = tuple(nx.strongly_connected_components(dg))
-#        dt = time.time() - t
-#
-#        count = 200
-#        dg = nx.DiGraph()
-#        dg.add_nodes_from([0, 1])
-#        for i in range(2, count):
-#            dg.add_node(i)
-#            dg.add_edge(i, 1)
-#            dg.add_edge(0, i)
-#        t = time.time()
-#        ret = tuple(nx.strongly_connected_components(dg))
-#        dt2 = time.time() - t
-#        assert_less(dt2, dt * 2.3)  # should be 2 times longer for this graph

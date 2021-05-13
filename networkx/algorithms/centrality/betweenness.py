@@ -47,6 +47,8 @@ def betweenness_centrality(
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     endpoints : bool, optional
       If True include the endpoints in the shortest path counts.
@@ -120,18 +122,18 @@ def betweenness_centrality(
     if k is None:
         nodes = G
     else:
-        nodes = seed.sample(G.nodes(), k)
+        nodes = seed.sample(list(G.nodes()), k)
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS
-            S, P, sigma = _single_source_shortest_path_basic(G, s)
+            S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
         else:  # use Dijkstra's algorithm
-            S, P, sigma = _single_source_dijkstra_path_basic(G, s, weight)
+            S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
         # accumulation
         if endpoints:
-            betweenness = _accumulate_endpoints(betweenness, S, P, sigma, s)
+            betweenness, delta = _accumulate_endpoints(betweenness, S, P, sigma, s)
         else:
-            betweenness = _accumulate_basic(betweenness, S, P, sigma, s)
+            betweenness, delta = _accumulate_basic(betweenness, S, P, sigma, s)
     # rescaling
     betweenness = _rescale(
         betweenness,
@@ -177,6 +179,8 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
@@ -221,9 +225,9 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS
-            S, P, sigma = _single_source_shortest_path_basic(G, s)
+            S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
         else:  # use Dijkstra's algorithm
-            S, P, sigma = _single_source_dijkstra_path_basic(G, s, weight)
+            S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
         # accumulation
         betweenness = _accumulate_edges(betweenness, S, P, sigma, s)
     # rescaling
@@ -268,7 +272,7 @@ def _single_source_shortest_path_basic(G, s):
             if D[w] == Dv + 1:  # this is a shortest path, count paths
                 sigma[w] += sigmav
                 P[w].append(v)  # predecessors
-    return S, P, sigma
+    return S, P, sigma, D
 
 
 def _single_source_dijkstra_path_basic(G, s, weight):
@@ -303,7 +307,7 @@ def _single_source_dijkstra_path_basic(G, s, weight):
             elif vw_dist == seen[w]:  # handle equal paths
                 sigma[w] += sigma[v]
                 P[w].append(v)
-    return S, P, sigma
+    return S, P, sigma, D
 
 
 def _accumulate_basic(betweenness, S, P, sigma, s):
@@ -315,7 +319,7 @@ def _accumulate_basic(betweenness, S, P, sigma, s):
             delta[v] += sigma[v] * coeff
         if w != s:
             betweenness[w] += delta[w]
-    return betweenness
+    return betweenness, delta
 
 
 def _accumulate_endpoints(betweenness, S, P, sigma, s):
@@ -328,7 +332,7 @@ def _accumulate_endpoints(betweenness, S, P, sigma, s):
             delta[v] += sigma[v] * coeff
         if w != s:
             betweenness[w] += delta[w] + 1
-    return betweenness
+    return betweenness, delta
 
 
 def _accumulate_edges(betweenness, S, P, sigma, s):

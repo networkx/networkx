@@ -9,8 +9,9 @@ Developer Guide
    code_of_conduct
    values
    contribute
+   projects
+   new_contributor_faq
    core_developer
-   gitwash/index
    release
    deprecations
    roadmap

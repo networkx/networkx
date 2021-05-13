@@ -2,12 +2,14 @@
 module.
 
 """
+import pytest
 
 import networkx as nx
 from networkx import barbell_graph
 from networkx.algorithms.community import coverage
 from networkx.algorithms.community import modularity
 from networkx.algorithms.community import performance
+from networkx.algorithms.community import partition_quality
 from networkx.algorithms.community.quality import inter_community_edges
 from networkx.testing import almost_equal
 
@@ -20,12 +22,14 @@ class TestPerformance:
         G = barbell_graph(3, 0)
         partition = [{0, 1, 4}, {2, 3, 5}]
         assert almost_equal(8 / 15, performance(G, partition))
+        assert almost_equal(8 / 15, partition_quality(G, partition)[1])
 
     def test_good_partition(self):
         """Tests that a good partition has a high performance measure."""
         G = barbell_graph(3, 0)
         partition = [{0, 1, 2}, {3, 4, 5}]
         assert almost_equal(14 / 15, performance(G, partition))
+        assert almost_equal(14 / 15, partition_quality(G, partition)[1])
 
 
 class TestCoverage:
@@ -36,12 +40,14 @@ class TestCoverage:
         G = barbell_graph(3, 0)
         partition = [{0, 1, 4}, {2, 3, 5}]
         assert almost_equal(3 / 7, coverage(G, partition))
+        assert almost_equal(3 / 7, partition_quality(G, partition)[0])
 
     def test_good_partition(self):
         """Tests that a good partition has a high coverage measure."""
         G = barbell_graph(3, 0)
         partition = [{0, 1, 2}, {3, 4, 5}]
         assert almost_equal(6 / 7, coverage(G, partition))
+        assert almost_equal(6 / 7, partition_quality(G, partition)[0])
 
 
 def test_modularity():
@@ -66,6 +72,64 @@ def test_modularity():
     G.add_edges_from([(2, 1), (2, 3), (3, 4)])
     C = [{1, 2}, {3, 4}]
     assert almost_equal(2 / 9, modularity(G, C))
+
+
+def test_modularity_resolution():
+    G = nx.barbell_graph(3, 0)
+    C = [{0, 1, 4}, {2, 3, 5}]
+    assert modularity(G, C) == pytest.approx(3 / 7 - 100 / 14 ** 2)
+    gamma = 2
+    result = modularity(G, C, resolution=gamma)
+    assert result == pytest.approx(3 / 7 - gamma * 100 / 14 ** 2)
+    gamma = 0.2
+    result = modularity(G, C, resolution=gamma)
+    assert result == pytest.approx(3 / 7 - gamma * 100 / 14 ** 2)
+
+    C = [{0, 1, 2}, {3, 4, 5}]
+    assert modularity(G, C) == pytest.approx(6 / 7 - 98 / 14 ** 2)
+    gamma = 2
+    result = modularity(G, C, resolution=gamma)
+    assert result == pytest.approx(6 / 7 - gamma * 98 / 14 ** 2)
+    gamma = 0.2
+    result = modularity(G, C, resolution=gamma)
+    assert result == pytest.approx(6 / 7 - gamma * 98 / 14 ** 2)
+
+    G = nx.barbell_graph(5, 3)
+    C = [frozenset(range(5)), frozenset(range(8, 13)), frozenset(range(5, 8))]
+    gamma = 1
+    result = modularity(G, C, resolution=gamma)
+    # This C is maximal for gamma=1:  modularity = 0.518229
+    assert result == pytest.approx((22 / 24) - gamma * (918 / (48 ** 2)))
+    gamma = 2
+    result = modularity(G, C, resolution=gamma)
+    assert result == pytest.approx((22 / 24) - gamma * (918 / (48 ** 2)))
+    gamma = 0.2
+    result = modularity(G, C, resolution=gamma)
+    assert result == pytest.approx((22 / 24) - gamma * (918 / (48 ** 2)))
+
+    C = [{0, 1, 2, 3}, {9, 10, 11, 12}, {5, 6, 7}, {4}, {8}]
+    gamma = 1
+    result = modularity(G, C, resolution=gamma)
+    assert result == pytest.approx((14 / 24) - gamma * (598 / (48 ** 2)))
+    gamma = 2.5
+    result = modularity(G, C, resolution=gamma)
+    # This C is maximal for gamma=2.5:  modularity = -0.06553819
+    assert result == pytest.approx((14 / 24) - gamma * (598 / (48 ** 2)))
+    gamma = 0.2
+    result = modularity(G, C, resolution=gamma)
+    assert result == pytest.approx((14 / 24) - gamma * (598 / (48 ** 2)))
+
+    C = [frozenset(range(8)), frozenset(range(8, 13))]
+    gamma = 1
+    result = modularity(G, C, resolution=gamma)
+    assert result == pytest.approx((23 / 24) - gamma * (1170 / (48 ** 2)))
+    gamma = 2
+    result = modularity(G, C, resolution=gamma)
+    assert result == pytest.approx((23 / 24) - gamma * (1170 / (48 ** 2)))
+    gamma = 0.3
+    result = modularity(G, C, resolution=gamma)
+    # This C is maximal for gamma=0.3:  modularity = 0.805990
+    assert result == pytest.approx((23 / 24) - gamma * (1170 / (48 ** 2)))
 
 
 def test_inter_community_edges_with_digraphs():

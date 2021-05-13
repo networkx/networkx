@@ -50,6 +50,8 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
        Encoding for text data.
     prettyprint : bool (optional, default: True)
        If True use line breaks and indenting in output XML.
+    version: string (optional, default: '1.2draft')
+       The version of GEXF to be used for nodes attributes checking
 
     Examples
     --------

@@ -65,7 +65,7 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None
     the interest of speed and generality, that is not required here.
 
     """
-    nset1 = {v for v in G if v in nbunch1}
+    nset1 = {n for n in nbunch1 if n in G}
     # Here we create an iterator over edges incident to nodes in the set
     # `nset1`. The `Graph.edges()` method does not provide a guarantee
     # on the orientation of the edges, so our algorithm below must

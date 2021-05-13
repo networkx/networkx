@@ -1,8 +1,4 @@
-# TODO:
-#   - Alter equations for weighted case
-#   - Write tests for weighted case
-"""Functions for detecting communities based on modularity.
-"""
+"""Functions for detecting communities based on modularity."""
 
 from networkx.algorithms.community.quality import modularity
 
@@ -15,22 +11,33 @@ __all__ = [
 ]
 
 
-def greedy_modularity_communities(G, weight=None):
-    """Find communities in graph using Clauset-Newman-Moore greedy modularity
-    maximization. This method currently supports the Graph class and does not
-    consider edge weights.
+def greedy_modularity_communities(G, weight=None, resolution=1):
+    r"""Find communities in G using greedy modularity maximization.
+
+    This function uses Clauset-Newman-Moore greedy modularity maximization [2]_.
+    This method currently supports the Graph class.
 
     Greedy modularity maximization begins with each node in its own community
     and joins the pair of communities that most increases modularity until no
     such pair exists.
 
+    This function maximizes the generalized modularity, where `resolution`
+    is the resolution parameter, often expressed as $\gamma$.
+    See :func:`~networkx.algorithms.community.quality.modularity`.
+
     Parameters
     ----------
     G : NetworkX graph
+    weight : string or None, optional (default=None)
+       The name of an edge attribute that holds the numerical value used
+       as a weight.  If None, then each edge has weight 1.
+       The degree is the sum of the edge weights adjacent to the node.
 
     Returns
     -------
-    Yields sets of nodes, one for each community.
+    list
+        A list of sets of nodes, one for each community.
+        Sorted by length with largest communities first.
 
     Examples
     --------
@@ -40,13 +47,19 @@ def greedy_modularity_communities(G, weight=None):
     >>> sorted(c[0])
     [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
 
+    See Also
+    --------
+    modularity
+
     References
     ----------
-    .. [1] M. E. J Newman 'Networks: An Introduction', page 224
+    .. [1] M. E. J Newman "Networks: An Introduction", page 224
        Oxford University Press 2011.
     .. [2] Clauset, A., Newman, M. E., & Moore, C.
        "Finding community structure in very large networks."
        Physical Review E 70(6), 2004.
+    .. [3] Reichardt and Bornholdt "Statistical Mechanics of Community
+       Detection" Phys. Rev. E74, 2006.
     """
 
     # Count nodes and edges
@@ -68,7 +81,7 @@ def greedy_modularity_communities(G, weight=None):
 
     # Initial modularity
     partition = [[label_for_node[x] for x in c] for c in communities.values()]
-    q_cnm = modularity(G, partition)
+    q_cnm = modularity(G, partition, resolution=resolution)
 
     # Initialize data structures
     # CNM Eq 8-9 (Eq 8 was missing a factor of 2 (from A_ij + A_ji)
@@ -79,7 +92,8 @@ def greedy_modularity_communities(G, weight=None):
     a = [k[i] * q0 for i in range(N)]
     dq_dict = {
         i: {
-            j: 2 * q0 - 2 * k[i] * k[j] * q0 * q0
+            j: 2 * q0 * G.get_edge_data(i, j).get(weight, 1.0)
+            - 2 * resolution * k[i] * k[j] * q0 * q0
             for j in [node_for_label[u] for u in G.neighbors(label_for_node[i])]
             if j != i
         }
@@ -138,10 +152,10 @@ def greedy_modularity_communities(G, weight=None):
             if k in both_set:
                 dq_jk = dq_dict[j][k] + dq_dict[i][k]
             elif k in j_set:
-                dq_jk = dq_dict[j][k] - 2.0 * a[i] * a[k]
+                dq_jk = dq_dict[j][k] - 2.0 * resolution * a[i] * a[k]
             else:
                 # k in i_set
-                dq_jk = dq_dict[i][k] - 2.0 * a[j] * a[k]
+                dq_jk = dq_dict[i][k] - 2.0 * resolution * a[j] * a[k]
             # Update rows j and k
             for row, col in [(j, k), (k, j)]:
                 # Save old value for finding heap index
@@ -209,10 +223,42 @@ def greedy_modularity_communities(G, weight=None):
     return sorted(communities, key=len, reverse=True)
 
 
-def naive_greedy_modularity_communities(G):
-    """Find communities in graph using the greedy modularity maximization.
+def naive_greedy_modularity_communities(G, resolution=1):
+    r"""Find communities in G using greedy modularity maximization.
+
     This implementation is O(n^4), much slower than alternatives, but it is
     provided as an easy-to-understand reference implementation.
+
+    Greedy modularity maximization begins with each node in its own community
+    and joins the pair of communities that most increases modularity until no
+    such pair exists.
+
+    This function maximizes the generalized modularity, where `resolution`
+    is the resolution parameter, often expressed as $\gamma$.
+    See :func:`~networkx.algorithms.community.quality.modularity`.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    Returns
+    -------
+    list
+        A list of sets of nodes, one for each community.
+        Sorted by length with largest communities first.
+
+    Examples
+    --------
+    >>> from networkx.algorithms.community import greedy_modularity_communities
+    >>> G = nx.karate_club_graph()
+    >>> c = list(greedy_modularity_communities(G))
+    >>> sorted(c[0])
+    [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+
+    See Also
+    --------
+    greedy_modularity_communities
+    modularity
     """
     # First create one community for each node
     communities = list([frozenset([u]) for u in G.nodes()])
@@ -220,7 +266,7 @@ def naive_greedy_modularity_communities(G):
     merges = []
     # Greedily merge communities until no improvement is possible
     old_modularity = None
-    new_modularity = modularity(G, communities)
+    new_modularity = modularity(G, communities, resolution=resolution)
     while old_modularity is None or new_modularity > old_modularity:
         # Save modularity for comparison
         old_modularity = new_modularity
@@ -229,13 +275,15 @@ def naive_greedy_modularity_communities(G):
         to_merge = None
         for i, u in enumerate(communities):
             for j, v in enumerate(communities):
-                # Skip i=j and empty communities
+                # Skip i==j and empty communities
                 if j <= i or len(u) == 0 or len(v) == 0:
                     continue
                 # Merge communities u and v
                 trial_communities[j] = u | v
                 trial_communities[i] = frozenset([])
-                trial_modularity = modularity(G, trial_communities)
+                trial_modularity = modularity(
+                    G, trial_communities, resolution=resolution
+                )
                 if trial_modularity >= new_modularity:
                     # Check if strictly better or tie
                     if trial_modularity > new_modularity:
@@ -257,8 +305,7 @@ def naive_greedy_modularity_communities(G):
             communities[j] = u | v
             communities[i] = frozenset([])
     # Remove empty communities and sort
-    communities = [c for c in communities if len(c) > 0]
-    yield from sorted(communities, key=lambda x: len(x), reverse=True)
+    return sorted((c for c in communities if len(c) > 0), key=len, reverse=True)
 
 
 # old name

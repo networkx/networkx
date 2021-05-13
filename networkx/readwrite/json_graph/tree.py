@@ -96,16 +96,15 @@ def tree_graph(data, attrs=_attrs):
     ----------
     data : dict
         Tree formatted graph data
-
-    Returns
-    -------
-    G : NetworkX DiGraph
-
     attrs : dict
         A dictionary that contains two keys 'id' and 'children'. The
         corresponding values provide the attribute names for storing
         NetworkX-internal graph data. The values should be unique. Default
         value: :samp:`dict(id='id', children='children')`.
+
+    Returns
+    -------
+    G : NetworkX DiGraph
 
     Examples
     --------

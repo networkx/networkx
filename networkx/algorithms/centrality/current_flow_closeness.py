@@ -28,6 +28,8 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype: data type (default=float)
       Default data type for internal matrices.

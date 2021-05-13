@@ -90,6 +90,8 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
     So you may want to divide by 2.
 
     """
+    import numpy as np
+
     if weight is None or G.number_of_edges() == 0:
         max_weight = 1
     else:
@@ -114,7 +116,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
             # loop.
             wij = wt(i, j)
             weighted_triangles += sum(
-                (wij * wt(j, k) * wt(k, i)) ** (1 / 3) for k in inbrs & jnbrs
+                np.cbrt([(wij * wt(j, k) * wt(k, i)) for k in inbrs & jnbrs])
             )
         yield (i, len(inbrs), 2 * weighted_triangles)
 
@@ -163,6 +165,8 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
     directed triangles so does not count triangles twice.
 
     """
+    import numpy as np
+
     if weight is None or G.number_of_edges() == 0:
         max_weight = 1
     else:
@@ -182,32 +186,32 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
             jpreds = set(G._pred[j]) - {j}
             jsuccs = set(G._succ[j]) - {j}
             directed_triangles += sum(
-                (wt(j, i) * wt(k, i) * wt(k, j)) ** (1 / 3) for k in ipreds & jpreds
+                np.cbrt([(wt(j, i) * wt(k, i) * wt(k, j)) for k in ipreds & jpreds])
             )
             directed_triangles += sum(
-                (wt(j, i) * wt(k, i) * wt(j, k)) ** (1 / 3) for k in ipreds & jsuccs
+                np.cbrt([(wt(j, i) * wt(k, i) * wt(j, k)) for k in ipreds & jsuccs])
             )
             directed_triangles += sum(
-                (wt(j, i) * wt(i, k) * wt(k, j)) ** (1 / 3) for k in isuccs & jpreds
+                np.cbrt([(wt(j, i) * wt(i, k) * wt(k, j)) for k in isuccs & jpreds])
             )
             directed_triangles += sum(
-                (wt(j, i) * wt(i, k) * wt(j, k)) ** (1 / 3) for k in isuccs & jsuccs
+                np.cbrt([(wt(j, i) * wt(i, k) * wt(j, k)) for k in isuccs & jsuccs])
             )
 
         for j in isuccs:
             jpreds = set(G._pred[j]) - {j}
             jsuccs = set(G._succ[j]) - {j}
             directed_triangles += sum(
-                (wt(i, j) * wt(k, i) * wt(k, j)) ** (1 / 3) for k in ipreds & jpreds
+                np.cbrt([(wt(i, j) * wt(k, i) * wt(k, j)) for k in ipreds & jpreds])
             )
             directed_triangles += sum(
-                (wt(i, j) * wt(k, i) * wt(j, k)) ** (1 / 3) for k in ipreds & jsuccs
+                np.cbrt([(wt(i, j) * wt(k, i) * wt(j, k)) for k in ipreds & jsuccs])
             )
             directed_triangles += sum(
-                (wt(i, j) * wt(i, k) * wt(k, j)) ** (1 / 3) for k in isuccs & jpreds
+                np.cbrt([(wt(i, j) * wt(i, k) * wt(k, j)) for k in isuccs & jpreds])
             )
             directed_triangles += sum(
-                (wt(i, j) * wt(i, k) * wt(j, k)) ** (1 / 3) for k in isuccs & jsuccs
+                np.cbrt([(wt(i, j) * wt(i, k) * wt(j, k)) for k in isuccs & jsuccs])
             )
 
         dtotal = len(ipreds) + len(isuccs)
@@ -270,7 +274,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     """
     c = clustering(G, nodes, weight=weight).values()
     if not count_zeros:
-        c = [v for v in c if v > 0]
+        c = [v for v in c if abs(v) > 0]
     return sum(c) / len(c)
 
 
@@ -301,9 +305,11 @@ def clustering(G, nodes=None, weight=None):
 
     The value of :math:`c_u` is assigned to 0 if :math:`deg(u) < 2`.
 
+    Additionally, this weighted definition has been generalized to support negative edge weights [3]_.
+
     For directed graphs, the clustering is similarly defined as the fraction
     of all possible directed triangles or geometric average of the subgraph
-    edge weights for unweighted and weighted directed graph respectively [3]_.
+    edge weights for unweighted and weighted directed graph respectively [4]_.
 
     .. math::
 
@@ -314,6 +320,7 @@ def clustering(G, nodes=None, weight=None):
     :math:`u`, :math:`deg^{tot}(u)` is the sum of in degree and out degree of
     :math:`u` and :math:`deg^{\leftrightarrow}(u)` is the reciprocal degree of
     :math:`u`.
+
 
     Parameters
     ----------
@@ -352,7 +359,9 @@ def clustering(G, nodes=None, weight=None):
     .. [2] Intensity and coherence of motifs in weighted complex
        networks by J. P. Onnela, J. Saramäki, J. Kertész, and K. Kaski,
        Physical Review E, 71(6), 065103 (2005).
-    .. [3] Clustering in complex directed networks by G. Fagiolo,
+    .. [3] Generalization of Clustering Coefficients to Signed Correlation Networks
+       by G. Costantini and M. Perugini, PloS one, 9(2), e88669 (2014).
+    .. [4] Clustering in complex directed networks by G. Fagiolo,
        Physical Review E, 76(2), 026107 (2007).
     """
     if G.is_directed():

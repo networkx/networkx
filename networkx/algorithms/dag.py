@@ -8,17 +8,11 @@ to the user to check for that.
 from collections import deque
 from math import gcd
 from functools import partial
-from itertools import chain
-from itertools import product
-from itertools import starmap
+from itertools import chain, product, starmap
 import heapq
 
 import networkx as nx
-from networkx.algorithms.traversal.breadth_first_search import descendants_at_distance
-from networkx.generators.trees import NIL
-from networkx.utils import arbitrary_element
-from networkx.utils import pairwise
-from networkx.utils import not_implemented_for
+from networkx.utils import arbitrary_element, pairwise, not_implemented_for
 
 __all__ = [
     "descendants",
@@ -46,7 +40,7 @@ def descendants(G, source):
     Parameters
     ----------
     G : NetworkX DiGraph
-        A directed acyclic graph (DAG)
+        A directed graph
     source : node in `G`
 
     Returns
@@ -66,7 +60,7 @@ def ancestors(G, source):
     Parameters
     ----------
     G : NetworkX DiGraph
-        A directed acyclic graph (DAG)
+        A directed graph
     source : node in `G`
 
     Returns
@@ -573,7 +567,7 @@ def transitive_closure_dag(G, topo_order=None):
     # idea: traverse vertices following a reverse topological order, connecting
     # each vertex to its descendants at distance 2 as we go
     for v in reversed(topo_order):
-        TC.add_edges_from((v, u) for u in descendants_at_distance(TC, v, 2))
+        TC.add_edges_from((v, u) for u in nx.descendants_at_distance(TC, v, 2))
 
     return TC
 
@@ -601,6 +595,27 @@ def transitive_reduction(G):
     NetworkXError
         If `G` is not a directed acyclic graph (DAG) transitive reduction is
         not uniquely defined and a :exc:`NetworkXError` exception is raised.
+
+    Examples
+    --------
+    To perform transitive reduction on a DiGraph:
+
+    >>> DG = nx.DiGraph([(1, 2), (2, 3), (1, 3)])
+    >>> TR = nx.transitive_reduction(DG)
+    >>> list(TR.edges)
+    [(1, 2), (2, 3)]
+
+    To avoid unnecessary data copies, this implementation does not return a
+    DiGraph with node/edge data.
+    To perform transitive reduction on a DiGraph and transfer node/edge data:
+
+    >>> DG = nx.DiGraph()
+    >>> DG.add_edges_from([(1, 2), (2, 3), (1, 3)], color='red')
+    >>> TR = nx.transitive_reduction(DG)
+    >>> TR.add_nodes_from(DG.nodes(data=True))
+    >>> TR.add_edges_from((u, v, DG.edges[u, v]) for u, v in TR.edges)
+    >>> list(TR.edges(data=True))
+    [(1, 2, {'color': 'red'}), (2, 3, {'color': 'red'})]
 
     References
     ----------
@@ -900,8 +915,8 @@ def dag_to_branching(G):
         msg = "dag_to_branching is only defined for acyclic graphs"
         raise nx.HasACycle(msg)
     paths = root_to_leaf_paths(G)
-    B, root = nx.prefix_tree(paths)
-    # Remove the synthetic `root` and `NIL` nodes in the prefix tree.
-    B.remove_node(root)
-    B.remove_node(NIL)
+    B = nx.prefix_tree(paths)
+    # Remove the synthetic `root`(0) and `NIL`(-1) nodes from the tree
+    B.remove_node(0)
+    B.remove_node(-1)
     return B

@@ -324,7 +324,7 @@ class HistoricalTests:
         H = G.copy()  # copy
         assert H.adj == G.adj
         assert H.name == G.name
-        assert H != G
+        assert H is not G
 
     def test_subgraph(self):
         G = self.G()
@@ -341,7 +341,7 @@ class HistoricalTests:
             )
 
             DG = G.to_directed()
-            assert DG != G  # directed copy or copy
+            assert DG is not G  # directed copy or copy
 
             assert DG.is_directed()
             assert DG.name == G.name
@@ -364,7 +364,7 @@ class HistoricalTests:
                 [("A", "B"), ("A", "C"), ("B", "D"), ("C", "B"), ("C", "D")]
             )
             UG = G.to_undirected()  # to_undirected
-            assert UG != G
+            assert UG is not G
             assert not UG.is_directed()
             assert G.is_directed()
             assert UG.name == G.name

@@ -45,7 +45,7 @@ Release Process
 
 - Push the new meta-data to github::
 
-   git push --tags upstream master
+   git push --tags upstream main
 
   (where ``upstream`` is the name of the
    ``github.com:networkx/networkx`` repository.)
@@ -87,16 +87,16 @@ Release Process
   - Update ``major`` and ``minor`` in ``networkx/release.py``.
   - Append the following to ``doc/_templates/layout.html``::
 
-    {% block document %}
-      {% include "dev_banner.html" %}
-      {{ super() }}
-    {% endblock %}
+      {% block document %}
+        {% include "dev_banner.html" %}
+        {{ super() }}
+      {% endblock %}
 
  - Commit and push changes::
 
     git add networkx/release.py doc/_templates/layout.html
     git commit -m "Bump release version"
-    git push upstream master
+    git push upstream main
 
 - Update the web frontpage:
   The webpage is kept in a separate repo: networkx/website

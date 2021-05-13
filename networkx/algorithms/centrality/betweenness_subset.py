@@ -49,6 +49,8 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     Returns
     -------
@@ -102,9 +104,9 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     for s in sources:
         # single source shortest paths
         if weight is None:  # use BFS
-            S, P, sigma = shortest_path(G, s)
+            S, P, sigma, _ = shortest_path(G, s)
         else:  # use Dijkstra's algorithm
-            S, P, sigma = dijkstra(G, s, weight)
+            S, P, sigma, _ = dijkstra(G, s, weight)
         b = _accumulate_subset(b, S, P, sigma, s, targets)
     b = _rescale(b, len(G), normalized=normalized, directed=G.is_directed())
     return b
@@ -143,6 +145,8 @@ def edge_betweenness_centrality_subset(
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     Returns
     -------
@@ -182,9 +186,9 @@ def edge_betweenness_centrality_subset(
     for s in sources:
         # single source shortest paths
         if weight is None:  # use BFS
-            S, P, sigma = shortest_path(G, s)
+            S, P, sigma, _ = shortest_path(G, s)
         else:  # use Dijkstra's algorithm
-            S, P, sigma = dijkstra(G, s, weight)
+            S, P, sigma, _ = dijkstra(G, s, weight)
         b = _accumulate_edges_subset(b, S, P, sigma, s, targets)
     for n in G:  # remove nodes to only return edges
         del b[n]

@@ -28,6 +28,9 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def set_warnings():
     warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message=r"Ordered.* is deprecated"
+    )
+    warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
         message="literal_stringizer is deprecated",
@@ -41,7 +44,24 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="is_string_like is deprecated"
     )
     warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\nauthority_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\nhub_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="default_opener is deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="empty_generator is deprecated"
+    )
+    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="make_str is deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="generate_unique_node is deprecated",
     )
     warnings.filterwarnings(
         "ignore",

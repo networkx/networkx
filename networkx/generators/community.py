@@ -859,7 +859,7 @@ def LFR_benchmark_graph(
         created graph. This value must be strictly greater than one.
 
     mu : float
-        Fraction of intra-community edges incident to each node. This
+        Fraction of inter-community edges incident to each node. This
         value must be in the interval [0, 1].
 
     average_degree : float

@@ -7,7 +7,7 @@ Routes to LANL from 186 sites on the Internet.
 
 The data file can be found at:
 
-- https://github.com/networkx/networkx/blob/master/examples/drawing/lanl_routes.edgelist
+- https://github.com/networkx/networkx/blob/main/examples/drawing/lanl_routes.edgelist
 
 This example needs Graphviz and PyGraphviz.
 """

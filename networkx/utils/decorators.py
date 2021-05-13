@@ -45,11 +45,11 @@ def not_implemented_for(*graph_types):
     --------
     Decorate functions like this::
 
-       @not_implemnted_for('directed')
+       @not_implemented_for('directed')
        def sp_function(G):
            pass
 
-       @not_implemnted_for('directed','multigraph')
+       @not_implemented_for('directed','multigraph')
        def sp_np_function(G):
            pass
     """

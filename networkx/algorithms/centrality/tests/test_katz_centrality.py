@@ -314,6 +314,7 @@ class TestKatzCentralityDirectedNumpy(TestKatzCentralityDirected):
         global np
         np = pytest.importorskip("numpy")
         pytest.importorskip("scipy")
+        super().setup_class()
 
     def test_katz_centrality_weighted(self):
         G = self.G

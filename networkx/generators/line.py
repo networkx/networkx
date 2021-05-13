@@ -3,7 +3,7 @@ from itertools import combinations
 from collections import defaultdict
 
 import networkx as nx
-from networkx.utils import arbitrary_element, generate_unique_node
+from networkx.utils import arbitrary_element
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["line_graph", "inverse_line_graph"]
@@ -241,11 +241,11 @@ def _lg_undirected(G, selfloops=False, create_using=None):
 def inverse_line_graph(G):
     """Returns the inverse line graph of graph G.
 
-    If H is a graph, and G is the line graph of H, such that H = L(G).
+    If H is a graph, and G is the line graph of H, such that G = L(H).
     Then H is the inverse line graph of G.
 
     Not all graphs are line graphs and these do not have an inverse line graph.
-    In these cases this generator returns a NetworkXError.
+    In these cases this function raises a NetworkXError.
 
     Parameters
     ----------
@@ -288,12 +288,9 @@ def inverse_line_graph(G):
 
     """
     if G.number_of_nodes() == 0:
-        a = generate_unique_node()
-        H = nx.Graph()
-        H.add_node(a)
-        return H
+        return nx.empty_graph(1)
     elif G.number_of_nodes() == 1:
-        v = list(G)[0]
+        v = arbitrary_element(G)
         a = (v, 0)
         b = (v, 1)
         H = nx.Graph([(a, b)])
@@ -308,20 +305,20 @@ def inverse_line_graph(G):
     starting_cell = _select_starting_cell(G)
     P = _find_partition(G, starting_cell)
     # count how many times each vertex appears in the partition set
-    P_count = {u: 0 for u in G.nodes()}
+    P_count = {u: 0 for u in G.nodes}
     for p in P:
         for u in p:
             P_count[u] += 1
 
     if max(P_count.values()) > 2:
-        msg = "G is not a line graph (vertex found in more " "than two partition cells)"
+        msg = "G is not a line graph (vertex found in more than two partition cells)"
         raise nx.NetworkXError(msg)
-    W = tuple([(u,) for u in P_count if P_count[u] == 1])
+    W = tuple((u,) for u in P_count if P_count[u] == 1)
     H = nx.Graph()
     H.add_nodes_from(P)
     H.add_nodes_from(W)
-    for a, b in combinations(H.nodes(), 2):
-        if len(set(a).intersection(set(b))) > 0:
+    for a, b in combinations(H.nodes, 2):
+        if any(a_bit in b for a_bit in a):
             H.add_edge(a, b)
     return H
 
@@ -457,10 +454,10 @@ def _select_starting_cell(G, starting_edge=None):
     triangles is the same as in the Roussopoulos paper cited above.
     """
     if starting_edge is None:
-        e = arbitrary_element(list(G.edges()))
+        e = arbitrary_element(G.edges())
     else:
         e = starting_edge
-        if e[0] not in G[e[1]]:
+        if e[1] not in G[e[0]]:
             msg = f"starting_edge ({e[0]}, {e[1]}) is not in the Graph"
             raise nx.NetworkXError(msg)
     e_triangles = _triangles(G, e)

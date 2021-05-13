@@ -121,7 +121,7 @@ def kosaraju_strongly_connected_components(G, source=None):
     Returns
     -------
     comp : generator of sets
-        A genrator of sets of nodes, one for each strongly connected
+        A generator of sets of nodes, one for each strongly connected
         component of G.
 
     Raises

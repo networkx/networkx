@@ -1,6 +1,5 @@
 from datetime import date
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
-import sphinx_rtd_theme
 from warnings import filterwarnings
 
 filterwarnings(
@@ -36,7 +35,8 @@ sphinx_gallery_conf = {
             "../examples/basic",
             "../examples/drawing",
             "../examples/3d_drawing",
-            "../examples/graphviz",
+            "../examples/graphviz_layout",
+            "../examples/graphviz_drawing",
             "../examples/graph",
             "../examples/algorithms",
             "../examples/advanced",
@@ -49,8 +49,22 @@ sphinx_gallery_conf = {
     # path where to save gallery generated examples
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
-    "image_scrapers": ("matplotlib", "mayavi"),
+    "image_scrapers": ("matplotlib",),
 }
+# Add mayavi scraper, if available
+try:
+    import mayavi
+
+    sphinx_gallery_conf["image_scrapers"] += ("mayavi",)
+except ImportError:
+    pass
+# Add pygraphviz png scraper, if available
+try:
+    from pygraphviz.scraper import PNGScraper
+
+    sphinx_gallery_conf["image_scrapers"] += (PNGScraper(),)
+except ImportError:
+    pass
 
 # generate autosummary pages
 autosummary_generate = True
@@ -65,9 +79,6 @@ source_suffix = ".rst"
 
 # The encoding of source files.
 source_encoding = "utf-8"
-
-# The master toctree document.
-master_doc = "index"
 
 # Do not include release announcement template
 exclude_patterns = ["release/release_template.rst"]
@@ -116,17 +127,27 @@ doctest_global_setup = "import networkx as nx"
 # Options for HTML output
 # -----------------------
 
-
-html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
+html_baseurl = "https://networkx.org/documentation/stable/"
+html_theme = "pydata_sphinx_theme"
 html_theme_options = {
-    "canonical_url": "https://networkx.org/documentation/stable/",
+    "collapse_navigation": True,
     "navigation_depth": 3,
-    "logo_only": True,
+    "show_prev_next": False,
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/networkx/networkx",
+            "icon": "fab fa-github-square",
+        },
+        {
+            "name": "Home Page",
+            "url": "https://networkx.org",
+            "icon": "fas fa-home",
+        },
+    ],
 }
 
-html_logo = "_static/networkx_logo.svg"
+html_logo = "_static/networkx_banner.svg"
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
@@ -164,6 +185,14 @@ html_use_opensearch = "https://networkx.org"
 # Output file base name for HTML help builder.
 htmlhelp_basename = "NetworkX"
 
+html_context = {
+    "versions_dropdown": {
+        "latest": "v2.6 (devel)",
+        "stable": "v2.5 (stable)",
+        "networkx-2.4": "v2.4",
+    },
+}
+
 # Options for LaTeX output
 # ------------------------
 
@@ -198,6 +227,8 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "geopandas": ("https://geopandas.org/", None),
+    "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
+    "sphinx-gallery": ("https://sphinx-gallery.github.io/stable/", None),
 }
 
 # The reST default role (used for this markup: `text`) to use for all
