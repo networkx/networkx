@@ -420,7 +420,7 @@ def all_topological_sorts(G):
 
 def topological_generations(G):
     """Stratifies a DAG into generations.
-    
+
     A topological generation is node collection in which ancestors of a node in each
     generation are guaranteed to be in a previous generation, and any descendants of
     a node are guaranteed to be in a following generation. Nodes are guaranteed to
