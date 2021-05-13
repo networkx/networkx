@@ -104,13 +104,15 @@ class DiGraphMap(DiGraphEnhanced):
                 )
                 edge_dict[edge] = (source_map[edge], target_map[edge])
             except KeyError:
-                logger.error(f'The maps for edge "{edge}" is not complete.')
+                raise nx.NetworkXAlgorithmError(
+                    f'The maps for edge "{edge}" is not complete.'
+                )
 
         # All the node in nodes must be found in node_set.
         node_set = set()
         for node in self.nodes:
             if node not in nodes:
-                logger.error(f'Node "{node}" is not specified.')
+                raise nx.NetworkXAlgorithmError(f'Node "{node}" is not specified.')
             else:
                 node_set.add(node)
 
@@ -155,7 +157,10 @@ class DiGraphMap(DiGraphEnhanced):
                 target_map[label] = edge[1]
                 weight_map[label] = edge[2][attr]
             except KeyError:
-                logger.error(f'Edge "{edge[0]}, {edge[1]}" is incorrect.')
+                raise nx.NetworkXAlgorithmError(
+                    f'Edge "{edge[0]}, {edge[1]}" is incorrect. There are key-errors '
+                    f"associated with attributes {attr} or(and) {attr_label}."
+                )
         return cls(
             dg.nodes, edges, source_map, target_map, weight_map, attr, attr_label
         )
@@ -181,7 +186,9 @@ class DiGraphMap(DiGraphEnhanced):
             try:
                 value = float(value)
             except ValueError:
-                logger.error("A string representing a float number should be passed.")
+                raise nx.NetworkXAlgorithmError(
+                    "A string representing a float number should be passed."
+                )
 
         the_map = getattr(self, f"{attrname}_map")
         res = []
@@ -267,13 +274,15 @@ class MultiDiGraphMap(nx.MultiDiGraph):
                 )
                 edge_dict[edge] = (source_map[edge], target_map[edge], idx)
             except KeyError:
-                logger.error(f'The maps for edge "{edge}" is not complete.')
+                raise nx.NetworkXAlgorithmError(
+                    f'The maps for edge "{edge}" is not complete.'
+                )
 
         # All the node in nodes must be found in node_set.
         node_set = set()
         for node in self.nodes:
             if node not in nodes:
-                logger.error(f'Node "{node}" is not specified.')
+                raise nx.NetworkXAlgorithmError(f'Node "{node}" is not specified.')
             else:
                 node_set.add(node)
 
@@ -321,7 +330,7 @@ class MultiDiGraphMap(nx.MultiDiGraph):
                 target_map[label] = edge[1]
                 weight_map[label] = edge[2][attr]
             except KeyError:
-                logger.error(
+                raise nx.NetworkXAlgorithmError(
                     f'Edge "{edge[0]}, {edge[1]}" is incorrect. There are key-errors '
                     f"associated with attributes {attr} or(and) {attr_label}."
                 )
@@ -368,7 +377,9 @@ class MultiDiGraphMap(nx.MultiDiGraph):
             try:
                 value = float(value)
             except ValueError:
-                logger.error("A string representing a float number should be passed.")
+                raise nx.NetworkXAlgorithmError(
+                    "A string representing a float number should be passed."
+                )
 
         the_map = getattr(self, f"{attrname}_map")
         res = []
@@ -397,7 +408,7 @@ class MultiDiGraphMap(nx.MultiDiGraph):
                 f"with max weight {data[res]}."
             )
         else:
-            logger.error(f"Node {v} is not in {self.nodes}.")
+            raise nx.NetworkXAlgorithmError(f"Node {v} is not in {self.nodes}.")
             res = None
 
         return res
@@ -430,7 +441,7 @@ class MultiDiGraphMap(nx.MultiDiGraph):
             root (str): the specified root node in the graph.
         """
         if root not in self.nodes:
-            logger.error(f"The passed root {root} is incorrect.")
+            raise nx.NodeNotFound(f"The passed root {root} is incorrect.")
 
     def first_node_exposed(self, branch: Set[str], root: str) -> str:
         """Get the first exposed node with respect to a branching.
@@ -602,9 +613,9 @@ class MultiDiGraphMap(nx.MultiDiGraph):
                     **{self.attr: self.weight_map[edge], self.attr_label: edge},
                 )
             except KeyError:
-                logger.error(f'Edge "{edge}" is not in the {self.name} graph.')
-                res = None
-                break
+                raise nx.NetworkXAlgorithmError(
+                    f'Edge "{edge}" is not in the {self.name} graph.'
+                )
 
         if res:
             res = MultiDiGraphMap.from_nx(res, self.attr, self.attr_label)
@@ -626,13 +637,13 @@ class MultiDiGraphMap(nx.MultiDiGraph):
             with the arguments.
         """
         if any(edge in branch for edge in edges):
-            logger.error(
-                "Some passed edge is contained in the passed " "spanning arborescence."
+            raise nx.NetworkXAlgorithmError(
+                "Some passed edge is contained in the passed spanning arborescence."
             )
-            res = None
         elif any(edge not in self.edge_dict.keys() for edge in edges):
-            logger.error("Some passed edge is not contained in the graph.")
-            res = None
+            raise nx.NetworkXAlgorithmError(
+                "Some passed edge is not contained in the graph."
+            )
         else:
             edges_left = set(self.edge_dict.keys())
             for edge in edges:
@@ -656,7 +667,9 @@ class MultiDiGraphMap(nx.MultiDiGraph):
         if not res:
             logger.warning("Empty sub-graph has been returned")
         elif not nx.is_connected(nx.Graph(res)):
-            logger.error("The constrained sub-graph is not connected.")
+            raise nx.NetworkXAlgorithmError(
+                "The constrained sub-graph is not connected."
+            )
 
         return res
 
@@ -699,8 +712,10 @@ class Arborescence(DiGraphEnhanced):
         if not dg.is_directed():
             raise TypeError("The graph is not directed.")
         if not nx.is_arborescence(dg):
-            logger.error(f"There are {len(dg.edges)} edges and {len(dg.nodes)} nodes.")
-            raise TypeError("The directed graph is not a arborescence.")
+            raise TypeError(
+                "The directed graph is not a arborescence. "
+                f"There are {len(dg.edges)} edges and {len(dg.nodes)} nodes."
+            )
 
         roots = [n for n, d in dg.in_degree() if d == 0]
         if not roots:
@@ -818,7 +833,7 @@ def collapse_into_cycle(
                 value=g.target_map[e_label], attrname="target"
             )
             if len(e_label_colliding) != 1:
-                logger.error(
+                raise nx.NetworkXAlgorithmError(
                     f"There are {len(e_label_colliding)} colliding"
                     "found instead of one and only one."
                 )
@@ -923,7 +938,7 @@ class MinSpanSolver:
 
         nodes = list(m.nodes)
         if root not in nodes:
-            logger.error("The root is incorrectly specified.")
+            raise nx.NodeNotFound(f'The root "{root}" is not found.')
         else:
             nodes.remove(root)
         cycles = {node: [] for node in nodes}
@@ -1124,8 +1139,7 @@ class MinSpanSolver:
                 else:
                     break
         else:
-            logger.error(f'There is still a node "{v}" exposed.')
-            res = None
+            raise nx.NetworkXAlgorithmError(f'There is still a node "{v}" exposed.')
 
         return res
 
@@ -1165,9 +1179,7 @@ class MinSpanSolver:
                 f'An edge "{res}" is found next to {b} and ' f"delta is {delta}."
             )
         else:
-            logger.error(f'Given edge "{b}" is not in the graph.')
-            res = None
-            delta = None
+            raise nx.NetworkXAlgorithmError(f'Given edge "{b}" is not in the graph.')
 
         return res, delta
 
@@ -1279,7 +1291,9 @@ def _next_sa(
     m = n.constrain_subgraph(y, z)
 
     if not a.root:
-        logger.error("Root of the previous spanning arborescence is not specified.")
+        raise nx.NetworkXAlgorithmError(
+            "Root of the previous spanning arborescence is not specified."
+        )
     mss = MinSpanSolver.from_map(m, a.root, attr, attr_label)
 
     a = DiGraphMap.from_nx(a, attr, attr_label)
@@ -1353,12 +1367,14 @@ def _max_sa(
     if any(
         edge not in nx.get_edge_attributes(res, attr_label).values() for edge in branch
     ):
-        logger.error("All edges in the branching should be found in the SA.")
+        raise nx.NetworkXAlgorithmError(
+            "All edges in the branching should be found in the SA."
+        )
     if any(
         edge not in {e for e in n.edge_dict.keys() if e not in edges}
         for edge in nx.get_edge_attributes(res, attr_label).values()
     ):
-        logger.error(
+        raise nx.NetworkXAlgorithmError(
             "All edges in the SA should be found in original edge set "
             "without passed edges"
         )
@@ -1382,11 +1398,9 @@ def _is_ancestor(g: nx.DiGraph, source: str, target: str) -> bool:
 
     """
     if source not in g.nodes:
-        logger.error(f'Source "{source}" is not in the graph.')
-        path = None
+        raise nx.NodeNotFound(f'Source "{source}" is not in the graph.')
     elif target not in g.nodes:
-        logger.error(f'Target "{target}" is not in the graph.')
-        path = None
+        raise nx.NodeNotFound(f'Target "{target}" is not in the graph.')
     else:
         path = next(nx.all_simple_paths(g, source, target), None)
 
@@ -1410,15 +1424,16 @@ def _is_reachable(g: nx.DiGraph, root: str) -> bool:
         bool: True if all nodes are reachable from a given root.
     """
     if root not in g.nodes:
-        logger.error(f'The root "{root}" is not in the graph.')
+        raise nx.NodeNotFound(f'The root "{root}" is not in the graph.')
         res = False
     else:
         res = True
         nodes = {n for n in g.nodes if n != root}
         for node in nodes:
             if not _is_ancestor(g, root, node):
-                logger.error(f"Node {node} is not reachable from {root}.")
-                res = False
+                raise nx.NetworkXUnfeasible(
+                    f'At least node "{node}" is not reachable from root "{root}".'
+                )
     return res
 
 
@@ -1474,7 +1489,9 @@ class DescendSpanningArborescences:
         # Check if there is edge directed into the root.
         edges_to_root = set(self.raw.in_edges(self.root))
         if edges_to_root:
-            logger.error(f"There are edges, {edges_to_root}, directed into root.")
+            raise nx.NetworkXAlgorithmError(
+                f"There are edges, {edges_to_root}, directed into root."
+            )
 
         self.msa = _max_sa(
             self.raw, self.root, set(), set(), self.attr, self.attr_label
@@ -1529,12 +1546,12 @@ class DescendSpanningArborescences:
 
             # Check if the total weight is decreased.
             if a_current.size(weight=self.attr) > self._last:
-                logger.error("Increasing total weight.")
+                raise nx.NetworkXAlgorithmError("Increasing total weight.")
             self._last = a_current.size(weight=self.attr)
 
             # Check if the total weight is the same as expected.
             if abs(a_current.size(weight=self.attr) - pre.w) >= self._THRESHOLD:
-                logger.error(
+                raise nx.NetworkXAlgorithmError(
                     f"Weight of the SA, {a_current.size(weight=self.attr)}, "
                     f"is different from the expected value, {pre.w}."
                 )
@@ -1542,7 +1559,9 @@ class DescendSpanningArborescences:
             # Check if there is edge directed into the root.
             edges_to_root = set(a_current.in_edges(self.root))
             if edges_to_root:
-                logger.error(f"There are edges, {edges_to_root}, directed into root.")
+                raise nx.NetworkXAlgorithmError(
+                    f"There are edges, {edges_to_root}, directed into root."
+                )
 
             e, d = _next_sa(self.raw, pre.a, y_prime, pre.z, self.attr, self.attr_label)
             self.p_list.append(
