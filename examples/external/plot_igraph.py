@@ -30,14 +30,14 @@ h = ig.Graph.from_networkx(H)
 fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
 
 # NetworkX draw
-ax0.set_title('Plot with NetworkX draw')
+ax0.set_title("Plot with NetworkX draw")
 nx.draw_kamada_kawai(H, node_size=50, ax=ax0)
 
 # igraph draw
-ax1.set_title('Plot with igraph plot')
+ax1.set_title("Plot with igraph plot")
 layout = h.layout_kamada_kawai()
 ig.plot(h, layout=layout, target=ax1)
-plt.axis('off')
+plt.axis("off")
 plt.show()
 
 
