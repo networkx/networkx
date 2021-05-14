@@ -214,7 +214,7 @@ def simple_cycles(G, max_len=None):
                     blocked.add(nextnode)
                     continue
             # done with nextnode... look for more neighbors
-            else:  # no more nbrs or path got too long
+            if not nbrs:  # no more nbrs
                 if thisnode in closed:
                     _unblock(thisnode, blocked, B)
                 else:
