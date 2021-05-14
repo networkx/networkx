@@ -3,6 +3,7 @@ from itertools import chain
 
 import networkx as nx
 from networkx.utils import arbitrary_element
+import random
 
 __all__ = ["dominating_set", "is_dominating_set"]
 
