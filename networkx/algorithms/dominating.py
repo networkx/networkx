@@ -7,7 +7,7 @@ from networkx.utils import arbitrary_element
 __all__ = ["dominating_set", "is_dominating_set"]
 
 
-def dominating_set(G, start_with=None):
+def dominating_set(G, start_with=None, randomize=False):
     r"""Finds a dominating set for the graph G.
 
     A *dominating set* for a graph with node set *V* is a subset *D* of
@@ -21,6 +21,9 @@ def dominating_set(G, start_with=None):
     start_with : node (default=None)
         Node to use as a starting point for the algorithm.
 
+    randomize : boolean (default=False)
+        Choose a random node rather than the next node in the set, at each iteration.
+
     Returns
     -------
     D : set
@@ -29,7 +32,7 @@ def dominating_set(G, start_with=None):
     Notes
     -----
     This function is an implementation of algorithm 7 in [2]_ which
-    finds some dominating set, not necessarily the smallest one.
+    finds some dominating set, not necessarily the smallest one. It adds a randomization option.
 
     See also
     --------
@@ -45,15 +48,22 @@ def dominating_set(G, start_with=None):
     """
     all_nodes = set(G)
     if start_with is None:
-        start_with = arbitrary_element(all_nodes)
+        if not randomize:
+            start_with = arbitrary_element(all_nodes)
+        else:
+            start_with = random.choice(tuple(all_nodes))
     if start_with not in G:
         raise nx.NetworkXError(f"node {start_with} is not in G")
     dominating_set = {start_with}
     dominated_nodes = set(G[start_with])
     remaining_nodes = all_nodes - dominated_nodes - dominating_set
     while remaining_nodes:
-        # Choose an arbitrary node and determine its undominated neighbors.
-        v = remaining_nodes.pop()
+        # Choose an arbitrary or random node and determine its undominated neighbors.
+        if not randomize:
+            v = remaining_nodes.pop()
+        else:
+            v = random.choice(tuple(remaining_nodes))
+            remaining_nodes.remove(v)
         undominated_neighbors = set(G[v]) - dominating_set
         # Add the node to the dominating set and the neighbors to the
         # dominated set. Finally, remove all of those nodes from the set
