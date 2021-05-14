@@ -76,7 +76,7 @@ Directed Version of Traveling Salesman Problem
   The goal of this project is to learn the API used for implemented methods
   and then implement the Asadpour method for directed graphs with similar API.
   Other even more recent papers discussing algorithm improvements for directed
-  TSP (also called Asymmetric TSP or ATSP) include `Svensson`__ and `Traub`__.
+  TSP (also called Asymmetric TSP or ATSP) include `Svensson`_ and `Traub`_.
   The Traub paper may be most useful for implementing the algorithm as all three
   are focused on proving asymptotic computation requirements rather than coding.
 

@@ -51,13 +51,6 @@ sphinx_gallery_conf = {
     "backreferences_dir": "modules/generated",
     "image_scrapers": ("matplotlib",),
 }
-# Add mayavi scraper, if available
-try:
-    import mayavi
-
-    sphinx_gallery_conf["image_scrapers"] += ("mayavi",)
-except ImportError:
-    pass
 # Add pygraphviz png scraper, if available
 try:
     from pygraphviz.scraper import PNGScraper
@@ -130,6 +123,9 @@ doctest_global_setup = "import networkx as nx"
 html_baseurl = "https://networkx.org/documentation/stable/"
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
+    "collapse_navigation": True,
+    "navigation_depth": 3,
+    "show_prev_next": False,
     "icon_links": [
         {
             "name": "GitHub",
