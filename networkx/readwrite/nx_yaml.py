@@ -15,16 +15,20 @@ http://pyyaml.org/wiki/PyYAML
 """
 
 
+def __dir__():
+    return ["read_yaml", "write_yaml"]
+
+
 def __getattr__(name):
     """Remove functions and provide informative error messages."""
     if name == "read_yaml":
-        raise AttributeError(
+        raise ImportError(
             "\nread_yaml has been removed from NetworkX, please use `yaml`\n"
             "directly:\n\n"
             "    ``yaml.load(path, Loader=yaml.Loader)``"
         )
     if name == "write_yaml":
-        raise AttributeError(
+        raise ImportError(
             "\nwrite_yaml has been removed from NetworkX, please use `yaml`\n"
             "directly:\n\n"
             "    ``yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)``"
