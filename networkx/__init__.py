@@ -19,21 +19,27 @@ def __getattr__(name):
             "Please use the `yaml` package directly for working with yaml data.\n"
             "For example, a networkx.Graph `G` can be written to and loaded\n"
             "from a yaml file as:\n\n"
-            "    import yaml\n"
-            "    yaml.dump(G, path_to_yaml_file)\n"
-            "    yaml.load(path_to_yaml_file, Loader=yaml.Loader)"
+            "    import yaml\n\n"
+            "    with open('path_to_yaml_file', 'w') as fh:\n"
+            "        yaml.dump(G, fh)\n"
+            "    with open('path_to_yaml_file', 'r') as fh:\n"
+            "        G = yaml.load(fh, Loader=yaml.Loader)\n"
         )
     if name == "read_yaml":
         raise ImportError(
             "\nread_yaml has been removed from NetworkX, please use `yaml`\n"
             "directly:\n\n"
-            "    ``yaml.load(path, Loader=yaml.Loader)``"
+            "    import yaml\n\n"
+            "    with open('path', 'r') as fh:\n"
+            "        yaml.load(fh, Loader=yaml.Loader)"
         )
     if name == "write_yaml":
         raise ImportError(
             "\nwrite_yaml has been removed from NetworkX, please use `yaml`\n"
             "directly:\n\n"
-            "    ``yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)``"
+            "    import yaml\n\n"
+            "    with oepn('path_for_yaml_output', 'w') as fh:\n"
+            "        yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)"
         )
     raise AttributeError(f"module {__name__} has no attribute {name}")
 
