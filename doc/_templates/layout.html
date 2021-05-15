@@ -1,10 +1,6 @@
 {% extends "!layout.html" %}
-{% block sidebartitle %}
-    <a href="https://networkx.org/">Project Homepage</a> |
-    <a href="https://github.com/networkx/networkx">Source Code</a>
-    {{ super() }}
-{% endblock %}
-{% block document %}
+
+{% block docs_body %}
     {% include "dev_banner.html" %}
     {{ super() }}
 {% endblock %}
