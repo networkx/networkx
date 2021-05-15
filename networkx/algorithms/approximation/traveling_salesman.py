@@ -36,6 +36,7 @@ import math
 import networkx as nx
 from networkx.utils import py_random_state, not_implemented_for, pairwise
 
+
 __all__ = [
     "traveling_salesman_problem",
     "christofides",
