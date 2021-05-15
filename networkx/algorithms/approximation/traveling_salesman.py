@@ -504,14 +504,13 @@ def greedy_tsp_minimum_insertions(G, weight="weight", source=None):
             for k in range(0, len(cycle) - 1):
                 previous_node = cycle[k]
                 after_node = cycle[k + 1]
-                cost_added = (
-                    G.edges[previous_node, candidate_node][weight]
-                    + G.edges[candidate_node, after_node][weight]
-                )
+                cost_added = G.edges[previous_node, candidate_node].get(
+                    weight, 1
+                ) + G.edges[candidate_node, after_node].get(weight, 1)
                 if previous_node == after_node:
                     cost_removed = 0
                 else:
-                    cost_removed = G.edges[previous_node, after_node][weight]
+                    cost_removed = G.edges[previous_node, after_node].get(weight, 1)
                 trial_cost = cost_added - cost_removed
                 if trial_cost < minimum_insertion_cost:
                     index_of_next_node = j
