@@ -54,10 +54,7 @@ def _require_partition(G, partition):
     """
     if is_partition(G, partition):
         return G, partition
-    else:
-        raise nx.NetworkXError(
-            "`partition` is not a valid partition of" " the nodes of G"
-        )
+    raise nx.NetworkXError("`partition` is not a valid partition of the nodes of G")
 
 
 require_partition = argmap(_require_partition, (0, 1))

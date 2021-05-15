@@ -58,13 +58,13 @@ def not_implemented_for(*graph_types):
            pass
     """
     if "directed" in graph_types:
-        assert (
-            "undirected" not in graph_types
-        ), "Function not implemented on graph AND multigraphs?"
+        if "undirected" in graph_types:
+            raise ValueError(
+                "Function not implemented on directed AND undirected graphs?"
+            )
     if "multigraph" in graph_types:
-        assert (
-            "graph" not in graph_types
-        ), "Function not implemented on graph AND multigraphs?"
+        if "graph" in graph_types:
+            raise ValueError("Function not implemented on graph AND multigraphs?")
     if not set(graph_types) < {"directed", "undirected", "multigraph", "graph"}:
         raise KeyError(
             "use one or more of directed, undirected, multigraph, graph.  "
@@ -364,9 +364,6 @@ def py_random_state(random_state_index):
     return argmap(create_py_random_state, random_state_index)
 
 
-_tabs = " " * 512
-
-
 class argmap:
     """A decorating class which applies a map to a function's arguments before
     calling it.
@@ -414,7 +411,7 @@ class argmap:
 
         def foo(a, b, c):
             a, b = swap(a, b)
-            return a, b, z
+            return a, b, c
 
     Also, transforming functions can preceed a try-finally block, if they both
     transform an argument and return a closing function:
@@ -509,9 +506,10 @@ class argmap:
         return func
 
     def __call__(self, f):
-        """Construct a lazily decorated wrapper of f.  The decorated function
-        will be compiled when it is called for the first time, and it will
-        replace its own __code__ object so subsequent calls are fast.
+        """Construct a lazily decorated wrapper of f.
+
+        The decorated function will be compiled when it is called for the first time,
+        and it will replace its own __code__ object so subsequent calls are fast.
 
         Parameters
         ----------
@@ -600,7 +598,9 @@ class argmap:
         return f"argmap_{fname}_{cls._count()}"
 
     def compile(self, f):
-        """Called once for a given decorated function -- collects the code from all
+        """Compile the decorated function.
+
+        Called once for a given decorated function -- collects the code from all
         argmap decorators in the stack, and compiles the decorated function.
 
         Parameters
@@ -634,6 +634,7 @@ class argmap:
 
     def assemble(self, f):
         """Collects the requisite data to compile the decorated version of f.
+
         Note, this is recursive, and all argmap-decorators will be flattened
         into a single function call
 
@@ -742,7 +743,9 @@ class argmap:
 
     @classmethod
     def signature(cls, f):
-        """Compute a Signature so that we can write a function wrapping f with
+        """Compute the signature for f
+
+        Compute a Signature so that we can write a function wrapping f with
         the same signature and call-type.
 
         Parameters

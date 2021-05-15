@@ -75,10 +75,10 @@ def test_not_implemented_decorator():
     with pytest.raises(nx.NetworkXNotImplemented):
         test_graph_only(nx.MultiDiGraph())
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         not_implemented_for("directed", "undirected")
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         not_implemented_for("multigraph", "graph")
 
 
@@ -390,11 +390,10 @@ class TestArgmap:
             return x, lambda: container.append(x)
 
         @argmap.try_finally(contextmanager, 0, 1, 2)
-        def do_not_much(x, y, z):
+        def foo(x, y, z):
             return x, y, z
 
-        x, y, z = do_not_much("a", "b", "c")
-        print(do_not_much._code)
+        x, y, z = foo("a", "b", "c")
 
         # context exits are called in reverse
         assert container == ["c", "b", "a"]
@@ -407,10 +406,10 @@ class TestArgmap:
             return x, lambda: container.append(x)
 
         @argmap.try_finally(contextmanager, 0, 1, 2)
-        def do_not_much(x, y, z):
+        def foo(x, y, z):
             yield from (x, y, z)
 
-        q = do_not_much("a", "b", "c")
+        q = foo("a", "b", "c")
         assert next(q) == "a"
         assert container == []
         assert next(q) == "b"
