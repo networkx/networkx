@@ -2,14 +2,14 @@
 ****
 ETE
 ****
-Read and write NetworkX graphs in the New Hampshire Newick format.
+Read and write NetworkX :mod:`arborescence<tree>` in the New Hampshire Newick format.
 
-"ETE (Environment for Tree Exploration) is a Python programming toolkit
+ETE (Environment for Tree Exploration) is a Python programming toolkit
 that assists in the automated manipulation,
 analysis and visualization of phylogenetic trees.
 
 It uses the New Hampshire Newick format as one of the most widely used
-standard representation of trees in bioinformatics."
+standard representation of trees in bioinformatics.
 
 See http://etetoolkit.org/ for documentation.
 
@@ -19,14 +19,15 @@ http://etetoolkit.org/docs/latest/tutorial/tutorial_trees.html#reading-and-writi
 
 """
 
-__all__ = ["to_ete", "from_ete", "write_ete", "read_ete"]
+__all__ = ["generate_ete", "parse_ete"]
+
+from collections import deque
 
 import networkx as nx
-from networkx.utils import open_file, deque
 
 
-def to_ete(G):
-    """Returns a ETE Tree from NetworkX arborescence [3]_ G.
+def generate_ete(G):
+    """Returns a ETE Tree from NetworkX :mod:`arborescence<tree>` G.
 
     ETE (Environment for Tree Exploration) is a Python programming toolkit
     that assists in the automated manipulation,
@@ -34,7 +35,6 @@ def to_ete(G):
 
     It uses the New Hampshire Newick format as one of the most widely used
     standard representation of trees in bioinformatics [1]_.
-
 
     Parameters
     ----------
@@ -47,27 +47,36 @@ def to_ete(G):
     Examples
     --------
     >>> G = nx.path_graph(42, create_using=nx.DiGraph)
-    >>> T = nx.to_ete(G)
+    >>> T = nx.generate_ete(G)
+
+    Notes
+    -----
+    - ETE Tree containing only node features.
+      Thus, the data of the edges of the NetworkX :mod:`arborescence<tree>` will be lost.
+    - In ETE Tree every node contains three basic attributes: name(``TreeNode.name``),
+      branch length(``TreeNode.dist``) and branch support(``TreeNode.support``)
+      which can have different meanings in the NetworkX :mod:`arborescence<tree>`.
 
     References
     ----------
     .. [1] http://etetoolkit.org/docs/latest/tutorial/tutorial_trees.html#reading-and-writing-newick-trees
     .. [2] http://etetoolkit.org/
-    .. [3] https://networkx.org/documentation/stable//reference/algorithms/tree.html#tree
     """
     if not nx.is_arborescence(G):
-        raise ValueError(f"Input graph {G} must be an arborescence.")
+        raise ValueError(f"Input graph G must be an arborescence.")
 
     try:
         import ete3
     except ImportError as e:
-        raise ImportError("to_ete() requires ete3: http://etetoolkit.org/") from e
+        raise ImportError("generate_ete() requires ete3: http://etetoolkit.org/") from e
 
-    node2tree = dict()
+    tree_nodes = dict()
 
     for node_name, node_features in G.nodes(data=True):
-        node2tree[node_name] = ete3.Tree(name=node_name)
-        node2tree[node_name].add_features(**node_features)
+        tree_node = ete3.Tree(name=node_name)
+        tree_node.add_features(**node_features)
+
+        tree_nodes[node_name] = tree_node
 
     root_node = [n for n, d in G.in_degree() if d == 0][0]
 
@@ -78,13 +87,13 @@ def to_ete(G):
 
         for child in G[parent]:
             queue.append(child)
-            node2tree[parent].add_child(node2tree[child])
+            tree_nodes[parent].add_child(child=tree_nodes[child])
 
-    return node2tree[root_node]
+    return tree_nodes[root_node]
 
 
-def from_ete(T):
-    """Returns a NetworkX arborescence [3]_ from ETE Tree.
+def parse_ete(T):
+    """Returns a NetworkX :mod:`arborescence<tree>` from ETE Tree.
 
     ETE (Environment for Tree Exploration) is a Python programming toolkit
     that assists in the automated manipulation,
@@ -103,26 +112,31 @@ def from_ete(T):
 
     Examples
     --------
-    >>> T = nx.to_ete(nx.path_graph(42, create_using=nx.DiGraph))
-    >>> G = nx.from_ete(T)
+    >>> T = nx.generate_ete(nx.path_graph(42, create_using=nx.DiGraph))
+    >>> G = nx.parse_ete(T)
+
+    Notes
+    -----
+    - In ETE Tree every node contains three basic attributes: name(``TreeNode.name``),
+      branch length(``TreeNode.dist``) and branch support(``TreeNode.support``)
+      which can have different meanings in the NetworkX :mod:`arborescence<tree>`.
 
     References
     ----------
     .. [1] http://etetoolkit.org/docs/latest/tutorial/tutorial_trees.html#reading-and-writing-newick-trees
     .. [2] http://etetoolkit.org/
-    .. [3] https://networkx.org/documentation/stable//reference/algorithms/tree.html#tree
     """
     try:
         import ete3
     except ImportError as e:
-        raise ImportError("to_ete() requires ete3: http://etetoolkit.org/") from e
+        raise ImportError("parse_ete() requires ete3: http://etetoolkit.org/") from e
 
     G = nx.DiGraph()
 
     for tree_node in T.iter_search_nodes():
         node_name = tree_node.name
         node_features = {
-            k: getattr(tree_node, k) for k in tree_node.features - {"dist", "support"}
+            k: getattr(tree_node, k) for k in tree_node.features - {"name"}
         }
 
         G.add_node(node_name, **node_features)
@@ -137,85 +151,3 @@ def from_ete(T):
             G.add_edge(parent.name, child.name)
 
     return G
-
-
-@open_file(1, mode="w")
-def write_ete(G, path_for_ete_output):
-    """Write NetworkX arborescence [3]_ G in the New Hampshire Newick format.
-
-    ETE (Environment for Tree Exploration) is a Python programming toolkit
-    that assists in the automated manipulation,
-    analysis and visualization of phylogenetic trees [2]_.
-
-    It uses the New Hampshire Newick format as one of the most widely used
-    standard representation of trees in bioinformatics [1]_.
-
-
-    Parameters
-    ----------
-    G : NetworkX arborescence
-
-    path_for_ete_output : file or string
-       File or filename to write.
-
-    Examples
-    --------
-    >>> G = nx.path_graph(42, create_using=nx.DiGraph)
-    >>> nx.write_ete(G, "test_ete.txt")
-
-    References
-    ----------
-    .. [1] http://etetoolkit.org/docs/latest/tutorial/tutorial_trees.html#reading-and-writing-newick-trees
-    .. [2] http://etetoolkit.org/
-    .. [3] https://networkx.org/documentation/stable//reference/algorithms/tree.html#tree
-    """
-    tree = to_ete(G)
-
-    path_for_ete_output.write(
-        tree.write(
-            features=list(tree.features - {"dist", "support"}), format_root_node=True
-        )
-    )
-
-
-@open_file(0, mode="r")
-def read_ete(path):
-    """Read a NetworkX arborescence [3]_ in the New Hampshire Newick format.
-
-    ETE (Environment for Tree Exploration) is a Python programming toolkit
-    that assists in the automated manipulation,
-    analysis and visualization of phylogenetic trees [2]_.
-
-    It uses the New Hampshire Newick format as one of the most widely used
-    standard representation of trees in bioinformatics [1]_.
-
-    Parameters
-    ----------
-    path : file or string
-       File or filename to read.
-
-    Returns
-    -------
-    G : NetworkX arborescence
-
-    Examples
-    --------
-    >>> nx.write_ete(nx.path_graph(42, create_using=nx.DiGraph), "test_ete.txt")
-    >>> G = nx.read_ete("test_ete.txt")
-
-    References
-    ----------
-    .. [1] http://etetoolkit.org/docs/latest/tutorial/tutorial_trees.html#reading-and-writing-newick-trees
-    .. [2] http://etetoolkit.org/
-    .. [3] https://networkx.org/documentation/stable//reference/algorithms/tree.html#tree
-    """
-    try:
-        import ete3
-    except ImportError as e:
-        raise ImportError("to_ete() requires ete3: http://etetoolkit.org/") from e
-
-    file = [line for line in path]
-
-    tree = ete3.Tree(file[0])
-
-    return from_ete(tree)
