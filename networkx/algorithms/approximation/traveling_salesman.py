@@ -42,6 +42,7 @@ __all__ = [
     "greedy_tsp",
     "greedy_tsp_minimum_insertions",
     "nearest_insertion",
+    "farthest_insertion",
     "simulated_annealing_tsp",
     "threshold_accepting_tsp",
 ]
@@ -604,6 +605,115 @@ def nearest_insertion(G, weight="weight", source=None):
         farthest_point = farthest_point[0]
 
         # Find the closest edge of the cycle to the nearest city
+        last = None
+        best = None
+        for current in route:
+            if last is not None:
+                d1 = G[last][farthest_point].get(weight, 1)
+                d2 = G[current][farthest_point].get(weight, 1)
+                d3 = G[last][current].get(weight, 1) if last != current else 0
+                d = d1 + d2 - d3
+
+                if best is None or d < best[2]:
+                    best = (last, current, d)
+            last = current
+
+        if last is None:
+            last = route[0]
+
+        d1 = G[last][farthest_point].get(weight, 1)
+        d2 = G[route[0]][farthest_point].get(weight, 1)
+        d3 = G[last][route[0]].get(weight, 1) if last != current else 0
+        d = d1 + d2 - d3
+        if best is None or d < best[2]:
+            best = (last, route[0], d)
+
+        # Connect the farthest city to the cycle
+        route.insert(route.index(best[0]) + 1, farthest_point)
+        points.remove(farthest_point)
+
+    return route
+
+
+def farthest_insertion(G, weight="weight", source=None):
+    """Return a low cost route starting at `source`.
+
+    This function implements the farthest insertion greedy criterion for
+    creating a tsp route. At each iteration, it finds the most remote node
+    from any of the nodes of the current route and then calculates the best
+    point to locate it inside the route, until all nodes have been added to
+    the solution.
+
+    Parameters
+    ----------
+    G : Graph
+        The Graph should be a complete weighted undirected graph.
+        The distance between all pairs of nodes should be included.
+
+    weight : string, optional (default="weight")
+        Edge data key corresponding to the edge weight.
+        If any edge does not have this attribute the weight is set to 1.
+
+    source : node, optional (default: first node in list(G))
+        Starting node.  If None, defaults to ``next(iter(G))``
+
+    Returns
+    -------
+    route : list of nodes
+        Returns the route (list of nodes) that a salesman
+        can follow to minimize total weight of the trip.
+
+    Raises
+    ------
+    NetworkXError
+        If `G` is not complete, the algorithm raises an exception.
+
+    Examples
+    --------
+    >>> from networkx.algorithms import approximation as approx
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from({
+    ...     ("A", "B", 3), ("A", "C", 17), ("A", "D", 14), ("B", "A", 3),
+    ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
+    ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2),
+    ...     ("E", "A", 5), ("A", "E", 7), ("E", "D", 9), ("D", "E", 12),
+    ...     ("E", "C", 10), ("C", "E", 19), ("E", "B", 7), ("B", "E", 3)
+    ... })
+    >>> route = approx.farthest_insertion(G, source="A")
+    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(route))
+    >>> route
+    ['A', 'E', 'D', 'C', 'B', 'A']
+    >>> cost
+    33
+
+    Notes
+    -----
+    Time complexity: It has a running time $O(|V|^2)$
+    """
+    # Check that G is a complete graph
+    N = len(G) - 1
+    # This check ignores selfloops which is what we want here.
+    if any(len(nbrdict) != N for n, nbrdict in G.adj.items()):
+        raise nx.NetworkXError("G must be a complete graph.")
+
+    points = list(G)
+    if source is None:
+        source = next(iter(G))
+    route = [source, source]
+    points.remove(source)
+
+    while points:
+        farthest_point = None
+
+        # Find the farthest point to the current cycle
+        for current in route:
+            for point in points:
+                d = G[current][point].get(weight, 1)
+                if farthest_point is None or d > farthest_point[1]:
+                    farthest_point = (point, d)
+        farthest_point = farthest_point[0]
+
+        # Find the closest edge of the cycle to the farthest city
         last = None
         best = None
         for current in route:
