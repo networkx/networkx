@@ -26,26 +26,10 @@ jobs:
             sudo apt-get install texlive texlive-latex-extra latexmk texlive-xetex fonts-freefont-otf xindy
 
       - run:
-          name: Install cartopy dependencies
-          command: |
-            sudo apt-get install libgeos-dev libproj-dev
-
-      - run:
           name: Install pysal dependencies
           command: |
             sudo apt-get install libspatialindex-dev
       
-      - run:
-          name: Install mayavi dependencies
-          command : |
-            sudo apt-get --no-install-recommends install -y libxkbcommon-x11-0 optipng libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 xcb libxcb-xfixes0 libxcb-xinerama0 libxcb-shape0 xvfb
-
-      - run:
-          name: Configure for headless mayavi
-          command: |
-            echo "export DISPLAY=:99" >> $BASH_ENV
-            /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1400x200x24 -ac +extension GLX +render -noreset;
-
       - restore_cache:
           keys:
             - pip-cache-v1
@@ -58,7 +42,6 @@ jobs:
             pip install --upgrade pip wheel setuptools
             pip install -r requirements.txt
             pip install -r requirements/extra.txt
-            pip install -r requirements/example-requirements.txt
             pip install -r requirements/example.txt
             pip install -r requirements/doc.txt
             pip list
