@@ -4,70 +4,77 @@
 
 import os
 import tempfile
-import pytest
 
-ete3 = pytest.importorskip("ete3")
+import pytest
 
 import networkx as nx
 from networkx.testing import assert_edges_equal, assert_nodes_equal
 
+ete3 = pytest.importorskip("ete3")
 
-class TestETE:
-    @classmethod
-    def setup_class(cls):
-        cls.build_graphs()
+dg_path_graph = nx.path_graph(42, create_using=nx.DiGraph)
 
-    @classmethod
-    def build_graphs(cls):
-        cls.DG = nx.DiGraph(name="test_directed_graph")
-        cls.MDG = nx.MultiDiGraph(name="test_multi_graph")
+dg_tree_with_int_nodes = nx.DiGraph(
+    [
+        (1, 2),
+        (1, 3),
+        (2, 4),
+        (3, 5),
+    ]
+)
 
-        # Setting nodes with data
-        for i in range(0, 42):
-            node = str(i)
-            cls.DG.add_node(node, data="test_data")
-            cls.MDG.add_node(node, data="test_data")
+dg_tree_with_str_nodes = nx.DiGraph(
+    [
+        ("a", "b"),
+        ("a", "c"),
+        ("b", "d"),
+        ("b", "e"),
+    ]
+)
 
-        # Setting edges
-        for i in range(1, 42):
-            u = str(i - 1)
-            v = str(i)
 
-            cls.DG.add_edge(u, v)
-            cls.MDG.add_edge(u, v)
+@pytest.mark.parametrize(
+    ("graph",),
+    (
+        (dg_path_graph,),
+        (dg_tree_with_int_nodes,),
+        (dg_tree_with_str_nodes,),
+    ),
+)
+def test_transform_without_features(graph):
+    tree = nx.parse_ete(nx.generate_ete(graph))
 
-    def assert_equal_file_transform(self, G, data=False):
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_ete(G, fname)
-        Gin = nx.read_ete(fname)
+    assert nx.is_arborescence(graph)
+    assert nx.is_arborescence(tree)
 
-        assert nx.is_arborescence(G)
-        assert nx.is_arborescence(Gin)
+    assert_nodes_equal(graph.nodes, tree.nodes)
+    assert_edges_equal(graph.edges, tree.edges)
 
-        assert_nodes_equal(list(G), list(Gin))
-        assert_edges_equal(G.edges(data=data), Gin.edges(data=data))
 
-        os.close(fd)
-        os.unlink(fname)
+@pytest.mark.parametrize(
+    ("graph",),
+    (
+        (dg_path_graph,),
+        (dg_tree_with_int_nodes,),
+        (dg_tree_with_str_nodes,),
+    ),
+)
+def test_transform_with_features(graph):
+    for node in graph.nodes:
+        graph.nodes[node]["feature"] = "test"
 
-    def assert_equal_instance_transform(self, G, data=False):
-        T = nx.to_ete(G)
-        Gin = nx.from_ete(T)
+    tree = nx.parse_ete(nx.generate_ete(graph))
 
-        assert nx.is_arborescence(G)
-        assert nx.is_arborescence(Gin)
+    assert nx.is_arborescence(graph)
+    assert nx.is_arborescence(tree)
 
-        assert_nodes_equal(list(G), list(Gin))
-        assert_edges_equal(G.edges(data=data), Gin.edges(data=data))
+    def _setup_nodes(nodes):
+        res = dict(nodes)
+        for feature in ("name", "dist", "support"):
+            res.pop(feature, None)
+        return res
 
-    def test_directed_through_file_transformation(self):
-        self.assert_equal_file_transform(self.DG, data=True)
-
-    def test_multigraph_through_file_transformation(self):
-        self.assert_equal_file_transform(self.MDG, data=True)
-
-    def test_directed_through_instance_transformation(self):
-        self.assert_equal_instance_transform(self.DG, data=True)
-
-    def test_multigraph_through_instance_transformation(self):
-        self.assert_equal_instance_transform(self.MDG, data=True)
+    assert_nodes_equal(
+        _setup_nodes(graph.nodes(data=True)), _setup_nodes(tree.nodes(data=True))
+    )
+    assert_edges_equal(graph.edges(data=True), tree.edges(data=True))
