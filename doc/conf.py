@@ -128,16 +128,17 @@ html_theme_options = {
     "show_prev_next": False,
     "icon_links": [
         {
-            "name": "GitHub",
-            "url": "https://github.com/networkx/networkx",
-            "icon": "fab fa-github-square",
-        },
-        {
             "name": "Home Page",
             "url": "https://networkx.org",
             "icon": "fas fa-home",
         },
+        {
+            "name": "GitHub",
+            "url": "https://github.com/networkx/networkx",
+            "icon": "fab fa-github-square",
+        },
     ],
+    "navbar_end": ["navbar-icon-links", "version"],
 }
 
 html_logo = "_static/networkx_banner.svg"
@@ -180,7 +181,7 @@ htmlhelp_basename = "NetworkX"
 
 html_context = {
     "versions_dropdown": {
-        "latest": "v2.6 (devel)",
+        "latest": "devel (latest)",
         "stable": "v2.5 (stable)",
         "networkx-2.4": "v2.4",
     },
