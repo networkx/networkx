@@ -265,6 +265,54 @@ class TestNearestInsertion:
         assert len(cycle) - 1 == len(G) == len(set(cycle))
 
 
+class TestFarthestInsertion:
+    setup_class = _setup_class
+
+    def test_farthest_insertion(self):
+        cycle = nx.app.farthest_insertion(self.DG, source="D")
+        cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 31.0)
+
+        cycle = nx.app.farthest_insertion(self.DG2, source="D")
+        cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 78.0)
+
+        cycle = nx.app.farthest_insertion(self.UG, source="D")
+        cost = sum(self.UG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "A", "B", "C", "D"], 33.0)
+
+        # cycle = nx_app.greedy_tsp_minimum_insertions(self.UG2, source="D")
+        cycle = nx.app.farthest_insertion(self.UG2, source="D")
+        cost = sum(self.UG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 25.0)
+
+    def test_not_complete_graph(self):
+        pytest.raises(
+            nx.NetworkXError, nx.app.farthest_insertion, self.incompleteUG
+        )
+        pytest.raises(
+            nx.NetworkXError, nx.app.farthest_insertion, self.incompleteDG
+        )
+
+    def test_not_weighted_graph(self):
+        nx.app.farthest_insertion(self.unweightedUG)
+        nx.app.farthest_insertion(self.unweightedDG)
+
+    def test_two_nodes(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from({(1, 2, 1)})
+        cycle = nx.app.farthest_insertion(G)
+        cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+
+        validate_solution(cycle, cost, [1, 2, 1], 2)
+
+    def test_ignore_selfloops(self):
+        G = nx.complete_graph(5)
+        G.add_edge(3, 3)
+        cycle = nx.app.farthest_insertion(G)
+        assert len(cycle) - 1 == len(G) == len(set(cycle))
+
+
 class TestSimulatedAnnealingTSP:
     setup_class = _setup_class
     tsp = staticmethod(nx_app.simulated_annealing_tsp)
