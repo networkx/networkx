@@ -1,7 +1,7 @@
 .. currentmodule:: networkx
 
-Release Log
-===========
+Old Release Log
+===============
 
 NetworkX 2.5
 ------------

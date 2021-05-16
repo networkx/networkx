@@ -1,16 +1,37 @@
-*********************************
-Version 1.0 notes and API changes
-*********************************
+NetworkX 1.0
+============
 
-We have made some significant API changes, detailed below, to add
-functionality and clarity.  This page reflects changes from
-networkx-0.99 to networkx-1.0.  For changes from earlier versions to
-networkx-0.99 see :doc:`Version 0.99 API changes <api_0.99>`.
+Release date:  8 Jan 2010
 
 Version 1.0 requires Python 2.4 or greater.
 
-Please send comments and questions to the networkx-discuss mailing list:
-http://groups.google.com/group/networkx-discuss .
+
+New features
+~~~~~~~~~~~~
+This release has significant changes to parts of the graph API
+to allow graph, node, and edge attributes.
+See http://networkx.lanl.gov/reference/api_changes.html
+
+ - Update Graph, DiGraph, and MultiGraph classes to allow attributes.
+ - Default edge data is now an empty dictionary (was the integer 1)
+ - Difference and intersection operators
+ - Average shortest path
+ - A* (A-Star) algorithm
+ - PageRank, HITS, and eigenvector centrality
+ - Read Pajek files
+ - Line graphs
+ - Minimum spanning tree (Kruskal's algorithm)
+ - Dense and sparse Fruchterman-Reingold layout
+ - Random clustered graph generator
+ - Directed scale-free graph generator
+ - Faster random regular graph generator
+ - Improved edge color and label drawing with Matplotlib
+ - and much more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.0
+
+Examples
+~~~~~~~~
+ - Update to work with networkx-1.0 API
+ - Graph subclass example
 
 
 Version numbering

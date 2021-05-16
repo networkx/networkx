@@ -84,5 +84,5 @@ License
    auto_examples/index
    reference/index
    developer/index
-   news
+   release/index
    bibliography
