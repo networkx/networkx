@@ -75,6 +75,8 @@ License
 
 .. include:: ../LICENSE.txt
 
+.. include:: bibliography.rst
+
 .. toctree::
    :maxdepth: 1
    :hidden:
@@ -85,4 +87,3 @@ License
    reference/index
    developer/index
    release/index
-   bibliography
