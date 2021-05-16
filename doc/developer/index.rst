@@ -6,6 +6,7 @@ Developer Guide
 .. toctree::
    :maxdepth: 2
 
+   about_us
    code_of_conduct
    values
    contribute

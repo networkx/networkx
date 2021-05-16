@@ -81,7 +81,6 @@ Documentation
    developer/index
    news
    license
-   credits
    citing
    bibliography
 
