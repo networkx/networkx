@@ -585,7 +585,7 @@ def nearest_insertion(G, weight="weight", source=None):
     # Check that G is a complete graph
     N = len(G) - 1
     # This check ignores selfloops which is what we want here.
-    if any(len(nbrdict) != N for n, nbrdict in G.adj.items()):
+    if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
         raise nx.NetworkXError("G must be a complete graph.")
 
     points = list(G)
@@ -694,7 +694,7 @@ def farthest_insertion(G, weight="weight", source=None):
     # Check that G is a complete graph
     N = len(G) - 1
     # This check ignores selfloops which is what we want here.
-    if any(len(nbrdict) != N for n, nbrdict in G.adj.items()):
+    if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
         raise nx.NetworkXError("G must be a complete graph.")
 
     points = list(G)
