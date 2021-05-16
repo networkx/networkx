@@ -1,4 +1,4 @@
-NetworkX 2.X
+Next Release
 ============
 
 Release date: TBD

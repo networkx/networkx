@@ -6,7 +6,7 @@ Release date:  18 November 2008
 See: https://networkx.lanl.gov/trac/timeline
 
 New features
-~~~~~~~~~~~~
+------------
 This release has significant changes to parts of the graph API.
 See http://networkx.lanl.gov/reference/api_changes.html
 
@@ -19,11 +19,11 @@ See http://networkx.lanl.gov/reference/api_changes.html
  - Moved package and file layout to subdirectories.
 
 Bug fixes
-~~~~~~~~~
+---------
  - handle root= option to draw_graphviz correctly
 
 Examples
-~~~~~~~~
+--------
  - Update to work with networkx-0.99 API
  - Drawing examples now use matplotlib.pyplot interface
  - Improved drawings in many examples
@@ -43,7 +43,7 @@ Please send comments and questions to the networkx-discuss mailing list.
 http://groups.google.com/group/networkx-discuss
 
 Changes in base classes
-=======================
+-----------------------
 
 The most significant changes are in the graph classes.
 We have redesigned the Graph() and DiGraph() classes
@@ -321,7 +321,7 @@ Used internally - now called nbunch_iter and returns an iterator.
 
 
 Converting your old code to Version 0.99
-========================================
+----------------------------------------
 
 Mostly you can just run the code and python will raise an exception
 for features that changed.  Common places for changes are

@@ -4,7 +4,7 @@ NetworkX 1.4
 Release date:  23 January 2011
 
 New features
-~~~~~~~~~~~~
+------------
  - :mod:`k-shell,k-crust,k-corona <networkx.algorithms.core>`
  - :mod:`read GraphML files from yEd <networkx.readwrite.graphml>`
  - :mod:`read/write GEXF format files <networkx.readwrite.gexf>`
@@ -20,7 +20,7 @@ New features
  - and more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.4
 
 API changes
-~~~~~~~~~~~
+-----------
  - :mod:`gnp_random_graph() <networkx.generators.random_graphs>` now takes a
    directed=True|False keyword instead of create_using
  - :mod:`gnm_random_graph() <networkx.generators.random_graphs>` now takes a

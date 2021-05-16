@@ -142,11 +142,11 @@ html_theme_options = {
     "page_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
 }
 html_sidebars = {
-  "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
-  "index": [],
-  "install": [],
-  "tutorial": [],
-  "auto_examples/index": [],
+    "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
+    "index": [],
+    "install": [],
+    "tutorial": [],
+    "auto_examples/index": [],
 }
 html_logo = "_static/networkx_banner.svg"
 

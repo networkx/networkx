@@ -6,7 +6,7 @@ Release date: 21 June 2014
 Support for Python 3.1 is dropped in this release.
 
 Highlights
-~~~~~~~~~~
+----------
 - Completely rewritten maximum flow and flow-based connectivity algorithms with
   backwards incompatible interfaces
 - Community graph generators
