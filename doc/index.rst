@@ -3,10 +3,14 @@
 Software for Complex Networks
 =============================
 
+.. only:: html
+
+    :Release: |version|
+    :Date: |today|
+
 NetworkX is a Python package for the creation, manipulation, and study
 of the structure, dynamics, and functions of complex networks.
-
-NetworkX provides:
+It provides:
 
 -  tools for the study of the structure and
    dynamics of social, biological, and infrastructure networks;
@@ -22,6 +26,25 @@ With NetworkX you can load and store networks in standard and nonstandard data
 formats, generate many types of random and classic networks, analyze network
 structure, build network models, design new network algorithms, draw networks,
 and much more.
+
+Citing
+------
+
+To cite NetworkX please use the following publication:
+
+Aric A. Hagberg, Daniel A. Schult and Pieter J. Swart,
+`"Exploring network structure, dynamics, and function using NetworkX"
+<http://conference.scipy.org/proceedings/SciPy2008/paper_2/>`_,
+in
+`Proceedings of the 7th Python in Science Conference (SciPy2008)
+<http://conference.scipy.org/proceedings/SciPy2008/index.html>`_, Gäel
+Varoquaux, Travis Vaught, and Jarrod Millman (Eds), (Pasadena, CA
+USA), pp. 11--15, Aug 2008
+
+.. only:: html
+
+   `PDF <http://conference.scipy.org/proceedings/SciPy2008/paper_2/full_text.pdf>`_
+   `BibTeX <http://conference.scipy.org/proceedings/SciPy2008/paper_2/reference.bib>`_
 
 Audience
 --------
@@ -47,32 +70,14 @@ to write basic programs in Python.  Among the many guides to Python, we
 recommend the `Python documentation <https://docs.python.org/3/>`_ and the text
 by Alex Martelli [Martelli03]_.
 
-Free software
--------------
-
-NetworkX is free software; you can redistribute it and/or modify it under the
-terms of the :doc:`3-clause BSD License </license>`.  We welcome contributions.
-Join us on `GitHub <https://github.com/networkx/networkx>`_.
-
-History
+License
 -------
 
-NetworkX was born in May 2002. The original version was designed and written by
-Aric Hagberg, Dan Schult, and Pieter Swart in 2002 and 2003.  The first public
-release was in April 2005.
-Many people have contributed to the success of NetworkX. Some of the
-contributors are listed in the :doc:`credits. <credits>`
-
-Documentation
--------------
-
-.. only:: html
-
-    :Release: |version|
-    :Date: |today|
+.. include:: ../LICENSE.txt
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
    install
    tutorial
@@ -80,14 +85,4 @@ Documentation
    reference/index
    developer/index
    news
-   license
-   citing
    bibliography
-
-Indices and tables
-------------------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-* :ref:`glossary`

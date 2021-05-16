@@ -3,6 +3,11 @@
 Developer Guide
 ***************
 
+.. only:: html
+
+    :Release: |version|
+    :Date: |today|
+
 .. toctree::
    :maxdepth: 2
 

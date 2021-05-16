@@ -124,7 +124,7 @@ html_baseurl = "https://networkx.org/documentation/stable/"
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
     "collapse_navigation": True,
-    "navigation_depth": 3,
+    "navigation_depth": 2,
     "show_prev_next": False,
     "icon_links": [
         {
