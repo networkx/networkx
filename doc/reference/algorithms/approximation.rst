@@ -91,6 +91,19 @@ Steiner Tree
    steiner_tree
 
 
+Traveling Salesman
+------------------
+.. automodule:: networkx.algorithms.approximation.traveling_salesman
+.. autosummary::
+   :toctree: generated/
+
+   christofides
+   traveling_salesman_problem
+   greedy_tsp
+   simulated_annealing_tsp
+   threshold_accepting_tsp
+
+
 Treewidth
 ---------
 .. automodule:: networkx.algorithms.approximation.treewidth
