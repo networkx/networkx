@@ -57,7 +57,7 @@ plt.title(
     "Original (%s nodes, %s edges)"
     % (original_graph.number_of_nodes(), original_graph.number_of_edges())
 )
-pos = nx.spring_layout(original_graph)
+pos = nx.spring_layout(original_graph, seed=7482934)
 node_colors = [d["color"] for _, d in original_graph.nodes(data=True)]
 
 edge_type_visual_weight_lookup = {"Weak": 1.0, "Strong": 3.0}
@@ -82,7 +82,7 @@ plt.title(
     "SNAP Aggregation (%s nodes, %s edges)"
     % (summary_graph.number_of_nodes(), summary_graph.number_of_edges())
 )
-summary_pos = nx.spring_layout(summary_graph)
+summary_pos = nx.spring_layout(summary_graph, seed=8375428)
 node_colors = []
 for node in summary_graph:
     color = summary_graph.nodes[node]["color"]
