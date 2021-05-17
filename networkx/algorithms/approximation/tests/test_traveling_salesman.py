@@ -242,8 +242,8 @@ class TestNearestInsertion:
         pytest.raises(nx.NetworkXError, nx_app.nearest_insertion, self.incompleteDG)
 
     def test_not_weighted_graph(self):
-        nx.app.nearest_insertion(self.unweightedUG)
-        nx.app.nearest_insertion(self.unweightedDG)
+        nx_app.nearest_insertion(self.unweightedUG)
+        nx_app.nearest_insertion(self.unweightedDG)
 
     def test_two_nodes(self):
         G = nx.Graph()
@@ -294,7 +294,6 @@ class TestFarthestInsertion:
         G.add_weighted_edges_from({(1, 2, 1)})
         cycle = nx_app.farthest_insertion(G)
         cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-
         validate_solution(cycle, cost, [1, 2, 1], 2)
 
     def test_ignore_selfloops(self):
