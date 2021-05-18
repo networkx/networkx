@@ -260,7 +260,7 @@ def parse_gml(lines, label="label", destringizer=None):
 
 
 class Pattern(Enum):
-    """ encodes the index of each token-matching pattern in `tokenize`. """
+    """encodes the index of each token-matching pattern in `tokenize`."""
 
     KEYS = 0
     REALS = 1

@@ -346,14 +346,14 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges, targ
         will continue only through edges *not* in the given matching.
 
         """
-        if along_matched:
-            edges = itertools.cycle([matched_edges, unmatched_edges])
-        else:
-            edges = itertools.cycle([unmatched_edges, matched_edges])
         visited = set()
-        stack = [(u, iter(G[u]), next(edges))]
+        # Follow matched edges when depth is even,
+        # and follow unmatched edges when depth is odd.
+        initial_depth = 0 if along_matched else 1
+        stack = [(u, iter(G[u]), initial_depth)]
         while stack:
-            parent, children, valid_edges = stack[-1]
+            parent, children, depth = stack[-1]
+            valid_edges = matched_edges if depth % 2 else unmatched_edges
             try:
                 child = next(children)
                 if child not in visited:
@@ -361,7 +361,7 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges, targ
                         if child in targets:
                             return True
                         visited.add(child)
-                        stack.append((child, iter(G[child]), next(edges)))
+                        stack.append((child, iter(G[child]), depth + 1))
             except StopIteration:
                 stack.pop()
         return False

@@ -278,7 +278,7 @@ def circular_ladder_graph(n, create_using=None):
 
 
 def circulant_graph(n, offsets, create_using=None):
-    """Returns the circulant graph $Ci_n(x_1, x_2, ..., x_m)$ with $n$ nodes.
+    r"""Returns the circulant graph $Ci_n(x_1, x_2, ..., x_m)$ with $n$ nodes.
 
     The circulant graph $Ci_n(x_1, ..., x_m)$ consists of $n$ nodes $0, ..., n-1$
     such that node $i$ is connected to nodes $(i + x) \mod n$ and $(i - x) \mod n$

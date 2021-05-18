@@ -596,6 +596,27 @@ def transitive_reduction(G):
         If `G` is not a directed acyclic graph (DAG) transitive reduction is
         not uniquely defined and a :exc:`NetworkXError` exception is raised.
 
+    Examples
+    --------
+    To perform transitive reduction on a DiGraph:
+
+    >>> DG = nx.DiGraph([(1, 2), (2, 3), (1, 3)])
+    >>> TR = nx.transitive_reduction(DG)
+    >>> list(TR.edges)
+    [(1, 2), (2, 3)]
+
+    To avoid unnecessary data copies, this implementation does not return a
+    DiGraph with node/edge data.
+    To perform transitive reduction on a DiGraph and transfer node/edge data:
+
+    >>> DG = nx.DiGraph()
+    >>> DG.add_edges_from([(1, 2), (2, 3), (1, 3)], color='red')
+    >>> TR = nx.transitive_reduction(DG)
+    >>> TR.add_nodes_from(DG.nodes(data=True))
+    >>> TR.add_edges_from((u, v, DG.edges[u, v]) for u, v in TR.edges)
+    >>> list(TR.edges(data=True))
+    [(1, 2, {'color': 'red'}), (2, 3, {'color': 'red'})]
+
     References
     ----------
     https://en.wikipedia.org/wiki/Transitive_reduction

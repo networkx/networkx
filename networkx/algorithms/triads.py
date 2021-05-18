@@ -395,7 +395,7 @@ def random_triad(G):
     G2 : subgraph
        A randomly selected triad (order-3 NetworkX DiGraph)
     """
-    nodes = sample(G.nodes(), 3)
+    nodes = sample(list(G.nodes()), 3)
     G2 = G.subgraph(nodes)
     return G2
 

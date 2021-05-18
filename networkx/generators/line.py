@@ -324,7 +324,7 @@ def inverse_line_graph(G):
 
 
 def _triangles(G, e):
-    """ Return list of all triangles containing edge e"""
+    """Return list of all triangles containing edge e"""
     u, v = e
     if u not in G:
         raise nx.NetworkXError(f"Vertex {u} not in graph")
