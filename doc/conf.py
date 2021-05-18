@@ -124,7 +124,7 @@ html_baseurl = "https://networkx.org/documentation/stable/"
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
     "collapse_navigation": True,
-    "navigation_depth": 3,
+    "navigation_depth": 2,
     "show_prev_next": False,
     "icon_links": [
         {
@@ -139,8 +139,15 @@ html_theme_options = {
         },
     ],
     "navbar_end": ["navbar-icon-links", "version"],
+    "page_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
 }
-
+html_sidebars = {
+    "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
+    "index": [],
+    "install": [],
+    "tutorial": [],
+    "auto_examples/index": [],
+}
 html_logo = "_static/networkx_banner.svg"
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name

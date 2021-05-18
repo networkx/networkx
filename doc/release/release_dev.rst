@@ -1,7 +1,10 @@
-Announcement: NetworkX 2.6
-==========================
+Next Release
+============
 
-We're happy to announce the release of NetworkX 2.6!
+Release date: TBD
+
+Supports Python 3.7, 3.8, and 3.9.
+
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
@@ -107,14 +110,13 @@ Deprecations
   Deprecate the ``Ordered`` graph classes.
 
 
-
-Contributors to this release
-----------------------------
+Contributors
+------------
 
 <output of contribs.py>
 
 
-Pull requests merged in this release
-------------------------------------
+Merged PRs
+----------
 
 <output of contribs.py>
