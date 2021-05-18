@@ -103,6 +103,7 @@ class TestHITS:
             G = self.G
             networkx.hits(G, max_iter=0)
 
+
 @pytest.mark.parametrize(
     "hits_alg",
     (nx.hits_numpy, nx.hits_scipy),

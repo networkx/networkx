@@ -5,6 +5,7 @@ import networkx as nx
 
 __all__ = ["hits", "hits_numpy", "hits_scipy", "authority_matrix", "hub_matrix"]
 
+
 def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
 
@@ -70,6 +71,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
     return hits_scipy(G, max_iter, tol, nstart, normalized)
+
 
 def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
