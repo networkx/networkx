@@ -60,7 +60,7 @@ class UnionFind:
             root = self.parents[root]
 
         # compress the path and return
-        for ancestor in path:
+        for ancestor in path[0:-1]:
             self.parents[ancestor] = root
         return root
 
