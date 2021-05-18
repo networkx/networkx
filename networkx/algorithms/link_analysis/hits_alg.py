@@ -240,7 +240,7 @@ def hits_numpy(G, normalized=True):
     return hubs, authorities
 
 
-def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
+def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
 
     The HITS algorithm computes two numbers for a node.
@@ -314,6 +314,13 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
     (n, m) = M.shape  # should be square
     A = M.T * M  # authority matrix
     x = np.ones((n, 1)) / n  # initial guess
+    # choose fixed starting vector if not given
+    if nstart is None:
+        x = np.ones((n, 1)) / n  # initial guess
+    else:
+        x = np.array([nstart.get(n, 0) for n in nodelist], dtype=float)
+        x = x / x.sum()
+
     # power iteration on authority matrix
     i = 0
     while True:

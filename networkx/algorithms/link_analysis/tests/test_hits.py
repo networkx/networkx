@@ -38,6 +38,10 @@ class TestHITS:
         G = self.G
         nstart = {i: 1.0 / 2 for i in G}
         h, a = networkx.hits(G, nstart=nstart)
+        for n in G:
+            assert almost_equal(h[n], G.h[n], places=4)
+        for n in G:
+            assert almost_equal(a[n], G.a[n], places=4)
 
     def test_hits_numpy(self):
         pytest.importorskip("numpy")
@@ -52,6 +56,12 @@ class TestHITS:
         pytest.importorskip("scipy")
         G = self.G
         h, a = networkx.hits_scipy(G, tol=1.0e-08)
+        for n in G:
+            assert almost_equal(h[n], G.h[n], places=4)
+        for n in G:
+            assert almost_equal(a[n], G.a[n], places=4)
+        nstart = {i: 1.0 / 2 for i in G}
+        h, a = networkx.hits(G, nstart=nstart)
         for n in G:
             assert almost_equal(h[n], G.h[n], places=4)
         for n in G:
