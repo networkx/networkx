@@ -30,7 +30,6 @@ class TestHITS:
             zip(sorted(G), [0.366025, 0.000000, 0.211325, 0.000000, 0.211325, 0.211325])
         )
 
-
     def test_hits_numpy(self):
         G = self.G
         h, a = nx.hits_numpy(G)
@@ -40,8 +39,8 @@ class TestHITS:
             assert almost_equal(a[n], G.a[n], places=4)
 
     @pytest.mark.parametrize(
-    "hits_alg",
-    (nx.hits, nx.hits_scipy, _hits_python),
+        "hits_alg",
+        (nx.hits, nx.hits_scipy, _hits_python),
     )
     def test_hits(self, hits_alg):
         G = self.G
@@ -65,7 +64,6 @@ class TestHITS:
         assert nx.hits_scipy(G) == ({}, {})
         assert nx.authority_matrix(G).shape == (0, 0)
         assert nx.hub_matrix(G).shape == (0, 0)
- 
 
     def test_hits_not_convergent(self):
         with pytest.raises(nx.PowerIterationFailedConvergence):
