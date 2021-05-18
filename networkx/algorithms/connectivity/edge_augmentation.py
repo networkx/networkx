@@ -334,7 +334,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
     """
 
     def _edges_between_disjoint(H, only1, only2):
-        """ finds edges between disjoint nodes """
+        """finds edges between disjoint nodes"""
         only1_adj = {u: set(H.adj[u]) for u in only1}
         for u, neighbs in only1_adj.items():
             # Find the neighbors of u in only1 that are also in only2

@@ -96,7 +96,7 @@ def empty_generator():
 
 
 def flatten(obj, result=None):
-    """ Return flattened version of (possibly nested) iterable object. """
+    """Return flattened version of (possibly nested) iterable object."""
     if not isinstance(obj, (Iterable, Sized)) or isinstance(obj, str):
         return obj
     if result is None:
