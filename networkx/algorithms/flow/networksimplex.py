@@ -58,7 +58,7 @@ class _DataEssentialsAndFunctions:
         self.prev_node_dft = None  # previous nodes in depth-first thread
         self.last_descendent_dft = None  # last descendants in depth-first thread
         self._spanning_tree_initialized = (
-            False  # False untill initialize_spanning_tree() is called
+            False  # False until initialize_spanning_tree() is called
         )
 
     def initialize_spanning_tree(self, n, faux_inf):
