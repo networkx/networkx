@@ -76,7 +76,7 @@ def degree(G, nbunch=None, weight=None):
 
 
 def neighbors(G, n):
-    """Returns a list of nodes connected to node n. """
+    """Returns a list of nodes connected to node n."""
     return G.neighbors(n)
 
 
@@ -86,7 +86,7 @@ def number_of_nodes(G):
 
 
 def number_of_edges(G):
-    """Returns the number of edges in the graph. """
+    """Returns the number of edges in the graph."""
     return G.number_of_edges()
 
 
@@ -149,7 +149,7 @@ def degree_histogram(G):
 
 
 def is_directed(G):
-    """ Return True if graph is directed."""
+    """Return True if graph is directed."""
     return G.is_directed()
 
 
