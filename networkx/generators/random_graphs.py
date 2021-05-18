@@ -616,9 +616,8 @@ def _random_subset(seq, m, rng):
 
 
 @py_random_state(2)
-def barabasi_albert_graph(n, m, seed=None, initial=None):
-    """Returns a random graph according to the Barabási–Albert preferential
-    attachment model.
+def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
+    """Returns a random graph using Barabási–Albert preferential attachment
 
     A graph of $n$ nodes is grown by attaching new nodes each with $m$
     edges that are preferentially attached to existing nodes with high degree.
@@ -632,8 +631,10 @@ def barabasi_albert_graph(n, m, seed=None, initial=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-    initial : Graph or None (default)
-        Initial network for Barabási–Albert algorithm. A copy of `initial` is used.
+    initial_graph : Graph or None (default)
+        Initial network for Barabási–Albert algorithm.
+        It should be a connected graph for most use cases.
+        A copy of `initial_graph` is used.
         If None, starts from a star graph on (m+1) nodes.
 
     Returns
@@ -643,7 +644,8 @@ def barabasi_albert_graph(n, m, seed=None, initial=None):
     Raises
     ------
     NetworkXError
-        If `m` does not satisfy ``1 <= m < n``, or the initial graph size m0 does not satisfy ``m <= m0 <= n``.
+        If `m` does not satisfy ``1 <= m < n``, or
+        the initial graph number of nodes m0 does not satisfy ``m <= m0 <= n``.
 
     References
     ----------
@@ -656,15 +658,15 @@ def barabasi_albert_graph(n, m, seed=None, initial=None):
             f"Barabási–Albert network must have m >= 1 and m < n, m = {m}, n = {n}"
         )
 
-    if initial is None:
+    if initial_graph is None:
         # Default initial graph : star graph on (m + 1) nodes
         G = star_graph(m)
     else:
-        if len(initial) < m or len(initial) > n:
+        if len(initial_graph) < m or len(initial_graph) > n:
             raise nx.NetworkXError(
-                f"Barabási–Albert initial graph must have between m = {m} and n = {n} nodes"
+                f"Barabási–Albert initial graph needs between m={m} and n={n} nodes"
             )
-        G = initial.copy()
+        G = initial_graph.copy()
 
     # List of existing nodes, with nodes repeated once for each adjacent edge
     repeated_nodes = [n for n, d in G.degree() for _ in range(d)]
@@ -686,9 +688,8 @@ def barabasi_albert_graph(n, m, seed=None, initial=None):
 
 
 @py_random_state(4)
-def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial=None):
-    """Returns a random graph according to the dual Barabási–Albert preferential
-    attachment model.
+def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
+    """Returns a random graph using dual Barabási–Albert preferential attachment
 
     A graph of $n$ nodes is grown by attaching new nodes each with either $m_1$
     edges (with probability $p$) or $m_2$ edges (with probability $1-p$) that
@@ -699,16 +700,18 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial=None):
     n : int
         Number of nodes
     m1 : int
-        Number of edges to attach from a new node to existing nodes with probability $p$
+        Number of edges to link each new node to existing nodes with probability $p$
     m2 : int
-        Number of edges to attach from a new node to existing nodes with probability $1-p$
+        Number of edges to link each new node to existing nodes with probability $1-p$
     p : float
         The probability of attaching $m_1$ edges (as opposed to $m_2$ edges)
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-    initial : Graph or None (default)
-        Initial network for Barabási–Albert algorithm. A copy of `initial` is used.
+    initial_graph : Graph or None (default)
+        Initial network for Barabási–Albert algorithm.
+        A copy of `initial_graph` is used.
+        It should be connected for most use cases.
         If None, starts from an star graph on max(m1, m2) + 1 nodes.
 
     Returns
@@ -718,8 +721,9 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial=None):
     Raises
     ------
     NetworkXError
-        If `m1` and `m2` do not satisfy ``1 <= m1,m2 < n``, `p` does not satisfy ``0 <= p <= 1``,
-        or the initial graph size m0 does not satisfy m1, m2 <= m0 <= n.
+        If `m1` and `m2` do not satisfy ``1 <= m1,m2 < n``, or
+        `p` does not satisfy ``0 <= p <= 1``, or
+        the initial graph number of nodes m0 does not satisfy m1, m2 <= m0 <= n.
 
     References
     ----------
@@ -728,11 +732,11 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial=None):
 
     if m1 < 1 or m1 >= n:
         raise nx.NetworkXError(
-            f"Dual Barabási–Albert network must have m1 >= 1 and m1 < n, m1 = {m1}, n = {n}"
+            f"Dual Barabási–Albert must have m1 >= 1 and m1 < n, m1 = {m1}, n = {n}"
         )
     if m2 < 1 or m2 >= n:
         raise nx.NetworkXError(
-            f"Dual Barabási–Albert network must have m2 >= 1 and m2 < n, m2 = {m2}, n = {n}"
+            f"Dual Barabási–Albert must have m2 >= 1 and m2 < n, m2 = {m2}, n = {n}"
         )
     if p < 0 or p > 1:
         raise nx.NetworkXError(
@@ -745,16 +749,16 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial=None):
     elif p == 0:
         return barabasi_albert_graph(n, m2, seed)
 
-    if initial is None:
+    if initial_graph is None:
         # Default initial graph : empty graph on max(m1, m2) nodes
         G = star_graph(max(m1, m2))
     else:
-        if len(initial) < max(m1, m2) or len(initial) > n:
+        if len(initial_graph) < max(m1, m2) or len(initial_graph) > n:
             raise nx.NetworkXError(
                 f"Barabási–Albert initial graph must have between "
                 f"max(m1, m2) = {max(m1, m2)} and n = {n} nodes"
             )
-        G = initial.copy()
+        G = initial_graph.copy()
 
     # Target nodes for new edges
     targets = list(G)
