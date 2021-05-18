@@ -1,8 +1,11 @@
 import pytest
+import networkx as nx
 
 
 import networkx
 from networkx.testing import almost_equal
+
+from networkx.algorithms.link_analysis.hits_alg import _hits_python
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
@@ -67,11 +70,26 @@ class TestHITS:
         for n in G:
             assert almost_equal(a[n], G.a[n], places=4)
 
+    def test_hits_python(self):
+        G = self.G
+        h, a = _hits_python(G, tol=1.0e-08)
+        for n in G:
+            assert almost_equal(h[n], G.h[n], places=4)
+        for n in G:
+            assert almost_equal(a[n], G.a[n], places=4)
+        nstart = {i: 1.0 / 2 for i in G}
+        h, a = _hits_python(G, nstart=nstart)
+        for n in G:
+            assert almost_equal(h[n], G.h[n], places=4)
+        for n in G:
+            assert almost_equal(a[n], G.a[n], places=4)
+
     def test_empty(self):
         pytest.importorskip("numpy")
         G = networkx.Graph()
         assert networkx.hits(G) == ({}, {})
         assert networkx.hits_numpy(G) == ({}, {})
+        assert _hits_python(G) == ({}, {})
         assert networkx.authority_matrix(G).shape == (0, 0)
         assert networkx.hub_matrix(G).shape == (0, 0)
 
@@ -84,3 +102,16 @@ class TestHITS:
         with pytest.raises(networkx.PowerIterationFailedConvergence):
             G = self.G
             networkx.hits(G, max_iter=0)
+
+@pytest.mark.parametrize(
+    "hits_alg",
+    (nx.hits_numpy, nx.hits_scipy),
+)
+def test_deprecation_warnings(hits_alg):
+    """Make sure deprecation warnings are raised.
+
+    To be removed when deprecations expire.
+    """
+    G = nx.DiGraph(nx.path_graph(4))
+    with pytest.warns(DeprecationWarning):
+        pr = hits_alg(G)
