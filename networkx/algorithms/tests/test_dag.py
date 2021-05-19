@@ -478,39 +478,6 @@ class TestDAG:
         assert sorting == test_nodes
 
 
-def test_topological_sort_with_generation():
-    G = nx.DiGraph(
-        {
-            1: [2, 3],
-            2: [4, 5],
-            3: [7],
-            4: [],
-            5: [6, 7],
-            6: [],
-            7: [],
-        }
-    ).reverse()
-    result = sorted(
-        nx.topological_sort(G, with_generation=True), key=lambda x: (x[1], x[0])
-    )
-    expected = [(4, 0), (6, 0), (7, 0), (3, 1), (5, 1), (2, 2), (1, 3)]
-    assert result == expected
-
-
-def test_topological_sort_with_generation_empty():
-    G = nx.DiGraph()
-    result = sorted(
-        nx.topological_sort(G, with_generation=True), key=lambda x: (x[1], x[0])
-    )
-    assert result == []
-
-
-def test_topological_sort_with_generation_cycle():
-    G = nx.DiGraph([[2, 1], [3, 1], [1, 2]])
-    with pytest.raises(nx.NetworkXUnfeasible):
-        list(nx.topological_sort(G, with_generation=True))
-
-
 def test_topological_generations():
     G = nx.DiGraph(
         {
