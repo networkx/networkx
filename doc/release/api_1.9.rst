@@ -1,11 +1,22 @@
-*********************************
-Version 1.9 notes and API changes
-*********************************
+NetworkX 1.9
+============
 
-This page reflects API changes from NetworkX 1.8 to NetworkX 1.9.
+Release date: 21 June 2014
 
-Please send comments and questions to the networkx-discuss mailing list:
-<http://groups.google.com/group/networkx-discuss>.
+Support for Python 3.1 is dropped in this release.
+
+Highlights
+----------
+- Completely rewritten maximum flow and flow-based connectivity algorithms with
+  backwards incompatible interfaces
+- Community graph generators
+- Stoer–Wagner minimum cut algorithm
+- Linear-time Eulerian circuit algorithm
+- Linear algebra package changed to use SciPy sparse matrices
+- Algebraic connectivity, Fiedler vector, spectral ordering algorithms
+- Link prediction algorithms
+- Goldberg–Radzik shortest path algorithm
+- Semiconnected graph and tree recognition algorithms
 
 Flow package
 ------------

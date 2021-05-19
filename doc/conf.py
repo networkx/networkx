@@ -51,13 +51,6 @@ sphinx_gallery_conf = {
     "backreferences_dir": "modules/generated",
     "image_scrapers": ("matplotlib",),
 }
-# Add mayavi scraper, if available
-try:
-    import mayavi
-
-    sphinx_gallery_conf["image_scrapers"] += ("mayavi",)
-except ImportError:
-    pass
 # Add pygraphviz png scraper, if available
 try:
     from pygraphviz.scraper import PNGScraper
@@ -130,20 +123,31 @@ doctest_global_setup = "import networkx as nx"
 html_baseurl = "https://networkx.org/documentation/stable/"
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
+    "collapse_navigation": True,
+    "navigation_depth": 2,
+    "show_prev_next": False,
     "icon_links": [
-        {
-            "name": "GitHub",
-            "url": "https://github.com/networkx/networkx",
-            "icon": "fab fa-github-square",
-        },
         {
             "name": "Home Page",
             "url": "https://networkx.org",
             "icon": "fas fa-home",
         },
+        {
+            "name": "GitHub",
+            "url": "https://github.com/networkx/networkx",
+            "icon": "fab fa-github-square",
+        },
     ],
+    "navbar_end": ["navbar-icon-links", "version"],
+    "page_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
 }
-
+html_sidebars = {
+    "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
+    "index": [],
+    "install": [],
+    "tutorial": [],
+    "auto_examples/index": [],
+}
 html_logo = "_static/networkx_banner.svg"
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
@@ -184,7 +188,7 @@ htmlhelp_basename = "NetworkX"
 
 html_context = {
     "versions_dropdown": {
-        "latest": "v2.6 (devel)",
+        "latest": "devel (latest)",
         "stable": "v2.5 (stable)",
         "networkx-2.4": "v2.4",
     },

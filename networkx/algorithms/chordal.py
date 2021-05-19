@@ -274,7 +274,7 @@ def _is_complete_graph(G):
 
 
 def _find_missing_edge(G):
-    """ Given a non-complete graph G, returns a missing edge."""
+    """Given a non-complete graph G, returns a missing edge."""
     nodes = set(G)
     for u in G:
         missing = nodes - set(list(G[u].keys()) + [u])

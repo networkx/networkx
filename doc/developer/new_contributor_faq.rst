@@ -23,6 +23,7 @@ documentation.
 The "best" way to find a place to start is to follow your own personal
 interests!
 That said, a few places to check for ideas on where to get started:
+
  - `The issue tracker <https://github.com/networkx/networkx/issues>`_ lists
    known bugs and feature requests. Of particular interest for first-time
    contributors are issues that have been tagged with the `Good First Issue`_

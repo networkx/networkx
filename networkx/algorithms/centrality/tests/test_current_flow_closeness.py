@@ -25,7 +25,7 @@ class TestFlowClosenessCentrality:
             assert almost_equal(b[n], b_answer[n])
 
     def test_star(self):
-        """Closeness centrality: star """
+        """Closeness centrality: star"""
         G = nx.Graph()
         nx.add_star(G, ["a", "b", "c", "d"])
         b = nx.current_flow_closeness_centrality(G)
