@@ -472,7 +472,7 @@ def snap_aggregation(
     --------
     SNAP aggregation takes a graph and summarizes it in the context of user-provided
     node and edge attributes such that a viewer can more easily extract and
-    analyze the information represented by the graph::
+    analyze the information represented by the graph
 
     >>> nodes = {
     ...     "A": dict(color="Red"),

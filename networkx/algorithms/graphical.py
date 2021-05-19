@@ -209,8 +209,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
        Discrete Mathematics, 265, pp. 417-420 (2003).
     .. [2] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
        of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
-
-    [EG1960]_, [choudum1986]_
+    .. [EG1960] Erdős and Gallai, Mat. Lapok 11 264, 1960.
     """
     try:
         dmax, dmin, dsum, n, num_degs = _basic_graphical_tests(deg_sequence)
