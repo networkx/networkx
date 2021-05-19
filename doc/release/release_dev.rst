@@ -34,6 +34,9 @@ Improvements
 - [`#4640 <https://github.com/networkx/networkx/pull/4640>`_]
   ``prefix_tree`` now uses a non-recursive algorithm. The original recursive
   algorithm is still available via ``prefix_tree_recursive``.
+- [`#4743 <https://github.com/networkx/networkx/pull/4743>`_]
+  New ``layered_layout`` graph positioning algorithm for directed acyclic
+  graphs based on Sugiyama's method.
 
 API Changes
 -----------

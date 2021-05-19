@@ -32,6 +32,7 @@ __all__ = [
     "fruchterman_reingold_layout",
     "spiral_layout",
     "multipartite_layout",
+    "layered_layout",
 ]
 
 
@@ -431,8 +432,7 @@ def fruchterman_reingold_layout(
     --------
     >>> G = nx.path_graph(4)
     >>> pos = nx.spring_layout(G)
-
-    # The same using longer but equivalent function name
+    >>> # The same using longer but equivalent function name
     >>> pos = nx.fruchterman_reingold_layout(G)
     """
     import numpy as np
@@ -1184,3 +1184,604 @@ def rescale_layout_dict(pos, scale=1):
     pos_v = np.array(list(pos.values()))
     pos_v = rescale_layout(pos_v, scale=scale)
     return {k: tuple(v) for k, v in zip(pos.keys(), pos_v)}
+
+
+@nx.not_implemented_for("undirected")
+@nx.not_implemented_for("multigraph")
+def layered_layout(G, align="vertical", center=None, scale=1):
+    """Position directed acyclic graphs in layers, using Sugiyama's method.
+
+    Nodes are positioned in layers according to their order in the graph.
+
+    The order of the nodes in each layer is computed so as to emphasize nodes' relationships.
+
+    Edges are positioned and drawn so as to minimise crossings.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        A position will be assigned to every node in G.
+
+    align : string (default='vertical')
+        The alignment of the drawn graph:
+
+        * 'vertical' yields horizontal layers and top-to-bottom edges;
+        * 'horizontal' yields vertical layers and left-to-right edges.
+
+    center : array-like or None
+        Coordinate pair around which to center the layout.
+
+    scale : number (default: 1)
+        Scale factor for positions.
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node
+    edges_path: dict
+        A dictionary of paths keyed by edge. Allows `draw_networkx_edges` to draw
+        complex edges as segmented lines, minimising edge crossings.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is not a directed acyclic graph
+    ValueError
+        Invalid `align` parameter (can only be 'vertical' or 'horizontal')
+
+    Examples
+    --------
+    >>> G = nx.gn_graph(24)
+    >>> pos, edges_path = nx.layered_layout(G)
+    >>> nx.draw(G, pos, edges_path=edges_path)
+
+    Notes
+    -----
+    This algorithm only works for Directed Acyclic Graphs (DAGs).
+
+    The behaviour is undefined when drawing a graph with disconnected components.
+
+    `dim` parameter omitted because only `dim==2` is supported.
+
+    TODO
+    ----
+
+    * Cycle removal (will allow non-DAG DiGraphs to be laid out)
+    * Handling disconnected components
+    * Accept weighted edges
+
+        * Accept MultiDiGraphs (by increasing weight of multi-edges)
+
+    * Layer width minimization
+        If wanted, an additional `max_width` parameter would be set by the caller.
+        This requires another algorithm than current `_layer_assignment`.
+
+    * Optimise computation time
+        The `_coordinate_assignmnent` algorithm makes use of the "priority method",
+        which is a heuristic producing good looking graphs at the expense of time
+        complexity. Could be replaced.
+
+    References
+    ----------
+
+    * K. Sugiyama, S. Tagawa, and M. Toda, “Methods for Visual Understanding of Hierarchical System Structures,” IEEE Transactions on Systems, Man, and Cybernetics, vol. 11, no. 2, pp. 109–125, Feb. 1981, doi: 10.1109/TSMC.1981.4308636.
+
+    * Tamara Mchedlidze, “Algorithms for Graph Visualization“, University Course, Institut für theoretische informatik, Karlsruhe Institute of Technology, Dec. 2016.
+
+        * https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v7-added-proofs.pdf
+        * https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v8.pdf
+
+    * E. R. Gansner, E. Koutsofios, S. C. North, and K.-P. Vo, “A technique for drawing directed graphs,” IIEEE Trans. Software Eng., vol. 19, no. 3, pp. 214–230, Mar. 1993, doi: 10.1109/32.221135.
+    * V. Mazetti and H. Sörensson, “Visualisation of state machines using the Sugiyama framework,” Master of Science Thesis in Computer Science, Chalmers University of Technology, University of Gothenburg, Göteborg, Sweden, June 2012.
+    * K. Sugiyama, “Graph Drawing and Applications for Software and Knowledge Engineers,“ World Scientific, section 4.2, 2002, ISBN-10: 9810248792.
+    """
+    import numpy as np
+
+    if align not in ("vertical", "horizontal"):
+        raise ValueError("align must be either 'vertical' or 'horizontal'.")
+
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXNotImplemented(
+            "layered_layout is only implemented for directed acyclic graphs"
+        )
+
+    # Graph has no vertices
+    if len(G) == 0:
+        return {}, {}
+
+    G, center = _process_params(G, center, dim=2)
+    nodes_layer = _layer_assignment(G)
+    Gd, nodes_layer, dummy_paths = _new_graph_with_dummy_nodes(G, nodes_layer)
+    layers_order = _nodes_layer_dict_to_layers_order(nodes_layer)
+    layers_order = _vertex_ordering(Gd, layers_order)
+    # layers_pos: list[layer_id]list[node_id](node_pos_in_layer, node_name)
+    layers_pos = _coordinate_assignmnent(Gd, layers_order)
+
+    # Build output data for all nodes (including dummies)
+    # pos: list[node_id](xpos, ypos)
+    # nodes_name: list[node_id]node_name
+    pos, nodes_name = [None] * len(Gd), [None] * len(Gd)
+    n_layers = len(layers_pos)
+    idx = 0
+    for d1 in range(n_layers):
+        for (d2, u) in layers_pos[d1]:
+            pos[idx] = (d2, n_layers - d1 - 1) if align == "vertical" else (d1, d2)
+            nodes_name[idx] = u
+            idx += 1
+    # Rescale, center and convert pos to output type
+    pos = rescale_layout(np.array(pos, dtype=float), scale=scale) + center
+    pos = dict(zip(nodes_name, pos))
+
+    # Add dummy_nodes' positions to edges_path and prune them from pos
+    edges_path = {}
+    for e, path_nodes in dummy_paths.items():
+        edges_path[e] = [None] * len(path_nodes)
+        for i, u in enumerate(path_nodes):
+            edges_path[e][i] = pos[u]
+            del pos[u]
+
+    return pos, edges_path
+
+
+def _layer_assignment(G):
+    """Assigns each node in G to a layer number, based on the node's ancestors
+
+    layer(u) = 1 + max{layer(v) for v, _ in in_edges(u)}
+
+    References
+    ----------
+
+    * p. 14: https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v7-added-proofs.pdf
+    * https://networkx.org/documentation/stable/_modules/networkx/algorithms/dag.html#topological_sort
+
+    Returns
+    -------
+
+    nodes_layer : dict[node]int
+        Layer number for each node in G
+    """
+    indegree_map = {v: d for v, d in G.in_degree() if d > 0}
+    # These nodes have zero indegree and ready to be returned.
+    zero_indegree = [v for v, d in G.in_degree() if d == 0]
+
+    # Compute each node's layer
+    nodes_layer = {}
+    while zero_indegree:
+        u = zero_indegree.pop()
+
+        # Process u's direct successors
+        for _, v in G.out_edges(u):
+            indegree_map[v] -= 1
+            if indegree_map[v] == 0:
+                zero_indegree.append(v)
+                del indegree_map[v]
+
+        # Compute u's layer
+        if G.in_degree(u) == 0:
+            nodes_layer[u] = 0
+        else:
+            nodes_layer[u] = 1 + max([nodes_layer[v] for v, _ in G.in_edges(u)])
+
+    return nodes_layer
+
+
+DUMMY_KEY = "_dummy_node"
+
+
+def _new_graph_with_dummy_nodes(G, nodes_layer):
+    """Split each edge spanning several layers into a path with one dummy node per layer.
+
+    Returns
+    -------
+
+    Gd : nx.DiGraph
+        Copy of G with dummy nodes and paths added
+    nodes_layer : dict[node]int
+        Layer number for each node in Gd
+    dummy_paths : list
+        New paths replacing the ones spanning several layers in Gd
+    """
+    Gd = G.copy()
+
+    dummy_paths = {}
+    dummy_node_id = 0
+    for e in G.edges:
+        from_pos = nodes_layer[e[0]]
+        e_length = nodes_layer[e[1]] - from_pos
+
+        if e_length == 1:
+            continue
+
+        # Remove existing edge from Gd
+        Gd.remove_edge(*e)
+        # Compute new path passing through dummy nodes
+        dummy_path = [None] * (e_length - 1)
+        for i in range(e_length - 1):
+            # Add dummy node to path, nodes_layer & Gd (with dummy annotation)
+            dummy_node = f"dummy_{dummy_node_id}"
+            dummy_path[i] = dummy_node
+            nodes_layer[dummy_node] = from_pos + i + 1
+            Gd.add_node(dummy_node, **{DUMMY_KEY: True})
+            dummy_node_id += 1
+        # Add full path to Gd
+        nx.add_path(Gd, [e[0]] + dummy_path + [e[1]])
+        # And only the dummies in the path to dummy_paths
+        dummy_paths[e] = dummy_path
+
+    return Gd, nodes_layer, dummy_paths
+
+
+def _nodes_layer_dict_to_layers_order(nodes_layer):
+    """Conversion of node-to-layer data representation.
+
+    Parameters
+    ----------
+
+    nodes_layer : dict[node]int
+        Layer number for each node in G
+
+    Returns
+    -------
+
+    layers_order: list[][]node
+        ordered list of nodes in each layer
+    """
+    layers_order = [None] * (max(nodes_layer.values()) + 1)
+    for u, l in nodes_layer.items():
+        if layers_order[l] is None:
+            layers_order[l] = [u]
+        else:
+            layers_order[l].append(u)
+    return layers_order
+
+
+def _vertex_ordering(G, layers_order):
+    """Orders vertices in each layer to minimise edge crossings.
+
+    References
+    ----------
+
+    * Gansner, Koutsofios, North & Vo, "A technique for drawing directed graphs," pp. 13-17, IIEEE Trans. Software Eng., 1993, doi: 10.1109/32.221135.
+    * pp. 8-11: https://i11www.iti.kit.edu/_media/teaching/winter2016/graphvis/graphvis-ws16-v8.pdf
+    """
+    from copy import copy
+
+    best_layers_order = copy(layers_order)
+    for it in range(24):
+        # Depending on the parity of the current iteration number,
+        # the ranks are traversed from top to bottom or from bottom to top
+        top_to_bot = it % 2 == 0
+
+        layers_order = _order_layers_by_weighted_median(G, layers_order, top_to_bot)
+        layers_order = _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot)
+
+        if it >= 1 and layers_order == best_layers_order:
+            break
+        elif _edge_crossings(G, layers_order) < _edge_crossings(G, best_layers_order):
+            best_layers_order = copy(layers_order)
+
+    return best_layers_order
+
+
+def _order_layers_by_weighted_median(G, layers_order, top_to_bot):
+    import collections
+
+    def _weighted_node_median(node_neighbours, layer):
+        # Sorted ranks of the ancestors that are in the previous layer
+        neighbours_rank = sorted(
+            [r for r, u in enumerate(layer) if u in node_neighbours]
+        )
+        n_neighbours = len(neighbours_rank)
+        if n_neighbours == 0:
+            # When a node has no direct ancestors, it must keep its current position.
+            # median == -1 informs _sort_layer of the situation
+            return -1
+        elif n_neighbours == 1:
+            return neighbours_rank[0]
+        elif n_neighbours == 2:
+            return sum(neighbours_rank) / 2
+
+        midpoint = n_neighbours // 2
+        if n_neighbours % 2 == 1:
+            return neighbours_rank[midpoint]
+
+        # n_neighbours > 2 and even
+        left_range = neighbours_rank[midpoint - 1] - neighbours_rank[0]
+        right_range = neighbours_rank[-1] - neighbours_rank[midpoint]
+        return (
+            neighbours_rank[midpoint - 1] * left_range
+            + neighbours_rank[midpoint] * right_range
+        ) / (left_range + right_range)
+
+    def _sort_layer(layer_order, nodes_median):
+        """Sort the layer by node median.
+        Except for nodes having median == -1 that must not change position.
+        Optimizable?
+        """
+        # OrderedDict remembers order of insertion
+        # => correct inserts in layer_order afterwards
+        fixed_nodes = collections.OrderedDict()
+        list_of_tuples = []
+        for (pos, u), m in zip(enumerate(layer_order), nodes_median):
+            if m == -1:
+                fixed_nodes[u] = pos
+            else:
+                list_of_tuples.append((u, m))
+
+        list_of_tuples = sorted(list_of_tuples, key=lambda t: t[1])
+        layer_order = [t[0] for t in list_of_tuples]
+        for u, pos in fixed_nodes.items():
+            layer_order.insert(pos, u)
+
+        return layer_order
+
+    if top_to_bot:
+        layers_iterator = range(1, len(layers_order))
+        node_neighbours = lambda u: [v for v, _ in G.in_edges(u)]
+        next_layer_id = lambda l: l - 1
+    else:
+        layers_iterator = range(len(layers_order) - 2, -1, -1)
+        node_neighbours = lambda u: [v for _, v in G.out_edges(u)]
+        next_layer_id = lambda l: l + 1
+
+    for l in layers_iterator:
+        nodes_median = [0] * len(layers_order[l])
+        for i, u in enumerate(layers_order[l]):
+            nodes_median[i] = _weighted_node_median(
+                node_neighbours(u), layers_order[next_layer_id(l)]
+            )
+
+        layers_order[l] = _sort_layer(layers_order[l], nodes_median)
+
+    return layers_order
+
+
+def _try_exchanging_adjacent_nodes(G, layers_order, top_to_bot):
+    improved = True
+    if top_to_bot:
+        layers_iterator = range(len(layers_order))
+    else:
+        layers_iterator = range(len(layers_order) - 1, -1, -1)
+
+    while improved:
+        improved = False
+        for l in layers_iterator:
+            for i in range(len(layers_order[l]) - 1):
+                u = layers_order[l][i]
+                v = layers_order[l][i + 1]
+                uv_crossings = _edge_crossings_local(
+                    G, layers_order, u, v, l, top_to_bot
+                )
+                vu_crossings = _edge_crossings_local(
+                    G, layers_order, v, u, l, top_to_bot
+                )
+                if uv_crossings > vu_crossings:
+                    improved = True
+                    layers_order[l][i], layers_order[l][i + 1] = v, u
+    return layers_order
+
+
+def _edge_crossings_local(G, layers_order, u, v, l, top_to_bot):
+    """Number of edge crossings between two nodes from the same layer.
+    Assuming u's rank (in the layer) is lower than v's.
+    """
+    # Discard first/last layer depending on search direction
+    if top_to_bot and l == len(layers_order) - 1 or not top_to_bot and l == 0:
+        return 0
+
+    if top_to_bot:
+        layer = layers_order[l + 1]
+        node_neighbours = lambda u: [v for _, v in G.out_edges(u)]
+    else:
+        layer = layers_order[l - 1]
+        node_neighbours = lambda u: [v for v, _ in G.in_edges(u)]
+
+    # Fetching rank of u (resp. v)'s neighbours in ancestor layer
+    u_neighbours, v_neighbours = node_neighbours(u), node_neighbours(v)
+    u_neigh_ranks, v_neigh_ranks = [], []
+    for r, w in enumerate(layer):
+        if w in u_neighbours:
+            u_neigh_ranks.append(r)
+        if w in v_neighbours:
+            v_neigh_ranks.append(r)
+    # Computing number of edge crossings
+    uv_edge_crossings = 0
+    for u_neigh_rank in u_neigh_ranks:
+        for v_neigh_rank in v_neigh_ranks:
+            uv_edge_crossings += int(u_neigh_rank > v_neigh_rank)
+    return uv_edge_crossings
+
+
+def _edge_crossings(G, layers_order):
+    """Total number of edge crossings in the graph."""
+    crossings = 0
+    for l in range(len(layers_order) - 1):
+        for i, u in enumerate(layers_order[l]):
+            for j in range(i + 1, len(layers_order[l])):
+                v = layers_order[l][j]
+                crossings += _edge_crossings_local(
+                    G, layers_order, u, v, l, top_to_bot=True
+                )
+    return crossings
+
+
+def _coordinate_assignmnent(G, layers_order):
+    """Set in-layer node positions according to the Sugiyama's priority heuristic."""
+    import numpy as np
+
+    def node_priority(G, u, direction):
+        if G.nodes[u].get(DUMMY_KEY, False):
+            return np.inf
+        elif direction == 1:
+            return G.out_degree(u)
+        else:
+            return G.in_degree(u)
+
+    def index_in_list_of_tuples(l, t1=None, t2=None):
+        """Index of first item in l = [(a, b)] having a == t1 or b == t2
+        Return -1 if not found."""
+        for i, (tt1, tt2) in enumerate(l):
+            if t1 is not None and tt1 == t1:
+                return i
+            if t2 is not None and tt2 == t2:
+                return i
+        return -1
+
+    def neighbours_pos(G, u, direction, prev_layer_pos):
+        if direction == 1:
+            neighbours = [v for _, v in G.out_edges(u)]
+        else:
+            neighbours = [v for v, _ in G.in_edges(u)]
+
+        neighbours_ids = [
+            index_in_list_of_tuples(prev_layer_pos, t2=v) for v in neighbours
+        ]
+
+        return [prev_layer_pos[i][0] for i in neighbours_ids if i != -1]
+
+    def move_node(G, p, u, prev_pos, target_pos, layer_priorities, layer_pos):
+        """
+        layer_priorities is sorted by desc. priority.
+        layer_pos is sorted by asc. position.
+
+        Returns
+        -------
+        layer_pos: list of tuples
+            List of nodes' position in layer
+            Modified if success == True
+        success: bool
+            Did the move succeed?
+        """
+
+        pos_diff = target_pos - prev_pos
+        if pos_diff == 0:
+            # We are already at the desired position
+            return layer_pos, True
+        if target_pos <= 0:
+            return layer_pos, False
+
+        u_id = index_in_list_of_tuples(layer_pos, t2=u)
+        success = False
+        if pos_diff < 0:
+            # Trying to move left ...
+            if u_id == 0:
+                # ... when you're the leftmost node always succeeds
+                layer_pos[u_id] = (target_pos, u)
+                return layer_pos, True
+            prev_node_pos_tuple = layer_pos[u_id - 1]  # (pos, name)
+            if prev_node_pos_tuple[0] >= target_pos:
+                # The previous node's position conflicts
+                prev_node_priority_id = index_in_list_of_tuples(
+                    layer_priorities, t2=prev_node_pos_tuple[1]
+                )
+                prev_node_priority = layer_priorities[prev_node_priority_id][0]
+                if p > prev_node_priority:
+                    # And we have higher priority: try to move it left
+                    layer_pos, success = move_node(
+                        G,
+                        p,  # OUR priority
+                        prev_node_pos_tuple[1],  # prev node name
+                        prev_node_pos_tuple[0],  # prev node current pos
+                        target_pos - 1,
+                        layer_priorities,
+                        layer_pos,
+                    )
+                    if success:
+                        # Only move if success
+                        layer_pos[u_id] = (target_pos, u)
+            else:
+                # The previous node's position is ok, we move
+                layer_pos[u_id] = (target_pos, u)
+        else:
+            # Trying to move right ...
+            if u_id == len(layer_pos) - 1:
+                # ... when you're the rightmost node always succeeds
+                layer_pos[u_id] = (target_pos, u)
+                return layer_pos, True
+            next_node_pos_tuple = layer_pos[u_id + 1]  # (pos, name)
+            if next_node_pos_tuple[0] <= target_pos:
+                # The next node's position conflicts
+                next_node_priority_id = index_in_list_of_tuples(
+                    layer_priorities, t2=next_node_pos_tuple[1]
+                )
+                next_node_priority = layer_priorities[next_node_priority_id][0]
+                if p > next_node_priority:
+                    # And we have higher priority: try to move it right
+                    layer_pos, success = move_node(
+                        G,
+                        p,  # OUR priority
+                        next_node_pos_tuple[1],  # next node name
+                        next_node_pos_tuple[0],  # next node current pos
+                        target_pos + 1,
+                        layer_priorities,
+                        layer_pos,
+                    )
+                    if success:
+                        # Only move if success
+                        layer_pos[u_id] = (target_pos, u)
+            else:
+                # The next node's position is ok, we move
+                layer_pos[u_id] = (target_pos, u)
+        return layer_pos, success
+
+    # pos: list[layer_id]list[node_id](node_pos_in_layer, node)
+    # pos <- init_order()
+    # = place each layer L_i' vertices from 0 to |L_i| - 1 in order
+    n_layers = len(layers_order)
+    layers_pos = [None] * n_layers
+    for l, layer_order in enumerate(layers_order):
+        layers_pos[l] = [None] * len(layer_order)
+        for i, u in enumerate(layer_order):
+            layers_pos[l][i] = (i, u)
+
+    # Loop:
+    # downwards: L_1 to L_n (looking at in-degrees)
+    # upwards: L_(n-1) to L_0 (looking at out-degrees)
+    # downwards: L_1 to L_n (looking at in-degrees)
+    r = (
+        list(range(1, n_layers))
+        + list(range(n_layers - 2, -1, -1))
+        + list(range(1, n_layers))
+    )
+    directions = [-1] * (n_layers - 1) + [1] * (n_layers - 1) + [-1] * (n_layers - 1)
+
+    for l, direction in zip(r, directions):
+        # L_j = L_(i-1) if direction = downwards
+        #       L_(i+1) if direction = upwards
+        prev_layer_pos = layers_pos[l + direction]
+        # For each vertex u in L_i: compute u's priority:
+        #   * numpy.inf if u is dummy edge
+        #   * otherwise: u's in degree if direction = downwards
+        #                u's out degree if direction = upwards
+        layer_priorities = sorted(
+            [(node_priority(G, u, direction), u) for _, u in layers_pos[l]],
+            reverse=True,
+        )
+
+        # for u in L_i in order of descending priority:
+        # We try to move each layer twice in a row, which lets more moves succeed
+        # CONTRARY TO LITERATURE:
+        # We loop ( len(layers_pos[l]) * len(layers_pos[l]) / 2 ) times
+        # This is the only way I see to ensure that some moves are not stupidly blocked
+        # by nodes with same priority, that will move to our desired location
+        # right after us.
+        # If performances become a problem, consider `for p, u in layer_priorities:`
+        # although it will introduce glitches. Or ditch the priority method altogether.
+        for p, u in layer_priorities * (len(layers_pos[l]) // 2 + 1):
+            # Place u at mean(u's L_j neighbours' positions),
+            # possibly moving other nodes with lower priority.
+            neigh_pos = neighbours_pos(G, u, direction, prev_layer_pos)
+            if len(neigh_pos) == 0:
+                continue
+            target_pos = int(round(np.mean(neigh_pos)))
+
+            u_id = index_in_list_of_tuples(layers_pos[l], t2=u)
+            prev_pos = layers_pos[l][u_id][0]
+
+            layers_pos[l], success = move_node(
+                G, p, u, prev_pos, target_pos, layer_priorities, layers_pos[l]
+            )
+
+        # TODO: break early depending on successes?
+
+    return layers_pos

@@ -14,6 +14,8 @@ class TestLayout:
         cls.Gi = nx.grid_2d_graph(5, 5)
         cls.Gs = nx.Graph()
         nx.add_path(cls.Gs, "abcdef")
+        cls.DGs = nx.DiGraph()
+        nx.add_path(cls.DGs, "abcdef")
         cls.bigG = nx.grid_2d_graph(25, 25)  # > 500 nodes for sparse
 
     @staticmethod
@@ -26,6 +28,41 @@ class TestLayout:
                 distances.append((diff @ diff) ** 0.5)
             prev_val = positions[k]
         return distances
+
+    @staticmethod
+    def deep_compare_pos(p1, p2):
+        if p1.keys() != p2.keys():
+            return False
+        for k in p1.keys():
+            if not np.allclose(p1[k], p2[k]):
+                return False
+        return True
+
+    def test_deep_compare_pos(self):
+        assert not self.deep_compare_pos(  # wrong keys
+            {"a": np.array([-0.5, 1.0]), "b": np.array([-0.5, -0.5])},
+            {"a": np.array([-0.5, 1.0]), "c": np.array([-0.5, -0.5])},
+        )
+        assert not self.deep_compare_pos(  # wrong values
+            {"a": np.array([-0.5, 1.0]), "b": np.array([-0.5, -0.5])},
+            {"a": np.array([-0.5, -5]), "b": np.array([-0.5, -0.5])},
+        )
+        assert not self.deep_compare_pos(  # wrong values
+            {"a": np.array([-0.5, 1.0]), "b": np.array([-0.5, -0.5])},
+            {"a": np.array([-0.5, 1.0]), "b": np.array([-0.5, -0.0])},
+        )
+        assert not self.deep_compare_pos(  # wrong values without ndarray
+            {"a": np.array([-0.5, 1.0]), "b": np.array([-0.5, -0.5])},
+            {"a": [-0.5, -5], "b": np.array([-0.5, -0.5])},
+        )
+        assert self.deep_compare_pos(  # good
+            {"a": np.array([-0.5, 1.0]), "b": np.array([-0.5, -0.5])},
+            {"a": np.array([-0.5, 1.0]), "b": np.array([-0.5, -0.5])},
+        )
+        assert self.deep_compare_pos(  # also good without ndarray
+            {"a": np.array([-0.5, 1.0]), "b": np.array([-0.5, -0.5])},
+            {"a": [-0.5, 1.0], "b": [-0.5, -0.5]},
+        )
 
     def test_spring_fixed_without_pos(self):
         G = nx.path_graph(4)
@@ -60,6 +97,7 @@ class TestLayout:
         nx.spiral_layout(G)
         nx.multipartite_layout(G)
         nx.kamada_kawai_layout(G)
+        # layered_layout only supports DiGraph objects, not lists of nodes
 
     def test_smoke_int(self):
         G = self.Gi
@@ -78,6 +116,7 @@ class TestLayout:
         nx.kamada_kawai_layout(G)
         nx.kamada_kawai_layout(G, dim=1)
         nx.kamada_kawai_layout(G, dim=3)
+        # layered_layout only supports directed acyclic graphs
 
     def test_smoke_string(self):
         G = self.Gs
@@ -92,6 +131,10 @@ class TestLayout:
         nx.kamada_kawai_layout(G)
         nx.kamada_kawai_layout(G, dim=1)
         nx.kamada_kawai_layout(G, dim=3)
+        pytest.raises(nx.NetworkXNotImplemented, nx.layered_layout, G)
+        # DiGraph
+        G = self.DGs
+        nx.layered_layout(G)
 
     def check_scale_and_center(self, pos, scale, center):
         center = np.array(center)
@@ -116,9 +159,9 @@ class TestLayout:
         sc(nx.shell_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.spiral_layout(G, scale=2, center=c), scale=2, center=c)
         sc(nx.kamada_kawai_layout(G, scale=2, center=c), scale=2, center=c)
-
         c = (2, 3, 5)
         sc(nx.kamada_kawai_layout(G, dim=3, scale=2, center=c), scale=2, center=c)
+        # layered_layout only supports directed acyclic graphs
 
     def test_planar_layout_non_planar_input(self):
         G = nx.complete_graph(9)
@@ -141,9 +184,9 @@ class TestLayout:
         sc(nx.shell_layout(G), scale=1, center=c)
         sc(nx.spiral_layout(G), scale=1, center=c)
         sc(nx.kamada_kawai_layout(G), scale=1, center=c)
-
         c = (0, 0, 0)
         sc(nx.kamada_kawai_layout(G, dim=3), scale=1, center=c)
+        # layered_layout only supports directed acyclic graphs
 
     def test_circular_planar_and_shell_dim_error(self):
         G = nx.path_graph(4)
@@ -171,7 +214,7 @@ class TestLayout:
         pos = nx.drawing.layout._sparse_fruchterman_reingold(A, dim=3)
         assert pos.shape == (6, 3)
 
-    def test_single_nodes(self):
+    def test_shell_layout_single_nodes(self):
         G = nx.path_graph(1)
         vpos = nx.shell_layout(G)
         assert not vpos[0].any()
@@ -215,6 +258,10 @@ class TestLayout:
         assert tuple(vpos[0]) == (1, 1)
         vpos = nx.spiral_layout(G, center=(1, 1))
         assert tuple(vpos[0]) == (1, 1)
+        # Layered layout is only implemented for DiGraphs
+        G = nx.path_graph(1, create_using=nx.DiGraph)
+        vpos, _ = nx.layered_layout(G, center=(1, 1))
+        assert tuple(vpos[0]) == (1, 1)
 
     def test_center_wrong_dimensions(self):
         G = nx.path_graph(1)
@@ -229,6 +276,8 @@ class TestLayout:
         pytest.raises(ValueError, nx.shell_layout, G, center=(1, 1, 1))
         pytest.raises(ValueError, nx.spiral_layout, G, center=(1, 1, 1))
         pytest.raises(ValueError, nx.kamada_kawai_layout, G, center=(1, 1, 1))
+        G = nx.path_graph(1, create_using=nx.DiGraph)
+        pytest.raises(ValueError, nx.layered_layout, G, center=(1, 1, 1))
 
     def test_empty_graph(self):
         G = nx.empty_graph()
@@ -254,6 +303,11 @@ class TestLayout:
         assert vpos == {}
         vpos = nx.kamada_kawai_layout(G, center=(1, 1))
         assert vpos == {}
+        # Layered layout is only implemented for DiGraphs
+        G = nx.empty_graph(create_using=nx.DiGraph)
+        vpos, edges_path = nx.layered_layout(G, center=(1, 1))
+        assert vpos == {}
+        assert edges_path == {}
 
     def test_bipartite_layout(self):
         G = nx.complete_bipartite_graph(3, 5)
@@ -399,3 +453,167 @@ class TestLayout:
         assert s_vpos == {0: (-1, -1), 1: (1, 1), 2: (0, 0)}
         s_vpos = nx.rescale_layout_dict(vpos, scale=2)
         assert s_vpos == {0: (-2, -2), 1: (2, 2), 2: (0, 0)}
+
+    def test_layered_layout(self):
+        test_cases = {
+            "single edge": {
+                "edges": [(1, 2)],
+                "align": "vertical",
+                "pos": {1: [0.0, 1.0], 2: [0.0, -1.0]},
+                "edges_path": {},
+            },
+            "stump": {
+                "edges": [(1, 2), (1, 3)],
+                "align": "vertical",
+                "pos": {1: [-0.5, 1.0], 3: [-0.5, -0.5], 2: [1.0, -0.5]},
+                "edges_path": {},
+            },
+            "long edge": {
+                "edges": [(1, 2), (2, 3), (1, 3)],
+                "align": "vertical",
+                "pos": {1: [-0.25, 1.0], 2: [-0.25, 0.0], 3: [-0.25, -1.0]},
+                "edges_path": {(1, 3): [[0.75, 0.0]]},
+            },
+            "two long edges": {
+                "edges": [(1, 2), (2, 3), (1, 3), (1, 4), (2, 4)],
+                "align": "vertical",
+                "pos": {
+                    1: [0.0, 1.0],
+                    2: [0.0, 0.14285714],
+                    3: [-0.85714286, -0.71428571],
+                    4: [0.85714286, -0.71428571],
+                },
+                "edges_path": {
+                    (1, 3): [[-0.85714286, 0.14285714]],
+                    (1, 4): [[0.85714286, 0.14285714]],
+                },
+            },
+            "30-nodes growing network graph": {
+                "edges": [
+                    (1, 0),
+                    (2, 0),
+                    (3, 2),
+                    (4, 0),
+                    (5, 0),
+                    (6, 0),
+                    (7, 1),
+                    (8, 1),
+                    (9, 0),
+                    (10, 1),
+                    (11, 1),
+                    (12, 2),
+                    (13, 2),
+                    (14, 0),
+                    (15, 0),
+                    (16, 1),
+                    (17, 1),
+                    (18, 2),
+                    (19, 17),
+                    (20, 1),
+                    (21, 2),
+                    (22, 1),
+                    (23, 0),
+                    (24, 1),
+                    (25, 0),
+                    (26, 0),
+                    (27, 19),
+                    (28, 1),
+                    (29, 28),
+                ],
+                "align": "vertical",
+                "pos": {
+                    26: [-0.93791574, 0.1075388],
+                    25: [-0.85365854, 0.1075388],
+                    23: [-0.76940133, 0.1075388],
+                    29: [-0.68514412, 0.1075388],
+                    27: [-0.60088692, 0.1075388],
+                    24: [-0.51662971, 0.1075388],
+                    22: [-0.43237251, 0.1075388],
+                    20: [-0.3481153, 0.1075388],
+                    16: [-0.26385809, 0.1075388],
+                    11: [-0.17960089, 0.1075388],
+                    10: [-0.09534368, 0.1075388],
+                    8: [-0.01108647, 0.1075388],
+                    7: [0.07317073, 0.1075388],
+                    15: [0.15742794, 0.1075388],
+                    14: [0.24168514, 0.1075388],
+                    21: [0.32594235, 0.1075388],
+                    18: [0.41019956, 0.1075388],
+                    13: [0.49445676, 0.1075388],
+                    12: [0.57871397, 0.1075388],
+                    3: [0.66297118, 0.1075388],
+                    9: [0.74722838, 0.1075388],
+                    6: [0.83148559, 0.1075388],
+                    5: [0.91574279, 0.1075388],
+                    4: [1.0, 0.1075388],
+                    28: [-0.68514412, 0.0232816],
+                    19: [-0.60088692, 0.0232816],
+                    2: [0.49445676, 0.0232816],
+                    17: [-0.60088692, -0.06097561],
+                    1: [-0.26385809, -0.14523282],
+                    0: [0.15742794, -0.22949002],
+                },
+                "edges_path": {
+                    (2, 0): [[0.49445676, -0.06097561], [0.49445676, -0.14523282]],
+                    (4, 0): [[1.0, 0.0232816], [1.0, -0.06097561], [1.0, -0.14523282]],
+                    (5, 0): [
+                        [0.91574279, 0.0232816],
+                        [0.91574279, -0.06097561],
+                        [0.91574279, -0.14523282],
+                    ],
+                    (6, 0): [
+                        [0.83148559, 0.0232816],
+                        [0.83148559, -0.06097561],
+                        [0.83148559, -0.14523282],
+                    ],
+                    (7, 1): [[0.07317073, 0.0232816], [0.07317073, -0.06097561]],
+                    (8, 1): [[-0.01108647, 0.0232816], [-0.01108647, -0.06097561]],
+                    (9, 0): [
+                        [0.74722838, 0.0232816],
+                        [0.74722838, -0.06097561],
+                        [0.74722838, -0.14523282],
+                    ],
+                    (10, 1): [[-0.09534368, 0.0232816], [-0.09534368, -0.06097561]],
+                    (11, 1): [[-0.17960089, 0.0232816], [-0.17960089, -0.06097561]],
+                    (14, 0): [
+                        [0.24168514, 0.0232816],
+                        [0.24168514, -0.06097561],
+                        [0.24168514, -0.14523282],
+                    ],
+                    (15, 0): [
+                        [0.15742794, 0.0232816],
+                        [0.15742794, -0.06097561],
+                        [0.15742794, -0.14523282],
+                    ],
+                    (16, 1): [[-0.26385809, 0.0232816], [-0.26385809, -0.06097561]],
+                    (20, 1): [[-0.3481153, 0.0232816], [-0.3481153, -0.06097561]],
+                    (22, 1): [[-0.43237251, 0.0232816], [-0.43237251, -0.06097561]],
+                    (23, 0): [
+                        [-0.76940133, 0.0232816],
+                        [-0.76940133, -0.06097561],
+                        [-0.76940133, -0.14523282],
+                    ],
+                    (24, 1): [[-0.51662971, 0.0232816], [-0.51662971, -0.06097561]],
+                    (25, 0): [
+                        [-0.85365854, 0.0232816],
+                        [-0.85365854, -0.06097561],
+                        [-0.85365854, -0.14523282],
+                    ],
+                    (26, 0): [
+                        [-0.93791574, 0.0232816],
+                        [-0.93791574, -0.06097561],
+                        [-0.93791574, -0.14523282],
+                    ],
+                    (28, 1): [[-0.68514412, -0.06097561]],
+                },
+            },
+        }
+
+        for test_case_name, test_case in test_cases.items():
+            G = nx.DiGraph()
+            G.add_edges_from(test_case["edges"])
+            pos, edges_path = nx.layered_layout(G, align=test_case["align"])
+            if not self.deep_compare_pos(
+                pos, test_case["pos"]
+            ) or not self.deep_compare_pos(edges_path, test_case["edges_path"]):
+                raise ValueError(f"{test_case_name} was not displayed as expected")

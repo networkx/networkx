@@ -95,4 +95,4 @@ Graph Layout
    spectral_layout
    spiral_layout
    multipartite_layout
-   
+   layered_layout

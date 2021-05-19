@@ -289,6 +289,7 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
         "edge_cmap",
         "edge_vmin",
         "edge_vmax",
+        "edges_path",
         "ax",
         "label",
         "node_size",
@@ -500,6 +501,7 @@ def draw_networkx_edges(
     edge_cmap=None,
     edge_vmin=None,
     edge_vmax=None,
+    edges_path=None,
     ax=None,
     arrows=True,
     label=None,
@@ -548,6 +550,10 @@ def draw_networkx_edges(
 
     edge_vmin,edge_vmax : floats, optional
         Minimum and maximum for edge colormap scaling
+
+    edges_path: dictionary of lists of pos keyed by edge, optional
+        Paths that must be taken by the keyed edges
+        See `networkx.drawing.layered_layout`
 
     ax : Matplotlib Axes object, optional
         Draw the graph in the specified Matplotlib axes.
@@ -718,37 +724,35 @@ def draw_networkx_edges(
             # is 0, e.g. for a single node. In this case, fall back to scaling
             # by the maximum node size
             selfloop_ht = 0.005 * max_nodesize if h == 0 else h
-            # this is called with _screen space_ values so covert back
+            # this is called with _screen space_ values so convert back
             # to data space
             data_loc = ax.transData.inverted().transform(posA)
             v_shift = 0.1 * selfloop_ht
             h_shift = v_shift * 0.5
             # put the top of the loop first so arrow is not hidden by node
             path = [
-                # 1
+                # MOVETO(=1)
                 data_loc + np.asarray([0, v_shift]),
-                # 4 4 4
+                # CURVE4(=4): 2 control points, 1 endpoint
                 data_loc + np.asarray([h_shift, v_shift]),
                 data_loc + np.asarray([h_shift, 0]),
                 data_loc,
-                # 4 4 4
+                # CURVE4(=4): 2 control points, 1 endpoint
                 data_loc + np.asarray([-h_shift, 0]),
                 data_loc + np.asarray([-h_shift, v_shift]),
                 data_loc + np.asarray([0, v_shift]),
             ]
 
             ret = mpl.path.Path(ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4])
-        # if not, fall back to the user specified behavior
         else:
+            # else, fall back to the user specified behavior
             ret = base_connection_style(posA, posB, *args, **kwargs)
 
         return ret
 
     # FancyArrowPatch doesn't handle color strings
     arrow_colors = mpl.colors.colorConverter.to_rgba_array(edge_color, alpha)
-    for i, (src, dst) in enumerate(edge_pos):
-        x1, y1 = src
-        x2, y2 = dst
+    for (i, (src, dst)), e in zip(enumerate(edge_pos), edgelist):
         shrink_source = 0  # space from source to tail
         shrink_target = 0  # space from  head to target
         if np.iterable(node_size):  # many node sizes
@@ -781,15 +785,32 @@ def draw_networkx_edges(
         else:
             line_width = width
 
+        path = None
+        if edges_path is not None and e in edges_path:
+            # Edge e must be drawn using a user-defined path of intermediary positions.
+            # Passing a non-null path is incompatible with src & dst parameters,
+            # and ignores shirnkA & shrinkB. Is the arrowhead even drawn?
+            # This feature is not documented much in Matplotlib...
+
+            # TODO: apply shrink_source and shrink_target to path because shrinkA
+            # and shrinkB are ignored by FancyArrowPatch when path is not None.
+            path = [src] + edges_path[e] + [dst]
+            codes = [mpl.path.Path.MOVETO] + [mpl.path.Path.LINETO] * (len(path) - 1)
+            path = mpl.path.Path(path, codes)
+            # Set src & dst to None because FancyArrowPatch expects either path or
+            # the src & dst parameters, not both.
+            src = dst = None
+
         arrow = mpl.patches.FancyArrowPatch(
-            (x1, y1),
-            (x2, y2),
+            src,
+            dst,
             arrowstyle=arrowstyle,
             shrinkA=shrink_source,
             shrinkB=shrink_target,
             mutation_scale=mutation_scale,
             color=arrow_color,
             linewidth=line_width,
+            path=path,
             connectionstyle=_connectionstyle,
             linestyle=style,
             zorder=1,
