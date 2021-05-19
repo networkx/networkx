@@ -687,8 +687,8 @@ def graph_entropy(DAG, forward_entropy=False):
     >>> condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph)))
     >>> fwd_graph_entropy = [round(nx.graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
     >>> bkwd_graph_entropy = [round(nx.graph_entropy(net), 3) for net in condensed_network_layers]
-    >>> print("graph entropy (from top | bottom): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
-    graph entropy (from top | bottom): [0.52, 0.0] | [1.04, 0.0]
+    >>> print("graph entropy (forwards | backwards): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
+    graph entropy (forwards | backwards): [0.0, 0.0] | [0.347, 0.0]
 
     Notes
     ______
@@ -729,22 +729,23 @@ def graph_entropy(DAG, forward_entropy=False):
     L_GC = len(recursive_leaf_removal(DAG))
 
     axis = 1 if forward_entropy else 0
-    B = nx.to_numpy_array(dag)
+    B = nx.to_numpy_array(dag)  # .T
     # normalize so rows (forward_entropy) or columns (backward_entropy) sum to 1.
     sums = B.sum(axis=axis, keepdims=True)
     sums[sums == 0] = 1
     B = B / sums
+    B = B if forward_entropy else B.T
     # +1 as k \in ( 1, L(G_C) )
-    P = sum([np.power(B, k) for k in range(1, L_GC + 1)])
-    # TODO: Not so sure about this unless k coincides with the number of steps already taken (and the sum is odd)
-    # (Presently awaiting response from original authors for clarification)
-
+    P = sum([np.linalg.matrix_power(B, k) for k in range(1, L_GC + 1)])
     boundary_layer = max_min_layers(dag, max_layer=forward_entropy)
     non_extremal_nodes = set(dag.nodes() - boundary_layer)
+    # Eliminates zero degree nodes from log; as
+    opposite_boundary_layer = max_min_layers(dag, max_layer=not forward_entropy)
+    non_extremal_nodes = set(non_extremal_nodes - set(opposite_boundary_layer))
+
     deg = dag.out_degree if forward_entropy else dag.in_degree
-    P = P if forward_entropy else P.T
     e = sum(
-        P[u][v] * np.log(deg(u)) for u in boundary_layer for v in non_extremal_nodes
+        P[u][v] * np.log(deg(v)) for u in boundary_layer for v in non_extremal_nodes
     )
     entropy = e / len(boundary_layer)
     return entropy
@@ -787,8 +788,8 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
     >>> condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph)))
     >>> fwd_graph_entropy = [round(nx.infographic_graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
     >>> bkwd_graph_entropy = [round(nx.infographic_graph_entropy(net), 3) for net in condensed_network_layers]
-    >>> print("graph entropy (from top | bottom): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
-    graph entropy (from top | bottom): [0.347, 0.0] | [1.04, 0.0]
+    >>> print("graph entropy (forwards | backwards): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
+    graph entropy (forwards | backwards): [0.347, 0.0] | [1.04, 0.0]
 
     Notes
     ______
@@ -874,7 +875,7 @@ def _single_graph_treeness(DAG):
     ... ])
     >>> condensed_network = nx.node_weighted_condense(a)[0][0]
     >>> print("treeness (single graph): {0}".format(np.round(_single_graph_treeness(condensed_network), 3)))
-    treeness (single graph): 0.667
+    treeness (single graph): 0.333
 
     Notes
     ______
@@ -884,8 +885,8 @@ def _single_graph_treeness(DAG):
     """
     if len(DAG.nodes()) == 1:
         return 0
-    forward_entropy = graph_entropy(DAG, forward_entropy=True)
-    backward_entropy = graph_entropy(DAG, forward_entropy=False)
+    forward_entropy = infographic_graph_entropy(DAG, forward_entropy=True)
+    backward_entropy = infographic_graph_entropy(DAG, forward_entropy=False)
     if forward_entropy == 0 and backward_entropy == 0:
         return 0
 
@@ -926,8 +927,8 @@ def treeness(DAG):
     ...     [0, 0, 0, 0, 0, 0, 0],
     ... ])
     >>> dag = nx.condensation(nx.from_numpy_matrix(a, create_using=nx.DiGraph))
-    >>> print("treeness: {0}".format(nx.treeness(dag)))
-    treeness: -0.5
+    >>> print("treeness: {0}".format(np.round(nx.treeness(dag), 2)))
+    treeness: -0.56
 
     Notes
     ______
@@ -1009,9 +1010,9 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
     ...     [0, 0, 0, 0, 0, 0, 0],
     ... ])
     >>> print('(a) Treeness: {0} | Feedforwardness: {1} | Orderability: {2}'.format(*np.round(nx.hierarchy_coordinates(a), 2)))
-    (a) Treeness: -0.04 | Feedforwardness: 0.87 | Orderability: 0.81
+    (a) Treeness: -0.08 | Feedforwardness: 0.87 | Orderability: 0.81
     >>> print('(b) Treeness: {0} | Feedforwardness: {1} | Orderability: {2}'.format(*np.round(nx.hierarchy_coordinates(b), 2)))
-    (b) Treeness: -0.5 | Feedforwardness: 0.56 | Orderability: 0.43
+    (b) Treeness: -0.56 | Feedforwardness: 0.56 | Orderability: 0.43
 
     Notes
     ______

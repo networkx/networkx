@@ -176,11 +176,51 @@ def test_feedforwardness():
 
 
 def test_graph_entropy():
-    pass  # awaits response from Professor Solé
+    b = np.array(
+        [
+            [0, 0, 1, 0, 0, 0, 1],
+            [0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 1, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0],
+        ]
+    )
+    condensed_network_layers = nx.recursive_leaf_removal(
+        nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph))
+    )
+    # WIP
+    # fwd_graph_entropy = [round(nx.graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
+    # bkwd_graph_entropy = [round(nx.graph_entropy(net), 3) for net in condensed_network_layers]
+    # print("graph entropy (forwards | backwards): {0} | {1} [analytic]".format(fwd_graph_entropy, bkwd_graph_entropy))
 
 
 def test_infographic_graph_entropy():
-    pass  # awaits response from Professor Solé
+    b = np.array(
+        [
+            [0, 0, 1, 0, 0, 0, 1],
+            [0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 1, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0],
+        ]
+    )
+    condensed_network_layers = nx.recursive_leaf_removal(
+        nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph))
+    )
+    fwd_graph_entropy = [
+        round(nx.infographic_graph_entropy(net, forward_entropy=True), 3)
+        for net in condensed_network_layers
+    ]
+    bkwd_graph_entropy = [
+        round(nx.infographic_graph_entropy(net), 3) for net in condensed_network_layers
+    ]
+    assert fwd_graph_entropy == [0.347, 0.0]
+    assert bkwd_graph_entropy == [1.04, 0.0]
+    # print("graph entropy (forwards | backwards): {0} | {1} [infographic]".format(fwd_graph_entropy, bkwd_graph_entropy))
 
 
 def test_treeness():
