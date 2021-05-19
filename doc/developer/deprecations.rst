@@ -67,7 +67,10 @@ Version 3.0
   argument with explicit ``name`` and ``ident`` keyword args.
 * In ``readwrite/json_graph/tree.py``, remove ``attrs`` kwarg from ``tree_graph``
   and ``tree_data``.
-* Remove ``readwrite/nx_yaml.py`` and related tests.
+* Undo changes related to the removal of ``pyyaml``. Remove the
+  ``__getattr__`` definitions from ``networkx/__init__.py``,
+  ``networkx/readwrite/__init__.py`` and ``networkx/readwrite/nx_yaml.py`` and
+  remove ``networkx/readwrite/tests/test_getattr_nxyaml_removal.py``
 * Remove ``readwrite/gpickle.py`` and related tests.
 * Remove ``readwrite/nx_shp.py`` and related tests (add info in alternatives).
 * Remove ``copy`` method in the coreview Filtered-related classes and related tests.
