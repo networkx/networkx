@@ -13,11 +13,11 @@ class TestIntervalGraph:
     """Unit tests for :func:`networkx.generators.interval_graph.interval_graph`"""
 
     def test_empty(self):
-        """ Tests for trivial case of empty input"""
+        """Tests for trivial case of empty input"""
         assert len(interval_graph([])) == 0
 
     def test_interval_graph_check_invalid(self):
-        """ Tests for conditions that raise Exceptions """
+        """Tests for conditions that raise Exceptions"""
 
         invalids_having_none = [None, (1, 2)]
         with pytest.raises(TypeError):
@@ -92,7 +92,7 @@ class TestIntervalGraph:
         assert_edges_equal(expected_graph, actual_g)
 
     def test_interval_graph_4(self):
-        """ test all possible overlaps """
+        """test all possible overlaps"""
         intervals = [
             (0, 2),
             (-2, -1),
@@ -129,7 +129,7 @@ class TestIntervalGraph:
         assert set(actual_nbrs) == expected_nbrs
 
     def test_interval_graph_5(self):
-        """ this test is to see that an interval supports infinite number"""
+        """this test is to see that an interval supports infinite number"""
         intervals = {(-math.inf, 0), (-1, -1), (0.5, 0.5), (1, 1), (1, math.inf)}
 
         expected_graph = nx.Graph()

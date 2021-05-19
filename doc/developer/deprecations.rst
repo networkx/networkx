@@ -65,6 +65,8 @@ Version 3.0
 * In ``readwrite/json_graph/cytoscape.py``, change function signature for
   ``cytoscape_graph`` and ``cytoscape_data`` to replace the ``attrs`` keyword.
   argument with explicit ``name`` and ``ident`` keyword args.
+* In ``readwrite/json_graph/tree.py``, remove ``attrs`` kwarg from ``tree_graph``
+  and ``tree_data``.
 * Remove ``readwrite/nx_yaml.py`` and related tests.
 * Remove ``readwrite/gpickle.py`` and related tests.
 * Remove ``readwrite/nx_shp.py`` and related tests (add info in alternatives).
@@ -75,5 +77,7 @@ Version 3.0
 * Remove ``readwrite/json_graph/jit.py`` and related tests.
 * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
 * In ``algorithms/link_analysis/hits_alg.py`` remove ``hub_matrix`` and ``authority_matrix``
+* In ``algorithms/link_analysis/hits_alg.py``, replace ``hits`` with the
+  implementation from ``hits_scipy`` and remove ``hits_numpy`` and ``hist_scipy``.
 * In ``networkx.classes`` remove the ``ordered`` module and the four ``Ordered``
   classes defined therein.
