@@ -104,7 +104,7 @@ def is_directed_acyclic_graph(G):
 
 def topological_generations(G):
     """Stratifies a DAG into generations.
-    
+
     A topological generation is node collection in which ancestors of a node in each
     generation are guaranteed to be in a previous generation, and any descendants of
     a node are guaranteed to be in a following generation. Nodes are guaranteed to
@@ -118,7 +118,7 @@ def topological_generations(G):
     Returns
     -------
     iterable[set]
-        An iterable of sets of nodes.
+        Yields sets of nodes representing each generation.
 
     Raises
     ------
@@ -143,7 +143,8 @@ def topological_generations(G):
     Notes
     -----
     The generation in which a node resides can also be determined by taking the
-    max-path-distance from the node to the farthest leaf node.
+    max-path-distance from the node to the farthest leaf node. That value can
+    be obtained with this function using `enumerate(topological_generations(G))`.
 
     See also
     --------
@@ -152,22 +153,23 @@ def topological_generations(G):
     if not G.is_directed():
         raise nx.NetworkXError("Topological sort not defined on undirected graphs.")
 
+    multigraph = G.is_multigraph()
     indegree_map = {v: d for v, d in G.in_degree() if d > 0}
-    zero_indegree = {v for v, d in G.in_degree() if d == 0}
+    zero_indegree = [v for v, d in G.in_degree() if d == 0]
 
     while zero_indegree:
         this_generation = zero_indegree
-        zero_indegree = set()
+        zero_indegree = []
         for node in this_generation:
             if node not in G:
                 raise RuntimeError("Graph changed during iteration")
-            for _, child in G.edges(node):
+            for child in G.neighbors(node):
                 try:
-                    indegree_map[child] -= 1
+                    indegree_map[child] -= len(G[node][child]) if multigraph else 1
                 except KeyError as e:
                     raise RuntimeError("Graph changed during iteration") from e
                 if indegree_map[child] == 0:
-                    zero_indegree.add(child)
+                    zero_indegree.append(child)
                     del indegree_map[child]
         yield this_generation
 
@@ -177,7 +179,7 @@ def topological_generations(G):
         )
 
 
-def topological_sort(G, with_generation=False):
+def topological_sort(G):
     """Returns a generator of nodes in topologically sorted order.
 
     A topological sort is a nonunique permutation of the nodes of a
@@ -189,19 +191,11 @@ def topological_sort(G, with_generation=False):
     ----------
     G : NetworkX digraph
         A directed acyclic graph (DAG)
-    with_generation : bool, optional
-        Whether to also yield the earliest possible generation of the node, such
-        that all ancestors are in a previous generation, and all descendants
-        are in a following generation.
 
     Returns
     -------
-    iterable | iterable[tuple[node, int]]
-        If with_generation=False: An iterable of node names in topological sorted order.
-
-        If with_generation=True: An iterable of tuples where the first
-        element is the node and the second element is the generation. In
-        topologically sorted order.
+    iterable
+        Yields the nodes in topological sorted order.
 
     Raises
     ------
@@ -250,8 +244,7 @@ def topological_sort(G, with_generation=False):
        *Introduction to Algorithms - A Creative Approach.* Addison-Wesley.
     """
     for generation in nx.topological_generations(G):
-        for node in generation:
-            yield node
+        yield from generation
 
 
 def lexicographical_topological_sort(G, key=None):

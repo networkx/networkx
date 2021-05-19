@@ -495,6 +495,11 @@ def test_topological_generations():
     expected = [[4, 6, 7], [3, 5], [2], [1]]
     assert generations == expected
 
+    MG = nx.MultiDiGraph(G.edges)
+    MG.add_edge(2, 1)
+    generations = [sorted(gen) for gen in nx.topological_generations(MG)]
+    assert generations == expected
+
 
 def test_topological_generations_empty():
     G = nx.DiGraph()
