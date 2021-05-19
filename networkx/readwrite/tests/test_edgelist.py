@@ -9,7 +9,7 @@ import textwrap
 
 import networkx as nx
 from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
-
+import warnings
 
 edges_no_data = textwrap.dedent(
     """
@@ -20,7 +20,6 @@ edges_no_data = textwrap.dedent(
     """
 )
 
-
 edges_with_values = textwrap.dedent(
     """
     # comment line
@@ -29,7 +28,6 @@ edges_with_values = textwrap.dedent(
     2 3 3.0
     """
 )
-
 
 edges_with_weight = textwrap.dedent(
     """
@@ -40,7 +38,6 @@ edges_with_weight = textwrap.dedent(
     """
 )
 
-
 edges_with_multiple_attrs = textwrap.dedent(
     """
     # comment line
@@ -50,7 +47,6 @@ edges_with_multiple_attrs = textwrap.dedent(
     """
 )
 
-
 edges_with_multiple_attrs_csv = textwrap.dedent(
     """
     # comment line
@@ -59,7 +55,6 @@ edges_with_multiple_attrs_csv = textwrap.dedent(
     2, 3, {'weight':3.0, 'color':'red'}
     """
 )
-
 
 _expected_edges_weights = [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
 _expected_edges_multiattr = [
@@ -102,6 +97,68 @@ def test_read_edgelist_with_data(data, extra_kwargs, expected):
     bytesIO = io.BytesIO(data.encode("utf-8"))
     G = nx.read_edgelist(bytesIO, nodetype=int, **extra_kwargs)
     assert_edges_equal(G.edges(data=True), expected)
+
+
+def test_read_edgelist_with_information_line():
+    s = """\
+# number of nodes, number of edges
+3 2
+# comment line
+1 2 {'weight':2.0}
+# comment line
+2 3 {'weight':3.0}
+"""
+    StringIO = io.StringIO(s)
+    G = nx.read_edgelist(StringIO, nodetype=int, data=False, information_line=True)
+    assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
+
+    StringIO = io.StringIO(s)
+    G = nx.read_edgelist(StringIO, nodetype=int, data=True, information_line=True)
+    assert_edges_equal(
+        G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
+    )
+
+
+def test_read_edgelist_without_information_line():
+    s = """\
+# comment line
+1 2 {'weight':2.0}
+# comment line
+2 3 {'weight':3.0}
+"""
+    with pytest.raises(nx.NetworkXError):
+        StringIO = io.StringIO(s)
+        G = nx.read_edgelist(StringIO, nodetype=int, data=False, information_line=True)
+        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
+
+    with pytest.raises(nx.NetworkXError):
+        StringIO = io.StringIO(s)
+        G = nx.read_edgelist(StringIO, nodetype=int, data=True, information_line=True)
+        assert_edges_equal(
+            G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
+        )
+
+
+def test_read_edgelist_information_line_warning():
+    s = """\
+# number of nodes, number of edges
+2 2
+# comment line
+1 2 {'weight':2.0}
+# comment line
+2 3 {'weight':3.0}
+"""
+    StringIO = io.StringIO(s)
+    with pytest.warns(UserWarning):
+        G = nx.read_edgelist(StringIO, nodetype=int, data=False, information_line=True)
+    assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
+
+    StringIO = io.StringIO(s)
+    with pytest.warns(UserWarning):
+        G = nx.read_edgelist(StringIO, nodetype=int, data=True, information_line=True)
+    assert_edges_equal(
+        G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
+    )
 
 
 @pytest.fixture
@@ -207,6 +264,14 @@ class TestEdgelist:
         nx.write_edgelist(G, fh, data=[("weight")])
         fh.seek(0)
         assert fh.read() == b"1 2 2.0\n2 3 3.0\n"
+
+    def test_write_edgelist_with_information_line(self):
+        fh = io.BytesIO()
+        G = nx.OrderedGraph()
+        G.add_edges_from([(1, 2), (2, 3)])
+        nx.write_edgelist(G, fh, data=False, information_line=True)
+        fh.seek(0)
+        assert fh.read() == b"3 2\n1 2\n2 3\n"
 
     def test_unicode(self):
         G = nx.Graph()
