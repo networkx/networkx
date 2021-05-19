@@ -165,6 +165,10 @@ def hub_matrix(G, nodelist=None):
 def hits_numpy(G, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
 
+    .. deprecated:: 2.6
+
+       hits_numpy is deprecated and will be removed in networkx 3.0.
+
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
     Hubs estimates the node value based on outgoing links.
@@ -249,6 +253,10 @@ def hits_numpy(G, normalized=True):
 
 def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
+
+    .. deprecated:: 2.6
+
+       hits_scipy is deprecated and will be removed in networkx 3.0
 
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
