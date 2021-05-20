@@ -182,6 +182,22 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
         expected = [(1, {2: {0: {}}}), (2, {1: {0: {}}})]
         assert sorted(G.adj.items()) == expected
 
+    def test_data_multigraph_input(self):
+        G = self.Graph({1: {2: {4: {}}}}, multigraph_input=True)
+        if G.is_directed():
+            expected = [(1, {2: {4: {}}}), (2, {})]
+        else:
+            expected = [(1, {2: {4: {}}}), (2, {1: {4: {}}})]
+        assert sorted(G.adj.items()) == expected
+
+        G = self.Graph({1: {2: {4: {}}}, 2: {1: {4: {}}}}, multigraph_input=False)
+        expected = [(1, {2: {0: {4: {}}}}), (2, {1: {0: {4: {}}}})]
+        assert sorted(G.adj.items()) == expected
+
+        G = self.Graph({1: {2: {4: {}}}, 2: {1: {4: {}}}}, multigraph_input=True)
+        expected = [(1, {2: {4: {}}}), (2, {1: {4: {}}})]
+        assert sorted(G.adj.items()) == expected
+
     def test_getitem(self):
         G = self.K3
         assert G[0] == {1: {0: {}}, 2: {0: {}}}
