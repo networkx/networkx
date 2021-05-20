@@ -509,6 +509,7 @@ def draw_networkx_edges(
     connectionstyle="arc3",
     min_source_margin=0,
     min_target_margin=0,
+    use_linecollection=True,
 ):
     r"""Draw the edges of the graph G.
 
@@ -637,6 +638,7 @@ def draw_networkx_edges(
     import matplotlib as mpl
     import matplotlib.colors  # call as mpl.colors
     import matplotlib.patches  # call as mpl.patches
+    import matplotlib.collections  # call as mpl.collections
     import matplotlib.path  # call as mpl.path
     import matplotlib.pyplot as plt
 
@@ -683,12 +685,8 @@ def draw_networkx_edges(
         color_normal = mpl.colors.Normalize(vmin=edge_vmin, vmax=edge_vmax)
         edge_color = [edge_cmap(color_normal(e)) for e in edge_color]
 
-    if use_linecollection:
-        return _draw_networkx_edges_line_collection()
-    return _draw_networkx_edges_fancy_arrow_patch()
-
     def _draw_networkx_edges_line_collection():
-        edge_collection = LineCollection(
+        edge_collection = mpl.collections.LineCollection(
             edge_pos,
             colors=edge_color,
             linewidths=width,
@@ -837,6 +835,10 @@ def draw_networkx_edges(
         )
 
         return arrow_collection
+
+    if use_linecollection:
+        return _draw_networkx_edges_line_collection()
+    return _draw_networkx_edges_fancy_arrow_patch()
 
 
 def draw_networkx_labels(
