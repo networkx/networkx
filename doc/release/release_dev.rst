@@ -34,6 +34,9 @@ Improvements
 - [`#4640 <https://github.com/networkx/networkx/pull/4640>`_]
   ``prefix_tree`` now uses a non-recursive algorithm. The original recursive
   algorithm is still available via ``prefix_tree_recursive``.
+- [`#4659 <https://github.com/networkx/networkx/pull/4659>`_]
+  New ``initial_graph`` argument to ``barabasi_albert_graph`` and
+  ``dual_barabasi_albert_graph`` to supply an initial graph to the model.
 
 API Changes
 -----------
