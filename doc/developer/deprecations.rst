@@ -81,3 +81,4 @@ Version 3.0
   implementation from ``hits_scipy`` and remove ``hits_numpy`` and ``hist_scipy``.
 * In ``networkx.classes`` remove the ``ordered`` module and the four ``Ordered``
   classes defined therein.
+* In ``utils/decorators.py`` remove ``preserve_random_state``.

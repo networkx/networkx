@@ -133,6 +133,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nThe `attrs` keyword"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="preserve_random_state"
+    )
 
 
 @pytest.fixture(autouse=True)

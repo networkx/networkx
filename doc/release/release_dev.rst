@@ -111,6 +111,8 @@ Deprecations
   Deprecate ``hub_matrix`` and ``authority_matrix``
 - [`#4629 <https://github.com/networkx/networkx/pull/4629>`_]
   Deprecate the ``Ordered`` graph classes.
+- [`#4826 <https://github.com/networkx/networkx/pull/4826>`_]
+  Deprecate ``preserve_random_state``.
 
 
 Contributors
