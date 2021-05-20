@@ -115,9 +115,9 @@ def topological_generations(G):
     G : NetworkX digraph
         A directed acyclic graph (DAG)
 
-    Returns
-    -------
-    iterable[set]
+    Yields
+    ------
+    sets of nodes
         Yields sets of nodes representing each generation.
 
     Raises
@@ -192,9 +192,9 @@ def topological_sort(G):
     G : NetworkX digraph
         A directed acyclic graph (DAG)
 
-    Returns
-    -------
-    iterable
+    Yields
+    ------
+    nodes
         Yields the nodes in topological sorted order.
 
     Raises
