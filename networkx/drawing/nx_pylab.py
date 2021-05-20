@@ -718,14 +718,6 @@ def draw_networkx_edges(
         arrow_collection = []
         mutation_scale = arrowsize  # scale factor of arrow head
 
-        # compute view
-        minx = np.amin(np.ravel(edge_pos[:, :, 0]))
-        maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
-        miny = np.amin(np.ravel(edge_pos[:, :, 1]))
-        maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
-        w = maxx - minx
-        h = maxy - miny
-
         base_connection_style = mpl.patches.ConnectionStyle(connectionstyle)
 
         # Fallback for self-loop scale. Left outside of _connectionstyle so it is
@@ -819,26 +811,38 @@ def draw_networkx_edges(
             arrow_collection.append(arrow)
             ax.add_patch(arrow)
 
-        # update view
-        padx, pady = 0.05 * w, 0.05 * h
-        corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
-        ax.update_datalim(corners)
-        ax.autoscale_view()
-
-        ax.tick_params(
-            axis="both",
-            which="both",
-            bottom=False,
-            left=False,
-            labelbottom=False,
-            labelleft=False,
-        )
-
         return arrow_collection
 
+    # compute initial view
+    minx = np.amin(np.ravel(edge_pos[:, :, 0]))
+    maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
+    miny = np.amin(np.ravel(edge_pos[:, :, 1]))
+    maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
+    w = maxx - minx
+    h = maxy - miny
+
+    # Draw the edges
     if use_linecollection:
-        return _draw_networkx_edges_line_collection()
-    return _draw_networkx_edges_fancy_arrow_patch()
+        edge_viz_obj = _draw_networkx_edges_line_collection()
+    else:
+        edge_viz_obj = _draw_networkx_edges_fancy_arrow_patch()
+
+    # update view after drawing
+    padx, pady = 0.05 * w, 0.05 * h
+    corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
+    ax.update_datalim(corners)
+    ax.autoscale_view()
+
+    ax.tick_params(
+        axis="both",
+        which="both",
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False,
+    )
+
+    return edge_viz_obj
 
 
 def draw_networkx_labels(
