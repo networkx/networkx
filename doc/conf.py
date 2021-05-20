@@ -138,6 +138,7 @@ html_theme_options = {
             "icon": "fab fa-github-square",
         },
     ],
+    "external_links": [{"name": "Guides", "url": "https://networkx.org/nx-guides/"}],
     "navbar_end": ["navbar-icon-links", "version"],
     "page_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
 }
