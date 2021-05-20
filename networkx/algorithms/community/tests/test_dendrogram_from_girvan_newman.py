@@ -11,22 +11,19 @@ np = pytest.importorskip("numpy")
 
 
 class TestDendrogram:
-
     def test_girvan_newman_partition(self):
         G = nx.path_graph(4)
         partitions = dgn.girvan_newman_partitions(G)
-        test_part = [[{0, 1}, {2, 3}],
-                     [{0}, {1}, {2, 3}],
-                     [{0}, {1}, {2}, {3}]]
+        test_part = [[{0, 1}, {2, 3}], [{0}, {1}, {2, 3}], [{0}, {1}, {2}, {3}]]
         assert partitions == test_part
 
     def test_agglomerative_matrix(self):
         G = nx.path_graph(4)
         partitions = dgn.girvan_newman_partitions(G)
         agglomerative_mat = dgn.agglomerative_matrix(G, partitions)
-        test_mat = np.array([[2., 3., 1., 2.],
-                             [0., 1., 1., 2.],
-                             [4., 5., 2., 4.]])
+        test_mat = np.array(
+            [[2.0, 3.0, 1.0, 2.0], [0.0, 1.0, 1.0, 2.0], [4.0, 5.0, 2.0, 4.0]]
+        )
         np.testing.assert_array_equal(agglomerative_mat, test_mat)
 
     def test_girvan_newman_best_partition(self):
@@ -41,8 +38,7 @@ class TestDendrogram:
         partitions = dgn.girvan_newman_partitions(G)
         agglomerative_mat = dgn.agglomerative_matrix(G, partitions)
         n_communities = 2
-        dist_2comm = dgn.distance_of_partition(agglomerative_mat,
-                                               n_communities)
+        dist_2comm = dgn.distance_of_partition(agglomerative_mat, n_communities)
         assert dist_2comm == 3
 
     def test_wrong_node_indices(self):
@@ -79,7 +75,9 @@ class TestDendrogram:
             # bad number of communities
             bad_n_communities_big = 999
             bad_n_communities_small = 0
-            dist_big = dgn.distance_of_partition(agglomerative_mat,
-                                                 bad_n_communities_big)
-            dist_small = dgn.distance_of_partition(agglomerative_mat,
-                                                   bad_n_communities_small)
+            dist_big = dgn.distance_of_partition(
+                agglomerative_mat, bad_n_communities_big
+            )
+            dist_small = dgn.distance_of_partition(
+                agglomerative_mat, bad_n_communities_small
+            )

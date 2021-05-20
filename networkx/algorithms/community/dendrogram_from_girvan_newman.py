@@ -108,7 +108,7 @@ def girvan_newman_partitions(G):
 
 
 def _list2dict(list_partitions, number_nodes):
-    """ Rearranges the `list_partitions' into a list of dictionaries.
+    """Rearranges the `list_partitions' into a list of dictionaries.
 
     Parameters
     ----------
@@ -144,7 +144,7 @@ def _list2dict(list_partitions, number_nodes):
 
 
 def _informative_dict(list_of_dict, number_nodes):
-    """ Creates a list of dictionaries, each one containing information about
+    """Creates a list of dictionaries, each one containing information about
     the partition of that level.
 
     Parameters
@@ -165,7 +165,7 @@ def _informative_dict(list_of_dict, number_nodes):
         value (list of integers, [label of the community the node belongs to,
         distance of the community from the ground level,
         number of nodes in the community])
-     """
+    """
     _list_of_dict = list_of_dict[::-1]
     informative_dict = [0] * (number_nodes - 1)
 
@@ -196,7 +196,9 @@ def _informative_dict(list_of_dict, number_nodes):
                     mykey = i
                     break
             if mykey == -999:
-                raise ValueError("ERROR: New community not found," + " fix list_of_dict")
+                raise ValueError(
+                    "ERROR: New community not found," + " fix list_of_dict"
+                )
 
             # Update info of nodes belonging to the new community.
             # Community A and B are the two communities that are joined
@@ -242,7 +244,7 @@ def _informative_dict(list_of_dict, number_nodes):
 
 
 def agglomerative_matrix(G, list_partitions):
-    """ Perform hierarchical/agglomerative clustering.
+    """Perform hierarchical/agglomerative clustering.
 
     Creates the "agglomerative matrix" of a graph from the community detection
     performed with the Girvan-Newman algorithm.
@@ -534,7 +536,7 @@ def girvan_newman_best_partition(G, list_partitions):
 
 
 def distance_of_partition(agglomerative_matrix, n_communities):
-    """ Returns the distance of the partition from the ground level.
+    """Returns the distance of the partition from the ground level.
 
     The partition considered is the one which splits the graph into
     `n_communities` different communities.
