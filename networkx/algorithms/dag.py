@@ -175,7 +175,7 @@ def topological_generations(G):
 
     if indegree_map:
         raise nx.NetworkXUnfeasible(
-            "Graph contains a cycle or graph changed " "during iteration"
+            "Graph contains a cycle or graph changed during iteration"
         )
 
 
