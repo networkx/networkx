@@ -1,7 +1,7 @@
 .. _developer:
 
-Developer Guide
-***************
+Developer
+*********
 
 .. only:: html
 
