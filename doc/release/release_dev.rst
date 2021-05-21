@@ -22,6 +22,18 @@ X contributors. Highlights include:
 - Dropped support for Python 3.6.
 - NumPy, SciPy, Matplotlib, and pandas are now default requirements.
 
+NXEPs
+-----
+
+**N**\etwork\ **X** **E**\nhancement **P**\roposals capture changes
+that are larger in scope than typical pull requests, such as changes to
+fundamental data structures.
+The following proposals have come under consideration since the previous
+release:
+
+- :ref:`NXEP2`
+- :ref:`NXEP3`
+
 Improvements
 ------------
 
