@@ -375,6 +375,8 @@ You can **add a new** plot by placing a new ``.py`` file in one of the directori
 ``examples`` directory of the repository. See the other examples to get an idea for the
 format.
 
+.. note:: Gallery examples should start with ``plot_``, e.g. ``plot_new_example.py``
+
 General guidelines for making a good gallery plot:
 
 * Examples should highlight a single feature/command.
