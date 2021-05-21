@@ -297,7 +297,7 @@ def test_draw_edges_min_source_target_margins(node_shape):
     # Create a single axis object to get consistent pixel coords across
     # multiple draws
     fig, ax = plt.subplots()
-    G = nx.Graph([(0, 1)])
+    G = nx.DiGraph([(0, 1)])
     pos = {0: (0, 0), 1: (1, 0)}  # horizontal layout
     # Get leftmost and rightmost points of the FancyArrowPatch object
     # representing the edge between nodes 0 and 1 (in pixel coordinates)
@@ -327,7 +327,7 @@ def test_nonzero_selfloop_with_single_node():
     # Create explicit axis object for test
     fig, ax = plt.subplots()
     # Graph with single node + self loop
-    G = nx.Graph()
+    G = nx.DiGraph()
     G.add_node(0)
     G.add_edge(0, 0)
     # Draw
@@ -346,7 +346,7 @@ def test_nonzero_selfloop_with_single_edge_in_edgelist():
     # Create explicit axis object for test
     fig, ax = plt.subplots()
     # Graph with selfloop
-    G = nx.path_graph(2)
+    G = nx.path_graph(2, create_using=nx.DiGraph)
     G.add_edge(1, 1)
     pos = {n: (n, n) for n in G.nodes}
     # Draw only the selfloop edge via the `edgelist` kwarg

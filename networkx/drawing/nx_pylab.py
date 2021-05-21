@@ -495,7 +495,7 @@ def draw_networkx_edges(
     edge_color="k",
     style="solid",
     alpha=None,
-    arrowstyle=None,
+    arrowstyle="-|>",
     arrowsize=10,
     edge_cmap=None,
     edge_vmin=None,
@@ -509,7 +509,6 @@ def draw_networkx_edges(
     connectionstyle="arc3",
     min_source_margin=0,
     min_target_margin=0,
-    use_linecollection=True,
 ):
     r"""Draw the edges of the graph G.
 
@@ -555,13 +554,11 @@ def draw_networkx_edges(
 
     arrows : bool, optional (default=True)
         For directed graphs, if True set default to drawing arrowheads.
-        Otherwise set default to no arrowheads. Ignored if `arrowstyle` is set.
 
         Note: Arrows will be the same color as edges.
 
-    arrowstyle : str (default='-\|>' if directed else '-')
+    arrowstyle : str (default='-\|>')
         For directed graphs and `arrows==True` defaults to '-\|>',
-        otherwise defaults to '-'.
 
         See `matplotlib.patches.ArrowStyle` for more options.
 
@@ -642,11 +639,10 @@ def draw_networkx_edges(
     import matplotlib.path  # call as mpl.path
     import matplotlib.pyplot as plt
 
-    if arrowstyle is None:
-        if G.is_directed() and arrows:
-            arrowstyle = "-|>"
-        else:
-            arrowstyle = "-"
+    # Use LineCollection to draw edges by default, for performance reasons
+    use_linecollection = True
+    if G.is_directed() and arrows:
+        use_linecollection = False
 
     if ax is None:
         ax = plt.gca()
