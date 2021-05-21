@@ -113,6 +113,8 @@ Deprecations
   Deprecate the ``Ordered`` graph classes.
 - [`#4826 <https://github.com/networkx/networkx/pull/4826>`_]
   Deprecate ``preserve_random_state``.
+- [`#4827 <https://github.com/networkx/networkx/pull/4827>`_]
+  Deprecate ``almost_equal``.
 
 
 Contributors

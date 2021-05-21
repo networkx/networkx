@@ -3,7 +3,6 @@ Tests for closeness centrality.
 """
 import pytest
 import networkx as nx
-from networkx.testing import almost_equal
 
 
 class TestClosenessCentrality:
@@ -35,8 +34,8 @@ class TestClosenessCentrality:
         res = {0: 0.25, 1: 0.375, 2: 0.375, 3: 0.25, 4: 0.222, 5: 0.333, 6: 0.222}
         wf_res = {0: 0.5, 1: 0.75, 2: 0.75, 3: 0.5, 4: 0.667, 5: 1.0, 6: 0.667}
         for n in G:
-            assert almost_equal(c[n], res[n], places=3)
-            assert almost_equal(cwf[n], wf_res[n], places=3)
+            assert c[n] == pytest.approx(res[n], abs=1e-3)
+            assert cwf[n] == pytest.approx(wf_res[n], abs=1e-3)
 
     def test_digraph(self):
         G = nx.path_graph(3, create_using=nx.DiGraph())
@@ -45,20 +44,20 @@ class TestClosenessCentrality:
         d = {0: 0.0, 1: 0.500, 2: 0.667}
         dr = {0: 0.667, 1: 0.500, 2: 0.0}
         for n in sorted(self.P3):
-            assert almost_equal(c[n], d[n], places=3)
-            assert almost_equal(cr[n], dr[n], places=3)
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
+            assert cr[n] == pytest.approx(dr[n], abs=1e-3)
 
     def test_k5_closeness(self):
         c = nx.closeness_centrality(self.K5)
         d = {0: 1.000, 1: 1.000, 2: 1.000, 3: 1.000, 4: 1.000}
         for n in sorted(self.K5):
-            assert almost_equal(c[n], d[n], places=3)
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_p3_closeness(self):
         c = nx.closeness_centrality(self.P3)
         d = {0: 0.667, 1: 1.000, 2: 0.667}
         for n in sorted(self.P3):
-            assert almost_equal(c[n], d[n], places=3)
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_krackhardt_closeness(self):
         c = nx.closeness_centrality(self.K)
@@ -75,7 +74,7 @@ class TestClosenessCentrality:
             9: 0.310,
         }
         for n in sorted(self.K):
-            assert almost_equal(c[n], d[n], places=3)
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_florentine_families_closeness(self):
         c = nx.closeness_centrality(self.F)
@@ -97,7 +96,7 @@ class TestClosenessCentrality:
             "Tornabuoni": 0.483,
         }
         for n in sorted(self.F):
-            assert almost_equal(c[n], d[n], places=3)
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_les_miserables_closeness(self):
         c = nx.closeness_centrality(self.LM)
@@ -181,7 +180,7 @@ class TestClosenessCentrality:
             "MmeHucheloup": 0.353,
         }
         for n in sorted(self.LM):
-            assert almost_equal(c[n], d[n], places=3)
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_weighted_closeness(self):
         edges = [
@@ -201,7 +200,7 @@ class TestClosenessCentrality:
         c = nx.closeness_centrality(XG, distance="weight")
         d = {"y": 0.200, "x": 0.286, "s": 0.138, "u": 0.235, "v": 0.200}
         for n in sorted(XG):
-            assert almost_equal(c[n], d[n], places=3)
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     #
     # Tests for incremental closeness centrality.
