@@ -259,7 +259,8 @@ def k_shell(G, k=None, core_number=None):
 def k_crust(G, k=None, core_number=None):
     """Returns the k-crust of G.
 
-    The k-crust is the graph G with the k-core removed.
+    The k-crust is the graph G with the edges of the k-core removed
+    and isolated nodes found after the removal of edges are also removed.
 
     Parameters
     ----------
