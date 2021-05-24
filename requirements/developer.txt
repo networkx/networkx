@@ -1,2 +1,2 @@
-black==20.8b1
-pre-commit==2.9.3
+black==21.5b1
+pre-commit~=2.12

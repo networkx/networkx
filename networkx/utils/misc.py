@@ -19,6 +19,30 @@ import uuid
 from itertools import tee, chain
 import networkx as nx
 
+__all__ = [
+    "is_string_like",
+    "iterable",
+    "empty_generator",
+    "flatten",
+    "make_list_of_ints",
+    "is_list_of_ints",
+    "make_str",
+    "generate_unique_node",
+    "default_opener",
+    "dict_to_numpy_array",
+    "dict_to_numpy_array1",
+    "dict_to_numpy_array2",
+    "is_iterator",
+    "arbitrary_element",
+    "consume",
+    "pairwise",
+    "groups",
+    "to_tuple",
+    "create_random_state",
+    "create_py_random_state",
+    "PythonRandomInterface",
+]
+
 
 # some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
@@ -72,7 +96,7 @@ def empty_generator():
 
 
 def flatten(obj, result=None):
-    """ Return flattened version of (possibly nested) iterable object. """
+    """Return flattened version of (possibly nested) iterable object."""
     if not isinstance(obj, (Iterable, Sized)) or isinstance(obj, str):
         return obj
     if result is None:

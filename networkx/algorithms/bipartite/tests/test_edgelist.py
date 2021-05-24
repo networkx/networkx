@@ -148,7 +148,7 @@ class TestEdgelist:
         bipartite.write_edgelist(G, fname)
         H = bipartite.read_edgelist(fname)
         H2 = bipartite.read_edgelist(fname)
-        assert H != H2  # they should be different graphs
+        assert H is not H2  # they should be different graphs
         G.remove_node("g")  # isolated nodes are not written in edgelist
         assert_nodes_equal(list(H), list(G))
         assert_edges_equal(list(H.edges()), list(G.edges()))
@@ -173,7 +173,7 @@ class TestEdgelist:
         bipartite.write_edgelist(G, fname)
         H = bipartite.read_edgelist(fname, nodetype=int, create_using=nx.MultiGraph())
         H2 = bipartite.read_edgelist(fname, nodetype=int, create_using=nx.MultiGraph())
-        assert H != H2  # they should be different graphs
+        assert H is not H2  # they should be different graphs
         assert_nodes_equal(list(H), list(G))
         assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)

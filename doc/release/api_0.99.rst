@@ -1,6 +1,33 @@
-************************
-Version 0.99 API changes
-************************
+NetworkX 0.99
+=============
+
+Release date:  18 November 2008
+
+See: https://networkx.lanl.gov/trac/timeline
+
+New features
+------------
+This release has significant changes to parts of the graph API.
+See http://networkx.lanl.gov/reference/api_changes.html
+
+ - Update Graph and DiGraph classes to use weighted graphs as default
+   Change in API for performance and code simplicity.
+ - New MultiGraph and MultiDiGraph classes (replace XGraph and XDiGraph)
+ - Update to use Sphinx documentation system http://networkx.lanl.gov/
+ - Developer site at https://networkx.lanl.gov/trac/
+ - Experimental LabeledGraph and LabeledDiGraph
+ - Moved package and file layout to subdirectories.
+
+Bug fixes
+---------
+ - handle root= option to draw_graphviz correctly
+
+Examples
+--------
+ - Update to work with networkx-0.99 API
+ - Drawing examples now use matplotlib.pyplot interface
+ - Improved drawings in many examples
+ - New examples - see http://networkx.lanl.gov/examples/
 
 The version networkx-0.99 is the penultimate release before
 networkx-1.0.  We have bumped the version from 0.37 to 0.99 to
@@ -16,7 +43,7 @@ Please send comments and questions to the networkx-discuss mailing list.
 http://groups.google.com/group/networkx-discuss
 
 Changes in base classes
-=======================
+-----------------------
 
 The most significant changes are in the graph classes.
 We have redesigned the Graph() and DiGraph() classes
@@ -294,7 +321,7 @@ Used internally - now called nbunch_iter and returns an iterator.
 
 
 Converting your old code to Version 0.99
-========================================
+----------------------------------------
 
 Mostly you can just run the code and python will raise an exception
 for features that changed.  Common places for changes are
