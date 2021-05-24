@@ -206,6 +206,10 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     Second, an algorithm (default: `christofides`) is used to approximate
     the minimal Hamiltonian cycle on this new graph. The available
     algorithms are:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7ebd9f94a8e9ca8e3f08b93cfdb46103b8925cd1
      - christofides
      - greedy_tsp
      - simulated_annealing_tsp
@@ -417,16 +421,16 @@ def greedy_tsp(G, weight="weight", source=None):
 
 @py_random_state(9)
 def simulated_annealing_tsp(
-        G,
-        init_cycle,
-        weight="weight",
-        source=None,
-        temp=100,
-        move="1-1",
-        max_iterations=10,
-        N_inner=100,
-        alpha=0.01,
-        seed=None,
+    G,
+    init_cycle,
+    weight="weight",
+    source=None,
+    temp=100,
+    move="1-1",
+    max_iterations=10,
+    N_inner=100,
+    alpha=0.01,
+    seed=None,
 ):
     """Returns an approximate solution to the traveling salesman problem.
 
@@ -472,6 +476,7 @@ def simulated_annealing_tsp(
     move : "1-1" or "1-0" or function, optional (default="1-1")
         Indicator of what move to use when finding new trial solutions.
         Strings indicate two special built-in moves:
+
         - "1-1": 1-1 exchange which transposes the position
           of two elements of the current solution.
           The function called is :func:`swap_two_nodes`.
@@ -636,16 +641,16 @@ def simulated_annealing_tsp(
 
 @py_random_state(9)
 def threshold_accepting_tsp(
-        G,
-        init_cycle,
-        weight="weight",
-        source=None,
-        threshold=1,
-        move="1-1",
-        max_iterations=10,
-        N_inner=100,
-        alpha=0.1,
-        seed=None,
+    G,
+    init_cycle,
+    weight="weight",
+    source=None,
+    threshold=1,
+    move="1-1",
+    max_iterations=10,
+    N_inner=100,
+    alpha=0.1,
+    seed=None,
 ):
     """Returns an approximate solution to the traveling salesman problem.
 
@@ -679,6 +684,10 @@ def threshold_accepting_tsp(
     move : "1-1" or "1-0" or function, optional (default="1-1")
         Indicator of what move to use when finding new trial solutions.
         Strings indicate two special built-in moves:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7ebd9f94a8e9ca8e3f08b93cfdb46103b8925cd1
         - "1-1": 1-1 exchange which transposes the position
           of two elements of the current solution.
           The function called is :func:`swap_two_nodes`.

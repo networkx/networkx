@@ -5,7 +5,6 @@ from networkx.readwrite.graphml import GraphMLWriter
 import io
 import tempfile
 import os
-from networkx.testing import almost_equal
 
 
 class BaseGraphML:
@@ -1258,7 +1257,7 @@ class TestWriteGraphML(BaseGraphML):
         assert G.edges == H.edges
         wtG = G[1][2]["weight"]
         wtH = H[1][2]["weight"]
-        assert almost_equal(wtG, wtH, places=6)
+        assert wtG == pytest.approx(wtH, abs=1e-6)
         assert type(wtG) == np.float64
         assert type(wtH) == float
         os.close(fd)
@@ -1274,7 +1273,7 @@ class TestWriteGraphML(BaseGraphML):
         assert G.edges == H.edges
         wtG = G[1][2]["weight"]
         wtH = H[1][2]["weight"]
-        assert almost_equal(wtG, wtH, places=6)
+        assert wtG == pytest.approx(wtH, abs=1e-6)
         assert type(wtG) == np.float32
         assert type(wtH) == float
         os.close(fd)

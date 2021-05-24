@@ -7,6 +7,16 @@ import networkx as nx
 from networkx.utils import py_random_state
 
 
+__all__ = [
+    "powerlaw_sequence",
+    "zipf_rv",
+    "cumulative_distribution",
+    "discrete_sequence",
+    "random_weighted_sample",
+    "weighted_choice",
+]
+
+
 # The same helpers for choosing random sequences from distributions
 # uses Python's random module
 # https://docs.python.org/3/library/random.html
