@@ -314,13 +314,16 @@ class DiGraph(Graph):
 
         # attempt to load graph with data
         if incoming_graph_data is not None:
+            # process multigraph_input for multigraphs
             if "multigraph_input" in attr:
                 mgi = attr.pop("multigraph_input")
-                convert.to_networkx_graph(
-                    incoming_graph_data, create_using=self, multigraph_input=mgi
-                )
             else:
-                convert.to_networkx_graph(incoming_graph_data, create_using=self)
+                mgi = False
+            convert.to_networkx_graph(
+                incoming_graph_data,
+                create_using=self,
+                multigraph_input=mgi,
+            )
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 

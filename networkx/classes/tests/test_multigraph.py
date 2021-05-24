@@ -183,20 +183,63 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
         assert sorted(G.adj.items()) == expected
 
     def test_data_multigraph_input(self):
-        G = self.Graph({1: {2: {4: {}}}}, multigraph_input=True)
-        if G.is_directed():
-            expected = [(1, {2: {4: {}}}), (2, {})]
-        else:
-            expected = [(1, {2: {4: {}}}), (2, {1: {4: {}}})]
-        assert sorted(G.adj.items()) == expected
+        # standard case with edge keys and edge data
+        edata0 = dict(w=200, s="foo")
+        edata1 = dict(w=201, s="bar")
+        keydict = {0: edata0, 1: edata1}
+        dododod = {"a": {"b": keydict}}
 
-        G = self.Graph({1: {2: {4: {}}}, 2: {1: {4: {}}}}, multigraph_input=False)
-        expected = [(1, {2: {0: {4: {}}}}), (2, {1: {0: {4: {}}}})]
-        assert sorted(G.adj.items()) == expected
+        multiple_edge = [("a", "b", 0, edata0), ("a", "b", 1, edata1)]
+        single_edge = [("a", "b", 0, keydict)]
 
-        G = self.Graph({1: {2: {4: {}}}, 2: {1: {4: {}}}}, multigraph_input=True)
-        expected = [(1, {2: {4: {}}}), (2, {1: {4: {}}})]
-        assert sorted(G.adj.items()) == expected
+        # test each form of multgraph_input
+        cases = [
+            (dododod, True, multiple_edge),
+            (dododod, False, single_edge),
+            (dododod, None, single_edge),
+        ]
+        for dod, mgi, edges in cases:
+            G = self.Graph(dod, multigraph_input=mgi)
+            assert list(G.edges(keys=True, data=True)) == edges
+
+        # test round-trip to_dict_of_dict and MultiGraph constructor
+        G = self.Graph(dododod, multigraph_input=True)
+        H = self.Graph(nx.to_dict_of_dicts(G))
+        assert nx.is_isomorphic(G, H) == True  # test that default is True
+        for mgi in [True, False]:
+            H = self.Graph(nx.to_dict_of_dicts(G), multigraph_input=mgi)
+            assert nx.is_isomorphic(G, H) == mgi
+
+    def test_data_non_multigraph_input(self):
+        # other cases for dict incoming_graph_data
+        edata = {
+            "traits": {"w": 200, "s": "foo"},
+            "graphics": {"color": "blue", "shape": "box"},
+        }
+        dodod1 = {"a": {"b": edata}}
+        dodod2 = {"a": {"b": {"w": 200, "s": "foo"}}}
+        dodod3 = {"a": {"b": {"w": {"color": "blue"}, "s": "foo"}}}
+        dol = {"a": ["b"]}
+
+        multiple_edge = [("a", "b", "traits"), ("a", "b", "graphics")]
+        single_edge = [("a", "b", 0)]
+
+        cases = [  # (dod, mgi, edges)
+            (dodod1, True, multiple_edge),
+            (dodod1, False, single_edge),
+            (dodod2, True, single_edge),
+            (dodod2, False, single_edge),
+            (dodod3, True, single_edge),
+            (dodod3, False, single_edge),
+            (dol, True, single_edge),
+            (dol, False, single_edge),
+        ]
+
+        for dod, mgi, edges in cases:
+            G = self.Graph(dod, multigraph_input=mgi)
+            assert list(G.edges) == edges
+            G = nx.to_networkx_graph(dod, create_using=self.Graph, multigraph_input=mgi)
+            assert list(G.edges) == edges
 
     def test_getitem(self):
         G = self.K3

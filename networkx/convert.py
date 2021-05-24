@@ -370,9 +370,11 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
         Graph type to create. If graph instance, then cleared before populated.
 
     multigraph_input : bool (default False)
-       When True, the values of the inner dict are assumed
-       to be containers of edge data for multiple edges.
-       Otherwise this routine assumes the edge data are singletons.
+       When True, the dict `d` is assumed
+       to be a dict-of-dict-of-dict-of-dict structure keyed by
+       node to neighbor to edge keys to edge data for multi-edges.
+       Otherwise this routine assumes dict-of-dict-of-dict keyed by
+       node to neighbor to edge data.
 
     Examples
     --------
@@ -386,9 +388,8 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
     """
     G = nx.empty_graph(0, create_using)
     G.add_nodes_from(d)
-    # is dict a MultiGraph or MultiDiGraph?
+    # does dict d represent a MultiGraph or MultiDiGraph?
     if multigraph_input:
-        # make a copy of the list of edge data (but not the edge data)
         if G.is_directed():
             if G.is_multigraph():
                 G.add_edges_from(
