@@ -546,7 +546,17 @@ def create_py_random_state(random_state=None):
 
 
 def nodes_equal(nodes1, nodes2):
-    # Assumes iterables of nodes, or (node,datadict) tuples
+    """Check if nodes are equal.
+
+    Parameters
+    ----------
+    nodes1, nodes2 : iterables of nodes, or (node,datadict) tuples
+
+    Returns
+    -------
+    bool
+        True if nodes are equal, False otherwise.
+    """
     nlist1 = list(nodes1)
     nlist2 = list(nodes2)
     try:
@@ -559,10 +569,20 @@ def nodes_equal(nodes1, nodes2):
 
 
 def edges_equal(edges1, edges2):
-    # Assumes iterables with u,v nodes as
-    # edge tuples (u,v), or
-    # edge tuples with data dicts (u,v,d), or
-    # edge tuples with keys and data dicts (u,v,k, d)
+    """Check if edges are equal.
+
+    Parameters
+    ----------
+    edges1, edges2 : iterables of with u,v nodes as
+        edge tuples (u,v), or
+        edge tuples with data dicts (u,v,d), or
+        edge tuples with keys and data dicts (u,v,k, d)
+
+    Returns
+    -------
+    bool
+        True if edges are equal, False otherwise.
+    """
     from collections import defaultdict
 
     d1 = defaultdict(dict)
@@ -600,6 +620,17 @@ def edges_equal(edges1, edges2):
 
 
 def graphs_equal(graph1, graph2):
+    """Check if graphs are equal.
+
+    Parameters
+    ----------
+    graph1, graph2 : graph
+
+    Returns
+    -------
+    bool
+        True if graphs are equal, False otherwise.
+    """
     return (
         graph1.adj == graph2.adj
         and graph1.nodes == graph2.nodes
