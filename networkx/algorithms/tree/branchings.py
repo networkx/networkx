@@ -460,10 +460,8 @@ class Edmonds:
 
                 # Conditions for adding the edge.
                 # If weight < 0, then it cannot help in finding a maximum branching.
-                if self.style == "branching" and weight <= 0:
-                    acceptable = False
-                else:
-                    acceptable = True
+                # A better solution needs to be found
+                acceptable = True
 
                 # print(f"Edge is acceptable: {acceptable}")
                 if acceptable:
