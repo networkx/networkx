@@ -2,11 +2,7 @@ import os
 import tempfile
 
 import networkx as nx
-from networkx.testing.utils import (
-    assert_graphs_equal,
-    assert_edges_equal,
-    assert_nodes_equal,
-)
+from networkx.utils import nodes_equal, edges_equal, graphs_equal
 
 
 class TestGpickle:
@@ -53,9 +49,9 @@ class TestGpickle:
             (fd, fname) = tempfile.mkstemp()
             nx.write_gpickle(G, fname)
             Gin = nx.read_gpickle(fname)
-            assert_nodes_equal(list(G.nodes(data=True)), list(Gin.nodes(data=True)))
-            assert_edges_equal(list(G.edges(data=True)), list(Gin.edges(data=True)))
-            assert_graphs_equal(G, Gin)
+            assert nodes_equal(list(G.nodes(data=True)), list(Gin.nodes(data=True)))
+            assert edges_equal(list(G.edges(data=True)), list(Gin.edges(data=True)))
+            assert graphs_equal(G, Gin)
             os.close(fd)
             os.unlink(fname)
 
@@ -74,6 +70,6 @@ class TestGpickle:
                 nx.write_gpickle(G, f, 0)
                 f.seek(0)
                 Gin = nx.read_gpickle(f)
-                assert_nodes_equal(list(G.nodes(data=True)), list(Gin.nodes(data=True)))
-                assert_edges_equal(list(G.edges(data=True)), list(Gin.edges(data=True)))
-                assert_graphs_equal(G, Gin)
+                assert nodes_equal(list(G.nodes(data=True)), list(Gin.nodes(data=True)))
+                assert edges_equal(list(G.edges(data=True)), list(Gin.edges(data=True)))
+                assert graphs_equal(G, Gin)
