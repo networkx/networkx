@@ -501,7 +501,7 @@ def draw_networkx_edges(
     edge_vmin=None,
     edge_vmax=None,
     ax=None,
-    arrows=True,
+    arrows=None,
     label=None,
     node_size=300,
     nodelist=None,
@@ -552,10 +552,14 @@ def draw_networkx_edges(
     ax : Matplotlib Axes object, optional
         Draw the graph in the specified Matplotlib axes.
 
-    arrows : bool, optional (default=True)
-        For directed graphs, if True set default to drawing arrowheads.
+    arrows : bool or None, optional (default=None)
+        If `None`, directed graphs draw arrowheads with
+        `~matplotlib.patches.FancyArrowPatch`, while undirected graphs draw edges
+        via `~matplotlib.collections.LineCollection` for speed.
+        If `True`, draw arrowheads with FancyArrowPatches (bendable and stylish).
+        If `False`, draw edges using LineCollection (linear and fast).
 
-        Note: Arrows will be the same color as edges.
+        Note: Arrowheads will be the same color as edges.
 
     arrowstyle : str (default='-\|>')
         For directed graphs and `arrows==True` defaults to '-\|>',
@@ -639,10 +643,13 @@ def draw_networkx_edges(
     import matplotlib.path  # call as mpl.path
     import matplotlib.pyplot as plt
 
-    # Use LineCollection to draw edges by default, for performance reasons
-    use_linecollection = True
-    if G.is_directed() and arrows:
-        use_linecollection = False
+    # The default behavior is to use LineCollection to draw edges for
+    # undirected graphs (for performance reasons) and use FancyArrowPatches
+    # for directed graphs.
+    # The `arrows` keyword can be used to override the default behavior
+    use_linecollection = not G.is_directed()
+    if arrows in (True, False):
+        use_linecollection = not arrows
 
     if ax is None:
         ax = plt.gca()

@@ -387,7 +387,7 @@ def test_draw_edges_toggling_with_arrows_kwarg():
     # Use FancyArrowPatches when arrows=True, regardless of graph type
     for G in (UG, DG):
         edges = nx.draw_networkx_edges(G, pos, arrows=True)
-        assert len(edges) == 3
+        assert len(edges) == len(G.edges)
         assert isinstance(edges[0], mpl.patches.FancyArrowPatch)
 
     # Use LineCollection when arrows=False, regardless of graph type
@@ -399,5 +399,5 @@ def test_draw_edges_toggling_with_arrows_kwarg():
     edges = nx.draw_networkx_edges(UG, pos)
     assert isinstance(edges, mpl.collections.LineCollection)
     edges = nx.draw_networkx_edges(DG, pos)
-    assert len(edges) == 3
+    assert len(edges) == len(G.edges)
     assert isinstance(edges[0], mpl.patches.FancyArrowPatch)
