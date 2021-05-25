@@ -599,8 +599,11 @@ def draw_networkx_edges(
 
     Returns
     -------
-    list of matplotlib.patches.FancyArrowPatch
-        `FancyArrowPatch` instances of the directed edges
+    list of matplotlib.patches.FancyArrowPatch or matplotlib.colections.LineCollection
+        If ``arrows=True``, a list of FancyArrowPatches is returned.
+        If 1`arrows=False``, a LineCollection is returned.
+        If ``arrows=None`` (the default), then a LineCollection is returned if
+        `G` is undirected, otherwise returns a list of FancyArrowPatches.
 
     Notes
     -----
@@ -610,6 +613,13 @@ def draw_networkx_edges(
 
     Be sure to include `node_size` as a keyword argument; arrows are
     drawn considering the size of nodes.
+
+    Self-loops are always drawn with `~matplotlib.patches.FancyArrowPatch`
+    regardless of the value of `arrows` or whether `G` is directed.
+    When ``arrows=False`` or ``arrows=None`` and `G` is undirected, the
+    FancyArrowPatches corresponding to the self-loops are not explicitly
+    returned. They should instead be accessed via the ``Axes.patches``
+    attribute (see examples).
 
     Examples
     --------
@@ -622,6 +632,16 @@ def draw_networkx_edges(
     >>> alphas = [0.3, 0.4, 0.5]
     >>> for i, arc in enumerate(arcs):  # change alpha values of arcs
     ...     arc.set_alpha(alphas[i])
+
+    The FancyArrowPatches corresponding to self-loops are not always
+    returned, but can always be accessed via the ``patches`` attribute of the
+    `matplotlib.Axes` object.
+
+    >>> import matplotlib.pyplot as plt
+    >>> fig, ax = plt.subplots()
+    >>> G = nx.Graph([(0, 1), (0, 0)])  # Self-loop at node 0
+    >>> edge_collection = nx.draw_networkx_edges(G, pos=nx.circular_layout(G), ax=ax)
+    >>> self_loop_fap = ax.patches[0]
 
     Also see the NetworkX drawing examples at
     https://networkx.org/documentation/latest/auto_examples/index.html
