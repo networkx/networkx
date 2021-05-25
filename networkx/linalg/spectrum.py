@@ -6,13 +6,14 @@ import networkx as nx
 __all__ = [
     "laplacian_spectrum",
     "adjacency_spectrum",
+    "normalized_adjacency_spectrum",
     "modularity_spectrum",
     "normalized_laplacian_spectrum",
     "bethe_hessian_spectrum",
 ]
 
 
-def laplacian_spectrum(G, weight="weight"):
+def laplacian_spectrum(G, weight="weight", signless=False):
     """Returns eigenvalues of the Laplacian of G
 
     Parameters
@@ -23,6 +24,9 @@ def laplacian_spectrum(G, weight="weight"):
     weight : string or None, optional (default='weight')
        The edge data key used to compute each value in the matrix.
        If None, then each edge has weight 1.
+
+    signless : boolean, optional (default=False)
+       If True, then it return a signless Laplacian matrix L = D + A.
 
     Returns
     -------
@@ -41,10 +45,12 @@ def laplacian_spectrum(G, weight="weight"):
     import scipy as sp
     import scipy.linalg  # call as sp.linalg
 
-    return sp.linalg.eigvalsh(nx.laplacian_matrix(G, weight=weight).todense())
+    return sp.linalg.eigvalsh(
+        nx.laplacian_matrix(G, weight=weight, signless=signless).todense()
+    )
 
 
-def normalized_laplacian_spectrum(G, weight="weight"):
+def normalized_laplacian_spectrum(G, weight="weight", signless=False):
     """Return eigenvalues of the normalized Laplacian of G
 
     Parameters
@@ -55,6 +61,9 @@ def normalized_laplacian_spectrum(G, weight="weight"):
     weight : string or None, optional (default='weight')
        The edge data key used to compute each value in the matrix.
        If None, then each edge has weight 1.
+
+    signless : boolean, optional (default=False)
+       If True, then it return a signless Laplacian matrix L = D + A.
 
     Returns
     -------
@@ -74,7 +83,7 @@ def normalized_laplacian_spectrum(G, weight="weight"):
     import scipy.linalg  # call as sp.linalg
 
     return sp.linalg.eigvalsh(
-        nx.normalized_laplacian_matrix(G, weight=weight).todense()
+        nx.normalized_laplacian_matrix(G, weight=weight, signless=signless).todense()
     )
 
 
@@ -108,6 +117,37 @@ def adjacency_spectrum(G, weight="weight"):
     import scipy.linalg  # call as sp.linalg
 
     return sp.linalg.eigvals(nx.adjacency_matrix(G, weight=weight).todense())
+
+
+def normalized_adjacency_spectrum(G, weight="weight"):
+    """Returns eigenvalues of the normalized adjacency matrix of G.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph
+
+    weight : string or None, optional (default='weight')
+       The edge data key used to compute each value in the matrix.
+       If None, then each edge has weight 1.
+
+    Returns
+    -------
+    evals : NumPy array
+      Eigenvalues
+
+    Notes
+    -----
+    For MultiGraph/MultiDiGraph, the edges weights are summed.
+    See to_numpy_matrix for other options.
+
+    See Also
+    --------
+    normalized_adjacency_matrix
+    """
+    from scipy.linalg import eigvals
+
+    return eigvals(nx.normalized_adjacency_matrix(G, weight=weight).todense())
 
 
 def modularity_spectrum(G):
