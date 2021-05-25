@@ -6,6 +6,7 @@ from networkx.classes.graph import Graph
 from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.reportviews import MultiEdgeView, MultiDegreeView
 from networkx import NetworkXError
+import networkx.convert as convert
 
 
 class MultiGraph(Graph):
@@ -272,7 +273,7 @@ class MultiGraph(Graph):
         """
         return MultiGraph
 
-    def __init__(self, incoming_graph_data=None, multigraph_input=True, **attr):
+    def __init__(self, incoming_graph_data=None, multigraph_input=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
         Parameters
@@ -284,15 +285,18 @@ class MultiGraph(Graph):
             packages are installed the data can also be a NumPy matrix
             or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
 
-        multigraph_input : bool or None (default True)
-           Only used when `incoming_graph_data` is a dict.
-           When True, `incoming_graph_data` is assumed to be a
+        multigraph_input : bool or None (default None)
+           Note: Only used when `incoming_graph_data` is a dict.
+           If True, `incoming_graph_data` is assumed to be a
            dict-of-dict-of-dict-of-dict structure keyed by
            node to neighbor to edge keys to edge data for multi-edges.
-           Otherwise :func:`to_networkx_graph` is used to try to determine
+           A NetworkXError is raised if this is not the case.
+           If False, :func:`to_networkx_graph` is used to try to determine
            the dict's graph data structure as either a dict-of-dict-of-dict
            keyed by node to neighbor to edge data, or a dict-of-iterable
            keyed by node to neighbors.
+           If None, the treatment for True is tried, but if it fails,
+           the treatment for False is tried.
 
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to graph as key=value pairs.
@@ -316,11 +320,20 @@ class MultiGraph(Graph):
 
         """
         self.edge_key_dict_factory = self.edge_key_dict_factory
-        # don't add multigraph_input argument unless needed
-        if isinstance(incoming_graph_data, dict):
-            Graph.__init__(
-                self, incoming_graph_data, multigraph_input=multigraph_input, **attr
-            )
+        # multigraph_input can be None/True/False. So check "is not False"
+        if isinstance(incoming_graph_data, dict) and multigraph_input is not False:
+            Graph.__init__(self)
+            try:
+                convert.from_dict_of_dicts(
+                    incoming_graph_data, create_using=self, multigraph_input=True
+                )
+                self.graph.update(attr)
+            except Exception as e:
+                if multigraph_input is True:
+                    raise nx.NetworkXError(
+                        f"converting multigraph_input raised:\n{type(e)}: {e}"
+                    )
+                Graph.__init__(self, incoming_graph_data, **attr)
         else:
             Graph.__init__(self, incoming_graph_data, **attr)
 

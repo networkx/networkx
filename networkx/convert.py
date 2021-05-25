@@ -103,7 +103,11 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             return from_dict_of_dicts(
                 data, create_using=create_using, multigraph_input=multigraph_input
             )
-        except:
+        except Exception as e:
+            if multigraph_input is True:
+                raise nx.NetworkXError(
+                    f"converting multigraph_input raised:\n{type(e)}: {e}"
+                )
             try:
                 return from_dict_of_lists(data, create_using=create_using)
             except Exception as e:
