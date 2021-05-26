@@ -3,6 +3,8 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+__all__ = ["chain_decomposition"]
+
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
