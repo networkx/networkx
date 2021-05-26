@@ -4,8 +4,7 @@ import pytest
 
 import networkx as nx
 import networkx.readwrite.graph6 as g6
-from networkx.utils import edges_equal
-from networkx.utils import nodes_equal
+from networkx.utils import nodes_equal, edges_equal
 
 
 class TestGraph6Utils:
