@@ -965,5 +965,10 @@ class GraphMLReader(GraphML):
             # check for "default" subelement of key element
             default = k.find(f"{{{self.NS_GRAPHML}}}default")
             if default is not None:
-                graphml_key_defaults[attr_id] = default.text
+                # Handle default values identically to data element values
+                python_type = graphml_keys[attr_id]["type"]
+                if python_type == bool:
+                    graphml_key_defaults[attr_id] = self.convert_bool[default.text.lower()]
+                else:
+                    graphml_key_defaults[attr_id] = python_type(default.text)
         return graphml_keys, graphml_key_defaults
