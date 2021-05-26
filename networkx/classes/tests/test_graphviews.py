@@ -1,7 +1,7 @@
 import pytest
 
 import networkx as nx
-from networkx.testing import assert_edges_equal, assert_nodes_equal
+from networkx.utils import nodes_equal, edges_equal
 
 # Note: SubGraph views are not tested here. They have their own testing file
 
@@ -111,8 +111,8 @@ class TestToDirected:
     def test_already_directed(self):
         dd = nx.to_directed(self.dv)
         Mdd = nx.to_directed(self.Mdv)
-        assert_edges_equal(dd.edges, self.dv.edges)
-        assert_edges_equal(Mdd.edges, self.Mdv.edges)
+        assert edges_equal(dd.edges, self.dv.edges)
+        assert edges_equal(Mdd.edges, self.Mdv.edges)
 
     def test_pickle(self):
         import pickle
@@ -150,8 +150,8 @@ class TestToUndirected:
     def test_already_directed(self):
         uu = nx.to_undirected(self.uv)
         Muu = nx.to_undirected(self.Muv)
-        assert_edges_equal(uu.edges, self.uv.edges)
-        assert_edges_equal(Muu.edges, self.Muv.edges)
+        assert edges_equal(uu.edges, self.uv.edges)
+        assert edges_equal(Muu.edges, self.Muv.edges)
 
     def test_pickle(self):
         import pickle
@@ -207,8 +207,8 @@ class TestChainsOfViews:
 
         for G in self.graphs:
             H = pickle.loads(pickle.dumps(G, -1))
-            assert_edges_equal(H.edges, G.edges)
-            assert_nodes_equal(H.nodes, G.nodes)
+            assert edges_equal(H.edges, G.edges)
+            assert nodes_equal(H.nodes, G.nodes)
 
     def test_subgraph_of_subgraph(self):
         SGv = nx.subgraph(self.G, range(3, 7))
@@ -239,19 +239,19 @@ class TestChainsOfViews:
         assert RG._graph is self.G
         assert SSG._graph is self.G
         assert SG._graph is RG
-        assert_edges_equal(SG.edges, SSG.edges)
+        assert edges_equal(SG.edges, SSG.edges)
         # should be same as morphing the graph
         CG = self.G.copy()
         CG.remove_nodes_from(hide_nodes)
         CG.remove_edges_from(hide_edges)
-        assert_edges_equal(CG.edges(nodes), SSG.edges)
+        assert edges_equal(CG.edges(nodes), SSG.edges)
         CG.remove_nodes_from([0, 1, 2, 3])
-        assert_edges_equal(CG.edges, SSG.edges)
+        assert edges_equal(CG.edges, SSG.edges)
         # switch order: subgraph first, then restricted view
         SSSG = self.G.subgraph(nodes)
         RSG = nx.restricted_view(SSSG, hide_nodes, hide_edges)
         assert RSG._graph is not self.G
-        assert_edges_equal(RSG.edges, CG.edges)
+        assert edges_equal(RSG.edges, CG.edges)
 
     def test_subgraph_copy(self):
         for origG in self.graphs:

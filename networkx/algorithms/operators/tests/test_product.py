@@ -1,6 +1,6 @@
 import pytest
 import networkx as nx
-from networkx.testing import assert_edges_equal
+from networkx.utils import edges_equal
 
 
 def test_tensor_product_raises():
@@ -375,7 +375,7 @@ def test_graph_power():
     G.add_edge(9, 2)
     H = nx.power(G, 2)
 
-    assert_edges_equal(
+    assert edges_equal(
         list(H.edges()),
         [
             (0, 1),

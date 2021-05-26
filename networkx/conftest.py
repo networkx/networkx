@@ -139,6 +139,24 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="`almost_equal`"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="`assert_nodes_equal`"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="`assert_edges_equal`"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="`assert_graphs_equal`"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="networkx.hits_scipy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="networkx.hits_numpy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="preserve_random_state"
+    )
 
 
 @pytest.fixture(autouse=True)

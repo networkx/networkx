@@ -4,7 +4,7 @@ np = pytest.importorskip("numpy")
 
 import networkx as nx
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
-from networkx.testing.utils import assert_graphs_equal
+from networkx.utils import graphs_equal
 
 
 def test_to_numpy_matrix_deprecation():
@@ -201,9 +201,9 @@ class TestConvertNumpyMatrix:
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         expected.add_edge(1, 1, weight=2)
         actual = nx.from_numpy_matrix(A, parallel_edges=True, create_using=nx.DiGraph)
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         actual = nx.from_numpy_matrix(A, parallel_edges=False, create_using=nx.DiGraph)
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         # Now each integer entry in the adjacency matrix is interpreted as the
         # number of parallel edges in the graph if the appropriate keyword
         # argument is specified.
@@ -213,7 +213,7 @@ class TestConvertNumpyMatrix:
         actual = nx.from_numpy_matrix(
             A, parallel_edges=True, create_using=nx.MultiDiGraph
         )
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         expected = nx.MultiDiGraph()
         expected.add_edges_from(set(edges), weight=1)
         # The sole self-loop (edge 0) on vertex 1 should have weight 2.
@@ -221,7 +221,7 @@ class TestConvertNumpyMatrix:
         actual = nx.from_numpy_matrix(
             A, parallel_edges=False, create_using=nx.MultiDiGraph
         )
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
 
     def test_symmetric(self):
         """Tests that a symmetric matrix has edges added only once to an
@@ -232,7 +232,7 @@ class TestConvertNumpyMatrix:
         G = nx.from_numpy_matrix(A, create_using=nx.MultiGraph)
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
-        assert_graphs_equal(G, expected)
+        assert graphs_equal(G, expected)
 
     def test_dtype_int_graph(self):
         """Test that setting dtype int actually gives an integer matrix.
@@ -375,9 +375,9 @@ class TestConvertNumpyArray:
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         expected.add_edge(1, 1, weight=2)
         actual = nx.from_numpy_array(A, parallel_edges=True, create_using=nx.DiGraph)
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         actual = nx.from_numpy_array(A, parallel_edges=False, create_using=nx.DiGraph)
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         # Now each integer entry in the adjacency matrix is interpreted as the
         # number of parallel edges in the graph if the appropriate keyword
         # argument is specified.
@@ -387,7 +387,7 @@ class TestConvertNumpyArray:
         actual = nx.from_numpy_array(
             A, parallel_edges=True, create_using=nx.MultiDiGraph
         )
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         expected = nx.MultiDiGraph()
         expected.add_edges_from(set(edges), weight=1)
         # The sole self-loop (edge 0) on vertex 1 should have weight 2.
@@ -395,7 +395,7 @@ class TestConvertNumpyArray:
         actual = nx.from_numpy_array(
             A, parallel_edges=False, create_using=nx.MultiDiGraph
         )
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
 
     def test_symmetric(self):
         """Tests that a symmetric array has edges added only once to an
@@ -406,7 +406,7 @@ class TestConvertNumpyArray:
         G = nx.from_numpy_array(A, create_using=nx.MultiGraph)
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
-        assert_graphs_equal(G, expected)
+        assert graphs_equal(G, expected)
 
     def test_dtype_int_graph(self):
         """Test that setting dtype int actually gives an integer array.

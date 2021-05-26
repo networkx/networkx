@@ -117,6 +117,8 @@ Deprecations
   Deprecate ``almost_equal``.
 - [`#4833 <https://github.com/networkx/networkx/pull/4833>`_]
   Deprecate ``run``.
+- [`#4829 <https://github.com/networkx/networkx/pull/4829>`_]
+  Deprecate ``assert_nodes_equal``, ``assert_edges_equal``, and ``assert_graphs_equal``.
 
 Contributors
 ------------
