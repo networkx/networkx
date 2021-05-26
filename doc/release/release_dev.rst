@@ -156,8 +156,8 @@ API Changes
   any keys in `mapping` which are not in the graph are ignored.
 - [`#4502 <https://github.com/networkx/networkx/pull/4502>`_]
   Moves ``maximum_independent_set`` to the ``clique`` module in ``approximation``.
-- [`#4536 <https://github.com/networkx/networkx/pull/4545>`_]
-  Deprecate ``performance`` and ``coverage`` in favor of ``parition_quality``,
+- [`#4536 <https://github.com/networkx/networkx/pull/4536>`_]
+  Deprecate ``performance`` and ``coverage`` in favor of ``partition_quality``,
   which computes both metrics simultaneously and is more efficient.
 - [`#4573 <https://github.com/networkx/networkx/pull/4573>`_]
   `label_propagation_communities` returns a `dict_values` object of community
@@ -206,7 +206,7 @@ Deprecations
   Deprecate ``consume``.
 - [`#4448 <https://github.com/networkx/networkx/pull/4448>`_]
   Deprecate ``iterable``.
-- [`#4536 <https://github.com/networkx/networkx/pull/4545>`_]
+- [`#4536 <https://github.com/networkx/networkx/pull/4536>`_]
   Deprecate ``performance`` and ``coverage`` in favor of ``parition_quality``.
 - [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
   Deprecate ``generate_unique_node``.
