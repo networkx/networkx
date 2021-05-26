@@ -59,9 +59,9 @@ def average_degree_connectivity(
     >>> nx.k_nearest_neighbors(G, weight="weight")
     {1: 2.0, 2: 1.75}
 
-    See also
+    See Also
     --------
-    neighbors_average_degree
+    average_neighbor_degree
 
     Notes
     -----

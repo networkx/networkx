@@ -14,6 +14,8 @@ from networkx.classes.reportviews import (
 from networkx.exception import NetworkXError
 import networkx.convert as convert
 
+__all__ = ["DiGraph"]
+
 
 class DiGraph(Graph):
     """
