@@ -548,6 +548,10 @@ def create_py_random_state(random_state=None):
 def nodes_equal(nodes1, nodes2):
     """Check if nodes are equal.
 
+    Equality here means equal as Python objects.
+    Node data must match if included.
+    The order of nodes is not relevant.
+
     Parameters
     ----------
     nodes1, nodes2 : iterables of nodes, or (node, datadict) tuples
@@ -570,6 +574,10 @@ def nodes_equal(nodes1, nodes2):
 
 def edges_equal(edges1, edges2):
     """Check if edges are equal.
+
+    Equality here means equal as Python objects.
+    Edge data must match if included.
+    The order of the edges is not relevant.
 
     Parameters
     ----------
@@ -621,6 +629,9 @@ def edges_equal(edges1, edges2):
 
 def graphs_equal(graph1, graph2):
     """Check if graphs are equal.
+
+    Equality here means equal as Python objects (not isomorphism).
+    Node, edge and graph data must match.
 
     Parameters
     ----------
