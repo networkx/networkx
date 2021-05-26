@@ -115,7 +115,8 @@ Deprecations
   Deprecate ``preserve_random_state``.
 - [`#4827 <https://github.com/networkx/networkx/pull/4827>`_]
   Deprecate ``almost_equal``.
-
+- [`#4833 <https://github.com/networkx/networkx/pull/4833>`_]
+  Deprecate ``run``.
 
 Contributors
 ------------
