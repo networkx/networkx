@@ -3,8 +3,7 @@ from itertools import product
 
 import pytest
 import networkx as nx
-from networkx.utils import nodes_equal
-from networkx.utils import edges_equal
+from networkx.utils import nodes_equal, edges_equal
 
 
 class TestPruferSequence:
