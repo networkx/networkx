@@ -136,6 +136,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="preserve_random_state"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="`almost_equal`"
+    )
 
 
 @pytest.fixture(autouse=True)

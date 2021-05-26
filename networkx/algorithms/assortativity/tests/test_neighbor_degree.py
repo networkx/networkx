@@ -1,5 +1,5 @@
+import pytest
 import networkx as nx
-from networkx.testing import almost_equal
 
 
 class TestAverageNeighbor:
@@ -73,4 +73,4 @@ class TestAverageNeighbor:
         nd = nx.average_neighbor_degree(G)[5]
         assert nd == 1.8
         nd = nx.average_neighbor_degree(G, weight="weight")[5]
-        assert almost_equal(nd, 3.222222, places=5)
+        assert nd == pytest.approx(3.222222, abs=1e-5)

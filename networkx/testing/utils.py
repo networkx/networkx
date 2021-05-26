@@ -7,6 +7,15 @@ __all__ = [
 
 
 def almost_equal(x, y, places=7):
+    import warnings
+
+    warnings.warn(
+        (
+            "`almost_equal` is deprecated and will be removed in version 3.0.\n"
+            "Use `pytest.approx` instead.\n"
+        ),
+        DeprecationWarning,
+    )
     return round(abs(x - y), places) == 0
 
 
