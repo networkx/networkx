@@ -85,4 +85,5 @@ Version 3.0
 * In ``networkx.classes`` remove the ``ordered`` module and the four ``Ordered``
   classes defined therein.
 * In ``utils/decorators.py`` remove ``preserve_random_state``.
+* In ``algorithms/community/quality.py`` remove ``coverage`` and ``performance``.
 * Remove ``testing``.
