@@ -367,7 +367,7 @@ Adding examples
 
 The gallery examples are managed by
 `sphinx-gallery <https://sphinx-gallery.readthedocs.io/>`_.
-The source files for the example gallery are `.py` scripts in ``examples/`` that
+The source files for the example gallery are ``.py`` scripts in ``examples/`` that
 generate one or more figures. They are executed automatically by sphinx-gallery when the
 documentation is built. The output is gathered and assembled into the gallery.
 
