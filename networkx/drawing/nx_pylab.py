@@ -599,9 +599,9 @@ def draw_networkx_edges(
 
     Returns
     -------
-    list of matplotlib.patches.FancyArrowPatch or matplotlib.colections.LineCollection
+     matplotlib.colections.LineCollection or a list of matplotlib.patches.FancyArrowPatch
         If ``arrows=True``, a list of FancyArrowPatches is returned.
-        If 1`arrows=False``, a LineCollection is returned.
+        If ``arrows=False``, a LineCollection is returned.
         If ``arrows=None`` (the default), then a LineCollection is returned if
         `G` is undirected, otherwise returns a list of FancyArrowPatches.
 
