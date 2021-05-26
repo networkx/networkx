@@ -54,8 +54,8 @@ fundamental data structures.
 The following proposals have come under consideration since the previous
 release:
 
-- :ref:`NXEP2` API design of view slices
-- :ref:`NXEP3` Allow generators to yield from edgelists
+- :ref:`NXEP2`
+- :ref:`NXEP3`
 
 Improvements
 ------------
