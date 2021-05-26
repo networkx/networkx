@@ -4,8 +4,6 @@ import networkx as nx
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
 
-from networkx.testing import almost_equal
-
 from networkx.algorithms.link_analysis.hits_alg import _hits_python
 
 # Example from
@@ -34,9 +32,9 @@ class TestHITS:
         G = self.G
         h, a = nx.hits_numpy(G)
         for n in G:
-            assert almost_equal(h[n], G.h[n], places=4)
+            assert h[n] == pytest.approx(G.h[n], abs=1e-4)
         for n in G:
-            assert almost_equal(a[n], G.a[n], places=4)
+            assert a[n] == pytest.approx(G.a[n], abs=1e-4)
 
     @pytest.mark.parametrize(
         "hits_alg",
@@ -46,15 +44,15 @@ class TestHITS:
         G = self.G
         h, a = hits_alg(G, tol=1.0e-08)
         for n in G:
-            assert almost_equal(h[n], G.h[n], places=4)
+            assert h[n] == pytest.approx(G.h[n], abs=1e-4)
         for n in G:
-            assert almost_equal(a[n], G.a[n], places=4)
+            assert a[n] == pytest.approx(G.a[n], abs=1e-4)
         nstart = {i: 1.0 / 2 for i in G}
         h, a = hits_alg(G, nstart=nstart)
         for n in G:
-            assert almost_equal(h[n], G.h[n], places=4)
+            assert h[n] == pytest.approx(G.h[n], abs=1e-4)
         for n in G:
-            assert almost_equal(a[n], G.a[n], places=4)
+            assert a[n] == pytest.approx(G.a[n], abs=1e-4)
 
     def test_empty(self):
         G = nx.Graph()

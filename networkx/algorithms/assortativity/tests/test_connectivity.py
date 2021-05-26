@@ -3,7 +3,6 @@ from itertools import permutations
 import pytest
 
 import networkx as nx
-from networkx.testing import almost_equal
 
 
 class TestNeighborConnectivity:
@@ -86,9 +85,9 @@ class TestNeighborConnectivity:
         nd = nx.average_degree_connectivity(G)[5]
         assert nd == 1.8
         nd = nx.average_degree_connectivity(G, weight="weight")[5]
-        assert almost_equal(nd, 3.222222, places=5)
+        assert nd == pytest.approx(3.222222, abs=1e-5)
         nd = nx.k_nearest_neighbors(G, weight="weight")[5]
-        assert almost_equal(nd, 3.222222, places=5)
+        assert nd == pytest.approx(3.222222, abs=1e-5)
 
     def test_zero_deg(self):
         G = nx.DiGraph()
