@@ -16,10 +16,10 @@ Abstract
 Iterating over a subset of nodes or edges in a graph is a very common 
 operation in networkx analysis.
 The graph classes in NetworkX (e.g. :class:`~networkx.Graph`,
-:class:`~newtorkx.DiGraph`, :class:`~networkx.MultiGraph`, etc.) expose the
-node and edge data of the graph via :meth:`nodes` and :meth:`edges`, which 
-return dict view objects, `NodeView` (or `NodeDataView`) and `EdgeView` 
-(or `EdgeDataView`), respectively.
+:class:`~networkx.DiGraph`, :class:`~networkx.MultiGraph`, etc.) expose the
+node and edge data of the graph via :meth:`~networkx.Graph.nodes` and
+:meth:`~networkx.Graph.edges`, which return dict view objects, `NodeView`
+(or `NodeDataView`) and `EdgeView` (or `EdgeDataView`), respectively.
 The node and edge `View` classes have dict-like semantics for item access,
 returning the data dict corresponding to a given node or edge.
 This NXEP proposes adding support for slicing to the relevant node & edge
