@@ -4,8 +4,7 @@ from collections import deque
 import pytest
 
 import networkx as nx
-from networkx.utils import edges_equal
-from networkx.utils import pairwise
+from networkx.utils import edges_equal, pairwise
 
 # Recipe from the itertools documentation.
 def _consume(iterator):
