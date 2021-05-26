@@ -36,8 +36,9 @@ New functions:
 - maximum cut heuristics
 - equivalence_classes
 - dedensification
+- random_ordered_tree
 - forest_str
-- snap
+- snap_aggregation
 - networkx.approximation.diameter
 - partition_quality
 - prominent_group
@@ -53,8 +54,8 @@ fundamental data structures.
 The following proposals have come under consideration since the previous
 release:
 
-- :ref:`NXEP2`
-- :ref:`NXEP3`
+- :ref:`NXEP2` API design of view slices
+- :ref:`NXEP3` Allow generators to yield from edgelists
 
 Improvements
 ------------
@@ -69,6 +70,8 @@ Improvements
   ``nx.info`` is more concise.
 - [`#4198 <https://github.com/networkx/networkx/pull/4198>`_]
   Improve performance of ``transitivity``.
+- [`#4206 <https://github.com/networkx/networkx/pull/4206>`_]
+  UnionFind.union selects the heaviest root as the new root
 - [`#4240 <https://github.com/networkx/networkx/pull/4240>`_]
   Adds ``dedensification`` function in a new ``summarization`` module.
 - [`#4294 <https://github.com/networkx/networkx/pull/4294>`_]
@@ -81,6 +84,8 @@ Improvements
 - [`#4356 <https://github.com/networkx/networkx/pull/4356>`_]
   Use ``bidirectional_djikstra`` in ``shortest_path`` for weighted graphs
   to improve performance.
+- [`#4361 <https://github.com/networkx/networkx/pull/4361>`_]
+  Adds ``nodelist`` argument to ``triadic_census``
 - [`#4435 <https://github.com/networkx/networkx/pull/4435>`_]
   Improve ``group_betweenness_centrality``.
 - [`#4446 <https://github.com/networkx/networkx/pull/4446>`_]
@@ -142,7 +147,9 @@ API Changes
   addition to the API change this may cause a performance regression for
   large graphs.
 - [`#4384 <https://github.com/networkx/networkx/pull/4384>`_]
-  Added edge_key parameter for MultiGraphs in to_pandas_edgelist
+  Added ``edge_key`` parameter for MultiGraphs in to_pandas_edgelist
+- [`#4461 <https://github.com/networkx/networkx/pull/4461>`_]
+  Added ``create_using`` parameter to ``binomial_tree``
 - [`#4466 <https://github.com/networkx/networkx/pull/4466>`_]
   `relabel_nodes` used to raise a KeyError for a key in `mapping` that is not
   a node in the graph, but it only did this when `copy` was `False`. Now
@@ -205,6 +212,8 @@ Deprecations
   Deprecate ``generate_unique_node``.
 - [`#4599 <https://github.com/networkx/networkx/pull/4599>`_]
   Deprecate ``empty_generator``.
+- [`#4600 <https://github.com/networkx/networkx/pull/4600>`_]
+  Deprecate ``default_opener``.
 - [`#4617 <https://github.com/networkx/networkx/pull/4617>`_]
   Deprecate ``hub_matrix`` and ``authority_matrix``
 - [`#4629 <https://github.com/networkx/networkx/pull/4629>`_]
