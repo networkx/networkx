@@ -550,7 +550,7 @@ def nodes_equal(nodes1, nodes2):
 
     Parameters
     ----------
-    nodes1, nodes2 : iterables of nodes, or (node,datadict) tuples
+    nodes1, nodes2 : iterables of nodes, or (node, datadict) tuples
 
     Returns
     -------
@@ -573,10 +573,10 @@ def edges_equal(edges1, edges2):
 
     Parameters
     ----------
-    edges1, edges2 : iterables of with u,v nodes as
-        edge tuples (u,v), or
-        edge tuples with data dicts (u,v,d), or
-        edge tuples with keys and data dicts (u,v,k, d)
+    edges1, edges2 : iterables of with u, v nodes as
+        edge tuples (u, v), or
+        edge tuples with data dicts (u, v, d), or
+        edge tuples with keys and data dicts (u, v, k, d)
 
     Returns
     -------
