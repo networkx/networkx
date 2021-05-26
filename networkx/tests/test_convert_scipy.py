@@ -5,7 +5,7 @@ sp = pytest.importorskip("scipy")
 import scipy.sparse  # call as sp.sparse
 
 import networkx as nx
-from networkx.testing import assert_graphs_equal
+from networkx.utils import graphs_equal
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
 
 
@@ -230,11 +230,11 @@ class TestConvertScipy:
         actual = nx.from_scipy_sparse_matrix(
             A, parallel_edges=True, create_using=nx.DiGraph
         )
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         actual = nx.from_scipy_sparse_matrix(
             A, parallel_edges=False, create_using=nx.DiGraph
         )
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         # Now each integer entry in the adjacency matrix is interpreted as the
         # number of parallel edges in the graph if the appropriate keyword
         # argument is specified.
@@ -244,7 +244,7 @@ class TestConvertScipy:
         actual = nx.from_scipy_sparse_matrix(
             A, parallel_edges=True, create_using=nx.MultiDiGraph
         )
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         expected = nx.MultiDiGraph()
         expected.add_edges_from(set(edges), weight=1)
         # The sole self-loop (edge 0) on vertex 1 should have weight 2.
@@ -252,7 +252,7 @@ class TestConvertScipy:
         actual = nx.from_scipy_sparse_matrix(
             A, parallel_edges=False, create_using=nx.MultiDiGraph
         )
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
 
     def test_symmetric(self):
         """Tests that a symmetric matrix has edges added only once to an
@@ -264,7 +264,7 @@ class TestConvertScipy:
         G = nx.from_scipy_sparse_matrix(A, create_using=nx.MultiGraph)
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
-        assert_graphs_equal(G, expected)
+        assert graphs_equal(G, expected)
 
 
 @pytest.mark.parametrize("sparse_format", ("csr", "csc", "dok"))
@@ -283,4 +283,4 @@ def test_from_scipy_sparse_matrix_formats(sparse_format):
         ]
     )
     A = sp.sparse.coo_matrix([[0, 3, 2], [3, 0, 1], [2, 1, 0]]).asformat(sparse_format)
-    assert_graphs_equal(expected, nx.from_scipy_sparse_matrix(A))
+    assert graphs_equal(expected, nx.from_scipy_sparse_matrix(A))
