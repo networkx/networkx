@@ -1325,7 +1325,7 @@ def simrank_similarity(
            pp. 538--543. ACM Press, 2002.
     """
     return simrank_similarity_numpy(
-        source, target, importance_factor, max_iterations, tolerance
+        G, source, target, importance_factor, max_iterations, tolerance
     )
 
 
