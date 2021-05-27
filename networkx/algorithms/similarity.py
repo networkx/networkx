@@ -1332,10 +1332,8 @@ def simrank_similarity(
     if isinstance(x, np.ndarray):
         if x.ndim == 1:
             return {i: val for i, val in enumerate(x)}
-        elif x.ndim == 2:
+        else:  # x.ndim == 2:
             return {i: {j: val for j, val in enumerate(row)} for i, row in enumerate(x)}
-        else:
-            raise nx.NetworkXError("Is this possible?")
     else:
         return x
 
@@ -1349,7 +1347,6 @@ def _simrank_similarity_python(
     tolerance=1e-4,
 ):
     """Returns the SimRank similarity of nodes in the graph ``G``.
-
 
     This pure Python version is provided for pedagogical purposes.
 
