@@ -176,6 +176,9 @@ API Changes
 - [`#4786 <https://github.com/networkx/networkx/pull/4786>`_]
   Deprecate the ``attrs`` keyword argument in favor of explicit keyword
   arguments in the ``json_graph`` module.
+- [`#4843 <https://github.com/networkx/networkx/pull/4843>`_]
+  The unused ``normalized`` parameter has been removed
+  from ``communicability_betweeness_centrality``
 
 Deprecations
 ------------
