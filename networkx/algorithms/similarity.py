@@ -1324,6 +1324,19 @@ def simrank_similarity(
            International Conference on Knowledge Discovery and Data Mining,
            pp. 538--543. ACM Press, 2002.
     """
+    return simrank_similarity_numpy(
+        source, targete, importance_factor, max_iterations, tolerance
+    )
+
+
+def _simrank_similarity_python(
+    G,
+    source=None,
+    target=None,
+    importance_factor=0.9,
+    max_iterations=100,
+    tolerance=1e-4,
+):
     prevsim = None
 
     # build up our similarity adjacency dictionary output
@@ -1363,63 +1376,74 @@ def simrank_similarity_numpy(
 ):
     """Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.
 
-    The SimRank algorithm for determining node similarity is defined in
-    [1]_.
+    .. deprecated:: 2.6
+        simrank_similarity_numpy is deprecated and will be removed in networkx 3.0.
 
-    Parameters
-    ----------
-    G : NetworkX graph
-        A NetworkX graph
+     The SimRank algorithm for determining node similarity is defined in
+     [1]_.
 
-    source : node
-        If this is specified, the returned dictionary maps each node
-        ``v`` in the graph to the similarity between ``source`` and
-        ``v``.
+     Parameters
+     ----------
+     G : NetworkX graph
+         A NetworkX graph
 
-    target : node
-        If both ``source`` and ``target`` are specified, the similarity
-        value between ``source`` and ``target`` is returned. If
-        ``target`` is specified but ``source`` is not, this argument is
-        ignored.
+     source : node
+         If this is specified, the returned dictionary maps each node
+         ``v`` in the graph to the similarity between ``source`` and
+         ``v``.
 
-    importance_factor : float
-        The relative importance of indirect neighbors with respect to
-        direct neighbors.
+     target : node
+         If both ``source`` and ``target`` are specified, the similarity
+         value between ``source`` and ``target`` is returned. If
+         ``target`` is specified but ``source`` is not, this argument is
+         ignored.
 
-    max_iterations : integer
-        Maximum number of iterations.
+     importance_factor : float
+         The relative importance of indirect neighbors with respect to
+         direct neighbors.
 
-    tolerance : float
-        Error tolerance used to check convergence. When an iteration of
-        the algorithm finds that no similarity value changes more than
-        this amount, the algorithm halts.
+     max_iterations : integer
+         Maximum number of iterations.
 
-    Returns
-    -------
-    similarity : numpy matrix, numpy array or float
-        If ``source`` and ``target`` are both ``None``, this returns a
-        Matrix containing SimRank scores of the nodes.
+     tolerance : float
+         Error tolerance used to check convergence. When an iteration of
+         the algorithm finds that no similarity value changes more than
+         this amount, the algorithm halts.
 
-        If ``source`` is not ``None`` but ``target`` is, this returns an
-        Array containing SimRank scores of ``source`` and that
-        node.
+     Returns
+     -------
+     similarity : numpy matrix, numpy array or float
+         If ``source`` and ``target`` are both ``None``, this returns a
+         Matrix containing SimRank scores of the nodes.
 
-        If neither ``source`` nor ``target`` is ``None``, this returns
-        the similarity value for the given pair of nodes.
+         If ``source`` is not ``None`` but ``target`` is, this returns an
+         Array containing SimRank scores of ``source`` and that
+         node.
 
-    Examples
-    --------
-    >>> G = nx.cycle_graph(4)
-    >>> sim = nx.simrank_similarity_numpy(G)
+         If neither ``source`` nor ``target`` is ``None``, this returns
+         the similarity value for the given pair of nodes.
 
-    References
-    ----------
-    .. [1] G. Jeh and J. Widom.
-           "SimRank: a measure of structural-context similarity",
-           In KDD'02: Proceedings of the Eighth ACM SIGKDD
-           International Conference on Knowledge Discovery and Data Mining,
-           pp. 538--543. ACM Press, 2002.
+     Examples
+     --------
+     >>> G = nx.cycle_graph(4)
+     >>> sim = nx.simrank_similarity_numpy(G)
+
+     References
+     ----------
+     .. [1] G. Jeh and J. Widom.
+            "SimRank: a measure of structural-context similarity",
+            In KDD'02: Proceedings of the Eighth ACM SIGKDD
+            International Conference on Knowledge Discovery and Data Mining,
+            pp. 538--543. ACM Press, 2002.
     """
+    warnings.warn(
+        (
+            "networkx.simrank_similarity_numpy is deprecated and will be removed"
+            "in NetworkX 3.0, use networkx.simrank_similarity instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     # This algorithm follows roughly
     #
     #     S = max{C * (A.T * S * A), I}
