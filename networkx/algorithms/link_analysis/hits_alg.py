@@ -3,7 +3,16 @@
 from warnings import warn
 import networkx as nx
 
-__all__ = ["hits", "hits_numpy", "hits_scipy", "authority_matrix", "hub_matrix"]
+__all__ = [
+    "hits",
+    "_hits_python",
+    "hits_numpy",
+    "hits_scipy",
+    "hits_scipy2",
+    "hits_scipy3",
+    "authority_matrix",
+    "hub_matrix",
+]
 
 
 def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
@@ -70,7 +79,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    return hits_scipy(G, max_iter, tol, nstart, normalized)
+    return hits_scipy2(G, max_iter, tol, nstart, normalized)
 
 
 def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
@@ -353,6 +362,90 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
         i += 1
 
     a = np.asarray(x).flatten()
+    # h=M*a
+    h = np.asarray(M * a).flatten()
+    if normalized:
+        h = h / h.sum()
+        a = a / a.sum()
+    hubs = dict(zip(G, map(float, h)))
+    authorities = dict(zip(G, map(float, a)))
+    return hubs, authorities
+
+
+def hits_scipy2(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
+    import numpy as np
+    import scipy as sp
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
+
+    if len(G) == 0:
+        return {}, {}
+    M = nx.to_scipy_sparse_matrix(G, nodelist=list(G))
+    #    (n, m) = M.shape  # should be square
+    A = M.T * M  # authority matrix
+
+    #    x = np.ones((n, 1)) / n  # initial guess
+    #    # choose fixed starting vector if not given
+    #    if nstart is None:
+    #        x = np.ones((n, 1)) / n  # initial guess
+    #    else:
+    #        x = np.array([nstart.get(n, 0) for n in list(G)], dtype=float)
+    #        x = x / x.sum()
+    #
+    #    # power iteration on authority matrix
+    #    i = 0
+    #    while True:
+    #        xlast = x
+    #        x = A * x
+    #        x = x / x.max()
+    #        # check convergence, l1 norm
+    #        err = np.absolute(x - xlast).sum()
+    #        if err < tol:
+    #            break
+    #        if i > max_iter:
+    #            raise nx.PowerIterationFailedConvergence(max_iter)
+    #        i += 1
+    if nstart is None:
+        eigenvalue, eigenvector = sp.sparse.linalg.eigs(
+            A.astype(float), k=1, which="LR", maxiter=max_iter, tol=tol
+        )
+    else:
+        nstart = np.array(list(nstart.values()))
+        eigenvalue, eigenvector = sp.sparse.linalg.eigs(
+            A.astype(float), k=1, v0=nstart, which="LR", maxiter=max_iter, tol=tol
+        )
+    a = eigenvector.flatten().real
+
+    # h=M*a
+    h = np.asarray(M * a).flatten()
+    if normalized:
+        h = h / h.sum()
+        a = a / a.sum()
+    hubs = dict(zip(G, map(float, h)))
+    authorities = dict(zip(G, map(float, a)))
+    return hubs, authorities
+
+
+def hits_scipy3(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
+    import numpy as np
+    import scipy as sp
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
+
+    if len(G) == 0:
+        return {}, {}
+    M = nx.adjacency_matrix(G, nodelist=list(G), dtype=float)
+    A = M.T * M  # authority matrix
+
+    if nstart is None:
+        eigenvalue, eigenvector = sp.sparse.linalg.eigs(
+            A, k=1, which="LR", maxiter=max_iter, tol=tol
+        )
+    else:
+        nstart = np.array(list(nstart.values()))
+        eigenvalue, eigenvector = sp.sparse.linalg.eigs(
+            A, k=1, v0=nstart, which="LR", maxiter=max_iter, tol=tol
+        )
+    a = eigenvector.flatten().real
+
     # h=M*a
     h = np.asarray(M * a).flatten()
     if normalized:

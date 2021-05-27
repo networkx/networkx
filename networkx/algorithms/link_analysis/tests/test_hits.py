@@ -64,7 +64,7 @@ class TestHITS:
         assert nx.hub_matrix(G).shape == (0, 0)
 
     def test_hits_not_convergent(self):
-        with pytest.raises(nx.PowerIterationFailedConvergence):
+        with pytest.raises(ValueError):
             G = self.G
             nx.hits(G, max_iter=0)
 
