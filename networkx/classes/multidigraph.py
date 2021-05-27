@@ -14,6 +14,8 @@ from networkx.classes.reportviews import (
 )
 from networkx.exception import NetworkXError
 
+__all__ = ["MultiDiGraph"]
+
 
 class MultiDiGraph(MultiGraph, DiGraph):
     """A directed graph class that can store multiedges.
@@ -796,7 +798,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         graph attributes which attempts to completely copy
         all of the data and references.
 
-        This is in contrast to the similar D=MultiiGraph(G) which
+        This is in contrast to the similar D=MultiDiGraph(G) which
         returns a shallow copy of the data.
 
         See the Python copy module for more information on shallow

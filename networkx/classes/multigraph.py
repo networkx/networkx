@@ -7,6 +7,8 @@ from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.reportviews import MultiEdgeView, MultiDegreeView
 from networkx import NetworkXError
 
+__all__ = ["MultiGraph"]
+
 
 class MultiGraph(Graph):
     """
@@ -1043,7 +1045,7 @@ class MultiGraph(Graph):
         See the Python copy module for more information on shallow
         and deep copies, https://docs.python.org/3/library/copy.html.
 
-        Warning: If you have subclassed MultiiGraph to use dict-like
+        Warning: If you have subclassed MultiGraph to use dict-like
         objects in the data structure, those changes do not transfer
         to the MultiGraph created by this method.
 

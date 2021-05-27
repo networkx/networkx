@@ -34,7 +34,7 @@ def _node_value(G, node_attr):
         def value(u):
             return u
 
-    elif not hasattr(node_attr, "__call__"):
+    elif not callable(node_attr):
         # assume it is a key for the node attribute dictionary
         def value(u):
             return G.nodes[u][node_attr]
@@ -94,7 +94,7 @@ def _edge_value(G, edge_attr):
             def value(u, v):
                 return 1
 
-    elif not hasattr(edge_attr, "__call__"):
+    elif not callable(edge_attr):
         # assume it is a key for the edge attribute dictionary
 
         if edge_attr == "weight":
