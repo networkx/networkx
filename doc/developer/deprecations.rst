@@ -87,3 +87,4 @@ Version 3.0
 * In ``utils/decorators.py`` remove ``preserve_random_state``.
 * In ``algorithms/community/quality.py`` remove ``coverage`` and ``performance``.
 * Remove ``testing``.
+* In ``linalg/graphmatrix.py`` remove ``adj_matrix``.

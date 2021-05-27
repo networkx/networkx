@@ -179,6 +179,8 @@ API Changes
 - [`#4843 <https://github.com/networkx/networkx/pull/4843>`_]
   The unused ``normalized`` parameter has been removed
   from ``communicability_betweeness_centrality``
+- [`#4850 <https://github.com/networkx/networkx/pull/4850>`_]
+  Added ``dtype`` parameter to adjacency_matrix
 
 Deprecations
 ------------
@@ -233,6 +235,8 @@ Deprecations
   Deprecate ``run``.
 - [`#4829 <https://github.com/networkx/networkx/pull/4829>`_]
   Deprecate ``assert_nodes_equal``, ``assert_edges_equal``, and ``assert_graphs_equal``.
+- [`#4850 <https://github.com/networkx/networkx/pull/4850>`_]
+  Deprecate ``adj_matrix``.
 
 Contributors
 ------------
