@@ -35,6 +35,19 @@ class MultiGraph(Graph):
         dict of dicts, dict of lists, NetworkX graph, NumPy matrix
         or 2d ndarray, SciPy sparse matrix, or PyGraphviz graph.
 
+    multigraph_input : bool or None (default None)
+        Note: Only used when `incoming_graph_data` is a dict.
+        If True, `incoming_graph_data` is assumed to be a
+        dict-of-dict-of-dict-of-dict structure keyed by
+        node to neighbor to edge keys to edge data for multi-edges.
+        A NetworkXError is raised if this is not the case.
+        If False, :func:`to_networkx_graph` is used to try to determine
+        the dict's graph data structure as either a dict-of-dict-of-dict
+        keyed by node to neighbor to edge data, or a dict-of-iterable
+        keyed by node to neighbors.
+        If None, the treatment for True is tried, but if it fails,
+        the treatment for False is tried.
+
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
 
@@ -288,17 +301,17 @@ class MultiGraph(Graph):
             or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
 
         multigraph_input : bool or None (default None)
-           Note: Only used when `incoming_graph_data` is a dict.
-           If True, `incoming_graph_data` is assumed to be a
-           dict-of-dict-of-dict-of-dict structure keyed by
-           node to neighbor to edge keys to edge data for multi-edges.
-           A NetworkXError is raised if this is not the case.
-           If False, :func:`to_networkx_graph` is used to try to determine
-           the dict's graph data structure as either a dict-of-dict-of-dict
-           keyed by node to neighbor to edge data, or a dict-of-iterable
-           keyed by node to neighbors.
-           If None, the treatment for True is tried, but if it fails,
-           the treatment for False is tried.
+            Note: Only used when `incoming_graph_data` is a dict.
+            If True, `incoming_graph_data` is assumed to be a
+            dict-of-dict-of-dict-of-dict structure keyed by
+            node to neighbor to edge keys to edge data for multi-edges.
+            A NetworkXError is raised if this is not the case.
+            If False, :func:`to_networkx_graph` is used to try to determine
+            the dict's graph data structure as either a dict-of-dict-of-dict
+            keyed by node to neighbor to edge data, or a dict-of-iterable
+            keyed by node to neighbors.
+            If None, the treatment for True is tried, but if it fails,
+            the treatment for False is tried.
 
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to graph as key=value pairs.
