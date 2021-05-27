@@ -285,6 +285,13 @@ class TestDAGLCA:
         """Test that LCA on non-dags bails."""
         pytest.raises(nx.NetworkXError, all_pairs_lca, nx.DiGraph([(3, 4), (4, 3)]))
 
+    def test_all_pairs_lowest_common_ancestor_self_ancestor(self):
+        # example from #4458
+        G = nx.DiGraph([(1, 0), (2, 0), (3, 2), (4, 1), (4, 3)])
+        for (i, j), a in all_pairs_lca(G):
+            if i==j:
+                assert a == i == j
+
     def test_all_pairs_lowest_common_ancestor9(self):
         """Test that it works on non-empty graphs with no LCAs."""
         G = nx.DiGraph()
@@ -309,3 +316,8 @@ class TestDAGLCA:
         G = nx.DiGraph()
         G.add_node(3)
         assert nx.lowest_common_ancestor(G, 3, 3) == 3
+
+    def test_lowest_common_ancestor_self_ancestor(self):
+        # example from #4458
+        G = nx.DiGraph([(1, 0), (2, 0), (3, 2), (4, 1), (4, 3)])
+        assert nx.lowest_common_ancestor(G, 0, 0) == 0
