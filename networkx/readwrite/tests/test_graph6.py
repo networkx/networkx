@@ -4,8 +4,7 @@ import pytest
 
 import networkx as nx
 import networkx.readwrite.graph6 as g6
-from networkx.testing.utils import assert_edges_equal
-from networkx.testing.utils import assert_nodes_equal
+from networkx.utils import nodes_equal, edges_equal
 
 
 class TestGraph6Utils:
@@ -20,8 +19,8 @@ class TestFromGraph6Bytes:
     def test_from_graph6_bytes(self):
         data = b"DF{"
         G = nx.from_graph6_bytes(data)
-        assert_nodes_equal(G.nodes(), [0, 1, 2, 3, 4])
-        assert_edges_equal(
+        assert nodes_equal(G.nodes(), [0, 1, 2, 3, 4])
+        assert edges_equal(
             G.edges(), [(0, 3), (0, 4), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
         )
 
@@ -30,8 +29,8 @@ class TestFromGraph6Bytes:
         G = nx.from_graph6_bytes(data)
         fh = BytesIO(data)
         Gin = nx.read_graph6(fh)
-        assert_nodes_equal(G.nodes(), Gin.nodes())
-        assert_edges_equal(G.edges(), Gin.edges())
+        assert nodes_equal(G.nodes(), Gin.nodes())
+        assert edges_equal(G.edges(), Gin.edges())
 
 
 class TestReadGraph6:
@@ -100,8 +99,8 @@ class TestWriteGraph6:
             nx.write_graph6(G, f)
             f.seek(0)
             H = nx.read_graph6(f)
-            assert_nodes_equal(G.nodes(), H.nodes())
-            assert_edges_equal(G.edges(), H.edges())
+            assert nodes_equal(G.nodes(), H.nodes())
+            assert edges_equal(G.edges(), H.edges())
 
     def test_write_path(self):
         with tempfile.NamedTemporaryFile() as f:

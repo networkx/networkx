@@ -7,6 +7,8 @@ from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.reportviews import MultiEdgeView, MultiDegreeView
 from networkx import NetworkXError
 
+__all__ = ["MultiGraph"]
+
 
 class MultiGraph(Graph):
     """

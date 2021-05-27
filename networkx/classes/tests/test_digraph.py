@@ -1,7 +1,7 @@
 import pytest
 
 import networkx as nx
-from networkx.testing import assert_nodes_equal
+from networkx.utils import nodes_equal
 from .test_graph import BaseGraphTester, BaseAttrGraphTester
 from .test_graph import TestGraph as _TestGraph
 from .test_graph import TestEdgeSubgraph as _TestGraphEdgeSubgraph
@@ -128,7 +128,7 @@ class BaseDiGraphTester(BaseGraphTester):
         y = Foo()
         G = nx.DiGraph()
         G.add_edge(x, y)
-        assert_nodes_equal(G.nodes(), G.reverse().nodes())
+        assert nodes_equal(G.nodes(), G.reverse().nodes())
         assert [(y, x)] == list(G.reverse().edges())
 
 
