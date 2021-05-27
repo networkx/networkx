@@ -536,7 +536,10 @@ class GraphMLWriter(GraphML):
         if G.is_multigraph():
             for u, v, key, data in G.edges(data=True, keys=True):
                 edge_element = self.myElement(
-                    "edge", source=str(u), target=str(v), id=str(key)
+                    "edge",
+                    source=str(u),
+                    target=str(v),
+                    id="({},{},{})".format(str(u), str(v), str(key)),
                 )
                 default = G.graph.get("edge_default", {})
                 self.add_attributes("edge", edge_element, data, default)
@@ -872,6 +875,9 @@ class GraphMLReader(GraphML):
         # attribute is specified
         edge_id = edge_element.get("id")
         if edge_id:
+            parsed_edge_id = edge_id.strip("()").split(",")
+            if len(parsed_edge_id) > 2:
+                edge_id = parsed_edge_id[2]
             # self.edge_ids is used by `make_graph` method for non-multigraphs
             self.edge_ids[source, target] = edge_id
             try:
