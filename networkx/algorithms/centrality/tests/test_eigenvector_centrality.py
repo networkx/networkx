@@ -46,7 +46,7 @@ class TestEigenvectorCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
 
     def test_maxiter(self):
-        with pytest.raises(nx.PowerIterationFailedConvergence):
+        with pytest.raises(ValueError):
             G = nx.path_graph(3)
             b = nx.eigenvector_centrality(G, max_iter=0)
 
