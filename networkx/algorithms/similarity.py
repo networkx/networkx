@@ -1324,9 +1324,20 @@ def simrank_similarity(
            International Conference on Knowledge Discovery and Data Mining,
            pp. 538--543. ACM Press, 2002.
     """
-    return simrank_similarity_numpy(
+    import numpy as np
+
+    x = simrank_similarity_numpy(
         G, source, target, importance_factor, max_iterations, tolerance
     )
+    if isinstance(x, np.ndarray):
+        if x.ndim == 1:
+            return {i: val for i, val in enumerate(x)}
+        elif x.ndim == 2:
+            return {i: {j: val for j, val in enumerate(row)} for i, row in enumerate(x)}
+        else:
+            raise nx.NetworkXError("Is this possible?")
+    else:
+        return x
 
 
 def _simrank_similarity_python(
@@ -1337,6 +1348,21 @@ def _simrank_similarity_python(
     max_iterations=100,
     tolerance=1e-4,
 ):
+    """Returns the SimRank similarity of nodes in the graph ``G``.
+
+
+    This pure Python version is provided for pedagogical purposes.
+
+    Examples
+    --------
+    >>> G = nx.cycle_graph(2)
+    >>> _simrank_similarity_python(G)
+    {0: {0: 1, 1: 0.0}, 1: {0: 0.0, 1: 1}}
+    >>> _simrank_similarity_python(G, source=0)
+    {0: 1, 1: 0.0}
+    >>> _simrank_similarity_python(G, source=0, target=0)
+    1
+    """
     prevsim = None
 
     # build up our similarity adjacency dictionary output
@@ -1379,62 +1405,68 @@ def simrank_similarity_numpy(
     .. deprecated:: 2.6
         simrank_similarity_numpy is deprecated and will be removed in networkx 3.0.
 
-     The SimRank algorithm for determining node similarity is defined in
-     [1]_.
+    The SimRank algorithm for determining node similarity is defined in
+    [1]_.
 
-     Parameters
-     ----------
-     G : NetworkX graph
-         A NetworkX graph
+    Parameters
+    ----------
+    G : NetworkX graph
+        A NetworkX graph
 
-     source : node
-         If this is specified, the returned dictionary maps each node
-         ``v`` in the graph to the similarity between ``source`` and
-         ``v``.
+    source : node
+        If this is specified, the returned dictionary maps each node
+        ``v`` in the graph to the similarity between ``source`` and
+        ``v``.
 
-     target : node
-         If both ``source`` and ``target`` are specified, the similarity
-         value between ``source`` and ``target`` is returned. If
-         ``target`` is specified but ``source`` is not, this argument is
-         ignored.
+    target : node
+        If both ``source`` and ``target`` are specified, the similarity
+        value between ``source`` and ``target`` is returned. If
+        ``target`` is specified but ``source`` is not, this argument is
+        ignored.
 
-     importance_factor : float
-         The relative importance of indirect neighbors with respect to
-         direct neighbors.
+    importance_factor : float
+        The relative importance of indirect neighbors with respect to
+        direct neighbors.
 
-     max_iterations : integer
-         Maximum number of iterations.
+    max_iterations : integer
+        Maximum number of iterations.
 
-     tolerance : float
-         Error tolerance used to check convergence. When an iteration of
-         the algorithm finds that no similarity value changes more than
-         this amount, the algorithm halts.
+    tolerance : float
+        Error tolerance used to check convergence. When an iteration of
+        the algorithm finds that no similarity value changes more than
+        this amount, the algorithm halts.
 
-     Returns
-     -------
-     similarity : numpy matrix, numpy array or float
-         If ``source`` and ``target`` are both ``None``, this returns a
-         Matrix containing SimRank scores of the nodes.
+    Returns
+    -------
+    similarity : numpy matrix, numpy array or float
+        If ``source`` and ``target`` are both ``None``, this returns a
+        Matrix containing SimRank scores of the nodes.
 
-         If ``source`` is not ``None`` but ``target`` is, this returns an
-         Array containing SimRank scores of ``source`` and that
-         node.
+        If ``source`` is not ``None`` but ``target`` is, this returns an
+        Array containing SimRank scores of ``source`` and that
+        node.
 
-         If neither ``source`` nor ``target`` is ``None``, this returns
-         the similarity value for the given pair of nodes.
+        If neither ``source`` nor ``target`` is ``None``, this returns
+        the similarity value for the given pair of nodes.
 
-     Examples
-     --------
-     >>> G = nx.cycle_graph(4)
-     >>> sim = nx.simrank_similarity_numpy(G)
+    Examples
+    --------
+    >>> G = nx.cycle_graph(2)
+    >>> nx.simrank_similarity_numpy(G)
+    array([[1., 0.],
+           [0., 1.]])
+    >>> nx.simrank_similarity_numpy(G, source=0)
+    array([1., 0.])
+    >>> nx.simrank_similarity_numpy(G, source=0, target=0)
+    1.0
 
-     References
-     ----------
-     .. [1] G. Jeh and J. Widom.
-            "SimRank: a measure of structural-context similarity",
-            In KDD'02: Proceedings of the Eighth ACM SIGKDD
-            International Conference on Knowledge Discovery and Data Mining,
-            pp. 538--543. ACM Press, 2002.
+    References
+    ----------
+    .. [1] G. Jeh and J. Widom.
+           "SimRank: a measure of structural-context similarity",
+           In KDD'02: Proceedings of the Eighth ACM SIGKDD
+           International Conference on Knowledge Discovery and Data Mining,
+           pp. 538--543. ACM Press, 2002.
     """
     warnings.warn(
         (

@@ -563,7 +563,8 @@ class TestSimilarity:
             },
         }
         actual = nx.simrank_similarity(G)
-        assert expected == actual
+        for k, v in expected.items():
+            assert v == pytest.approx(actual[k], abs=1e-2)
 
         # For a DiGraph test, use the first graph from the paper cited in
         # the docs: https://dl.acm.org/doi/pdf/10.1145/775047.775126
@@ -596,7 +597,8 @@ class TestSimilarity:
         }
         # Use the importance_factor from the paper to get the same numbers.
         actual = nx.algorithms.similarity.simrank_similarity(G, importance_factor=0.8)
-        assert expected == actual
+        for k, v in expected.items():
+            assert v == pytest.approx(actual[k], abs=1e-2)
 
     def test_simrank_source_no_target(self):
         G = nx.cycle_graph(5)
@@ -608,7 +610,7 @@ class TestSimilarity:
             4: 0.3951219505902449,
         }
         actual = nx.simrank_similarity(G, source=0)
-        assert expected == actual
+        assert expected == pytest.approx(actual, abs=1e-2)
 
         # For a DiGraph test, use the first graph from the paper cited in
         # the docs: https://dl.acm.org/doi/pdf/10.1145/775047.775126
@@ -625,7 +627,7 @@ class TestSimilarity:
         actual = nx.algorithms.similarity.simrank_similarity(
             G, importance_factor=0.8, source=0
         )
-        assert expected == actual
+        assert expected == pytest.approx(actual, abs=1e-2)
 
     def test_simrank_source_and_target(self):
         G = nx.cycle_graph(5)
@@ -648,7 +650,7 @@ class TestSimilarity:
         actual = nx.algorithms.similarity.simrank_similarity(
             G, importance_factor=0.8, source=0, target=2
         )
-        assert expected == actual
+        assert expected == pytest.approx(actual, abs=1e-5)
 
     def test_simrank_numpy_no_source_no_target(self):
         G = nx.cycle_graph(5)
