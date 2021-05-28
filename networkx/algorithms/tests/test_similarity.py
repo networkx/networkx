@@ -596,7 +596,7 @@ class TestSimilarity:
             },
         }
         # Use the importance_factor from the paper to get the same numbers.
-        actual = nx.algorithms.similarity.simrank_similarity(G, importance_factor=0.8)
+        actual = nx.simrank_similarity(G, importance_factor=0.8)
         for k, v in expected.items():
             assert v == pytest.approx(actual[k], abs=1e-2)
 
@@ -624,15 +624,56 @@ class TestSimilarity:
 
         expected = {0: 1, 1: 0.0, 2: 0.1323363991265798, 3: 0.0, 4: 0.03387811817640443}
         # Use the importance_factor from the paper to get the same numbers.
-        actual = nx.algorithms.similarity.simrank_similarity(
-            G, importance_factor=0.8, source=0
+        actual = nx.simrank_similarity(G, importance_factor=0.8, source=0)
+        assert expected == pytest.approx(actual, abs=1e-2)
+
+    def test_simrank_noninteger_nodes(self):
+        G = nx.cycle_graph(5)
+        G = nx.relabel_nodes(G, dict(enumerate("abcde")))
+        expected = {
+            "a": 1,
+            "b": 0.3951219505902448,
+            "c": 0.5707317069281646,
+            "d": 0.5707317069281646,
+            "e": 0.3951219505902449,
+        }
+        actual = nx.similarity._simrank_similarity_python(G, source="a")
+        assert expected == pytest.approx(actual, abs=1e-2)
+        actual = nx.simrank_similarity(G, source="a")
+        assert expected == pytest.approx(actual, abs=1e-2)
+
+        # For a DiGraph test, use the first graph from the paper cited in
+        # the docs: https://dl.acm.org/doi/pdf/10.1145/775047.775126
+        G = nx.DiGraph()
+        G.add_node(0, label="Univ")
+        G.add_node(1, label="ProfA")
+        G.add_node(2, label="ProfB")
+        G.add_node(3, label="StudentA")
+        G.add_node(4, label="StudentB")
+        G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 4), (4, 2), (3, 0)])
+        node_labels = dict(enumerate(nx.get_node_attributes(G, "label").values()))
+        G = nx.relabel_nodes(G, node_labels)
+
+        expected = {
+            "Univ": 1,
+            "ProfA": 0.0,
+            "ProfB": 0.1323363991265798,
+            "StudentA": 0.0,
+            "StudentB": 0.03387811817640443,
+        }
+        # Use the importance_factor from the paper to get the same numbers.
+        actual = nx.similarity._simrank_similarity_python(
+            G, importance_factor=0.8, source="Univ"
         )
+        assert expected == pytest.approx(actual, abs=1e-2)
+        actual = nx.simrank_similarity(G, importance_factor=0.8, source="Univ")
         assert expected == pytest.approx(actual, abs=1e-2)
 
     def test_simrank_source_and_target(self):
         G = nx.cycle_graph(5)
         expected = 1
         actual = nx.simrank_similarity(G, source=0, target=0)
+        assert expected == pytest.approx(actual, abs=1e-2)
 
         # For a DiGraph test, use the first graph from the paper cited in
         # the docs: https://dl.acm.org/doi/pdf/10.1145/775047.775126
@@ -647,9 +688,7 @@ class TestSimilarity:
         expected = 0.1323363991265798
         # Use the importance_factor from the paper to get the same numbers.
         # Use the pair (0,2) because (0,0) and (0,1) have trivial results.
-        actual = nx.algorithms.similarity.simrank_similarity(
-            G, importance_factor=0.8, source=0, target=2
-        )
+        actual = nx.simrank_similarity(G, importance_factor=0.8, source=0, target=2)
         assert expected == pytest.approx(actual, abs=1e-5)
 
     def test_simrank_numpy_no_source_no_target(self):

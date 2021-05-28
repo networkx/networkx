@@ -1304,16 +1304,27 @@ def simrank_similarity(
 
     Examples
     --------
-    If the nodes of the graph are numbered from zero to *n - 1*, where *n*
-    is the number of nodes in the graph, you can create a SimRank matrix
-    from the return value of this function where the node numbers are
-    the row and column indices of the matrix:
+    >>> G = nx.cycle_graph(2)
+    >>> nx.simrank_similarity(G)
+    {0: {0: 1.0, 1: 0.0}, 1: {0: 0.0, 1: 1.0}}
+    >>> nx.simrank_similarity(G, source=0)
+    {0: 1.0, 1: 0.0}
+    >>> nx.simrank_similarity(G, source=0, target=0)
+    1.0
+
+    The result of this function can be converted to a numpy array
+    representing the SimRank matrix by using the node order of the
+    graph to determine which row and column represent each node.
+    Other ordering of nodes is also possible.
 
     >>> import numpy as np
-    >>> G = nx.cycle_graph(4)
     >>> sim = nx.simrank_similarity(G)
-    >>> lol = [[sim[u][v] for v in sorted(sim[u])] for u in sorted(sim)]
-    >>> sim_array = np.array(lol)
+    >>> np.array([[sim[u][v] for v in G] for u in G])
+    array([[1., 0.],
+           [0., 1.]])
+    >>> sim_1d = nx.simrank_similarity(G, source=0)
+    >>> np.array([sim[0][v] for v in G])
+    array([1., 0.])
 
     References
     ----------
@@ -1326,14 +1337,18 @@ def simrank_similarity(
     """
     import numpy as np
 
+    nodelist = list(G)
+    s_indx = None if source is None else nodelist.index(source)
+    t_indx = None if target is None else nodelist.index(target)
+
     x = simrank_similarity_numpy(
-        G, source, target, importance_factor, max_iterations, tolerance
+        G, s_indx, t_indx, importance_factor, max_iterations, tolerance
     )
     if isinstance(x, np.ndarray):
         if x.ndim == 1:
-            return {i: val for i, val in enumerate(x)}
+            return {node: val for node, val in zip(G, x)}
         else:  # x.ndim == 2:
-            return {i: {j: val for j, val in enumerate(row)} for i, row in enumerate(x)}
+            return {u: {v: val for v, val in zip(G, row)} for u, row in zip(G, x)}
     else:
         return x
 
@@ -1353,11 +1368,11 @@ def _simrank_similarity_python(
     Examples
     --------
     >>> G = nx.cycle_graph(2)
-    >>> _simrank_similarity_python(G)
+    >>> nx.similarity._simrank_similarity_python(G)
     {0: {0: 1, 1: 0.0}, 1: {0: 0.0, 1: 1}}
-    >>> _simrank_similarity_python(G, source=0)
+    >>> nx.similarity._simrank_similarity_python(G, source=0)
     {0: 1, 1: 0.0}
-    >>> _simrank_similarity_python(G, source=0, target=0)
+    >>> nx.similarity._simrank_similarity_python(G, source=0, target=0)
     1
     """
     prevsim = None
