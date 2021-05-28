@@ -152,7 +152,7 @@ def degree_mixing_matrix(G, x="out", y="in", weight=None, nodes=None, normalized
     s = set(d.keys())
     for k, v in d.items():
         s.update(v.keys())
-    mapping = {x:i for i, x in enumerate(s)}
+    mapping = {x: i for i, x in enumerate(s)}
     a = dict_to_numpy_array(d, mapping=mapping)
     if normalized:
         a = a / a.sum()
