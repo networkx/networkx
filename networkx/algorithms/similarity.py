@@ -1341,7 +1341,7 @@ def simrank_similarity(
     s_indx = None if source is None else nodelist.index(source)
     t_indx = None if target is None else nodelist.index(target)
 
-    x = simrank_similarity_numpy(
+    x = _simrank_similarity_numpy(
         G, s_indx, t_indx, importance_factor, max_iterations, tolerance
     )
     if isinstance(x, np.ndarray):
@@ -1404,7 +1404,7 @@ def _simrank_similarity_python(
     return newsim
 
 
-def simrank_similarity_numpy(
+def _simrank_similarity_numpy(
     G,
     source=None,
     target=None,
@@ -1464,12 +1464,12 @@ def simrank_similarity_numpy(
     Examples
     --------
     >>> G = nx.cycle_graph(2)
-    >>> nx.simrank_similarity_numpy(G)
+    >>> nx.similarity._simrank_similarity_numpy(G)
     array([[1., 0.],
            [0., 1.]])
-    >>> nx.simrank_similarity_numpy(G, source=0)
+    >>> nx.similarity._simrank_similarity_numpy(G, source=0)
     array([1., 0.])
-    >>> nx.simrank_similarity_numpy(G, source=0, target=0)
+    >>> nx.similarity._simrank_similarity_numpy(G, source=0, target=0)
     1.0
 
     References
@@ -1515,6 +1515,31 @@ def simrank_similarity_numpy(
     if source is not None:
         return newsim[source]
     return newsim
+
+
+def simrank_similarity_numpy(
+    G,
+    source=None,
+    target=None,
+    importance_factor=0.9,
+    max_iterations=100,
+    tolerance=1e-4,
+):
+    """Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.
+
+    .. deprecated:: 2.6
+        simrank_similarity_numpy is deprecated and will be removed in networkx 3.0.
+        Use simrank_similarity
+
+    """
+    return _simrank_similarity_numpy(
+        G,
+        source,
+        target,
+        importance_factor,
+        max_iterations,
+        tolerance,
+    )
 
 
 # TODO replace w/ math.comb(n, k) for Python 3.8+
