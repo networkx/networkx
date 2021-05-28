@@ -117,7 +117,7 @@ def degree_mixing_dict(G, x="out", y="in", weight=None, nodes=None, normalized=F
     return mixing_dict(xy_iter, normalized=normalized)
 
 
-def degree_mixing_matrix(G, x="out", y="in", weight=None, nodes=None, normalized=True):
+def degree_mixing_matrix(G, x="out", y="in", weight=None, nodes=None, mapping=None, normalized=True):
     """Returns mixing matrix for attribute.
 
     Parameters
@@ -139,6 +139,10 @@ def degree_mixing_matrix(G, x="out", y="in", weight=None, nodes=None, normalized
        The edge attribute that holds the numerical value used
        as a weight.  If None, then each edge has weight 1.
        The degree is the sum of the edge weights adjacent to the node.
+    
+    mapping : dictionary, optional
+       Mapping from node degree to integer index in matrix.
+       If not specified, an arbitrary ordering will be used.
 
     normalized : bool (default=True)
        Return counts if False or probabilities if True.
@@ -149,17 +153,13 @@ def degree_mixing_matrix(G, x="out", y="in", weight=None, nodes=None, normalized
        Counts, or joint probability, of occurrence of node degree.
     """
     d = degree_mixing_dict(G, x=x, y=y, nodes=nodes, weight=weight)
-    s = set(d.keys())
-    for k, v in d.items():
-        s.update(v.keys())
-    mapping = {x: i for i, x in enumerate(s)}
     a = dict_to_numpy_array(d, mapping=mapping)
     if normalized:
         a = a / a.sum()
     return a
 
 
-def numeric_mixing_matrix(G, attribute, nodes=None, normalized=True):
+def numeric_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=True):
     """Returns numeric mixing matrix for attribute.
 
     The attribute must be an integer.
@@ -175,6 +175,10 @@ def numeric_mixing_matrix(G, attribute, nodes=None, normalized=True):
     nodes: list or iterable (optional)
         Build the matrix only with nodes in container. The default is all nodes.
 
+    mapping : dictionary, optional
+       Mapping from node attribute to integer index in matrix.
+       If not specified, an arbitrary ordering will be used.
+
     normalized : bool (default=True)
        Return counts if False or probabilities if True.
 
@@ -183,15 +187,7 @@ def numeric_mixing_matrix(G, attribute, nodes=None, normalized=True):
     m: numpy array
        Counts, or joint, probability of occurrence of node attribute pairs.
     """
-    d = attribute_mixing_dict(G, attribute, nodes)
-    s = set(d.keys())
-    for k, v in d.items():
-        s.update(v.keys())
-    mapping = {x: i for i, x in enumerate(s)}
-    a = dict_to_numpy_array(d, mapping=mapping)
-    if normalized:
-        a = a / a.sum()
-    return a
+    return attribute_mixing_matrix(G, attribute, nodes, mapping, normalized)
 
 
 def mixing_dict(xy, normalized=False):
