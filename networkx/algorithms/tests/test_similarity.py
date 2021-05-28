@@ -695,6 +695,41 @@ class TestSimilarity:
         actual = simrank_similarity(G, importance_factor=0.8, source=0, target=2)
         assert expected == pytest.approx(actual, abs=1e-5)
 
+    @pytest.mark.parametrize("alg", simrank_algs)
+    def test_simrank_max_iterations(self, alg):
+        G = nx.cycle_graph(5)
+        pytest.raises(nx.ExceededMaxIterations, alg, G, max_iterations=10)
+
+    def test_simrank_between_versions(self):
+        G = nx.cycle_graph(5)
+        # _python tolerance 1e-4
+        expected_python_tol4 = {
+            0: 1,
+            1: 0.394512499239852,
+            2: 0.5703550452791322,
+            3: 0.5703550452791323,
+            4: 0.394512499239852,
+        }
+        # _numpy tolerance 1e-4
+        expected_numpy_tol4 = {
+            0: 1.0,
+            1: 0.3947180735764555,
+            2: 0.570482097206368,
+            3: 0.570482097206368,
+            4: 0.3947180735764555,
+        }
+        actual = nx.simrank_similarity(G, source=0)
+        assert expected_numpy_tol4 == pytest.approx(actual, abs=1e-7)
+        # versions differ at 1e-4 level but equal at 1e-3
+        assert expected_python_tol4 != pytest.approx(actual, abs=1e-4)
+        assert expected_python_tol4 == pytest.approx(actual, abs=1e-3)
+
+        actual = nx.similarity._simrank_similarity_python(G, source=0)
+        assert expected_python_tol4 == pytest.approx(actual, abs=1e-7)
+        # versions differ at 1e-4 level but equal at 1e-3
+        assert expected_numpy_tol4 != pytest.approx(actual, abs=1e-4)
+        assert expected_numpy_tol4 == pytest.approx(actual, abs=1e-3)
+
     def test_simrank_numpy_no_source_no_target(self):
         G = nx.cycle_graph(5)
         expected = np.array(

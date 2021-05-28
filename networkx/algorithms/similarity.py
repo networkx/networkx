@@ -1196,41 +1196,6 @@ def optimize_edit_paths(
         yield list(vertex_path), list(edge_path), cost
 
 
-def _is_close(d1, d2, atolerance=0, rtolerance=0):
-    """Determines whether two adjacency matrices are within
-    a provided tolerance.
-
-    Parameters
-    ----------
-    d1 : dict
-        Adjacency dictionary
-
-    d2 : dict
-        Adjacency dictionary
-
-    atolerance : float
-        Some scalar tolerance value to determine closeness
-
-    rtolerance : float
-        A scalar tolerance value that will be some proportion
-        of ``d2``'s value
-
-    Returns
-    -------
-    closeness : bool
-        If all of the nodes within ``d1`` and ``d2`` are within
-        a predefined tolerance, they are considered "close" and
-        this method will return True. Otherwise, this method will
-        return False.
-
-    """
-    # Pre-condition: d1 and d2 have the same keys at each level if they
-    # are dictionaries.
-    if not isinstance(d1, dict) and not isinstance(d2, dict):
-        return abs(d1 - d2) <= atolerance + rtolerance * abs(d2)
-    return all(all(_is_close(d1[u][v], d2[u][v]) for v in d1[u]) for u in d1)
-
-
 def simrank_similarity(
     G,
     source=None,
@@ -1344,13 +1309,13 @@ def simrank_similarity(
     x = _simrank_similarity_numpy(
         G, s_indx, t_indx, importance_factor, max_iterations, tolerance
     )
+
     if isinstance(x, np.ndarray):
         if x.ndim == 1:
             return {node: val for node, val in zip(G, x)}
         else:  # x.ndim == 2:
             return {u: {v: val for v, val in zip(G, row)} for u, row in zip(G, x)}
-    else:
-        return x
+    return x
 
 
 def _simrank_similarity_python(
@@ -1375,8 +1340,6 @@ def _simrank_similarity_python(
     >>> nx.similarity._simrank_similarity_python(G, source=0, target=0)
     1
     """
-    prevsim = None
-
     # build up our similarity adjacency dictionary output
     newsim = {u: {v: 1 if u == v else 0 for v in G} for u in G}
 
@@ -1385,17 +1348,28 @@ def _simrank_similarity_python(
     def avg_sim(s):
         return sum(newsim[w][x] for (w, x) in s) / len(s) if s else 0.0
 
+    Gadj = G.pred if G.is_directed() else G.adj
+
     def sim(u, v):
-        Gadj = G.pred if G.is_directed() else G.adj
         return importance_factor * avg_sim(list(product(Gadj[u], Gadj[v])))
 
-    for _ in range(max_iterations):
-        if prevsim and _is_close(prevsim, newsim, tolerance):
+    for its in range(max_iterations):
+        oldsim = newsim
+        newsim = {u: {v: sim(u, v) if u is not v else 1 for v in G} for u in G}
+        is_close = all(
+            all(
+                abs(newsim[u][v] - old) <= tolerance * (1 + abs(old))
+                for v, old in nbrs.items()
+            )
+            for u, nbrs in oldsim.items()
+        )
+        if is_close:
             break
-        prevsim = newsim
-        newsim = {
-            u: {v: sim(u, v) if u is not v else 1 for v in newsim[u]} for u in newsim
-        }
+
+    if its + 1 == max_iterations:
+        raise nx.ExceededMaxIterations(
+            "simrank did not converge. Try larger max_iterations."
+        )
 
     if source is not None and target is not None:
         return newsim[source][target]
@@ -1413,9 +1387,6 @@ def _simrank_similarity_numpy(
     tolerance=1e-4,
 ):
     """Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.
-
-    .. deprecated:: 2.6
-        simrank_similarity_numpy is deprecated and will be removed in networkx 3.0.
 
     The SimRank algorithm for determining node similarity is defined in
     [1]_.
@@ -1480,14 +1451,6 @@ def _simrank_similarity_numpy(
            International Conference on Knowledge Discovery and Data Mining,
            pp. 538--543. ACM Press, 2002.
     """
-    warnings.warn(
-        (
-            "networkx.simrank_similarity_numpy is deprecated and will be removed"
-            "in NetworkX 3.0, use networkx.simrank_similarity instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
     # This algorithm follows roughly
     #
     #     S = max{C * (A.T * S * A), I}
@@ -1502,13 +1465,18 @@ def _simrank_similarity_numpy(
     adjacency_matrix /= adjacency_matrix.sum(axis=0)
 
     newsim = np.eye(adjacency_matrix.shape[0], dtype=np.float64)
-    for _ in range(max_iterations):
+    for its in range(max_iterations):
         prevsim = np.copy(newsim)
         newsim = importance_factor * ((adjacency_matrix.T @ prevsim) @ adjacency_matrix)
         np.fill_diagonal(newsim, 1.0)
 
         if np.allclose(prevsim, newsim, atol=tolerance):
             break
+
+    if its + 1 == max_iterations:
+        raise nx.ExceededMaxIterations(
+            "simrank did not converge. Try larger max_iterations."
+        )
 
     if source is not None and target is not None:
         return newsim[source, target]
@@ -1532,6 +1500,14 @@ def simrank_similarity_numpy(
         Use simrank_similarity
 
     """
+    warnings.warn(
+        (
+            "networkx.simrank_similarity_numpy is deprecated and will be removed"
+            "in NetworkX 3.0, use networkx.simrank_similarity instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return _simrank_similarity_numpy(
         G,
         source,
