@@ -79,7 +79,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    return hits_scipy2(G, max_iter, tol, nstart, normalized)
+    return hits_scipy3(G, max_iter, tol, nstart, normalized)
 
 
 def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
@@ -433,18 +433,24 @@ def hits_scipy3(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
     if len(G) == 0:
         return {}, {}
     M = nx.adjacency_matrix(G, nodelist=list(G), dtype=float)
-    A = M.T * M  # authority matrix
 
     if nstart is None:
-        eigenvalue, eigenvector = sp.sparse.linalg.eigs(
-            A, k=1, which="LR", maxiter=max_iter, tol=tol
-        )
+        u, s, vt = sp.sparse.linalg.svds(M, k=1, maxiter=max_iter, tol=tol)
     else:
         nstart = np.array(list(nstart.values()))
-        eigenvalue, eigenvector = sp.sparse.linalg.eigs(
-            A, k=1, v0=nstart, which="LR", maxiter=max_iter, tol=tol
-        )
-    a = eigenvector.flatten().real
+        u, s, vt = sp.sparse.linalg.svds(M, k=1, v0=nstart, maxiter=max_iter, tol=tol)
+#    A = M.T * M  # authority matrix
+#
+#    if nstart is None:
+#        eigenvalue, eigenvector = sp.sparse.linalg.eigs(
+#            A, k=1, which="LR", maxiter=max_iter, tol=tol
+#        )
+#    else:
+#        nstart = np.array(list(nstart.values()))
+#        eigenvalue, eigenvector = sp.sparse.linalg.eigs(
+#            A, k=1, v0=nstart, which="LR", maxiter=max_iter, tol=tol
+#        )
+    a = vt.flatten().real
 
     # h=M*a
     h = np.asarray(M * a).flatten()
