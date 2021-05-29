@@ -117,7 +117,9 @@ def degree_mixing_dict(G, x="out", y="in", weight=None, nodes=None, normalized=F
     return mixing_dict(xy_iter, normalized=normalized)
 
 
-def degree_mixing_matrix(G, x="out", y="in", weight=None, nodes=None, mapping=None, normalized=True):
+def degree_mixing_matrix(
+   G, x="out", y="in", weight=None, nodes=None, mapping=None, normalized=True
+):
     """Returns mixing matrix for attribute.
 
     Parameters
@@ -162,15 +164,13 @@ def degree_mixing_matrix(G, x="out", y="in", weight=None, nodes=None, mapping=No
 def numeric_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=True):
     """Returns numeric mixing matrix for attribute.
 
-    The attribute must be an integer.
-
     Parameters
     ----------
     G : graph
        NetworkX graph object.
 
     attribute : string
-       Node attribute key.  The corresponding attribute must be an integer.
+       Node attribute key.
 
     nodes: list or iterable (optional)
         Build the matrix only with nodes in container. The default is all nodes.
