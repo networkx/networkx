@@ -128,6 +128,8 @@ Improvements
   in images with large node sizes.
 - [`#4812 <https://github.com/networkx/networkx/pull/4812>`_]
   Use ``scipy`` implementation for ``hits`` algorithm to improve performance.
+- [`#4847 <https://github.com/networkx/networkx/pull/4847>`_]
+  Improve performance of ``scipy`` implementation of ``hits`` algorithm.
 
 API Changes
 -----------
