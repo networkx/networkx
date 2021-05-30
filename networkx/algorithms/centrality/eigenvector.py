@@ -103,7 +103,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
        Oxford University Press, USA, 2010, pp. 169.
 
     """
-    return eigenvector_centrality_numpy(G, weight, max_iter, tol)
+    return _eigenvector_centrality_numpy(G, weight, max_iter, tol)
 
 
 @not_implemented_for("multigraph")
@@ -145,7 +145,7 @@ def _eigenvector_centrality_python(
     raise nx.PowerIterationFailedConvergence(max_iter)
 
 
-def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
+def _eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     r"""Compute the eigenvector centrality for the graph G.
 
     .. deprecated:: 2.6
@@ -223,16 +223,6 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
        Networks: An Introduction.
        Oxford University Press, USA, 2010, pp. 169.
     """
-    import warnings
-
-    warnings.warn(
-        (
-            "networkx.eigenvector_centrality_numpy is deprecated and will be removed"
-            "in NetworkX 3.0, use networkx.eigenvector_centrality instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
     import numpy as np
     import scipy as sp
     import scipy.sparse.linalg  # call as sp.sparse.linalg
@@ -248,3 +238,24 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     largest = eigenvector.flatten().real
     norm = np.sign(largest.sum()) * sp.linalg.norm(largest)
     return dict(zip(G, largest / norm))
+
+
+def _eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
+    """Compute the eigenvector centrality for the graph G.
+
+    .. deprecated:: 2.6
+        eigenvector_centrality_numpy is deprecated and will be removed in networkx 3.0.
+        Use eigenvector_centrality.
+
+    """
+    import warnings
+
+    warnings.warn(
+        (
+            "networkx.eigenvector_centrality_numpy is deprecated and will be removed"
+            "in NetworkX 3.0, use networkx.eigenvector_centrality instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return _eigenvector_centrality_numpy(G, weight, max_iter, tol)
