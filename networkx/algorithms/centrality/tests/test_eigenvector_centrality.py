@@ -2,7 +2,8 @@ import math
 import pytest
 
 np = pytest.importorskip("numpy")
-pytest.importorskip("scipy")
+sp = pytest.importorskip("scipy")
+import scipy.sparse  # call using sp.sparse
 
 
 import networkx as nx
@@ -46,8 +47,14 @@ class TestEigenvectorCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
 
     def test_maxiter(self):
+        G = nx.path_graph(50)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            b = nx.centrality.eigenvector._eigenvector_centrality_python(G, max_iter=0)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            b = nx.centrality.eigenvector._eigenvector_centrality_python(G, max_iter=1)
+        with pytest.raises(sp.sparse.linalg.eigen.arpack.ArpackNoConvergence):
+            b = nx.eigenvector_centrality(G, max_iter=1)
         with pytest.raises(ValueError):
-            G = nx.path_graph(3)
             b = nx.eigenvector_centrality(G, max_iter=0)
 
 
