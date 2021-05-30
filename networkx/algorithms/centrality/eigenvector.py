@@ -240,7 +240,7 @@ def _eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     return dict(zip(G, largest / norm))
 
 
-def _eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
+def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     """Compute the eigenvector centrality for the graph G.
 
     .. deprecated:: 2.6

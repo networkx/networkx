@@ -88,3 +88,5 @@ Version 3.0
 * In ``algorithms/community/quality.py`` remove ``coverage`` and ``performance``.
 * Remove ``testing``.
 * In ``linalg/graphmatrix.py`` remove ``adj_matrix``.
+* In ``algorithms/centrality/eigenvector.py`` replace ``eigenvector_centrality`` with ``_eigenvector_centrality_numpy``.
+* In ``algorithms/centrality/eigenvector.py`` remove ``eigenvector_centrality_numpy``.
