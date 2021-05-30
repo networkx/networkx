@@ -118,7 +118,7 @@ def degree_mixing_dict(G, x="out", y="in", weight=None, nodes=None, normalized=F
 
 
 def degree_mixing_matrix(
-   G, x="out", y="in", weight=None, nodes=None, mapping=None, normalized=True
+    G, x="out", y="in", weight=None, nodes=None, mapping=None, normalized=True
 ):
     """Returns mixing matrix for attribute.
 
@@ -181,6 +181,15 @@ def numeric_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=Tru
 
     normalized : bool (default=True)
        Return counts if False or probabilities if True.
+
+    Notes
+    -----
+    If each node has a unique attribute value, the unnormalized mixing matrix
+    will be equal to the adjacency matrix. To get a denser mixing matrix,
+    the rounding can be performed ​​to form groups of nodes with equal values.
+    For example, the exact height of persons in cm (180.79155222, 163.9080892,
+    163.30095355, 167.99016217, 168.21590163, ...) can be rounded to (180, 163,
+    163, 168, 168, ...).
 
     Returns
     -------
