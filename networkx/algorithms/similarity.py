@@ -1201,7 +1201,7 @@ def simrank_similarity(
     source=None,
     target=None,
     importance_factor=0.9,
-    max_iterations=100,
+    max_iterations=1000,
     tolerance=1e-4,
 ):
     """Returns the SimRank similarity of nodes in the graph ``G``.
@@ -1314,7 +1314,7 @@ def simrank_similarity(
         if x.ndim == 1:
             return {node: val for node, val in zip(G, x)}
         else:  # x.ndim == 2:
-            return {u: {v: val for v, val in zip(G, row)} for u, row in zip(G, x)}
+            return {u: dict(zip(G, row)) for u, row in zip(G, x)}
     return x
 
 
@@ -1323,7 +1323,7 @@ def _simrank_similarity_python(
     source=None,
     target=None,
     importance_factor=0.9,
-    max_iterations=100,
+    max_iterations=1000,
     tolerance=1e-4,
 ):
     """Returns the SimRank similarity of nodes in the graph ``G``.
@@ -1368,7 +1368,7 @@ def _simrank_similarity_python(
 
     if its + 1 == max_iterations:
         raise nx.ExceededMaxIterations(
-            "simrank did not converge. Try larger max_iterations."
+            f"simrank did not converge after {max_iterations} iterations."
         )
 
     if source is not None and target is not None:
@@ -1383,7 +1383,7 @@ def _simrank_similarity_numpy(
     source=None,
     target=None,
     importance_factor=0.9,
-    max_iterations=100,
+    max_iterations=1000,
     tolerance=1e-4,
 ):
     """Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.
@@ -1462,11 +1462,13 @@ def _simrank_similarity_numpy(
     adjacency_matrix = nx.to_numpy_array(G)
 
     # column-normalize the ``adjacency_matrix``
-    adjacency_matrix /= adjacency_matrix.sum(axis=0)
+    s = np.array(adjacency_matrix.sum(axis=0))
+    s[s == 0] = 1
+    adjacency_matrix /= s #adjacency_matrix.sum(axis=0)
 
-    newsim = np.eye(adjacency_matrix.shape[0], dtype=np.float64)
+    newsim = np.eye(len(G), dtype=np.float64)
     for its in range(max_iterations):
-        prevsim = np.copy(newsim)
+        prevsim = newsim.copy()
         newsim = importance_factor * ((adjacency_matrix.T @ prevsim) @ adjacency_matrix)
         np.fill_diagonal(newsim, 1.0)
 
@@ -1475,7 +1477,7 @@ def _simrank_similarity_numpy(
 
     if its + 1 == max_iterations:
         raise nx.ExceededMaxIterations(
-            "simrank did not converge. Try larger max_iterations."
+            f"simrank did not converge after {max_iterations} iterations."
         )
 
     if source is not None and target is not None:
