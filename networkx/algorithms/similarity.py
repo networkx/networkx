@@ -1464,7 +1464,7 @@ def _simrank_similarity_numpy(
     # column-normalize the ``adjacency_matrix``
     s = np.array(adjacency_matrix.sum(axis=0))
     s[s == 0] = 1
-    adjacency_matrix /= s #adjacency_matrix.sum(axis=0)
+    adjacency_matrix /= s  # adjacency_matrix.sum(axis=0)
 
     newsim = np.eye(len(G), dtype=np.float64)
     for its in range(max_iterations):
