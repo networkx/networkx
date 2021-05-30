@@ -56,7 +56,6 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     --------
     attribute_assortativity_coefficient
     numeric_assortativity_coefficient
-    neighbor_connectivity
     degree_mixing_dict
     degree_mixing_matrix
 

@@ -96,7 +96,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
     return A.asformat("csc")
 
 
-def adjacency_matrix(G, nodelist=None, weight="weight"):
+def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     """Returns adjacency matrix of G.
 
     Parameters
@@ -107,6 +107,10 @@ def adjacency_matrix(G, nodelist=None, weight="weight"):
     nodelist : list, optional
        The rows and columns are ordered according to the nodes in nodelist.
        If nodelist is None, then the ordering is produced by G.nodes().
+
+    dtype : NumPy data-type, optional
+        The desired data-type for the array.
+        If None, then the NumPy default is used.
 
     weight : string or None, optional (default='weight')
        The edge data key used to provide each value in the matrix.
@@ -150,7 +154,21 @@ def adjacency_matrix(G, nodelist=None, weight="weight"):
     to_dict_of_dicts
     adjacency_spectrum
     """
-    return nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight)
+    return nx.to_scipy_sparse_matrix(G, nodelist=nodelist, dtype=dtype, weight=weight)
 
 
-adj_matrix = adjacency_matrix
+def _adj_matrix_warning(G, nodelist=None, dtype=None, weight="weight"):
+    import warnings
+
+    warnings.warn(
+        (
+            "adj_matrix is deprecated and will be removed in version 3.0.\n"
+            "Use `adjacency_matrix` instead\n"
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return adjacency_matrix(G, nodelist, dtype, weight)
+
+
+adj_matrix = _adj_matrix_warning

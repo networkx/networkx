@@ -1,5 +1,6 @@
 """Hubs and authorities analysis of graph structure.
 """
+from warnings import warn
 import networkx as nx
 
 __all__ = ["hits", "hits_numpy", "hits_scipy", "authority_matrix", "hub_matrix"]
@@ -69,6 +70,10 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
+    return hits_scipy(G, max_iter, tol, nstart, normalized)
+
+
+def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
         raise Exception("hits() not defined for graphs with multiedges.")
     if len(G) == 0:
@@ -160,6 +165,10 @@ def hub_matrix(G, nodelist=None):
 def hits_numpy(G, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
 
+    .. deprecated:: 2.6
+
+       hits_numpy is deprecated and will be removed in networkx 3.0.
+
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
     Hubs estimates the node value based on outgoing links.
@@ -216,6 +225,8 @@ def hits_numpy(G, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
+    msg = "networkx.hits_numpy is deprecated and will be removed in NetworkX 3.0, use networkx.hits instead."
+    warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
 
     if len(G) == 0:
@@ -240,8 +251,12 @@ def hits_numpy(G, normalized=True):
     return hubs, authorities
 
 
-def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
+def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
+
+    .. deprecated:: 2.6
+
+       hits_scipy is deprecated and will be removed in networkx 3.0
 
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
@@ -306,6 +321,8 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
+    msg = "networkx.hits_scipy is deprecated and will be removed in NetworkX 3.0, use networkx.hits instead."
+    warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
 
     if len(G) == 0:
@@ -314,6 +331,13 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
     (n, m) = M.shape  # should be square
     A = M.T * M  # authority matrix
     x = np.ones((n, 1)) / n  # initial guess
+    # choose fixed starting vector if not given
+    if nstart is None:
+        x = np.ones((n, 1)) / n  # initial guess
+    else:
+        x = np.array([nstart.get(n, 0) for n in list(G)], dtype=float)
+        x = x / x.sum()
+
     # power iteration on authority matrix
     i = 0
     while True:
