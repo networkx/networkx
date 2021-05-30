@@ -103,6 +103,13 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
        Oxford University Press, USA, 2010, pp. 169.
 
     """
+    return _eigenvector_centrality_numpy(G, weight, max_iter, tol)
+
+
+@not_implemented_for("multigraph")
+def _eigenvector_centrality_python(
+    G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
+):
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
             "cannot compute centrality for the null graph"
@@ -138,8 +145,11 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     raise nx.PowerIterationFailedConvergence(max_iter)
 
 
-def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
+def _eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     r"""Compute the eigenvector centrality for the graph G.
+
+    .. deprecated:: 2.6
+        eigenvector_centrality_numpy is deprecated and will be removed in networkx 3.0.
 
     Eigenvector centrality computes the centrality for a node based on the
     centrality of its neighbors. The eigenvector centrality for node $i$ is
@@ -228,3 +238,24 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     largest = eigenvector.flatten().real
     norm = np.sign(largest.sum()) * sp.linalg.norm(largest)
     return dict(zip(G, largest / norm))
+
+
+def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
+    """Compute the eigenvector centrality for the graph G.
+
+    .. deprecated:: 2.6
+        eigenvector_centrality_numpy is deprecated and will be removed in networkx 3.0.
+        Use eigenvector_centrality.
+
+    """
+    import warnings
+
+    warnings.warn(
+        (
+            "networkx.eigenvector_centrality_numpy is deprecated and will be removed"
+            "in NetworkX 3.0, use networkx.eigenvector_centrality instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return _eigenvector_centrality_numpy(G, weight, max_iter, tol)
