@@ -1247,6 +1247,28 @@ class TestWriteGraphML(BaseGraphML):
         os.close(fd)
         os.unlink(fname)
 
+    def test_multigraph_edge_id_from_attribute(self):
+        G = nx.MultiGraph()
+        G.add_edges_from([("a", "b", 0), ("b", "c", 0), ("a", "b", 1)])
+        edge_attributes = {e: str(e) for e in G.edges}
+        nx.set_edge_attributes(G, edge_attributes, "eid")
+        fd, fname = tempfile.mkstemp()
+        self.writer(G, fname, "eid")  # set edge_id_from_attribute e.g. "eid"
+        H = nx.read_graphml(fname)
+        assert H.is_multigraph()
+        H = nx.read_graphml(fname, force_multigraph=True)
+        assert H.is_multigraph()
+
+        # NetworkX uses edge_ids as keys in multigraphs if no key
+        assert [edge[2] for edge in H.edges(keys=True)] == list(
+            edge_attributes.values()
+        )
+        assert [edge[2].get("eid") for edge in H.edges(data=True)] == list(
+            edge_attributes.values()
+        )
+        os.close(fd)
+        os.unlink(fname)
+
     def test_numpy_float64(self):
         np = pytest.importorskip("numpy")
         wt = np.float64(3.4)

@@ -57,6 +57,7 @@ __all__ = [
 def write_graphml_xml(
     G,
     path,
+    edge_id_from_attribute=None,
     encoding="utf-8",
     prettyprint=True,
     infer_numeric_types=False,
@@ -71,6 +72,8 @@ def write_graphml_xml(
     path : file or string
        File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
+    edge_id_from_attribute : keyword argument, hashtable identifier (optional),
+       Select edge_attribute for edge_id
     encoding : string (optional)
        Encoding for text data.
     prettyprint : bool (optional)
@@ -93,6 +96,7 @@ def write_graphml_xml(
     and unidirected edges together) hyperedges, nested graphs, or ports.
     """
     writer = GraphMLWriter(
+        edge_id_from_attribute=edge_id_from_attribute,
         encoding=encoding,
         prettyprint=prettyprint,
         infer_numeric_types=infer_numeric_types,
@@ -106,6 +110,7 @@ def write_graphml_xml(
 def write_graphml_lxml(
     G,
     path,
+    edge_id_from_attribute=None,
     encoding="utf-8",
     prettyprint=True,
     infer_numeric_types=False,
@@ -123,6 +128,8 @@ def write_graphml_lxml(
     path : file or string
        File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
+    edge_id_from_attribute : keyword argument, hashtable identifier (optional),
+       Select edge_attribute for edge_id
     encoding : string (optional)
        Encoding for text data.
     prettyprint : bool (optional)
@@ -148,12 +155,19 @@ def write_graphml_lxml(
         import lxml.etree as lxmletree
     except ImportError:
         return write_graphml_xml(
-            G, path, encoding, prettyprint, infer_numeric_types, named_key_ids
+            G,
+            path,
+            edge_id_from_attribute,
+            encoding,
+            prettyprint,
+            infer_numeric_types,
+            named_key_ids,
         )
 
     writer = GraphMLWriterLxml(
         path,
         graph=G,
+        edge_id_from_attribute=edge_id_from_attribute,
         encoding=encoding,
         prettyprint=prettyprint,
         infer_numeric_types=infer_numeric_types,
@@ -162,13 +176,21 @@ def write_graphml_lxml(
     writer.dump()
 
 
-def generate_graphml(G, encoding="utf-8", prettyprint=True, named_key_ids=False):
+def generate_graphml(
+    G,
+    edge_id_from_attribute=None,
+    encoding="utf-8",
+    prettyprint=True,
+    named_key_ids=False,
+):
     """Generate GraphML lines for G
 
     Parameters
     ----------
     G : graph
        A networkx graph
+    edge_id_from_attribute : keyword argument, hashtable identifier (optional),
+       Select edge_attribute for edge_id
     encoding : string (optional)
        Encoding for text data.
     prettyprint : bool (optional)
@@ -190,7 +212,10 @@ def generate_graphml(G, encoding="utf-8", prettyprint=True, named_key_ids=False)
     edges together) hyperedges, nested graphs, or ports.
     """
     writer = GraphMLWriter(
-        encoding=encoding, prettyprint=prettyprint, named_key_ids=named_key_ids
+        edge_id_from_attribute=edge_id_from_attribute,
+        encoding=encoding,
+        prettyprint=prettyprint,
+        named_key_ids=named_key_ids,
     )
     writer.add_graph_element(G)
     yield from str(writer).splitlines()
@@ -415,6 +440,7 @@ class GraphMLWriter(GraphML):
     def __init__(
         self,
         graph=None,
+        edge_id_from_attribute=None,
         encoding="utf-8",
         prettyprint=True,
         infer_numeric_types=False,
@@ -428,6 +454,7 @@ class GraphMLWriter(GraphML):
         self.infer_numeric_types = infer_numeric_types
         self.prettyprint = prettyprint
         self.named_key_ids = named_key_ids
+        self.edge_id_from_attribute = edge_id_from_attribute
         self.encoding = encoding
         self.xml = self.myElement(
             "graphml",
@@ -539,7 +566,10 @@ class GraphMLWriter(GraphML):
                     "edge",
                     source=str(u),
                     target=str(v),
-                    id="({},{},{})".format(str(u), str(v), str(key)),
+                    id=str(data.get(self.edge_id_from_attribute))
+                    if self.edge_id_from_attribute
+                    and self.edge_id_from_attribute in data
+                    else str(key),
                 )
                 default = G.graph.get("edge_default", {})
                 self.add_attributes("edge", edge_element, data, default)
@@ -640,6 +670,7 @@ class GraphMLWriterLxml(GraphMLWriter):
         self,
         path,
         graph=None,
+        edge_id_from_attribute=None,
         encoding="utf-8",
         prettyprint=True,
         infer_numeric_types=False,
@@ -650,6 +681,7 @@ class GraphMLWriterLxml(GraphMLWriter):
 
         self.myElement = lxmletree.Element
 
+        self.edge_id_from_attribute = edge_id_from_attribute
         self._encoding = encoding
         self._prettyprint = prettyprint
         self.named_key_ids = named_key_ids
@@ -875,9 +907,6 @@ class GraphMLReader(GraphML):
         # attribute is specified
         edge_id = edge_element.get("id")
         if edge_id:
-            parsed_edge_id = edge_id.strip("()").split(",")
-            if len(parsed_edge_id) > 2:
-                edge_id = parsed_edge_id[2]
             # self.edge_ids is used by `make_graph` method for non-multigraphs
             self.edge_ids[source, target] = edge_id
             try:
