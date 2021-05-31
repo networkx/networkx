@@ -78,6 +78,8 @@ Improvements
   Adds ``forest_str`` for string representation of trees.
 - [`#4319 <https://github.com/networkx/networkx/pull/4319>`_]
   pagerank uses scipy by default now.
+- [`#4841 <https://github.com/networkx/networkx/pull/4841>`_]
+  simrank_similarity uses numpy by default now.
 - [`#4317 <https://github.com/networkx/networkx/pull/4317>`_]
   New ``source`` argument to ``has_eulerian_path`` to look for path starting at
   source.
@@ -239,6 +241,8 @@ Deprecations
   Deprecate ``assert_nodes_equal``, ``assert_edges_equal``, and ``assert_graphs_equal``.
 - [`#4850 <https://github.com/networkx/networkx/pull/4850>`_]
   Deprecate ``adj_matrix``.
+- [`#4841 <https://github.com/networkx/networkx/pull/4841>`_]
+  Deprecate ``simrank_similarity_numpy``.
 
 Contributors
 ------------
