@@ -226,7 +226,7 @@ def parse_gml(lines, label="label", destringizer=None):
     `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML url <>`_.
+    `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
     """
