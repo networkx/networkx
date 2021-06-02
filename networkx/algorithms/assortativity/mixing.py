@@ -141,7 +141,7 @@ def degree_mixing_matrix(
        The edge attribute that holds the numerical value used
        as a weight.  If None, then each edge has weight 1.
        The degree is the sum of the edge weights adjacent to the node.
-    
+
     mapping : dictionary, optional
        Mapping from node degree to integer index in matrix.
        If not specified, an arbitrary ordering will be used.
