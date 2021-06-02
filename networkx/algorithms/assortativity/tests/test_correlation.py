@@ -39,7 +39,7 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
         np.testing.assert_almost_equal(r, -1.0 / 7.0, decimal=4)
 
     def test_degree_assortativity_weighted(self):
-        r = nx.degree_pearson_correlation_coefficient(self.W)
+        r = nx.degree_assortativity_coefficient(self.W, weight='weight')
         np.testing.assert_almost_equal(r, -0.1429, decimal=4)
 
 
