@@ -87,10 +87,10 @@ Release Process
   - Update ``major`` and ``minor`` in ``networkx/release.py``.
   - Append the following to ``doc/_templates/layout.html``::
 
-    {% block document %}
-      {% include "dev_banner.html" %}
-      {{ super() }}
-    {% endblock %}
+      {% block document %}
+        {% include "dev_banner.html" %}
+        {{ super() }}
+      {% endblock %}
 
  - Commit and push changes::
 

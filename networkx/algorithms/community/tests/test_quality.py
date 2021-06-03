@@ -11,7 +11,6 @@ from networkx.algorithms.community import modularity
 from networkx.algorithms.community import performance
 from networkx.algorithms.community import partition_quality
 from networkx.algorithms.community.quality import inter_community_edges
-from networkx.testing import almost_equal
 
 
 class TestPerformance:
@@ -21,15 +20,15 @@ class TestPerformance:
         """Tests that a poor partition has a low performance measure."""
         G = barbell_graph(3, 0)
         partition = [{0, 1, 4}, {2, 3, 5}]
-        assert almost_equal(8 / 15, performance(G, partition))
-        assert almost_equal(8 / 15, partition_quality(G, partition)[1])
+        assert 8 / 15 == pytest.approx(performance(G, partition), abs=1e-7)
+        assert 8 / 15 == pytest.approx(partition_quality(G, partition)[1], abs=1e-7)
 
     def test_good_partition(self):
         """Tests that a good partition has a high performance measure."""
         G = barbell_graph(3, 0)
         partition = [{0, 1, 2}, {3, 4, 5}]
-        assert almost_equal(14 / 15, performance(G, partition))
-        assert almost_equal(14 / 15, partition_quality(G, partition)[1])
+        assert 14 / 15 == pytest.approx(performance(G, partition), abs=1e-7)
+        assert 14 / 15 == pytest.approx(partition_quality(G, partition)[1], abs=1e-7)
 
 
 class TestCoverage:
@@ -39,39 +38,39 @@ class TestCoverage:
         """Tests that a poor partition has a low coverage measure."""
         G = barbell_graph(3, 0)
         partition = [{0, 1, 4}, {2, 3, 5}]
-        assert almost_equal(3 / 7, coverage(G, partition))
-        assert almost_equal(3 / 7, partition_quality(G, partition)[0])
+        assert 3 / 7 == pytest.approx(coverage(G, partition), abs=1e-7)
+        assert 3 / 7 == pytest.approx(partition_quality(G, partition)[0], abs=1e-7)
 
     def test_good_partition(self):
         """Tests that a good partition has a high coverage measure."""
         G = barbell_graph(3, 0)
         partition = [{0, 1, 2}, {3, 4, 5}]
-        assert almost_equal(6 / 7, coverage(G, partition))
-        assert almost_equal(6 / 7, partition_quality(G, partition)[0])
+        assert 6 / 7 == pytest.approx(coverage(G, partition), abs=1e-7)
+        assert 6 / 7 == pytest.approx(partition_quality(G, partition)[0], abs=1e-7)
 
 
 def test_modularity():
     G = nx.barbell_graph(3, 0)
     C = [{0, 1, 4}, {2, 3, 5}]
-    assert almost_equal(-16 / (14 ** 2), modularity(G, C))
+    assert (-16 / (14 ** 2)) == pytest.approx(modularity(G, C), abs=1e-7)
     C = [{0, 1, 2}, {3, 4, 5}]
-    assert almost_equal((35 * 2) / (14 ** 2), modularity(G, C))
+    assert (35 * 2) / (14 ** 2) == pytest.approx(modularity(G, C), abs=1e-7)
 
     n = 1000
     G = nx.erdos_renyi_graph(n, 0.09, seed=42, directed=True)
     C = [set(range(n // 2)), set(range(n // 2, n))]
-    assert almost_equal(0.00017154251389292754, modularity(G, C))
+    assert 0.00017154251389292754 == pytest.approx(modularity(G, C), abs=1e-7)
 
     G = nx.margulis_gabber_galil_graph(10)
     mid_value = G.number_of_nodes() // 2
     nodes = list(G.nodes)
     C = [set(nodes[:mid_value]), set(nodes[mid_value:])]
-    assert almost_equal(0.13, modularity(G, C))
+    assert 0.13 == pytest.approx(modularity(G, C), abs=1e-7)
 
     G = nx.DiGraph()
     G.add_edges_from([(2, 1), (2, 3), (3, 4)])
     C = [{1, 2}, {3, 4}]
-    assert almost_equal(2 / 9, modularity(G, C))
+    assert 2 / 9 == pytest.approx(modularity(G, C), abs=1e-7)
 
 
 def test_modularity_resolution():

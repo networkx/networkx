@@ -1,9 +1,9 @@
 """Unit tests for the :mod:`networkx.algorithms.boundary` module."""
 
 from itertools import combinations
-
+import pytest
 import networkx as nx
-from networkx.testing import almost_equal, assert_edges_equal
+from networkx.utils import edges_equal
 from networkx import convert_node_labels_to_integers as cnlti
 
 
@@ -51,11 +51,11 @@ class TestNodeBoundary:
             return min(len(nx.node_boundary(G, nn)) / k for nn in combinations(G, k))
 
         P = nx.petersen_graph()
-        assert almost_equal(cheeger(P, 1), 3.00, places=2)
-        assert almost_equal(cheeger(P, 2), 2.00, places=2)
-        assert almost_equal(cheeger(P, 3), 1.67, places=2)
-        assert almost_equal(cheeger(P, 4), 1.00, places=2)
-        assert almost_equal(cheeger(P, 5), 0.80, places=2)
+        assert cheeger(P, 1) == pytest.approx(3.00, abs=1e-2)
+        assert cheeger(P, 2) == pytest.approx(2.00, abs=1e-2)
+        assert cheeger(P, 3) == pytest.approx(1.67, abs=1e-2)
+        assert cheeger(P, 4) == pytest.approx(1.00, abs=1e-2)
+        assert cheeger(P, 5) == pytest.approx(0.80, abs=1e-2)
 
     def test_directed(self):
         """Tests the node boundary of a directed graph."""
@@ -117,11 +117,11 @@ class TestEdgeBoundary:
         assert ilen(nx.edge_boundary(K10, [4, 5, 6, 7])) == 24
         assert ilen(nx.edge_boundary(K10, [3, 4, 5, 6, 7])) == 25
         assert ilen(nx.edge_boundary(K10, [8, 9, 10])) == 21
-        assert_edges_equal(
+        assert edges_equal(
             nx.edge_boundary(K10, [4, 5, 6], [9, 10]),
             [(4, 9), (4, 10), (5, 9), (5, 10), (6, 9), (6, 10)],
         )
-        assert_edges_equal(
+        assert edges_equal(
             nx.edge_boundary(K10, [1, 2, 3], [3, 4, 5]),
             [(1, 3), (1, 4), (1, 5), (2, 3), (2, 4), (2, 5), (3, 4), (3, 5)],
         )

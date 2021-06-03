@@ -3,7 +3,7 @@
 import pytest
 
 import networkx as nx
-from networkx.testing import assert_edges_equal
+from networkx.utils import edges_equal
 from itertools import product
 
 
@@ -76,7 +76,7 @@ class TestGrid2DGraph:
         assert nx.is_isomorphic(H, G)
         G = nx.grid_2d_graph(5, 6)
         H = nx.grid_2d_graph(range(5), range(6))
-        assert_edges_equal(H, G)
+        assert edges_equal(H, G)
 
 
 class TestGridGraph:
