@@ -1,4 +1,4 @@
-"""Laplacian matrix of graphs.
+"""Laplacian matrix of an undirected graphs.
 """
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -9,8 +9,7 @@ __all__ = [
     "directed_laplacian_matrix",
     "directed_combinatorial_laplacian_matrix",
     "distance_matrix",
-    "k_path_Laplacian"
-    
+    "k_path_Laplacian",
 ]
 
 
@@ -54,47 +53,50 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=sorted(nodelist), weight=weight, format="csr")
+    A = nx.to_scipy_sparse_matrix(
+        G, nodelist=sorted(nodelist), weight=weight, format="csr"
+    )
     n, m = A.shape
     diags = A.sum(axis=1)
     D = sp.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
     return D - A
 
+
 # @not_implemented_for("directed")
 # def distance_matrix(G,nodelist=None, weight="weight"):
-    
+
 #     """
 #     Notes
 #     --------
 #     A distance between two nodes is the length of the shortest path between these nodes.
 #     Is 0 if is between node with itself and infinity if there is no path joining these two nodes
 #     (In case of disconected graph).
-    
+
 #     This is a distance function. Given a graph, it return a pairwise distance matrix
 #     between nodes. The graph structure is created through networkx library.
-    
-    
+
+
 #     Parameters
 #     ----------
 #     G: Graph (Undirected)
-    
-#     Return 
+
+#     Return
 #     ------
 #     Pairwise matrix of distance Between Node
-    
+
 #     Raises
 #     ------
 #     When The graph is disconnected or directed.
-    
-    
+
+
 #     Example
 #     -------
-#     A graph of 5 nodes and 5 edges. 
-    
+#     A graph of 5 nodes and 5 edges.
+
 #     >>> G=nx.Graph() # create an empty graph
 #     >>> Edges=[(1,2),(2,3),(2,5),(3,4),(4,5)] # Create a list of edges
 #     >>> G.add_edges_from(Edges) # Add these edges to the empty graph G.
-    
+
 
 #     >>> print(distance_matrix(G))
 #     array([[0, 1, 2, 3, 2],
@@ -105,7 +107,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 #     """
 #     if nodelist is None:
 #         nodelist = list(G)
-    
+
 #     if nx.is_connected(G):
 #         D=list(nx.shortest_path_length(G))
 #         D=sorted(D,reverse=False)
@@ -123,62 +125,62 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
 # @not_implemented_for("directed")
 # def k_path_Laplacian(G,k, nodelist=None, weight="weight"):
-    
-    
+
+
 #     """
 #     Notes
 #     -----
-#     k_path_Laplacian is the generalization of standard Laplacian, this one is 1-degree or 
-#     local or direct neighbors or distance 1. Unlike k_path_Laplacian where k means the distance 
+#     k_path_Laplacian is the generalization of standard Laplacian, this one is 1-degree or
+#     local or direct neighbors or distance 1. Unlike k_path_Laplacian where k means the distance
 #     two consider. You put 1 in the Adjacency matrix if the distance between two nodes is k.
 #     We call this adjacency matrix k-Path Adjacency matrix.
-    
+
 #     From this Adjacency matrix, you compute the Degree and Laplacian Matrix. You need to know the
 #     diameter of your graph (Maximum distance of nodes in a graph.)
-    
+
 #     Parameters
 #     ----------
 #     k: int
 #         Is used to precise distance that you want to use.
-#     If k= 2, you put 1 in the matrix if the distance between two nodes is 2. And so on. 
-    
+#     If k= 2, you put 1 in the matrix if the distance between two nodes is 2. And so on.
+
 #     Returns
 #     -------
 #     P: k-Path Adjacency matrix
 #     Deg: k Degree matrix
 #     Deg-P: k-path Laplacian
-    
+
 #     Example
 #     -------
-    
+
 #     >>> k= 2
 #     >>> k_path_Laplacian(G,k)[0]
-    
+
 #     array([[0., 0., 1., 0., 1.],
 #        [0., 0., 0., 1., 0.],
 #        [1., 0., 0., 0., 1.],
 #        [0., 1., 0., 0., 0.],
 #        [1., 0., 1., 0., 0.]])
-       
+
 #     Raises
 #     ------
 #     Errors when the graph is not connected or directed.
-       
+
 #     """
 #     if nodelist is None:
 #         nodelist = list(G)
-        
+
 #     I=np.ones(len(G.nodes()))
 #     Deg=np.zeros((len(G.nodes()),len(G.nodes())))
 #     P=np.zeros((len(G.nodes()),len(G.nodes())))
 #     G_diam= nx.diameter(G)
 #     Dis= distance_matrix(G)
-    
+
 #     if k>G_diam:
 #         raise nx.NetworkXError('{} is greater than {} which is the diameter of your graph. Please check your Graph diameter'.format(k, G_diam))
-        
+
 #         return None, None, None
-    
+
 #     else:
 #         for i in range(len(G.nodes())):
 #             for j in range(len(G.nodes())):
@@ -189,8 +191,9 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 #         Result= np.dot(I.T,P)
 #         for t in range(len(G.nodes())):
 #             Deg[t,t]=Result[t]
-        
+
 #         return P,Deg,Deg-P
+
 
 @not_implemented_for("directed")
 def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
