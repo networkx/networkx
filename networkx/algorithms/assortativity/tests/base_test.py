@@ -68,5 +68,5 @@ class BaseTestNumericMixing:
         F = nx.Graph()
         F.add_edges_from([(0, 3), (1, 3), (2, 3)], weight=0.5)
         F.add_edge(0, 2, weight=1)
-        nx.set_node_attributes(F, dict(F.degree(weight='weight')), 'margin')
+        nx.set_node_attributes(F, dict(F.degree(weight="weight")), "margin")
         cls.F = F

@@ -5,9 +5,9 @@ np = pytest.importorskip("numpy")
 
 import networkx as nx
 from .base_test import (
-    BaseTestAttributeMixing, 
-    BaseTestDegreeMixing, 
-    BaseTestNumericMixing
+    BaseTestAttributeMixing,
+    BaseTestDegreeMixing,
+    BaseTestNumericMixing,
 )
 
 
@@ -34,7 +34,7 @@ class TestDegreeMixingDict(BaseTestDegreeMixing):
         assert d == d_result
 
     def test_degree_mixing_dict_weighted(self):
-        d = nx.degree_mixing_dict(self.W, weight='weight')
+        d = nx.degree_mixing_dict(self.W, weight="weight")
         d_result = {0.5: {1.5: 1}, 1.5: {1.5: 6, 0.5: 1}}
 
 
@@ -84,21 +84,17 @@ class TestDegreeMixingMatrix(BaseTestDegreeMixing):
         np.testing.assert_equal(a, a_result / float(a_result.sum()))
 
     def test_degree_mixing_matrix_weighted(self):
-        a_result = np.array([[0., 1.],
-                             [1., 6.]]
-                            )
-        a = nx.degree_mixing_matrix(self.W, weight='weight', normalized=False)
+        a_result = np.array([[0.0, 1.0], [1.0, 6.0]])
+        a = nx.degree_mixing_matrix(self.W, weight="weight", normalized=False)
         np.testing.assert_equal(a, a_result)
-        a = nx.degree_mixing_matrix(self.W, weight='weight')
+        a = nx.degree_mixing_matrix(self.W, weight="weight")
         np.testing.assert_equal(a, a_result / float(a_result.sum()))
 
     def test_degree_mixing_matrix_mapping(self):
-        a_result = np.array([[6., 1.],
-                             [1., 0.]]
-                            )
+        a_result = np.array([[6.0, 1.0], [1.0, 0.0]])
         mapping = {0.5: 1, 1.5: 0}
         a = nx.degree_mixing_matrix(
-            self.W, weight='weight', normalized=False, mapping=mapping
+            self.W, weight="weight", normalized=False, mapping=mapping
         )
         np.testing.assert_equal(a, a_result)
 
@@ -165,10 +161,7 @@ class TestAttributeMixingMatrix(BaseTestAttributeMixing):
 class TestNumericMixingMatrix(BaseTestNumericMixing):
     def test_numeric_mixing_matrix_negative(self):
         mapping = {-2: 0, -3: 1, -4: 2}
-        a_result = np.array([[4., 1., 1.],
-                             [1., 0., 0.],
-                             [1., 0., 0.]]
-        )
+        a_result = np.array([[4.0, 1.0, 1.0], [1.0, 0.0, 0.0], [1.0, 0.0, 0.0]])
         a = nx.numeric_mixing_matrix(
             self.N, "margin", mapping=mapping, normalized=False
         )
@@ -178,9 +171,7 @@ class TestNumericMixingMatrix(BaseTestNumericMixing):
 
     def test_numeric_mixing_matrix_float(self):
         mapping = {0.5: 1, 1.5: 0}
-        a_result = np.array([[6., 1.],
-                             [1., 0.]]
-        )
+        a_result = np.array([[6.0, 1.0], [1.0, 0.0]])
         a = nx.numeric_mixing_matrix(
             self.F, "margin", mapping=mapping, normalized=False
         )
