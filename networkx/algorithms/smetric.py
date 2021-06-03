@@ -1,5 +1,7 @@
 import networkx as nx
 
+__all__ = ["s_metric"]
+
 
 def s_metric(G, normalized=True):
     """Returns the s-metric of graph.

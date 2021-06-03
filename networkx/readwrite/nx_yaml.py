@@ -14,93 +14,46 @@ http://pyyaml.org/wiki/PyYAML
 
 """
 
-__all__ = ["read_yaml", "write_yaml"]
 
-import warnings
-from networkx.utils import open_file
-
-
-@open_file(1, mode="w")
-def write_yaml(G_to_be_yaml, path_for_yaml_output, **kwds):
-    """Write graph G in YAML format to path.
-
-    YAML is a data serialization format designed for human readability
-    and interaction with scripting languages [1]_.
-
-    Parameters
-    ----------
-    G_to_be_yaml : graph
-       A NetworkX graph
-    path_for_yaml_output : file or string
-       File or filename to write.
-       Filenames ending in .gz or .bz2 will be compressed.
-
-    Notes
-    -----
-    To use encoding on the output file include e.g. `encoding='utf-8'`
-    in the keyword arguments.
-
-    Examples
-    --------
-    >>> G = nx.path_graph(4)
-    >>> nx.write_yaml(G, "test.yaml")
-
-    References
-    ----------
-    .. [1] http://www.yaml.org
-
-    .. deprecated:: 2.6
-    """
-    msg = (
-        "write_yaml is deprecated and will be removed in 3.0."
-        "Use ``yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)``"
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    try:
-        import yaml
-    except ImportError as e:
-        raise ImportError("write_yaml() requires PyYAML: http://pyyaml.org/") from e
-    yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)
+def __dir__():
+    return ["read_yaml", "write_yaml"]
 
 
-@open_file(0, mode="r")
-def read_yaml(path):
-    """Read graph in YAML format from path.
-
-    YAML is a data serialization format designed for human readability
-    and interaction with scripting languages [1]_.
-
-    Parameters
-    ----------
-    path : file or string
-       File or filename to read.  Filenames ending in .gz or .bz2
-       will be uncompressed.
-
-    Returns
-    -------
-    G : NetworkX graph
-
-    Examples
-    --------
-    >>> G = nx.path_graph(4)
-    >>> nx.write_yaml(G, "test.yaml")
-    >>> G = nx.read_yaml("test.yaml")
-
-    References
-    ----------
-    .. [1] http://www.yaml.org
-
-    .. deprecated:: 2.6
-    """
-    msg = (
-        "read_yaml is deprecated and will be removed in 3.0."
-        "Use ``yaml.load(path, Loader=yaml.FullLoader)``"
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    try:
-        import yaml
-    except ImportError as e:
-        raise ImportError("read_yaml() requires PyYAML: http://pyyaml.org/") from e
-
-    G = yaml.load(path, Loader=yaml.Loader)
-    return G
+def __getattr__(name):
+    """Remove functions and provide informative error messages."""
+    if name == "nx_yaml":
+        raise ImportError(
+            "\nThe nx_yaml module has been removed from NetworkX.\n"
+            "Please use the `yaml` package directly for working with yaml data.\n"
+            "For example, a networkx.Graph `G` can be written to and loaded\n"
+            "from a yaml file with:\n\n"
+            "    import yaml\n\n"
+            "    with open('path_to_yaml_file', 'w') as fh:\n"
+            "        yaml.dump(G, fh)\n"
+            "    with open('path_to_yaml_file', 'r') as fh:\n"
+            "        G = yaml.load(fh, Loader=yaml.Loader)\n\n"
+            "Note that yaml.Loader is considered insecure - see the pyyaml\n"
+            "documentation for further details.\n\n"
+            "This message will be removed in NetworkX 3.0."
+        )
+    if name == "read_yaml":
+        raise ImportError(
+            "\nread_yaml has been removed from NetworkX, please use `yaml`\n"
+            "directly:\n\n"
+            "    import yaml\n\n"
+            "    with open('path', 'r') as fh:\n"
+            "        yaml.load(fh, Loader=yaml.Loader)\n\n"
+            "Note that yaml.Loader is considered insecure - see the pyyaml\n"
+            "documentation for further details.\n\n"
+            "This message will be removed in NetworkX 3.0."
+        )
+    if name == "write_yaml":
+        raise ImportError(
+            "\nwrite_yaml has been removed from NetworkX, please use `yaml`\n"
+            "directly:\n\n"
+            "    import yaml\n\n"
+            "    with open('path_for_yaml_output', 'w') as fh:\n"
+            "        yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)\n\n"
+            "This message will be removed in NetworkX 3.0."
+        )
+    raise AttributeError(f"module {__name__} has no attribute {name}")

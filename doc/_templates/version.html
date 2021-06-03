@@ -1,10 +1,6 @@
-{%- extends "pydata_sphinx_theme/docs-navbar.html" %}
-
-{%- block icon_links -%}
-<!-- begin version dropdown -->
 <ul class="navbar-nav">
     <li class="mr-2 dropdown">
-        <button type="button" class="btn btn-{% if (build_dev_html|tobool) %}danger{% else %}primary{% endif %} btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        <button type="button" class="btn btn-version btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
             v{{ release }}
             <span class="caret"></span>
         </button>
@@ -15,6 +11,3 @@
         </ul>
     </li>
 </ul>
-<!-- end version dropdown -->
-{%- include "icon-links.html" with context -%}
-{%- endblock %}

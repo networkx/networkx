@@ -10,7 +10,6 @@ from networkx.algorithms.centrality.subgraph_alg import (
     subgraph_centrality,
     subgraph_centrality_exp,
 )
-from networkx.testing import almost_equal
 
 
 class TestSubgraph:
@@ -18,7 +17,7 @@ class TestSubgraph:
         answer = {0: 1.5430806348152433, 1: 1.5430806348152433}
         result = subgraph_centrality(nx.path_graph(2))
         for k, v in result.items():
-            assert almost_equal(answer[k], result[k], places=7)
+            assert answer[k] == pytest.approx(result[k], abs=1e-7)
 
         answer1 = {
             "1": 1.6445956054135658,
@@ -39,10 +38,10 @@ class TestSubgraph:
         )
         result1 = subgraph_centrality(G1)
         for k, v in result1.items():
-            assert almost_equal(answer1[k], result1[k], places=7)
+            assert answer1[k] == pytest.approx(result1[k], abs=1e-7)
         result1 = subgraph_centrality_exp(G1)
         for k, v in result1.items():
-            assert almost_equal(answer1[k], result1[k], places=7)
+            assert answer1[k] == pytest.approx(result1[k], abs=1e-7)
 
     def test_subgraph_centrality_big_graph(self):
         g199 = nx.complete_graph(199)
@@ -54,6 +53,25 @@ class TestSubgraph:
         comm200 = nx.subgraph_centrality(g200)
         comm200_exp = nx.subgraph_centrality_exp(g200)
 
+    def test_communicability_betweenness_centrality_small(self):
+        result = communicability_betweenness_centrality(nx.path_graph(2))
+        assert result == {0: 0, 1: 0}
+
+        result = communicability_betweenness_centrality(nx.path_graph(1))
+        assert result == {0: 0}
+
+        result = communicability_betweenness_centrality(nx.path_graph(0))
+        assert result == {}
+
+        answer = {0: 0.1411224421177313, 1: 1.0, 2: 0.1411224421177313}
+        result = communicability_betweenness_centrality(nx.path_graph(3))
+        for k, v in result.items():
+            assert answer[k] == pytest.approx(result[k], abs=1e-7)
+
+        result = communicability_betweenness_centrality(nx.complete_graph(3))
+        for k, v in result.items():
+            assert 0.49786143366223296 == pytest.approx(result[k], abs=1e-7)
+
     def test_communicability_betweenness_centrality(self):
         answer = {
             0: 0.07017447951484615,
@@ -63,7 +81,7 @@ class TestSubgraph:
         }
         result = communicability_betweenness_centrality(nx.path_graph(4))
         for k, v in result.items():
-            assert almost_equal(answer[k], result[k], places=7)
+            assert answer[k] == pytest.approx(result[k], abs=1e-7)
 
         answer1 = {
             "1": 0.060039074193949521,
@@ -84,9 +102,9 @@ class TestSubgraph:
         )
         result1 = communicability_betweenness_centrality(G1)
         for k, v in result1.items():
-            assert almost_equal(answer1[k], result1[k], places=7)
+            assert answer1[k] == pytest.approx(result1[k], abs=1e-7)
 
     def test_estrada_index(self):
         answer = 1041.2470334195475
         result = estrada_index(nx.karate_club_graph())
-        assert almost_equal(answer, result, places=7)
+        assert answer == pytest.approx(result, abs=1e-7)
