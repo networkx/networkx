@@ -22,7 +22,7 @@ specification.  For other data types, you need to explicitly supply a
 `stringizer`/`destringizer`.
 
 For additional documentation on the GML file format, please see the
-`GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+`GML website <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
 Several example graphs in GML format may be found on Mark Newman's
 `Network data page <http://www-personal.umich.edu/~mejn/netdata/>`_.
@@ -155,7 +155,7 @@ def read_gml(path, label="label", destringizer=None):
     `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
@@ -226,7 +226,7 @@ def parse_gml(lines, label="label", destringizer=None):
     `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
     """
@@ -288,7 +288,7 @@ def parse_gml_lines(lines, label, destringizer):
         patterns = [
             r"[A-Za-z][0-9A-Za-z_]*\b",  # keys
             # reals
-            r"[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?",
+            r"[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*|INF)(?:[Ee][+-]?[0-9]+)?",
             r"[+-]?[0-9]+",  # ints
             r'".*?"',  # strings
             r"\[",  # dict start
@@ -370,6 +370,15 @@ def parse_gml_lines(lines, label, destringizer):
                             + " convertable ASCII value for node id or label"
                         )
                         unexpected(curr_token, msg)
+                # Special handling for nan and infinity.  Since the gml language
+                # defines unquoted strings as keys, the numeric and string branches
+                # are skipped and we end up in this special branch, so we need to
+                # convert the current token value to a float for NAN and plain INF.
+                # +/-INF are handled in the pattern for 'reals' in tokenize().  This
+                # allows labels and values to be nan or infinity, but not keys.
+                elif curr_token.value in {"NAN", "INF"}:
+                    value = float(curr_token.value)
+                    curr_token = next(tokens)
                 else:  # Otherwise error out
                     unexpected(curr_token, "an int, float, string or '['")
             dct[key].append(value)
@@ -616,7 +625,7 @@ def generate_gml(G, stringizer=None):
     `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
@@ -680,12 +689,17 @@ def generate_gml(G, stringizer=None):
                     yield indent + key + " " + str(value)
             elif isinstance(value, float):
                 text = repr(value).upper()
-                # GML requires that a real literal contain a decimal point, but
-                # repr may not output a decimal point when the mantissa is
-                # integral and hence needs fixing.
-                epos = text.rfind("E")
-                if epos != -1 and text.find(".", 0, epos) == -1:
-                    text = text[:epos] + "." + text[epos:]
+                # GML matches INF to keys, so prepend + to INF. Use repr(float(*))
+                # instead of string literal to future proof against changes to repr.
+                if text == repr(float("inf")).upper():
+                    text = "+" + text
+                else:
+                    # GML requires that a real literal contain a decimal point, but
+                    # repr may not output a decimal point when the mantissa is
+                    # integral and hence needs fixing.
+                    epos = text.rfind("E")
+                    if epos != -1 and text.find(".", 0, epos) == -1:
+                        text = text[:epos] + "." + text[epos:]
                 if key == "label":
                     yield indent + key + ' "' + text + '"'
                 else:
@@ -806,7 +820,7 @@ def write_gml(G, path, stringizer=None):
     sure to write GML format. In particular, underscores are not allowed in
     attribute names.
     For additional documentation on the GML file format, please see the
-    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 

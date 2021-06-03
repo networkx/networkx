@@ -13,7 +13,7 @@ def _test_func(G, ebunch, expected, predict_func, **kwargs):
 
     assert len(exp_dict) == len(res_dict)
     for p in exp_dict:
-        assert nx.testing.almost_equal(exp_dict[p], res_dict[p])
+        assert exp_dict[p] == pytest.approx(res_dict[p], abs=1e-7)
 
 
 class TestResourceAllocationIndex:

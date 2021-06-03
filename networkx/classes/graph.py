@@ -15,6 +15,8 @@ from networkx.classes.reportviews import NodeView, EdgeView, DegreeView
 from networkx.exception import NetworkXError
 import networkx.convert as convert
 
+__all__ = ["Graph"]
+
 
 class Graph:
     """
@@ -189,9 +191,7 @@ class Graph:
     dict-like object. In general, the dict-like features should be
     maintained but extra features can be added. To replace one of the
     dicts create a new graph class by changing the class(!) variable
-    holding the factory for that dict-like structure. The variable names are
-    node_dict_factory, node_attr_dict_factory, adjlist_inner_dict_factory,
-    adjlist_outer_dict_factory, edge_attr_dict_factory and graph_attr_dict_factory.
+    holding the factory for that dict-like structure.
 
     node_dict_factory : function, (default: dict)
         Factory function to be used to create the dict containing node

@@ -343,7 +343,7 @@ def bipartite_layout(
 
 
 @random_state(10)
-def fruchterman_reingold_layout(
+def spring_layout(
     G,
     k=None,
     pos=None,
@@ -401,7 +401,8 @@ def fruchterman_reingold_layout(
 
     weight : string or None   optional (default='weight')
         The edge attribute that holds the numerical value used for
-        the edge weight.  If None, then all edge weights are 1.
+        the edge weight.  Larger means a stronger attractive force.
+        If None, then all edge weights are 1.
 
     scale : number or None (default: 1)
         Scale factor for positions. Not used unless `fixed is None`.
@@ -494,7 +495,7 @@ def fruchterman_reingold_layout(
     return pos
 
 
-spring_layout = fruchterman_reingold_layout
+fruchterman_reingold_layout = spring_layout
 
 
 @random_state(7)

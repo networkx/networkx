@@ -22,7 +22,9 @@ Helper Functions
    pairwise
    groups
    create_random_state
-
+   nodes_equal
+   edges_equal
+   graphs_equal
 
 Data Structures and Algorithms
 ------------------------------

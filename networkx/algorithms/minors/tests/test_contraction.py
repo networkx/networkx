@@ -2,8 +2,7 @@
 import pytest
 
 import networkx as nx
-from networkx.testing.utils import assert_edges_equal, assert_nodes_equal
-from networkx.utils import arbitrary_element
+from networkx.utils import arbitrary_element, nodes_equal, edges_equal
 
 
 class TestQuotient:
@@ -113,8 +112,8 @@ class TestQuotient:
         G = nx.path_graph(6)
         partition = [{0, 1}, {2, 3}, {4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_nodes_equal(M, [0, 1, 2])
-        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
             assert M.nodes[n]["nedges"] == 1
             assert M.nodes[n]["nnodes"] == 2
@@ -124,8 +123,8 @@ class TestQuotient:
         G = nx.path_graph(6)
         partition = {0: [0, 1], 2: [2, 3], 4: [4, 5]}
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_nodes_equal(M, [0, 1, 2])
-        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
             assert M.nodes[n]["nedges"] == 1
             assert M.nodes[n]["nnodes"] == 2
@@ -135,8 +134,8 @@ class TestQuotient:
         G = nx.path_graph(6)
         partition = {0: (0, 1), 2: (2, 3), 4: (4, 5)}
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_nodes_equal(M, [0, 1, 2])
-        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
             assert M.nodes[n]["nedges"] == 1
             assert M.nodes[n]["nnodes"] == 2
@@ -146,8 +145,8 @@ class TestQuotient:
         G = nx.path_graph(6)
         partition = {0: {0, 1}, 2: {2, 3}, 4: {4, 5}}
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_nodes_equal(M, [0, 1, 2])
-        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
             assert M.nodes[n]["nedges"] == 1
             assert M.nodes[n]["nnodes"] == 2
@@ -157,8 +156,8 @@ class TestQuotient:
         G = nx.MultiGraph(nx.path_graph(6))
         partition = [{0, 1}, {2, 3}, {4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_nodes_equal(M, [0, 1, 2])
-        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
             assert M.nodes[n]["nedges"] == 1
             assert M.nodes[n]["nnodes"] == 2
@@ -169,8 +168,8 @@ class TestQuotient:
         nx.add_path(G, range(6))
         partition = [{0, 1}, {2, 3}, {4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_nodes_equal(M, [0, 1, 2])
-        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
             assert M.nodes[n]["nedges"] == 1
             assert M.nodes[n]["nnodes"] == 2
@@ -181,8 +180,8 @@ class TestQuotient:
         nx.add_path(G, range(6))
         partition = [{0, 1}, {2, 3}, {4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_nodes_equal(M, [0, 1, 2])
-        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M:
             assert M.nodes[n]["nedges"] == 1
             assert M.nodes[n]["nnodes"] == 2
@@ -200,8 +199,8 @@ class TestQuotient:
             G[i][i + 1]["weight"] = i + 1
         partition = [{0, 1}, {2, 3}, {4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_nodes_equal(M, [0, 1, 2])
-        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
         assert M[0][1]["weight"] == 2
         assert M[1][2]["weight"] == 4
         for n in M:
@@ -213,8 +212,8 @@ class TestQuotient:
         G = nx.barbell_graph(3, 0)
         partition = [{0, 1, 2}, {3, 4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_nodes_equal(M, [0, 1])
-        assert_edges_equal(M.edges(), [(0, 1)])
+        assert nodes_equal(M, [0, 1])
+        assert edges_equal(M.edges(), [(0, 1)])
         for n in M:
             assert M.nodes[n]["nedges"] == 3
             assert M.nodes[n]["nnodes"] == 3
@@ -226,8 +225,8 @@ class TestQuotient:
         G.add_edge(0, 5)
         partition = [{0, 1, 2}, {3, 4, 5}]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_nodes_equal(M, [0, 1])
-        assert_edges_equal(M.edges(), [(0, 1)])
+        assert nodes_equal(M, [0, 1])
+        assert edges_equal(M.edges(), [(0, 1)])
         assert M[0][1]["weight"] == 2
         for n in M:
             assert M.nodes[n]["nedges"] == 3
@@ -238,8 +237,8 @@ class TestQuotient:
         G = nx.path_graph(6)
         partition = [[0, 1], [2, 3], [4, 5]]
         M = nx.quotient_graph(G, partition, relabel=True)
-        assert_nodes_equal(M.nodes(), [0, 1, 2])
-        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
+        assert nodes_equal(M.nodes(), [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M.nodes():
             assert M.nodes[n]["nedges"] == 1
             assert M.nodes[n]["nnodes"] == 2
@@ -249,8 +248,8 @@ class TestQuotient:
         G = nx.MultiGraph(nx.path_graph(6))
         partition = [[0, 1], [2, 3], [4, 5]]
         M = nx.quotient_graph(G, partition, create_using=nx.MultiGraph(), relabel=True)
-        assert_nodes_equal(M.nodes(), [0, 1, 2])
-        assert_edges_equal(M.edges(), [(0, 1), (1, 2)])
+        assert nodes_equal(M.nodes(), [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
         for n in M.nodes():
             assert M.nodes[n]["nedges"] == 1
             assert M.nodes[n]["nnodes"] == 2
@@ -260,13 +259,13 @@ class TestQuotient:
         G = nx.path_graph(6)
         partition = []
         H = nx.quotient_graph(G, partition, relabel=True)
-        assert_nodes_equal(H.nodes(), [])
-        assert_edges_equal(H.edges(), [])
+        assert nodes_equal(H.nodes(), [])
+        assert edges_equal(H.edges(), [])
 
         partition = [[0, 1], [2, 3], [5]]
         H = nx.quotient_graph(G, partition, relabel=True)
-        assert_nodes_equal(H.nodes(), [0, 1, 2])
-        assert_edges_equal(H.edges(), [(0, 1)])
+        assert nodes_equal(H.nodes(), [0, 1, 2])
+        assert edges_equal(H.edges(), [(0, 1)])
 
 
 class TestContraction:
@@ -323,7 +322,7 @@ class TestContraction:
         expected.add_edge(0, 1)
         expected.add_edge(0, 0)
         expected.add_edge(0, 0)
-        assert_edges_equal(actual.edges, expected.edges)
+        assert edges_equal(actual.edges, expected.edges)
 
     def test_multigraph_keys(self):
         """Tests that multiedge keys are reset in new graph."""
@@ -338,7 +337,7 @@ class TestContraction:
         expected.add_edge(0, 1, 2)  # keyed as 2 b/c 2 edges already in G
         expected.add_edge(0, 0, 0)
         expected.add_edge(0, 0, 1)  # this comes from (0, 2, 5)
-        assert_edges_equal(actual.edges, expected.edges)
+        assert edges_equal(actual.edges, expected.edges)
 
     def test_node_attributes(self):
         """Tests that node contraction preserves node attributes."""
@@ -390,12 +389,12 @@ class TestContraction:
         expected = nx.complete_graph([0, 2, 3])
         expected.add_edge(0, 0)
         expected.add_edge(0, 0)
-        assert_edges_equal(actual.edges, expected.edges)
+        assert edges_equal(actual.edges, expected.edges)
         actual = nx.contracted_nodes(G, 1, 0)
         expected = nx.complete_graph([1, 2, 3])
         expected.add_edge(1, 1)
         expected.add_edge(1, 1)
-        assert_edges_equal(actual.edges, expected.edges)
+        assert edges_equal(actual.edges, expected.edges)
 
     def test_undirected_edge_contraction(self):
         """Tests for edge contraction in an undirected graph."""
