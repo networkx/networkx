@@ -320,8 +320,8 @@ def random_tree(n, seed=None, create_using=None):
     *n* nodes, the tree is chosen uniformly at random from the set of
     all trees on *n* nodes.
 
-    Example
-    -------
+    Examples
+    --------
     >>> tree = nx.random_tree(n=10, seed=0)
     >>> print(nx.forest_str(tree, sources=[0]))
     ╙── 0

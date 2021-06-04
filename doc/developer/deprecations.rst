@@ -80,10 +80,11 @@ Version 3.0
 * Remove ``readwrite/json_graph/jit.py`` and related tests.
 * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
 * In ``algorithms/link_analysis/hits_alg.py`` remove ``hub_matrix`` and ``authority_matrix``
-* In ``algorithms/link_analysis/hits_alg.py``, replace ``hits`` with the
-  implementation from ``hits_scipy`` and remove ``hits_numpy`` and ``hist_scipy``.
+* In ``algorithms/link_analysis/hits_alg.py``, remove ``hits_numpy`` and ``hist_scipy``.
 * In ``networkx.classes`` remove the ``ordered`` module and the four ``Ordered``
   classes defined therein.
 * In ``utils/decorators.py`` remove ``preserve_random_state``.
-* In ``testing/utils.py`` remove ``almost_equal``.
-* Remove ``testing/test.py``.
+* In ``algorithms/community/quality.py`` remove ``coverage`` and ``performance``.
+* Remove ``testing``.
+* In ``linalg/graphmatrix.py`` remove ``adj_matrix``.
+* In ``algorithms/similarity.py`` replace ``simrank_similarity`` with ``simrank_similarity_numpy``.

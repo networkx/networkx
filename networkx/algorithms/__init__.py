@@ -58,27 +58,27 @@ from networkx.algorithms.wiener import *
 
 # Make certain subpackages available to the user as direct imports from
 # the `networkx` namespace.
-import networkx.algorithms.approximation
-import networkx.algorithms.assortativity
-import networkx.algorithms.bipartite
-import networkx.algorithms.node_classification
-import networkx.algorithms.centrality
-import networkx.algorithms.chordal
-import networkx.algorithms.cluster
-import networkx.algorithms.clique
-import networkx.algorithms.components
-import networkx.algorithms.connectivity
-import networkx.algorithms.community
-import networkx.algorithms.coloring
-import networkx.algorithms.flow
-import networkx.algorithms.isomorphism
-import networkx.algorithms.link_analysis
-import networkx.algorithms.lowest_common_ancestors
-import networkx.algorithms.operators
-import networkx.algorithms.shortest_paths
-import networkx.algorithms.tournament
-import networkx.algorithms.traversal
-import networkx.algorithms.tree
+from networkx.algorithms import approximation
+from networkx.algorithms import assortativity
+from networkx.algorithms import bipartite
+from networkx.algorithms import node_classification
+from networkx.algorithms import centrality
+from networkx.algorithms import chordal
+from networkx.algorithms import cluster
+from networkx.algorithms import clique
+from networkx.algorithms import components
+from networkx.algorithms import connectivity
+from networkx.algorithms import community
+from networkx.algorithms import coloring
+from networkx.algorithms import flow
+from networkx.algorithms import isomorphism
+from networkx.algorithms import link_analysis
+from networkx.algorithms import lowest_common_ancestors
+from networkx.algorithms import operators
+from networkx.algorithms import shortest_paths
+from networkx.algorithms import tournament
+from networkx.algorithms import traversal
+from networkx.algorithms import tree
 
 # Make certain functions from some of the previous subpackages available
 # to the user as direct imports from the `networkx` namespace.

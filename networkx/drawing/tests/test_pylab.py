@@ -297,7 +297,7 @@ def test_draw_edges_min_source_target_margins(node_shape):
     # Create a single axis object to get consistent pixel coords across
     # multiple draws
     fig, ax = plt.subplots()
-    G = nx.Graph([(0, 1)])
+    G = nx.DiGraph([(0, 1)])
     pos = {0: (0, 0), 1: (1, 0)}  # horizontal layout
     # Get leftmost and rightmost points of the FancyArrowPatch object
     # representing the edge between nodes 0 and 1 (in pixel coordinates)
@@ -327,7 +327,7 @@ def test_nonzero_selfloop_with_single_node():
     # Create explicit axis object for test
     fig, ax = plt.subplots()
     # Graph with single node + self loop
-    G = nx.Graph()
+    G = nx.DiGraph()
     G.add_node(0)
     G.add_edge(0, 0)
     # Draw
@@ -346,7 +346,7 @@ def test_nonzero_selfloop_with_single_edge_in_edgelist():
     # Create explicit axis object for test
     fig, ax = plt.subplots()
     # Graph with selfloop
-    G = nx.path_graph(2)
+    G = nx.path_graph(2, create_using=nx.DiGraph)
     G.add_edge(1, 1)
     pos = {n: (n, n) for n in G.nodes}
     # Draw only the selfloop edge via the `edgelist` kwarg
@@ -367,3 +367,37 @@ def test_apply_alpha():
     alpha = 0.5
     rgba_colors = nx.drawing.nx_pylab.apply_alpha(colorlist, alpha, nodelist)
     assert all(rgba_colors[:, -1] == alpha)
+
+
+def test_draw_edges_toggling_with_arrows_kwarg():
+    """
+    The `arrows` keyword argument is used as a 3-way switch to select which
+    type of object to use for drawing edges:
+      - ``arrows=None`` -> default (FancyArrowPatches for directed, else LineCollection)
+      - ``arrows=True`` -> FancyArrowPatches
+      - ``arrows=False`` -> LineCollection
+    """
+    import matplotlib.patches
+    import matplotlib.collections
+
+    UG = nx.path_graph(3)
+    DG = nx.path_graph(3, create_using=nx.DiGraph)
+    pos = {n: (n, n) for n in UG}
+
+    # Use FancyArrowPatches when arrows=True, regardless of graph type
+    for G in (UG, DG):
+        edges = nx.draw_networkx_edges(G, pos, arrows=True)
+        assert len(edges) == len(G.edges)
+        assert isinstance(edges[0], mpl.patches.FancyArrowPatch)
+
+    # Use LineCollection when arrows=False, regardless of graph type
+    for G in (UG, DG):
+        edges = nx.draw_networkx_edges(G, pos, arrows=False)
+        assert isinstance(edges, mpl.collections.LineCollection)
+
+    # Default behavior when arrows=None: FAPs for directed, LC's for undirected
+    edges = nx.draw_networkx_edges(UG, pos)
+    assert isinstance(edges, mpl.collections.LineCollection)
+    edges = nx.draw_networkx_edges(DG, pos)
+    assert len(edges) == len(G.edges)
+    assert isinstance(edges[0], mpl.patches.FancyArrowPatch)

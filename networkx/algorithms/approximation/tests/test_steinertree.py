@@ -2,7 +2,7 @@ import pytest
 import networkx as nx
 from networkx.algorithms.approximation.steinertree import metric_closure
 from networkx.algorithms.approximation.steinertree import steiner_tree
-from networkx.testing.utils import assert_edges_equal
+from networkx.utils import edges_equal
 
 
 class TestSteinerTree:
@@ -49,7 +49,7 @@ class TestSteinerTree:
             (5, 7, {"distance": 1, "path": [5, 7]}),
             (6, 7, {"distance": 11, "path": [6, 5, 7]}),
         ]
-        assert_edges_equal(list(M.edges(data=True)), mc)
+        assert edges_equal(list(M.edges(data=True)), mc)
 
     def test_steiner_tree(self):
         S = steiner_tree(self.G, self.term_nodes)
@@ -60,7 +60,7 @@ class TestSteinerTree:
             (3, 4, {"weight": 10}),
             (5, 7, {"weight": 1}),
         ]
-        assert_edges_equal(list(S.edges(data=True)), expected_steiner_tree)
+        assert edges_equal(list(S.edges(data=True)), expected_steiner_tree)
 
     def test_multigraph_steiner_tree(self):
         G = nx.MultiGraph()
@@ -80,4 +80,4 @@ class TestSteinerTree:
             (3, 5, 0, {"weight": 1}),
         ]
         T = steiner_tree(G, terminal_nodes)
-        assert_edges_equal(T.edges(data=True, keys=True), expected_edges)
+        assert edges_equal(T.edges(data=True, keys=True), expected_edges)

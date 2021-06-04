@@ -6,7 +6,7 @@ import pytest
 
 import networkx as nx
 from networkx.generators.interval_graph import interval_graph
-from networkx.testing import assert_edges_equal
+from networkx.utils import edges_equal
 
 
 class TestIntervalGraph:
@@ -44,7 +44,7 @@ class TestIntervalGraph:
         actual_g = interval_graph(intervals)
 
         assert set(actual_g.nodes) == set(expected_graph.nodes)
-        assert_edges_equal(expected_graph, actual_g)
+        assert edges_equal(expected_graph, actual_g)
 
     def test_interval_graph_1(self):
         intervals = [(1, 2), (2, 3), (3, 4), (1, 4)]
@@ -62,7 +62,7 @@ class TestIntervalGraph:
         actual_g = interval_graph(intervals)
 
         assert set(actual_g.nodes) == set(expected_graph.nodes)
-        assert_edges_equal(expected_graph, actual_g)
+        assert edges_equal(expected_graph, actual_g)
 
     def test_interval_graph_2(self):
         intervals = [(1, 2), [3, 5], [6, 8], (9, 10)]
@@ -73,7 +73,7 @@ class TestIntervalGraph:
         actual_g = interval_graph(intervals)
 
         assert set(actual_g.nodes) == set(expected_graph.nodes)
-        assert_edges_equal(expected_graph, actual_g)
+        assert edges_equal(expected_graph, actual_g)
 
     def test_interval_graph_3(self):
         intervals = [(1, 4), [3, 5], [2.5, 4]]
@@ -89,7 +89,7 @@ class TestIntervalGraph:
         actual_g = interval_graph(intervals)
 
         assert set(actual_g.nodes) == set(expected_graph.nodes)
-        assert_edges_equal(expected_graph, actual_g)
+        assert edges_equal(expected_graph, actual_g)
 
     def test_interval_graph_4(self):
         """test all possible overlaps"""
@@ -141,4 +141,4 @@ class TestIntervalGraph:
         actual_g = interval_graph(intervals)
 
         assert set(actual_g.nodes) == set(expected_graph.nodes)
-        assert_edges_equal(expected_graph, actual_g)
+        assert edges_equal(expected_graph, actual_g)
