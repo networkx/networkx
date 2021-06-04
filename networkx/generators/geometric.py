@@ -52,7 +52,7 @@ def geometric_edges(G, radius, p):
     nodes, coords = list(zip(*nodes_pos))
     kdtree = sp.spatial.cKDTree(coords)  # Cannot provide generator.
     edge_indexes = kdtree.query_pairs(radius, p)
-    edges = [(nodes[u], nodes[v]) for u, v in edge_indexes]
+    edges = [(nodes[u], nodes[v]) for u, v in sorted(edge_indexes)]
     return edges
 
 

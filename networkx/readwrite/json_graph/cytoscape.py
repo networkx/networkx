@@ -2,11 +2,8 @@ import networkx as nx
 
 __all__ = ["cytoscape_data", "cytoscape_graph"]
 
-# TODO: Remove in NX 3.0
-_attrs = dict(name="name", ident="id")
 
-
-def cytoscape_data(G, attrs=None):
+def cytoscape_data(G, attrs=None, name="name", ident="id"):
     """Returns data in Cytoscape JSON format (cyjs).
 
     Parameters
@@ -24,6 +21,13 @@ def cytoscape_data(G, attrs=None):
            The `attrs` keyword argument will be replaced with `name` and
            `ident` in networkx 3.0
 
+    name : string
+        A string which is mapped to the 'name' node element in cyjs format.
+        Must not have the same value as `ident`.
+    ident : string
+        A string which is mapped to the 'id' node element in cyjs format.
+        Must not have the same value as `name`.
+
     Returns
     -------
     data: dict
@@ -32,7 +36,7 @@ def cytoscape_data(G, attrs=None):
     Raises
     ------
     NetworkXError
-        If the `name` and `ident` attributes are identical.
+        If the values for `name` and `ident` are identical.
 
     See Also
     --------
@@ -55,28 +59,27 @@ def cytoscape_data(G, attrs=None):
       'edges': [{'data': {'source': 0, 'target': 1}}]}}
     """
     # ------ TODO: Remove between the lines in 3.0 ----- #
-    if attrs is None:
-        attrs = _attrs
-    else:
+    if attrs is not None:
         import warnings
 
         msg = (
-            "\nThe function signature for cytoscape_data will change in "
-            "networkx 3.0.\n"
-            "The `attrs` keyword argument will be replaced with \n"
-            "explicit `name` and `ident` keyword arguments, e.g.\n\n"
+            "\nThe `attrs` keyword argument of cytoscape_data is deprecated\n"
+            "and will be removed in networkx 3.0.\n"
+            "It is replaced with explicit `name` and `ident` keyword\n"
+            "arguments.\n"
+            "To make this warning go away and ensure usage is forward\n"
+            "compatible, replace `attrs` with `name` and `ident`,\n"
+            "for example:\n\n"
             "   >>> cytoscape_data(G, attrs={'name': 'foo', 'ident': 'bar'})\n\n"
             "should instead be written as\n\n"
             "   >>> cytoscape_data(G, name='foo', ident='bar')\n\n"
             "in networkx 3.0.\n"
-            "The default values for 'name' and 'ident' will not change."
+            "The default values of 'name' and 'id' will not change."
         )
-        warnings.warn(msg, FutureWarning, stacklevel=2)
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
-        attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
-
-    name = attrs["name"]
-    ident = attrs["ident"]
+        name = attrs["name"]
+        ident = attrs["ident"]
     # -------------------------------------------------- #
 
     if name == ident:
@@ -112,7 +115,7 @@ def cytoscape_data(G, attrs=None):
     return jsondata
 
 
-def cytoscape_graph(data, attrs=None):
+def cytoscape_graph(data, attrs=None, name="name", ident="id"):
     """
     Create a NetworkX graph from a dictionary in cytoscape JSON format.
 
@@ -130,6 +133,13 @@ def cytoscape_graph(data, attrs=None):
 
            The `attrs` keyword argument will be replaced with `name` and
            `ident` in networkx 3.0
+
+    name : string
+        A string which is mapped to the 'name' node element in cyjs format.
+        Must not have the same value as `ident`.
+    ident : string
+        A string which is mapped to the 'id' node element in cyjs format.
+        Must not have the same value as `name`.
 
     Returns
     -------
@@ -172,28 +182,26 @@ def cytoscape_graph(data, attrs=None):
     EdgeDataView([(0, 1, {'source': 0, 'target': 1})])
     """
     # ------ TODO: Remove between the lines in 3.0 ----- #
-    if attrs is None:
-        attrs = _attrs
-    else:
+    if attrs is not None:
         import warnings
 
         msg = (
-            "\nThe function signature for cytoscape_data will change in "
-            "networkx 3.0.\n"
-            "The `attrs` keyword argument will be replaced with \n"
-            "explicit `name` and `ident` keyword arguments, e.g.\n\n"
+            "\nThe `attrs` keyword argument of cytoscape_data is deprecated\n"
+            "and will be removed in networkx 3.0.\n"
+            "It is replaced with explicit `name` and `ident` keyword\n"
+            "arguments.\n"
+            "To make this warning go away and ensure usage is forward\n"
+            "compatible, replace `attrs` with `name` and `ident`,\n"
+            "for example:\n\n"
             "   >>> cytoscape_data(G, attrs={'name': 'foo', 'ident': 'bar'})\n\n"
             "should instead be written as\n\n"
             "   >>> cytoscape_data(G, name='foo', ident='bar')\n\n"
-            "in networkx 3.0.\n"
-            "The default values for 'name' and 'ident' will not change."
+            "The default values of 'name' and 'id' will not change."
         )
-        warnings.warn(msg, FutureWarning, stacklevel=2)
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
-        attrs.update({k: v for (k, v) in _attrs.items() if k not in attrs})
-
-    name = attrs["name"]
-    ident = attrs["ident"]
+        name = attrs["name"]
+        ident = attrs["ident"]
     # -------------------------------------------------- #
 
     if name == ident:

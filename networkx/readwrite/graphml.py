@@ -588,7 +588,7 @@ class GraphMLWriter(GraphML):
         self.xml.append(graph_element)
 
     def add_graphs(self, graph_list):
-        """ Add many graphs to this GraphML document. """
+        """Add many graphs to this GraphML document."""
         for G in graph_list:
             self.add_graph_element(G)
 

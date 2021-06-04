@@ -1,6 +1,6 @@
-import networkx as nx
-from networkx.utils import arbitrary_element
 import pytest
+import networkx as nx
+from networkx.utils import arbitrary_element, graphs_equal
 
 
 @pytest.mark.parametrize("prefix_tree_fn", (nx.prefix_tree, nx.prefix_tree_recursive))
@@ -78,7 +78,7 @@ def test_basic_prefix_tree(prefix_tree_fn):
 )
 def test_implementations_consistent(strings):
     """Ensure results are consistent between prefix_tree implementations."""
-    nx.testing.assert_graphs_equal(
+    assert graphs_equal(
         nx.prefix_tree(strings),
         nx.prefix_tree_recursive(strings),
     )

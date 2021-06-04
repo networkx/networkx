@@ -3,7 +3,7 @@ from io import StringIO
 import tempfile
 import os
 import networkx as nx
-from networkx.testing import assert_graphs_equal
+from networkx.utils import graphs_equal
 
 import pytest
 
@@ -36,7 +36,7 @@ class TestPydot:
         G2 = G.__class__(nx.nx_pydot.from_pydot(P))
 
         # Validate the original and resulting graphs to be the same.
-        assert_graphs_equal(G, G2)
+        assert graphs_equal(G, G2)
 
         fd, fname = tempfile.mkstemp()
 
@@ -77,7 +77,7 @@ class TestPydot:
         Hin = G.__class__(Hin)
 
         # Validate the original and resulting graphs to be the same.
-        assert_graphs_equal(G, Hin)
+        assert graphs_equal(G, Hin)
 
         os.close(fd)
         os.unlink(fname)
@@ -96,4 +96,4 @@ class TestPydot:
         nx.nx_pydot.write_dot(G, fh)
         fh.seek(0)
         H = nx.nx_pydot.read_dot(fh)
-        assert_graphs_equal(G, H)
+        assert graphs_equal(G, H)
