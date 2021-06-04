@@ -1253,7 +1253,9 @@ class TestWriteGraphML(BaseGraphML):
         edge_attributes = {e: str(e) for e in G.edges}
         nx.set_edge_attributes(G, edge_attributes, "eid")
         fd, fname = tempfile.mkstemp()
-        self.writer(G, fname, "eid")  # set edge_id_from_attribute e.g. "eid"
+        self.writer(
+            G, fname, edge_id_from_attribute="eid"
+        )  # set edge_id_from_attribute e.g. "eid"
         H = nx.read_graphml(fname)
         assert H.is_multigraph()
         H = nx.read_graphml(fname, force_multigraph=True)
