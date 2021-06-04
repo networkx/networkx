@@ -78,6 +78,8 @@ Improvements
   Adds ``forest_str`` for string representation of trees.
 - [`#4319 <https://github.com/networkx/networkx/pull/4319>`_]
   pagerank uses scipy by default now.
+- [`#4841 <https://github.com/networkx/networkx/pull/4841>`_]
+  simrank_similarity uses numpy by default now.
 - [`#4317 <https://github.com/networkx/networkx/pull/4317>`_]
   New ``source`` argument to ``has_eulerian_path`` to look for path starting at
   source.
@@ -128,6 +130,8 @@ Improvements
   in images with large node sizes.
 - [`#4812 <https://github.com/networkx/networkx/pull/4812>`_]
   Use ``scipy`` implementation for ``hits`` algorithm to improve performance.
+- [`#4847 <https://github.com/networkx/networkx/pull/4847>`_]
+  Improve performance of ``scipy`` implementation of ``hits`` algorithm.
 
 API Changes
 -----------
@@ -176,6 +180,11 @@ API Changes
 - [`#4786 <https://github.com/networkx/networkx/pull/4786>`_]
   Deprecate the ``attrs`` keyword argument in favor of explicit keyword
   arguments in the ``json_graph`` module.
+- [`#4843 <https://github.com/networkx/networkx/pull/4843>`_]
+  The unused ``normalized`` parameter has been removed
+  from ``communicability_betweeness_centrality``
+- [`#4850 <https://github.com/networkx/networkx/pull/4850>`_]
+  Added ``dtype`` parameter to adjacency_matrix
 
 Deprecations
 ------------
@@ -230,6 +239,10 @@ Deprecations
   Deprecate ``run``.
 - [`#4829 <https://github.com/networkx/networkx/pull/4829>`_]
   Deprecate ``assert_nodes_equal``, ``assert_edges_equal``, and ``assert_graphs_equal``.
+- [`#4850 <https://github.com/networkx/networkx/pull/4850>`_]
+  Deprecate ``adj_matrix``.
+- [`#4841 <https://github.com/networkx/networkx/pull/4841>`_]
+  Deprecate ``simrank_similarity_numpy``.
 
 Contributors
 ------------

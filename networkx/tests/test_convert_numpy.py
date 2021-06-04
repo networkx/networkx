@@ -151,7 +151,7 @@ class TestConvertNumpyMatrix:
         pytest.raises(TypeError, nx.from_numpy_matrix, A)
 
         G = nx.cycle_graph(3)
-        A = nx.adj_matrix(G).todense()
+        A = nx.adjacency_matrix(G).todense()
         H = nx.from_numpy_matrix(A)
         assert all(type(m) == int and type(n) == int for m, n in H.edges())
         H = nx.from_numpy_array(A)

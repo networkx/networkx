@@ -505,9 +505,6 @@ class TestGraph(BaseAttrGraphTester):
         G = self.Graph({1: [2], 2: [1]}, name="test")
         assert G.name == "test"
         assert sorted(G.adj.items()) == [(1, {2: {}}), (2, {1: {}})]
-        G = self.Graph({1: [2], 2: [1]}, name="test")
-        assert G.name == "test"
-        assert sorted(G.adj.items()) == [(1, {2: {}}), (2, {1: {}})]
 
     def test_adjacency(self):
         G = self.K3
