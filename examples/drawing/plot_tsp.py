@@ -58,4 +58,5 @@ nx.draw_networkx(
     node_size=200,
     width=4,
 )
+print("The route of the traveller is:", cycle)
 plt.show()
