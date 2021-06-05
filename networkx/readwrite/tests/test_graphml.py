@@ -144,12 +144,14 @@ class BaseGraphML:
             "long_attribute": 0,
             "float_attribute": 0.0,
             "double_attribute": 0.0,
-            "string_attribute": "Foo"
+            "string_attribute": "Foo",
         }
         cls.node_attribute_default_graph.add_node("n0")
         cls.node_attribute_default_graph.add_node("n1")
         cls.node_attribute_default_graph.add_edge("n0", "n1", id="e0")
-        cls.node_attribute_default_fh = io.BytesIO(cls.node_attribute_default_data.encode("UTF-8"))
+        cls.node_attribute_default_fh = io.BytesIO(
+            cls.node_attribute_default_data.encode("UTF-8")
+        )
 
         cls.attribute_named_key_ids_data = """<?xml version='1.0' encoding='utf-8'?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
