@@ -576,7 +576,17 @@ class GraphMLWriter(GraphML):
                 graph_element.append(edge_element)
         else:
             for u, v, data in G.edges(data=True):
-                edge_element = self.myElement("edge", source=str(u), target=str(v))
+                if self.edge_id_from_attribute and self.edge_id_from_attribute in data:
+                    # select attribute to be edge id
+                    edge_element = self.myElement(
+                        "edge",
+                        source=str(u),
+                        target=str(v),
+                        id=str(data.get(self.edge_id_from_attribute)),
+                    )
+                else:
+                    # default: no edge id
+                    edge_element = self.myElement("edge", source=str(u), target=str(v))
                 default = G.graph.get("edge_default", {})
                 self.add_attributes("edge", edge_element, data, default)
                 graph_element.append(edge_element)
