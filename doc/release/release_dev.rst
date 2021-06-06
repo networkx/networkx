@@ -185,6 +185,8 @@ API Changes
   from ``communicability_betweeness_centrality``
 - [`#4850 <https://github.com/networkx/networkx/pull/4850>`_]
   Added ``dtype`` parameter to adjacency_matrix
+- [`#4867 <https://github.com/networkx/networkx/pull/4867>`_]
+  The function ``spring_layout`` now ignores 'fixed' nodes not in the graph
 
 Deprecations
 ------------
