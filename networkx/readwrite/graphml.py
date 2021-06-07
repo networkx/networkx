@@ -912,7 +912,11 @@ class GraphMLReader(GraphML):
             elif len(list(data_element)) > 0:
                 # Assume yfiles as subelements, try to extract node_label
                 node_label = None
-                for node_type in ["ShapeNode", "SVGNode", "ImageNode"]:
+                # set GenericNode's configuration as shape type
+                gn = data_element.find(f"{{{self.NS_Y}}}GenericNode")
+                if gn:
+                    data["shape_type"] = gn.get("configuration")
+                for node_type in ["GenericNode", "ShapeNode", "SVGNode", "ImageNode"]:
                     pref = f"{{{self.NS_Y}}}{node_type}/{{{self.NS_Y}}}"
                     geometry = data_element.find(f"{pref}Geometry")
                     if geometry is not None:
