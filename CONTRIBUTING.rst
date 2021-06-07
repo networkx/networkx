@@ -33,7 +33,6 @@ Development Workflow
      - ``origin``, which refers to your personal fork
 
    * Next, you need to set up your build environment.
-     Here are instructions for two popular environment managers:
 
      * ``venv`` (pip based)
 
@@ -54,27 +53,6 @@ Development Workflow
          #
          # Build and install networkx from source
          pip install -e .
-         # Test your installation
-         PYTHONPATH=. pytest networkx
-
-     * ``conda`` (Anaconda or Miniconda)
-
-       ::
-
-         # Create a conda environment named ``networkx-dev``
-         conda create --name networkx-dev
-         # Activate it
-         conda activate networkx-dev
-         # Install main development and runtime dependencies of networkx
-         conda install -c conda-forge `for i in requirements/{default,developer,test}.txt; do echo -n " --file $i "; done`
-         #
-         # (Optional) Install pygraphviz, pydot, and gdal packages
-         # These packages require that you have your system properly configured
-         # and what that involves differs on various systems.
-         # pip install -r requirements/extra.txt
-         #
-         # Install networkx from source
-         pip install -e . --no-deps
          # Test your installation
          PYTHONPATH=. pytest networkx
 
