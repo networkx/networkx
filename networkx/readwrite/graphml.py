@@ -247,8 +247,8 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
     there is no "key" attribute a default NetworkX multigraph edge key
     will be provided.
 
-    Files with the yEd "yfiles" extension will can be read but the graphics
-    information is discarded.
+    Files with the yEd "yfiles" extension can be read. The type of the node's
+    shape is preserved in the `shape_type` node attribute.
 
     yEd compressed files ("file.graphmlz" extension) can be read by renaming
     the file to "file.graphml.gz".
