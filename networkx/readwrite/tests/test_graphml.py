@@ -119,6 +119,40 @@ class BaseGraphML:
         cls.attribute_graph.add_edge("n5", "n4", id="e6", weight=1.1)
         cls.attribute_fh = io.BytesIO(cls.attribute_data.encode("UTF-8"))
 
+        cls.node_attribute_default_data = """<?xml version="1.0" encoding="UTF-8"?>
+        <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+                http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+          <key id="d0" for="node" attr.name="boolean_attribute" attr.type="boolean"><default>false</default></key>
+          <key id="d1" for="node" attr.name="int_attribute" attr.type="int"><default>0</default></key>
+          <key id="d2" for="node" attr.name="long_attribute" attr.type="long"><default>0</default></key>
+          <key id="d3" for="node" attr.name="float_attribute" attr.type="float"><default>0.0</default></key>
+          <key id="d4" for="node" attr.name="double_attribute" attr.type="double"><default>0.0</default></key>
+          <key id="d5" for="node" attr.name="string_attribute" attr.type="string"><default>Foo</default></key>
+          <graph id="G" edgedefault="directed">
+            <node id="n0"/>
+            <node id="n1"/>
+            <edge id="e0" source="n0" target="n1"/>
+          </graph>
+        </graphml>
+        """
+        cls.node_attribute_default_graph = nx.DiGraph(id="G")
+        cls.node_attribute_default_graph.graph["node_default"] = {
+            "boolean_attribute": False,
+            "int_attribute": 0,
+            "long_attribute": 0,
+            "float_attribute": 0.0,
+            "double_attribute": 0.0,
+            "string_attribute": "Foo",
+        }
+        cls.node_attribute_default_graph.add_node("n0")
+        cls.node_attribute_default_graph.add_node("n1")
+        cls.node_attribute_default_graph.add_edge("n0", "n1", id="e0")
+        cls.node_attribute_default_fh = io.BytesIO(
+            cls.node_attribute_default_data.encode("UTF-8")
+        )
+
         cls.attribute_named_key_ids_data = """<?xml version='1.0' encoding='utf-8'?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -350,6 +384,11 @@ class TestReadGraphML(BaseGraphML):
         he = sorted(PG.edges(data=True))
         for a, b in zip(ge, he):
             assert a == b
+
+    def test_node_default_attribute_graphml(self):
+        G = self.node_attribute_default_graph
+        H = nx.read_graphml(self.node_attribute_default_fh)
+        assert G.graph["node_default"] == H.graph["node_default"]
 
     def test_directed_edge_in_undirected(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
