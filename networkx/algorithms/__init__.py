@@ -125,3 +125,4 @@ from networkx.algorithms.tree.decomposition import *
 from networkx.algorithms.tree.mst import *
 from networkx.algorithms.tree.operations import *
 from networkx.algorithms.tree.recognition import *
+from networkx.algorithms.tree.tree_iterators import *

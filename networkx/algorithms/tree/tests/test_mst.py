@@ -29,7 +29,7 @@ class MinimumSpanningTreeTestBase:
 
         """
         # This stores the class attribute `algorithm` in an instance attribute.
-        self.algo = self.algorithm
+        self.algo = method
         # This example graph comes from Wikipedia:
         # https://en.wikipedia.org/wiki/Kruskal's_algorithm
         edges = [
@@ -283,3 +283,11 @@ class TestPrim(MultigraphMSTTestBase):
         G.add_edge(0, 1, key="b", weight=1)
         T = nx.maximum_spanning_tree(G)
         assert_edges_equal([(0, 1, 2)], list(T.edges(data="weight")))
+
+
+class TestSpanningTreePartitions(MinimumSpanningTreeTestBase):
+    """
+    Unit tests for computing a minimum (or maximum) spanning tree within a
+    partition
+    """
+
