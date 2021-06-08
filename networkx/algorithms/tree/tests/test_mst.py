@@ -3,6 +3,7 @@
 import pytest
 
 import networkx as nx
+from networkx.algorithms.tree.tree_iterators import EdgePartition
 from networkx.testing import assert_nodes_equal, assert_edges_equal
 
 
@@ -13,20 +14,17 @@ def test_unknown_algorithm():
 
 class MinimumSpanningTreeTestBase:
     """Base class for test classes for minimum spanning tree algorithms.
-
     This class contains some common tests that will be inherited by
     subclasses. Each subclass must have a class attribute
     :data:`algorithm` that is a string representing the algorithm to
     run, as described under the ``algorithm`` keyword argument for the
     :func:`networkx.minimum_spanning_edges` function.  Subclasses can
     then implement any algorithm-specific tests.
-
     """
 
     def setup_method(self, method):
         """Creates an example graph and stores the expected minimum and
         maximum spanning tree edges.
-
         """
         # This stores the class attribute `algorithm` in an instance attribute.
         self.algo = self.algorithm
@@ -208,7 +206,6 @@ class MinimumSpanningTreeTestBase:
 class TestBoruvka(MinimumSpanningTreeTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
     using Borůvka's algorithm.
-
     """
 
     algorithm = "boruvka"
@@ -216,7 +213,6 @@ class TestBoruvka(MinimumSpanningTreeTestBase):
     def test_unicode_name(self):
         """Tests that using a Unicode string can correctly indicate
         Borůvka's algorithm.
-
         """
         edges = nx.minimum_spanning_edges(self.G, algorithm="borůvka")
         # Edges from the spanning edges functions don't come in sorted
@@ -231,7 +227,6 @@ class MultigraphMSTTestBase(MinimumSpanningTreeTestBase):
     def test_multigraph_keys_min(self):
         """Tests that the minimum spanning edges of a multigraph
         preserves edge keys.
-
         """
         G = nx.MultiGraph()
         G.add_edge(0, 1, key="a", weight=2)
@@ -243,7 +238,6 @@ class MultigraphMSTTestBase(MinimumSpanningTreeTestBase):
     def test_multigraph_keys_max(self):
         """Tests that the maximum spanning edges of a multigraph
         preserves edge keys.
-
         """
         G = nx.MultiGraph()
         G.add_edge(0, 1, key="a", weight=2)
@@ -256,7 +250,6 @@ class MultigraphMSTTestBase(MinimumSpanningTreeTestBase):
 class TestKruskal(MultigraphMSTTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
     using Kruskal's algorithm.
-
     """
 
     algorithm = "kruskal"
@@ -265,7 +258,6 @@ class TestKruskal(MultigraphMSTTestBase):
 class TestPrim(MultigraphMSTTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
     using Prim's algorithm.
-
     """
 
     algorithm = "prim"
@@ -283,3 +275,67 @@ class TestPrim(MultigraphMSTTestBase):
         G.add_edge(0, 1, key="b", weight=1)
         T = nx.maximum_spanning_tree(G)
         assert_edges_equal([(0, 1, 2)], list(T.edges(data="weight")))
+
+
+class TestSpanningTreePartitions(MinimumSpanningTreeTestBase):
+    """
+    Unit tests for computing a minimum (or maximum) spanning tree within a
+    partition
+
+    """
+
+    algorithm = "kruskal"
+
+    def setup_method(self, method):
+        """
+        Creates the same graph from the other base class, but adds partition
+        data to the edges.
+        """
+        # This stores the class attribute `algorithm` in an instance attribute.
+        self.algo = self.algorithm
+        # This example graph comes from Wikipedia:
+        # https://en.wikipedia.org/wiki/Kruskal's_algorithm
+        edges = [
+            (0, 1, {"weight": 7, "partition": EdgePartition.OPEN}),
+            (0, 3, {"weight": 5, "partition": EdgePartition.EXCLUDED}),
+            (1, 2, {"weight": 8, "partition": EdgePartition.OPEN}),
+            (1, 3, {"weight": 9, "partition": EdgePartition.OPEN}),
+            (1, 4, {"weight": 7, "partition": EdgePartition.OPEN}),
+            (2, 4, {"weight": 5, "partition": EdgePartition.EXCLUDED}),
+            (3, 4, {"weight": 15, "partition": EdgePartition.INCLUDED}),
+            (3, 5, {"weight": 6, "partition": EdgePartition.OPEN}),
+            (4, 5, {"weight": 8, "partition": EdgePartition.OPEN}),
+            (4, 6, {"weight": 9, "partition": EdgePartition.OPEN}),
+            (5, 6, {"weight": 11, "partition": EdgePartition.OPEN}),
+        ]
+        self.G = nx.Graph()
+        self.G.add_edges_from(edges)
+        self.minimum_spanning_edgelist = [
+            (0, 1, {"weight": 7, "partition": EdgePartition.OPEN}),
+            (0, 3, {"weight": 5, "partition": EdgePartition.EXCLUDED}),
+            (1, 4, {"weight": 7, "partition": EdgePartition.OPEN}),
+            (2, 4, {"weight": 5, "partition": EdgePartition.EXCLUDED}),
+            (3, 5, {"weight": 6, "partition": EdgePartition.OPEN}),
+            (4, 6, {"weight": 9, "partition": EdgePartition.OPEN}),
+        ]
+        self.minimum_partition_spanning_edgelist = [
+            (0, 1, {"weight": 7, "partition": EdgePartition.OPEN}),
+            (1, 2, {"weight": 8, "partition": EdgePartition.OPEN}),
+            (1, 4, {"weight": 7, "partition": EdgePartition.OPEN}),
+            (3, 4, {"weight": 15, "partition": EdgePartition.INCLUDED}),
+            (3, 5, {"weight": 6, "partition": EdgePartition.OPEN}),
+            (4, 6, {"weight": 9, "partition": EdgePartition.OPEN}),
+        ]
+        self.maximum_spanning_edgelist = [
+            (0, 1, {"weight": 7, "partition": EdgePartition.OPEN}),
+            (1, 2, {"weight": 8, "partition": EdgePartition.OPEN}),
+            (1, 3, {"weight": 9, "partition": EdgePartition.OPEN}),
+            (3, 4, {"weight": 15, "partition": EdgePartition.INCLUDED}),
+            (4, 6, {"weight": 9, "partition": EdgePartition.OPEN}),
+            (5, 6, {"weight": 11, "partition": EdgePartition.OPEN}),
+        ]
+
+    def test_with_partition(self):
+        T = nx.partition_minimum_spanning_tree(self.G)
+        actual = sorted(T.edges(data=True))
+        assert_edges_equal(actual, self.minimum_partition_spanning_edgelist)
