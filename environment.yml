@@ -1,0 +1,16 @@
+# To use:
+#   $ conda env create -f environment.yml  # `mamba` works too for this command
+#   $ conda activate networkx-dev
+name: networkx-dev
+channels:
+  - conda-forge
+dependencies:
+  - decorator
+  - numpy
+  - scipy
+  - matplotlib
+  - pandas
+  # For testing
+  - pytest
+  # For development
+  - pre-commit
