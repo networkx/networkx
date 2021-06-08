@@ -231,6 +231,7 @@ intersphinx_mapping = {
     "geopandas": ("https://geopandas.org/", None),
     "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
     "sphinx-gallery": ("https://sphinx-gallery.github.io/stable/", None),
+    "nx-guides": ("https://networkx.org/nx-guides/", None),
 }
 
 # The reST default role (used for this markup: `text`) to use for all
