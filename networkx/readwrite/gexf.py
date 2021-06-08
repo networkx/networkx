@@ -76,7 +76,7 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
     References
     ----------
     .. [1] GEXF File Format, https://gephi.org/gexf/format/
-    .. [2] GEXF viz schema 1.1, https://gephi.org/gexf/1.1draft/viz
+    .. [2] GEXF schema, https://gephi.org/gexf/format/schema.html
     """
     writer = GEXFWriter(encoding=encoding, prettyprint=prettyprint, version=version)
     writer.add_graph(G)

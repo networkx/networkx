@@ -25,7 +25,7 @@ There are two different functions for computing a tree decomposition:
       http://www.cs.uu.nl
 
 .. [3] K. Wang, Z. Lu, and J. Hicks *Treewidth*.
-      http://web.eecs.utk.edu/~cphillip/cs594_spring2015_projects/treewidth.pdf
+      https://web.archive.org/web/20210507025929/http://web.eecs.utk.edu/~cphill25/cs594_spring2015_projects/treewidth.pdf
 
 """
 
