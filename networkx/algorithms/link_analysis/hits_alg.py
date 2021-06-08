@@ -1,6 +1,5 @@
 """Hubs and authorities analysis of graph structure.
 """
-from warnings import warn
 import networkx as nx
 
 __all__ = ["hits", "hits_numpy", "hits_scipy", "authority_matrix", "hub_matrix"]
@@ -70,7 +69,28 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    return hits_scipy(G, max_iter, tol, nstart, normalized)
+    import numpy as np
+    import scipy as sp
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
+
+    if len(G) == 0:
+        return {}, {}
+    M = nx.adjacency_matrix(G, nodelist=list(G), dtype=float)
+
+    if nstart is None:
+        u, s, vt = sp.sparse.linalg.svds(M, k=1, maxiter=max_iter, tol=tol)
+    else:
+        nstart = np.array(list(nstart.values()))
+        u, s, vt = sp.sparse.linalg.svds(M, k=1, v0=nstart, maxiter=max_iter, tol=tol)
+
+    a = vt.flatten().real
+    h = np.asarray(M * a).flatten()
+    if normalized:
+        h = h / h.sum()
+        a = a / a.sum()
+    hubs = dict(zip(G, map(float, h)))
+    authorities = dict(zip(G, map(float, a)))
+    return hubs, authorities
 
 
 def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
@@ -225,9 +245,17 @@ def hits_numpy(G, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    msg = "networkx.hits_numpy is deprecated and will be removed in NetworkX 3.0, use networkx.hits instead."
-    warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
+    import warnings
+
+    warnings.warn(
+        (
+            "networkx.hits_numpy is deprecated and will be removed"
+            "in NetworkX 3.0, use networkx.hits instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
     if len(G) == 0:
         return {}, {}
@@ -321,9 +349,17 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    msg = "networkx.hits_scipy is deprecated and will be removed in NetworkX 3.0, use networkx.hits instead."
-    warn(msg, DeprecationWarning, stacklevel=2)
     import numpy as np
+    import warnings
+
+    warnings.warn(
+        (
+            "networkx.hits_scipy is deprecated and will be removed"
+            "in NetworkX 3.0, use networkx.hits instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
     if len(G) == 0:
         return {}, {}

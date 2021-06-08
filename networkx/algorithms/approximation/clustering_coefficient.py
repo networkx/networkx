@@ -49,7 +49,7 @@ def average_clustering(G, trials=1000, seed=None):
     .. [1] Schank, Thomas, and Dorothea Wagner. Approximating clustering
        coefficient and transitivity. Universität Karlsruhe, Fakultät für
        Informatik, 2004.
-       http://www.emis.ams.org/journals/JGAA/accepted/2005/SchankWagner2005.9.2.pdf
+       https://doi.org/10.5445/IR/1000001239
 
     """
     n = len(G)
