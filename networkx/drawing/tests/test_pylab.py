@@ -401,3 +401,26 @@ def test_draw_edges_toggling_with_arrows_kwarg():
     edges = nx.draw_networkx_edges(DG, pos)
     assert len(edges) == len(G.edges)
     assert isinstance(edges[0], mpl.patches.FancyArrowPatch)
+
+
+def test_draw_networkx_arrows_default_undirected():
+    import matplotlib.collections
+
+    G = nx.path_graph(3)
+    fig, ax = plt.subplots()
+    nx.draw_networkx(G, ax=ax)
+    assert any(isinstance(c, mpl.collections.LineCollection) for c in ax.collections)
+    assert not ax.patches
+    plt.delaxes(ax)
+
+
+def test_draw_networkx_arrows_default_directed():
+    import matplotlib.collections
+
+    G = nx.path_graph(3, create_using=nx.DiGraph)
+    fig, ax = plt.subplots()
+    nx.draw_networkx(G, ax=ax)
+    assert not any(
+        isinstance(c, mpl.collections.LineCollection) for c in ax.collections
+    )
+    assert ax.patches
