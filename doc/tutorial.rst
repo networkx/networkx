@@ -565,8 +565,7 @@ Matplotlib
 >>> plt.show()
 
 command if you are not using matplotlib in interactive mode (see
-`Matplotlib FAQ <https://matplotlib.org/stable/faq/installing_faq.html#matplotlib-compiled-fine-but-nothing-shows-up-when-i-use-it>`_
-).
+:doc:`this Matplotlib FAQ <faq/installing_faq>`).
 
 .. nbplot::
 
