@@ -56,7 +56,7 @@ jobs:
     - name: Install packages (MacOS)
       if: runner.os == 'macOS'
       run: |
-        pip install --upgrade pip wheel setuptools
+        pip install --upgrade pip setuptools
         pip install decorator -r requirements/test.txt
         pip install .
         pip list
