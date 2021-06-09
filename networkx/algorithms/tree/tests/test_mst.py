@@ -335,7 +335,90 @@ class TestSpanningTreePartitions(MinimumSpanningTreeTestBase):
             (5, 6, {"weight": 11, "partition": EdgePartition.OPEN}),
         ]
 
-    def test_with_partition(self):
+    def test_minimum_with_partition(self):
         T = nx.partition_minimum_spanning_tree(self.G)
         actual = sorted(T.edges(data=True))
         assert_edges_equal(actual, self.minimum_partition_spanning_edgelist)
+
+
+class TestSpanningTreeIterator:
+    """
+    Tests the spanning tree iterator on the example graph in the 2005 Sörensen
+    and Janssens paper An Algorithm to Generate all Spanning Trees of a Graph in
+    Order of Increasing Cost
+    """
+
+    def setup(self):
+        # Original Graph
+        edges = [(0, 1, 5), (1, 2, 4), (1, 4, 6), (2, 3, 5), (2, 4, 7), (3, 4, 3)]
+        self.G = nx.Graph()
+        self.G.add_weighted_edges_from(edges)
+        # List of lists of spanning trees in increasing order
+        self.spanning_trees = [
+            # 1, MST, cost = 17
+            [
+                (0, 1, {"weight": 5}),
+                (1, 2, {"weight": 4}),
+                (2, 3, {"weight": 5}),
+                (3, 4, {"weight": 3}),
+            ],
+            # 2, cost = 18
+            [
+                (0, 1, {"weight": 5}),
+                (1, 2, {"weight": 4}),
+                (1, 4, {"weight": 6}),
+                (3, 4, {"weight": 3}),
+            ],
+            # 3, cost = 19
+            [
+                (0, 1, {"weight": 5}),
+                (1, 4, {"weight": 6}),
+                (2, 3, {"weight": 5}),
+                (3, 4, {"weight": 3}),
+            ],
+            # 4, cost = 19
+            [
+                (0, 1, {"weight": 5}),
+                (1, 2, {"weight": 4}),
+                (2, 4, {"weight": 7}),
+                (3, 4, {"weight": 3}),
+            ],
+            # 5, cost = 20
+            [
+                (0, 1, {"weight": 5}),
+                (1, 2, {"weight": 4}),
+                (1, 4, {"weight": 6}),
+                (2, 3, {"weight": 5}),
+            ],
+            # 6, cost = 21
+            [
+                (0, 1, {"weight": 5}),
+                (1, 4, {"weight": 6}),
+                (2, 4, {"weight": 7}),
+                (3, 4, {"weight": 3}),
+            ],
+            # 7, cost = 21
+            [
+                (0, 1, {"weight": 5}),
+                (1, 2, {"weight": 4}),
+                (2, 3, {"weight": 5}),
+                (2, 4, {"weight": 7}),
+            ],
+            # 8, cost = 23
+            [
+                (0, 1, {"weight": 5}),
+                (1, 4, {"weight": 6}),
+                (2, 3, {"weight": 5}),
+                (2, 4, {"weight": 7}),
+            ],
+        ]
+
+    def test_minimum_spanning_tree_iterator(self):
+        """
+        Tests that the spanning trees are correctly return in increasing order
+        """
+        tree_index = 0
+        for tree in nx.SpanningTreeIterator(self.G):
+            actual = sorted(tree.edges(data=True))
+            assert_edges_equal(actual, self.spanning_trees[tree_index])
+            tree_index += 1

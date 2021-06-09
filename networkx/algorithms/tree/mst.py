@@ -16,6 +16,7 @@ __all__ = [
     "maximum_spanning_edges",
     "minimum_spanning_tree",
     "maximum_spanning_tree",
+    "partition_minimum_spanning_tree",
 ]
 
 
@@ -170,7 +171,6 @@ def _kruskal_mst_partition_edges(
         """
         included_edges = []
         open_edges = []
-        excluded_edges = []
         for u, v, k, d in edges:
             wt = d.get(weight, 1)
             if isnan(wt):
@@ -182,7 +182,7 @@ def _kruskal_mst_partition_edges(
             if d.get(partition) == EdgePartition.INCLUDED:
                 included_edges.append((wt, u, v, k, d))
             elif d.get(partition) == EdgePartition.EXCLUDED:
-                excluded_edges.append((wt, u, v, k, d))
+                continue
             else:
                 open_edges.append((wt, u, v, k, d))
 
@@ -198,8 +198,7 @@ def _kruskal_mst_partition_edges(
         """
         included_edges = []
         open_edges = []
-        excluded_edges = []
-        for u, v, k, d in edges:
+        for u, v, d in edges:
             wt = d.get(weight, 1)
             if isnan(wt):
                 if ignore_nan:
@@ -210,7 +209,7 @@ def _kruskal_mst_partition_edges(
             if d.get(partition) == EdgePartition.INCLUDED:
                 included_edges.append((wt, u, v, d))
             elif d.get(partition) == EdgePartition.EXCLUDED:
-                excluded_edges.append((wt, u, v, d))
+                continue
             else:
                 open_edges.append((wt, u, v, d))
 
@@ -220,10 +219,9 @@ def _kruskal_mst_partition_edges(
         sorted_open_edges = sorted(open_edges, key=itemgetter(0), reverse=True)
 
     # Condense the lists into one
-    sorted_open_edges.extend(excluded_edges)
     included_edges.extend(sorted_open_edges)
     sorted_edges = included_edges
-    del open_edges, sorted_open_edges, excluded_edges, included_edges
+    del open_edges, sorted_open_edges, included_edges
 
     # Multigraphs need to handle edge keys in addition to edge data.
     if G.is_multigraph():
