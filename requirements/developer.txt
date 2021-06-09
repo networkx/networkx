@@ -1,2 +1,3 @@
 black==21.5b1
-pre-commit~=2.12
+# The following is supposed to be (PEP 440) the same as ~=2.12
+pre-commit>=2.12,<3
