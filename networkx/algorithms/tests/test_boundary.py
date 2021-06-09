@@ -3,7 +3,7 @@
 from itertools import combinations
 import pytest
 import networkx as nx
-from networkx.testing import assert_edges_equal
+from networkx.utils import edges_equal
 from networkx import convert_node_labels_to_integers as cnlti
 
 
@@ -117,11 +117,11 @@ class TestEdgeBoundary:
         assert ilen(nx.edge_boundary(K10, [4, 5, 6, 7])) == 24
         assert ilen(nx.edge_boundary(K10, [3, 4, 5, 6, 7])) == 25
         assert ilen(nx.edge_boundary(K10, [8, 9, 10])) == 21
-        assert_edges_equal(
+        assert edges_equal(
             nx.edge_boundary(K10, [4, 5, 6], [9, 10]),
             [(4, 9), (4, 10), (5, 9), (5, 10), (6, 9), (6, 10)],
         )
-        assert_edges_equal(
+        assert edges_equal(
             nx.edge_boundary(K10, [1, 2, 3], [3, 4, 5]),
             [(1, 3), (1, 4), (1, 5), (2, 3), (2, 4), (2, 5), (3, 4), (3, 5)],
         )

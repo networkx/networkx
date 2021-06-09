@@ -96,8 +96,8 @@ def latapy_clustering(G, nodes=None, mode="dot"):
     See Also
     --------
     robins_alexander_clustering
-    square_clustering
     average_clustering
+    networkx.algorithms.cluster.square_clustering
 
     References
     ----------
@@ -239,7 +239,7 @@ def robins_alexander_clustering(G):
     See Also
     --------
     latapy_clustering
-    square_clustering
+    networkx.algorithms.cluster.square_clustering
 
     References
     ----------
