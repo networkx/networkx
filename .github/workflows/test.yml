@@ -45,10 +45,19 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install packages
+    - name: Install packages (Linux)
+      if: runner.os == 'Linux'
       run: |
         pip install --upgrade pip wheel setuptools
         pip install -r requirements.txt
+        pip install .
+        pip list
+
+    - name: Install packages (MacOS)
+      if: runner.os == 'macOS'
+      run: |
+        pip install --upgrade pip wheel setuptools
+        pip install decorator -r requirements/test.txt
         pip install .
         pip list
 
