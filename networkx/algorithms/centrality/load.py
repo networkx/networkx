@@ -53,7 +53,7 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
     .. [2] Kwang-Il Goh, Byungnam Kahng and Doochul Kim
        Universal behavior of Load Distribution in Scale-Free Networks.
        Physical Review Letters 87(27):1–4, 2001.
-       http://phya.snu.ac.kr/~dkim/PRL87278701.pdf
+       https://doi.org/10.1103/PhysRevLett.87.278701
     """
     if v is not None:  # only one node
         betweenness = 0.0

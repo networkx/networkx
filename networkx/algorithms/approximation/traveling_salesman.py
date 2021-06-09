@@ -780,7 +780,7 @@ def threshold_accepting_tsp(
     of times the outer and inner loop run respectively.
 
     For more information and how algorithm is inspired see:
-    http://en.wikipedia.org/wiki/Threshold_accepting
+    https://doi.org/10.1016/0021-9991(90)90201-B
 
     See Also
     --------

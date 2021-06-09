@@ -1,2 +1,2 @@
 black==21.5b1
-pre-commit~=2.12
+pre-commit>=2.12
