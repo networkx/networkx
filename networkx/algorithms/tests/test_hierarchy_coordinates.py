@@ -242,20 +242,32 @@ def test_treeness():
 
 
 def test_hierarchy_coordinate():
-    # awaits response from Professor Solé regarding graph entropy evaluation
-    pass
+    import numpy as np
+
+    a = np.array(
+        [
+            [0, 0.2, 0, 0, 0],
+            [0, 0, 0, 0.7, 0],
+            [0, 0.4, 0, 0, 0],
+            [0, 0.3, 0.1, 0, 1.0],
+            [0, 0, 0, 0, 0],
+        ]
+    )
+    b = np.array(
+        [
+            [0, 0, 1, 0, 0, 0, 1],
+            [0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 1, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0],
+        ]
+    )
+    a_hc = [round(hc, 2) for hc in nx.hierarchy_coordinates(a)]
+    b_hc = [round(hc, 2) for hc in nx.hierarchy_coordinates(b)]
+    assert a_hc == [-0.08, 0.87, 0.81]
+    assert b_hc == [-0.56, 0.56, 0.43]
 
 
-# While WIP:
-test_treeness()
-test_max_min_layers()
-test_leaf_removal()
-test_recursive_leaf_removal()
-test_weight_nodes_by_condensation()
-test_node_weighted_condense()
-test_orderability()
-test_feedforwardness()
-test_graph_entropy()
-test_infographic_graph_entropy()
-test_treeness()
 test_hierarchy_coordinate()
