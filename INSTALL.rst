@@ -32,6 +32,15 @@ install into your user directory using the ``--user`` flag::
 
     $ pip install --user networkx
 
+If you do not want to install our dependencies (e.g., ``numpy``, ``scipy``, etc.),
+you can use::
+
+    $ pip install decorator networkx --no-deps
+
+This may be helpful if you are using PyPy or you are working on a project that
+only needs a limited subset of our functionality and you want to limit the
+number of dependencies.
+
 Alternatively, you can manually download ``networkx`` from
 `GitHub <https://github.com/networkx/networkx/releases>`_  or
 `PyPI <https://pypi.python.org/pypi/networkx>`_.
