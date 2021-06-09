@@ -3,7 +3,6 @@
 import pytest
 
 import networkx as nx
-from networkx.algorithms.tree.tree_iterators import EdgePartition
 from networkx.utils import nodes_equal, edges_equal
 
 
@@ -277,70 +276,6 @@ class TestPrim(MultigraphMSTTestBase):
         assert edges_equal([(0, 1, 2)], list(T.edges(data="weight")))
 
 
-class TestSpanningTreePartitions(MinimumSpanningTreeTestBase):
-    """
-    Unit tests for computing a minimum (or maximum) spanning tree within a
-    partition
-
-    """
-
-    algorithm = "kruskal"
-
-    def setup_method(self, method):
-        """
-        Creates the same graph from the other base class, but adds partition
-        data to the edges.
-        """
-        # This stores the class attribute `algorithm` in an instance attribute.
-        self.algo = self.algorithm
-        # This example graph comes from Wikipedia:
-        # https://en.wikipedia.org/wiki/Kruskal's_algorithm
-        edges = [
-            (0, 1, {"weight": 7, "partition": EdgePartition.OPEN}),
-            (0, 3, {"weight": 5, "partition": EdgePartition.EXCLUDED}),
-            (1, 2, {"weight": 8, "partition": EdgePartition.OPEN}),
-            (1, 3, {"weight": 9, "partition": EdgePartition.OPEN}),
-            (1, 4, {"weight": 7, "partition": EdgePartition.OPEN}),
-            (2, 4, {"weight": 5, "partition": EdgePartition.EXCLUDED}),
-            (3, 4, {"weight": 15, "partition": EdgePartition.INCLUDED}),
-            (3, 5, {"weight": 6, "partition": EdgePartition.OPEN}),
-            (4, 5, {"weight": 8, "partition": EdgePartition.OPEN}),
-            (4, 6, {"weight": 9, "partition": EdgePartition.OPEN}),
-            (5, 6, {"weight": 11, "partition": EdgePartition.OPEN}),
-        ]
-        self.G = nx.Graph()
-        self.G.add_edges_from(edges)
-        self.minimum_spanning_edgelist = [
-            (0, 1, {"weight": 7, "partition": EdgePartition.OPEN}),
-            (0, 3, {"weight": 5, "partition": EdgePartition.EXCLUDED}),
-            (1, 4, {"weight": 7, "partition": EdgePartition.OPEN}),
-            (2, 4, {"weight": 5, "partition": EdgePartition.EXCLUDED}),
-            (3, 5, {"weight": 6, "partition": EdgePartition.OPEN}),
-            (4, 6, {"weight": 9, "partition": EdgePartition.OPEN}),
-        ]
-        self.minimum_partition_spanning_edgelist = [
-            (0, 1, {"weight": 7, "partition": EdgePartition.OPEN}),
-            (1, 2, {"weight": 8, "partition": EdgePartition.OPEN}),
-            (1, 4, {"weight": 7, "partition": EdgePartition.OPEN}),
-            (3, 4, {"weight": 15, "partition": EdgePartition.INCLUDED}),
-            (3, 5, {"weight": 6, "partition": EdgePartition.OPEN}),
-            (4, 6, {"weight": 9, "partition": EdgePartition.OPEN}),
-        ]
-        self.maximum_spanning_edgelist = [
-            (0, 1, {"weight": 7, "partition": EdgePartition.OPEN}),
-            (1, 2, {"weight": 8, "partition": EdgePartition.OPEN}),
-            (1, 3, {"weight": 9, "partition": EdgePartition.OPEN}),
-            (3, 4, {"weight": 15, "partition": EdgePartition.INCLUDED}),
-            (4, 6, {"weight": 9, "partition": EdgePartition.OPEN}),
-            (5, 6, {"weight": 11, "partition": EdgePartition.OPEN}),
-        ]
-
-    def test_minimum_with_partition(self):
-        T = nx.partition_minimum_spanning_tree(self.G)
-        actual = sorted(T.edges(data=True))
-        assert edges_equal(actual, self.minimum_partition_spanning_edgelist)
-
-
 class TestSpanningTreeIterator:
     """
     Tests the spanning tree iterator on the example graph in the 2005 Sörensen
@@ -415,10 +350,20 @@ class TestSpanningTreeIterator:
 
     def test_minimum_spanning_tree_iterator(self):
         """
-        Tests that the spanning trees are correctly return in increasing order
+        Tests that the spanning trees are correctly returned in increasing order
         """
         tree_index = 0
         for tree in nx.SpanningTreeIterator(self.G):
             actual = sorted(tree.edges(data=True))
             assert edges_equal(actual, self.spanning_trees[tree_index])
             tree_index += 1
+
+    def test_maximum_spanning_tree_iterator(self):
+        """
+        Tests that the spanning trees are correctly returned in decreasing order
+        """
+        tree_index = 7
+        for tree in nx.SpanningTreeIterator(self.G, minimum=False):
+            actual = sorted(tree.edges(data=True))
+            assert edges_equal(actual, self.spanning_trees[tree_index])
+            tree_index -= 1

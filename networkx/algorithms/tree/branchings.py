@@ -26,10 +26,12 @@ This implementation is based on:
 #    pages={109-122},
 #    language={English}
 # }
-
-
+import random
 import string
+from dataclasses import dataclass, field
+from enum import Enum
 from operator import itemgetter
+from queue import PriorityQueue
 
 import networkx as nx
 from networkx.utils import py_random_state
@@ -330,11 +332,12 @@ class Edmonds:
         # A list of lists of edge indexes. Each list is a circuit for graph G^i.
         # Note the edge list will not, in general, be a circuit in graph G^0.
         self.circuits = []
-        # Stores the index of the minimum edge in the circuit found in G^i and B^i.
-        # The ordering of the edges seems to preserve the weight ordering from G^0.
-        # So even if the circuit does not form a circuit in G^0, it is still true
-        # that the minimum edge of the circuit in G^i is still the minimum edge
-        # in circuit G^0 (depsite their weights being different).
+        # Stores the index of the minimum edge in the circuit found in G^i
+        # and B^i. The ordering of the edges seems to preserve the weight
+        # ordering from G^0. So even if the circuit does not form a circuit
+        # in G^0, it is still true that the minimum edge of the circuit in
+        # G^i is still the minimum edge in circuit G^0 (depsite their weights
+        # being different).
         self.minedge_circuit = []
 
     def find_optimum(
@@ -724,3 +727,174 @@ maximum_spanning_arborescence.__doc__ = docstring_arborescence.format(
 minimum_spanning_arborescence.__doc__ = docstring_arborescence.format(
     kind="minimum", style="spanning arborescence"
 )
+
+
+class EdgePartition(Enum):
+    OPEN = 0
+    INCLUDED = 1
+    EXCLUDED = 2
+
+
+class ArborescenceIterator:
+    """
+    This iterator will successively return spanning arborescences of the input
+    graph in order of minimum weight to maximum weight.
+    This is an implementation of an algorithm published by Sörensen and Janssens
+    and published in the 2005 paper An Algorithm to Generate all Spanning Trees
+    of a Graph in Order of Increasing Cost which can be accessed at
+    https://www.scielo.br/j/pope/a/XHswBwRwJyrfL88dmMwYNWp/?lang=en
+    """
+
+    @dataclass(order=True)
+    class Partition:
+        """
+        This dataclass represents a partition and stores a dict with the edge
+        data and the weight of the minimum spanning tree with the partitions
+        are stored using
+        """
+
+        mst_weight: int
+        partition_dict: dict = field(compare=False)
+
+        def __copy__(self):
+            return ArborescenceIterator.Partition(
+                self.mst_weight, self.partition_dict.copy()
+            )
+
+    def __init__(self, G, weight="weight", minimum=True, ignore_nan=False):
+        """
+        Initialize the iterator
+
+        Parameters
+        ----------
+        G : nx.Graph
+            The directed graph which we need to iterate trees over
+
+        weight : String, default = "weight"
+            The edge attribute used to store the weight of the edge
+
+        minimum : bool, default = True
+            Return the trees in increasing order while true and decreasing order
+            while false.
+
+        """
+        self.G = G.copy()
+        self.weight = weight
+        self.minimum = minimum
+        # Randomly create a key for an edge attribute to hold the partition data
+        self.partition_key = "".join(
+            [random.choice(string.ascii_letters) for _ in range(15)]
+        )
+
+    def __iter__(self):
+        """
+        Returns
+        -------
+        TreeIterator
+            The iterator object for this graph
+        """
+        self.partition_queue = PriorityQueue()
+        self.clear_partition(self.G)
+        # TODO replace with partition minimum arborescence
+        mst_weight = minimum_spanning_arborescence(self.G, self.weight, True).size(
+            weight=self.weight
+        )
+
+        self.partition_queue.put(
+            self.Partition(mst_weight if self.minimum else -mst_weight, dict())
+        )
+
+        return self
+
+    def __next__(self):
+        """
+        Returns
+        -------
+        (multi)Graph
+            The spanning tree of next greatest weight, which ties broken
+            arbitrarily.
+        """
+        if self.partition_queue.empty():
+            raise StopIteration
+
+        partition = self.partition_queue.get()
+        self.write_partition(partition)
+        # TODO replace with partition minimum arborescence
+        next_tree = minimum_spanning_arborescence(self.G, self.weight, True)
+        self.partition(partition, next_tree)
+
+        self.clear_partition(next_tree)
+        return next_tree
+
+    def partition(self, partition, partition_tree):
+        """
+        Create new partitions based of the minimum spanning tree of the
+        current minimum partition.
+
+        Parameters
+        ----------
+        partition : Partition
+        partition_tree : nx.Graph
+        """
+        # create two new partitions with the data from the input partition dict
+        p1 = self.Partition(0, partition.partition_dict.copy())
+        p2 = self.Partition(0, partition.partition_dict.copy())
+        for e in partition_tree.edges:
+            # determine if the edge was open or included
+            if e not in partition.partition_dict:
+                # This is an open edge
+                p1.partition_dict[e] = EdgePartition.EXCLUDED
+                p2.partition_dict[e] = EdgePartition.INCLUDED
+
+                self.write_partition(p1)
+                # TODO replace with partition minimum arborescence
+                p1_mst = minimum_spanning_arborescence(self.G, self.weight, True)
+                p1_mst_weight = p1_mst.size(weight=self.weight)
+                if nx.is_connected(p1_mst):
+                    p1.mst_weight = p1_mst_weight if self.minimum else -p1_mst_weight
+                    self.partition_queue.put(p1.__copy__())
+                p1.partition_dict = p2.partition_dict.copy()
+
+    def write_partition(self, partition):
+        """
+        Writes the desired partition into the graph to calculate the minimum
+        spanning tree.
+
+        Parameters
+        ----------
+        partition : Partition
+            A Partition dataclass describing a partition on the edges of the
+            graph.
+        """
+        for u, v, d in self.G.edges(data=True):
+            if (u, v) in partition.partition_dict:
+                d[self.partition_key] = partition.partition_dict[(u, v)]
+            else:
+                d[self.partition_key] = EdgePartition.OPEN
+
+    def check_partition(self):
+        """
+        Check that the partition is not empty.
+        An empty partition for a directed graph would be any partition in which
+        their is at least one node which is disconnected or contains multiple
+        included edges.
+        Returns
+        -------
+        bool
+            True if the partition is acceptable and false otherwise.
+        """
+        pass
+
+    def clear_partition(self, G):
+        """
+        Removes partition data from the graph
+        """
+        for u, v, d in G.edges(data=True):
+            if self.partition_key in d:
+                del d[self.partition_key]
+
+    def __del__(self):
+        """
+        Delete the copy of the graph
+        """
+        del self.G
