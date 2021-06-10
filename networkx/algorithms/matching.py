@@ -1,6 +1,4 @@
 """Functions for computing and verifying matchings in a graph."""
-import networkx as nx
-from networkx.utils import not_implemented_for
 from collections import Counter
 from itertools import combinations
 from itertools import repeat
@@ -10,13 +8,10 @@ __all__ = [
     "is_maximal_matching",
     "is_perfect_matching",
     "max_weight_matching",
-    "min_weight_matching",
     "maximal_matching",
 ]
 
 
-@not_implemented_for("multigraph")
-@not_implemented_for("directed")
 def maximal_matching(G):
     r"""Find a maximal matching in the graph.
 
@@ -51,9 +46,7 @@ def maximal_matching(G):
 
 
 def matching_dict_to_set(matching):
-    """Converts matching dict format to matching set format
-
-    Converts a dictionary representing a matching (as returned by
+    """Converts a dictionary representing a matching (as returned by
     :func:`max_weight_matching`) to a set representing a matching (as
     returned by :func:`maximal_matching`).
 
@@ -73,7 +66,8 @@ def matching_dict_to_set(matching):
 
 
 def is_matching(G, matching):
-    """Return True if ``matching`` is a valid matching of ``G``
+    """Decides whether the given set or dictionary represents a valid
+    matching in ``G``.
 
     A *matching* in a graph is a set of edges in which no two distinct
     edges share a common endpoint.
@@ -110,7 +104,8 @@ def is_matching(G, matching):
 
 
 def is_maximal_matching(G, matching):
-    """Return True if ``matching`` is a maximal matching of ``G``
+    """Decides whether the given set or dictionary represents a valid
+    maximal matching in ``G``.
 
     A *maximal matching* in a graph is a matching in which adding any
     edge would cause the set to no longer be a valid matching.
@@ -153,7 +148,8 @@ def is_maximal_matching(G, matching):
 
 
 def is_perfect_matching(G, matching):
-    """Return True if ``matching`` is a perfect matching for ``G``
+    """Decides whether the given set represents a valid perfect matching in
+    ``G``.
 
     A *perfect matching* in a graph is a matching in which exactly one edge
     is incident upon each vertex.
@@ -187,45 +183,6 @@ def is_perfect_matching(G, matching):
     return all(counts[v] == 1 for v in G)
 
 
-@not_implemented_for("multigraph")
-@not_implemented_for("directed")
-def min_weight_matching(G, maxcardinality=False, weight="weight"):
-    """Use reciprocal edge weights to find max reciprocal weight matching.
-
-    This method replaces the weights with their reciprocal and
-    then runs :func:`max_weight_matching`.
-    Read the documentation of max_weight_matching for more information.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-      Undirected graph
-
-    maxcardinality: bool, optional (default=False)
-       If maxcardinality is True, compute the maximum-cardinality matching
-       with minimum weight among all maximum-cardinality matchings.
-
-    weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight.
-       If key not found, uses 1 as weight.
-
-    Returns
-    -------
-    matching : set
-        A minimal weight matching of the graph.
-    """
-    if len(G.edges) == 0:
-        return max_weight_matching(G, maxcardinality, weight)
-    G_edges = G.edges(data=weight, default=1)
-    min_weight = min([w for _, _, w in G_edges])
-    InvG = nx.Graph()
-    edges = ((u, v, 1 / (1 + w - min_weight)) for u, v, w in G_edges)
-    InvG.add_weighted_edges_from(edges, weight=weight)
-    return max_weight_matching(InvG, maxcardinality, weight)
-
-
-@not_implemented_for("multigraph")
-@not_implemented_for("directed")
 def max_weight_matching(G, maxcardinality=False, weight="weight"):
     """Compute a maximum-weighted matching of G.
 

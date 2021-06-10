@@ -1,5 +1,6 @@
 from datetime import date
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
+import sphinx_rtd_theme
 from warnings import filterwarnings
 
 filterwarnings(
@@ -51,6 +52,13 @@ sphinx_gallery_conf = {
     "backreferences_dir": "modules/generated",
     "image_scrapers": ("matplotlib",),
 }
+# Add mayavi scraper, if available
+try:
+    import mayavi
+
+    sphinx_gallery_conf["image_scrapers"] += ("mayavi",)
+except ImportError:
+    pass
 # Add pygraphviz png scraper, if available
 try:
     from pygraphviz.scraper import PNGScraper
@@ -120,36 +128,17 @@ doctest_global_setup = "import networkx as nx"
 # Options for HTML output
 # -----------------------
 
-html_baseurl = "https://networkx.org/documentation/stable/"
-html_theme = "pydata_sphinx_theme"
+
+html_theme = "sphinx_rtd_theme"
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
 html_theme_options = {
-    "collapse_navigation": True,
-    "navigation_depth": 2,
-    "show_prev_next": False,
-    "icon_links": [
-        {
-            "name": "Home Page",
-            "url": "https://networkx.org",
-            "icon": "fas fa-home",
-        },
-        {
-            "name": "GitHub",
-            "url": "https://github.com/networkx/networkx",
-            "icon": "fab fa-github-square",
-        },
-    ],
-    "external_links": [{"name": "Guides", "url": "https://networkx.org/nx-guides/"}],
-    "navbar_end": ["navbar-icon-links", "version"],
-    "page_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
+    "canonical_url": "https://networkx.org/documentation/stable/",
+    "navigation_depth": 3,
+    "logo_only": True,
 }
-html_sidebars = {
-    "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
-    "index": [],
-    "install": [],
-    "tutorial": [],
-    "auto_examples/index": [],
-}
-html_logo = "_static/networkx_banner.svg"
+
+html_logo = "_static/networkx_logo.svg"
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
@@ -186,14 +175,6 @@ html_use_opensearch = "https://networkx.org"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "NetworkX"
-
-html_context = {
-    "versions_dropdown": {
-        "latest": "devel (latest)",
-        "stable": "v2.5 (stable)",
-        "networkx-2.4": "v2.4",
-    },
-}
 
 # Options for LaTeX output
 # ------------------------

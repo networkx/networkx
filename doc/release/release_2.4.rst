@@ -1,11 +1,7 @@
-NetworkX 2.4
-============
+Announcement: NetworkX 2.4
+==========================
 
-Release date: 16 October 2019
-
-Supports Python 3.5, 3.6, 3.7, and 3.8.
-This is the last release to support Python 3.5.
-
+We're happy to announce the release of NetworkX 2.4!
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
@@ -122,8 +118,8 @@ Remove old names for graphview functions.
 - MultiReverseView
 - Use reverse_view, subgraph_view and generic_graph_view.
 
-Merged PRs
-----------
+Pull requests and commits merged in this release
+------------------------------------------------
 
 A total of 205 changes have been committed.
 
@@ -341,8 +337,8 @@ It contained the following 5 merges:
 - Test Python 3.8 with AppVeyor (#3648)
 - Cleanup and speedup CI (#3652)
 
-Contributors
-------------
+Contributors to this release
+----------------------------
 
 - Rajendra Adhikari
 - Antoine Allard

@@ -8,6 +8,7 @@ import pytest
 import networkx as nx
 import networkx.algorithms.threshold as nxt
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
+from networkx.testing import almost_equal
 
 cnlti = nx.convert_node_labels_to_integers
 
@@ -223,7 +224,7 @@ class TestGeneratorThreshold:
 
         c1 = nxt.cluster_sequence(cs)
         c2 = list(nx.clustering(G).values())
-        assert sum([abs(c - d) for c, d in zip(c1, c2)]) == pytest.approx(0, abs=1e-7)
+        assert almost_equal(sum([abs(c - d) for c, d in zip(c1, c2)]), 0)
 
         b1 = nx.betweenness_centrality(G).values()
         b2 = nxt.betweenness_sequence(cs)

@@ -1,10 +1,7 @@
-NetworkX 2.1
-============
+Announcement: NetworkX 2.1
+==========================
 
-Release date: 22 January 2018
-
-Supports Python 2.7, 3.4, 3.5, and 3.6.
-
+We're happy to announce the release of NetworkX 2.1!
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
@@ -117,8 +114,8 @@ Deprecations
   ``weakly_connected_component_subgraphs``.
   Instead use: ``[G.subgraph(c) for c in *_components]``
 
-Contributors
-------------
+Contributors to this release
+----------------------------
 
 - Jack Amadeo
 - Boskovits
@@ -159,8 +156,8 @@ Contributors
 - talhum
 
 
-Merged PRs
-----------
+Pull requests merged in this release
+------------------------------------
 
 - Update Release Notes for v2.1 (#2839)
 - Update release notes (#2838)

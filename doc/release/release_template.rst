@@ -1,10 +1,7 @@
-Next Release
-============
+Announcement: NetworkX 2.X
+==========================
 
-Release date: TBD
-
-Supports Python ...
-
+We're happy to announce the release of NetworkX 2.X!
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
@@ -33,13 +30,13 @@ Deprecations
 ------------
 
 
-Contributors
-------------
+Contributors to this release
+----------------------------
 
 <output of contribs.py>
 
 
-Merged PRs
-----------
+Pull requests merged in this release
+------------------------------------
 
 <output of contribs.py>

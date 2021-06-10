@@ -16,6 +16,7 @@ Reading and writing graphs
    graphml
    json_graph
    leda
+   yaml
    sparsegraph6
    pajek
    nx_shp

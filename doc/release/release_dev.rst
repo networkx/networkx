@@ -1,10 +1,7 @@
-Next Release
-============
+Announcement: NetworkX 2.6
+==========================
 
-Release date: TBD
-
-Supports Python 3.7, 3.8, and 3.9.
-
+We're happy to announce the release of NetworkX 2.6!
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
@@ -34,9 +31,6 @@ Improvements
 - [`#4640 <https://github.com/networkx/networkx/pull/4640>`_]
   ``prefix_tree`` now uses a non-recursive algorithm. The original recursive
   algorithm is still available via ``prefix_tree_recursive``.
-- [`#4659 <https://github.com/networkx/networkx/pull/4659>`_]
-  New ``initial_graph`` argument to ``barabasi_albert_graph`` and
-  ``dual_barabasi_albert_graph`` to supply an initial graph to the model.
 
 API Changes
 -----------
@@ -111,19 +105,16 @@ Deprecations
   Deprecate ``hub_matrix`` and ``authority_matrix``
 - [`#4629 <https://github.com/networkx/networkx/pull/4629>`_]
   Deprecate the ``Ordered`` graph classes.
-- [`#4826 <https://github.com/networkx/networkx/pull/4826>`_]
-  Deprecate ``preserve_random_state``.
-- [`#4827 <https://github.com/networkx/networkx/pull/4827>`_]
-  Deprecate ``almost_equal``.
 
 
-Contributors
-------------
+
+Contributors to this release
+----------------------------
 
 <output of contribs.py>
 
 
-Merged PRs
-----------
+Pull requests merged in this release
+------------------------------------
 
 <output of contribs.py>

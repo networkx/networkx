@@ -125,20 +125,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="iterable is deprecated"
     )
-    warnings.filterwarnings(
-        "ignore",
-        category=FutureWarning,
-        message="\nThe function signature for cytoscape",
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\nThe `attrs` keyword"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="preserve_random_state"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="`almost_equal`"
-    )
 
 
 @pytest.fixture(autouse=True)

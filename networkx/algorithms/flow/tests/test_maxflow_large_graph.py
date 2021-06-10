@@ -11,6 +11,7 @@ from networkx.algorithms.flow import dinitz
 from networkx.algorithms.flow import edmonds_karp
 from networkx.algorithms.flow import preflow_push
 from networkx.algorithms.flow import shortest_augmenting_path
+from networkx.testing import almost_equal
 
 flow_funcs = [
     boykov_kolmogorov,
@@ -96,7 +97,7 @@ class TestMaxflowLargeGraph:
             kwargs["flow_func"] = flow_func
             errmsg = f"Assertion failed in function: {flow_func.__name__}"
             flow_value = nx.maximum_flow_value(G, (0, 0), "t", **kwargs)
-            assert flow_value == pytest.approx(1.0, abs=1e-7)
+            assert almost_equal(flow_value, 1.0), errmsg
 
     def test_gl1(self):
         G = read_graph("gl1")

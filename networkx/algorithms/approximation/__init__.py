@@ -1,14 +1,14 @@
-"""Approximations of graph properties and Heuristic methods for optimization.
+"""Approximations of graph properties and Heuristic functions for optimization
+problems.
 
-    .. warning:: These functions are not imported in the top-level of ``networkx``
+    .. warning:: The approximation submodule is not imported in the top-level
+        ``networkx``.
 
-    These functions can be accessed using
-    ``networkx.approximation.function_name``
-
-    They can be imported using ``from networkx.algorithms import approximation``
-    or ``from networkx.algorithms.approximation import function_name``
+    These functions can be imported with
+    ``from networkx.algorithms import approximation``.
 
 """
+
 from networkx.algorithms.approximation.clustering_coefficient import *
 from networkx.algorithms.approximation.clique import *
 from networkx.algorithms.approximation.connectivity import *
@@ -18,7 +18,6 @@ from networkx.algorithms.approximation.kcomponents import *
 from networkx.algorithms.approximation.matching import *
 from networkx.algorithms.approximation.ramsey import *
 from networkx.algorithms.approximation.steinertree import *
-from networkx.algorithms.approximation.traveling_salesman import *
-from networkx.algorithms.approximation.treewidth import *
 from networkx.algorithms.approximation.vertex_cover import *
+from networkx.algorithms.approximation.treewidth import *
 from networkx.algorithms.approximation.maxcut import *

@@ -1,5 +1,6 @@
 """Unit tests for layout functions."""
 import networkx as nx
+from networkx.testing import almost_equal
 
 import pytest
 
@@ -195,7 +196,7 @@ class TestLayout:
         pos = nx.circular_layout(self.bigG)
         npos = nx.spring_layout(self.bigG, pos=pos, fixed=[(0, 0)])
         for axis in range(2):
-            assert pos[(0, 0)][axis] == pytest.approx(npos[(0, 0)][axis], abs=1e-7)
+            assert almost_equal(pos[(0, 0)][axis], npos[(0, 0)][axis])
 
     def test_center_parameter(self):
         G = nx.path_graph(1)
@@ -314,9 +315,9 @@ class TestLayout:
 
         cost, grad = costfn(pos, np, invdist, meanweight=0, dim=1)
 
-        assert cost == pytest.approx(((3 / 2.0 - 1) ** 2), abs=1e-7)
-        assert grad[0] == pytest.approx((-0.5), abs=1e-7)
-        assert grad[1] == pytest.approx(0.5, abs=1e-7)
+        assert almost_equal(cost, ((3 / 2.0 - 1) ** 2))
+        assert almost_equal(grad[0], -0.5)
+        assert almost_equal(grad[1], 0.5)
 
     def check_kamada_kawai_costfn(self, pos, invdist, meanwt, dim):
         costfn = nx.drawing.layout._kamada_kawai_costfn
@@ -329,7 +330,7 @@ class TestLayout:
                 diff = np.linalg.norm(pos[i] - pos[j])
                 expected_cost += (diff * invdist[i][j] - 1.0) ** 2
 
-        assert cost == pytest.approx(expected_cost, abs=1e-7)
+        assert almost_equal(cost, expected_cost)
 
         dx = 1e-4
         for nd in range(pos.shape[0]):
@@ -343,7 +344,7 @@ class TestLayout:
                 ps[idx] -= 2 * dx
                 cminus = costfn(ps, np, invdist, meanweight=meanwt, dim=pos.shape[1])[0]
 
-                assert grad[idx] == pytest.approx((cplus - cminus) / (2 * dx), abs=1e-5)
+                assert almost_equal(grad[idx], (cplus - cminus) / (2 * dx), places=5)
 
     def test_kamada_kawai_costfn(self):
         invdist = 1 / np.array([[0.1, 2.1, 1.7], [2.1, 0.2, 0.6], [1.7, 0.6, 0.3]])
@@ -378,8 +379,8 @@ class TestLayout:
         distances_equidistant = self.collect_node_distances(pos_equidistant)
         for d in range(1, len(distances_equidistant) - 1):
             # test similarity to two decimal places
-            assert distances_equidistant[d] == pytest.approx(
-                distances_equidistant[d + 1], abs=1e-2
+            assert almost_equal(
+                distances_equidistant[d], distances_equidistant[d + 1], 2
             )
 
     def test_rescale_layout_dict(self):

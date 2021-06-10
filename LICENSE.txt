@@ -1,3 +1,6 @@
+License
+=======
+
 NetworkX is distributed with the 3-clause BSD license.
 
 ::

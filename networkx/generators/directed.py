@@ -4,12 +4,13 @@ scale-free graphs.
 
 """
 
-import numbers
 from collections import Counter
 
 import networkx as nx
 from networkx.generators.classic import empty_graph
-from networkx.utils import discrete_sequence, py_random_state, weighted_choice
+from networkx.utils import discrete_sequence
+from networkx.utils import weighted_choice
+from networkx.utils import py_random_state
 
 __all__ = [
     "gn_graph",
@@ -237,13 +238,15 @@ def scale_free_graph(
            Discrete Algorithms, 132--139, 2003.
     """
 
-    def _choose_node(candidates, node_list, delta):
-        if delta > 0:
-            bias_sum = len(node_list) * delta
-            p_delta = bias_sum / (bias_sum + len(candidates))
-            if seed.random() < p_delta:
-                return seed.choice(node_list)
-        return seed.choice(candidates)
+    def _choose_node(G, distribution, delta, psum):
+        cumsum = 0.0
+        # normalization
+        r = seed.random()
+        for n, d in distribution:
+            cumsum += (d + delta) / psum
+            if r < cumsum:
+                break
+        return n
 
     if create_using is None or not hasattr(create_using, "_adj"):
         # start with 3-cycle
@@ -264,66 +267,32 @@ def scale_free_graph(
     if abs(alpha + beta + gamma - 1.0) >= 1e-9:
         raise ValueError("alpha+beta+gamma must equal 1.")
 
-    if delta_in < 0:
-        raise ValueError("delta_in must be >= 0.")
-
-    if delta_out < 0:
-        raise ValueError("delta_out must be >= 0.")
-
-    # pre-populate degree states
-    vs = sum([count * [idx] for idx, count in G.out_degree()], [])
-    ws = sum([count * [idx] for idx, count in G.in_degree()], [])
-
-    # pre-populate node state
-    node_list = list(G.nodes())
-
-    # see if there already are number-based nodes
-    numeric_nodes = [n for n in node_list if isinstance(n, numbers.Number)]
-    if len(numeric_nodes) > 0:
-        # set cursor for new nodes appropriately
-        cursor = max([int(n.real) for n in numeric_nodes]) + 1
-    else:
-        # or start at zero
-        cursor = 0
-
+    number_of_edges = G.number_of_edges()
     while len(G) < n:
+        psum_in = number_of_edges + delta_in * len(G)
+        psum_out = number_of_edges + delta_out * len(G)
         r = seed.random()
-
         # random choice in alpha,beta,gamma ranges
         if r < alpha:
             # alpha
             # add new node v
-            v = cursor
-            cursor += 1
-            # also add to node state
-            node_list.append(v)
+            v = len(G)
             # choose w according to in-degree and delta_in
-            w = _choose_node(ws, node_list, delta_in)
-
+            w = _choose_node(G, G.in_degree(), delta_in, psum_in)
         elif r < alpha + beta:
             # beta
             # choose v according to out-degree and delta_out
-            v = _choose_node(vs, node_list, delta_out)
+            v = _choose_node(G, G.out_degree(), delta_out, psum_out)
             # choose w according to in-degree and delta_in
-            w = _choose_node(ws, node_list, delta_in)
-
+            w = _choose_node(G, G.in_degree(), delta_in, psum_in)
         else:
             # gamma
             # choose v according to out-degree and delta_out
-            v = _choose_node(vs, node_list, delta_out)
+            v = _choose_node(G, G.out_degree(), delta_out, psum_out)
             # add new node w
-            w = cursor
-            cursor += 1
-            # also add to node state
-            node_list.append(w)
-
-        # add edge to graph
+            w = len(G)
         G.add_edge(v, w)
-
-        # update degree states
-        vs.append(v)
-        ws.append(w)
-
+        number_of_edges += 1
     return G
 
 

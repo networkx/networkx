@@ -12,7 +12,7 @@ Requires Internet connection to download the URL
 http://www-personal.umich.edu/~mejn/netdata/football.zip
 """
 
-import urllib.request
+import urllib.request as urllib
 import io
 import zipfile
 
@@ -21,7 +21,7 @@ import networkx as nx
 
 url = "http://www-personal.umich.edu/~mejn/netdata/football.zip"
 
-sock = urllib.request.urlopen(url)  # open URL
+sock = urllib.urlopen(url)  # open URL
 s = io.BytesIO(sock.read())  # read into BytesIO "file"
 sock.close()
 

@@ -6,6 +6,7 @@ np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
 
 import networkx as nx
+from networkx.testing import almost_equal
 
 
 def test_trophic_levels():
@@ -73,15 +74,15 @@ def test_trophic_levels_levine():
 
     for nid, level in d.items():
         expected_level = expected_d[nid]
-        assert expected_level == pytest.approx(level, abs=1e-7)
+        assert almost_equal(expected_level, level)
 
 
 def test_trophic_levels_simple():
     matrix_a = np.array([[0, 0], [1, 0]])
     G = nx.from_numpy_array(matrix_a, create_using=nx.DiGraph)
     d = nx.trophic_levels(G)
-    assert d[0] == pytest.approx(2, abs=1e-7)
-    assert d[1] == pytest.approx(1, abs=1e-7)
+    assert almost_equal(d[0], 2)
+    assert almost_equal(d[1], 1)
 
 
 def test_trophic_levels_more_complex():
@@ -97,7 +98,7 @@ def test_trophic_levels_more_complex():
     d = nx.trophic_levels(G)
     expected_result = [1, 2, 3, 4]
     for ind in range(4):
-        assert d[ind] == pytest.approx(expected_result[ind], abs=1e-7)
+        assert almost_equal(d[ind], expected_result[ind])
 
     # fmt: off
     matrix = np.array([
@@ -115,7 +116,7 @@ def test_trophic_levels_more_complex():
     print("Expected Result: ", expected_result)
 
     for ind in range(4):
-        assert d[ind] == pytest.approx(expected_result[ind], abs=1e-7)
+        assert almost_equal(d[ind], expected_result[ind])
 
 
 def test_trophic_levels_even_more_complex():
@@ -142,7 +143,7 @@ def test_trophic_levels_even_more_complex():
     result_2 = nx.trophic_levels(G)
 
     for ind in range(5):
-        assert result_1[ind] == pytest.approx(result_2[ind], abs=1e-7)
+        assert almost_equal(result_1[ind], result_2[ind])
 
 
 def test_trophic_levels_singular_matrix():
@@ -203,7 +204,7 @@ def test_trophic_differences():
     matrix_a = np.array([[0, 1], [0, 0]])
     G = nx.from_numpy_array(matrix_a, create_using=nx.DiGraph)
     diffs = nx.trophic_differences(G)
-    assert diffs[(0, 1)] == pytest.approx(1, abs=1e-7)
+    assert almost_equal(diffs[(0, 1)], 1)
 
     # fmt: off
     matrix_b = np.array([
@@ -216,18 +217,18 @@ def test_trophic_differences():
     G = nx.from_numpy_array(matrix_b, create_using=nx.DiGraph)
     diffs = nx.trophic_differences(G)
 
-    assert diffs[(0, 1)] == pytest.approx(1, abs=1e-7)
-    assert diffs[(0, 2)] == pytest.approx(1.5, abs=1e-7)
-    assert diffs[(1, 2)] == pytest.approx(0.5, abs=1e-7)
-    assert diffs[(1, 3)] == pytest.approx(1.25, abs=1e-7)
-    assert diffs[(2, 3)] == pytest.approx(0.75, abs=1e-7)
+    assert almost_equal(diffs[(0, 1)], 1)
+    assert almost_equal(diffs[(0, 2)], 1.5)
+    assert almost_equal(diffs[(1, 2)], 0.5)
+    assert almost_equal(diffs[(1, 3)], 1.25)
+    assert almost_equal(diffs[(2, 3)], 0.75)
 
 
 def test_trophic_incoherence_parameter_no_cannibalism():
     matrix_a = np.array([[0, 1], [0, 0]])
     G = nx.from_numpy_array(matrix_a, create_using=nx.DiGraph)
     q = nx.trophic_incoherence_parameter(G, cannibalism=False)
-    assert q == pytest.approx(0, abs=1e-7)
+    assert almost_equal(q, 0)
 
     # fmt: off
     matrix_b = np.array([
@@ -239,7 +240,7 @@ def test_trophic_incoherence_parameter_no_cannibalism():
     # fmt: on
     G = nx.from_numpy_array(matrix_b, create_using=nx.DiGraph)
     q = nx.trophic_incoherence_parameter(G, cannibalism=False)
-    assert q == pytest.approx(np.std([1, 1.5, 0.5, 0.75, 1.25]), abs=1e-7)
+    assert almost_equal(q, np.std([1, 1.5, 0.5, 0.75, 1.25]))
 
     # fmt: off
     matrix_c = np.array([
@@ -252,7 +253,7 @@ def test_trophic_incoherence_parameter_no_cannibalism():
     G = nx.from_numpy_array(matrix_c, create_using=nx.DiGraph)
     q = nx.trophic_incoherence_parameter(G, cannibalism=False)
     # Ignore the -link
-    assert q == pytest.approx(np.std([1, 1.5, 0.5, 0.75, 1.25]), abs=1e-7)
+    assert almost_equal(q, np.std([1, 1.5, 0.5, 0.75, 1.25]))
 
     # no self-loops case
     # fmt: off
@@ -266,14 +267,14 @@ def test_trophic_incoherence_parameter_no_cannibalism():
     G = nx.from_numpy_array(matrix_d, create_using=nx.DiGraph)
     q = nx.trophic_incoherence_parameter(G, cannibalism=False)
     # Ignore the -link
-    assert q == pytest.approx(np.std([1, 1.5, 0.5, 0.75, 1.25]), abs=1e-7)
+    assert almost_equal(q, np.std([1, 1.5, 0.5, 0.75, 1.25]))
 
 
 def test_trophic_incoherence_parameter_cannibalism():
     matrix_a = np.array([[0, 1], [0, 0]])
     G = nx.from_numpy_array(matrix_a, create_using=nx.DiGraph)
     q = nx.trophic_incoherence_parameter(G, cannibalism=True)
-    assert q == pytest.approx(0, abs=1e-7)
+    assert almost_equal(q, 0)
 
     # fmt: off
     matrix_b = np.array([
@@ -286,7 +287,7 @@ def test_trophic_incoherence_parameter_cannibalism():
     # fmt: on
     G = nx.from_numpy_array(matrix_b, create_using=nx.DiGraph)
     q = nx.trophic_incoherence_parameter(G, cannibalism=True)
-    assert q == pytest.approx(2, abs=1e-7)
+    assert almost_equal(q, 2)
 
     # fmt: off
     matrix_c = np.array([
@@ -299,4 +300,4 @@ def test_trophic_incoherence_parameter_cannibalism():
     G = nx.from_numpy_array(matrix_c, create_using=nx.DiGraph)
     q = nx.trophic_incoherence_parameter(G, cannibalism=True)
     # Ignore the -link
-    assert q == pytest.approx(np.std([1, 1.5, 0.5, 0.75, 1.25]), abs=1e-7)
+    assert almost_equal(q, np.std([1, 1.5, 0.5, 0.75, 1.25]))

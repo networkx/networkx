@@ -398,7 +398,7 @@ def view_pygraphviz(
 
     # If the user passed in an edgelabel, we update the labels for all edges.
     if edgelabel is not None:
-        if not callable(edgelabel):
+        if not hasattr(edgelabel, "__call__"):
 
             def func(data):
                 return "".join(["  ", str(data[edgelabel]), "  "])
