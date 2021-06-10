@@ -123,14 +123,9 @@ class TestTreeLCA:
         """Test that pairs not in the graph raises error."""
         lca = tree_all_pairs_lca(self.DG, 0, [(-1, -1)])
         pytest.raises(nx.NodeNotFound, list, lca)
-
-    def test_tree_all_pairs_lowest_common_ancestor11(self):
-        """Test that None as a node in the graph raises an error."""
-        G = nx.DiGraph([(None, 3)])
-        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
-        pytest.raises(
-            nx.NodeNotFound, list, tree_all_pairs_lca(self.DG, pairs=G.edges())
-        )
+        # check if node is None
+        lca = tree_all_pairs_lca(self.DG, None, [(-1, -1)])
+        pytest.raises(nx.NodeNotFound, list, lca)
 
     def test_tree_all_pairs_lowest_common_ancestor12(self):
         """Test that tree routine bails on DAGs."""
@@ -291,12 +286,6 @@ class TestDAGLCA:
         G.add_node(3)
         ans = list(all_pairs_lca(G))
         assert ans == [((3, 3), 3)]
-
-    def test_all_pairs_lowest_common_ancestor10(self):
-        """Test that it bails on None as a node."""
-        G = nx.DiGraph([(None, 3)])
-        pytest.raises(nx.NetworkXError, all_pairs_lca, G)
-        pytest.raises(nx.NodeNotFound, all_pairs_lca, self.DG, pairs=G.edges())
 
     def test_lowest_common_ancestor1(self):
         """Test that the one-pair function works on default."""
