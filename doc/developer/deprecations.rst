@@ -65,7 +65,12 @@ Version 3.0
 * In ``readwrite/json_graph/cytoscape.py``, change function signature for
   ``cytoscape_graph`` and ``cytoscape_data`` to replace the ``attrs`` keyword.
   argument with explicit ``name`` and ``ident`` keyword args.
-* Remove ``readwrite/nx_yaml.py`` and related tests.
+* In ``readwrite/json_graph/tree.py``, remove ``attrs`` kwarg from ``tree_graph``
+  and ``tree_data``.
+* Undo changes related to the removal of ``pyyaml``. Remove the
+  ``__getattr__`` definitions from ``networkx/__init__.py``,
+  ``networkx/readwrite/__init__.py`` and ``networkx/readwrite/nx_yaml.py`` and
+  remove ``networkx/readwrite/tests/test_getattr_nxyaml_removal.py``
 * Remove ``readwrite/gpickle.py`` and related tests.
 * Remove ``readwrite/nx_shp.py`` and related tests (add info in alternatives).
 * Remove ``copy`` method in the coreview Filtered-related classes and related tests.
@@ -75,5 +80,11 @@ Version 3.0
 * Remove ``readwrite/json_graph/jit.py`` and related tests.
 * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
 * In ``algorithms/link_analysis/hits_alg.py`` remove ``hub_matrix`` and ``authority_matrix``
+* In ``algorithms/link_analysis/hits_alg.py``, replace ``hits`` with the
 * In ``networkx.classes`` remove the ``ordered`` module and the four ``Ordered``
   classes defined therein.
+* In ``utils/decorators.py`` remove ``preserve_random_state``.
+* In ``algorithms/community/quality.py`` remove ``coverage`` and ``performance``.
+* Remove ``testing``.
+* In ``linalg/graphmatrix.py`` remove ``adj_matrix``.
+* In ``algorithms/similarity.py`` replace ``simrank_similarity`` with ``simrank_similarity_numpy``.

@@ -390,6 +390,7 @@ def fruchterman_reingold_layout(
 
     fixed : list or None  optional (default=None)
         Nodes to keep fixed at initial position.
+        Nodes not in ``G.nodes`` are ignored.
         ValueError raised if `fixed` specified and `pos` not.
 
     iterations : int  optional (default=50)
@@ -446,7 +447,7 @@ def fruchterman_reingold_layout(
             if node not in pos:
                 raise ValueError("nodes are fixed without positions given")
         nfixed = {node: i for i, node in enumerate(G)}
-        fixed = np.asarray([nfixed[node] for node in fixed])
+        fixed = np.asarray([nfixed[node] for node in fixed if node in nfixed])
 
     if pos is not None:
         # Determine size of existing domain to adjust initial positions

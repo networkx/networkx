@@ -617,7 +617,7 @@ def group_closeness_centrality(G, S, weight=None):
        Measuring and Maximizing Group Closeness Centrality over
        Disk Resident Graphs.
        WWWConference Proceedings, 2014. 689-694.
-       http://wwwconference.org/proceedings/www2014/companion/p689.pdf
+       https://doi.org/10.1145/2567948.2579356
     """
     if G.is_directed():
         G = G.reverse()  # reverse view

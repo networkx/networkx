@@ -1,8 +1,11 @@
 import pytest
+import networkx as nx
 
+np = pytest.importorskip("numpy")
+sp = pytest.importorskip("scipy")
+import scipy.sparse  # call as sp.sparse
 
-import networkx
-from networkx.testing import almost_equal
+from networkx.algorithms.link_analysis.hits_alg import _hits_python
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
@@ -71,6 +74,30 @@ class TestHITS:
         assert networkx.hits_scipy(G) == ({}, {})
 
     def test_hits_not_convergent(self):
-        with pytest.raises(networkx.PowerIterationFailedConvergence):
-            G = self.G
-            networkx.hits(G, max_iter=0)
+        G = nx.path_graph(50)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            nx.hits_scipy(G, max_iter=1)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            _hits_python(G, max_iter=1)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            nx.hits_scipy(G, max_iter=0)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            _hits_python(G, max_iter=0)
+        with pytest.raises(ValueError):
+            nx.hits(G, max_iter=0)
+        with pytest.raises(sp.sparse.linalg.eigen.arpack.ArpackNoConvergence):
+            nx.hits(G, max_iter=1)
+
+
+@pytest.mark.parametrize(
+    "hits_alg",
+    (nx.hits_numpy, nx.hits_scipy),
+)
+def test_deprecation_warnings(hits_alg):
+    """Make sure deprecation warnings are raised.
+
+    To be removed when deprecations expire.
+    """
+    G = nx.DiGraph(nx.path_graph(4))
+    with pytest.warns(DeprecationWarning):
+        pr = hits_alg(G)
