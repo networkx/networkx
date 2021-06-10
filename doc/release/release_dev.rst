@@ -1,10 +1,7 @@
-Next Release
-============
+Announcement: NetworkX 2.6
+==========================
 
-Release date: TBD
-
-Supports Python 3.7, 3.8, and 3.9.
-
+We're happy to announce the release of NetworkX 2.6!
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
@@ -115,8 +112,6 @@ Improvements
   ``prefix_tree`` now uses a non-recursive algorithm. The original recursive
   algorithm is still available via ``prefix_tree_recursive``.
 - [`#4659 <https://github.com/networkx/networkx/pull/4659>`_]
-  New ``initial_graph`` argument to ``barabasi_albert_graph`` and
-  ``dual_barabasi_albert_graph`` to supply an initial graph to the model.
 - [`#4690 <https://github.com/networkx/networkx/pull/4690>`_]
   ``modularity_max`` now supports edge weights.
 - [`#4727 <https://github.com/networkx/networkx/pull/4727>`_]
