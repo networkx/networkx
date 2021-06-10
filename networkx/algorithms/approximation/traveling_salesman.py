@@ -323,8 +323,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
 
 def asadpour_tsp(G, weight="weight"):
     """
-    Returns an O( log n / log log n ) approximate solution to the traveling
-    salesman problem.
+    Returns an approximate solution to the traveling salesman problem.
 
     This approximate solution is one of the best known approximations for
     the asymmetric traveling salesman problem developed by Asadpour et al,
@@ -333,7 +332,7 @@ def asadpour_tsp(G, weight="weight"):
     exponential distribution of undirected spanning trees where the
     probability of an edge being in the tree corresponds to the weight of
     that edge using a maximum entropy rounding scheme. Next we sample that
-    distribution $2 \\log n$ times and saves the minimum sampled tree once
+    distribution $2 \\log n$ times and save the minimum sampled tree once
     the direction of the arcs is added back to the edges. Finally,
     we argument then short circuit that graph to find the approximate tour
     for the salesman.
@@ -348,8 +347,10 @@ def asadpour_tsp(G, weight="weight"):
         Edge data key corresponding to the edge weight.
         If any edge does not have this attribute the weight is set to 1.
 
-    Returns ------- cycle : list of nodes Returns the cycle (list of nodes)
-    that a salesman can follow to minimize the total weight of the trip.
+    Returns
+    -------
+        cycle : list of nodes Returns the cycle (list of nodes) that a salesman
+            can follow to minimize the total weight of the trip.
 
     Raises
     ------
@@ -402,6 +403,7 @@ def _held_karp(G, weight="weight"):
        traveling salesman problem, Operations research, 65 (2017),
        pp. 1043–1061
     """
+
     def sep_oracle(point):
         """
         The separation oracle used in the ellipsoid algorithm to solve the
@@ -432,6 +434,7 @@ def _held_karp(G, weight="weight"):
             was farthest from, None if no constraints are violated.
         """
         pass
+
     pass
 
 
@@ -586,16 +589,16 @@ def greedy_tsp(G, weight="weight", source=None):
 
 @py_random_state(9)
 def simulated_annealing_tsp(
-        G,
-        init_cycle,
-        weight="weight",
-        source=None,
-        temp=100,
-        move="1-1",
-        max_iterations=10,
-        N_inner=100,
-        alpha=0.01,
-        seed=None,
+    G,
+    init_cycle,
+    weight="weight",
+    source=None,
+    temp=100,
+    move="1-1",
+    max_iterations=10,
+    N_inner=100,
+    alpha=0.01,
+    seed=None,
 ):
     """Returns an approximate solution to the traveling salesman problem.
 
@@ -806,16 +809,16 @@ def simulated_annealing_tsp(
 
 @py_random_state(9)
 def threshold_accepting_tsp(
-        G,
-        init_cycle,
-        weight="weight",
-        source=None,
-        threshold=1,
-        move="1-1",
-        max_iterations=10,
-        N_inner=100,
-        alpha=0.1,
-        seed=None,
+    G,
+    init_cycle,
+    weight="weight",
+    source=None,
+    threshold=1,
+    move="1-1",
+    max_iterations=10,
+    N_inner=100,
+    alpha=0.1,
+    seed=None,
 ):
     """Returns an approximate solution to the traveling salesman problem.
 

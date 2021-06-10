@@ -38,7 +38,6 @@ from networkx.utils import py_random_state
 
 from .recognition import is_arborescence, is_branching
 
-
 __all__ = [
     "branching_weight",
     "greedy_branching",
@@ -47,6 +46,7 @@ __all__ = [
     "maximum_spanning_arborescence",
     "minimum_spanning_arborescence",
     "Edmonds",
+    "ArborescenceIterator",
 ]
 
 KINDS = {"max", "min"}
@@ -241,6 +241,7 @@ def get_path(G, u, v):
 
     """
     nodes = nx.shortest_path(G, u, v)
+
     # We are guaranteed that there is only one edge connected every node
     # in the shortest path.
 
@@ -274,7 +275,7 @@ class Edmonds:
         # sure that our node names do not conflict with the real node names.
         self.template = random_string(seed=seed) + "_{0}"
 
-    def _init(self, attr, default, kind, style, preserve_attrs, seed):
+    def _init(self, attr, default, kind, style, preserve_attrs, seed, partition):
         if kind not in KINDS:
             raise nx.NetworkXException("Unknown value for `kind`.")
 
@@ -307,6 +308,9 @@ class Edmonds:
         for key, (u, v, data) in enumerate(self.G_original.edges(data=True)):
             d = {attr: trans(data.get(attr, default))}
 
+            if data.get(partition) is not None:
+                d[partition] = data.get(partition)
+
             if preserve_attrs:
                 for (d_k, d_v) in data.items():
                     if d_k != attr:
@@ -336,7 +340,7 @@ class Edmonds:
         # and B^i. The ordering of the edges seems to preserve the weight
         # ordering from G^0. So even if the circuit does not form a circuit
         # in G^0, it is still true that the minimum edge of the circuit in
-        # G^i is still the minimum edge in circuit G^0 (depsite their weights
+        # G^i is still the minimum edge in circuit G^0 (despite their weights
         # being different).
         self.minedge_circuit = []
 
@@ -347,6 +351,7 @@ class Edmonds:
         kind="max",
         style="branching",
         preserve_attrs=False,
+        partition=None,
         seed=None,
     ):
         """
@@ -370,6 +375,9 @@ class Edmonds:
         preserve_attrs : bool
             If True, preserve the other edge attributes of the original
             graph (that are not the one passed to `attr`)
+        partition : str
+            The edge attribute holding edge partition data. Used in the
+            spanning arborescence iterator.
         seed : integer, random_state, or None (default)
             Indicator of random number generation state.
             See :ref:`Randomness<randomness>`.
@@ -380,7 +388,7 @@ class Edmonds:
             The branching.
 
         """
-        self._init(attr, default, kind, style, preserve_attrs, seed)
+        self._init(attr, default, kind, style, preserve_attrs, seed, partition)
         uf = self.uf
 
         # This enormous while loop could use some refactoring...
@@ -395,14 +403,27 @@ class Edmonds:
             """
             Find the edge directed toward v with maximal weight.
 
+            If an edge partition exists in this graph, return the included edge
+            if it exists and no not return any excluded edges. There can only
+            be one included edge for each vertex otherwise the edge partition is
+            empty.
             """
             edge = None
             weight = -INF
             for u, _, key, data in G.in_edges(v, data=True, keys=True):
+                # Skip excluded edges
+                if data.get(partition) == EdgePartition.EXCLUDED:
+                    continue
                 new_weight = data[attr]
+                # Return the included edge
+                if data.get(partition) == EdgePartition.INCLUDED:
+                    weight = new_weight
+                    edge = (u, v, key, new_weight, data)
+                    return edge, weight
+                # Find the best open edge
                 if new_weight > weight:
                     weight = new_weight
-                    edge = (u, v, key, new_weight)
+                    edge = (u, v, key, new_weight, data)
 
             return edge, weight
 
@@ -455,7 +476,7 @@ class Edmonds:
                     # from the paper does hold. We need to store the circuit
                     # for future reference.
                     Q_nodes, Q_edges = get_path(B, v, u)
-                    Q_edges.append(edge[2])
+                    Q_edges.append(edge[2])  # Edge key
                 else:
                     # Then B with the edge is still a branching and condition
                     # (a) from the paper does not hold.
@@ -471,6 +492,8 @@ class Edmonds:
                 # print(f"Edge is acceptable: {acceptable}")
                 if acceptable:
                     dd = {attr: weight}
+                    if edge[4].get(partition) is not None:
+                        dd[partition] = edge[4].get(partition)
                     B.add_edge(u, v, edge[2], **dd)
                     G[u][v][edge[2]][self.candidate_attr] = True
                     uf.union(u, v)
@@ -489,8 +512,12 @@ class Edmonds:
                         Q_incoming_weight = {}
                         for edge_key in Q_edges:
                             u, v, data = B.edge_index[edge_key]
+                            # We cannot remove an included edges, even if it is
+                            # the minimum edge in the circuit
                             w = data[attr]
                             Q_incoming_weight[v] = w
+                            if data.get(partition) == EdgePartition.INCLUDED:
+                                continue
                             if w < minweight:
                                 minweight = w
                                 minedge = edge_key
@@ -679,6 +706,24 @@ def minimum_spanning_arborescence(G, attr="weight", default=1, preserve_attrs=Fa
     return B
 
 
+def partition_spanning_arborescence(
+    G, attr="weight", default=1, kind="min", partition=None, preserve_attrs=True
+):
+    ed = Edmonds(G)
+    B = ed.find_optimum(
+        attr,
+        default,
+        kind=kind,
+        style="arborescence",
+        partition=partition,
+        preserve_attrs=preserve_attrs,
+    )
+
+    if not is_arborescence(B):
+        return None
+    return B
+
+
 docstring_branching = """
 Returns a {kind} {style} from G.
 
@@ -739,6 +784,7 @@ class ArborescenceIterator:
     """
     This iterator will successively return spanning arborescences of the input
     graph in order of minimum weight to maximum weight.
+
     This is an implementation of an algorithm published by Sörensen and Janssens
     and published in the 2005 paper An Algorithm to Generate all Spanning Trees
     of a Graph in Order of Increasing Cost which can be accessed at
@@ -761,13 +807,13 @@ class ArborescenceIterator:
                 self.mst_weight, self.partition_dict.copy()
             )
 
-    def __init__(self, G, weight="weight", minimum=True, ignore_nan=False):
+    def __init__(self, G, weight="weight", minimum=True):
         """
         Initialize the iterator
 
         Parameters
         ----------
-        G : nx.Graph
+        G : nx.DiGraph
             The directed graph which we need to iterate trees over
 
         weight : String, default = "weight"
@@ -780,7 +826,7 @@ class ArborescenceIterator:
         """
         self.G = G.copy()
         self.weight = weight
-        self.minimum = minimum
+        self.kind = "min" if minimum else "max"
         # Randomly create a key for an edge attribute to hold the partition data
         self.partition_key = "".join(
             [random.choice(string.ascii_letters) for _ in range(15)]
@@ -790,18 +836,22 @@ class ArborescenceIterator:
         """
         Returns
         -------
-        TreeIterator
+        ArborescenceIterator
             The iterator object for this graph
         """
         self.partition_queue = PriorityQueue()
         self.clear_partition(self.G)
-        # TODO replace with partition minimum arborescence
-        mst_weight = minimum_spanning_arborescence(self.G, self.weight, True).size(
-            weight=self.weight
-        )
+
+        mst_weight = partition_spanning_arborescence(
+            self.G,
+            self.weight,
+            kind=self.kind,
+            partition=self.partition_key,
+            preserve_attrs=True,
+        ).size(weight=self.weight)
 
         self.partition_queue.put(
-            self.Partition(mst_weight if self.minimum else -mst_weight, dict())
+            self.Partition(mst_weight if self.kind else -mst_weight, dict())
         )
 
         return self
@@ -819,8 +869,13 @@ class ArborescenceIterator:
 
         partition = self.partition_queue.get()
         self.write_partition(partition)
-        # TODO replace with partition minimum arborescence
-        next_tree = minimum_spanning_arborescence(self.G, self.weight, True)
+        next_tree = partition_spanning_arborescence(
+            self.G,
+            self.weight,
+            kind=self.kind,
+            partition=self.partition_key,
+            preserve_attrs=True,
+        )
         self.partition(partition, next_tree)
 
         self.clear_partition(next_tree)
@@ -834,7 +889,7 @@ class ArborescenceIterator:
         Parameters
         ----------
         partition : Partition
-        partition_tree : nx.Graph
+        partition_tree : nx.DiGraph
         """
         # create two new partitions with the data from the input partition dict
         p1 = self.Partition(0, partition.partition_dict.copy())
@@ -847,11 +902,20 @@ class ArborescenceIterator:
                 p2.partition_dict[e] = EdgePartition.INCLUDED
 
                 self.write_partition(p1)
-                # TODO replace with partition minimum arborescence
-                p1_mst = minimum_spanning_arborescence(self.G, self.weight, True)
-                p1_mst_weight = p1_mst.size(weight=self.weight)
-                if nx.is_connected(p1_mst):
-                    p1.mst_weight = p1_mst_weight if self.minimum else -p1_mst_weight
+                # valid_partition = self.check_partition()
+                # if valid_partition:
+                p1_mst = partition_spanning_arborescence(
+                    self.G,
+                    self.weight,
+                    kind=self.kind,
+                    partition=self.partition_key,
+                    preserve_attrs=True,
+                )
+                if p1_mst is not None:
+                    p1_mst_weight = p1_mst.size(weight=self.weight)
+                    p1.mst_weight = (
+                        p1_mst_weight if self.kind == "min" else -p1_mst_weight
+                    )
                     self.partition_queue.put(p1.__copy__())
                 p1.partition_dict = p2.partition_dict.copy()
 
@@ -872,18 +936,20 @@ class ArborescenceIterator:
             else:
                 d[self.partition_key] = EdgePartition.OPEN
 
-    def check_partition(self):
-        """
-        Check that the partition is not empty.
-        An empty partition for a directed graph would be any partition in which
-        their is at least one node which is disconnected or contains multiple
-        included edges.
-        Returns
-        -------
-        bool
-            True if the partition is acceptable and false otherwise.
-        """
-        pass
+        for n in self.G:
+            included_count = 0
+            excluded_count = 0
+            for u, v, d in self.G.in_edges(nbunch=n, data=True):
+                if d.get(self.partition_key) == EdgePartition.INCLUDED:
+                    included_count += 1
+                elif d.get(self.partition_key) == EdgePartition.EXCLUDED:
+                    excluded_count += 1
+            # Check that if there is an included edges, all other incoming ones
+            # are excluded. If not fix it!
+            if included_count == 1 and excluded_count != self.G.in_degree(n) - 1:
+                for u, v, d in self.G.in_edges(nbunch=n, data=True):
+                    if d.get(self.partition_key) != EdgePartition.INCLUDED:
+                        d[self.partition_key] = EdgePartition.EXCLUDED
 
     def clear_partition(self, G):
         """
