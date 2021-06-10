@@ -57,8 +57,8 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 
 - Expected Outcome: A collection of Interactive Jupyter notebooks which
   explain and explore network algorithms to readers and users of NetworkX.
-  An example notebook about Random Geometric Graphs is available at
-  https://nbviewer.jupyter.org/github/networkx/notebooks/blob/main/generators/geometric.ipynb
+  For example, see this notebook on
+  :doc:`Random Geometric Graphs <content/generators/geometric>`
 
 - Complexity: Depending on the algorithms you are interested to work on.
 

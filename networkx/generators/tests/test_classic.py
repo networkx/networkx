@@ -10,8 +10,7 @@ import itertools
 import pytest
 import networkx as nx
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
-from networkx.testing import assert_edges_equal
-from networkx.testing import assert_nodes_equal
+from networkx.utils import nodes_equal, edges_equal
 
 is_isomorphic = graph_could_be_isomorphic
 
@@ -135,7 +134,7 @@ class TestGeneratorClassic:
         )
 
         mb = nx.barbell_graph(m1, m2, create_using=nx.MultiGraph())
-        assert_edges_equal(mb.edges(), b.edges())
+        assert edges_equal(mb.edges(), b.edges())
 
     def test_binomial_tree(self):
         graphs = (None, nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
@@ -154,10 +153,10 @@ class TestGeneratorClassic:
             assert nx.number_of_edges(g) == m * (m - 1) // 2
 
         mg = nx.complete_graph(m, create_using=nx.MultiGraph)
-        assert_edges_equal(mg.edges(), g.edges())
+        assert edges_equal(mg.edges(), g.edges())
 
         g = nx.complete_graph("abc")
-        assert_nodes_equal(g.nodes(), ["a", "b", "c"])
+        assert nodes_equal(g.nodes(), ["a", "b", "c"])
         assert g.size() == 3
 
     def test_complete_digraph(self):
@@ -179,18 +178,18 @@ class TestGeneratorClassic:
             nx.NetworkXError, nx.circular_ladder_graph, 5, create_using=nx.DiGraph
         )
         mG = nx.circular_ladder_graph(5, create_using=nx.MultiGraph)
-        assert_edges_equal(mG.edges(), G.edges())
+        assert edges_equal(mG.edges(), G.edges())
 
     def test_circulant_graph(self):
         # Ci_n(1) is the cycle graph for all n
         Ci6_1 = nx.circulant_graph(6, [1])
         C6 = nx.cycle_graph(6)
-        assert_edges_equal(Ci6_1.edges(), C6.edges())
+        assert edges_equal(Ci6_1.edges(), C6.edges())
 
         # Ci_n(1, 2, ..., n div 2) is the complete graph for all n
         Ci7 = nx.circulant_graph(7, [1, 2, 3])
         K7 = nx.complete_graph(7)
-        assert_edges_equal(Ci7.edges(), K7.edges())
+        assert edges_equal(Ci7.edges(), K7.edges())
 
         # Ci_6(1, 3) is K_3,3 i.e. the utility graph
         Ci6_1_3 = nx.circulant_graph(6, [1, 3])
@@ -199,9 +198,9 @@ class TestGeneratorClassic:
 
     def test_cycle_graph(self):
         G = nx.cycle_graph(4)
-        assert_edges_equal(G.edges(), [(0, 1), (0, 3), (1, 2), (2, 3)])
+        assert edges_equal(G.edges(), [(0, 1), (0, 3), (1, 2), (2, 3)])
         mG = nx.cycle_graph(4, create_using=nx.MultiGraph)
-        assert_edges_equal(mG.edges(), [(0, 1), (0, 3), (1, 2), (2, 3)])
+        assert edges_equal(mG.edges(), [(0, 1), (0, 3), (1, 2), (2, 3)])
         G = nx.cycle_graph(4, create_using=nx.DiGraph)
         assert not G.has_edge(2, 1)
         assert G.has_edge(1, 2)
@@ -217,10 +216,10 @@ class TestGeneratorClassic:
 
     def test_dorogovtsev_goltsev_mendes_graph(self):
         G = nx.dorogovtsev_goltsev_mendes_graph(0)
-        assert_edges_equal(G.edges(), [(0, 1)])
-        assert_nodes_equal(list(G), [0, 1])
+        assert edges_equal(G.edges(), [(0, 1)])
+        assert nodes_equal(list(G), [0, 1])
         G = nx.dorogovtsev_goltsev_mendes_graph(1)
-        assert_edges_equal(G.edges(), [(0, 1), (0, 2), (1, 2)])
+        assert edges_equal(G.edges(), [(0, 1), (0, 2), (1, 2)])
         assert nx.average_clustering(G) == 1.0
         assert sorted(nx.triangles(G).values()) == [1, 1, 1]
         G = nx.dorogovtsev_goltsev_mendes_graph(10)
@@ -316,7 +315,7 @@ class TestGeneratorClassic:
 
         g = nx.ladder_graph(2)
         mg = nx.ladder_graph(2, create_using=nx.MultiGraph)
-        assert_edges_equal(mg.edges(), g.edges())
+        assert edges_equal(mg.edges(), g.edges())
 
     def test_lollipop_graph(self):
         # number of nodes = m1 + m2
@@ -342,7 +341,7 @@ class TestGeneratorClassic:
         )
 
         mb = nx.lollipop_graph(m1, m2, create_using=nx.MultiGraph)
-        assert_edges_equal(mb.edges(), b.edges())
+        assert edges_equal(mb.edges(), b.edges())
 
         g = nx.lollipop_graph([1, 2, 3, 4], "abc")
         assert len(g) == 7
@@ -368,7 +367,7 @@ class TestGeneratorClassic:
         assert not dp.has_edge(1, 0)
 
         mp = nx.path_graph(10, create_using=nx.MultiGraph)
-        assert_edges_equal(mp.edges(), p.edges())
+        assert edges_equal(mp.edges(), p.edges())
 
         G = nx.path_graph("abc")
         assert len(G) == 3
@@ -391,7 +390,7 @@ class TestGeneratorClassic:
         pytest.raises(nx.NetworkXError, star_graph, 10, create_using=nx.DiGraph)
 
         ms = star_graph(10, create_using=nx.MultiGraph)
-        assert_edges_equal(ms.edges(), s.edges())
+        assert edges_equal(ms.edges(), s.edges())
 
         G = star_graph("abcdefg")
         assert len(G) == 7
@@ -423,7 +422,7 @@ class TestGeneratorClassic:
         pytest.raises(nx.NetworkXError, nx.wheel_graph, 10, create_using=nx.DiGraph)
 
         mg = nx.wheel_graph(10, create_using=nx.MultiGraph())
-        assert_edges_equal(mg.edges(), g.edges())
+        assert edges_equal(mg.edges(), g.edges())
 
         G = nx.wheel_graph("abc")
         assert len(G) == 3
@@ -433,15 +432,15 @@ class TestGeneratorClassic:
         """Tests that the complete 0-partite graph is the null graph."""
         G = nx.complete_multipartite_graph()
         H = nx.null_graph()
-        assert_nodes_equal(G, H)
-        assert_edges_equal(G.edges(), H.edges())
+        assert nodes_equal(G, H)
+        assert edges_equal(G.edges(), H.edges())
 
     def test_complete_1_partite_graph(self):
         """Tests that the complete 1-partite graph is the empty graph."""
         G = nx.complete_multipartite_graph(3)
         H = nx.empty_graph(3)
-        assert_nodes_equal(G, H)
-        assert_edges_equal(G.edges(), H.edges())
+        assert nodes_equal(G, H)
+        assert edges_equal(G.edges(), H.edges())
 
     def test_complete_2_partite_graph(self):
         """Tests that the complete 2-partite graph is the complete bipartite
@@ -450,8 +449,8 @@ class TestGeneratorClassic:
         """
         G = nx.complete_multipartite_graph(2, 3)
         H = nx.complete_bipartite_graph(2, 3)
-        assert_nodes_equal(G, H)
-        assert_edges_equal(G.edges(), H.edges())
+        assert nodes_equal(G, H)
+        assert edges_equal(G.edges(), H.edges())
 
     def test_complete_multipartite_graph(self):
         """Tests for generating the complete multipartite graph."""

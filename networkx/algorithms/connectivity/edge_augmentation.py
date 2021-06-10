@@ -1019,7 +1019,7 @@ def _minimum_rooted_branching(D, root):
     References
     ----------
     [1] Khuller, Samir (2002) Advanced Algorithms Lecture 24 Notes.
-    https://www.cs.umd.edu/class/spring2011/cmsc651/lec07.pdf
+    https://web.archive.org/web/20121030033722/https://www.cs.umd.edu/class/spring2011/cmsc651/lec07.pdf
     """
     rooted = D.copy()
     # root the graph by removing all predecessors to `root`.
