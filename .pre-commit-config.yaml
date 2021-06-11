@@ -2,7 +2,7 @@
 # pre-commit install
 
 repos:
--   repo: https://github.com/ambv/black
-    rev: 20.8b1
+-   repo: https://github.com/psf/black
+    rev: 21.5b1
     hooks:
     - id: black
