@@ -3,7 +3,7 @@
 VF2 Algorithm
 *************
 
-An implementation of VF2 algorithm for graph ismorphism testing.
+An implementation of VF2 algorithm for graph isomorphism testing.
 
 The simplest interface to use this module is to call networkx.is_isomorphic().
 

@@ -2,6 +2,7 @@ from collections import defaultdict
 from os.path import splitext
 from contextlib import contextmanager
 from pathlib import Path
+import warnings
 
 import networkx as nx
 from decorator import decorator
@@ -331,6 +332,9 @@ def preserve_random_state(func):
     -----
     If numpy.random is not importable, the state is not saved or restored.
     """
+    msg = "preserve_random_state is deprecated and will be removed in 3.0."
+    warnings.warn(msg, DeprecationWarning)
+
     try:
         import numpy as np
 

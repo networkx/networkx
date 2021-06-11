@@ -8,7 +8,6 @@ from itertools import count
 from math import isnan
 
 import networkx as nx
-from networkx.algorithms.tree.tree_iterators import EdgePartition
 from networkx.utils import UnionFind, not_implemented_for
 
 __all__ = [
@@ -21,8 +20,7 @@ __all__ = [
 
 @not_implemented_for("multigraph")
 def boruvka_mst_edges(
-        G, minimum=True, weight="weight", keys=False, data=True,
-        ignore_nan=False
+    G, minimum=True, weight="weight", keys=False, data=True, ignore_nan=False
 ):
     """Iterate over edges of a Borůvka's algorithm min/max spanning tree.
 
@@ -116,8 +114,9 @@ def boruvka_mst_edges(
                     yield u, v
                 forest.union(u, v)
 
+
 def kruskal_mst_edges(
-        G, minimum, weight="weight", keys=True, data=True, ignore_nan=False
+    G, minimum, weight="weight", keys=True, data=True, ignore_nan=False
 ):
     """Iterate over edges of a Kruskal's algorithm min/max spanning tree.
 
@@ -195,14 +194,13 @@ def kruskal_mst_edges(
         for wt, u, v, d in edges:
             if subtrees[u] != subtrees[v]:
                 if data:
-                    yield u, v, d
+                    yield (u, v, d)
                 else:
-                    yield u, v
+                    yield (u, v)
                 subtrees.union(u, v)
 
 
-def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True,
-                   ignore_nan=False):
+def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan=False):
     """Iterate over edges of Prim's algorithm min/max spanning tree.
 
     Parameters
@@ -308,8 +306,7 @@ ALGORITHMS = {
 
 @not_implemented_for("directed")
 def minimum_spanning_edges(
-        G, algorithm="kruskal", weight="weight", keys=True, data=True,
-        ignore_nan=False
+    G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
 ):
     """Generate edges in a minimum spanning forest of an undirected
     weighted graph.
@@ -397,15 +394,13 @@ def minimum_spanning_edges(
         raise ValueError(msg) from e
 
     return algo(
-        G, minimum=True, weight=weight, keys=keys, data=data,
-        ignore_nan=ignore_nan
+        G, minimum=True, weight=weight, keys=keys, data=data, ignore_nan=ignore_nan
     )
 
 
 @not_implemented_for("directed")
 def maximum_spanning_edges(
-        G, algorithm="kruskal", weight="weight", keys=True, data=True,
-        ignore_nan=False
+    G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
 ):
     """Generate edges in a maximum spanning forest of an undirected
     weighted graph.
@@ -492,13 +487,11 @@ def maximum_spanning_edges(
         raise ValueError(msg) from e
 
     return algo(
-        G, minimum=False, weight=weight, keys=keys, data=data,
-        ignore_nan=ignore_nan
+        G, minimum=False, weight=weight, keys=keys, data=data, ignore_nan=ignore_nan
     )
 
 
-def minimum_spanning_tree(G, weight="weight", algorithm="kruskal",
-                          ignore_nan=False):
+def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a minimum spanning tree or forest on an undirected graph `G`.
 
     Parameters
@@ -556,8 +549,8 @@ def minimum_spanning_tree(G, weight="weight", algorithm="kruskal",
     T.add_edges_from(edges)
     return T
 
-def maximum_spanning_tree(G, weight="weight", algorithm="kruskal",
-                          ignore_nan=False):
+
+def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a maximum spanning tree or forest on an undirected graph `G`.
 
     Parameters

@@ -181,7 +181,7 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
 
 
 def bull_graph(create_using=None):
-    """Returns the Bull graph. """
+    """Returns the Bull graph."""
     description = [
         "adjacencylist",
         "Bull Graph",
@@ -239,14 +239,14 @@ def cubical_graph(create_using=None):
 
 
 def desargues_graph(create_using=None):
-    """ Return the Desargues graph."""
+    """Return the Desargues graph."""
     G = LCF_graph(20, [5, -5, 9, -9], 5, create_using)
     G.name = "Desargues Graph"
     return G
 
 
 def diamond_graph(create_using=None):
-    """Returns the Diamond graph. """
+    """Returns the Diamond graph."""
     description = [
         "adjacencylist",
         "Diamond Graph",
@@ -258,7 +258,7 @@ def diamond_graph(create_using=None):
 
 
 def dodecahedral_graph(create_using=None):
-    """ Return the Platonic Dodecahedral graph. """
+    """Return the Platonic Dodecahedral graph."""
     G = LCF_graph(20, [10, 7, 4, -4, -7, 10, -4, 7, -7, 4], 2, create_using)
     G.name = "Dodecahedral Graph"
     return G
@@ -293,7 +293,7 @@ def frucht_graph(create_using=None):
 
 
 def heawood_graph(create_using=None):
-    """ Return the Heawood graph, a (3,6) cage. """
+    """Return the Heawood graph, a (3,6) cage."""
     G = LCF_graph(14, [5, -5], 7, create_using)
     G.name = "Heawood Graph"
     return G
@@ -416,7 +416,7 @@ def octahedral_graph(create_using=None):
 
 
 def pappus_graph():
-    """ Return the Pappus graph."""
+    """Return the Pappus graph."""
     G = LCF_graph(18, [5, 7, -7, 7, -7, -5], 3)
     G.name = "Pappus Graph"
     return G
@@ -464,7 +464,7 @@ def sedgewick_maze_graph(create_using=None):
 
 
 def tetrahedral_graph(create_using=None):
-    """ Return the 3-regular Platonic Tetrahedral graph."""
+    """Return the 3-regular Platonic Tetrahedral graph."""
     G = complete_graph(4, create_using)
     G.name = "Platonic Tetrahedral graph"
     return G

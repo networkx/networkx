@@ -1,7 +1,0 @@
-<<<<<<< HEAD
-black==20.8b1
-pre-commit==2.9.3
-=======
-black==21.5b1
-pre-commit>=2.12
->>>>>>> c568dcbac43a70b22e0c82b6201e77e7601868ee

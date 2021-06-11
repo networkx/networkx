@@ -8,7 +8,7 @@ from networkx.utils import nodes_equal, edges_equal, graphs_equal
 
 
 class BaseGraphTester:
-    """ Tests for data-structure independent graph class features."""
+    """Tests for data-structure independent graph class features."""
 
     def test_contains(self):
         G = self.K3
@@ -155,7 +155,7 @@ class BaseGraphTester:
 
 
 class BaseAttrGraphTester(BaseGraphTester):
-    """ Tests of graph class attribute features."""
+    """Tests of graph class attribute features."""
 
     def test_weighted_degree(self):
         G = self.Graph()

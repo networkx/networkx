@@ -2,9 +2,8 @@
     Unit tests for degree centrality.
 """
 
-
+import pytest
 import networkx as nx
-from networkx.testing import almost_equal
 
 
 class TestDegreeCentrality:
@@ -52,13 +51,13 @@ class TestDegreeCentrality:
         d = nx.degree_centrality(self.K5)
         exact = dict(zip(range(5), [1] * 5))
         for n, dc in d.items():
-            assert almost_equal(exact[n], dc)
+            assert exact[n] == pytest.approx(dc, abs=1e-7)
 
     def test_degree_centrality_2(self):
         d = nx.degree_centrality(self.P3)
         exact = {0: 0.5, 1: 1, 2: 0.5}
         for n, dc in d.items():
-            assert almost_equal(exact[n], dc)
+            assert exact[n] == pytest.approx(dc, abs=1e-7)
 
     def test_degree_centrality_3(self):
         d = nx.degree_centrality(self.K)
@@ -75,7 +74,7 @@ class TestDegreeCentrality:
             9: 0.111,
         }
         for n, dc in d.items():
-            assert almost_equal(exact[n], float(f"{dc:.3f}"))
+            assert exact[n] == pytest.approx(float(f"{dc:.3f}"), abs=1e-7)
 
     def test_degree_centrality_4(self):
         d = nx.degree_centrality(self.F)
@@ -99,7 +98,7 @@ class TestDegreeCentrality:
         ]
         exact = dict(zip(names, dcs))
         for n, dc in d.items():
-            assert almost_equal(exact[n], float(f"{dc:.3f}"))
+            assert exact[n] == pytest.approx(float(f"{dc:.3f}"), abs=1e-7)
 
     def test_indegree_centrality(self):
         d = nx.in_degree_centrality(self.G)
@@ -115,7 +114,7 @@ class TestDegreeCentrality:
             8: 0.125,
         }
         for n, dc in d.items():
-            assert almost_equal(exact[n], dc)
+            assert exact[n] == pytest.approx(dc, abs=1e-7)
 
     def test_outdegree_centrality(self):
         d = nx.out_degree_centrality(self.G)
@@ -131,7 +130,7 @@ class TestDegreeCentrality:
             8: 0.0,
         }
         for n, dc in d.items():
-            assert almost_equal(exact[n], dc)
+            assert exact[n] == pytest.approx(dc, abs=1e-7)
 
     def test_small_graph_centrality(self):
         G = nx.empty_graph(create_using=nx.DiGraph)

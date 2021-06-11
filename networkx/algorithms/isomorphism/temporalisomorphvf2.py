@@ -3,7 +3,7 @@
 Time-respecting VF2 Algorithm
 *****************************
 
-An extension of the VF2 algorithm for time-respecting graph ismorphism
+An extension of the VF2 algorithm for time-respecting graph isomorphism
 testing in temporal graphs.
 
 A temporal graph is one in which edges contain a datetime attribute,

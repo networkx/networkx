@@ -17,12 +17,14 @@ class TestMaxWeightMatching:
         """Empty graph"""
         G = nx.Graph()
         assert nx.max_weight_matching(G) == set()
+        assert nx.min_weight_matching(G) == set()
 
     def test_trivial2(self):
         """Self loop"""
         G = nx.Graph()
         G.add_edge(0, 0, weight=100)
         assert nx.max_weight_matching(G) == set()
+        assert nx.min_weight_matching(G) == set()
 
     def test_trivial3(self):
         """Single edge"""
@@ -169,6 +171,8 @@ class TestMaxWeightMatching:
         dict_format = {1: 3, 2: 4, 3: 1, 4: 2, 5: 6, 6: 5}
         expected = {frozenset(e) for e in matching_dict_to_set(dict_format)}
         answer = {frozenset(e) for e in nx.max_weight_matching(G)}
+        assert answer == expected
+        answer = {frozenset(e) for e in nx.min_weight_matching(G)}
         assert answer == expected
 
     def test_nested_s_blossom_relabel(self):
@@ -532,3 +536,9 @@ class TestMaximalMatching:
             matching = nx.maximal_matching(G)
             assert len(matching) == 1
             assert nx.is_maximal_matching(G, matching)
+
+    def test_wrong_graph_type(self):
+        error = nx.NetworkXNotImplemented
+        raises(error, nx.maximal_matching, nx.MultiGraph())
+        raises(error, nx.maximal_matching, nx.MultiDiGraph())
+        raises(error, nx.maximal_matching, nx.DiGraph())
