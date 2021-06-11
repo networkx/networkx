@@ -29,7 +29,7 @@ def not_implemented_for(*graph_types):
     Parameters
     ----------
     graph_types : container of strings
-        Entries must be one of 'directed','undirected', 'multigraph', 'graph'.
+        Entries must be one of "directed", "undirected", "multigraph", or "graph".
 
     Returns
     -------
@@ -50,11 +50,18 @@ def not_implemented_for(*graph_types):
     --------
     Decorate functions like this::
 
-       @not_implemented_for('directed')
+       @not_implemented_for("directed")
        def sp_function(G):
            pass
 
-       @not_implemented_for('directed','multigraph')
+       # rule out MultiDiGraph
+       @not_implemented_for("directed","multigraph")
+       def sp_np_function(G):
+           pass
+
+       # rule out all except DiGraph
+       @not_implemented_for("undirected")
+       @not_implemented_for("multigraph")
        def sp_np_function(G):
            pass
     """
@@ -101,10 +108,9 @@ def open_file(path_arg, mode="r"):
 
     Parameters
     ----------
-    path_arg : int
-        Location of the path argument in args.  Even if the argument is a
-        named positional argument (with a default value), you must specify its
-        index as a positional argument.
+    path_arg : string or int
+        Name or index of the argument that is a path.
+
     mode : str
         String for opening mode.
 
@@ -117,51 +123,59 @@ def open_file(path_arg, mode="r"):
     --------
     Decorate functions like this::
 
-       @open_file(0,'r')
+       @open_file(0,"r")
        def read_function(pathname):
            pass
 
-       @open_file(1,'w')
-       def write_function(G,pathname):
+       @open_file(1,"w")
+       def write_function(G, pathname):
            pass
 
-       @open_file(1,'w')
-       def write_function(G, pathname='graph.dot')
+       @open_file(1,"w")
+       def write_function(G, pathname="graph.dot")
            pass
 
-       @open_file('path', 'w+')
+       @open_file("pathname","w")
+       def write_function(G, pathname="graph.dot")
+           pass
+
+       @open_file("path", "w+")
        def another_function(arg, **kwargs):
-           path = kwargs['path']
+           path = kwargs["path"]
            pass
+
+    Notes
+    -----
+    Note that this decorator solves the problem when a path argument is
+    specified as a string, but it does not handle the situation when the
+    function wants to accept a default of None (and then handle it).
+
+    Here is an example of how to handle this case:
+
+      @open_file("path")
+      def some_function(arg1, arg2, path=None):
+         if path is None:
+             fobj = tempfile.NamedTemporaryFile(delete=False)
+             close_fobj = True
+         else:
+             # `path` could have been a string or file object or something
+             # similar. In any event, the decorator has given us a file object
+             # and it will close it for us, if it should.
+             fobj = path
+             close_fobj = False
+
+         try:
+             fobj.write("blah")
+         finally:
+             if close_fobj:
+                 fobj.close()
+
+    Normally, we'd want to use "with" to ensure that fobj gets closed.
+    However, the decorator will make `path` a file object for us,
+    and using "with" would undesirably close that file object.
+    Instead, we use a try block, as shown above.
+    When we exit the function, fobj will be closed, if it should be, by the decorator.
     """
-    # Note that this decorator solves the problem when a path argument is
-    # specified as a string, but it does not handle the situation when the
-    # function wants to accept a default of None (and then handle it).
-    # Here is an example:
-    #
-    # @open_file('path')
-    # def some_function(arg1, arg2, path=None):
-    #    if path is None:
-    #        fobj = tempfile.NamedTemporaryFile(delete=False)
-    #        close_fobj = True
-    #    else:
-    #        # `path` could have been a string or file object or something
-    #        # similar. In any event, the decorator has given us a file object
-    #        # and it will close it for us, if it should.
-    #        fobj = path
-    #        close_fobj = False
-    #
-    #    try:
-    #        fobj.write('blah')
-    #    finally:
-    #        if close_fobj:
-    #            fobj.close()
-    #
-    # Normally, we'd want to use "with" to ensure that fobj gets closed.
-    # However, recall that the decorator will make `path` a file object for
-    # us, and using "with" would undesirably close that file object. Instead,
-    # you use a try block, as shown above. When we exit the function, fobj will
-    # be closed, if it should be, by the decorator.
 
     def _open_file(path):
         # Now we have the path_arg. There are two types of input to consider:
@@ -186,12 +200,16 @@ def open_file(path_arg, mode="r"):
 def nodes_or_number(which_args):
     """Decorator to allow number of nodes or container of nodes.
 
+    With this decorator, the specified argument can be either a number of a container
+    of nodes. If it is a number, the nodes used are `range(n)`.
+    This allows `nx.complete_graph(50)` in place of `nx.complete_graph(list(range(50)))`.
+    And it also allows `nx.complete_graph(any_list_of_nodes)`.
+
     Parameters
     ----------
-    which_args : int or sequence of ints
-        Location of the node arguments in args. Even if the argument is a
-        named positional argument (with a default value), you must specify its
-        index as a positional argument.
+    which_args : string or int or sequence of strings or ints
+        If string, the name of the argument to be treated.
+        If int, the index of the argument to be treated.
         If more than one node argument is allowed, can be a list of locations.
 
     Returns
@@ -203,18 +221,26 @@ def nodes_or_number(which_args):
     --------
     Decorate functions like this::
 
+       @nodes_or_number("nodes")
+       def empty_graph(nodes):
+           # nodes is converted to a list of nodes
+
        @nodes_or_number(0)
        def empty_graph(nodes):
-           pass
+           # nodes is converted to a list of nodes
 
-       @nodes_or_number([0,1])
+       @nodes_or_number(["m1", "m2"])
        def grid_2d_graph(m1, m2, periodic=False):
-           pass
+           # m1 and m2 are each converted to a list of nodes
+
+       @nodes_or_number([0, 1])
+       def grid_2d_graph(m1, m2, periodic=False):
+           # m1 and m2 are each converted to a list of nodes
 
        @nodes_or_number(1)
        def full_rary_tree(r, n)
-           # r is a number. n can be a number of a list of nodes
-           pass
+           # presumably r is a number. It is not handled by this decorator.
+           # n is converted to a list of nodes
     """
 
     def _nodes_or_number(n):
@@ -238,6 +264,9 @@ def nodes_or_number(which_args):
 
 def preserve_random_state(func):
     """Decorator to preserve the numpy.random state during a function.
+
+    .. deprecated:: 2.6
+        This is deprecated and will be removed in NetworkX v3.0.
 
     Parameters
     ----------
@@ -287,19 +316,19 @@ def preserve_random_state(func):
         return func
 
 
-def random_state(random_state_index):
+def random_state(random_state_argument):
     """Decorator to generate a numpy.random.RandomState instance.
 
-    Argument position `random_state_index` is processed by create_random_state.
+    The decorator processes the argument indicated by `random_state_argument`
+    using :func:`nx.utils.create_random_state`.
+    The argument value can be a seed (integer), or a random number generator.
     The result is a numpy.random.RandomState instance.
 
     Parameters
     ----------
-    random_state_index : int
-        Location of the random_state argument in args that is to be used to
-        generate the numpy.random.RandomState instance. Even if the argument is
-        a named positional argument (with a default value), you must specify
-        its index as a positional argument.
+    random_state_argument : string or int
+        The name or index of the argument to be converted
+        to a numpy.random.RandomState instance.
 
     Returns
     -------
@@ -310,9 +339,13 @@ def random_state(random_state_index):
     --------
     Decorate functions like this::
 
+       @np_random_state("seed")
+       def random_float(seed=None):
+           return seed.rand()
+
        @np_random_state(0)
-       def random_float(random_state=None):
-           return random_state.rand()
+       def random_float(rng=None):
+           return rng.rand()
 
        @np_random_state(1)
        def random_array(dims, random_state=1):
@@ -322,55 +355,74 @@ def random_state(random_state_index):
     --------
     py_random_state
     """
-    return argmap(create_random_state, random_state_index)
+    return argmap(create_random_state, random_state_argument)
 
 
 np_random_state = random_state
 
 
-def py_random_state(random_state_index):
+def py_random_state(random_state_argument):
     """Decorator to generate a random.Random instance (or equiv).
 
-    Argument position `random_state_index` processed by create_py_random_state.
+    The decorator processes the argument indicated by `random_state_argument`
+    using :func:`nx.utils.create_py_random_state`.
+    The argument value can be a seed (integer), or a random number generator.
     The result is either a random.Random instance, or numpy.random.RandomState
-    instance with additional attributes to mimic basic methods of Random.
+    instance with additional attributes to mimic basic methods of random.Random.
 
     Parameters
     ----------
-    random_state_index : int
-        Location of the random_state argument in args that is to be used to
-        generate the numpy.random.RandomState instance. Even if the argument is
-        a named positional argument (with a default value), you must specify
-        its index as a positional argument.
+    random_state_argument : string or int
+        The name of the argument or the index of the argument in args that is
+        to be converted to the random.Random instance or numpy.random.RandomState
+        instance that mimics basic methods of random.Random.
 
     Returns
     -------
     _random_state : function
-        Function whose random_state keyword argument is a RandomState instance.
+        Function whose random_state_argument is converted to a Random instance.
 
     Examples
     --------
     Decorate functions like this::
 
-       @py_random_state(0)
+       @py_random_state("random_state")
        def random_float(random_state=None):
            return random_state.rand()
 
+       @py_random_state(0)
+       def random_float(rng=None):
+           return rng.rand()
+
        @py_random_state(1)
-       def random_array(dims, random_state=1):
-           return random_state.rand(*dims)
+       def random_array(dims, seed=12345):
+           return seed.rand(*dims)
 
     See Also
     --------
     np_random_state
     """
 
-    return argmap(create_py_random_state, random_state_index)
+    return argmap(create_py_random_state, random_state_argument)
 
 
 class argmap:
-    """A decorating class which applies a map to a function's arguments before
-    calling it.
+    """A decorator to apply a map to arguments before calling the function
+
+    This class provides a decorator that maps arguments of the function
+    before the function is called. Thus for example, we have similar code
+    in many function to determine whether an argument is the number of nodes
+    to be created, or a list of nodes to be handled. The decorator provides
+    the code to accept either -- transforming the indicated argument into a
+    list of nodes before the actual function is called.
+
+    This decorator class allows us to process single or multiple arguments.
+    Or to process arguments that e.g. might need to be closed (or not) depending
+    on how they are input (used for file handle arguments that may either be
+    a string naming the file or an existing file handle). If the decorator opens
+    the file it should close it when done. Otherwise it should not close the file.
+    The arguments to be processed can be specified by string, naming the argument,
+    or by index, specifying the item in the args list.
 
     Parameters
     ----------
@@ -385,50 +437,87 @@ class argmap:
     --------
     The decorated function
 
-        @argmap(sum, 'x', 2)
+        @argmap(sum, "x", "z")
         def foo(x, y, z):
-            return x, y, z
+            return x - y + z
 
     is equivalent to
 
-        @argmap(sum, 'z', 0)
+        @argmap(sum, "x", 2)
         def foo(x, y, z):
-            return x, y, z
+            return x - y + z
+
+        @argmap(sum, "z", 0)
+        def foo(x, y, z):
+            return x - y + z
 
     or
 
         def foo(x, y, z):
             x = sum(x)
             z = sum(z)
-            return x, y, z
+            return x - y + z
 
     Transforming functions can be applied to multiple arguments, such as
 
         def swap(x, y):
             return y, x
 
-        @argmap(swap, ('a', 'b')):
+        @argmap(swap, ("a", "b")):
         def foo(a, b, c):
-            return a, b, c
+            return a / b * c
 
     is equivalent to
 
         def foo(a, b, c):
             a, b = swap(a, b)
-            return a, b, c
+            return a / b * c
 
-    Also, transforming functions can preceed a try-finally block, if they both
-    transform an argument and return a closing function:
+    More generally, the applied arguments can be nested tuples of strings or ints.
+    The syntax `@argmap(some_func, ("a", ("b", "c")))` would expect `some_func` to
+    accept 2 inputs with the second expected to be a 2-tuple. It should then return
+    2 outputs with the second a 2-tuple. The returns values would replace input "a"
+    "b" and "c" respectively. Similarly for `@argmap(some_func, (0, ("b", 2)))`.
+
+    Also, note that an index larger than the number of named parameters is allowed
+    so long as a VAR_POSITIONAL input appears, e.g. `*args`. In that case the index
+    extends past the named parameters into the `args` tuple. For example,
+
+        def double(a):
+            return 2 * a
+
+        @argmap(double, 3)
+        def overflow(a, *args):
+            return a, args
+
+        print(overflow(1, 2, 3, 4, 5, 6))  # output is 1, (2, 3, 8, 5, 6)
+
+    **Try Finally**
+
+    Additionally, this argmap class can be used to create a decorator that
+    initiates a try-finally block. The decorator must be written to return
+    both the transformed argument and a closing function.
+    This feature was included to enable the `open_file` decorator which might
+    need to close the file or not depending on whether it had to open that file.
+    This feature uses the calling name `@argmap.try_finally`.
+
+    For example:
 
         def open_file(fn):
             f = open(fn)
             return f, lambda: f.close()
 
-        @argmap.try_finally(open_file, 'file')
+        @argmap.try_finally(open_file, "file")
         def foo(file):
             print(file.read())
 
     is equivalent to
+
+        @argmap.try_finally(open_file, 0)
+        def foo(file):
+            print(file.read())
+
+    or
 
         def foo(file):
             file, close_file = open_file(file)
@@ -437,6 +526,146 @@ class argmap:
             finally:
                 close_file()
 
+    But this feature is intended to create decorators.
+    For example:
+
+        def my_closing_decorator(which_arg):
+            def _opener(path):
+                if path is None:
+                    path = open(path)
+                    fclose = path.close
+                else:
+                    # assume `path` handles the closing
+                    fclose = lambda: None
+                return path, fclose
+            return argmap.try_finally(_opener, path)
+
+    which can then be used as:
+
+        @my_closing_decorator("file")
+        def fancy_reader(file=None):
+            # this code doesn't need to worry about closing the file
+            print(file.read())
+
+    Finally, understand this `try_finally` as syntactic sugar.
+    Instead of `return argmap.try_finally(_opener, path)`
+    we could use
+
+        result = argmap(_opener, path)
+        result._finally = True
+        return result
+
+    Notes
+    -----
+    An object of this class is callable and intended to be used when
+    defining a decorator. Generally, a decorator takes a function as input
+    and constructs a function as output. Specifically, an `argmap` object
+    returns the input function decorated/wrapped so that specified
+    arguments are mapped to new values before the decorated function is called.
+
+    As an overview, the argmap object returns a new function with all the
+    dunder values of the original function (like `__doc__`, `__name__`, etc).
+    Code for this decorated function is built based on the original function's
+    signature. It starts by mapping the input arguments to potentially new
+    values. Then it calls the decorated function with these new values in place
+    of the indicated arguments that have been mapped. The return value of the
+    original function is then returned. This new function is the function that
+    is actually called by the user.
+
+    Three additional features are provided.
+        1) The code is lazy_compiled. That is, the new function is returned
+        as an object without the code compiled, but with all information
+        needed so it can be compiled upon it's first invocation. This saves
+        time on import at the cost of additional time on the first call of
+        the function. Subsequent calls are then just as fast as normal.
+
+        2) The maps applied can process multiple arguments. For example,
+        you could swap two arguments using a mapping, or transform
+        them to their sum and their difference. This was constructed to allow
+        a decorator in the `quality.py` module that checks that an input
+        partition is a valid `partition` of the nodes of the input graph `G`.
+        In this example, the map has inputs `partition` and `G`. After checking
+        for a valid partition, the map either raises an exception or leaves
+        the inputs unchanged. Thus many functions that make this check can
+        use the decorator rather than copy the checking code into each function.
+
+        3) For decorators that construct arguments that need to be
+        treated with a try/finally clause, the class provides an alternative
+        calling sequence `argmap.try_finally(f, ...)`. This simply sets
+        `argmap._finally` to `True`, but results in the decorated
+        function being wrapped in a try/finally clause. The finally
+        clause consists of a call to the second returned result of the
+        mapping function. So, the mapping function returns a 2-tuple: the
+        mapped value and a function to be called in the finally clause.
+        This feature was included so the `open_file` decorator could
+        provide a file handle to the decorated function and close
+        the file handle after the function call. It even keeps track
+        of whether to close the file handle or not based on whether it had
+        to open the file or the input was already open. So, the decorated
+        function does not need to include any code to open or close files.
+
+    The remaining notes describe the code structure and methods for this
+    class in broad terms to aid in understanding how to use it.
+
+    Instantiating an `argmap` object simply stores the mapping function and
+    the input identifiers of which arguments to map. The resulting decorator
+    is ready to use this map to decorate any function. Calling that object
+    (`argmap.__call__`, but usually done via `@my_decorator`) a lazily
+    compiled thin wrapper of the decorated function is constructed,
+    wrapped with the necessary function dunder attributes like `__doc__`
+    and `__name__`. That thinly wrapped function is returned as the
+    decorated function. When that decorated function is called, the thin
+    wrapper of code calls `argmap._lazy_compile` which compiles the decorated
+    function (using `argmap.compile`) and replaces the code of the thin
+    wrapper with the newly compiled code. This saves the compilation step
+    every import of networkx, at the cost of compiling upon the first call
+    to the decorated function.
+
+    When the decorated function is compiled, the code is recursively assembled
+    using the `argmap.assemble` method. The recursive nature is needed in
+    case of nested decorators. The result of the assembly is a number of
+    useful objects.
+
+      sig : the function signature of the original decorated functon as
+          determined by `inspect.signature` but enhanced with attribute
+          strings `sig_def` and `sig_call` which hold the defining
+          signature and calling signature for the decorated function.
+          These strings are needed for the string of code defining the
+          new function and calling the original function respectively.
+
+      wrapped_name : a unique internally used name constructed by argmap
+          for the decorated function.
+
+      functions : a dict of the functions used inside the code of this
+          decorated function, to be used as `globals` in `exec`.
+          This dict is recursively updated to allow for nested decorating.
+
+      mapblock : code (as a list of strings) to map the incoming argument
+          values to their mapped values.
+
+      finallys : code (as a list of strings) to provide the possibly nested
+          set of finally clauses if needed.
+
+      mutable_args : a bool indicating whether the `sig.args` tuple should be
+          converted to a list so mutation can occur.
+
+    After this recursive assmbly process, the `argmap.compile` method
+    constructs code (as strings) to convert the tuple `sig.args` to a list
+    if needed. It joins the defining code with appropriate indents and
+    compiles the result. The compiled code is `exec`uted defining the
+    new function upon which the code string is monkey-patched
+    to help with introspection. The new function is returned and replaces
+    the original thinly-wrapped function.
+
+    Other `argmap` methods include `_name` and `_count` which allow internally
+    generated names to be unique within a python session.
+    The methods `_flatten` and `_indent` process the nested lists of strings
+    into properly indented python code ready to be compiled.
+
+    The `argmap.try_finally` method provides an alternative way to
+    instantiate `argmap` so that the `_finally` flag attribute is set to
+    indicate that a try/finally codeblock should surround the decorated code.
+    This is useful for the `open_file` decorator.
     """
 
     def __init__(self, func, *args):
@@ -446,11 +675,23 @@ class argmap:
 
     @classmethod
     def try_finally(cls, func, *args):
-        """Alternative decorator-constructor which first transforms one or more
+        """Instantiates argmap to wrap `func` inside a try-finally block
+
+        Alternative decorator-constructor which first transforms one or more
         arguments with func, executes the function to be decorated in a try
         block, and then calls a cleanup function in the associated finally
         block.  The cleanup function takes no arguments, and is expected to be
         the second value returned by func.
+
+        This is syntactic sugar that replaces
+
+            result = argmap(_open_file, path)
+            result._finally = True
+            return result
+
+        with
+
+            return argmap.try_finally(_open_file, path)`
 
         Parameters
         ----------
@@ -488,8 +729,11 @@ class argmap:
 
     @staticmethod
     def _lazy_compile(func):
-        """Assemble and compile the source of our optimized decorator, and
+        """Compile the source of a wrapped function
+
+        Assemble and compile the decorated function, and
         intrusively replace its code with the compiled version's.
+        The thinly wrapped function becomes the decorated function.
 
         Parameters
         ----------
@@ -586,6 +830,8 @@ class argmap:
     @classmethod
     def _name(cls, f):
         """Mangle the name of a function to be unique but somewhat human-readable
+
+        The names are unique within a Python session and set using `_count`.
 
         Parameters
         ----------
@@ -729,7 +975,7 @@ class argmap:
                         f"index {arg} not a parameter index and this function doesn't have args"
                     )
                 mutable_args = True
-                return f"{sig.args}[{arg-sig.n_positional}]"
+                return f"{sig.args}[{arg - sig.n_positional}]"
 
         if self._finally:
             for a in self._args:
@@ -761,6 +1007,19 @@ class argmap:
         -------
         sig : argmap.Signature
             The Signature of f
+
+        The Signature is a namedtuple with names:
+            name : a unique version of the name of the decorated function
+            signature : the inspect.signature of the decorated function
+            def_sig : a string used as code to define the new function
+            call_sig : a string used as code to call the decorated function
+            names : a dict keyed by argument name and index to the argument's name
+            n_positional : the number of positional arguments in the signature
+            args : the name of the VAR_POSITIONAL argument if any, i.e. *theseargs
+            kwargs : the name of the VAR_KEYWORDS argument if any, i.e. **kwargs
+
+        These named attributes of the signature are used in `assemble` and `compile`
+        to construct a string of source code for the decorated function.
 
         """
         sig = inspect.signature(f, follow_wrapped=False)
