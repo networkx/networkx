@@ -133,7 +133,7 @@ Covering
 
 
 Extendability
-----------
+-------------
 .. automodule:: networkx.algorithms.bipartite.extendability
 .. autosummary::
    :toctree: generated/
