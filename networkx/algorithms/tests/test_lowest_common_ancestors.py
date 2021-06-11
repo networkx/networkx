@@ -289,7 +289,7 @@ class TestDAGLCA:
         # example from #4458
         G = nx.DiGraph([(1, 0), (2, 0), (3, 2), (4, 1), (4, 3)])
         for (i, j), a in all_pairs_lca(G):
-            if i==j:
+            if i == j:
                 assert a == i == j
 
     def test_all_pairs_lowest_common_ancestor9(self):
