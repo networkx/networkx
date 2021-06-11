@@ -29,7 +29,7 @@ class MinimumSpanningTreeTestBase:
 
         """
         # This stores the class attribute `algorithm` in an instance attribute.
-        self.algo = method
+        self.algo = self.algorithm
         # This example graph comes from Wikipedia:
         # https://en.wikipedia.org/wiki/Kruskal's_algorithm
         edges = [

@@ -3,6 +3,7 @@
 from itertools import combinations
 import pytest
 import networkx as nx
+from networkx.testing import almost_equal
 from networkx.utils import edges_equal
 from networkx import convert_node_labels_to_integers as cnlti
 
