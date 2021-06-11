@@ -19,12 +19,6 @@ For example:
 
 
 import networkx as nx
-from networkx.algorithms.components.connected import is_connected
-from networkx.algorithms.bipartite import is_bipartite, sets
-from networkx.algorithms.bipartite.matching import hopcroft_karp_matching
-from networkx.algorithms.matching import is_perfect_matching
-from networkx.algorithms.components import is_strongly_connected
-from networkx.algorithms.connectivity.disjoint_paths import node_disjoint_paths
 
 
 __all__ = [
@@ -32,6 +26,8 @@ __all__ = [
 ]
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def find_extendability(G):
     """Computes the extendability of a graph.
 
@@ -96,25 +92,23 @@ def find_extendability(G):
 
     """
     # Graph G must be simple and undirected
-    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph or type(G) == nx.DiGraph:
-        raise nx.NetworkXError("Graph G must be of type nx.Graph")
     for edge in G.edges:
         if edge[0] == edge[1]:
             raise nx.NetworkXError("Graph G is not simple")
     # Graph G must be connected
-    if not is_connected(G):
+    if not nx.is_connected(G):
         raise nx.NetworkXError("Graph G is not connected")
     # Graph G must be bipartite
-    if not is_bipartite(G):
+    if not nx.bipartite.is_bipartite(G):
         raise nx.NetworkXError("Graph G is not bipartite")
     # Obtain the two sets which form the partition of graph G
-    U, V = sets(G)
+    U, V = nx.bipartite.sets(G)
     # Variable $k$ stands for the extendability of graph G
     k = float("Inf")
     # Find a maximum matching
-    maximum_matching = hopcroft_karp_matching(G)
+    maximum_matching = nx.bipartite.hopcroft_karp_matching(G)
     # Check whether G has a perfect matching or not
-    if is_perfect_matching(G, maximum_matching):
+    if nx.is_perfect_matching(G, maximum_matching):
         # Convert undirected graph G into a directed graph G'
         directed_G = nx.DiGraph()
         # Obtain the edges of the perfect matching from the dictionary
@@ -142,12 +136,12 @@ def find_extendability(G):
         directed_G.add_nodes_from(G.nodes)
         directed_G.add_edges_from(directed_edges)
         # Check whether G' is strongly connected or not
-        if is_strongly_connected(directed_G):
+        if nx.is_strongly_connected(directed_G):
             # Find the number of maximum disjoint paths between every vertex of U and V and keep the minimum
             for u in U:
                 for v in V:
                     vertex_disjoint_paths = []
-                    paths = node_disjoint_paths(directed_G, u, v)
+                    paths = nx.node_disjoint_paths(directed_G, u, v)
                     for path in paths:
                         vertex_disjoint_paths.append(path)
                     k = min(k, len(vertex_disjoint_paths))
