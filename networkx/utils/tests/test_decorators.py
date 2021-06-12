@@ -430,14 +430,18 @@ class TestArgmap:
         assert foo(1, 2, 3, 4, 5, 6) == (1, 2, 3, 4, -5, 6)
 
     def test_signature_destroying_intermediate_decorator(self):
-        def bad_decorator(f):
+        def add_one_to_first_bad_decorator(f):
+            """Bad because it doesn't wrap the f signature (clobbers it)"""
+
             def decorated(a, *args, **kwargs):
                 return f(a + 1, *args, **kwargs)
 
             return decorated
 
-        @argmap(lambda b: b + 2, 1)
-        @bad_decorator
+        add_two_to_second = argmap(lambda b: b + 2, 1)
+
+        @add_two_to_second
+        @add_one_to_first_bad_decorator
         def add_one_and_two(a, b):
             return a, b
 
@@ -463,8 +467,8 @@ class TestArgmap:
         a, args, kwargs = foo(1, 2, 3, t=4)
 
         assert a == 1 + 4 + 3
-        assert args == (2, 3 + 1)
-        assert kwargs == {"t": 4 + 1}
+        assert args == (2, 1 + 3)
+        assert kwargs == {"t": 1 + 4}
 
     def test_flatten(self):
         assert tuple(argmap._flatten([[[[[], []], [], []], [], [], []]], set())) == ()

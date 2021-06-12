@@ -616,7 +616,7 @@ class argmap:
     case of nested decorators. The result of the assembly is a number of
     useful objects.
 
-      sig : the function signature of the original decorated functon as
+      sig : the function signature of the original decorated function as
           determined by `inspect.signature` but enhanced with attribute
           strings `sig_def` and `sig_call` which hold the defining
           signature and calling signature for the decorated function.
@@ -639,7 +639,7 @@ class argmap:
       mutable_args : a bool indicating whether the `sig.args` tuple should be
           converted to a list so mutation can occur.
 
-    After this recursive assmbly process, the `argmap.compile` method
+    After this recursive assembly process, the `argmap.compile` method
     constructs code (as strings) to convert the tuple `sig.args` to a list
     if needed. It joins the defining code with appropriate indents and
     compiles the result. The compiled code is `exec`uted defining the
@@ -753,7 +753,7 @@ class argmap:
         func.__wrapped__ = f
 
         # now that we've wrapped f, we may have picked up some __dict__ or
-        # __kwdefaults__ items that were set by a previous argmap.  thus, we set
+        # __kwdefaults__ items that were set by a previous argmap.  Thus, we set
         # these values after those update() calls.
 
         # If we attempt to access func from within  itself, that happens through
@@ -911,7 +911,7 @@ class argmap:
         # this is a bit complicated -- we can call functions with a variety of
         # arguments, so long as their input and output are tuples with the same
         # structure.  The ability to argmap multiple arguments was necessary for
-        # the decorator `nx.algorithms.community.quality.require_parition`, and
+        # the decorator `nx.algorithms.community.quality.require_partition`, and
         # while we're not taking full advantage of the ability to handle
         # multiply-nested tuples, it was convenient to implement this in
         # generality because the recursive call to `get_name` is necessary in
