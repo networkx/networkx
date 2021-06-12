@@ -4,7 +4,7 @@ igraph
 ======
 
 igraph (https://igraph.org/) is a popular network analysis package that
-provides (among many other things) functions to convert to/from NetworkX.
+provides (among many other things) functions to convert to or from NetworkX.
 """
 
 import matplotlib.pyplot as plt
