@@ -389,7 +389,7 @@ class TestArgmap:
             nonlocal container
             return x, lambda: container.append(x)
 
-        @argmap.try_finally(contextmanager, 0, 1, 2)
+        @argmap(contextmanager, 0, 1, 2, try_finally=True)
         def foo(x, y, z):
             return x, y, z
 
@@ -405,7 +405,7 @@ class TestArgmap:
             nonlocal container
             return x, lambda: container.append(x)
 
-        @argmap.try_finally(contextmanager, 0, 1, 2)
+        @argmap(contextmanager, 0, 1, 2, try_finally=True)
         def foo(x, y, z):
             yield from (x, y, z)
 
@@ -428,6 +428,20 @@ class TestArgmap:
             return (x, y) + tuple(args)
 
         assert foo(1, 2, 3, 4, 5, 6) == (1, 2, 3, 4, -5, 6)
+
+    def test_signature_destroying_intermediate_decorator(self):
+        def bad_decorator(f):
+            def decorated(a, *args, **kwargs):
+                return f(a + 1, *args, **kwargs)
+
+            return decorated
+
+        @argmap(lambda b: b + 2, 1)
+        @bad_decorator
+        def add_one_and_two(a, b):
+            return a, b
+
+        assert add_one_and_two(5, 5) == (6, 7)
 
     def test_actual_kwarg(self):
         @argmap(lambda x: -x, "arg")

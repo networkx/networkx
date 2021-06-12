@@ -194,7 +194,7 @@ def open_file(path_arg, mode="r"):
         fobj = _dispatch_dict[ext](path, mode=mode)
         return fobj, lambda: fobj.close()
 
-    return argmap.try_finally(_open_file, path_arg)
+    return argmap(_open_file, path_arg, try_finally=True)
 
 
 def nodes_or_number(which_args):
@@ -411,7 +411,7 @@ class argmap:
 
     This class provides a decorator that maps arguments of the function
     before the function is called. Thus for example, we have similar code
-    in many function to determine whether an argument is the number of nodes
+    in many functions to determine whether an argument is the number of nodes
     to be created, or a list of nodes to be handled. The decorator provides
     the code to accept either -- transforming the indicated argument into a
     list of nodes before the actual function is called.
@@ -499,7 +499,7 @@ class argmap:
     both the transformed argument and a closing function.
     This feature was included to enable the `open_file` decorator which might
     need to close the file or not depending on whether it had to open that file.
-    This feature uses the calling name `@argmap.try_finally`.
+    This feature uses the keyword-only `try-finally` argument to `@argmap`.
 
     For example:
 
@@ -507,13 +507,13 @@ class argmap:
             f = open(fn)
             return f, lambda: f.close()
 
-        @argmap.try_finally(open_file, "file")
+        @argmap(open_file, "file", try_finally = True)
         def foo(file):
             print(file.read())
 
     is equivalent to
 
-        @argmap.try_finally(open_file, 0)
+        @argmap(open_file, 0, try_finally = True)
         def foo(file):
             print(file.read())
 
@@ -538,7 +538,7 @@ class argmap:
                     # assume `path` handles the closing
                     fclose = lambda: None
                 return path, fclose
-            return argmap.try_finally(_opener, path)
+            return argmap(_opener, path, try_finally = True)
 
     which can then be used as:
 
@@ -546,14 +546,6 @@ class argmap:
         def fancy_reader(file=None):
             # this code doesn't need to worry about closing the file
             print(file.read())
-
-    Finally, understand this `try_finally` as syntactic sugar.
-    Instead of `return argmap.try_finally(_opener, path)`
-    we could use
-
-        result = argmap(_opener, path)
-        result._finally = True
-        return result
 
     Notes
     -----
@@ -590,19 +582,17 @@ class argmap:
         use the decorator rather than copy the checking code into each function.
 
         3) For decorators that construct arguments that need to be
-        treated with a try/finally clause, the class provides an alternative
-        calling sequence `argmap.try_finally(f, ...)`. This simply sets
-        `argmap._finally` to `True`, but results in the decorated
-        function being wrapped in a try/finally clause. The finally
-        clause consists of a call to the second returned result of the
-        mapping function. So, the mapping function returns a 2-tuple: the
-        mapped value and a function to be called in the finally clause.
-        This feature was included so the `open_file` decorator could
-        provide a file handle to the decorated function and close
-        the file handle after the function call. It even keeps track
-        of whether to close the file handle or not based on whether it had
-        to open the file or the input was already open. So, the decorated
-        function does not need to include any code to open or close files.
+        treated with a try/finally clause, the class accepts a keyword-only
+        argument "try_finally", which if true, wraps the decorated function
+        in a try/finally clause. The finally clause consists of a call to the
+        second returned result of the mapping function. So, the mapping function
+        returns a 2-tuple: the mapped value and a function to be called in the
+        finally clause.  This feature was included so the `open_file` decorator
+        could provide a file handle to the decorated function and close the file
+        handle after the function call. It even keeps track of whether to close
+        the file handle or not based on whether it had to open the file or the
+        input was already open. So, the decorated function does not need to
+        include any code to open or close files.
 
     The remaining notes describe the code structure and methods for this
     class in broad terms to aid in understanding how to use it.
@@ -662,78 +652,25 @@ class argmap:
     The methods `_flatten` and `_indent` process the nested lists of strings
     into properly indented python code ready to be compiled.
 
-    The `argmap.try_finally` method provides an alternative way to
-    instantiate `argmap` so that the `_finally` flag attribute is set to
-    indicate that a try/finally codeblock should surround the decorated code.
-    This is useful for the `open_file` decorator.
+    See Also
+    --------
+    not_implemented_for, open_file, nodes_or_number, random_state,
+    py_random_state, networkx.algorithms.community.quality.require_partition
+
     """
 
-    def __init__(self, func, *args):
+    def __init__(self, func, *args, try_finally=False):
         self._func = func
         self._args = args
-        self._finally = False
-
-    @classmethod
-    def try_finally(cls, func, *args):
-        """Instantiates argmap to wrap `func` inside a try-finally block
-
-        Alternative decorator-constructor which first transforms one or more
-        arguments with func, executes the function to be decorated in a try
-        block, and then calls a cleanup function in the associated finally
-        block.  The cleanup function takes no arguments, and is expected to be
-        the second value returned by func.
-
-        This is syntactic sugar that replaces
-
-            result = argmap(_open_file, path)
-            result._finally = True
-            return result
-
-        with
-
-            return argmap.try_finally(_open_file, path)`
-
-        Parameters
-        ----------
-        func : callable
-            The function to apply to arguments
-
-        *params: iterable of (int, str or tuple)
-            A list of parameters, specified either as strings (their names),
-            ints (numerical indices) or arbitrarily nested tuples thereof.
-
-        Examples
-        --------
-
-            def open_close(filename):
-                file = open(filename)
-                return file, lambda: file.close()
-
-            @argmap.try_finally(open_close, 0)
-            def print_file(file):
-                print(file.read())
-
-        generates a decorated function
-
-            def print_file(filename):
-                file, close = open_close(filename)
-                try:
-                    print(file.read())
-                finally:
-                    close()
-
-        """
-        dec = cls(func, *args)
-        dec._finally = True
-        return dec
+        self._finally = try_finally
 
     @staticmethod
     def _lazy_compile(func):
         """Compile the source of a wrapped function
 
-        Assemble and compile the decorated function, and
-        intrusively replace its code with the compiled version's.
-        The thinly wrapped function becomes the decorated function.
+        Assemble and compile the decorated function, and intrusively replace its
+        code with the compiled version's.  The thinly wrapped function becomes
+        the decorated function.
 
         Parameters
         ----------
@@ -745,6 +682,27 @@ class argmap:
         -------
         func : callable
             The same function, with a new __code__ object.
+
+        Notes
+        -----
+        It was observed in NetworkX issue #4732 [1] that the import time of
+        NetworkX was significantly bloated by the use of decorators: over half
+        of the import time was being spent decorating functions.  This was
+        somewhat improved by a change made to the `decorator` library, at the
+        cost of a relatively heavy-weight call to `inspect.Signature.bind`
+        for each call to the decorated function.
+
+        The workaround we arrived at is to do minimal work at the time of
+        decoration.  When the decorated function is called for the first time,
+        we compile a function with the same function signature as the wrapped
+        function.  The resulting decorated function is faster than one made by
+        the `decorator` library, so that the overhead of the first call is
+        'paid off' after a small number of calls.
+
+        References
+        ----------
+
+        [1] https://github.com/networkx/networkx/issues/4732
 
         """
         real_func = func.__argmap__.compile(func.__wrapped__)
@@ -769,7 +727,9 @@ class argmap:
         func : callable
             The decorated function.
 
-
+        See Also
+        --------
+        argmap._lazy_compile
         """
 
         if inspect.isgeneratorfunction(f):
@@ -950,7 +910,12 @@ class argmap:
 
         # this is a bit complicated -- we can call functions with a variety of
         # arguments, so long as their input and output are tuples with the same
-        # structure
+        # structure.  The ability to argmap multiple arguments was necessary for
+        # the decorator `nx.algorithms.community.quality.require_parition`, and
+        # while we're not taking full advantage of the ability to handle
+        # multiply-nested tuples, it was convenient to implement this in
+        # generality because the recursive call to `get_name` is necessary in
+        # any case.
         applied = set()
 
         def get_name(arg, first=True):
@@ -978,6 +943,19 @@ class argmap:
                 return f"{sig.args}[{arg - sig.n_positional}]"
 
         if self._finally:
+            # here's where we handle try-finally decorators.  Such a decorator
+            # returns a mapped argument and a function to be called in a
+            # finally block.  This feature was required by the open_file
+            # decorator.  The below generates the code
+            #
+            # name, final = func(name)                   #<--append to mapblock
+            # try:                                       #<--append to mapblock
+            #     ... more argmapping and try blocks
+            #     return WRAPPED_FUNCTION(...)
+            #     ... more finally blocks
+            # finally:                                   #<--prepend to finallys
+            #     final()                                #<--prepend to finallys
+            #
             for a in self._args:
                 name = get_name(a)
                 final = self._name(name)
