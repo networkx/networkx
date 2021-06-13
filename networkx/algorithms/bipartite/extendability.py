@@ -75,7 +75,7 @@ def find_extendability(G):
            Jan Hackfeld, Arie M. C. A. Koster, Springer Nature, 2018.
 
     """
-    # Graph G must be simple and undirected
+    # Graph G must be simple
     for edge in G.edges:
         if edge[0] == edge[1]:
             raise nx.NetworkXError("Graph G is not simple")
@@ -93,7 +93,7 @@ def find_extendability(G):
     maximum_matching = nx.bipartite.hopcroft_karp_matching(G)
     # Check whether G has a perfect matching or not
     if nx.is_perfect_matching(G, maximum_matching):
-        # Convert undirected graph G into a directed graph G'
+        # Convert undirected graph G into its residual graph
         directed_G = nx.DiGraph()
         # Obtain the edges of the perfect matching from the dictionary
         perfect_matching = []
@@ -119,7 +119,7 @@ def find_extendability(G):
                     directed_edges.append(reverse_pair)
         directed_G.add_nodes_from(G.nodes)
         directed_G.add_edges_from(directed_edges)
-        # Check whether G' is strongly connected or not
+        # Check whether the residual graph of G is strongly connected or not
         if nx.is_strongly_connected(directed_G):
             # Find the number of maximum disjoint paths between every vertex of U and V and keep the minimum
             for u in U:
