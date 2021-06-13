@@ -1,10 +1,10 @@
 import networkx as nx
-from networkx.utils.decorators import py_random_state
+from networkx.utils.decorators import py_random_state, not_implemented_for
 
 __all__ = ["randomized_partitioning", "one_exchange"]
 
 
-@nx.not_implemented_for("directed", "multigraph")
+@not_implemented_for("directed", "multigraph")
 @py_random_state(1)
 def randomized_partitioning(G, seed=None, p=0.5, weight=None):
     """Compute a random partitioning of the graph nodes and its cut value.
@@ -48,7 +48,7 @@ def _swap_node_partition(cut, node):
     return cut - {node} if node in cut else cut.union({node})
 
 
-@nx.not_implemented_for("directed", "multigraph")
+@not_implemented_for("directed", "multigraph")
 @py_random_state(2)
 def one_exchange(G, initial_cut=None, seed=None, weight=None):
     """Compute a partitioning of the graphs nodes and the corresponding cut value.

@@ -24,10 +24,10 @@ def degree_centrality(G, nodes):
 
     See Also
     --------
-    betweenness_centrality,
-    closeness_centrality,
-    sets,
-    is_bipartite
+    betweenness_centrality
+    closeness_centrality
+    :func:`~networkx.algorithms.bipartite.basic.sets`
+    :func:`~networkx.algorithms.bipartite.basic.is_bipartite`
 
     Notes
     -----
@@ -59,7 +59,7 @@ def degree_centrality(G, nodes):
     .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
-        http://www.steveborgatti.com/research/publications/bhaffiliations.pdf
+        https://dx.doi.org/10.4135/9781446294413.n28
     """
     top = set(nodes)
     bottom = set(G) - top
@@ -122,10 +122,10 @@ def betweenness_centrality(G, nodes):
 
     See Also
     --------
-    degree_centrality,
-    closeness_centrality,
-    sets,
-    is_bipartite
+    degree_centrality
+    closeness_centrality
+    :func:`~networkx.algorithms.bipartite.basic.sets`
+    :func:`~networkx.algorithms.bipartite.basic.is_bipartite`
 
     Notes
     -----
@@ -140,7 +140,7 @@ def betweenness_centrality(G, nodes):
     .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
-        http://www.steveborgatti.com/research/publications/bhaffiliations.pdf
+        https://dx.doi.org/10.4135/9781446294413.n28
     """
     top = set(nodes)
     bottom = set(G) - top
@@ -194,10 +194,10 @@ def closeness_centrality(G, nodes, normalized=True):
 
     See Also
     --------
-    betweenness_centrality,
+    betweenness_centrality
     degree_centrality
-    sets,
-    is_bipartite
+    :func:`~networkx.algorithms.bipartite.basic.sets`
+    :func:`~networkx.algorithms.bipartite.basic.is_bipartite`
 
     Notes
     -----
@@ -237,7 +237,7 @@ def closeness_centrality(G, nodes, normalized=True):
     .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
-        http://www.steveborgatti.com/research/publications/bhaffiliations.pdf
+        https://dx.doi.org/10.4135/9781446294413.n28
     """
     closeness = {}
     path_length = nx.single_source_shortest_path_length

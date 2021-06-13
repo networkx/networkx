@@ -588,7 +588,7 @@ class GraphMLWriter(GraphML):
         self.xml.append(graph_element)
 
     def add_graphs(self, graph_list):
-        """ Add many graphs to this GraphML document. """
+        """Add many graphs to this GraphML document."""
         for G in graph_list:
             self.add_graph_element(G)
 
@@ -962,8 +962,15 @@ class GraphMLReader(GraphML):
                 "type": self.python_type[attr_type],
                 "for": k.get("for"),
             }
-            # check for "default" subelement of key element
+            # check for "default" sub-element of key element
             default = k.find(f"{{{self.NS_GRAPHML}}}default")
             if default is not None:
-                graphml_key_defaults[attr_id] = default.text
+                # Handle default values identically to data element values
+                python_type = graphml_keys[attr_id]["type"]
+                if python_type == bool:
+                    graphml_key_defaults[attr_id] = self.convert_bool[
+                        default.text.lower()
+                    ]
+                else:
+                    graphml_key_defaults[attr_id] = python_type(default.text)
         return graphml_keys, graphml_key_defaults

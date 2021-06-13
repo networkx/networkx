@@ -1,95 +1,78 @@
 """Unit tests for the :mod:`networkx.generators.random_graphs` module.
 
 """
+import networkx as nx
 import pytest
-
-from networkx.exception import NetworkXError
-from networkx.generators.random_graphs import barabasi_albert_graph
-from networkx.generators.random_graphs import dual_barabasi_albert_graph
-from networkx.generators.random_graphs import extended_barabasi_albert_graph
-from networkx.generators.random_graphs import binomial_graph
-from networkx.generators.random_graphs import connected_watts_strogatz_graph
-from networkx.generators.random_graphs import dense_gnm_random_graph
-from networkx.generators.random_graphs import erdos_renyi_graph
-from networkx.generators.random_graphs import fast_gnp_random_graph
-from networkx.generators.random_graphs import gnm_random_graph
-from networkx.generators.random_graphs import gnp_random_graph
-from networkx.generators.random_graphs import newman_watts_strogatz_graph
-from networkx.generators.random_graphs import powerlaw_cluster_graph
-from networkx.generators.random_graphs import random_kernel_graph
-from networkx.generators.random_graphs import random_lobster
-from networkx.generators.random_graphs import random_powerlaw_tree
-from networkx.generators.random_graphs import random_powerlaw_tree_sequence
-from networkx.generators.random_graphs import random_regular_graph
-from networkx.generators.random_graphs import random_shell_graph
-from networkx.generators.random_graphs import watts_strogatz_graph
 
 
 class TestGeneratorsRandom:
     def test_random_graph(self):
         seed = 42
-        G = gnp_random_graph(100, 0.25, seed)
-        G = gnp_random_graph(100, 0.25, seed, directed=True)
-        G = binomial_graph(100, 0.25, seed)
-        G = erdos_renyi_graph(100, 0.25, seed)
-        G = fast_gnp_random_graph(100, 0.25, seed)
-        G = fast_gnp_random_graph(100, 0.25, seed, directed=True)
-        G = gnm_random_graph(100, 20, seed)
-        G = gnm_random_graph(100, 20, seed, directed=True)
-        G = dense_gnm_random_graph(100, 20, seed)
+        G = nx.gnp_random_graph(100, 0.25, seed)
+        G = nx.gnp_random_graph(100, 0.25, seed, directed=True)
+        G = nx.binomial_graph(100, 0.25, seed)
+        G = nx.erdos_renyi_graph(100, 0.25, seed)
+        G = nx.fast_gnp_random_graph(100, 0.25, seed)
+        G = nx.fast_gnp_random_graph(100, 0.25, seed, directed=True)
+        G = nx.gnm_random_graph(100, 20, seed)
+        G = nx.gnm_random_graph(100, 20, seed, directed=True)
+        G = nx.dense_gnm_random_graph(100, 20, seed)
 
-        G = watts_strogatz_graph(10, 2, 0.25, seed)
+        G = nx.watts_strogatz_graph(10, 2, 0.25, seed)
         assert len(G) == 10
         assert G.number_of_edges() == 10
 
-        G = connected_watts_strogatz_graph(10, 2, 0.1, tries=10, seed=seed)
+        G = nx.connected_watts_strogatz_graph(10, 2, 0.1, tries=10, seed=seed)
         assert len(G) == 10
         assert G.number_of_edges() == 10
         pytest.raises(
-            NetworkXError, connected_watts_strogatz_graph, 10, 2, 0.1, tries=0
+            nx.NetworkXError, nx.connected_watts_strogatz_graph, 10, 2, 0.1, tries=0
         )
 
-        G = watts_strogatz_graph(10, 4, 0.25, seed)
+        G = nx.watts_strogatz_graph(10, 4, 0.25, seed)
         assert len(G) == 10
         assert G.number_of_edges() == 20
 
-        G = newman_watts_strogatz_graph(10, 2, 0.0, seed)
+        G = nx.newman_watts_strogatz_graph(10, 2, 0.0, seed)
         assert len(G) == 10
         assert G.number_of_edges() == 10
 
-        G = newman_watts_strogatz_graph(10, 4, 0.25, seed)
+        G = nx.newman_watts_strogatz_graph(10, 4, 0.25, seed)
         assert len(G) == 10
         assert G.number_of_edges() >= 20
 
-        G = barabasi_albert_graph(100, 1, seed)
-        G = barabasi_albert_graph(100, 3, seed)
+        G = nx.barabasi_albert_graph(100, 1, seed)
+        G = nx.barabasi_albert_graph(100, 3, seed)
         assert G.number_of_edges() == (97 * 3)
 
-        G = extended_barabasi_albert_graph(100, 1, 0, 0, seed)
+        G = nx.barabasi_albert_graph(100, 3, seed, nx.complete_graph(5))
+        assert G.number_of_edges() == (10 + 95 * 3)
+
+        G = nx.extended_barabasi_albert_graph(100, 1, 0, 0, seed)
         assert G.number_of_edges() == 99
-        G = extended_barabasi_albert_graph(100, 3, 0, 0, seed)
+        G = nx.extended_barabasi_albert_graph(100, 3, 0, 0, seed)
         assert G.number_of_edges() == 97 * 3
-        G = extended_barabasi_albert_graph(100, 1, 0, 0.5, seed)
+        G = nx.extended_barabasi_albert_graph(100, 1, 0, 0.5, seed)
         assert G.number_of_edges() == 99
-        G = extended_barabasi_albert_graph(100, 2, 0.5, 0, seed)
+        G = nx.extended_barabasi_albert_graph(100, 2, 0.5, 0, seed)
         assert G.number_of_edges() > 100 * 3
         assert G.number_of_edges() < 100 * 4
 
-        G = extended_barabasi_albert_graph(100, 2, 0.3, 0.3, seed)
+        G = nx.extended_barabasi_albert_graph(100, 2, 0.3, 0.3, seed)
         assert G.number_of_edges() > 100 * 2
         assert G.number_of_edges() < 100 * 4
 
-        G = powerlaw_cluster_graph(100, 1, 1.0, seed)
-        G = powerlaw_cluster_graph(100, 3, 0.0, seed)
+        G = nx.powerlaw_cluster_graph(100, 1, 1.0, seed)
+        G = nx.powerlaw_cluster_graph(100, 3, 0.0, seed)
         assert G.number_of_edges() == (97 * 3)
 
-        G = random_regular_graph(10, 20, seed)
+        G = nx.random_regular_graph(10, 20, seed)
 
-        pytest.raises(NetworkXError, random_regular_graph, 3, 21)
-        pytest.raises(NetworkXError, random_regular_graph, 33, 21)
+        pytest.raises(nx.NetworkXError, nx.random_regular_graph, 3, 21)
+        pytest.raises(nx.NetworkXError, nx.random_regular_graph, 33, 21)
 
         constructor = [(10, 20, 0.8), (20, 40, 0.8)]
-        G = random_shell_graph(constructor, seed)
+        G = nx.random_shell_graph(constructor, seed)
 
         def is_caterpillar(g):
             """
@@ -113,20 +96,20 @@ class TestGeneratorsRandom:
             non_leafs = [n for n in g if g.degree(n) > 1]
             return is_caterpillar(g.subgraph(non_leafs))
 
-        G = random_lobster(10, 0.1, 0.5, seed)
+        G = nx.random_lobster(10, 0.1, 0.5, seed)
         assert max([G.degree(n) for n in G.nodes()]) > 3
         assert is_lobster(G)
-        pytest.raises(NetworkXError, random_lobster, 10, 0.1, 1, seed)
-        pytest.raises(NetworkXError, random_lobster, 10, 1, 1, seed)
-        pytest.raises(NetworkXError, random_lobster, 10, 1, 0.5, seed)
+        pytest.raises(nx.NetworkXError, nx.random_lobster, 10, 0.1, 1, seed)
+        pytest.raises(nx.NetworkXError, nx.random_lobster, 10, 1, 1, seed)
+        pytest.raises(nx.NetworkXError, nx.random_lobster, 10, 1, 0.5, seed)
 
         # docstring says this should be a caterpillar
-        G = random_lobster(10, 0.1, 0.0, seed)
+        G = nx.random_lobster(10, 0.1, 0.0, seed)
         assert is_caterpillar(G)
 
         # difficult to find seed that requires few tries
-        seq = random_powerlaw_tree_sequence(10, 3, seed=14, tries=1)
-        G = random_powerlaw_tree(10, 3, seed=14, tries=1)
+        seq = nx.random_powerlaw_tree_sequence(10, 3, seed=14, tries=1)
+        G = nx.random_powerlaw_tree(10, 3, seed=14, tries=1)
 
     def test_dual_barabasi_albert(self, m1=1, m2=4, p=0.5):
         """
@@ -137,28 +120,42 @@ class TestGeneratorsRandom:
         The graphs generation are repeated several times to prevent lucky shots
 
         """
-        seed = 42
-        repeats = 2
+        seeds = [42, 314, 2718]
+        initial_graph = nx.complete_graph(10)
 
-        while repeats:
-            repeats -= 1
+        for seed in seeds:
 
             # This should be BA with m = m1
-            BA1 = barabasi_albert_graph(100, m1, seed)
-            DBA1 = dual_barabasi_albert_graph(100, m1, m2, 1, seed)
-            assert BA1.size() == DBA1.size()
+            BA1 = nx.barabasi_albert_graph(100, m1, seed)
+            DBA1 = nx.dual_barabasi_albert_graph(100, m1, m2, 1, seed)
+            assert BA1.edges() == DBA1.edges()
 
             # This should be BA with m = m2
-            BA2 = barabasi_albert_graph(100, m2, seed)
-            DBA2 = dual_barabasi_albert_graph(100, m1, m2, 0, seed)
-            assert BA2.size() == DBA2.size()
+            BA2 = nx.barabasi_albert_graph(100, m2, seed)
+            DBA2 = nx.dual_barabasi_albert_graph(100, m1, m2, 0, seed)
+            assert BA2.edges() == DBA2.edges()
+
+            BA3 = nx.barabasi_albert_graph(100, m1, seed)
+            DBA3 = nx.dual_barabasi_albert_graph(100, m1, m1, p, seed)
+            # We can't compare edges here since randomness is "consumed" when drawing
+            # between m1 and m2
+            assert BA3.size() == DBA3.size()
+
+            DBA = nx.dual_barabasi_albert_graph(100, m1, m2, p, seed, initial_graph)
+            BA1 = nx.barabasi_albert_graph(100, m1, seed, initial_graph)
+            BA2 = nx.barabasi_albert_graph(100, m2, seed, initial_graph)
+            assert (
+                min(BA1.size(), BA2.size()) <= DBA.size() <= max(BA1.size(), BA2.size())
+            )
 
         # Testing exceptions
-        dbag = dual_barabasi_albert_graph
-        pytest.raises(NetworkXError, dbag, m1, m1, m2, 0)
-        pytest.raises(NetworkXError, dbag, m2, m1, m2, 0)
-        pytest.raises(NetworkXError, dbag, 100, m1, m2, -0.5)
-        pytest.raises(NetworkXError, dbag, 100, m1, m2, 1.5)
+        dbag = nx.dual_barabasi_albert_graph
+        pytest.raises(nx.NetworkXError, dbag, m1, m1, m2, 0)
+        pytest.raises(nx.NetworkXError, dbag, m2, m1, m2, 0)
+        pytest.raises(nx.NetworkXError, dbag, 100, m1, m2, -0.5)
+        pytest.raises(nx.NetworkXError, dbag, 100, m1, m2, 1.5)
+        initial = nx.complete_graph(max(m1, m2) - 1)
+        pytest.raises(nx.NetworkXError, dbag, 100, m1, m2, p, initial_graph=initial)
 
     def test_extended_barabasi_albert(self, m=2):
         """
@@ -169,36 +166,34 @@ class TestGeneratorsRandom:
         The graphs generation are repeated several times to prevent lucky-shots
 
         """
-        seed = 42
-        repeats = 2
-        BA_model = barabasi_albert_graph(100, m, seed)
-        BA_model_edges = BA_model.number_of_edges()
+        seeds = [42, 314, 2718]
 
-        while repeats:
-            repeats -= 1
+        for seed in seeds:
+            BA_model = nx.barabasi_albert_graph(100, m, seed)
+            BA_model_edges = BA_model.number_of_edges()
 
             # This behaves just like BA, the number of edges must be the same
-            G1 = extended_barabasi_albert_graph(100, m, 0, 0, seed)
+            G1 = nx.extended_barabasi_albert_graph(100, m, 0, 0, seed)
             assert G1.size() == BA_model_edges
 
             # More than twice more edges should have been added
-            G1 = extended_barabasi_albert_graph(100, m, 0.8, 0, seed)
+            G1 = nx.extended_barabasi_albert_graph(100, m, 0.8, 0, seed)
             assert G1.size() > BA_model_edges * 2
 
             # Only edge rewiring, so the number of edges less than original
-            G2 = extended_barabasi_albert_graph(100, m, 0, 0.8, seed)
+            G2 = nx.extended_barabasi_albert_graph(100, m, 0, 0.8, seed)
             assert G2.size() == BA_model_edges
 
             # Mixed scenario: less edges than G1 and more edges than G2
-            G3 = extended_barabasi_albert_graph(100, m, 0.3, 0.3, seed)
+            G3 = nx.extended_barabasi_albert_graph(100, m, 0.3, 0.3, seed)
             assert G3.size() > G2.size()
             assert G3.size() < G1.size()
 
         # Testing exceptions
-        ebag = extended_barabasi_albert_graph
-        pytest.raises(NetworkXError, ebag, m, m, 0, 0)
-        pytest.raises(NetworkXError, ebag, 1, 0.5, 0, 0)
-        pytest.raises(NetworkXError, ebag, 100, 2, 0.5, 0.5)
+        ebag = nx.extended_barabasi_albert_graph
+        pytest.raises(nx.NetworkXError, ebag, m, m, 0, 0)
+        pytest.raises(nx.NetworkXError, ebag, 1, 0.5, 0, 0)
+        pytest.raises(nx.NetworkXError, ebag, 100, 2, 0.5, 0.5)
 
     def test_random_zero_regular_graph(self):
         """Tests that a 0-regular graph has the correct number of nodes and
@@ -206,16 +201,16 @@ class TestGeneratorsRandom:
 
         """
         seed = 42
-        G = random_regular_graph(0, 10, seed)
+        G = nx.random_regular_graph(0, 10, seed)
         assert len(G) == 10
         assert sum(1 for _ in G.edges()) == 0
 
     def test_gnp(self):
         for generator in [
-            gnp_random_graph,
-            binomial_graph,
-            erdos_renyi_graph,
-            fast_gnp_random_graph,
+            nx.gnp_random_graph,
+            nx.binomial_graph,
+            nx.erdos_renyi_graph,
+            nx.fast_gnp_random_graph,
         ]:
             G = generator(10, -1.1)
             assert len(G) == 10
@@ -253,39 +248,39 @@ class TestGeneratorsRandom:
             assert abs(edges / float(runs) - 90) <= runs * 2.0 / 100
 
     def test_gnm(self):
-        G = gnm_random_graph(10, 3)
+        G = nx.gnm_random_graph(10, 3)
         assert len(G) == 10
         assert sum(1 for _ in G.edges()) == 3
 
-        G = gnm_random_graph(10, 3, seed=42)
+        G = nx.gnm_random_graph(10, 3, seed=42)
         assert len(G) == 10
         assert sum(1 for _ in G.edges()) == 3
 
-        G = gnm_random_graph(10, 100)
+        G = nx.gnm_random_graph(10, 100)
         assert len(G) == 10
         assert sum(1 for _ in G.edges()) == 45
 
-        G = gnm_random_graph(10, 100, directed=True)
+        G = nx.gnm_random_graph(10, 100, directed=True)
         assert len(G) == 10
         assert sum(1 for _ in G.edges()) == 90
 
-        G = gnm_random_graph(10, -1.1)
+        G = nx.gnm_random_graph(10, -1.1)
         assert len(G) == 10
         assert sum(1 for _ in G.edges()) == 0
 
     def test_watts_strogatz_big_k(self):
         # Test to make sure than n <= k
-        pytest.raises(NetworkXError, watts_strogatz_graph, 10, 11, 0.25)
-        pytest.raises(NetworkXError, newman_watts_strogatz_graph, 10, 11, 0.25)
+        pytest.raises(nx.NetworkXError, nx.watts_strogatz_graph, 10, 11, 0.25)
+        pytest.raises(nx.NetworkXError, nx.newman_watts_strogatz_graph, 10, 11, 0.25)
 
         # could create an infinite loop, now doesn't
         # infinite loop used to occur when a node has degree n-1 and needs to rewire
-        watts_strogatz_graph(10, 9, 0.25, seed=0)
-        newman_watts_strogatz_graph(10, 9, 0.5, seed=0)
+        nx.watts_strogatz_graph(10, 9, 0.25, seed=0)
+        nx.newman_watts_strogatz_graph(10, 9, 0.5, seed=0)
 
         # Test k==n scenario
-        watts_strogatz_graph(10, 10, 0.25, seed=0)
-        newman_watts_strogatz_graph(10, 10, 0.25, seed=0)
+        nx.watts_strogatz_graph(10, 10, 0.25, seed=0)
+        nx.newman_watts_strogatz_graph(10, 10, 0.25, seed=0)
 
     def test_random_kernel_graph(self):
         def integral(u, w, z):
@@ -295,6 +290,6 @@ class TestGeneratorsRandom:
             return r / c + w
 
         c = 1
-        graph = random_kernel_graph(1000, integral, root)
-        graph = random_kernel_graph(1000, integral, root, seed=42)
+        graph = nx.random_kernel_graph(1000, integral, root)
+        graph = nx.random_kernel_graph(1000, integral, root, seed=42)
         assert len(graph) == 1000

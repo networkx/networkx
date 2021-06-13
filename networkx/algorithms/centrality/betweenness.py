@@ -209,11 +209,11 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     ----------
     .. [1]  A Faster Algorithm for Betweenness Centrality. Ulrik Brandes,
        Journal of Mathematical Sociology 25(2):163-177, 2001.
-       http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+       https://doi.org/10.1080/0022250X.2001.9990249
     .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
-       http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
+       https://doi.org/10.1016/j.socnet.2007.11.001
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     # b[e]=0 for e in G.edges()
