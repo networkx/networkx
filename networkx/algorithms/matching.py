@@ -76,7 +76,8 @@ def is_matching(G, matching):
     """Return True if ``matching`` is a valid matching of ``G``
 
     A *matching* in a graph is a set of edges in which no two distinct
-    edges share a common endpoint.
+    edges share a common endpoint. Each node is incident to at most one
+    edge in the matching. The edges are said to be independent.
 
     Parameters
     ----------
@@ -95,18 +96,31 @@ def is_matching(G, matching):
         Whether the given set or dictionary represents a valid matching
         in the graph.
 
+    Raises
+    ------
+    NetworkXError
+        If the proposed matching has an edge to a node not in G.
+        Or if the matching is not a collection of 2-tuple edges.
+
     """
     if isinstance(matching, dict):
         matching = matching_dict_to_set(matching)
 
+    nodes = set()
     for edge in matching:
         if len(edge) != 2:
+            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
+        u, v = edge
+        if u not in G or v not in G:
+            raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
+        if u == v:
             return False
-        if not G.has_edge(*edge):
+        if not G.has_edge(u, v):
             return False
-
-    # TODO This is parallelizable.
-    return all(len(set(e1) & set(e2)) == 0 for e1, e2 in combinations(matching, 2))
+        if u in nodes or v in nodes:
+            return False
+        nodes.update(edge)
+    return True
 
 
 def is_maximal_matching(G, matching):
@@ -136,20 +150,32 @@ def is_maximal_matching(G, matching):
     if isinstance(matching, dict):
         matching = matching_dict_to_set(matching)
     # If the given set is not a matching, then it is not a maximal matching.
-    if not is_matching(G, matching):
-        return False
-    # A matching is maximal if adding any unmatched edge to it causes
-    # the resulting set to *not* be a valid matching.
-    #
-    # HACK Since the `matching_dict_to_set` function returns a set of
-    # sets, we need to convert the list of edges to a set of sets in
-    # order for the set difference function to work. Ideally, we would
-    # just be able to do `set(G.edges()) - matching`.
-    all_edges = set(map(frozenset, G.edges()))
-    matched_edges = set(map(frozenset, matching))
-    unmatched_edges = all_edges - matched_edges
-    # TODO This is parallelizable.
-    return all(not is_matching(G, matching | {e}) for e in unmatched_edges)
+    edges = set()
+    nodes = set()
+    for edge in matching:
+        if len(edge) != 2:
+            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
+        u, v = edge
+        if u not in G or v not in G:
+            raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
+        if u == v:
+            return False
+        if not G.has_edge(u, v):
+            return False
+        if u in nodes or v in nodes:
+            return False
+        nodes.update(edge)
+        edges.add(edge)
+        edges.add((v, u))
+    # A matching is maximal if adding any new edge from G to it
+    # causes the resulting set to match some node twice.
+    # Be careful to check for adding selfloops
+    for u, v in G.edges:
+        if (u, v) not in edges:
+            # could add edge (u, v) to edges and have a bigger matching
+            if u not in nodes and v not in nodes and u != v:
+                return False
+    return True
 
 
 def is_perfect_matching(G, matching):
@@ -179,12 +205,21 @@ def is_perfect_matching(G, matching):
     if isinstance(matching, dict):
         matching = matching_dict_to_set(matching)
 
-    if not is_matching(G, matching):
-        return False
-
-    counts = Counter(sum(matching, ()))
-
-    return all(counts[v] == 1 for v in G)
+    nodes = set()
+    for edge in matching:
+        if len(edge) != 2:
+            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
+        u, v = edge
+        if u not in G or v not in G:
+            raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
+        if u == v:
+            return False
+        if not G.has_edge(u, v):
+            return False
+        if u in nodes or v in nodes:
+            return False
+        nodes.update(edge)
+    return len(nodes) == len(G)
 
 
 @not_implemented_for("multigraph")
