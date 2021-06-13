@@ -1,5 +1,4 @@
 import networkx as nx
-from networkx.algorithms.bipartite import extendability
 
 
 class TestBipartiteExtendability:
@@ -18,7 +17,7 @@ class TestBipartiteExtendability:
         graph = nx.Graph()
         graph.add_nodes_from(nodes)
         graph.add_edges_from(edges)
-        k = extendability.find_extendability(graph)
+        k = nx.bipartite.find_extendability(graph)
         assert k == 1
 
     @staticmethod
@@ -41,7 +40,7 @@ class TestBipartiteExtendability:
         graph = nx.Graph()
         graph.add_nodes_from(nodes)
         graph.add_edges_from(edges)
-        k = extendability.find_extendability(graph)
+        k = nx.bipartite.find_extendability(graph)
         assert k == 2
 
     @staticmethod
@@ -72,7 +71,7 @@ class TestBipartiteExtendability:
         graph = nx.Graph()
         graph.add_nodes_from(nodes)
         graph.add_edges_from(edges)
-        k = extendability.find_extendability(graph)
+        k = nx.bipartite.find_extendability(graph)
         assert k == 3
 
     @staticmethod
@@ -133,7 +132,7 @@ class TestBipartiteExtendability:
         graph = nx.Graph()
         graph.add_nodes_from(nodes)
         graph.add_edges_from(edges)
-        k = extendability.find_extendability(graph)
+        k = nx.bipartite.find_extendability(graph)
         assert k == 4
 
     @staticmethod
@@ -201,7 +200,7 @@ class TestBipartiteExtendability:
         graph = nx.Graph()
         graph.add_nodes_from(nodes)
         graph.add_edges_from(edges)
-        k = extendability.find_extendability(graph)
+        k = nx.bipartite.find_extendability(graph)
         assert k == 5
 
     @staticmethod
@@ -285,7 +284,7 @@ class TestBipartiteExtendability:
         graph = nx.Graph()
         graph.add_nodes_from(nodes)
         graph.add_edges_from(edges)
-        k = extendability.find_extendability(graph)
+        k = nx.bipartite.find_extendability(graph)
         assert k == 6
 
     @staticmethod
@@ -411,5 +410,5 @@ class TestBipartiteExtendability:
         graph = nx.Graph()
         graph.add_nodes_from(nodes)
         graph.add_edges_from(edges)
-        k = extendability.find_extendability(graph)
+        k = nx.bipartite.find_extendability(graph)
         assert k == 7

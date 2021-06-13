@@ -1,21 +1,5 @@
-""" Provides a function for computing the extendability of
-graph which is undirected, simple, connected and bipartite.
-
-For example:
-
->> nodes = ['1', '2', '3', '4',
-            '5', '6', '7', '8']
->> edges = [('1', '5'), ('1', '6'), ('1', '7'),
-            ('2', '5'), ('2', '6'), ('2', '8'),
-            ('3', '6'), ('3', '7'), ('3', '8'),
-            ('4', '5'), ('4', '7'), ('4', '8')]
->> graph = nx.Graph()
->> graph.add_nodes_from(nodes)
->> graph.add_edges_from(edges)
->> find_extendability(graph)
-2
-
-"""
+""" Provides a function for computing the extendability of a
+graph which is undirected, simple, connected and bipartite. """
 
 
 import networkx as nx
@@ -37,10 +21,8 @@ def find_extendability(G):
     set of $k$ independent edges can extend to perfect matching.
 
     EXTENDABILITY PROBLEM
-    --------------------------------------------
     Input: A graph G and a positive integer $k$.
     Output: Is G $k$-extendable?
-    --------------------------------------------
 
     In general case the above problem is co-NP-complete([2]).
     If graph G is bipartite, then it can be decided in polynomial time([1]).
@@ -60,36 +42,37 @@ def find_extendability(G):
 
     Parameters
     ----------
-    G : NetworkX Graph
-    ----------
+
+        G : NetworkX Graph
 
     Returns
     -------
-    extendability: int
-    -------
+
+        extendability: int
 
     Raises
     ------
-    NetworkXError
-      If the graph G is of type nx.MultiGraph, nx.MultiDiGraph or nx.DiGraph.
-      If the graph G is not simple.
-      If the graph G is disconnected.
-      If the graph G is not bipartite.
-      If the graph G does not contain a perfect matching.
-      If the residual graph of G is not strongly connected.
-    ------
+
+         NetworkXError
+           If the graph G is of type nx.MultiGraph, nx.MultiDiGraph or nx.DiGraph.
+           If the graph G is not simple.
+           If the graph G is disconnected.
+           If the graph G is not bipartite.
+           If the graph G does not contain a perfect matching.
+           If the residual graph of G is not strongly connected.
 
     Notes
     -----
-    Time complexity: O($n^3$ $m^2$))
-    -----
+
+         Time complexity: O($n^3$ $m^2$))
 
     References
     ----------
-    ..[1] "A polynomial algorithm for the extendability problem in bipartite graphs",
-      J. Lakhal, L. Litzler, Information Processing Letters, 1998.
-    ..[2] "The matching extension problem in general graphs is co-NP-complete",
-      Jan Hackfeld, Arie M. C. A. Koster, Springer Nature, 2018.
+
+         ..[1] "A polynomial algorithm for the extendability problem in bipartite graphs",
+           J. Lakhal, L. Litzler, Information Processing Letters, 1998.
+         ..[2] "The matching extension problem in general graphs is co-NP-complete",
+           Jan Hackfeld, Arie M. C. A. Koster, Springer Nature, 2018.
 
     """
     # Graph G must be simple and undirected
