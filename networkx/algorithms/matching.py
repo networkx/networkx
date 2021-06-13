@@ -40,13 +40,13 @@ def maximal_matching(G):
     """
     matching = set()
     nodes = set()
-    for u, v in G.edges():
+    for edge in G.edges():
         # If the edge isn't covered, add it to the matching
         # then remove neighborhood of u and v from consideration.
+        u, v = edge
         if u not in nodes and v not in nodes and u != v:
-            matching.add((u, v))
-            nodes.add(u)
-            nodes.add(v)
+            matching.add(edge)
+            nodes.update(edge)
     return matching
 
 
@@ -64,12 +64,15 @@ def matching_dict_to_set(matching):
     example, key ``u`` with value ``v`` and key ``v`` with value ``u``.
 
     """
-    # Need to compensate for the fact that both pairs (u, v) and (v, u)
-    # appear in `matching.items()`, so we use a set of sets. This way,
-    # only the (frozen)set `{u, v}` appears as an element in the
-    # returned set.
-
-    return {(u, v) for (u, v) in set(map(frozenset, matching.items()))}
+    edges = set()
+    for edge in matching.items():
+        u, v = edge
+        if (v, u) in edges or edge in edges:
+            continue
+        if u == v:
+            raise nx.NetworkXError(f"Selfloops cannot appear in matchings {edge}")
+        edges.add(edge)
+    return edges
 
 
 def is_matching(G, matching):
@@ -225,7 +228,14 @@ def is_perfect_matching(G, matching):
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
 def min_weight_matching(G, maxcardinality=False, weight="weight"):
-    """Use reciprocal edge weights to find max reciprocal weight matching.
+    """Computing a minimum-weight maximal matching of G.
+
+    Use reciprocal edge weights with the maximum-weight algorithm.
+
+    A matching is a subset of edges in which no node occurs more than once.
+    The weight of a matching is the sum of the weights of its edges.
+    A maximal matching cannot add more edges and still be a matching.
+    The cardinality of a matching is the number of matched edges.
 
     This method replaces the weights with their reciprocal and
     then runs :func:`max_weight_matching`.
@@ -304,6 +314,8 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     paths and the "primal-dual" method for finding a matching of maximum
     weight, both methods invented by Jack Edmonds [1]_.
 
+    See Also
+    --------
     Bipartite graphs can also be matched using the functions present in
     :mod:`networkx.algorithms.bipartite.matching`.
 
