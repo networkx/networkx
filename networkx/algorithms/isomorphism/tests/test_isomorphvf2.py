@@ -84,7 +84,7 @@ class TestWikipediaExample:
 
 
 class TestVF2GraphDB:
-    # http://amalfi.dis.unina.it/graph/db/
+    # https://web.archive.org/web/20090303210205/http://amalfi.dis.unina.it/graph/db/
 
     @staticmethod
     def create_graph(filename):

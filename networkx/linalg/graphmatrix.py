@@ -54,7 +54,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
     References
     ----------
     .. [1] Gil Strang, Network applications: A = incidence matrix,
-       http://academicearth.org/lectures/network-applications-incidence-matrix
+       http://videolectures.net/mit18085f07_strang_lec03/
     """
     import scipy as sp
     import scipy.sparse  # call as sp.sparse

@@ -48,8 +48,8 @@ jobs:
     - name: Install packages
       run: |
         pip install --upgrade pip wheel setuptools
-        pip install -r requirements.txt
-        pip install .
+        pip install -r requirements/test.txt
+        pip install decorator . --no-deps
         pip list
 
     - name: Test NetworkX

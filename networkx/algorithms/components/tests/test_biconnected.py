@@ -78,7 +78,7 @@ def test_biconnected_components_cycle():
 
 def test_biconnected_components1():
     # graph example from
-    # http://www.ibluemojo.com/school/articul_algorithm.html
+    # https://web.archive.org/web/20121229123447/http://www.ibluemojo.com/school/articul_algorithm.html
     edges = [
         (0, 1),
         (0, 5),
