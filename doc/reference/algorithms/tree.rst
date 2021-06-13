@@ -31,8 +31,8 @@ Branchings and Spanning Arborescences
    minimum_spanning_arborescence
    Edmonds
 
-Ranking
--------
+Rank Spanning Arborescences
+---------------------------
 .. automodule:: networkx.algorithms.tree.rank
 .. autosummary::
    :toctree: generated/
