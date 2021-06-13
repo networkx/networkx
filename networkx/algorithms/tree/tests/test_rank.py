@@ -1,5 +1,4 @@
-"""
-Test functions and generators in ``rank.py``.
+"""Test functions and generators in ``rank.py``.
 
 .. [camerini1980ranking]
     Camerini, P. M., Fratta, L., & Maffioli, F. (1980). Ranking
@@ -11,11 +10,12 @@ import math
 from operator import eq
 from typing import Set, Union
 
+import pytest
+
 import networkx as nx
 from networkx.algorithms.isomorphism import generic_edge_match
 from networkx.algorithms.isomorphism.matchhelpers import close
 from networkx.algorithms.tree import rank
-import pytest
 
 NODES = {"b1", "b2", "b3", "b4"}
 EDGES = {"e1", "e2", "e3", "e4", "e5", "e6"}

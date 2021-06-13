@@ -1461,6 +1461,18 @@ def label_edges(g: nx.DiGraph) -> nx.DiGraph:
 
 
 class DescendSpanningArborescences:
+    """Generator to rank spanning arborescences in descending order.
+
+    A list of tuples, ``p_list``, is maintained during the iteration.
+    There are two steps in each iteration:
+
+    - Take out the tuple with the max total weight and find the
+      max spanning arborescence based on the graph constrained
+      by parameters in this tuple. The weight of this tuple is the
+      weight of the max spanning arborescence.
+    - Append two new tuples to the list.
+    """
+
     _THRESHOLD = 1e-4
     """float: threshold used to check if the total weight is the same as expected."""
 
@@ -1588,6 +1600,8 @@ class DescendSpanningArborescences:
 
 
 class AscendSpanningArborescences(DescendSpanningArborescences):
+    """Generator to rank spanning arborescences in descending order."""
+
     def __init__(self, g: nx.DiGraph, root: str, attr: str, attr_label: str):
         self.attr_max = max(nx.get_edge_attributes(g, attr).values())
         self.attr = attr  # Will be overridden when init, but essential here.
@@ -1616,7 +1630,7 @@ class AscendSpanningArborescences(DescendSpanningArborescences):
         return a_current_inv, self.rank
 
 
-@nx.not_implemented_for("undirected", "multigraph")
+@nx.utils.not_implemented_for("undirected", "multigraph")
 def ascend_spanning_arborescences(
     g: nx.DiGraph,
     root: str,
@@ -1626,7 +1640,7 @@ def ascend_spanning_arborescences(
     return AscendSpanningArborescences(g, root, attr, attr_label)
 
 
-@nx.not_implemented_for("undirected", "multigraph")
+@nx.utils.not_implemented_for("undirected", "multigraph")
 def descend_spanning_arborescences(
     g: nx.DiGraph,
     root: str,
@@ -1639,20 +1653,10 @@ def descend_spanning_arborescences(
 docstring_cls = """
     Generator to {direction} weighted spanning arborescences.
 
-    A tuple for a spanning arborescence and its rank every time is
+    A tuple for a spanning arborescence and the rank every time is
     returned in each iteration.
 
-    A list of tuples, ``p_list``, is maintained during the iteration.
-    There are two steps in each iteration:
-
-        - Take out the tuple with the {end} total weight and find the
-            {end} spanning arborescence based on the graph constrained by
-            parameters in this tuple. The weight of this tuple is the
-            weight of the {end} spanning arborescence.
-        - Append two new tuples to the list.
-
     Attributes:
-
         raw (MultiDiGraphMap): the original directed graph.
         msa (Arborescence): the {end} spanning arborescence.
         rank (int): rank of the current spanning arborescence.
