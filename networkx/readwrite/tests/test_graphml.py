@@ -1321,6 +1321,108 @@ class TestWriteGraphML(BaseGraphML):
         os.close(fd)
         os.unlink(fname)
 
+    def test_write_generate_edge_id_from_attribute(self):
+        from xml.etree.ElementTree import parse
+
+        G = nx.Graph()
+        G.add_edges_from([("a", "b"), ("b", "c"), ("a", "c")])
+        edge_attributes = {e: str(e) for e in G.edges}
+        nx.set_edge_attributes(G, edge_attributes, "eid")
+        fd, fname = tempfile.mkstemp()
+        # set edge_id_from_attribute e.g. "eid" for write_graphml()
+        self.writer(G, fname, edge_id_from_attribute="eid")
+        # set edge_id_from_attribute e.g. "eid" for generate_graphml()
+        generator = nx.generate_graphml(G, edge_id_from_attribute="eid")
+
+        H = nx.read_graphml(fname)
+        assert nodes_equal(G.nodes(), H.nodes())
+        assert edges_equal(G.edges(), H.edges())
+        # NetworkX adds explicit edge "id" from file as attribute
+        nx.set_edge_attributes(G, edge_attributes, "id")
+        assert edges_equal(G.edges(data=True), H.edges(data=True))
+
+        tree = parse(fname)
+        children = list(tree.getroot())
+        assert len(children) == 2
+        edge_ids = [
+            edge.attrib["id"]
+            for edge in tree.getroot().findall(
+                ".//{http://graphml.graphdrawing.org/xmlns}edge"
+            )
+        ]
+        # verify edge id value is equal to sepcified attribute value
+        assert sorted(edge_ids) == sorted(edge_attributes.values())
+
+        # check graphml generated from generate_graphml()
+        data = "".join(generator)
+        J = nx.parse_graphml(data)
+        assert sorted(G.nodes()) == sorted(J.nodes())
+        assert sorted(G.edges()) == sorted(J.edges())
+        # NetworkX adds explicit edge "id" from file as attribute
+        nx.set_edge_attributes(G, edge_attributes, "id")
+        assert edges_equal(G.edges(data=True), J.edges(data=True))
+
+        os.close(fd)
+        os.unlink(fname)
+
+    def test_multigraph_write_generate_edge_id_from_attribute(self):
+        from xml.etree.ElementTree import parse
+
+        G = nx.MultiGraph()
+        G.add_edges_from([("a", "b"), ("b", "c"), ("a", "c"), ("a", "b")])
+        edge_attributes = {e: str(e) for e in G.edges}
+        nx.set_edge_attributes(G, edge_attributes, "eid")
+        fd, fname = tempfile.mkstemp()
+        # set edge_id_from_attribute e.g. "eid" for write_graphml()
+        self.writer(G, fname, edge_id_from_attribute="eid")
+        # set edge_id_from_attribute e.g. "eid" for generate_graphml()
+        generator = nx.generate_graphml(G, edge_id_from_attribute="eid")
+
+        H = nx.read_graphml(fname)
+        assert H.is_multigraph()
+        H = nx.read_graphml(fname, force_multigraph=True)
+        assert H.is_multigraph()
+
+        assert nodes_equal(G.nodes(), H.nodes())
+        assert edges_equal(G.edges(), H.edges())
+        assert sorted([data.get("eid") for u, v, data in H.edges(data=True)]) == sorted(
+            edge_attributes.values()
+        )
+        # NetworkX uses edge_ids as keys in multigraphs if no key
+        assert sorted([key for u, v, key in H.edges(keys=True)]) == sorted(
+            edge_attributes.values()
+        )
+
+        tree = parse(fname)
+        children = list(tree.getroot())
+        assert len(children) == 2
+        edge_ids = [
+            edge.attrib["id"]
+            for edge in tree.getroot().findall(
+                ".//{http://graphml.graphdrawing.org/xmlns}edge"
+            )
+        ]
+        # verify edge id value is equal to sepcified attribute value
+        assert sorted(edge_ids) == sorted(edge_attributes.values())
+
+        # check graphml generated from generate_graphml()
+        graphml_data = "".join(generator)
+        J = nx.parse_graphml(graphml_data)
+        assert J.is_multigraph()
+
+        assert nodes_equal(G.nodes(), J.nodes())
+        assert edges_equal(G.edges(), J.edges())
+        assert sorted([data.get("eid") for u, v, data in J.edges(data=True)]) == sorted(
+            edge_attributes.values()
+        )
+        # NetworkX uses edge_ids as keys in multigraphs if no key
+        assert sorted([key for u, v, key in J.edges(keys=True)]) == sorted(
+            edge_attributes.values()
+        )
+
+        os.close(fd)
+        os.unlink(fname)
+
     def test_numpy_float64(self):
         np = pytest.importorskip("numpy")
         wt = np.float64(3.4)
