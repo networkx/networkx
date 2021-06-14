@@ -435,30 +435,32 @@ class argmap:
 
     Examples
     --------
-    The decorated function
+    The decorated function::
 
         @argmap(sum, "x", "z")
         def foo(x, y, z):
             return x - y + z
 
-    is equivalent to
+    is equivalent to::
 
         @argmap(sum, "x", 2)
         def foo(x, y, z):
             return x - y + z
 
+    or::
+
         @argmap(sum, "z", 0)
         def foo(x, y, z):
             return x - y + z
 
-    or
+    or::
 
         def foo(x, y, z):
             x = sum(x)
             z = sum(z)
             return x - y + z
 
-    Transforming functions can be applied to multiple arguments, such as
+    Transforming functions can be applied to multiple arguments, such as::
 
         def swap(x, y):
             return y, x
@@ -467,7 +469,7 @@ class argmap:
         def foo(a, b, c):
             return a / b * c
 
-    is equivalent to
+    is equivalent to::
 
         def foo(a, b, c):
             a, b = swap(a, b)
@@ -481,7 +483,7 @@ class argmap:
 
     Also, note that an index larger than the number of named parameters is allowed
     so long as a VAR_POSITIONAL input appears, e.g. `*args`. In that case the index
-    extends past the named parameters into the `args` tuple. For example,
+    extends past the named parameters into the `args` tuple. For example::
 
         def double(a):
             return 2 * a
@@ -494,14 +496,14 @@ class argmap:
 
     **Try Finally**
 
-    Additionally, this argmap class can be used to create a decorator that
-    initiates a try-finally block. The decorator must be written to return
+    Additionally, this `argmap` class can be used to create a decorator that
+    initiates a try...finally block. The decorator must be written to return
     both the transformed argument and a closing function.
     This feature was included to enable the `open_file` decorator which might
     need to close the file or not depending on whether it had to open that file.
-    This feature uses the keyword-only `try-finally` argument to `@argmap`.
+    This feature uses the keyword-only `try_finally` argument to `@argmap`.
 
-    For example:
+    For example::
 
         def open_file(fn):
             f = open(fn)
@@ -511,13 +513,13 @@ class argmap:
         def foo(file):
             print(file.read())
 
-    is equivalent to
+    is equivalent to::
 
         @argmap(open_file, 0, try_finally = True)
         def foo(file):
             print(file.read())
 
-    or
+    or::
 
         def foo(file):
             file, close_file = open_file(file)
@@ -527,7 +529,7 @@ class argmap:
                 close_file()
 
     But this feature is intended to create decorators.
-    For example:
+    For example::
 
         def my_closing_decorator(which_arg):
             def _opener(path):
@@ -540,7 +542,7 @@ class argmap:
                 return path, fclose
             return argmap(_opener, path, try_finally = True)
 
-    which can then be used as:
+    which can then be used as::
 
         @my_closing_decorator("file")
         def fancy_reader(file=None):
@@ -571,20 +573,10 @@ class argmap:
         time on import at the cost of additional time on the first call of
         the function. Subsequent calls are then just as fast as normal.
 
-        2) The maps applied can process multiple arguments. For example,
-        you could swap two arguments using a mapping, or transform
-        them to their sum and their difference. This was constructed to allow
-        a decorator in the `quality.py` module that checks that an input
-        partition is a valid `partition` of the nodes of the input graph `G`.
-        In this example, the map has inputs `partition` and `G`. After checking
-        for a valid partition, the map either raises an exception or leaves
-        the inputs unchanged. Thus many functions that make this check can
-        use the decorator rather than copy the checking code into each function.
-
-        3) For decorators that construct arguments that need to be
-        treated with a try/finally clause, the class accepts a keyword-only
+        2) For decorators that construct arguments that need to be
+        treated with a try...finally clause, the class accepts a keyword-only
         argument "try_finally", which if true, wraps the decorated function
-        in a try/finally clause. The finally clause consists of a call to the
+        in a try...finally clause. The finally clause consists of a call to the
         second returned result of the mapping function. So, the mapping function
         returns a 2-tuple: the mapped value and a function to be called in the
         finally clause.  This feature was included so the `open_file` decorator
@@ -593,6 +585,17 @@ class argmap:
         the file handle or not based on whether it had to open the file or the
         input was already open. So, the decorated function does not need to
         include any code to open or close files.
+
+        3) The maps applied can process multiple arguments. For example,
+        you could swap two arguments using a mapping, or transform
+        them to their sum and their difference. This was included to allow
+        a decorator in the `quality.py` module that checks that an input
+        `partition` is a valid partition of the nodes of the input graph `G`.
+        In this example, the map has inputs `(G, partition)`. After checking
+        for a valid partition, the map either raises an exception or leaves
+        the inputs unchanged. Thus many functions that make this check can
+        use the decorator rather than copy the checking code into each function.
+        More complicated nested argument structures are described below.
 
     The remaining notes describe the code structure and methods for this
     class in broad terms to aid in understanding how to use it.
@@ -617,11 +620,12 @@ class argmap:
     useful objects.
 
       sig : the function signature of the original decorated function as
-          determined by `inspect.signature` but enhanced with attribute
-          strings `sig_def` and `sig_call` which hold the defining
-          signature and calling signature for the decorated function.
-          These strings are needed for the string of code defining the
-          new function and calling the original function respectively.
+          constructed by :func:`argmap.signature`. This is constructed
+          using `inspect.signature` but enhanced with attribute
+          strings `sig_def` and `sig_call`, and other information
+          specific to mapping arguments of this function.
+          This information is used to construct a string of code defining
+          the new decorated function.
 
       wrapped_name : a unique internally used name constructed by argmap
           for the decorated function.
@@ -652,10 +656,25 @@ class argmap:
     The methods `_flatten` and `_indent` process the nested lists of strings
     into properly indented python code ready to be compiled.
 
+    More complicated nested tuples of arguments also allowed though
+    usually not used. For the simple 2 argument case, the argmap
+    input ("a", "b") implies the mapping function will take 2 arguments
+    and return a 2-tuple of mapped values. A more complicated example
+    with argmap input `("a", ("b", "c"))` requires the mapping function
+    take 2 inputs, with the second being a 2-tuple. It then must output
+    the 3 mapped values in the same nested structure `(newa, (newb, newc))`.
+    This level of generality is not often needed, but was convenient
+    to implement when handling the multiple arguments.
+
     See Also
     --------
-    not_implemented_for, open_file, nodes_or_number, random_state,
-    py_random_state, networkx.algorithms.community.quality.require_partition
+    not_implemented_for
+    open_file
+    nodes_or_number
+    random_state
+    py_random_state
+    networkx.community.quality.require_partition
+    require_partition
 
     """
 
@@ -778,9 +797,19 @@ class argmap:
     def _count(cls):
         """Maintain a globally-unique identifier for function names and "file" names
 
+        Note that this counter is a class method reporting a class variable
+        so the count is unique within a Python session. It could differ from
+        session to session for a specific decorator depending on the order
+        that the decorators are created. But that doesn't disrupt `argmap`.
+
+        This is used in two places: to construct unique variable names
+        in the `_name` method and to construct unique fictitious filenames
+        in the `_compile` method.
+
         Returns
         -------
         count : int
+            An integer unique to this Python session (simply counts from zero)
         """
         cls.__count += 1
         return cls.__count
@@ -800,7 +829,7 @@ class argmap:
         Returns
         -------
         name : str
-            The mangled version of f.__name__ (if f.__name__ exists) or f
+            The mangled version of `f.__name__` (if `f.__name__` exists) or `f`
 
         """
         f = f.__name__ if hasattr(f, "__name__") else f
@@ -812,6 +841,19 @@ class argmap:
 
         Called once for a given decorated function -- collects the code from all
         argmap decorators in the stack, and compiles the decorated function.
+
+        Much of the work done here uses the `assemble` method to allow recursive
+        treatment of multiple argmap decorators on a single decorated function.
+        That flattens the argmap decorators, collects the source code to construct
+        a single decorated function, then compiles/executes/returns that function.
+
+        The source code for the decorated function is stored as an attribute
+        `_code` on the function object itself.
+
+        Note that Python's `compile` function requires a filename, but this
+        code is constructed without a file, so a fictitious filename is used
+        to describe where the function comes from. The name is something like:
+        "argmap compilation 4".
 
         Parameters
         ----------
@@ -843,10 +885,15 @@ class argmap:
         return func
 
     def assemble(self, f):
-        """Collects the requisite data to compile the decorated version of f.
+        """Collects the requisite info to compile the decorated version of f.
 
-        Note, this is recursive, and all argmap-decorators will be flattened
-        into a single function call
+        Note, this is recursive, and all nested argmap-decorators for a
+        specific decorated function will be flattened into a single function.
+
+        This method is part of the `compile` method's process yet separated
+        from that method to allow recursive processing. The outputs are
+        strings, dictionaries and lists that collect needed info to
+        flatten any nested argmap-decoration.
 
         Parameters
         ----------
@@ -856,36 +903,42 @@ class argmap:
         Returns
         -------
         sig : argmap.Signature
-            The function signature.
+            The function signature as an `argmap.Signature` object.
         wrapped_name : str
             The mangled name used to represent the wrapped function in the code
             being assembled.
         functions : dict
             A dictionary mapping id(g) -> (mangled_name(g), g) for functions g
-            referred to in the code being assembled
+            referred to in the code being assembled. These need to be present
+            in the `globals` scope of `exec` when defining the decorated function.
         mapblock : list of lists and/or strings
-            Code that implements mapping of parameters including try blocks
+            Code that implements mapping of parameters including any try blocks
+            if needed. This code will precede the decorated function call.
         finallys : list of lists and/or strings
-            Code that implements the closing-functions in finally blocks
+            Code that implements the finally blocks to post-process the
+            arguments (usually close any files if needed) after the
+            decorated function is called.
         mutable_args : bool
-            True if the compiled function will attempt to modify positional
-            arguments via their indices.
+            True if the decorator needs to modify positional arguments
+            via their indices. The compile method then turns the argument
+            tuple into a list so that the arguments can be modified.
         """
 
         # first, we check if f is already argmapped -- if that's the case,
         # build up the function recursively.
         # > mapblock is generally a list of function calls of the sort
         #     arg = func(arg)
-        # in addition to some try-blocks.
+        # in addition to some try-blocks if needed.
         # > finallys is a recursive list of finally blocks of the sort
         #         finally:
         #             close_func_1()
         #     finally:
         #         close_func_2()
         # > functions is a dict of functions used in the scope of our decorated
-        # function.  It will be used to construct globals used in compilation.
+        # function. It will be used to construct globals used in compilation.
         # We make functions[id(f)] = name_of_f, f to ensure that a given
-        # function is stored and named exactly once.
+        # function is stored and named exactly once even if called by
+        # nested decorators.
         if hasattr(f, "__argmap__") and f.__self__ is f:
             (
                 sig,
@@ -909,8 +962,11 @@ class argmap:
             fname, _ = functions[id(self._func)] = self._name(self._func), self._func
 
         # this is a bit complicated -- we can call functions with a variety of
-        # arguments, so long as their input and output are tuples with the same
-        # structure.  The ability to argmap multiple arguments was necessary for
+        # nested arguments, so long as their input and output are tuples with
+        # the same nested structure. e.g. ("a", "b") maps arguments a and b.
+        # A more complicated nesting like (0, (3, 4)) maps arguments 0, 3, 4
+        # expecting the mapping to output new values in the same nested shape.
+        # The ability to argmap multiple arguments was necessary for
         # the decorator `nx.algorithms.community.quality.require_partition`, and
         # while we're not taking full advantage of the ability to handle
         # multiply-nested tuples, it was convenient to implement this in
@@ -943,7 +999,7 @@ class argmap:
                 return f"{sig.args}[{arg - sig.n_positional}]"
 
         if self._finally:
-            # here's where we handle try-finally decorators.  Such a decorator
+            # here's where we handle try_finally decorators.  Such a decorator
             # returns a mapped argument and a function to be called in a
             # finally block.  This feature was required by the open_file
             # decorator.  The below generates the code
@@ -971,7 +1027,7 @@ class argmap:
 
     @classmethod
     def signature(cls, f):
-        """Compute the signature for f
+        """Construct a Signature object describing `f`
 
         Compute a Signature so that we can write a function wrapping f with
         the same signature and call-type.
@@ -987,6 +1043,7 @@ class argmap:
             The Signature of f
 
         The Signature is a namedtuple with names:
+
             name : a unique version of the name of the decorated function
             signature : the inspect.signature of the decorated function
             def_sig : a string used as code to define the new function
@@ -1103,7 +1160,9 @@ class argmap:
 
     @staticmethod
     def _indent(*lines):
-        """indents a tree-recursive list of strings, following the rule that one
+        """Indent list of code lines to make executable Python code
+
+        Indents a tree-recursive list of strings, following the rule that one
         space is added to the tab after a line that ends in a colon, and one is
         removed after a line that ends in an hashmark.
 
