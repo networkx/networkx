@@ -536,7 +536,7 @@ class argmap:
 
     The decorator applies that to the function `foo`::
 
-        @argmap(open_file, "file", try_finally = True)
+        @argmap(open_file, "file", try_finally=True)
         def foo(file):
             print(file.read())
 
@@ -551,7 +551,7 @@ class argmap:
 
     and is equivalent to (using indexes)::
 
-        @argmap(open_file, 0, try_finally = True)
+        @argmap(open_file, 0, try_finally=True)
         def foo(file):
             print(file.read())
 
@@ -566,7 +566,7 @@ class argmap:
                     # assume `path` handles the closing
                     fclose = lambda: None
                 return path, fclose
-            return argmap(_opener, which_arg, try_finally = True)
+            return argmap(_opener, which_arg, try_finally=True)
 
     which can then be used as::
 
