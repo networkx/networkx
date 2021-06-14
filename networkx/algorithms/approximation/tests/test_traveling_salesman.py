@@ -397,3 +397,26 @@ def test_TSP_incomplete_graph_short_path():
     path = nx_app.traveling_salesman_problem(G, cycle=False)
     print(path)
     assert len(path) == 13 and len(set(path)) == 12
+
+
+def test_held_karp():
+    """
+    Test the Held-Karp relaxation
+    """
+    import numpy as np
+
+    # Adjacency matrix from page 1153 of the 1970 Held and Karp paper which have
+    # been edited to be directional, but also symmetric
+    G_array = np.array(
+        [
+            [0, 97, 60, 73, 17, 52],
+            [97, 0, 41, 52, 90, 30],
+            [60, 41, 0, 21, 35, 41],
+            [73, 52, 21, 0, 95, 46],
+            [17, 90, 35, 95, 0, 81],
+            [52, 30, 41, 46, 81, 0],
+        ]
+    )
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    k = nx_app._held_karp(G)
