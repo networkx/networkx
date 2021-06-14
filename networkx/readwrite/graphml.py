@@ -82,8 +82,10 @@ def write_graphml_xml(
        we infer in GraphML that both are floats.
     named_key_ids : bool (optional)
        If True use attr.name as value for key elements' id attribute.
-    edge_id_from_attribute : keyword argument, hashtable identifier (optional),
-       Select edge_attribute for edge_id
+    edge_id_from_attribute : dict key (optional)
+        If provided, the graphml edge id is set by looking up the corresponding
+        edge data attribute keyed by this parameter. If `None` or the key does not exist in edge data,
+        the edge id is set by the edge key if `G` is a MultiGraph, else the edge id is left unset.
 
     Examples
     --------
@@ -138,8 +140,10 @@ def write_graphml_lxml(
        we infer in GraphML that both are floats.
     named_key_ids : bool (optional)
        If True use attr.name as value for key elements' id attribute.
-    edge_id_from_attribute : keyword argument, hashtable identifier (optional),
-       Select edge_attribute for edge_id
+    edge_id_from_attribute : dict key (optional)
+        If provided, the graphml edge id is set by looking up the corresponding
+        edge data attribute keyed by this parameter. If `None` or the key does not exist in edge data,
+        the edge id is set by the edge key if `G` is a MultiGraph, else the edge id is left unset.
 
     Examples
     --------
@@ -195,8 +199,10 @@ def generate_graphml(
        If True use line breaks and indenting in output XML.
     named_key_ids : bool (optional)
        If True use attr.name as value for key elements' id attribute.
-    edge_id_from_attribute : keyword argument, hashtable identifier (optional),
-       Select edge_attribute for edge_id
+    edge_id_from_attribute : dict key (optional)
+        If provided, the graphml edge id is set by looking up the corresponding
+        edge data attribute keyed by this parameter. If `None` or the key does not exist in edge data,
+        the edge id is set by the edge key if `G` is a MultiGraph, else the edge id is left unset.
 
     Examples
     --------
