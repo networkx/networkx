@@ -409,7 +409,7 @@ def py_random_state(random_state_argument):
 class argmap:
     """A decorator to apply a map to arguments before calling the function
 
-    This class provides a decorator that maps arguments of the function
+    This class provides a decorator that maps (transforms) arguments of the function
     before the function is called. Thus for example, we have similar code
     in many functions to determine whether an argument is the number of nodes
     to be created, or a list of nodes to be handled. The decorator provides
@@ -435,13 +435,44 @@ class argmap:
 
     Examples
     --------
-    The decorated function::
+    Let's start with a caveat. Most of these examples will use `@argmap(...)`
+    to apply the decorator immediately to the function defined on the next line.
+    In the NetworkX codebase however, `argmap` is used within a function to
+    construct a decorator. That is, the decorator defines a mapping function
+    and then uses `argmap` to build the decorator from the mapping.
+    A simple example is a decorator that specifies which currency to report money.
+    The decorator (named `convert_to`) would be used like::
+
+        @convert_to("US_Dollars", "income")
+        def show_me_the_money(name, income):
+            print(f"{name} : {income}")
+
+    And the code to create the decorator might be::
+
+        def convert_to(currency, which_arg):
+            def _convert(amount):
+                if amount.currency != currency:
+                    amount = amount.to_currency(currency)
+                return amount
+            return argmap(_convert, which_arg)
+
+    Despite this common idiom for argmap, most of the following examples
+    use the `@argmap(...)` idiom to save space here.
+
+    As an example, the decorated function::
 
         @argmap(sum, "x", "z")
         def foo(x, y, z):
             return x - y + z
 
-    is equivalent to::
+    is syntactic sugar for::
+
+        def foo(x, y, z):
+            x = sum(x)
+            z = sum(z)
+            return x - y + z
+
+    and is equivalent to (using argument indexes)::
 
         @argmap(sum, "x", 2)
         def foo(x, y, z):
@@ -453,18 +484,12 @@ class argmap:
         def foo(x, y, z):
             return x - y + z
 
-    or::
-
-        def foo(x, y, z):
-            x = sum(x)
-            z = sum(z)
-            return x - y + z
-
     Transforming functions can be applied to multiple arguments, such as::
 
         def swap(x, y):
             return y, x
 
+        # the 2-tuple tells argmap that the map `swap` has 2 inputs/outputs.
         @argmap(swap, ("a", "b")):
         def foo(a, b, c):
             return a / b * c
@@ -503,23 +528,19 @@ class argmap:
     need to close the file or not depending on whether it had to open that file.
     This feature uses the keyword-only `try_finally` argument to `@argmap`.
 
-    For example::
+    For example this map opens a file and then makes sure it is closed::
 
         def open_file(fn):
             f = open(fn)
             return f, lambda: f.close()
 
+    The decorator applies that to the function `foo`::
+
         @argmap(open_file, "file", try_finally = True)
         def foo(file):
             print(file.read())
 
-    is equivalent to::
-
-        @argmap(open_file, 0, try_finally = True)
-        def foo(file):
-            print(file.read())
-
-    or::
+    is syntactic sugar for::
 
         def foo(file):
             file, close_file = open_file(file)
@@ -528,8 +549,13 @@ class argmap:
             finally:
                 close_file()
 
-    But this feature is intended to create decorators.
-    For example::
+    and is equivalent to (using indexes)::
+
+        @argmap(open_file, 0, try_finally = True)
+        def foo(file):
+            print(file.read())
+
+    Here's an example of the try_finally feature used to create a decorator::
 
         def my_closing_decorator(which_arg):
             def _opener(path):
@@ -540,7 +566,7 @@ class argmap:
                     # assume `path` handles the closing
                     fclose = lambda: None
                 return path, fclose
-            return argmap(_opener, path, try_finally = True)
+            return argmap(_opener, which_arg, try_finally = True)
 
     which can then be used as::
 
@@ -554,8 +580,8 @@ class argmap:
     An object of this class is callable and intended to be used when
     defining a decorator. Generally, a decorator takes a function as input
     and constructs a function as output. Specifically, an `argmap` object
-    returns the input function decorated/wrapped so that specified
-    arguments are mapped to new values before the decorated function is called.
+    returns the input function decorated/wrapped so that specified arguments
+    are mapped (transformed) to new values before the decorated function is called.
 
     As an overview, the argmap object returns a new function with all the
     dunder values of the original function (like `__doc__`, `__name__`, etc).
