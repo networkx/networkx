@@ -604,6 +604,29 @@ class TestReadGraphML(BaseGraphML):
         </y:ShapeNode>
       </data>
     </node>
+    <node id="n2">
+      <data key="d6" xml:space="preserve"><![CDATA[description
+line1
+line2]]></data>
+      <data key="d3">
+        <y:GenericNode configuration="com.yworks.flowchart.terminator">
+          <y:Geometry height="40.0" width="80.0" x="950.0" y="286.0"/>
+          <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content"
+          fontFamily="Dialog" fontSize="12" fontStyle="plain"
+          hasBackgroundColor="false" hasLineColor="false" height="17.96875"
+          horizontalTextPosition="center" iconTextGap="4" modelName="custom"
+          textColor="#000000" verticalTextPosition="bottom" visible="true"
+          width="67.984375" x="6.0078125" xml:space="preserve"
+          y="11.015625">3<y:LabelModel>
+          <y:SmartNodeLabelModel distance="4.0"/></y:LabelModel>
+          <y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0"
+          labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0"
+          offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
     <edge id="e0" source="n0" target="n1">
       <data key="d7">
         <y:PolyLineEdge>
@@ -626,24 +649,36 @@ class TestReadGraphML(BaseGraphML):
         assert G.has_edge("n0", "n1", key="e0")
         assert G.nodes["n0"]["label"] == "1"
         assert G.nodes["n1"]["label"] == "2"
+        assert G.nodes["n2"]["label"] == "3"
+        assert G.nodes["n0"]["shape_type"] == "rectangle"
+        assert G.nodes["n1"]["shape_type"] == "rectangle"
+        assert G.nodes["n2"]["shape_type"] == "com.yworks.flowchart.terminator"
+        assert G.nodes["n2"]["description"] == "description\nline1\nline2"
         fh.seek(0)
         G = nx.read_graphml(fh)
         assert list(G.edges()) == [("n0", "n1")]
         assert G["n0"]["n1"]["id"] == "e0"
         assert G.nodes["n0"]["label"] == "1"
         assert G.nodes["n1"]["label"] == "2"
+        assert G.nodes["n2"]["label"] == "3"
+        assert G.nodes["n0"]["shape_type"] == "rectangle"
+        assert G.nodes["n1"]["shape_type"] == "rectangle"
+        assert G.nodes["n2"]["shape_type"] == "com.yworks.flowchart.terminator"
+        assert G.nodes["n2"]["description"] == "description\nline1\nline2"
 
         H = nx.parse_graphml(data, force_multigraph=True)
         assert list(H.edges()) == [("n0", "n1")]
         assert H.has_edge("n0", "n1", key="e0")
         assert H.nodes["n0"]["label"] == "1"
         assert H.nodes["n1"]["label"] == "2"
+        assert H.nodes["n2"]["label"] == "3"
 
         H = nx.parse_graphml(data)
         assert list(H.edges()) == [("n0", "n1")]
         assert H["n0"]["n1"]["id"] == "e0"
         assert H.nodes["n0"]["label"] == "1"
         assert H.nodes["n1"]["label"] == "2"
+        assert H.nodes["n2"]["label"] == "3"
 
     def test_bool(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>

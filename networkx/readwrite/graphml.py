@@ -247,8 +247,8 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
     there is no "key" attribute a default NetworkX multigraph edge key
     will be provided.
 
-    Files with the yEd "yfiles" extension will can be read but the graphics
-    information is discarded.
+    Files with the yEd "yfiles" extension can be read. The type of the node's
+    shape is preserved in the `shape_type` node attribute.
 
     yEd compressed files ("file.graphmlz" extension) can be read by renaming
     the file to "file.graphml.gz".
@@ -912,7 +912,11 @@ class GraphMLReader(GraphML):
             elif len(list(data_element)) > 0:
                 # Assume yfiles as subelements, try to extract node_label
                 node_label = None
-                for node_type in ["ShapeNode", "SVGNode", "ImageNode"]:
+                # set GenericNode's configuration as shape type
+                gn = data_element.find(f"{{{self.NS_Y}}}GenericNode")
+                if gn:
+                    data["shape_type"] = gn.get("configuration")
+                for node_type in ["GenericNode", "ShapeNode", "SVGNode", "ImageNode"]:
                     pref = f"{{{self.NS_Y}}}{node_type}/{{{self.NS_Y}}}"
                     geometry = data_element.find(f"{pref}Geometry")
                     if geometry is not None:
@@ -920,6 +924,9 @@ class GraphMLReader(GraphML):
                         data["y"] = geometry.get("y")
                     if node_label is None:
                         node_label = data_element.find(f"{pref}NodeLabel")
+                    shape = data_element.find(f"{pref}Shape")
+                    if shape is not None:
+                        data["shape_type"] = shape.get("type")
                 if node_label is not None:
                     data["label"] = node_label.text
 
