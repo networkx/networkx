@@ -128,13 +128,7 @@ def boruvka_mst_edges(
 
 
 def kruskal_mst_edges_partition(
-    G,
-    minimum,
-    weight="weight",
-    keys=True,
-    data=True,
-    ignore_nan=False,
-    partition=None,
+    G, minimum, weight="weight", keys=True, data=True, ignore_nan=False, partition=None
 ):
     """
     Iterate over edge of a Kruskal's algorithm min/max spanning tree with

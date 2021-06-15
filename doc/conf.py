@@ -127,11 +127,7 @@ html_theme_options = {
     "navigation_depth": 2,
     "show_prev_next": False,
     "icon_links": [
-        {
-            "name": "Home Page",
-            "url": "https://networkx.org",
-            "icon": "fas fa-home",
-        },
+        {"name": "Home Page", "url": "https://networkx.org", "icon": "fas fa-home"},
         {
             "name": "GitHub",
             "url": "https://github.com/networkx/networkx",
@@ -192,7 +188,7 @@ html_context = {
         "latest": "devel (latest)",
         "stable": "v2.5 (stable)",
         "networkx-2.4": "v2.4",
-    },
+    }
 }
 
 # Options for LaTeX output

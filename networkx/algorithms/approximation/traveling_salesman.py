@@ -36,6 +36,8 @@ import math
 import networkx as nx
 import numpy as np
 import scipy.optimize as sp
+
+from networkx import NetworkXNoCycle
 from networkx.utils import py_random_state, not_implemented_for, pairwise
 
 __all__ = [
@@ -421,11 +423,7 @@ def _held_karp(G, weight="weight"):
         for u, v, d in G.edges(data=True):
             if (u, v) not in original_edge_weights:
                 original_edge_weights[(u, v)] = d[weight]
-            d[weight] = (
-                original_edge_weights[(u, v)]
-                + pi_vector[pi_dict[u]]
-                + pi_vector[pi_dict[v]]
-            )
+            d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
 
     def k_pi():
         """
@@ -439,9 +437,9 @@ def _held_karp(G, weight="weight"):
         # Create a copy of G without vertex 1
         G_1 = G.copy()
         # node is node '1' in the Held and Karp paper
-        node = next(G.__iter__())
         G_1.remove_node(node)
         minimum_arborescence_weight = math.inf
+        minimum_1_arborescence_weight = math.inf
         minimum_1_arborescences = set()
         for arborescence in nx.ArborescenceIterator(G_1):
             if minimum_arborescence_weight == math.inf:
@@ -470,7 +468,16 @@ def _held_karp(G, weight="weight"):
                     arborescence.add_edge(node, n, weight=G[node][n][weight])
                     break
             # We now have a 1-arborescence
+            if arborescence.size(weight) < minimum_1_arborescence_weight:
+                minimum_1_arborescence_weight = arborescence.size(weight)
             minimum_1_arborescences.add(arborescence)
+        # Not every minimum spanning arborescence will produce a minimum
+        # 1-arborescence, depending on the cheapest root to connect to.
+        # Once we have this set, we need to delete all of the non-minimum
+        # 1-arborescences from it.
+        for one_arborescence in list(minimum_1_arborescences):
+            if one_arborescence.size(weight) > minimum_1_arborescence_weight:
+                minimum_1_arborescences.discard(one_arborescence)
 
         return minimum_1_arborescences
 
@@ -505,44 +512,51 @@ def _held_karp(G, weight="weight"):
                 d[n] = 0
             del n
         # 2. Find a 1-Aborescence T^k such that k is in K(pi, d).
-        minimum_1_arborescences = k_pi()
-        # Reduce K(pi) to K(pi, d)
-        # Find the arborescence in K(pi) which increases the lest in direction d
-        min_k_d_weight = math.inf
-        min_k_d = None
-        for arborescence in minimum_1_arborescences:
-            weighted_cost = 0
+        iter_count = 0
+        while True:
+            minimum_1_arborescences = k_pi()
+            # Reduce K(pi) to K(pi, d)
+            # Find the arborescence in K(pi) which increases the lest in
+            # direction d
+            min_k_d_weight = math.inf
+            min_k_d = None
+            for arborescence in minimum_1_arborescences:
+                weighted_cost = 0
+                for n in G:
+                    weighted_cost += d[n] * (arborescence.degree(n) - 2)
+                if weighted_cost < min_k_d_weight:
+                    min_k_d_weight = weighted_cost
+                    min_k_d = arborescence
+            # 3. If sum of d_i * v_{i, k} is greater than zero, terminate
+            if min_k_d_weight > 0:
+                return d, min_k_d
+            # 4. d_i = d_i + v_{i, k}
             for n in G:
-                weighted_cost += d[n] * (arborescence.degree(n) - 2)
-            if weighted_cost < min_k_d_weight:
-                min_k_d_weight = weighted_cost
-                min_k_d = arborescence
-        # 3. If sum of d_i * v_{i, k} is greater than zero, terminate
-        if min_k_d_weight > 0:
-            return d
-        # 4. d_i = d_i + v_{i, k}
-        for n in G:
-            d[n] += min_k_d.in_degree(n) - 2
-        # Check that we do not need to terminate because the direction of
-        # ascent does not exist. This is done with linear programming.
-        c = np.full(len(minimum_1_arborescences), -1)
-        a_eq = np.empty((len(G), len(minimum_1_arborescences)))
-        b_eq = np.zeros(len(G))
-        arb_count = 0
-        for arborescence in minimum_1_arborescences:
-            n_count = 0
-            for n in arborescence:
-                a_eq[n_count][arb_count] = arborescence.degree(n) - 2
-                n_count += 1
-            arb_count += 1
-        program_result = sp.linprog(c, A_eq=a_eq, b_eq=b_eq)
-        bool_result = program_result.x >= 0
-        if np.sum(bool_result) == len(minimum_1_arborescences):
-            # There is no direction of ascent
-            return None, next(minimum_1_arborescences.__iter__())
+                if n is node:
+                    continue
+                d[n] += min_k_d.degree(n) - 2
+            iter_count += 1
+            if iter_count > 100:
+                # Check that we do not need to terminate because the direction
+                # of ascent does not exist. This is done with linear
+                # programming.
+                c = np.full(len(minimum_1_arborescences), -1)
+                a_eq = np.empty((len(G), len(minimum_1_arborescences)))
+                b_eq = np.zeros(len(G))
+                arb_count = 0
+                for arborescence in minimum_1_arborescences:
+                    n_count = len(G) - 1
+                    for n in arborescence:
+                        a_eq[n_count][arb_count] = arborescence.degree(n) - 2
+                        n_count -= 1
+                    arb_count += 1
+                program_result = sp.linprog(c, A_eq=a_eq, b_eq=b_eq, bounds=None)
+                bool_result = program_result.x >= 0
+                if np.sum(bool_result) == len(minimum_1_arborescences):
+                    # There is no direction of ascent
+                    return None, min_k_d
 
-        # 5. GO TO 2
-        return direction_of_ascent(d), next(minimum_1_arborescences.__iter__())
+            # 5. GO TO 2
 
     def find_epsilon(k, d):
         """
@@ -561,17 +575,39 @@ def _held_karp(G, weight="weight"):
         """
         epsilon = {}
         for u_e, v_e, d_e in G.edges(data=True):
-            if (u_e, v_e, d_e) in k:
+            if (u_e, v_e) in k.edges:
                 continue
-
             k.add_edge(u_e, v_e, weight=d_e[weight])
             c = nx.find_cycle(k, v_e, orientation="ignore")
-            for u_c, v_c, d_c in c:
+            # All edges in c could be substitutes for edge e, but I have not
+            # been able to figure out how to check if it is a substitute
+            # without doing so explicitly
+            for u_c, v_c, _ in c:
+                # delete the edge in the cycle and check if we still have
+                # a 1-arborescence
                 if (u_c, v_c) == (u_e, v_e):
                     continue
-                epsilon[(u_c, v_c)] = (d_c[weight] - d_e[weight]) / (
-                    d[u_c] + d[v_c] - d[u_e] - d[v_e]
-                )
+                k.remove_edge(u_c, v_c)
+                if (
+                    max(d for n, d in k.in_degree()) <= 1
+                    and len(G) == k.number_of_edges()
+                    and nx.is_weakly_connected(k)
+                ):
+                    # (u_e, v_e) is a substitute for (u_c, v_c)
+                    if d[u_c] == d[u_e] or G[u_c][v_c][weight] == d_e[weight]:
+                        k.add_edge(u_c, v_c, weight=G[u_c][v_c][weight])
+                        continue
+                    epsilon[(u_c, v_c, u_e, v_e)] = (
+                        G[u_c][v_c][weight] - d_e[weight]
+                    ) / (d[u_e] - d[u_c])
+                    epsilon_c = G[u_c][v_c][weight] + epsilon[(u_c, v_c, u_e, v_e)] * (
+                        d[u_c]
+                    )
+                    epsilon_e = d_e[weight] + epsilon[(u_c, v_c, u_e, v_e)] * (d[u_e])
+                    if epsilon_c != epsilon_e or epsilon[(u_c, v_c, u_e, v_e)] < 0:
+                        del epsilon[(u_c, v_c, u_e, v_e)]
+                k.add_edge(u_c, v_c, weight=G[u_c][v_c][weight])
+            k.remove_edge(u_e, v_e)
         min_epsilon = min(epsilon.items(), key=lambda x: x[1])
 
         return min_epsilon[1]
@@ -580,18 +616,21 @@ def _held_karp(G, weight="weight"):
     # in the direction of ascent, even if the node labels are not integers.
     # Thus, I will use dictionaries to made that mapping.
     pi_dict = {}
-    i = 0
     for n in G:
-        pi_dict[n] = i
-        i += 1
-    del i, n
-    pi_vector = np.zeros(len(G))
+        pi_dict[n] = 0
+    del n
+    node = next(G.__iter__())
     apply_pi()
     dir_ascent, k_d = direction_of_ascent()
+    count = 0
     while dir_ascent is not None:
         max_distance = find_epsilon(k_d, dir_ascent)
-        max_dist_ascent = max_distance * dir_ascent
-        np.add(pi_vector, max_dist_ascent, out=pi_vector)
+        for n, v in dir_ascent.items():
+            pi_dict[n] += max_distance * v
+        count += 1
+        if count > 25:
+            temp = "halt"
+        apply_pi()
         dir_ascent, k_d = direction_of_ascent()
 
     return k_d

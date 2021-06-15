@@ -211,20 +211,8 @@ class TestSimulatedAnnealingTSP:
         validate_symmetric_solution(cycle, cost, self.UG2_cycle, self.UG2_cost)
 
     def test_not_complete_graph(self):
-        pytest.raises(
-            nx.NetworkXError,
-            self.tsp,
-            self.incompleteUG,
-            "greedy",
-            source=0,
-        )
-        pytest.raises(
-            nx.NetworkXError,
-            self.tsp,
-            self.incompleteDG,
-            "greedy",
-            source=0,
-        )
+        pytest.raises(nx.NetworkXError, self.tsp, self.incompleteUG, "greedy", source=0)
+        pytest.raises(nx.NetworkXError, self.tsp, self.incompleteDG, "greedy", source=0)
 
     def test_ignore_selfloops(self):
         G = nx.complete_graph(5)
@@ -296,12 +284,7 @@ class TestThresholdAcceptingTSP(TestSimulatedAnnealingTSP):
         # set threshold too low
         initial_sol = ["D", "A", "B", "C", "D"]
         cycle = self.tsp(
-            self.DG,
-            initial_sol,
-            source="D",
-            move="1-0",
-            threshold=-3,
-            seed=42,
+            self.DG, initial_sol, source="D", move="1-0", threshold=-3, seed=42
         )
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         assert cost > self.DG_cost
@@ -350,10 +333,7 @@ def test_TSP_weighted():
         [6, 7, 8, 0, 1, 2, 3, 2, 1, 0, 8, 7, 6],
     )
     # path through all nodes
-    expected_tourpaths = (
-        [5, 6, 7, 8, 0, 1, 2, 3, 4],
-        [4, 3, 2, 1, 0, 8, 7, 6, 5],
-    )
+    expected_tourpaths = ([5, 6, 7, 8, 0, 1, 2, 3, 4], [4, 3, 2, 1, 0, 8, 7, 6, 5])
 
     # Check default method
     cycle = tsp(G, nodes=[3, 6], weight="weight")
@@ -420,3 +400,4 @@ def test_held_karp():
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     k = nx_app._held_karp(G)
+    print(k)
