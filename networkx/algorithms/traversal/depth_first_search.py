@@ -16,8 +16,9 @@ __all__ = [
 def dfs_edges(G, source=None, depth_limit=None):
     """Iterate over edges in a depth-first-search (DFS).
 
-    Perform a depth-first-search over the nodes of G and yield
-    the edges in order. This may not generate all edges in G (see edge_dfs).
+    Perform a depth-first-search over the nodes of `G` and yield
+    the edges in order. This may not generate all edges in `G`
+    (see `~networkx.algorithms.traversal.edgedfs.edge_dfs`).
 
     Parameters
     ----------
