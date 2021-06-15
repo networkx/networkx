@@ -29,6 +29,17 @@ class BaseGraphTester:
         assert sorted(G.nodes()) == self.k3nodes
         assert sorted(G.nodes(data=True)) == [(0, {}), (1, {}), (2, {})]
 
+    def test_none_node(self):
+        G = self.Graph()
+        with pytest.raises(ValueError):
+            G.add_node(None)
+        with pytest.raises(ValueError):
+            G.add_nodes_from([None])
+        with pytest.raises(ValueError):
+            G.add_edge(0, None)
+        with pytest.raises(ValueError):
+            G.add_edges_from([(0, None)])
+
     def test_has_node(self):
         G = self.K3
         assert G.has_node(1)
