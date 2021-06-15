@@ -25,16 +25,16 @@ def dfs_edges(G, source=None, depth_limit=None):
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
+       Specify starting node for depth-first search and yield edges in
        the component reachable from source.
 
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    Returns
-    -------
-    edges: generator
-       A generator of edges in the depth-first-search.
+    Yields
+    ------
+    edge: 2-tuple of nodes
+       Yields edges resulting from the depth-first-search.
 
     Examples
     --------
