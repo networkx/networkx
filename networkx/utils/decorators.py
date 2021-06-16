@@ -599,18 +599,16 @@ class argmap:
         time on import at the cost of additional time on the first call of
         the function. Subsequent calls are then just as fast as normal.
 
-        2) For decorators that construct arguments that need to be
-        treated with a try...finally clause, the class accepts a keyword-only
-        argument "try_finally", which if true, wraps the decorated function
-        in a try...finally clause. The finally clause consists of a call to the
-        second returned result of the mapping function. So, the mapping function
-        returns a 2-tuple: the mapped value and a function to be called in the
-        finally clause.  This feature was included so the `open_file` decorator
-        could provide a file handle to the decorated function and close the file
-        handle after the function call. It even keeps track of whether to close
-        the file handle or not based on whether it had to open the file or the
-        input was already open. So, the decorated function does not need to
-        include any code to open or close files.
+        2) If the "try_finally" keyword-only argument is True, a try block
+        follows each mapped argument, matched on the other side of the wrapped
+        call, by a finally block closing that mapping.  We expect func to return
+        a 2-tuple: the mapped value and a function to be called in the finally
+        clause.  This feature was included so the `open_file` decorator could
+        provide a file handle to the decorated function and close the file handle
+        after the function call. It even keeps track of whether to close the file
+        handle or not based on whether it had to open the file or the input was
+        already open. So, the decorated function does not need to include any
+        code to open or close files.
 
         3) The maps applied can process multiple arguments. For example,
         you could swap two arguments using a mapping, or transform
@@ -801,7 +799,7 @@ class argmap:
         # __kwdefaults__ items that were set by a previous argmap.  Thus, we set
         # these values after those update() calls.
 
-        # If we attempt to access func from within  itself, that happens through
+        # If we attempt to access func from within itself, that happens through
         # a closure -- which trips an error when we replace func.__code__.  The
         # standard workaround for functions which can't see themselves is to use
         # a Y-combinator, as we do here.
@@ -911,10 +909,9 @@ class argmap:
         return func
 
     def assemble(self, f):
-        """Collects the requisite info to compile the decorated version of f.
-
-        Note, this is recursive, and all nested argmap-decorators for a
-        specific decorated function will be flattened into a single function.
+        """Collects components of the source for the decorated function wrapping f.
+        If f is argmap-decorated, then we recursively assemble the stack of
+        decorators into a single flattened function.
 
         This method is part of the `compile` method's process yet separated
         from that method to allow recursive processing. The outputs are
@@ -924,7 +921,7 @@ class argmap:
         Parameters
         ----------
         f : callable
-            The function to be assembled
+            The function to be decorated.  If f is argmapped, we assemble it.
 
         Returns
         -------
