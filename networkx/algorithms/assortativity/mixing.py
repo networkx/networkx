@@ -78,6 +78,17 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=T
     -------
     m: numpy array
        Counts or joint probability of occurrence of attribute pairs.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(3)
+    >>> gender = {0: 'male', 1: 'female', 2: 'female'}
+    >>> nx.set_node_attributes(G, gender, 'gender')
+    >>> mapping = {'male': 0, 'female': 1}
+    >>> mix_mat = nx.attribute_mixing_matrix(G, 'gender', mapping=mapping)
+    >>> # mixing from male nodes to female nodes
+    >>> print(mix_mat[mapping['male'], mapping['female']])
+    0.25
     """
     d = attribute_mixing_dict(G, attribute, nodes)
     a = dict_to_numpy_array(d, mapping=mapping)
@@ -153,6 +164,15 @@ def degree_mixing_matrix(
     -------
     m: numpy array
        Counts, or joint probability, of occurrence of node degree.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> max_degree = max(dict(G.degree).values())
+    >>> mapping = {x: x for x in range(max_degree + 1)} # identity mapping
+    >>> mix_mat = nx.degree_mixing_matrix(G, mapping=mapping)
+    >>> mix_mat[2, 1] # mixing from node degree 2 to node degree 1
+    0.25
     """
     d = degree_mixing_dict(G, x=x, y=y, nodes=nodes, weight=weight)
     a = dict_to_numpy_array(d, mapping=mapping)
