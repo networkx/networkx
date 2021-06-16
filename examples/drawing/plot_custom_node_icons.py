@@ -38,9 +38,10 @@ for u in range(1, 4):
     for v in range(1, 4):
         G.add_edge("switch_" + str(u), "PC_" + str(u) + "_" + str(v))
 
-# get layout
-pos = nx.spring_layout(G)
+# Get a reproducible layout and create figure
+pos = nx.spring_layout(G, seed=1734289230)
 fig, ax = plt.subplots()
+
 # Note: the min_source/target_margin kwargs only work with FancyArrowPatch objects.
 # Force the use of FancyArrowPatch for edge drawing by setting `arrows=True`,
 # but suppress arrowheads with `arrowstyle="-"`
