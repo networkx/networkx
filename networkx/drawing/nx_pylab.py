@@ -124,7 +124,7 @@ def draw(G, pos=None, ax=None, **kwds):
     return
 
 
-def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
+def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
     r"""Draw the graph G using Matplotlib.
 
     Draw the graph with Matplotlib with options for node positions,
@@ -142,7 +142,12 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
         See :py:mod:`networkx.drawing.layout` for functions that
         compute node positions.
 
-    arrows : bool (default=True)
+    arrows : bool or None, optional (default=None)
+        If `None`, directed graphs draw arrowheads with
+        `~matplotlib.patches.FancyArrowPatch`, while undirected graphs draw edges
+        via `~matplotlib.collections.LineCollection` for speed.
+        If `True`, draw arrowheads with FancyArrowPatches (bendable and stylish).
+        If `False`, draw edges using LineCollection (linear and fast).
         For directed graphs, if True draw arrowheads.
         Note: Arrows will be the same color as edges.
 
