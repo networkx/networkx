@@ -4,24 +4,23 @@ Custom node icons
 =================
 
 Example of using custom icons to represent nodes with matplotlib.
+
+Images for node icons courtesy of www.materialui.co
 """
 
 import matplotlib.pyplot as plt
 import networkx as nx
 import PIL
-import urllib.request
 
 # Image URLs for graph nodes
-icon_urls = {
-    "router": "https://www.materialui.co/materialIcons/hardware/router_black_144x144.png",
-    "switch": "https://www.materialui.co/materialIcons/action/dns_black_144x144.png",
-    "PC": "https://www.materialui.co/materialIcons/hardware/computer_black_144x144.png",
+icons = {
+    "router": "icons/router_black_144x144.png",
+    "switch": "icons/switch_black_144x144.png",
+    "PC": "icons/computer_black_144x144.png",
 }
 
-# Load images from web
-images = {
-    k: PIL.Image.open(urllib.request.urlopen(url)) for k, url in icon_urls.items()
-}
+# Load images
+images = {k: PIL.Image.open(fname) for k, fname in icons.items()}
 
 # Generate the computer network graph
 G = nx.Graph()
