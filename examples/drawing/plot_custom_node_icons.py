@@ -38,10 +38,21 @@ for u in range(1, 4):
     for v in range(1, 4):
         G.add_edge("switch_" + str(u), "PC_" + str(u) + "_" + str(v))
 
-# get layout and draw edges
+# get layout
 pos = nx.spring_layout(G)
 fig, ax = plt.subplots()
-nx.draw_networkx_edges(G, pos=pos, ax=ax, min_source_margin=15, min_target_margin=15)
+# Note: the min_source/target_margin kwargs only work with FancyArrowPatch objects.
+# Force the use of FancyArrowPatch for edge drawing by setting `arrows=True`,
+# but suppress arrowheads with `arrowstyle="-"`
+nx.draw_networkx_edges(
+    G,
+    pos=pos,
+    ax=ax,
+    arrows=True,
+    arrowstyle="-",
+    min_source_margin=15,
+    min_target_margin=15,
+)
 
 # Transform from data coordinates (scaled between xlim and ylim) to display coordinates
 tr_figure = ax.transData.transform
