@@ -54,7 +54,6 @@ def find_extendability(G):
     ------
 
          NetworkXError
-           If the graph G is of type nx.MultiGraph, nx.MultiDiGraph or nx.DiGraph.
            If the graph G is not simple.
            If the graph G is disconnected.
            If the graph G is not bipartite.
