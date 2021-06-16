@@ -413,18 +413,6 @@ def _held_karp(G, weight="weight"):
            pp.1138-1162
     """
 
-    def apply_pi():
-        """
-        Modify the graph so that each edge is affected by the weights of the
-        nodes stored in pi
-        """
-        original_edge_weights = {}
-
-        for u, v, d in G.edges(data=True):
-            if (u, v) not in original_edge_weights:
-                original_edge_weights[(u, v)] = d[weight]
-            d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
-
     def k_pi():
         """
         Find the set of minimum 1-Arborescences for G at point pi.
@@ -536,7 +524,7 @@ def _held_karp(G, weight="weight"):
                     continue
                 d[n] += min_k_d.degree(n) - 2
             iter_count += 1
-            if iter_count > 100:
+            if iter_count > 10:
                 # Check that we do not need to terminate because the direction
                 # of ascent does not exist. This is done with linear
                 # programming.
@@ -620,7 +608,10 @@ def _held_karp(G, weight="weight"):
         pi_dict[n] = 0
     del n
     node = next(G.__iter__())
-    apply_pi()
+    original_edge_weights = {}
+    for u, v, d in G.edges(data=True):
+        original_edge_weights[(u, v)] = d[weight]
+        d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
     dir_ascent, k_d = direction_of_ascent()
     count = 0
     while dir_ascent is not None:
@@ -630,7 +621,8 @@ def _held_karp(G, weight="weight"):
         count += 1
         if count > 25:
             temp = "halt"
-        apply_pi()
+        for u, v, d in G.edges(data=True):
+            d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
         dir_ascent, k_d = direction_of_ascent()
 
     return k_d
