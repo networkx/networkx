@@ -223,7 +223,6 @@ def optimal_edit_paths(
     edge_ins_cost=None,
     upper_bound=None,
     roots=None,
-    timeout=None,
 ):
     """Returns all minimum-cost edit paths transforming G1 to G2.
 
@@ -322,10 +321,6 @@ def optimal_edit_paths(
         These nodes are forced to be matched in the comparison to
         allow comparison between multiply vertex-rooted graphs.
 
-    timeout : numeric
-        Maximum number of seconds to execute.
-        After timeout is met, the current best GED is returned.
-
     Returns
     -------
     edit_paths : list of tuples (node_edit_path, edge_edit_path)
@@ -376,7 +371,6 @@ def optimal_edit_paths(
         upper_bound,
         False,
         roots,
-        timeout,
 
     ):
         # assert bestcost is None or cost <= bestcost
@@ -400,7 +394,6 @@ def optimize_graph_edit_distance(
     edge_ins_cost=None,
     upper_bound=None,
     roots=None,
-    timeout=None,
 ):
     """Returns consecutive approximations of GED (graph edit distance)
     between graphs G1 and G2.
@@ -501,10 +494,6 @@ def optimize_graph_edit_distance(
         These nodes are forced to be matched in the comparison to
         allow comparison between multiply vertex-rooted graphs.
 
-    timeout : numeric
-        Maximum number of seconds to execute.
-        After timeout is met, the current best GED is returned.
-
     Returns
     -------
     Generator of consecutive approximations of graph edit distance.
@@ -546,7 +535,6 @@ def optimize_graph_edit_distance(
         upper_bound,
         True,
         roots,
-        timeout,
     ):
         yield cost
 
