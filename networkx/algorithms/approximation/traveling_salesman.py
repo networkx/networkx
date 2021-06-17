@@ -509,9 +509,15 @@ def _held_karp(G, weight="weight"):
             min_k_d = None
             for arborescence in minimum_1_arborescences:
                 weighted_cost = 0
+                v_k_0 = 0
                 for n in G:
                     weighted_cost += d[n] * (arborescence.degree(n) - 2)
+                    if arborescence.degree(n) - 2 == 0:
+                        v_k_0 += 1
                 if weighted_cost < min_k_d_weight:
+                    min_k_d_weight = weighted_cost
+                    min_k_d = arborescence
+                if v_k_0 == len(G):
                     min_k_d_weight = weighted_cost
                     min_k_d = arborescence
             # 3. If sum of d_i * v_{i, k} is greater than zero, terminate
@@ -593,7 +599,7 @@ def _held_karp(G, weight="weight"):
                         d[u_c]
                     )
                     epsilon_e = d_e[weight] + epsilon[(u_c, v_c, u_e, v_e)] * (d[u_e])
-                    if epsilon_c != epsilon_e or epsilon[(u_c, v_c, u_e, v_e)] < 0:
+                    if epsilon[(u_c, v_c, u_e, v_e)] < 0:
                         del epsilon[(u_c, v_c, u_e, v_e)]
                 k.add_edge(u_c, v_c, weight=G[u_c][v_c][weight])
             k.remove_edge(u_e, v_e)
@@ -613,12 +619,10 @@ def _held_karp(G, weight="weight"):
     for u, v, d in G.edges(data=True):
         original_edge_weights[(u, v)] = d[weight]
     dir_ascent, k_d = direction_of_ascent()
-    count = 1
     while dir_ascent is not None:
         max_distance = find_epsilon(k_d, dir_ascent)
         for n, v in dir_ascent.items():
             pi_dict[n] += max_distance * v
-        count += 1
         for u, v, d in G.edges(data=True):
             d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
         dir_ascent, k_d = direction_of_ascent()
