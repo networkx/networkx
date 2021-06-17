@@ -501,7 +501,6 @@ def _held_karp(G, weight="weight"):
             del n
         # 2. Find a 1-Aborescence T^k such that k is in K(pi, d).
         minimum_1_arborescences = k_pi()
-        iter_count = 0
         while True:
             # Reduce K(pi) to K(pi, d)
             # Find the arborescence in K(pi) which increases the lest in
@@ -523,26 +522,28 @@ def _held_karp(G, weight="weight"):
                 if n is node:
                     continue
                 d[n] += min_k_d.degree(n) - 2
-            iter_count += 1
-            if iter_count > 5:
-                # Check that we do not need to terminate because the direction
-                # of ascent does not exist. This is done with linear
-                # programming.
-                c = np.full(len(minimum_1_arborescences), -1)
-                a_eq = np.empty((len(G), len(minimum_1_arborescences)))
-                b_eq = np.zeros(len(G))
-                arb_count = 0
-                for arborescence in minimum_1_arborescences:
-                    n_count = len(G) - 1
-                    for n in arborescence:
-                        a_eq[n_count][arb_count] = arborescence.degree(n) - 2
-                        n_count -= 1
-                    arb_count += 1
-                program_result = sp.linprog(c, A_eq=a_eq, b_eq=b_eq, bounds=None)
-                bool_result = program_result.x >= 0
-                if np.sum(bool_result) == len(minimum_1_arborescences):
-                    # There is no direction of ascent
-                    return None, min_k_d
+            # Check that we do not need to terminate because the direction
+            # of ascent does not exist. This is done with linear
+            # programming.
+            c = np.full(len(minimum_1_arborescences), -1)
+            a_eq = np.empty((len(G) + 1, len(minimum_1_arborescences)))
+            b_eq = np.zeros(len(G) + 1)
+            b_eq[len(G)] = 1
+            arb_count = 0
+            for arborescence in minimum_1_arborescences:
+                n_count = len(G) - 1
+                for n in arborescence:
+                    a_eq[n_count][arb_count] = arborescence.degree(n) - 2
+                    n_count -= 1
+                a_eq[len(G)][arb_count] = 1
+                arb_count += 1
+            program_result = sp.linprog(c, A_eq=a_eq, b_eq=b_eq)
+            bool_result = program_result.x >= 0
+            if program_result.status == 0 and np.sum(bool_result) == len(
+                minimum_1_arborescences
+            ):
+                # There is no direction of ascent
+                return None, min_k_d
 
             # 5. GO TO 2
 
@@ -612,10 +613,12 @@ def _held_karp(G, weight="weight"):
     for u, v, d in G.edges(data=True):
         original_edge_weights[(u, v)] = d[weight]
     dir_ascent, k_d = direction_of_ascent()
+    count = 1
     while dir_ascent is not None:
         max_distance = find_epsilon(k_d, dir_ascent)
         for n, v in dir_ascent.items():
             pi_dict[n] += max_distance * v
+        count += 1
         for u, v, d in G.edges(data=True):
             d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
         dir_ascent, k_d = direction_of_ascent()

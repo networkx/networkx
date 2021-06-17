@@ -400,4 +400,4 @@ def test_held_karp():
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     k = nx_app._held_karp(G)
-    print(k)
+    print(f"\n{k.adj}")
