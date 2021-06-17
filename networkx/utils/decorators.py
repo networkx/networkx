@@ -65,13 +65,9 @@ def not_implemented_for(*graph_types):
        def sp_np_function(G):
            pass
     """
-    if "directed" in graph_types:
-        if "undirected" in graph_types:
-            raise ValueError(
-                "Function not implemented on directed AND undirected graphs?"
-            )
-    if "multigraph" in graph_types:
-        if "graph" in graph_types:
+    if ("directed" in graph_types) and ("undirected" in graph_types):
+        raise ValueError("Function not implemented on directed AND undirected graphs?")
+    if ("multigraph" in graph_types) and ("graph" in graph_types):
             raise ValueError("Function not implemented on graph AND multigraphs?")
     if not set(graph_types) < {"directed", "undirected", "multigraph", "graph"}:
         raise KeyError(
@@ -156,18 +152,16 @@ def open_file(path_arg, mode="r"):
       def some_function(arg1, arg2, path=None):
          if path is None:
              fobj = tempfile.NamedTemporaryFile(delete=False)
-             close_fobj = True
          else:
              # `path` could have been a string or file object or something
              # similar. In any event, the decorator has given us a file object
              # and it will close it for us, if it should.
              fobj = path
-             close_fobj = False
 
          try:
              fobj.write("blah")
          finally:
-             if close_fobj:
+             if path is None:
                  fobj.close()
 
     Normally, we'd want to use "with" to ensure that fobj gets closed.
@@ -200,7 +194,7 @@ def open_file(path_arg, mode="r"):
 def nodes_or_number(which_args):
     """Decorator to allow number of nodes or container of nodes.
 
-    With this decorator, the specified argument can be either a number of a container
+    With this decorator, the specified argument can be either a number or a container
     of nodes. If it is a number, the nodes used are `range(n)`.
     This allows `nx.complete_graph(50)` in place of `nx.complete_graph(list(range(50)))`.
     And it also allows `nx.complete_graph(any_list_of_nodes)`.
@@ -317,18 +311,20 @@ def preserve_random_state(func):
 
 
 def random_state(random_state_argument):
-    """Decorator to generate a numpy.random.RandomState instance.
+    """Decorator to generate a `numpy.random.RandomState` instance.
 
     The decorator processes the argument indicated by `random_state_argument`
     using :func:`nx.utils.create_random_state`.
-    The argument value can be a seed (integer), or a random number generator.
-    The result is a numpy.random.RandomState instance.
+    The argument value can be a seed (integer), or a `numpy.random.RandomState`
+    instance or (`None` or `numpy.random`). The latter options use the glocal
+    random number generator used by `numpy.random`.
+    The result is a `numpy.random.RandomState` instance.
 
     Parameters
     ----------
     random_state_argument : string or int
         The name or index of the argument to be converted
-        to a numpy.random.RandomState instance.
+        to a `numpy.random.RandomState` instance.
 
     Returns
     -------
@@ -366,9 +362,17 @@ def py_random_state(random_state_argument):
 
     The decorator processes the argument indicated by `random_state_argument`
     using :func:`nx.utils.create_py_random_state`.
-    The argument value can be a seed (integer), or a random number generator.
-    The result is either a random.Random instance, or numpy.random.RandomState
-    instance with additional attributes to mimic basic methods of random.Random.
+    The argument value can be a seed (integer), or a random number generator::
+
+        If int, return a random.Random instance set with seed=int.
+        If random.Random instance, return it.
+        If None or the `random` package, return the global random number
+        generator used by `random`.
+        If np.random package, return the global numpy random number
+        generator wrapped in a PythonRandomInterface class.
+        If np.random.RandomState instance, return it wrapped in
+        PythonRandomInterface
+        If a PythonRandomInterface instance, return it
 
     Parameters
     ----------
@@ -417,10 +421,6 @@ class argmap:
     list of nodes before the actual function is called.
 
     This decorator class allows us to process single or multiple arguments.
-    Or to process arguments that e.g. might need to be closed (or not) depending
-    on how they are input (used for file handle arguments that may either be
-    a string naming the file or an existing file handle). If the decorator opens
-    the file it should close it when done. Otherwise it should not close the file.
     The arguments to be processed can be specified by string, naming the argument,
     or by index, specifying the item in the args list.
 
@@ -429,17 +429,26 @@ class argmap:
     func : callable
         The function to apply to arguments
 
-    *params: iterable of (int, str or tuple)
+    *args : iterable of (int, str or tuple)
         A list of parameters, specified either as strings (their names), ints
         (numerical indices) or arbitrarily nested tuples thereof.
+        This indicates which parameters the decorator should map. Tuples
+        indicate that the map function takes (and returns) multiple parameters
+        in the same order and nested structure as indicated here.
+
+    try_finally : bool (default: False)
+        When True, wrap the function call in a try-finally block with code
+        for the finally block created by `func`. This is used when the map
+        function constructs an object (like a file handle) that requires
+        post-processing (like closing).
 
     Examples
     --------
-    Let's start with a caveat. Most of these examples will use `@argmap(...)`
-    to apply the decorator immediately to the function defined on the next line.
+    Most of these examples use `@argmap(...)` to apply the decorator to
+    the function defined on the next line.
     In the NetworkX codebase however, `argmap` is used within a function to
     construct a decorator. That is, the decorator defines a mapping function
-    and then uses `argmap` to build the decorator from the mapping.
+    and then uses `argmap` to build and return a decorated function.
     A simple example is a decorator that specifies which currency to report money.
     The decorator (named `convert_to`) would be used like::
 
@@ -457,32 +466,33 @@ class argmap:
             return argmap(_convert, which_arg)
 
     Despite this common idiom for argmap, most of the following examples
-    use the `@argmap(...)` idiom to save space here.
+    use the `@argmap(...)` idiom to save space.
 
-    As an example, the decorated function::
+    Here's an example use of argmap to sum the elements of two of the functions
+    arguments. The decorated function::
 
-        @argmap(sum, "x", "z")
-        def foo(x, y, z):
-            return x - y + z
+        @argmap(sum, "xlist", "zlist")
+        def foo(xlist, y, zlist):
+            return xlist - y + zlist
 
     is syntactic sugar for::
 
-        def foo(x, y, z):
-            x = sum(x)
-            z = sum(z)
+        def foo(xlist, y, zlist):
+            x = sum(xlist)
+            z = sum(zlist)
             return x - y + z
 
     and is equivalent to (using argument indexes)::
 
-        @argmap(sum, "x", 2)
-        def foo(x, y, z):
-            return x - y + z
+        @argmap(sum, "xlist", 2)
+        def foo(xlist, y, zlist):
+            return xlist - y + zlist
 
     or::
 
-        @argmap(sum, "z", 0)
-        def foo(x, y, z):
-            return x - y + z
+        @argmap(sum, "zlist", 0)
+        def foo(xlist, y, zlist):
+            return xlist - y + zlist
 
     Transforming functions can be applied to multiple arguments, such as::
 
@@ -910,7 +920,8 @@ class argmap:
 
     def assemble(self, f):
         """Collects components of the source for the decorated function wrapping f.
-        If f is argmap-decorated, then we recursively assemble the stack of
+
+        If `f` has multiple argmap decorators, we recursively assemble the stack of
         decorators into a single flattened function.
 
         This method is part of the `compile` method's process yet separated
@@ -933,7 +944,8 @@ class argmap:
         functions : dict
             A dictionary mapping id(g) -> (mangled_name(g), g) for functions g
             referred to in the code being assembled. These need to be present
-            in the `globals` scope of `exec` when defining the decorated function.
+            in the ``globals`` scope of ``exec`` when defining the decorated
+            function.
         mapblock : list of lists and/or strings
             Code that implements mapping of parameters including any try blocks
             if needed. This code will precede the decorated function call.
