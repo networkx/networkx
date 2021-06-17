@@ -68,7 +68,7 @@ def not_implemented_for(*graph_types):
     if ("directed" in graph_types) and ("undirected" in graph_types):
         raise ValueError("Function not implemented on directed AND undirected graphs?")
     if ("multigraph" in graph_types) and ("graph" in graph_types):
-            raise ValueError("Function not implemented on graph AND multigraphs?")
+        raise ValueError("Function not implemented on graph AND multigraphs?")
     if not set(graph_types) < {"directed", "undirected", "multigraph", "graph"}:
         raise KeyError(
             "use one or more of directed, undirected, multigraph, graph.  "
