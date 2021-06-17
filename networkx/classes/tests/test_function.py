@@ -107,16 +107,16 @@ class TestFunction:
         )
 
         G = self.G.copy()
-        nlist = [None]
+        nlist = ["node"]
         nx.add_path(G, nlist)
         assert edges_equal(G.edges(nlist), [])
-        assert nodes_equal(G, list(self.G) + [None])
+        assert nodes_equal(G, list(self.G) + ["node"])
 
         G = self.G.copy()
-        nlist = iter([None])
+        nlist = iter(["node"])
         nx.add_path(G, nlist)
-        assert edges_equal(G.edges([None]), [])
-        assert nodes_equal(G, list(self.G) + [None])
+        assert edges_equal(G.edges(["node"]), [])
+        assert nodes_equal(G, list(self.G) + ["node"])
 
         G = self.G.copy()
         nlist = [12]

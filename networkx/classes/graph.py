@@ -28,7 +28,7 @@ class Graph:
     (parallel) edges are not.
 
     Nodes can be arbitrary (hashable) Python objects with optional
-    key/value attributes. By convention `None` is not used as a node.
+    key/value attributes, except that `None` is not allowed as a node.
 
     Edges are represented as links between nodes with optional
     key/value attributes.
@@ -515,6 +515,8 @@ class Graph:
         doesn't change on mutables.
         """
         if node_for_adding not in self._node:
+            if node_for_adding is None:
+                raise ValueError("None cannot be a node")
             self._adj[node_for_adding] = self.adjlist_inner_dict_factory()
             attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
             attr_dict.update(attr)
@@ -575,6 +577,8 @@ class Graph:
                 newdict = attr.copy()
                 newdict.update(ndict)
             if newnode:
+                if n is None:
+                    raise ValueError("None cannot be a node")
                 self._adj[n] = self.adjlist_inner_dict_factory()
                 self._node[n] = self.node_attr_dict_factory()
             self._node[n].update(newdict)
@@ -873,9 +877,13 @@ class Graph:
         u, v = u_of_edge, v_of_edge
         # add nodes
         if u not in self._node:
+            if u is None:
+                raise ValueError("None cannot be a node")
             self._adj[u] = self.adjlist_inner_dict_factory()
             self._node[u] = self.node_attr_dict_factory()
         if v not in self._node:
+            if v is None:
+                raise ValueError("None cannot be a node")
             self._adj[v] = self.adjlist_inner_dict_factory()
             self._node[v] = self.node_attr_dict_factory()
         # add the edge
@@ -932,9 +940,13 @@ class Graph:
             else:
                 raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
             if u not in self._node:
+                if u is None:
+                    raise ValueError("None cannot be a node")
                 self._adj[u] = self.adjlist_inner_dict_factory()
                 self._node[u] = self.node_attr_dict_factory()
             if v not in self._node:
+                if v is None:
+                    raise ValueError("None cannot be a node")
                 self._adj[v] = self.adjlist_inner_dict_factory()
                 self._node[v] = self.node_attr_dict_factory()
             datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
