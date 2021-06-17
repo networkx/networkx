@@ -52,6 +52,9 @@ def __getattr__(name):
 
 
 # These are import orderwise
+from networkx.lazy_imports import lazy_import, lazy_package_import
+
+np = lazy_import("numpy")
 from networkx.exception import *
 
 from networkx import utils
