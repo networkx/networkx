@@ -5,7 +5,7 @@ Traveling Salesman Problem
 
 This is an example of a drawing solution of the traveling salesman problem
 
-The function is used to produce the solution is greedy_tsp (Nearest Neighbor),
+The function is used to produce the solution is christofides,
 where given a set of nodes, it calculates the route of the nodes
 that the traveler has to follow in order to minimize the total cost.
 """
@@ -31,7 +31,7 @@ for i in range(len(pos)):
         dist = dist
         G.add_edge(i, j, weight=dist)
 
-cycle = nx_app.greedy_tsp(G, source=0)
+cycle = nx_app.christofides(G, weight='weight')
 edge_list = [(x1, x2) for x1, x2 in nx.utils.pairwise(cycle)]
 
 # Draw closest edges on each node only
