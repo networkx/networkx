@@ -4,6 +4,7 @@ import importlib.util
 import pytest
 
 from networkx import lazy_import, lazy_package_import
+from networkx.lazy_imports import DelayedImportErrorModule
 
 
 def test_lazy_import():
@@ -13,6 +14,13 @@ def test_lazy_import():
     # Now test that accessing attributes does what it should
     assert np.sin(np.pi) == pytest.approx(0, 1e-6)
     # poor-mans pytest.raises for testing errors on attribute access
+    try:
+        anything_not_real.pi
+        assert False  # Should not get here
+    except ModuleNotFoundError:
+        pass
+    assert isinstance(anything_not_real, DelayedImportErrorModule)
+    # see if it changes for second access
     try:
         anything_not_real.pi
         assert False  # Should not get here
