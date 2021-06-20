@@ -252,14 +252,14 @@ def generate_graphml(
 
     >>> G = nx.path_graph(4)
     >>> nx.set_edge_attributes(G, {e: str(e) for e in G.edges}, "eid")
-    >>> for line in nx.generate_graphml(G, named_key_ids=True):
+    >>> for line in nx.generate_graphml(G, named_key_ids=True): # doctest: +SKIP
     ...     print(line)
 
     The optional parameter `edge_id_from_attribute` allows the selection of an edge data attribute to be edge id.
 
     >>> G = nx.path_graph(4)
     >>> nx.set_edge_attributes(G, {e: str(e) for e in G.edges}, "eid")
-    >>> for line in nx.generate_graphml(G , edge_id_from_attribute="eid"):
+    >>> for line in nx.generate_graphml(G , edge_id_from_attribute="eid"): # doctest: +SKIP
     ...     print(line)
 
     Notes
