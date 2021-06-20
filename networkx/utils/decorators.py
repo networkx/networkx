@@ -431,10 +431,11 @@ class argmap:
 
     *args : iterable of (int, str or tuple)
         A list of parameters, specified either as strings (their names), ints
-        (numerical indices) or arbitrarily nested tuples thereof.
-        This indicates which parameters the decorator should map. Tuples
-        indicate that the map function takes (and returns) multiple parameters
-        in the same order and nested structure as indicated here.
+        (numerical indices) or tuples, which may contain ints, strings, and
+        (recursively) tuples. Each indicates which parameters the decorator
+        should map. Tuples indicate that the map function takes (and returns)
+        multiple parameters in the same order and nested structure as indicated
+        here.
 
     try_finally : bool (default: False)
         When True, wrap the function call in a try-finally block with code
@@ -517,8 +518,7 @@ class argmap:
     "b" and "c" respectively. Similarly for `@argmap(some_func, (0, ("b", 2)))`.
 
     Also, note that an index larger than the number of named parameters is allowed
-    so long as a VAR_POSITIONAL input appears, e.g. `*args`. In that case the index
-    extends past the named parameters into the `args` tuple. For example::
+    for variadic functions. For example::
 
         def double(a):
             return 2 * a
@@ -603,7 +603,7 @@ class argmap:
     is actually called by the user.
 
     Three additional features are provided.
-        1) The code is lazy_compiled. That is, the new function is returned
+        1) The code is lazily compiled. That is, the new function is returned
         as an object without the code compiled, but with all information
         needed so it can be compiled upon it's first invocation. This saves
         time on import at the cost of additional time on the first call of
@@ -680,10 +680,9 @@ class argmap:
     After this recursive assembly process, the `argmap.compile` method
     constructs code (as strings) to convert the tuple `sig.args` to a list
     if needed. It joins the defining code with appropriate indents and
-    compiles the result. The compiled code is `exec`uted defining the
-    new function upon which the code string is monkey-patched
-    to help with introspection. The new function is returned and replaces
-    the original thinly-wrapped function.
+    compiles the result.  Finally, this code is evaluated and the original
+    wrapper's implementation is replaced with the compiled version (see
+    `argmap._lazy_compile` for more details).
 
     Other `argmap` methods include `_name` and `_count` which allow internally
     generated names to be unique within a python session.
