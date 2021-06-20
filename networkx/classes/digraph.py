@@ -1177,7 +1177,6 @@ class DiGraph(Graph):
         >>> list(G2.edges)
         [(0, 1)]
         """
-        graph_class = self.to_undirected_class()
         if as_view is True:
             return nx.graphviews.generic_graph_view(self, Graph)
         # deepcopy when not a view
