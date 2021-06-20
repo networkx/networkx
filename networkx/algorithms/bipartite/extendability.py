@@ -53,7 +53,7 @@ def find_extendability(G):
     Raises
     ------
 
-         NetworkXError
+        NetworkXError
            If the graph G is not simple.
            If the graph G is disconnected.
            If the graph G is not bipartite.
@@ -63,45 +63,47 @@ def find_extendability(G):
     Notes
     -----
 
-         Time complexity: O($n^3$ $m^2$))
+        Time complexity O($n^3$ $m^2$)) where $n$ is the number of vertices
+        and $m$ is the number of edges.
 
     References
     ----------
 
-         ..[1] "A polynomial algorithm for the extendability problem in bipartite graphs",
-           J. Lakhal, L. Litzler, Information Processing Letters, 1998.
-         ..[2] "The matching extension problem in general graphs is co-NP-complete",
-           Jan Hackfeld, Arie M. C. A. Koster, Springer Nature, 2018.
+        ..[1] "A polynomial algorithm for the extendability problem in bipartite graphs",
+              J. Lakhal, L. Litzler, Information Processing Letters, 1998.
+        ..[2] "The matching extension problem in general graphs is co-NP-complete",
+              Jan Hackfeld, Arie M. C. A. Koster, Springer Nature, 2018.
 
     """
-    # Graph G must be simple
+
     for edge in G.edges:
         if edge[0] == edge[1]:
             raise nx.NetworkXError("Graph G is not simple")
-    # Graph G must be connected
+
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph G is not connected")
-    # Graph G must be bipartite
+
     if not nx.bipartite.is_bipartite(G):
         raise nx.NetworkXError("Graph G is not bipartite")
-    # Obtain the two sets which form the partition of graph G
+
     U, V = nx.bipartite.sets(G)
+
     # Variable $k$ stands for the extendability of graph G
     k = float("Inf")
-    # Find a maximum matching
+
+    # Find a maximum matching M
     maximum_matching = nx.bipartite.hopcroft_karp_matching(G)
-    # Check whether G has a perfect matching or not
+
     if nx.is_perfect_matching(G, maximum_matching):
-        # Convert undirected graph G into its residual graph
-        directed_G = nx.DiGraph()
-        # Obtain the edges of the perfect matching from the dictionary
+
+        # Construct a list consists of the edges of M by directing them from V to U
         perfect_matching = []
         for vertex in maximum_matching.keys():
-            # Store only the edges from V to U
             if vertex in V:
                 neighbor = maximum_matching[vertex]
                 perfect_matching.append((vertex, neighbor))
-        # Direct the edges
+
+        # Direct all the edges of G
         directed_edges = []
         for edge in G.edges:
             first_coordinate, second_coordinate = edge[0], edge[1]
@@ -116,15 +118,19 @@ def find_extendability(G):
                     directed_edges.append(edge)
                 else:
                     directed_edges.append(reverse_pair)
-        directed_G.add_nodes_from(G.nodes)
-        directed_G.add_edges_from(directed_edges)
-        # Check whether the residual graph of G is strongly connected or not
-        if nx.is_strongly_connected(directed_G):
+
+        # Construct the residual graph of G
+        residual_G = nx.DiGraph()
+        residual_G.add_nodes_from(G.nodes)
+        residual_G.add_edges_from(directed_edges)
+
+        if nx.is_strongly_connected(residual_G):
+
             # Find the number of maximum disjoint paths between every vertex of U and V and keep the minimum
             for u in U:
                 for v in V:
                     vertex_disjoint_paths = []
-                    paths = nx.node_disjoint_paths(directed_G, u, v)
+                    paths = nx.node_disjoint_paths(residual_G, u, v)
                     for path in paths:
                         vertex_disjoint_paths.append(path)
                     k = min(k, len(vertex_disjoint_paths))
