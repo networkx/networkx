@@ -175,13 +175,12 @@ class TestStronglyConnected:
 
     def test_connected_raise(self):
         G = nx.Graph()
-        pytest.raises(NetworkXNotImplemented, nx.strongly_connected_components, G)
-        pytest.raises(
-            NetworkXNotImplemented, nx.kosaraju_strongly_connected_components, G
-        )
-        pytest.raises(
-            NetworkXNotImplemented, nx.strongly_connected_components_recursive, G
-        )
+        with pytest.raises(NetworkXNotImplemented):
+            next(nx.strongly_connected_components(G))
+        with pytest.raises(NetworkXNotImplemented):
+            next(nx.kosaraju_strongly_connected_components(G))
+        with pytest.raises(NetworkXNotImplemented):
+            next(nx.strongly_connected_components_recursive(G))
         pytest.raises(NetworkXNotImplemented, nx.is_strongly_connected, G)
         pytest.raises(
             nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph()
