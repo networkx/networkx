@@ -334,7 +334,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
     """
 
     def _edges_between_disjoint(H, only1, only2):
-        """ finds edges between disjoint nodes """
+        """finds edges between disjoint nodes"""
         only1_adj = {u: set(H.adj[u]) for u in only1}
         for u, neighbs in only1_adj.items():
             # Find the neighbors of u in only1 that are also in only2
@@ -1019,7 +1019,7 @@ def _minimum_rooted_branching(D, root):
     References
     ----------
     [1] Khuller, Samir (2002) Advanced Algorithms Lecture 24 Notes.
-    https://www.cs.umd.edu/class/spring2011/cmsc651/lec07.pdf
+    https://web.archive.org/web/20121030033722/https://www.cs.umd.edu/class/spring2011/cmsc651/lec07.pdf
     """
     rooted = D.copy()
     # root the graph by removing all predecessors to `root`.

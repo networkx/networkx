@@ -88,7 +88,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     ----------
     .. [1] Linton C. Freeman: Centrality in networks: I.
        Conceptual clarification. Social Networks 1:215-239, 1979.
-       http://leonidzhukov.ru/hse/2013/socialnetworks/papers/freeman79-centrality.pdf
+       https://doi.org/10.1016/0378-8733(78)90021-7
     .. [2] pg. 201 of Wasserman, S. and Faust, K.,
        Social Network Analysis: Methods and Applications, 1994,
        Cambridge University Press.
@@ -216,7 +216,7 @@ def incremental_closeness_centrality(
     ----------
     .. [1] Freeman, L.C., 1979. Centrality in networks: I.
        Conceptual clarification.  Social Networks 1, 215--239.
-       http://www.soc.ucsb.edu/faculty/friedkin/Syllabi/Soc146/Freeman78.PDF
+       https://doi.org/10.1016/0378-8733(78)90021-7
     .. [2] Sariyuce, A.E. ; Kaya, K. ; Saule, E. ; Catalyiirek, U.V. Incremental
        Algorithms for Closeness Centrality. 2013 IEEE International Conference on Big Data
        http://sariyuce.com/papers/bigdata13.pdf

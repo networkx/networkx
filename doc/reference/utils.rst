@@ -22,7 +22,9 @@ Helper Functions
    pairwise
    groups
    create_random_state
-
+   nodes_equal
+   edges_equal
+   graphs_equal
 
 Data Structures and Algorithms
 ------------------------------
@@ -56,6 +58,7 @@ Decorators
    nodes_or_number
    preserve_random_state
    random_state
+   argmap
 
 Cuthill-Mckee Ordering
 ----------------------

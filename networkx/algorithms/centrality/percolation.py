@@ -78,7 +78,7 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
     .. [2] Ulrik Brandes:
        A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
-       http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+       https://doi.org/10.1080/0022250X.2001.9990249
     """
     percolation = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
 
