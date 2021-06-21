@@ -103,13 +103,6 @@ class BaseDiGraphTester(BaseGraphTester):
         H2 = H.to_undirected(as_view=True)
         assert H is H2._graph
 
-    def test_to_undirected(self):
-        G = nx.path_graph(2)
-        H = G.to_directed()
-        assert sorted(H.edges()) == [(0, 1), (1, 0)]
-        H2 = H.to_undirected()
-        assert H2.has_edge(0, 1)
-
     def test_to_undirected_reciprocal(self):
         G = self.Graph()
         G.add_edge(1, 2)
