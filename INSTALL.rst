@@ -35,7 +35,7 @@ install into your user directory using the ``--user`` flag::
 If you do not want to install our dependencies (e.g., ``numpy``, ``scipy``, etc.),
 you can use::
 
-    $ pip install decorator networkx --no-deps
+    $ pip install networkx --no-deps
 
 This may be helpful if you are using PyPy or you are working on a project that
 only needs a limited subset of our functionality and you want to limit the
