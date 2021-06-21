@@ -1,8 +1,8 @@
 from copy import copy
-import pytest
-import random
 
+import pytest
 import networkx as nx
+import random
 from networkx.utils import (
     arbitrary_element,
     create_py_random_state,
@@ -129,7 +129,7 @@ class TestNumpyArray:
     @classmethod
     def setup_class(cls):
         global np
-        np = nx.lazy_importorskip("numpy")
+        np = pytest.importorskip("numpy")
 
     def test_numpy_to_list_of_ints(self):
         a = np.array([1, 2, 3], dtype=np.int64)
@@ -225,7 +225,7 @@ def test_to_tuple():
 
 
 def test_create_random_state():
-    np = nx.lazy_importorskip("numpy")
+    np = pytest.importorskip("numpy")
     rs = np.random.RandomState
 
     assert isinstance(create_random_state(1), rs)
@@ -245,7 +245,7 @@ def test_create_py_random_state():
     assert isinstance(create_py_random_state(pyrs(1)), pyrs)
     pytest.raises(ValueError, create_py_random_state, "a")
 
-    np = nx.lazy_importorskip("numpy")
+    np = pytest.importorskip("numpy")
 
     rs = np.random.RandomState
     nprs = PythonRandomInterface
@@ -256,7 +256,7 @@ def test_create_py_random_state():
 
 
 def test_PythonRandomInterface():
-    np = nx.lazy_importorskip("numpy")
+    np = pytest.importorskip("numpy")
     rs = np.random.RandomState
     rng = PythonRandomInterface(rs(42))
     rs42 = rs(42)

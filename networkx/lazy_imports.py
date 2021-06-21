@@ -85,42 +85,22 @@ def lazy_package_import(module_name, submodules=None, submod_attrs=None):
 
 class DelayedImportErrorLoader(importlib.util.LazyLoader):
     def exec_module(self, module):
-        """Make the module load lazily."""
-        module.__spec__.loader = self.loader
-        module.__loader__ = self.loader
-        # Don't need to worry about deep-copying as trying to set an attribute
-        # on an object would have triggered the load,
-        # e.g. ``module.__spec__.loader = None`` would trigger a load from
-        # trying to access module.__spec__.
-        loader_state = {}
-        loader_state["__dict__"] = module.__dict__.copy()
-        loader_state["__class__"] = module.__class__
-        module.__spec__.loader_state = loader_state
+        super().exec_module(module)
         module.__class__ = DelayedImportErrorModule
 
 
 class DelayedImportErrorModule(types.ModuleType):
-    """A subclass of ModuleType which trigger an ImportError upon attribute access
-
-    Based on importlib.util._LazyModule
-    """
-
     def __getattribute__(self, attr):
+        """Trigger a ModuleNotFoundError upon attribute access"""
         spec = super().__getattribute__("__spec__")
+        # allows isinstance and type functions to work without raising error
+        if attr in ["__class__"]:
+            return super().__getattribute__("__class__")
         raise ModuleNotFoundError(
             f"Delayed Report: module named '{spec.name}' not found.\n"
             "Reporting was Lazy -- delayed until module attributes accessed.\n"
             f"Most likely, {spec.name} is not installed"
         )
-
-
-def lazy_importorskip(modname, minversion=None, reason=None):
-    module = pytest.importorskip(modname, minversion, reason)
-    if isinstance(module, DelayedImportErrorModule):
-        if reason is None:
-            reason = "Could not import {modname!r}. Lazy import delayed reporting."
-        raise pytest.skip(reason, allow_module_level=True)
-    return module
 
 
 def lazy_import(fullname):
@@ -173,7 +153,5 @@ def lazy_import(fullname):
     module = importlib.util.module_from_spec(spec)
     tmp_loader = importlib.machinery.SourceFileLoader(module, path=None)
     loader = DelayedImportErrorLoader(tmp_loader)
-
-    sys.modules[fullname] = module
     loader.exec_module(module)
     return module
