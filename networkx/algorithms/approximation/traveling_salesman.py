@@ -422,6 +422,10 @@ def _held_karp(G, weight="weight"):
         Set
             The set of minimum 1-Trees
         """
+        # We are told simply to find the "1-[arborescences] that are of minimum
+        # weight". This means that the choice of node '1' which is not included
+        # is probably important.
+        #
         # Create a copy of G without vertex 1
         G_1 = G.copy()
         # node is node '1' in the Held and Karp paper
@@ -512,11 +516,13 @@ def _held_karp(G, weight="weight"):
                 v_k_0 = 0
                 for n in G:
                     weighted_cost += d[n] * (arborescence.degree(n) - 2)
-                    if arborescence.degree(n) - 2 == 0:
-                        v_k_0 += 1
+                    v_k_0 += 1 if arborescence.degree(n) - 2 == 0 else 0
                 if weighted_cost < min_k_d_weight:
                     min_k_d_weight = weighted_cost
                     min_k_d = arborescence
+                # If d is the zero vector, then all minimum arborescences
+                # will have the same weighted cost of 0, but if there is a
+                # cycle among them, that needs to be the one we pick
                 if v_k_0 == len(G):
                     min_k_d_weight = weighted_cost
                     min_k_d = arborescence
@@ -568,44 +574,39 @@ def _held_karp(G, weight="weight"):
         float
             The distance we can travel in direction d
         """
-        epsilon = {}
+        min_epsilon = math.inf
         for u_e, v_e, d_e in G.edges(data=True):
             if (u_e, v_e) in k.edges:
                 continue
+            # Now, I have found a condition which MUST be true for the edges to
+            # be a valid substitute. The edge in the graph which is the
+            # substitute is the one with the same terminated end. This can be
+            # checked rather simply.
+            #
+            # Find the edge within k which is the substitute. Because k is a
+            # 1-arborescence, we know that they is only one such edges
+            # leading into every vertex.
+            u_sub, v_sub, d_sub = next(k.in_edges(v_e, data=True).__iter__())
             k.add_edge(u_e, v_e, weight=d_e[weight])
-            c = nx.find_cycle(k, v_e, orientation="ignore")
-            # All edges in c could be substitutes for edge e, but I have not
-            # been able to figure out how to check if it is a substitute
-            # without doing so explicitly
-            for u_c, v_c, _ in c:
-                # delete the edge in the cycle and check if we still have
-                # a 1-arborescence
-                if (u_c, v_c) == (u_e, v_e):
+            k.remove_edge(u_sub, v_sub)
+            if (
+                max(d for n, d in k.in_degree()) <= 1
+                and len(G) == k.number_of_edges()
+                and nx.is_weakly_connected(k)
+            ):
+                if d[u_sub] == d[u_e] or d_sub[weight] == d_e[weight]:
+                    # Revert to the original graph
+                    k.remove_edge(u_e, v_e)
+                    k.add_edges_from([(u_sub, v_sub, d_sub)])
                     continue
-                k.remove_edge(u_c, v_c)
-                if (
-                    max(d for n, d in k.in_degree()) <= 1
-                    and len(G) == k.number_of_edges()
-                    and nx.is_weakly_connected(k)
-                ):
-                    # (u_e, v_e) is a substitute for (u_c, v_c)
-                    if d[u_c] == d[u_e] or G[u_c][v_c][weight] == d_e[weight]:
-                        k.add_edge(u_c, v_c, weight=G[u_c][v_c][weight])
-                        continue
-                    epsilon[(u_c, v_c, u_e, v_e)] = (
-                        G[u_c][v_c][weight] - d_e[weight]
-                    ) / (d[u_e] - d[u_c])
-                    epsilon_c = G[u_c][v_c][weight] + epsilon[(u_c, v_c, u_e, v_e)] * (
-                        d[u_c]
-                    )
-                    epsilon_e = d_e[weight] + epsilon[(u_c, v_c, u_e, v_e)] * (d[u_e])
-                    if epsilon[(u_c, v_c, u_e, v_e)] < 0:
-                        del epsilon[(u_c, v_c, u_e, v_e)]
-                k.add_edge(u_c, v_c, weight=G[u_c][v_c][weight])
+                epsilon = (d_sub[weight] - d_e[weight]) / (d[u_e] - d[u_sub])
+                if 0 < epsilon < min_epsilon:
+                    min_epsilon = epsilon
+            # Revert to the original graph
             k.remove_edge(u_e, v_e)
-        min_epsilon = min(epsilon.items(), key=lambda x: x[1])
+            k.add_edges_from([(u_sub, v_sub, d_sub)])
 
-        return min_epsilon[1]
+        return min_epsilon
 
     # I HAVE to know that the elements in pi correspond to the correct elements
     # in the direction of ascent, even if the node labels are not integers.

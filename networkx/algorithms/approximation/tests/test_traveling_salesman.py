@@ -400,4 +400,5 @@ def test_held_karp():
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     k = nx_app._held_karp(G)
-    print(f"\n{k.adj}")
+
+    print(f"\n{k.adj}\nTotal Weight: {k.size('weight')}")
