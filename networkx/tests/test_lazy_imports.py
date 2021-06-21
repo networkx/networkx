@@ -38,7 +38,7 @@ def test_lazy_impact_on_sys_modules():
     assert "anything_not_real" not in sys.modules
 
     # only do this if numpy is installed
-    # np_test = pytest.importorskip("numpy")
+    np_test = pytest.importorskip("numpy")
     np = lazy_import("numpy")
     assert type(np) == importlib.types.ModuleType
     assert "numpy" in sys.modules
