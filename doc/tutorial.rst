@@ -20,8 +20,9 @@ identified pairs of nodes (called edges, links, etc).  In NetworkX, nodes can
 be any :py:term:`hashable` object e.g., a text string, an image, an XML object,
 another Graph, a customized node object, etc.
 
-.. note:: Python's ``None`` object should not be used as a node as it determines
-   whether optional function arguments have been assigned in many functions.
+.. note:: Python's ``None`` object is not allowed to be used as a node. It
+    determines whether optional function arguments have been assigned in many
+    functions. And it can be used as a sentinel object meaning "not a node".
 
 Nodes
 -----
