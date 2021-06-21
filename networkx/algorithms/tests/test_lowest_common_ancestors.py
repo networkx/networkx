@@ -135,16 +135,22 @@ class TestTreeLCA:
     def test_not_implemented_for(self):
         NNI = nx.NetworkXNotImplemented
         G = nx.Graph([(0, 1)])
-        pytest.raises(NNI, tree_all_pairs_lca, G)
-        pytest.raises(NNI, all_pairs_lca, G)
+        with pytest.raises(NNI):
+            next(tree_all_pairs_lca(G))
+        with pytest.raises(NNI):
+            next(all_pairs_lca(G))
         pytest.raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
         G = nx.MultiGraph([(0, 1)])
-        pytest.raises(NNI, tree_all_pairs_lca, G)
-        pytest.raises(NNI, all_pairs_lca, G)
+        with pytest.raises(NNI):
+            next(tree_all_pairs_lca(G))
+        with pytest.raises(NNI):
+            next(all_pairs_lca(G))
         pytest.raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
         G = nx.MultiDiGraph([(0, 1)])
-        pytest.raises(NNI, tree_all_pairs_lca, G)
-        pytest.raises(NNI, all_pairs_lca, G)
+        with pytest.raises(NNI):
+            next(tree_all_pairs_lca(G))
+        with pytest.raises(NNI):
+            next(all_pairs_lca(G))
         pytest.raises(NNI, nx.lowest_common_ancestor, G, 0, 1)
 
     def test_tree_all_pairs_lowest_common_ancestor13(self):
