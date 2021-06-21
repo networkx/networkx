@@ -58,9 +58,6 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
            "Specificity and stability in topology of protein networks."
            Science 296.5569 (2002): 910-913.
     """
-    if G.is_directed():
-        msg = "random_reference() not defined for directed graphs."
-        raise nx.NetworkXError(msg)
     if len(G) < 4:
         raise nx.NetworkXError("Graph has less than four nodes.")
 
@@ -162,9 +159,6 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
 
     local_conn = nx.connectivity.local_edge_connectivity
 
-    if G.is_directed():
-        msg = "lattice_reference() not defined for directed graphs."
-        raise nx.NetworkXError(msg)
     if len(G) < 4:
         raise nx.NetworkXError("Graph has less than four nodes.")
     # Instead of choosing uniformly at random from a generated edge list,

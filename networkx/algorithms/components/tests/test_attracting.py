@@ -63,6 +63,7 @@ class TestAttractingComponents:
 
     def test_connected_raise(self):
         G = nx.Graph()
-        pytest.raises(NetworkXNotImplemented, nx.attracting_components, G)
+        with pytest.raises(NetworkXNotImplemented):
+            next(nx.attracting_components(G))
         pytest.raises(NetworkXNotImplemented, nx.number_attracting_components, G)
         pytest.raises(NetworkXNotImplemented, nx.is_attracting_component, G)

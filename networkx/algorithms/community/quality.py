@@ -9,6 +9,7 @@ from itertools import product, combinations
 import networkx as nx
 from networkx import NetworkXError
 from networkx.utils import not_implemented_for
+from networkx.utils.decorators import argmap
 from networkx.algorithms.community.community_utils import is_partition
 
 __all__ = ["coverage", "modularity", "performance", "partition_quality"]
@@ -22,7 +23,7 @@ class NotAPartition(NetworkXError):
         super().__init__(msg)
 
 
-def require_partition(func):
+def _require_partition(G, partition):
     """Decorator to check that a valid partition is input to a function
 
     Raises :exc:`networkx.NetworkXError` if the partition is not valid.
@@ -51,17 +52,12 @@ def require_partition(func):
         networkx.exception.NetworkXError: `partition` is not a valid partition of the nodes of G
 
     """
+    if is_partition(G, partition):
+        return G, partition
+    raise nx.NetworkXError("`partition` is not a valid partition of the nodes of G")
 
-    @wraps(func)
-    def new_func(*args, **kw):
-        # Here we assume that the first two arguments are (G, partition).
-        if not is_partition(*args[:2]):
-            raise nx.NetworkXError(
-                "`partition` is not a valid partition of" " the nodes of G"
-            )
-        return func(*args, **kw)
 
-    return new_func
+require_partition = argmap(_require_partition, (0, 1))
 
 
 def intra_community_edges(G, partition):

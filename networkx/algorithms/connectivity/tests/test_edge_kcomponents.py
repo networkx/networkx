@@ -162,8 +162,10 @@ def test_not_implemented():
     pytest.raises(nx.NetworkXNotImplemented, EdgeComponentAuxGraph.construct, G)
     pytest.raises(nx.NetworkXNotImplemented, nx.k_edge_components, G, k=2)
     pytest.raises(nx.NetworkXNotImplemented, nx.k_edge_subgraphs, G, k=2)
-    pytest.raises(nx.NetworkXNotImplemented, bridge_components, G)
-    pytest.raises(nx.NetworkXNotImplemented, bridge_components, nx.DiGraph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        next(bridge_components(G))
+    with pytest.raises(nx.NetworkXNotImplemented):
+        next(bridge_components(nx.DiGraph()))
 
 
 def test_general_k_edge_subgraph_quick_return():

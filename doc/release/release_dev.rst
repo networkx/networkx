@@ -21,6 +21,7 @@ X contributors. Highlights include:
 
 - Dropped support for Python 3.6.
 - NumPy, SciPy, Matplotlib, and pandas are now default requirements.
+- NetworkX no longer depends on the library "decorator".
 - Improved example gallery
 - Removed code for supporting Jython/IronPython
 - The ``__str__`` method for graph objects is more informative and concise.
@@ -121,6 +122,8 @@ Improvements
   ``modularity_max`` now supports edge weights.
 - [`#4727 <https://github.com/networkx/networkx/pull/4727>`_]
   Improved performance of ``scale_free_graph``.
+- [`#4739 <https://github.com/networkx/networkx/pull/4739>`_]
+  Added `argmap` function to replace the decorator library dependence
 - [`#4757 <https://github.com/networkx/networkx/pull/4757>`_]
   Adds ``topological_generations`` function for DAG stratification.
 - [`#4768 <https://github.com/networkx/networkx/pull/4768>`_]
