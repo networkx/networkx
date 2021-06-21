@@ -424,52 +424,61 @@ def _held_karp(G, weight="weight"):
         """
         # We are told simply to find the "1-[arborescences] that are of minimum
         # weight". This means that the choice of node '1' which is not included
-        # is probably important.
+        # is probably important. I have tried to select which node will produce
+        # the minimum 1-arborescences before hand by summing the minimum
+        # incoming and outgoing edges and it did not work so I will have to
+        # exhaustively check until I find a better way
         #
-        # Create a copy of G without vertex 1
+        # TODO find which node will be the best node 1 in advance
+        #
+        # Create a copy of G without vertex 1.
         G_1 = G.copy()
-        # node is node '1' in the Held and Karp paper
-        G_1.remove_node(node)
-        minimum_arborescence_weight = math.inf
-        minimum_1_arborescence_weight = math.inf
         minimum_1_arborescences = set()
-        for arborescence in nx.ArborescenceIterator(G_1):
-            if minimum_arborescence_weight == math.inf:
-                minimum_arborescence_weight = arborescence.size(weight)
-            elif arborescence.size(weight) > minimum_arborescence_weight:
-                # We are done with minimum arborescences
+        minimum_1_arborescence_weight = math.inf
+
+        # node is node '1' in the Held and Karp paper
+        n = next(G.__iter__())
+        G_1.remove_node(n)
+
+        # Iterate over the minimum spanning arborescences of the graph
+        min_arb_weight = math.inf
+        for arb in nx.ArborescenceIterator(G_1):
+            # Only iterate over the minimum weight arborescences
+            arb_weight = arb.size(weight)
+            if min_arb_weight == math.inf:
+                min_arb_weight = arb_weight
+            elif arb_weight > min_arb_weight:
                 break
-            arborescence.add_node(node)
-            # We can pick the minimum weight in-edge for the vertex with a cycle
+            # We can pick the minimum weight in-edge for the vertex with a
+            # cycle
             min_in_edge_weight = math.inf
             min_in_edge = None
-            for u, v, d in G.in_edges(node, data=True):
+            for u, v, d in G.in_edges(n, data=True):
                 edge_weight = d[weight]
                 if edge_weight < min_in_edge_weight:
                     min_in_edge_weight = edge_weight
                     min_in_edge = (u, v)
-            arborescence.add_edge(
-                min_in_edge[0], min_in_edge[1], weight=min_in_edge_weight
-            )
-            # We have to pick the root node of the arborescence for the out edge
-            # of the first vertex as that is the only node without an edge
-            # directed into it.
-            for n in arborescence:
-                if arborescence.in_degree(n) == 0:
+            arb.add_edge(min_in_edge[0], min_in_edge[1], weight=min_in_edge_weight)
+            arb_weight += min_in_edge_weight
+            # We have to pick the root node of the arborescence for the out
+            # edge of the first vertex as that is the only node without an
+            # edge directed into it.
+            for N in arb:
+                if arb.in_degree(N) == 0:
                     # root found
-                    arborescence.add_edge(node, n, weight=G[node][n][weight])
+                    arb.add_edge(n, N, weight=G[n][N][weight])
+                    arb_weight += G[n][N][weight]
                     break
-            # We now have a 1-arborescence
-            if arborescence.size(weight) < minimum_1_arborescence_weight:
-                minimum_1_arborescence_weight = arborescence.size(weight)
-            minimum_1_arborescences.add(arborescence)
-        # Not every minimum spanning arborescence will produce a minimum
-        # 1-arborescence, depending on the cheapest root to connect to.
-        # Once we have this set, we need to delete all of the non-minimum
-        # 1-arborescences from it.
-        for one_arborescence in list(minimum_1_arborescences):
-            if one_arborescence.size(weight) > minimum_1_arborescence_weight:
-                minimum_1_arborescences.discard(one_arborescence)
+            # Check to see the weight of the arborescence, if it is a new
+            # minimum, clear all of the old potential minimum
+            # 1-arborescences and add this is the only one. If its weight is
+            # above the known minimum, do not add it.
+            if arb_weight < minimum_1_arborescence_weight:
+                minimum_1_arborescences.clear()
+                minimum_1_arborescence_weight = arb_weight
+            # We have a 1-arborescence, add it to the set
+            if arb_weight == minimum_1_arborescence_weight:
+                minimum_1_arborescences.add(arb)
 
         return minimum_1_arborescences
 
@@ -531,8 +540,6 @@ def _held_karp(G, weight="weight"):
                 return d, min_k_d
             # 4. d_i = d_i + v_{i, k}
             for n in G:
-                if n is node:
-                    continue
                 d[n] += min_k_d.degree(n) - 2
             # Check that we do not need to terminate because the direction
             # of ascent does not exist. This is done with linear
@@ -615,11 +622,12 @@ def _held_karp(G, weight="weight"):
     for n in G:
         pi_dict[n] = 0
     del n
-    node = next(G.__iter__())
     original_edge_weights = {}
     for u, v, d in G.edges(data=True):
         original_edge_weights[(u, v)] = d[weight]
     dir_ascent, k_d = direction_of_ascent()
+    print()
+    print(k_d.size(weight))
     while dir_ascent is not None:
         max_distance = find_epsilon(k_d, dir_ascent)
         for n, v in dir_ascent.items():
@@ -627,6 +635,7 @@ def _held_karp(G, weight="weight"):
         for u, v, d in G.edges(data=True):
             d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
         dir_ascent, k_d = direction_of_ascent()
+        print(k_d.size(weight))
 
     return k_d
 
