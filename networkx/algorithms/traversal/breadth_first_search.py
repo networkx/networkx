@@ -108,10 +108,10 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
         A function that takes the list of neighbors of given node as input, and
         returns an *iterator* over these neighbors but with custom ordering.
 
-    Returns
-    -------
-    edges: generator
-       A generator of edges in the breadth-first-search.
+    Yields
+    ------
+    edge: 2-tuple of nodes
+       Yields edges resulting from the breadth-first search.
 
     Examples
     --------
@@ -134,27 +134,30 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
 
     Notes
     -----
-    The naming of this function is very similar to edge_bfs. The difference
-    is that 'edge_bfs' yields edges even if they extend back to an already
-    explored node while 'bfs_edges' yields the edges of the tree that results
+    The naming of this function is very similar to
+    :func:`~networkx.algorithms.traversal.edgebfs.edge_bfs`. The difference
+    is that ``edge_bfs`` yields edges even if they extend back to an already
+    explored node while this generator yields the edges of the tree that results
     from a breadth-first-search (BFS) so no edges are reported if they extend
-    to already explored nodes. That means 'edge_bfs' reports all edges while
-    'bfs_edges' only reports those traversed by a node-based BFS. Yet another
-    description is that 'bfs_edges' reports the edges traversed during BFS
-    while 'edge_bfs' reports all edges in the order they are explored.
+    to already explored nodes. That means ``edge_bfs`` reports all edges while
+    ``bfs_edges`` only reports those traversed by a node-based BFS. Yet another
+    description is that ``bfs_edges`` reports the edges traversed during BFS
+    while ``edge_bfs`` reports all edges in the order they are explored.
 
-    Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py.
-    by D. Eppstein, July 2004. The modifications
-    to allow depth limits based on the Wikipedia article
-    "`Depth-limited-search`_".
+    Based on the breadth-first search implementation in PADS [1]_
+    by D. Eppstein, July 2004; with modifications to allow depth limits
+    as described in [2]_.
 
-    .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search
+    References
+    ----------
+    .. [1] http://www.ics.uci.edu/~eppstein/PADS/BFS.py.
+    .. [2] https://en.wikipedia.org/wiki/Depth-limited_search
 
     See Also
     --------
     bfs_tree
-    dfs_edges
-    edge_bfs
+    :func:`~networkx.algorithms.traversal.depth_first_search.dfs_edges`
+    :func:`~networkx.algorithms.traversal.edgebfs.edge_bfs`
 
     """
     if reverse and G.is_directed():
