@@ -1177,10 +1177,11 @@ class DiGraph(Graph):
         >>> list(G2.edges)
         [(0, 1)]
         """
+        graph_class = self.to_undirected_class()
         if as_view is True:
             return nx.graphviews.generic_graph_view(self, Graph)
         # deepcopy when not a view
-        G = Graph()
+        G = graph_class()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         if reciprocal is True:
