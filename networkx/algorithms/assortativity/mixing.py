@@ -184,6 +184,11 @@ def degree_mixing_matrix(
 def numeric_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=True):
     """Returns numeric mixing matrix for attribute.
 
+    .. deprecated:: 2.6
+
+       numeric_mixing_matrix is deprecated and will be removed in 3.0.
+       Use `attribute_mixing_matrix` instead.
+
     Parameters
     ----------
     G : graph
@@ -216,6 +221,13 @@ def numeric_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=Tru
     m: numpy array
        Counts, or joint, probability of occurrence of node attribute pairs.
     """
+    import warnings
+
+    msg = (
+        "numeric_mixing_matrix is deprecated and will be removed in v3.0.\n"
+        "Use `attribute_mixing_matrix` instead."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     return attribute_mixing_matrix(G, attribute, nodes, mapping, normalized)
 
 
