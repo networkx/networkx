@@ -453,6 +453,53 @@ class BaseAttrGraphTester(BaseGraphTester):
         H = G.to_undirected()
         self.is_deepcopy(H, G)
 
+    def test_to_directed_as_view(self):
+        H = nx.path_graph(2, create_using=self.Graph)
+        H2 = H.to_directed(as_view=True)
+        assert H is H2._graph
+        assert H2.has_edge(0, 1)
+        assert H2.has_edge(1, 0) or H.is_directed()
+        pytest.raises(nx.NetworkXError, H2.add_node, -1)
+        pytest.raises(nx.NetworkXError, H2.add_edge, 1, 2)
+        H.add_edge(1, 2)
+        assert H2.has_edge(1, 2)
+        assert H2.has_edge(2, 1) or H.is_directed()
+
+    def test_to_undirected_as_view(self):
+        H = nx.path_graph(2, create_using=self.Graph)
+        H2 = H.to_undirected(as_view=True)
+        assert H is H2._graph
+        assert H2.has_edge(0, 1)
+        assert H2.has_edge(1, 0)
+        pytest.raises(nx.NetworkXError, H2.add_node, -1)
+        pytest.raises(nx.NetworkXError, H2.add_edge, 1, 2)
+        H.add_edge(1, 2)
+        assert H2.has_edge(1, 2)
+        assert H2.has_edge(2, 1)
+
+    def test_directed_class(self):
+        G = self.Graph()
+
+        class newGraph(G.to_undirected_class()):
+            def to_directed_class(self):
+                return newDiGraph
+
+            def to_undirected_class(self):
+                return newGraph
+
+        class newDiGraph(G.to_directed_class()):
+            def to_directed_class(self):
+                return newDiGraph
+
+            def to_undirected_class(self):
+                return newGraph
+
+        G = newDiGraph() if G.is_directed() else newGraph()
+        H = G.to_directed()
+        assert isinstance(H, newDiGraph)
+        H = G.to_undirected()
+        assert isinstance(H, newGraph)
+
     def test_to_directed(self):
         G = self.K3
         self.add_attributes(G)
