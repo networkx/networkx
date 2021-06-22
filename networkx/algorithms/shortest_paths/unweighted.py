@@ -2,7 +2,6 @@
 Shortest path algorithms for unweighted graphs.
 """
 import networkx as nx
-from multiprocessing import Pool
 
 __all__ = [
     "bidirectional_shortest_path",
@@ -141,7 +140,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     return _single_shortest_path_length(adj, nextlevel, cutoff)
 
 
-def all_pairs_shortest_path_length(G, cutoff=None, parallel=False):
+def all_pairs_shortest_path_length(G, cutoff=None):
     """Computes the shortest path lengths between all nodes in `G`.
 
     Parameters
@@ -180,13 +179,9 @@ def all_pairs_shortest_path_length(G, cutoff=None, parallel=False):
 
     """
     length = single_source_shortest_path_length
-    if parallel:
-        with Pool() as pool:
-            for n in G:
-                yield (n, pool.apply(length, (G, n, cutoff)))
-    else:
-        for n in G:
-            yield (n, length(G, n, cutoff=cutoff))
+    # TODO This can be trivially parallelized.
+    for n in G:
+        yield (n, length(G, n, cutoff=cutoff))
 
 
 def bidirectional_shortest_path(G, source, target):
@@ -431,7 +426,7 @@ def single_target_shortest_path(G, target, cutoff=None):
     return dict(_single_shortest_path(adj, nextlevel, paths, cutoff, join))
 
 
-def all_pairs_shortest_path(G, cutoff=None, parallel=False):
+def all_pairs_shortest_path(G, cutoff=None):
     """Compute shortest paths between all nodes.
 
     Parameters
@@ -459,13 +454,9 @@ def all_pairs_shortest_path(G, cutoff=None, parallel=False):
     floyd_warshall
 
     """
-    if parallel:
-        with Pool() as pool:
-            for n in G:
-                yield (n, pool.apply(single_source_shortest_path, (G, n, cutoff)))
-    else:
-        for n in G:
-            yield (n,  single_source_shortest_path(G, n, cutoff=cutoff))
+    # TODO This can be trivially parallelized.
+    for n in G:
+        yield (n, single_source_shortest_path(G, n, cutoff=cutoff))
 
 
 def predecessor(G, source, target=None, cutoff=None, return_seen=None):
