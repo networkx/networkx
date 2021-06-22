@@ -164,6 +164,7 @@ def read_gml(path, label="label", destringizer=None):
     >>> G = nx.path_graph(4)
     >>> nx.write_gml(G, "test.gml")
     >>> H = nx.read_gml("test.gml")
+    >>> I = nx.read_gml("test.gml", destringizer=int)
     """
 
     def filter_lines(lines):
