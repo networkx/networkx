@@ -230,6 +230,8 @@ Deprecations
   Deprecate ``run``.
 - [`#4829 <https://github.com/networkx/networkx/pull/4829>`_]
   Deprecate ``assert_nodes_equal``, ``assert_edges_equal``, and ``assert_graphs_equal``.
+- [`#4920 <https://github.com/networkx/networkx/pull/4920>`_]
+  Deprecate ``numeric_mixing_matrix``.
 
 Contributors
 ------------
