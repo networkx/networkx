@@ -1,0 +1,3 @@
+lxml>=4.5
+pygraphviz>=1.7
+pydot>=1.4.1

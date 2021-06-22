@@ -17,6 +17,7 @@ nx_agraph, nx_pydot
 """
 import warnings
 import networkx as nx
+from collections.abc import Collection, Generator, Iterator
 
 __all__ = [
     "to_networkx_graph",
@@ -35,7 +36,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     The preferred way to call this is automatically
     from the class constructor
 
-    >>> d = {0: {1: {'weight':1}}} # dict-of-dicts single edge (0,1)
+    >>> d = {0: {1: {"weight": 1}}}  # dict-of-dicts single edge (0,1)
     >>> G = nx.Graph(d)
 
     instead of the equivalent
@@ -50,7 +51,9 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
          any NetworkX graph
          dict-of-dicts
          dict-of-lists
-         container (ie set, list, tuple, iterator) of edges
+         container (e.g. set, list, tuple) of edges
+         iterator (e.g. itertools.chain) that produces edges
+         generator of edges
          Pandas DataFrame (row per edge)
          numpy matrix
          numpy ndarray
@@ -75,24 +78,24 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                 create_using=create_using,
                 multigraph_input=data.is_multigraph(),
             )
-            if hasattr(data, "graph"):  # data.graph should be dict-like
-                result.graph.update(data.graph)
-            if hasattr(data, "nodes"):  # data.nodes should be dict-like
-                # result.add_node_from(data.nodes.items()) possible but
-                # for custom node_attr_dict_factory which may be hashable
-                # will be unexpected behavior
-                for n, dd in data.nodes.items():
-                    result._node[n].update(dd)
+            # data.graph should be dict-like
+            result.graph.update(data.graph)
+            # data.nodes should be dict-like
+            # result.add_node_from(data.nodes.items()) possible but
+            # for custom node_attr_dict_factory which may be hashable
+            # will be unexpected behavior
+            for n, dd in data.nodes.items():
+                result._node[n].update(dd)
             return result
-        except:
-            raise nx.NetworkXError("Input is not a correct NetworkX graph.")
+        except Exception as e:
+            raise nx.NetworkXError("Input is not a correct NetworkX graph.") from e
 
     # pygraphviz  agraph
     if hasattr(data, "is_strict"):
         try:
             return nx.nx_agraph.from_agraph(data, create_using=create_using)
-        except:
-            raise nx.NetworkXError("Input is not a correct pygraphviz graph.")
+        except Exception as e:
+            raise nx.NetworkXError("Input is not a correct pygraphviz graph.") from e
 
     # dict of dicts/lists
     if isinstance(data, dict):
@@ -100,21 +103,15 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             return from_dict_of_dicts(
                 data, create_using=create_using, multigraph_input=multigraph_input
             )
-        except:
+        except Exception as e:
+            if multigraph_input is True:
+                raise nx.NetworkXError(
+                    f"converting multigraph_input raised:\n{type(e)}: {e}"
+                )
             try:
                 return from_dict_of_lists(data, create_using=create_using)
-            except:
-                raise TypeError("Input is not known type.")
-
-    # list or generator of edges
-
-    if isinstance(data, (list, tuple, set)) or any(
-        hasattr(data, attr) for attr in ["_adjdict", "next", "__next__"]
-    ):
-        try:
-            return from_edgelist(data, create_using=create_using)
-        except:
-            raise nx.NetworkXError("Input is not a valid edge list")
+            except Exception as e:
+                raise TypeError("Input is not known type.") from e
 
     # Pandas DataFrame
     try:
@@ -124,30 +121,31 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             if data.shape[0] == data.shape[1]:
                 try:
                     return nx.from_pandas_adjacency(data, create_using=create_using)
-                except:
+                except Exception as e:
                     msg = "Input is not a correct Pandas DataFrame adjacency matrix."
-                    raise nx.NetworkXError(msg)
+                    raise nx.NetworkXError(msg) from e
             else:
                 try:
                     return nx.from_pandas_edgelist(
                         data, edge_attr=True, create_using=create_using
                     )
-                except:
+                except Exception as e:
                     msg = "Input is not a correct Pandas DataFrame edge-list."
-                    raise nx.NetworkXError(msg)
+                    raise nx.NetworkXError(msg) from e
     except ImportError:
-        msg = "pandas not found, skipping conversion test."
-        warnings.warn(msg, ImportWarning)
+        warnings.warn("pandas not found, skipping conversion test.", ImportWarning)
 
     # numpy matrix or ndarray
     try:
-        import numpy
+        import numpy as np
 
-        if isinstance(data, (numpy.matrix, numpy.ndarray)):
+        if isinstance(data, (np.matrix, np.ndarray)):
             try:
                 return nx.from_numpy_matrix(data, create_using=create_using)
-            except:
-                raise nx.NetworkXError("Input is not a correct numpy matrix or array.")
+            except Exception as e:
+                raise nx.NetworkXError(
+                    "Input is not a correct numpy matrix or array."
+                ) from e
     except ImportError:
         warnings.warn("numpy not found, skipping conversion test.", ImportWarning)
 
@@ -158,12 +156,22 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
         if hasattr(data, "format"):
             try:
                 return nx.from_scipy_sparse_matrix(data, create_using=create_using)
-            except:
+            except Exception as e:
                 raise nx.NetworkXError(
                     "Input is not a correct scipy sparse matrix type."
-                )
+                ) from e
     except ImportError:
         warnings.warn("scipy not found, skipping conversion test.", ImportWarning)
+
+    # Note: most general check - should remain last in order of execution
+    # Includes containers (e.g. list, set, dict, etc.), generators, and
+    # iterators (e.g. itertools.chain) of edges
+
+    if isinstance(data, (Collection, Generator, Iterator)):
+        try:
+            return from_edgelist(data, create_using=create_using)
+        except Exception as e:
+            raise nx.NetworkXError("Input is not a valid edge list") from e
 
     raise nx.NetworkXError("Input is not a known data type for conversion.")
 
@@ -206,12 +214,12 @@ def from_dict_of_lists(d, create_using=None):
 
     Examples
     --------
-    >>> dol = {0: [1]} # single edge (0,1)
+    >>> dol = {0: [1]}  # single edge (0,1)
     >>> G = nx.from_dict_of_lists(dol)
 
     or
 
-    >>> G = nx.Graph(dol) # use Graph constructor
+    >>> G = nx.Graph(dol)  # use Graph constructor
 
     """
     G = nx.empty_graph(0, create_using)
@@ -244,12 +252,93 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     nodelist : list
        Use only nodes specified in nodelist
 
-    edge_data : list, optional
-       If provided,  the value of the dictionary will be
-       set to edge_data for all edges.  This is useful to make
-       an adjacency matrix type representation with 1 as the edge data.
-       If edgedata is None, the edgedata in G is used to fill the values.
-       If G is a multigraph, the edgedata is a dict for each pair (u,v).
+    edge_data : scalar, optional
+       If provided, the value of the dictionary will be set to `edge_data` for
+       all edges. Usual values could be `1` or `True`. If `edge_data` is
+       `None` (the default), the edgedata in `G` is used, resulting in a
+       dict-of-dict-of-dicts. If `G` is a MultiGraph, the result will be a
+       dict-of-dict-of-dict-of-dicts. See Notes for an approach to customize
+       handling edge data. `edge_data` should *not* be a container.
+
+    Returns
+    -------
+    dod : dict
+       A nested dictionary representation of `G`. Note that the level of
+       nesting depends on the type of `G` and the value of `edge_data`
+       (see Examples).
+
+    See Also
+    --------
+    from_dict_of_dicts, to_dict_of_lists
+
+    Notes
+    -----
+    For a more custom approach to handling edge data, try::
+
+        dod = {
+            n: {
+                nbr: custom(n, nbr, dd) for nbr, dd in nbrdict.items()
+            }
+            for n, nbrdict in G.adj.items()
+        }
+
+    where `custom` returns the desired edge data for each edge between `n` and
+    `nbr`, given existing edge data `dd`.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(3)
+    >>> nx.to_dict_of_dicts(G)
+    {0: {1: {}}, 1: {0: {}, 2: {}}, 2: {1: {}}}
+
+    Edge data is preserved by default (``edge_data=None``), resulting
+    in dict-of-dict-of-dicts where the innermost dictionary contains the
+    edge data:
+
+    >>> G = nx.Graph()
+    >>> G.add_edges_from(
+    ...     [
+    ...         (0, 1, {'weight': 1.0}),
+    ...         (1, 2, {'weight': 2.0}),
+    ...         (2, 0, {'weight': 1.0}),
+    ...     ]
+    ... )
+    >>> d = nx.to_dict_of_dicts(G)
+    >>> d  # doctest: +SKIP
+    {0: {1: {'weight': 1.0}, 2: {'weight': 1.0}},
+     1: {0: {'weight': 1.0}, 2: {'weight': 2.0}},
+     2: {1: {'weight': 2.0}, 0: {'weight': 1.0}}}
+    >>> d[1][2]['weight']
+    2.0
+
+    If `edge_data` is not `None`, edge data in the original graph (if any) is
+    replaced:
+
+    >>> d = nx.to_dict_of_dicts(G, edge_data=1)
+    >>> d
+    {0: {1: 1, 2: 1}, 1: {0: 1, 2: 1}, 2: {1: 1, 0: 1}}
+    >>> d[1][2]
+    1
+
+    This also applies to MultiGraphs: edge data is preserved by default:
+
+    >>> G = nx.MultiGraph()
+    >>> G.add_edge(0, 1, key='a', weight=1.0)
+    'a'
+    >>> G.add_edge(0, 1, key='b', weight=5.0)
+    'b'
+    >>> d = nx.to_dict_of_dicts(G)
+    >>> d  # doctest: +SKIP
+    {0: {1: {'a': {'weight': 1.0}, 'b': {'weight': 5.0}}},
+     1: {0: {'a': {'weight': 1.0}, 'b': {'weight': 5.0}}}}
+    >>> d[0][1]['b']['weight']
+    5.0
+
+    But multi edge data is lost if `edge_data` is not `None`:
+
+    >>> d = nx.to_dict_of_dicts(G, edge_data=10)
+    >>> d
+    {0: {1: 10}, 1: {0: 10}}
     """
     dod = {}
     if nodelist is None:
@@ -285,25 +374,26 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
         Graph type to create. If graph instance, then cleared before populated.
 
     multigraph_input : bool (default False)
-       When True, the values of the inner dict are assumed
-       to be containers of edge data for multiple edges.
-       Otherwise this routine assumes the edge data are singletons.
+       When True, the dict `d` is assumed
+       to be a dict-of-dict-of-dict-of-dict structure keyed by
+       node to neighbor to edge keys to edge data for multi-edges.
+       Otherwise this routine assumes dict-of-dict-of-dict keyed by
+       node to neighbor to edge data.
 
     Examples
     --------
-    >>> dod = {0: {1: {'weight': 1}}} # single edge (0,1)
+    >>> dod = {0: {1: {"weight": 1}}}  # single edge (0,1)
     >>> G = nx.from_dict_of_dicts(dod)
 
     or
 
-    >>> G = nx.Graph(dod) # use Graph constructor
+    >>> G = nx.Graph(dod)  # use Graph constructor
 
     """
     G = nx.empty_graph(0, create_using)
     G.add_nodes_from(d)
-    # is dict a MultiGraph or MultiDiGraph?
+    # does dict d represent a MultiGraph or MultiDiGraph?
     if multigraph_input:
-        # make a copy of the list of edge data (but not the edge data)
         if G.is_directed():
             if G.is_multigraph():
                 G.add_edges_from(
@@ -388,12 +478,12 @@ def from_edgelist(edgelist, create_using=None):
 
     Examples
     --------
-    >>> edgelist = [(0, 1)] # single edge (0,1)
+    >>> edgelist = [(0, 1)]  # single edge (0,1)
     >>> G = nx.from_edgelist(edgelist)
 
     or
 
-    >>> G = nx.Graph(edgelist) # use Graph constructor
+    >>> G = nx.Graph(edgelist)  # use Graph constructor
 
     """
     G = nx.empty_graph(0, create_using)

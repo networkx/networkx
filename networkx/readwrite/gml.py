@@ -22,7 +22,7 @@ specification.  For other data types, you need to explicitly supply a
 `stringizer`/`destringizer`.
 
 For additional documentation on the GML file format, please see the
-`GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+`GML website <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
 Several example graphs in GML format may be found on Mark Newman's
 `Network data page <http://www-personal.umich.edu/~mejn/netdata/>`_.
@@ -101,14 +101,14 @@ def literal_destringizer(rep):
     ValueError
         If `rep` is not a Python literal.
     """
-    msg = "literal_destringizer is deprecated and will be removed in 2.6."
+    msg = "literal_destringizer is deprecated and will be removed in 3.0."
     warnings.warn(msg, DeprecationWarning)
     if isinstance(rep, str):
         orig_rep = rep
         try:
             return literal_eval(rep)
-        except SyntaxError:
-            raise ValueError(f"{orig_rep!r} is not a valid Python literal")
+        except SyntaxError as e:
+            raise ValueError(f"{orig_rep!r} is not a valid Python literal") from e
     else:
         raise ValueError(f"{rep!r} is not a string")
 
@@ -155,23 +155,23 @@ def read_gml(path, label="label", destringizer=None):
     `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.write_gml(G, 'test.gml')
-    >>> H = nx.read_gml('test.gml')
+    >>> nx.write_gml(G, "test.gml")
+    >>> H = nx.read_gml("test.gml")
     """
 
     def filter_lines(lines):
         for line in lines:
             try:
                 line = line.decode("ascii")
-            except UnicodeDecodeError:
-                raise NetworkXError("input is not ASCII-encoded")
+            except UnicodeDecodeError as e:
+                raise NetworkXError("input is not ASCII-encoded") from e
             if not isinstance(line, str):
                 lines = str(lines)
             if line and line[-1] == "\n":
@@ -226,7 +226,7 @@ def parse_gml(lines, label="label", destringizer=None):
     `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
     """
@@ -235,8 +235,8 @@ def parse_gml(lines, label="label", destringizer=None):
         if isinstance(line, bytes):
             try:
                 line.decode("ascii")
-            except UnicodeDecodeError:
-                raise NetworkXError("input is not ASCII-encoded")
+            except UnicodeDecodeError as e:
+                raise NetworkXError("input is not ASCII-encoded") from e
         if not isinstance(line, str):
             line = str(line)
         return line
@@ -260,7 +260,8 @@ def parse_gml(lines, label="label", destringizer=None):
 
 
 class Pattern(Enum):
-    """ encodes the index of each token-matching pattern in `tokenize`. """
+    """encodes the index of each token-matching pattern in `tokenize`."""
+
     KEYS = 0
     REALS = 1
     INTS = 2
@@ -281,13 +282,13 @@ LIST_START_VALUE = "_networkx_list_start"
 
 
 def parse_gml_lines(lines, label, destringizer):
-    """Parse GML `lines` into a graph.
-    """
+    """Parse GML `lines` into a graph."""
+
     def tokenize():
         patterns = [
             r"[A-Za-z][0-9A-Za-z_]*\b",  # keys
             # reals
-            r"[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?",
+            r"[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*|INF)(?:[Ee][+-]?[0-9]+)?",
             r"[+-]?[0-9]+",  # ints
             r'".*?"',  # strings
             r"\[",  # dict start
@@ -315,7 +316,7 @@ def parse_gml_lines(lines, label, destringizer):
                             value = int(group)
                         else:
                             value = group
-                        if i != 6:    # comments and whitespaces
+                        if i != 6:  # comments and whitespaces
                             yield Token(Pattern(i), value, lineno + 1, pos + 1)
                         pos += len(group)
                         break
@@ -369,6 +370,15 @@ def parse_gml_lines(lines, label, destringizer):
                             + " convertable ASCII value for node id or label"
                         )
                         unexpected(curr_token, msg)
+                # Special handling for nan and infinity.  Since the gml language
+                # defines unquoted strings as keys, the numeric and string branches
+                # are skipped and we end up in this special branch, so we need to
+                # convert the current token value to a float for NAN and plain INF.
+                # +/-INF are handled in the pattern for 'reals' in tokenize().  This
+                # allows labels and values to be nan or infinity, but not keys.
+                elif curr_token.value in {"NAN", "INF"}:
+                    value = float(curr_token.value)
+                    curr_token = next(tokens)
                 else:  # Otherwise error out
                     unexpected(curr_token, "an int, float, string or '['")
             dct[key].append(value)
@@ -420,8 +430,8 @@ def parse_gml_lines(lines, label, destringizer):
     def pop_attr(dct, category, attr, i):
         try:
             return dct.pop(attr)
-        except KeyError:
-            raise NetworkXError(f"{category} #{i} has no '{attr}' attribute")
+        except KeyError as e:
+            raise NetworkXError(f"{category} #{i} has no {attr!r} attribute") from e
 
     nodes = graph.get("node", [])
     mapping = {}
@@ -496,7 +506,7 @@ def literal_stringizer(value):
     The original value can be recovered using the
     :func:`networkx.readwrite.gml.literal_destringizer` function.
     """
-    msg = "literal_stringizer is deprecated and will be removed in 2.6."
+    msg = "literal_stringizer is deprecated and will be removed in 3.0."
     warnings.warn(msg, DeprecationWarning)
 
     def stringize(value):
@@ -615,7 +625,7 @@ def generate_gml(G, stringizer=None):
     `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
@@ -654,7 +664,7 @@ def generate_gml(G, stringizer=None):
       ]
     ]
     """
-    valid_keys = re.compile("^[A-Za-z][0-9A-Za-z]*$")
+    valid_keys = re.compile("^[A-Za-z][0-9A-Za-z_]*$")
 
     def stringize(key, value, ignored_keys, indent, in_list=False):
         if not isinstance(key, str):
@@ -673,18 +683,23 @@ def generate_gml(G, stringizer=None):
                 elif value is False:
                     yield indent + key + " 0"
                 # GML only supports signed 32-bit integers
-                elif value < -2 ** 31 or value >= 2 ** 31:
+                elif value < -(2 ** 31) or value >= 2 ** 31:
                     yield indent + key + ' "' + str(value) + '"'
                 else:
                     yield indent + key + " " + str(value)
             elif isinstance(value, float):
                 text = repr(value).upper()
-                # GML requires that a real literal contain a decimal point, but
-                # repr may not output a decimal point when the mantissa is
-                # integral and hence needs fixing.
-                epos = text.rfind("E")
-                if epos != -1 and text.find(".", 0, epos) == -1:
-                    text = text[:epos] + "." + text[epos:]
+                # GML matches INF to keys, so prepend + to INF. Use repr(float(*))
+                # instead of string literal to future proof against changes to repr.
+                if text == repr(float("inf")).upper():
+                    text = "+" + text
+                else:
+                    # GML requires that a real literal contain a decimal point, but
+                    # repr may not output a decimal point when the mantissa is
+                    # integral and hence needs fixing.
+                    epos = text.rfind("E")
+                    if epos != -1 and text.find(".", 0, epos) == -1:
+                        text = text[:epos] + "." + text[epos:]
                 if key == "label":
                     yield indent + key + ' "' + text + '"'
                 else:
@@ -694,21 +709,25 @@ def generate_gml(G, stringizer=None):
                 next_indent = indent + "  "
                 for key, value in value.items():
                     yield from stringize(key, value, (), next_indent)
-                yield indent + ']'
-            elif isinstance(value, (list, tuple)) and key != 'label' \
-                    and value and not in_list:
+                yield indent + "]"
+            elif (
+                isinstance(value, (list, tuple))
+                and key != "label"
+                and value
+                and not in_list
+            ):
                 if len(value) == 1:
-                    yield indent + key + ' ' + f'"{LIST_START_VALUE}"'
+                    yield indent + key + " " + f'"{LIST_START_VALUE}"'
                 for val in value:
                     yield from stringize(key, val, (), indent, True)
             else:
                 if stringizer:
                     try:
                         value = stringizer(value)
-                    except ValueError:
+                    except ValueError as e:
                         raise NetworkXError(
                             f"{value!r} cannot be converted into a string"
-                        )
+                        ) from e
                 if not isinstance(value, str):
                     raise NetworkXError(f"{value!r} is not a string")
                 yield indent + key + ' "' + escape(value) + '"'
@@ -801,7 +820,7 @@ def write_gml(G, path, stringizer=None):
     sure to write GML format. In particular, underscores are not allowed in
     attribute names.
     For additional documentation on the GML file format, please see the
-    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 

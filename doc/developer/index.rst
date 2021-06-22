@@ -1,11 +1,24 @@
 .. _developer:
 
-Developer Guide
-***************
+Developer
+*********
+
+.. only:: html
+
+    :Release: |version|
+    :Date: |today|
 
 .. toctree::
    :maxdepth: 2
 
-   contribute
+   about_us
    code_of_conduct
-   gitwash/index
+   values
+   contribute
+   projects
+   new_contributor_faq
+   core_developer
+   release
+   deprecations
+   roadmap
+   nxeps/index

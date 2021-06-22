@@ -2,6 +2,7 @@ from ast import literal_eval
 import codecs
 from contextlib import contextmanager
 import io
+import math
 import pytest
 import networkx as nx
 from networkx.readwrite.gml import literal_stringizer, literal_destringizer
@@ -150,7 +151,9 @@ graph   [
         ]
 
         assert [e for e in sorted(G.edges(data=True))] == [
-            ("Node 1", "Node 2",
+            (
+                "Node 1",
+                "Node 2",
                 {
                     "color": {"line": "blue", "thickness": 3},
                     "label": "Edge from node 1 to node 2",
@@ -285,6 +288,108 @@ graph
 ]"""
         assert data == answer
 
+    def test_float_label(self):
+        special_floats = [float("nan"), float("+inf"), float("-inf")]
+        try:
+            import numpy as np
+
+            special_floats += [np.nan, np.inf, np.inf * -1]
+        except ImportError:
+            special_floats += special_floats
+
+        G = nx.cycle_graph(len(special_floats))
+        attrs = dict(enumerate(special_floats))
+        nx.set_node_attributes(G, attrs, "nodefloat")
+        edges = list(G.edges)
+        attrs = {edges[i]: value for i, value in enumerate(special_floats)}
+        nx.set_edge_attributes(G, attrs, "edgefloat")
+
+        fobj = tempfile.NamedTemporaryFile()
+        nx.write_gml(G, fobj)
+        fobj.seek(0)
+        # Should be bytes in 2.x and 3.x
+        data = fobj.read().strip().decode("ascii")
+        answer = """graph [
+  node [
+    id 0
+    label "0"
+    nodefloat NAN
+  ]
+  node [
+    id 1
+    label "1"
+    nodefloat +INF
+  ]
+  node [
+    id 2
+    label "2"
+    nodefloat -INF
+  ]
+  node [
+    id 3
+    label "3"
+    nodefloat NAN
+  ]
+  node [
+    id 4
+    label "4"
+    nodefloat +INF
+  ]
+  node [
+    id 5
+    label "5"
+    nodefloat -INF
+  ]
+  edge [
+    source 0
+    target 1
+    edgefloat NAN
+  ]
+  edge [
+    source 0
+    target 5
+    edgefloat +INF
+  ]
+  edge [
+    source 1
+    target 2
+    edgefloat -INF
+  ]
+  edge [
+    source 2
+    target 3
+    edgefloat NAN
+  ]
+  edge [
+    source 3
+    target 4
+    edgefloat +INF
+  ]
+  edge [
+    source 4
+    target 5
+    edgefloat -INF
+  ]
+]"""
+        assert data == answer
+
+        fobj.seek(0)
+        graph = nx.read_gml(fobj)
+        for indx, value in enumerate(special_floats):
+            node_value = graph.nodes[str(indx)]["nodefloat"]
+            if math.isnan(value):
+                assert math.isnan(node_value)
+            else:
+                assert node_value == value
+
+            edge = edges[indx]
+            string_edge = (str(edge[0]), str(edge[1]))
+            edge_value = graph.edges[string_edge]["edgefloat"]
+            if math.isnan(value):
+                assert math.isnan(edge_value)
+            else:
+                assert edge_value == value
+
     def test_name(self):
         G = nx.parse_gml('graph [ name "x" node [ id 0 label "x" ] ]')
         assert "x" == G.graph["name"]
@@ -334,10 +439,7 @@ graph
             '"&&amp;&&#34;"',
             [{(b"\xfd",): "\x7f", chr(0x4444): (1, 2)}, (2, "3")],
         ]
-        try:  # fails under IronPython
-            data.append(chr(0x14444))
-        except ValueError:
-            data.append(chr(0x1444))
+        data.append(chr(0x14444))
         data.append(literal_eval("{2.3j, 1 - 2.3j, ()}"))
         G = nx.Graph()
         G.name = data
@@ -490,8 +592,8 @@ graph
         # Test export for numbers that barely fit or don't fit into 32 bits,
         # and 3 numbers in the middle
         numbers = {
-            "toosmall": (-2 ** 31) - 1,
-            "small": -2 ** 31,
+            "toosmall": (-(2 ** 31)) - 1,
+            "small": -(2 ** 31),
             "med1": -4,
             "med2": 0,
             "med3": 17,
@@ -530,7 +632,8 @@ class TestPropertyLists:
             nx.write_gml(g, f)
         result = f.read().decode()
 
-        assert result == dedent("""\
+        assert result == dedent(
+            """\
             graph [
               node [
                 id 0
@@ -543,7 +646,8 @@ class TestPropertyLists:
                 properties 0
               ]
             ]
-        """)
+        """
+        )
 
     def test_writing_graph_with_one_element_property_list(self):
         g = nx.Graph()
@@ -552,7 +656,8 @@ class TestPropertyLists:
             nx.write_gml(g, f)
         result = f.read().decode()
 
-        assert result == dedent("""\
+        assert result == dedent(
+            """\
             graph [
               node [
                 id 0
@@ -561,11 +666,14 @@ class TestPropertyLists:
                 properties "element"
               ]
             ]
-        """)
+        """
+        )
 
     def test_reading_graph_with_list_property(self):
         with byte_file() as f:
-            f.write(dedent("""
+            f.write(
+                dedent(
+                    """
               graph [
                 node [
                   id 0
@@ -576,21 +684,18 @@ class TestPropertyLists:
                   properties 2.5
                 ]
               ]
-            """).encode("ascii"))
+            """
+                ).encode("ascii")
+            )
             f.seek(0)
             graph = nx.read_gml(f)
-        assert graph.nodes(data=True)["n1"] == {
-            'properties': [
-                'element',
-                0,
-                1,
-                2.5,
-            ]
-        }
+        assert graph.nodes(data=True)["n1"] == {"properties": ["element", 0, 1, 2.5]}
 
     def test_reading_graph_with_single_element_list_property(self):
         with byte_file() as f:
-            f.write(dedent("""
+            f.write(
+                dedent(
+                    """
               graph [
                 node [
                   id 0
@@ -599,11 +704,9 @@ class TestPropertyLists:
                   properties "element"
                 ]
               ]
-            """).encode("ascii"))
+            """
+                ).encode("ascii")
+            )
             f.seek(0)
             graph = nx.read_gml(f)
-        assert graph.nodes(data=True)["n1"] == {
-            'properties': [
-                'element',
-            ]
-        }
+        assert graph.nodes(data=True)["n1"] == {"properties": ["element"]}

@@ -7,22 +7,31 @@ from networkx.algorithms.centrality.flow_matrix import (
     laplacian_sparse_matrix,
     SuperLUInverseLaplacian,
 )
-from networkx.utils import (not_implemented_for,
-                            reverse_cuthill_mckee_ordering,
-                            py_random_state)
+from networkx.utils import (
+    not_implemented_for,
+    reverse_cuthill_mckee_ordering,
+    py_random_state,
+)
 
-__all__ = ['current_flow_betweenness_centrality',
-           'approximate_current_flow_betweenness_centrality',
-           'edge_current_flow_betweenness_centrality']
+__all__ = [
+    "current_flow_betweenness_centrality",
+    "approximate_current_flow_betweenness_centrality",
+    "edge_current_flow_betweenness_centrality",
+]
 
 
 @py_random_state(7)
-@not_implemented_for('directed')
-def approximate_current_flow_betweenness_centrality(G, normalized=True,
-                                                    weight=None,
-                                                    dtype=float, solver='full',
-                                                    epsilon=0.5, kmax=10000,
-                                                    seed=None):
+@not_implemented_for("directed")
+def approximate_current_flow_betweenness_centrality(
+    G,
+    normalized=True,
+    weight=None,
+    dtype=float,
+    solver="full",
+    epsilon=0.5,
+    kmax=10000,
+    seed=None,
+):
     r"""Compute the approximate current-flow betweenness centrality for nodes.
 
     Approximates the current-flow betweenness centrality within absolute
@@ -41,12 +50,14 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     weight : string or None, optional (default=None)
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype : data type (float)
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
-    solver : string (default='lu')
+    solver : string (default='full')
        Type of linear solver to use for computing the flow matrix.
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).
@@ -84,40 +95,34 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
        Centrality Measures Based on Current Flow.
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
+       https://doi.org/10.1007/978-3-540-31856-9_44
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://scipy.org/')
-    try:
-        from scipy import sparse
-        from scipy.sparse import linalg
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires SciPy ',
-                          'http://scipy.org/')
+    import numpy as np
+
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
-    solvername = {"full": FullInverseLaplacian,
-                  "lu": SuperLUInverseLaplacian,
-                  "cg": CGInverseLaplacian}
+    solvername = {
+        "full": FullInverseLaplacian,
+        "lu": SuperLUInverseLaplacian,
+        "cg": CGInverseLaplacian,
+    }
     n = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
     H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
-    L = laplacian_sparse_matrix(H, nodelist=range(n), weight=weight,
-                                dtype=dtype, format='csc')
+    L = laplacian_sparse_matrix(
+        H, nodelist=range(n), weight=weight, dtype=dtype, format="csc"
+    )
     C = solvername[solver](L, dtype=dtype)  # initialize solver
     betweenness = dict.fromkeys(H, 0.0)
     nb = (n - 1.0) * (n - 2.0)  # normalization factor
     cstar = n * (n - 1) / nb
     l = 1  # parameter in approximation, adjustable
-    k = l * int(np.ceil((cstar / epsilon)**2 * np.log(n)))
+    k = l * int(np.ceil((cstar / epsilon) ** 2 * np.log(n)))
     if k > kmax:
         msg = f"Number random pairs k>kmax ({k}>{kmax}) "
-        raise nx.NetworkXError(msg, 'Increase kmax or epsilon')
+        raise nx.NetworkXError(msg, "Increase kmax or epsilon")
     cstar2k = cstar / (2 * k)
     for i in range(k):
         s, t = seed.sample(range(n), 2)
@@ -139,9 +144,10 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     return {ordering[k]: float(v * factor) for k, v in betweenness.items()}
 
 
-@not_implemented_for('directed')
-def current_flow_betweenness_centrality(G, normalized=True, weight=None,
-                                        dtype=float, solver='full'):
+@not_implemented_for("directed")
+def current_flow_betweenness_centrality(
+    G, normalized=True, weight=None, dtype=float, solver="full"
+):
     r"""Compute current-flow betweenness centrality for nodes.
 
     Current-flow betweenness centrality uses an electrical current
@@ -163,12 +169,14 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
     weight : string or None, optional (default=None)
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype : data type (float)
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
-    solver : string (default='lu')
+    solver : string (default='full')
        Type of linear solver to use for computing the flow matrix.
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).
@@ -205,21 +213,11 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
+       https://doi.org/10.1007/978-3-540-31856-9_44
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://scipy.org/')
-    try:
-        import scipy
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires SciPy ',
-                          'http://scipy.org/')
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()
@@ -228,8 +226,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
     # this could be done without a copy if we really wanted to
     H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
     betweenness = dict.fromkeys(H, 0.0)  # b[v]=0 for v in H
-    for row, (s, t) in flow_matrix_row(H, weight=weight, dtype=dtype,
-                                       solver=solver):
+    for row, (s, t) in flow_matrix_row(H, weight=weight, dtype=dtype, solver=solver):
         pos = dict(zip(row.argsort()[::-1], range(n)))
         for i in range(n):
             betweenness[s] += (i - pos[i]) * row[i]
@@ -243,10 +240,10 @@ def current_flow_betweenness_centrality(G, normalized=True, weight=None,
     return {ordering[k]: v for k, v in betweenness.items()}
 
 
-@not_implemented_for('directed')
-def edge_current_flow_betweenness_centrality(G, normalized=True,
-                                             weight=None,
-                                             dtype=float, solver='full'):
+@not_implemented_for("directed")
+def edge_current_flow_betweenness_centrality(
+    G, normalized=True, weight=None, dtype=float, solver="full"
+):
     r"""Compute current-flow betweenness centrality for edges.
 
     Current-flow betweenness centrality uses an electrical current
@@ -268,12 +265,14 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
     weight : string or None, optional (default=None)
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype : data type (default=float)
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
-    solver : string (default='lu')
+    solver : string (default='full')
        Type of linear solver to use for computing the flow matrix.
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).
@@ -316,22 +315,13 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
+       https://doi.org/10.1007/978-3-540-31856-9_44
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
     from networkx.utils import reverse_cuthill_mckee_ordering
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
-                          'http://scipy.org/')
-    try:
-        import scipy
-    except ImportError:
-        raise ImportError('current_flow_betweenness_centrality requires SciPy ',
-                          'http://scipy.org/')
+
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()
@@ -345,12 +335,10 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
         nb = (n - 1.0) * (n - 2.0)  # normalization factor
     else:
         nb = 2.0
-    for row, (e) in flow_matrix_row(H, weight=weight, dtype=dtype,
-                                    solver=solver):
+    for row, (e) in flow_matrix_row(H, weight=weight, dtype=dtype, solver=solver):
         pos = dict(zip(row.argsort()[::-1], range(1, n + 1)))
         for i in range(n):
             betweenness[e] += (i + 1 - pos[i]) * row[i]
             betweenness[e] += (n - i - pos[i]) * row[i]
         betweenness[e] /= nb
-    return {(ordering[s], ordering[t]): float(v)
-                for (s, t), v in betweenness.items()}
+    return {(ordering[s], ordering[t]): float(v) for (s, t), v in betweenness.items()}

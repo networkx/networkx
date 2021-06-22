@@ -27,10 +27,11 @@ var json = [
 """
 
 import json
+import warnings
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
-__all__ = ['jit_graph', 'jit_data']
+__all__ = ["jit_graph", "jit_data"]
 
 
 def jit_graph(data, create_using=None):
@@ -46,7 +47,14 @@ def jit_graph(data, create_using=None):
     Returns
     -------
     G : NetworkX Graph built from create_using if provided.
+
+    .. deprecated:: 2.6
     """
+    warnings.warn(
+        ("jit_graph is deprecated and will be removed in NetworkX 3.0."),
+        DeprecationWarning,
+    )
+
     if create_using is None:
         G = nx.Graph()
     else:
@@ -57,14 +65,14 @@ def jit_graph(data, create_using=None):
         data = json.loads(data)
 
     for node in data:
-        G.add_node(node['id'], **node['data'])
-        if node.get('adjacencies') is not None:
-            for adj in node['adjacencies']:
-                G.add_edge(node['id'], adj['nodeTo'], **adj['data'])
+        G.add_node(node["id"], **node["data"])
+        if node.get("adjacencies") is not None:
+            for adj in node["adjacencies"]:
+                G.add_edge(node["id"], adj["nodeTo"], **adj["data"])
     return G
 
 
-@not_implemented_for('multigraph')
+@not_implemented_for("multigraph")
 def jit_data(G, indent=None, default=None):
     """Returns data in JIT JSON format.
 
@@ -85,22 +93,23 @@ def jit_data(G, indent=None, default=None):
     Returns
     -------
     data: JIT JSON string
+
+    .. deprecated:: 2.6
     """
+    warnings.warn(
+        ("jit_data is deprecated and will be removed in NetworkX 3.0."),
+        DeprecationWarning,
+    )
     json_graph = []
     for node in G.nodes():
-        json_node = {
-            "id": node,
-            "name": node
-        }
+        json_node = {"id": node, "name": node}
         # node data
         json_node["data"] = G.nodes[node]
         # adjacencies
         if G[node]:
             json_node["adjacencies"] = []
             for neighbour in G[node]:
-                adjacency = {
-                    "nodeTo": neighbour,
-                }
+                adjacency = {"nodeTo": neighbour}
                 # adjacency data
                 adjacency["data"] = G.edges[node, neighbour]
                 json_node["adjacencies"].append(adjacency)

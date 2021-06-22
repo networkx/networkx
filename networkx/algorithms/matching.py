@@ -1,12 +1,22 @@
 """Functions for computing and verifying matchings in a graph."""
+import networkx as nx
+from networkx.utils import not_implemented_for
 from collections import Counter
 from itertools import combinations
 from itertools import repeat
 
-__all__ = ['is_matching', 'is_maximal_matching', 'is_perfect_matching',
-           'max_weight_matching', 'maximal_matching']
+__all__ = [
+    "is_matching",
+    "is_maximal_matching",
+    "is_perfect_matching",
+    "max_weight_matching",
+    "min_weight_matching",
+    "maximal_matching",
+]
 
 
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
 def maximal_matching(G):
     r"""Find a maximal matching in the graph.
 
@@ -41,7 +51,9 @@ def maximal_matching(G):
 
 
 def matching_dict_to_set(matching):
-    """Converts a dictionary representing a matching (as returned by
+    """Converts matching dict format to matching set format
+
+    Converts a dictionary representing a matching (as returned by
     :func:`max_weight_matching`) to a set representing a matching (as
     returned by :func:`maximal_matching`).
 
@@ -61,8 +73,7 @@ def matching_dict_to_set(matching):
 
 
 def is_matching(G, matching):
-    """Decides whether the given set or dictionary represents a valid
-    matching in ``G``.
+    """Return True if ``matching`` is a valid matching of ``G``
 
     A *matching* in a graph is a set of edges in which no two distinct
     edges share a common endpoint.
@@ -87,14 +98,19 @@ def is_matching(G, matching):
     """
     if isinstance(matching, dict):
         matching = matching_dict_to_set(matching)
+
+    for edge in matching:
+        if len(edge) != 2:
+            return False
+        if not G.has_edge(*edge):
+            return False
+
     # TODO This is parallelizable.
-    return all(len(set(e1) & set(e2)) == 0
-               for e1, e2 in combinations(matching, 2))
+    return all(len(set(e1) & set(e2)) == 0 for e1, e2 in combinations(matching, 2))
 
 
 def is_maximal_matching(G, matching):
-    """Decides whether the given set or dictionary represents a valid
-    maximal matching in ``G``.
+    """Return True if ``matching`` is a maximal matching of ``G``
 
     A *maximal matching* in a graph is a matching in which adding any
     edge would cause the set to no longer be a valid matching.
@@ -137,8 +153,7 @@ def is_maximal_matching(G, matching):
 
 
 def is_perfect_matching(G, matching):
-    """Decides whether the given set represents a valid perfect matching in
-    ``G``.
+    """Return True if ``matching`` is a perfect matching for ``G``
 
     A *perfect matching* in a graph is a matching in which exactly one edge
     is incident upon each vertex.
@@ -172,7 +187,46 @@ def is_perfect_matching(G, matching):
     return all(counts[v] == 1 for v in G)
 
 
-def max_weight_matching(G, maxcardinality=False, weight='weight'):
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
+def min_weight_matching(G, maxcardinality=False, weight="weight"):
+    """Use reciprocal edge weights to find max reciprocal weight matching.
+
+    This method replaces the weights with their reciprocal and
+    then runs :func:`max_weight_matching`.
+    Read the documentation of max_weight_matching for more information.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+      Undirected graph
+
+    maxcardinality: bool, optional (default=False)
+       If maxcardinality is True, compute the maximum-cardinality matching
+       with minimum weight among all maximum-cardinality matchings.
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight.
+       If key not found, uses 1 as weight.
+
+    Returns
+    -------
+    matching : set
+        A minimal weight matching of the graph.
+    """
+    if len(G.edges) == 0:
+        return max_weight_matching(G, maxcardinality, weight)
+    G_edges = G.edges(data=weight, default=1)
+    min_weight = min([w for _, _, w in G_edges])
+    InvG = nx.Graph()
+    edges = ((u, v, 1 / (1 + w - min_weight)) for u, v, w in G_edges)
+    InvG.add_weighted_edges_from(edges, weight=weight)
+    return max_weight_matching(InvG, maxcardinality, weight)
+
+
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
+def max_weight_matching(G, maxcardinality=False, weight="weight"):
     """Compute a maximum-weighted matching of G.
 
     A matching is a subset of edges in which no node occurs more than once.
@@ -239,12 +293,13 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
 
     class NoNode:
         """Dummy value which is different from any node."""
+
         pass
 
     class Blossom:
         """Representation of a non-trivial blossom or sub-blossom."""
 
-        __slots__ = ['childs', 'edges', 'mybestedges']
+        __slots__ = ["childs", "edges", "mybestedges"]
 
         # b.childs is an ordered list of b's sub-blossoms, starting with
         # the base and going round the blossom.
@@ -278,8 +333,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
         wt = d.get(weight, 1)
         if i != j and wt > maxweight:
             maxweight = wt
-        allinteger = allinteger and (str(type(wt)).split("'")[1]
-                                     in ('int', 'long'))
+        allinteger = allinteger and (str(type(wt)).split("'")[1] in ("int", "long"))
 
     # If v is a matched vertex, mate[v] is its partner vertex.
     # If v is a single vertex, v does not occur as a key in mate.
@@ -436,8 +490,9 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
             blossomparent[bv] = b
             path.append(bv)
             edgs.append(labeledge[bv])
-            assert label[bv] == 2 or (label[bv] == 1 and labeledge[
-                                      bv][0] == mate[blossombase[bv]])
+            assert label[bv] == 2 or (
+                label[bv] == 1 and labeledge[bv][0] == mate[blossombase[bv]]
+            )
             # Trace one step back.
             v = labeledge[bv][0]
             bv = inblossom[v]
@@ -451,8 +506,9 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
             blossomparent[bw] = b
             path.append(bw)
             edgs.append((labeledge[bw][1], labeledge[bw][0]))
-            assert label[bw] == 2 or (label[bw] == 1 and labeledge[
-                                      bw][0] == mate[blossombase[bw]])
+            assert label[bw] == 2 or (
+                label[bw] == 1 and labeledge[bw][0] == mate[blossombase[bw]]
+            )
             # Trace one step back.
             w = labeledge[bw][0]
             bw = inblossom[w]
@@ -481,22 +537,21 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
                 else:
                     # This subblossom does not have a list of least-slack
                     # edges; get the information from the vertices.
-                    nblist = [(v, w)
-                              for v in bv.leaves()
-                              for w in G.neighbors(v)
-                              if v != w]
+                    nblist = [
+                        (v, w) for v in bv.leaves() for w in G.neighbors(v) if v != w
+                    ]
             else:
-                nblist = [(bv, w)
-                          for w in G.neighbors(bv)
-                          if bv != w]
+                nblist = [(bv, w) for w in G.neighbors(bv) if bv != w]
             for k in nblist:
                 (i, j) = k
                 if inblossom[j] == b:
                     i, j = j, i
                 bj = inblossom[j]
-                if (bj != b and label.get(bj) == 1 and
-                    ((bj not in bestedgeto) or
-                     slack(i, j) < slack(*bestedgeto[bj]))):
+                if (
+                    bj != b
+                    and label.get(bj) == 1
+                    and ((bj not in bestedgeto) or slack(i, j) < slack(*bestedgeto[bj]))
+                ):
                     bestedgeto[bj] = k
             # Forget about least-slack edge of the subblossom.
             bestedge[bv] = None
@@ -661,9 +716,9 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
             while 1:
                 bs = inblossom[s]
                 assert label[bs] == 1
-                assert (
-                    labeledge[bs] is None and blossombase[bs] not in mate)\
-                    or (labeledge[bs][0] == mate[blossombase[bs]])
+                assert (labeledge[bs] is None and blossombase[bs] not in mate) or (
+                    labeledge[bs][0] == mate[blossombase[bs]]
+                )
                 # Augment through the S-blossom from s to base.
                 if isinstance(bs, Blossom):
                     augmentBlossom(bs, s)
@@ -823,15 +878,13 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
                     elif label.get(bw) == 1:
                         # keep track of the least-slack non-allowable edge to
                         # a different S-blossom.
-                        if bestedge.get(bv) is None or \
-                                kslack < slack(*bestedge[bv]):
+                        if bestedge.get(bv) is None or kslack < slack(*bestedge[bv]):
                             bestedge[bv] = (v, w)
                     elif label.get(w) is None:
                         # w is a free vertex (or an unreached vertex inside
                         # a T-blossom) but we can not reach it yet;
                         # keep track of the least-slack edge that reaches w.
-                        if bestedge.get(w) is None or \
-                                kslack < slack(*bestedge[w]):
+                        if bestedge.get(w) is None or kslack < slack(*bestedge[w]):
                             bestedge[w] = (v, w)
 
             if augmented:
@@ -852,8 +905,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
             # Compute delta2: the minimum slack on any edge between
             # an S-vertex and a free vertex.
             for v in G.nodes():
-                if label.get(inblossom[v]) is None and \
-                        bestedge.get(v) is not None:
+                if label.get(inblossom[v]) is None and bestedge.get(v) is not None:
                     d = slack(*bestedge[v])
                     if deltatype == -1 or d < delta:
                         delta = d
@@ -863,8 +915,11 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
             # Compute delta3: half the minimum slack on any edge between
             # a pair of S-blossoms.
             for b in blossomparent:
-                if (blossomparent[b] is None and label.get(b) == 1 and
-                        bestedge.get(b) is not None):
+                if (
+                    blossomparent[b] is None
+                    and label.get(b) == 1
+                    and bestedge.get(b) is not None
+                ):
                     kslack = slack(*bestedge[b])
                     if allinteger:
                         assert (kslack % 2) == 0
@@ -878,8 +933,11 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
 
             # Compute delta4: minimum z variable of any T-blossom.
             for b in blossomdual:
-                if (blossomparent[b] is None and label.get(b) == 2 and
-                        (deltatype == -1 or blossomdual[b] < delta)):
+                if (
+                    blossomparent[b] is None
+                    and label.get(b) == 2
+                    and (deltatype == -1 or blossomdual[b] < delta)
+                ):
                     delta = blossomdual[b]
                     deltatype = 4
                     deltablossom = b
@@ -943,8 +1001,7 @@ def max_weight_matching(G, maxcardinality=False, weight='weight'):
         for b in list(blossomdual.keys()):
             if b not in blossomdual:
                 continue  # already expanded
-            if (blossomparent[b] is None and label.get(b) == 1 and
-                    blossomdual[b] == 0):
+            if blossomparent[b] is None and label.get(b) == 1 and blossomdual[b] == 0:
                 expandBlossom(b, True)
 
     # Verify that we reached the optimum solution (only for integer weights).

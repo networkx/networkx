@@ -69,6 +69,31 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
+    import numpy as np
+    import scipy as sp
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
+
+    if len(G) == 0:
+        return {}, {}
+    M = nx.adjacency_matrix(G, nodelist=list(G), dtype=float)
+
+    if nstart is None:
+        u, s, vt = sp.sparse.linalg.svds(M, k=1, maxiter=max_iter, tol=tol)
+    else:
+        nstart = np.array(list(nstart.values()))
+        u, s, vt = sp.sparse.linalg.svds(M, k=1, v0=nstart, maxiter=max_iter, tol=tol)
+
+    a = vt.flatten().real
+    h = np.asarray(M * a).flatten()
+    if normalized:
+        h = h / h.sum()
+        a = a / a.sum()
+    hubs = dict(zip(G, map(float, h)))
+    authorities = dict(zip(G, map(float, a)))
+    return hubs, authorities
+
+
+def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
         raise Exception("hits() not defined for graphs with multiedges.")
     if len(G) == 0:
@@ -120,19 +145,49 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
 
 
 def authority_matrix(G, nodelist=None):
-    """Returns the HITS authority matrix."""
-    M = nx.to_numpy_matrix(G, nodelist=nodelist)
-    return M.T * M
+    """Returns the HITS authority matrix.
+
+    .. deprecated:: 2.6
+    """
+    import warnings
+
+    msg = (
+        "\nauthority_matrix is deprecated as of version 2.6 and will be removed "
+        "in version 3.0.\n"
+        "The authority matrix can be computed by::\n"
+        "    >>> M = nx.to_numpy_array(G, nodelist=nodelist)\n"
+        "    >>> M.T @ M"
+    )
+    warnings.warn(msg, DeprecationWarning)
+    M = nx.to_numpy_array(G, nodelist=nodelist)
+    return M.T @ M
 
 
 def hub_matrix(G, nodelist=None):
-    """Returns the HITS hub matrix."""
-    M = nx.to_numpy_matrix(G, nodelist=nodelist)
-    return M * M.T
+    """Returns the HITS hub matrix.
+
+    .. deprecated:: 2.6
+    """
+    import warnings
+
+    msg = (
+        "\nhub_matrix is deprecated as of version 2.6 and will be removed "
+        "in version 3.0.\n"
+        "The hub matrix can be computed by::\n"
+        "    >>> M = nx.to_numpy_array(G, nodelist=nodelist)\n"
+        "    >>> M @ M.T"
+    )
+    warnings.warn(msg, DeprecationWarning)
+    M = nx.to_numpy_array(G, nodelist=nodelist)
+    return M @ M.T
 
 
 def hits_numpy(G, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
+
+    .. deprecated:: 2.6
+
+       hits_numpy is deprecated and will be removed in networkx 3.0.
 
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
@@ -155,7 +210,21 @@ def hits_numpy(G, normalized=True):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> h, a = nx.hits(G)
+
+    The `hubs` and `authorities` are given by the eigenvectors corresponding to the
+    maximum eigenvalues of the hubs_matrix and the authority_matrix, respectively.
+
+    The ``hubs`` and ``authority`` matrices are computed from the adjancency
+    matrix:
+
+    >>> adj_ary = nx.to_numpy_array(G)
+    >>> hubs_matrix = adj_ary @ adj_ary.T
+    >>> authority_matrix = adj_ary.T @ adj_ary
+
+    `hits_numpy` maps the eigenvector corresponding to the maximum eigenvalue
+    of the respective matrices to the nodes in `G`:
+
+    >>> hubs, authority = hits_numpy(G)
 
     Notes
     -----
@@ -176,20 +245,29 @@ def hits_numpy(G, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError("hits_numpy() requires NumPy: http://scipy.org/")
+    import numpy as np
+    import warnings
+
+    warnings.warn(
+        (
+            "networkx.hits_numpy is deprecated and will be removed"
+            "in NetworkX 3.0, use networkx.hits instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     if len(G) == 0:
         return {}, {}
-    H = nx.hub_matrix(G, list(G))
+    adj_ary = nx.to_numpy_array(G)
+    # Hub matrix
+    H = adj_ary @ adj_ary.T
     e, ev = np.linalg.eig(H)
-    m = e.argsort()[-1]  # index of maximum eigenvalue
-    h = np.array(ev[:, m]).flatten()
-    A = nx.authority_matrix(G, list(G))
+    h = ev[:, np.argmax(e)]  # eigenvector corresponding to the maximum eigenvalue
+    # Authority matrix
+    A = adj_ary.T @ adj_ary
     e, ev = np.linalg.eig(A)
-    m = e.argsort()[-1]  # index of maximum eigenvalue
-    a = np.array(ev[:, m]).flatten()
+    a = ev[:, np.argmax(e)]  # eigenvector corresponding to the maximum eigenvalue
     if normalized:
         h = h / h.sum()
         a = a / a.sum()
@@ -201,8 +279,12 @@ def hits_numpy(G, normalized=True):
     return hubs, authorities
 
 
-def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
+def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
+
+    .. deprecated:: 2.6
+
+       hits_scipy is deprecated and will be removed in networkx 3.0
 
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
@@ -267,17 +349,31 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    try:
-        import scipy.sparse
-        import numpy as np
-    except ImportError:
-        raise ImportError("hits_scipy() requires SciPy: http://scipy.org/")
+    import numpy as np
+    import warnings
+
+    warnings.warn(
+        (
+            "networkx.hits_scipy is deprecated and will be removed"
+            "in NetworkX 3.0, use networkx.hits instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     if len(G) == 0:
         return {}, {}
     M = nx.to_scipy_sparse_matrix(G, nodelist=list(G))
     (n, m) = M.shape  # should be square
     A = M.T * M  # authority matrix
     x = np.ones((n, 1)) / n  # initial guess
+    # choose fixed starting vector if not given
+    if nstart is None:
+        x = np.ones((n, 1)) / n  # initial guess
+    else:
+        x = np.array([nstart.get(n, 0) for n in list(G)], dtype=float)
+        x = x / x.sum()
+
     # power iteration on authority matrix
     i = 0
     while True:

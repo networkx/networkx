@@ -3,12 +3,19 @@ Operations on graphs including union, intersection, difference.
 """
 import networkx as nx
 
-__all__ = ['union', 'compose', 'disjoint_union', 'intersection',
-           'difference', 'symmetric_difference', 'full_join']
+__all__ = [
+    "union",
+    "compose",
+    "disjoint_union",
+    "intersection",
+    "difference",
+    "symmetric_difference",
+    "full_join",
+]
 
 
 def union(G, H, rename=(None, None), name=None):
-    """ Return the union of graphs G and H.
+    """Return the union of graphs G and H.
 
     Graphs G and H must be disjoint, otherwise an exception is raised.
 
@@ -43,7 +50,7 @@ def union(G, H, rename=(None, None), name=None):
     disjoint_union
     """
     if not G.is_multigraph() == H.is_multigraph():
-        raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
+        raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
     # Union is the same type as G
     R = G.__class__()
     # add graph attributes, H attributes take precedent over G attributes
@@ -61,13 +68,16 @@ def union(G, H, rename=(None, None), name=None):
             else:
                 name = prefix + repr(x)
             return name
+
         return nx.relabel_nodes(graph, label)
+
     G = add_prefix(G, rename[0])
     H = add_prefix(H, rename[1])
     if set(G) & set(H):
-        raise nx.NetworkXError('The node sets of G and H are not disjoint.',
-                               'Use appropriate rename=(Gprefix,Hprefix)'
-                               'or use disjoint_union(G,H).')
+        raise nx.NetworkXError(
+            "The node sets of G and H are not disjoint.",
+            "Use appropriate rename=(Gprefix,Hprefix)" "or use disjoint_union(G,H).",
+        )
     if G.is_multigraph():
         G_edges = G.edges(keys=True, data=True)
     else:
@@ -93,7 +103,7 @@ def union(G, H, rename=(None, None), name=None):
 
 
 def disjoint_union(G, H):
-    """ Return the disjoint union of graphs G and H.
+    """Return the disjoint union of graphs G and H.
 
     This algorithm forces distinct integer node labels.
 
@@ -127,15 +137,18 @@ def disjoint_union(G, H):
 
 
 def intersection(G, H):
-    """Returns a new graph that contains only the edges that exist in
+    """Returns a new graph that contains only the nodes and the edges that exist in
     both G and H.
-
-    The node sets of H and G must be the same.
 
     Parameters
     ----------
     G,H : graph
-       A NetworkX graph.  G and H must have the same node sets.
+       A NetworkX graph. G and H can have different node sets but must be both graphs or both multigraphs.
+
+    Raises
+    ------
+    NetworkXError
+        If one is a MultiGraph and the other one is a graph.
 
     Returns
     -------
@@ -148,18 +161,21 @@ def intersection(G, H):
     with the attributes (including edge data) from G use remove_nodes_from()
     as follows
 
-    >>> G=nx.path_graph(3)
-    >>> H=nx.path_graph(5)
-    >>> R=G.copy()
+    >>> G = nx.path_graph(3)
+    >>> H = nx.path_graph(5)
+    >>> R = G.copy()
     >>> R.remove_nodes_from(n for n in G if n not in H)
+    >>> R.remove_edges_from(e for e in G.edges if e not in H.edges)
     """
-    # create new graph
-    R = nx.create_empty_copy(G)
-
     if not G.is_multigraph() == H.is_multigraph():
-        raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
+        raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
+
+    # create new graph
     if set(G) != set(H):
-        raise nx.NetworkXError("Node sets of graphs are not equal")
+        R = G.__class__()
+        R.add_nodes_from(set(G.nodes).intersection(set(H.nodes)))
+    else:
+        R = nx.create_empty_copy(G)
 
     if G.number_of_edges() <= H.number_of_edges():
         if G.is_multigraph():
@@ -198,7 +214,7 @@ def difference(G, H):
     -----
     Attributes from the graph, nodes, and edges are not copied to the new
     graph.  If you want a new graph of the difference of G and H with
-    with the attributes (including edge data) from G use remove_nodes_from()
+    the attributes (including edge data) from G use remove_nodes_from()
     as follows:
 
     >>> G = nx.path_graph(3)
@@ -208,7 +224,7 @@ def difference(G, H):
     """
     # create new graph
     if not G.is_multigraph() == H.is_multigraph():
-        raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
+        raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
     R = nx.create_empty_copy(G)
 
     if set(G) != set(H):
@@ -245,7 +261,7 @@ def symmetric_difference(G, H):
     """
     # create new graph
     if not G.is_multigraph() == H.is_multigraph():
-        raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
+        raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
     R = nx.create_empty_copy(G)
 
     if set(G) != set(H):
@@ -301,7 +317,7 @@ def compose(G, H):
     in two graphs) if you use MultiGraph without keeping track of edge keys.
     """
     if not G.is_multigraph() == H.is_multigraph():
-        raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
+        raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
 
     R = G.__class__()
     # add graph attributes, H attributes take precedent over G attributes
@@ -377,7 +393,9 @@ def full_join(G, H, rename=(None, None)):
             else:
                 name = prefix + repr(x)
             return name
+
         return nx.relabel_nodes(graph, label)
+
     G = add_prefix(G, rename[0])
     H = add_prefix(H, rename[1])
 

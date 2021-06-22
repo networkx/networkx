@@ -4,18 +4,15 @@ import pytest
 
 
 class TestIsSemiconnected:
-
     def test_undirected(self):
-        pytest.raises(nx.NetworkXNotImplemented, nx.is_semiconnected,
-                      nx.Graph())
-        pytest.raises(nx.NetworkXNotImplemented, nx.is_semiconnected,
-                      nx.MultiGraph())
+        pytest.raises(nx.NetworkXNotImplemented, nx.is_semiconnected, nx.Graph())
+        pytest.raises(nx.NetworkXNotImplemented, nx.is_semiconnected, nx.MultiGraph())
 
     def test_empty(self):
-        pytest.raises(nx.NetworkXPointlessConcept, nx.is_semiconnected,
-                      nx.DiGraph())
-        pytest.raises(nx.NetworkXPointlessConcept, nx.is_semiconnected,
-                      nx.MultiDiGraph())
+        pytest.raises(nx.NetworkXPointlessConcept, nx.is_semiconnected, nx.DiGraph())
+        pytest.raises(
+            nx.NetworkXPointlessConcept, nx.is_semiconnected, nx.MultiDiGraph()
+        )
 
     def test_single_node_graph(self):
         G = nx.DiGraph()
@@ -37,8 +34,9 @@ class TestIsSemiconnected:
 
     def test_tree(self):
         G = nx.DiGraph()
-        G.add_edges_from(chain.from_iterable([(i, 2 * i + 1), (i, 2 * i + 2)]
-                                             for i in range(100)))
+        G.add_edges_from(
+            chain.from_iterable([(i, 2 * i + 1), (i, 2 * i + 2)] for i in range(100))
+        )
         assert not nx.is_semiconnected(G)
 
     def test_dumbbell(self):
@@ -49,6 +47,7 @@ class TestIsSemiconnected:
         assert nx.is_semiconnected(G)
 
     def test_alternating_path(self):
-        G = nx.DiGraph(chain.from_iterable([(i, i - 1), (i, i + 1)]
-                                           for i in range(0, 100, 2)))
+        G = nx.DiGraph(
+            chain.from_iterable([(i, i - 1), (i, i + 1)] for i in range(0, 100, 2))
+        )
         assert not nx.is_semiconnected(G)

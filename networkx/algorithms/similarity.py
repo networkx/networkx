@@ -12,7 +12,13 @@ and/or `optimize_edit_paths`.
 At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
+
+from functools import reduce
 from itertools import product
+import math
+from operator import mul
+import time
+import warnings
 import networkx as nx
 
 __all__ = [
@@ -22,6 +28,8 @@ __all__ = [
     "optimize_edit_paths",
     "simrank_similarity",
     "simrank_similarity_numpy",
+    "panther_similarity",
+    "generate_random_paths",
 ]
 
 
@@ -40,7 +48,9 @@ def graph_edit_distance(
     edge_subst_cost=None,
     edge_del_cost=None,
     edge_ins_cost=None,
+    roots=None,
     upper_bound=None,
+    timeout=None,
 ):
     """Returns GED (graph edit distance) between graphs G1 and G2.
 
@@ -131,9 +141,19 @@ def graph_edit_distance(
         cost of 1 is used.  If edge_ins_cost is not specified then
         default edge insertion cost of 1 is used.
 
+    roots : 2-tuple
+        Tuple where first element is a node in G1 and the second
+        is a node in G2.
+        These nodes are forced to be matched in the comparison to
+        allow comparison between rooted graphs.
+
     upper_bound : numeric
         Maximum edit distance to consider.  Return None if no edit
         distance under or equal to upper_bound exists.
+
+    timeout : numeric
+        Maximum number of seconds to execute.
+        After timeout is met, the current best GED is returned.
 
     Examples
     --------
@@ -142,11 +162,18 @@ def graph_edit_distance(
     >>> nx.graph_edit_distance(G1, G2)
     7.0
 
+    >>> G1 = nx.star_graph(5)
+    >>> G2 = nx.star_graph(5)
+    >>> nx.graph_edit_distance(G1, G2, roots=(0, 0))
+    0.0
+    >>> nx.graph_edit_distance(G1, G2, roots=(1, 0))
+    8.0
+
     See Also
     --------
     optimal_edit_paths, optimize_graph_edit_distance,
 
-    is_isomorphic (test for graph edit distance of 0)
+    is_isomorphic: test for graph edit distance of 0
 
     References
     ----------
@@ -173,6 +200,8 @@ def graph_edit_distance(
         edge_ins_cost,
         upper_bound,
         True,
+        roots,
+        timeout,
     ):
         # assert bestcost is None or cost < bestcost
         bestcost = cost
@@ -504,6 +533,8 @@ def optimize_edit_paths(
     edge_ins_cost=None,
     upper_bound=None,
     strictly_decreasing=True,
+    roots=None,
+    timeout=None,
 ):
     """GED (graph edit distance) calculation: advanced interface.
 
@@ -603,6 +634,16 @@ def optimize_edit_paths(
         decreasing cost.  Otherwise, return all edit paths of cost
         less than or equal to the previous minimum cost.
 
+    roots : 2-tuple
+        Tuple where first element is a node in G1 and the second
+        is a node in G2.
+        These nodes are forced to be matched in the comparison to
+        allow comparison between rooted graphs.
+
+    timeout : numeric
+        Maximum number of seconds to execute.
+        After timeout is met, the current best GED is returned.
+
     Returns
     -------
     Generator of tuples (node_edit_path, edge_edit_path, cost)
@@ -628,7 +669,8 @@ def optimize_edit_paths(
     # TODO: support DiGraph
 
     import numpy as np
-    from scipy.optimize import linear_sum_assignment
+    import scipy as sp
+    import scipy.optimize  # call as sp.optimize
 
     class CostMatrix:
         def __init__(self, C, lsa_row_ind, lsa_col_ind, ls):
@@ -645,7 +687,7 @@ def optimize_edit_paths(
 
     def make_CostMatrix(C, m, n):
         # assert(C.shape == (m + n, m + n))
-        lsa_row_ind, lsa_col_ind = linear_sum_assignment(C)
+        lsa_row_ind, lsa_col_ind = sp.optimize.linear_sum_assignment(C)
 
         # Fixup dummy assignments:
         # each substitution i<->j should have dummy assignment m+j<->n+i
@@ -1005,6 +1047,16 @@ def optimize_edit_paths(
     pending_u = list(G1.nodes)
     pending_v = list(G2.nodes)
 
+    initial_cost = 0
+    if roots:
+        root_u, root_v = roots
+        if root_u not in pending_u or root_v not in pending_v:
+            raise nx.NodeNotFound("Root node not in graph.")
+
+        # remove roots from pending
+        pending_u.remove(root_u)
+        pending_v.remove(root_v)
+
     # cost matrix of vertex mappings
     m = len(pending_u)
     n = len(pending_v)
@@ -1017,6 +1069,8 @@ def optimize_edit_paths(
                 for v in pending_v
             ]
         ).reshape(m, n)
+        if roots:
+            initial_cost = node_subst_cost(G1.nodes[root_u], G2.nodes[root_v])
     elif node_match:
         C[0:m, 0:n] = np.array(
             [
@@ -1025,6 +1079,8 @@ def optimize_edit_paths(
                 for v in pending_v
             ]
         ).reshape(m, n)
+        if roots:
+            initial_cost = 1 - node_match(G1.nodes[root_u], G2.nodes[root_v])
     else:
         # all zeroes
         pass
@@ -1107,7 +1163,15 @@ def optimize_edit_paths(
 
     maxcost = MaxCost()
 
+    if timeout is not None:
+        if timeout <= 0:
+            raise nx.NetworkXError("Timeout value must be greater than 0")
+        start = time.perf_counter()
+
     def prune(cost):
+        if timeout is not None:
+            if time.perf_counter() - start > timeout:
+                return True
         if upper_bound is not None:
             if cost > upper_bound:
                 return True
@@ -1118,8 +1182,10 @@ def optimize_edit_paths(
 
     # Now go!
 
+    done_uv = [] if roots is None else [roots]
+
     for vertex_path, edge_path, cost in get_edit_paths(
-        [], pending_u, pending_v, Cv, [], pending_g, pending_h, Ce, 0
+        done_uv, pending_u, pending_v, Cv, [], pending_g, pending_h, Ce, initial_cost
     ):
         # assert sorted(G1.nodes) == sorted(u for u, v in vertex_path if u is not None)
         # assert sorted(G2.nodes) == sorted(v for u, v in vertex_path if v is not None)
@@ -1130,47 +1196,12 @@ def optimize_edit_paths(
         yield list(vertex_path), list(edge_path), cost
 
 
-def _is_close(d1, d2, atolerance=0, rtolerance=0):
-    """Determines whether two adjacency matrices are within
-    a provided tolerance.
-
-    Parameters
-    ----------
-    d1 : dict
-        Adjacency dictionary
-
-    d2 : dict
-        Adjacency dictionary
-
-    atolerance : float
-        Some scalar tolerance value to determine closeness
-
-    rtolerance : float
-        A scalar tolerance value that will be some proportion
-        of ``d2``'s value
-
-    Returns
-    -------
-    closeness : bool
-        If all of the nodes within ``d1`` and ``d2`` are within
-        a predefined tolerance, they are considered "close" and
-        this method will return True. Otherwise, this method will
-        return False.
-
-    """
-    # Pre-condition: d1 and d2 have the same keys at each level if they
-    # are dictionaries.
-    if not isinstance(d1, dict) and not isinstance(d2, dict):
-        return abs(d1 - d2) <= atolerance + rtolerance * abs(d2)
-    return all(all(_is_close(d1[u][v], d2[u][v]) for v in d1[u]) for u in d1)
-
-
 def simrank_similarity(
     G,
     source=None,
     target=None,
     importance_factor=0.9,
-    max_iterations=100,
+    max_iterations=1000,
     tolerance=1e-4,
 ):
     """Returns the SimRank similarity of nodes in the graph ``G``.
@@ -1238,17 +1269,27 @@ def simrank_similarity(
 
     Examples
     --------
-    If the nodes of the graph are numbered from zero to *n - 1*, where *n*
-    is the number of nodes in the graph, you can create a SimRank matrix
-    from the return value of this function where the node numbers are
-    the row and column indices of the matrix::
+    >>> G = nx.cycle_graph(2)
+    >>> nx.simrank_similarity(G)
+    {0: {0: 1.0, 1: 0.0}, 1: {0: 0.0, 1: 1.0}}
+    >>> nx.simrank_similarity(G, source=0)
+    {0: 1.0, 1: 0.0}
+    >>> nx.simrank_similarity(G, source=0, target=0)
+    1.0
 
-        >>> import networkx as nx
-        >>> from numpy import array
-        >>> G = nx.cycle_graph(4)
-        >>> sim = nx.simrank_similarity(G)
-        >>> lol = [[sim[u][v] for v in sorted(sim[u])] for u in sorted(sim)]
-        >>> sim_array = array(lol)
+    The result of this function can be converted to a numpy array
+    representing the SimRank matrix by using the node order of the
+    graph to determine which row and column represent each node.
+    Other ordering of nodes is also possible.
+
+    >>> import numpy as np
+    >>> sim = nx.simrank_similarity(G)
+    >>> np.array([[sim[u][v] for v in G] for u in G])
+    array([[1., 0.],
+           [0., 1.]])
+    >>> sim_1d = nx.simrank_similarity(G, source=0)
+    >>> np.array([sim[0][v] for v in G])
+    array([1., 0.])
 
     References
     ----------
@@ -1259,8 +1300,46 @@ def simrank_similarity(
            International Conference on Knowledge Discovery and Data Mining,
            pp. 538--543. ACM Press, 2002.
     """
-    prevsim = None
+    import numpy as np
 
+    nodelist = list(G)
+    s_indx = None if source is None else nodelist.index(source)
+    t_indx = None if target is None else nodelist.index(target)
+
+    x = _simrank_similarity_numpy(
+        G, s_indx, t_indx, importance_factor, max_iterations, tolerance
+    )
+
+    if isinstance(x, np.ndarray):
+        if x.ndim == 1:
+            return {node: val for node, val in zip(G, x)}
+        else:  # x.ndim == 2:
+            return {u: dict(zip(G, row)) for u, row in zip(G, x)}
+    return x
+
+
+def _simrank_similarity_python(
+    G,
+    source=None,
+    target=None,
+    importance_factor=0.9,
+    max_iterations=1000,
+    tolerance=1e-4,
+):
+    """Returns the SimRank similarity of nodes in the graph ``G``.
+
+    This pure Python version is provided for pedagogical purposes.
+
+    Examples
+    --------
+    >>> G = nx.cycle_graph(2)
+    >>> nx.similarity._simrank_similarity_python(G)
+    {0: {0: 1, 1: 0.0}, 1: {0: 0.0, 1: 1}}
+    >>> nx.similarity._simrank_similarity_python(G, source=0)
+    {0: 1, 1: 0.0}
+    >>> nx.similarity._simrank_similarity_python(G, source=0, target=0)
+    1
+    """
     # build up our similarity adjacency dictionary output
     newsim = {u: {v: 1 if u == v else 0 for v in G} for u in G}
 
@@ -1269,17 +1348,28 @@ def simrank_similarity(
     def avg_sim(s):
         return sum(newsim[w][x] for (w, x) in s) / len(s) if s else 0.0
 
+    Gadj = G.pred if G.is_directed() else G.adj
+
     def sim(u, v):
-        Gadj = G.pred if G.is_directed() else G.adj
         return importance_factor * avg_sim(list(product(Gadj[u], Gadj[v])))
 
-    for _ in range(max_iterations):
-        if prevsim and _is_close(prevsim, newsim, tolerance):
+    for its in range(max_iterations):
+        oldsim = newsim
+        newsim = {u: {v: sim(u, v) if u is not v else 1 for v in G} for u in G}
+        is_close = all(
+            all(
+                abs(newsim[u][v] - old) <= tolerance * (1 + abs(old))
+                for v, old in nbrs.items()
+            )
+            for u, nbrs in oldsim.items()
+        )
+        if is_close:
             break
-        prevsim = newsim
-        newsim = {
-            u: {v: sim(u, v) if u is not v else 1 for v in newsim[u]} for u in newsim
-        }
+
+    if its + 1 == max_iterations:
+        raise nx.ExceededMaxIterations(
+            f"simrank did not converge after {max_iterations} iterations."
+        )
 
     if source is not None and target is not None:
         return newsim[source][target]
@@ -1288,12 +1378,12 @@ def simrank_similarity(
     return newsim
 
 
-def simrank_similarity_numpy(
+def _simrank_similarity_numpy(
     G,
     source=None,
     target=None,
     importance_factor=0.9,
-    max_iterations=100,
+    max_iterations=1000,
     tolerance=1e-4,
 ):
     """Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.
@@ -1344,10 +1434,14 @@ def simrank_similarity_numpy(
 
     Examples
     --------
-        >>> import networkx as nx
-        >>> from numpy import array
-        >>> G = nx.cycle_graph(4)
-        >>> sim = nx.simrank_similarity_numpy(G)
+    >>> G = nx.cycle_graph(2)
+    >>> nx.similarity._simrank_similarity_numpy(G)
+    array([[1., 0.],
+           [0., 1.]])
+    >>> nx.similarity._simrank_similarity_numpy(G, source=0)
+    array([1., 0.])
+    >>> nx.similarity._simrank_similarity_numpy(G, source=0, target=0)
+    1.0
 
     References
     ----------
@@ -1368,21 +1462,304 @@ def simrank_similarity_numpy(
     adjacency_matrix = nx.to_numpy_array(G)
 
     # column-normalize the ``adjacency_matrix``
-    adjacency_matrix /= adjacency_matrix.sum(axis=0)
+    s = np.array(adjacency_matrix.sum(axis=0))
+    s[s == 0] = 1
+    adjacency_matrix /= s  # adjacency_matrix.sum(axis=0)
 
-    newsim = np.eye(adjacency_matrix.shape[0], dtype=np.float64)
-    for _ in range(max_iterations):
-        prevsim = np.copy(newsim)
-        newsim = importance_factor * np.matmul(
-            np.matmul(adjacency_matrix.T, prevsim), adjacency_matrix
-        )
+    newsim = np.eye(len(G), dtype=np.float64)
+    for its in range(max_iterations):
+        prevsim = newsim.copy()
+        newsim = importance_factor * ((adjacency_matrix.T @ prevsim) @ adjacency_matrix)
         np.fill_diagonal(newsim, 1.0)
 
         if np.allclose(prevsim, newsim, atol=tolerance):
             break
+
+    if its + 1 == max_iterations:
+        raise nx.ExceededMaxIterations(
+            f"simrank did not converge after {max_iterations} iterations."
+        )
 
     if source is not None and target is not None:
         return newsim[source, target]
     if source is not None:
         return newsim[source]
     return newsim
+
+
+def simrank_similarity_numpy(
+    G,
+    source=None,
+    target=None,
+    importance_factor=0.9,
+    max_iterations=100,
+    tolerance=1e-4,
+):
+    """Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.
+
+    .. deprecated:: 2.6
+        simrank_similarity_numpy is deprecated and will be removed in networkx 3.0.
+        Use simrank_similarity
+
+    """
+    warnings.warn(
+        (
+            "networkx.simrank_similarity_numpy is deprecated and will be removed"
+            "in NetworkX 3.0, use networkx.simrank_similarity instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return _simrank_similarity_numpy(
+        G,
+        source,
+        target,
+        importance_factor,
+        max_iterations,
+        tolerance,
+    )
+
+
+# TODO replace w/ math.comb(n, k) for Python 3.8+
+def _n_choose_k(n, k):
+    """Pure Python implementation of the binomial coefficient
+
+    The general equation is n! / (k! * (n - k)!). The below
+    implementation is a more efficient version.
+
+    Note: this will be removed in favor of Python 3.8's ``math.comb(n, k)``.
+
+    Parameters
+    ----------
+    n : int
+        Set of ``n`` elements
+    k : int
+        Unordered chosen subset of length ``k``
+
+    Returns
+    -------
+    binomial_coeff : int
+        The number of ways (disregarding order) that k objects
+        can be chosen from among n objects.
+
+    Examples
+    --------
+    >>> _n_choose_k(5, 2)
+    10
+    >>> _n_choose_k(5, 4)
+    5
+    >>> _n_choose_k(100, 100)
+    1
+
+    """
+    if k > n:
+        return 0
+    if n == k:
+        return 1
+    elif k < n - k:
+        return reduce(mul, range(n - k + 1, n + 1)) // math.factorial(k)
+    else:
+        return reduce(mul, range(k + 1, n + 1)) // math.factorial(n - k)
+
+
+def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
+    r"""Returns the Panther similarity of nodes in the graph `G` to node ``v``.
+
+    Panther is a similarity metric that says "two objects are considered
+    to be similar if they frequently appear on the same paths." [1]_.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A NetworkX graph
+    source : node
+        Source node for which to find the top `k` similar other nodes
+    k : int (default = 5)
+        The number of most similar nodes to return
+    path_length : int (default = 5)
+        How long the randomly generated paths should be (``T`` in [1]_)
+    c : float (default = 0.5)
+        A universal positive constant used to scale the number
+        of sample random paths to generate.
+    delta : float (default = 0.1)
+        The probability that the similarity $S$ is not an epsilon-approximation to (R, phi),
+        where $R$ is the number of random paths and $\phi$ is the probability
+        that an element sampled from a set $A \subseteq D$, where $D$ is the domain.
+    eps : float or None (default = None)
+        The error bound. Per [1]_, a good value is ``sqrt(1/|E|)``. Therefore,
+        if no value is provided, the recommended computed value will be used.
+
+    Returns
+    -------
+    similarity : dictionary
+        Dictionary of nodes to similarity scores (as floats). Note:
+        the self-similarity (i.e., ``v``) will not be included in
+        the returned dictionary.
+
+    Examples
+    --------
+    >>> G = nx.star_graph(10)
+    >>> sim = nx.panther_similarity(G, 0)
+
+    References
+    ----------
+    .. [1] Zhang, J., Tang, J., Ma, C., Tong, H., Jing, Y., & Li, J.
+           Panther: Fast top-k similarity search on large networks.
+           In Proceedings of the ACM SIGKDD International Conference
+           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).
+           Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
+    """
+    import numpy as np
+
+    num_nodes = G.number_of_nodes()
+    if num_nodes < k:
+        warnings.warn(
+            f"Number of nodes is {num_nodes}, but requested k is {k}. "
+            "Setting k to number of nodes."
+        )
+        k = num_nodes
+    # According to [1], they empirically determined
+    # a good value for ``eps`` to be sqrt( 1 / |E| )
+    if eps is None:
+        eps = np.sqrt(1.0 / G.number_of_edges())
+
+    inv_node_map = {name: index for index, name in enumerate(G.nodes)}
+    node_map = np.array(G)
+
+    # Calculate the sample size ``R`` for how many paths
+    # to randomly generate
+    t_choose_2 = _n_choose_k(path_length, 2)
+    sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
+    index_map = {}
+    _ = list(
+        generate_random_paths(
+            G, sample_size, path_length=path_length, index_map=index_map
+        )
+    )
+    S = np.zeros(num_nodes)
+
+    inv_sample_size = 1 / sample_size
+
+    source_paths = set(index_map[source])
+
+    # Calculate the path similarities
+    # between ``source`` (v) and ``node`` (v_j)
+    # using our inverted index mapping of
+    # vertices to paths
+    for node, paths in index_map.items():
+        # Only consider paths where both
+        # ``node`` and ``source`` are present
+        common_paths = source_paths.intersection(paths)
+        S[inv_node_map[node]] = len(common_paths) * inv_sample_size
+
+    # Retrieve top ``k`` similar
+    # Note: the below performed anywhere from 4-10x faster
+    # (depending on input sizes) vs the equivalent ``np.argsort(S)[::-1]``
+    top_k_unsorted = np.argpartition(S, -k)[-k:]
+    top_k_sorted = top_k_unsorted[np.argsort(S[top_k_unsorted])][::-1]
+
+    # Add back the similarity scores
+    top_k_sorted_names = map(lambda n: node_map[n], top_k_sorted)
+    top_k_with_val = dict(zip(top_k_sorted_names, S[top_k_sorted]))
+
+    # Remove the self-similarity
+    top_k_with_val.pop(source, None)
+    return top_k_with_val
+
+
+def generate_random_paths(G, sample_size, path_length=5, index_map=None):
+    """Randomly generate `sample_size` paths of length `path_length`.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A NetworkX graph
+    sample_size : integer
+        The number of paths to generate. This is ``R`` in [1]_.
+    path_length : integer (default = 5)
+        The maximum size of the path to randomly generate.
+        This is ``T`` in [1]_. According to the paper, ``T >= 5`` is
+        recommended.
+    index_map : dictionary, optional
+        If provided, this will be populated with the inverted
+        index of nodes mapped to the set of generated random path
+        indices within ``paths``.
+
+    Returns
+    -------
+    paths : generator of lists
+        Generator of `sample_size` paths each with length `path_length`.
+
+    Examples
+    --------
+    Note that the return value is the list of paths:
+
+    >>> G = nx.star_graph(3)
+    >>> random_path = nx.generate_random_paths(G, 2)
+
+    By passing a dictionary into `index_map`, it will build an
+    inverted index mapping of nodes to the paths in which that node is present:
+
+    >>> G = nx.star_graph(3)
+    >>> index_map = {}
+    >>> random_path = nx.generate_random_paths(G, 3, index_map=index_map)
+    >>> paths_containing_node_0 = [random_path[path_idx] for path_idx in index_map.get(0, [])]
+
+    References
+    ----------
+    .. [1] Zhang, J., Tang, J., Ma, C., Tong, H., Jing, Y., & Li, J.
+           Panther: Fast top-k similarity search on large networks.
+           In Proceedings of the ACM SIGKDD International Conference
+           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).
+           Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
+    """
+    import numpy as np
+
+    # Calculate transition probabilities between
+    # every pair of vertices according to Eq. (3)
+    adj_mat = nx.to_numpy_array(G)
+    inv_row_sums = np.reciprocal(adj_mat.sum(axis=1)).reshape(-1, 1)
+    transition_probabilities = adj_mat * inv_row_sums
+
+    node_map = np.array(G)
+    num_nodes = G.number_of_nodes()
+
+    for path_index in range(sample_size):
+        # Sample current vertex v = v_i uniformly at random
+        node_index = np.random.randint(0, high=num_nodes)
+        node = node_map[node_index]
+
+        # Add v into p_r and add p_r into the path set
+        # of v, i.e., P_v
+        path = [node]
+
+        # Build the inverted index (P_v) of vertices to paths
+        if index_map is not None:
+            if node in index_map:
+                index_map[node].add(path_index)
+            else:
+                index_map[node] = {path_index}
+
+        starting_index = node_index
+        for _ in range(path_length):
+            # Randomly sample a neighbor (v_j) according
+            # to transition probabilities from ``node`` (v) to its neighbors
+            neighbor_index = np.random.choice(
+                num_nodes, p=transition_probabilities[starting_index]
+            )
+
+            # Set current vertex (v = v_j)
+            starting_index = neighbor_index
+
+            # Add v into p_r
+            neighbor_node = node_map[neighbor_index]
+            path.append(neighbor_node)
+
+            # Add p_r into P_v
+            if index_map is not None:
+                if neighbor_node in index_map:
+                    index_map[neighbor_node].add(path_index)
+                else:
+                    index_map[neighbor_node] = {path_index}
+
+        yield path

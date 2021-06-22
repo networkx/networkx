@@ -35,8 +35,8 @@ import networkx
 from networkx.utils import open_file
 
 
-@open_file(1, mode='w')
-def write_p2g(G, path, encoding='utf-8'):
+@open_file(1, mode="w")
+def write_p2g(G, path, encoding="utf-8"):
     """Write NetworkX graph in p2g format.
 
     Notes
@@ -56,8 +56,8 @@ def write_p2g(G, path, encoding='utf-8'):
         path.write("\n".encode(encoding))
 
 
-@open_file(0, mode='r')
-def read_p2g(path, encoding='utf-8'):
+@open_file(0, mode="r")
+def read_p2g(path, encoding="utf-8"):
     """Read graph in p2g format from path.
 
     Returns

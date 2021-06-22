@@ -3,7 +3,7 @@ from itertools import groupby
 import pytest
 
 import networkx as nx
-from networkx.testing import assert_edges_equal, assert_nodes_equal
+from networkx.utils import nodes_equal, edges_equal
 from networkx import graph_atlas
 from networkx import graph_atlas_g
 from networkx.generators.atlas import NUM_GRAPHS
@@ -23,8 +23,8 @@ class TestAtlasGraph:
 
     def test_graph(self):
         G = graph_atlas(6)
-        assert_nodes_equal(G.nodes(), range(3))
-        assert_edges_equal(G.edges(), [(0, 1), (0, 2)])
+        assert nodes_equal(G.nodes(), range(3))
+        assert edges_equal(G.edges(), [(0, 1), (0, 2)])
 
 
 class TestAtlasGraphG:
@@ -66,7 +66,7 @@ class TestAtlasGraphG:
         # There are three exceptions to this rule in the order given in
         # the "Atlas of Graphs" book, so we need to manually exclude
         # those.
-        exceptions = [('G55', 'G56'), ('G1007', 'G1008'), ('G1012', 'G1013')]
+        exceptions = [("G55", "G56"), ("G1007", "G1008"), ("G1012", "G1013")]
         for n, group in groupby(self.GAG, key=nx.number_of_nodes):
             for m, group in groupby(group, key=nx.number_of_edges):
                 for G1, G2 in pairwise(group):

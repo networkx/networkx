@@ -1,3 +1,16 @@
+"""
+Testing
+=======
+
+General guidelines for writing good tests:
+
+- doctests always assume ``import networkx as nx`` so don't add that
+- prefer pytest fixtures over classes with setup methods.
+- use the ``@pytest.mark.parametrize``  decorator
+- use ``pytest.importskip`` for numpy, scipy, pandas, and matplotlib b/c of PyPy.
+  and add the module to the relevant entries below.
+
+"""
 import pytest
 import networkx
 import sys
@@ -28,28 +41,134 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def set_warnings():
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning,
-        message="literal_stringizer is deprecated*",
+        "ignore", category=DeprecationWarning, message=r"Ordered.* is deprecated"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning,
-        message="literal_destringizer is deprecated*",
+        "ignore",
+        category=DeprecationWarning,
+        message="literal_stringizer is deprecated",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning,
-        message="is_string_like is deprecated*"
+        "ignore",
+        category=DeprecationWarning,
+        message="literal_destringizer is deprecated",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning,
-        message="make_str is deprecated*"
+        "ignore", category=DeprecationWarning, message="is_string_like is deprecated"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning,
-        message="context_manager reversed is deprecated*"
+        "ignore", category=DeprecationWarning, message="\nauthority_matrix"
     )
     warnings.filterwarnings(
-        "ignore", category=PendingDeprecationWarning,
-        message="the matrix subclass is not the recommended way*",
+        "ignore", category=DeprecationWarning, message="\nhub_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="default_opener is deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="empty_generator is deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="make_str is deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="generate_unique_node is deprecated",
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="context manager reversed is deprecated",
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="This will return a generator in 3.0*",
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="betweenness_centrality_source"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="edge_betweeness"
+    )
+    warnings.filterwarnings(
+        "ignore", category=PendingDeprecationWarning, message="the matrix subclass"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="to_numpy_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="from_numpy_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="networkx.pagerank_numpy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="networkx.pagerank_scipy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="write_gpickle"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="read_gpickle"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_shp")
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_shp")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="edges_from_line"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_yaml")
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_yaml")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="FilterAtlas.copy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="FilterAdjacency.copy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="FilterMultiAdjacency.copy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="FilterMultiInner.copy"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_data")
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_graph")
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="consume")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="iterable is deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=FutureWarning,
+        message="\nThe function signature for cytoscape",
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\nThe `attrs` keyword"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="preserve_random_state"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="`almost_equal`"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="`assert_nodes_equal`"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="`assert_edges_equal`"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="`assert_graphs_equal`"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="networkx.hits_scipy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="networkx.hits_numpy"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="preserve_random_state"
     )
 
 

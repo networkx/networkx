@@ -15,29 +15,45 @@ alternative algorithms.
 Examples
 --------
 
->>> import networkx as nx
->>> 
+>>>
 >>> # HMM graph with five states and observation nodes
-... g= nx.DiGraph()
->>> g.add_edges_from([('S1', 'S2'), ('S2', 'S3'), ('S3', 'S4'), ('S4', 'S5'),
-...                   ('S1', 'O1'), ('S2', 'O2'), ('S3', 'O3'), ('S4', 'O4'),
-...                   ('S5', 'O5')])
->>> 
+... g = nx.DiGraph()
+>>> g.add_edges_from(
+...     [
+...         ("S1", "S2"),
+...         ("S2", "S3"),
+...         ("S3", "S4"),
+...         ("S4", "S5"),
+...         ("S1", "O1"),
+...         ("S2", "O2"),
+...         ("S3", "O3"),
+...         ("S4", "O4"),
+...         ("S5", "O5"),
+...     ]
+... )
+>>>
 >>> # states/obs before 'S3' are d-separated from states/obs after 'S3'
-... nx.d_separated(g, {'S1', 'S2', 'O1', 'O2'}, {'S4', 'S5', 'O4', 'O5'}, {'S3'})
+... nx.d_separated(g, {"S1", "S2", "O1", "O2"}, {"S4", "S5", "O4", "O5"}, {"S3"})
 True
 
 
 References
 ----------
 
-..  [1] Pearl, J.  (2009).  Causality.  Cambridge: Cambridge University Press.
+.. [1] Pearl, J.  (2009).  Causality.  Cambridge: Cambridge University Press.
 
-..  [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks.  Cambridge: Cambridge University Press.
+.. [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks. 
+   Cambridge: Cambridge University Press.
 
-..  [3] Shachter, R.  D.  (1998).  Bayes-ball: rational pastime (for determining irrelevance and requisite information in belief networks and influence diagrams).  In , Proceedings of the Fourteenth Conference on Uncertainty in Artificial Intelligence (pp.  480–487).  San Francisco, CA, USA: Morgan Kaufmann Publishers Inc.
+.. [3] Shachter, R.  D.  (1998).
+   Bayes-ball: rational pastime (for determining irrelevance and requisite
+   information in belief networks and influence diagrams).
+   In , Proceedings of the Fourteenth Conference on Uncertainty in Artificial
+   Intelligence (pp.  480–487).
+   San Francisco, CA, USA: Morgan Kaufmann Publishers Inc.
 
-..  [4] Koller, D., & Friedman, N. (2009). Probabilistic graphical models: principles and techniques. The MIT Press.
+.. [4] Koller, D., & Friedman, N. (2009).
+   Probabilistic graphical models: principles and techniques. The MIT Press.
 
 """
 
@@ -51,8 +67,7 @@ __all__ = ["d_separated"]
 
 
 @not_implemented_for("undirected")
-def d_separated(G: nx.DiGraph, x: AbstractSet, y: AbstractSet,
-                z: AbstractSet) -> bool:
+def d_separated(G: nx.DiGraph, x: AbstractSet, y: AbstractSet, z: AbstractSet) -> bool:
     """
     Return whether node sets ``x`` and ``y`` are d-separated by ``z``.
 
@@ -93,9 +108,8 @@ def d_separated(G: nx.DiGraph, x: AbstractSet, y: AbstractSet,
 
     union_xyz = x.union(y).union(z)
 
-    if any((n not in G.nodes for n in union_xyz)):
-        raise nx.NodeNotFound(
-            "one or more specified nodes not found in the graph")
+    if any(n not in G.nodes for n in union_xyz):
+        raise nx.NodeNotFound("one or more specified nodes not found in the graph")
 
     G_copy = G.copy()
 

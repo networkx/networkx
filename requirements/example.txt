@@ -1,0 +1,6 @@
+osmnx>=1.1
+momepy>=0.4
+contextily>=1.1
+seaborn>=0.11
+cairocffi>=1.2
+python-igraph>=0.9

@@ -5,19 +5,46 @@ These are not imported into the base networkx namespace but
 can be accessed, for example, as
 
 >>> import networkx
->>> networkx.utils.is_list_of_ints([1, 2, 3])
-True
->>> networkx.utils.is_list_of_ints([1, 2, "spam"])
-False
+>>> networkx.utils.make_list_of_ints({1, 2, 3})
+[1, 2, 3]
+>>> networkx.utils.arbitrary_element({5, 1, 7})  # doctest: +SKIP
+1
 """
 
-from collections import defaultdict
-from collections import deque
+from collections import defaultdict, deque
+from collections.abc import Iterable, Iterator, Sized
 import warnings
 import sys
 import uuid
 from itertools import tee, chain
 import networkx as nx
+
+__all__ = [
+    "is_string_like",
+    "iterable",
+    "empty_generator",
+    "flatten",
+    "make_list_of_ints",
+    "is_list_of_ints",
+    "make_str",
+    "generate_unique_node",
+    "default_opener",
+    "dict_to_numpy_array",
+    "dict_to_numpy_array1",
+    "dict_to_numpy_array2",
+    "is_iterator",
+    "arbitrary_element",
+    "consume",
+    "pairwise",
+    "groups",
+    "to_tuple",
+    "create_random_state",
+    "create_py_random_state",
+    "PythonRandomInterface",
+    "nodes_equal",
+    "edges_equal",
+    "graphs_equal",
+]
 
 
 # some cookbook stuff
@@ -26,15 +53,30 @@ import networkx as nx
 
 
 def is_string_like(obj):  # from John Hunter, types-free version
-    """Check if obj is string."""
-    msg = "is_string_like is deprecated and will be removed in 2.6." \
-          "Use isinstance(obj, str) instead."
+    """Check if obj is string.
+
+    .. deprecated:: 2.6
+        This is deprecated and will be removed in NetworkX v3.0.
+    """
+    msg = (
+        "is_string_like is deprecated and will be removed in 3.0."
+        "Use isinstance(obj, str) instead."
+    )
     warnings.warn(msg, DeprecationWarning)
     return isinstance(obj, str)
 
 
 def iterable(obj):
-    """ Return True if obj is iterable with a well-defined len()."""
+    """Return True if obj is iterable with a well-defined len().
+
+    .. deprecated:: 2.6
+        This is deprecated and will be removed in NetworkX v3.0.
+    """
+    msg = (
+        "iterable is deprecated and will be removed in 3.0."
+        "Use isinstance(obj, (collections.abc.Iterable, collections.abc.Sized)) instead."
+    )
+    warnings.warn(msg, DeprecationWarning)
     if hasattr(obj, "__iter__"):
         return True
     try:
@@ -44,18 +86,30 @@ def iterable(obj):
     return True
 
 
+def empty_generator():
+    """Return a generator with no members.
+
+    .. deprecated:: 2.6
+    """
+    warnings.warn(
+        "empty_generator is deprecated and will be removed in v3.0.",
+        DeprecationWarning,
+    )
+    return (i for i in ())
+
+
 def flatten(obj, result=None):
-    """ Return flattened version of (possibly nested) iterable object. """
-    if not iterable(obj) or is_string_like(obj):
+    """Return flattened version of (possibly nested) iterable object."""
+    if not isinstance(obj, (Iterable, Sized)) or isinstance(obj, str):
         return obj
     if result is None:
         result = []
     for item in obj:
-        if not iterable(item) or is_string_like(item):
+        if not isinstance(item, (Iterable, Sized)) or isinstance(item, str):
             result.append(item)
         else:
             flatten(item, result)
-    return obj.__class__(result)
+    return tuple(result)
 
 
 def make_list_of_ints(sequence):
@@ -95,7 +149,16 @@ def make_list_of_ints(sequence):
 
 
 def is_list_of_ints(intlist):
-    """ Return True if list is a list of ints. """
+    """Return True if list is a list of ints.
+
+    .. deprecated:: 2.6
+        This is deprecated and will be removed in NetworkX v3.0.
+    """
+    msg = (
+        "is_list_of_ints is deprecated and will be removed in 3.0."
+        "See also: ``networkx.utils.make_list_of_ints.``"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     if not isinstance(intlist, list):
         return False
     for i in intlist:
@@ -105,19 +168,36 @@ def is_list_of_ints(intlist):
 
 
 def make_str(x):
-    """Returns the string representation of t."""
-    msg = "make_str is deprecated and will be removed in 2.6. Use str instead."
+    """Returns the string representation of t.
+
+    .. deprecated:: 2.6
+        This is deprecated and will be removed in NetworkX v3.0.
+    """
+    msg = "make_str is deprecated and will be removed in 3.0. Use str instead."
     warnings.warn(msg, DeprecationWarning)
     return str(x)
 
 
 def generate_unique_node():
-    """ Generate a unique node label."""
-    return str(uuid.uuid1())
+    """Generate a unique node label.
+
+    .. deprecated:: 2.6
+        This is deprecated and will be removed in NetworkX v3.0.
+    """
+    msg = "generate_unique_node is deprecated and will be removed in 3.0. Use uuid.uuid4 instead."
+    warnings.warn(msg, DeprecationWarning)
+    return str(uuid.uuid4())
 
 
 def default_opener(filename):
     """Opens `filename` using system's default program.
+
+    .. deprecated:: 2.6
+       default_opener is deprecated and will be removed in version 3.0.
+       Consider an image processing library to open images, such as Pillow::
+
+           from PIL import Image
+           Image.open(filename).show()
 
     Parameters
     ----------
@@ -125,12 +205,18 @@ def default_opener(filename):
         The path of the file to be opened.
 
     """
+    warnings.warn(
+        "default_opener is deprecated and will be removed in version 3.0. ",
+        DeprecationWarning,
+    )
     from subprocess import call
 
-    cmds = {'darwin': ['open'],
-            'linux': ['xdg-open'],
-            'linux2': ['xdg-open'],
-            'win32': ['cmd.exe', '/C', 'start', '']}
+    cmds = {
+        "darwin": ["open"],
+        "linux": ["xdg-open"],
+        "linux2": ["xdg-open"],
+        "win32": ["cmd.exe", "/C", "start", ""],
+    }
     cmd = cmds[sys.platform] + [filename]
     call(cmd)
 
@@ -151,14 +237,15 @@ def dict_to_numpy_array2(d, mapping=None):
     with optional mapping.
 
     """
-    import numpy
+    import numpy as np
+
     if mapping is None:
         s = set(d.keys())
         for k, v in d.items():
             s.update(v.keys())
         mapping = dict(zip(s, range(len(s))))
     n = len(mapping)
-    a = numpy.zeros((n, n))
+    a = np.zeros((n, n))
     for k1, i in mapping.items():
         for k2, j in mapping.items():
             try:
@@ -173,12 +260,13 @@ def dict_to_numpy_array1(d, mapping=None):
     with optional mapping.
 
     """
-    import numpy
+    import numpy as np
+
     if mapping is None:
         s = set(d.keys())
         mapping = dict(zip(s, range(len(s))))
     n = len(mapping)
-    a = numpy.zeros(n)
+    a = np.zeros(n)
     for k1, i in mapping.items():
         i = mapping[k1]
         a[i] = d[k1]
@@ -186,11 +274,17 @@ def dict_to_numpy_array1(d, mapping=None):
 
 
 def is_iterator(obj):
-    """Returns True if and only if the given object is an iterator
-    object.
+    """Returns True if and only if the given object is an iterator object.
 
+    .. deprecated:: 2.6.0
+        Deprecated in favor of ``isinstance(obj, collections.abc.Iterator)``
     """
-    has_next_attr = hasattr(obj, '__next__') or hasattr(obj, 'next')
+    msg = (
+        "is_iterator is deprecated and will be removed in version 3.0. "
+        "Use ``isinstance(obj, collections.abc.Iterator)`` instead."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
+    has_next_attr = hasattr(obj, "__next__") or hasattr(obj, "next")
     return iter(obj) is obj and has_next_attr
 
 
@@ -198,34 +292,84 @@ def arbitrary_element(iterable):
     """Returns an arbitrary element of `iterable` without removing it.
 
     This is most useful for "peeking" at an arbitrary element of a set,
-    but can be used for any list, dictionary, etc., as well::
+    but can be used for any list, dictionary, etc., as well.
 
-        >>> arbitrary_element({3, 2, 1})
+    Parameters
+    ----------
+    iterable : `abc.collections.Iterable` instance
+        Any object that implements ``__iter__``, e.g. set, dict, list, tuple,
+        etc.
+
+    Returns
+    -------
+    The object that results from ``next(iter(iterable))``
+
+    Raises
+    ------
+    ValueError
+        If `iterable` is an iterator (because the current implementation of
+        this function would consume an element from the iterator).
+
+    Examples
+    --------
+    Arbitrary elements from common Iterable objects:
+
+    >>> arbitrary_element([1, 2, 3])  # list
+    1
+    >>> arbitrary_element((1, 2, 3))  # tuple
+    1
+    >>> arbitrary_element({1, 2, 3})  # set
+    1
+    >>> d = {k: v for k, v in zip([1, 2, 3], [3, 2, 1])}
+    >>> arbitrary_element(d)  # dict_keys
+    1
+    >>> arbitrary_element(d.values())   # dict values
+    3
+
+    `str` is also an Iterable:
+
+    >>> arbitrary_element("hello")
+    'h'
+
+    :exc:`ValueError` is raised if `iterable` is an iterator:
+
+    >>> iterator = iter([1, 2, 3])  # Iterator, *not* Iterable
+    >>> arbitrary_element(iterator)
+    Traceback (most recent call last):
+        ...
+    ValueError: cannot return an arbitrary item from an iterator
+
+    Notes
+    -----
+    This function does not return a *random* element. If `iterable` is
+    ordered, sequential calls will return the same value::
+
+        >>> l = [1, 2, 3]
+        >>> arbitrary_element(l)
         1
-        >>> arbitrary_element('hello')
-        'h'
-
-    This function raises a :exc:`ValueError` if `iterable` is an
-    iterator (because the current implementation of this function would
-    consume an element from the iterator)::
-
-        >>> iterator = iter([1, 2, 3])
-        >>> arbitrary_element(iterator)
-        Traceback (most recent call last):
-            ...
-        ValueError: cannot return an arbitrary item from an iterator
+        >>> arbitrary_element(l)
+        1
 
     """
-    if is_iterator(iterable):
-        raise ValueError('cannot return an arbitrary item from an iterator')
+    if isinstance(iterable, Iterator):
+        raise ValueError("cannot return an arbitrary item from an iterator")
     # Another possible implementation is ``for x in iterable: return x``.
     return next(iter(iterable))
 
 
 # Recipe from the itertools documentation.
 def consume(iterator):
-    "Consume the iterator entirely."
+    """Consume the iterator entirely.
+
+    .. deprecated:: 2.6
+        This is deprecated and will be removed in NetworkX v3.0.
+    """
     # Feed the entire iterator into a zero-length deque.
+    msg = (
+        "consume is deprecated and will be removed in version 3.0. "
+        "Use ``collections.deque(iterator, maxlen=0)`` instead."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     deque(iterator, maxlen=0)
 
 
@@ -248,13 +392,12 @@ def groups(many_to_one):
     The return value is a dictionary mapping values from `many_to_one`
     to sets of keys from `many_to_one` that have that value.
 
-    For example::
-
-        >>> from networkx.utils import groups
-        >>> many_to_one = {'a': 1, 'b': 1, 'c': 2, 'd': 3, 'e': 3}
-        >>> groups(many_to_one)  # doctest: +SKIP
-        {1: {'a', 'b'}, 2: {'c'}, 3: {'d', 'e'}}
-
+    Examples
+    --------
+    >>> from networkx.utils import groups
+    >>> many_to_one = {"a": 1, "b": 1, "c": 2, "d": 3, "e": 3}
+    >>> groups(many_to_one)  # doctest: +SKIP
+    {1: {'a', 'b'}, 2: {'c'}, 3: {'e', 'd'}}
     """
     one_to_many = defaultdict(set)
     for v, k in many_to_one.items():
@@ -265,13 +408,12 @@ def groups(many_to_one):
 def to_tuple(x):
     """Converts lists to tuples.
 
-    For example::
-
-        >>> from networkx.utils import to_tuple
-        >>> a_list = [1, 2, [1, 4]]
-        >>> to_tuple(a_list)
-        (1, 2, (1, 4))
-
+    Examples
+    --------
+    >>> from networkx.utils import to_tuple
+    >>> a_list = [1, 2, [1, 4]]
+    >>> to_tuple(a_list)
+    (1, 2, (1, 4))
     """
     if not isinstance(x, (tuple, list)):
         return x
@@ -297,20 +439,24 @@ def create_random_state(random_state=None):
         return random_state
     if isinstance(random_state, int):
         return np.random.RandomState(random_state)
-    msg = f"{random_state} cannot be used to generate a numpy.random.RandomState instance"
+    msg = (
+        f"{random_state} cannot be used to generate a numpy.random.RandomState instance"
+    )
     raise ValueError(msg)
 
 
 class PythonRandomInterface:
-    try:
-        def __init__(self, rng=None):
-            import numpy
-            if rng is None:
-                self._rng = numpy.random.mtrand._rand
+    def __init__(self, rng=None):
+        try:
+            import numpy as np
+        except ImportError:
+            msg = "numpy not found, only random.random available."
+            warnings.warn(msg, ImportWarning)
+
+        if rng is None:
+            self._rng = np.random.mtrand._rand
+        else:
             self._rng = rng
-    except ImportError:
-        msg = 'numpy not found, only random.random available.'
-        warnings.warn(msg, ImportWarning)
 
     def random(self):
         return self._rng.random_sample()
@@ -330,8 +476,8 @@ class PythonRandomInterface:
     def shuffle(self, seq):
         return self._rng.shuffle(seq)
 
-#    Some methods don't match API for numpy RandomState.
-#    Commented out versions are not used by NetworkX
+    #    Some methods don't match API for numpy RandomState.
+    #    Commented out versions are not used by NetworkX
 
     def sample(self, seq, k):
         return self._rng.choice(list(seq), size=(k,), replace=False)
@@ -339,13 +485,14 @@ class PythonRandomInterface:
     def randint(self, a, b):
         return self._rng.randint(a, b + 1)
 
-#    exponential as expovariate with 1/argument,
+    #    exponential as expovariate with 1/argument,
     def expovariate(self, scale):
-        return self._rng.exponential(1/scale)
+        return self._rng.exponential(1 / scale)
 
-#    pareto as paretovariate with 1/argument,
+    #    pareto as paretovariate with 1/argument,
     def paretovariate(self, shape):
         return self._rng.pareto(shape)
+
 
 #    weibull as weibullvariate multiplied by beta,
 #    def weibullvariate(self, alpha, beta):
@@ -375,8 +522,10 @@ def create_py_random_state(random_state=None):
         if a PythonRandomInterface instance, return it
     """
     import random
+
     try:
         import numpy as np
+
         if random_state is np.random:
             return PythonRandomInterface(np.random.mtrand._rand)
         if isinstance(random_state, np.random.RandomState):
@@ -394,3 +543,107 @@ def create_py_random_state(random_state=None):
         return random.Random(random_state)
     msg = f"{random_state} cannot be used to generate a random.Random instance"
     raise ValueError(msg)
+
+
+def nodes_equal(nodes1, nodes2):
+    """Check if nodes are equal.
+
+    Equality here means equal as Python objects.
+    Node data must match if included.
+    The order of nodes is not relevant.
+
+    Parameters
+    ----------
+    nodes1, nodes2 : iterables of nodes, or (node, datadict) tuples
+
+    Returns
+    -------
+    bool
+        True if nodes are equal, False otherwise.
+    """
+    nlist1 = list(nodes1)
+    nlist2 = list(nodes2)
+    try:
+        d1 = dict(nlist1)
+        d2 = dict(nlist2)
+    except (ValueError, TypeError):
+        d1 = dict.fromkeys(nlist1)
+        d2 = dict.fromkeys(nlist2)
+    return d1 == d2
+
+
+def edges_equal(edges1, edges2):
+    """Check if edges are equal.
+
+    Equality here means equal as Python objects.
+    Edge data must match if included.
+    The order of the edges is not relevant.
+
+    Parameters
+    ----------
+    edges1, edges2 : iterables of with u, v nodes as
+        edge tuples (u, v), or
+        edge tuples with data dicts (u, v, d), or
+        edge tuples with keys and data dicts (u, v, k, d)
+
+    Returns
+    -------
+    bool
+        True if edges are equal, False otherwise.
+    """
+    from collections import defaultdict
+
+    d1 = defaultdict(dict)
+    d2 = defaultdict(dict)
+    c1 = 0
+    for c1, e in enumerate(edges1):
+        u, v = e[0], e[1]
+        data = [e[2:]]
+        if v in d1[u]:
+            data = d1[u][v] + data
+        d1[u][v] = data
+        d1[v][u] = data
+    c2 = 0
+    for c2, e in enumerate(edges2):
+        u, v = e[0], e[1]
+        data = [e[2:]]
+        if v in d2[u]:
+            data = d2[u][v] + data
+        d2[u][v] = data
+        d2[v][u] = data
+    if c1 != c2:
+        return False
+    # can check one direction because lengths are the same.
+    for n, nbrdict in d1.items():
+        for nbr, datalist in nbrdict.items():
+            if n not in d2:
+                return False
+            if nbr not in d2[n]:
+                return False
+            d2datalist = d2[n][nbr]
+            for data in datalist:
+                if datalist.count(data) != d2datalist.count(data):
+                    return False
+    return True
+
+
+def graphs_equal(graph1, graph2):
+    """Check if graphs are equal.
+
+    Equality here means equal as Python objects (not isomorphism).
+    Node, edge and graph data must match.
+
+    Parameters
+    ----------
+    graph1, graph2 : graph
+
+    Returns
+    -------
+    bool
+        True if graphs are equal, False otherwise.
+    """
+    return (
+        graph1.adj == graph2.adj
+        and graph1.nodes == graph2.nodes
+        and graph1.graph == graph2.graph
+    )

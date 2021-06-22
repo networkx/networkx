@@ -13,12 +13,13 @@ letter, resulting in 14,135 edges. This example is described in Section 1.1 of
 
 The data file can be found at:
 
-- https://github.com/networkx/networkx/blob/master/examples/graph/words_dat.txt.gz
+- https://github.com/networkx/networkx/blob/main/examples/graph/words_dat.txt.gz
 """
 
 import gzip
 from string import ascii_lowercase as lowercase
 
+import matplotlib.pyplot as plt
 import networkx as nx
 
 
@@ -61,14 +62,31 @@ def words_graph():
 G = words_graph()
 print("Loaded words_dat.txt containing 5757 five-letter English words.")
 print("Two words are connected if they differ in one letter.")
-print(f"Graph has {nx.number_of_nodes(G)} nodes with {nx.number_of_edges(G)} edges")
+print(G)
 print(f"{nx.number_connected_components(G)} connected components")
 
 for (source, target) in [("chaos", "order"), ("nodes", "graph"), ("pound", "marks")]:
     print(f"Shortest path between {source} and {target} is")
     try:
-        sp = nx.shortest_path(G, source, target)
-        for n in sp:
+        shortest_path = nx.shortest_path(G, source, target)
+        for n in shortest_path:
             print(n)
     except nx.NetworkXNoPath:
         print("None")
+
+
+# draw a subset of the graph
+boundary = list(nx.node_boundary(G, shortest_path))
+G.add_nodes_from(shortest_path, color="red")
+G.add_nodes_from(boundary, color="blue")
+H = G.subgraph(shortest_path + boundary)
+colors = nx.get_node_attributes(H, "color")
+options = {
+    "node_size": 1500,
+    "alpha": 0.3,
+    "node_color": colors.values(),
+}
+pos = nx.kamada_kawai_layout(H)
+nx.draw(H, pos, **options)
+nx.draw_networkx_labels(H, pos, font_weight="bold")
+plt.show()

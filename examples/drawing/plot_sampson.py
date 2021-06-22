@@ -9,7 +9,7 @@ Shows how to read data from a zip file and plot multiple frames.
 
 The data file can be found at:
 
-- https://github.com/networkx/networkx/blob/master/examples/drawing/sampson_data.zip
+- https://github.com/networkx/networkx/blob/main/examples/drawing/sampson_data.zip
 """
 
 import zipfile
@@ -26,7 +26,7 @@ with zipfile.ZipFile("sampson_data.zip") as zf:
 G1 = nx.read_edgelist(e1, delimiter="\t")
 G2 = nx.read_edgelist(e2, delimiter="\t")
 G3 = nx.read_edgelist(e3, delimiter="\t")
-pos = nx.spring_layout(G3, iterations=100)
+pos = nx.spring_layout(G3, iterations=100, seed=173)
 plt.clf()
 
 plt.subplot(221)
@@ -43,4 +43,5 @@ plt.title("samplike1,2,3")
 nx.draw(G3, pos, edgelist=list(G3.edges()), node_size=50, with_labels=False)
 nx.draw_networkx_edges(G1, pos, alpha=0.25)
 nx.draw_networkx_edges(G2, pos, alpha=0.25)
+plt.tight_layout()
 plt.show()

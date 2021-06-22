@@ -1,8 +1,6 @@
 import networkx as nx
 
-__all__ = ['degree_centrality',
-           'betweenness_centrality',
-           'closeness_centrality']
+__all__ = ["degree_centrality", "betweenness_centrality", "closeness_centrality"]
 
 
 def degree_centrality(G, nodes):
@@ -26,10 +24,10 @@ def degree_centrality(G, nodes):
 
     See Also
     --------
-    betweenness_centrality,
-    closeness_centrality,
-    sets,
-    is_bipartite
+    betweenness_centrality
+    closeness_centrality
+    :func:`~networkx.algorithms.bipartite.basic.sets`
+    :func:`~networkx.algorithms.bipartite.basic.is_bipartite`
 
     Notes
     -----
@@ -61,7 +59,7 @@ def degree_centrality(G, nodes):
     .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
-        http://www.steveborgatti.com/research/publications/bhaffiliations.pdf
+        https://dx.doi.org/10.4135/9781446294413.n28
     """
     top = set(nodes)
     bottom = set(G) - top
@@ -124,10 +122,10 @@ def betweenness_centrality(G, nodes):
 
     See Also
     --------
-    degree_centrality,
-    closeness_centrality,
-    sets,
-    is_bipartite
+    degree_centrality
+    closeness_centrality
+    :func:`~networkx.algorithms.bipartite.basic.sets`
+    :func:`~networkx.algorithms.bipartite.basic.is_bipartite`
 
     Notes
     -----
@@ -142,7 +140,7 @@ def betweenness_centrality(G, nodes):
     .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
-        http://www.steveborgatti.com/research/publications/bhaffiliations.pdf
+        https://dx.doi.org/10.4135/9781446294413.n28
     """
     top = set(nodes)
     bottom = set(G) - top
@@ -150,16 +148,19 @@ def betweenness_centrality(G, nodes):
     m = float(len(bottom))
     s = (n - 1) // m
     t = (n - 1) % m
-    bet_max_top = (((m**2) * ((s + 1)**2)) +
-                   (m * (s + 1) * (2 * t - s - 1)) -
-                   (t * ((2 * s) - t + 3))) / 2.0
+    bet_max_top = (
+        ((m ** 2) * ((s + 1) ** 2))
+        + (m * (s + 1) * (2 * t - s - 1))
+        - (t * ((2 * s) - t + 3))
+    ) / 2.0
     p = (m - 1) // n
     r = (m - 1) % n
-    bet_max_bot = (((n**2) * ((p + 1)**2)) +
-                   (n * (p + 1) * (2 * r - p - 1)) -
-                   (r * ((2 * p) - r + 3))) / 2.0
-    betweenness = nx.betweenness_centrality(G, normalized=False,
-                                            weight=None)
+    bet_max_bot = (
+        ((n ** 2) * ((p + 1) ** 2))
+        + (n * (p + 1) * (2 * r - p - 1))
+        - (r * ((2 * p) - r + 3))
+    ) / 2.0
+    betweenness = nx.betweenness_centrality(G, normalized=False, weight=None)
     for node in top:
         betweenness[node] /= bet_max_top
     for node in bottom:
@@ -193,10 +194,10 @@ def closeness_centrality(G, nodes, normalized=True):
 
     See Also
     --------
-    betweenness_centrality,
+    betweenness_centrality
     degree_centrality
-    sets,
-    is_bipartite
+    :func:`~networkx.algorithms.bipartite.basic.sets`
+    :func:`~networkx.algorithms.bipartite.basic.is_bipartite`
 
     Notes
     -----
@@ -236,7 +237,7 @@ def closeness_centrality(G, nodes, normalized=True):
     .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
-        http://www.steveborgatti.com/research/publications/bhaffiliations.pdf
+        https://dx.doi.org/10.4135/9781446294413.n28
     """
     closeness = {}
     path_length = nx.single_source_shortest_path_length

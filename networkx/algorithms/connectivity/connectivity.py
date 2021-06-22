@@ -29,7 +29,9 @@ __all__ = [
 ]
 
 
-def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None):
+def local_node_connectivity(
+    G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None
+):
     r"""Computes local node connectivity for nodes s and t.
 
     Local node connectivity for two non adjacent nodes s and t is the
@@ -110,15 +112,14 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None, residual=No
     >>> import itertools
     >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
-    >>> from networkx.algorithms.connectivity import (
-    ...     build_auxiliary_node_connectivity)
+    >>> from networkx.algorithms.connectivity import build_auxiliary_node_connectivity
     ...
     >>> H = build_auxiliary_node_connectivity(G)
     >>> # And the function for building the residual network from the
     >>> # flow package
     >>> from networkx.algorithms.flow import build_residual_network
     >>> # Note that the auxiliary digraph has an edge attribute named capacity
-    >>> R = build_residual_network(H, 'capacity')
+    >>> R = build_residual_network(H, "capacity")
     >>> result = dict.fromkeys(G, dict())
     >>> # Reuse the auxiliary digraph and the residual network by passing them
     >>> # as parameters
@@ -483,7 +484,9 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     return all_pairs
 
 
-def local_edge_connectivity(G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None):
+def local_edge_connectivity(
+    G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None
+):
     r"""Returns local edge connectivity for nodes s and t in G.
 
     Local edge connectivity for two nodes s and t is the minimum number
@@ -563,14 +566,13 @@ def local_edge_connectivity(G, s, t, flow_func=None, auxiliary=None, residual=No
     >>> import itertools
     >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
-    >>> from networkx.algorithms.connectivity import (
-    ...     build_auxiliary_edge_connectivity)
+    >>> from networkx.algorithms.connectivity import build_auxiliary_edge_connectivity
     >>> H = build_auxiliary_edge_connectivity(G)
     >>> # And the function for building the residual network from the
     >>> # flow package
     >>> from networkx.algorithms.flow import build_residual_network
     >>> # Note that the auxiliary digraph has an edge attribute named capacity
-    >>> R = build_residual_network(H, 'capacity')
+    >>> R = build_residual_network(H, "capacity")
     >>> result = dict.fromkeys(G, dict())
     >>> # Reuse the auxiliary digraph and the residual network by passing them
     >>> # as parameters

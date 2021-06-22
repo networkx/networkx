@@ -80,5 +80,5 @@ A* Algorithm
    :toctree: generated/
 
    astar_path
-   astar_path_length   
+   astar_path_length
 

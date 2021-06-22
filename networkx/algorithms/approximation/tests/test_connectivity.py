@@ -7,9 +7,29 @@ from networkx.algorithms import approximation as approx
 def test_global_node_connectivity():
     # Figure 1 chapter on Connectivity
     G = nx.Graph()
-    G.add_edges_from([(1, 2), (1, 3), (1, 4), (1, 5), (2, 3), (2, 6), (3, 4),
-                      (3, 6), (4, 6), (4, 7), (5, 7), (6, 8), (6, 9), (7, 8),
-                      (7, 10), (8, 11), (9, 10), (9, 11), (10, 11)])
+    G.add_edges_from(
+        [
+            (1, 2),
+            (1, 3),
+            (1, 4),
+            (1, 5),
+            (2, 3),
+            (2, 6),
+            (3, 4),
+            (3, 6),
+            (4, 6),
+            (4, 7),
+            (5, 7),
+            (6, 8),
+            (6, 9),
+            (7, 8),
+            (7, 10),
+            (8, 11),
+            (9, 10),
+            (9, 11),
+            (10, 11),
+        ]
+    )
     assert 2 == approx.local_node_connectivity(G, 1, 11)
     assert 2 == approx.node_connectivity(G)
     assert 2 == approx.node_connectivity(G, 1, 11)
@@ -49,6 +69,7 @@ def test_petersen():
     assert 3 == approx.node_connectivity(G)
     assert 3 == approx.node_connectivity(G, 0, 5)
 
+
 # Approximation fails with tutte graph
 # def test_tutte():
 #    G = nx.tutte_graph()
@@ -65,6 +86,7 @@ def test_octahedral():
     G = nx.octahedral_graph()
     assert 4 == approx.node_connectivity(G)
     assert 4 == approx.node_connectivity(G, 0, 5)
+
 
 # Approximation can fail with icosahedral graph depending
 # on iteration order.
@@ -109,7 +131,6 @@ def test_directed_node_connectivity():
 
 
 class TestAllPairsNodeConnectivityApprox:
-
     @classmethod
     def setup_class(cls):
         cls.path = nx.path_graph(7)
@@ -121,9 +142,17 @@ class TestAllPairsNodeConnectivityApprox:
         cls.K20 = nx.complete_graph(20)
         cls.K10 = nx.complete_graph(10)
         cls.K5 = nx.complete_graph(5)
-        cls.G_list = [cls.path, cls.directed_path, cls.cycle,
-                      cls.directed_cycle, cls.gnp, cls.directed_gnp, cls.K10,
-                      cls.K5, cls.K20]
+        cls.G_list = [
+            cls.path,
+            cls.directed_path,
+            cls.cycle,
+            cls.directed_cycle,
+            cls.gnp,
+            cls.directed_gnp,
+            cls.K10,
+            cls.K5,
+            cls.K20,
+        ]
 
     def test_cycles(self):
         K_undir = approx.all_pairs_node_connectivity(self.cycle)

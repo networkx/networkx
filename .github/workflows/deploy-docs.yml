@@ -1,0 +1,77 @@
+name: deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  documentation:
+
+    # Do not attempt to deploy documentation on forks
+    if: github.repository_owner == 'networkx'
+
+    runs-on: Ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Before install
+      run: |
+        sudo apt-get update
+        sudo apt-get install libgdal-dev graphviz graphviz-dev
+        sudo apt-get install texlive texlive-latex-extra latexmk texlive-xetex
+        sudo apt-get install fonts-freefont-otf xindy
+        sudo apt-get install libspatialindex-dev
+
+    - name: Install packages
+      run: |
+        pip install --upgrade pip wheel setuptools
+        pip install -r requirements.txt
+        pip install -r requirements/extra.txt
+        pip install -r requirements/example.txt
+        pip install -U -r requirements/doc.txt
+        export CPLUS_INCLUDE_PATH=/usr/include/gdal
+        export C_INCLUDE_PATH=/usr/include/gdal
+        pip install gdal==3.0.4
+        pip install .
+        pip list
+
+    # To set up a cross-repository deploy key:
+    # 1. Create a key pair:
+    #   `ssh-keygen -t ed25519 -C "nx_doc_deploy_bot@nomail"`
+    # 2. Add the public key to the networkx/documentation repo
+    #   - Settings -> Deploy keys -> Add new
+    #   - Make sure the key has write permissions
+    # 3. Add private key as a secret to networkx/networkx repo
+    #   - Settings -> Secrets -> New Repository Secret
+    #   - Make sure the name is the same as below: CI_DEPLOY_KEY
+    - name: Install SSH agent
+      if: github.ref == 'refs/heads/main'
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+        ssh-private-key: ${{ secrets.CI_DEPLOY_KEY }}
+
+    - name: Build docs
+      if: github.ref == 'refs/heads/main'
+      run: |
+        export DISPLAY=:99
+        make -C doc/ html
+        make -C doc/ latexpdf LATEXOPTS="-file-line-error -halt-on-error"
+        cp -a doc/build/latex/networkx_reference.pdf doc/build/html/_downloads/.
+
+    - name: Deploy docs
+      if: github.ref == 'refs/heads/main'
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        GIT_CONFIG_NAME: nx-doc-deploy-bot
+        GIT_CONFIG_EMAIL: nx-doc-deploy-bot@nomail
+        FOLDER: doc/build/html
+        REPOSITORY_NAME: networkx/documentation
+        BRANCH: gh-pages
+        TARGET_FOLDER: latest
+        SSH: true
+

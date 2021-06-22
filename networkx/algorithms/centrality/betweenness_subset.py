@@ -1,16 +1,21 @@
 """Betweenness centrality measures for subsets of nodes."""
+import warnings
 
-from networkx.algorithms.centrality.betweenness import\
-    _single_source_dijkstra_path_basic as dijkstra
-from networkx.algorithms.centrality.betweenness import\
-    _single_source_shortest_path_basic as shortest_path
+from networkx.algorithms.centrality.betweenness import (
+    _single_source_dijkstra_path_basic as dijkstra,
+)
+from networkx.algorithms.centrality.betweenness import (
+    _single_source_shortest_path_basic as shortest_path,
+)
 
-__all__ = ['betweenness_centrality_subset', 'betweenness_centrality_source',
-           'edge_betweenness_centrality_subset']
+__all__ = [
+    "betweenness_centrality_subset",
+    "betweenness_centrality_source",
+    "edge_betweenness_centrality_subset",
+]
 
 
-def betweenness_centrality_subset(G, sources, targets, normalized=False,
-                                  weight=None):
+def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=None):
     r"""Compute betweenness centrality for a subset of nodes.
 
     .. math::
@@ -44,6 +49,8 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False,
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     Returns
     -------
@@ -87,26 +94,27 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False,
     ----------
     .. [1] Ulrik Brandes, A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
-       http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+       https://doi.org/10.1080/0022250X.2001.9990249
     .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
-       http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
+       https://doi.org/10.1016/j.socnet.2007.11.001
     """
     b = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     for s in sources:
         # single source shortest paths
         if weight is None:  # use BFS
-            S, P, sigma = shortest_path(G, s)
+            S, P, sigma, _ = shortest_path(G, s)
         else:  # use Dijkstra's algorithm
-            S, P, sigma = dijkstra(G, s, weight)
+            S, P, sigma, _ = dijkstra(G, s, weight)
         b = _accumulate_subset(b, S, P, sigma, s, targets)
     b = _rescale(b, len(G), normalized=normalized, directed=G.is_directed())
     return b
 
 
-def edge_betweenness_centrality_subset(G, sources, targets, normalized=False,
-                                       weight=None):
+def edge_betweenness_centrality_subset(
+    G, sources, targets, normalized=False, weight=None
+):
     r"""Compute betweenness centrality for edges for a subset of nodes.
 
     .. math::
@@ -137,6 +145,8 @@ def edge_betweenness_centrality_subset(G, sources, targets, normalized=False,
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     Returns
     -------
@@ -165,20 +175,20 @@ def edge_betweenness_centrality_subset(G, sources, targets, normalized=False,
     ----------
     .. [1] Ulrik Brandes, A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
-       http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+       https://doi.org/10.1080/0022250X.2001.9990249
     .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
-       http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
+       https://doi.org/10.1016/j.socnet.2007.11.001
     """
     b = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     b.update(dict.fromkeys(G.edges(), 0.0))  # b[e] for e in G.edges()
     for s in sources:
         # single source shortest paths
         if weight is None:  # use BFS
-            S, P, sigma = shortest_path(G, s)
+            S, P, sigma, _ = shortest_path(G, s)
         else:  # use Dijkstra's algorithm
-            S, P, sigma = dijkstra(G, s, weight)
+            S, P, sigma, _ = dijkstra(G, s, weight)
         b = _accumulate_edges_subset(b, S, P, sigma, s, targets)
     for n in G:  # remove nodes to only return edges
         del b[n]
@@ -187,13 +197,13 @@ def edge_betweenness_centrality_subset(G, sources, targets, normalized=False,
 
 
 # obsolete name
-def betweenness_centrality_source(G, normalized=True, weight=None,
-                                  sources=None):
+def betweenness_centrality_source(G, normalized=True, weight=None, sources=None):
+    msg = "betweenness_centrality_source --> betweenness_centrality_subset"
+    warnings.warn(msg, DeprecationWarning)
     if sources is None:
         sources = G.nodes()
     targets = list(G)
-    return betweenness_centrality_subset(G, sources, targets, normalized,
-                                         weight)
+    return betweenness_centrality_subset(G, sources, targets, normalized, weight)
 
 
 def _accumulate_subset(betweenness, S, P, sigma, s, targets):

@@ -3,8 +3,7 @@ from itertools import product
 
 import pytest
 import networkx as nx
-from networkx.testing import assert_nodes_equal
-from networkx.testing import assert_edges_equal
+from networkx.utils import nodes_equal, edges_equal
 
 
 class TestPruferSequence:
@@ -28,7 +27,7 @@ class TestPruferSequence:
 
     def test_bad_integer_labels(self):
         with pytest.raises(KeyError):
-            T = nx.Graph(nx.utils.pairwise('abc'))
+            T = nx.Graph(nx.utils.pairwise("abc"))
             nx.to_prufer_sequence(T)
 
     def test_encoding(self):
@@ -46,26 +45,24 @@ class TestPruferSequence:
         # Example from Wikipedia.
         sequence = [3, 3, 3, 4]
         tree = nx.from_prufer_sequence(sequence)
-        assert_nodes_equal(list(tree), list(range(6)))
+        assert nodes_equal(list(tree), list(range(6)))
         edges = [(0, 3), (1, 3), (2, 3), (3, 4), (4, 5)]
-        assert_edges_equal(list(tree.edges()), edges)
+        assert edges_equal(list(tree.edges()), edges)
 
     def test_decoding2(self):
         # Example from "An Optimal Algorithm for Prufer Codes".
         sequence = [2, 4, 0, 1, 3, 3]
         tree = nx.from_prufer_sequence(sequence)
-        assert_nodes_equal(list(tree), list(range(8)))
+        assert nodes_equal(list(tree), list(range(8)))
         edges = [(0, 1), (0, 4), (1, 3), (2, 4), (2, 5), (3, 6), (3, 7)]
-        assert_edges_equal(list(tree.edges()), edges)
+        assert edges_equal(list(tree.edges()), edges)
 
     def test_inverse(self):
-        """Tests that the encoding and decoding functions are inverses.
-
-        """
+        """Tests that the encoding and decoding functions are inverses."""
         for T in nx.nonisomorphic_trees(4):
             T2 = nx.from_prufer_sequence(nx.to_prufer_sequence(T))
-            assert_nodes_equal(list(T), list(T2))
-            assert_edges_equal(list(T.edges()), list(T2.edges()))
+            assert nodes_equal(list(T), list(T2))
+            assert edges_equal(list(T.edges()), list(T2.edges()))
 
         for seq in product(range(4), repeat=2):
             seq2 = nx.to_prufer_sequence(nx.from_prufer_sequence(seq))
@@ -73,9 +70,7 @@ class TestPruferSequence:
 
 
 class TestNestedTuple:
-    """Unit tests for the nested tuple encoding and decoding functions.
-
-    """
+    """Unit tests for the nested tuple encoding and decoding functions."""
 
     def test_nontree(self):
         with pytest.raises(nx.NotATree):
@@ -85,13 +80,13 @@ class TestNestedTuple:
     def test_unknown_root(self):
         with pytest.raises(nx.NodeNotFound):
             G = nx.path_graph(2)
-            nx.to_nested_tuple(G, 'bogus')
+            nx.to_nested_tuple(G, "bogus")
 
     def test_encoding(self):
         T = nx.full_rary_tree(2, 2 ** 3 - 1)
         expected = (((), ()), ((), ()))
         actual = nx.to_nested_tuple(T, 0)
-        assert_nodes_equal(expected, actual)
+        assert nodes_equal(expected, actual)
 
     def test_canonical_form(self):
         T = nx.Graph()
@@ -113,5 +108,5 @@ class TestNestedTuple:
         balanced = (((), ()), ((), ()))
         T = nx.from_nested_tuple(balanced, sensible_relabeling=True)
         edges = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]
-        assert_nodes_equal(list(T), list(range(2 ** 3 - 1)))
-        assert_edges_equal(list(T.edges()), edges)
+        assert nodes_equal(list(T), list(range(2 ** 3 - 1)))
+        assert edges_equal(list(T.edges()), edges)

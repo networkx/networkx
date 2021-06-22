@@ -1,3 +1,6 @@
+import warnings
+
+
 def run(verbosity=1, doctest=False):
     """Run NetworkX tests.
 
@@ -9,13 +12,20 @@ def run(verbosity=1, doctest=False):
     doctest: bool, optional
       True to run doctests in code modules
     """
+    warnings.warn(
+        (
+            "`run` is deprecated and will be removed in version 3.0.\n"
+            "Call `pytest` directly from the commandline instead.\n"
+        ),
+        DeprecationWarning,
+    )
 
     import pytest
 
-    pytest_args = ['-l']
+    pytest_args = ["-l"]
 
     if verbosity and int(verbosity) > 1:
-        pytest_args += ["-" + "v"*(int(verbosity)-1)]
+        pytest_args += ["-" + "v" * (int(verbosity) - 1)]
 
     if doctest:
         pytest_args += ["--doctest-modules"]
@@ -27,7 +37,7 @@ def run(verbosity=1, doctest=False):
     except SystemExit as exc:
         code = exc.code
 
-    return (code == 0)
+    return code == 0
 
 
 if __name__ == "__main__":

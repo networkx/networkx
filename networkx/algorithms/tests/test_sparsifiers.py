@@ -61,7 +61,7 @@ def _assign_random_weights(G, seed=None):
         See :ref:`Randomness<randomness>`.
     """
     for u, v in G.edges():
-        G[u][v]['weight'] = seed.random()
+        G[u][v]["weight"] = seed.random()
 
 
 def test_spanner_trivial():
@@ -70,7 +70,7 @@ def test_spanner_trivial():
     spanner = nx.spanner(G, 1, seed=_seed)
 
     for u, v in G.edges:
-        assert(spanner.has_edge(u, v))
+        assert spanner.has_edge(u, v)
 
 
 def test_spanner_unweighted_complete_graph():
@@ -89,11 +89,11 @@ def test_spanner_weighted_complete_graph():
     G = nx.complete_graph(20)
     _assign_random_weights(G, seed=_seed)
 
-    spanner = nx.spanner(G, 4, weight='weight', seed=_seed)
-    _test_spanner(G, spanner, 4, weight='weight')
+    spanner = nx.spanner(G, 4, weight="weight", seed=_seed)
+    _test_spanner(G, spanner, 4, weight="weight")
 
-    spanner = nx.spanner(G, 10, weight='weight', seed=_seed)
-    _test_spanner(G, spanner, 10, weight='weight')
+    spanner = nx.spanner(G, 10, weight="weight", seed=_seed)
+    _test_spanner(G, spanner, 10, weight="weight")
 
 
 def test_spanner_unweighted_gnp_graph():
@@ -112,11 +112,11 @@ def test_spanner_weighted_gnp_graph():
     G = nx.gnp_random_graph(20, 0.4, seed=_seed)
     _assign_random_weights(G, seed=_seed)
 
-    spanner = nx.spanner(G, 4, weight='weight', seed=_seed)
-    _test_spanner(G, spanner, 4, weight='weight')
+    spanner = nx.spanner(G, 4, weight="weight", seed=_seed)
+    _test_spanner(G, spanner, 4, weight="weight")
 
-    spanner = nx.spanner(G, 10, weight='weight', seed=_seed)
-    _test_spanner(G, spanner, 10, weight='weight')
+    spanner = nx.spanner(G, 10, weight="weight", seed=_seed)
+    _test_spanner(G, spanner, 10, weight="weight")
 
 
 def test_spanner_unweighted_disconnected_graph():

@@ -1,0 +1,41 @@
+name: coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  report:
+    runs-on: Ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: [3.8]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Before install
+      run: |
+        sudo apt-get update
+        sudo apt-get install libgdal-dev graphviz graphviz-dev
+
+    - name: Install packages
+      run: |
+        pip install --upgrade pip wheel setuptools
+        pip install -r requirements.txt
+        pip install -r requirements/extra.txt
+        export CPLUS_INCLUDE_PATH=/usr/include/gdal
+        export C_INCLUDE_PATH=/usr/include/gdal
+        pip install gdal==3.0.4
+        pip install .
+        pip list
+
+    - name: Test NetworkX
+      run: |
+        pytest --cov=networkx --runslow --doctest-modules --pyargs networkx
+        codecov

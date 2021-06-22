@@ -5,8 +5,8 @@ import pytest
 import networkx as nx
 from networkx.algorithms.community import lukes_partitioning
 
-EWL = 'e_weight'
-NWL = 'n_weight'
+EWL = "e_weight"
+NWL = "n_weight"
 
 
 # first test from the Lukes original paper
@@ -40,9 +40,10 @@ def paper_1_case(float_edge_wt=False, explicit_node_wt=True, directed=False):
         wtu = None
 
     # partitioning
-    clusters_1 = {frozenset(x) for x in
-                  lukes_partitioning(example_1, limit,
-                                     node_weight=wtu, edge_weight=EWL)}
+    clusters_1 = {
+        frozenset(x)
+        for x in lukes_partitioning(example_1, limit, node_weight=wtu, edge_weight=EWL)
+    }
 
     return clusters_1
 
@@ -67,42 +68,42 @@ def paper_2_case(explicit_edge_wt=True, directed=False):
         wtu = None
 
     # graph creation
-    example_2.add_edge('name', 'home_address', **edic)
-    example_2.add_edge('name', 'education', **edic)
-    example_2.add_edge('education', 'bs', **edic)
-    example_2.add_edge('education', 'ms', **edic)
-    example_2.add_edge('education', 'phd', **edic)
-    example_2.add_edge('name', 'telephone', **edic)
-    example_2.add_edge('telephone', 'home', **edic)
-    example_2.add_edge('telephone', 'office', **edic)
-    example_2.add_edge('office', 'no1', **edic)
-    example_2.add_edge('office', 'no2', **edic)
+    example_2.add_edge("name", "home_address", **edic)
+    example_2.add_edge("name", "education", **edic)
+    example_2.add_edge("education", "bs", **edic)
+    example_2.add_edge("education", "ms", **edic)
+    example_2.add_edge("education", "phd", **edic)
+    example_2.add_edge("name", "telephone", **edic)
+    example_2.add_edge("telephone", "home", **edic)
+    example_2.add_edge("telephone", "office", **edic)
+    example_2.add_edge("office", "no1", **edic)
+    example_2.add_edge("office", "no2", **edic)
 
-    example_2.nodes['name'][NWL] = 20
-    example_2.nodes['education'][NWL] = 10
-    example_2.nodes['bs'][NWL] = 1
-    example_2.nodes['ms'][NWL] = 1
-    example_2.nodes['phd'][NWL] = 1
-    example_2.nodes['home_address'][NWL] = 8
-    example_2.nodes['telephone'][NWL] = 8
-    example_2.nodes['home'][NWL] = 8
-    example_2.nodes['office'][NWL] = 4
-    example_2.nodes['no1'][NWL] = 1
-    example_2.nodes['no2'][NWL] = 1
+    example_2.nodes["name"][NWL] = 20
+    example_2.nodes["education"][NWL] = 10
+    example_2.nodes["bs"][NWL] = 1
+    example_2.nodes["ms"][NWL] = 1
+    example_2.nodes["phd"][NWL] = 1
+    example_2.nodes["home_address"][NWL] = 8
+    example_2.nodes["telephone"][NWL] = 8
+    example_2.nodes["home"][NWL] = 8
+    example_2.nodes["office"][NWL] = 4
+    example_2.nodes["no1"][NWL] = 1
+    example_2.nodes["no2"][NWL] = 1
 
     # partitioning
-    clusters_2 = {frozenset(x) for x in
-                  lukes_partitioning(example_2,
-                                     byte_block_size,
-                                     node_weight=NWL,
-                                     edge_weight=wtu)}
+    clusters_2 = {
+        frozenset(x)
+        for x in lukes_partitioning(
+            example_2, byte_block_size, node_weight=NWL, edge_weight=wtu
+        )
+    }
 
     return clusters_2
 
 
 def test_paper_1_case():
-    ground_truth = {frozenset([1, 4]),
-                    frozenset([2, 3, 5])}
+    ground_truth = {frozenset([1, 4]), frozenset([2, 3, 5])}
 
     tf = (True, False)
     for flt, nwt, drc in product(tf, tf, tf):
@@ -111,10 +112,11 @@ def test_paper_1_case():
 
 
 def test_paper_2_case():
-    ground_truth = {frozenset(['education', 'bs', 'ms', 'phd']),
-                    frozenset(['name', 'home_address']),
-                    frozenset(['telephone', 'home', 'office', 'no1', 'no2']),
-                    }
+    ground_truth = {
+        frozenset(["education", "bs", "ms", "phd"]),
+        frozenset(["name", "home_address"]),
+        frozenset(["telephone", "home", "office", "no1", "no2"]),
+    }
 
     tf = (True, False)
     for ewt, drc in product(tf, tf):
@@ -147,7 +149,6 @@ def test_mandatory_integrality():
     ex_1_broken.nodes[5][NWL] = 2
 
     with pytest.raises(TypeError):
-        lukes_partitioning(ex_1_broken,
-                           byte_block_size,
-                           node_weight=NWL,
-                           edge_weight=EWL)
+        lukes_partitioning(
+            ex_1_broken, byte_block_size, node_weight=NWL, edge_weight=EWL
+        )

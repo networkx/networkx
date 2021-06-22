@@ -4,8 +4,7 @@ Napoleon Russian Campaign
 =========================
 
 Minard's data from Napoleon's 1812-1813  Russian Campaign.
-http://www.math.yorku.ca/SCS/Gallery/minard/minard.txt
-
+https://web.archive.org/web/20080112042656/http://www.math.yorku.ca/SCS/Gallery/minard/minard.txt
 """
 
 import matplotlib.pyplot as plt

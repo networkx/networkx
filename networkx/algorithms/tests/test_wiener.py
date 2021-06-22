@@ -16,7 +16,7 @@ class TestWienerIndex:
         positive infinity.
 
         """
-        assert wiener_index(empty_graph(2)) == float('inf')
+        assert wiener_index(empty_graph(2)) == float("inf")
 
     def test_directed(self):
         """Tests that each pair of nodes in the directed graph is

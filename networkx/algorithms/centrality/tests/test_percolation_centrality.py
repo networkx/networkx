@@ -1,5 +1,5 @@
+import pytest
 import networkx as nx
-from networkx.testing import almost_equal
 
 
 def example1a_G():
@@ -37,7 +37,7 @@ class TestPercolationCentrality:
         p = nx.percolation_centrality(G)
         p_answer = {4: 0.625, 6: 0.667}
         for n in p_answer:
-            assert almost_equal(p[n], p_answer[n], places=3)
+            assert p[n] == pytest.approx(p_answer[n], abs=1e-3)
 
     def test_percolation_example1b(self):
         """percolation centrality: example 1a"""
@@ -45,36 +45,37 @@ class TestPercolationCentrality:
         p = nx.percolation_centrality(G)
         p_answer = {4: 0.825, 6: 0.4}
         for n in p_answer:
-            assert almost_equal(p[n], p_answer[n], places=3)
+            assert p[n] == pytest.approx(p_answer[n], abs=1e-3)
 
     def test_converge_to_betweenness(self):
         """percolation centrality: should converge to betweenness
         centrality when all nodes are percolated the same"""
         # taken from betweenness test test_florentine_families_graph
         G = nx.florentine_families_graph()
-        b_answer =\
-            {'Acciaiuoli':    0.000,
-             'Albizzi':       0.212,
-             'Barbadori':     0.093,
-             'Bischeri':      0.104,
-             'Castellani':    0.055,
-             'Ginori':        0.000,
-             'Guadagni':      0.255,
-             'Lamberteschi':  0.000,
-             'Medici':        0.522,
-             'Pazzi':         0.000,
-             'Peruzzi':       0.022,
-             'Ridolfi':       0.114,
-             'Salviati':      0.143,
-             'Strozzi':       0.103,
-             'Tornabuoni':    0.092}
+        b_answer = {
+            "Acciaiuoli": 0.000,
+            "Albizzi": 0.212,
+            "Barbadori": 0.093,
+            "Bischeri": 0.104,
+            "Castellani": 0.055,
+            "Ginori": 0.000,
+            "Guadagni": 0.255,
+            "Lamberteschi": 0.000,
+            "Medici": 0.522,
+            "Pazzi": 0.000,
+            "Peruzzi": 0.022,
+            "Ridolfi": 0.114,
+            "Salviati": 0.143,
+            "Strozzi": 0.103,
+            "Tornabuoni": 0.092,
+        }
 
         p_states = {k: 1.0 for k, v in b_answer.items()}
         p_answer = nx.percolation_centrality(G, states=p_states)
         for n in sorted(G):
-            assert almost_equal(p_answer[n], b_answer[n], places=3)
+            assert p_answer[n] == pytest.approx(b_answer[n], abs=1e-3)
 
         p_states = {k: 0.3 for k, v in b_answer.items()}
         p_answer = nx.percolation_centrality(G, states=p_states)
         for n in sorted(G):
-            assert almost_equal(p_answer[n], b_answer[n], places=3)
+            assert p_answer[n] == pytest.approx(b_answer[n], abs=1e-3)

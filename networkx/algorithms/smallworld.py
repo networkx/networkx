@@ -18,12 +18,12 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.utils import py_random_state
 
-__all__ = ['random_reference', 'lattice_reference', 'sigma', 'omega']
+__all__ = ["random_reference", "lattice_reference", "sigma", "omega"]
 
 
 @py_random_state(3)
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def random_reference(G, niter=1, connectivity=True, seed=None):
     """Compute a random graph by swapping edges of a given graph.
 
@@ -58,13 +58,11 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
            "Specificity and stability in topology of protein networks."
            Science 296.5569 (2002): 910-913.
     """
-    if G.is_directed():
-        msg = "random_reference() not defined for directed graphs."
-        raise nx.NetworkXError(msg)
     if len(G) < 4:
         raise nx.NetworkXError("Graph has less than four nodes.")
 
     from networkx.utils import cumulative_distribution, discrete_sequence
+
     local_conn = nx.connectivity.local_edge_connectivity
 
     G = G.copy()
@@ -72,8 +70,8 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
     cdf = cumulative_distribution(degrees)  # cdf of degree
     nnodes = len(G)
     nedges = nx.number_of_edges(G)
-    niter = niter*nedges
-    ntries = int(nnodes*nedges/(nnodes*(nnodes-1)/2))
+    niter = niter * nedges
+    ntries = int(nnodes * nedges / (nnodes * (nnodes - 1) / 2))
     swapcount = 0
 
     for i in range(niter):
@@ -89,8 +87,6 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
             # choose target uniformly from neighbors
             b = seed.choice(list(G.neighbors(a)))
             d = seed.choice(list(G.neighbors(c)))
-            bi = keys.index(b)
-            di = keys.index(d)
             if b in [a, c, d] or d in [a, b, c]:
                 continue  # all vertices should be different
 
@@ -116,8 +112,8 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
 
 
 @py_random_state(4)
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
     """Latticize the given graph by swapping edges.
 
@@ -160,11 +156,9 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
     """
     import numpy as np
     from networkx.utils import cumulative_distribution, discrete_sequence
+
     local_conn = nx.connectivity.local_edge_connectivity
 
-    if G.is_directed():
-        msg = "lattice_reference() not defined for directed graphs."
-        raise nx.NetworkXError(msg)
     if len(G) < 4:
         raise nx.NetworkXError("Graph has less than four nodes.")
     # Instead of choosing uniformly at random from a generated edge list,
@@ -183,10 +177,10 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
         u = np.append((0,), np.where(un < um, un, um))
 
         for v in range(int(np.ceil(nnodes / 2))):
-            D[nnodes - v - 1, :] = np.append(u[v + 1:], u[:v + 1])
+            D[nnodes - v - 1, :] = np.append(u[v + 1 :], u[: v + 1])
             D[v, :] = D[nnodes - v - 1, :][::-1]
 
-    niter = niter*nedges
+    niter = niter * nedges
     ntries = int(nnodes * nedges / (nnodes * (nnodes - 1) / 2))
     swapcount = 0
 
@@ -234,8 +228,8 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
 
 
 @py_random_state(3)
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def sigma(G, niter=100, nrand=10, seed=None):
     """Returns the small-world coefficient (sigma) of the given graph.
 
@@ -302,8 +296,8 @@ def sigma(G, niter=100, nrand=10, seed=None):
 
 
 @py_random_state(3)
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def omega(G, niter=100, nrand=10, seed=None):
     """Returns the small-world coefficient (omega) of a graph
 

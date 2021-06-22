@@ -1,11 +1,11 @@
 from networkx.utils import not_implemented_for
 from networkx.utils import py_random_state
 
-__all__ = ['average_clustering']
+__all__ = ["average_clustering"]
 
 
 @py_random_state(2)
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def average_clustering(G, trials=1000, seed=None):
     r"""Estimates the average clustering coefficient of G.
 
@@ -37,12 +37,19 @@ def average_clustering(G, trials=1000, seed=None):
     c : float
         Approximated average clustering coefficient.
 
+    Examples
+    --------
+    >>> from networkx.algorithms import approximation
+    >>> G = nx.erdos_renyi_graph(10, 0.2, seed=10)
+    >>> approximation.average_clustering(G, trials=1000, seed=10)
+    0.214
+
     References
     ----------
     .. [1] Schank, Thomas, and Dorothea Wagner. Approximating clustering
        coefficient and transitivity. Universität Karlsruhe, Fakultät für
        Informatik, 2004.
-       http://www.emis.ams.org/journals/JGAA/accepted/2005/SchankWagner2005.9.2.pdf
+       https://doi.org/10.5445/IR/1000001239
 
     """
     n = len(G)

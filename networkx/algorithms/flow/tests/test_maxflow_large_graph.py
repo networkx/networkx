@@ -11,7 +11,6 @@ from networkx.algorithms.flow import dinitz
 from networkx.algorithms.flow import edmonds_karp
 from networkx.algorithms.flow import preflow_push
 from networkx.algorithms.flow import shortest_augmenting_path
-from networkx.testing import almost_equal
 
 flow_funcs = [
     boykov_kolmogorov,
@@ -59,7 +58,7 @@ def validate_flows(G, s, t, soln_value, R, flow_func):
     excess = {u: 0 for u in flow_dict}
     for u in flow_dict:
         for v, flow in flow_dict[u].items():
-            assert flow <= G[u][v].get("capacity", float("inf")), errmsg 
+            assert flow <= G[u][v].get("capacity", float("inf")), errmsg
             assert flow >= 0, errmsg
             excess[u] -= flow
             excess[v] += flow
@@ -97,7 +96,7 @@ class TestMaxflowLargeGraph:
             kwargs["flow_func"] = flow_func
             errmsg = f"Assertion failed in function: {flow_func.__name__}"
             flow_value = nx.maximum_flow_value(G, (0, 0), "t", **kwargs)
-            assert almost_equal(flow_value, 1.0), errmsg
+            assert flow_value == pytest.approx(1.0, abs=1e-7)
 
     def test_gl1(self):
         G = read_graph("gl1")

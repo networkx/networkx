@@ -9,12 +9,11 @@ from networkx.algorithms.centrality.flow_matrix import (
     SuperLUInverseLaplacian,
 )
 
-__all__ = ['current_flow_closeness_centrality', 'information_centrality']
+__all__ = ["current_flow_closeness_centrality", "information_centrality"]
 
 
-@not_implemented_for('directed')
-def current_flow_closeness_centrality(G, weight=None,
-                                      dtype=float, solver='lu'):
+@not_implemented_for("directed")
+def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     """Compute current-flow closeness centrality for nodes.
 
     Current-flow closeness centrality is variant of closeness
@@ -29,6 +28,8 @@ def current_flow_closeness_centrality(G, weight=None,
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype: data type (default=float)
       Default data type for internal matrices.
@@ -60,20 +61,20 @@ def current_flow_closeness_centrality(G, weight=None,
        Centrality Measures Based on Current Flow.
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
+       https://doi.org/10.1007/978-3-540-31856-9_44
 
     .. [2] Karen Stephenson and Marvin Zelen:
        Rethinking centrality: Methods and examples.
        Social Networks 11(1):1-37, 1989.
        https://doi.org/10.1016/0378-8733(89)90016-6
     """
-    import numpy as np
-    import scipy
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
-    solvername = {"full": FullInverseLaplacian,
-                  "lu": SuperLUInverseLaplacian,
-                  "cg": CGInverseLaplacian}
+    solvername = {
+        "full": FullInverseLaplacian,
+        "lu": SuperLUInverseLaplacian,
+        "cg": CGInverseLaplacian,
+    }
     n = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
@@ -81,8 +82,9 @@ def current_flow_closeness_centrality(G, weight=None,
     H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
     betweenness = dict.fromkeys(H, 0.0)  # b[v]=0 for v in H
     n = H.number_of_nodes()
-    L = laplacian_sparse_matrix(H, nodelist=range(n), weight=weight,
-                                dtype=dtype, format='csc')
+    L = laplacian_sparse_matrix(
+        H, nodelist=range(n), weight=weight, dtype=dtype, format="csc"
+    )
     C2 = solvername[solver](L, width=1, dtype=dtype)  # initialize solver
     for v in H:
         col = C2.get_row(v)

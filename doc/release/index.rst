@@ -1,8 +1,5 @@
-:orphan:
-
-***********
-API changes
-***********
+Releases
+********
 
 We don't use semantic versioning.  The first number indicates that we have
 made a major API break (e.g., 1.x to 2.x), which has happened once and probably
@@ -18,6 +15,7 @@ period.
    :maxdepth: 2
 
    release_dev
+   release_2.5
    release_2.4
    release_2.3
    release_2.2
@@ -33,3 +31,4 @@ period.
    api_1.4
    api_1.0
    api_0.99
+   old_release_log

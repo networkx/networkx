@@ -1,13 +1,17 @@
-Announcement: NetworkX 2.2
-==========================
+NetworkX 2.2
+============
 
-We're happy to announce the release of NetworkX 2.2!
+Release date: 19 September 2018
+
+Supports Python 2.7, 3.5, 3.6 and 3.7.
+This is the last release to support Python 2.
+
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
-For more information, please visit our `website <http://networkx.github.io/>`_
+For more information, please visit our `website <https://networkx.org/>`_
 and our `gallery of examples
-<https://networkx.github.io/documentation/latest/auto_examples/index.html>`_.
+<https://networkx.org/documentation/latest/auto_examples/index.html>`_.
 Please send comments and questions to the `networkx-discuss mailing list
 <http://groups.google.com/group/networkx-discuss>`_.
 
@@ -103,8 +107,8 @@ And `GraphView`, `DiGraphView`, `MultiGraphView`, `MultiDiGraphView`
 are derecated in favor of `generic_graph_view(graph, create_using)`.
 
 
-Contributors to this release
-----------------------------
+Contributors
+------------
 
 - Luca Baldesi
 - William Bernoudy

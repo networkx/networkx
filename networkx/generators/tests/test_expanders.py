@@ -24,11 +24,10 @@ def test_margulis_gabber_galil_graph():
                 assert 0 <= i < n
 
     np = pytest.importorskip("numpy")
-    scipy = pytest.importorskip("scipy")
-    scipy.linalg = pytest.importorskip("scipy.linalg")
+    sp = pytest.importorskip("scipy")
     # Eigenvalues are already sorted using the scipy eigvalsh,
     # but the implementation in numpy does not guarantee order.
-    w = sorted(scipy.linalg.eigvalsh(adjacency_matrix(g).A))
+    w = sorted(sp.linalg.eigvalsh(adjacency_matrix(g).A))
     assert w[-2] < 5 * np.sqrt(2)
 
 
@@ -41,7 +40,7 @@ def test_chordal_cycle_graph():
         # TODO The second largest eigenvalue should be smaller than a constant,
         # independent of the number of nodes in the graph:
         #
-        #     eigs = sorted(scipy.linalg.eigvalsh(adjacency_matrix(G).A))
+        #     eigs = sorted(sp.linalg.eigvalsh(adjacency_matrix(G).A))
         #     assert_less(eigs[-2], ...)
         #
 
@@ -54,8 +53,8 @@ def test_paley_graph():
         # G has p nodes
         assert len(G) == p
         # G is (p-1)/2-regular
-        in_degrees = set([G.in_degree(node) for node in G.nodes])
-        out_degrees = set([G.out_degree(node) for node in G.nodes])
+        in_degrees = {G.in_degree(node) for node in G.nodes}
+        out_degrees = {G.out_degree(node) for node in G.nodes}
         assert len(in_degrees) == 1 and in_degrees.pop() == (p - 1) // 2
         assert len(out_degrees) == 1 and out_degrees.pop() == (p - 1) // 2
 
@@ -67,7 +66,5 @@ def test_paley_graph():
 
 
 def test_margulis_gabber_galil_graph_badinput():
-    pytest.raises(nx.NetworkXError, margulis_gabber_galil_graph, 3,
-                  nx.DiGraph())
-    pytest.raises(nx.NetworkXError, margulis_gabber_galil_graph, 3,
-                  nx.Graph())
+    pytest.raises(nx.NetworkXError, margulis_gabber_galil_graph, 3, nx.DiGraph())
+    pytest.raises(nx.NetworkXError, margulis_gabber_galil_graph, 3, nx.Graph())

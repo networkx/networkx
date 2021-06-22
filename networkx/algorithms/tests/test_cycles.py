@@ -24,7 +24,7 @@ class TestCycles:
         if len(b) != n:
             return False
         l = a + a
-        return any(l[i:i + n] == b for i in range(n))
+        return any(l[i : i + n] == b for i in range(n))
 
     def test_cycle_basis(self):
         G = self.G
@@ -41,8 +41,7 @@ class TestCycles:
         nx.add_cycle(G, "ABC")
         cy = networkx.cycle_basis(G, 9)
         sort_cy = sorted(sorted(c) for c in cy[:-1]) + [sorted(cy[-1])]
-        assert sort_cy == [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5],
-                           ['A', 'B', 'C']]
+        assert sort_cy == [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5], ["A", "B", "C"]]
 
     def test_cycle_basis2(self):
         with pytest.raises(nx.NetworkXNotImplemented):
@@ -71,7 +70,7 @@ class TestCycles:
     def test_unsortable(self):
         #  TODO What does this test do?  das 6/2013
         G = nx.DiGraph()
-        nx.add_cycle(G, ['a', 1])
+        nx.add_cycle(G, ["a", 1])
         c = list(nx.simple_cycles(G))
 
     def test_simple_cycles_small(self):
@@ -136,9 +135,23 @@ class TestCycles:
 
     def test_simple_graph_with_reported_bug(self):
         G = nx.DiGraph()
-        edges = [(0, 2), (0, 3), (1, 0), (1, 3), (2, 1), (2, 4),
-                 (3, 2), (3, 4), (4, 0), (4, 1), (4, 5), (5, 0),
-                 (5, 1), (5, 2), (5, 3)]
+        edges = [
+            (0, 2),
+            (0, 3),
+            (1, 0),
+            (1, 3),
+            (2, 1),
+            (2, 4),
+            (3, 2),
+            (3, 4),
+            (4, 0),
+            (4, 1),
+            (4, 5),
+            (5, 0),
+            (5, 1),
+            (5, 2),
+            (5, 3),
+        ]
         G.add_edges_from(edges)
         cc = sorted(nx.simple_cycles(G))
         assert len(cc) == 26
@@ -148,6 +161,7 @@ class TestCycles:
             assert any(self.is_cyclic_permutation(c, rc) for rc in rcc)
         for rc in rcc:
             assert any(self.is_cyclic_permutation(rc, c) for c in cc)
+
 
 # These tests might fail with hash randomization since they depend on
 # edge_dfs. For more information, see the comments in:
@@ -181,7 +195,7 @@ class TestFindCycle:
     def test_graph_orientation_original(self):
         G = nx.Graph(self.edges)
         G.add_edge(2, 0)
-        x = list(find_cycle(G, self.nodes, orientation='original'))
+        x = list(find_cycle(G, self.nodes, orientation="original"))
         x_ = [(0, 1, FORWARD), (1, 2, FORWARD), (2, 0, FORWARD)]
         assert x == x_
 
@@ -199,7 +213,7 @@ class TestFindCycle:
 
     def test_digraph_orientation_original(self):
         G = nx.DiGraph(self.edges)
-        x = list(find_cycle(G, self.nodes, orientation='original'))
+        x = list(find_cycle(G, self.nodes, orientation="original"))
         x_ = [(0, 1, FORWARD), (1, 0, FORWARD)]
         assert x == x_
 
@@ -220,19 +234,19 @@ class TestFindCycle:
 
     def test_digraph_ignore(self):
         G = nx.DiGraph(self.edges)
-        x = list(find_cycle(G, self.nodes, orientation='ignore'))
+        x = list(find_cycle(G, self.nodes, orientation="ignore"))
         x_ = [(0, 1, FORWARD), (1, 0, FORWARD)]
         assert x == x_
 
     def test_digraph_reverse(self):
         G = nx.DiGraph(self.edges)
-        x = list(find_cycle(G, self.nodes, orientation='reverse'))
+        x = list(find_cycle(G, self.nodes, orientation="reverse"))
         x_ = [(1, 0, REVERSE), (0, 1, REVERSE)]
         assert x == x_
 
     def test_multidigraph_ignore(self):
         G = nx.MultiDiGraph(self.edges)
-        x = list(find_cycle(G, self.nodes, orientation='ignore'))
+        x = list(find_cycle(G, self.nodes, orientation="ignore"))
         x_ = [(0, 1, 0, FORWARD), (1, 0, 0, FORWARD)]  # or (1, 0, 1, 1)
         assert x[0] == x_[0]
         assert x[1][:2] == x_[1][:2]
@@ -241,7 +255,7 @@ class TestFindCycle:
     def test_multidigraph_ignore2(self):
         # Loop traversed an edge while ignoring its orientation.
         G = nx.MultiDiGraph([(0, 1), (1, 2), (1, 2)])
-        x = list(find_cycle(G, [0, 1, 2], orientation='ignore'))
+        x = list(find_cycle(G, [0, 1, 2], orientation="ignore"))
         x_ = [(1, 2, 0, FORWARD), (1, 2, 1, REVERSE)]
         assert x == x_
 
@@ -251,14 +265,20 @@ class TestFindCycle:
         # when 4 is visited from the first time (so we must make sure that 4
         # is not visited from 2, and hence, we respect the edge orientation).
         G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 3), (4, 2)])
-        pytest.raises(nx.exception.NetworkXNoCycle,
-                      find_cycle, G, [0, 1, 2, 3, 4], orientation='original')
+        pytest.raises(
+            nx.exception.NetworkXNoCycle,
+            find_cycle,
+            G,
+            [0, 1, 2, 3, 4],
+            orientation="original",
+        )
 
     def test_dag(self):
         G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
-        pytest.raises(nx.exception.NetworkXNoCycle,
-                      find_cycle, G, orientation='original')
-        x = list(find_cycle(G, orientation='ignore'))
+        pytest.raises(
+            nx.exception.NetworkXNoCycle, find_cycle, G, orientation="original"
+        )
+        x = list(find_cycle(G, orientation="ignore"))
         assert x == [(0, 1, FORWARD), (1, 2, FORWARD), (0, 2, REVERSE)]
 
     def test_prev_explored(self):
@@ -305,7 +325,7 @@ class TestMinimumCycles:
         assert_basis_equal([sorted(c) for c in mcb], [[1, 2, 4], [2, 3, 4]])
 
     def test_weighted_diamond(self):
-        mcb = minimum_cycle_basis(self.diamond_graph, weight='weight')
+        mcb = minimum_cycle_basis(self.diamond_graph, weight="weight")
         assert_basis_equal([sorted(c) for c in mcb], [[1, 2, 4], [1, 2, 3, 4]])
 
     def test_dimensionality(self):

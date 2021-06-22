@@ -11,10 +11,10 @@ Helper Functions
 .. autosummary::
    :toctree: generated/
 
+   arbitrary_element
    is_string_like
    flatten
    iterable
-   is_list_of_ints
    make_list_of_ints
    make_str
    generate_unique_node
@@ -22,7 +22,9 @@ Helper Functions
    pairwise
    groups
    create_random_state
-
+   nodes_equal
+   edges_equal
+   graphs_equal
 
 Data Structures and Algorithms
 ------------------------------
@@ -56,6 +58,7 @@ Decorators
    nodes_or_number
    preserve_random_state
    random_state
+   argmap
 
 Cuthill-Mckee Ordering
 ----------------------

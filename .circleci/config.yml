@@ -1,0 +1,71 @@
+# See: https://circleci.com/docs/2.0/language-python/
+
+version: 2
+jobs:
+  build:
+    working_directory: ~/repo
+    docker:
+      - image: cimg/python:3.8
+
+    steps:
+      - checkout
+
+      - run:
+          name: Update apt-get
+          command: |
+            sudo apt-get update
+
+      - run:
+          name: Install Graphviz
+          command: |
+            sudo apt-get install graphviz libgraphviz-dev
+
+      - run:
+          name: Install TeX
+          command: |
+            sudo apt-get install texlive texlive-latex-extra latexmk texlive-xetex fonts-freefont-otf xindy
+
+      - run:
+          name: Install pysal dependencies
+          command: |
+            sudo apt-get install libspatialindex-dev
+      
+      - restore_cache:
+          keys:
+            - pip-cache-v1
+
+      - run:
+          name: Install Python dependencies
+          command: |
+            python3 -m venv venv
+            source venv/bin/activate
+            pip install --upgrade pip wheel setuptools
+            pip install -r requirements.txt
+            pip install -r requirements/extra.txt
+            pip install -r requirements/example.txt
+            pip install -r requirements/doc.txt
+            pip list
+
+      - save_cache:
+          key: pip-cache-v1
+          paths:
+            - ~/.cache/pip
+
+      - run:
+          name: Install
+          command: |
+            source venv/bin/activate
+            pip install -e .
+
+      - run:
+          name: Build docs
+          command: |
+            # NOTE: bad interaction w/ blas multithreading on circleci
+            export OMP_NUM_THREADS=1
+            source venv/bin/activate
+            make -C doc/ html
+            make -C doc/ latexpdf LATEXOPTS="-file-line-error -halt-on-error"
+            cp -a doc/build/latex/networkx_reference.pdf doc/build/html/_downloads/.
+
+      - store_artifacts:
+          path: doc/build/html

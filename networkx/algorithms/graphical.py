@@ -3,16 +3,17 @@
 import heapq
 import networkx as nx
 
-__all__ = ['is_graphical',
-           'is_multigraphical',
-           'is_pseudographical',
-           'is_digraphical',
-           'is_valid_degree_sequence_erdos_gallai',
-           'is_valid_degree_sequence_havel_hakimi',
-           ]
+__all__ = [
+    "is_graphical",
+    "is_multigraphical",
+    "is_pseudographical",
+    "is_digraphical",
+    "is_valid_degree_sequence_erdos_gallai",
+    "is_valid_degree_sequence_havel_hakimi",
+]
 
 
-def is_graphical(sequence, method='eg'):
+def is_graphical(sequence, method="eg"):
     """Returns True if sequence is a valid degree sequence.
 
     A degree sequence is valid if some graph can realize it.
@@ -24,8 +25,10 @@ def is_graphical(sequence, method='eg'):
 
     method : "eg" | "hh"  (default: 'eg')
         The method used to validate the degree sequence.
-        "eg" corresponds to the Erdős-Gallai algorithm, and
-        "hh" to the Havel-Hakimi algorithm.
+        "eg" corresponds to the Erdős-Gallai algorithm
+        [EG1960]_, [choudum1986]_, and
+        "hh" to the Havel-Hakimi algorithm
+        [havel1955]_, [hakimi1962]_, [CL1996]_.
 
     Returns
     -------
@@ -41,15 +44,20 @@ def is_graphical(sequence, method='eg'):
 
     References
     ----------
-    Erdős-Gallai
-        [EG1960]_, [choudum1986]_
-
-    Havel-Hakimi
-        [havel1955]_, [hakimi1962]_, [CL1996]_
+    .. [EG1960] Erdős and Gallai, Mat. Lapok 11 264, 1960.
+    .. [choudum1986] S.A. Choudum. "A simple proof of the Erdős-Gallai theorem on
+       graph sequences." Bulletin of the Australian Mathematical Society, 33,
+       pp 67-70, 1986. https://doi.org/10.1017/S0004972700002872
+    .. [havel1955] Havel, V. "A Remark on the Existence of Finite Graphs"
+       Casopis Pest. Mat. 80, 477-480, 1955.
+    .. [hakimi1962] Hakimi, S. "On the Realizability of a Set of Integers as
+       Degrees of the Vertices of a Graph." SIAM J. Appl. Math. 10, 496-506, 1962.
+    .. [CL1996] G. Chartrand and L. Lesniak, "Graphs and Digraphs",
+       Chapman and Hall/CRC, 1996.
     """
-    if method == 'eg':
+    if method == "eg":
         valid = is_valid_degree_sequence_erdos_gallai(list(sequence))
-    elif method == 'hh':
+    elif method == "hh":
         valid = is_valid_degree_sequence_havel_hakimi(list(sequence))
     else:
         msg = "`method` must be 'eg' or 'hh'"
@@ -80,7 +88,8 @@ def _basic_graphical_tests(deg_sequence):
 def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     r"""Returns True if deg_sequence can be realized by a simple graph.
 
-    The validation proceeds using the Havel-Hakimi theorem.
+    The validation proceeds using the Havel-Hakimi theorem
+    [havel1955]_, [hakimi1962]_, [CL1996]_.
     Worst-case run time is $O(s)$ where $s$ is the sum of the sequence.
 
     Parameters
@@ -107,9 +116,12 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     ----------
     .. [1] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
        of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
-
-    [havel1955]_, [hakimi1962]_, [CL1996]_
-
+    .. [havel1955] Havel, V. "A Remark on the Existence of Finite Graphs"
+       Casopis Pest. Mat. 80, 477-480, 1955.
+    .. [hakimi1962] Hakimi, S. "On the Realizability of a Set of Integers as
+       Degrees of the Vertices of a Graph." SIAM J. Appl. Math. 10, 496-506, 1962.
+    .. [CL1996] G. Chartrand and L. Lesniak, "Graphs and Digraphs",
+       Chapman and Hall/CRC, 1996.
     """
     try:
         dmax, dmin, dsum, n, num_degs = _basic_graphical_tests(deg_sequence)
@@ -197,8 +209,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
        Discrete Mathematics, 265, pp. 417-420 (2003).
     .. [2] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
        of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
-
-    [EG1960]_, [choudum1986]_
+    .. [EG1960] Erdős and Gallai, Mat. Lapok 11 264, 1960.
     """
     try:
         dmax, dmin, dsum, n, num_degs = _basic_graphical_tests(deg_sequence)
@@ -211,12 +222,12 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     # Perform the EG checks using the reformulation of Zverovich and Zverovich
     k, sum_deg, sum_nj, sum_jnj = 0, 0, 0, 0
     for dk in range(dmax, dmin - 1, -1):
-        if dk < k + 1:            # Check if already past Durfee index
+        if dk < k + 1:  # Check if already past Durfee index
             return True
         if num_degs[dk] > 0:
             run_size = num_degs[dk]  # Process a run of identical-valued degrees
-            if dk < k + run_size:     # Check if end of run is past Durfee index
-                run_size = dk - k     # Adjust back to Durfee index
+            if dk < k + run_size:  # Check if end of run is past Durfee index
+                run_size = dk - k  # Adjust back to Durfee index
             sum_deg += run_size * dk
             for v in range(run_size):
                 sum_nj += num_degs[k + v]
