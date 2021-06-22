@@ -29,11 +29,11 @@ Release Process
       {{ super() }}
     {% endblock %}
 
-- Toggle ``dev = True`` to ``dev = False`` in ``networkx/release.py``.
+- Update ``__version__`` in ``networkx/__init__.py``.
 
 - Commit changes::
 
-   git add networkx/release.py
+   git add networkx/__init__.py
    git commit -m "Designate X.X release"
 
 - Add the version number as a tag in git::
