@@ -187,15 +187,13 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
 
     Assortativity measures the similarity of connections
     in the graph with respect to the given numeric attribute.
-    The numeric attribute must be an integer.
 
     Parameters
     ----------
     G : NetworkX graph
 
     attribute : string
-        Node attribute key.  The corresponding attribute value must be an
-        integer.
+        Node attribute key.
 
     nodes: list or iterable (optional)
         Compute numeric assortativity only for attributes of nodes in

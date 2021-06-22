@@ -188,6 +188,10 @@ API Changes
   from ``communicability_betweeness_centrality``
 - [`#4850 <https://github.com/networkx/networkx/pull/4850>`_]
   Added ``dtype`` parameter to adjacency_matrix
+- [`#4851 <https://github.com/networkx/networkx/pull/4851>`_]
+  Output of `numeric_mixing_matrix` and `degree_mixing_matrix` no longer
+  includes rows with all entries zero by default. The functions now accept
+  a parameter `mapping` keyed by value to row index to identify each row.
 - [`#4867 <https://github.com/networkx/networkx/pull/4867>`_]
   The function ``spring_layout`` now ignores 'fixed' nodes not in the graph
 
