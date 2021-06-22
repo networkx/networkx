@@ -182,10 +182,9 @@ class TestConvert:
         GW = to_networkx_graph(dod, create_using=nx.MultiGraph, multigraph_input=True)
         assert nodes_equal(sorted(XGM.nodes()), sorted(GW.nodes()))
         assert edges_equal(sorted(XGM.edges()), sorted(GW.edges()))
-        GI = nx.MultiGraph(dod)  # convert can't tell whether to duplicate edges!
+        GI = nx.MultiGraph(dod)
         assert nodes_equal(sorted(XGM.nodes()), sorted(GI.nodes()))
-        # assert_not_equal(sorted(XGM.edges()), sorted(GI.edges()))
-        assert not sorted(XGM.edges()) == sorted(GI.edges())
+        assert sorted(XGM.edges()) == sorted(GI.edges())
         GE = from_dict_of_dicts(dod, create_using=nx.MultiGraph, multigraph_input=False)
         assert nodes_equal(sorted(XGM.nodes()), sorted(GE.nodes()))
         assert sorted(XGM.edges()) != sorted(GE.edges())

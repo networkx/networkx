@@ -182,6 +182,95 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
         expected = [(1, {2: {0: {}}}), (2, {1: {0: {}}})]
         assert sorted(G.adj.items()) == expected
 
+    def test_data_multigraph_input(self):
+        # standard case with edge keys and edge data
+        edata0 = dict(w=200, s="foo")
+        edata1 = dict(w=201, s="bar")
+        keydict = {0: edata0, 1: edata1}
+        dododod = {"a": {"b": keydict}}
+
+        multiple_edge = [("a", "b", 0, edata0), ("a", "b", 1, edata1)]
+        single_edge = [("a", "b", 0, keydict)]
+
+        G = self.Graph(dododod, multigraph_input=True)
+        assert list(G.edges(keys=True, data=True)) == multiple_edge
+        G = self.Graph(dododod, multigraph_input=None)
+        assert list(G.edges(keys=True, data=True)) == multiple_edge
+        G = self.Graph(dododod, multigraph_input=False)
+        assert list(G.edges(keys=True, data=True)) == single_edge
+
+        # test round-trip to_dict_of_dict and MultiGraph constructor
+        G = self.Graph(dododod, multigraph_input=True)
+        H = self.Graph(nx.to_dict_of_dicts(G))
+        assert nx.is_isomorphic(G, H) is True  # test that default is True
+        for mgi in [True, False]:
+            H = self.Graph(nx.to_dict_of_dicts(G), multigraph_input=mgi)
+            assert nx.is_isomorphic(G, H) == mgi
+
+    # Set up cases for when incoming_graph_data is not multigraph_input
+    etraits = {"w": 200, "s": "foo"}
+    egraphics = {"color": "blue", "shape": "box"}
+    edata = {"traits": etraits, "graphics": egraphics}
+    dodod1 = {"a": {"b": edata}}
+    dodod2 = {"a": {"b": etraits}}
+    dodod3 = {"a": {"b": {"traits": etraits, "s": "foo"}}}
+    dol = {"a": ["b"]}
+
+    multiple_edge = [
+        ("a", "b", "traits", etraits),
+        ("a", "b", "graphics", egraphics),
+    ]
+    single_edge = [("a", "b", 0, {})]
+    single_edge1 = [("a", "b", 0, edata)]
+    single_edge2 = [("a", "b", 0, etraits)]
+    single_edge3 = [("a", "b", 0, {"traits": etraits, "s": "foo"})]
+
+    cases = [  # (dod, mgi, edges)
+        (dodod1, True, multiple_edge),
+        (dodod1, False, single_edge1),
+        (dodod2, False, single_edge2),
+        (dodod3, False, single_edge3),
+        (dol, False, single_edge),
+    ]
+
+    @pytest.mark.parametrize("dod, mgi, edges", cases)
+    def test_non_multigraph_input(self, dod, mgi, edges):
+        G = self.Graph(dod, multigraph_input=mgi)
+        assert list(G.edges(keys=True, data=True)) == edges
+        G = nx.to_networkx_graph(dod, create_using=self.Graph, multigraph_input=mgi)
+        assert list(G.edges(keys=True, data=True)) == edges
+
+    mgi_none_cases = [
+        (dodod1, multiple_edge),
+        (dodod2, single_edge2),
+        (dodod3, single_edge3),
+    ]
+
+    @pytest.mark.parametrize("dod, edges", mgi_none_cases)
+    def test_non_multigraph_input_mgi_none(self, dod, edges):
+        # test constructor without to_networkx_graph for mgi=None
+        G = self.Graph(dod)
+        assert list(G.edges(keys=True, data=True)) == edges
+
+    raise_cases = [dodod2, dodod3, dol]
+
+    @pytest.mark.parametrize("dod", raise_cases)
+    def test_non_multigraph_input_raise(self, dod):
+        # cases where NetworkXError is raised
+        pytest.raises(
+            nx.NetworkXError,
+            self.Graph,
+            dod,
+            multigraph_input=True,
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            nx.to_networkx_graph,
+            dod,
+            create_using=self.Graph,
+            multigraph_input=True,
+        )
+
     def test_getitem(self):
         G = self.K3
         assert G[0] == {1: {0: {}}, 2: {0: {}}}
