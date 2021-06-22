@@ -252,6 +252,8 @@ Deprecations
   Deprecate ``adj_matrix``.
 - [`#4841 <https://github.com/networkx/networkx/pull/4841>`_]
   Deprecate ``simrank_similarity_numpy``.
+- [`#4923 <https://github.com/networkx/networkx/pull/4923>`_]
+  Deprecate ``numeric_mixing_matrix``.
 
 Contributors
 ------------
