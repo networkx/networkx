@@ -97,12 +97,6 @@ class BaseDiGraphTester(BaseGraphTester):
         assert G.size() == 6
         assert G.number_of_edges() == 6
 
-    def test_to_undirected_as_view(self):
-        G = nx.path_graph(2)
-        H = G.to_directed()
-        H2 = H.to_undirected(as_view=True)
-        assert H is H2._graph
-
     def test_to_undirected_reciprocal(self):
         G = self.Graph()
         G.add_edge(1, 2)
