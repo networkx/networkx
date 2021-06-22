@@ -494,7 +494,7 @@ class BaseAttrGraphTester(BaseGraphTester):
             def to_undirected_class(self):
                 return newGraph
 
-        G = newGraph()
+        G = newDiGraph() if G.is_directed() else newGraph()
         H = G.to_directed()
         assert isinstance(H, newDiGraph)
         H = G.to_undirected()
