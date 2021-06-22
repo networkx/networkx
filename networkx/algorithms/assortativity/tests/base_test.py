@@ -49,3 +49,24 @@ class BaseTestDegreeMixing:
         cls.M.add_edge(0, 1)
         cls.S = nx.Graph()
         cls.S.add_edges_from([(0, 0), (1, 1)])
+        cls.W = nx.Graph()
+        cls.W.add_edges_from([(0, 3), (1, 3), (2, 3)], weight=0.5)
+        cls.W.add_edge(0, 2, weight=1)
+
+
+class BaseTestNumericMixing:
+    @classmethod
+    def setup_class(cls):
+        N = nx.Graph()
+        N.add_nodes_from([0, 1], margin=-2)
+        N.add_nodes_from([2, 3], margin=-2)
+        N.add_nodes_from([4], margin=-3)
+        N.add_nodes_from([5], margin=-4)
+        N.add_edges_from([(0, 1), (2, 3), (0, 4), (2, 5)])
+        cls.N = N
+
+        F = nx.Graph()
+        F.add_edges_from([(0, 3), (1, 3), (2, 3)], weight=0.5)
+        F.add_edge(0, 2, weight=1)
+        nx.set_node_attributes(F, dict(F.degree(weight="weight")), "margin")
+        cls.F = F
