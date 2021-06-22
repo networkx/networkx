@@ -17,9 +17,9 @@ interact with different languages and even different Python versions.
 Re-importing from gml is also a concern.
 
 Without specifying a `stringizer`/`destringizer`, the code is capable of
-handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
-specification.  For other data types, you need to explicitly supply a
-`stringizer`/`destringizer`.
+writing `int`/`float`/`str`/`dict`/`list` data as required by the GML 
+specification.  For writing other data types, and for reading data other
+than `str` you need to explicitly supply a `stringizer`/`destringizer`.
 
 For additional documentation on the GML file format, please see the
 `GML website <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
@@ -150,9 +150,9 @@ def read_gml(path, label="label", destringizer=None):
     GML files are stored using a 7-bit ASCII encoding with any extended
     ASCII characters (iso8859-1) appearing as HTML character entities.
     Without specifying a `stringizer`/`destringizer`, the code is capable of
-    handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
-    specification.  For other data types, you need to explicitly supply a
-    `stringizer`/`destringizer`.
+    writing `int`/`float`/`str`/`dict`/`list` data as required by the GML
+    specification.  For writing other data types, and for reading data other
+    than `str` you need to explicitly supply a `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
     `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
@@ -164,6 +164,7 @@ def read_gml(path, label="label", destringizer=None):
     >>> G = nx.path_graph(4)
     >>> nx.write_gml(G, "test.gml")
     >>> H = nx.read_gml("test.gml")
+    >>> I = nx.read_gml("test.gml", destringizer=int)
     """
 
     def filter_lines(lines):
@@ -221,9 +222,9 @@ def parse_gml(lines, label="label", destringizer=None):
     GML files are stored using a 7-bit ASCII encoding with any extended
     ASCII characters (iso8859-1) appearing as HTML character entities.
     Without specifying a `stringizer`/`destringizer`, the code is capable of
-    handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
-    specification.  For other data types, you need to explicitly supply a
-    `stringizer`/`destringizer`.
+    writing `int`/`float`/`str`/`dict`/`list` data as required by the GML
+    specification.  For writing other data types, and for reading data other
+    than `str` you need to explicitly supply a `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
     `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
@@ -620,9 +621,9 @@ def generate_gml(G, stringizer=None):
     GML files are stored using a 7-bit ASCII encoding with any extended
     ASCII characters (iso8859-1) appearing as HTML character entities.
     Without specifying a `stringizer`/`destringizer`, the code is capable of
-    handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
-    specification.  For other data types, you need to explicitly supply a
-    `stringizer`/`destringizer`.
+    writing `int`/`float`/`str`/`dict`/`list` data as required by the GML
+    specification.  For writing other data types, and for reading data other
+    than `str` you need to explicitly supply a `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
     `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
@@ -812,9 +813,9 @@ def write_gml(G, path, stringizer=None):
     GML files are stored using a 7-bit ASCII encoding with any extended
     ASCII characters (iso8859-1) appearing as HTML character entities.
     Without specifying a `stringizer`/`destringizer`, the code is capable of
-    handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
-    specification.  For other data types, you need to explicitly supply a
-    `stringizer`/`destringizer`.
+    writing `int`/`float`/`str`/`dict`/`list` data as required by the GML
+    specification.  For writing other data types, and for reading data other
+    than `str` you need to explicitly supply a `stringizer`/`destringizer`.
 
     Note that while we allow non-standard GML to be read from a file, we make
     sure to write GML format. In particular, underscores are not allowed in
