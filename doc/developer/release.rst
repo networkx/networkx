@@ -89,16 +89,14 @@ Release Process
       # you will then need to force the push so be careful!
       git push
 
- - Increase the version number
+- Update ``__version__`` in ``networkx/__init__.py``.
 
-  - Toggle ``dev = False`` to ``dev = True`` in ``networkx/release.py``.
-  - Update ``major`` and ``minor`` in ``networkx/release.py``.
-  - Append the following to ``doc/_templates/layout.html``::
+- Append the following to ``doc/_templates/layout.html``::
 
-      {% block document %}
-        {% include "dev_banner.html" %}
-        {{ super() }}
-      {% endblock %}
+    {% block document %}
+      {% include "dev_banner.html" %}
+      {{ super() }}
+    {% endblock %}
 
  - Commit and push changes::
 
