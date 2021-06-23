@@ -5,7 +5,11 @@ pytest.importorskip("scipy")
 
 
 import networkx as nx
-from .base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
+from .base_test import (
+    BaseTestAttributeMixing,
+    BaseTestDegreeMixing,
+    BaseTestNumericMixing,
+)
 from networkx.algorithms.assortativity.correlation import attribute_ac
 
 
@@ -33,6 +37,10 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
     def test_degree_pearson_assortativity_multigraph(self):
         r = nx.degree_pearson_correlation_coefficient(self.M)
         np.testing.assert_almost_equal(r, -1.0 / 7.0, decimal=4)
+
+    def test_degree_assortativity_weighted(self):
+        r = nx.degree_assortativity_coefficient(self.W, weight="weight")
+        np.testing.assert_almost_equal(r, -0.1429, decimal=4)
 
 
 class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
@@ -73,3 +81,13 @@ class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
         a = np.array([[50, 50, 0], [50, 50, 0], [0, 0, 2]])
         r = attribute_ac(a)
         np.testing.assert_almost_equal(r, 0.029, decimal=3)
+
+
+class TestNumericMixingCorrelation(BaseTestNumericMixing):
+    def test_numeric_assortativity_negative(self):
+        r = nx.numeric_assortativity_coefficient(self.N, "margin")
+        np.testing.assert_almost_equal(r, -0.2903, decimal=4)
+
+    def test_numeric_assortativity_float(self):
+        r = nx.numeric_assortativity_coefficient(self.F, "margin")
+        np.testing.assert_almost_equal(r, -0.1429, decimal=4)
