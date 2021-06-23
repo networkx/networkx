@@ -33,11 +33,11 @@ important in operations research and theoretical computer science.
 http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """
 import math
-import networkx as nx
-import numpy as np
-import scipy.optimize as sp
+from dataclasses import dataclass, field
+from queue import PriorityQueue
 
-from networkx import NetworkXNoCycle
+import networkx as nx
+
 from networkx.utils import py_random_state, not_implemented_for, pairwise
 
 __all__ = [
@@ -412,25 +412,51 @@ def _held_karp(G, weight="weight"):
            spanning trees, Operations Research, 1970-11-01, Vol. 18 (6),
            pp.1138-1162
     """
+    import numpy as np
+    import scipy.optimize as optimize
 
-    def k_pi():
+    @dataclass(order=True)
+    class BranchConfiguration:
+        """
+        This dataclass tracks an entry in the branch and bound configuration
+        list, including the edge partition, value of pi at this configuration
+        and the value of the bound, which is the weight of the minimum
+        1-arborescence.
+
+        The only comparable attribute is the bound, as we always need to pick
+        the one with the smallest bound.
+        """
+
+        included_edges: set = field(compare=False)
+        excluded_edges: set = field(compare=False)
+        pi: dict = field(compare=False)
+        bound: float
+
+        def __copy__(self):
+            return BranchConfiguration(
+                self.included_edges.copy(),
+                self.excluded_edges.copy(),
+                self.pi.copy(),
+                self.bound,
+            )
+
+    def k_pi(partition=None):
         """
         Find the set of minimum 1-Arborescences for G at point pi.
+
+        Parameters
+        ----------
+        partition : tuple
+            In the case that certain edges have to be included or excluded from
+            the arborescences, `init_partition` should be in the form
+            `(included_edges, excluded_edges)` where each edges is a
+            `(u, v)`-tuple inside an iterable such as a list or set.
 
         Returns
         -------
         Set
-            The set of minimum 1-Trees
+            The set of minimum 1-Arborescences
         """
-        # We are told simply to find the "1-[arborescences] that are of minimum
-        # weight". This means that the choice of node '1' which is not included
-        # is probably important. I have tried to select which node will produce
-        # the minimum 1-arborescences before hand by summing the minimum
-        # incoming and outgoing edges and it did not work so I will have to
-        # exhaustively check until I find a better way
-        #
-        # TODO find which node will be the best node 1 in advance
-        #
         # Create a copy of G without vertex 1.
         G_1 = G.copy()
         minimum_1_arborescences = set()
@@ -442,13 +468,22 @@ def _held_karp(G, weight="weight"):
 
         # Iterate over the minimum spanning arborescences of the graph
         min_arb_weight = math.inf
-        for arb in nx.ArborescenceIterator(G_1):
+        for arb in nx.ArborescenceIterator(G_1, init_partition=partition):
             # Only iterate over the minimum weight arborescences
             arb_weight = arb.size(weight)
             if min_arb_weight == math.inf:
                 min_arb_weight = arb_weight
             elif arb_weight > min_arb_weight:
                 break
+            # We have to pick the root node of the arborescence for the out
+            # edge of the first vertex as that is the only node without an
+            # edge directed into it.
+            for N in arb:
+                if arb.in_degree(N) == 0:
+                    # root found
+                    arb.add_edge(n, N, weight=G[n][N][weight])
+                    arb_weight += G[n][N][weight]
+                    break
             # We can pick the minimum weight in-edge for the vertex with a
             # cycle
             min_in_edge_weight = math.inf
@@ -460,15 +495,6 @@ def _held_karp(G, weight="weight"):
                     min_in_edge = (u, v)
             arb.add_edge(min_in_edge[0], min_in_edge[1], weight=min_in_edge_weight)
             arb_weight += min_in_edge_weight
-            # We have to pick the root node of the arborescence for the out
-            # edge of the first vertex as that is the only node without an
-            # edge directed into it.
-            for N in arb:
-                if arb.in_degree(N) == 0:
-                    # root found
-                    arb.add_edge(n, N, weight=G[n][N][weight])
-                    arb_weight += G[n][N][weight]
-                    break
             # Check to see the weight of the arborescence, if it is a new
             # minimum, clear all of the old potential minimum
             # 1-arborescences and add this is the only one. If its weight is
@@ -482,23 +508,177 @@ def _held_karp(G, weight="weight"):
 
         return minimum_1_arborescences
 
-    def direction_of_ascent(d=None):
+    def direction_of_ascent_kilter(configuration):
+        """
+        Find the direction of ascent using out-of-kilter nodes.
+
+        An out-of-kilter node is a node whose degree is consistently too high or
+        too low. For more information please see [1]_.
+
+        Parameters
+        ----------
+        configuration : BranchConfiguration
+            The details of the configuration under consideration.
+
+        Returns
+        -------
+        dict or None
+            A mapping of the nodes of the graph to the value in the direction of
+            ascent. Because this function uses out-of-kilter vertices, it will
+            return a unit vector or `None`.
+
+        References
+        ----------
+        .. [1] M. Held, R. M. Karp, The traveling-salesman problem and minimum
+           spanning trees, Operations Research, 1970-11-01, Vol. 18 (6),
+           pp.1138-1162
+        """
+        from enum import Enum
+
+        class Kilter(Enum):
+            LOW = -1
+            NOT_OUT_OF_KILTER = 0
+            HIGH = 1
+            UNKNOWN = 2
+
+        # Find K_{X Y}(pi) using the partition data.
+        k_xy = k_pi()
+        # There are two method which we can use to find out-of-kilter nodes.
+        # 1. Find an arbitrary member of K(pi, u_i) and check if node i has a
+        #    degree of 1 or more than 2.
+        # 2. Find all members of K(pi) and then check for each vertex that
+        #    v_{i k} is 1 or greater than 2 for all members of K(pi)
+        # I personally believe that while method 2 will require a nested for
+        # loop it will be faster than having to many n calls to k_pi() so I will
+        # implement that method.
+
+        # This set tracks potentially out of kilter nodes.
+        out_of_kilter = {}
+        for n in G:
+            out_of_kilter[n] = Kilter.UNKNOWN
+            for arborescence in k_xy:
+                if (
+                    arborescence.degree(n) == 1
+                    and out_of_kilter[n] is not Kilter.NOT_OUT_OF_KILTER
+                ):
+                    out_of_kilter[n] = Kilter.LOW
+                elif (
+                    arborescence.degree(n) > 2
+                    and out_of_kilter[n] is not Kilter.NOT_OUT_OF_KILTER
+                ):
+                    out_of_kilter[n] = Kilter.HIGH
+                else:
+                    out_of_kilter[n] = Kilter.NOT_OUT_OF_KILTER
+                    break
+
+        # Create the direction of ascent dictionary d
+        d = {}
+        for n in G:
+            d[n] = 0
+
+        # Find an out-of-kilter vertex
+        for n, k in out_of_kilter.items():
+            if k is Kilter.LOW:
+                d[n] = -1
+                return d, k_xy
+            elif k is Kilter.HIGH:
+                d[n] = 1
+                return d, k_xy
+
+        # If we get here, no out-of-kilter vertices exist
+        return None, k_xy
+
+    def branch(configuration):
+        """
+        If the direction returned by `direction_of_ascent_kilter()` is `None`,
+        we branch. If the direction of ascent does exist, but is not due to an
+        out-of-kilter nodes branch immediately, otherwise check for a tour
+        within the returned 1-arborescences and if there is one, that is our
+        solution
+
+        Parameters
+        ----------
+        configuration : BranchConfiguration
+            The details of the configuration under consideration.
+        """
+        # Check to see if the direction of ascent exists with the linear program
+        # from the ascent method.
+        c = np.full(len(k_xy), -1)
+        a_eq = np.empty((len(G) + 1, len(k_xy)))
+        b_eq = np.zeros(len(G) + 1)
+        b_eq[len(G)] = 1
+        arb_count = 0
+        for arborescence in k_xy:
+            n_count = len(G) - 1
+            for n in arborescence:
+                a_eq[n_count][arb_count] = arborescence.degree(n) - 2
+                n_count -= 1
+            a_eq[len(G)][arb_count] = 1
+            arb_count += 1
+        program_result = optimize.linprog(c, A_eq=a_eq, b_eq=b_eq)
+        bool_result = program_result.x >= 0
+        if program_result.status == 0 and np.sum(bool_result) == len(k_xy):
+            # There is no direction of ascent, search for a tour
+            for arborescence in k_xy:
+                nodes_degree_two = 0
+                for n in arborescence:
+                    nodes_degree_two += 1 if arborescence.degree(n) - 2 == 0 else 0
+                if nodes_degree_two == len(G):
+                    # tour found
+                    return arborescence
+
+        # Branch
+        # Start by picking an edge which is not included or excluded.
+        for u, v in G.edges():
+            # Find an edges which is not included or excluded from the current
+            # configuration
+            if (u, v) in configuration.included_edges:
+                continue
+            if (u, v) in configuration.excluded_edges:
+                continue
+            # (u, v) is an available edge
+            # For the inclusive configuration, add (u, v) to the included edges
+            # and recalculate the bound
+            new_inclusive_config = configuration.copy()
+            new_inclusive_config.included_edges.add((u, v))
+            new_inclusive_config.bound = next(
+                nx.ArborescenceIterator(
+                    G,
+                    init_partition=(
+                        new_inclusive_config.included_edges,
+                        new_inclusive_config.excluded_edges,
+                    ),
+                ).__iter__()
+            ).size(weight)
+            # For the exclusive configuration, add (u, v) to the included edges
+            # and recalculate the bound
+            new_exclusive_config = configuration.copy()
+            new_exclusive_config.excluded_edges.add((u, v))
+            new_exclusive_config.bound = next(
+                nx.ArborescenceIterator(
+                    G,
+                    init_partition=(
+                        new_exclusive_config.included_edges,
+                        new_exclusive_config.excluded_edges,
+                    ),
+                ).__iter__()
+            ).size(weight)
+            # Add the new configurations to the config_queue
+            config_queue.put(new_inclusive_config)
+            config_queue.put(new_exclusive_config)
+            return None
+
+    def direction_of_ascent():
         """
         Find the direction of ascent at point pi.
 
         See [1]_ for more information.
 
-        Parameters
-        ----------
-        d : dict
-            A mapping from the nodes of n to their values for the direction of
-            ascent
-
         Returns
         -------
-        np.array
-            A numpy array representing the direction in which the objective
-            function is increasing the fastest.
+        dict
+            A mapping from the nodes of the graph which represents the direction
+            of ascent.
 
         References
         ----------
@@ -507,11 +687,10 @@ def _held_karp(G, weight="weight"):
            pp.1138-1162
         """
         # 1. Set d equal to the zero n-vector.
-        if d is None:
-            d = {}
-            for n in G:
-                d[n] = 0
-            del n
+        d = {}
+        for n in G:
+            d[n] = 0
+        del n
         # 2. Find a 1-Aborescence T^k such that k is in K(pi, d).
         minimum_1_arborescences = k_pi()
         while True:
@@ -556,7 +735,7 @@ def _held_karp(G, weight="weight"):
                     n_count -= 1
                 a_eq[len(G)][arb_count] = 1
                 arb_count += 1
-            program_result = sp.linprog(c, A_eq=a_eq, b_eq=b_eq)
+            program_result = optimize.linprog(c, A_eq=a_eq, b_eq=b_eq)
             bool_result = program_result.x >= 0
             if program_result.status == 0 and np.sum(bool_result) == len(
                 minimum_1_arborescences
@@ -625,19 +804,48 @@ def _held_karp(G, weight="weight"):
     original_edge_weights = {}
     for u, v, d in G.edges(data=True):
         original_edge_weights[(u, v)] = d[weight]
-    dir_ascent, k_d = direction_of_ascent()
-    print()
-    print(k_d.size(weight))
-    while dir_ascent is not None:
-        max_distance = find_epsilon(k_d, dir_ascent)
-        for n, v in dir_ascent.items():
-            pi_dict[n] += max_distance * v
-        for u, v, d in G.edges(data=True):
-            d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
-        dir_ascent, k_d = direction_of_ascent()
-        print(k_d.size(weight))
+    # THE CODE BELOW IS DESIGNED TO RUN THE REGULAR ASCENT METHOD
+    # dir_ascent, k_d = direction_of_ascent()
+    # print()
+    # print(k_d.size(weight))
+    # while dir_ascent is not None:
+    #     max_distance = find_epsilon(k_d, dir_ascent)
+    #     for n, v in dir_ascent.items():
+    #         pi_dict[n] += max_distance * v
+    #     for u, v, d in G.edges(data=True):
+    #         d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
+    #     dir_ascent, k_d = direction_of_ascent()
+    #     print(k_d.size(weight))
 
-    return k_d
+    config_queue = PriorityQueue()
+    config_queue.put(
+        BranchConfiguration(
+            set(), set(), pi_dict.copy(), next(k_pi().__iter__()).size(weight)
+        )
+    )
+    while not config_queue.empty():
+        config = config_queue.get()
+        dir_ascent, k_xy = direction_of_ascent_kilter(config)
+        # If dir_ascent is None, we have either run out of out-of-kilter nodes
+        # or we have found the tour.
+        if dir_ascent is None:
+            solution = branch(config)
+            if solution is not None:
+                return solution
+        else:
+            # find epsilon and apply an iteration of the ascent method.
+            max_distance = find_epsilon(next(k_xy.__iter__()), dir_ascent)
+            for n, v in dir_ascent.items():
+                pi_dict[n] += max_distance * v
+            for u, v, d in G.edges(data=True):
+                d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
+            # Update the configuration and put it back into the config_queue
+            config.pi = pi_dict.copy()
+            config.bound = next(k_pi().__iter__()).size(weight)
+            config_queue.put(config)
+
+    # No solution found, which should be impossible
+    return None
 
 
 def _spanning_tree_distribution(z_star):
