@@ -807,7 +807,7 @@ class ArborescenceIterator:
                 self.mst_weight, self.partition_dict.copy()
             )
 
-    def __init__(self, G, weight="weight", minimum=True):
+    def __init__(self, G, weight="weight", minimum=True, init_partition=None):
         """
         Initialize the iterator
 
@@ -823,6 +823,12 @@ class ArborescenceIterator:
             Return the trees in increasing order while true and decreasing order
             while false.
 
+        init_partition : tuple, default = None
+            In the case that certain edges have to be included or excluded from
+            the arborescences, `init_partition` should be in the form
+            `(included_edges, excluded_edges)` where each edges is a
+            `(u, v)`-tuple inside an iterable such as a list or set.
+
         """
         self.G = G.copy()
         self.weight = weight
@@ -831,6 +837,15 @@ class ArborescenceIterator:
         self.partition_key = "".join(
             [random.choice(string.ascii_letters) for _ in range(15)]
         )
+        if init_partition is not None:
+            partition_dict = {}
+            for e in init_partition[0]:
+                partition_dict[e] = EdgePartition.INCLUDED
+            for e in init_partition[1]:
+                partition_dict[e] = EdgePartition.EXCLUDED
+            self.init_partition = ArborescenceIterator.Partition(0, partition_dict)
+        else:
+            self.init_partition = None
 
     def __iter__(self):
         """
@@ -842,6 +857,10 @@ class ArborescenceIterator:
         self.partition_queue = PriorityQueue()
         self.clear_partition(self.G)
 
+        # Write the initial partition if it exists.
+        if self.init_partition is not None:
+            self.write_partition(self.init_partition)
+
         mst_weight = partition_spanning_arborescence(
             self.G,
             self.weight,
@@ -851,7 +870,12 @@ class ArborescenceIterator:
         ).size(weight=self.weight)
 
         self.partition_queue.put(
-            self.Partition(mst_weight if self.kind else -mst_weight, dict())
+            self.Partition(
+                mst_weight if self.kind else -mst_weight,
+                dict()
+                if self.init_partition is None
+                else self.init_partition.partition_dict,
+            )
         )
 
         return self
@@ -958,9 +982,3 @@ class ArborescenceIterator:
         for u, v, d in G.edges(data=True):
             if self.partition_key in d:
                 del d[self.partition_key]
-
-    def __del__(self):
-        """
-        Delete the copy of the graph
-        """
-        del self.G

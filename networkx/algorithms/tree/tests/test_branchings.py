@@ -461,28 +461,28 @@ def test_partition_spanning_arborescence():
 
     To re-engage this test, all 'partition_spanning_arborescence' to __all__
     """
-    # G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    # G[3][0]["partition"] = EdgePartition.EXCLUDED
-    # G[2][3]["partition"] = EdgePartition.INCLUDED
-    # G[7][3]["partition"] = EdgePartition.EXCLUDED
-    # G[0][2]["partition"] = EdgePartition.EXCLUDED
-    # G[6][2]["partition"] = EdgePartition.INCLUDED
-    #
-    # actual_edges = [
-    #     (0, 4, 12),
-    #     (1, 0, 4),
-    #     (1, 5, 13),
-    #     (2, 3, 21),
-    #     (4, 7, 12),
-    #     (5, 6, 14),
-    #     (5, 8, 12),
-    #     (6, 2, 21)
-    # ]
-    #
-    # B = branchings.partition_spanning_arborescence(G, "weight", kind="min",
-    #                                                partition="partition")
-    # assert_equal_branchings(build_branching(actual_edges), B)
-    pass
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    G[3][0]["partition"] = EdgePartition.EXCLUDED
+    G[2][3]["partition"] = EdgePartition.INCLUDED
+    G[7][3]["partition"] = EdgePartition.EXCLUDED
+    G[0][2]["partition"] = EdgePartition.EXCLUDED
+    G[6][2]["partition"] = EdgePartition.INCLUDED
+
+    actual_edges = [
+        (0, 4, 12),
+        (1, 0, 4),
+        (1, 5, 13),
+        (2, 3, 21),
+        (4, 7, 12),
+        (5, 6, 14),
+        (5, 8, 12),
+        (6, 2, 21),
+    ]
+
+    B = branchings.partition_spanning_arborescence(
+        G, "weight", kind="min", partition="partition"
+    )
+    assert_equal_branchings(build_branching(actual_edges), B)
 
 
 def test_arborescence_iterator_min():
@@ -502,7 +502,7 @@ def test_arborescence_iterator_min():
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
 
     arborescence_count = 0
-    arborescence_weight = 0
+    arborescence_weight = -math.inf
     for B in branchings.ArborescenceIterator(G):
         arborescence_count += 1
         new_arborescence_weight = B.size(weight="weight")
@@ -539,3 +539,35 @@ def test_arborescence_iterator_max():
         arborescence_weight = new_arborescence_weight
 
     assert arborescence_count == 680
+
+
+def test_arborescence_iterator_initial_partition():
+    """
+    Tests the arborescence iterator with three included edges and three excluded
+    in the initial partition.
+
+    A brute force method similar to the one used in the above tests found that
+    there are 16 arborescences which contain the included edges and not the
+    excluded edges.
+    """
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    included_edges = [(1, 0), (5, 6), (8, 7)]
+    excluded_edges = [(0, 2), (3, 6), (1, 5)]
+
+    arborescence_count = 0
+    arborescence_weight = -math.inf
+    for B in branchings.ArborescenceIterator(
+        G, init_partition=(included_edges, excluded_edges)
+    ):
+        arborescence_count += 1
+        new_arborescence_weight = B.size(weight="weight")
+        if new_arborescence_weight < arborescence_weight:
+            assert False
+        arborescence_weight = new_arborescence_weight
+        for e in included_edges:
+            if e not in B.edges():
+                assert False
+        for e in excluded_edges:
+            if e in B.edges():
+                assert False
+    assert arborescence_count == 16
