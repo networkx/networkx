@@ -88,3 +88,4 @@ Version 3.0
 * Remove ``testing``.
 * In ``linalg/graphmatrix.py`` remove ``adj_matrix``.
 * In ``algorithms/similarity.py`` replace ``simrank_similarity`` with ``simrank_similarity_numpy``.
+* In ``algorithms/assortativity/mixing.py`` remove ``numeric_mixing_matrix``.

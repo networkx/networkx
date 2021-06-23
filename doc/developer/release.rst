@@ -20,8 +20,6 @@ Release Process
   6. Copy ``doc/release/release_template.rst`` to
      ``doc/release/release_dev.rst`` for the next release.
 
-  7. Update ``doc/news.rst``.
-
 - Delete the following from ``doc/_templates/layout.html``::
 
     {% block document %}
@@ -29,11 +27,11 @@ Release Process
       {{ super() }}
     {% endblock %}
 
-- Toggle ``dev = True`` to ``dev = False`` in ``networkx/release.py``.
+- Update ``__version__`` in ``networkx/__init__.py``.
 
 - Commit changes::
 
-   git add networkx/release.py
+   git add networkx/__init__.py
    git commit -m "Designate X.X release"
 
 - Add the version number as a tag in git::
@@ -54,12 +52,22 @@ Release Process
 
    https://github.com/networkx/networkx/releases
 
+- Pin badges in ``README.rst``::
+
+  - https://github.com/networkx/networkx/workflows/test/badge.svg?tag=networkx-<major>.<minor>
+  - https://github.com/networkx/networkx/actions?query=branch%3Anetworkx-<major>.<minor>
+
 - Publish on PyPi::
 
    git clean -fxd
    pip install -r requirements/release.txt
    python setup.py sdist bdist_wheel
    twine upload -s dist/*
+
+- Unpin badges in ``README.rst``::
+
+  - https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main
+  - https://github.com/networkx/networkx/actions?query=branch%3Amain
 
 - Update documentation on the web:
   The documentation is kept in a separate repo: networkx/documentation
@@ -81,16 +89,14 @@ Release Process
       # you will then need to force the push so be careful!
       git push
 
- - Increase the version number
+- Update ``__version__`` in ``networkx/__init__.py``.
 
-  - Toggle ``dev = False`` to ``dev = True`` in ``networkx/release.py``.
-  - Update ``major`` and ``minor`` in ``networkx/release.py``.
-  - Append the following to ``doc/_templates/layout.html``::
+- Append the following to ``doc/_templates/layout.html``::
 
-      {% block document %}
-        {% include "dev_banner.html" %}
-        {{ super() }}
-      {% endblock %}
+    {% block document %}
+      {% include "dev_banner.html" %}
+      {{ super() }}
+    {% endblock %}
 
  - Commit and push changes::
 
