@@ -20,8 +20,6 @@ Release Process
   6. Copy ``doc/release/release_template.rst`` to
      ``doc/release/release_dev.rst`` for the next release.
 
-  7. Update ``doc/news.rst``.
-
 - Delete the following from ``doc/_templates/layout.html``::
 
     {% block document %}
@@ -54,12 +52,22 @@ Release Process
 
    https://github.com/networkx/networkx/releases
 
+- Pin badges in ``README.rst``::
+
+  - https://github.com/networkx/networkx/workflows/test/badge.svg?tag=networkx-<major>.<minor>
+  - https://github.com/networkx/networkx/actions?query=branch%3Anetworkx-<major>.<minor>
+
 - Publish on PyPi::
 
    git clean -fxd
    pip install -r requirements/release.txt
    python setup.py sdist bdist_wheel
    twine upload -s dist/*
+
+- Unpin badges in ``README.rst``::
+
+  - https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main
+  - https://github.com/networkx/networkx/actions?query=branch%3Amain
 
 - Update documentation on the web:
   The documentation is kept in a separate repo: networkx/documentation
