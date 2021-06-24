@@ -278,8 +278,13 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
     shortest_path = nx.shortest_path(G)
 
     def predict(u, v):
+        try:
+            path_len = len(shortest_path[u][v])
+        except KeyError:
+            return 0
+
         return alpha * len(list(nx.common_neighbors(G, u, v))) + (1 - alpha) * (
-            G.number_of_nodes() / (len(shortest_path[u][v]) - 1)
+            G.number_of_nodes() / (path_len - 1)
         )
 
     return _apply_prediction(G, predict, ebunch)
