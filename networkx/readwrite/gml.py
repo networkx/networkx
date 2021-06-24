@@ -164,7 +164,19 @@ def read_gml(path, label="label", destringizer=None):
     >>> G = nx.path_graph(4)
     >>> nx.write_gml(G, "test.gml")
     >>> H = nx.read_gml("test.gml")
-    >>> I = nx.read_gml("test.gml", destringizer=int)
+
+    >>> I = nx.MultiGraph()
+    >>> I.add_edge(1, 3, data = {'s': 1})
+    >>> print(I.nodes)
+    [1, 3]
+    >>> nx.write_gml(I, "test.gml")
+    >>> J = nx.read_gml("test.gml")
+    >>> K = nx.read_gml("test.gml", destringizer=int)
+    >>> print(J.nodes)
+    ['1', '3']
+    >>> print(K.nodes)
+    [1, 3]
+
     """
 
     def filter_lines(lines):
