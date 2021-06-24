@@ -167,6 +167,7 @@ def read_gml(path, label="label", destringizer=None):
 
     >>> I = nx.MultiGraph()
     >>> I.add_edge(1, 3, data = {'s': 1})
+    0
     >>> print(I.nodes)
     [1, 3]
     >>> nx.write_gml(I, "test.gml")
