@@ -231,7 +231,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
         nodes = G.nodes
     vals = set(G.nodes[n][attribute] for n in nodes)
     mapping = {d: i for i, d, in enumerate(vals)}
-    M = attribute_mixing_matrix(G, attribute, nodes, mapping=mapping)
+    M = attribute_mixing_matrix(G, attribute, nodes, mapping)
     return numeric_ac(M, mapping)
 
 
