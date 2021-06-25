@@ -466,14 +466,38 @@ def _held_karp(G, weight="weight"):
         n = next(G.__iter__())
         G_1.remove_node(n)
 
-        # Iterate over the minimum spanning arborescences of the graph
+        # Check to see if there is information in the partition
+        partition = (
+            None if partition is None or partition == (set(), set()) else partition
+        )
+
+        # Iterate over the spanning arborescences of the graph until we know
+        # that we have found the minimum 1-arborescences. My proposed strategy
+        # is to find the most extensive root to connect to from 'node 1' and
+        # the least expensive one. We then iterate over arborescences until
+        # the cost of the basic arborescence is the cost of the minimum one
+        # plus the difference between the most and least expensive roots,
+        # that way the cost of connecting 'node 1' will by definition not by
+        # minimum
+        min_root = {"node": None, "weight": math.inf}
+        max_root = {"node": None, "weight": -math.inf}
+        for u, v, d in G.edges(n, data=True):
+            if d[weight] < min_root["weight"]:
+                min_root = {"node": v, "weight": d[weight]}
+            if d[weight] > max_root["weight"]:
+                max_root = {"node": v, "weight": d[weight]}
+
+        min_in_edge = min(G.in_edges(n, data=True), key=lambda x: x[2][weight])
+        min_root["weight"] = min_root["weight"] + min_in_edge[2][weight]
+        max_root["weight"] = max_root["weight"] + min_in_edge[2][weight]
+
         min_arb_weight = math.inf
         for arb in nx.ArborescenceIterator(G_1, init_partition=partition):
             # Only iterate over the minimum weight arborescences
             arb_weight = arb.size(weight)
             if min_arb_weight == math.inf:
                 min_arb_weight = arb_weight
-            elif arb_weight > min_arb_weight:
+            elif arb_weight > min_arb_weight + max_root["weight"] - min_root["weight"]:
                 break
             # We have to pick the root node of the arborescence for the out
             # edge of the first vertex as that is the only node without an
@@ -490,6 +514,8 @@ def _held_karp(G, weight="weight"):
             min_in_edge = None
             for u, v, d in G.in_edges(n, data=True):
                 edge_weight = d[weight]
+                if u == N:
+                    continue
                 if edge_weight < min_in_edge_weight:
                     min_in_edge_weight = edge_weight
                     min_in_edge = (u, v)
@@ -542,7 +568,9 @@ def _held_karp(G, weight="weight"):
             UNKNOWN = 2
 
         # Find K_{X Y}(pi) using the partition data.
-        k_xy = k_pi()
+        k_xy = k_pi(
+            partition=(configuration.included_edges, configuration.excluded_edges)
+        )
         # There are two method which we can use to find out-of-kilter nodes.
         # 1. Find an arbitrary member of K(pi, u_i) and check if node i has a
         #    degree of 1 or more than 2.
@@ -577,6 +605,10 @@ def _held_karp(G, weight="weight"):
             d[n] = 0
 
         # Find an out-of-kilter vertex
+        # TODO remove debug code which forces it to pick a certain vertex
+        if out_of_kilter[3] == Kilter.LOW:
+            d[3] = -1
+            return d, k_xy
         for n, k in out_of_kilter.items():
             if k is Kilter.LOW:
                 d[n] = -1
@@ -639,7 +671,7 @@ def _held_karp(G, weight="weight"):
             # (u, v) is an available edge
             # For the inclusive configuration, add (u, v) to the included edges
             # and recalculate the bound
-            new_inclusive_config = configuration.copy()
+            new_inclusive_config = configuration.__copy__()
             new_inclusive_config.included_edges.add((u, v))
             new_inclusive_config.bound = next(
                 nx.ArborescenceIterator(
@@ -652,7 +684,7 @@ def _held_karp(G, weight="weight"):
             ).size(weight)
             # For the exclusive configuration, add (u, v) to the included edges
             # and recalculate the bound
-            new_exclusive_config = configuration.copy()
+            new_exclusive_config = configuration.__copy__()
             new_exclusive_config.excluded_edges.add((u, v))
             new_exclusive_config.bound = next(
                 nx.ArborescenceIterator(
@@ -745,14 +777,14 @@ def _held_karp(G, weight="weight"):
 
             # 5. GO TO 2
 
-    def find_epsilon(k, d):
+    def find_epsilon(k_xy, d):
         """
         Given the direction of ascent at pi, find the maximum distance we can go
         in that direction.
 
         Parameters
         ----------
-        k : nx.DiGraph
+        k_xy : set
         d : dict
 
         Returns
@@ -761,36 +793,41 @@ def _held_karp(G, weight="weight"):
             The distance we can travel in direction d
         """
         min_epsilon = math.inf
-        for u_e, v_e, d_e in G.edges(data=True):
-            if (u_e, v_e) in k.edges:
-                continue
-            # Now, I have found a condition which MUST be true for the edges to
-            # be a valid substitute. The edge in the graph which is the
-            # substitute is the one with the same terminated end. This can be
-            # checked rather simply.
-            #
-            # Find the edge within k which is the substitute. Because k is a
-            # 1-arborescence, we know that they is only one such edges
-            # leading into every vertex.
-            u_sub, v_sub, d_sub = next(k.in_edges(v_e, data=True).__iter__())
-            k.add_edge(u_e, v_e, weight=d_e[weight])
-            k.remove_edge(u_sub, v_sub)
-            if (
-                max(d for n, d in k.in_degree()) <= 1
-                and len(G) == k.number_of_edges()
-                and nx.is_weakly_connected(k)
-            ):
-                if d[u_sub] == d[u_e] or d_sub[weight] == d_e[weight]:
-                    # Revert to the original graph
-                    k.remove_edge(u_e, v_e)
-                    k.add_edges_from([(u_sub, v_sub, d_sub)])
+        for e_u, e_v, e_d in G.edges(data=True):
+            for k in k_xy:
+                if (e_u, e_v) in k.edges:
                     continue
-                epsilon = (d_sub[weight] - d_e[weight]) / (d[u_e] - d[u_sub])
-                if 0 < epsilon < min_epsilon:
-                    min_epsilon = epsilon
-            # Revert to the original graph
-            k.remove_edge(u_e, v_e)
-            k.add_edges_from([(u_sub, v_sub, d_sub)])
+                # Now, I have found a condition which MUST be true for the edges to
+                # be a valid substitute. The edge in the graph which is the
+                # substitute is the one with the same terminated end. This can be
+                # checked rather simply.
+                #
+                # Find the edge within k which is the substitute. Because k is a
+                # 1-arborescence, we know that they is only one such edges
+                # leading into every vertex.
+                sub_u, sub_v, sub_d = next(k.in_edges(e_v, data=True).__iter__())
+                k.add_edge(e_u, e_v, weight=e_d[weight])
+                k.remove_edge(sub_u, sub_v)
+                if (
+                    max(d for n, d in k.in_degree()) <= 1
+                    and len(G) == k.number_of_edges()
+                    and nx.is_weakly_connected(k)
+                ):
+                    # Ascent method calculation
+                    # if d[sub_u] == d[e_u] or sub_d[weight] == e_d[weight]:
+                    #     # Revert to the original graph
+                    #     k.remove_edge(e_u, e_v)
+                    #     k.add_edges_from([(sub_u, sub_v, sub_d)])
+                    #     continue
+                    # epsilon = (sub_d[weight] - e_d[weight]) / (d[e_u] - d[sub_u])
+                    # BRANCH AND BOUND CALCULATION
+                    epsilon = sub_d[weight] - e_d[weight]
+                    epsilon = -epsilon if d[e_u] == -1 else epsilon
+                    if 0 < epsilon < min_epsilon:
+                        min_epsilon = epsilon
+                # Revert to the original graph
+                k.remove_edge(e_u, e_v)
+                k.add_edges_from([(sub_u, sub_v, sub_d)])
 
         return min_epsilon
 
@@ -831,10 +868,20 @@ def _held_karp(G, weight="weight"):
         if dir_ascent is None:
             solution = branch(config)
             if solution is not None:
+                print(f"\nReturned Solution:")
+                for u, v, d in solution.edges(data=True):
+                    print(f"({u}, {v}, {d[weight]})")
+                print(f"with weight {solution.size(weight)}")
+                print(f"\nSolution with original weights:")
+                total_weight = 0
+                for u, v in solution.edges():
+                    print(f"({u}, {v}, {original_edge_weights[(u, v)]})")
+                    total_weight += original_edge_weights[(u, v)]
+                print(f"with weight {total_weight}")
                 return solution
         else:
             # find epsilon and apply an iteration of the ascent method.
-            max_distance = find_epsilon(next(k_xy.__iter__()), dir_ascent)
+            max_distance = find_epsilon(k_xy, dir_ascent)
             for n, v in dir_ascent.items():
                 pi_dict[n] += max_distance * v
             for u, v, d in G.edges(data=True):
