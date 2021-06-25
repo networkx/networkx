@@ -777,7 +777,7 @@ def _held_karp(G, weight="weight"):
 
             # 5. GO TO 2
 
-    def find_epsilon(k_xy, d):
+    def find_epsilon(k, d):
         """
         Given the direction of ascent at pi, find the maximum distance we can go
         in that direction.
@@ -794,40 +794,40 @@ def _held_karp(G, weight="weight"):
         """
         min_epsilon = math.inf
         for e_u, e_v, e_d in G.edges(data=True):
-            for k in k_xy:
-                if (e_u, e_v) in k.edges:
+            # for k in k_xy:
+            if (e_u, e_v) in k.edges:
+                continue
+            # Now, I have found a condition which MUST be true for the edges to
+            # be a valid substitute. The edge in the graph which is the
+            # substitute is the one with the same terminated end. This can be
+            # checked rather simply.
+            #
+            # Find the edge within k which is the substitute. Because k is a
+            # 1-arborescence, we know that they is only one such edges
+            # leading into every vertex.
+            sub_u, sub_v, sub_d = next(k.in_edges(e_v, data=True).__iter__())
+            k.add_edge(e_u, e_v, weight=e_d[weight])
+            k.remove_edge(sub_u, sub_v)
+            if (
+                max(d for n, d in k.in_degree()) <= 1
+                and len(G) == k.number_of_edges()
+                and nx.is_weakly_connected(k)
+            ):
+                # Ascent method calculation
+                if d[sub_u] == d[e_u] or sub_d[weight] == e_d[weight]:
+                    # Revert to the original graph
+                    k.remove_edge(e_u, e_v)
+                    k.add_edges_from([(sub_u, sub_v, sub_d)])
                     continue
-                # Now, I have found a condition which MUST be true for the edges to
-                # be a valid substitute. The edge in the graph which is the
-                # substitute is the one with the same terminated end. This can be
-                # checked rather simply.
-                #
-                # Find the edge within k which is the substitute. Because k is a
-                # 1-arborescence, we know that they is only one such edges
-                # leading into every vertex.
-                sub_u, sub_v, sub_d = next(k.in_edges(e_v, data=True).__iter__())
-                k.add_edge(e_u, e_v, weight=e_d[weight])
-                k.remove_edge(sub_u, sub_v)
-                if (
-                    max(d for n, d in k.in_degree()) <= 1
-                    and len(G) == k.number_of_edges()
-                    and nx.is_weakly_connected(k)
-                ):
-                    # Ascent method calculation
-                    # if d[sub_u] == d[e_u] or sub_d[weight] == e_d[weight]:
-                    #     # Revert to the original graph
-                    #     k.remove_edge(e_u, e_v)
-                    #     k.add_edges_from([(sub_u, sub_v, sub_d)])
-                    #     continue
-                    # epsilon = (sub_d[weight] - e_d[weight]) / (d[e_u] - d[sub_u])
-                    # BRANCH AND BOUND CALCULATION
-                    epsilon = sub_d[weight] - e_d[weight]
-                    epsilon = -epsilon if d[e_u] == -1 else epsilon
-                    if 0 < epsilon < min_epsilon:
-                        min_epsilon = epsilon
-                # Revert to the original graph
-                k.remove_edge(e_u, e_v)
-                k.add_edges_from([(sub_u, sub_v, sub_d)])
+                epsilon = (sub_d[weight] - e_d[weight]) / (d[e_u] - d[sub_u])
+                # BRANCH AND BOUND CALCULATION
+                # epsilon = sub_d[weight] - e_d[weight]
+                # epsilon = -epsilon if d[e_u] == -1 else epsilon
+                if 0 < epsilon < min_epsilon:
+                    min_epsilon = epsilon
+            # Revert to the original graph
+            k.remove_edge(e_u, e_v)
+            k.add_edges_from([(sub_u, sub_v, sub_d)])
 
         return min_epsilon
 
@@ -842,57 +842,68 @@ def _held_karp(G, weight="weight"):
     for u, v, d in G.edges(data=True):
         original_edge_weights[(u, v)] = d[weight]
     # THE CODE BELOW IS DESIGNED TO RUN THE REGULAR ASCENT METHOD
-    # dir_ascent, k_d = direction_of_ascent()
-    # print()
-    # print(k_d.size(weight))
-    # while dir_ascent is not None:
-    #     max_distance = find_epsilon(k_d, dir_ascent)
-    #     for n, v in dir_ascent.items():
-    #         pi_dict[n] += max_distance * v
-    #     for u, v, d in G.edges(data=True):
-    #         d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
-    #     dir_ascent, k_d = direction_of_ascent()
-    #     print(k_d.size(weight))
+    dir_ascent, k_d = direction_of_ascent()
+    print()
+    print(k_d.size(weight))
+    while dir_ascent is not None:
+        max_distance = find_epsilon(k_d, dir_ascent)
+        for n, v in dir_ascent.items():
+            pi_dict[n] += max_distance * v
+        for u, v, d in G.edges(data=True):
+            d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
+        dir_ascent, k_d = direction_of_ascent()
+        print(k_d.size(weight))
 
-    config_queue = PriorityQueue()
-    config_queue.put(
-        BranchConfiguration(
-            set(), set(), pi_dict.copy(), next(k_pi().__iter__()).size(weight)
-        )
-    )
-    while not config_queue.empty():
-        config = config_queue.get()
-        dir_ascent, k_xy = direction_of_ascent_kilter(config)
-        # If dir_ascent is None, we have either run out of out-of-kilter nodes
-        # or we have found the tour.
-        if dir_ascent is None:
-            solution = branch(config)
-            if solution is not None:
-                print(f"\nReturned Solution:")
-                for u, v, d in solution.edges(data=True):
-                    print(f"({u}, {v}, {d[weight]})")
-                print(f"with weight {solution.size(weight)}")
-                print(f"\nSolution with original weights:")
-                total_weight = 0
-                for u, v in solution.edges():
-                    print(f"({u}, {v}, {original_edge_weights[(u, v)]})")
-                    total_weight += original_edge_weights[(u, v)]
-                print(f"with weight {total_weight}")
-                return solution
-        else:
-            # find epsilon and apply an iteration of the ascent method.
-            max_distance = find_epsilon(k_xy, dir_ascent)
-            for n, v in dir_ascent.items():
-                pi_dict[n] += max_distance * v
-            for u, v, d in G.edges(data=True):
-                d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
-            # Update the configuration and put it back into the config_queue
-            config.pi = pi_dict.copy()
-            config.bound = next(k_pi().__iter__()).size(weight)
-            config_queue.put(config)
+    print(f"\nReturned Solution:")
+    for u, v, d in k_d.edges(data=True):
+        print(f"({u}, {v}, {d[weight]})")
+    print(f"with weight {k_d.size(weight)}")
+    print(f"\nSolution with original weights:")
+    total_weight = 0
+    for u, v in k_d.edges():
+        print(f"({u}, {v}, {original_edge_weights[(u, v)]})")
+        total_weight += original_edge_weights[(u, v)]
+    print(f"with weight {total_weight}")
+
+    # config_queue = PriorityQueue()
+    # config_queue.put(
+    #     BranchConfiguration(
+    #         set(), set(), pi_dict.copy(), next(k_pi().__iter__()).size(weight)
+    #     )
+    # )
+    # while not config_queue.empty():
+    #     config = config_queue.get()
+    #     dir_ascent, k_xy = direction_of_ascent_kilter(config)
+    #     # If dir_ascent is None, we have either run out of out-of-kilter nodes
+    #     # or we have found the tour.
+    #     if dir_ascent is None:
+    #         solution = branch(config)
+    #         if solution is not None:
+    #             print(f"\nReturned Solution:")
+    #             for u, v, d in solution.edges(data=True):
+    #                 print(f"({u}, {v}, {d[weight]})")
+    #             print(f"with weight {solution.size(weight)}")
+    #             print(f"\nSolution with original weights:")
+    #             total_weight = 0
+    #             for u, v in solution.edges():
+    #                 print(f"({u}, {v}, {original_edge_weights[(u, v)]})")
+    #                 total_weight += original_edge_weights[(u, v)]
+    #             print(f"with weight {total_weight}")
+    #             return solution
+    #     else:
+    #         # find epsilon and apply an iteration of the ascent method.
+    #         max_distance = find_epsilon(k_xy, dir_ascent)
+    #         for n, v in dir_ascent.items():
+    #             pi_dict[n] += max_distance * v
+    #         for u, v, d in G.edges(data=True):
+    #             d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
+    #         # Update the configuration and put it back into the config_queue
+    #         config.pi = pi_dict.copy()
+    #         config.bound = next(k_pi().__iter__()).size(weight)
+    #         config_queue.put(config)
 
     # No solution found, which should be impossible
-    return None
+    return k_d
 
 
 def _spanning_tree_distribution(z_star):
