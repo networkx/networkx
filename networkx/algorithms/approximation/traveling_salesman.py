@@ -46,7 +46,6 @@ __all__ = [
     "greedy_tsp",
     "simulated_annealing_tsp",
     "threshold_accepting_tsp",
-    "_held_karp",
 ]
 
 
@@ -372,7 +371,290 @@ def asadpour_tsp(G, weight="weight"):
     pass
 
 
-def _held_karp(G, weight="weight"):
+# TODO below, both the ascent method and the branch and bound method for the
+# Held Karp relaxation are implemented. Once we have a clear idea of which is
+# better, delete the other one. Both functions are completely self contained at
+# the expense of redundant code, so that removing one will be easy.
+#
+# For the current test on a six node graph the ascent method is faster, but on
+# a larger graph the branch and bound may be the preferred choice.
+def held_karp_ascent(G, weight="weight"):
+    """
+    Solves the Held-Karp relaxation of the input complete digraph and scales
+    the output solution for use in the Asadpour [1]_ ASTP algorithm.
+
+    The Held-Karp relaxation defines the lower bound for solutions to the
+    ATSP, although it does return a fractional solution. This is used in the
+    Asadpour algorithm as an initial solution which is later rounded to a
+    integral tree within the spanning tree polytopes. This function solves
+    the relaxation with the branch and bound method in [2]_.
+
+    Parameters
+    ----------
+    G : nx.DiGraph
+        The graph should be a complete weighted directed graph.
+        The distance between all paris of nodes should be included.
+
+    weight : string, optional (default="weight")
+        Edge data key corresponding to the edge weight.
+        If any edge does not have this attribute the weight is set to 1.
+
+    Returns
+    -------
+    OPT : float
+        The cost for the optimal solution to the Held-Karp relaxation
+    z_star : numpy array
+        A symmetrized and scaled version of the optimal solution to the
+        Held-Karp relaxation for use in the Asadpour algorithm
+
+    References
+    ----------
+    .. [1] A. Asadpour, M. X. Goemans, A. Madry, S. O. Gharan, and A. Saberi,
+       An o(log n/log log n)-approximation algorithm for the asymmetric
+       traveling salesman problem, Operations research, 65 (2017),
+       pp. 1043–1061
+
+    .. [2] M. Held, R. M. Karp, The traveling-salesman problem and minimum
+           spanning trees, Operations Research, 1970-11-01, Vol. 18 (6),
+           pp.1138-1162
+    """
+    import numpy as np
+    import scipy.optimize as optimize
+
+    def k_pi():
+        """
+        Find the set of minimum 1-Arborescences for G at point pi.
+
+        Returns
+        -------
+        Set
+            The set of minimum 1-Arborescences
+        """
+        # Create a copy of G without vertex 1.
+        G_1 = G.copy()
+        minimum_1_arborescences = set()
+        minimum_1_arborescence_weight = math.inf
+
+        # node is node '1' in the Held and Karp paper
+        n = next(G.__iter__())
+        G_1.remove_node(n)
+
+        # Iterate over the spanning arborescences of the graph until we know
+        # that we have found the minimum 1-arborescences. My proposed strategy
+        # is to find the most extensive root to connect to from 'node 1' and
+        # the least expensive one. We then iterate over arborescences until
+        # the cost of the basic arborescence is the cost of the minimum one
+        # plus the difference between the most and least expensive roots,
+        # that way the cost of connecting 'node 1' will by definition not by
+        # minimum
+        min_root = {"node": None, "weight": math.inf}
+        max_root = {"node": None, "weight": -math.inf}
+        for u, v, d in G.edges(n, data=True):
+            if d[weight] < min_root["weight"]:
+                min_root = {"node": v, "weight": d[weight]}
+            if d[weight] > max_root["weight"]:
+                max_root = {"node": v, "weight": d[weight]}
+
+        min_in_edge = min(G.in_edges(n, data=True), key=lambda x: x[2][weight])
+        min_root["weight"] = min_root["weight"] + min_in_edge[2][weight]
+        max_root["weight"] = max_root["weight"] + min_in_edge[2][weight]
+
+        min_arb_weight = math.inf
+        for arb in nx.ArborescenceIterator(G_1):
+            # Only iterate over the minimum weight arborescences
+            arb_weight = arb.size(weight)
+            if min_arb_weight == math.inf:
+                min_arb_weight = arb_weight
+            elif arb_weight > min_arb_weight + max_root["weight"] - min_root["weight"]:
+                break
+            # We have to pick the root node of the arborescence for the out
+            # edge of the first vertex as that is the only node without an
+            # edge directed into it.
+            for N in arb:
+                if arb.in_degree(N) == 0:
+                    # root found
+                    arb.add_edge(n, N, weight=G[n][N][weight])
+                    arb_weight += G[n][N][weight]
+                    break
+            # We can pick the minimum weight in-edge for the vertex with a
+            # cycle
+            min_in_edge_weight = math.inf
+            min_in_edge = None
+            for u, v, d in G.in_edges(n, data=True):
+                edge_weight = d[weight]
+                if u == N:
+                    continue
+                if edge_weight < min_in_edge_weight:
+                    min_in_edge_weight = edge_weight
+                    min_in_edge = (u, v)
+            arb.add_edge(min_in_edge[0], min_in_edge[1], weight=min_in_edge_weight)
+            arb_weight += min_in_edge_weight
+            # Check to see the weight of the arborescence, if it is a new
+            # minimum, clear all of the old potential minimum
+            # 1-arborescences and add this is the only one. If its weight is
+            # above the known minimum, do not add it.
+            if arb_weight < minimum_1_arborescence_weight:
+                minimum_1_arborescences.clear()
+                minimum_1_arborescence_weight = arb_weight
+            # We have a 1-arborescence, add it to the set
+            if arb_weight == minimum_1_arborescence_weight:
+                minimum_1_arborescences.add(arb)
+
+        return minimum_1_arborescences
+
+    def direction_of_ascent():
+        """
+        Find the direction of ascent at point pi.
+
+        See [1]_ for more information.
+
+        Returns
+        -------
+        dict
+            A mapping from the nodes of the graph which represents the direction
+            of ascent.
+
+        References
+        ----------
+        .. [1] M. Held, R. M. Karp, The traveling-salesman problem and minimum
+           spanning trees, Operations Research, 1970-11-01, Vol. 18 (6),
+           pp.1138-1162
+        """
+        # 1. Set d equal to the zero n-vector.
+        d = {}
+        for n in G:
+            d[n] = 0
+        del n
+        # 2. Find a 1-Aborescence T^k such that k is in K(pi, d).
+        minimum_1_arborescences = k_pi()
+        while True:
+            # Reduce K(pi) to K(pi, d)
+            # Find the arborescence in K(pi) which increases the lest in
+            # direction d
+            min_k_d_weight = math.inf
+            min_k_d = None
+            for arborescence in minimum_1_arborescences:
+                weighted_cost = 0
+                v_k_0 = 0
+                for n in G:
+                    weighted_cost += d[n] * (arborescence.degree(n) - 2)
+                    v_k_0 += 1 if arborescence.degree(n) - 2 == 0 else 0
+                if weighted_cost < min_k_d_weight:
+                    min_k_d_weight = weighted_cost
+                    min_k_d = arborescence
+                # If d is the zero vector, then all minimum arborescences
+                # will have the same weighted cost of 0, but if there is a
+                # cycle among them, that needs to be the one we pick
+                if v_k_0 == len(G):
+                    min_k_d_weight = weighted_cost
+                    min_k_d = arborescence
+            # 3. If sum of d_i * v_{i, k} is greater than zero, terminate
+            if min_k_d_weight > 0:
+                return d, min_k_d
+            # 4. d_i = d_i + v_{i, k}
+            for n in G:
+                d[n] += min_k_d.degree(n) - 2
+            # Check that we do not need to terminate because the direction
+            # of ascent does not exist. This is done with linear
+            # programming.
+            c = np.full(len(minimum_1_arborescences), -1)
+            a_eq = np.empty((len(G) + 1, len(minimum_1_arborescences)))
+            b_eq = np.zeros(len(G) + 1)
+            b_eq[len(G)] = 1
+            arb_count = 0
+            for arborescence in minimum_1_arborescences:
+                n_count = len(G) - 1
+                for n in arborescence:
+                    a_eq[n_count][arb_count] = arborescence.degree(n) - 2
+                    n_count -= 1
+                a_eq[len(G)][arb_count] = 1
+                arb_count += 1
+            program_result = optimize.linprog(c, A_eq=a_eq, b_eq=b_eq)
+            bool_result = program_result.x >= 0
+            if program_result.status == 0 and np.sum(bool_result) == len(
+                minimum_1_arborescences
+            ):
+                # There is no direction of ascent
+                return None, min_k_d
+
+            # 5. GO TO 2
+
+    def find_epsilon(k, d):
+        """
+        Given the direction of ascent at pi, find the maximum distance we can go
+        in that direction.
+
+        Parameters
+        ----------
+        k_xy : set
+        d : dict
+
+        Returns
+        -------
+        float
+            The distance we can travel in direction d
+        """
+        min_epsilon = math.inf
+        for e_u, e_v, e_d in G.edges(data=True):
+            if (e_u, e_v) in k.edges:
+                continue
+            # Now, I have found a condition which MUST be true for the edges to
+            # be a valid substitute. The edge in the graph which is the
+            # substitute is the one with the same terminated end. This can be
+            # checked rather simply.
+            #
+            # Find the edge within k which is the substitute. Because k is a
+            # 1-arborescence, we know that they is only one such edges
+            # leading into every vertex.
+            sub_u, sub_v, sub_d = next(k.in_edges(e_v, data=True).__iter__())
+            k.add_edge(e_u, e_v, weight=e_d[weight])
+            k.remove_edge(sub_u, sub_v)
+            if (
+                max(d for n, d in k.in_degree()) <= 1
+                and len(G) == k.number_of_edges()
+                and nx.is_weakly_connected(k)
+            ):
+                # Ascent method calculation
+                if d[sub_u] == d[e_u] or sub_d[weight] == e_d[weight]:
+                    # Revert to the original graph
+                    k.remove_edge(e_u, e_v)
+                    k.add_edges_from([(sub_u, sub_v, sub_d)])
+                    continue
+                epsilon = (sub_d[weight] - e_d[weight]) / (d[e_u] - d[sub_u])
+                if 0 < epsilon < min_epsilon:
+                    min_epsilon = epsilon
+            # Revert to the original graph
+            k.remove_edge(e_u, e_v)
+            k.add_edges_from([(sub_u, sub_v, sub_d)])
+
+        return min_epsilon
+
+    # I have to know that the elements in pi correspond to the correct elements
+    # in the direction of ascent, even if the node labels are not integers.
+    # Thus, I will use dictionaries to made that mapping.
+    pi_dict = {}
+    for n in G:
+        pi_dict[n] = 0
+    del n
+    original_edge_weights = {}
+    for u, v, d in G.edges(data=True):
+        original_edge_weights[(u, v)] = d[weight]
+    dir_ascent, k_d = direction_of_ascent()
+    while dir_ascent is not None:
+        max_distance = find_epsilon(k_d, dir_ascent)
+        for n, v in dir_ascent.items():
+            pi_dict[n] += max_distance * v
+        for u, v, d in G.edges(data=True):
+            d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
+        dir_ascent, k_d = direction_of_ascent()
+
+    # Write the original edge weights back to G
+    for u, v, d in G.edges(data=True):
+        d[weight] = original_edge_weights[(u, v)]
+    return k_d
+
+
+def held_karp_branch_bound(G, weight="weight"):
     """
     Solves the Held-Karp relaxation of the input complete digraph and scales
     the output solution for use in the Asadpour [1]_ ASTP algorithm.
@@ -493,7 +775,6 @@ def _held_karp(G, weight="weight"):
 
         min_arb_weight = math.inf
         for arb in nx.ArborescenceIterator(G_1, init_partition=partition):
-            # Only iterate over the minimum weight arborescences
             arb_weight = arb.size(weight)
             if min_arb_weight == math.inf:
                 min_arb_weight = arb_weight
@@ -580,7 +861,7 @@ def _held_karp(G, weight="weight"):
         # loop it will be faster than having to many n calls to k_pi() so I will
         # implement that method.
 
-        # This set tracks potentially out of kilter nodes.
+        # This dict tracks potentially out of kilter nodes.
         out_of_kilter = {}
         for n in G:
             out_of_kilter[n] = Kilter.UNKNOWN
@@ -605,10 +886,6 @@ def _held_karp(G, weight="weight"):
             d[n] = 0
 
         # Find an out-of-kilter vertex
-        # TODO remove debug code which forces it to pick a certain vertex
-        if out_of_kilter[3] == Kilter.LOW:
-            d[3] = -1
-            return d, k_xy
         for n, k in out_of_kilter.items():
             if k is Kilter.LOW:
                 d[n] = -1
@@ -700,83 +977,6 @@ def _held_karp(G, weight="weight"):
             config_queue.put(new_exclusive_config)
             return None
 
-    def direction_of_ascent():
-        """
-        Find the direction of ascent at point pi.
-
-        See [1]_ for more information.
-
-        Returns
-        -------
-        dict
-            A mapping from the nodes of the graph which represents the direction
-            of ascent.
-
-        References
-        ----------
-        .. [1] M. Held, R. M. Karp, The traveling-salesman problem and minimum
-           spanning trees, Operations Research, 1970-11-01, Vol. 18 (6),
-           pp.1138-1162
-        """
-        # 1. Set d equal to the zero n-vector.
-        d = {}
-        for n in G:
-            d[n] = 0
-        del n
-        # 2. Find a 1-Aborescence T^k such that k is in K(pi, d).
-        minimum_1_arborescences = k_pi()
-        while True:
-            # Reduce K(pi) to K(pi, d)
-            # Find the arborescence in K(pi) which increases the lest in
-            # direction d
-            min_k_d_weight = math.inf
-            min_k_d = None
-            for arborescence in minimum_1_arborescences:
-                weighted_cost = 0
-                v_k_0 = 0
-                for n in G:
-                    weighted_cost += d[n] * (arborescence.degree(n) - 2)
-                    v_k_0 += 1 if arborescence.degree(n) - 2 == 0 else 0
-                if weighted_cost < min_k_d_weight:
-                    min_k_d_weight = weighted_cost
-                    min_k_d = arborescence
-                # If d is the zero vector, then all minimum arborescences
-                # will have the same weighted cost of 0, but if there is a
-                # cycle among them, that needs to be the one we pick
-                if v_k_0 == len(G):
-                    min_k_d_weight = weighted_cost
-                    min_k_d = arborescence
-            # 3. If sum of d_i * v_{i, k} is greater than zero, terminate
-            if min_k_d_weight > 0:
-                return d, min_k_d
-            # 4. d_i = d_i + v_{i, k}
-            for n in G:
-                d[n] += min_k_d.degree(n) - 2
-            # Check that we do not need to terminate because the direction
-            # of ascent does not exist. This is done with linear
-            # programming.
-            c = np.full(len(minimum_1_arborescences), -1)
-            a_eq = np.empty((len(G) + 1, len(minimum_1_arborescences)))
-            b_eq = np.zeros(len(G) + 1)
-            b_eq[len(G)] = 1
-            arb_count = 0
-            for arborescence in minimum_1_arborescences:
-                n_count = len(G) - 1
-                for n in arborescence:
-                    a_eq[n_count][arb_count] = arborescence.degree(n) - 2
-                    n_count -= 1
-                a_eq[len(G)][arb_count] = 1
-                arb_count += 1
-            program_result = optimize.linprog(c, A_eq=a_eq, b_eq=b_eq)
-            bool_result = program_result.x >= 0
-            if program_result.status == 0 and np.sum(bool_result) == len(
-                minimum_1_arborescences
-            ):
-                # There is no direction of ascent
-                return None, min_k_d
-
-            # 5. GO TO 2
-
     def find_epsilon(k, d):
         """
         Given the direction of ascent at pi, find the maximum distance we can go
@@ -784,7 +984,7 @@ def _held_karp(G, weight="weight"):
 
         Parameters
         ----------
-        k_xy : set
+        k : nx.DiGraph
         d : dict
 
         Returns
@@ -813,16 +1013,8 @@ def _held_karp(G, weight="weight"):
                 and len(G) == k.number_of_edges()
                 and nx.is_weakly_connected(k)
             ):
-                # Ascent method calculation
-                if d[sub_u] == d[e_u] or sub_d[weight] == e_d[weight]:
-                    # Revert to the original graph
-                    k.remove_edge(e_u, e_v)
-                    k.add_edges_from([(sub_u, sub_v, sub_d)])
-                    continue
-                epsilon = (sub_d[weight] - e_d[weight]) / (d[e_u] - d[sub_u])
-                # BRANCH AND BOUND CALCULATION
-                # epsilon = sub_d[weight] - e_d[weight]
-                # epsilon = -epsilon if d[e_u] == -1 else epsilon
+                epsilon = sub_d[weight] - e_d[weight]
+                epsilon = -epsilon if d[e_u] == -1 else epsilon
                 if 0 < epsilon < min_epsilon:
                     min_epsilon = epsilon
             # Revert to the original graph
@@ -831,7 +1023,7 @@ def _held_karp(G, weight="weight"):
 
         return min_epsilon
 
-    # I HAVE to know that the elements in pi correspond to the correct elements
+    # I have to know that the elements in pi correspond to the correct elements
     # in the direction of ascent, even if the node labels are not integers.
     # Thus, I will use dictionaries to made that mapping.
     pi_dict = {}
@@ -841,69 +1033,42 @@ def _held_karp(G, weight="weight"):
     original_edge_weights = {}
     for u, v, d in G.edges(data=True):
         original_edge_weights[(u, v)] = d[weight]
-    # THE CODE BELOW IS DESIGNED TO RUN THE REGULAR ASCENT METHOD
-    dir_ascent, k_d = direction_of_ascent()
-    print()
-    print(k_d.size(weight))
-    while dir_ascent is not None:
-        max_distance = find_epsilon(k_d, dir_ascent)
-        for n, v in dir_ascent.items():
-            pi_dict[n] += max_distance * v
-        for u, v, d in G.edges(data=True):
-            d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
-        dir_ascent, k_d = direction_of_ascent()
-        print(k_d.size(weight))
 
-    print(f"\nReturned Solution:")
-    for u, v, d in k_d.edges(data=True):
-        print(f"({u}, {v}, {d[weight]})")
-    print(f"with weight {k_d.size(weight)}")
-    print(f"\nSolution with original weights:")
-    total_weight = 0
-    for u, v in k_d.edges():
-        print(f"({u}, {v}, {original_edge_weights[(u, v)]})")
-        total_weight += original_edge_weights[(u, v)]
-    print(f"with weight {total_weight}")
-
-    # config_queue = PriorityQueue()
-    # config_queue.put(
-    #     BranchConfiguration(
-    #         set(), set(), pi_dict.copy(), next(k_pi().__iter__()).size(weight)
-    #     )
-    # )
-    # while not config_queue.empty():
-    #     config = config_queue.get()
-    #     dir_ascent, k_xy = direction_of_ascent_kilter(config)
-    #     # If dir_ascent is None, we have either run out of out-of-kilter nodes
-    #     # or we have found the tour.
-    #     if dir_ascent is None:
-    #         solution = branch(config)
-    #         if solution is not None:
-    #             print(f"\nReturned Solution:")
-    #             for u, v, d in solution.edges(data=True):
-    #                 print(f"({u}, {v}, {d[weight]})")
-    #             print(f"with weight {solution.size(weight)}")
-    #             print(f"\nSolution with original weights:")
-    #             total_weight = 0
-    #             for u, v in solution.edges():
-    #                 print(f"({u}, {v}, {original_edge_weights[(u, v)]})")
-    #                 total_weight += original_edge_weights[(u, v)]
-    #             print(f"with weight {total_weight}")
-    #             return solution
-    #     else:
-    #         # find epsilon and apply an iteration of the ascent method.
-    #         max_distance = find_epsilon(k_xy, dir_ascent)
-    #         for n, v in dir_ascent.items():
-    #             pi_dict[n] += max_distance * v
-    #         for u, v, d in G.edges(data=True):
-    #             d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
-    #         # Update the configuration and put it back into the config_queue
-    #         config.pi = pi_dict.copy()
-    #         config.bound = next(k_pi().__iter__()).size(weight)
-    #         config_queue.put(config)
+    config_queue = PriorityQueue()
+    config_queue.put(
+        BranchConfiguration(
+            set(), set(), pi_dict.copy(), next(k_pi().__iter__()).size(weight)
+        )
+    )
+    while not config_queue.empty():
+        config = config_queue.get()
+        dir_ascent, k_xy = direction_of_ascent_kilter(config)
+        # If dir_ascent is None, we have either run out of out-of-kilter nodes
+        # or we have found the tour.
+        if dir_ascent is None:
+            solution = branch(config)
+            if solution is not None:
+                # Write the original edge weights back to G
+                for u, v, d in G.edges(data=True):
+                    d[weight] = original_edge_weights[(u, v)]
+                return solution
+        else:
+            # find epsilon and apply an iteration of the ascent method.
+            max_distance = find_epsilon(next(k_xy.__iter__()), dir_ascent)
+            for n, v in dir_ascent.items():
+                pi_dict[n] += max_distance * v
+            for u, v, d in G.edges(data=True):
+                d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
+            # Update the configuration and put it back into the config_queue
+            config.pi = pi_dict.copy()
+            config.bound = next(k_pi().__iter__()).size(weight)
+            config_queue.put(config)
 
     # No solution found, which should be impossible
-    return k_d
+    # Write the original edge weights back to G
+    for u, v, d in G.edges(data=True):
+        d[weight] = original_edge_weights[(u, v)]
+    return None
 
 
 def _spanning_tree_distribution(z_star):

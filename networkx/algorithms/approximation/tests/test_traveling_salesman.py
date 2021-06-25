@@ -379,14 +379,15 @@ def test_TSP_incomplete_graph_short_path():
     assert len(path) == 13 and len(set(path)) == 12
 
 
-def test_held_karp():
+def test_held_karp_ascent():
     """
-    Test the Held-Karp relaxation
+    Test the Held-Karp relaxation with the ascent method
     """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
     import numpy as np
 
-    # Adjacency matrix from page 1153 of the 1970 Held and Karp paper which have
-    # been edited to be directional, but also symmetric
+    # Adjacency matrix from page 1153 of the 1970 Held and Karp paper
+    # which have been edited to be directional, but also symmetric
     G_array = np.array(
         [
             [0, 97, 60, 73, 17, 52],
@@ -398,7 +399,56 @@ def test_held_karp():
         ]
     )
 
-    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    k = nx_app._held_karp(G)
+    solution_edges = [
+        (1, 5, 30),
+        (2, 3, 21),
+        (3, 1, 52),
+        (4, 2, 35),
+        (5, 0, 52),
+        (0, 4, 17),
+    ]
+    solution = nx.DiGraph()
+    solution.add_weighted_edges_from(solution_edges)
 
-    # print(f"\n{k.adj}\nTotal Weight: {k.size('weight')}")
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    k = tsp.held_karp_ascent(G)
+
+    assert nx.utils.edges_equal(k.edges(), solution.edges())
+
+
+def test_held_karp_branch_bound():
+    """
+    Test the Held Karp relaxation using the same graph as above but with a
+    different method
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+    import numpy as np
+
+    # Adjacency matrix from page 1153 of the 1970 Held and Karp paper
+    # which have been edited to be directional, but also symmetric
+    G_array = np.array(
+        [
+            [0, 97, 60, 73, 17, 52],
+            [97, 0, 41, 52, 90, 30],
+            [60, 41, 0, 21, 35, 41],
+            [73, 52, 21, 0, 95, 46],
+            [17, 90, 35, 95, 0, 81],
+            [52, 30, 41, 46, 81, 0],
+        ]
+    )
+
+    solution_edges = [
+        (1, 5, 30),
+        (2, 3, 21),
+        (3, 1, 52),
+        (4, 2, 35),
+        (5, 0, 52),
+        (0, 4, 17),
+    ]
+    solution = nx.DiGraph()
+    solution.add_weighted_edges_from(solution_edges)
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    k = tsp.held_karp_branch_bound(G)
+
+    assert nx.utils.edges_equal(k.edges(), solution.edges())
