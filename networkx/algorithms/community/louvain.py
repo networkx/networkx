@@ -59,6 +59,7 @@ def _one_level(G, partition, weight="weight"):
     """Calculate one level of the tree"""
     node2com = {u: i for i, u in enumerate(G.nodes())}
     total_weights = {i: G.degree(u, weight=weight) for i, u in enumerate(G.nodes())}
+    degrees = G.degree(weight=weight)
     rand_nodes = sample(G.nodes, len(G.nodes))
     nb_moves = 1
     m = G.size(weight=weight)
@@ -71,16 +72,16 @@ def _one_level(G, partition, weight="weight"):
             best_com = node2com[u]
             partition[best_com].difference_update(G.nodes[u].get("graph", {u}))
             weights2com = _neighbor_weights(u, nbrs, node2com, weight)
-            ki = G.degree(u, weight=weight)
-            total_weights[best_com] -= ki
+            degree = degrees[u]
+            total_weights[best_com] -= degree
             for nbr_com, weight in weights2com.items():
                 # Modularity gain
-                gain = weight / (2 * m) - (total_weights[nbr_com] * ki) / (2 * m * m)
+                gain = weight - (total_weights[nbr_com] * degree) / m
                 if gain > best_mod:
                     best_mod = gain
                     best_com = nbr_com
             partition[best_com].update(G.nodes[u].get("graph", {u}))
-            total_weights[best_com] += ki
+            total_weights[best_com] += degree
             if best_com != node2com[u]:
                 improvement = True
                 nb_moves += 1
