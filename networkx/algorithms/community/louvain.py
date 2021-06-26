@@ -2,7 +2,7 @@
 Algorithm"""
 
 from copy import deepcopy
-from random import sample
+import random
 
 import networkx as nx
 from networkx.algorithms.community import modularity
@@ -42,9 +42,12 @@ def louvain_communities(G, weight="weight", threshold=0):
     partition = [{u} for u in G.nodes()]
     mod = modularity(G, partition)
     current_graph = G.copy()
+    m = current_graph.size(weight=weight)
 
     while True:
-        partition, improvement = _one_level(current_graph, deepcopy(partition), weight)
+        partition, improvement = _one_level(
+            current_graph, m, deepcopy(partition), weight
+        )
         if not improvement:
             break
         new_mod = modularity(G, partition)
@@ -55,14 +58,13 @@ def louvain_communities(G, weight="weight", threshold=0):
     return partitions
 
 
-def _one_level(G, partition, weight="weight"):
+def _one_level(G, m, partition, weight="weight"):
     """Calculate one level of the tree"""
     node2com = {u: i for i, u in enumerate(G.nodes())}
-    total_weights = {i: G.degree(u, weight=weight) for i, u in enumerate(G.nodes())}
-    degrees = G.degree(weight=weight)
-    rand_nodes = sample(G.nodes, len(G.nodes))
+    degrees = dict(G.degree(weight=weight))
+    total_weights = {i: deg for i, deg in enumerate(degrees.values())}
+    random.shuffle(rand_nodes := list(G.nodes))
     nb_moves = 1
-    m = G.size(weight=weight)
     improvement = False
     while nb_moves > 0:
         nb_moves = 0
