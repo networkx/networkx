@@ -63,7 +63,8 @@ def _one_level(G, m, partition, weight="weight"):
     node2com = {u: i for i, u in enumerate(G.nodes())}
     degrees = dict(G.degree(weight=weight))
     total_weights = {i: deg for i, deg in enumerate(degrees.values())}
-    random.shuffle(rand_nodes := list(G.nodes))
+    rand_nodes = list(G.nodes)
+    random.shuffle(rand_nodes)
     nb_moves = 1
     improvement = False
     while nb_moves > 0:
