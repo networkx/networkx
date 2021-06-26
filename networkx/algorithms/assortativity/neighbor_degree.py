@@ -1,23 +1,6 @@
 __all__ = ["average_neighbor_degree"]
 
 
-def _average_nbr_deg(G, source_degree, target_degree, nodes=None, weight=None):
-    # average degree of neighbors
-    avg = {}
-    for n, deg in source_degree(nodes, weight=weight):
-        # normalize but not by zero degree
-        if deg == 0:
-            deg = 1
-        nbrdeg = target_degree(G[n])
-        if weight is None:
-            avg[n] = sum(d for n, d in nbrdeg) / float(deg)
-        else:
-            avg[n] = sum((G[n][nbr].get(weight, 1) * d for nbr, d in nbrdeg)) / float(
-                deg
-            )
-    return avg
-
-
 def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=None):
     r"""Returns the average degree of the neighborhood of each node.
 
@@ -102,10 +85,25 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
     source_degree = G.degree
     target_degree = G.degree
     if G.is_directed():
-        direction = {"out": G.out_degree, "in": G.in_degree}
-        source_degree = direction[source]
-        target_degree = direction[target]
-    return _average_nbr_deg(G, source_degree, target_degree, nodes=nodes, weight=weight)
+        # G.degree is G.out_degree so only change if "in" degree requested
+        if source == "in":
+            source_degree = G.in_degree
+        if target == "in":
+            target_degree = G.in_degree
+    # precompute target degrees -- should *not* be weighted degree
+    target_degree = dict(target_degree())
+    # average degree of neighbors
+    avg = {}
+    for n, deg in source_degree(nodes, weight=weight):
+        # normalize but not by zero degree
+        if deg == 0:
+            avg[n] = 0
+            continue
+        if weight is None:
+            avg[n] = sum(target_degree[nbr] for nbr in G[n]) / deg
+        else:
+            avg[n] = sum((G[n][nbr].get(weight, 1) * target_degree[nbr] for nbr in G[n])) / deg
+    return avg
 
 
 # obsolete

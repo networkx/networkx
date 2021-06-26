@@ -28,7 +28,7 @@ class TestAverageNeighbor:
         nd = nx.average_neighbor_degree(G, weight="weight")
         assert nd == answer
 
-        D = G.to_directed()
+        D = nx.DiGraph(G.edges(data=True)) # G.to_directed()
         nd = nx.average_neighbor_degree(D, weight="weight")
         assert nd == answer
 
