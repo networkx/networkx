@@ -338,7 +338,7 @@ def _quotient_graph(
     relabel=False,
     create_using=None,
 ):
-    """Construct the quotient graph assuming inout has been checked"""
+    """Construct the quotient graph assuming input has been checked"""
     if create_using is None:
         H = G.__class__()
     else:
