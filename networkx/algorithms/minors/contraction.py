@@ -128,10 +128,9 @@ def quotient_graph(
 
     edge_relation : Boolean function with two arguments
         This function must represent an edge relation on the *blocks* of
-        `G` in the partition induced by `node_relation`. It must
-        take two arguments, *B* and *C*, each one a set of nodes, and
-        return True exactly when there should be an edge joining
-        block *B* to block *C* in the returned graph.
+        the `partition` of `G`. It must take two arguments, *B* and *C*,
+        each one a set of nodes, and return True exactly when there should be
+        an edge joining block *B* to block *C* in the returned graph.
 
         If `edge_relation` is not specified, it is assumed to be the
         following relation. Block *B* is related to block *C* if and
