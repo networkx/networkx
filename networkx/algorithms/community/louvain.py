@@ -63,6 +63,7 @@ def _one_level(G, m, partition, weight="weight"):
     node2com = {u: i for i, u in enumerate(G.nodes())}
     degrees = dict(G.degree(weight=weight))
     total_weights = {i: deg for i, deg in enumerate(degrees.values())}
+    nbrs = {u: dict(G[u]) for u in G.nodes()}
     rand_nodes = list(G.nodes)
     random.shuffle(rand_nodes)
     nb_moves = 1
@@ -70,11 +71,10 @@ def _one_level(G, m, partition, weight="weight"):
     while nb_moves > 0:
         nb_moves = 0
         for u in rand_nodes:
-            nbrs = G.adj[u]
             best_mod = 0
             best_com = node2com[u]
             partition[best_com].difference_update(G.nodes[u].get("graph", {u}))
-            weights2com = _neighbor_weights(u, nbrs, node2com, weight)
+            weights2com = _neighbor_weights(u, nbrs[u], node2com, weight)
             degree = degrees[u]
             total_weights[best_com] -= degree
             for nbr_com, weight in weights2com.items():
