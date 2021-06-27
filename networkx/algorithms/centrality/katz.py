@@ -298,7 +298,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     ----------
     .. [1] Mark E. J. Newman:
        Networks: An Introduction.
-       Oxford University Press, USA, 2010, p. 720.
+       Oxford University Press, USA, 2010, p. 173.
     .. [2] Leo Katz:
        A New Status Index Derived from Sociometric Index.
        Psychometrika 18(1):39–43, 1953
