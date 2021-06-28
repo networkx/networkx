@@ -62,7 +62,7 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
     >>> G = nx.DiGraph()
     >>> nx.add_path(G, [0, 1, 2, 3])
     >>> nx.average_neighbor_degree(G, source="in", target="in")
-    {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0}
+    {0: 0.0, 1: 1.0, 2: 1.0, 3: 0.0}
 
     >>> nx.average_neighbor_degree(G, source="out", target="out")
     {0: 1.0, 1: 1.0, 2: 0.0, 3: 0.0}
@@ -90,28 +90,33 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
         elif source == "out":
             source_degree = G.out_degree
         elif source != "in+out":
-            raise nx.NetworkXError(f"source argument must be 'in', 'out' or 'in+out', not {source}")
+            raise nx.NetworkXError(
+                f"source argument {source} must be 'in', 'out' or 'in+out'"
+            )
 
         if target == "in":
             target_degree = G.in_degree
         elif target == "out":
             target_degree = G.out_degree
         elif target != "in+out":
-            raise nx.NetworkXError(f"target argument must be 'in', 'out' or 'in+out', not {target}")
+            raise nx.NetworkXError(
+                f"target argument {target} must be 'in', 'out' or 'in+out'"
+            )
 
     # precompute target degrees -- should *not* be weighted degree
-    target_degree = dict(target_degree())
+    tgt_deg = dict(target_degree())
     # average degree of neighbors
     avg = {}
     for n, deg in source_degree(nodes, weight=weight):
         # normalize but not by zero degree
         if deg == 0:
-            avg[n] = 0
+            avg[n] = 0.0
             continue
+        G_n = G[n]
         if weight is None:
-            avg[n] = sum(target_degree[nbr] for nbr in G[n]) / deg
+            avg[n] = sum(tgt_deg[nbr] for nbr in G_n) / deg
         else:
-            avg[n] = sum((G[n][nbr].get(weight, 1) * target_degree[nbr] for nbr in G[n])) / deg
+            avg[n] = sum(G_n[nbr].get(weight, 1) * tgt_deg[nbr] for nbr in G_n) / deg
     return avg
 
 
