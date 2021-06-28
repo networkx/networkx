@@ -2,8 +2,8 @@
 Matrix Market Graph Format
 **************************
 
-The `Matrix Market`_ exchange format is a ASCII-encoded text-based file format
-described by Nist.
+The `Matrix Market`_ exchange format is a text-based file format described by
+NIST.
 Matrix Market supports both a **coordinate format** for sparse matrices and
 an **array format** for dense matrices.
 The :mod:`scipy.io` module provides the `scipy.io.mmread` and `scipy.io.mmwrite`
