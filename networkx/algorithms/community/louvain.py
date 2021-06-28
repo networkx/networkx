@@ -10,7 +10,7 @@ from networkx.algorithms.community import modularity
 __all__ = ["louvain_communities"]
 
 
-def louvain_communities(G, weight="weight", threshold=0):
+def louvain_communities(G, weight="weight", threshold=0.0000001):
     """Find communities in G using the Louvain Community Detection
     Algorithm.
 
@@ -41,20 +41,18 @@ def louvain_communities(G, weight="weight", threshold=0):
     partitions = []
     partition = [{u} for u in G.nodes()]
     mod = modularity(G, partition)
-    current_graph = G.copy()
-    m = current_graph.size(weight=weight)
+    graph = G.copy()
+    m = G.size(weight=weight)
 
     while True:
-        partition, improvement = _one_level(
-            current_graph, m, deepcopy(partition), weight
-        )
+        partition, improvement = _one_level(graph, m, deepcopy(partition), weight)
         if not improvement:
             break
         new_mod = modularity(G, partition)
         if new_mod - mod <= threshold:
             break
         partitions.append(partition)
-        current_graph = _gen_graph(G, partition)
+        graph = _gen_graph(G, partition)
     return partitions
 
 
@@ -73,17 +71,16 @@ def _one_level(G, m, partition, weight="weight"):
         for u in rand_nodes:
             best_mod = 0
             best_com = node2com[u]
-            partition[best_com].difference_update(G.nodes[u].get("graph", {u}))
+            partition[best_com].difference_update(G.nodes[u].get("nodes", {u}))
             weights2com = _neighbor_weights(u, nbrs[u], node2com, weight)
             degree = degrees[u]
             total_weights[best_com] -= degree
-            for nbr_com, weight in weights2com.items():
-                # Modularity gain
-                gain = weight - (total_weights[nbr_com] * degree) / m
+            for nbr_com, wt in weights2com.items():
+                gain = wt - (total_weights[nbr_com] * degree) / m
                 if gain > best_mod:
                     best_mod = gain
                     best_com = nbr_com
-            partition[best_com].update(G.nodes[u].get("graph", {u}))
+            partition[best_com].update(G.nodes[u].get("nodes", {u}))
             total_weights[best_com] += degree
             if best_com != node2com[u]:
                 improvement = True
@@ -93,7 +90,7 @@ def _one_level(G, m, partition, weight="weight"):
     return partition, improvement
 
 
-def _neighbor_weights(node, nbrs, node2com, weight):
+def _neighbor_weights(node, nbrs, node2com, weight="weight"):
     """Calculate node's neighbor communities and weights"""
     weights = {}
     for nbr, data in nbrs.items():
@@ -104,10 +101,18 @@ def _neighbor_weights(node, nbrs, node2com, weight):
     return weights
 
 
-def _gen_graph(G, partition):
-    """Generate induced graph from given partition"""
-    H = nx.quotient_graph(G, partition, relabel=True)
-    for u in H.nodes:
-        if H.nodes[u]["nedges"] != 0:
-            H.add_edge(u, u, weight=H.nodes[u]["nedges"])
+def _gen_graph(G, partition, weight="weight"):
+    H = nx.Graph()
+    node2com = {}
+    for i, part in enumerate(partition):
+        H.add_node(i, nodes=part)
+        for node in part:
+            node2com[node] = i
+
+    for node1, node2, wt in G.edges(data=True):
+        wt = wt.get(weight, 1)
+        com1 = node2com[node1]
+        com2 = node2com[node2]
+        temp = H.get_edge_data(com1, com2, {weight: 0}).get(weight, 1)
+        H.add_edge(com1, com2, **{weight: wt + temp})
     return H
