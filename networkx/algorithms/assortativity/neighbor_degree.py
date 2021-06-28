@@ -27,11 +27,11 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
     ----------
     G : NetworkX graph
 
-    source : string ("in"|"out")
+    source : string ("in"|"out"|"in+out")
        Directed graphs only.
        Use "in"- or "out"-degree for source node.
 
-    target : string ("in"|"out")
+    target : string ("in"|"out"|"in+out")
        Directed graphs only.
        Use "in"- or "out"-degree for target node.
 
@@ -85,11 +85,20 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
     source_degree = G.degree
     target_degree = G.degree
     if G.is_directed():
-        # G.degree is G.out_degree so only change if "in" degree requested
         if source == "in":
             source_degree = G.in_degree
+        elif source == "out":
+            source_degree = G.out_degree
+        elif source != "in+out":
+            raise nx.NetworkXError(f"source argument must be 'in', 'out' or 'in+out', not {source}")
+
         if target == "in":
             target_degree = G.in_degree
+        elif target == "out":
+            target_degree = G.out_degree
+        elif target != "in+out":
+            raise nx.NetworkXError(f"target argument must be 'in', 'out' or 'in+out', not {target}")
+
     # precompute target degrees -- should *not* be weighted degree
     target_degree = dict(target_degree())
     # average degree of neighbors
