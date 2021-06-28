@@ -10,8 +10,12 @@ The function betweenness centrality accepts a bunch of nodes and computes
 the contribution of those nodes to the betweenness centrality of the whole
 network. Here we divide the network in chunks of nodes and we compute their
 contribution to the betweenness centrality of the whole network.
-"""
 
+Note: The example output below shows that the non-parallel implementation is
+faster. This is a limitation of our CI/CD pipeline running on a single core.
+
+Depending on your setup, you will likely observe a speedup.
+"""
 from multiprocessing import Pool
 import time
 import itertools
