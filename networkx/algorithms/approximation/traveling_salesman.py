@@ -338,7 +338,7 @@ def asadpour_tsp(G, weight="weight"):
     that edge using a maximum entropy rounding scheme. Next we sample that
     distribution $2 \\log n$ times and save the minimum sampled tree once
     the direction of the arcs is added back to the edges. Finally,
-    we argument then short circuit that graph to find the approximate tour
+    we augment then short circuit that graph to find the approximate tour
     for the salesman.
 
     Parameters
@@ -380,6 +380,8 @@ def asadpour_tsp(G, weight="weight"):
 # a larger graph the branch and bound may be the preferred choice.
 def held_karp_ascent(G, weight="weight"):
     """
+    Minimizes the Held-Karp relaxation of the TSP for `G`
+
     Solves the Held-Karp relaxation of the input complete digraph and scales
     the output solution for use in the Asadpour [1]_ ASTP algorithm.
 
@@ -470,25 +472,25 @@ def held_karp_ascent(G, weight="weight"):
             # We have to pick the root node of the arborescence for the out
             # edge of the first vertex as that is the only node without an
             # edge directed into it.
-            for N in arb:
-                if arb.in_degree(N) == 0:
+            for N, deg in arb.in_degree:
+                if deg == 0:
                     # root found
-                    arb.add_edge(n, N, weight=G[n][N][weight])
+                    arb.add_edge(n, N, **{weight: G[n][N][weight]})
                     arb_weight += G[n][N][weight]
                     break
             # We can pick the minimum weight in-edge for the vertex with a
             # cycle
-            min_in_edge_weight = math.inf
+            min_in_edge_weight = {weight: math.inf}
             min_in_edge = None
             for u, v, d in G.in_edges(n, data=True):
                 edge_weight = d[weight]
                 if u == N:
                     continue
-                if edge_weight < min_in_edge_weight:
-                    min_in_edge_weight = edge_weight
+                if edge_weight < min_in_edge_weight[weight]:
+                    min_in_edge_weight[weight] = edge_weight
                     min_in_edge = (u, v)
-            arb.add_edge(min_in_edge[0], min_in_edge[1], weight=min_in_edge_weight)
-            arb_weight += min_in_edge_weight
+            arb.add_edge(min_in_edge[0], min_in_edge[1], **d)
+            arb_weight += min_in_edge_weight[weight]
             # Check to see the weight of the arborescence, if it is a new
             # minimum, clear all of the old potential minimum
             # 1-arborescences and add this is the only one. If its weight is
@@ -536,9 +538,9 @@ def held_karp_ascent(G, weight="weight"):
             for arborescence in minimum_1_arborescences:
                 weighted_cost = 0
                 v_k_0 = 0
-                for n in G:
-                    weighted_cost += d[n] * (arborescence.degree(n) - 2)
-                    v_k_0 += 1 if arborescence.degree(n) - 2 == 0 else 0
+                for n, deg in arborescence.degree:
+                    weighted_cost += d[n] * (deg - 2)
+                    v_k_0 += 1 if deg - 2 == 0 else 0
                 if weighted_cost < min_k_d_weight:
                     min_k_d_weight = weighted_cost
                     min_k_d = arborescence
@@ -557,15 +559,15 @@ def held_karp_ascent(G, weight="weight"):
             # Check that we do not need to terminate because the direction
             # of ascent does not exist. This is done with linear
             # programming.
-            c = np.full(len(minimum_1_arborescences), -1)
-            a_eq = np.empty((len(G) + 1, len(minimum_1_arborescences)))
-            b_eq = np.zeros(len(G) + 1)
+            c = np.full(len(minimum_1_arborescences), -1, dtype=int)
+            a_eq = np.empty((len(G) + 1, len(minimum_1_arborescences)), dtype=int)
+            b_eq = np.zeros(len(G) + 1, dtype=int)
             b_eq[len(G)] = 1
             arb_count = 0
             for arborescence in minimum_1_arborescences:
                 n_count = len(G) - 1
-                for n in arborescence:
-                    a_eq[n_count][arb_count] = arborescence.degree(n) - 2
+                for n, deg in arborescence.degree:
+                    a_eq[n_count][arb_count] = deg - 2
                     n_count -= 1
                 a_eq[len(G)][arb_count] = 1
                 arb_count += 1
@@ -607,7 +609,7 @@ def held_karp_ascent(G, weight="weight"):
             # 1-arborescence, we know that they is only one such edges
             # leading into every vertex.
             sub_u, sub_v, sub_d = next(k.in_edges(e_v, data=True).__iter__())
-            k.add_edge(e_u, e_v, weight=e_d[weight])
+            k.add_edge(e_u, e_v, **{weight: e_d[weight]})
             k.remove_edge(sub_u, sub_v)
             if (
                 max(d for n, d in k.in_degree()) <= 1
@@ -649,13 +651,15 @@ def held_karp_ascent(G, weight="weight"):
         dir_ascent, k_d = direction_of_ascent()
 
     # Write the original edge weights back to G
-    for u, v, d in G.edges(data=True):
+    for u, v, d in k_d.edges(data=True):
         d[weight] = original_edge_weights[(u, v)]
     return k_d
 
 
 def held_karp_branch_bound(G, weight="weight"):
     """
+    Minimizes the Held-Karp relaxation of the TSP for `G`
+
     Solves the Held-Karp relaxation of the input complete digraph and scales
     the output solution for use in the Asadpour [1]_ ASTP algorithm.
 
@@ -783,25 +787,25 @@ def held_karp_branch_bound(G, weight="weight"):
             # We have to pick the root node of the arborescence for the out
             # edge of the first vertex as that is the only node without an
             # edge directed into it.
-            for N in arb:
-                if arb.in_degree(N) == 0:
+            for N, deg in arb.in_degree:
+                if deg == 0:
                     # root found
-                    arb.add_edge(n, N, weight=G[n][N][weight])
+                    arb.add_edge(n, N, **{weight: G[n][N][weight]})
                     arb_weight += G[n][N][weight]
                     break
             # We can pick the minimum weight in-edge for the vertex with a
             # cycle
-            min_in_edge_weight = math.inf
+            min_in_edge_weight = {weight: math.inf}
             min_in_edge = None
             for u, v, d in G.in_edges(n, data=True):
                 edge_weight = d[weight]
                 if u == N:
                     continue
-                if edge_weight < min_in_edge_weight:
-                    min_in_edge_weight = edge_weight
+                if edge_weight < min_in_edge_weight[weight]:
+                    min_in_edge_weight[weight] = edge_weight
                     min_in_edge = (u, v)
-            arb.add_edge(min_in_edge[0], min_in_edge[1], weight=min_in_edge_weight)
-            arb_weight += min_in_edge_weight
+            arb.add_edge(min_in_edge[0], min_in_edge[1], **d)
+            arb_weight += min_in_edge_weight[weight]
             # Check to see the weight of the arborescence, if it is a new
             # minimum, clear all of the old potential minimum
             # 1-arborescences and add this is the only one. If its weight is
@@ -912,15 +916,15 @@ def held_karp_branch_bound(G, weight="weight"):
         """
         # Check to see if the direction of ascent exists with the linear program
         # from the ascent method.
-        c = np.full(len(k_xy), -1)
-        a_eq = np.empty((len(G) + 1, len(k_xy)))
-        b_eq = np.zeros(len(G) + 1)
+        c = np.full(len(k_xy), -1, dtype=int)
+        a_eq = np.empty((len(G) + 1, len(k_xy)), dtype=int)
+        b_eq = np.zeros(len(G) + 1, dtype=int)
         b_eq[len(G)] = 1
         arb_count = 0
         for arborescence in k_xy:
             n_count = len(G) - 1
-            for n in arborescence:
-                a_eq[n_count][arb_count] = arborescence.degree(n) - 2
+            for n, deg in arborescence.degree:
+                a_eq[n_count][arb_count] = deg - 2
                 n_count -= 1
             a_eq[len(G)][arb_count] = 1
             arb_count += 1
@@ -930,8 +934,8 @@ def held_karp_branch_bound(G, weight="weight"):
             # There is no direction of ascent, search for a tour
             for arborescence in k_xy:
                 nodes_degree_two = 0
-                for n in arborescence:
-                    nodes_degree_two += 1 if arborescence.degree(n) - 2 == 0 else 0
+                for n, deg in arborescence.degree:
+                    nodes_degree_two += 1 if deg - 2 == 0 else 0
                 if nodes_degree_two == len(G):
                     # tour found
                     return arborescence
@@ -951,12 +955,11 @@ def held_karp_branch_bound(G, weight="weight"):
             new_inclusive_config = configuration.__copy__()
             new_inclusive_config.included_edges.add((u, v))
             new_inclusive_config.bound = next(
-                nx.ArborescenceIterator(
-                    G,
-                    init_partition=(
+                k_pi(
+                    partition=(
                         new_inclusive_config.included_edges,
                         new_inclusive_config.excluded_edges,
-                    ),
+                    )
                 ).__iter__()
             ).size(weight)
             # For the exclusive configuration, add (u, v) to the included edges
@@ -964,12 +967,11 @@ def held_karp_branch_bound(G, weight="weight"):
             new_exclusive_config = configuration.__copy__()
             new_exclusive_config.excluded_edges.add((u, v))
             new_exclusive_config.bound = next(
-                nx.ArborescenceIterator(
-                    G,
-                    init_partition=(
+                k_pi(
+                    partition=(
                         new_exclusive_config.included_edges,
                         new_exclusive_config.excluded_edges,
-                    ),
+                    )
                 ).__iter__()
             ).size(weight)
             # Add the new configurations to the config_queue
@@ -1006,7 +1008,7 @@ def held_karp_branch_bound(G, weight="weight"):
             # 1-arborescence, we know that they is only one such edges
             # leading into every vertex.
             sub_u, sub_v, sub_d = next(k.in_edges(e_v, data=True).__iter__())
-            k.add_edge(e_u, e_v, weight=e_d[weight])
+            k.add_edge(e_u, e_v, **{weight: e_d[weight]})
             k.remove_edge(sub_u, sub_v)
             if (
                 max(d for n, d in k.in_degree()) <= 1
@@ -1049,7 +1051,9 @@ def held_karp_branch_bound(G, weight="weight"):
             solution = branch(config)
             if solution is not None:
                 # Write the original edge weights back to G
-                for u, v, d in G.edges(data=True):
+                for u, v, d in solution.edges(data=True):
+                    if (u, v) == (2, 0):
+                        halt = "halt"
                     d[weight] = original_edge_weights[(u, v)]
                 return solution
         else:

@@ -1,4 +1,6 @@
 """Unit tests for the traveling_salesman module."""
+import numpy as np
+import math
 import pytest
 import random
 import networkx as nx
@@ -384,7 +386,6 @@ def test_held_karp_ascent():
     Test the Held-Karp relaxation with the ascent method
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
-    import numpy as np
 
     # Adjacency matrix from page 1153 of the 1970 Held and Karp paper
     # which have been edited to be directional, but also symmetric
@@ -422,7 +423,6 @@ def test_held_karp_branch_bound():
     different method
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
-    import numpy as np
 
     # Adjacency matrix from page 1153 of the 1970 Held and Karp paper
     # which have been edited to be directional, but also symmetric
@@ -452,3 +452,63 @@ def test_held_karp_branch_bound():
     k = tsp.held_karp_branch_bound(G)
 
     assert nx.utils.edges_equal(k.edges(), solution.edges())
+
+
+def test_ascent_fractional_solution():
+    """
+    Test the ascent method using a modified version of Figure 2 on page 1140
+    in 'The Traveling Salesman Problem and Minimum Spanning Trees' by Held and
+    Karp
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    # This version of Figure 2 has all of the edge weights multiplied by 100
+    # and is a complete directed graph with infinite edge weights for the
+    # edges not listed in the original graph
+    G_array = np.array(
+        [
+            [0, 100, 100, np.inf, np.inf, 1],
+            [100, 0, 100, np.inf, 1, np.inf],
+            [100, 100, 0, 1, np.inf, np.inf],
+            [np.inf, np.inf, 1, 0, 100, 100],
+            [np.inf, 1, np.inf, 100, 0, 100],
+            [1, np.inf, np.inf, 100, 100, 0],
+        ]
+    )
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    k = tsp.held_karp_ascent(G)
+
+    print()
+    for u, v, d in k.edges(data=True):
+        print(f"({u}, {v}, {d['weight']})")
+
+
+def test_branch_bound_fractional_solution():
+    """
+    Test the branch and bound method using a modified version of Figure 2 on
+    page 1140 in 'The Traveling Salesman Problem and Minimum Spanning Trees'
+    by Held and Karp
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    # This version of Figure 2 has all of the edge weights multiplied by 100
+    # and is a complete directed graph with infinite edge weights for the
+    # edges not listed in the original graph
+    G_array = np.array(
+        [
+            [0, 100, 100, np.inf, np.inf, 1],
+            [100, 0, 100, np.inf, 1, np.inf],
+            [100, 100, 0, 1, np.inf, np.inf],
+            [np.inf, np.inf, 1, 0, 100, 100],
+            [np.inf, 1, np.inf, 100, 0, 100],
+            [1, np.inf, np.inf, 100, 100, 0],
+        ]
+    )
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    k = tsp.held_karp_branch_bound(G)
+
+    print()
+    for u, v, d in k.edges(data=True):
+        print(f"({u}, {v}, {d['weight']})")
