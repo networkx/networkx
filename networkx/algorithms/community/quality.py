@@ -147,7 +147,7 @@ def performance(G, partition):
     .. deprecated:: 2.6
        Use `partition_quality` instead.
 
-    The *performance* of a partition is the ratio of the number of
+    The *performance* of a partition is the number of
     intra-community edges plus inter-community non-edges divided by the total
     number of potential edges.
 
@@ -360,7 +360,7 @@ def partition_quality(G, partition):
     The *coverage* of a partition is the ratio of the number of
     intra-community edges to the total number of edges in the graph.
 
-    The *performance* of a partition is the ratio of the number of
+    The *performance* of a partition is the number of
     intra-community edges plus inter-community non-edges divided by the total
     number of potential edges.
 
