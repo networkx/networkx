@@ -51,6 +51,12 @@ def equivalence_classes(iterable, relation):
         Duplicate elements will be ignored so it makes the most sense for
         `iterable` to be a :class:`set`.
 
+    Notes
+    -----
+    This function does not check that `relation` represents an equivalence
+    relation. You can check that your equivalence classes provide a partition
+    using `is_partition`.
+
     Examples
     --------
     Let `X` be the set of integers from `0` to `9`, and consider an equivalence
@@ -128,10 +134,9 @@ def quotient_graph(
 
     edge_relation : Boolean function with two arguments
         This function must represent an edge relation on the *blocks* of
-        `G` in the partition induced by `node_relation`. It must
-        take two arguments, *B* and *C*, each one a set of nodes, and
-        return True exactly when there should be an edge joining
-        block *B* to block *C* in the returned graph.
+        the `partition` of `G`. It must take two arguments, *B* and *C*,
+        each one a set of nodes, and return True exactly when there should be
+        an edge joining block *B* to block *C* in the returned graph.
 
         If `edge_relation` is not specified, it is assumed to be the
         following relation. Block *B* is related to block *C* if and
@@ -296,6 +301,10 @@ def quotient_graph(
     if callable(partition):
         # equivalence_classes always return partition of whole G.
         partition = equivalence_classes(G, partition)
+        if not nx.community.is_partition(G, partition):
+            raise nx.NetworkXException(
+                "Input `partition` is not an equivalence relation for nodes of G"
+            )
         return _quotient_graph(
             G, partition, edge_relation, node_data, edge_data, relabel, create_using
         )
@@ -311,6 +320,9 @@ def quotient_graph(
     partition_nodes = set().union(*partition)
     if len(partition_nodes) != len(G):
         G = G.subgraph(partition_nodes)
+    # Each node in the graph/subgraph must be in exactly one block.
+    if not nx.community.is_partition(G, partition):
+        raise NetworkXException("each node must be in exactly one part of `partition`")
     return _quotient_graph(
         G, partition, edge_relation, node_data, edge_data, relabel, create_using
     )
@@ -325,9 +337,7 @@ def _quotient_graph(
     relabel=False,
     create_using=None,
 ):
-    # Each node in the graph must be in exactly one block.
-    if any(sum(1 for b in partition if v in b) != 1 for v in G):
-        raise NetworkXException("each node must be in exactly one block")
+    """Construct the quotient graph assuming input has been checked"""
     if create_using is None:
         H = G.__class__()
     else:
