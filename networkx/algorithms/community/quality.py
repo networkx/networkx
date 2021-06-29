@@ -113,9 +113,10 @@ def inter_community_non_edges(G, partition):
 
     Parameters
     ----------
-    G : must be a NetworkX graph.
+    G : NetworkX graph.
 
-    partition : must be a partition of the nodes of `G`.
+    partition : iterable of sets of nodes
+        This must be a partition of the nodes of `G`.
 
     A *non-edge* is a pair of nodes (undirected if `G` is undirected)
     that are not adjacent in `G`. The *inter-community non-edges* are
