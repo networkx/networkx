@@ -467,12 +467,12 @@ def test_ascent_fractional_solution():
     # edges not listed in the original graph
     G_array = np.array(
         [
-            [0, 100, 100, np.inf, np.inf, 1],
-            [100, 0, 100, np.inf, 1, np.inf],
-            [100, 100, 0, 1, np.inf, np.inf],
-            [np.inf, np.inf, 1, 0, 100, 100],
-            [np.inf, 1, np.inf, 100, 0, 100],
-            [1, np.inf, np.inf, 100, 100, 0],
+            [0, 100, 100, 100000, 100000, 1],
+            [100, 0, 100, 100000, 1, 100000],
+            [100, 100, 0, 1, 100000, 100000],
+            [100000, 100000, 1, 0, 100, 100],
+            [100000, 1, 100000, 100, 0, 100],
+            [1, 100000, 100000, 100, 100, 0],
         ]
     )
 
@@ -497,12 +497,12 @@ def test_branch_bound_fractional_solution():
     # edges not listed in the original graph
     G_array = np.array(
         [
-            [0, 100, 100, np.inf, np.inf, 1],
-            [100, 0, 100, np.inf, 1, np.inf],
-            [100, 100, 0, 1, np.inf, np.inf],
-            [np.inf, np.inf, 1, 0, 100, 100],
-            [np.inf, 1, np.inf, 100, 0, 100],
-            [1, np.inf, np.inf, 100, 100, 0],
+            [0, 100, 100, 100000, 100000, 1],
+            [100, 0, 100, 100000, 1, 100000],
+            [100, 100, 0, 1, 100000, 100000],
+            [100000, 100000, 1, 0, 100, 100],
+            [100000, 1, 100000, 100, 0, 100],
+            [1, 100000, 100000, 100, 100, 0],
         ]
     )
 

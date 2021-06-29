@@ -463,7 +463,6 @@ def held_karp_ascent(G, weight="weight"):
 
         min_arb_weight = math.inf
         for arb in nx.ArborescenceIterator(G_1):
-            # Only iterate over the minimum weight arborescences
             arb_weight = arb.size(weight)
             if min_arb_weight == math.inf:
                 min_arb_weight = arb_weight
