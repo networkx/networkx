@@ -50,4 +50,4 @@ def test_quality():
 
     quality = partition_quality(G, partition)[0]
 
-    assert quality >= 0.7
+    assert quality >= 0.65
