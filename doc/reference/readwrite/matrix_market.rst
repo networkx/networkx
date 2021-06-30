@@ -1,6 +1,6 @@
-**************************
-Matrix Market Graph Format
-**************************
+*************
+Matrix Market
+*************
 
 The `Matrix Market`_ exchange format is a text-based file format described by
 NIST.
