@@ -1,7 +1,12 @@
 import pytest
 
 import networkx as nx
-from networkx.algorithms.community import louvain_communities, modularity, is_partition
+from networkx.algorithms.community import (
+    louvain_communities,
+    modularity,
+    is_partition,
+    partition_quality,
+)
 
 
 def test_modularity_increase():
@@ -22,3 +27,27 @@ def test_valid_partition():
     partitions = louvain_communities(G)
 
     assert is_partition(G, partitions[-1])
+
+
+def test_partition():
+    G = nx.karate_club_graph()
+    partition = [
+        {0, 1, 2, 3, 7, 9, 11, 12, 13, 17, 19, 21},
+        {16, 4, 5, 6, 10},
+        {23, 25, 27, 28, 24, 31},
+        {32, 33, 8, 14, 15, 18, 20, 22, 26, 29, 30},
+    ]
+    partitions = louvain_communities(G, seed=2)
+
+    assert partitions[-1] == partition
+
+
+def test_quality():
+    G = nx.LFR_benchmark_graph(
+        250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
+    )
+    partitions = louvain_communities(G)
+
+    quality = partition_quality(G, partitions[-1])[0]
+
+    assert quality >= 0.7

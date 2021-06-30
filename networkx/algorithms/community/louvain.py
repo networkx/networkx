@@ -6,11 +6,13 @@ import random
 
 import networkx as nx
 from networkx.algorithms.community import modularity
+from networkx.utils import py_random_state
 
 __all__ = ["louvain_communities"]
 
 
-def louvain_communities(G, weight="weight", threshold=0.0000001):
+@py_random_state("seed")
+def louvain_communities(G, weight="weight", threshold=0.0000001, seed=None):
     """Find communities in G using the Louvain Community Detection
     Algorithm.
 
@@ -45,7 +47,7 @@ def louvain_communities(G, weight="weight", threshold=0.0000001):
     m = G.size(weight=weight)
 
     while True:
-        partition, improvement = _one_level(graph, m, deepcopy(partition), weight)
+        partition, improvement = _one_level(graph, m, deepcopy(partition), weight, seed)
         if not improvement:
             break
         new_mod = modularity(G, partition)
@@ -56,14 +58,14 @@ def louvain_communities(G, weight="weight", threshold=0.0000001):
     return partitions
 
 
-def _one_level(G, m, partition, weight="weight"):
+def _one_level(G, m, partition, weight="weight", seed=None):
     """Calculate one level of the tree"""
     node2com = {u: i for i, u in enumerate(G.nodes())}
     degrees = dict(G.degree(weight=weight))
     total_weights = {i: deg for i, deg in enumerate(degrees.values())}
     nbrs = {u: dict(G[u]) for u in G.nodes()}
     rand_nodes = list(G.nodes)
-    random.shuffle(rand_nodes)
+    seed.shuffle(rand_nodes)
     nb_moves = 1
     improvement = False
     while nb_moves > 0:
