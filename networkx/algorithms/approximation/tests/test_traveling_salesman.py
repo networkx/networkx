@@ -210,6 +210,11 @@ class TestSimulatedAnnealingTSP:
         cost = sum(self.UG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         validate_symmetric_solution(cycle, cost, self.UG2_cycle, self.UG2_cost)
 
+    def test_error_on_input_order_mistake(self):
+        # see issue #4846 https://github.com/networkx/networkx/issues/4846
+        pytest.raises(TypeError, self.tsp, self.UG, weight="weight")
+        pytest.raises(nx.NetworkXError, self.tsp, self.UG, "weight")
+
     def test_not_complete_graph(self):
         pytest.raises(
             nx.NetworkXError,
