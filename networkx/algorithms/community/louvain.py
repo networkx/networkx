@@ -34,8 +34,8 @@ def louvain_communities(G, weight="weight", threshold=0.0000001, seed=None):
      Returns
      -------
      list
-         A list of sets. Each set represents the communities with
-         all the nodes that constitute them.
+         A list of sets. Each set represents one community and contains
+         all the nodes that constitute it.
 
      References
      ----------
