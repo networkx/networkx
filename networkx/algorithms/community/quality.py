@@ -3,8 +3,7 @@ communities).
 
 """
 
-from functools import wraps
-from itertools import product, combinations
+from itertools import combinations
 
 import networkx as nx
 from networkx import NetworkXError
@@ -78,7 +77,7 @@ def intra_community_edges(G, partition):
 
 
 def inter_community_edges(G, partition):
-    """Returns the number of inter-community edges for a prtition of `G`.
+    """Returns the number of inter-community edges for a partition of `G`.
     according to the given
     partition of the nodes of `G`.
 
@@ -112,9 +111,12 @@ def inter_community_non_edges(G, partition):
     """Returns the number of inter-community non-edges according to the
     given partition of the nodes of `G`.
 
-    `G` must be a NetworkX graph.
+    Parameters
+    ----------
+    G : NetworkX graph.
 
-    `partition` must be a partition of the nodes of `G`.
+    partition : iterable of sets of nodes
+        This must be a partition of the nodes of `G`.
 
     A *non-edge* is a pair of nodes (undirected if `G` is undirected)
     that are not adjacent in `G`. The *inter-community non-edges* are
@@ -145,8 +147,8 @@ def performance(G, partition):
     .. deprecated:: 2.6
        Use `partition_quality` instead.
 
-    The *performance* of a partition is the ratio of the number of
-    intra-community edges plus inter-community non-edges with the total
+    The *performance* of a partition is the number of
+    intra-community edges plus inter-community non-edges divided by the total
     number of potential edges.
 
     Parameters
@@ -358,8 +360,8 @@ def partition_quality(G, partition):
     The *coverage* of a partition is the ratio of the number of
     intra-community edges to the total number of edges in the graph.
 
-    The *performance* of a partition is the ratio of the number of
-    intra-community edges plus inter-community non-edges with the total
+    The *performance* of a partition is the number of
+    intra-community edges plus inter-community non-edges divided by the total
     number of potential edges.
 
     This algorithm has complexity $O(C^2 + L)$ where C is the number of communities and L is the number of links.
