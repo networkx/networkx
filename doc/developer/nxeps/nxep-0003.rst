@@ -149,27 +149,27 @@ Usage and Impact
 
 Users will build graphs using similar syntax as before with added flexibility.
 
-Create a wheel graph with 9 spokes (10 nodes):
+Create a wheel graph with 9 spokes (10 nodes)::
 
     >>> G = nx.wheel_graph(9)  # same as current code
 
-Construct a path graph using a MultiDiGraph data structure:
+Construct a path graph using a MultiDiGraph data structure::
 
     >>> MDG = nx.path_graph.MultiDiGraph([3, 4, 2, 5, 7, 6])
     >>> # current code:
     >>> MDG = nx.path_graph([3, 4, 2, 5, 7, 6], create_using=MultiDiGraph)
 
-Construct a star graph using a CustomGraph subclass of a NetworkX graph class.
+Construct a star graph using a CustomGraph subclass of a NetworkX graph class::
 
     >>> G = nx.star_graph.CustomGraph(9, MyCustomGraph)
     >>> # current code:
     >>> G = nx.star_graph(9, create_using=MyCustomGraph)
 
-Add a complete graph to an existing graph G:
+Add a complete graph to an existing graph G::
 
     >>> G.update(nx.complete_graph.edgelist(range(len(G) - 10, 20))
 
-Iterate over the edges of a randomly generated graph without storing it.
+Iterate over the edges of a randomly generated graph without storing it::
 
     >>> for u, v in nx.configuration_model_graph.edgelist(deg_sequence):
     >>>     process(u, v)

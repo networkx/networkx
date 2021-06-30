@@ -78,7 +78,7 @@ def prefix_tree(paths):
         >>> list(T.edges)
         [(0, 1), (1, 2), (1, 4), (2, -1), (2, 3), (3, -1), (4, -1)]
 
-    The leaf nodes can be obtained as predecessors of the nil node.
+    The leaf nodes can be obtained as predecessors of the nil node::
 
         >>> root, NIL = 0, -1
         >>> list(T.predecessors(NIL))
