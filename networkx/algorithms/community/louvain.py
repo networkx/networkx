@@ -1,6 +1,7 @@
 """Function for detecting communities base on Louvain Community Detection
 Algorithm"""
 
+from collections import deque
 from copy import deepcopy
 import random
 
@@ -8,39 +9,54 @@ import networkx as nx
 from networkx.algorithms.community import modularity
 from networkx.utils import py_random_state
 
-__all__ = ["louvain_communities"]
+__all__ = ["louvain_communities", "generate_dendrogram"]
 
 
 @py_random_state("seed")
 def louvain_communities(G, weight="weight", threshold=0.0000001, seed=None):
-    """Find communities in G using the Louvain Community Detection
-    Algorithm.
+    """Find the best partition of G using the Louvain Community Detection
+     Algorithm.
 
-    Parameters
-    ----------
-    G : NetworkX graph
-    weight : string or None, optional (default="weight")
-        The name of an edge attribute that holds the numerical value
-        used as a weight. If None then each edge has weight 1.
-    threshold : float, optional (default=0)
-        Modularity gain threshold for each level. If the gain of modularity
-        between 2 levels of the algorithm is less than the given threshold
-        then the algorithm stops and returns the resulting communities.
+     Parameters
+     ----------
+     G : NetworkX graph
+     weight : string or None, optional (default="weight")
+         The name of an edge attribute that holds the numerical value
+         used as a weight. If None then each edge has weight 1.
+     threshold : float, optional (default=0.0000001)
+         Modularity gain threshold for each level. If the gain of modularity
+         between 2 levels of the algorithm is less than the given threshold
+         then the algorithm stops and returns the resulting communities.
+    seed : integer, random_state, or None (default)
+         Indicator of random number generation state.
+         See :ref:`Randomness<randomness>`.
 
-    Returns
-    -------
-    list
-        A list of lists of sets. Each sublist of sets represents one
-        level of the tree and each set represents the communities with
-        all the nodes that constitute them.
+     Returns
+     -------
+     list
+         A list of sets. Each set represents the communities with
+         all the nodes that constitute them.
 
-    References
-    ----------
-    .. [1] Blondel, V.D. et al. Fast unfolding of communities in
-       large networks. J. Stat. Mech 10008, 1-12(2008)
+     References
+     ----------
+     .. [1] Blondel, V.D. et al. Fast unfolding of communities in
+        large networks. J. Stat. Mech 10008, 1-12(2008)
     """
 
-    partitions = []
+    d = generate_dendrogram(G, weight, threshold, seed)
+    q = deque(d, maxlen=1)
+    return q.pop()
+
+
+def generate_dendrogram(G, weight="weight", threshold=0.0000001, seed=None):
+    """Compute the communities in G and generate the associated dendrogram
+
+    A dendrogram is a diagram representing a tree and each level represents
+    a partition of the G graph. The top level contains the smallest communities
+    and as you traverse to the bottom of the tree the communities get bigger
+    and the overal modularity increases making the partition better.
+    """
+
     partition = [{u} for u in G.nodes()]
     mod = modularity(G, partition)
     graph = G.copy()
@@ -53,9 +69,8 @@ def louvain_communities(G, weight="weight", threshold=0.0000001, seed=None):
         new_mod = modularity(G, partition)
         if new_mod - mod <= threshold:
             break
-        partitions.append(partition)
         graph = _gen_graph(G, partition)
-    return partitions
+        yield partition
 
 
 def _one_level(G, m, partition, weight="weight", seed=None):
@@ -104,6 +119,7 @@ def _neighbor_weights(node, nbrs, node2com, weight="weight"):
 
 
 def _gen_graph(G, partition, weight="weight"):
+    """Generate a new graph based on the partitions of a given graph"""
     H = nx.Graph()
     node2com = {}
     for i, part in enumerate(partition):
