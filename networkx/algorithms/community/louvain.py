@@ -48,6 +48,7 @@ def louvain_communities(G, weight="weight", threshold=0.0000001, seed=None):
     return q.pop()
 
 
+@py_random_state("seed")
 def generate_dendrogram(G, weight="weight", threshold=0.0000001, seed=None):
     """Compute the communities in G and generate the associated dendrogram
 
