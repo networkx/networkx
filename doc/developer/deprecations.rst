@@ -89,3 +89,4 @@ Version 3.0
 * In ``linalg/graphmatrix.py`` remove ``adj_matrix``.
 * In ``algorithms/similarity.py`` replace ``simrank_similarity`` with ``simrank_similarity_numpy``.
 * In ``algorithms/assortativity/mixing.py`` remove ``numeric_mixing_matrix``.
+* In ``algorithms/assortativity/connectivity.py`` remove ``k_nearest_neighbors``.
