@@ -400,21 +400,46 @@ def test_held_karp_ascent():
         ]
     )
 
-    solution_edges = [
-        (1, 5, 30),
-        (2, 3, 21),
-        (3, 1, 52),
-        (4, 2, 35),
-        (5, 0, 52),
-        (0, 4, 17),
-    ]
-    solution = nx.DiGraph()
-    solution.add_weighted_edges_from(solution_edges)
+    solution_z_star = {
+        (0, 1): 0.0,
+        (0, 2): 0.0,
+        (0, 3): 0.0,
+        (0, 4): 5 / 6,
+        (0, 5): 5 / 6,
+        (1, 0): 0.0,
+        (1, 2): 0.0,
+        (1, 3): 5 / 6,
+        (1, 4): 0.0,
+        (1, 5): 5 / 6,
+        (2, 0): 0.0,
+        (2, 1): 0.0,
+        (2, 3): 5 / 6,
+        (2, 4): 5 / 6,
+        (2, 5): 0.0,
+        (3, 0): 0.0,
+        (3, 1): 5 / 6,
+        (3, 2): 5 / 6,
+        (3, 4): 0.0,
+        (3, 5): 0.0,
+        (4, 0): 5 / 6,
+        (4, 1): 0.0,
+        (4, 2): 5 / 6,
+        (4, 3): 0.0,
+        (4, 5): 0.0,
+        (5, 0): 5 / 6,
+        (5, 1): 5 / 6,
+        (5, 2): 0.0,
+        (5, 3): 0.0,
+        (5, 4): 0.0,
+    }
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    k = tsp.held_karp_ascent(G)
+    opt_hk, z_star = tsp.held_karp_ascent(G)
 
-    assert nx.utils.edges_equal(k.edges(), solution.edges())
+    # Check that the optimal weights are the same
+    assert opt_hk == 207
+    # Check that the z_stars are the same
+    assert z_star == solution_z_star
 
 
 def test_held_karp_branch_bound():
@@ -476,12 +501,48 @@ def test_ascent_fractional_solution():
         ]
     )
 
-    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    k = tsp.held_karp_ascent(G)
+    solution_z_star = {
+        (0, 1): 5 / 12,
+        (0, 2): 5 / 12,
+        (0, 3): 0.0,
+        (0, 4): 0.0,
+        (0, 5): 5 / 6,
+        (1, 0): 5 / 12,
+        (1, 2): 1 / 3,
+        (1, 3): 0.0,
+        (1, 4): 5 / 6,
+        (1, 5): 0.0,
+        (2, 0): 5 / 12,
+        (2, 1): 1 / 3,
+        (2, 3): 5 / 6,
+        (2, 4): 0.0,
+        (2, 5): 0.0,
+        (3, 0): 0.0,
+        (3, 1): 0.0,
+        (3, 2): 5 / 6,
+        (3, 4): 1 / 3,
+        (3, 5): 1 / 2,
+        (4, 0): 0.0,
+        (4, 1): 5 / 6,
+        (4, 2): 0.0,
+        (4, 3): 1 / 3,
+        (4, 5): 1 / 2,
+        (5, 0): 5 / 6,
+        (5, 1): 0.0,
+        (5, 2): 0.0,
+        (5, 3): 1 / 2,
+        (5, 4): 1 / 2,
+    }
 
-    print()
-    for u, v, d in k.edges(data=True):
-        print(f"({u}, {v}, {d['weight']})")
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    opt_hk, z_star = tsp.held_karp_ascent(G)
+
+    # Check that the optimal weights are the same
+    assert opt_hk == 303
+    # Check that the z_stars are the same
+    assert {key: round(z_star[key], 4) for key in z_star} == {
+        key: round(solution_z_star[key], 4) for key in solution_z_star
+    }
 
 
 def test_branch_bound_fractional_solution():
