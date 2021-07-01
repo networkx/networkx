@@ -118,17 +118,3 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
         else:
             avg[n] = sum(G_n[nbr].get(weight, 1) * tgt_deg[nbr] for nbr in G_n) / deg
     return avg
-
-
-# obsolete
-# def average_neighbor_in_degree(G, nodes=None, weight=None):
-#     if not G.is_directed():
-#         raise nx.NetworkXError("Not defined for undirected graphs.")
-#     return _average_nbr_deg(G, G.in_degree, G.in_degree, nodes, weight)
-# average_neighbor_in_degree.__doc__=average_neighbor_degree.__doc__
-
-# def average_neighbor_out_degree(G, nodes=None, weight=None):
-#     if not G.is_directed():
-#         raise nx.NetworkXError("Not defined for undirected graphs.")
-#     return _average_nbr_deg(G, G.out_degree, G.out_degree, nodes, weight)
-# average_neighbor_out_degree.__doc__=average_neighbor_degree.__doc__
