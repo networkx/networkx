@@ -447,13 +447,11 @@ def simulated_annealing_tsp(
         The distance between all pairs of nodes should be included.
 
     init_cycle : list of all nodes or "greedy"
-        The initial solution (a cycle through all nodes).
-        Usually you should use `greedy_tsp(G, weight)`.
-        But you can start with `list(G)` or the final result
-        of `simulated_annealing_tsp` when doing `threshold_accepting_tsp`.
-
-        This argument is required. A shortcut if you don't want to think
-        about it is to use the string "greedy" which calls `greedy_tsp`.
+        The initial solution (a cycle through all nodes returning to the start).
+        This argument has no default to make you think about it.
+        If "greedy", use `greedy_tsp(G, weight)`.
+        Other common starting cycles are `list(G) + [next(iter(G))]` or the final
+        result of `simulated_annealing_tsp` when doing `threshold_accepting_tsp`.
 
     weight : string, optional (default="weight")
         Edge data key corresponding to the edge weight.
@@ -663,6 +661,13 @@ def threshold_accepting_tsp(
         `G` should be a complete weighted undirected graph.
         The distance between all pairs of nodes should be included.
 
+    init_cycle : list or "greedy"
+        The initial solution (a cycle through all nodes returning to the start).
+        This argument has no default to make you think about it.
+        If "greedy", use `greedy_tsp(G, weight)`.
+        Other common starting cycles are `list(G) + [next(iter(G))]` or the final
+        result of `simulated_annealing_tsp` when doing `threshold_accepting_tsp`.
+
     weight : string, optional (default="weight")
         Edge data key corresponding to the edge weight.
         If any edge does not have this attribute the weight is set to 1.
@@ -712,9 +717,6 @@ def threshold_accepting_tsp(
         Percentage of threshold decrease when there is at
         least one acceptance of a neighbor solution.
         If no inner loop moves are accepted the threshold remains unchanged.
-
-    cycle : list, optional (default=compute using greedy algorithm)
-        The initial solution (a cycle all nodes).
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
