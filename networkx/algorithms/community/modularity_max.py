@@ -4,6 +4,8 @@ from networkx.algorithms.community.quality import modularity
 
 from networkx.utils.mapped_queue import MappedQueue
 
+import warnings
+
 __all__ = [
     "greedy_modularity_communities",
     "naive_greedy_modularity_communities",
