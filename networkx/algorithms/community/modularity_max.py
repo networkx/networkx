@@ -73,8 +73,10 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
     q0 = 1.0 / (2.0 * m)
 
     if n_communities > N:
-        warnings.warn("Input n_communities is greater than number of nodes of G."
-                      "Falling back to default n_communities = 1.")
+        warnings.warn(
+            "Input n_communities is greater than number of nodes of G."
+            "Falling back to default n_communities = 1."
+        )
         n_communities = 1
 
 
