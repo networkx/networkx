@@ -79,7 +79,6 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
         )
         n_communities = 1
 
-
     # Map node labels to contiguous integers
     label_for_node = {i: v for i, v in enumerate(G.nodes())}
     node_for_label = {label_for_node[i]: i for i in range(N)}
