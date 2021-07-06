@@ -258,7 +258,7 @@ Deprecations
   Deprecate ``simrank_similarity_numpy``.
 - [`#4923 <https://github.com/networkx/networkx/pull/4923>`_]
   Deprecate ``numeric_mixing_matrix``.
-- [`#4931 <https://github.com/networkx/networkx/pull/4931>`_]
+- [`#4937 <https://github.com/networkx/networkx/pull/4937>`_]
   Deprecate ``k_nearest_neighbors``.
 
 Contributors
