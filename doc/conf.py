@@ -190,8 +190,7 @@ htmlhelp_basename = "NetworkX"
 html_context = {
     "versions_dropdown": {
         "latest": "devel (latest)",
-        "stable": "v2.5 (stable)",
-        "networkx-2.4": "v2.4",
+        "stable": "current (stable)",
     },
 }
 
