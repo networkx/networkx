@@ -374,7 +374,7 @@ def descendants_at_distance(G, source, distance):
 
     Parameters
     ----------
-    G : NetworkX Graph
+    G : NetworkX graph
         A graph
     source : node in `G`
     distance : the distance of the wanted nodes from `source`
