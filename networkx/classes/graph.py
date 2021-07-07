@@ -1100,7 +1100,7 @@ class Graph:
         It you want to update the graph using an adjacency structure
         it is straightforward to obtain the edges/nodes from adjacency.
         The following examples provide common cases, your adjacency may
-        be slightly different and require tweaks of these examples.
+        be slightly different and require tweaks of these examples::
 
         >>> # dict-of-set/list/tuple
         >>> adj = {1: {2, 3}, 2: {1, 3}, 3: {1, 2}}
