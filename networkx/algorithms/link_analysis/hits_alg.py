@@ -224,7 +224,7 @@ def hits_numpy(G, normalized=True):
     `hits_numpy` maps the eigenvector corresponding to the maximum eigenvalue
     of the respective matrices to the nodes in `G`:
 
-    >>> hubs, authority = hits_numpy(G)
+    >>> hubs, authority = nx.hits_numpy(G)
 
     Notes
     -----

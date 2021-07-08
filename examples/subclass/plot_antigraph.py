@@ -96,8 +96,8 @@ class AntiGraph(Graph):
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> list(G.degree(0))  # node 0 with degree 1
-        [(0, 1)]
+        >>> G.degree(0)  # node 0 with degree 1
+        1
         >>> list(G.degree([0, 1]))
         [(0, 1), (1, 2)]
 

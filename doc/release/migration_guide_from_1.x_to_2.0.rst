@@ -305,7 +305,6 @@ the node data structure if not done correctly. Code such as the following:
 used to work, even though it could cause errors if ``n`` was not a node in ``G``.
 That code will cause an error in v2.x.  Replace it with one of the more safe versions:
 
-    >>> G.node[n].update(H.node[n])  # works in both v1.x and v2.x
     >>> G.nodes[n].update(H.nodes[n])  # works in v2.x
 
 -------
