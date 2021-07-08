@@ -264,8 +264,6 @@ Deprecations
 Merged PRs
 ----------
 
-- Designate 2.5 release
-- Remove dev banner
 - Bump release version
 - Update release process
 - Update website doc
