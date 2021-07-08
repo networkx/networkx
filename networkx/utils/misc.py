@@ -314,27 +314,27 @@ def arbitrary_element(iterable):
     --------
     Arbitrary elements from common Iterable objects:
 
-    >>> arbitrary_element([1, 2, 3])  # list
+    >>> nx.utils.arbitrary_element([1, 2, 3])  # list
     1
-    >>> arbitrary_element((1, 2, 3))  # tuple
+    >>> nx.utils.arbitrary_element((1, 2, 3))  # tuple
     1
-    >>> arbitrary_element({1, 2, 3})  # set
+    >>> nx.utils.arbitrary_element({1, 2, 3})  # set
     1
     >>> d = {k: v for k, v in zip([1, 2, 3], [3, 2, 1])}
-    >>> arbitrary_element(d)  # dict_keys
+    >>> nx.utils.arbitrary_element(d)  # dict_keys
     1
-    >>> arbitrary_element(d.values())   # dict values
+    >>> nx.utils.arbitrary_element(d.values())   # dict values
     3
 
     `str` is also an Iterable:
 
-    >>> arbitrary_element("hello")
+    >>> nx.utils.arbitrary_element("hello")
     'h'
 
     :exc:`ValueError` is raised if `iterable` is an iterator:
 
     >>> iterator = iter([1, 2, 3])  # Iterator, *not* Iterable
-    >>> arbitrary_element(iterator)
+    >>> nx.utils.arbitrary_element(iterator)
     Traceback (most recent call last):
         ...
     ValueError: cannot return an arbitrary item from an iterator
@@ -345,9 +345,9 @@ def arbitrary_element(iterable):
     ordered, sequential calls will return the same value::
 
         >>> l = [1, 2, 3]
-        >>> arbitrary_element(l)
+        >>> nx.utils.arbitrary_element(l)
         1
-        >>> arbitrary_element(l)
+        >>> nx.utils.arbitrary_element(l)
         1
 
     """

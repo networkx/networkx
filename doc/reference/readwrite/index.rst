@@ -19,3 +19,4 @@ Reading and writing graphs
    sparsegraph6
    pajek
    nx_shp
+   matrix_market

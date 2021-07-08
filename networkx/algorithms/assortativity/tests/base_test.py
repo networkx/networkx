@@ -52,6 +52,10 @@ class BaseTestDegreeMixing:
         cls.W = nx.Graph()
         cls.W.add_edges_from([(0, 3), (1, 3), (2, 3)], weight=0.5)
         cls.W.add_edge(0, 2, weight=1)
+        S1 = nx.star_graph(4)
+        S2 = nx.star_graph(4)
+        cls.DS = nx.disjoint_union(S1, S2)
+        cls.DS.add_edge(4, 5)
 
 
 class BaseTestNumericMixing:
@@ -70,3 +74,10 @@ class BaseTestNumericMixing:
         F.add_edge(0, 2, weight=1)
         nx.set_node_attributes(F, dict(F.degree(weight="weight")), "margin")
         cls.F = F
+
+        M = nx.Graph()
+        M.add_nodes_from([1, 2], margin=-1)
+        M.add_nodes_from([3], margin=1)
+        M.add_nodes_from([4], margin=2)
+        M.add_edges_from([(3, 4), (1, 2), (1, 3)])
+        cls.M = M
