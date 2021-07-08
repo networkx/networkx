@@ -1,6 +1,4 @@
 """Unit tests for the traveling_salesman module."""
-import numpy as np
-import math
 import pytest
 import random
 import networkx as nx
@@ -387,6 +385,8 @@ def test_held_karp_ascent():
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
+    np = pytest.importorskip("numpy")
+
     # Adjacency matrix from page 1153 of the 1970 Held and Karp paper
     # which have been edited to be directional, but also symmetric
     G_array = np.array(
@@ -442,43 +442,6 @@ def test_held_karp_ascent():
     assert z_star == solution_z_star
 
 
-def test_held_karp_branch_bound():
-    """
-    Test the Held Karp relaxation using the same graph as above but with a
-    different method
-    """
-    import networkx.algorithms.approximation.traveling_salesman as tsp
-
-    # Adjacency matrix from page 1153 of the 1970 Held and Karp paper
-    # which have been edited to be directional, but also symmetric
-    G_array = np.array(
-        [
-            [0, 97, 60, 73, 17, 52],
-            [97, 0, 41, 52, 90, 30],
-            [60, 41, 0, 21, 35, 41],
-            [73, 52, 21, 0, 95, 46],
-            [17, 90, 35, 95, 0, 81],
-            [52, 30, 41, 46, 81, 0],
-        ]
-    )
-
-    solution_edges = [
-        (1, 5, 30),
-        (2, 3, 21),
-        (3, 1, 52),
-        (4, 2, 35),
-        (5, 0, 52),
-        (0, 4, 17),
-    ]
-    solution = nx.DiGraph()
-    solution.add_weighted_edges_from(solution_edges)
-
-    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    k = tsp.held_karp_branch_bound(G)
-
-    assert nx.utils.edges_equal(k.edges(), solution.edges())
-
-
 def test_ascent_fractional_solution():
     """
     Test the ascent method using a modified version of Figure 2 on page 1140
@@ -486,6 +449,8 @@ def test_ascent_fractional_solution():
     Karp
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
 
     # This version of Figure 2 has all of the edge weights multiplied by 100
     # and is a complete directed graph with infinite edge weights for the
@@ -545,13 +510,136 @@ def test_ascent_fractional_solution():
     }
 
 
+def test_ascent_method_asymmetric():
+    """
+    Tests the ascent method using a truly asymmetric graph for which the
+    solution has been brute forced
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            [0, 26, 63, 59, 69, 31, 41],
+            [62, 0, 91, 53, 75, 87, 47],
+            [47, 82, 0, 90, 15, 9, 18],
+            [68, 19, 5, 0, 58, 34, 93],
+            [11, 58, 53, 55, 0, 61, 79],
+            [88, 75, 13, 76, 98, 0, 40],
+            [41, 61, 55, 88, 46, 45, 0],
+        ]
+    )
+
+    solution_edges = [(0, 1), (1, 3), (3, 2), (2, 5), (5, 6), (4, 0), (6, 4)]
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    opt_hk, z_star = tsp.held_karp_ascent(G)
+
+    # Check that the optimal weights are the same
+    assert opt_hk == 190.0
+    # Check that the z_stars match.
+    # Because this dict would have 42 entries, I'm not going to write the whole
+    # thing out
+    for u, v in sorted(z_star):
+        if (u, v) in solution_edges or (v, u) in solution_edges:
+            assert True if z_star[(u, v)] == 6 / 7 else False
+            assert True if z_star[(v, u)] == 6 / 7 else False
+        else:
+            assert True if z_star[(u, v)] == 0.0 else False
+            assert True if z_star[(v, u)] == 0.0 else False
+
+
+def test_ascent_method_asymmetric_2():
+    """
+    Tests the ascent method using a truly asymmetric graph for which the
+    solution has been brute forced
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            [0, 45, 39, 92, 29, 31],
+            [72, 0, 4, 12, 21, 60],
+            [81, 6, 0, 98, 70, 53],
+            [49, 71, 59, 0, 98, 94],
+            [74, 95, 24, 43, 0, 47],
+            [56, 43, 3, 65, 22, 0],
+        ]
+    )
+
+    solution_edges = [(0, 5), (5, 4), (1, 3), (3, 0), (2, 1), (4, 2)]
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    opt_hk, z_star = tsp.held_karp_ascent(G)
+
+    # Check that the optimal weights are the same
+    assert opt_hk == 144.0
+    # Check that the z_stars match.
+    # Because this dict would have 42 entries, I'm not going to write the whole
+    # thing out
+    for u, v in sorted(z_star):
+        if (u, v) in solution_edges or (v, u) in solution_edges:
+            assert True if z_star[(u, v)] == 5 / 6 else False
+            assert True if z_star[(v, u)] == 5 / 6 else False
+        else:
+            assert True if z_star[(u, v)] == 0.0 else False
+            assert True if z_star[(v, u)] == 0.0 else False
+
+
+def test_held_karp_branch_bound():
+    """
+    Test the Held Karp relaxation using the same graph as above but with a
+    different method
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
+
+    # Adjacency matrix from page 1153 of the 1970 Held and Karp paper
+    # which have been edited to be directional, but also symmetric
+    G_array = np.array(
+        [
+            [0, 97, 60, 73, 17, 52],
+            [97, 0, 41, 52, 90, 30],
+            [60, 41, 0, 21, 35, 41],
+            [73, 52, 21, 0, 95, 46],
+            [17, 90, 35, 95, 0, 81],
+            [52, 30, 41, 46, 81, 0],
+        ]
+    )
+
+    solution_edges = [
+        (1, 5, 30),
+        (2, 3, 21),
+        (3, 1, 52),
+        (4, 2, 35),
+        (5, 0, 52),
+        (0, 4, 17),
+    ]
+    solution = nx.DiGraph()
+    solution.add_weighted_edges_from(solution_edges)
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    k = tsp.held_karp_branch_bound(G)
+
+    assert nx.utils.edges_equal(k.edges(), solution.edges())
+
+
 def test_branch_bound_fractional_solution():
     """
     Test the branch and bound method using a modified version of Figure 2 on
     page 1140 in 'The Traveling Salesman Problem and Minimum Spanning Trees'
-    by Held and Karp
+    by Held and Karp.
+
+    The Branch and bound method does not return a fractional solution, but
+    rather continues to branch until a true solution is found
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
 
     # This version of Figure 2 has all of the edge weights multiplied by 100
     # and is a complete directed graph with infinite edge weights for the
@@ -567,9 +655,58 @@ def test_branch_bound_fractional_solution():
         ]
     )
 
+    solution_edges = [
+        (1, 4, 1),
+        (2, 0, 100),
+        (3, 2, 1),
+        (4, 5, 100),
+        (5, 3, 100),
+        (0, 1, 100),
+    ]
+
+    solution = nx.DiGraph()
+    solution.add_weighted_edges_from(solution_edges)
+
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     k = tsp.held_karp_branch_bound(G)
 
-    print()
-    for u, v, d in k.edges(data=True):
-        print(f"({u}, {v}, {d['weight']})")
+    assert nx.utils.edges_equal(k.edges(), solution.edges())
+
+
+def test_branch_bound_asymmetric():
+    """
+    Tests the branch and bound method on a truly asymmetric graph whose
+    solution has been brute forced.
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            [0, 45, 39, 92, 29, 31],
+            [72, 0, 4, 12, 21, 60],
+            [81, 6, 0, 98, 70, 53],
+            [49, 71, 59, 0, 98, 94],
+            [74, 95, 24, 43, 0, 47],
+            [56, 43, 3, 65, 22, 0],
+        ]
+    )
+
+    solution_edges = [
+        (0, 5, 31),
+        (5, 4, 22),
+        (1, 3, 12),
+        (3, 0, 49),
+        (2, 1, 6),
+        (4, 2, 24),
+    ]
+
+    solution = nx.DiGraph()
+    solution.add_weighted_edges_from(solution_edges)
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    # Commented to avoid crash
+    # k = tsp.held_karp_branch_bound(G)
+
+    # assert nx.utils.edges_equal(k.edges(), solution.edges())

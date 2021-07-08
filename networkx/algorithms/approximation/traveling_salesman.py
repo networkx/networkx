@@ -739,11 +739,9 @@ def held_karp_branch_bound(G, weight="weight"):
 
     Returns
     -------
-    OPT : float
-        The cost for the optimal solution to the Held-Karp relaxation
-    z_star : numpy array
-        A symmetrized and scaled version of the optimal solution to the
-        Held-Karp relaxation for use in the Asadpour algorithm
+    nx.DiGraph
+        A DiGraph representing the optimal tour for the asymmetric traveling
+        salesperson problem.
 
     References
     ----------
@@ -811,9 +809,7 @@ def held_karp_branch_bound(G, weight="weight"):
         G_1.remove_node(n)
 
         # Check to see if there is information in the partition
-        partition = (
-            None if partition is None or partition == (set(), set()) else partition
-        )
+        partition = None if partition == (set(), set()) else partition
 
         # Iterate over the spanning arborescences of the graph until we know
         # that we have found the minimum 1-arborescences. My proposed strategy
@@ -831,9 +827,9 @@ def held_karp_branch_bound(G, weight="weight"):
             if d[weight] > max_root[weight]:
                 max_root = {"node": v, weight: d[weight]}
 
-        min_in_edge = min(G.in_edges(n, data=True), key=lambda x: x[2][weight])
-        min_root[weight] = min_root[weight] + min_in_edge[2][weight]
-        max_root[weight] = max_root[weight] + min_in_edge[2][weight]
+        min_in_edge = min(G.in_edges(n, data=weight), key=lambda x: x[2])
+        min_root[weight] = min_root[weight] + min_in_edge[2]
+        max_root[weight] = max_root[weight] + min_in_edge[2]
 
         min_arb_weight = math.inf
         for arb in nx.ArborescenceIterator(G_1, init_partition=partition):
@@ -851,29 +847,33 @@ def held_karp_branch_bound(G, weight="weight"):
                     arb.add_edge(n, N, **{weight: G[n][N][weight]})
                     arb_weight += G[n][N][weight]
                     break
-            # We can pick the minimum weight in-edge for the vertex with a
-            # cycle
-            min_in_edge_weight = {weight: math.inf}
-            min_in_edge = None
-            for u, v, d in G.in_edges(n, data=True):
-                edge_weight = d[weight]
-                if u == N:
-                    continue
-                if edge_weight < min_in_edge_weight[weight]:
-                    min_in_edge_weight[weight] = edge_weight
-                    min_in_edge = (u, v)
-            arb.add_edge(min_in_edge[0], min_in_edge[1], **d)
-            arb_weight += min_in_edge_weight[weight]
-            # Check to see the weight of the arborescence, if it is a new
-            # minimum, clear all of the old potential minimum
-            # 1-arborescences and add this is the only one. If its weight is
-            # above the known minimum, do not add it.
-            if arb_weight < minimum_1_arborescence_weight:
-                minimum_1_arborescences.clear()
-                minimum_1_arborescence_weight = arb_weight
-            # We have a 1-arborescence, add it to the set
-            if arb_weight == minimum_1_arborescence_weight:
-                minimum_1_arborescences.add(arb)
+
+            # We can pick the minimum weight in-edge for the vertex with
+            # a cycle. If there are multiple edges with the same, minimum
+            # weight, We need to add all of them.
+            #
+            # Delete the edge (N, v) so that we cannot pick it.
+            edge_data = G[N][n]
+            G.remove_edge(N, n)
+            min_weight = min(G.in_edges(n, data=weight), key=lambda x: x[2])[2]
+            min_edges = [
+                (u, v, d) for u, v, d in G.in_edges(n, data=weight) if d == min_weight
+            ]
+            for u, v, d in min_edges:
+                new_arb = arb.copy()
+                new_arb.add_edge(u, v, **{weight: d})
+                new_arb_weight = arb_weight + d
+                # Check to see the weight of the arborescence, if it is a
+                # new minimum, clear all of the old potential minimum
+                # 1-arborescences and add this is the only one. If its
+                # weight is above the known minimum, do not add it.
+                if new_arb_weight < minimum_1_arborescence_weight:
+                    minimum_1_arborescences.clear()
+                    minimum_1_arborescence_weight = new_arb_weight
+                # We have a 1-arborescence, add it to the set
+                if new_arb_weight == minimum_1_arborescence_weight:
+                    minimum_1_arborescences.add(new_arb)
+            G.add_edge(N, n, **edge_data)
 
         return minimum_1_arborescences
 
@@ -1065,7 +1065,8 @@ def held_karp_branch_bound(G, weight="weight"):
             # Find the edge within k which is the substitute. Because k is a
             # 1-arborescence, we know that they is only one such edges
             # leading into every vertex.
-            sub_u, sub_v, sub_d = next(k.in_edges(e_v, data=True).__iter__())
+            in_edges = k.in_edges(e_v, data=True)
+            sub_u, sub_v, sub_d = next(in_edges.__iter__())
             k.add_edge(e_u, e_v, **{weight: e_d[weight]})
             k.remove_edge(sub_u, sub_v)
             if (
@@ -1110,13 +1111,19 @@ def held_karp_branch_bound(G, weight="weight"):
             if solution is not None:
                 # Write the original edge weights back to G
                 for u, v, d in solution.edges(data=True):
-                    if (u, v) == (2, 0):
-                        halt = "halt"
                     d[weight] = original_edge_weights[(u, v)]
                 return solution
         else:
             # find epsilon and apply an iteration of the ascent method.
             max_distance = find_epsilon(next(k_xy.__iter__()), dir_ascent)
+            if max_distance == math.inf:
+                solution = branch(config)
+                if solution is not None:
+                    # Write the original edge weights back to G
+                    for u, v, d in solution.edges(data=True):
+                        d[weight] = original_edge_weights[(u, v)]
+                    return solution
+                continue
             for n, v in dir_ascent.items():
                 pi_dict[n] += max_distance * v
             for u, v, d in G.edges(data=True):

@@ -244,6 +244,7 @@ except ImportError:
 collect_ignore = []
 
 needs_numpy = [
+    "algorithms/approximation/traveling_salesman.py",
     "algorithms/centrality/current_flow_closeness.py",
     "algorithms/node_classification/__init__.py",
     "algorithms/non_randomness.py",
@@ -253,6 +254,7 @@ needs_numpy = [
     "utils/misc.py",
 ]
 needs_scipy = [
+    "algorithms/approximation/traveling_salesman.py",
     "algorithms/assortativity/correlation.py",
     "algorithms/assortativity/mixing.py",
     "algorithms/assortativity/pairs.py",
