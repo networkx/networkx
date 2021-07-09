@@ -396,3 +396,160 @@ def condensation(G, scc=None):
     # Add a list of members (ie original nodes) to each node (ie scc) in C.
     nx.set_node_attributes(C, members, "members")
     return C
+
+
+@not_implemented_for("undirected")
+def in_component(G, scc_comp):
+    """Generate the IN component of a graph with respect to
+    a given strongly connected component.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        A directed graph.
+
+    scc_comp : set
+        A set of nodes belonging to a strongly connected
+        component of G.
+
+    Returns
+    -------
+    set
+        A set of nodes belonging to the IN component with
+        respect to `scc_comp`.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is undirected.
+
+    Notes
+    -----
+    The IN component is part of the Web's graph structure as
+    described by Broder et al.[1]_.
+
+    References
+    ----------
+    .. [1] Graph structure in the web,
+       A. Broder, R. Kumar, F. Maghoul, P. Raghavan,
+       S. Rajagopalan, R. Stata, A. Tomkins, J. Wiener
+       Computer Networks, 33(1-6):309-320, (2000).
+
+    """
+    return in_or_out_component(G, scc_comp, comp_type="in")
+
+
+@not_implemented_for("undirected")
+def out_component(G, scc_comp):
+    """Generate the OUT component of a graph with respect to
+    a given strongly connected component.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        A directed graph.
+
+    scc_comp : set
+        A set of nodes belonging to a strongly connected
+        component of G.
+
+    Returns
+    -------
+    set
+        A set of nodes belonging to the OUT component with
+        respect to `scc_comp`.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is undirected.
+
+    Notes
+    -----
+    The OUT component is part of the Web's graph structure as
+    described by Broder et al.[1]_.
+
+    References
+    ----------
+    .. [1] Graph structure in the web,
+       A. Broder, R. Kumar, F. Maghoul, P. Raghavan,
+       S. Rajagopalan, R. Stata, A. Tomkins, J. Wiener
+       Computer Networks, 33(1-6):309-320, (2000).
+
+    """
+    return in_or_out_component(G, scc_comp, comp_type="out")
+
+
+@not_implemented_for("undirected")
+def in_or_out_component(G, scc_comp, comp_type):
+    """Generate the IN/OUT component of a graph with respect to
+    a given strongly connected component.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        A directed graph.
+
+    scc_comp : set
+        A set of nodes belonging to a strongly connected
+        component of G.
+
+    comp_type : str
+        Specify which component to return. If 'in', returns
+        the IN component. If 'out', returns the OUT component.
+
+    Returns
+    -------
+    comp : set
+        A set of nodes belonging to the IN/OUT component with
+        respect to `scc_comp`.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is undirected.
+
+    ValueError
+        If `comp_type` is neither 'in' nor 'out'.
+
+    Notes
+    -----
+    The IN/OUT component is part of the Web's graph structure as
+    described by Broder et al.[1]_.
+
+    References
+    ----------
+    .. [1] Graph structure in the web,
+       A. Broder, R. Kumar, F. Maghoul, P. Raghavan,
+       S. Rajagopalan, R. Stata, A. Tomkins, J. Wiener
+       Computer Networks, 33(1-6):309-320, (2000).
+
+    """
+    import random
+
+    # Gets a random node from the strongly connected component
+    # as a root for executing BFS.
+    random_scc_node = random.sample(scc_comp, 1)[0]
+
+    visited = [random_scc_node]
+    queue = [random_scc_node]
+    while queue:
+        node = queue.pop(0)
+
+        if comp_type == "in":
+            neighbors = G.predecessors(node)
+        elif comp_type == "out":
+            neighbors = G.successors(node)
+        else:
+            raise ValueError("Expect `comp_type` to be 'in' or 'out'.")
+
+        for n in neighbors:
+            if n not in visited:
+                visited.append(n)
+                queue.append(n)
+
+    # `visited` contains the IN/OUT component together with the
+    # strongly connected component. Use set difference to just
+    # get the IN/OUT component.
+    comp = set(visited).difference(scc_comp)
+    return comp
