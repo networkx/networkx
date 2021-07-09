@@ -9,6 +9,9 @@ __all__ = [
     "strongly_connected_components_recursive",
     "kosaraju_strongly_connected_components",
     "condensation",
+    "in_component",
+    "out_component",
+    "in_or_out_component",
 ]
 
 
@@ -529,7 +532,7 @@ def in_or_out_component(G, scc_comp, comp_type):
 
     # Gets a random node from the strongly connected component
     # as a root for executing BFS.
-    random_scc_node = random.sample(scc_comp, 1)[0]
+    random_scc_node = random.sample(list(scc_comp), 1)[0]
 
     visited = [random_scc_node]
     queue = [random_scc_node]
