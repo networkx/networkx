@@ -589,94 +589,10 @@ def test_ascent_method_asymmetric_2():
             assert True if z_star[(v, u)] == 0.0 else False
 
 
-def test_held_karp_branch_bound():
+def test_held_karp_ascent_fractional_asymmetric():
     """
-    Test the Held Karp relaxation using the same graph as above but with a
-    different method
-    """
-    import networkx.algorithms.approximation.traveling_salesman as tsp
-
-    np = pytest.importorskip("numpy")
-
-    # Adjacency matrix from page 1153 of the 1970 Held and Karp paper
-    # which have been edited to be directional, but also symmetric
-    G_array = np.array(
-        [
-            [0, 97, 60, 73, 17, 52],
-            [97, 0, 41, 52, 90, 30],
-            [60, 41, 0, 21, 35, 41],
-            [73, 52, 21, 0, 95, 46],
-            [17, 90, 35, 95, 0, 81],
-            [52, 30, 41, 46, 81, 0],
-        ]
-    )
-
-    solution_edges = [
-        (1, 5, 30),
-        (2, 3, 21),
-        (3, 1, 52),
-        (4, 2, 35),
-        (5, 0, 52),
-        (0, 4, 17),
-    ]
-    solution = nx.DiGraph()
-    solution.add_weighted_edges_from(solution_edges)
-
-    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    k = tsp.held_karp_branch_bound(G)
-
-    assert nx.utils.edges_equal(k.edges(), solution.edges())
-
-
-def test_branch_bound_fractional_solution():
-    """
-    Test the branch and bound method using a modified version of Figure 2 on
-    page 1140 in 'The Traveling Salesman Problem and Minimum Spanning Trees'
-    by Held and Karp.
-
-    The Branch and bound method does not return a fractional solution, but
-    rather continues to branch until a true solution is found
-    """
-    import networkx.algorithms.approximation.traveling_salesman as tsp
-
-    np = pytest.importorskip("numpy")
-
-    # This version of Figure 2 has all of the edge weights multiplied by 100
-    # and is a complete directed graph with infinite edge weights for the
-    # edges not listed in the original graph
-    G_array = np.array(
-        [
-            [0, 100, 100, 100000, 100000, 1],
-            [100, 0, 100, 100000, 1, 100000],
-            [100, 100, 0, 1, 100000, 100000],
-            [100000, 100000, 1, 0, 100, 100],
-            [100000, 1, 100000, 100, 0, 100],
-            [1, 100000, 100000, 100, 100, 0],
-        ]
-    )
-
-    solution_edges = [
-        (1, 4, 1),
-        (2, 0, 100),
-        (3, 2, 1),
-        (4, 5, 100),
-        (5, 3, 100),
-        (0, 1, 100),
-    ]
-
-    solution = nx.DiGraph()
-    solution.add_weighted_edges_from(solution_edges)
-
-    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    k = tsp.held_karp_branch_bound(G)
-
-    assert nx.utils.edges_equal(k.edges(), solution.edges())
-
-
-def test_branch_bound_asymmetric():
-    """
-    Tests the branch and bound method on a truly asymmetric graph whose
-    solution has been brute forced.
+    Tests the ascent method using a truly asymmetric graph with a fractional
+    solution for which the solution has been brute forced
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
@@ -684,29 +600,92 @@ def test_branch_bound_asymmetric():
 
     G_array = np.array(
         [
-            [0, 45, 39, 92, 29, 31],
-            [72, 0, 4, 12, 21, 60],
-            [81, 6, 0, 98, 70, 53],
-            [49, 71, 59, 0, 98, 94],
-            [74, 95, 24, 43, 0, 47],
-            [56, 43, 3, 65, 22, 0],
+            [0, 1, 5, 2, 7, 4],
+            [7, 0, 7, 7, 1, 4],
+            [4, 7, 0, 9, 2, 1],
+            [7, 2, 7, 0, 4, 4],
+            [5, 5, 4, 4, 0, 3],
+            [3, 9, 1, 3, 4, 0],
         ]
     )
 
-    solution_edges = [
-        (0, 5, 31),
-        (5, 4, 22),
-        (1, 3, 12),
-        (3, 0, 49),
-        (2, 1, 6),
-        (4, 2, 24),
-    ]
+    solution_edges_weight_five_twelfths = [(0, 2), (0, 5), (2, 4), (4, 5)]
 
-    solution = nx.DiGraph()
-    solution.add_weighted_edges_from(solution_edges)
+    solution_edges_weight_five_sixths = [(0, 3), (1, 3), (1, 4), (2, 5)]
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    # Commented to avoid crash
-    # k = tsp.held_karp_branch_bound(G)
+    opt_hk, z_star = tsp.held_karp_ascent(G)
 
-    # assert nx.utils.edges_equal(k.edges(), solution.edges())
+    assert opt_hk == 13.0
+
+    for u, v in sorted(z_star):
+        if (u, v) in solution_edges_weight_five_twelfths or (
+            v,
+            u,
+        ) in solution_edges_weight_five_twelfths:
+            assert z_star[(u, v)] == 5 / 12
+            assert z_star[(v, u)] == 5 / 12
+        elif (u, v) in solution_edges_weight_five_sixths or (
+            v,
+            u,
+        ) in solution_edges_weight_five_sixths:
+            assert z_star[(u, v)] == 5 / 6
+            assert z_star[(v, u)] == 5 / 6
+        else:
+            assert z_star[(u, v)] == 0.0
+            assert z_star[(v, u)] == 0.0
+
+
+def test_held_karp_ascent_fractional_asymmetric_2():
+    """
+    Tests the ascent method using a truly asymmetric graph with a fractional
+    solution for which the solution has been brute forced
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            [0, 8, 1, 1, 1, 2, 3],
+            [5, 0, 9, 7, 4, 5, 7],
+            [7, 7, 0, 6, 7, 4, 4],
+            [2, 4, 9, 0, 4, 5, 4],
+            [1, 5, 7, 2, 0, 4, 7],
+            [4, 1, 3, 2, 7, 0, 3],
+            [5, 2, 5, 3, 9, 8, 0],
+        ]
+    )
+
+    solution_edges_weight_six_sevenths = [(0, 2), (1, 4), (2, 5), (6, 1)]
+
+    solution_edges_weight_three_sevenths = [
+        (3, 0),
+        (3, 6),
+        (4, 0),
+        (4, 3),
+        (5, 3),
+        (5, 6),
+    ]
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    opt_hk, z_star = tsp.held_karp_ascent(G)
+
+    assert opt_hk == 18.0
+    print(f"\n{z_star}")
+    # for u, v in sorted(z_star):
+    #     if (u, v) in solution_edges_weight_six_sevenths or (
+    #         v,
+    #         u,
+    #     ) in solution_edges_weight_six_sevenths:
+    #         assert z_star[(u, v)] == 6 / 7
+    #         assert z_star[(v, u)] == 6 / 7
+    #     elif (u, v) in solution_edges_weight_three_sevenths or (
+    #         v,
+    #         u,
+    #     ) in solution_edges_weight_three_sevenths:
+    #         assert z_star[(u, v)] == 3 / 7
+    #         assert z_star[(v, u)] == 3 / 7
+    #     else:
+    #         assert z_star[(u, v)] == 0.0
+    #         assert z_star[(v, u)] == 0.0
