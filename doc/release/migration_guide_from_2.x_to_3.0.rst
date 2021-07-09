@@ -6,8 +6,7 @@ Preparing for the 3.0 release
 
 .. note::
    Much of the work leading to the NetworkX 3.0 release will be included
-   in the NetworkX 2.6 and 2.7 releases.  For example, we are changing our
-   default dependencies in the 2.6 release and we are deprecating a lot
+   in the NetworkX 2.6 and 2.7 releases.  For example, we are deprecating a lot
    of old code in the 2.6 and 2.7 releases.  This guide will discuss this
    ongoing work and will help you understand what changes you can make now
    to minimize the disruption caused by the move to 3.0.
