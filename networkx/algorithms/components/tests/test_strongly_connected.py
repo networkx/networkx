@@ -202,3 +202,27 @@ class TestStronglyConnected:
             assert len(seen & component) == 0
             seen.update(component)
             component.clear()
+
+    def test_in_component(self):
+        G = nx.DiGraph({0: [1], 1: [2], 2: [3], 3: [1, 4]})
+        C = {frozenset([0])}
+        scc_comp = max(nx.strongly_connected_components(G), key=len)
+        in_comp = nx.in_component(G, scc_comp)
+        assert {frozenset(in_comp)} == C
+
+    def test_out_component(self):
+        G = nx.DiGraph({0: [1], 1: [2], 2: [3], 3: [1, 4]})
+        C = {frozenset([4])}
+        scc_comp = max(nx.strongly_connected_components(G), key=len)
+        out_comp = nx.out_component(G, scc_comp)
+        assert {frozenset(out_comp)} == C
+
+    def test_in_or_out_component(self):
+        G = nx.DiGraph({0: [1], 1: [2], 2: [3], 3: [1, 4]})
+        C_in = {frozenset([0])}
+        C_out = {frozenset([4])}
+        scc_comp = max(nx.strongly_connected_components(G), key=len)
+        in_comp = nx.in_or_out_component(G, scc_comp, comp_type="in")
+        out_comp = nx.in_or_out_component(G, scc_comp, comp_type="out")
+        assert {frozenset(in_comp)} == C_in
+        assert {frozenset(out_comp)} == C_out
