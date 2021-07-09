@@ -21,21 +21,21 @@ Install the released version
 
 Install the current release of ``networkx`` with ``pip``::
 
-    $ pip install networkx
+    $ pip install networkx[default]
 
 To upgrade to a newer release use the ``--upgrade`` flag::
 
-    $ pip install --upgrade networkx
+    $ pip install --upgrade networkx[default]
 
 If you do not have permission to install software systemwide, you can
 install into your user directory using the ``--user`` flag::
 
-    $ pip install --user networkx
+    $ pip install --user networkx[default]
 
 If you do not want to install our dependencies (e.g., ``numpy``, ``scipy``, etc.),
 you can use::
 
-    $ pip install networkx --no-deps
+    $ pip install networkx
 
 This may be helpful if you are using PyPy or you are working on a project that
 only needs a limited subset of our functionality and you want to limit the
@@ -47,7 +47,7 @@ Alternatively, you can manually download ``networkx`` from
 To install one of these versions, unpack it and run the following from the
 top-level source directory using the Terminal::
 
-    $ pip install .
+    $ pip install .[default]
 
 Install the development version
 -------------------------------
@@ -64,9 +64,9 @@ Then do::
 
     $ git clone https://github.com/networkx/networkx.git
     $ cd networkx
-    $ pip install -e .
+    $ pip install -e .[default]
 
-The ``pip install -e .`` command allows you to follow the development branch as
+The ``pip install -e .[default]`` command allows you to follow the development branch as
 it changes by creating links in the right places and installing the command
 line scripts to the appropriate locations.
 
@@ -95,7 +95,7 @@ version requirements.
 
 To install ``networkx`` and extra packages, do::
 
-    $ pip install networkx[extra]
+    $ pip install networkx[default,extra]
 
 To explicitly install all optional packages, do::
 

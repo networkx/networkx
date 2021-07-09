@@ -26,17 +26,6 @@ Default dependencies
 
 We no longer depend on the "decorator" library.
 
-NumPy, SciPy, Matplotlib, and Pandas are now default dependencies due to their
-central position in the scientific Python ecosystem and the fact that they
-provide self-contained, easy to install wheels for pip.
-While we've made these core libraries of the scientific Python ecosystem default dependencies,
-much of NetworkX still works without these libraries and we expect that to continue.
-Be assured that we test NetworkX with and without the dependencies,
-so if you do **not** use functions that depend on external libraries
-you can install NetworkX using pip with the `--no-deps` flag::
-
-    $ pip install networkx --no-deps
-
 Deprecated code
 ---------------
 
