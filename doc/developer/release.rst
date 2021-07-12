@@ -20,6 +20,8 @@ Release Process
   6. Copy ``doc/release/release_template.rst`` to
      ``doc/release/release_dev.rst`` for the next release.
 
+  7. Add ``release_<major>.<minor>`` to ``doc/release/index.rst``.
+
 - Delete the following from ``doc/_templates/layout.html``::
 
     {% block document %}
@@ -66,8 +68,7 @@ Release Process
 
 - Unpin badges in ``README.rst``::
 
-  - https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main
-  - https://github.com/networkx/networkx/actions?query=branch%3Amain
+   git restore README.rst 
 
 - Update documentation on the web:
   The documentation is kept in a separate repo: networkx/documentation
