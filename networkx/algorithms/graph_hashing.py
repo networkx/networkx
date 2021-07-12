@@ -77,17 +77,17 @@ def weisfeiler_lehman_graph_hash(
 
     Omitting the `edge_attr` option, results in identical hashes.
 
-    >>> weisfeiler_lehman_graph_hash(G1)
+    >>> nx.weisfeiler_lehman_graph_hash(G1)
     '0db442538bb6dc81d675bd94e6ebb7ca'
-    >>> weisfeiler_lehman_graph_hash(G2)
+    >>> nx.weisfeiler_lehman_graph_hash(G2)
     '0db442538bb6dc81d675bd94e6ebb7ca'
 
     With edge labels, the graphs are no longer assigned
     the same hash digest.
 
-    >>> weisfeiler_lehman_graph_hash(G1, edge_attr="label")
+    >>> nx.weisfeiler_lehman_graph_hash(G1, edge_attr="label")
     '408c18537e67d3e56eb7dc92c72cb79e'
-    >>> weisfeiler_lehman_graph_hash(G2, edge_attr="label")
+    >>> nx.weisfeiler_lehman_graph_hash(G2, edge_attr="label")
     'f9e9cb01c6d2f3b17f83ffeaa24e5986'
 
     References

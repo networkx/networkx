@@ -728,7 +728,7 @@ New features
   - include documentation in source package (doc)
   - tests can now be run with
      >>> import networkx
-     >>> networkx.test()
+     >>> networkx.test()  # doctest: +SKIP
 
 Bug fixes
 ~~~~~~~~~
