@@ -637,7 +637,6 @@ def held_karp_ascent(G, weight="weight"):
         pi_dict[n] = 0
     del n
     original_edge_weights = {}
-    count = 0
     for u, v, d in G.edges(data=True):
         original_edge_weights[(u, v)] = d[weight]
     dir_ascent, k_d = direction_of_ascent()
@@ -647,12 +646,6 @@ def held_karp_ascent(G, weight="weight"):
             pi_dict[n] += max_distance * v
         for u, v, d in G.edges(data=True):
             d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
-        count += 1
-        print(f"count = {count}")
-        round_pi = {k: round(v, 2) for k, v in pi_dict.items()}
-        print(
-            f"pi = {round_pi}\ndirection of ascent = {dir_ascent}\nepsilon = {max_distance:.2f}\n"
-        )
         dir_ascent, k_d = direction_of_ascent()
     # k_d is no longer an individual 1-arborescence but rather a set of
     # minimal 1-arborescences at the maximum point of the polytope and should
@@ -690,10 +683,6 @@ def held_karp_ascent(G, weight="weight"):
         z_star[(u, v)] = scale_factor * (x_star[(u, v)] + x_star[(v, u)])
     del x_star
     # Return the optimal weight and the z_star dict
-    for k in k_max:
-        print(f"\ntotal weight: {k.size(weight)}")
-        for u, v, d in k.edges(data=weight):
-            print(f"({u}, {v}, {d})")
     return next(k_max.__iter__()).size(weight), z_star
 
 

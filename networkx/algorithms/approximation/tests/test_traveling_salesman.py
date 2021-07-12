@@ -656,8 +656,8 @@ def test_held_karp_ascent_fractional_asymmetric():
             [150, 0, 100, 100000, 1, 100000],
             [100, 150, 0, 1, 100000, 100000],
             [100000, 100000, 1, 0, 150, 100],
-            [100000, 1, 100000, 100, 0, 150],
-            [1, 100000, 100000, 150, 100, 0],
+            [100000, 2, 100000, 100, 0, 150],
+            [2, 100000, 100000, 150, 100, 0],
         ]
     )
 
@@ -698,7 +698,7 @@ def test_held_karp_ascent_fractional_asymmetric():
     opt_hk, z_star = tsp.held_karp_ascent(G)
 
     # Check that the optimal weights are the same
-    assert opt_hk == 303
+    assert opt_hk == 304
     # Check that the z_stars are the same
     assert {key: round(z_star[key], 4) for key in z_star} == {
         key: round(solution_z_star[key], 4) for key in solution_z_star
