@@ -483,8 +483,8 @@ def held_karp_ascent(G, weight="weight"):
             # weight, We need to add all of them.
             #
             # Delete the edge (N, v) so that we cannot pick it.
-            # edge_data = G[N][n]
-            # G.remove_edge(N, n)
+            edge_data = G[N][n]
+            G.remove_edge(N, n)
             min_weight = min(G.in_edges(n, data=weight), key=lambda x: x[2])[2]
             min_edges = [
                 (u, v, d) for u, v, d in G.in_edges(n, data=weight) if d == min_weight
@@ -503,7 +503,7 @@ def held_karp_ascent(G, weight="weight"):
                 # We have a 1-arborescence, add it to the set
                 if new_arb_weight == minimum_1_arborescence_weight:
                     minimum_1_arborescences.add(new_arb)
-            # G.add_edge(N, n, **edge_data)
+            G.add_edge(N, n, **edge_data)
 
         return minimum_1_arborescences
 
@@ -637,6 +637,7 @@ def held_karp_ascent(G, weight="weight"):
         pi_dict[n] = 0
     del n
     original_edge_weights = {}
+    count = 0
     for u, v, d in G.edges(data=True):
         original_edge_weights[(u, v)] = d[weight]
     dir_ascent, k_d = direction_of_ascent()
@@ -646,6 +647,12 @@ def held_karp_ascent(G, weight="weight"):
             pi_dict[n] += max_distance * v
         for u, v, d in G.edges(data=True):
             d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
+        count += 1
+        print(f"count = {count}")
+        round_pi = {k: round(v, 2) for k, v in pi_dict.items()}
+        print(
+            f"pi = {round_pi}\ndirection of ascent = {dir_ascent}\nepsilon = {max_distance:.2f}\n"
+        )
         dir_ascent, k_d = direction_of_ascent()
     # k_d is no longer an individual 1-arborescence but rather a set of
     # minimal 1-arborescences at the maximum point of the polytope and should
@@ -683,7 +690,6 @@ def held_karp_ascent(G, weight="weight"):
         z_star[(u, v)] = scale_factor * (x_star[(u, v)] + x_star[(v, u)])
     del x_star
     # Return the optimal weight and the z_star dict
-    print(f"\npi = {pi_dict}")
     for k in k_max:
         print(f"\ntotal weight: {k.size(weight)}")
         for u, v, d in k.edges(data=weight):

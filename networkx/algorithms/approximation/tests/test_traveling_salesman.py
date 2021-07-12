@@ -594,7 +594,7 @@ def test_ascent_method_asymmetric_2():
             assert True if z_star[(v, u)] == 0.0 else False
 
 
-def test_held_karp_ascent_fractional_asymmetric():
+def test_held_karp_ascent_asymmetric_3():
     """
     Tests the ascent method using a truly asymmetric graph with a fractional
     solution for which the solution has been brute forced
@@ -641,7 +641,7 @@ def test_held_karp_ascent_fractional_asymmetric():
             assert z_star[(v, u)] == 0.0
 
 
-def test_held_karp_ascent_fractional_asymmetric_2():
+def test_held_karp_ascent_fractional_asymmetric():
     """
     Tests the ascent method using a truly asymmetric graph with a fractional
     solution for which the solution has been brute forced
@@ -652,45 +652,54 @@ def test_held_karp_ascent_fractional_asymmetric_2():
 
     G_array = np.array(
         [
-            [0, 8, 1, 1, 1, 2, 3],
-            [5, 0, 9, 7, 4, 5, 7],
-            [7, 7, 0, 6, 7, 4, 4],
-            [2, 4, 9, 0, 4, 5, 4],
-            [1, 5, 7, 2, 0, 4, 7],
-            [4, 1, 3, 2, 7, 0, 3],
-            [5, 2, 5, 3, 9, 8, 0],
+            [0, 100, 150, 100000, 100000, 1],
+            [150, 0, 100, 100000, 1, 100000],
+            [100, 150, 0, 1, 100000, 100000],
+            [100000, 100000, 1, 0, 150, 100],
+            [100000, 1, 100000, 100, 0, 150],
+            [1, 100000, 100000, 150, 100, 0],
         ]
     )
 
-    solution_edges_weight_six_sevenths = [(0, 2), (1, 4), (2, 5), (6, 1)]
-
-    solution_edges_weight_three_sevenths = [
-        (3, 0),
-        (3, 6),
-        (4, 0),
-        (4, 3),
-        (5, 3),
-        (5, 6),
-    ]
+    solution_z_star = {
+        (0, 1): 5 / 12,
+        (0, 2): 5 / 12,
+        (0, 3): 0.0,
+        (0, 4): 0.0,
+        (0, 5): 5 / 6,
+        (1, 0): 5 / 12,
+        (1, 2): 5 / 12,
+        (1, 3): 0.0,
+        (1, 4): 5 / 6,
+        (1, 5): 0.0,
+        (2, 0): 5 / 12,
+        (2, 1): 5 / 12,
+        (2, 3): 5 / 6,
+        (2, 4): 0.0,
+        (2, 5): 0.0,
+        (3, 0): 0.0,
+        (3, 1): 0.0,
+        (3, 2): 5 / 6,
+        (3, 4): 5 / 12,
+        (3, 5): 5 / 12,
+        (4, 0): 0.0,
+        (4, 1): 5 / 6,
+        (4, 2): 0.0,
+        (4, 3): 5 / 12,
+        (4, 5): 5 / 12,
+        (5, 0): 5 / 6,
+        (5, 1): 0.0,
+        (5, 2): 0.0,
+        (5, 3): 5 / 12,
+        (5, 4): 5 / 12,
+    }
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     opt_hk, z_star = tsp.held_karp_ascent(G)
 
-    assert opt_hk == 18.0
-    print(f"\n{z_star}")
-    # for u, v in sorted(z_star):
-    #     if (u, v) in solution_edges_weight_six_sevenths or (
-    #         v,
-    #         u,
-    #     ) in solution_edges_weight_six_sevenths:
-    #         assert z_star[(u, v)] == 6 / 7
-    #         assert z_star[(v, u)] == 6 / 7
-    #     elif (u, v) in solution_edges_weight_three_sevenths or (
-    #         v,
-    #         u,
-    #     ) in solution_edges_weight_three_sevenths:
-    #         assert z_star[(u, v)] == 3 / 7
-    #         assert z_star[(v, u)] == 3 / 7
-    #     else:
-    #         assert z_star[(u, v)] == 0.0
-    #         assert z_star[(v, u)] == 0.0
+    # Check that the optimal weights are the same
+    assert opt_hk == 303
+    # Check that the z_stars are the same
+    assert {key: round(z_star[key], 4) for key in z_star} == {
+        key: round(solution_z_star[key], 4) for key in solution_z_star
+    }
