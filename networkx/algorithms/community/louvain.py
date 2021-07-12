@@ -59,7 +59,7 @@ def generate_dendrogram(G, weight="weight", threshold=0.0000001, seed=None):
     """
 
     partition = [{u} for u in G.nodes()]
-    mod = modularity(G, partition)
+    mod = modularity(G, partition, weight=weight)
     graph = G.copy()
     m = G.size(weight=weight)
 
@@ -67,10 +67,15 @@ def generate_dendrogram(G, weight="weight", threshold=0.0000001, seed=None):
         partition, improvement = _one_level(graph, m, deepcopy(partition), weight, seed)
         if not improvement:
             break
-        new_mod = modularity(G, partition)
+        new_mod = modularity(G, partition, weight=weight)
         if new_mod - mod <= threshold:
             break
-        graph = _gen_graph(G, partition)
+
+        # After the first pass the new graph generated from the partition will contain weights
+        if weight is None:
+            weight = "weight"
+
+        graph = _gen_graph(G, partition, weight=weight)
         yield partition
 
 
