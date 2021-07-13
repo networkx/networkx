@@ -767,7 +767,7 @@ def _spanning_tree_distribution(G, z):
         # changing anything for the condition to be meet
         in_range_count = 0
         # Search for an edge with q_e > (1 + epsilon) * z_e
-        for e, z_e in z.items:
+        for e, z_e in z.items():
             q_e = q(e)
             if q_e > (1 + EPSILON) * z_e:
                 delta = ln(

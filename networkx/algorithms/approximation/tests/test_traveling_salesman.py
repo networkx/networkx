@@ -703,3 +703,28 @@ def test_held_karp_ascent_fractional_asymmetric():
     assert {key: round(z_star[key], 4) for key in z_star} == {
         key: round(solution_z_star[key], 4) for key in solution_z_star
     }
+
+
+def test_spanning_tree_distribution():
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            [0, 26, 63, 59, 69, 31, 41],
+            [62, 0, 91, 53, 75, 87, 47],
+            [47, 82, 0, 90, 15, 9, 18],
+            [68, 19, 5, 0, 58, 34, 93],
+            [11, 58, 53, 55, 0, 61, 79],
+            [88, 75, 13, 76, 98, 0, 40],
+            [41, 61, 55, 88, 46, 45, 0],
+        ]
+    )
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+
+    _, z = tsp.held_karp_ascent(G)
+    # gamma = tsp._spanning_tree_distribution(G, z)
+
+    # print(gamma)
