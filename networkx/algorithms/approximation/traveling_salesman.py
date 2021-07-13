@@ -371,13 +371,6 @@ def asadpour_tsp(G, weight="weight"):
     pass
 
 
-# TODO below, both the ascent method and the branch and bound method for the
-# Held Karp relaxation are implemented. Once we have a clear idea of which is
-# better, delete the other one. Both functions are completely self contained at
-# the expense of redundant code, so that removing one will be easy.
-#
-# For the current test on a six node graph the ascent method is faster, but on
-# a larger graph the branch and bound may be the preferred choice.
 def held_karp_ascent(G, weight="weight"):
     """
     Minimizes the Held-Karp relaxation of the TSP for `G`
@@ -405,7 +398,7 @@ def held_karp_ascent(G, weight="weight"):
     -------
     OPT : float
         The cost for the optimal solution to the Held-Karp relaxation
-    z_star : numpy array
+    z : numpy array
         A symmetrized and scaled version of the optimal solution to the
         Held-Karp relaxation for use in the Asadpour algorithm
 
@@ -682,11 +675,11 @@ def held_karp_ascent(G, weight="weight"):
     for u, v in x_star.keys():
         z_star[(u, v)] = scale_factor * (x_star[(u, v)] + x_star[(v, u)])
     del x_star
-    # Return the optimal weight and the z_star dict
+    # Return the optimal weight and the z dict
     return next(k_max.__iter__()).size(weight), z_star
 
 
-def _spanning_tree_distribution(z_star):
+def _spanning_tree_distribution(G, z):
     """
     Solves the Maximum Entropy Convex Program in the Asadpour algorithm [1]_
     using the approach in section 7 to build an exponential distribution of
@@ -699,7 +692,10 @@ def _spanning_tree_distribution(z_star):
 
     Parameters
     ----------
-    z_star : numpy array
+    G : nx.DiGraph
+        The complete, weighted digraph to calculate the distribution on.
+
+    z : numpy array
         The output of `_held_karp()`, a scaled version of the Held-Karp
         solution.
 
@@ -709,7 +705,87 @@ def _spanning_tree_distribution(z_star):
         The probability distribution which approximately preserves the marginal
         probabilities of `z_star`.
     """
-    pass
+    import numpy as np
+    from math import exp
+    from math import log as ln
+    import random
+    import string
+
+    def q(e):
+        """
+
+        Parameters
+        ----------
+        e : tuple
+            The `(u, v)` tuple describing the edge we are interested in
+
+        Returns
+        -------
+        float
+            The probability that a spanning tree chosen according to the
+            current values of gamma will include edge `e`.
+        """
+        # Create the laplacian matrices
+        for (u, v), g in gamma.items():
+            G[u][v][lambda_key] = exp(g)
+        G_laplacian = np.asarray(nx.laplacian_matrix(G, weight=lambda_key))
+        G_e = nx.contracted_edge(G, e)
+        G_e_laplacian = np.asarray(nx.laplacian_matrix(G_e, weight=lambda_key))
+
+        # Delete the first row and column from both laplacian matrices
+        # Since I need to delete a row and a column, two calls to numpy are
+        # needed
+        G_laplacian = np.delete(G_laplacian, 0, 0)
+        G_laplacian = np.delete(G_laplacian, 0, 1)
+        G_e_laplacian = np.delete(G_e_laplacian, 0, 0)
+        G_e_laplacian = np.delete(G_e_laplacian, 0, 1)
+
+        # Find the determinant of the cofactor matrices
+        det_G_laplacian = np.det(G_laplacian)
+        det_G_e_laplacian = np.det(G_e_laplacian)
+
+        # delete the old data
+        del G_laplacian, G_e, G_e_laplacian
+
+        return abs(det_G_e_laplacian) / abs(det_G_laplacian)
+
+    # initialize gamma to the zero dict
+    gamma = {}
+    for k, _ in z.items():
+        gamma[k] = 0
+
+    # set epsilon
+    EPSILON = 0.2
+
+    # pick an edge attribute name that is unlikely to be in the graph
+    lambda_key = "".join([random.choice(string.ascii_letters) for _ in range(15)])
+
+    while True:
+        # We need to know that know that no values of q_e are greater than
+        # (1 + epsilon) * z_e, however changing one gamma value can increase the
+        # value of a different q_e, so we have to complete the for loop without
+        # changing anything for the condition to be meet
+        in_range_count = 0
+        # Search for an edge with q_e > (1 + epsilon) * z_e
+        for e, z_e in z.items:
+            q_e = q(e)
+            if q_e > (1 + EPSILON) * z_e:
+                delta = ln(
+                    (q_e * (1 - (1 + EPSILON / 2) * z_e))
+                    / ((1 - q_e) * (1 + EPSILON / 2) * z_e)
+                )
+                gamma[e] -= delta
+            else:
+                in_range_count += 1
+        # Check if the for loop terminated without changing any gamma
+        if in_range_count == G.size():
+            break
+
+    # Remove the new edge attributes
+    for _, _, d in G.edges(data=True):
+        del d[lambda_key]
+
+    return gamma
 
 
 def _sample_spanning_tree(G, gamma):
@@ -724,16 +800,16 @@ def _sample_spanning_tree(G, gamma):
 
     Parameters
     ----------
-    G : nx.Graph
+    G : nx.DiGraph
         An undirected version of the original graph.
 
-    gamma : numpy array
+    gamma : dict
         The probabilities associated with each of the edges in the undirected
         graph `G`.
 
     Returns
     -------
-    nx.Graph
+    nx.DiGraph
         A spanning tree using the distribution defined by `gamma`.
 
     References
