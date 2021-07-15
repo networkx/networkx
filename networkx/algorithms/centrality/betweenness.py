@@ -5,12 +5,12 @@ import warnings
 
 from networkx.utils import py_random_state
 from networkx.utils.decorators import not_implemented_for
+from networkx.algorithms.shortest_paths.weighted import _weight_function
 
 __all__ = ["betweenness_centrality", "edge_betweenness_centrality", "edge_betweenness"]
 
 
 @py_random_state(5)
-@not_implemented_for("multigraph")
 def betweenness_centrality(
     G, k=None, normalized=True, weight=None, endpoints=False, seed=None
 ):
@@ -147,7 +147,6 @@ def betweenness_centrality(
 
 
 @py_random_state(4)
-@not_implemented_for("multigraph")
 def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=None):
     r"""Compute betweenness centrality for edges.
 
@@ -277,6 +276,7 @@ def _single_source_shortest_path_basic(G, s):
 
 
 def _single_source_dijkstra_path_basic(G, s, weight):
+    weight = _weight_function(G, weight)
     # modified from Eppstein
     S = []
     P = {}
@@ -299,7 +299,7 @@ def _single_source_dijkstra_path_basic(G, s, weight):
         S.append(v)
         D[v] = dist
         for w, edgedata in G[v].items():
-            vw_dist = dist + edgedata.get(weight, 1)
+            vw_dist = dist + weight(v,w,edgedata)
             if w not in D and (w not in seen or vw_dist < seen[w]):
                 seen[w] = vw_dist
                 push(Q, (vw_dist, next(c), v, w))
