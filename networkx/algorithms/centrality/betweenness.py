@@ -147,6 +147,7 @@ def betweenness_centrality(
 
 
 @py_random_state(4)
+@not_implemented_for("multigraph")
 def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=None):
     r"""Compute betweenness centrality for edges.
 
