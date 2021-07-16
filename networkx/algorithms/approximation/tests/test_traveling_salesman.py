@@ -406,36 +406,18 @@ def test_held_karp_ascent():
     )
 
     solution_z_star = {
-        (0, 1): 0.0,
-        (0, 2): 0.0,
-        (0, 3): 0.0,
         (0, 4): 5 / 6,
         (0, 5): 5 / 6,
-        (1, 0): 0.0,
-        (1, 2): 0.0,
         (1, 3): 5 / 6,
-        (1, 4): 0.0,
         (1, 5): 5 / 6,
-        (2, 0): 0.0,
-        (2, 1): 0.0,
         (2, 3): 5 / 6,
         (2, 4): 5 / 6,
-        (2, 5): 0.0,
-        (3, 0): 0.0,
         (3, 1): 5 / 6,
         (3, 2): 5 / 6,
-        (3, 4): 0.0,
-        (3, 5): 0.0,
         (4, 0): 5 / 6,
-        (4, 1): 0.0,
         (4, 2): 5 / 6,
-        (4, 3): 0.0,
-        (4, 5): 0.0,
         (5, 0): 5 / 6,
         (5, 1): 5 / 6,
-        (5, 2): 0.0,
-        (5, 3): 0.0,
-        (5, 4): 0.0,
     }
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
@@ -474,32 +456,20 @@ def test_ascent_fractional_solution():
     solution_z_star = {
         (0, 1): 5 / 12,
         (0, 2): 5 / 12,
-        (0, 3): 0.0,
-        (0, 4): 0.0,
         (0, 5): 5 / 6,
         (1, 0): 5 / 12,
         (1, 2): 1 / 3,
-        (1, 3): 0.0,
         (1, 4): 5 / 6,
-        (1, 5): 0.0,
         (2, 0): 5 / 12,
         (2, 1): 1 / 3,
         (2, 3): 5 / 6,
-        (2, 4): 0.0,
-        (2, 5): 0.0,
-        (3, 0): 0.0,
-        (3, 1): 0.0,
         (3, 2): 5 / 6,
         (3, 4): 1 / 3,
         (3, 5): 1 / 2,
-        (4, 0): 0.0,
         (4, 1): 5 / 6,
-        (4, 2): 0.0,
         (4, 3): 1 / 3,
         (4, 5): 1 / 2,
         (5, 0): 5 / 6,
-        (5, 1): 0.0,
-        (5, 2): 0.0,
         (5, 3): 1 / 2,
         (5, 4): 1 / 2,
     }
@@ -536,7 +506,22 @@ def test_ascent_method_asymmetric():
         ]
     )
 
-    solution_edges = [(0, 1), (1, 3), (3, 2), (2, 5), (5, 6), (4, 0), (6, 4)]
+    solution_edges = {
+        (0, 1): 6 / 7,
+        (1, 3): 6 / 7,
+        (3, 2): 6 / 7,
+        (2, 5): 6 / 7,
+        (5, 6): 6 / 7,
+        (4, 0): 6 / 7,
+        (6, 4): 6 / 7,
+        (1, 0): 6 / 7,
+        (3, 1): 6 / 7,
+        (2, 3): 6 / 7,
+        (5, 2): 6 / 7,
+        (6, 5): 6 / 7,
+        (0, 4): 6 / 7,
+        (4, 6): 6 / 7,
+    }
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     opt_hk, z_star = tsp.held_karp_ascent(G)
@@ -544,15 +529,9 @@ def test_ascent_method_asymmetric():
     # Check that the optimal weights are the same
     assert opt_hk == 190.0
     # Check that the z_stars match.
-    # Because this dict would have 42 entries, I'm not going to write the whole
-    # thing out
-    for u, v in sorted(z_star):
-        if (u, v) in solution_edges or (v, u) in solution_edges:
-            assert True if z_star[(u, v)] == 6 / 7 else False
-            assert True if z_star[(v, u)] == 6 / 7 else False
-        else:
-            assert True if z_star[(u, v)] == 0.0 else False
-            assert True if z_star[(v, u)] == 0.0 else False
+    assert {key: round(z_star[key], 4) for key in z_star} == {
+        key: round(solution_edges[key], 4) for key in solution_edges
+    }
 
 
 def test_ascent_method_asymmetric_2():
@@ -575,7 +554,20 @@ def test_ascent_method_asymmetric_2():
         ]
     )
 
-    solution_edges = [(0, 5), (5, 4), (1, 3), (3, 0), (2, 1), (4, 2)]
+    solution_edges = {
+        (0, 5): 5 / 6,
+        (5, 0): 5 / 6,
+        (5, 4): 5 / 6,
+        (4, 5): 5 / 6,
+        (1, 3): 5 / 6,
+        (3, 1): 5 / 6,
+        (3, 0): 5 / 6,
+        (0, 3): 5 / 6,
+        (2, 1): 5 / 6,
+        (1, 2): 5 / 6,
+        (4, 2): 5 / 6,
+        (2, 4): 5 / 6,
+    }
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     opt_hk, z_star = tsp.held_karp_ascent(G)
@@ -583,15 +575,9 @@ def test_ascent_method_asymmetric_2():
     # Check that the optimal weights are the same
     assert opt_hk == 144.0
     # Check that the z_stars match.
-    # Because this dict would have 42 entries, I'm not going to write the whole
-    # thing out
-    for u, v in sorted(z_star):
-        if (u, v) in solution_edges or (v, u) in solution_edges:
-            assert True if z_star[(u, v)] == 5 / 6 else False
-            assert True if z_star[(v, u)] == 5 / 6 else False
-        else:
-            assert True if z_star[(u, v)] == 0.0 else False
-            assert True if z_star[(v, u)] == 0.0 else False
+    assert {key: round(z_star[key], 4) for key in z_star} == {
+        key: round(solution_edges[key], 4) for key in solution_edges
+    }
 
 
 def test_held_karp_ascent_asymmetric_3():
@@ -614,31 +600,33 @@ def test_held_karp_ascent_asymmetric_3():
         ]
     )
 
-    solution_edges_weight_five_twelfths = [(0, 2), (0, 5), (2, 4), (4, 5)]
-
-    solution_edges_weight_five_sixths = [(0, 3), (1, 3), (1, 4), (2, 5)]
+    solution = {
+        (0, 2): 5 / 12,
+        (0, 5): 5 / 12,
+        (2, 4): 5 / 12,
+        (4, 5): 5 / 12,
+        (2, 0): 5 / 12,
+        (5, 0): 5 / 12,
+        (4, 2): 5 / 12,
+        (5, 4): 5 / 12,
+        (0, 3): 5 / 6,
+        (1, 3): 5 / 6,
+        (1, 4): 5 / 6,
+        (2, 5): 5 / 6,
+        (3, 0): 5 / 6,
+        (3, 1): 5 / 6,
+        (4, 1): 5 / 6,
+        (5, 2): 5 / 6,
+    }
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     opt_hk, z_star = tsp.held_karp_ascent(G)
 
     assert opt_hk == 13.0
-
-    for u, v in sorted(z_star):
-        if (u, v) in solution_edges_weight_five_twelfths or (
-            v,
-            u,
-        ) in solution_edges_weight_five_twelfths:
-            assert z_star[(u, v)] == 5 / 12
-            assert z_star[(v, u)] == 5 / 12
-        elif (u, v) in solution_edges_weight_five_sixths or (
-            v,
-            u,
-        ) in solution_edges_weight_five_sixths:
-            assert z_star[(u, v)] == 5 / 6
-            assert z_star[(v, u)] == 5 / 6
-        else:
-            assert z_star[(u, v)] == 0.0
-            assert z_star[(v, u)] == 0.0
+    # Check that the z_stars are the same
+    assert {key: round(z_star[key], 4) for key in z_star} == {
+        key: round(solution[key], 4) for key in solution
+    }
 
 
 def test_held_karp_ascent_fractional_asymmetric():
@@ -664,32 +652,20 @@ def test_held_karp_ascent_fractional_asymmetric():
     solution_z_star = {
         (0, 1): 5 / 12,
         (0, 2): 5 / 12,
-        (0, 3): 0.0,
-        (0, 4): 0.0,
         (0, 5): 5 / 6,
         (1, 0): 5 / 12,
         (1, 2): 5 / 12,
-        (1, 3): 0.0,
         (1, 4): 5 / 6,
-        (1, 5): 0.0,
         (2, 0): 5 / 12,
         (2, 1): 5 / 12,
         (2, 3): 5 / 6,
-        (2, 4): 0.0,
-        (2, 5): 0.0,
-        (3, 0): 0.0,
-        (3, 1): 0.0,
         (3, 2): 5 / 6,
         (3, 4): 5 / 12,
         (3, 5): 5 / 12,
-        (4, 0): 0.0,
         (4, 1): 5 / 6,
-        (4, 2): 0.0,
         (4, 3): 5 / 12,
         (4, 5): 5 / 12,
         (5, 0): 5 / 6,
-        (5, 1): 0.0,
-        (5, 2): 0.0,
         (5, 3): 5 / 12,
         (5, 4): 5 / 12,
     }
@@ -712,19 +688,18 @@ def test_spanning_tree_distribution():
 
     G_array = np.array(
         [
-            [0, 26, 63, 59, 69, 31, 41],
-            [62, 0, 91, 53, 75, 87, 47],
-            [47, 82, 0, 90, 15, 9, 18],
-            [68, 19, 5, 0, 58, 34, 93],
-            [11, 58, 53, 55, 0, 61, 79],
-            [88, 75, 13, 76, 98, 0, 40],
-            [41, 61, 55, 88, 46, 45, 0],
+            [0, 100, 100, 100000, 100000, 1],
+            [100, 0, 100, 100000, 1, 100000],
+            [100, 100, 0, 1, 100000, 100000],
+            [100000, 100000, 1, 0, 100, 100],
+            [100000, 1, 100000, 100, 0, 100],
+            [1, 100000, 100000, 100, 100, 0],
         ]
     )
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
 
     _, z = tsp.held_karp_ascent(G)
-    # gamma = tsp._spanning_tree_distribution(G, z)
+    gamma = tsp._spanning_tree_distribution(G, z)
 
-    # print(gamma)
+    print(gamma)

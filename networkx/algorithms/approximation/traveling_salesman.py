@@ -673,7 +673,9 @@ def held_karp_ascent(G, weight="weight"):
     z_star = {}
     scale_factor = (G.order() - 1) / G.order()
     for u, v in x_star.keys():
-        z_star[(u, v)] = scale_factor * (x_star[(u, v)] + x_star[(v, u)])
+        frequency = x_star[(u, v)] + x_star[(v, u)]
+        if frequency > 0:
+            z_star[(u, v)] = scale_factor * frequency
     del x_star
     # Return the optimal weight and the z dict
     return next(k_max.__iter__()).size(weight), z_star
@@ -693,17 +695,17 @@ def _spanning_tree_distribution(G, z):
     Parameters
     ----------
     G : nx.DiGraph
-        The complete, weighted digraph to calculate the distribution on.
+        The support graph for the Held Karp relaxation
 
-    z : numpy array
-        The output of `_held_karp()`, a scaled version of the Held-Karp
+    z : dict
+        The output of `held_karp_ascent()`, a scaled version of the Held-Karp
         solution.
 
     Returns
     -------
-    gamma : numpy array
+    gamma : dict
         The probability distribution which approximately preserves the marginal
-        probabilities of `z_star`.
+        probabilities of `z`.
     """
     import numpy as np
     from math import exp
@@ -726,11 +728,14 @@ def _spanning_tree_distribution(G, z):
             current values of gamma will include edge `e`.
         """
         # Create the laplacian matrices
-        for (u, v), g in gamma.items():
-            G[u][v][lambda_key] = exp(g)
-        G_laplacian = np.asarray(nx.laplacian_matrix(G, weight=lambda_key))
+        for u, v, d in G.edges(data=True):
+            if (u, v) in gamma:
+                d[lambda_key] = exp(gamma[(u, v)])
+            else:
+                d[lambda_key] = 0
+        G_laplacian = nx.laplacian_matrix(G, weight=lambda_key).toarray()
         G_e = nx.contracted_edge(G, e)
-        G_e_laplacian = np.asarray(nx.laplacian_matrix(G_e, weight=lambda_key))
+        G_e_laplacian = nx.laplacian_matrix(G_e, weight=lambda_key).toarray()
 
         # Delete the first row and column from both laplacian matrices
         # Since I need to delete a row and a column, two calls to numpy are
@@ -741,18 +746,22 @@ def _spanning_tree_distribution(G, z):
         G_e_laplacian = np.delete(G_e_laplacian, 0, 1)
 
         # Find the determinant of the cofactor matrices
-        det_G_laplacian = np.det(G_laplacian)
-        det_G_e_laplacian = np.det(G_e_laplacian)
+        det_G_laplacian = np.linalg.det(G_laplacian)
+        det_G_e_laplacian = np.linalg.det(G_e_laplacian)
 
         # delete the old data
-        del G_laplacian, G_e, G_e_laplacian
+        # del G_laplacian, G_e, G_e_laplacian
 
-        return abs(det_G_e_laplacian) / abs(det_G_laplacian)
+        solution = abs(det_G_e_laplacian) / abs(det_G_laplacian)
+        return solution
 
     # initialize gamma to the zero dict
     gamma = {}
-    for k, _ in z.items():
-        gamma[k] = 0
+    for k, v in z.items():
+        # We only want elements in gamma which can occur in the Held-Karp
+        # solution
+        if v > 0:
+            gamma[k] = 0
 
     # set epsilon
     EPSILON = 0.2
@@ -767,8 +776,9 @@ def _spanning_tree_distribution(G, z):
         # changing anything for the condition to be meet
         in_range_count = 0
         # Search for an edge with q_e > (1 + epsilon) * z_e
-        for e, z_e in z.items():
+        for e, _ in gamma.items():
             q_e = q(e)
+            z_e = z[e]
             if q_e > (1 + EPSILON) * z_e:
                 delta = ln(
                     (q_e * (1 - (1 + EPSILON / 2) * z_e))
@@ -778,12 +788,13 @@ def _spanning_tree_distribution(G, z):
             else:
                 in_range_count += 1
         # Check if the for loop terminated without changing any gamma
-        if in_range_count == G.size():
+        if in_range_count == len(gamma):
             break
 
     # Remove the new edge attributes
     for _, _, d in G.edges(data=True):
-        del d[lambda_key]
+        if lambda_key in d:
+            del d[lambda_key]
 
     return gamma
 
