@@ -236,6 +236,11 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     betweenness = _rescale_e(
         betweenness, len(G), normalized=normalized, directed=G.is_directed()
     )
+    if G.is_multigraph():
+        betweenness = _add_edge_keys(G, betweenness, weight=weight)
+        for e in G.edges():  # Remove edges without key
+            if e in betweenness:
+                del betweenness[e]
     return betweenness
 
 
@@ -299,7 +304,7 @@ def _single_source_dijkstra_path_basic(G, s, weight):
         S.append(v)
         D[v] = dist
         for w, edgedata in G[v].items():
-            vw_dist = dist + weight(v,w,edgedata)
+            vw_dist = dist + weight(v, w, edgedata)
             if w not in D and (w not in seen or vw_dist < seen[w]):
                 seen[w] = vw_dist
                 push(Q, (vw_dist, next(c), v, w))
@@ -394,4 +399,20 @@ def _rescale_e(betweenness, n, normalized, directed=False, k=None):
             scale = scale * n / k
         for v in betweenness:
             betweenness[v] *= scale
+    return betweenness
+
+
+def _add_edge_keys(G, betweenness, weight=None):
+    _weight = _weight_function(G, weight)
+    betweenness.update(dict.fromkeys(G.edges(keys=True), 0.0))
+
+    get_keys = lambda u, v, d: [
+        k for k in d if not weight or d[k].get(weight, 1) == _weight(u, v, d)
+    ]
+
+    for u, v in G.edges():
+        keys = get_keys(u, v, G[u][v])
+        for k in keys:
+            betweenness[(u, v, k)] = betweenness[(u, v)] / len(keys)
+
     return betweenness
