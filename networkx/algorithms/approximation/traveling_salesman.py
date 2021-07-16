@@ -694,8 +694,8 @@ def _spanning_tree_distribution(G, z):
 
     Parameters
     ----------
-    G : nx.DiGraph
-        The support graph for the Held Karp relaxation
+    G : nx.MultiGraph
+        The undirected support graph for the Held Karp relaxation
 
     z : dict
         The output of `held_karp_ascent()`, a scaled version of the Held-Karp
@@ -734,7 +734,11 @@ def _spanning_tree_distribution(G, z):
             else:
                 d[lambda_key] = 0
         G_laplacian = nx.laplacian_matrix(G, weight=lambda_key).toarray()
-        G_e = nx.contracted_edge(G, e)
+        G_e = nx.contracted_nodes(G, e[0], e[1], self_loops=False)
+        # print()
+        # print(G_e.adj)
+        # for e in G_e.edges():
+        #     print(f"{e}")
         G_e_laplacian = nx.laplacian_matrix(G_e, weight=lambda_key).toarray()
 
         # Delete the first row and column from both laplacian matrices
@@ -753,15 +757,14 @@ def _spanning_tree_distribution(G, z):
         # del G_laplacian, G_e, G_e_laplacian
 
         solution = abs(det_G_e_laplacian) / abs(det_G_laplacian)
+        if solution > 1:
+            x = "STOP"
         return solution
 
     # initialize gamma to the zero dict
     gamma = {}
-    for k, v in z.items():
-        # We only want elements in gamma which can occur in the Held-Karp
-        # solution
-        if v > 0:
-            gamma[k] = 0
+    for k, _ in z.items():
+        gamma[k] = 0
 
     # set epsilon
     EPSILON = 0.2
@@ -776,7 +779,8 @@ def _spanning_tree_distribution(G, z):
         # changing anything for the condition to be meet
         in_range_count = 0
         # Search for an edge with q_e > (1 + epsilon) * z_e
-        for e, _ in gamma.items():
+        for u, v in gamma:
+            e = (u, v)
             q_e = q(e)
             z_e = z[e]
             if q_e > (1 + EPSILON) * z_e:
@@ -784,7 +788,9 @@ def _spanning_tree_distribution(G, z):
                     (q_e * (1 - (1 + EPSILON / 2) * z_e))
                     / ((1 - q_e) * (1 + EPSILON / 2) * z_e)
                 )
+                # Keep gamma symmetric
                 gamma[e] -= delta
+                gamma[(v, u)] -= delta
             else:
                 in_range_count += 1
         # Check if the for loop terminated without changing any gamma

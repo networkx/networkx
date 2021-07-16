@@ -697,9 +697,34 @@ def test_spanning_tree_distribution():
         ]
     )
 
-    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    z_star = {
+        (0, 1): 5 / 12,
+        (0, 2): 5 / 12,
+        (0, 5): 5 / 6,
+        (1, 0): 5 / 12,
+        (1, 2): 1 / 3,
+        (1, 4): 5 / 6,
+        (2, 0): 5 / 12,
+        (2, 1): 1 / 3,
+        (2, 3): 5 / 6,
+        (3, 2): 5 / 6,
+        (3, 4): 1 / 3,
+        (3, 5): 1 / 2,
+        (4, 1): 5 / 6,
+        (4, 3): 1 / 3,
+        (4, 5): 1 / 2,
+        (5, 0): 5 / 6,
+        (5, 3): 1 / 2,
+        (5, 4): 1 / 2,
+    }
 
-    _, z = tsp.held_karp_ascent(G)
-    gamma = tsp._spanning_tree_distribution(G, z)
+    # The undirected support of z_star
+    G = nx.MultiGraph()
+    for u, v in z_star:
+        if (u, v) in G.edges or (v, u) in G.edges:
+            continue
+        G.add_edge(u, v)
 
-    print(gamma)
+    gamma = tsp._spanning_tree_distribution(G, z_star)
+
+    print(f"\n{gamma}")
