@@ -1,3 +1,5 @@
+from random import randint
+
 import pytest
 
 import networkx as nx
@@ -38,6 +40,22 @@ def test_partition():
         {32, 33, 8, 14, 15, 18, 20, 22, 26, 29, 30},
     ]
     partition = louvain_communities(G, seed=2)
+
+    assert part == partition
+
+
+def test_none_weight_param():
+    G = nx.karate_club_graph()
+    for edge in G.edges():
+        nx.set_edge_attributes(G, {edge: {"weight": randint(1, 20)}})
+
+    part = [
+        {0, 1, 2, 3, 7, 9, 11, 12, 13, 17, 19, 21},
+        {16, 4, 5, 6, 10},
+        {23, 25, 27, 28, 24, 31},
+        {32, 33, 8, 14, 15, 18, 20, 22, 26, 29, 30},
+    ]
+    partition = louvain_communities(G, weight=None, seed=2)
 
     assert part == partition
 

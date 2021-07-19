@@ -60,29 +60,29 @@ def generate_dendrogram(G, weight="weight", threshold=0.0000001, seed=None):
 
     partition = [{u} for u in G.nodes()]
     mod = modularity(G, partition, weight=weight)
-    graph = G.copy()
-    m = G.size(weight=weight)
+    graph = G.__class__()
+    graph.add_nodes_from(G)
+    graph.add_weighted_edges_from(G.edges(data=weight, default=1))
 
+    m = graph.size(weight="weight")
     while True:
-        partition, improvement = _one_level(graph, m, deepcopy(partition), weight, seed)
+        partition, inner_partition, improvement = _one_level(
+            graph, m, deepcopy(partition), seed
+        )
         if not improvement:
             break
-        new_mod = modularity(G, partition, weight=weight)
+        new_mod = modularity(graph, inner_partition, weight="weight")
         if new_mod - mod <= threshold:
             break
-
-        # After the first pass the new graph generated from the partition will contain weights
-        if weight is None:
-            weight = "weight"
-
-        graph = _gen_graph(G, partition, weight=weight)
+        graph = _gen_graph(graph, inner_partition)
         yield partition
 
 
-def _one_level(G, m, partition, weight="weight", seed=None):
+def _one_level(G, m, partition, seed=None):
     """Calculate one level of the tree"""
     node2com = {u: i for i, u in enumerate(G.nodes())}
-    degrees = dict(G.degree(weight=weight))
+    inner_partition = [{u} for u in G.nodes()]
+    degrees = dict(G.degree(weight="weight"))
     total_weights = {i: deg for i, deg in enumerate(degrees.values())}
     nbrs = {u: dict(G[u]) for u in G.nodes()}
     rand_nodes = list(G.nodes)
@@ -95,7 +95,8 @@ def _one_level(G, m, partition, weight="weight", seed=None):
             best_mod = 0
             best_com = node2com[u]
             partition[best_com].difference_update(G.nodes[u].get("nodes", {u}))
-            weights2com = _neighbor_weights(u, nbrs[u], node2com, weight)
+            inner_partition[best_com].remove(u)
+            weights2com = _neighbor_weights(u, nbrs[u], node2com)
             degree = degrees[u]
             total_weights[best_com] -= degree
             for nbr_com, wt in weights2com.items():
@@ -104,39 +105,41 @@ def _one_level(G, m, partition, weight="weight", seed=None):
                     best_mod = gain
                     best_com = nbr_com
             partition[best_com].update(G.nodes[u].get("nodes", {u}))
+            inner_partition[best_com].add(u)
             total_weights[best_com] += degree
             if best_com != node2com[u]:
                 improvement = True
                 nb_moves += 1
                 node2com[u] = best_com
     partition = list(filter(len, partition))
-    return partition, improvement
+    inner_partition = list(filter(len, inner_partition))
+    return partition, inner_partition, improvement
 
 
-def _neighbor_weights(node, nbrs, node2com, weight="weight"):
+def _neighbor_weights(node, nbrs, node2com):
     """Calculate node's neighbor communities and weights"""
     weights = {}
     for nbr, data in nbrs.items():
         if nbr != node:
-            weights[node2com[nbr]] = weights.get(node2com[nbr], 0) + 2 * data.get(
-                weight, 1
-            )
+            weights[node2com[nbr]] = weights.get(node2com[nbr], 0) + 2 * data["weight"]
     return weights
 
 
-def _gen_graph(G, partition, weight="weight"):
+def _gen_graph(G, partition):
     """Generate a new graph based on the partitions of a given graph"""
     H = nx.Graph()
     node2com = {}
     for i, part in enumerate(partition):
-        H.add_node(i, nodes=part)
+        nodes = set()
         for node in part:
             node2com[node] = i
+            nodes.update(G.nodes[node].get("nodes", {node}))
+        H.add_node(i, nodes=nodes)
 
     for node1, node2, wt in G.edges(data=True):
-        wt = wt.get(weight, 1)
+        wt = wt["weight"]
         com1 = node2com[node1]
         com2 = node2com[node2]
-        temp = H.get_edge_data(com1, com2, {weight: 0}).get(weight, 1)
-        H.add_edge(com1, com2, **{weight: wt + temp})
+        temp = H.get_edge_data(com1, com2, {"weight": 0})["weight"]
+        H.add_edge(com1, com2, **{"weight": wt + temp})
     return H
