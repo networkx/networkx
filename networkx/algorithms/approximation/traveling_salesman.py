@@ -729,17 +729,16 @@ def _spanning_tree_distribution(G, z):
         """
         # Create the laplacian matrices
         for u, v, d in G.edges(data=True):
-            if (u, v) in gamma:
-                d[lambda_key] = exp(gamma[(u, v)])
-            else:
-                d[lambda_key] = 0
-        G_laplacian = nx.laplacian_matrix(G, weight=lambda_key).toarray()
-        G_e = nx.contracted_nodes(G, e[0], e[1], self_loops=False)
-        # print()
-        # print(G_e.adj)
-        # for e in G_e.edges():
-        #     print(f"{e}")
-        G_e_laplacian = nx.laplacian_matrix(G_e, weight=lambda_key).toarray()
+            d[lambda_key] = exp(gamma[(u, v)])
+        G_laplacian = nx.laplacian_matrix(
+            G, weight=lambda_key, nodelist=[0, 1, 2, 3, 4, 5]
+        ).toarray()
+        G_e = nx.contracted_nodes(G, e[0], e[1], self_loops=True)
+        # What is the degree of vertex 0 considered?
+        deg = G_e.degree(0, weight=lambda_key)
+        G_e_laplacian = nx.laplacian_matrix(
+            G_e, weight=lambda_key, nodelist=[0, 1, 2, 3, 4, 5].remove(e[1])
+        ).toarray()
 
         # Delete the first row and column from both laplacian matrices
         # Since I need to delete a row and a column, two calls to numpy are
@@ -757,14 +756,12 @@ def _spanning_tree_distribution(G, z):
         # del G_laplacian, G_e, G_e_laplacian
 
         solution = abs(det_G_e_laplacian) / abs(det_G_laplacian)
-        if solution > 1:
-            x = "STOP"
         return solution
 
     # initialize gamma to the zero dict
     gamma = {}
-    for k, _ in z.items():
-        gamma[k] = 0
+    for u, v, _ in G.edges:
+        gamma[(u, v)] = 0
 
     # set epsilon
     EPSILON = 0.2
@@ -788,9 +785,7 @@ def _spanning_tree_distribution(G, z):
                     (q_e * (1 - (1 + EPSILON / 2) * z_e))
                     / ((1 - q_e) * (1 + EPSILON / 2) * z_e)
                 )
-                # Keep gamma symmetric
-                gamma[e] -= delta
-                gamma[(v, u)] -= delta
+                gamma[e] += delta
             else:
                 in_range_count += 1
         # Check if the for loop terminated without changing any gamma

@@ -682,20 +682,17 @@ def test_held_karp_ascent_fractional_asymmetric():
 
 
 def test_spanning_tree_distribution():
+    """
+    For the moment, this test is not a 'real' test as it checks the program
+    against a solution from that same piece of code. It will would fail if the
+    program returns a different result.
+
+    More through tests will be implemented upon the completion of the
+    sample_spanning_tree function.
+
+    This test is more the symmetric, fractional held karp graph.
+    """
     import networkx.algorithms.approximation.traveling_salesman as tsp
-
-    np = pytest.importorskip("numpy")
-
-    G_array = np.array(
-        [
-            [0, 100, 100, 100000, 100000, 1],
-            [100, 0, 100, 100000, 1, 100000],
-            [100, 100, 0, 1, 100000, 100000],
-            [100000, 100000, 1, 0, 100, 100],
-            [100000, 1, 100000, 100, 0, 100],
-            [1, 100000, 100000, 100, 100, 0],
-        ]
-    )
 
     z_star = {
         (0, 1): 5 / 12,
@@ -718,6 +715,18 @@ def test_spanning_tree_distribution():
         (5, 4): 1 / 2,
     }
 
+    solution_gamma = {
+        (0, 1): 0.3006,
+        (0, 2): 0.2164,
+        (0, 5): 0,
+        (1, 2): 0.5247,
+        (1, 4): 0,
+        (2, 3): 0,
+        (5, 3): 0,
+        (5, 4): 0,
+        (4, 3): 0.6388,
+    }
+
     # The undirected support of z_star
     G = nx.MultiGraph()
     for u, v in z_star:
@@ -727,4 +736,6 @@ def test_spanning_tree_distribution():
 
     gamma = tsp._spanning_tree_distribution(G, z_star)
 
-    print(f"\n{gamma}")
+    assert {key: round(gamma[key], 4) for key in gamma} == {
+        key: round(solution_gamma[key], 4) for key in solution_gamma
+    }
