@@ -1,7 +1,9 @@
 """Read and write graphs in GDF format.
 
 GDF (GUESS Data Format) is a simple file format for network files. It is
-supported by Gephi and GUESS, among others.
+supported by Gephi and GUESS, among others, and due to its simplicity it
+is used as a graph export format by research software like DMI-TCAT and
+4CAT.
 
 Format
 ------
@@ -118,10 +120,6 @@ def gdf_split(line, types=None):
 def write_gdf(G, path, encoding="utf-8"):
     """Write a NetworkX network as a GDF file to a given file path
 
-    Examples
-    --------
-    >>> nx.write_gdf(G, "network.gdf")
-
     Parameters
     ----------
     G : graph
@@ -203,11 +201,6 @@ def read_gdf(path, encoding="utf-8"):
     The returned graph can be a Graph or a DiGraph. For it to be a DiGraph, all
     edges must have a `directed` attribute, and the attribute must be set to
     `True` for all of the edges.
-
-    Examples
-    --------
-    >>> with open("network.gdf") as infile:
-    >>>   G = nx.read_gdf(infile)
 
     Parameters
     ----------
