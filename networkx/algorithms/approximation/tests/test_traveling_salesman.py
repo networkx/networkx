@@ -694,6 +694,8 @@ def test_spanning_tree_distribution():
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
+    pytest.importorskip("numpy")
+
     z_star = {
         (0, 1): 5 / 12,
         (0, 2): 5 / 12,

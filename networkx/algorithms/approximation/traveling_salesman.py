@@ -730,15 +730,9 @@ def _spanning_tree_distribution(G, z):
         # Create the laplacian matrices
         for u, v, d in G.edges(data=True):
             d[lambda_key] = exp(gamma[(u, v)])
-        G_laplacian = nx.laplacian_matrix(
-            G, weight=lambda_key, nodelist=[0, 1, 2, 3, 4, 5]
-        ).toarray()
-        G_e = nx.contracted_nodes(G, e[0], e[1], self_loops=True)
-        # What is the degree of vertex 0 considered?
-        deg = G_e.degree(0, weight=lambda_key)
-        G_e_laplacian = nx.laplacian_matrix(
-            G_e, weight=lambda_key, nodelist=[0, 1, 2, 3, 4, 5].remove(e[1])
-        ).toarray()
+        G_laplacian = nx.laplacian_matrix(G, weight=lambda_key).toarray()
+        G_e = nx.contracted_edge(G, e, self_loops=False)
+        G_e_laplacian = nx.laplacian_matrix(G_e, weight=lambda_key).toarray()
 
         # Delete the first row and column from both laplacian matrices
         # Since I need to delete a row and a column, two calls to numpy are
