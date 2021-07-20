@@ -2,7 +2,6 @@
 Algorithm"""
 
 from collections import deque
-from copy import deepcopy
 import random
 
 import networkx as nx
@@ -66,9 +65,7 @@ def generate_dendrogram(G, weight="weight", threshold=0.0000001, seed=None):
 
     m = graph.size(weight="weight")
     while True:
-        partition, inner_partition, improvement = _one_level(
-            graph, m, deepcopy(partition), seed
-        )
+        partition, inner_partition, improvement = _one_level(graph, m, partition, seed)
         if not improvement:
             break
         new_mod = modularity(graph, inner_partition, weight="weight")
@@ -79,7 +76,10 @@ def generate_dendrogram(G, weight="weight", threshold=0.0000001, seed=None):
 
 
 def _one_level(G, m, partition, seed=None):
-    """Calculate one level of the tree"""
+    """Calculate one level of the tree
+
+    Input `m` is the size of the graph `G`.
+    """
     node2com = {u: i for i, u in enumerate(G.nodes())}
     inner_partition = [{u} for u in G.nodes()]
     degrees = dict(G.degree(weight="weight"))
@@ -117,7 +117,12 @@ def _one_level(G, m, partition, seed=None):
 
 
 def _neighbor_weights(node, nbrs, node2com):
-    """Calculate node's neighbor communities and weights"""
+    """Calculate weights between node its neighbor communities.
+
+    Input `nbrs` should be a dict of the node's neighbors.
+
+    `node2com` is a dict with nodes as keys and community index as values.
+    """
     weights = {}
     for nbr, data in nbrs.items():
         if nbr != node:
