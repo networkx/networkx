@@ -693,6 +693,7 @@ def test_spanning_tree_distribution():
     This test is more the symmetric, fractional held karp graph.
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
+    from math import exp
 
     pytest.importorskip("numpy")
 
@@ -718,15 +719,15 @@ def test_spanning_tree_distribution():
     }
 
     solution_gamma = {
-        (0, 1): 0.3006,
-        (0, 2): 0.2164,
+        (0, 1): -0.6383,
+        (0, 2): -0.6827,
         (0, 5): 0,
-        (1, 2): 0.5247,
+        (1, 2): -1.0781,
         (1, 4): 0,
         (2, 3): 0,
-        (5, 3): 0,
-        (5, 4): 0,
-        (4, 3): 0.6388,
+        (5, 3): -0.2820,
+        (5, 4): -0.3327,
+        (4, 3): -0.9927,
     }
 
     # The undirected support of z_star
@@ -738,6 +739,21 @@ def test_spanning_tree_distribution():
 
     gamma = tsp._spanning_tree_distribution(G, z_star)
 
-    assert {key: round(gamma[key], 4) for key in gamma} == {
-        key: round(solution_gamma[key], 4) for key in solution_gamma
-    }
+    assert {key: round(gamma[key], 4) for key in gamma} == solution_gamma
+
+    # # Create the graph represented by z with edge weight exp(gamma[e])
+    # G = nx.Graph()
+    # G.add_edges_from(gamma)
+    # for u, v, d in G.edges(data=True):
+    #     d["lambda"] = exp(gamma[(u, v)])
+    #
+    # # Use the spanning tree iterator to sum the probabilities for all trees
+    # tree_cdf = 0.0
+    # for T in nx.SpanningTreeIterator(G, "lambda"):
+    #     tree_prob = 1.0
+    #     for _, _, d in T.edges(data="lambda"):
+    #         tree_prob *= d
+    #     print(tree_prob)
+    #     tree_cdf += tree_prob
+    #
+    # assert tree_cdf == 1.0

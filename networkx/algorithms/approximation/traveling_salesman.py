@@ -750,6 +750,7 @@ def _spanning_tree_distribution(G, z):
         # del G_laplacian, G_e, G_e_laplacian
 
         solution = abs(det_G_e_laplacian) / abs(det_G_laplacian)
+        solution *= exp(gamma[(e[0], e[1])])
         return solution
 
     # initialize gamma to the zero dict
@@ -779,7 +780,12 @@ def _spanning_tree_distribution(G, z):
                     (q_e * (1 - (1 + EPSILON / 2) * z_e))
                     / ((1 - q_e) * (1 + EPSILON / 2) * z_e)
                 )
-                gamma[e] += delta
+                gamma[e] -= delta
+                # Check that delta had the desired effect
+                new_q_e = q(e)
+                desired_q_e = (1 + EPSILON / 2) * z_e
+                if round(new_q_e, 8) != round(desired_q_e, 8):
+                    raise Exception
             else:
                 in_range_count += 1
         # Check if the for loop terminated without changing any gamma
