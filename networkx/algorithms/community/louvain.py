@@ -23,7 +23,9 @@ def louvain_communities(G, weight="weight", threshold=0.0000001, seed=None):
 
     The modularity gain obtained by moving an isolated node $i$ into a community $C$ can
     easily be calculated by the following formula:
-    $\Delta Q = \frac{k_{i,in}}{2m} - \frac{\Sigma_{tot}\cdot k_i}{2m^2}$
+
+    .. math::
+        \Delta Q = \frac{k_{i,in}}{2m} - \frac{ \Sigma_{tot} \cdot k_i}{2m^2}
 
     where $m$ is the size of the graph, $k_{i,in}$ is the sum of the weights of the links
     from $i$ to nodes in $C$, $k_i$ is the sum of the weights of the links incident to node $i$
@@ -137,7 +139,7 @@ def _one_level(G, m, partition, seed=None):
     node2com = {u: i for i, u in enumerate(G.nodes())}
     inner_partition = [{u} for u in G.nodes()]
     degrees = dict(G.degree(weight="weight"))
-    total_weights = {i: deg for i, deg in enumerate(degrees.values())}
+    total_weights = [deg for deg in degrees.values()]
     nbrs = {u: dict(G[u]) for u in G.nodes()}
     rand_nodes = list(G.nodes)
     seed.shuffle(rand_nodes)
