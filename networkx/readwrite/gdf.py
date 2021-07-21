@@ -116,8 +116,7 @@ def gdf_split(line, types=None):
 
         buffer += character
 
-    if buffer:
-        values.append(buffer)
+    values.append(buffer)
 
     values = [value.strip() for value in values]
 
@@ -264,14 +263,30 @@ def write_gdf(G, path, encoding="utf-8", guess_types=True):
 
 
 @open_file(0, mode="r")
-def read_gdf(path):
-    """Read graph in GraphML format from a reader object
+def read_gdf(file):
+    """Read graph in GDF format from a file handler
 
     Parameters
     ----------
-    path : generator
-      A generator that yields a GDF network line by line, e.g. an open file
-      handler.
+    file
+      Open file reader from which GDF can be read
+
+    Returns
+    -------
+    graph : NetworkX graph
+      A Graph, as returned by `parse_gdf()` called on the file's full
+      contents.
+    """
+    return parse_gdf(file.read())
+
+
+def parse_gdf(gdf):
+    """Read graph in GDF format from a string
+
+    Parameters
+    ----------
+    gdf : string
+      A GDF file, as a string
 
     Returns
     -------
@@ -302,8 +317,12 @@ def read_gdf(path):
     node_index = 1
     is_directed = []
 
-    for line in path:
+    for line in gdf.split("\n"):
+        line = line.strip()
         line_num += 1
+
+        if not line:
+            continue
 
         if line.startswith("nodedef>"):
             # read node schema

@@ -38,7 +38,7 @@ nodedef>name,comma_foo,foo,num1,num2,quote_foo
 'third','bar,baz','bar',1,8.3,'bar\\'baz'
 edgedef>node1,node2,attribute_bar,attribute_foo
 'first','second',,'foo'
-'first','third',,
+'first','third',,,
 'second','third','bar',
 """
         cls.gdf_file_node_attr_error = """\
