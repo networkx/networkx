@@ -149,8 +149,6 @@ def write_gdf(G, path, encoding="utf-8", guess_types=True):
     ----------
     G : graph
       A NetworkX graph
-    path : file or string
-       File or filename to write.
     encoding : string, optional
        Encoding for text data.
     guess_types : bool, optional
@@ -172,9 +170,48 @@ def write_gdf(G, path, encoding="utf-8", guess_types=True):
     Graphs that are not a Graph, MultiGraph, DiGraph or MultiDiGraph will raise
     a TypeError.
     """
-    def write_schema(component, handle, columns, types):
+    path.write(dump_gdf(G, encoding, guess_types))
+
+
+def dump_gdf(G, encoding="utf-8", guess_types=True):
+    """Return a NetworkX network as a GDF file as bytes
+
+    Parameters
+    ----------
+    G : graph
+      A NetworkX graph
+    encoding : string, optional
+       Encoding for text data.
+    guess_types : bool, optional
+        Whether to try and guess GDF types for node and edge attributes. If all
+        values for a given attribute are of the same time, the GDF data type
+        (VARCHAR, BOOLEAN, INTEGER or DOUBLE) will be inferred, else it will
+        not be set.
+
+    Returns
+    -------
+    gdf : bytes
+      The GDF files, as bytes with the provided encoding
+
+    Notes
+    ----------
+    If the provided graph is a DiGraph or MultiDiGraph, the attribute
+    `directed` is set to `TRUE` for all edges. Otherwise, it is absent unless
+    it is specified explicitly in the edge's data.
+
+    If nodes have a `name` attribute in their data, the value of that attribute
+    is used as the node name in the GDF file. Otherwise, all nodes use their
+    original ID as name.
+
+    Graphs that are not a Graph, MultiGraph, DiGraph or MultiDiGraph will raise
+    a TypeError.
+    """
+    buffer = bytes()
+
+    def write_schema(component, buffer, columns, types):
         schema = ",".join([column + types[i] for i, column in enumerate(columns)])
-        handle.write(("%sdef>%s\n" % (component, schema)).encode(encoding))
+        buffer += ("%sdef>%s\n" % (component, schema)).encode(encoding)
+        return buffer
 
     if type(G) not in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
         raise TypeError("Cannot write object of type %s as GDF file - must be standard Graph type" % type(G).__name__)
@@ -207,13 +244,13 @@ def write_gdf(G, path, encoding="utf-8", guess_types=True):
             if len(type_test) == 1 and type_test[0] is not None:
                 node_types[index] = " " + type_test[0]
 
-    write_schema("node", path, node_attributes, node_types)
+    buffer = write_schema("node", buffer, node_attributes, node_types)
 
     # write nodes
     for index, item_data in G.nodes(data=True):
         node_values = [gdf_escape(item_data.get(key)) for key in sorted(node_attributes) if key != "name"]
         node_values.insert(0, gdf_escape(name_map[index]))
-        path.write((",".join(node_values) + "\n").encode(encoding))
+        buffer += (",".join(node_values) + "\n").encode(encoding)
 
     # determine edge attributes to include
     edge_attributes = set()
@@ -246,7 +283,7 @@ def write_gdf(G, path, encoding="utf-8", guess_types=True):
             if len(type_test) == 1 and type_test[0] is not None:
                 edge_types[index] = " " + type_test[0]
 
-    write_schema("edge", path, edge_attributes, edge_types)
+    buffer = write_schema("edge", buffer, edge_attributes, edge_types)
 
     # write edges
     for from_index, to_index, edge_data in G.edges(data=True):
@@ -257,9 +294,10 @@ def write_gdf(G, path, encoding="utf-8", guess_types=True):
                        key not in ("node1", "node2")]
         edge_values.insert(0, gdf_escape(name_map[to_index]))
         edge_values.insert(0, gdf_escape(name_map[from_index]))
-        path.write((",".join(edge_values) + "\n").encode(encoding))
+        buffer += (",".join(edge_values) + "\n").encode(encoding)
 
     # done!
+    return buffer
 
 
 @open_file(0, mode="r")
