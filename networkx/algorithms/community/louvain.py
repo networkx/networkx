@@ -13,7 +13,7 @@ __all__ = ["louvain_communities", "generate_dendrogram"]
 
 @py_random_state("seed")
 def louvain_communities(G, weight="weight", threshold=0.0000001, seed=None):
-    """Find the best partition of G using the Louvain Community Detection
+    r"""Find the best partition of G using the Louvain Community Detection
     Algorithm.
 
     The algorithm works in 2 steps. On the first step it assigns every node to be
