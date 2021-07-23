@@ -35,6 +35,30 @@ def has_path(G, source, target):
         return False
     return True
 
+def shortest_path_with_keys(G, source, target):
+    """ Compute shortest path in the graph for a multigraph
+
+    Parameters
+    ----------
+    G: Networkx Multigraph
+    source: Starting node
+    target: Ending node
+
+    Returns
+    -------
+    A complete path between source and target
+
+    Raises
+    ------
+    ValueError
+        If G isn't a multigraph.
+    """
+    if G.is_multigraph():
+        all_edge_paths = nx.all_simple_edge_paths(G, source, target)
+        sorted_all_edge_paths = sorted(list(all_edge_paths), key=lambda a: len(a))
+        return sorted_all_edge_paths[0]
+    else:
+        raise ValueError(f"Graph type not supported")
 
 def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     """Compute shortest paths in the graph.
