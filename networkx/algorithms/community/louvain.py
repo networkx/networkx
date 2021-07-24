@@ -113,9 +113,12 @@ def generate_dendrogram(G, weight="weight", threshold=0.0000001, seed=None):
 
     partition = [{u} for u in G.nodes()]
     mod = modularity(G, partition, weight=weight)
-    graph = G.__class__()
-    graph.add_nodes_from(G)
-    graph.add_weighted_edges_from(G.edges(data=weight, default=1))
+    if G.is_multigraph():
+        graph = _convert_multigraph(G, weight)
+    else:
+        graph = G.__class__()
+        graph.add_nodes_from(G)
+        graph.add_weighted_edges_from(G.edges(data=weight, default=1))
 
     m = graph.size(weight="weight")
     while True:
@@ -203,4 +206,17 @@ def _gen_graph(G, partition):
         com2 = node2com[node2]
         temp = H.get_edge_data(com1, com2, {"weight": 0})["weight"]
         H.add_edge(com1, com2, **{"weight": wt + temp})
+    return H
+
+
+def _convert_multigraph(G, weight):
+    """Convert a Multigraph to normal Graph"""
+    H = nx.Graph()
+    H.add_nodes_from(G)
+    for u, v, data in G.edges(data=True):
+        wt = data.get(weight, 1)
+        if H.has_edge(u, v):
+            H[u][v]["weight"] += wt
+        else:
+            H.add_edge(u, v, weight=wt)
     return H
