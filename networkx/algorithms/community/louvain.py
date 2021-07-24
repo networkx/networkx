@@ -1,7 +1,7 @@
 """Function for detecting communities base on Louvain Community Detection
 Algorithm"""
 
-from collections import deque
+from collections import deque, defaultdict
 import random
 
 import networkx as nx
@@ -140,7 +140,7 @@ def _one_level(G, m, partition, seed=None):
     inner_partition = [{u} for u in G.nodes()]
     degrees = dict(G.degree(weight="weight"))
     total_weights = [deg for deg in degrees.values()]
-    nbrs = {u: dict(G[u]) for u in G.nodes()}
+    nbrs = {u: {v: data["weight"] for v, data in G[u].items() if v != u} for u in G}
     rand_nodes = list(G.nodes)
     seed.shuffle(rand_nodes)
     nb_moves = 1
@@ -150,8 +150,6 @@ def _one_level(G, m, partition, seed=None):
         for u in rand_nodes:
             best_mod = 0
             best_com = node2com[u]
-            partition[best_com].difference_update(G.nodes[u].get("nodes", {u}))
-            inner_partition[best_com].remove(u)
             weights2com = _neighbor_weights(u, nbrs[u], node2com)
             degree = degrees[u]
             total_weights[best_com] -= degree
@@ -160,10 +158,13 @@ def _one_level(G, m, partition, seed=None):
                 if gain > best_mod:
                     best_mod = gain
                     best_com = nbr_com
-            partition[best_com].update(G.nodes[u].get("nodes", {u}))
-            inner_partition[best_com].add(u)
             total_weights[best_com] += degree
             if best_com != node2com[u]:
+                com = G.nodes[u].get("nodes", {u})
+                partition[node2com[u]].difference_update(com)
+                inner_partition[node2com[u]].remove(u)
+                partition[best_com].update(com)
+                inner_partition[best_com].add(u)
                 improvement = True
                 nb_moves += 1
                 node2com[u] = best_com
@@ -179,10 +180,9 @@ def _neighbor_weights(node, nbrs, node2com):
 
     `node2com` is a dict with nodes as keys and community index as values.
     """
-    weights = {}
-    for nbr, data in nbrs.items():
-        if nbr != node:
-            weights[node2com[nbr]] = weights.get(node2com[nbr], 0) + 2 * data["weight"]
+    weights = defaultdict(float)
+    for nbr, wt in nbrs.items():
+        weights[node2com[nbr]] += 2 * wt
     return weights
 
 
