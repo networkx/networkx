@@ -30,7 +30,7 @@ jobs:
     - name: Install packages
       run: |
         pip install --upgrade pip wheel setuptools
-        pip install -r requirements.txt
+        pip install -r requirements/default.txt -r requirements/test.txt
         pip install -r requirements/extra.txt
         pip install -r requirements/example.txt
         pip install -U -r requirements/doc.txt

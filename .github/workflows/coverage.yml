@@ -27,7 +27,7 @@ jobs:
     - name: Install packages
       run: |
         pip install --upgrade pip wheel setuptools
-        pip install -r requirements.txt
+        pip install -r requirements/default.txt -r requirements/test.txt
         pip install -r requirements/extra.txt
         export CPLUS_INCLUDE_PATH=/usr/include/gdal
         export C_INCLUDE_PATH=/usr/include/gdal
