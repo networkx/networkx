@@ -17,12 +17,12 @@ interact with different languages and even different Python versions.
 Re-importing from gml is also a concern.
 
 Without specifying a `stringizer`/`destringizer`, the code is capable of
-handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
-specification.  For other data types, you need to explicitly supply a
-`stringizer`/`destringizer`.
+writing `int`/`float`/`str`/`dict`/`list` data as required by the GML 
+specification.  For writing other data types, and for reading data other
+than `str` you need to explicitly supply a `stringizer`/`destringizer`.
 
 For additional documentation on the GML file format, please see the
-`GML website <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+`GML website <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
 Several example graphs in GML format may be found on Mark Newman's
 `Network data page <http://www-personal.umich.edu/~mejn/netdata/>`_.
@@ -150,12 +150,12 @@ def read_gml(path, label="label", destringizer=None):
     GML files are stored using a 7-bit ASCII encoding with any extended
     ASCII characters (iso8859-1) appearing as HTML character entities.
     Without specifying a `stringizer`/`destringizer`, the code is capable of
-    handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
-    specification.  For other data types, you need to explicitly supply a
-    `stringizer`/`destringizer`.
+    writing `int`/`float`/`str`/`dict`/`list` data as required by the GML
+    specification.  For writing other data types, and for reading data other
+    than `str` you need to explicitly supply a `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
@@ -163,7 +163,20 @@ def read_gml(path, label="label", destringizer=None):
     --------
     >>> G = nx.path_graph(4)
     >>> nx.write_gml(G, "test.gml")
+
+    GML values are interpreted as strings by default:
+
     >>> H = nx.read_gml("test.gml")
+    >>> H.nodes
+    NodeView(('0', '1', '2', '3'))
+
+    When a `destringizer` is provided, GML values are converted to the provided type.
+    For example, integer nodes can be recovered as shown below:
+
+    >>> J = nx.read_gml("test.gml", destringizer=int)
+    >>> J.nodes
+    NodeView((0, 1, 2, 3))
+
     """
 
     def filter_lines(lines):
@@ -221,12 +234,12 @@ def parse_gml(lines, label="label", destringizer=None):
     GML files are stored using a 7-bit ASCII encoding with any extended
     ASCII characters (iso8859-1) appearing as HTML character entities.
     Without specifying a `stringizer`/`destringizer`, the code is capable of
-    handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
-    specification.  For other data types, you need to explicitly supply a
-    `stringizer`/`destringizer`.
+    writing `int`/`float`/`str`/`dict`/`list` data as required by the GML
+    specification.  For writing other data types, and for reading data other
+    than `str` you need to explicitly supply a `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
     """
@@ -260,7 +273,7 @@ def parse_gml(lines, label="label", destringizer=None):
 
 
 class Pattern(Enum):
-    """ encodes the index of each token-matching pattern in `tokenize`. """
+    """encodes the index of each token-matching pattern in `tokenize`."""
 
     KEYS = 0
     REALS = 1
@@ -288,7 +301,7 @@ def parse_gml_lines(lines, label, destringizer):
         patterns = [
             r"[A-Za-z][0-9A-Za-z_]*\b",  # keys
             # reals
-            r"[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?",
+            r"[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*|INF)(?:[Ee][+-]?[0-9]+)?",
             r"[+-]?[0-9]+",  # ints
             r'".*?"',  # strings
             r"\[",  # dict start
@@ -370,6 +383,15 @@ def parse_gml_lines(lines, label, destringizer):
                             + " convertable ASCII value for node id or label"
                         )
                         unexpected(curr_token, msg)
+                # Special handling for nan and infinity.  Since the gml language
+                # defines unquoted strings as keys, the numeric and string branches
+                # are skipped and we end up in this special branch, so we need to
+                # convert the current token value to a float for NAN and plain INF.
+                # +/-INF are handled in the pattern for 'reals' in tokenize().  This
+                # allows labels and values to be nan or infinity, but not keys.
+                elif curr_token.value in {"NAN", "INF"}:
+                    value = float(curr_token.value)
+                    curr_token = next(tokens)
                 else:  # Otherwise error out
                     unexpected(curr_token, "an int, float, string or '['")
             dct[key].append(value)
@@ -611,12 +633,12 @@ def generate_gml(G, stringizer=None):
     GML files are stored using a 7-bit ASCII encoding with any extended
     ASCII characters (iso8859-1) appearing as HTML character entities.
     Without specifying a `stringizer`/`destringizer`, the code is capable of
-    handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
-    specification.  For other data types, you need to explicitly supply a
-    `stringizer`/`destringizer`.
+    writing `int`/`float`/`str`/`dict`/`list` data as required by the GML
+    specification.  For writing other data types, and for reading data other
+    than `str` you need to explicitly supply a `stringizer`/`destringizer`.
 
     For additional documentation on the GML file format, please see the
-    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 
@@ -680,12 +702,17 @@ def generate_gml(G, stringizer=None):
                     yield indent + key + " " + str(value)
             elif isinstance(value, float):
                 text = repr(value).upper()
-                # GML requires that a real literal contain a decimal point, but
-                # repr may not output a decimal point when the mantissa is
-                # integral and hence needs fixing.
-                epos = text.rfind("E")
-                if epos != -1 and text.find(".", 0, epos) == -1:
-                    text = text[:epos] + "." + text[epos:]
+                # GML matches INF to keys, so prepend + to INF. Use repr(float(*))
+                # instead of string literal to future proof against changes to repr.
+                if text == repr(float("inf")).upper():
+                    text = "+" + text
+                else:
+                    # GML requires that a real literal contain a decimal point, but
+                    # repr may not output a decimal point when the mantissa is
+                    # integral and hence needs fixing.
+                    epos = text.rfind("E")
+                    if epos != -1 and text.find(".", 0, epos) == -1:
+                        text = text[:epos] + "." + text[epos:]
                 if key == "label":
                     yield indent + key + ' "' + text + '"'
                 else:
@@ -798,15 +825,15 @@ def write_gml(G, path, stringizer=None):
     GML files are stored using a 7-bit ASCII encoding with any extended
     ASCII characters (iso8859-1) appearing as HTML character entities.
     Without specifying a `stringizer`/`destringizer`, the code is capable of
-    handling `int`/`float`/`str`/`dict`/`list` data as required by the GML
-    specification.  For other data types, you need to explicitly supply a
-    `stringizer`/`destringizer`.
+    writing `int`/`float`/`str`/`dict`/`list` data as required by the GML
+    specification.  For writing other data types, and for reading data other
+    than `str` you need to explicitly supply a `stringizer`/`destringizer`.
 
     Note that while we allow non-standard GML to be read from a file, we make
     sure to write GML format. In particular, underscores are not allowed in
     attribute names.
     For additional documentation on the GML file format, please see the
-    `GML url <http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html>`_.
+    `GML url <https://web.archive.org/web/20190207140002/http://www.fim.uni-passau.de/index.php?id=17297&L=1>`_.
 
     See the module docstring :mod:`networkx.readwrite.gml` for more details.
 

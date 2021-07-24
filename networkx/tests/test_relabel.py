@@ -1,7 +1,7 @@
 import pytest
 import networkx as nx
 from networkx.generators.classic import empty_graph
-from networkx.testing import assert_nodes_equal, assert_edges_equal
+from networkx.utils import nodes_equal, edges_equal
 
 
 class TestRelabel:
@@ -29,7 +29,7 @@ class TestRelabel:
         degH = (d for n, d in H.degree())
         degG = (d for n, d in G.degree())
         assert sorted(degH) == sorted(degG)
-        assert_nodes_equal(H.nodes(), [1000, 1001, 1002, 1003])
+        assert nodes_equal(H.nodes(), [1000, 1001, 1002, 1003])
 
         H = nx.convert_node_labels_to_integers(G, ordering="increasing degree")
         degH = (d for n, d in H.degree())
@@ -92,7 +92,7 @@ class TestRelabel:
         G.add_edges_from([("A", "B"), ("A", "C"), ("B", "C"), ("C", "D")])
         mapping = {"A": "aardvark", "B": "bear", "C": "cat", "D": "dog"}
         H = nx.relabel_nodes(G, mapping)
-        assert_nodes_equal(H.nodes(), ["aardvark", "bear", "cat", "dog"])
+        assert nodes_equal(H.nodes(), ["aardvark", "bear", "cat", "dog"])
 
     def test_relabel_nodes_function(self):
         G = nx.empty_graph()
@@ -103,13 +103,13 @@ class TestRelabel:
             return ord(n)
 
         H = nx.relabel_nodes(G, mapping)
-        assert_nodes_equal(H.nodes(), [65, 66, 67, 68])
+        assert nodes_equal(H.nodes(), [65, 66, 67, 68])
 
     def test_relabel_nodes_graph(self):
         G = nx.Graph([("A", "B"), ("A", "C"), ("B", "C"), ("C", "D")])
         mapping = {"A": "aardvark", "B": "bear", "C": "cat", "D": "dog"}
         H = nx.relabel_nodes(G, mapping)
-        assert_nodes_equal(H.nodes(), ["aardvark", "bear", "cat", "dog"])
+        assert nodes_equal(H.nodes(), ["aardvark", "bear", "cat", "dog"])
 
     def test_relabel_nodes_orderedgraph(self):
         G = nx.OrderedGraph()
@@ -123,39 +123,39 @@ class TestRelabel:
         G = nx.DiGraph([("A", "B"), ("A", "C"), ("B", "C"), ("C", "D")])
         mapping = {"A": "aardvark", "B": "bear", "C": "cat", "D": "dog"}
         H = nx.relabel_nodes(G, mapping, copy=False)
-        assert_nodes_equal(H.nodes(), ["aardvark", "bear", "cat", "dog"])
+        assert nodes_equal(H.nodes(), ["aardvark", "bear", "cat", "dog"])
 
     def test_relabel_nodes_multigraph(self):
         G = nx.MultiGraph([("a", "b"), ("a", "b")])
         mapping = {"a": "aardvark", "b": "bear"}
         G = nx.relabel_nodes(G, mapping, copy=False)
-        assert_nodes_equal(G.nodes(), ["aardvark", "bear"])
-        assert_edges_equal(G.edges(), [("aardvark", "bear"), ("aardvark", "bear")])
+        assert nodes_equal(G.nodes(), ["aardvark", "bear"])
+        assert edges_equal(G.edges(), [("aardvark", "bear"), ("aardvark", "bear")])
 
     def test_relabel_nodes_multidigraph(self):
         G = nx.MultiDiGraph([("a", "b"), ("a", "b")])
         mapping = {"a": "aardvark", "b": "bear"}
         G = nx.relabel_nodes(G, mapping, copy=False)
-        assert_nodes_equal(G.nodes(), ["aardvark", "bear"])
-        assert_edges_equal(G.edges(), [("aardvark", "bear"), ("aardvark", "bear")])
+        assert nodes_equal(G.nodes(), ["aardvark", "bear"])
+        assert edges_equal(G.edges(), [("aardvark", "bear"), ("aardvark", "bear")])
 
     def test_relabel_isolated_nodes_to_same(self):
         G = nx.Graph()
         G.add_nodes_from(range(4))
         mapping = {1: 1}
         H = nx.relabel_nodes(G, mapping, copy=False)
-        assert_nodes_equal(H.nodes(), list(range(4)))
+        assert nodes_equal(H.nodes(), list(range(4)))
 
     def test_relabel_nodes_missing(self):
         G = nx.Graph([("A", "B"), ("A", "C"), ("B", "C"), ("C", "D")])
         mapping = {0: "aardvark"}
         # copy=True
         H = nx.relabel_nodes(G, mapping, copy=True)
-        assert_nodes_equal(H.nodes, G.nodes)
+        assert nodes_equal(H.nodes, G.nodes)
         # copy=False
         GG = G.copy()
         nx.relabel_nodes(G, mapping, copy=False)
-        assert_nodes_equal(G.nodes, GG.nodes)
+        assert nodes_equal(G.nodes, GG.nodes)
 
     def test_relabel_copy_name(self):
         G = nx.Graph()
@@ -181,13 +181,13 @@ class TestRelabel:
     def test_relabel_selfloop(self):
         G = nx.DiGraph([(1, 1), (1, 2), (2, 3)])
         G = nx.relabel_nodes(G, {1: "One", 2: "Two", 3: "Three"}, copy=False)
-        assert_nodes_equal(G.nodes(), ["One", "Three", "Two"])
+        assert nodes_equal(G.nodes(), ["One", "Three", "Two"])
         G = nx.MultiDiGraph([(1, 1), (1, 2), (2, 3)])
         G = nx.relabel_nodes(G, {1: "One", 2: "Two", 3: "Three"}, copy=False)
-        assert_nodes_equal(G.nodes(), ["One", "Three", "Two"])
+        assert nodes_equal(G.nodes(), ["One", "Three", "Two"])
         G = nx.MultiDiGraph([(1, 1)])
         G = nx.relabel_nodes(G, {1: 0}, copy=False)
-        assert_nodes_equal(G.nodes(), [0])
+        assert nodes_equal(G.nodes(), [0])
 
     def test_relabel_multidigraph_inout_merge_nodes(self):
         for MG in (nx.MultiGraph, nx.MultiDiGraph):

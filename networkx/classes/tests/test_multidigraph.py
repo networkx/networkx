@@ -1,5 +1,5 @@
 import pytest
-from networkx.testing import assert_edges_equal
+from networkx.utils import edges_equal
 import networkx as nx
 from .test_multigraph import BaseMultiGraphTester
 from .test_multigraph import TestMultiGraph as _TestMultiGraph
@@ -156,9 +156,9 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         # the result is traversal order dependent so we
         # can't use the is_shallow() test here.
         try:
-            assert_edges_equal(H.edges(), [(0, 1), (1, 2), (2, 0)])
+            assert edges_equal(H.edges(), [(0, 1), (1, 2), (2, 0)])
         except AssertionError:
-            assert_edges_equal(H.edges(), [(0, 1), (1, 2), (1, 2), (2, 0)])
+            assert edges_equal(H.edges(), [(0, 1), (1, 2), (1, 2), (2, 0)])
         H = G.to_undirected()
         self.is_deep(H, G)
 

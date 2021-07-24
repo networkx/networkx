@@ -298,7 +298,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     ----------
     .. [1] Mark E. J. Newman:
        Networks: An Introduction.
-       Oxford University Press, USA, 2010, p. 720.
+       Oxford University Press, USA, 2010, p. 173.
     .. [2] Leo Katz:
        A New Status Index Derived from Sociometric Index.
        Psychometrika 18(1):39–43, 1953
@@ -322,7 +322,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
         except (TypeError, ValueError, AttributeError) as e:
             raise nx.NetworkXError("beta must be a number") from e
 
-    A = nx.adj_matrix(G, nodelist=nodelist, weight=weight).todense().T
+    A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = A.shape[0]
     centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b)
     if normalized:

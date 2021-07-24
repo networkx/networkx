@@ -3,12 +3,12 @@ communities).
 
 """
 
-from functools import wraps
-from itertools import product, combinations
+from itertools import combinations
 
 import networkx as nx
 from networkx import NetworkXError
 from networkx.utils import not_implemented_for
+from networkx.utils.decorators import argmap
 from networkx.algorithms.community.community_utils import is_partition
 
 __all__ = ["coverage", "modularity", "performance", "partition_quality"]
@@ -22,7 +22,7 @@ class NotAPartition(NetworkXError):
         super().__init__(msg)
 
 
-def require_partition(func):
+def _require_partition(G, partition):
     """Decorator to check that a valid partition is input to a function
 
     Raises :exc:`networkx.NetworkXError` if the partition is not valid.
@@ -51,17 +51,12 @@ def require_partition(func):
         networkx.exception.NetworkXError: `partition` is not a valid partition of the nodes of G
 
     """
+    if is_partition(G, partition):
+        return G, partition
+    raise nx.NetworkXError("`partition` is not a valid partition of the nodes of G")
 
-    @wraps(func)
-    def new_func(*args, **kw):
-        # Here we assume that the first two arguments are (G, partition).
-        if not is_partition(*args[:2]):
-            raise nx.NetworkXError(
-                "`partition` is not a valid partition of" " the nodes of G"
-            )
-        return func(*args, **kw)
 
-    return new_func
+require_partition = argmap(_require_partition, (0, 1))
 
 
 def intra_community_edges(G, partition):
@@ -82,7 +77,7 @@ def intra_community_edges(G, partition):
 
 
 def inter_community_edges(G, partition):
-    """Returns the number of inter-community edges for a prtition of `G`.
+    """Returns the number of inter-community edges for a partition of `G`.
     according to the given
     partition of the nodes of `G`.
 
@@ -116,9 +111,12 @@ def inter_community_non_edges(G, partition):
     """Returns the number of inter-community non-edges according to the
     given partition of the nodes of `G`.
 
-    `G` must be a NetworkX graph.
+    Parameters
+    ----------
+    G : NetworkX graph.
 
-    `partition` must be a partition of the nodes of `G`.
+    partition : iterable of sets of nodes
+        This must be a partition of the nodes of `G`.
 
     A *non-edge* is a pair of nodes (undirected if `G` is undirected)
     that are not adjacent in `G`. The *inter-community non-edges* are
@@ -149,8 +147,8 @@ def performance(G, partition):
     .. deprecated:: 2.6
        Use `partition_quality` instead.
 
-    The *performance* of a partition is the ratio of the number of
-    intra-community edges plus inter-community non-edges with the total
+    The *performance* of a partition is the number of
+    intra-community edges plus inter-community non-edges divided by the total
     number of potential edges.
 
     Parameters
@@ -362,8 +360,8 @@ def partition_quality(G, partition):
     The *coverage* of a partition is the ratio of the number of
     intra-community edges to the total number of edges in the graph.
 
-    The *performance* of a partition is the ratio of the number of
-    intra-community edges plus inter-community non-edges with the total
+    The *performance* of a partition is the number of
+    intra-community edges plus inter-community non-edges divided by the total
     number of potential edges.
 
     This algorithm has complexity $O(C^2 + L)$ where C is the number of communities and L is the number of links.

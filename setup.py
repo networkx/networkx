@@ -74,6 +74,7 @@ packages = [
     "networkx.algorithms.connectivity",
     "networkx.algorithms.coloring",
     "networkx.algorithms.flow",
+    "networkx.algorithms.minors",
     "networkx.algorithms.traversal",
     "networkx.algorithms.isomorphism",
     "networkx.algorithms.shortest_paths",
@@ -134,6 +135,7 @@ package_data = {
     "networkx.algorithms.components": ["tests/*.py"],
     "networkx.algorithms.connectivity": ["tests/*.py"],
     "networkx.algorithms.coloring": ["tests/*.py"],
+    "networkx.algorithms.minors": ["tests/*.py"],
     "networkx.algorithms.flow": ["tests/*.py", "tests/*.bz2"],
     "networkx.algorithms.isomorphism": ["tests/*.py", "tests/*.*99"],
     "networkx.algorithms.link_analysis": ["tests/*.py"],
@@ -160,10 +162,10 @@ def parse_requirements_file(filename):
     return requires
 
 
-install_requires = parse_requirements_file("requirements/default.txt")
+install_requires = []
 extras_require = {
     dep: parse_requirements_file("requirements/" + dep + ".txt")
-    for dep in ["developer", "doc", "extra", "test"]
+    for dep in ["default", "developer", "doc", "extra", "test"]
 }
 
 with open("README.rst", "r") as fh:

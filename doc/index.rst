@@ -3,10 +3,14 @@
 Software for Complex Networks
 =============================
 
+.. only:: html
+
+    :Release: |version|
+    :Date: |today|
+
 NetworkX is a Python package for the creation, manipulation, and study
 of the structure, dynamics, and functions of complex networks.
-
-NetworkX provides:
+It provides:
 
 -  tools for the study of the structure and
    dynamics of social, biological, and infrastructure networks;
@@ -22,6 +26,25 @@ With NetworkX you can load and store networks in standard and nonstandard data
 formats, generate many types of random and classic networks, analyze network
 structure, build network models, design new network algorithms, draw networks,
 and much more.
+
+Citing
+------
+
+To cite NetworkX please use the following publication:
+
+Aric A. Hagberg, Daniel A. Schult and Pieter J. Swart,
+`"Exploring network structure, dynamics, and function using NetworkX"
+<http://conference.scipy.org/proceedings/SciPy2008/paper_2/>`_,
+in
+`Proceedings of the 7th Python in Science Conference (SciPy2008)
+<http://conference.scipy.org/proceedings/SciPy2008/index.html>`_, Gäel
+Varoquaux, Travis Vaught, and Jarrod Millman (Eds), (Pasadena, CA
+USA), pp. 11--15, Aug 2008
+
+.. only:: html
+
+   `PDF <http://conference.scipy.org/proceedings/SciPy2008/paper_2/full_text.pdf>`_
+   `BibTeX <http://conference.scipy.org/proceedings/SciPy2008/paper_2/reference.bib>`_
 
 Audience
 --------
@@ -47,48 +70,55 @@ to write basic programs in Python.  Among the many guides to Python, we
 recommend the `Python documentation <https://docs.python.org/3/>`_ and the text
 by Alex Martelli [Martelli03]_.
 
-Free software
--------------
-
-NetworkX is free software; you can redistribute it and/or modify it under the
-terms of the :doc:`3-clause BSD License </license>`.  We welcome contributions.
-Join us on `GitHub <https://github.com/networkx/networkx>`_.
-
-History
+License
 -------
 
-NetworkX was born in May 2002. The original version was designed and written by
-Aric Hagberg, Dan Schult, and Pieter Swart in 2002 and 2003.  The first public
-release was in April 2005.
-Many people have contributed to the success of NetworkX. Some of the
-contributors are listed in the :doc:`credits. <credits>`
+.. include:: ../LICENSE.txt
 
-Documentation
--------------
+Bibliography
+------------
 
-.. only:: html
+.. [BA02] R. Albert and A.-L. Barabási, "Statistical mechanics of complex
+   networks", Reviews of Modern Physics, 74, pp. 47-97, 2002.
+   https://arxiv.org/abs/cond-mat/0106096
 
-    :Release: |version|
-    :Date: |today|
+.. [Bollobas01] B. Bollobás, "Random Graphs", Second Edition,
+   Cambridge University Press, 2001.
+
+.. [BE05] U. Brandes and T. Erlebach, "Network Analysis:
+   Methodological Foundations", Lecture Notes in Computer Science,
+   Volume 3418, Springer-Verlag, 2005.
+
+.. [Diestel97] R. Diestel, "Graph Theory", Springer-Verlag, 1997.
+   http://diestel-graph-theory.com/index.html
+
+.. [DM03] S.N. Dorogovtsev and J.F.F. Mendes, "Evolution of Networks",
+   Oxford University Press, 2003.
+
+.. [Martelli03]  A. Martelli, "Python in a Nutshell", O'Reilly Media
+   Inc, 2003.
+
+.. [Newman03] M.E.J. Newman, "The Structure and Function of Complex
+   Networks", SIAM Review, 45, pp. 167-256, 2003.
+   http://epubs.siam.org/doi/abs/10.1137/S003614450342480
+
+.. [Sedgewick02] R. Sedgewick, "Algorithms in C: Parts 1-4:
+   Fundamentals, Data Structure, Sorting, Searching", Addison Wesley
+   Professional, 3rd ed., 2002.
+
+.. [Sedgewick01] R. Sedgewick, "Algorithms in C, Part 5: Graph Algorithms",
+   Addison Wesley Professional, 3rd ed., 2001.
+
+.. [West01] D. B. West, "Introduction to Graph Theory", Prentice Hall,
+    2nd ed., 2001.
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
    install
    tutorial
-   auto_examples/index
    reference/index
+   release/index
    developer/index
-   news
-   license
-   credits
-   citing
-   bibliography
-
-Indices and tables
-------------------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-* :ref:`glossary`
+   auto_examples/index

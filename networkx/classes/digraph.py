@@ -14,6 +14,8 @@ from networkx.classes.reportviews import (
 from networkx.exception import NetworkXError
 import networkx.convert as convert
 
+__all__ = ["DiGraph"]
+
 
 class DiGraph(Graph):
     """
@@ -414,6 +416,8 @@ class DiGraph(Graph):
         doesn't change on mutables.
         """
         if node_for_adding not in self._succ:
+            if node_for_adding is None:
+                raise ValueError("None cannot be a node")
             self._succ[node_for_adding] = self.adjlist_inner_dict_factory()
             self._pred[node_for_adding] = self.adjlist_inner_dict_factory()
             attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
@@ -475,6 +479,8 @@ class DiGraph(Graph):
                 newdict = attr.copy()
                 newdict.update(ndict)
             if newnode:
+                if n is None:
+                    raise ValueError("None cannot be a node")
                 self._succ[n] = self.adjlist_inner_dict_factory()
                 self._pred[n] = self.adjlist_inner_dict_factory()
                 self._node[n] = self.node_attr_dict_factory()
@@ -612,10 +618,14 @@ class DiGraph(Graph):
         u, v = u_of_edge, v_of_edge
         # add nodes
         if u not in self._succ:
+            if u is None:
+                raise ValueError("None cannot be a node")
             self._succ[u] = self.adjlist_inner_dict_factory()
             self._pred[u] = self.adjlist_inner_dict_factory()
             self._node[u] = self.node_attr_dict_factory()
         if v not in self._succ:
+            if v is None:
+                raise ValueError("None cannot be a node")
             self._succ[v] = self.adjlist_inner_dict_factory()
             self._pred[v] = self.adjlist_inner_dict_factory()
             self._node[v] = self.node_attr_dict_factory()
@@ -673,10 +683,14 @@ class DiGraph(Graph):
             else:
                 raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
             if u not in self._succ:
+                if u is None:
+                    raise ValueError("None cannot be a node")
                 self._succ[u] = self.adjlist_inner_dict_factory()
                 self._pred[u] = self.adjlist_inner_dict_factory()
                 self._node[u] = self.node_attr_dict_factory()
             if v not in self._succ:
+                if v is None:
+                    raise ValueError("None cannot be a node")
                 self._succ[v] = self.adjlist_inner_dict_factory()
                 self._pred[v] = self.adjlist_inner_dict_factory()
                 self._node[v] = self.node_attr_dict_factory()
@@ -1165,9 +1179,9 @@ class DiGraph(Graph):
         """
         graph_class = self.to_undirected_class()
         if as_view is True:
-            return nx.graphviews.generic_graph_view(self, Graph)
+            return nx.graphviews.generic_graph_view(self, graph_class)
         # deepcopy when not a view
-        G = Graph()
+        G = graph_class()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         if reciprocal is True:

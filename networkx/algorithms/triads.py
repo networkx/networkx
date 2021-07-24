@@ -332,7 +332,7 @@ def triad_type(G):
     ----------
     .. [1] Snijders, T. (2012). "Transitivity and triads." University of
         Oxford.
-        http://www.stats.ox.ac.uk/snijders/Trans_Triads_ha.pdf
+        https://web.archive.org/web/20170830032057/http://www.stats.ox.ac.uk/~snijders/Trans_Triads_ha.pdf
     """
     if not is_triad(G):
         raise nx.NetworkXAlgorithmError("G is not a triad (order-3 DiGraph)")
@@ -395,7 +395,7 @@ def random_triad(G):
     G2 : subgraph
        A randomly selected triad (order-3 NetworkX DiGraph)
     """
-    nodes = sample(G.nodes(), 3)
+    nodes = sample(list(G.nodes()), 3)
     G2 = G.subgraph(nodes)
     return G2
 

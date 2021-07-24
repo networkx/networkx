@@ -978,7 +978,7 @@ def LFR_benchmark_graph(
     .. [1] "Benchmark graphs for testing community detection algorithms",
            Andrea Lancichinetti, Santo Fortunato, and Filippo Radicchi,
            Phys. Rev. E 78, 046110 2008
-    .. [2] http://santo.fortunato.googlepages.com/inthepress2
+    .. [2] https://www.santofortunato.net/resources
 
     """
     # Perform some basic parameter validation.

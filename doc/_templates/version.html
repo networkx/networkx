@@ -1,0 +1,13 @@
+<ul class="navbar-nav">
+    <li class="mr-2 dropdown">
+        <button type="button" class="btn btn-version btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+            v{{ release }}
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+            {%- for ver, txt in versions_dropdown.items() %}
+            <li><a href="https://networkx.org/documentation/{{ ver }}/index.html">{{ txt }}</a></li>
+            {%- endfor %}
+        </ul>
+    </li>
+</ul>
