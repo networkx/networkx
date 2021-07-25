@@ -213,8 +213,7 @@ def _convert_multigraph(G, weight):
     """Convert a Multigraph to normal Graph"""
     H = nx.Graph()
     H.add_nodes_from(G)
-    for u, v, data in G.edges(data=True):
-        wt = data.get(weight, 1)
+    for u, v, wt in G.edges(data=weight, default=1):
         if H.has_edge(u, v):
             H[u][v]["weight"] += wt
         else:
