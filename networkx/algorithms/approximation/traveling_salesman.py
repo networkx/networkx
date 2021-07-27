@@ -681,7 +681,43 @@ def held_karp_ascent(G, weight="weight"):
     return next(k_max.__iter__()).size(weight), z_star
 
 
-def _spanning_tree_distribution(G, z):
+def krichhoffs(G, weight=None):
+    """
+    Apply Krichhoff's Tree Matrix Theorem a graph.
+
+    The theorem states that the determinant of any cofactor of the Laplacian
+    matrix of a graph is the number of spanning trees in the graph. For a
+    weighted Laplacian matrix, it is the sum across all spanning trees of the
+    multiplicative weight of each tree. That is, the weight of each tree is the
+    product of its edge weights.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        The graph to use Krichhoff's theorem on.
+    weight : string or None
+        The key for the edge attribute holding the edge weight. If `None`, then
+        each edge is assumed to have a weight of one.
+
+    Returns
+    -------
+    float
+        The sum of the total multiplicative weight for all spanning trees in the
+        graph.
+    """
+    import numpy as np
+
+    G_laplacian = nx.laplacian_matrix(G, weight=weight).toarray()
+    # Delete the first row and column from both laplacian matrices
+    # Since I need to delete a row and a column, two calls to numpy are
+    # needed
+    G_laplacian = np.delete(G_laplacian, 0, 0)
+    G_laplacian = np.delete(G_laplacian, 0, 1)
+
+    return abs(np.linalg.det(G_laplacian))
+
+
+def spanning_tree_distribution(G, z):
     """
     Solves the Maximum Entropy Convex Program in the Asadpour algorithm [1]_
     using the approach in section 7 to build an exponential distribution of
@@ -707,7 +743,6 @@ def _spanning_tree_distribution(G, z):
         The probability distribution which approximately preserves the marginal
         probabilities of `z`.
     """
-    import numpy as np
     from math import exp
     from math import log as ln
     import random
@@ -730,28 +765,13 @@ def _spanning_tree_distribution(G, z):
         # Create the laplacian matrices
         for u, v, d in G.edges(data=True):
             d[lambda_key] = exp(gamma[(u, v)])
-        G_laplacian = nx.laplacian_matrix(G, weight=lambda_key).toarray()
+        G_Krichhoff = krichhoffs(G, lambda_key)
         G_e = nx.contracted_edge(G, e, self_loops=False)
-        G_e_laplacian = nx.laplacian_matrix(G_e, weight=lambda_key).toarray()
+        G_e_Krichhoff = krichhoffs(G_e, lambda_key)
 
-        # Delete the first row and column from both laplacian matrices
-        # Since I need to delete a row and a column, two calls to numpy are
-        # needed
-        G_laplacian = np.delete(G_laplacian, 0, 0)
-        G_laplacian = np.delete(G_laplacian, 0, 1)
-        G_e_laplacian = np.delete(G_e_laplacian, 0, 0)
-        G_e_laplacian = np.delete(G_e_laplacian, 0, 1)
-
-        # Find the determinant of the cofactor matrices
-        det_G_laplacian = np.linalg.det(G_laplacian)
-        det_G_e_laplacian = np.linalg.det(G_e_laplacian)
-
-        # delete the old data
-        # del G_laplacian, G_e, G_e_laplacian
-
-        solution = abs(det_G_e_laplacian) / abs(det_G_laplacian)
-        solution *= exp(gamma[(e[0], e[1])])
-        return solution
+        # Multiply by the weight of the contracted edge since it is not included
+        # in the total weight of the contracted graph.
+        return exp(gamma[(e[0], e[1])]) * G_e_Krichhoff / G_Krichhoff
 
     # initialize gamma to the zero dict
     gamma = {}
@@ -800,7 +820,7 @@ def _spanning_tree_distribution(G, z):
     return gamma
 
 
-def _sample_spanning_tree(G, gamma):
+def sample_spanning_tree(G, lambda_key):
     """
     Sample one spanning tree from the distribution defined by `gamma`,
     roughly using algorithm A8 in [1]_ .
@@ -810,18 +830,20 @@ def _sample_spanning_tree(G, gamma):
     edges which where added to the tree. Probabilities are calculated using
     Kirchhoff's Matrix Tree Theorem and a weighted Laplacian matrix.
 
+    At each iteration, we contract the edges we have decided to include in the
+    sampled tree and delete those which we have decided not to include.
+
     Parameters
     ----------
-    G : nx.DiGraph
+    G : nx.Graph
         An undirected version of the original graph.
 
-    gamma : dict
-        The probabilities associated with each of the edges in the undirected
-        graph `G`.
+    lambda_key : string
+        The edge key for the edge attribute holding edge weight.
 
     Returns
     -------
-    nx.DiGraph
+    nx.Graph
         A spanning tree using the distribution defined by `gamma`.
 
     References
@@ -829,7 +851,122 @@ def _sample_spanning_tree(G, gamma):
     .. [1] V. Kulkarni, Generating random combinatorial objects, Journal of
        algorithms, 11 (1990), pp. 185–207
     """
-    pass
+    import random
+    import sys
+
+    seed = random.randrange(sys.maxsize)
+    random.seed(seed)
+    # print(f"\nseed was: {seed}")
+
+    def find_node(merged_nodes, n):
+        """
+        We can think of clusters of contracted nodes as having one
+        representative in the graph. Each node which is not in merged_nodes
+        is still its own representative. Since a representative can be later
+        contracted, we need to recursively search though the dict to find
+        the final representative, but only we know it we can use path
+        compression speed the access of the representative for next time.
+
+        Parameters
+        ----------
+        merged_nodes : dict
+            The dict storing the mapping from node to representative
+        n
+            The node whose representative we seek
+
+        Returns
+        -------
+        The representative of the `n`
+        """
+        if n not in merged_nodes:
+            return n
+        else:
+            rep = find_node(merged_nodes, merged_nodes[n])
+            merged_nodes[n] = rep
+            return rep
+
+    def prepare_graph():
+        """
+        For the graph `G`, remove all edges not in the set `V` and then
+        contract all edges in the set `U`.
+
+        Returns
+        -------
+        A copy of `G` which has had all edges not in `V` removed and all edges
+        in `U` contracted.
+        """
+
+        # The result is a MultiGraph version of G so that parallel edges are
+        # allowed during edge contraction
+        result = nx.MultiGraph(incoming_graph_data=G)
+
+        # Remove all edges not in V
+        edges_to_remove = set(result.edges()).difference(V)
+        result.remove_edges_from(edges_to_remove)
+
+        # Contract all edges in U
+        #
+        # Imagine that you have two edges to contract and they share an
+        # endpoint like this: [0] ----- [1] ----- [2] If we contract (0,
+        # 1) first, the contraction function will always delete the second
+        # node it is passed so the resulting graph would be [0] ----- [2] and
+        # edge (1, 2) no longer exists but (0, 2) would need to be contracted
+        # in its place now. That is why I use the below dict as a merge-find
+        # data structure with path compression to track how the nodes are
+        # merged.
+        merged_nodes = {}
+
+        for u, v in U:
+            u_rep = find_node(merged_nodes, u)
+            v_rep = find_node(merged_nodes, v)
+            # We cannot contract a node with itself
+            if u_rep == v_rep:
+                continue
+            nx.contracted_nodes(result, u_rep, v_rep, self_loops=False, copy=False)
+            merged_nodes[v_rep] = u_rep
+
+        return merged_nodes, result
+
+    U = set()
+    V = set(G.edges())
+    shuffled_edges = list(G.edges())
+    random.shuffle(shuffled_edges)
+
+    for u, v in shuffled_edges:
+        node_map, prepared_G = prepare_graph()
+        G_total_tree_weight = krichhoffs(prepared_G, lambda_key)
+        # Add the edge to U so that we can compute the total tree weight
+        # assuming we include that edge
+        U.add((u, v))
+        # Now, if (u, v) cannot exist in G because it is fully contracted out
+        # of existence, then it by definition cannot influence G_e's krichhoff
+        # value. But, we also cannot pick it.
+        _, prepared_G_e = prepare_graph()
+        rep_edge = (find_node(node_map, u), find_node(node_map, v))
+        # Check to see if the 'representative edge' for the current edge is
+        # in prepared_G. If so, then we can pick it.
+        if rep_edge in prepared_G.edges:
+            G_e_total_tree_weight = krichhoffs(prepared_G_e, lambda_key)
+        else:
+            G_e_total_tree_weight = 0.0
+        z = random.uniform(0.0, 1.0)
+        # This will be useful if I move this random spanning tree method to
+        # the boarder NetworkX library
+        e_weight = G[u][v][lambda_key] if lambda_key is not None else 1
+        # print(f"U = {U}, V = {V}")
+        # print(f"e = ({u}, {v}), z = {round(z, 4)}, edge probability = {round(e_weight * G_e_total_tree_weight / G_total_tree_weight, 4)}")
+        # print(f"probability breakdown: {round(e_weight, 4)} * {round(G_e_total_tree_weight, 4)} / {round(G_total_tree_weight, 4)}\n")
+        if z > e_weight * G_e_total_tree_weight / G_total_tree_weight:
+            # Remove the edge from U since we did not decide to include it in
+            # the sampled spanning tree. Also remove the edge from V because if
+            # we did not decide to include it we must reject it.
+            U.remove((u, v))
+            V.remove((u, v))
+        # If we decide to keep an edge, it may complete the spanning tree.
+        elif len(U) == G.number_of_nodes() - 1:
+            spanning_tree = nx.Graph()
+            spanning_tree.add_edges_from(U)
+            return spanning_tree
 
 
 def greedy_tsp(G, weight="weight", source=None):
