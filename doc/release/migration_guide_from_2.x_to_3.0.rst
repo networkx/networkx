@@ -6,8 +6,7 @@ Preparing for the 3.0 release
 
 .. note::
    Much of the work leading to the NetworkX 3.0 release will be included
-   in the NetworkX 2.6 and 2.7 releases.  For example, we are changing our
-   default dependencies in the 2.6 release and we are deprecating a lot
+   in the NetworkX 2.6 and 2.7 releases.  For example, we are deprecating a lot
    of old code in the 2.6 and 2.7 releases.  This guide will discuss this
    ongoing work and will help you understand what changes you can make now
    to minimize the disruption caused by the move to 3.0.
@@ -25,17 +24,6 @@ Default dependencies
 --------------------
 
 We no longer depend on the "decorator" library.
-
-NumPy, SciPy, Matplotlib, and Pandas are now default dependencies due to their
-central position in the scientific Python ecosystem and the fact that they
-provide self-contained, easy to install wheels for pip.
-While we've made these core libraries of the scientific Python ecosystem default dependencies,
-much of NetworkX still works without these libraries and we expect that to continue.
-Be assured that we test NetworkX with and without the dependencies,
-so if you do **not** use functions that depend on external libraries
-you can install NetworkX using pip with the `--no-deps` flag::
-
-    $ pip install networkx --no-deps
 
 Deprecated code
 ---------------
