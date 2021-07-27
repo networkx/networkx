@@ -23,9 +23,8 @@ Highlights
 This release is the result of 11 months of work with over 363 pull requests by
 91 contributors. Highlights include:
 
-- Dropped support for Python 3.6.
-- NumPy, SciPy, Matplotlib, and pandas are now default requirements.
-- NetworkX no longer depends on the library "decorator".
+- Dropped support for Python 3.6
+- Dropped "decorator" library dependency
 - Improved example gallery
 - Removed code for supporting Jython/IronPython
 - The ``__str__`` method for graph objects is more informative and concise.
