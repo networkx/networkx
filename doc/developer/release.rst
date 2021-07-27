@@ -100,7 +100,7 @@ Release Process
 
  - Commit and push changes::
 
-    git add networkx/release.py doc/_templates/layout.html
+    git add networkx/__init__.py doc/_templates/layout.html
     git commit -m "Bump release version"
     git push upstream main
 
