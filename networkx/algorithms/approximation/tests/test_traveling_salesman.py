@@ -769,6 +769,40 @@ def test_spanning_tree_sample():
             continue
         G.add_edge(u, v, lambda_key=exp(gamma[(u, v)]))
 
-    for _ in range(1000):
+    # Find the expected probability for each tree. Normalize the data
+    total_weight = 0
+    trees = {}
+    for t in nx.SpanningTreeIterator(G):
+        # Find the multiplicative weight of the spanning tree
+        weight = 1
+        for u, v, d in t.edges(data="lambda_key"):
+            weight *= d
+        trees[t] = weight
+        total_weight += weight
+
+    assert len(trees) == 75
+
+    tree_frequency = {}
+    for t in trees:
+        trees[t] /= total_weight
+        tree_frequency[t] = 0
+
+    # Sample 1000 spanning trees and record tree frequencies
+    sample_size = 50000
+    for _ in range(sample_size):
         sampled_tree = tsp.sample_spanning_tree(G, "lambda_key")
         assert nx.is_tree(sampled_tree)
+
+        for t in trees:
+            if nx.utils.edges_equal(t.edges, sampled_tree.edges):
+                tree_frequency[t] += 1 / sample_size
+
+    # print both tree_frequency and trees probability
+    print()
+    for t in trees:
+        expected = round(trees[t], 4)
+        actual = round(tree_frequency[t], 4)
+        error = (actual - expected) / expected
+        print(
+            f"Expected probability: {expected}, Actual probability: {actual}, Error: {error * 100}%"
+        )

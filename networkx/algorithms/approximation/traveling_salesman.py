@@ -907,13 +907,14 @@ def sample_spanning_tree(G, lambda_key):
         # Contract all edges in U
         #
         # Imagine that you have two edges to contract and they share an
-        # endpoint like this: [0] ----- [1] ----- [2] If we contract (0,
-        # 1) first, the contraction function will always delete the second
-        # node it is passed so the resulting graph would be [0] ----- [2] and
-        # edge (1, 2) no longer exists but (0, 2) would need to be contracted
+        # endpoint like this:
+        #                        [0] ----- [1] ----- [2]
+        # If we contract (0, 1) first, the contraction function will always
+        # delete the second node it is passed so the resulting graph would be
+        #                             [0] ----- [2]
+        # and edge (1, 2) no longer exists but (0, 2) would need to be contracted
         # in its place now. That is why I use the below dict as a merge-find
-        # data structure with path compression to track how the nodes are
-        # merged.
+        # data structure with path compression to track how the nodes are merged.
         merged_nodes = {}
 
         for u, v in U:
@@ -953,9 +954,6 @@ def sample_spanning_tree(G, lambda_key):
         # This will be useful if I move this random spanning tree method to
         # the boarder NetworkX library
         e_weight = G[u][v][lambda_key] if lambda_key is not None else 1
-        # print(f"U = {U}, V = {V}")
-        # print(f"e = ({u}, {v}), z = {round(z, 4)}, edge probability = {round(e_weight * G_e_total_tree_weight / G_total_tree_weight, 4)}")
-        # print(f"probability breakdown: {round(e_weight, 4)} * {round(G_e_total_tree_weight, 4)} / {round(G_total_tree_weight, 4)}\n")
         if z > e_weight * G_e_total_tree_weight / G_total_tree_weight:
             # Remove the edge from U since we did not decide to include it in
             # the sampled spanning tree. Also remove the edge from V because if
