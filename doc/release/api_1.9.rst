@@ -201,7 +201,7 @@ Other new functionalities
   added to provide link prediction-related functionalities.
 
 * Write Support for the graph6 and sparse6 formats is added in the read/write
-  package (:samp:`networx.readwrite`).
+  package (:samp:`networkx.readwrite`).
 
 * A :samp:`goldberg_radzik` function is added in the shortest path package
   (:samp:`networkx.algorithms.shortest_paths`) for computing shortest paths
