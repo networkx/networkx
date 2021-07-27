@@ -22,12 +22,9 @@ Release Process
 
   7. Add ``release_<major>.<minor>`` to ``doc/release/index.rst``.
 
-- Delete the following from ``doc/_templates/layout.html``::
+- Delete developer banner on docs::
 
-    {% block document %}
-      {% include "dev_banner.html" %}
-      {{ super() }}
-    {% endblock %}
+   git rm doc/_templates/layout.html
 
 - Update ``__version__`` in ``networkx/__init__.py``.
 
@@ -92,7 +89,9 @@ Release Process
 
 - Update ``__version__`` in ``networkx/__init__.py``.
 
-- Append the following to ``doc/_templates/layout.html``::
+- Create ``doc/_templates/layout.html`` with::
+
+    {% extends "!layout.html" %}
 
     {% block document %}
       {% include "dev_banner.html" %}
