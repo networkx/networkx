@@ -42,7 +42,6 @@ nx.draw_networkx(
     G,
     pos,
     with_labels=True,
-    nodelist=set(cycle),
     edgelist=edge_list,
     edge_color="red",
     node_size=200,
