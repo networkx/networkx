@@ -2,7 +2,6 @@
 Algorithm"""
 
 from collections import deque, defaultdict
-import random
 
 import networkx as nx
 from networkx.algorithms.community import modularity
@@ -12,7 +11,9 @@ __all__ = ["louvain_communities", "generate_dendrogram"]
 
 
 @py_random_state("seed")
-def louvain_communities(G, weight="weight", threshold=0.0000001, seed=None):
+def louvain_communities(
+    G, weight="weight", resolution=1, threshold=0.0000001, seed=None
+):
     r"""Find the best partition of G using the Louvain Community Detection
     Algorithm.
 
@@ -25,11 +26,12 @@ def louvain_communities(G, weight="weight", threshold=0.0000001, seed=None):
     easily be calculated by the following formula:
 
     .. math::
-        \Delta Q = \frac{k_{i,in}}{2m} - \frac{ \Sigma_{tot} \cdot k_i}{2m^2}
+        \Delta Q = \frac{k_{i,in}}{2m} - \gamma\frac{ \Sigma_{tot} \cdot k_i}{2m^2}
 
     where $m$ is the size of the graph, $k_{i,in}$ is the sum of the weights of the links
-    from $i$ to nodes in $C$, $k_i$ is the sum of the weights of the links incident to node $i$
-    and \Sigma_{tot} is the sum of the weights of the links incident to nodes in $C$.
+    from $i$ to nodes in $C$, $k_i$ is the sum of the weights of the links incident to node $i$,
+    $\Sigma_{tot}$ is the sum of the weights of the links incident to nodes in $C$ and $\gamma$
+    is the resolution parameter.
 
     The first phase continues until no individual move can improve the modularity.
 
@@ -48,6 +50,9 @@ def louvain_communities(G, weight="weight", threshold=0.0000001, seed=None):
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If None then each edge has weight 1.
+    resolution : float, optional (default=1)
+        If resolution is less than 1, the algorithm favors larger communities.
+        Greater than 1 favors smaller communities
     threshold : float, optional (default=0.0000001)
         Modularity gain threshold for each level. If the gain of modularity
         between 2 levels of the algorithm is less than the given threshold
@@ -62,19 +67,31 @@ def louvain_communities(G, weight="weight", threshold=0.0000001, seed=None):
         A list of sets (partition of `G`). Each set represents one community and contains
         all the nodes that constitute it.
 
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> import networkx.algorithms.community as nx_comm
+    >>> G = nx.petersen_graph()
+    >>> nx_comm.louvain_communities(G, seed=123)
+    [{0, 4, 5, 7, 9}, {1, 2, 3, 6, 8}]
+
     References
     ----------
     .. [1] Blondel, V.D. et al. Fast unfolding of communities in
        large networks. J. Stat. Mech 10008, 1-12(2008)
+    .. [2] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
+       well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
     """
 
-    d = generate_dendrogram(G, weight, threshold, seed)
+    d = generate_dendrogram(G, weight, resolution, threshold, seed)
     q = deque(d, maxlen=1)
     return q.pop()
 
 
 @py_random_state("seed")
-def generate_dendrogram(G, weight="weight", threshold=0.0000001, seed=None):
+def generate_dendrogram(
+    G, weight="weight", resolution=1, threshold=0.0000001, seed=None
+):
     """Compute the communities in G and generate the associated dendrogram
 
     A dendrogram is a diagram representing a tree and each level represents
@@ -91,6 +108,9 @@ def generate_dendrogram(G, weight="weight", threshold=0.0000001, seed=None):
     weight : string or None, optional (default="weight")
      The name of an edge attribute that holds the numerical value
      used as a weight. If None then each edge has weight 1.
+    resolution : float, optional (default=1)
+        If resolution is less than 1, the algorithm favors larger communities.
+        Greater than 1 favors smaller communities
     threshold : float, optional (default=0.0000001)
      Modularity gain threshold for each level. If the gain of modularity
      between 2 levels of the algorithm is less than the given threshold
@@ -112,7 +132,7 @@ def generate_dendrogram(G, weight="weight", threshold=0.0000001, seed=None):
     """
 
     partition = [{u} for u in G.nodes()]
-    mod = modularity(G, partition, weight=weight)
+    mod = modularity(G, partition, resolution=resolution, weight=weight)
     if G.is_multigraph():
         graph = _convert_multigraph(G, weight)
     else:
@@ -122,17 +142,21 @@ def generate_dendrogram(G, weight="weight", threshold=0.0000001, seed=None):
 
     m = graph.size(weight="weight")
     while True:
-        partition, inner_partition, improvement = _one_level(graph, m, partition, seed)
+        partition, inner_partition, improvement = _one_level(
+            graph, m, partition, resolution, seed
+        )
         if not improvement:
             break
-        new_mod = modularity(graph, inner_partition, weight="weight")
+        new_mod = modularity(
+            graph, inner_partition, resolution=resolution, weight="weight"
+        )
         if new_mod - mod <= threshold:
             break
         graph = _gen_graph(graph, inner_partition)
         yield partition
 
 
-def _one_level(G, m, partition, seed=None):
+def _one_level(G, m, partition, resolution=1, seed=None):
     """Calculate one level of the tree
 
     Input `m` is the size of the graph `G`.
@@ -157,7 +181,7 @@ def _one_level(G, m, partition, seed=None):
             degree = degrees[u]
             total_weights[best_com] -= degree
             for nbr_com, wt in weights2com.items():
-                gain = wt - (total_weights[nbr_com] * degree) / m
+                gain = wt - resolution * (total_weights[nbr_com] * degree) / m
                 if gain > best_mod:
                     best_mod = gain
                     best_com = nbr_com
@@ -177,7 +201,7 @@ def _one_level(G, m, partition, seed=None):
 
 
 def _neighbor_weights(node, nbrs, node2com):
-    """Calculate weights between node its neighbor communities.
+    """Calculate weights between node and its neighbor communities.
 
     Input `nbrs` should be a dict of the node's neighbors.
 
