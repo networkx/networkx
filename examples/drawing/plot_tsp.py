@@ -32,7 +32,7 @@ for i in range(len(pos)):
         G.add_edge(i, j, weight=dist)
 
 cycle = nx_app.christofides(G, weight="weight")
-edge_list = [(x1, x2) for x1, x2 in nx.utils.pairwise(cycle)]
+edge_list = list(nx.utils.pairwise(cycle))
 
 # Draw closest edges on each node only
 nx.draw_networkx_edges(H, pos, edge_color="blue", width=0.5)
