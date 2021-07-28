@@ -19,7 +19,7 @@ G = nx.random_geometric_graph(20, radius=0.4, seed=3)
 pos = nx.get_node_attributes(G, "pos")
 
 # Depot should be at (0,0)
-pos[0][0], pos[0][1] = 0.5, 0.5
+pos[0] = (0.5, 0.5)
 
 H = G.copy()
 
