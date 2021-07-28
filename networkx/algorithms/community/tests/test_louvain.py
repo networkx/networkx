@@ -91,11 +91,9 @@ def test_resolution():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
-    comms = []
-    for c in G.nodes.data():
-        if c[1]["community"] not in comms:
-            comms.append(c[1]["community"])
 
-    partition = louvain_communities(G, resolution=0.5, seed=12)
+    partition1 = louvain_communities(G, resolution=0.5, seed=12)
+    partition2 = louvain_communities(G, seed=12)
+    partition3 = louvain_communities(G, resolution=2, seed=12)
 
-    assert comms == partition
+    assert len(partition1) <= len(partition2) <= len(partition3)
