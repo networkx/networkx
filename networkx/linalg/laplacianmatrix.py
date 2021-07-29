@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 
-# @not_implemented_for("directed")
+@not_implemented_for("directed")
 def laplacian_matrix(G, nodelist=None, weight="weight"):
     """Returns the Laplacian matrix of G.
 
