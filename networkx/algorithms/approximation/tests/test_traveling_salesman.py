@@ -812,7 +812,7 @@ def test_spanning_tree_sample():
                 tree_actual[t] += 1
 
     # Conduct a Chi squared test to see if the actual distribution matches the
-    # expected one at an alpha = 0.05 significance level.
+    # expected one at an alpha = 0.01 significance level.
     #
     # H_0: The distribution of trees in tree_actual matches the normalized product
     # of the edge weights in the tree.
@@ -823,4 +823,4 @@ def test_spanning_tree_sample():
 
     # Assert that p is greater than the significance level so that we do not
     # reject the null hypothesis
-    assert not p < 0.05
+    assert not p < 0.01
