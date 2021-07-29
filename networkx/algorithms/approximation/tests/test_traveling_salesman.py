@@ -785,14 +785,15 @@ def test_spanning_tree_sample():
     assert len(tree_expected) == 75
 
     # Set the sample size and then calculate the expected number of times we
-    # expect to see each tree. This test uses the minimum sample size of
-    # 5 * the number of trees.
+    # expect to see each tree. This test uses a near minimum sample size where
+    # the most unlikely tree has an expected frequency of 5.15.
+    # (Minimum required is 5)
     #
     # Here we also initialize the tree_actual dict so that we know the keys
     # match between the two. We will later take advantage of the fact that since
     # python 3.7 dict order is guaranteed so the expected and actual data will
     # have the same order.
-    sample_size = 375
+    sample_size = 1200
     tree_actual = {}
     for t in tree_expected:
         tree_expected[t] = (tree_expected[t] / total_weight) * sample_size
@@ -811,7 +812,7 @@ def test_spanning_tree_sample():
                 tree_actual[t] += 1
 
     # Conduct a Chi squared test to see if the actual distribution matches the
-    # expected one at an alpha = 0.01 significance level.
+    # expected one at an alpha = 0.05 significance level.
     #
     # H_0: The distribution of trees in tree_actual matches the normalized product
     # of the edge weights in the tree.
@@ -822,4 +823,4 @@ def test_spanning_tree_sample():
 
     # Assert that p is greater than the significance level so that we do not
     # reject the null hypothesis
-    assert not p < 0.01
+    assert not p < 0.05
