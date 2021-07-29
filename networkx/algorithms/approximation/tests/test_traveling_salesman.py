@@ -749,6 +749,7 @@ def test_spanning_tree_sample():
     from math import exp
 
     pytest.importorskip("numpy")
+    stats = pytest.importorskip("scipy.stats")
 
     gamma = {
         (0, 1): -0.6383,
@@ -769,40 +770,56 @@ def test_spanning_tree_sample():
             continue
         G.add_edge(u, v, lambda_key=exp(gamma[(u, v)]))
 
-    # Find the expected probability for each tree. Normalize the data
+    # Find the multiplicative weight for each tree.
     total_weight = 0
-    trees = {}
+    tree_expected = {}
     for t in nx.SpanningTreeIterator(G):
         # Find the multiplicative weight of the spanning tree
         weight = 1
         for u, v, d in t.edges(data="lambda_key"):
             weight *= d
-        trees[t] = weight
+        tree_expected[t] = weight
         total_weight += weight
 
-    assert len(trees) == 75
+    # Assert that every tree has an entry in the expected distribution
+    assert len(tree_expected) == 75
 
-    tree_frequency = {}
-    for t in trees:
-        trees[t] /= total_weight
-        tree_frequency[t] = 0
+    # Set the sample size and then calculate the expected number of times we
+    # expect to see each tree. This test uses the minimum sample size of
+    # 5 * the number of trees.
+    #
+    # Here we also initialize the tree_actual dict so that we know the keys
+    # match between the two. We will later take advantage of the fact that since
+    # python 3.7 dict order is guaranteed so the expected and actual data will
+    # have the same order.
+    sample_size = 375
+    tree_actual = {}
+    for t in tree_expected:
+        tree_expected[t] = (tree_expected[t] / total_weight) * sample_size
+        tree_actual[t] = 0
 
-    # Sample 1000 spanning trees and record tree frequencies
-    sample_size = 50000
+    # Sample the spanning trees
+    #
+    # Assert that they are actually trees and record which of the 75 trees we
+    # have sampled
     for _ in range(sample_size):
         sampled_tree = tsp.sample_spanning_tree(G, "lambda_key")
         assert nx.is_tree(sampled_tree)
 
-        for t in trees:
+        for t in tree_expected:
             if nx.utils.edges_equal(t.edges, sampled_tree.edges):
-                tree_frequency[t] += 1 / sample_size
+                tree_actual[t] += 1
 
-    # print both tree_frequency and trees probability
-    print()
-    for t in trees:
-        expected = round(trees[t], 4)
-        actual = round(tree_frequency[t], 4)
-        error = (actual - expected) / expected
-        print(
-            f"Expected probability: {expected}, Actual probability: {actual}, Error: {error * 100}%"
-        )
+    # Conduct a Chi squared test to see if the actual distribution matches the
+    # expected one at an alpha = 0.05 significance level.
+    #
+    # H_0: The distribution of trees in tree_actual matches the normalized product
+    # of the edge weights in the tree.
+    #
+    # H_a: The distribution of trees in tree_actual follows some other
+    # distribution of spanning trees.
+    chisq, p = stats.chisquare(list(tree_actual.values()), list(tree_expected.values()))
+
+    # Assert that p is greater than the significance level so that we do not
+    # reject the null hypothesis
+    assert not p < 0.05
