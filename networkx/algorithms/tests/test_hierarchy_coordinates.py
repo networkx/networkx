@@ -19,8 +19,11 @@ def test_max_min_layers():
     assert nx.max_min_layers(G, max_layer=True) == [0]
     assert nx.max_min_layers(G, max_layer=False) == [3, 4, 5]
 
-    # G = nx.cycle_graph(5, create_using=nx.DiGraph)  # cannot detect cycles with just DAG check...
-    # pytest.raises(nx.NetworkXError, nx.max_min_layers, G)
+    # Testing return for unconnected graphs
+    unconnected_G = nx.DiGraph()
+    unconnected_G.add_edges_from([(0, 1), (1, 2), (3, 4), (4, 5)])
+    assert nx.max_min_layers(unconnected_G, max_layer=True) == [0, 3]
+    assert nx.max_min_layers(unconnected_G, max_layer=False) == [2, 5]
 
 
 def test_leaf_removal():
@@ -175,7 +178,7 @@ def test_feedforwardness():
     pytest.raises(nx.NetworkXError, nx.feedforwardness, cyclic_G)
 
 
-def test_graph_entropy():
+def test_analytic_graph_entropy():
     b = np.array(
         [
             [0, 0, 1, 0, 0, 0, 1],
@@ -191,12 +194,21 @@ def test_graph_entropy():
         nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph))
     )
     # WIP
-    # fwd_graph_entropy = [round(nx.graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
-    # bkwd_graph_entropy = [round(nx.graph_entropy(net), 3) for net in condensed_network_layers]
-    # print("graph entropy (forwards | backwards): {0} | {1} [analytic]".format(fwd_graph_entropy, bkwd_graph_entropy))
+    fwd_graph_entropy = [
+        round(nx.analytic_graph_entropy(net, forward_entropy=True), 3)
+        for net in condensed_network_layers
+    ]
+    bkwd_graph_entropy = [
+        round(nx.analytic_graph_entropy(net), 3) for net in condensed_network_layers
+    ]
+    print(
+        "graph entropy (forwards | backwards): {0} | {1} [analytic]".format(
+            fwd_graph_entropy, bkwd_graph_entropy
+        )
+    )
 
 
-def test_infographic_graph_entropy():
+def test_graph_entropy():
     b = np.array(
         [
             [0, 0, 1, 0, 0, 0, 1],
@@ -212,15 +224,19 @@ def test_infographic_graph_entropy():
         nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph))
     )
     fwd_graph_entropy = [
-        round(nx.infographic_graph_entropy(net, forward_entropy=True), 3)
+        round(nx.graph_entropy(net, forward_entropy=True), 3)
         for net in condensed_network_layers
     ]
     bkwd_graph_entropy = [
-        round(nx.infographic_graph_entropy(net), 3) for net in condensed_network_layers
+        round(nx.graph_entropy(net), 3) for net in condensed_network_layers
     ]
     assert fwd_graph_entropy == [0.347, 0.0]
     assert bkwd_graph_entropy == [1.04, 0.0]
-    # print("graph entropy (forwards | backwards): {0} | {1} [infographic]".format(fwd_graph_entropy, bkwd_graph_entropy))
+    print(
+        "graph entropy (forwards | backwards): {0} | {1} [infographic]".format(
+            fwd_graph_entropy, bkwd_graph_entropy
+        )
+    )
 
 
 def test_treeness():
@@ -242,8 +258,6 @@ def test_treeness():
 
 
 def test_hierarchy_coordinate():
-    import numpy as np
-
     a = np.array(
         [
             [0, 0.2, 0, 0, 0],
@@ -264,10 +278,8 @@ def test_hierarchy_coordinate():
             [0, 0, 0, 0, 0, 0, 0],
         ]
     )
+
     a_hc = [round(hc, 2) for hc in nx.hierarchy_coordinates(a)]
     b_hc = [round(hc, 2) for hc in nx.hierarchy_coordinates(b)]
     assert a_hc == [-0.08, 0.87, 0.81]
     assert b_hc == [-0.56, 0.56, 0.43]
-
-
-test_hierarchy_coordinate()

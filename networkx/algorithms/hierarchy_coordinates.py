@@ -4,19 +4,23 @@ Hierarchy Coordinates
 ========================
 Functions to calculate hierarchy coordinates for directed networks.
 
-Hierarchy coordinates consist of treeness, feedforwardness, and orderability, which collectively create a
-'hierarchy morphospace' classifying all network structures. In loose terms, treeness describes how consistently
-nodes higher on the hierarchy (maximal nodes) branch into more nodes, while feedforwardness considers the extent
-information passes vertically (vs horizontally) within a hierarchy, and orderability considers what fraction of the
-network is vertically hierarchical.
+Hierarchy coordinates consist of treeness, feedforwardness, and orderability,
+which collectively create a 'hierarchy morphospace' classifying all network
+structures. In loose terms, treeness describes how consistently nodes higher
+on the hierarchy (maximal nodes) branch into more nodes, while feedforwardness
+considers the extent information passes vertically (vs horizontally) within
+a hierarchy, and orderability considers what fraction of the network is
+vertically hierarchical.
 
-Originally from [1]_, adapted implementation accommodates weighted network. For details, see _[2]
+Originally from [1]_, adapted implementation accommodates weighted network.
+For details, see _[2]
 
 .. [1] "On the origins of hierarchy in complex networks."
  Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
  Proceedings of the National Academy of Sciences 110, no. 33 (2013)
 
-.. [2] Appendix of 2013 paper: https://www.pnas.org/highwire/filestream/613265/field_highwire_adjunct_files/0/sapp.pdf
+.. [2] Appendix of 2013 paper:
+https://www.pnas.org/highwire/filestream/613265/field_highwire_adjunct_files/0/sapp.pdf
 
 """
 
@@ -34,8 +38,8 @@ __all__ = [
     "recursive_leaf_removal",
     "orderability",
     "feedforwardness",
+    "analytic_graph_entropy",
     "graph_entropy",
-    "infographic_graph_entropy",
     "treeness",
     "hierarchy_coordinates",
 ]
@@ -43,29 +47,35 @@ __all__ = [
 
 # Hierarchy Coordinate Functions
 def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
-    """Creates a series of networkx graphs based on generated edge weight thresholds, and returns their node weighted
-    condensed and original graphs.
+    """Creates a series of networkx graphs based on generated edge weight
+    thresholds, and returns their node weighted condensed and original graphs.
 
-    Unweighted graphs will always lead to single graph outputs, whereas weighted graphs output a series of graphs
-     according to the number of thresholds and the distribution. Empty graphs are dropped.
-    Node weighted condense simply assigns the number of nodes in a cycle as the weight of the resultant node in the DAG[1]_.
+    Unweighted graphs will always lead to single graph outputs, whereas weighted
+    graphs output a series of graphs according to the number of thresholds and
+    the distribution. Empty graphs are dropped.  Node weighted condense simply
+    assigns the number of nodes in a cycle as the weight of the resultant node
+    in the DAG[1]_.
 
     Parameters
     ----------
     A: numpy array
         Adjacency matrix, as square 2d numpy array
     num_thresholds: int, default: 8
-        Number of thresholds and resultant sets of node-weighted Directed Acyclic Graphs
+        Number of thresholds and resultant sets of node-weighted
+            Directed Acyclic Graphs
     threshold_distribution: float, optional
-        If true or float, distributes the thresholds exponentially, with an exponent equal to the float input.
+        If true or float, distributes the thresholds exponentially,
+            with an exponent equal to the float input.
         Alternatively, a (lambda) function may be passed for custom distributions.
 
     Returns
     -------
     largest_condensed_graphs: list of networkX Graphs
-        list of node weighted condensed networkx graphs reduced from unweighted digraphs determined by thresholds. (See note)
+        list of node weighted condensed networkx graphs reduced from unweighted
+            digraphs determined by thresholds. (See note)
     nx_graphs: list of networkX Graphs
-        list of unweighted graphs produced from applying thresholds to the original weighted network
+        list of unweighted graphs produced from applying thresholds to the
+            original weighted network
 
     Examples
     --------
@@ -168,11 +178,12 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
 
 @not_implemented_for("undirected")
 def weight_nodes_by_condensation(condensed_graph):
-    """Weights nodes according to the number of other nodes they condensed (sum of constituent cycle of DAG node).
+    """Weights nodes according to the number of other nodes they condensed (sum
+    of constituent cycle of DAG node).
 
-    As, proposed in _[1]:  e.g. if a cycle contained 3 nodes (and became one in condensation)
-    the resulting node of the condensed graph would then gain weight = 3.
-    Single (non-cyclic) nodes are weighted as 1.
+    As, proposed in _[1]:  e.g. if a cycle contained 3 nodes (and became one in
+    condensation) the resulting node of the condensed graph would then gain
+    weight = 3.  Single (non-cyclic) nodes are weighted as 1.
 
     Parameters
     ----------
@@ -241,15 +252,16 @@ def weight_nodes_by_condensation(condensed_graph):
 def max_min_layers(G, max_layer=True):
     """Returns the maximal (k_in = 0) layer or the minimal layer (k_out = 0)
 
-    Returns the maximal (k_in = 0, highest in hierarchy) layer (those nodes with in degree = 0)
-     or the minimal layer (k_out = 0) of a directed network.
+    Returns the maximal (k_in = 0, highest in hierarchy) layer (those nodes with
+    in degree = 0) or the minimal layer (k_out = 0) of a directed network.
 
     Parameters
     ----------
     G: NetworkX Graph
         A directed graph.
     max_layer: bool, default: True
-        if True, returns maximal layer (k_in = 0), else returns nodes for which k_out = 0, minimal layer
+        if True, returns maximal layer (k_in = 0),
+            else returns nodes for which k_out = 0, minimal layer
 
     Return
     ------
@@ -281,7 +293,12 @@ def max_min_layers(G, max_layer=True):
 
     Notes:
     -------
-
+        For unconnected graphs, returns the set of minimal nodes in the order of their
+        appearance in the original (unconnected) network, e.g.
+    >>> unconnected_G = nx.DiGraph()
+    >>> unconnected_G.add_edges_from([(0, 2), (2, 3), (1, 2), ('a', 'b'), ('b', 'c')])
+    >>> print(f'{nx.max_min_layers(unconnected_G, max_layer=True)}')
+    [0, 1, 'a']
     """
     if not G.is_directed():
         raise nx.NetworkXError("G must be a DiGraph for min/max layer evaluation")
@@ -364,9 +381,11 @@ def leaf_removal(G, top=True):
 
 @not_implemented_for("undirected")
 def recursive_leaf_removal(G, from_top=True, keep_linkless_layer=False):
-    """Prunes nodes from top (maximal) or bottom (minimal) recursively. Original DAG is given as first element
+    """Prunes nodes from top (maximal) or bottom (minimal) recursively. Original
+    DAG is given as first element
 
-    Useful for examinations of hierarchy layer by layer. Note that the *remaining* graph is returned, not the layers
+    Useful for examinations of hierarchy layer by layer. Note that the
+    *remaining* graph is returned, not the layers
 
     Parameters
     ----------
@@ -433,10 +452,11 @@ def recursive_leaf_removal(G, from_top=True, keep_linkless_layer=False):
 def orderability(
     G, condensed_nx_graph=None, num_thresholds=8, threshold_distribution=None
 ):
-    """Evaluates orderability, a measure of how vertically hierarchical a network is.
+    """Evaluates orderability, a measure of how vertically hierarchical a
+    network is.
 
-    Given as intersection of the nodes inside the consdensed and original network,
-    divided by the total number of nodes in the original network.
+    Given as intersection of the nodes inside the consdensed and original
+    network, divided by the total number of nodes in the original network.
 
     Adapted for weighted networks from the original algorithm found here: [1]_.
 
@@ -560,15 +580,20 @@ def _feedforwardness_iteration(G):
 def feedforwardness(DAG):
     """Returns feedforwardness hierarchy coordinate.
 
-    The feedforwardness heierarchy coordinate represents the extent information passes vertically,
-    as opposed to horizontally, within a hierarchy. That is, how much does information pass
-    through unreciprocated connections versus how much through cyclic (reciprocated) connections.
+    The feedforwardness heierarchy coordinate represents the extent information
+    passes vertically, as opposed to horizontally, within a hierarchy. That is,
+    how much does information pass through unreciprocated connections versus how
+    much through cyclic (reciprocated) connections.
 
-    Based on a weighted sum which considers how much each path from every maximal node to every minimal node
-    traverses through cyclic (flat hierarchy) components. As this is performed over a DAG whose node weights
-    represent the number of cyclic nodes so condensed, the ratio of nodes to their total weight in a given path
-    yields precisely this measure. Feedforwardness is then given by the mean of this ratio for all paths on a
-    given layer, and then summing over all layers pruned through repeated removal of maximal nodes.
+    Based on a weighted sum which considers how much each path from every
+    maximal node to every minimal node traverses through cyclic (flat hierarchy)
+    components. As this is performed over a DAG whose node weights represent the
+    number of cyclic nodes so condensed, the ratio of nodes to their total
+    weight in a given path yields precisely this measure. Feedforwardness is
+    then given by the mean of this ratio for all paths on a given layer, and
+    then summing over all layers pruned through repeated removal of maximal
+    nodes.
+
 
     More formally, total feedfowardness is given by
     .. math:: F(G) = \frac{g(G_C) + \sum_{k < L(G_C)} g(G_k)}{|\prod_{M \mu}(G_c)| + \sum_{k < L_{G_C}} |\prod_{M \mu} (G_k)|}
@@ -578,8 +603,9 @@ def feedforwardness(DAG):
     :math:`F(\pi_k) = \frac{|v(\pi_k)|}{\sum_{v_i \in v(\pi_k)} \alpha_i}`, with :math:`v_k` and :math:`\alpha_k` being
     the k-ths node and its weight, respectively.
 
-    The original algorithm was given in "On the origins of hierarchy in complex networks."[1]_ and with details
-    given in their appendix.[2]_
+    The original algorithm was given in
+        "On the origins of hierarchy in complex networks."[1]_
+        and with details given in their appendix.[2]_
 
     Parameters
     ----------
@@ -611,10 +637,12 @@ def feedforwardness(DAG):
 
     Notes
     ______
-    feedforwardness is calculated by pruning layers of the original graph and averaging
-    over subsequent feedforwardness calculations.
+    feedforwardness is calculated by pruning layers of the original graph and
+    averaging over subsequent feedforwardness calculations.
 
-    TODO: Not sure what's proper re: optional num_thresholds and threshold_distribution parameter
+    TODO: Not sure what's proper re: optional num_thresholds and
+    threshold_distribution parameter
+
     .. [1] "On the origins of hierarchy in complex networks."
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
@@ -652,11 +680,13 @@ def feedforwardness(DAG):
 
 
 @not_implemented_for("undirected")
-def graph_entropy(DAG, forward_entropy=False):
+def analytic_graph_entropy(DAG, forward_entropy=False):
     """Measures uncertainty in following all directed paths through the network.
 
-    computed by summing over the probability of transition from every maximal (minimal) node to all others,
-    to yield forward (backward) entropy. transition probabilities are calculated via powers of the modified adjacency matrix.
+    computed by summing over the probability of transition from every maximal
+    (minimal) node to all others, to yield forward (backward) entropy.
+    transition probabilities are calculated via powers of the modified adjacency
+    matrix.
 
     Parameters
     ----------
@@ -688,14 +718,13 @@ def graph_entropy(DAG, forward_entropy=False):
     >>> fwd_graph_entropy = [round(nx.graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
     >>> bkwd_graph_entropy = [round(nx.graph_entropy(net), 3) for net in condensed_network_layers]
     >>> print("graph entropy (forwards | backwards): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
-    graph entropy (forwards | backwards): [0.0, 0.0] | [0.347, 0.0]
+    graph entropy (forwards | backwards): [0.347, 0.0] | [1.04, 0.0]
 
     Notes
     ______
-    WIP: Detail after confirmation of methodology from Prof. Sole.
-
     As described in the text of _[1], proposed and developed in _[2], _[3]:
-    Graph Entropy, is measure of probability of crossing a node n_j when following a path from n_i.
+    Graph Entropy, is measure of probability of crossing a node n_j when
+    following a path from n_i.
 
     _Forward_ entropy:
     .. math:: H_f(G_C) = \frac{1}{|M|} \sum_{v_i \in M} \sum_{v_k \in V \setminus \mu} P(v_i \right v_k) \cdot log k_{out}(v_k)
@@ -752,11 +781,12 @@ def graph_entropy(DAG, forward_entropy=False):
 
 
 @not_implemented_for("undirected")
-def infographic_graph_entropy(DAG, forward_entropy=False):
+def graph_entropy(DAG, forward_entropy=False):
     """Measures uncertainty in following all directed paths through the network.
 
-    Computed by summing over the probability of transition from every maximal (minimal) node to all others,
-    to yield forward (backward) entropy. Transition probabilities are calculated via brute force computation
+    Computed by summing over the probability of transition from every maximal
+    (minimal) node to all others, to yield forward (backward) entropy.
+    Transition probabilities are calculated via brute force computation
     considering the number of branches along each path.
 
     Parameters
@@ -786,17 +816,16 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
     ... ])
 
     >>> condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph)))
-    >>> fwd_graph_entropy = [round(nx.infographic_graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
-    >>> bkwd_graph_entropy = [round(nx.infographic_graph_entropy(net), 3) for net in condensed_network_layers]
+    >>> fwd_graph_entropy = [round(nx.graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
+    >>> bkwd_graph_entropy = [round(nx.graph_entropy(net), 3) for net in condensed_network_layers]
     >>> print("graph entropy (forwards | backwards): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
     graph entropy (forwards | backwards): [0.347, 0.0] | [1.04, 0.0]
 
     Notes
     ______
-    WIP: Detail after confirmation of methodology from Prof. Sole.
-
     As described in the text of _[1], proposed and developed in _[2], _[3]:
-    Graph Entropy, is measure of probability of crossing a node n_j when following a path from n_i.
+    Graph Entropy, is measure of probability of crossing a node n_j when
+    following a path from n_i.
 
     _Forward_ entropy:
     .. math:: H_f(G_C) = \frac{1}{|M|} \sum_{v_i \in M} \sum_{v_k \in V \setminus \mu} P(v_i \right v_k) \cdot log k_{out}(v_k)
@@ -847,9 +876,10 @@ def infographic_graph_entropy(DAG, forward_entropy=False):
 def _single_graph_treeness(DAG):
     """Evaluates treeness of a directed, acyclic, unweighted graph.
 
-    Treeness measures how consistently the network branches along the directed connections.
-    Alternatively, how maximal nodes feed to otherwise maximal nodes;
-    do edges connect to nodes with more edges further down the hierarchy?
+    Treeness measures how consistently the network branches along the directed
+    connections.  Alternatively, how maximal nodes feed to otherwise maximal
+    nodes; how much do edges connect to nodes with more edges further down the
+    hierarchy?
 
     Parameters
     ----------
@@ -885,8 +915,8 @@ def _single_graph_treeness(DAG):
     """
     if len(DAG.nodes()) == 1:
         return 0
-    forward_entropy = infographic_graph_entropy(DAG, forward_entropy=True)
-    backward_entropy = infographic_graph_entropy(DAG, forward_entropy=False)
+    forward_entropy = graph_entropy(DAG, forward_entropy=True)
+    backward_entropy = graph_entropy(DAG, forward_entropy=False)
     if forward_entropy == 0 and backward_entropy == 0:
         return 0
 
@@ -895,14 +925,16 @@ def _single_graph_treeness(DAG):
 
 @not_implemented_for("undirected")
 def treeness(DAG):
-    """Treeness describes how consistently nodes higher on the hierarchy (maximal nodes) branch into more nodes.
+    """Treeness describes how consistently nodes higher on the hierarchy
+    (maximal nodes) branch into more nodes.
 
-    Based on `graph_entropy` a measure dependant on the probability of transitioning between any two given nodes,
-     Treeness measures the expansion or contraction of paths from maximal nodes, yielding positive or negative
-      values respectively.
+    Based on `graph_entropy` a measure dependant on the probability of
+    transitioning between any two given nodes, Treeness measures the expansion
+    or contraction of paths from maximal nodes, yielding positive or negative
+    values respectively.
 
-    The original algorithm was given in "On the origins of hierarchy in complex networks."[1]_ and with details
-    given in their appendix.[2]_
+    The original algorithm was given in "On the origins of hierarchy in complex
+    networks."[1]_ and with details given in their appendix.[2]_
 
     Parameters
     ----------
@@ -964,26 +996,32 @@ def treeness(DAG):
 def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
     """Returns hierarchy coordinates: treeness, feedforwardness & orderability.
 
-    Hierarchy coordinates can classifying all network structures, and their respective hierarchy,
-     though certain combinations are theoretically impossible to acheive.
+    Hierarchy coordinates can classifying all network structures, and their
+    respective hierarchy, though certain combinations are theoretically
+    impossible to acheive.
 
-    Adapted for weighted networks from "On the origins of hierarchy in complex networks."[1]_ and with details
-    given in their appendix.[2]_
+    Adapted for weighted networks from "On the origins of hierarchy in complex
+    networks."[1]_ and with details given in their appendix.[2]_
 
 
     Parameters
     ----------
     A: 2d numpy array or networkX graph
-        numpy Adjacency matrix or networkx of which hierarchy coordinates will be calculated
+        numpy Adjacency matrix or networkx of which hierarchy coordinates
+            will be calculated
 
     num_thresholds: int, optional
         specifies number of weighted graph subdivisions
 
     threshold_distribution: None, float or lambda fct ptr, default: None
-        determines the distribution of threshold values used to create unweighted from weighted networks.
-        if None, creates a linear distribution of thresholds spanning the set of weights evenly.
-        if float, is the coefficient of exp(Ax) sampled between (0, 1) and rescaled appropriately.
-        if a lambda expression, determines a custom distribution sampled between (0, 1) and rescaled appropriately.
+        determines the distribution of threshold values used to
+            create unweighted from weighted networks.
+        if None, creates a linear distribution of thresholds spanning
+            the set of weights evenly.
+        if float, is the coefficient of exp(Ax) sampled between (0, 1)
+            and rescaled appropriately.
+        if a lambda expression, determines a custom distribution sampled
+            between (0, 1) and rescaled appropriately.
 
     Return
     -------
@@ -1051,8 +1089,10 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
 
 # Utilities for hierarchy coordinates
 def _distribute(n, end_value_range=None, dist=1, sampled_range_of_dist=(0, 1)):
-    """Returns n floats distributed as within the sampled range of provided distribution, rescaled to end_value_range
-    Defaults to an exponential distribution e^x, x = (0, 1), where int/float values of dist modify the coefficient on x
+    """Returns n floats distributed as within the sampled range of provided
+    distribution, rescaled to end_value_range Defaults to an exponential
+    distribution e^x, x = (0, 1), where int/float values of dist modify the
+    coefficient on x
 
     Parameters
     ----------
