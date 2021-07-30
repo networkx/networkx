@@ -3,7 +3,6 @@ import pytest
 import networkx as nx
 from networkx.algorithms.community import (
     greedy_modularity_communities,
-    modularity,
     naive_greedy_modularity_communities,
 )
 
@@ -11,16 +10,43 @@ from networkx.algorithms.community import (
 @pytest.mark.parametrize(
     "func", (greedy_modularity_communities, naive_greedy_modularity_communities)
 )
-def test_modularity_communities(func):
-    G = nx.karate_club_graph()
-
-    john_a = frozenset(
-        [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
-    )
-    mr_hi = frozenset([0, 4, 5, 6, 10, 11, 16, 19])
-    overlap = frozenset([1, 2, 3, 7, 9, 12, 13, 17, 21])
-    expected = {john_a, overlap, mr_hi}
-
+@pytest.mark.parametrize(
+    "G, expected",
+    [
+        (
+            nx.karate_club_graph(),
+            {
+                # john_a
+                frozenset(
+                    [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+                ),
+                # mr_hi
+                frozenset([0, 4, 5, 6, 10, 11, 16, 19]),
+                # overlap
+                frozenset([1, 2, 3, 7, 9, 12, 13, 17, 21]),
+            },
+        ),
+        (
+            nx.Graph(
+                [
+                    ("a", "b"),
+                    ("a", "c"),
+                    ("b", "c"),
+                    ("a", "d"),
+                    ("b", "d"),
+                    ("d", "e"),  # inter-community edge
+                    ("d", "f"),
+                    ("d", "g"),
+                    ("f", "g"),
+                    ("d", "e"),
+                    ("f", "e"),
+                ]
+            ),
+            {frozenset({"f", "g", "e", "d"}), frozenset({"a", "b", "c"})},
+        ),
+    ],
+)
+def test_modularity_communities(func, G, expected):
     assert set(func(G)) == expected
 
 
