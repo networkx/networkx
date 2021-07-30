@@ -69,7 +69,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
 
     # Count nodes and edges
     N = len(G.nodes())
-    m = sum([d.get("weight", 1) for u, v, d in G.edges(data=True)])
+    m = sum([d.get(weight, 1) for u, v, d in G.edges(data=True)])
     q0 = 1.0 / (2.0 * m)
 
     # Map node labels to contiguous integers
