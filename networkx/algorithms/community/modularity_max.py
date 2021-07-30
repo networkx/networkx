@@ -28,10 +28,15 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     Parameters
     ----------
     G : NetworkX graph
+
     weight : string or None, optional (default=None)
-       The name of an edge attribute that holds the numerical value used
-       as a weight.  If None, then each edge has weight 1.
-       The degree is the sum of the edge weights adjacent to the node.
+        The name of an edge attribute that holds the numerical value used
+        as a weight.  If None, then each edge has weight 1.
+        The degree is the sum of the edge weights adjacent to the node.
+
+    resolution : float (default=1)
+        If resolution is less than 1, modularity favors larger communities.
+        Greater than 1 favors smaller communities.
 
     Returns
     -------
@@ -242,6 +247,10 @@ def naive_greedy_modularity_communities(G, resolution=1):
     Parameters
     ----------
     G : NetworkX graph
+
+    resolution : float (default=1)
+        If resolution is less than 1, modularity favors larger communities.
+        Greater than 1 favors smaller communities.
 
     Returns
     -------
