@@ -206,10 +206,14 @@ class TestCommonNeighborCentrality:
         G.add_nodes_from([0, 1])
         self.test(G, [(0, 1)], [(0, 1, 0)])
 
-    # Undefined behaviour
-    # def test_equal_nodes(self):
-    #    G = nx.complete_graph(4)
-    #    self.test(G, [(0, 0)], [(0, 0, 3 / math.log(3))])
+    def test_invalid_alpha(self):
+        G = nx.complete_graph(3)
+        assert pytest.raises(nx.NetworkXAlgorithmError, self.func, G, [(0, 1)], 1.1)
+        assert pytest.raises(nx.NetworkXAlgorithmError, self.func, G, [(0, 1)], -1)
+
+    def test_equal_nodes(self):
+        G = nx.complete_graph(4)
+        assert pytest.raises(nx.NetworkXAlgorithmError, self.test, G, [(0, 0)], [])
 
     def test_all_nonexistent_edges(self):
         G = nx.Graph()

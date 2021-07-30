@@ -275,16 +275,19 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
            Sci Rep 10, 364 (2020).
            https://doi.org/10.1038/s41598-019-57304-y
     """
-    shortest_path = nx.shortest_path(G)
+
+    if not 0 <= alpha <= 1:
+        raise nx.NetworkXAlgorithmError("Alpha must be between 0 and 1")
+
+    spl = dict(nx.shortest_path_length(G))
 
     def predict(u, v):
-        try:
-            path_len = len(shortest_path[u][v])
-        except KeyError:
-            return 0
+        if u == v:
+            raise nx.NetworkXAlgorithmError("Self links are not supported")
+        path_len = spl[u].get(v, float("inf"))
 
         return alpha * len(list(nx.common_neighbors(G, u, v))) + (1 - alpha) * (
-            G.number_of_nodes() / (path_len - 1)
+            G.number_of_nodes() / path_len
         )
 
     return _apply_prediction(G, predict, ebunch)
