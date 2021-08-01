@@ -10,6 +10,7 @@ __all__ = [
     "_naive_greedy_modularity_communities",
 ]
 
+_SIG_FIGS=6
 
 def greedy_modularity_communities(G, weight=None, resolution=1):
     r"""Find communities in G using greedy modularity maximization.
@@ -92,8 +93,8 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     a = [k[i] * q0 for i in range(N)]
     dq_dict = {
         i: {
-            j: 2 * q0 * G.get_edge_data(i, j).get(weight, 1.0)
-            - 2 * resolution * k[i] * k[j] * q0 * q0
+            j: round(2 * q0 * G.get_edge_data(i, j).get(weight, 1.0)
+            - 2 * resolution * k[i] * k[j] * q0 * q0, _SIG_FIGS)
             for j in [node_for_label[u] for u in G.neighbors(label_for_node[i])]
             if j != i
         }
@@ -150,12 +151,12 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
         for k in all_set:
             # Calculate new dq value
             if k in both_set:
-                dq_jk = dq_dict[j][k] + dq_dict[i][k]
+                dq_jk = round(dq_dict[j][k] + dq_dict[i][k],_SIG_FIGS)
             elif k in j_set:
-                dq_jk = dq_dict[j][k] - 2.0 * resolution * a[i] * a[k]
+                dq_jk = round(dq_dict[j][k] - 2.0 * resolution * a[i] * a[k],_SIG_FIGS)
             else:
                 # k in i_set
-                dq_jk = dq_dict[i][k] - 2.0 * resolution * a[j] * a[k]
+                dq_jk = round(dq_dict[i][k] - 2.0 * resolution * a[j] * a[k], _SIG_FIGS)
             # Update rows j and k
             for row, col in [(j, k), (k, j)]:
                 # Save old value for finding heap index
