@@ -46,140 +46,6 @@ __all__ = [
 ]
 
 
-# Hierarchy Coordinate Functions
-# def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
-#     """Creates a series of networkx graphs based on generated edge weight
-#     thresholds, and returns their node weighted condensed and original graphs.
-#
-#     Unweighted graphs will always lead to single graph outputs, whereas weighted
-#     graphs output a series of graphs according to the number of thresholds and
-#     the distribution. Empty graphs are dropped.  Node weighted condense simply
-#     assigns the number of nodes in a cycle as the weight of the resultant node
-#     in the DAG[1]_.
-#
-#     Parameters
-#     ----------
-#     A: numpy array
-#         Adjacency matrix, as square 2d numpy array
-#     num_thresholds: int, default: 8
-#         Number of thresholds and resultant sets of node-weighted
-#             Directed Acyclic Graphs
-#     threshold_distribution: float, optional
-#         If true or float, distributes the thresholds exponentially,
-#             with an exponent equal to the float input.
-#         Alternatively, a (lambda) function may be passed for custom distributions.
-#
-#     Returns
-#     -------
-#     largest_condensed_graphs: list of networkX Graphs
-#         list of node weighted condensed networkx graphs reduced from unweighted
-#             digraphs determined by thresholds. (See note)
-#     nx_graphs: list of networkX Graphs
-#         list of unweighted graphs produced from applying thresholds to the
-#             original weighted network
-#
-#     Examples
-#     --------
-#     Graphing the resultant network is recommended, as otherwise this is difficult to visualize...
-#
-#     See Also
-#     --------
-#     weight_nodes_by_condensation, graph_entropy, treeness
-#
-#     >>> import numpy as np
-#     >>> a = np.array([
-#     ...     [0, 0.2, 0, 0, 0],
-#     ...     [0, 0, 0, 0.7, 0],
-#     ...     [0, 0.4, 0, 0, 0],
-#     ...     [0, 0, 0.1, 0, 1.0],
-#     ...     [0, 0, 0, 0, 0],
-#     ... ])
-#     >>> condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
-#     >>> for network in condensed_networks:
-#     ...     print(f'{network}, total weight: {nx.get_node_attributes(network, "weight")}')
-#     DiGraph with 3 nodes and 2 edges, total weight: {0: 1, 1: 3, 2: 1}
-#     DiGraph with 5 nodes and 4 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1, 4: 1}
-#     DiGraph with 4 nodes and 3 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1}
-#     DiGraph with 4 nodes and 3 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1}
-#     DiGraph with 3 nodes and 2 edges, total weight: {0: 1, 1: 1, 2: 1}
-#     DiGraph with 3 nodes and 2 edges, total weight: {0: 1, 1: 1, 2: 1}
-#     DiGraph with 2 nodes and 1 edges, total weight: {0: 1, 1: 1}
-#     DiGraph with 2 nodes and 1 edges, total weight: {0: 1, 1: 1}
-#
-#     Notes
-#     ------
-#     WIP TODO: As multiple independent graphs may form from applying threshold cutoffs to a weighted graph,
-#     only the largest is considered. This might be worth considering in re-evaluating the meaning of
-#     weighted network hierarchy coordinate evaluations. (See pages 7, 8 of [1]_, supplementary material)
-#
-#     An threshold_distribution of None results in a linear distribution, otherwise
-#      the exponential distribution is sampled from exp(x) \in (0, 1)
-#
-#     .. [1] "On the origins of hierarchy in complex networks."
-#      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
-#      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
-#     """
-#     import numpy as np
-#
-#     # binary check
-#     A_elements = set(A.flat)
-#     if len(A_elements) == 2 and 0 in A_elements:
-#         num_thresholds = 1
-#     else:
-#         num_thresholds = num_thresholds
-#
-#     # Establishing Thresholds
-#     if num_thresholds == 1 or np.isclose(np.max(A) - np.min(A), 0, 1e-15):
-#         nx_graphs = [nx.from_numpy_array(A, create_using=nx.DiGraph)]
-#     else:
-#         if threshold_distribution is None:
-#             # try:
-#             thresholds = list(
-#                 np.round(
-#                     np.arange(
-#                         np.min(A),
-#                         np.max(A),
-#                         (np.max(A - np.min(A))) / num_thresholds,
-#                         ),
-#                     4,
-#                 )
-#             )  # linear distribution
-#         else:
-#             thresholds = _distribute(
-#                 dist=threshold_distribution,
-#                 end_value_range=(np.min(A), np.max(A)),
-#                 n=num_thresholds,
-#             )
-#         # Converting to binary nx_graphs according to thresholds:
-#         nx_graphs = [
-#             nx.from_numpy_array(np.where(A > threshold, 1, 0), create_using=nx.DiGraph)
-#             for threshold in thresholds
-#         ]
-#     # removes isolated nodes (0 in & out degree) from binary nodes. (not needed for consolidation)
-#     for G in nx_graphs:
-#         G.remove_nodes_from(list(nx.isolates(G)))
-#
-#     # eliminates empty graphs
-#     nx_graphs = [graph for graph in nx_graphs if not nx.is_empty(graph)]
-#
-#
-#
-#     condensed_graphs = [nx.condensation(G) for G in nx_graphs]
-#     largest_condensed_graphs = []
-#     for condensed_graph in condensed_graphs:
-#         largest_condensed_graphs.append(
-#             nx.convert_node_labels_to_integers(
-#                 condensed_graph.subgraph(
-#                     max(nx.weakly_connected_components(condensed_graph), key=len)
-#                 )
-#             ).copy()
-#         )
-#         for node, attrs in largest_condensed_graphs[-1].nodes.data():
-#             attrs["weight"] = len(attrs["members"])
-#
-#     return largest_condensed_graphs, nx_graphs
-
-
 def graphs_from_thresholds(
     A, num_thresholds=8, threshold_distribution=None, verbose=False
 ):
@@ -382,12 +248,13 @@ def node_weighted_condense(nx_graphs):
 
 @not_implemented_for("undirected")
 def weight_nodes_by_condensation(condensed_graph):
-    """Weights nodes according to the number of other nodes they condensed (sum
-    of constituent cycle of DAG node).
+    """Weights nodes according to the number of other nodes they condensed
 
-    As, proposed in _[1]:  e.g. if a cycle contained 3 nodes (and became one in
+    Nodes condensed are the sum of constituent cycle of DAG nodes as proposed
+     in _[1]:  e.g. if a cycle contained 3 nodes (and thus became one in
     condensation) the resulting node of the condensed graph would then gain
     weight = 3.  Single (non-cyclic) nodes are weighted as 1.
+    Graphs are updated in-place, modifying the graph passed in as a parameter.
 
     Parameters
     ----------
@@ -431,7 +298,6 @@ def weight_nodes_by_condensation(condensed_graph):
 
     Note:
     ------
-    TODO: Might wish to eliminate return, or enable copying?
 
     .. [1] "On the origins of hierarchy in complex networks."
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
@@ -448,7 +314,6 @@ def weight_nodes_by_condensation(condensed_graph):
 
     for node, attrs in condensed_graph.nodes.data():
         attrs["weight"] = len(attrs["members"])
-    # WIP TODO: May not be necessary, as the graph itself is updated (not copied)?
     return condensed_graph
 
 
@@ -456,8 +321,12 @@ def weight_nodes_by_condensation(condensed_graph):
 def max_min_layers(G, max_layer=True):
     """Returns the maximal (k_in = 0) layer or the minimal layer (k_out = 0)
 
-    Returns the maximal (k_in = 0, highest in hierarchy) layer (those nodes with
-    in degree = 0) or the minimal layer (k_out = 0) of a directed network.
+    Returns the maximal or minimal layer of a directed network.
+    Layers here are defined with respect to repeated application of this function;
+    maximal (minimal) nodes are those with 0 out (in) degree, and thus the
+    first layer are those nodes meeting these requirements for the initial graph,
+    and the second layer are those which meet these requirements after removing
+    a 'layer' of maximal (minimal) nodes.
 
     Parameters
     ----------
@@ -514,8 +383,14 @@ def max_min_layers(G, max_layer=True):
 
 @not_implemented_for("undirected")
 def leaf_removal(G, top=True):
-    """Returns a pruned network, with either maximal (k_in=0)
-    or minimal (k_out = 0) nodes removed upon call.
+    """Returns a pruned network with either maximal or minimal nodes removed.
+
+    Maximal (minimal) nodes are those with k_in = 0 (k_out = 0).
+    The 'pruned network' is thus the network which remains afters its maximal
+    or minimal nodes have been removed, e.g. for a 3 node path graph, leaf_removal
+    would yield from (0, 1, 2) -> (1, 2) if removing maximal nodes (from top)
+     or (0, 1, 2) -> (0, 1) if removing minimal nodes, (from bottom, top=False)
+
 
     Parameters
     -----------
