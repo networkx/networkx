@@ -31,6 +31,7 @@ import copy
 # from sklearn.preprocessing import normalize
 
 __all__ = [
+    "graphs_from_thresholds",
     "node_weighted_condense",
     "weight_nodes_by_condensation",
     "max_min_layers",
@@ -46,15 +47,148 @@ __all__ = [
 
 
 # Hierarchy Coordinate Functions
-def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
-    """Creates a series of networkx graphs based on generated edge weight
-    thresholds, and returns their node weighted condensed and original graphs.
+# def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
+#     """Creates a series of networkx graphs based on generated edge weight
+#     thresholds, and returns their node weighted condensed and original graphs.
+#
+#     Unweighted graphs will always lead to single graph outputs, whereas weighted
+#     graphs output a series of graphs according to the number of thresholds and
+#     the distribution. Empty graphs are dropped.  Node weighted condense simply
+#     assigns the number of nodes in a cycle as the weight of the resultant node
+#     in the DAG[1]_.
+#
+#     Parameters
+#     ----------
+#     A: numpy array
+#         Adjacency matrix, as square 2d numpy array
+#     num_thresholds: int, default: 8
+#         Number of thresholds and resultant sets of node-weighted
+#             Directed Acyclic Graphs
+#     threshold_distribution: float, optional
+#         If true or float, distributes the thresholds exponentially,
+#             with an exponent equal to the float input.
+#         Alternatively, a (lambda) function may be passed for custom distributions.
+#
+#     Returns
+#     -------
+#     largest_condensed_graphs: list of networkX Graphs
+#         list of node weighted condensed networkx graphs reduced from unweighted
+#             digraphs determined by thresholds. (See note)
+#     nx_graphs: list of networkX Graphs
+#         list of unweighted graphs produced from applying thresholds to the
+#             original weighted network
+#
+#     Examples
+#     --------
+#     Graphing the resultant network is recommended, as otherwise this is difficult to visualize...
+#
+#     See Also
+#     --------
+#     weight_nodes_by_condensation, graph_entropy, treeness
+#
+#     >>> import numpy as np
+#     >>> a = np.array([
+#     ...     [0, 0.2, 0, 0, 0],
+#     ...     [0, 0, 0, 0.7, 0],
+#     ...     [0, 0.4, 0, 0, 0],
+#     ...     [0, 0, 0.1, 0, 1.0],
+#     ...     [0, 0, 0, 0, 0],
+#     ... ])
+#     >>> condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
+#     >>> for network in condensed_networks:
+#     ...     print(f'{network}, total weight: {nx.get_node_attributes(network, "weight")}')
+#     DiGraph with 3 nodes and 2 edges, total weight: {0: 1, 1: 3, 2: 1}
+#     DiGraph with 5 nodes and 4 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1, 4: 1}
+#     DiGraph with 4 nodes and 3 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1}
+#     DiGraph with 4 nodes and 3 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1}
+#     DiGraph with 3 nodes and 2 edges, total weight: {0: 1, 1: 1, 2: 1}
+#     DiGraph with 3 nodes and 2 edges, total weight: {0: 1, 1: 1, 2: 1}
+#     DiGraph with 2 nodes and 1 edges, total weight: {0: 1, 1: 1}
+#     DiGraph with 2 nodes and 1 edges, total weight: {0: 1, 1: 1}
+#
+#     Notes
+#     ------
+#     WIP TODO: As multiple independent graphs may form from applying threshold cutoffs to a weighted graph,
+#     only the largest is considered. This might be worth considering in re-evaluating the meaning of
+#     weighted network hierarchy coordinate evaluations. (See pages 7, 8 of [1]_, supplementary material)
+#
+#     An threshold_distribution of None results in a linear distribution, otherwise
+#      the exponential distribution is sampled from exp(x) \in (0, 1)
+#
+#     .. [1] "On the origins of hierarchy in complex networks."
+#      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
+#      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
+#     """
+#     import numpy as np
+#
+#     # binary check
+#     A_elements = set(A.flat)
+#     if len(A_elements) == 2 and 0 in A_elements:
+#         num_thresholds = 1
+#     else:
+#         num_thresholds = num_thresholds
+#
+#     # Establishing Thresholds
+#     if num_thresholds == 1 or np.isclose(np.max(A) - np.min(A), 0, 1e-15):
+#         nx_graphs = [nx.from_numpy_array(A, create_using=nx.DiGraph)]
+#     else:
+#         if threshold_distribution is None:
+#             # try:
+#             thresholds = list(
+#                 np.round(
+#                     np.arange(
+#                         np.min(A),
+#                         np.max(A),
+#                         (np.max(A - np.min(A))) / num_thresholds,
+#                         ),
+#                     4,
+#                 )
+#             )  # linear distribution
+#         else:
+#             thresholds = _distribute(
+#                 dist=threshold_distribution,
+#                 end_value_range=(np.min(A), np.max(A)),
+#                 n=num_thresholds,
+#             )
+#         # Converting to binary nx_graphs according to thresholds:
+#         nx_graphs = [
+#             nx.from_numpy_array(np.where(A > threshold, 1, 0), create_using=nx.DiGraph)
+#             for threshold in thresholds
+#         ]
+#     # removes isolated nodes (0 in & out degree) from binary nodes. (not needed for consolidation)
+#     for G in nx_graphs:
+#         G.remove_nodes_from(list(nx.isolates(G)))
+#
+#     # eliminates empty graphs
+#     nx_graphs = [graph for graph in nx_graphs if not nx.is_empty(graph)]
+#
+#
+#
+#     condensed_graphs = [nx.condensation(G) for G in nx_graphs]
+#     largest_condensed_graphs = []
+#     for condensed_graph in condensed_graphs:
+#         largest_condensed_graphs.append(
+#             nx.convert_node_labels_to_integers(
+#                 condensed_graph.subgraph(
+#                     max(nx.weakly_connected_components(condensed_graph), key=len)
+#                 )
+#             ).copy()
+#         )
+#         for node, attrs in largest_condensed_graphs[-1].nodes.data():
+#             attrs["weight"] = len(attrs["members"])
+#
+#     return largest_condensed_graphs, nx_graphs
 
-    Unweighted graphs will always lead to single graph outputs, whereas weighted
-    graphs output a series of graphs according to the number of thresholds and
-    the distribution. Empty graphs are dropped.  Node weighted condense simply
-    assigns the number of nodes in a cycle as the weight of the resultant node
-    in the DAG[1]_.
+
+def graphs_from_thresholds(
+    A, num_thresholds=8, threshold_distribution=None, verbose=False
+):
+    """Creates a series of networkx graphs based on generated edge weight thresholds
+
+    Transforms a weighted NetworkX DiGraph into a set of unweighted NetworkX DiGraphs.
+    The series of output graphs are determined by the number of thresholds and
+    the distribution, with empty graphs dropped. Unweighted input graphs will always
+     lead to single graph outputs.
 
     Parameters
     ----------
@@ -62,61 +196,47 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
         Adjacency matrix, as square 2d numpy array
     num_thresholds: int, default: 8
         Number of thresholds and resultant sets of node-weighted
-            Directed Acyclic Graphs
+        Directed Acyclic Graphs
     threshold_distribution: float, optional
         If true or float, distributes the thresholds exponentially,
-            with an exponent equal to the float input.
-        Alternatively, a (lambda) function may be passed for custom distributions.
+        with an exponent equal to the float input.
+        Alternatively, a (lambda) function may be passed for custom distributions or
+        custom thresholds may also be given via a list.
+    verbose: bool, optional
+        If true, returns thresholds used to make undirected graphs
 
     Returns
     -------
-    largest_condensed_graphs: list of networkX Graphs
-        list of node weighted condensed networkx graphs reduced from unweighted
-            digraphs determined by thresholds. (See note)
     nx_graphs: list of networkX Graphs
         list of unweighted graphs produced from applying thresholds to the
-            original weighted network
+        original weighted network
 
     Examples
     --------
-    Graphing the resultant network is recommended, as otherwise this is difficult to visualize...
+    >>> import numpy as np
+    >>> a = np.array([
+    ...     [0, 1, 0],
+    ...     [0, 0, 0.4],
+    ...     [0, 0, 0]
+    ... ])
+    >>> unweighted_networks_from_thresholds = nx.graphs_from_thresholds(a, num_thresholds=2)
+    >>> for network in unweighted_networks_from_thresholds:
+    ...     print(network, ":", network.edges)
+    DiGraph with 3 nodes and 2 edges : [(0, 1), (1, 2)]
+    DiGraph with 2 nodes and 1 edges : [(0, 1)]
 
     See Also
     --------
     weight_nodes_by_condensation, graph_entropy, treeness
 
-    >>> import numpy as np
-    >>> a = np.array([
-    ...     [0, 0.2, 0, 0, 0],
-    ...     [0, 0, 0, 0.7, 0],
-    ...     [0, 0.4, 0, 0, 0],
-    ...     [0, 0, 0.1, 0, 1.0],
-    ...     [0, 0, 0, 0, 0],
-    ... ])
-    >>> condensed_networks, base_binary_networks = nx.node_weighted_condense(a)
-    >>> for network in condensed_networks:
-    ...     print(f'{network}, total weight: {nx.get_node_attributes(network, "weight")}')
-    DiGraph with 3 nodes and 2 edges, total weight: {0: 1, 1: 3, 2: 1}
-    DiGraph with 5 nodes and 4 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1, 4: 1}
-    DiGraph with 4 nodes and 3 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1}
-    DiGraph with 4 nodes and 3 edges, total weight: {0: 1, 1: 1, 2: 1, 3: 1}
-    DiGraph with 3 nodes and 2 edges, total weight: {0: 1, 1: 1, 2: 1}
-    DiGraph with 3 nodes and 2 edges, total weight: {0: 1, 1: 1, 2: 1}
-    DiGraph with 2 nodes and 1 edges, total weight: {0: 1, 1: 1}
-    DiGraph with 2 nodes and 1 edges, total weight: {0: 1, 1: 1}
-
     Notes
     ------
-    WIP TODO: As multiple independent graphs may form from applying threshold cutoffs to a weighted graph,
-    only the largest is considered. This might be worth considering in re-evaluating the meaning of
-    weighted network hierarchy coordinate evaluations. (See pages 7, 8 of [1]_, supplementary material)
-
     An threshold_distribution of None results in a linear distribution, otherwise
-     the exponential distribution is sampled from exp(x) \in (0, 1)
+    the exponential distribution is sampled from exp(x) \in (0, 1)
 
     .. [1] "On the origins of hierarchy in complex networks."
-     Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
-     Proceedings of the National Academy of Sciences 110, no. 33 (2013)
+    Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
+    Proceedings of the National Academy of Sciences 110, no. 33 (2013)
     """
     import numpy as np
 
@@ -129,10 +249,11 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
 
     # Establishing Thresholds
     if num_thresholds == 1 or np.isclose(np.max(A) - np.min(A), 0, 1e-15):
-        nx_graphs = [nx.from_numpy_matrix(A, create_using=nx.DiGraph)]
+        nx_graphs = [nx.from_numpy_array(A, create_using=nx.DiGraph)]
+        if verbose:
+            print("0 Threshold used (edge values identical or threshold singular)")
     else:
         if threshold_distribution is None:
-            # try:
             thresholds = list(
                 np.round(
                     np.arange(
@@ -143,6 +264,12 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
                     4,
                 )
             )  # linear distribution
+        elif isinstance(threshold_distribution, list):
+            if max(threshold_distribution) > np.max(A) or min(
+                threshold_distribution
+            ) < np.min(threshold_distribution):
+                raise Exception(ValueError)
+            thresholds = threshold_distribution
         else:
             thresholds = _distribute(
                 dist=threshold_distribution,
@@ -150,8 +277,10 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
                 n=num_thresholds,
             )
         # Converting to binary nx_graphs according to thresholds:
+        if verbose:
+            print(f"Thresholds: {thresholds}")
         nx_graphs = [
-            nx.from_numpy_matrix(np.where(A > threshold, 1, 0), create_using=nx.DiGraph)
+            nx.from_numpy_array(np.where(A > threshold, 1, 0), create_using=nx.DiGraph)
             for threshold in thresholds
         ]
     # removes isolated nodes (0 in & out degree) from binary nodes. (not needed for consolidation)
@@ -159,8 +288,81 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
         G.remove_nodes_from(list(nx.isolates(G)))
 
     # eliminates empty graphs
-    nx_graphs = [graph for graph in nx_graphs if not nx.is_empty(graph)]
-    condensed_graphs = [nx.condensation(G) for G in nx_graphs]
+    return [graph for graph in nx_graphs if not nx.is_empty(graph)]
+
+
+def node_weighted_condense(nx_graphs):
+    """Condenses graphs and reassigns node weight according to original graph.
+
+    Condenses NetworkX DiGraphs with resultant node weight equal to number of nodes
+    in original strongly connected component, and reassigns node indices to match
+    length of the new NetworkX DiGraphs.
+
+    Parameters
+    ----------
+    nx_graphs: (list of) NetworkX DiGraph(s)
+        List of NetworkX Digraphs, or single NetworkX DiGraph
+
+    Returns
+    -------
+    largest_condensed_graphs: list of NetworkX DiGraph(s)
+        Largest (by number of nodes, not node weight) graphs made of each
+        original nx_graph, with resultant node weight equal to the number
+        of nodes in the original graphs (now compressed) strongly
+        connected components.
+
+    Raises
+    -------
+    NetworkXNotImplemented
+        If G is undirected
+
+    Examples
+    -------
+    >>> import numpy as np
+    >>> a = np.array([
+    ...     [0, 1, 0, 0],
+    ...     [0, 0, 1, 0],
+    ...     [0, 1, 0, 1],
+    ...     [0, 0, 0, 0]
+    ... ])
+    >>> A = nx.from_numpy_array(a, create_using=nx.DiGraph)
+    >>> condensed_a = nx.node_weighted_condense(A)[0]
+    >>> for n, w in A.nodes.data('weight'):
+    ...    print(f'Original Node {n}: Weight {w}')
+    Original Node 0: Weight None
+    Original Node 1: Weight None
+    Original Node 2: Weight None
+    Original Node 3: Weight None
+    >>> for n, w in condensed_a.nodes.data('weight'):
+    ...    print(f'Condensed Node {n}: Weight {w}')
+    Condensed Node 0: Weight 1
+    Condensed Node 1: Weight 2
+    Condensed Node 2: Weight 1
+
+
+
+    See Also
+    -------
+    weakly_connected_components
+    weight_nodes_by_condensation
+
+    Notes
+    -------
+    WIP TODO: As multiple independent graphs may result from applying threshold cutoffs to a weighted graph,
+        only the largest is considered. This might be worth considering in re-evaluating the meaning of
+        weighted network hierarchy coordinate evaluations. (See pages 7, 8 of [1]_, supplementary material)
+
+    Total node weight is preserved, graphs are relabeled to remain internally consistent,
+        e.g. if a graph's first 3 nodes are a strongly connected component, they will
+        combine into a single node of weight 3, which will be relabeled as node one.
+    """
+    if isinstance(nx_graphs, list):
+        condensed_graphs = [nx.condensation(G) for G in nx_graphs]
+    elif isinstance(nx_graphs, nx.DiGraph):
+        condensed_graphs = [nx.condensation(nx_graphs)]
+    else:
+        raise Exception(TypeError)
+
     largest_condensed_graphs = []
     for condensed_graph in condensed_graphs:
         largest_condensed_graphs.append(
@@ -173,7 +375,7 @@ def node_weighted_condense(A, num_thresholds=8, threshold_distribution=None):
         for node, attrs in largest_condensed_graphs[-1].nodes.data():
             attrs["weight"] = len(attrs["members"])
 
-    return largest_condensed_graphs, nx_graphs
+    return largest_condensed_graphs
 
 
 @not_implemented_for("undirected")
@@ -209,7 +411,7 @@ def weight_nodes_by_condensation(condensed_graph):
     ... ])
 
     >>> num_thresholds = 2
-    >>> condensed_networks, _ = nx.node_weighted_condense(b, num_thresholds=num_thresholds)
+    >>> condensed_networks = nx.node_weighted_condense(graphs_from_thresholds(b, num_thresholds=num_thresholds))
     >>> for cG in condensed_networks:
     ...     for node, weight in cG.nodes.data("weight"):
     ...         print(f"Node {node}, new weight: {weight}")
@@ -280,7 +482,7 @@ def max_min_layers(G, max_layer=True):
     ...     [0, 0, 0, 0, 0, 0, 0],
     ... ])
 
-    >>> G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
+    >>> G = nx.from_numpy_array(a, create_using=nx.DiGraph)
     >>> print(nx.max_min_layers(G))
     [0, 1]
     >>> print(nx.max_min_layers(G, max_layer=False))
@@ -338,7 +540,7 @@ def leaf_removal(G, top=True):
     ...   [0, 0, 0, 0, 0, 0, 0],
     ...   [0, 0, 0, 0, 0, 0, 0],
     ... ])
-    >>> G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
+    >>> G = nx.from_numpy_array(a, create_using=nx.DiGraph)
     >>> print(nx.to_numpy_array(nx.leaf_removal(G)))
     [[0. 0. 1. 1. 0.]
      [0. 0. 0. 1. 1.]
@@ -413,7 +615,7 @@ def recursive_leaf_removal(G, from_top=True, keep_linkless_layer=False):
     ...     [0, 0, 0, 0, 0, 0, 0],
     ...     [0, 0, 0, 0, 0, 0, 0],
     ... ])
-    >>> G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
+    >>> G = nx.from_numpy_array(a, create_using=nx.DiGraph)
     >>> pruned_to_ground = nx.recursive_leaf_removal(G, from_top=True)
     >>> pruned_from_ground = nx.recursive_leaf_removal(G, from_top=False)
     >>> for pruned_tree in pruned_to_ground:
@@ -467,9 +669,9 @@ def orderability(
     condensed_nx_graph: optional
         Directed acyclic networkX graph if already evaluated to save computational time
     num_thresholds: int, optional
-        only applicable as node_weighted_condense parameter if G is weighted
+        only applicable as graphs_from_thresholds parameter if G is weighted
     threshold_distribution: float, optional
-        only applicable as node_weighted_condense parameter if G is weighted
+        only applicable as graphs_from_thresholds parameter if G is weighted
 
     Return
     -------
@@ -488,7 +690,7 @@ def orderability(
     ...     [0, 0, 0, 0, 0],
     ... ])
 
-    >>> G = nx.from_numpy_matrix(a, create_using=nx.DiGraph)
+    >>> G = nx.from_numpy_array(a, create_using=nx.DiGraph)
     >>> print(nx.orderability(G))
     0.925
 
@@ -511,11 +713,13 @@ def orderability(
         )
     # unweighted (non-binary) check
     if not np.array_equal(np.unique(nx.to_numpy_array(G)), [0, 1]):
-        condensed_graphs, original_graphs = node_weighted_condense(
+        original_graphs = graphs_from_thresholds(
             nx.to_numpy_array(G),
             num_thresholds,
             threshold_distribution,
         )
+        condensed_graphs = node_weighted_condense(original_graphs)
+
         o = sum(
             orderability(OG, CG) for CG, OG in zip(condensed_graphs, original_graphs)
         )
@@ -714,7 +918,7 @@ def analytic_graph_entropy(DAG, forward_entropy=False):
     ...     [0, 0, 0, 0, 0, 0, 0],
     ... ])
 
-    >>> condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph)))
+    >>> condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_array(b, create_using=nx.DiGraph)))
     >>> fwd_graph_entropy = [round(nx.graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
     >>> bkwd_graph_entropy = [round(nx.graph_entropy(net), 3) for net in condensed_network_layers]
     >>> print("graph entropy (forwards | backwards): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
@@ -815,7 +1019,7 @@ def graph_entropy(DAG, forward_entropy=False):
     ...     [0, 0, 0, 0, 0, 0, 0],
     ... ])
 
-    >>> condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_matrix(b, create_using=nx.DiGraph)))
+    >>> condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_array(b, create_using=nx.DiGraph)))
     >>> fwd_graph_entropy = [round(nx.graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
     >>> bkwd_graph_entropy = [round(nx.graph_entropy(net), 3) for net in condensed_network_layers]
     >>> print("graph entropy (forwards | backwards): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
@@ -903,7 +1107,7 @@ def _single_graph_treeness(DAG):
     ...     [0, 0, 0, 0, 0, 0, 0],
     ...     [0, 0, 0, 0, 0, 0, 0],
     ... ])
-    >>> condensed_network = nx.node_weighted_condense(a)[0][0]
+    >>> condensed_network = nx.node_weighted_condense(graphs_from_thresholds(a))[0]
     >>> print("treeness (single graph): {0}".format(np.round(_single_graph_treeness(condensed_network), 3)))
     treeness (single graph): 0.333
 
@@ -958,7 +1162,7 @@ def treeness(DAG):
     ...     [0, 0, 0, 1, 0, 0, 1],
     ...     [0, 0, 0, 0, 0, 0, 0],
     ... ])
-    >>> dag = nx.condensation(nx.from_numpy_matrix(a, create_using=nx.DiGraph))
+    >>> dag = nx.condensation(nx.from_numpy_array(a, create_using=nx.DiGraph))
     >>> print("treeness: {0}".format(np.round(nx.treeness(dag), 2)))
     treeness: -0.56
 
@@ -1076,9 +1280,11 @@ def hierarchy_coordinates(A, num_thresholds=8, threshold_distribution=None):
         # raise Exception("Unconnected graph; trivially 0 hierarchy")  # TODO: Raise exception if undefined instead
         return 0, 0, 0
 
-    condensed_graphs, original_graphs = node_weighted_condense(
+    original_graphs = graphs_from_thresholds(
         np_A, num_thresholds, threshold_distribution
     )
+    condensed_graphs = node_weighted_condense(original_graphs)
+
     t = sum(treeness(G) for G in condensed_graphs) / len(condensed_graphs)
     f = sum(feedforwardness(G) for G in condensed_graphs) / len(condensed_graphs)
     o = sum(
