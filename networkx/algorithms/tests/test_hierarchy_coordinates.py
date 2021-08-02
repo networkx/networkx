@@ -67,6 +67,28 @@ def test_graphs_from_thresholds():
         for e, ee in zip(network.edges(), edges):
             assert e == ee
 
+    # test custom thresholds
+    d = np.array(
+        [
+            [0, 4, 0, 0],
+            [0, 0, 3, 0],
+            [0, 0, 0, 2],
+            [0, 0, 3, 0],
+        ]
+    )
+    # pytest.raises(ValueError, nx.graphs_from_thresholds, d, 2, [2, 9])
+    unweighted_networks_from_thresholds = nx.graphs_from_thresholds(
+        d, threshold_distribution=[1.5, 2.5, 3.5]
+    )
+    end_edges = [
+        [(0, 1), (1, 2), (2, 3), (3, 2)],
+        [(0, 1), (1, 2), (3, 2)],
+        [(0, 1)],
+    ]
+    for network, edges in zip(unweighted_networks_from_thresholds, end_edges):
+        for e, ee in zip(network.edges(), edges):
+            assert e == ee
+
 
 def test_node_weighted_condense():
     center_cycle_A = np.array(

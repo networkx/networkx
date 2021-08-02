@@ -244,6 +244,8 @@ def graphs_from_thresholds(
     A_elements = set(A.flat)
     if len(A_elements) == 2 and 0 in A_elements:
         num_thresholds = 1
+    elif isinstance(threshold_distribution, list):
+        num_thresholds = len(threshold_distribution)
     else:
         num_thresholds = num_thresholds
 
