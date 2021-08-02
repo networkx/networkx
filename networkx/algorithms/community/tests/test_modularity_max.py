@@ -24,17 +24,25 @@ def test_modularity_communities(func):
     assert set(func(G)) == expected
 
 
+def test_greedy_modularity_communities_relabeled():
+    G = nx.balanced_tree(2, 2)
+    mapping = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g", 7: "h"}
+    G = nx.relabel_nodes(G, mapping)
+
+    expected = [frozenset({"e", "d", "a", "b"}), frozenset({"c", "f", "g"})]
+
+    assert greedy_modularity_communities(G) == expected
+
+
 def test_modularity_communities_weighted():
     G = nx.balanced_tree(2, 3)
-    mapping = {0: 15}
-    G = nx.relabel_nodes(G, mapping)
     for (a, b) in G.edges:
-        if ((a == 1) or (a == 2)) and (b != 15):
+        if ((a == 1) or (a == 2)) and (b != 0):
             G[a][b]["weight"] = 10.0
         else:
             G[a][b]["weight"] = 1.0
 
-    expected = [{15, 1, 3, 4, 7, 8, 9, 10}, {2, 5, 6, 11, 12, 13, 14}]
+    expected = [{0, 1, 3, 4, 7, 8, 9, 10}, {2, 5, 6, 11, 12, 13, 14}]
 
     assert greedy_modularity_communities(G, weight="weight") == expected
 
