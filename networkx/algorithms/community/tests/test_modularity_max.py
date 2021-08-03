@@ -20,15 +20,19 @@ def test_modularity_communities(func):
     expected = {john_a, overlap, mr_hi}
     assert set(func(G)) == expected
 
+
+@pytest.mark.parametrize(
+    "func", (greedy_modularity_communities, naive_greedy_modularity_communities)
+)
+def test_modularity_communities_categorical_labels(func):
     # Using other than 0-starting contiguous integers as node-labels.
     G = nx.Graph(
         [
             ("a", "b"),
             ("a", "c"),
             ("b", "c"),
-            ("a", "d"),
-            ("b", "d"),
-            ("d", "e"),  # inter-community edge
+            ("b", "d"),  # inter-community edge
+            ("d", "e"),
             ("d", "f"),
             ("d", "g"),
             ("f", "g"),
