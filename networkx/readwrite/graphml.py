@@ -4,6 +4,10 @@ GraphML
 *******
 Read and write graphs in GraphML format.
 
+Security Warning: This parser uses the standard xml library present in Python. 
+It is vulnerable to several XML related vulnerabilites, such as XXE and denial 
+of service attacks. Only parse GraphML files you trust.
+
 This implementation does not support mixed graphs (directed and unidirected
 edges together), hyperedges, nested graphs, or ports.
 
