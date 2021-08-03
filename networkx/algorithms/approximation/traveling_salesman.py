@@ -33,8 +33,6 @@ important in operations research and theoretical computer science.
 http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """
 import math
-from dataclasses import dataclass, field
-from queue import PriorityQueue
 
 import networkx as nx
 
@@ -353,8 +351,9 @@ def asadpour_tsp(G, weight="weight"):
 
     Returns
     -------
-        cycle : list of nodes Returns the cycle (list of nodes) that a salesman
-            can follow to minimize the total weight of the trip.
+    cycle : list of nodes
+        Returns the cycle (list of nodes) that a salesman can follow to minimize
+        the total weight of the trip.
 
     Raises
     ------
@@ -368,7 +367,66 @@ def asadpour_tsp(G, weight="weight"):
        traveling salesman problem, Operations research, 65 (2017),
        pp. 1043–1061
     """
-    pass
+    from math import log as ln
+    from math import exp
+    from math import ceil
+
+    opt_hk, z_star = held_karp_ascent(G, weight)
+
+    # Test to see if the ascent method found an integer solution or a fractional
+    # solution. If it is integral then z_star is a nx.Graph, otherwise it is
+    # a dict
+    if type(z_star) is nx.Graph:
+        # Here we are using the shortcutting method to go from the list of edges
+        # returned from eularian_circuit to a list of nodes
+        return _shortcutting(nx.eulerian_circuit(z_star))
+
+    # Create the undirected support of z_star
+    z_support = nx.MultiGraph()
+    for u, v in z_star:
+        if (u, v) not in z_support.edges:
+            edge_weight = min(G[u, v][weight], G[v, u][weight])
+            z_support.add_edge(u, v, **{weight: edge_weight})
+
+    # Create the exponential distribution of spanning trees
+    gamma = spanning_tree_distribution(z_support, z_star)
+
+    # Write the lambda values to the edges of z_support
+    for u, v, d in z_support.edges(data=True):
+        d["lambda"] = exp(gamma[(u, v)])
+
+    # Sample 2 * ceil( ln(n) ) spanning trees and record the minimum one
+    minimum_sampled_tree = None
+    minimum_sampled_tree_weight = math.inf
+    for _ in range(2 * ceil(ln(G.number_of_nodes()))):
+        sampled_tree = sample_spanning_tree(z_support, "lambda")
+        sampled_tree_weight = sampled_tree.size(weight)
+        if sampled_tree_weight < minimum_sampled_tree_weight:
+            minimum_sampled_tree = sampled_tree.copy()
+            minimum_sampled_tree_weight = sampled_tree_weight
+
+    # Orient the edges in that tree to keep the cost of the tree the same.
+    t_star = nx.DiGraph
+    for u, v, d in minimum_sampled_tree.edges(data=weight):
+        if d == G[u][v][weight]:
+            t_star.add_edge(u, v, **{weight: d})
+        else:
+            t_star.add_edge(v, u, **{weight: d})
+
+    # Find the node demands needed to neutralize the flow of t_star in G
+    node_demands = {n: t_star.out_degree(n) - t_star.in_degree(n) for n in t_star}
+    nx.set_node_attributes(G, node_demands, "demand")
+
+    # Find the min_cost_flow
+    flow_dict = nx.min_cost_flow(G, "demand")
+
+    # Build the flow into t_star
+    for u, v in flow_dict:
+        if (u, v) not in t_star.edges:
+            t_star.add_edge(u, v)
+
+    # Return the shortcut eulerian curcuit
+    return _shortcutting(nx.eulerian_circuit(t_star))
 
 
 def held_karp_ascent(G, weight="weight"):
@@ -852,11 +910,8 @@ def sample_spanning_tree(G, lambda_key):
        algorithms, 11 (1990), pp. 185–207
     """
     import random
-    import sys
 
-    seed = random.randrange(sys.maxsize)
-    random.seed(seed)
-    # print(f"\nseed was: {seed}")
+    random.seed()
 
     def find_node(merged_nodes, n):
         """
