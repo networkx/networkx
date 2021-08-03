@@ -421,11 +421,12 @@ def asadpour_tsp(G, weight="weight"):
     flow_dict = nx.min_cost_flow(G, "demand")
 
     # Build the flow into t_star
-    for u, v in flow_dict:
-        if (u, v) not in t_star.edges:
-            t_star.add_edge(u, v)
+    for source, values in flow_dict:
+        for target in values:
+            if (source, target) not in t_star.edges and values[target] > 0:
+                t_star.add_edge(source, target)
 
-    # Return the shortcut eulerian curcuit
+    # Return the shortcut eulerian circuit
     return _shortcutting(nx.eulerian_circuit(t_star))
 
 
