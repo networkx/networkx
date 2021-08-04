@@ -41,6 +41,7 @@ from networkx.utils import py_random_state, not_implemented_for, pairwise
 __all__ = [
     "traveling_salesman_problem",
     "christofides",
+    "asadpour_tsp",
     "greedy_tsp",
     "simulated_annealing_tsp",
     "threshold_accepting_tsp",
@@ -298,7 +299,10 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
         dist[n] = d
         path[n] = p
 
-    GG = nx.Graph()
+    if method is asadpour_tsp:
+        GG = nx.DiGraph()
+    else:
+        GG = nx.Graph()
     for u in nodes:
         for v in nodes:
             if u == v:
@@ -385,28 +389,30 @@ def asadpour_tsp(G, weight="weight"):
     z_support = nx.MultiGraph()
     for u, v in z_star:
         if (u, v) not in z_support.edges:
-            edge_weight = min(G[u, v][weight], G[v, u][weight])
+            edge_weight = min(G[u][v][weight], G[v][u][weight])
             z_support.add_edge(u, v, **{weight: edge_weight})
 
     # Create the exponential distribution of spanning trees
     gamma = spanning_tree_distribution(z_support, z_star)
 
     # Write the lambda values to the edges of z_support
-    for u, v, d in z_support.edges(data=True):
-        d["lambda"] = exp(gamma[(u, v)])
+    z_support = nx.Graph(z_support)
+    lambda_dict = {(u, v): exp(gamma[(u, v)]) for u, v in z_support.edges()}
+    nx.set_edge_attributes(z_support, lambda_dict, "lambda_key")
+    del gamma, lambda_dict
 
     # Sample 2 * ceil( ln(n) ) spanning trees and record the minimum one
     minimum_sampled_tree = None
     minimum_sampled_tree_weight = math.inf
     for _ in range(2 * ceil(ln(G.number_of_nodes()))):
-        sampled_tree = sample_spanning_tree(z_support, "lambda")
+        sampled_tree = sample_spanning_tree(z_support, "lambda_key")
         sampled_tree_weight = sampled_tree.size(weight)
         if sampled_tree_weight < minimum_sampled_tree_weight:
             minimum_sampled_tree = sampled_tree.copy()
             minimum_sampled_tree_weight = sampled_tree_weight
 
     # Orient the edges in that tree to keep the cost of the tree the same.
-    t_star = nx.DiGraph
+    t_star = nx.DiGraph()
     for u, v, d in minimum_sampled_tree.edges(data=weight):
         if d == G[u][v][weight]:
             t_star.add_edge(u, v, **{weight: d})
@@ -421,13 +427,14 @@ def asadpour_tsp(G, weight="weight"):
     flow_dict = nx.min_cost_flow(G, "demand")
 
     # Build the flow into t_star
-    for source, values in flow_dict:
+    for source, values in flow_dict.items():
         for target in values:
             if (source, target) not in t_star.edges and values[target] > 0:
                 t_star.add_edge(source, target)
 
     # Return the shortcut eulerian circuit
-    return _shortcutting(nx.eulerian_circuit(t_star))
+    circuit = nx.eulerian_circuit(t_star)
+    return _shortcutting(circuit)
 
 
 def held_karp_ascent(G, weight="weight"):

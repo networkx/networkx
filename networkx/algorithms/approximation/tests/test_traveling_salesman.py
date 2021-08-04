@@ -824,3 +824,35 @@ def test_spanning_tree_sample():
     # Assert that p is greater than the significance level so that we do not
     # reject the null hypothesis
     assert not p < 0.01
+
+
+def test_asadpour_tsp1():
+    """
+    Test the complete asadpour tsp algorithm with the fractional, symmetric
+    Held Karp solution
+    """
+    # This version of Figure 2 has all of the edge weights multiplied by 100
+    # and is a complete directed graph with infinite edge weights for the
+    # edges not listed in the original graph
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            [0, 100, 100, 100000, 100000, 1],
+            [100, 0, 100, 100000, 1, 100000],
+            [100, 100, 0, 1, 100000, 100000],
+            [100000, 100000, 1, 0, 100, 100],
+            [100000, 1, 100000, 100, 0, 100],
+            [1, 100000, 100000, 100, 100, 0],
+        ]
+    )
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+
+    tour = nx_app.traveling_salesman_problem(
+        G, weight="weight", method=nx_app.asadpour_tsp
+    )
+
+    print()
+    for n in tour:
+        print(n)
