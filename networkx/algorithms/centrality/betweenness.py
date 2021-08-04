@@ -404,6 +404,34 @@ def _rescale_e(betweenness, n, normalized, directed=False, k=None):
 
 @not_implemented_for("graph")
 def _get_edge_keys(G, weight):
+    r"""Similar to `_weight_function`. Returns a function that
+    returns the keys of edges with the lowest weight between
+    two nodes.
+
+    This function is only suitable for multigraphs.
+
+    Parameters
+    ----------
+    G : NetworkX graph.
+
+    weight : string or function
+        If it is callable, `weight` itself is returned. If it is a string,
+        it is assumed to be the name of the edge attribute that represents
+        the weight of an edge. In that case, a function is returned that
+        gets the edge weight according to the specified edge attribute.
+
+    Returns
+    -------
+    function
+        This function returns a callable that accepts exactly three inputs:
+        a node `u`, a node adjacent to the first one `v` and the edge attribute
+        dictionary `d` for the edge joining those nodes. That function returns
+        a list with integers representing the keys of those edges matching
+        the lowest `weight` of edges between `u` and `v`.
+
+    If any edge does not have an attribute with key `weight`, it is assumed to
+    have weight one.
+    """
     _weight = _weight_function(G, weight)
 
     def get_keys(u, v, d):
@@ -414,6 +442,26 @@ def _get_edge_keys(G, weight):
 
 
 def _add_edge_keys(G, betweenness, weight=None):
+    r"""Adds the corrected betweenness centrality (BC) values for multigraphs.
+
+    Parameters
+    ----------
+    G : NetworkX graph.
+
+    betweenness : dictionary
+        Dictionary mapping adjacent node tuples to betweenness centrality values.
+
+    weight : string or function
+        See `_get_edge_keys` for details. Defaults to `None`.
+
+    Returns
+    -------
+    edges : dictionary
+        The parameter `betweenness` including edges with keys and their
+        betweenness centrality values.
+
+    The BC value is divided among edges of equal weight.
+    """
     _keys = _get_edge_keys(G, weight)
     betweenness.update(dict.fromkeys(G.edges(keys=True), 0.0))
 
