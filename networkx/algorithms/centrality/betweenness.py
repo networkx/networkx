@@ -402,16 +402,23 @@ def _rescale_e(betweenness, n, normalized, directed=False, k=None):
     return betweenness
 
 
-def _add_edge_keys(G, betweenness, weight=None):
+@not_implemented_for("graph")
+def _get_edge_keys(G, weight):
     _weight = _weight_function(G, weight)
+
+    def get_keys(u, v, d):
+        w = _weight(u, v, d)
+        return [k for k in d if d[k].get(weight, 1) == w]
+
+    return get_keys
+
+
+def _add_edge_keys(G, betweenness, weight=None):
+    _keys = _get_edge_keys(G, weight)
     betweenness.update(dict.fromkeys(G.edges(keys=True), 0.0))
 
-    get_keys = lambda u, v, d: [
-        k for k in d if not weight or d[k].get(weight, 1) == _weight(u, v, d)
-    ]
-
     for u, v in G.edges():
-        keys = get_keys(u, v, G[u][v])
+        keys = _keys(u, v, G[u][v])
         for k in keys:
             betweenness[(u, v, k)] = betweenness[(u, v)] / len(keys)
 
