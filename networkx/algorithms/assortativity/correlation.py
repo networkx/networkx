@@ -79,17 +79,21 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     degrees = None
 
     if G.is_directed():
-        degree_method = {"out": G.out_degree, "in": G.in_degree}
-
-        degrees = set([d for _, d in degree_method[x](nodes, weight=weight)])
-
-        if y != x:
-            degrees.update([d for _, d in degree_method[y](nodes, weight=weight)])
+        indeg = (
+            set([d for _, d in G.in_degree(nodes, weight=weight)])
+            if "in" in (x, y)
+            else set()
+        )
+        outdeg = (
+            set([d for _, d in G.out_degree(nodes, weight=weight)])
+            if "out" in (x, y)
+            else set()
+        )
+        degrees = set.union(indeg, outdeg)
     else:
         degrees = set([d for _, d in G.degree(nodes, weight=weight)])
 
     mapping = {d: i for i, d, in enumerate(degrees)}
-
     M = degree_mixing_matrix(G, x=x, y=y, nodes=nodes, weight=weight, mapping=mapping)
 
     return numeric_ac(M, mapping=mapping)
