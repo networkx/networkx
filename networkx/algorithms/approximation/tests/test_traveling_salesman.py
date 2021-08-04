@@ -831,6 +831,8 @@ def test_asadpour_tsp1():
     Test the complete asadpour tsp algorithm with the fractional, symmetric
     Held Karp solution
     """
+    from math import log as ln
+
     # This version of Figure 2 has all of the edge weights multiplied by 100
     # and is a complete directed graph with infinite edge weights for the
     # edges not listed in the original graph
@@ -854,5 +856,74 @@ def test_asadpour_tsp1():
     )
 
     print()
-    for n in tour:
+    tour_iter = tour.__iter__()
+    start_node = next(tour_iter)
+    print(start_node)
+    tour_weight = 0
+    for n in tour_iter:
         print(n)
+        tour_weight += G[start_node][n]["weight"]
+        start_node = n
+
+    assert tour_weight / 402 < 402 * (ln(6) / ln(ln(6)))
+
+
+def test_asadpour_real_world():
+    """
+    This test uses airline prices between the six largest cities in the US.
+
+        * New York City -> JFK
+        * Los Angeles -> LAX
+        * Chicago -> ORD
+        * Houston -> IAH
+        * Phoenix -> PHX
+        * Philadelphia -> PHL
+
+    Flight prices from August 2021 using Delta or American airlines to get
+    nonstop flight.
+    """
+    from math import log as ln
+
+    np = pytest.importorskip("numpy")
+
+    node_map = {
+        0: "JFK",
+        1: "LAX",
+        2: "ORD",
+        3: "IAH",
+        4: "PHX",
+        5: "PHL",
+    }
+
+    G_array = np.array(
+        [
+            # JFK  LAX  ORD  IAH  PHX  PHL
+            [0, 243, 199, 208, 169, 183],  # JFK
+            [277, 0, 217, 123, 127, 252],  # LAX
+            [297, 197, 0, 197, 123, 177],  # ORD
+            [303, 169, 197, 0, 117, 117],  # IAH
+            [257, 127, 160, 117, 0, 319],  # PHX
+            [183, 332, 217, 117, 319, 0],  # PHL
+        ]
+    )
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    # This test will use non-integer node labels
+    nx.relabel_nodes(G, node_map, copy=False)
+
+    tour = nx_app.traveling_salesman_problem(
+        G, weight="weight", method=nx_app.asadpour_tsp
+    )
+
+    print()
+    tour_iter = tour.__iter__()
+    start_node = next(tour_iter)
+    print(start_node)
+    tour_weight = 0
+    for n in tour_iter:
+        print(n)
+        tour_weight += G[start_node][n]["weight"]
+        start_node = n
+    print(f"Total Cost: {tour_weight}")
+
+    assert tour_weight / 872 < 872 * (ln(6) / ln(ln(6)))

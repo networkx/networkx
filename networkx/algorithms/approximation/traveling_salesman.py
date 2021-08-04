@@ -412,7 +412,7 @@ def asadpour_tsp(G, weight="weight"):
             minimum_sampled_tree_weight = sampled_tree_weight
 
     # Orient the edges in that tree to keep the cost of the tree the same.
-    t_star = nx.DiGraph()
+    t_star = nx.MultiDiGraph()
     for u, v, d in minimum_sampled_tree.edges(data=weight):
         if d == G[u][v][weight]:
             t_star.add_edge(u, v, **{weight: d})
@@ -430,7 +430,9 @@ def asadpour_tsp(G, weight="weight"):
     for source, values in flow_dict.items():
         for target in values:
             if (source, target) not in t_star.edges and values[target] > 0:
-                t_star.add_edge(source, target)
+                # IF values[target] > 0 we have to add that many edges
+                for _ in range(values[target]):
+                    t_star.add_edge(source, target)
 
     # Return the shortcut eulerian circuit
     circuit = nx.eulerian_circuit(t_star)
