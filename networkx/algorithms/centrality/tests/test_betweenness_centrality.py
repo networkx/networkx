@@ -56,6 +56,7 @@ class TestBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_sample_from_P3(self):
+        """Betweenness centrality: P3 sample"""
         G = nx.path_graph(3)
         b_answer = {0: 0.0, 1: 1.0, 2: 0.0}
         b = nx.betweenness_centrality(G, k=3, weight=None, normalized=False, seed=1)
@@ -636,6 +637,7 @@ class TestWeightedEdgeBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_weighted_graph(self):
+        """Edge betweenness centrality: weighted"""
         eList = [
             (0, 1, 5),
             (0, 2, 4),
@@ -665,6 +667,7 @@ class TestWeightedEdgeBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_normalized_weighted_graph(self):
+        """Edge betweenness centrality: normalized weighted"""
         eList = [
             (0, 1, 5),
             (0, 2, 4),
@@ -695,6 +698,7 @@ class TestWeightedEdgeBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n] / norm, abs=1e-7)
 
     def test_weighted_multigraph(self):
+        """Edge betweenness centrality: weighted multigraph"""
         eList = [
             (0, 1, 5),
             (0, 2, 4),
@@ -732,6 +736,7 @@ class TestWeightedEdgeBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_normalized_weighted_multigraph(self):
+        """Edge betweenness centrality: normalized weighted multigraph"""
         eList = [
             (0, 1, 5),
             (0, 2, 4),
