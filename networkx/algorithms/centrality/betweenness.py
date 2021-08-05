@@ -426,8 +426,8 @@ def _get_edge_keys(G, weight):
         This function returns a callable that accepts exactly three inputs:
         a node `u`, a node adjacent to the first one `v` and the edge attribute
         dictionary `d` for the edge joining those nodes. That function returns
-        a list with integers representing the keys of those edges matching
-        the lowest `weight` of edges between `u` and `v`.
+        a list with edge keys of those edges matching the lowest `weight` of
+        edges between `u` and `v`.
 
     If any edge does not have an attribute with key `weight`, it is assumed to
     have weight one.
