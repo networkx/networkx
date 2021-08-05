@@ -739,6 +739,7 @@ class TestWeightedEdgeBetweennessCentrality:
         """Edge betweenness centrality: normalized weighted multigraph"""
         eList = [
             (0, 1, 5),
+            (0, 1, 4),
             (0, 2, 4),
             (0, 3, 3),
             (0, 3, 3),
@@ -757,12 +758,13 @@ class TestWeightedEdgeBetweennessCentrality:
         b = nx.edge_betweenness_centrality(G, weight="weight", normalized=True)
         b_answer = {
             (0, 1, 0): 0.0,
+            (0, 1, 1): 0.5,
             (0, 2, 0): 1.0,
-            (0, 3, 0): 1.0,
-            (0, 3, 1): 1.0,
+            (0, 3, 0): 0.75,
+            (0, 3, 1): 0.75,
             (0, 4, 0): 1.0,
             (1, 2, 0): 2.0,
-            (1, 3, 0): 3.5,
+            (1, 3, 0): 3.0,
             (1, 3, 1): 0.0,
             (1, 4, 0): 1.5,
             (1, 4, 1): 0.0,
