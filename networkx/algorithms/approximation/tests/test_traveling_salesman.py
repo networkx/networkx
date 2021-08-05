@@ -405,20 +405,7 @@ def test_held_karp_ascent():
         ]
     )
 
-    solution_z_star = {
-        (0, 4): 5 / 6,
-        (0, 5): 5 / 6,
-        (1, 3): 5 / 6,
-        (1, 5): 5 / 6,
-        (2, 3): 5 / 6,
-        (2, 4): 5 / 6,
-        (3, 1): 5 / 6,
-        (3, 2): 5 / 6,
-        (4, 0): 5 / 6,
-        (4, 2): 5 / 6,
-        (5, 0): 5 / 6,
-        (5, 1): 5 / 6,
-    }
+    solution_edges = [(1, 3), (2, 4), (3, 2), (4, 0), (5, 1), (0, 5)]
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     opt_hk, z_star = tsp.held_karp_ascent(G)
@@ -426,7 +413,9 @@ def test_held_karp_ascent():
     # Check that the optimal weights are the same
     assert opt_hk == 207
     # Check that the z_stars are the same
-    assert z_star == solution_z_star
+    solution = nx.DiGraph()
+    solution.add_edges_from(solution_edges)
+    assert nx.utils.edges_equal(z_star.edges, solution.edges)
 
 
 def test_ascent_fractional_solution():
@@ -506,32 +495,17 @@ def test_ascent_method_asymmetric():
         ]
     )
 
-    solution_edges = {
-        (0, 1): 6 / 7,
-        (1, 3): 6 / 7,
-        (3, 2): 6 / 7,
-        (2, 5): 6 / 7,
-        (5, 6): 6 / 7,
-        (4, 0): 6 / 7,
-        (6, 4): 6 / 7,
-        (1, 0): 6 / 7,
-        (3, 1): 6 / 7,
-        (2, 3): 6 / 7,
-        (5, 2): 6 / 7,
-        (6, 5): 6 / 7,
-        (0, 4): 6 / 7,
-        (4, 6): 6 / 7,
-    }
+    solution_edges = [(0, 1), (1, 3), (3, 2), (2, 5), (5, 6), (4, 0), (6, 4)]
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     opt_hk, z_star = tsp.held_karp_ascent(G)
 
     # Check that the optimal weights are the same
-    assert opt_hk == 190.0
+    assert round(opt_hk, 4) == 190.0000
     # Check that the z_stars match.
-    assert {key: round(z_star[key], 4) for key in z_star} == {
-        key: round(solution_edges[key], 4) for key in solution_edges
-    }
+    solution = nx.DiGraph()
+    solution.add_edges_from(solution_edges)
+    assert nx.utils.edges_equal(z_star.edges, solution.edges)
 
 
 def test_ascent_method_asymmetric_2():
@@ -554,20 +528,7 @@ def test_ascent_method_asymmetric_2():
         ]
     )
 
-    solution_edges = {
-        (0, 5): 5 / 6,
-        (5, 0): 5 / 6,
-        (5, 4): 5 / 6,
-        (4, 5): 5 / 6,
-        (1, 3): 5 / 6,
-        (3, 1): 5 / 6,
-        (3, 0): 5 / 6,
-        (0, 3): 5 / 6,
-        (2, 1): 5 / 6,
-        (1, 2): 5 / 6,
-        (4, 2): 5 / 6,
-        (2, 4): 5 / 6,
-    }
+    solution_edges = [(0, 5), (5, 4), (1, 3), (3, 0), (2, 1), (4, 2)]
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     opt_hk, z_star = tsp.held_karp_ascent(G)
@@ -575,9 +536,9 @@ def test_ascent_method_asymmetric_2():
     # Check that the optimal weights are the same
     assert opt_hk == 144.0
     # Check that the z_stars match.
-    assert {key: round(z_star[key], 4) for key in z_star} == {
-        key: round(solution_edges[key], 4) for key in solution_edges
-    }
+    solution = nx.DiGraph()
+    solution.add_edges_from(solution_edges)
+    assert nx.utils.edges_equal(z_star.edges, solution.edges)
 
 
 def test_held_karp_ascent_asymmetric_3():
@@ -600,33 +561,22 @@ def test_held_karp_ascent_asymmetric_3():
         ]
     )
 
-    solution = {
-        (0, 2): 5 / 12,
-        (0, 5): 5 / 12,
-        (2, 4): 5 / 12,
-        (4, 5): 5 / 12,
-        (2, 0): 5 / 12,
-        (5, 0): 5 / 12,
-        (4, 2): 5 / 12,
-        (5, 4): 5 / 12,
-        (0, 3): 5 / 6,
-        (1, 3): 5 / 6,
-        (1, 4): 5 / 6,
-        (2, 5): 5 / 6,
-        (3, 0): 5 / 6,
-        (3, 1): 5 / 6,
-        (4, 1): 5 / 6,
-        (5, 2): 5 / 6,
-    }
+    solution1_edges = [(0, 3), (1, 4), (2, 5), (3, 1), (4, 2), (5, 0)]
+
+    solution2_edges = [(0, 3), (3, 1), (1, 4), (4, 5), (2, 0), (5, 2)]
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     opt_hk, z_star = tsp.held_karp_ascent(G)
 
     assert opt_hk == 13.0
     # Check that the z_stars are the same
-    assert {key: round(z_star[key], 4) for key in z_star} == {
-        key: round(solution[key], 4) for key in solution
-    }
+    solution1 = nx.DiGraph()
+    solution1.add_edges_from(solution1_edges)
+    solution2 = nx.DiGraph()
+    solution2.add_edges_from(solution2_edges)
+    assert nx.utils.edges_equal(z_star.edges, solution1.edges) or nx.utils.edges_equal(
+        z_star.edges, solution2.edges
+    )
 
 
 def test_held_karp_ascent_fractional_asymmetric():
@@ -747,6 +697,7 @@ def test_spanning_tree_sample():
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
     from math import exp
+    from random import Random
 
     pytest.importorskip("numpy")
     stats = pytest.importorskip("scipy.stats")
@@ -802,9 +753,16 @@ def test_spanning_tree_sample():
     # Sample the spanning trees
     #
     # Assert that they are actually trees and record which of the 75 trees we
-    # have sampled
+    # have sampled.
+    #
+    # For repeatability, we want to take advantage of the decorators in NetworkX
+    # to randomly sample the same sample each time. However, if we pass in a
+    # constant seed to sample_spanning_tree we will get the same tree each time.
+    # Instead, we can create our own random number generator with a fixed seed
+    # and pass those into sample_spanning_tree.
+    rng = Random(37)
     for _ in range(sample_size):
-        sampled_tree = tsp.sample_spanning_tree(G, "lambda_key")
+        sampled_tree = tsp.sample_spanning_tree(G, "lambda_key", rng)
         assert nx.is_tree(sampled_tree)
 
         for t in tree_expected:
@@ -826,46 +784,60 @@ def test_spanning_tree_sample():
     assert not p < 0.01
 
 
-def test_asadpour_tsp1():
+def test_asadpour_tsp():
     """
     Test the complete asadpour tsp algorithm with the fractional, symmetric
-    Held Karp solution
+    Held Karp solution. This test also uses an incomplete graph as input.
     """
-    from math import log as ln
-
     # This version of Figure 2 has all of the edge weights multiplied by 100
-    # and is a complete directed graph with infinite edge weights for the
-    # edges not listed in the original graph
-    np = pytest.importorskip("numpy")
+    # and the 0 weight edges have a weight of 1.
+    pytest.importorskip("numpy")
 
-    G_array = np.array(
-        [
-            [0, 100, 100, 100000, 100000, 1],
-            [100, 0, 100, 100000, 1, 100000],
-            [100, 100, 0, 1, 100000, 100000],
-            [100000, 100000, 1, 0, 100, 100],
-            [100000, 1, 100000, 100, 0, 100],
-            [1, 100000, 100000, 100, 100, 0],
-        ]
-    )
+    edge_list = [
+        (0, 1, 100),
+        (0, 2, 100),
+        (0, 5, 1),
+        (1, 2, 100),
+        (1, 4, 1),
+        (2, 3, 1),
+        (3, 4, 100),
+        (3, 5, 100),
+        (4, 5, 100),
+        (1, 0, 100),
+        (2, 0, 100),
+        (5, 0, 1),
+        (2, 1, 100),
+        (4, 1, 1),
+        (3, 2, 1),
+        (4, 3, 100),
+        (5, 3, 100),
+        (5, 4, 100),
+    ]
 
-    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(edge_list)
 
-    tour = nx_app.traveling_salesman_problem(
-        G, weight="weight", method=nx_app.asadpour_tsp
-    )
+    def fixed_asadpour(G, weight):
+        return nx_app.asadpour_atsp(G, weight, 19)
 
-    print()
-    tour_iter = tour.__iter__()
-    start_node = next(tour_iter)
-    print(start_node)
-    tour_weight = 0
-    for n in tour_iter:
-        print(n)
-        tour_weight += G[start_node][n]["weight"]
-        start_node = n
+    tour = nx_app.traveling_salesman_problem(G, weight="weight", method=fixed_asadpour)
 
-    assert tour_weight / 402 < 402 * (ln(6) / ln(ln(6)))
+    # Check that the returned list is a valid tour. Because this is an
+    # incomplete graph, the conditions are not as strict. We need the tour to
+    #
+    #   Start and end at the same node
+    #   Pass through every vertex at least once
+    #   Have a total cost at most ln(6) / ln(ln(6)) = 3.0723 times the optimal
+    #
+    # For the second condition it is possible to have the tour pass through the
+    # same vertex more then. Imagine that the tour on the complete version takes
+    # an edge not in the original graph. In the output this is substituted with
+    # the shortest path between those vertices, allowing vertices to appear more
+    # than once.
+    #
+    # However, we are using a fixed random number generator so we know what the
+    # expected tour is.
+    assert [1, 4, 5, 0, 2, 3, 2, 1] == tour
 
 
 def test_asadpour_real_world():
@@ -880,20 +852,9 @@ def test_asadpour_real_world():
         * Philadelphia -> PHL
 
     Flight prices from August 2021 using Delta or American airlines to get
-    nonstop flight.
+    nonstop flight. The brute force solution found the optimal tour to cost $872
     """
-    from math import log as ln
-
     np = pytest.importorskip("numpy")
-
-    node_map = {
-        0: "JFK",
-        1: "LAX",
-        2: "ORD",
-        3: "IAH",
-        4: "PHX",
-        5: "PHL",
-    }
 
     G_array = np.array(
         [
@@ -908,22 +869,97 @@ def test_asadpour_real_world():
     )
 
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    # This test will use non-integer node labels
-    nx.relabel_nodes(G, node_map, copy=False)
 
-    tour = nx_app.traveling_salesman_problem(
-        G, weight="weight", method=nx_app.asadpour_tsp
+    def fixed_asadpour(G, weight):
+        return nx_app.asadpour_atsp(G, weight, 37)
+
+    tour = nx_app.traveling_salesman_problem(G, weight="weight", method=fixed_asadpour)
+
+    expected_tours = [[4, 2, 3, 5, 0, 1, 4], [1, 3, 5, 0, 2, 4, 1]]
+
+    assert tour in expected_tours
+
+
+def test_asadpour_disconnected_graph():
+    """
+    Test that the proper exception is raised when asadpour_atsp is given an
+    disconnected graph.
+    """
+
+    G = nx.complete_graph(4, create_using=nx.DiGraph)
+    # have to set edge weights so that if the exception is not raised, the
+    # function will complete and we hit the assert False statement
+    nx.set_edge_attributes(G, 1, "weight")
+    G.add_node(5)
+
+    try:
+        nx_app.asadpour_atsp(G)
+
+        assert False
+    except nx.NetworkXError:
+        pass
+
+
+def test_asadpour_integral_held_karp():
+    """
+    This test uses an integral held karp solution and the held karp function
+    will return a graph rather than a dict, bypassing most of the asadpour
+    algorithm.
+
+    At first glance, this test probably doesn't look like it ensures that we
+    skip the rest of the asadpour algorithm, but it does. We are not fixing a
+    see for the random number generator, so if we sample any spanning trees
+    the approximation would be different basically every time this test is
+    executed but it is not since held karp is deterministic and we do not
+    reach the portion of the code with the dependence on random numbers.
+    """
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            [0, 26, 63, 59, 69, 31, 41],
+            [62, 0, 91, 53, 75, 87, 47],
+            [47, 82, 0, 90, 15, 9, 18],
+            [68, 19, 5, 0, 58, 34, 93],
+            [11, 58, 53, 55, 0, 61, 79],
+            [88, 75, 13, 76, 98, 0, 40],
+            [41, 61, 55, 88, 46, 45, 0],
+        ]
     )
 
-    print()
-    tour_iter = tour.__iter__()
-    start_node = next(tour_iter)
-    print(start_node)
-    tour_weight = 0
-    for n in tour_iter:
-        print(n)
-        tour_weight += G[start_node][n]["weight"]
-        start_node = n
-    print(f"Total Cost: {tour_weight}")
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
 
-    assert tour_weight / 872 < 872 * (ln(6) / ln(ln(6)))
+    for _ in range(2):
+        tour = nx_app.traveling_salesman_problem(G, method=nx_app.asadpour_atsp)
+
+        assert [1, 3, 2, 5, 2, 6, 4, 0, 1] == tour
+
+
+def test_asadpour_impossible():
+    """
+    Test the asadpour algorithm with a graph without a hamiltonian circuit
+    """
+    pytest.importorskip("numpy")
+
+    # In this graph, once we leave node 0 we cannot return
+    edges = [
+        (0, 1, 10),
+        (0, 2, 11),
+        (0, 3, 12),
+        (1, 2, 4),
+        (1, 3, 6),
+        (2, 1, 3),
+        (2, 3, 2),
+        (3, 1, 5),
+        (3, 2, 1),
+    ]
+
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(edges)
+
+    try:
+        nx_app.traveling_salesman_problem(G)
+
+        assert False
+    except nx.NetworkXError:
+        pass

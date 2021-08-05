@@ -41,7 +41,7 @@ from networkx.utils import py_random_state, not_implemented_for, pairwise
 __all__ = [
     "traveling_salesman_problem",
     "christofides",
-    "asadpour_tsp",
+    "asadpour_atsp",
     "greedy_tsp",
     "simulated_annealing_tsp",
     "threshold_accepting_tsp",
@@ -214,6 +214,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
      - greedy_tsp
      - simulated_annealing_tsp
      - threshold_accepting_tsp
+     - asadpour_atsp
 
     Once the Hamiltonian Cycle is found, this function post-processes to
     accommodate the structure of the original graph. If `cycle` is ``False``,
@@ -258,7 +259,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     Returns
     -------
     list
-        List of nodes in `G` along a path with a 3/2-approximation of the minimal
+        List of nodes in `G` along a path with an approximation of the minimal
         path through `nodes`.
 
     Examples
@@ -283,11 +284,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     """
     if method is None:
         if G.is_directed():
-
-            def threshold_tsp(G, weight):
-                return threshold_accepting_tsp(G, "greedy", weight)
-
-            method = threshold_tsp
+            method = asadpour_atsp
         else:
             method = christofides
     if nodes is None:
@@ -299,7 +296,10 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
         dist[n] = d
         path[n] = p
 
-    if method is asadpour_tsp:
+    if G.is_directed():
+        # If the graph is not strongly connected, raise an exception
+        if not nx.is_strongly_connected(G):
+            raise nx.NetworkXError("G is not strongly connected")
         GG = nx.DiGraph()
     else:
         GG = nx.Graph()
@@ -312,8 +312,6 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
 
     if not cycle:
         # find and remove the biggest edge
-        biggest_edge = None
-        length_biggest = float("-inf")
         (u, v) = max(pairwise(best_GG), key=lambda x: dist[x[0]][x[1]])
         pos = best_GG.index(u) + 1
         while best_GG[pos] != v:
@@ -327,7 +325,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     return best_path
 
 
-def asadpour_tsp(G, weight="weight"):
+def asadpour_atsp(G, weight="weight", random=None):
     """
     Returns an approximate solution to the traveling salesman problem.
 
@@ -353,6 +351,10 @@ def asadpour_tsp(G, weight="weight"):
         Edge data key corresponding to the edge weight.
         If any edge does not have this attribute the weight is set to 1.
 
+    random : int or random.Random
+        An random.Random instance or int used as the seed for the random number
+        generator in `sample_spanning_tree`.
+
     Returns
     -------
     cycle : list of nodes
@@ -375,12 +377,18 @@ def asadpour_tsp(G, weight="weight"):
     from math import exp
     from math import ceil
 
+    # Check that G is a complete graph
+    N = len(G) - 1
+    # This check ignores selfloops which is what we want here.
+    if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
+        raise nx.NetworkXError("G must be a complete graph.")
+
     opt_hk, z_star = held_karp_ascent(G, weight)
 
     # Test to see if the ascent method found an integer solution or a fractional
     # solution. If it is integral then z_star is a nx.Graph, otherwise it is
     # a dict
-    if type(z_star) is nx.Graph:
+    if type(z_star) is not dict:
         # Here we are using the shortcutting method to go from the list of edges
         # returned from eularian_circuit to a list of nodes
         return _shortcutting(nx.eulerian_circuit(z_star))
@@ -405,7 +413,7 @@ def asadpour_tsp(G, weight="weight"):
     minimum_sampled_tree = None
     minimum_sampled_tree_weight = math.inf
     for _ in range(2 * ceil(ln(G.number_of_nodes()))):
-        sampled_tree = sample_spanning_tree(z_support, "lambda_key")
+        sampled_tree = sample_spanning_tree(z_support, "lambda_key", random)
         sampled_tree_weight = sampled_tree.size(weight)
         if sampled_tree_weight < minimum_sampled_tree_weight:
             minimum_sampled_tree = sampled_tree.copy()
@@ -713,15 +721,12 @@ def held_karp_ascent(G, weight="weight"):
     # be reflected as such
     k_max = k_d
 
-    # Search for a cycle within k_max. If a cycle exists, remove all non cycles
-    # If no cycle exists, do not change the set
-    tours = set()
+    # Search for a cycle within k_max. If a cycle exists, return it as the
+    # solution
     for k in k_max:
         if len([n for n in k if k.degree(n) == 2]) == G.order():
             # Tour found
-            tours.add(k)
-    # Update k_max
-    k_max = tours if tours != set() else k_max
+            return k.size(weight), k
 
     # Write the original edge weights back to G and every member of k_max at
     # the maximum point. Also average the number of times that edge appears in
@@ -888,7 +893,8 @@ def spanning_tree_distribution(G, z):
     return gamma
 
 
-def sample_spanning_tree(G, lambda_key):
+@py_random_state(2)
+def sample_spanning_tree(G, lambda_key, random=None):
     """
     Sample one spanning tree from the distribution defined by `gamma`,
     roughly using algorithm A8 in [1]_ .
@@ -909,6 +915,10 @@ def sample_spanning_tree(G, lambda_key):
     lambda_key : string
         The edge key for the edge attribute holding edge weight.
 
+    random : int or random.Random instance
+        The random number generator used to shuffle the edges and find
+        probabilies
+
     Returns
     -------
     nx.Graph
@@ -919,9 +929,6 @@ def sample_spanning_tree(G, lambda_key):
     .. [1] V. Kulkarni, Generating random combinatorial objects, Journal of
        algorithms, 11 (1990), pp. 185–207
     """
-    import random
-
-    random.seed()
 
     def find_node(merged_nodes, n):
         """
