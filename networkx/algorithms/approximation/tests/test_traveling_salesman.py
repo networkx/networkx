@@ -501,7 +501,7 @@ def test_ascent_method_asymmetric():
     opt_hk, z_star = tsp.held_karp_ascent(G)
 
     # Check that the optimal weights are the same
-    assert round(opt_hk, 4) == 190.0000
+    assert opt_hk == 190.0
     # Check that the z_stars match.
     solution = nx.DiGraph()
     solution.add_edges_from(solution_edges)
@@ -837,12 +837,58 @@ def test_asadpour_tsp():
     #
     # However, we are using a fixed random number generator so we know what the
     # expected tour is.
-    assert [1, 4, 5, 0, 2, 3, 2, 1] == tour
+    expected_tours = [[1, 4, 5, 0, 2, 3, 2, 1], [3, 2, 0, 1, 4, 5, 3]]
+
+    assert tour in expected_tours
 
 
 def test_asadpour_real_world():
     """
     This test uses airline prices between the six largest cities in the US.
+
+        * New York City -> JFK
+        * Los Angeles -> LAX
+        * Chicago -> ORD
+        * Houston -> IAH
+        * Phoenix -> PHX
+        * Philadelphia -> PHL
+
+    Flight prices from August 2021 using Delta or American airlines to get
+    nonstop flight. The brute force solution found the optimal tour to cost $872
+
+    This test also uses the `source` keyword argument to ensure that the tour
+    always starts at city 0.
+    """
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            # JFK  LAX  ORD  IAH  PHX  PHL
+            [0, 243, 199, 208, 169, 183],  # JFK
+            [277, 0, 217, 123, 127, 252],  # LAX
+            [297, 197, 0, 197, 123, 177],  # ORD
+            [303, 169, 197, 0, 117, 117],  # IAH
+            [257, 127, 160, 117, 0, 319],  # PHX
+            [183, 332, 217, 117, 319, 0],  # PHL
+        ]
+    )
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+
+    def fixed_asadpour(G, weight):
+        return nx_app.asadpour_atsp(G, weight, 37, source=0)
+
+    tour = nx_app.traveling_salesman_problem(G, weight="weight", method=fixed_asadpour)
+
+    expected_tours = [[0, 1, 4, 2, 3, 5, 0], [0, 2, 4, 1, 3, 5, 0]]
+
+    assert tour in expected_tours
+
+
+def test_asadpour_real_world_path():
+    """
+    This test uses airline prices between the six largest cities in the US. This
+    time using a path, not a cycle.
 
         * New York City -> JFK
         * Los Angeles -> LAX
@@ -871,13 +917,15 @@ def test_asadpour_real_world():
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
 
     def fixed_asadpour(G, weight):
-        return nx_app.asadpour_atsp(G, weight, 37)
+        return nx_app.asadpour_atsp(G, weight, 56)
 
-    tour = nx_app.traveling_salesman_problem(G, weight="weight", method=fixed_asadpour)
+    path = nx_app.traveling_salesman_problem(
+        G, weight="weight", cycle=False, method=fixed_asadpour
+    )
 
-    expected_tours = [[4, 2, 3, 5, 0, 1, 4], [1, 3, 5, 0, 2, 4, 1]]
+    expected_paths = [[2, 4, 1, 3, 5, 0], [0, 5, 3, 2, 4, 1]]
 
-    assert tour in expected_tours
+    assert path in expected_paths
 
 
 def test_asadpour_disconnected_graph():

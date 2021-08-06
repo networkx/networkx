@@ -12,6 +12,7 @@ Categories of algorithms which are implemented:
 - Greedy
 - Simulated Annealing (SA)
 - Threshold Accepting (TA)
+- Asadpour Asymmetric Traveling Salesman Algorithm
 
 The Travelling Salesman Problem tries to find, given the weight
 (distance) between all points where a salesman has to visit, the
@@ -206,9 +207,9 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     graph using the all-pairs shortest_paths between nodes in `nodes`.
     Edge weights in the new graph are the lengths of the paths
     between each pair of nodes in the original graph.
-    Second, an algorithm (default: `christofides`) is used to approximate
-    the minimal Hamiltonian cycle on this new graph. The available
-    algorithms are:
+    Second, an algorithm (default: `christofides` for undirected and
+    `asadpour_atsp for directed) is used to approximate the minimal Hamiltonian
+    cycle on this new graph. The available algorithms are:
 
      - christofides
      - greedy_tsp
@@ -225,7 +226,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     Parameters
     ----------
     G : NetworkX graph
-        Undirected possibly weighted graph
+        A possibly weighted graph
 
     nodes : collection of nodes (default=G.nodes)
         collection (list, set, etc.) of nodes to visit
@@ -261,6 +262,13 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     list
         List of nodes in `G` along a path with an approximation of the minimal
         path through `nodes`.
+
+
+    Raises
+    ------
+    NetworkXError
+        If `G` is a directed graph it has to be strongly connected or the
+        complete version cannot be generated.
 
     Examples
     --------
@@ -325,35 +333,41 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     return best_path
 
 
-def asadpour_atsp(G, weight="weight", random=None):
+@not_implemented_for("undirected")
+def asadpour_atsp(G, weight="weight", random=None, source=None):
     """
     Returns an approximate solution to the traveling salesman problem.
 
-    This approximate solution is one of the best known approximations for
-    the asymmetric traveling salesman problem developed by Asadpour et al,
-    [1]_. The algorithm first solves the Held-Karp relaxation to find a
-    lower bound for the weight of the cycle. Next, it constructs an
-    exponential distribution of undirected spanning trees where the
-    probability of an edge being in the tree corresponds to the weight of
-    that edge using a maximum entropy rounding scheme. Next we sample that
-    distribution $2 \\log n$ times and save the minimum sampled tree once
-    the direction of the arcs is added back to the edges. Finally,
-    we augment then short circuit that graph to find the approximate tour
-    for the salesman.
+    This approximate solution is one of the best known approximations for the
+    asymmetric traveling salesman problem developed by Asadpour et al,
+    [1]_. The algorithm first solves the Held-Karp relaxation to find a lower
+    bound for the weight of the cycle. Next, it constructs an exponential
+    distribution of undirected spanning trees where the probability of an
+    edge being in the tree corresponds to the weight of that edge using a
+    maximum entropy rounding scheme. Next we sample that distribution
+    $2 \\lceil \\ln n \\rceil$ times and save the minimum sampled tree once the
+    direction of the arcs is added back to the edges. Finally, we augment
+    then short circuit that graph to find the approximate tour for the
+    salesman.
 
     Parameters
     ----------
     G : nx.DiGraph
-        The graph should be a complete weighted directed graph.
-        The distance between all paris of nodes should be included.
+        The graph should be a complete weighted directed graph. The
+        distance between all paris of nodes should be included and the triangle
+        inequality should hold. That is, the direct edge between any two nodes
+        should be the path of least cost.
 
     weight : string, optional (default="weight")
         Edge data key corresponding to the edge weight.
         If any edge does not have this attribute the weight is set to 1.
 
-    random : int or random.Random
+    random : int or random.Random, optional
         An random.Random instance or int used as the seed for the random number
         generator in `sample_spanning_tree`.
+
+    source : node label (default=`None`)
+        If given, return the cycle starting and ending at the given node.
 
     Returns
     -------
@@ -372,6 +386,16 @@ def asadpour_atsp(G, weight="weight", random=None):
        An o(log n/log log n)-approximation algorithm for the asymmetric
        traveling salesman problem, Operations research, 65 (2017),
        pp. 1043–1061
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> import networkx.algorithms.approximation as approx
+    >>> G = nx.complete_graph(3, create_using=nx.DiGraph)
+    >>> nx.set_edge_attributes(G, {(0, 1): 2, (1, 2): 2, (2, 0): 2, (0, 2): 1, (2, 1): 1, (1, 0): 1}, "weight")
+    >>> tour = approx.asadpour_atsp(G, source=0)
+    >>> tour
+    [0, 2, 1, 0]
     """
     from math import log as ln
     from math import exp
@@ -391,7 +415,7 @@ def asadpour_atsp(G, weight="weight", random=None):
     if type(z_star) is not dict:
         # Here we are using the shortcutting method to go from the list of edges
         # returned from eularian_circuit to a list of nodes
-        return _shortcutting(nx.eulerian_circuit(z_star))
+        return _shortcutting(nx.eulerian_circuit(z_star, source=source))
 
     # Create the undirected support of z_star
     z_support = nx.MultiGraph()
@@ -443,7 +467,7 @@ def asadpour_atsp(G, weight="weight", random=None):
                     t_star.add_edge(source, target)
 
     # Return the shortcut eulerian circuit
-    circuit = nx.eulerian_circuit(t_star)
+    circuit = nx.eulerian_circuit(t_star, source=source)
     return _shortcutting(circuit)
 
 
@@ -474,9 +498,12 @@ def held_karp_ascent(G, weight="weight"):
     -------
     OPT : float
         The cost for the optimal solution to the Held-Karp relaxation
-    z : numpy array
+    z : dict or nx.Graph
         A symmetrized and scaled version of the optimal solution to the
-        Held-Karp relaxation for use in the Asadpour algorithm
+        Held-Karp relaxation for use in the Asadpour algorithm.
+
+        If an integral solution is found, then that is an optimal solution for
+        the ATSP problem and that is returned instead.
 
     References
     ----------
@@ -654,12 +681,16 @@ def held_karp_ascent(G, weight="weight"):
         Parameters
         ----------
         k_xy : set
+            The set of 1-arborescences which have the minimum rate of increase
+            in the direction of ascent
+
         d : dict
+            The direction of ascent
 
         Returns
         -------
         float
-            The distance we can travel in direction d
+            The distance we can travel in direction `d`
         """
         min_epsilon = math.inf
         for e_u, e_v, e_w in G.edges(data=weight):
@@ -770,7 +801,7 @@ def krichhoffs(G, weight=None):
         The graph to use Krichhoff's theorem on.
     weight : string or None
         The key for the edge attribute holding the edge weight. If `None`, then
-        each edge is assumed to have a weight of one.
+        each edge is assumed to have a weight of 1.
 
     Returns
     -------
@@ -792,6 +823,8 @@ def krichhoffs(G, weight=None):
 
 def spanning_tree_distribution(G, z):
     """
+    Find the asadpour exponential distribution of spanning trees.
+
     Solves the Maximum Entropy Convex Program in the Asadpour algorithm [1]_
     using the approach in section 7 to build an exponential distribution of
     undirected spanning trees.
@@ -896,8 +929,12 @@ def spanning_tree_distribution(G, z):
 @py_random_state(2)
 def sample_spanning_tree(G, lambda_key, random=None):
     """
-    Sample one spanning tree from the distribution defined by `gamma`,
-    roughly using algorithm A8 in [1]_ .
+    Sample a spanning tree using the edges weights of the graph.
+
+    The edge weights are multiplicative, so the probability of each tree is
+    proportional to the product of edge weights.
+
+    The algorithm itself uses algorithm A8 in [1]_ .
 
     We 'shuffle' the edges in the graph, and then probabilistically
     determine weather to add the edge conditioned on all of the previous
