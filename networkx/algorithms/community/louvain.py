@@ -33,6 +33,16 @@ def louvain_communities(
     $\Sigma_{tot}$ is the sum of the weights of the links incident to nodes in $C$ and $\gamma$
     is the resolution parameter.
 
+    For the directed case the modularity gain can be computed using this formula according to [3]_
+
+    .. math::
+        \Delta Q = \frac{k_{i,in}}{m}
+        - \gamma\frac{k_i^{out} \cdot\Sigma_{tot}^{in} + k_i^{in} \cdot \Sigma_{tot}^{out}}{m^2}
+
+    where $k_i^{out}$, $k_i^{in}$ are the outer and inner weighted degrees of node $i$ and
+    $\Sigma_{tot}^{in}$, $\Sigma_{tot}^{out}$ are the sum of in-going and out-going links incident
+    to nodes in $C$.
+
     The first phase continues until no individual move can improve the modularity.
 
     > Note: The order in which the nodes are considered can affect the final output.
@@ -81,6 +91,8 @@ def louvain_communities(
        large networks. J. Stat. Mech 10008, 1-12(2008)
     .. [2] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
        well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
+    .. [3] Nicolas Dugué, Anthony Perez. Directed Louvain : maximizing modularity in directed networks.
+        [Research Report] Université d’Orléans. 2015. hal-01231784
     """
 
     d = generate_dendrogram(G, weight, resolution, threshold, seed)
@@ -93,6 +105,7 @@ def generate_dendrogram(
     G, weight="weight", resolution=1, threshold=0.0000001, seed=None
 ):
     """Compute the communities in G and generate the associated dendrogram
+    using the Louvain Community Detection Algorithm.
 
     A dendrogram is a diagram representing a tree and each level represents
     a partition of the G graph. The top level contains the smallest communities
@@ -133,6 +146,7 @@ def generate_dendrogram(
 
     partition = [{u} for u in G.nodes()]
     mod = modularity(G, partition, resolution=resolution, weight=weight)
+    is_directed = G.is_directed()
     if G.is_multigraph():
         graph = _convert_multigraph(G, weight)
     else:
@@ -143,7 +157,7 @@ def generate_dendrogram(
     m = graph.size(weight="weight")
     while True:
         partition, inner_partition, improvement = _one_level(
-            graph, m, partition, resolution, seed
+            graph, m, partition, resolution, is_directed, seed
         )
         if not improvement:
             break
@@ -156,7 +170,7 @@ def generate_dendrogram(
         yield partition
 
 
-def _one_level(G, m, partition, resolution=1, seed=None):
+def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
     """Calculate one level of the tree
 
     Input `m` is the size of the graph `G`.
@@ -165,8 +179,14 @@ def _one_level(G, m, partition, resolution=1, seed=None):
     """
     node2com = {u: i for i, u in enumerate(G.nodes())}
     inner_partition = [{u} for u in G.nodes()]
-    degrees = dict(G.degree(weight="weight"))
-    total_weights = [deg for deg in degrees.values()]
+    if is_directed:
+        in_degrees = dict(G.in_degree(weight="weight"))
+        out_degrees = dict(G.out_degree(weight="weight"))
+        Stot_in = [deg for deg in in_degrees.values()]
+        Stot_out = [deg for deg in out_degrees.values()]
+    else:
+        degrees = dict(G.degree(weight="weight"))
+        Stot = [deg for deg in degrees.values()]
     nbrs = {u: {v: data["weight"] for v, data in G[u].items() if v != u} for u in G}
     rand_nodes = list(G.nodes)
     seed.shuffle(rand_nodes)
@@ -177,15 +197,36 @@ def _one_level(G, m, partition, resolution=1, seed=None):
         for u in rand_nodes:
             best_mod = 0
             best_com = node2com[u]
-            weights2com = _neighbor_weights(u, nbrs[u], node2com)
-            degree = degrees[u]
-            total_weights[best_com] -= degree
+            weights2com = _neighbor_weights(nbrs[u], node2com)
+            if is_directed:
+                in_degree = in_degrees[u]
+                out_degree = out_degrees[u]
+                Stot_in[best_com] -= in_degree
+                Stot_out[best_com] -= out_degree
+            else:
+                degree = degrees[u]
+                Stot[best_com] -= degree
             for nbr_com, wt in weights2com.items():
-                gain = wt - resolution * (total_weights[nbr_com] * degree) / m
+                if is_directed:
+                    gain = (
+                        wt
+                        - resolution
+                        * (
+                            out_degree * Stot_in[nbr_com]
+                            + in_degree * Stot_out[nbr_com]
+                        )
+                        / m
+                    )
+                else:
+                    gain = 2 * wt - resolution * (Stot[nbr_com] * degree) / m
                 if gain > best_mod:
                     best_mod = gain
                     best_com = nbr_com
-            total_weights[best_com] += degree
+            if is_directed:
+                Stot_in[best_com] += in_degree
+                Stot_out[best_com] += out_degree
+            else:
+                Stot[best_com] += degree
             if best_com != node2com[u]:
                 com = G.nodes[u].get("nodes", {u})
                 partition[node2com[u]].difference_update(com)
@@ -200,7 +241,7 @@ def _one_level(G, m, partition, resolution=1, seed=None):
     return partition, inner_partition, improvement
 
 
-def _neighbor_weights(node, nbrs, node2com):
+def _neighbor_weights(nbrs, node2com):
     """Calculate weights between node and its neighbor communities.
 
     Input `nbrs` should be a dict of the node's neighbors.
@@ -209,13 +250,13 @@ def _neighbor_weights(node, nbrs, node2com):
     """
     weights = defaultdict(float)
     for nbr, wt in nbrs.items():
-        weights[node2com[nbr]] += 2 * wt
+        weights[node2com[nbr]] += wt
     return weights
 
 
 def _gen_graph(G, partition):
     """Generate a new graph based on the partitions of a given graph"""
-    H = nx.Graph()
+    H = G.__class__()
     node2com = {}
     for i, part in enumerate(partition):
         nodes = set()

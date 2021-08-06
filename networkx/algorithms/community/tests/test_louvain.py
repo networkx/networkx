@@ -26,9 +26,12 @@ def test_valid_partition():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
+    H = G.to_directed()
     partition = louvain_communities(G)
+    partition2 = louvain_communities(H)
 
     assert is_partition(G, partition)
+    assert is_partition(H, partition2)
 
 
 def test_partition():
@@ -70,6 +73,15 @@ def test_quality():
     quality = partition_quality(G, partition)[0]
 
     assert quality >= 0.65
+
+
+def test_directed_quality():
+    G = nx.gn_graph(200)
+    partition = louvain_communities(G)
+
+    quality = partition_quality(G, partition)[0]
+
+    assert quality >= 0.85
 
 
 def test_multigraph():
