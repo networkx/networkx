@@ -38,7 +38,7 @@ def __getattr__(name):
             "directly:\n\n"
             "    import yaml\n\n"
             "    with open('path_for_yaml_output', 'w') as fh:\n"
-            "        yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)\n\n"
+            "        yaml.dump(G_to_be_yaml, fh)\n\n"
             "This message will be removed in NetworkX 3.0."
         )
     raise AttributeError(f"module {__name__} has no attribute {name}")
