@@ -1,5 +1,10 @@
 """Read and write graphs in GEXF format.
 
+.. warning::
+    This parser uses the standard xml library present in Python, which is
+    insecure - see :doc:`library/xml` for additional information.
+    Only parse GEFX files you trust.
+
 GEXF (Graph Exchange XML Format) is a language for describing complex
 network structures, their associated data and dynamics.
 

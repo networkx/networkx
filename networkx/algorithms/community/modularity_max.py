@@ -28,10 +28,15 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     Parameters
     ----------
     G : NetworkX graph
+
     weight : string or None, optional (default=None)
-       The name of an edge attribute that holds the numerical value used
-       as a weight.  If None, then each edge has weight 1.
-       The degree is the sum of the edge weights adjacent to the node.
+        The name of an edge attribute that holds the numerical value used
+        as a weight.  If None, then each edge has weight 1.
+        The degree is the sum of the edge weights adjacent to the node.
+
+    resolution : float (default=1)
+        If resolution is less than 1, modularity favors larger communities.
+        Greater than 1 favors smaller communities.
 
     Returns
     -------
@@ -43,7 +48,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     --------
     >>> from networkx.algorithms.community import greedy_modularity_communities
     >>> G = nx.karate_club_graph()
-    >>> c = list(greedy_modularity_communities(G))
+    >>> c = greedy_modularity_communities(G)
     >>> sorted(c[0])
     [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
 
@@ -64,7 +69,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
 
     # Count nodes and edges
     N = len(G.nodes())
-    m = sum([d.get("weight", 1) for u, v, d in G.edges(data=True)])
+    m = sum([d.get(weight, 1) for u, v, d in G.edges(data=True)])
     q0 = 1.0 / (2.0 * m)
 
     # Map node labels to contiguous integers
@@ -243,6 +248,10 @@ def naive_greedy_modularity_communities(G, resolution=1):
     ----------
     G : NetworkX graph
 
+    resolution : float (default=1)
+        If resolution is less than 1, modularity favors larger communities.
+        Greater than 1 favors smaller communities.
+
     Returns
     -------
     list
@@ -251,9 +260,10 @@ def naive_greedy_modularity_communities(G, resolution=1):
 
     Examples
     --------
-    >>> from networkx.algorithms.community import greedy_modularity_communities
+    >>> from networkx.algorithms.community import \
+    ... naive_greedy_modularity_communities
     >>> G = nx.karate_club_graph()
-    >>> c = list(greedy_modularity_communities(G))
+    >>> c = naive_greedy_modularity_communities(G)
     >>> sorted(c[0])
     [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
 
