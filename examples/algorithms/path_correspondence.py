@@ -1048,6 +1048,7 @@ def test_realworld_case2():
 
 def main():
     import sys
+
     if "--bench" in sys.argv:
         bench_maximum_common_path_embedding()
     else:
