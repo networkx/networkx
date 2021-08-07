@@ -65,9 +65,6 @@ def longest_common_balanced_embedding(
         A tuple indicating the common subsequence embedding of sequence1 and
         sequence2 (usually these are the same) and its value.
 
-    See Also
-    --------
-    * This function is used to implement :func:`networkx.algorithms.minors.tree_embedding.maximum_common_ordered_subtree_embedding`
 
     Notes
     -----

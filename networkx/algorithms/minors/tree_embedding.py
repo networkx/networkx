@@ -84,11 +84,6 @@ def maximum_common_ordered_subtree_embedding(
         String Algorithmics (2004): 155-170.
         https://pdfs.semanticscholar.org/0b6e/061af02353f7d9b887f9a378be70be64d165.pdf
 
-    See Also
-    --------
-    * For example usage see ``examples/algorithms/path_correspondence.py``
-    * Core backends are in :mod:`networkx.algorithms.string.balanced_embedding`
-
     Example
     -------
     >>> # Create two random trees
@@ -137,6 +132,13 @@ def maximum_common_ordered_subtree_embedding(
         │   └─╼ 5
         └─╼ 6
     """
+
+    # Putting this in the docstring threw a sphinx error
+    # See Also
+    # --------
+    # * For example usage see examples/algorithms/path_correspondence.py
+    # * Core backends are in :mod:`networkx.algorithms.string.balanced_embedding`
+
     import networkx as nx
 
     # Note: checks that inputs are forests are handled by tree_to_seq
