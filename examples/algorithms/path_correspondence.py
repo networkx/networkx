@@ -188,13 +188,13 @@ __devnotes__ = """
 Command Line
 ------------
 # Run tests and doctests
-pytest examples/applications/path_correspondence.py -s -v --doctest-modules
-
-# Run benchmark (requires timerit and ubelt module)
-xdoctest -m examples/applications/path_correspondence.py bench_maximum_common_path_embedding
+pytest examples/algorithms/path_correspondence.py -s -v --doctest-modules
 
 # Run main function
-python examples/applications/path_correspondence.py
+python examples/algorithms/path_correspondence.py
+
+# Run benchmark (requires timerit and ubelt module)
+python examples/algorithms/path_correspondence.py --bench
 """
 import networkx as nx
 import pprint
@@ -298,7 +298,7 @@ def paths_to_otree(paths, sep="/"):
 
     Returns
     -------
-    nx.OrderedDiGraph
+    nx.DiGraph
 
     Example
     -------
@@ -353,7 +353,7 @@ def paths_to_otree(paths, sep="/"):
         │   └─╼ ('1', '3', '3')
         └─╼ ('1', '2')
     """
-    otree = nx.OrderedDiGraph()
+    otree = nx.DiGraph()
     for path in paths:
         parts = tuple(path.split(sep))
         node_path = []
@@ -534,17 +534,19 @@ def bench_maximum_common_path_embedding():
 
     Command Line
     ------------
-    xdoctest -m examples/applications/path_correspondence.py bench_maximum_common_path_embedding
+    python examples/algorithms/path_correspondence.py --bench
     """
     import itertools as it
     import ubelt as ub
+    import pandas as pd
+    import numpy as np
     import timerit
-    from networkx.algorithms.string import balanced_sequence
+    from networkx.algorithms.string import balanced_embedding
 
     data_modes = []
 
     available_impls = (
-        balanced_sequence.available_impls_longest_common_balanced_embedding()
+        balanced_embedding.available_impls_longest_common_balanced_embedding()
     )
 
     # Define which implementations we are going to test
@@ -564,6 +566,7 @@ def bench_maximum_common_path_embedding():
         "labels": [1, 26],
     }
 
+    # Note: the cython implementation does not exist in this branch yet
     # run_basis['impl'] = set(run_basis['impl']) & {
     #     'iter-cython',
     #     'iter',
@@ -751,17 +754,17 @@ def bench_maximum_common_path_embedding():
 
     print(ub.repr2(ub.sorted_vals(ti.measures["min"]), nl=1, align=":", precision=6))
 
-    import pandas as pd
-    import kwarray
+    def stats_dict(inputs, axis=None):
+        return {
+            'mean': np.nanmean(inputs, axis=axis),
+            'max': np.nanmax(inputs, axis=axis),
+        }
 
     df = pd.DataFrame.from_dict(results)
 
     dataparam_to_time = {}
     for item_type, subdf in df.groupby(["complexity"] + list(data_basis.keys())):
-        stats = kwarray.stats_dict(subdf["time"])
-        stats.pop("min", None)
-        stats.pop("std", None)
-        stats.pop("shape", None)
+        stats = stats_dict(subdf["time"])
         dataparam_to_time[item_type] = stats
     dataparam_to_time = ub.sorted_vals(dataparam_to_time, key=lambda x: x["max"])
     print(
@@ -773,10 +776,7 @@ def bench_maximum_common_path_embedding():
 
     runparam_to_time = {}
     for item_type, subdf in df.groupby(["item_type", "impl"]):
-        stats = kwarray.stats_dict(subdf["time"])
-        stats.pop("min", None)
-        stats.pop("std", None)
-        stats.pop("shape", None)
+        stats = stats_dict(subdf["time"])
         runparam_to_time[item_type] = stats
     runparam_to_time = ub.sorted_vals(runparam_to_time, key=lambda x: x["max"])
     print(
@@ -1048,15 +1048,14 @@ def test_realworld_case2():
 
 def main():
     import sys
-
-    test_simple_cases()
-    print("\n\n")
-    test_realworld_case1()
-    print("\n\n")
-    test_realworld_case2()
-
     if "--bench" in sys.argv:
         bench_maximum_common_path_embedding()
+    else:
+        test_simple_cases()
+        print("\n\n")
+        test_realworld_case1()
+        print("\n\n")
+        test_realworld_case2()
 
 
 if __name__ == "__main__":

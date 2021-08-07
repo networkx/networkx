@@ -8,8 +8,8 @@ def test_null_common_embedding():
     """
     The empty graph is not a tree and should raise an error
     """
-    empty = nx.OrderedDiGraph()
-    non_empty = nx.random_tree(n=1, create_using=nx.OrderedDiGraph)
+    empty = nx.DiGraph()
+    non_empty = nx.random_tree(n=1, create_using=nx.DiGraph)
 
     with pytest.raises(nx.NetworkXPointlessConcept):
         nx.maximum_common_ordered_subtree_embedding(empty, empty)
@@ -27,7 +27,7 @@ def test_self_common_embedding():
     """
     rng = create_py_random_state(85652972257)
     for n in range(1, 10):
-        tree = nx.random_tree(n=n, seed=rng, create_using=nx.OrderedDiGraph)
+        tree = nx.random_tree(n=n, seed=rng, create_using=nx.DiGraph)
         embedding1, embedding2, _ = nx.maximum_common_ordered_subtree_embedding(
             tree, tree
         )
@@ -35,8 +35,8 @@ def test_self_common_embedding():
 
 
 def test_common_tree_embedding_small():
-    tree1 = nx.OrderedDiGraph([(0, 1)])
-    tree2 = nx.OrderedDiGraph([(0, 1), (1, 2)])
+    tree1 = nx.DiGraph([(0, 1)])
+    tree2 = nx.DiGraph([(0, 1), (1, 2)])
     print(nx.forest_str(tree1))
     print(nx.forest_str(tree2))
 
@@ -48,8 +48,8 @@ def test_common_tree_embedding_small():
 
 
 def test_common_tree_embedding_small2():
-    tree1 = nx.OrderedDiGraph([(0, 1), (2, 3), (4, 5), (5, 6)])
-    tree2 = nx.OrderedDiGraph([(0, 1), (1, 2), (0, 3)])
+    tree1 = nx.DiGraph([(0, 1), (2, 3), (4, 5), (5, 6)])
+    tree2 = nx.DiGraph([(0, 1), (1, 2), (0, 3)])
     print(nx.forest_str(tree1))
     print(nx.forest_str(tree2))
 
@@ -77,8 +77,8 @@ def test_all_implementations_are_same():
         n1 = rng.randint(1, maxsize)
         n2 = rng.randint(1, maxsize)
 
-        tree1 = nx.random_tree(n1, seed=rng, create_using=nx.OrderedDiGraph)
-        tree2 = nx.random_tree(n2, seed=rng, create_using=nx.OrderedDiGraph)
+        tree1 = nx.random_tree(n1, seed=rng, create_using=nx.DiGraph)
+        tree2 = nx.random_tree(n2, seed=rng, create_using=nx.DiGraph)
 
         # Note: the returned sequences may be different (maximum embeddings may
         # not be unique), but the values should all be the same.
@@ -162,11 +162,11 @@ def test_forest_case():
     # Test forest case
     F = nx.disjoint_union_all(
         [
-            nx.random_tree(3, seed=0, create_using=nx.OrderedDiGraph),
-            nx.random_tree(5, seed=1, create_using=nx.OrderedDiGraph),
-            nx.random_tree(5, seed=1, create_using=nx.OrderedDiGraph),
-            nx.random_tree(2, seed=2, create_using=nx.OrderedDiGraph),
-            nx.random_tree(1, seed=3, create_using=nx.OrderedDiGraph),
+            nx.random_tree(3, seed=0, create_using=nx.DiGraph),
+            nx.random_tree(5, seed=1, create_using=nx.DiGraph),
+            nx.random_tree(5, seed=1, create_using=nx.DiGraph),
+            nx.random_tree(2, seed=2, create_using=nx.DiGraph),
+            nx.random_tree(1, seed=3, create_using=nx.DiGraph),
         ]
     )
 

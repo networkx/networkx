@@ -385,7 +385,7 @@ def random_balanced_sequence(
 
     # To create a random balanced sequences we simply create a random ordered
     # tree and convert it to a sequence
-    tree = nx.random_tree(n, seed=rng, create_using=nx.OrderedDiGraph)
+    tree = nx.random_tree(n, seed=rng, create_using=nx.DiGraph)
     if item_type == "paren":
         # special case
         pool = "[{("

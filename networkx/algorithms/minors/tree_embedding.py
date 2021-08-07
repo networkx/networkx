@@ -46,7 +46,7 @@ def maximum_common_ordered_subtree_embedding(
 
     Parameters
     ----------
-    tree1, tree2 : nx.OrderedDiGraph
+    tree1, tree2 : nx.DiGraph
         Trees to find the maximum embedding between
 
     node_affinity : None | str | callable
@@ -68,7 +68,7 @@ def maximum_common_ordered_subtree_embedding(
 
     Returns
     -------
-    S1, S2, value: Tuple[nx.OrderedDiGraph, nx.OrderedDiGraph, float]
+    S1, S2, value: Tuple[nx.DiGraph, nx.DiGraph, float]
         The maximum value common embedding for each tree with respect to the
         chosen ``node_affinity`` function. The topology of both graphs will
         always be the same, the only difference is that the node labels in the
@@ -86,14 +86,14 @@ def maximum_common_ordered_subtree_embedding(
 
     See Also
     --------
-    * For example usage see ``examples/applications/filesystem_embedding.py``
+    * For example usage see ``examples/algorithms/path_correspondence.py``
     * Core backends are in :mod:`networkx.algorithms.string.balanced_embedding.longest_common_balanced_embedding`
 
     Example
     -------
     >>> # Create two random trees
-    >>> tree1 = nx.random_tree(7, seed=3257073545741117277206611, create_using=nx.OrderedDiGraph)
-    >>> tree2 = nx.random_tree(7, seed=123568587133124688238689717, create_using=nx.OrderedDiGraph)
+    >>> tree1 = nx.random_tree(7, seed=3257073545741117277206611, create_using=nx.DiGraph)
+    >>> tree2 = nx.random_tree(7, seed=123568587133124688238689717, create_using=nx.DiGraph)
     >>> print(nx.forest_str(tree1))
     ╙── 0
         ├─╼ 5
@@ -140,12 +140,12 @@ def maximum_common_ordered_subtree_embedding(
     import networkx as nx
 
     # Note: checks that inputs are forests are handled by tree_to_seq
-    if not isinstance(tree1, nx.OrderedDiGraph):
+    if not isinstance(tree1, nx.DiGraph):
         raise nx.NetworkXNotImplemented(
             "only implemented for directed ordered trees. "
             "Got {} instead".format(type(tree1))
         )
-    if not isinstance(tree1, nx.OrderedDiGraph):
+    if not isinstance(tree1, nx.DiGraph):
         raise nx.NetworkXNotImplemented(
             "only implemented for directed ordered trees. "
             "Got {} instead".format(type(tree2))
@@ -216,7 +216,7 @@ def tree_to_seq(
 
     Parameters
     ----------
-    tree: nx.OrderedDiGraph
+    tree: nx.DiGraph
         The forest to encode as a string sequence.
 
     open_to_close : Dict | None
@@ -251,7 +251,7 @@ def tree_to_seq(
     --------
     >>> from networkx.algorithms.minors.tree_embedding import tree_to_seq  # NOQA
     >>> # This function helps us encode this graph as a balance sequence
-    >>> tree = nx.path_graph(3, nx.OrderedDiGraph)
+    >>> tree = nx.path_graph(3, nx.DiGraph)
     >>> print(nx.forest_str(tree))
     ╙── 0
         └─╼ 1
@@ -300,7 +300,7 @@ def tree_to_seq(
     >>> # Demo custom label encoding: If you have custom labels on your
     >>> # tree nodes, those can be used in the encoding.
     >>> import random
-    >>> tree = nx.random_tree(10, seed=1, create_using=nx.OrderedDiGraph)
+    >>> tree = nx.random_tree(10, seed=1, create_using=nx.DiGraph)
     >>> rng = random.Random(0)
     >>> open_to_close = dict(zip("[{(", "]})"))
     >>> for node in tree.nodes:
@@ -424,7 +424,7 @@ def seq_to_tree(subseq, open_to_close, open_to_node):
 
     Returns
     -------
-    subtree: nx.OrderedDiGraph
+    subtree: nx.DiGraph
         The ordered tree that corresponds to the balanced sequence
 
     Example
@@ -449,7 +449,7 @@ def seq_to_tree(subseq, open_to_close, open_to_node):
     import networkx as nx
 
     nextnode = 0  # only used if open_to_node is not specified
-    subtree = nx.OrderedDiGraph()
+    subtree = nx.DiGraph()
     stack = []
     for token in subseq:
         if token in open_to_close:
@@ -474,13 +474,3 @@ def seq_to_tree(subseq, open_to_close, open_to_node):
             if token != want_close:
                 raise balanced_sequence.UnbalancedException
     return subtree
-
-
-if __name__ == "__main__":
-    """
-    CommandLine:
-        xdoctest -m networkx.algorithms.minors.tree_embedding all
-    """
-    import xdoctest
-
-    xdoctest.doctest_module(__file__)
