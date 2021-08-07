@@ -756,8 +756,8 @@ def bench_maximum_common_path_embedding():
 
     def stats_dict(inputs, axis=None):
         return {
-            'mean': np.nanmean(inputs, axis=axis),
-            'max': np.nanmax(inputs, axis=axis),
+            "mean": np.nanmean(inputs, axis=axis),
+            "max": np.nanmax(inputs, axis=axis),
         }
 
     df = pd.DataFrame.from_dict(results)
