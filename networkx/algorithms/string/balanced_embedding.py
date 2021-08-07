@@ -56,7 +56,8 @@ def longest_common_balanced_embedding(
     impl : str
         Determines the backend implementation. Available choices are given by
         :func:`available_impls_longest_common_balanced_embedding`. The default
-        is "auto", which chooses "iter-cython" if available, otherwise "iter".
+        is "auto", which currently chooses "iter". This may change in the
+        future.
 
     Returns
     -------
@@ -199,18 +200,10 @@ def longest_common_balanced_embedding(
     full_seq1 = seq1
     full_seq2 = seq2
     if impl == "auto":
-        if _cython_lcse_backend(error="ignore"):
-            impl = "iter-cython"
-        else:
-            impl = "iter"
+        impl = "iter"
 
     if impl == "iter":
         value, best = _lcse_iter(
-            full_seq1, full_seq2, open_to_close, node_affinity, open_to_node
-        )
-    elif impl == "iter-cython":
-        balanced_embedding_cython = _cython_lcse_backend(error="raise")
-        value, best = balanced_embedding_cython._lcse_iter_cython(
             full_seq1, full_seq2, open_to_close, node_affinity, open_to_node
         )
     elif impl == "recurse":
@@ -241,44 +234,15 @@ def available_impls_longest_common_balanced_embedding():
         the string code for each available implementation
     """
     impls = []
-    if _cython_lcse_backend():
-        impls += [
-            "iter-cython",
-        ]
-
+    # A Cython backend may be added in the future
+    # See: https://github.com/Erotemic/networkx/tree/dev/minor_reorg_rebase
+    # for a candidate implementation.
     # Pure python backends
     impls += [
         "iter",
         "recurse",
     ]
     return impls
-
-
-def _cython_lcse_backend(error="ignore", verbose=0):
-    """
-    Returns the cython backend if available, otherwise None
-
-    CommandLine
-    -----------
-    xdoctest -m networkx.algorithms.string.balanced_embedding _cython_lcse_backend
-    """
-    from networkx.algorithms.string._autojit import import_module_from_pyx
-    from os.path import dirname
-    import os
-
-    # Toggle comments depending on the desired autojit default
-    NETWORKX_AUTOJIT = os.environ.get("NETWORKX_AUTOJIT", "")
-    # NETWORKX_AUTOJIT = not os.environ.get("NETWORKX_NO_AUTOJIT", "")
-
-    module = import_module_from_pyx(
-        "balanced_embedding_cython.pyx",
-        dpath=dirname(__file__),
-        error=error,
-        autojit=NETWORKX_AUTOJIT,
-        verbose=verbose,
-    )
-    balanced_embedding_cython = module
-    return balanced_embedding_cython
 
 
 def _lcse_iter(full_seq1, full_seq2, open_to_close, node_affinity, open_to_node):
