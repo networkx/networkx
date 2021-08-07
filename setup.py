@@ -143,7 +143,7 @@ package_data = {
     "networkx.algorithms.approximation": ["tests/*.py"],
     "networkx.algorithms.operators": ["tests/*.py"],
     "networkx.algorithms.shortest_paths": ["tests/*.py"],
-    "networkx.algorithms.string": ["tests/*.py", "*.pyx"],
+    "networkx.algorithms.string": ["tests/*.py"],
     "networkx.algorithms.traversal": ["tests/*.py"],
     "networkx.algorithms.tree": ["tests/*.py"],
     "networkx.classes": ["tests/*.py"],
