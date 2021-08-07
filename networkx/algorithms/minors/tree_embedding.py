@@ -87,7 +87,7 @@ def maximum_common_ordered_subtree_embedding(
     See Also
     --------
     * For example usage see ``examples/algorithms/path_correspondence.py``
-    * Core backends are in :mod:`networkx.algorithms.string.balanced_embedding.longest_common_balanced_embedding`
+    * Core backends are in :mod:`networkx.algorithms.string.balanced_embedding`
 
     Example
     -------
