@@ -290,11 +290,14 @@ def geographical_threshold_graph(
 
     .. math::
 
-       (w_u + w_v)h(r) \ge \theta
+       (w_u + w_v)p(r) \ge \theta
 
-    where `r` is the distance between `u` and `v`, h(r) is any function of
-    `r`, and :math:`\theta` as the threshold parameter. h(r) corresponds to
-    the p_dist parameter.
+    where `r` is the distance between `u` and `v`, p(r) is any function of
+    `r`, and :math:`\theta` as the threshold parameter. p(r) corresponds to
+    the `p_dist` parameter and is used to give weight to the distance between
+    nodes in deciding whether or not they should be connected. The larger p(r)
+    is, the more prone nodes separated by `r` are to be connected, and vice
+    versa.
 
     Parameters
     ----------
@@ -332,12 +335,11 @@ def geographical_threshold_graph(
         probability of connecting two nodes that are of metric distance `r`
         apart. The implementation here allows for more arbitrary definitions
         of `p_dist` that do not need to correspond to valid probability
-        density functions. The scipy.stats package has many probability
-        density functions implemented and tools for custom probability
-        density definitions [2], and passing the .pdf method of
-        scipy.stats distributions can be used here. If the function, `p_dist`,
-        is not supplied, the default exponential function :math: `r^{-2}` is
-        used.
+        density functions. The :mod:`scipy.stats` package has many
+        probability density functions implemented and tools for custom
+        probability density definitions, and passing the ``.pdf`` method of
+        scipy.stats distributions can be used here. If ``p_dist=None``
+        (the default), the exponential function :math:`r^{-2}` is used.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -381,6 +383,9 @@ def geographical_threshold_graph(
 
     If node positions are not specified they are randomly assigned from the
     uniform distribution.
+    
+    The `p_dist` argument in the implementation here corresponds to h(r) in
+    [1].
 
     References
     ----------
