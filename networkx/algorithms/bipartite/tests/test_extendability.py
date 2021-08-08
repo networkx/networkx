@@ -1,5 +1,6 @@
 import networkx as nx
 
+
 def test_k_is_1():
     edges = [
         ("1", "4"),
@@ -14,6 +15,7 @@ def test_k_is_1():
     graph.add_edges_from(edges)
     k = nx.bipartite.extendability.k_extendability(graph)
     assert k == 1
+
 
 def test_k_is_2():
     edges = [
@@ -34,6 +36,7 @@ def test_k_is_2():
     graph.add_edges_from(edges)
     k = nx.bipartite.extendability.k_extendability(graph)
     assert k == 2
+
 
 def test_k_is_3():
     edges = [
@@ -62,6 +65,7 @@ def test_k_is_3():
     graph.add_edges_from(edges)
     k = nx.bipartite.extendability.k_extendability(graph)
     assert k == 3
+
 
 def test_k_is_4():
     edges = [
@@ -105,6 +109,7 @@ def test_k_is_4():
     graph.add_edges_from(edges)
     k = nx.bipartite.extendability.k_extendability(graph)
     assert k == 4
+
 
 def test_k_is_5():
     edges = [
@@ -155,6 +160,7 @@ def test_k_is_5():
     graph.add_edges_from(edges)
     k = nx.bipartite.extendability.k_extendability(graph)
     assert k == 5
+
 
 def test_k_is_6():
     edges = [
@@ -219,6 +225,7 @@ def test_k_is_6():
     graph.add_edges_from(edges)
     k = nx.bipartite.extendability.k_extendability(graph)
     assert k == 6
+
 
 def test_k_is_7():
     edges = [
