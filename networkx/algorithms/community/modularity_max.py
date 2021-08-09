@@ -4,8 +4,6 @@ from networkx.algorithms.community.quality import modularity
 
 from networkx.utils.mapped_queue import MappedQueue
 
-import warnings
-
 __all__ = [
     "greedy_modularity_communities",
     "naive_greedy_modularity_communities",
@@ -21,7 +19,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
 
     Greedy modularity maximization begins with each node in its own community
     and joins the pair of communities that most increases modularity until no
-    such pair exists or until desired number of communities is reached.
+    such pair exists or until number of communities `n_communities` is reached.
 
     This function maximizes the generalized modularity, where `resolution`
     is the resolution parameter, often expressed as $\gamma$.
@@ -35,8 +33,12 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
        as a weight.  If None, then each edge has weight 1.
        The degree is the sum of the edge weights adjacent to the node.
     n_communities: int
-       desired number of communities, defaults to 1 and falls back to 1 if
-       the given number is larger than the initial amount of communities
+       Desired number of communities: the community merging process is
+       terminated once this number of communities is reached, or until
+       modularity can not be further increased. Must be between 1 and the
+       total number of nodes in `G`. Default is ``1``, meaning the community
+       merging process continues until all nodes are in the same community
+       or until the best community structure is found.
 
     Returns
     -------
@@ -72,12 +74,10 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
     m = sum([d.get("weight", 1) for u, v, d in G.edges(data=True)])
     q0 = 1.0 / (2.0 * m)
 
-    if n_communities > N:
-        warnings.warn(
-            "Input n_communities is greater than number of nodes of G."
-            "Falling back to default n_communities = 1."
+    if (n_communities < 1) or (n_communities > N):
+        raise ValueError(
+            f"n_communities must be between 1 and {len(G.nodes())}. Got {n_communities}"
         )
-        n_communities = 1
 
     # Map node labels to contiguous integers
     label_for_node = {i: v for i, v in enumerate(G.nodes())}
