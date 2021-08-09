@@ -29,16 +29,21 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
     ----------
     G : NetworkX graph
     weight : string or None, optional (default=None)
-       The name of an edge attribute that holds the numerical value used
-       as a weight.  If None, then each edge has weight 1.
-       The degree is the sum of the edge weights adjacent to the node.
+        The name of an edge attribute that holds the numerical value used
+        as a weight.  If None, then each edge has weight 1.
+        The degree is the sum of the edge weights adjacent to the node.
+
+    resolution : float (default=1)
+        If resolution is less than 1, modularity favors larger communities.
+        Greater than 1 favors smaller communities.
+
     n_communities: int
-       Desired number of communities: the community merging process is
-       terminated once this number of communities is reached, or until
-       modularity can not be further increased. Must be between 1 and the
-       total number of nodes in `G`. Default is ``1``, meaning the community
-       merging process continues until all nodes are in the same community
-       or until the best community structure is found.
+        Desired number of communities: the community merging process is
+        terminated once this number of communities is reached, or until
+        modularity can not be further increased. Must be between 1 and the
+        total number of nodes in `G`. Default is ``1``, meaning the community
+        merging process continues until all nodes are in the same community
+        or until the best community structure is found.
 
     Returns
     -------
