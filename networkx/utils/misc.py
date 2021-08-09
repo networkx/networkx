@@ -20,7 +20,7 @@ from itertools import tee, chain
 
 import networkx as nx
 
-np = nx.lazy_import("numpy")
+np = nx.lazy_imports.load("numpy")
 
 __all__ = [
     "is_string_like",

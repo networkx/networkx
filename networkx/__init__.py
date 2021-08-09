@@ -51,8 +51,8 @@ def __getattr__(name):
     raise AttributeError(f"module {__name__} has no attribute {name}")
 
 
-# These are import orderwise
-from networkx.lazy_imports import lazy_import, lazy_package_import
+# These are imported in order as listed
+from networkx import lazy_imports
 
 from networkx.exception import *
 

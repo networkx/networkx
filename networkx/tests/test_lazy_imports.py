@@ -1,15 +1,13 @@
 import sys
-import os
-import importlib.util
+import importlib
 import pytest
 
-from networkx import lazy_import, lazy_package_import
-from networkx.lazy_imports import DelayedImportErrorModule
+import networkx.lazy_imports as lazy
 
 
-def test_lazy_import_basics():
-    math = lazy_import("math")
-    anything_not_real = lazy_import("anything_not_real")
+def test_lazy_load_basics():
+    math = lazy.load("math")
+    anything_not_real = lazy.load("anything_not_real")
 
     # Now test that accessing attributes does what it should
     assert math.sin(math.pi) == pytest.approx(0, 1e-6)
@@ -19,7 +17,7 @@ def test_lazy_import_basics():
         assert False  # Should not get here
     except ModuleNotFoundError:
         pass
-    assert isinstance(anything_not_real, DelayedImportErrorModule)
+    assert isinstance(anything_not_real, lazy.DelayedImportErrorModule)
     # see if it changes for second access
     try:
         anything_not_real.pi
@@ -28,18 +26,18 @@ def test_lazy_import_basics():
         pass
 
 
-def test_lazy_impact_on_sys_modules():
-    math = lazy_import("math")
-    anything_not_real = lazy_import("anything_not_real")
+def test_load_impact_on_sys_modules():
+    math = lazy.load("math")
+    anything_not_real = lazy.load("anything_not_real")
 
     assert type(math) == importlib.types.ModuleType
     assert "math" in sys.modules
-    assert type(anything_not_real) == DelayedImportErrorModule
+    assert type(anything_not_real) == lazy.DelayedImportErrorModule
     assert "anything_not_real" not in sys.modules
 
     # only do this if numpy is installed
     np_test = pytest.importorskip("numpy")
-    np = lazy_import("numpy")
+    np = lazy.load("numpy")
     assert type(np) == importlib.types.ModuleType
     assert "numpy" in sys.modules
 
@@ -49,16 +47,16 @@ def test_lazy_impact_on_sys_modules():
     assert "numpy" in sys.modules
 
 
-def test_lazy_import_nonbuiltins():
-    sp = lazy_import("scipy")
-    np = lazy_import("numpy")
-    if isinstance(sp, DelayedImportErrorModule):
+def test_lazy_load_nonbuiltins():
+    sp = lazy.load("scipy")
+    np = lazy.load("numpy")
+    if isinstance(sp, lazy.DelayedImportErrorModule):
         try:
             sp.pi
             assert False
         except ModuleNotFoundError:
             pass
-    elif isinstance(np, DelayedImportErrorModule):
+    elif isinstance(np, lazy.DelayedImportErrorModule):
         try:
             np.sin(np.pi)
             assert False
@@ -68,22 +66,22 @@ def test_lazy_import_nonbuiltins():
         assert np.sin(sp.pi) == pytest.approx(0, 1e-6)
 
 
-def test_lazy_package_import():
+def test_lazy_attach():
     name = "mymod"
     submods = ["mysubmodule", "anothersubmodule"]
     myall = {"not_real_submod": ["some_var_or_func"]}
 
     locls = {
-        "lazy_package_import": lazy_package_import,
+        "attach": lazy.attach,
         "name": name,
         "submods": submods,
         "myall": myall,
     }
-    s = "__getattr__, __lazy_dir__, __all__ = lazy_package_import(name, submods, myall)"
+    s = "__getattr__, __lazy_dir__, __all__ = attach(name, submods, myall)"
 
     exec(s, {}, locls)
     expected = {
-        "lazy_package_import": lazy_package_import,
+        "attach": lazy.attach,
         "name": name,
         "submods": submods,
         "myall": myall,
@@ -92,6 +90,6 @@ def test_lazy_package_import():
         "__all__": None,
     }
     assert locls.keys() == expected.keys()
-    for k, v in locls.items():
-        if k not in ("__getattr__", "__lazy_dir__", "__all__"):
-            assert v == expected[k]
+    for k, v in expected.items():
+        if v is not None:
+            assert locls[k] == v

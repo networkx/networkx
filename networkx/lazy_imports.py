@@ -1,30 +1,31 @@
+import importlib
 import importlib.util
 import types
 import os
 import sys
-import pytest
 
 
-__all__ = ["lazy_import", "lazy_package_import", "lazy_importorskip"]
+__all__ = ["attach", "load"]
 
 
-def lazy_package_import(module_name, submodules=None, submod_attrs=None):
-    """Install lazily loaded submodules, and functions or other attributes.
+def attach(module_name, submodules=None, submod_attrs=None):
+    """Attach lazily loaded submodules, and functions or other attributes.
 
     Typically, modules import submodules and attributes as follows::
 
       import mysubmodule
       import anothersubmodule
+
       from .foo import someattr
 
-    The idea of the lazy package import is to replace the `__init__.py`
+    The idea of  this function is to replace the `__init__.py`
     module's `__getattr__`, `__dir__`, and `__all__` attributes such that
     all imports work exactly the way they normally would, except that the
     actual import is delayed until the resulting module object is first used.
 
     The typical way to call this function, replacing the above imports, is::
 
-      __getattr__, __lazy_dir__, __all__ = install_lazy(
+      __getattr__, __lazy_dir__, __all__ = lazy.attach(
           __name__,
           ['mysubmodule', 'anothersubmodule'],
           {'foo': 'someattr'}
@@ -34,19 +35,16 @@ def lazy_package_import(module_name, submodules=None, submod_attrs=None):
 
     Parameters
     ----------
-
     module_name : str
         Typically use __name__.
     submodules : set
         List of submodules to lazily import.
     submod_attrs : dict
         Dictionary of submodule -> list of attributes / functions.
-        These attributes are created the first time the submodule
-        is used.
+        These attributes are imported as they are used.
 
     Returns
     -------
-
     __getattr__, __dir__, __all__
 
     """
@@ -83,6 +81,75 @@ def lazy_package_import(module_name, submodules=None, submod_attrs=None):
     return __getattr__, __dir__, list(__all__)
 
 
+def load(fullname):
+    """Return a lazily imported proxy for a module or library.
+
+    We often see the following pattern::
+
+      def myfunc():
+          import scipy as sp
+          sp.argmin(...)
+          ....
+
+    This is to prevent a library, in this case `scipy`, from being
+    imported at function definition time, since that can be slow.
+
+    This function provides a proxy module that, upon access, imports
+    the actual module.  So the idiom equivalent to the above example is::
+
+      sp = lazy.load("scipy")
+
+      def myfunc():
+          sp.argmin(...)
+          ....
+
+    The initial import time is fast because the actual import is delayed
+    until the first attribute is requested. The overall import time may
+    decrease as well for users that don't make use of large portions
+    of the library.
+
+    Parameters
+    ----------
+    fullname : str
+        The full name of the package or subpackage to import.  For example::
+
+          sp = lazy.load('scipy')  # import scipy as sp
+          spla = lazy.load('scipy.linalg')  # import scipy.linalg as spla
+
+    Returns
+    -------
+    pm : importlib.util._LazyModule
+        Proxy module. Can be used like any regularly imported module.
+        Actual loading of the module occurs upon first attribute request.
+
+    """
+    try:
+        return sys.modules[fullname]
+    except:
+        pass
+
+    # Not previously loaded -- look it up
+    spec = importlib.util.find_spec(fullname)
+
+    if spec is None:
+        # module not found - construct a DelayedImportErrorModule
+        spec = importlib.util.spec_from_loader(fullname, loader=None)
+        module = importlib.util.module_from_spec(spec)
+        tmp_loader = importlib.machinery.SourceFileLoader(module, path=None)
+        loader = DelayedImportErrorLoader(tmp_loader)
+        loader.exec_module(module)
+        # dont add to sys.modules. The module wasn't found.
+        return module
+
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[fullname] = module
+
+    loader = importlib.util.LazyLoader(spec.loader)
+    loader.exec_module(module)
+
+    return module
+
+
 class DelayedImportErrorLoader(importlib.util.LazyLoader):
     def exec_module(self, module):
         super().exec_module(module)
@@ -96,62 +163,9 @@ class DelayedImportErrorModule(types.ModuleType):
         # allows isinstance and type functions to work without raising error
         if attr in ["__class__"]:
             return super().__getattribute__("__class__")
+
         raise ModuleNotFoundError(
             f"Delayed Report: module named '{spec.name}' not found.\n"
             "Reporting was Lazy -- delayed until module attributes accessed.\n"
             f"Most likely, {spec.name} is not installed"
         )
-
-
-def lazy_import(fullname):
-    """Return a lazily imported proxy for a module or library.
-
-    We often see the following pattern::
-
-      def myfunc():
-          import scipy
-          ....
-
-    This is to prevent a library, in this case `scipy`, from being
-    imported at function definition time, since that can be slow.
-    This function provides a proxy module that, upon access, imports
-    the actual module.
-
-    Parameters
-    ----------
-
-    fullname : str
-        The full name of the package or subpackage to import.  For example::
-          sp = lazy_import('scipy')  # import scipy as sp
-          spla = lazy_import('scipy.linalg')  # import scipy.linalg as spla
-
-    Returns
-    -------
-
-    pm : importlib.util._LazyModule
-        Proxy module. Can be used like any regularly imported module.
-    """
-    try:
-        return sys.modules[fullname]
-    except:
-        pass
-
-    # Not previously loaded -- look it up
-    spec = importlib.util.find_spec(fullname)
-
-    if spec is not None:
-        module = importlib.util.module_from_spec(spec)
-
-        # Make module with proper locking and get it inserted into sys.modules.
-        loader = importlib.util.LazyLoader(spec.loader)
-        sys.modules[fullname] = module
-        loader.exec_module(module)
-        return module
-
-    # package not found - construct delayed error module
-    spec = importlib.util.spec_from_loader(fullname, loader=None)
-    module = importlib.util.module_from_spec(spec)
-    tmp_loader = importlib.machinery.SourceFileLoader(module, path=None)
-    loader = DelayedImportErrorLoader(tmp_loader)
-    loader.exec_module(module)
-    return module
