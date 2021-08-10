@@ -411,7 +411,7 @@ def test_held_karp_ascent():
     opt_hk, z_star = tsp.held_karp_ascent(G)
 
     # Check that the optimal weights are the same
-    assert opt_hk == 207
+    assert round(opt_hk, 2) == 207.00
     # Check that the z_stars are the same
     solution = nx.DiGraph()
     solution.add_edges_from(solution_edges)
@@ -467,7 +467,7 @@ def test_ascent_fractional_solution():
     opt_hk, z_star = tsp.held_karp_ascent(G)
 
     # Check that the optimal weights are the same
-    assert opt_hk == 303
+    assert round(opt_hk, 2) == 303.00
     # Check that the z_stars are the same
     assert {key: round(z_star[key], 4) for key in z_star} == {
         key: round(solution_z_star[key], 4) for key in solution_z_star
@@ -501,7 +501,7 @@ def test_ascent_method_asymmetric():
     opt_hk, z_star = tsp.held_karp_ascent(G)
 
     # Check that the optimal weights are the same
-    assert opt_hk == 190.0
+    assert round(opt_hk, 2) == 190.00
     # Check that the z_stars match.
     solution = nx.DiGraph()
     solution.add_edges_from(solution_edges)
@@ -534,7 +534,7 @@ def test_ascent_method_asymmetric_2():
     opt_hk, z_star = tsp.held_karp_ascent(G)
 
     # Check that the optimal weights are the same
-    assert opt_hk == 144.0
+    assert round(opt_hk, 2) == 144.00
     # Check that the z_stars match.
     solution = nx.DiGraph()
     solution.add_edges_from(solution_edges)
@@ -568,7 +568,7 @@ def test_held_karp_ascent_asymmetric_3():
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     opt_hk, z_star = tsp.held_karp_ascent(G)
 
-    assert opt_hk == 13.0
+    assert round(opt_hk, 2) == 13.00
     # Check that the z_stars are the same
     solution1 = nx.DiGraph()
     solution1.add_edges_from(solution1_edges)
@@ -624,7 +624,7 @@ def test_held_karp_ascent_fractional_asymmetric():
     opt_hk, z_star = tsp.held_karp_ascent(G)
 
     # Check that the optimal weights are the same
-    assert opt_hk == 304
+    assert round(opt_hk, 2) == 304.00
     # Check that the z_stars are the same
     assert {key: round(z_star[key], 4) for key in z_star} == {
         key: round(solution_z_star[key], 4) for key in solution_z_star
@@ -873,14 +873,20 @@ def test_asadpour_real_world():
         ]
     )
 
+    node_map = {0: "JFK", 1: "LAX", 2: "ORD", 3: "IAH", 4: "PHX", 5: "PHL"}
+
+    expected_tours = [
+        ["JFK", "LAX", "PHX", "ORD", "IAH", "PHL", "JFK"],
+        ["JFK", "ORD", "PHX", "LAX", "IAH", "PHL", "JFK"],
+    ]
+
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    nx.relabel_nodes(G, node_map, copy=False)
 
     def fixed_asadpour(G, weight):
-        return nx_app.asadpour_atsp(G, weight, 37, source=0)
+        return nx_app.asadpour_atsp(G, weight, 37, source="JFK")
 
     tour = nx_app.traveling_salesman_problem(G, weight="weight", method=fixed_asadpour)
-
-    expected_tours = [[0, 1, 4, 2, 3, 5, 0], [0, 2, 4, 1, 3, 5, 0]]
 
     assert tour in expected_tours
 
@@ -914,7 +920,15 @@ def test_asadpour_real_world_path():
         ]
     )
 
+    node_map = {0: "JFK", 1: "LAX", 2: "ORD", 3: "IAH", 4: "PHX", 5: "PHL"}
+
+    expected_paths = [
+        ["ORD", "PHX", "LAX", "IAH", "PHL", "JFK"],
+        ["JFK", "PHL", "IAH", "ORD", "PHX", "LAX"],
+    ]
+
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    nx.relabel_nodes(G, node_map, copy=False)
 
     def fixed_asadpour(G, weight):
         return nx_app.asadpour_atsp(G, weight, 56)
@@ -922,8 +936,6 @@ def test_asadpour_real_world_path():
     path = nx_app.traveling_salesman_problem(
         G, weight="weight", cycle=False, method=fixed_asadpour
     )
-
-    expected_paths = [[2, 4, 1, 3, 5, 0], [0, 5, 3, 2, 4, 1]]
 
     assert path in expected_paths
 
