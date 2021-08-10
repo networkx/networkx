@@ -316,7 +316,8 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     each edge $(u, v)$ in the underlying "$n$-ring with $k$ nearest
     neighbors" with probability $p$ add a new edge $(u, w)$ with
     randomly-chosen existing node $w$.  In contrast with
-    :func:`watts_strogatz_graph`, no edges are removed.
+    :func:`watts_strogatz_graph`, no edges are removed, and multi-edges and
+    self-loops are allowed.
 
     See Also
     --------
@@ -325,7 +326,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     References
     ----------
     .. [1] M. E. J. Newman and D. J. Watts,
-       Renormalization group analysis of the small-world network model,
+       Scaling and percolation in the small-world network model,
        Physics Letters A, 263, 341, 1999.
        https://doi.org/10.1016/S0375-9601(99)00757-4
     """
@@ -336,7 +337,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     if k == n:
         return nx.complete_graph(n)
 
-    G = empty_graph(n)
+    G = empty_graph(n, create_using=nx.MultiGraph)
     nlist = list(G.nodes())
     fromv = nlist
     # connect the k/2 neighbors
@@ -350,14 +351,8 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     for (u, v) in e:
         if seed.random() < p:
             w = seed.choice(nlist)
-            # no self-loops and reject if edge u-w exists
-            # is that the correct NWS model?
-            while w == u or G.has_edge(u, w):
-                w = seed.choice(nlist)
-                if G.degree(u) >= n - 1:
-                    break  # skip this rewiring
-            else:
-                G.add_edge(u, w)
+            # self-loops and multi-edges are allowed
+            G.add_edge(u, w)
     return G
 
 
