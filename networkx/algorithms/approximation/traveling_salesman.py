@@ -380,6 +380,10 @@ def asadpour_atsp(G, weight="weight", random=None, source=None):
     NetworkXError
         If `G` is not complete, the algorithm raises an exception.
 
+    NetworkXError
+        if 'source` is not `None` and is not a node in `G`, the algorithm raises
+        an exception.
+
     References
     ----------
     .. [1] A. Asadpour, M. X. Goemans, A. Madry, S. O. Gharan, and A. Saberi,
@@ -406,6 +410,10 @@ def asadpour_atsp(G, weight="weight", random=None, source=None):
     # This check ignores selfloops which is what we want here.
     if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
         raise nx.NetworkXError("G must be a complete graph.")
+
+    # Check that the source vertex, if given, is in the graph
+    if source is not None and source not in G.nodes:
+        raise nx.NetworkXError("Given source node not in G.")
 
     opt_hk, z_star = held_karp_ascent(G, weight)
 
