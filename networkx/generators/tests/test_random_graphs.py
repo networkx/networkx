@@ -41,6 +41,10 @@ class TestGeneratorsRandom:
         assert len(G) == 10
         assert G.number_of_edges() >= 20
 
+        G = nx.newman_watts_strogatz_graph(10, 2, 1.0, seed)
+        assert len(G) == 10
+        assert G.number_of_edges() == 20
+
         G = nx.barabasi_albert_graph(100, 1, seed)
         G = nx.barabasi_albert_graph(100, 3, seed)
         assert G.number_of_edges() == (97 * 3)
