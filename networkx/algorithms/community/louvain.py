@@ -148,7 +148,7 @@ def generate_dendrogram(
     mod = modularity(G, partition, resolution=resolution, weight=weight)
     is_directed = G.is_directed()
     if G.is_multigraph():
-        graph = _convert_multigraph(G, weight)
+        graph = _convert_multigraph(G, weight, is_directed)
     else:
         graph = G.__class__()
         graph.add_nodes_from(G)
@@ -274,9 +274,12 @@ def _gen_graph(G, partition):
     return H
 
 
-def _convert_multigraph(G, weight):
+def _convert_multigraph(G, weight, is_directed):
     """Convert a Multigraph to normal Graph"""
-    H = nx.Graph()
+    if is_directed:
+        H = nx.DiGraph()
+    else:
+        H = nx.Graph()
     H.add_nodes_from(G)
     for u, v, wt in G.edges(data=weight, default=1):
         if H.has_edge(u, v):
