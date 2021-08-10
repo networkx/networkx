@@ -327,8 +327,8 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     ----------
     .. [1] M. E. J. Newman and D. J. Watts,
        Scaling and percolation in the small-world network model,
-       Physics Letters A, 263, 341, 1999.
-       https://doi.org/10.1016/S0375-9601(99)00757-4
+       Phys. Rev. E60(6), 7332-7342, 1999.
+       https://doi.org/10.1103/PhysRevE.60.7332
     """
     if k > n:
         raise nx.NetworkXError("k>=n, choose smaller k or larger n")
