@@ -257,9 +257,13 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
 def _neighbor_weights(nbrs, node2com):
     """Calculate weights between node and its neighbor communities.
 
-    Input `nbrs` should be a dict of the node's neighbors.
+    Parameters
+    ----------
+    nbrs : dictionary
+           Dictionary with nodes' neighbours as keys and their edge weight as value.
+    node2com : dictionary
+           Dictionary with all graph's nodes as keys and their community index as value.
 
-    `node2com` is a dict with nodes as keys and community index as values.
     """
     weights = defaultdict(float)
     for nbr, wt in nbrs.items():
