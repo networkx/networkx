@@ -1,4 +1,4 @@
-"""Function for detecting communities base on Louvain Community Detection
+"""Function for detecting communities based on Louvain Community Detection
 Algorithm"""
 
 from collections import deque, defaultdict

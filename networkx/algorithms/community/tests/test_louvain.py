@@ -1,7 +1,3 @@
-from random import randint, seed
-
-import pytest
-
 import networkx as nx
 from networkx.algorithms.community import (
     louvain_communities,
@@ -49,8 +45,9 @@ def test_partition():
 
 def test_none_weight_param():
     G = nx.karate_club_graph()
-    seed(1234)
-    nx.set_edge_attributes(G, {edge: randint(1, 20) for edge in G.edges}, name="foo")
+    nx.set_edge_attributes(
+        G, {edge: i * i for i, edge in enumerate(G.edges)}, name="foo"
+    )
 
     part = [
         {0, 1, 2, 3, 7, 9, 11, 12, 13, 17, 19, 21},
