@@ -55,7 +55,7 @@ Louvain Community Detection
     :toctree: generated/
 
     louvain_communities
-    generate_dendrogram
+    louvain_partitions
 
 Fluid Communities
 -----------------

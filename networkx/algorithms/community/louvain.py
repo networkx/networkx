@@ -7,7 +7,7 @@ import networkx as nx
 from networkx.algorithms.community import modularity
 from networkx.utils import py_random_state
 
-__all__ = ["louvain_communities", "generate_dendrogram"]
+__all__ = ["louvain_communities", "louvain_partitions"]
 
 
 @py_random_state("seed")
@@ -95,13 +95,13 @@ def louvain_communities(
         [Research Report] Université d’Orléans. 2015. hal-01231784
     """
 
-    d = generate_dendrogram(G, weight, resolution, threshold, seed)
+    d = louvain_partitions(G, weight, resolution, threshold, seed)
     q = deque(d, maxlen=1)
     return q.pop()
 
 
 @py_random_state("seed")
-def generate_dendrogram(
+def louvain_partitions(
     G, weight="weight", resolution=1, threshold=0.0000001, seed=None
 ):
     """Yields partitions for each level of the Louvain Community Detection Algorithm
