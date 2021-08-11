@@ -104,9 +104,9 @@ def louvain_communities(
 def generate_dendrogram(
     G, weight="weight", resolution=1, threshold=0.0000001, seed=None
 ):
-    """Compute the communities in G and generate the associated dendrogram
-    using the Louvain Community Detection Algorithm.
+    """Yields partitions for each level of the Louvain Community Detection Algorithm
 
+    The partitions at each level (step of the algorithm) form a dendogram of communities.
     A dendrogram is a diagram representing a tree and each level represents
     a partition of the G graph. The top level contains the smallest communities
     and as you traverse to the bottom of the tree the communities get bigger
