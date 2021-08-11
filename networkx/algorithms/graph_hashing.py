@@ -16,7 +16,7 @@ def _hash_label(label, digest_size):
 
 def _init_node_labels(G, edge_attr, node_attr):
     if node_attr:
-        return {u: str(G.nodes[u][node_attr]) for u in G.nodes()}
+        return {u: str(dd[node_attr]) for u, dd in G.nodes(data=True)}
     elif edge_attr:
         return {u: "" for u in G}
     else:
