@@ -104,9 +104,9 @@ def louvain_communities(
 def generate_dendrogram(
     G, weight="weight", resolution=1, threshold=0.0000001, seed=None
 ):
-    """Compute the communities in G and generate the associated dendrogram
-    using the Louvain Community Detection Algorithm.
+    """Yields partitions for each level of the Louvain Community Detection Algorithm
 
+    The partitions at each level (step of the algorithm) form a dendogram of communities.
     A dendrogram is a diagram representing a tree and each level represents
     a partition of the G graph. The top level contains the smallest communities
     and as you traverse to the bottom of the tree the communities get bigger
@@ -171,11 +171,24 @@ def generate_dendrogram(
 
 
 def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
-    """Calculate one level of the tree
+    """Calculate one level of the Louvain partitions tree
 
-    Input `m` is the size of the graph `G`.
-    Input `partition` is a valid partition of the graph `G` given as a list of sets of
-    nodes.
+    Parameters
+    ----------
+    G : NetworkX Graph/DiGraph
+        The graph from which to detect communities
+    m : number
+        The size of the graph `G`.
+    partition : list of sets of nodes
+        A valid partition of the graph `G`
+    resolution : positive number
+        The resolution parameter for computing the modularity of a partition
+    is_directed : bool
+        True if `G` is a directed graph.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
     """
     node2com = {u: i for i, u in enumerate(G.nodes())}
     inner_partition = [{u} for u in G.nodes()]
