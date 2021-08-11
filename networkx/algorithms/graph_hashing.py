@@ -5,7 +5,6 @@ For now, only Weisfeiler-Lehman hashing is implemented.
 """
 
 from collections import Counter, defaultdict
-from copy import Error
 from hashlib import blake2b
 
 __all__ = ["weisfeiler_lehman_graph_hash", "weisfeiler_lehman_subgraph_hashes"]
@@ -19,9 +18,9 @@ def _init_node_labels(G, edge_attr, node_attr):
     if node_attr:
         return {u: str(G.nodes[u][node_attr]) for u in G.nodes()}
     elif edge_attr:
-        return {u: "" for u in G.nodes()}
+        return {u: "" for u in G}
     else:
-        return {u: str(G.degree(u)) for u in G.nodes()}
+        return {u: str(deg) for u, deg in G.degree()}
 
 
 def _neighborhood_aggregate(G, node, node_labels, edge_attr=None):
@@ -30,9 +29,9 @@ def _neighborhood_aggregate(G, node, node_labels, edge_attr=None):
     the labels of each node's neighbors.
     """
     label_list = [node_labels[node]]
-    for nei in G.neighbors(node):
-        prefix = "" if not edge_attr else str(G[node][nei][edge_attr])
-        label_list.append(prefix + node_labels[nei])
+    for nbr in G.neighbors(node):
+        prefix = "" if edge_attr is None else str(G[node][nbr][edge_attr])
+        label_list.append(prefix + node_labels[nbr])
     return "".join(sorted(label_list))
 
 
