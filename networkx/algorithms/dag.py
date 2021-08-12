@@ -55,7 +55,7 @@ def descendants(G, source):
     NetworkXNotImplemented
         If `G` is not directed.
 
-    NetworkXError
+    NodeNotFound
         If node `source` is not in `G`.
 
     Examples
@@ -64,8 +64,6 @@ def descendants(G, source):
     >>> nx.descendants(DG, source=2)
     {3}
     """
-    if not G.has_node(source):
-        raise nx.NetworkXError(f"The node {source} is not in the graph.")
     return nx.shortest_path_length(G, source=source).keys() - {source}
 
 
@@ -89,7 +87,7 @@ def ancestors(G, target):
     NetworkXNotImplemented
         If `G` is not directed.
 
-    NetworkXError
+    NodeNotFound
         If node `target` is not in `G`.
 
     Examples
@@ -98,8 +96,6 @@ def ancestors(G, target):
     >>> nx.ancestors(DG, target=2)
     {1}
     """
-    if not G.has_node(target):
-        raise nx.NetworkXError(f"The node {target} is not in the graph.")
     return nx.shortest_path_length(G, target=target).keys() - {target}
 
 
