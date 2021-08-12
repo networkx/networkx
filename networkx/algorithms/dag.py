@@ -98,6 +98,30 @@ def is_directed_acyclic_graph(G):
     -------
     bool
         True if `G` is a DAG, False otherwise
+
+    Examples
+    --------
+    Undirected graph::
+
+        >>> G = nx.Graph([(1, 2), (2, 3)])
+        >>> nx.is_directed_acyclic_graph(G)
+        False
+
+    Directed graph with cycle::
+
+        >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
+        >>> nx.is_directed_acyclic_graph(G)
+        False
+
+    Directed acyclic graph::
+
+        >>> G = nx.DiGraph([(1, 2), (2, 3)])
+        >>> nx.is_directed_acyclic_graph(G)
+        True
+
+    See also
+    --------
+    topological_sort
     """
     return G.is_directed() and not has_cycle(G)
 
@@ -282,6 +306,12 @@ def lexicographical_topological_sort(G, key=None):
 
     RuntimeError
         If `G` is changed while the returned iterator is being processed.
+
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(2, 3), (1, 3)])
+    >>> list(nx.lexicographical_topological_sort(DG))
+    [1, 2, 3]
 
     Notes
     -----
@@ -477,6 +507,36 @@ def is_aperiodic(G):
     NetworkXError
         If `G` is not directed
 
+    Examples
+    --------
+    A graph consisting of one cycle,
+    the length of which is 2
+    (k = 2 divides the length of every cycle in the graph
+    and therefore the graph is not aperiodic)::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 1)])
+        >>> nx.is_aperiodic(DG)
+        False
+
+    A graph consisting of two cycles,
+    the length of which differs by one
+    (cycle lengths are coprime,
+    so there is no k > 1 dividing each cycle length
+    and therefore the graph is aperiodic)::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 3), (3, 1), (1, 4), (4, 1)])
+        >>> nx.is_aperiodic(DG)
+        True
+
+    Graph without cycles
+    (the lengths of all cycles are equal to zero,
+    so every k > 1 dividing each cycle length
+    and therefore the graph is not aperiodic)::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+        >>> nx.is_aperiodic(DG)
+        False
+
     Notes
     -----
     This uses the method outlined in [1]_, which runs in $O(m)$ time
@@ -550,6 +610,29 @@ def transitive_closure(G, reflexive=False):
     NetworkXNotImplemented
         If `G` is not directed
 
+    Examples
+    --------
+    Trivial cycles (length 0) create self-loops::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+        >>> TC = nx.transitive_closure(DG, reflexive=True)
+        >>> TC.edges()
+        OutEdgeView([(1, 2), (1, 1), (1, 3), (2, 3), (2, 2), (3, 3)])
+
+    Trivial cycles (length 0) do not create self-loops::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+        >>> TC = nx.transitive_closure(DG, reflexive=False)
+        >>> TC.edges()
+        OutEdgeView([(1, 2), (1, 3), (2, 3)])
+
+    Do not create self-loops at all::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 1)])
+        >>> TC = nx.transitive_closure(DG, reflexive=None)
+        >>> TC.edges()
+        OutEdgeView([(1, 2), (2, 1)])
+
     References
     ----------
     .. [1] http://www.ics.uci.edu/~eppstein/PADS/PartialOrder.py
@@ -607,6 +690,13 @@ def transitive_closure_dag(G, topo_order=None):
         If `G` is not directed
     NetworkXUnfeasible
         If `G` has a cycle
+
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+    >>> TC = nx.transitive_closure_dag(DG)
+    >>> TC.edges()
+    OutEdgeView([(1, 2), (1, 3), (2, 3)])
 
     Notes
     -----
@@ -725,6 +815,12 @@ def antichains(G, topo_order=None):
     NetworkXUnfeasible
         If `G` contains a cycle
 
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(1, 2), (1, 3)])
+    >>> list(nx.antichains(DG))
+    [[], [3], [2], [2, 3], [1]]
+
     Notes
     -----
     This function was originally developed by Peter Jipsen and Franco Saliola
@@ -788,6 +884,12 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     NetworkXNotImplemented
         If `G` is not directed
 
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+    >>> nx.dag_longest_path(DG)
+    [1, 2, 3]
+
     See also
     --------
     dag_longest_path_length
@@ -847,6 +949,12 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
     ------
     NetworkXNotImplemented
         If `G` is not directed
+
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+    >>> nx.dag_longest_path_length(DG)
+    2
 
     See also
     --------
