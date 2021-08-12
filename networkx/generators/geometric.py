@@ -382,10 +382,8 @@ def geographical_threshold_graph(
     >>> G = nx.geographical_threshold_graph(20, 50, weight=w)
 
     If node positions are not specified they are randomly assigned from the
-    uniform distribution.
-    
-    The `p_dist` argument in the implementation here corresponds to h(r) in
-    [1].
+    uniform distribution. Finally, the `p_dist` argument in the implementation
+    here corresponds to h(r) in [1].
 
     References
     ----------
