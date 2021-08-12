@@ -7,6 +7,7 @@ include README.rst
 
 recursive-include examples *.txt *.py *.edgelist *.mbox *.gz *.bz2 *.zip *.html *.js *.css
 recursive-include doc *.py *.rst Makefile *.html *.png *.txt *.css *.inc *.js
+recursive-include requirements *.txt *.md
 
 include networkx/tests/*.py
 include networkx/*/tests/*.txt

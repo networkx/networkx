@@ -13,13 +13,15 @@ class TestAverageNeighbor:
         nd = nx.average_neighbor_degree(D)
         assert nd == answer
 
-        D = G.to_directed()
+        D = nx.DiGraph(G.edges(data=True))
         nd = nx.average_neighbor_degree(D)
-        assert nd == answer
-
-        D = G.to_directed()
-        nd = nx.average_neighbor_degree(D, source="in", target="in")
-        assert nd == answer
+        assert nd == {0: 1, 1: 1, 2: 0, 3: 0}
+        nd = nx.average_neighbor_degree(D, "in", "out")
+        assert nd == {0: 0, 1: 1, 2: 0, 3: 0}
+        nd = nx.average_neighbor_degree(D, "out", "in")
+        assert nd == {0: 1, 1: 1, 2: 1, 3: 0}
+        nd = nx.average_neighbor_degree(D, "in", "in")
+        assert nd == {0: 0, 1: 1, 2: 1, 3: 0}
 
     def test_degree_p4_weighted(self):
         G = nx.path_graph(4)
@@ -31,6 +33,19 @@ class TestAverageNeighbor:
         D = G.to_directed()
         nd = nx.average_neighbor_degree(D, weight="weight")
         assert nd == answer
+
+        D = nx.DiGraph(G.edges(data=True))
+        print(D.edges(data=True))
+        nd = nx.average_neighbor_degree(D, weight="weight")
+        assert nd == {0: 1, 1: 1, 2: 0, 3: 0}
+        nd = nx.average_neighbor_degree(D, "out", "out", weight="weight")
+        assert nd == {0: 1, 1: 1, 2: 0, 3: 0}
+        nd = nx.average_neighbor_degree(D, "in", "in", weight="weight")
+        assert nd == {0: 0, 1: 4, 2: 0.25, 3: 0}
+        nd = nx.average_neighbor_degree(D, "in", "out", weight="weight")
+        assert nd == {0: 0, 1: 4, 2: 0, 3: 0}
+        nd = nx.average_neighbor_degree(D, "out", "in", weight="weight")
+        assert nd == {0: 1, 1: 1, 2: 1, 3: 0}
 
         D = G.to_directed()
         nd = nx.average_neighbor_degree(D, weight="weight")

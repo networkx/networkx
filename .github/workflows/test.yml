@@ -20,7 +20,7 @@ jobs:
     - name: Install packages
       run: |
         python -m pip install --upgrade pip wheel setuptools
-        python -m pip install -r requirements.txt
+        python -m pip install -r requirements/default.txt -r requirements/test.txt
         python -m pip install .
         python -m pip list
 
@@ -45,7 +45,7 @@ jobs:
       run: |
         pip install --upgrade pip wheel setuptools
         pip install -r requirements/test.txt
-        pip install . --no-deps
+        pip install .
         pip list
 
     - name: Test NetworkX
@@ -81,7 +81,7 @@ jobs:
       if: runner.os == 'Linux' || runner.os == 'macOS'
       run: |
         pip install --upgrade pip wheel setuptools
-        pip install -r requirements.txt
+        pip install -r requirements/default.txt -r requirements/test.txt
         pip install -r requirements/extra.txt
         pip install .
         pip list
@@ -91,7 +91,7 @@ jobs:
       run: |
         echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         python -m pip install --upgrade pip wheel setuptools
-        python -m pip install -r requirements.txt
+        python -m pip install -r requirements/default.txt -r requirements/test.txt
         python -m pip install --global-option=build_ext `
                               --global-option="-IC:\Program Files\Graphviz\include" `
                               --global-option="-LC:\Program Files\Graphviz\lib" `
@@ -120,7 +120,7 @@ jobs:
     - name: Install packages
       run: |
         pip install --upgrade pip wheel setuptools
-        pip install --pre -r requirements.txt
+        pip install --pre -r requirements/default.txt -r requirements/test.txt
         pip install .
         pip list
 

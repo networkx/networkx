@@ -20,12 +20,11 @@ Release Process
   6. Copy ``doc/release/release_template.rst`` to
      ``doc/release/release_dev.rst`` for the next release.
 
-- Delete the following from ``doc/_templates/layout.html``::
+  7. Add ``release_<major>.<minor>`` to ``doc/release/index.rst``.
 
-    {% block document %}
-      {% include "dev_banner.html" %}
-      {{ super() }}
-    {% endblock %}
+- Delete developer banner on docs::
+
+   git rm doc/_templates/layout.html
 
 - Update ``__version__`` in ``networkx/__init__.py``.
 
@@ -66,8 +65,7 @@ Release Process
 
 - Unpin badges in ``README.rst``::
 
-  - https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main
-  - https://github.com/networkx/networkx/actions?query=branch%3Amain
+   git restore README.rst 
 
 - Update documentation on the web:
   The documentation is kept in a separate repo: networkx/documentation
@@ -91,7 +89,9 @@ Release Process
 
 - Update ``__version__`` in ``networkx/__init__.py``.
 
-- Append the following to ``doc/_templates/layout.html``::
+- Create ``doc/_templates/layout.html`` with::
+
+    {% extends "!layout.html" %}
 
     {% block document %}
       {% include "dev_banner.html" %}
@@ -100,7 +100,7 @@ Release Process
 
  - Commit and push changes::
 
-    git add networkx/release.py doc/_templates/layout.html
+    git add networkx/__init__.py doc/_templates/layout.html
     git commit -m "Bump release version"
     git push upstream main
 

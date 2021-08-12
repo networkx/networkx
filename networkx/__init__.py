@@ -8,7 +8,7 @@ structure, dynamics, and functions of complex networks.
 See https://networkx.org for complete documentation.
 """
 
-__version__ = "2.6rc3.dev0"
+__version__ = "2.7rc1.dev0"
 
 
 def __getattr__(name):
@@ -45,7 +45,7 @@ def __getattr__(name):
             "directly:\n\n"
             "    import yaml\n\n"
             "    with open('path_for_yaml_output', 'w') as fh:\n"
-            "        yaml.dump(G_to_be_yaml, path_for_yaml_output, **kwds)\n\n"
+            "        yaml.dump(G_to_be_yaml, fh)\n\n"
             "This message will be removed in NetworkX 3.0."
         )
     raise AttributeError(f"module {__name__} has no attribute {name}")

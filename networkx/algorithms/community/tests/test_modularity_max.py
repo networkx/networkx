@@ -3,7 +3,6 @@ import pytest
 import networkx as nx
 from networkx.algorithms.community import (
     greedy_modularity_communities,
-    modularity,
     naive_greedy_modularity_communities,
 )
 
@@ -13,15 +12,45 @@ from networkx.algorithms.community import (
 )
 def test_modularity_communities(func):
     G = nx.karate_club_graph()
-
     john_a = frozenset(
         [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
     )
     mr_hi = frozenset([0, 4, 5, 6, 10, 11, 16, 19])
     overlap = frozenset([1, 2, 3, 7, 9, 12, 13, 17, 21])
     expected = {john_a, overlap, mr_hi}
-
     assert set(func(G)) == expected
+
+
+@pytest.mark.parametrize(
+    "func", (greedy_modularity_communities, naive_greedy_modularity_communities)
+)
+def test_modularity_communities_categorical_labels(func):
+    # Using other than 0-starting contiguous integers as node-labels.
+    G = nx.Graph(
+        [
+            ("a", "b"),
+            ("a", "c"),
+            ("b", "c"),
+            ("b", "d"),  # inter-community edge
+            ("d", "e"),
+            ("d", "f"),
+            ("d", "g"),
+            ("f", "g"),
+            ("d", "e"),
+            ("f", "e"),
+        ]
+    )
+    expected = {frozenset({"f", "g", "e", "d"}), frozenset({"a", "b", "c"})}
+    assert set(func(G)) == expected
+
+
+def test_greedy_modularity_communities_relabeled():
+    # Test for gh-4966
+    G = nx.balanced_tree(2, 2)
+    mapping = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g", 7: "h"}
+    G = nx.relabel_nodes(G, mapping)
+    expected = [frozenset({"e", "d", "a", "b"}), frozenset({"c", "f", "g"})]
+    assert greedy_modularity_communities(G) == expected
 
 
 def test_modularity_communities_weighted():
