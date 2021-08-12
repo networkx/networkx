@@ -49,8 +49,10 @@ def louvain_communities(
     the ordering happens using a random shuffle.
 
     The second phase consists in building a new network whose nodes are now the communities
-    found in the first phase. Once this phase is complete it is possible to reapply the
-    first phase creating bigger communities with increased modularity.
+    found in the first phase. To do so, the weights of the links between the new nodes are given by
+    the sum of the weight of the links between nodes in the corresponding two communities. Once this
+    phase is complete it is possible to reapply the first phase creating bigger communities with
+    increased modularity.
 
     The above two phases are executed until no modularity gain is achieved (or is less than
     the `threshold`).
