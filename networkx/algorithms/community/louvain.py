@@ -96,6 +96,10 @@ def louvain_communities(
        well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
     .. [3] Nicolas Dugué, Anthony Perez. Directed Louvain : maximizing modularity in directed networks.
         [Research Report] Université d’Orléans. 2015. hal-01231784
+
+    See Also
+    --------
+    louvain_partitions
     """
 
     d = louvain_partitions(G, weight, resolution, threshold, seed)
@@ -145,6 +149,10 @@ def louvain_partitions(
     ----------
     .. [1] Blondel, V.D. et al. Fast unfolding of communities in
        large networks. J. Stat. Mech 10008, 1-12(2008)
+
+    See Also
+    --------
+    louvain_communities
     """
 
     partition = [{u} for u in G.nodes()]
