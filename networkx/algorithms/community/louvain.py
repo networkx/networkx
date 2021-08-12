@@ -45,7 +45,8 @@ def louvain_communities(
 
     The first phase continues until no individual move can improve the modularity.
 
-    > Note: The order in which the nodes are considered can affect the final output.
+    > Note: The order in which the nodes are considered can affect the final output. In the algorithm
+    the ordering happens using a random shuffle.
 
     The second phase consists in building a new network whose nodes are now the communities
     found in the first phase. Once this phase is complete it is possible to reapply the
