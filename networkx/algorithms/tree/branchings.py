@@ -45,8 +45,8 @@ __all__ = [
     "minimum_branching",
     "maximum_spanning_arborescence",
     "minimum_spanning_arborescence",
-    "Edmonds",
     "ArborescenceIterator",
+    "Edmonds",
 ]
 
 KINDS = {"max", "min"}
@@ -258,7 +258,23 @@ def get_path(G, u, v):
 
 class Edmonds:
     """
-    Edmonds algorithm for finding optimal branchings and spanning arborescences.
+    Edmonds algorithm [1]_ for finding optimal branchings and spanning
+    arborescences.
+
+    This algorithm can find both minimum and maximum spanning arborescences and
+    branchings.
+
+    Notes
+    -----
+    While this algorithm can find a minimum branching, since it isn't required
+    to be spanning, the minimum branching is always from the set of negative
+    weight edges which is most likely the empty set for most graphs.
+
+    References
+    ----------
+    .. [1] J. Edmonds, Optimum Branchings, Journal of Research of the National
+           Bureau of Standards, 1967, Vol. 71B, p.233-240,
+           https://archive.org/details/jresv71Bn4p233
 
     """
 
@@ -782,21 +798,30 @@ class EdgePartition(Enum):
 
 class ArborescenceIterator:
     """
-    This iterator will successively return spanning arborescences of the input
-    graph in order of minimum weight to maximum weight.
+    Iterate over all spanning arborescences of a graph in order of increasing
+    cost.
 
-    This is an implementation of an algorithm published by Sörensen and Janssens
-    and published in the 2005 paper An Algorithm to Generate all Spanning Trees
-    of a Graph in Order of Increasing Cost which can be accessed at
-    https://www.scielo.br/j/pope/a/XHswBwRwJyrfL88dmMwYNWp/?lang=en
+    Notes
+    -----
+    This iterator uses the partition scheme from [1]_ as well as a modified
+    Edmonds' Algorithm to generate minimum spanning arborescences which respect
+    the partition of edges. For arborescences with the same weight, ties are
+    broken arbitrarily.
+
+    References
+    ----------
+    .. [1] G.K. Janssens, K. Sörensen, An algorithm to generate all spanning
+           trees in order of increasing cost, Pesquisa Operacional, 2005-08,
+           Vol. 25 (2), p. 219-229,
+           https://www.scielo.br/j/pope/a/XHswBwRwJyrfL88dmMwYNWp/?lang=en
     """
 
     @dataclass(order=True)
     class Partition:
         """
         This dataclass represents a partition and stores a dict with the edge
-        data and the weight of the minimum spanning tree with the partitions
-        are stored using
+        data and the weight of the minimum spanning arborescence of the
+        partition dict.
         """
 
         mst_weight: int
@@ -855,11 +880,11 @@ class ArborescenceIterator:
             The iterator object for this graph
         """
         self.partition_queue = PriorityQueue()
-        self.clear_partition(self.G)
+        self._clear_partition(self.G)
 
         # Write the initial partition if it exists.
         if self.init_partition is not None:
-            self.write_partition(self.init_partition)
+            self._write_partition(self.init_partition)
 
         mst_weight = partition_spanning_arborescence(
             self.G,
@@ -892,20 +917,20 @@ class ArborescenceIterator:
             raise StopIteration
 
         partition = self.partition_queue.get()
-        self.write_partition(partition)
-        next_tree = partition_spanning_arborescence(
+        self._write_partition(partition)
+        next_arborescence = partition_spanning_arborescence(
             self.G,
             self.weight,
             kind=self.kind,
             partition=self.partition_key,
             preserve_attrs=True,
         )
-        self.partition(partition, next_tree)
+        self._partition(partition, next_arborescence)
 
-        self.clear_partition(next_tree)
-        return next_tree
+        self._clear_partition(next_arborescence)
+        return next_arborescence
 
-    def partition(self, partition, partition_tree):
+    def _partition(self, partition, partition_arborescence):
         """
         Create new partitions based of the minimum spanning tree of the
         current minimum partition.
@@ -913,21 +938,22 @@ class ArborescenceIterator:
         Parameters
         ----------
         partition : Partition
-        partition_tree : nx.DiGraph
+            The Partition instance used to generate the current minimum spanning
+            tree.
+        partition_arborescence : nx.Graph
+            The minimum spanning arborescence of the input partition.
         """
         # create two new partitions with the data from the input partition dict
         p1 = self.Partition(0, partition.partition_dict.copy())
         p2 = self.Partition(0, partition.partition_dict.copy())
-        for e in partition_tree.edges:
+        for e in partition_arborescence.edges:
             # determine if the edge was open or included
             if e not in partition.partition_dict:
                 # This is an open edge
                 p1.partition_dict[e] = EdgePartition.EXCLUDED
                 p2.partition_dict[e] = EdgePartition.INCLUDED
 
-                self.write_partition(p1)
-                # valid_partition = self.check_partition()
-                # if valid_partition:
+                self._write_partition(p1)
                 p1_mst = partition_spanning_arborescence(
                     self.G,
                     self.weight,
@@ -943,10 +969,12 @@ class ArborescenceIterator:
                     self.partition_queue.put(p1.__copy__())
                 p1.partition_dict = p2.partition_dict.copy()
 
-    def write_partition(self, partition):
+    def _write_partition(self, partition):
         """
         Writes the desired partition into the graph to calculate the minimum
-        spanning tree.
+        spanning tree. Also, if one incoming edge is included, mark all others
+        as excluded so that if that vertex is merged during Edmonds' algorithm
+        we cannot still pick another of that vertex's included edges.
 
         Parameters
         ----------
@@ -975,10 +1003,16 @@ class ArborescenceIterator:
                     if d.get(self.partition_key) != EdgePartition.INCLUDED:
                         d[self.partition_key] = EdgePartition.EXCLUDED
 
-    def clear_partition(self, G):
+    def _clear_partition(self, G):
         """
         Removes partition data from the graph
         """
         for u, v, d in G.edges(data=True):
             if self.partition_key in d:
                 del d[self.partition_key]
+
+    def __del__(self):
+        """
+        Delete the copy of the graph
+        """
+        del self.G

@@ -760,20 +760,28 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
 
 class SpanningTreeIterator:
     """
-    This iterator will successively return spanning trees of the input
-    graph in order of minimum weight to maximum weight.
-    This is an implementation of an algorithm published by Sörensen and Janssens
-    and published in the 2005 paper An Algorithm to Generate all Spanning Trees
-    of a Graph in Order of Increasing Cost which can be accessed at
-    https://www.scielo.br/j/pope/a/XHswBwRwJyrfL88dmMwYNWp/?lang=en
+    Iterate over all spanning trees of a graph in order of increasing cost.
+
+    Notes
+    -----
+    This iterator uses the partition scheme from [1]_ as well as a modified
+    Kruskal's Algorithm to generate minimum spanning trees which respect the
+    partition of edges. For spanning trees with the same weight, ties are
+    broken arbitrarily.
+
+    References
+    ----------
+    .. [1] G.K. Janssens, K. Sörensen, An algorithm to generate all spanning
+           trees in order of increasing cost, Pesquisa Operacional, 2005-08,
+           Vol. 25 (2), p. 219-229,
+           https://www.scielo.br/j/pope/a/XHswBwRwJyrfL88dmMwYNWp/?lang=en
     """
 
     @dataclass(order=True)
     class Partition:
         """
         This dataclass represents a partition and stores a dict with the edge
-        data and the weight of the minimum spanning tree with the partitions
-        are stored using
+        data and the weight of the minimum spanning tree of the partition dict.
         """
 
         mst_weight: int
@@ -817,11 +825,11 @@ class SpanningTreeIterator:
         """
         Returns
         -------
-        TreeIterator
+        SpanningTreeIterator
             The iterator object for this graph
         """
         self.partition_queue = PriorityQueue()
-        self.clear_partition(self.G)
+        self._clear_partition(self.G)
         mst_weight = partition_minimum_spanning_tree(
             self.G, self.minimum, self.weight, self.partition_key, self.ignore_nan
         ).size(weight=self.weight)
@@ -844,16 +852,16 @@ class SpanningTreeIterator:
             raise StopIteration
 
         partition = self.partition_queue.get()
-        self.write_partition(partition)
+        self._write_partition(partition)
         next_tree = partition_minimum_spanning_tree(
             self.G, self.minimum, self.weight, self.partition_key, self.ignore_nan
         )
-        self.partition(partition, next_tree)
+        self._partition(partition, next_tree)
 
-        self.clear_partition(next_tree)
+        self._clear_partition(next_tree)
         return next_tree
 
-    def partition(self, partition, partition_tree):
+    def _partition(self, partition, partition_tree):
         """
         Create new partitions based of the minimum spanning tree of the
         current minimum partition.
@@ -861,7 +869,10 @@ class SpanningTreeIterator:
         Parameters
         ----------
         partition : Partition
+            The Partition instance used to generate the current minimum spanning
+            tree.
         partition_tree : nx.Graph
+            The minimum spanning tree of the input partition.
         """
         # create two new partitions with the data from the input partition dict
         p1 = self.Partition(0, partition.partition_dict.copy())
@@ -873,7 +884,7 @@ class SpanningTreeIterator:
                 p1.partition_dict[e] = EdgePartition.EXCLUDED
                 p2.partition_dict[e] = EdgePartition.INCLUDED
 
-                self.write_partition(p1)
+                self._write_partition(p1)
                 p1_mst = partition_minimum_spanning_tree(
                     self.G,
                     self.minimum,
@@ -887,7 +898,7 @@ class SpanningTreeIterator:
                     self.partition_queue.put(p1.__copy__())
                 p1.partition_dict = p2.partition_dict.copy()
 
-    def write_partition(self, partition):
+    def _write_partition(self, partition):
         """
         Writes the desired partition into the graph to calculate the minimum
         spanning tree.
@@ -904,7 +915,7 @@ class SpanningTreeIterator:
             else:
                 d[self.partition_key] = EdgePartition.OPEN
 
-    def clear_partition(self, G):
+    def _clear_partition(self, G):
         """
         Removes partition data from the graph
         """
