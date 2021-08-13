@@ -194,9 +194,6 @@ def edge_betweenness_centrality_subset(
     b = _rescale_e(b, len(G), normalized=normalized, directed=G.is_directed())
     if G.is_multigraph():
         b = _add_edge_keys(G, b, weight=weight)
-        for e in G.edges():  # Remove edges without key
-            if e in b:
-                del b[e]
     return b
 
 

@@ -238,9 +238,6 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     )
     if G.is_multigraph():
         betweenness = _add_edge_keys(G, betweenness, weight=weight)
-        for e in G.edges():  # Remove edges without key
-            if e in betweenness:
-                del betweenness[e]
     return betweenness
 
 
@@ -469,5 +466,9 @@ def _add_edge_keys(G, betweenness, weight=None):
         keys = _keys(u, v, G[u][v])
         for k in keys:
             betweenness[(u, v, k)] = betweenness[(u, v)] / len(keys)
+
+    for e in G.edges():  # Remove edges without key
+        if e in betweenness:
+            del betweenness[e]
 
     return betweenness
