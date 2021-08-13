@@ -14,7 +14,9 @@
       :toctree: generated/
 
    {% for item in methods %}
-      ~{{ name }}.{{ item }}
+       {% if item != "__init__" %}
+          ~{{ name }}.{{ item }}
+       {% endif %}
    {%- endfor %}
    {% endif %}
    {% endblock %}
