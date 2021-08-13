@@ -288,10 +288,10 @@ def lexicographical_topological_sort(G, key=None):
         This function maps nodes to keys with which to resolve ambiguities in
         the sort order.  Defaults to the identity function.
 
-    Returns
-    -------
-    iterable
-        An iterable of node names in lexicographical topological sort order.
+    Yields
+    ------
+    nodes
+        Yields the nodes in lexicographical topological sort order.
 
     Raises
     ------
@@ -309,9 +309,11 @@ def lexicographical_topological_sort(G, key=None):
 
     Examples
     --------
-    >>> DG = nx.DiGraph([(2, 3), (1, 3)])
+    >>> DG = nx.DiGraph([(2, 1), (2, 5), (1, 3), (1, 4), (5, 4)])
     >>> list(nx.lexicographical_topological_sort(DG))
-    [1, 2, 3]
+    [2, 1, 3, 5, 4]
+    >>> list(nx.lexicographical_topological_sort(DG, key=lambda x: -x))
+    [2, 5, 1, 4, 3]
 
     Notes
     -----
@@ -380,10 +382,10 @@ def all_topological_sorts(G):
     G : NetworkX DiGraph
         A directed graph
 
-    Returns
-    -------
-    generator
-        All topological sorts of the digraph G
+    Yields
+    ------
+    topological_sort_order : list
+        a list of nodes in `G`, representing one of the topological sort orders
 
     Raises
     ------
@@ -512,7 +514,7 @@ def is_aperiodic(G):
     A graph consisting of one cycle,
     the length of which is 2
     (k = 2 divides the length of every cycle in the graph
-    and therefore the graph is not aperiodic)::
+    and therefore the graph is *not aperiodic*)::
 
         >>> DG = nx.DiGraph([(1, 2), (2, 1)])
         >>> nx.is_aperiodic(DG)
@@ -521,17 +523,28 @@ def is_aperiodic(G):
     A graph consisting of two cycles,
     the length of which differs by one
     (cycle lengths are coprime,
-    so there is no k > 1 dividing each cycle length
-    and therefore the graph is aperiodic)::
+    so there is no single value of k,
+    where k > 1 that divides each cycle length
+    and therefore the graph is *aperiodic*)::
 
         >>> DG = nx.DiGraph([(1, 2), (2, 3), (3, 1), (1, 4), (4, 1)])
         >>> nx.is_aperiodic(DG)
         True
 
+    A graph consisting of two cycles,
+    lengths 2 and 4
+    (the lengths of the cycles
+    share a common factor k = 2,
+    and therefore the graph is *not aperiodic*)::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 1), (3, 4), (4, 5), (5, 6), (6, 3)])
+        >>> nx.is_aperiodic(DG)
+        False
+
     Graph without cycles
     (the lengths of all cycles are equal to zero,
     so every k > 1 dividing each cycle length
-    and therefore the graph is not aperiodic)::
+    and therefore the graph is *not aperiodic*)::
 
         >>> DG = nx.DiGraph([(1, 2), (2, 3)])
         >>> nx.is_aperiodic(DG)
@@ -612,26 +625,39 @@ def transitive_closure(G, reflexive=False):
 
     Examples
     --------
-    Trivial cycles (length 0) create self-loops::
+    The treatment of trivial (i.e. length 0) cycles
+    is controlled by the `reflexive` parameter.
 
-        >>> DG = nx.DiGraph([(1, 2), (2, 3)])
-        >>> TC = nx.transitive_closure(DG, reflexive=True)
-        >>> TC.edges()
-        OutEdgeView([(1, 2), (1, 1), (1, 3), (2, 3), (2, 2), (3, 3)])
-
-    Trivial cycles (length 0) do not create self-loops::
+    Trivial (i.e. length 0) cycles
+    do not create self-loops
+    when ``reflexive=False`` (the default)::
 
         >>> DG = nx.DiGraph([(1, 2), (2, 3)])
         >>> TC = nx.transitive_closure(DG, reflexive=False)
         >>> TC.edges()
         OutEdgeView([(1, 2), (1, 3), (2, 3)])
 
-    Do not create self-loops at all::
+    However, nontrivial (i.e. length greater then 0) cycles
+    create self-loops when ``reflexive=False`` (the default)::
 
-        >>> DG = nx.DiGraph([(1, 2), (2, 1)])
+        >>> DG = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
+        >>> TC = nx.transitive_closure(DG, reflexive=False)
+        >>> TC.edges()
+        OutEdgeView([(1, 2), (1, 3), (1, 1), (2, 3), (2, 1), (2, 2), (3, 1), (3, 2), (3, 3)])
+
+    Trivial cycles (length 0) create self-loops when ``reflexive=True``::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+        >>> TC = nx.transitive_closure(DG, reflexive=True)
+        >>> TC.edges()
+        OutEdgeView([(1, 2), (1, 1), (1, 3), (2, 3), (2, 2), (3, 3)])
+
+    And the third option is not to create self-loops at all when ``reflexive=None``::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
         >>> TC = nx.transitive_closure(DG, reflexive=None)
         >>> TC.edges()
-        OutEdgeView([(1, 2), (2, 1)])
+        OutEdgeView([(1, 2), (1, 3), (2, 3), (2, 1), (3, 1), (3, 2)])
 
     References
     ----------
@@ -803,9 +829,10 @@ def antichains(G, topo_order=None):
     topo_order: list or tuple, optional
         A topological order for G (if None, the function will compute one)
 
-    Returns
-    -------
-    generator object
+    Yields
+    ------
+    antichain : list
+        a list of nodes in `G` representing an antichain
 
     Raises
     ------
@@ -886,9 +913,13 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
 
     Examples
     --------
-    >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+    >>> DG = nx.DiGraph([(0, 1, {'cost':1}), (1, 2, {'cost':1}), (0, 2, {'cost':42})])
+    >>> list(nx.all_simple_paths(DG, 0, 2))
+    [[0, 1, 2], [0, 2]]
     >>> nx.dag_longest_path(DG)
-    [1, 2, 3]
+    [0, 1, 2]
+    >>> nx.dag_longest_path(DG, weight="cost")
+    [0, 2]
 
     See also
     --------
@@ -952,9 +983,13 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
 
     Examples
     --------
-    >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+    >>> DG = nx.DiGraph([(0, 1, {'cost':1}), (1, 2, {'cost':1}), (0, 2, {'cost':42})])
+    >>> list(nx.all_simple_paths(DG, 0, 2))
+    [[0, 1, 2], [0, 2]]
     >>> nx.dag_longest_path_length(DG)
     2
+    >>> nx.dag_longest_path_length(DG, weight="cost")
+    42
 
     See also
     --------
