@@ -268,11 +268,7 @@ class TestDAG:
         assert ancestors(G, 6) == {1, 2, 4, 5}
         assert ancestors(G, 3) == {1, 4}
         assert ancestors(G, 1) == set()
-        pytest.raises(nx.NodeNotFound, ancestors, G, 8)
-
-    def test_ancestors_undirected(self):
-        G = nx.path_graph(3, create_using=nx.Graph)
-        pytest.raises(nx.NetworkXNotImplemented, nx.algorithms.dag.ancestors, G, 1)
+        pytest.raises(nx.NetworkXError, ancestors, G, 8)
 
     def test_descendants(self):
         G = nx.DiGraph()
@@ -281,11 +277,7 @@ class TestDAG:
         assert descendants(G, 1) == {2, 3, 6}
         assert descendants(G, 4) == {2, 3, 5, 6}
         assert descendants(G, 3) == set()
-        pytest.raises(nx.NodeNotFound, descendants, G, 8)
-
-    def test_descendants_undirected(self):
-        G = nx.path_graph(3, create_using=nx.Graph)
-        pytest.raises(nx.NetworkXNotImplemented, nx.algorithms.dag.descendants, G, 1)
+        pytest.raises(nx.NetworkXError, descendants, G, 8)
 
     def test_transitive_closure(self):
         G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])

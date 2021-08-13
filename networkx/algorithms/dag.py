@@ -35,7 +35,6 @@ __all__ = [
 chaini = chain.from_iterable
 
 
-@not_implemented_for("undirected")
 def descendants(G, source):
     """Returns all nodes reachable from `source` in `G`.
 
@@ -43,6 +42,7 @@ def descendants(G, source):
     ----------
     G : NetworkX DiGraph
         A directed graph
+
     source : node in `G`
 
     Returns
@@ -52,51 +52,53 @@ def descendants(G, source):
 
     Raises
     ------
-    NetworkXNotImplemented
-        If `G` is not directed.
-
-    NodeNotFound
+    NetworkXError
         If node `source` is not in `G`.
 
     Examples
     --------
-    >>> DG = nx.DiGraph([(1, 2), (2, 3)])
-    >>> nx.descendants(DG, source=2)
-    {3}
+    >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
+    >>> sorted(list(nx.descendants(DG, 2)))
+    [3, 4]
+
+    See also
+    --------
+    ancestors
     """
-    return nx.shortest_path_length(G, source=source).keys() - {source}
+    return {child for parent, child in nx.bfs_edges(G, source)}
 
 
-@not_implemented_for("undirected")
-def ancestors(G, target):
-    """Returns all nodes having a path to `target` in `G`.
+def ancestors(G, source):
+    """Returns all nodes having a path to `source` in `G`.
 
     Parameters
     ----------
     G : NetworkX DiGraph
         A directed graph
-    target : node in `G`
+
+    source : node in `G`
 
     Returns
     -------
     set()
-        The ancestors of `target` in `G`
+        The ancestors of `source` in `G`
 
     Raises
     ------
-    NetworkXNotImplemented
-        If `G` is not directed.
-
-    NodeNotFound
-        If node `target` is not in `G`.
+    NetworkXError
+        If node `source` is not in `G`.
 
     Examples
     --------
-    >>> DG = nx.DiGraph([(1, 2), (2, 3)])
-    >>> nx.ancestors(DG, target=2)
-    {1}
+    >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
+    >>> sorted(list(nx.ancestors(DG, 2)))
+    [0, 1]
+
+    See also
+    --------
+    descendants
     """
-    return nx.shortest_path_length(G, target=target).keys() - {target}
+    return {child for parent, child in nx.bfs_edges(G, source, reverse=True)}
 
 
 def has_cycle(G):
