@@ -290,14 +290,13 @@ def geographical_threshold_graph(
 
     .. math::
 
-       (w_u + w_v)p(r) \ge \theta
+       (w_u + w_v)p_{dist}(r) \ge \theta
 
-    where `r` is the distance between `u` and `v`, p(r) is any function of
-    `r`, and :math:`\theta` as the threshold parameter. p(r) corresponds to
-    the `p_dist` parameter and is used to give weight to the distance between
-    nodes in deciding whether or not they should be connected. The larger p(r)
-    is, the more prone nodes separated by `r` are to be connected, and vice
-    versa.
+    where `r` is the distance between `u` and `v`, `p_dist` is any function of
+    `r`, and :math:`\theta` as the threshold parameter. `p_dist` is used to
+    give weight to the distance between nodes when deciding whether or not
+    they should be connected. The larger `p_dist` is, the more prone nodes
+    separated by `r` are to be connected, and vice versa.
 
     Parameters
     ----------
@@ -329,7 +328,7 @@ def geographical_threshold_graph(
 
         .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
     p_dist : function, optional
-        Any function used to give weight to the distance between nodes in
+        Any function used to give weight to the distance between nodes when
         deciding whether or not they should be connected. `p_dist` was
         originally conceived as a probability density function giving the
         probability of connecting two nodes that are of metric distance `r`
@@ -382,8 +381,7 @@ def geographical_threshold_graph(
     >>> G = nx.geographical_threshold_graph(20, 50, weight=w)
 
     If node positions are not specified they are randomly assigned from the
-    uniform distribution. Finally, the `p_dist` argument in the implementation
-    here corresponds to h(r) in [1].
+    uniform distribution.
 
     References
     ----------
