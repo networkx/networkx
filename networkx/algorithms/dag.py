@@ -40,9 +40,7 @@ def descendants(G, source):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-        A directed graph
-
+    G : NetworkX Graph
     source : node in `G`
 
     Returns
@@ -73,9 +71,7 @@ def ancestors(G, source):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-        A directed graph
-
+    G : NetworkX Graph
     source : node in `G`
 
     Returns
