@@ -354,12 +354,7 @@ def _snap_eligible_group(G, groups, group_lookup, edge_types):
     return None, neighbor_info
 
 
-def _snap_split(
-    groups,
-    neighbor_info,
-    group_lookup,
-    group_id,
-):
+def _snap_split(groups, neighbor_info, group_lookup, group_id):
     """
     Splits a group based on edge types and updates the groups accordingly
 

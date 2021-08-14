@@ -121,8 +121,7 @@ def test_parse_edgelist_no_data(example_graph):
 def test_parse_edgelist_with_data_dict(example_graph):
     G = example_graph
     H = nx.parse_edgelist(
-        ["1 2 {'weight': 3}", "2 3 {'weight': 27}", "3 4 {'weight': 3.0}"],
-        nodetype=int,
+        ["1 2 {'weight': 3}", "2 3 {'weight': 27}", "3 4 {'weight': 3.0}"], nodetype=int
     )
     assert nodes_equal(G.nodes, H.nodes)
     assert edges_equal(G.edges(data=True), H.edges(data=True))

@@ -479,11 +479,7 @@ def test_to_numpy_recarray_default_dtype_no_weight():
 def recarray_nodelist_test_graph():
     G = nx.Graph()
     G.add_edges_from(
-        [
-            (0, 1, {"weight": 1.0}),
-            (0, 2, {"weight": 2.0}),
-            (1, 2, {"weight": 0.5}),
-        ]
+        [(0, 1, {"weight": 1.0}), (0, 2, {"weight": 2.0}), (1, 2, {"weight": 0.5})]
     )
     return G
 
@@ -495,10 +491,7 @@ def test_to_numpy_recarray_nodelist(recarray_nodelist_test_graph):
 
 @pytest.mark.parametrize(
     ("nodelist", "errmsg"),
-    (
-        ([2, 3], "in nodelist is not in G"),
-        ([1, 1], "nodelist contains duplicates"),
-    ),
+    (([2, 3], "in nodelist is not in G"), ([1, 1], "nodelist contains duplicates")),
 )
 def test_to_numpy_recarray_bad_nodelist(recarray_nodelist_test_graph, nodelist, errmsg):
     with pytest.raises(nx.NetworkXError, match=errmsg):
@@ -519,14 +512,7 @@ def multigraph_test_graph():
     return G
 
 
-@pytest.mark.parametrize(
-    ("operator", "expected"),
-    (
-        (sum, 77),
-        (min, 7),
-        (max, 70),
-    ),
-)
+@pytest.mark.parametrize(("operator", "expected"), ((sum, 77), (min, 7), (max, 70)))
 def test_numpy_multigraph(multigraph_test_graph, operator, expected):
     A = nx.to_numpy_array(multigraph_test_graph, multigraph_weight=operator)
     assert A[1, 0] == expected

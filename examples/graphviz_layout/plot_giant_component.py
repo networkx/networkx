@@ -42,13 +42,7 @@ for p, ax, seed in zip(pvals, axes.ravel(), range(len(pvals))):
     # draw other connected components
     for Gi in Gcc[1:]:
         if len(Gi) > 1:
-            nx.draw_networkx_edges(
-                G.subgraph(Gi),
-                pos,
-                alpha=0.3,
-                width=5.0,
-                **options,
-            )
+            nx.draw_networkx_edges(G.subgraph(Gi), pos, alpha=0.3, width=5.0, **options)
     # draw connected/disconnected nodes
     options = {"ax": ax, "node_size": 30, "edgecolors": "white"}
     nx.draw(G, pos, nodelist=connected, **options)

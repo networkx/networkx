@@ -167,10 +167,7 @@ class TestUnDirectedDedensification:
         assert c_nodes == set()
 
     def setup_method(self):
-        self.c_nodes = (
-            "6AB",
-            "ABC",
-        )
+        self.c_nodes = ("6AB", "ABC")
 
     def build_compressed_graph(self):
         compressed_matrix = [
@@ -245,9 +242,7 @@ class AbstractSNAP:
 
         relationship_attributes = ("type",)
         generated_summary_graph = nx.snap_aggregation(
-            original_graph,
-            self.node_attributes,
-            relationship_attributes,
+            original_graph, self.node_attributes, relationship_attributes
         )
         relabeled_summary_graph = self.deterministic_labels(generated_summary_graph)
         assert nx.is_isomorphic(summary_graph, relabeled_summary_graph)
