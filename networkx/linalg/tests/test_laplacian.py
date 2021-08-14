@@ -151,15 +151,7 @@ class TestLaplacian:
 
         # Make a strongly connected periodic graph
         G = nx.DiGraph()
-        G.add_edges_from(
-            (
-                (1, 2),
-                (2, 4),
-                (4, 1),
-                (1, 3),
-                (3, 4),
-            )
-        )
+        G.add_edges_from(((1, 2), (2, 4), (4, 1), (1, 3), (3, 4)))
         # fmt: off
         GL = np.array([[ 0.5  , -0.176, -0.176, -0.25 ],
                        [-0.176,  0.5  ,  0.   , -0.176],

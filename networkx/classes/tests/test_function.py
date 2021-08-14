@@ -708,8 +708,7 @@ def test_selfloop_edges_multi_with_data_and_keys():
     G.add_edge(0, 0, weight=10)
     G.add_edge(0, 0, weight=100)
     assert edges_equal(
-        nx.selfloop_edges(G, data="weight", keys=True),
-        [(0, 0, 0, 10), (0, 0, 1, 100)],
+        nx.selfloop_edges(G, data="weight", keys=True), [(0, 0, 0, 10), (0, 0, 1, 100)]
     )
 
 

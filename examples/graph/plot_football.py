@@ -37,12 +37,7 @@ print(txt)
 for n, d in G.degree():
     print(f"{n:20} {d:2}")
 
-options = {
-    "node_color": "black",
-    "node_size": 50,
-    "linewidths": 0,
-    "width": 0.1,
-}
+options = {"node_color": "black", "node_size": 50, "linewidths": 0, "width": 0.1}
 
 pos = nx.spring_layout(G, seed=1969)  # Seed for reproducible layout
 nx.draw(G, pos, **options)
