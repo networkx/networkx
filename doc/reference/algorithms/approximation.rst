@@ -102,7 +102,6 @@ Traveling Salesman
    greedy_tsp
    simulated_annealing_tsp
    threshold_accepting_tsp
-   asadpour_atsp
 
 
 Treewidth

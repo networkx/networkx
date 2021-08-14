@@ -534,7 +534,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
 identified_nodes = contracted_nodes
 
 
-def contracted_edge(G, edge, self_loops=True, copy=True):
+def contracted_edge(G, edge, self_loops=True):
     """Returns the graph that results from contracting the specified edge.
 
     Edge contraction identifies the two endpoints of the edge as a single node
@@ -554,10 +554,6 @@ def contracted_edge(G, edge, self_loops=True, copy=True):
        If this is True, any edges (including `edge`) joining the
        endpoints of `edge` in `G` become self-loops on the new node in the
        returned graph.
-
-    copy : Boolean (default True)
-        If this is True, a the contraction will be performed on a copy of `G`,
-        otherwise the contraction will happen in place.
 
     Returns
     -------

@@ -2,15 +2,10 @@
 Algorithms for calculating min/max spanning trees/forests.
 
 """
-import string
-from dataclasses import dataclass, field
-from enum import Enum
 from heapq import heappop, heappush
 from operator import itemgetter
 from itertools import count
 from math import isnan
-from queue import PriorityQueue
-import random
 
 import networkx as nx
 from networkx.utils import UnionFind, not_implemented_for
@@ -20,14 +15,7 @@ __all__ = [
     "maximum_spanning_edges",
     "minimum_spanning_tree",
     "maximum_spanning_tree",
-    "SpanningTreeIterator",
 ]
-
-
-class EdgePartition(Enum):
-    OPEN = 0
-    INCLUDED = 1
-    EXCLUDED = 2
 
 
 @not_implemented_for("multigraph")
@@ -127,137 +115,6 @@ def boruvka_mst_edges(
                 forest.union(u, v)
 
 
-def kruskal_mst_edges_partition(
-    G, minimum, weight="weight", keys=True, data=True, ignore_nan=False, partition=None
-):
-    """
-    Iterate over edge of a Kruskal's algorithm min/max spanning tree with
-    respect to the partition encoded in the edges
-
-    Parameters
-    ----------
-    G : NetworkX Graph
-        The graph holding the tree of interest.
-
-    minimum : bool (default: True)
-        Find the minimum (True) or maximum (False) spanning tree.
-
-    weight : string (default: 'weight')
-        The name of the edge attribute holding the edge weights.
-
-    keys : bool (default: True)
-        If `G` is a multigraph, `keys` controls whether edge keys ar yielded.
-        Otherwise `keys` is ignored.
-
-    data : bool (default: True)
-        Flag for whether to yield edge attribute dicts.
-        If True, yield edges `(u, v, d)`, where `d` is the attribute dict.
-        If False, yield edges `(u, v)`.
-
-    ignore_nan : bool (default: False)
-        If a NaN is found as an edge weight normally an exception is raised.
-        If `ignore_nan is True` then that edge is ignored instead.
-
-    partition : string (default: None)
-        The name of the edge attribute holding the partition data, if it exists
-
-    Yields
-    ------
-    edge tuple
-        An tuple describing the always at least `(u, v)` but possibly
-        `(u, v, d)` or `(u, v, k, d)` depending on the `key` and `data`
-        parameters
-    """
-    subtrees = UnionFind()
-    if G.is_multigraph():
-        edges = G.edges(keys=True, data=True)
-        """
-        Sort the edges of the graph with respect to the partition data. 
-        Edges are returned in the following order:
-
-        * Included edges
-        * Open edges from smallest to largest weight
-        * Excluded edges
-        """
-        included_edges = []
-        open_edges = []
-        for u, v, k, d in edges:
-            wt = d.get(weight, 1)
-            if isnan(wt):
-                if ignore_nan:
-                    continue
-                msg = f"NaN found as an edge weight. Edge {(u, v, k, d)}"
-                raise ValueError(msg)
-
-            if d.get(partition) == EdgePartition.INCLUDED:
-                included_edges.append((wt, u, v, k, d))
-            elif d.get(partition) == EdgePartition.EXCLUDED:
-                continue
-            else:
-                open_edges.append((wt, u, v, k, d))
-
-    else:
-        edges = G.edges(data=True)
-        """
-        Sort the edges of the graph with respect to the partition data. 
-        Edges are returned in the following order:
-
-        * Included edges
-        * Open edges from smallest to largest weight
-        * Excluded edges
-        """
-        included_edges = []
-        open_edges = []
-        for u, v, d in edges:
-            wt = d.get(weight, 1)
-            if isnan(wt):
-                if ignore_nan:
-                    continue
-                msg = f"NaN found as an edge weight. Edge {(u, v, d)}"
-                raise ValueError(msg)
-
-            if d.get(partition) == EdgePartition.INCLUDED:
-                included_edges.append((wt, u, v, d))
-            elif d.get(partition) == EdgePartition.EXCLUDED:
-                continue
-            else:
-                open_edges.append((wt, u, v, d))
-
-    if minimum:
-        sorted_open_edges = sorted(open_edges, key=itemgetter(0))
-    else:
-        sorted_open_edges = sorted(open_edges, key=itemgetter(0), reverse=True)
-
-    # Condense the lists into one
-    included_edges.extend(sorted_open_edges)
-    sorted_edges = included_edges
-    del open_edges, sorted_open_edges, included_edges
-
-    # Multigraphs need to handle edge keys in addition to edge data.
-    if G.is_multigraph():
-        for wt, u, v, k, d in sorted_edges:
-            if subtrees[u] != subtrees[v]:
-                if keys:
-                    if data:
-                        yield u, v, k, d
-                    else:
-                        yield u, v, k
-                else:
-                    if data:
-                        yield u, v, d
-                    else:
-                        yield u, v
-                subtrees.union(u, v)
-    else:
-        for wt, u, v, d in sorted_edges:
-            if subtrees[u] != subtrees[v]:
-                if data:
-                    yield u, v, d
-                else:
-                    yield u, v
-                subtrees.union(u, v)
-
-
 def kruskal_mst_edges(
     G, minimum, weight="weight", keys=True, data=True, ignore_nan=False
 ):
@@ -288,8 +145,59 @@ def kruskal_mst_edges(
         If `ignore_nan is True` then that edge is ignored instead.
 
     """
+    subtrees = UnionFind()
+    if G.is_multigraph():
+        edges = G.edges(keys=True, data=True)
 
-    return kruskal_mst_edges_partition(G, minimum, weight, keys, data, ignore_nan, None)
+        def filter_nan_edges(edges=edges, weight=weight):
+            sign = 1 if minimum else -1
+            for u, v, k, d in edges:
+                wt = d.get(weight, 1) * sign
+                if isnan(wt):
+                    if ignore_nan:
+                        continue
+                    msg = f"NaN found as an edge weight. Edge {(u, v, k, d)}"
+                    raise ValueError(msg)
+                yield wt, u, v, k, d
+
+    else:
+        edges = G.edges(data=True)
+
+        def filter_nan_edges(edges=edges, weight=weight):
+            sign = 1 if minimum else -1
+            for u, v, d in edges:
+                wt = d.get(weight, 1) * sign
+                if isnan(wt):
+                    if ignore_nan:
+                        continue
+                    msg = f"NaN found as an edge weight. Edge {(u, v, d)}"
+                    raise ValueError(msg)
+                yield wt, u, v, d
+
+    edges = sorted(filter_nan_edges(), key=itemgetter(0))
+    # Multigraphs need to handle edge keys in addition to edge data.
+    if G.is_multigraph():
+        for wt, u, v, k, d in edges:
+            if subtrees[u] != subtrees[v]:
+                if keys:
+                    if data:
+                        yield u, v, k, d
+                    else:
+                        yield u, v, k
+                else:
+                    if data:
+                        yield u, v, d
+                    else:
+                        yield u, v
+                subtrees.union(u, v)
+    else:
+        for wt, u, v, d in edges:
+            if subtrees[u] != subtrees[v]:
+                if data:
+                    yield (u, v, d)
+                else:
+                    yield (u, v)
+                subtrees.union(u, v)
 
 
 def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan=False):
@@ -642,60 +550,6 @@ def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     return T
 
 
-def partition_minimum_spanning_tree(
-    G, minimum=True, weight="weight", partition="partition", ignore_nan=False
-):
-    """
-    Uses Kruskal's algorithm to create a minimum spanning tree which requires
-    certain edges to be in the tree and other to be excluded from the tree.
-
-    This is used in the tree iterators to create new partitions following the
-    algorithm of Sörensen and Janssens.
-
-    Parameters
-    ----------
-    G : undirected graph
-        An undirected graph.
-
-    minimum : bool (default: True)
-        Determines whether the returned tree is the minimum spanning tree of
-        the partition of the maximum one.
-
-    weight : str
-        Data key to use for edge weights.
-
-    partition : str
-        The key for the edge attribute containing the partition data on the
-        graph. Edges can be included, excluded or open using the enum in
-        `tree_iterators`.
-
-    ignore_nan : bool (default: False)
-        If a NaN is found as an edge weight normally an exception is raised.
-        If `ignore_nan is True` then that edge is ignored instead.
-
-
-    Returns
-    -------
-    G : NetworkX Graph
-        A minimum spanning tree using all of the included edges in the graph and
-        none of the excluded edges.
-    """
-    edges = kruskal_mst_edges_partition(
-        G,
-        minimum,
-        weight,
-        keys=True,
-        data=True,
-        ignore_nan=ignore_nan,
-        partition=partition,
-    )
-    T = G.__class__()  # Same graph class as G
-    T.graph.update(G.graph)
-    T.add_nodes_from(G.nodes.items())
-    T.add_edges_from(edges)
-    return T
-
-
 def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a maximum spanning tree or forest on an undirected graph `G`.
 
@@ -756,175 +610,3 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     T.add_nodes_from(G.nodes.items())
     T.add_edges_from(edges)
     return T
-
-
-class SpanningTreeIterator:
-    """
-    Iterate over all spanning trees of a graph in order of increasing cost.
-
-    Notes
-    -----
-    This iterator uses the partition scheme from [1]_ as well as a modified
-    Kruskal's Algorithm to generate minimum spanning trees which respect the
-    partition of edges. For spanning trees with the same weight, ties are
-    broken arbitrarily.
-
-    References
-    ----------
-    .. [1] G.K. Janssens, K. Sörensen, An algorithm to generate all spanning
-           trees in order of increasing cost, Pesquisa Operacional, 2005-08,
-           Vol. 25 (2), p. 219-229,
-           https://www.scielo.br/j/pope/a/XHswBwRwJyrfL88dmMwYNWp/?lang=en
-    """
-
-    @dataclass(order=True)
-    class Partition:
-        """
-        This dataclass represents a partition and stores a dict with the edge
-        data and the weight of the minimum spanning tree of the partition dict.
-        """
-
-        mst_weight: int
-        partition_dict: dict = field(compare=False)
-
-        def __copy__(self):
-            return SpanningTreeIterator.Partition(
-                self.mst_weight, self.partition_dict.copy()
-            )
-
-    def __init__(self, G, weight="weight", minimum=True, ignore_nan=False):
-        """
-        Initialize the iterator
-
-        Parameters
-        ----------
-        G : nx.Graph
-            The directed graph which we need to iterate trees over
-
-        weight : String, default = "weight"
-            The edge attribute used to store the weight of the edge
-
-        minimum : bool, default = True
-            Return the trees in increasing order while true and decreasing order
-            while false.
-
-        ignore_nan : bool, default = False
-            If a NaN is found as an edge weight normally an exception is raised.
-            If `ignore_nan is True` then that edge is ignored instead.
-        """
-        self.G = G.copy()
-        self.weight = weight
-        self.minimum = minimum
-        self.ignore_nan = ignore_nan
-        # Randomly create a key for an edge attribute to hold the partition data
-        self.partition_key = "".join(
-            [random.choice(string.ascii_letters) for _ in range(15)]
-        )
-
-    def __iter__(self):
-        """
-        Returns
-        -------
-        SpanningTreeIterator
-            The iterator object for this graph
-        """
-        self.partition_queue = PriorityQueue()
-        self._clear_partition(self.G)
-        mst_weight = partition_minimum_spanning_tree(
-            self.G, self.minimum, self.weight, self.partition_key, self.ignore_nan
-        ).size(weight=self.weight)
-
-        self.partition_queue.put(
-            self.Partition(mst_weight if self.minimum else -mst_weight, dict())
-        )
-
-        return self
-
-    def __next__(self):
-        """
-        Returns
-        -------
-        (multi)Graph
-            The spanning tree of next greatest weight, which ties broken
-            arbitrarily.
-        """
-        if self.partition_queue.empty():
-            raise StopIteration
-
-        partition = self.partition_queue.get()
-        self._write_partition(partition)
-        next_tree = partition_minimum_spanning_tree(
-            self.G, self.minimum, self.weight, self.partition_key, self.ignore_nan
-        )
-        self._partition(partition, next_tree)
-
-        self._clear_partition(next_tree)
-        return next_tree
-
-    def _partition(self, partition, partition_tree):
-        """
-        Create new partitions based of the minimum spanning tree of the
-        current minimum partition.
-
-        Parameters
-        ----------
-        partition : Partition
-            The Partition instance used to generate the current minimum spanning
-            tree.
-        partition_tree : nx.Graph
-            The minimum spanning tree of the input partition.
-        """
-        # create two new partitions with the data from the input partition dict
-        p1 = self.Partition(0, partition.partition_dict.copy())
-        p2 = self.Partition(0, partition.partition_dict.copy())
-        for e in partition_tree.edges:
-            # determine if the edge was open or included
-            if e not in partition.partition_dict:
-                # This is an open edge
-                p1.partition_dict[e] = EdgePartition.EXCLUDED
-                p2.partition_dict[e] = EdgePartition.INCLUDED
-
-                self._write_partition(p1)
-                p1_mst = partition_minimum_spanning_tree(
-                    self.G,
-                    self.minimum,
-                    self.weight,
-                    self.partition_key,
-                    self.ignore_nan,
-                )
-                p1_mst_weight = p1_mst.size(weight=self.weight)
-                if nx.is_connected(p1_mst):
-                    p1.mst_weight = p1_mst_weight if self.minimum else -p1_mst_weight
-                    self.partition_queue.put(p1.__copy__())
-                p1.partition_dict = p2.partition_dict.copy()
-
-    def _write_partition(self, partition):
-        """
-        Writes the desired partition into the graph to calculate the minimum
-        spanning tree.
-
-        Parameters
-        ----------
-        partition : Partition
-            A Partition dataclass describing a partition on the edges of the
-            graph.
-        """
-        for u, v, d in self.G.edges(data=True):
-            if (u, v) in partition.partition_dict:
-                d[self.partition_key] = partition.partition_dict[(u, v)]
-            else:
-                d[self.partition_key] = EdgePartition.OPEN
-
-    def _clear_partition(self, G):
-        """
-        Removes partition data from the graph
-        """
-        for u, v, d in G.edges(data=True):
-            if self.partition_key in d:
-                del d[self.partition_key]
-
-    def __del__(self):
-        """
-        Delete the copy of the graph
-        """
-        del self.G
