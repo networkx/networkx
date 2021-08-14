@@ -128,11 +128,11 @@ def open_file(path_arg, mode="r"):
            pass
 
        @open_file(1,"w")
-       def write_function(G, pathname="graph.dot")
+       def write_function(G, pathname="graph.dot"):
            pass
 
        @open_file("pathname","w")
-       def write_function(G, pathname="graph.dot")
+       def write_function(G, pathname="graph.dot"):
            pass
 
        @open_file("path", "w+")
@@ -146,7 +146,7 @@ def open_file(path_arg, mode="r"):
     specified as a string, but it does not handle the situation when the
     function wants to accept a default of None (and then handle it).
 
-    Here is an example of how to handle this case:
+    Here is an example of how to handle this case::
 
       @open_file("path")
       def some_function(arg1, arg2, path=None):
