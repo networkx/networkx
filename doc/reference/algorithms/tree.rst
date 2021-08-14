@@ -22,7 +22,6 @@ Branchings and Spanning Arborescences
 .. automodule:: networkx.algorithms.tree.branchings
 .. autosummary::
    :toctree: generated/
-   :maxdepth: 2
 
    branching_weight
    greedy_branching
@@ -38,7 +37,6 @@ Encoding and decoding
 .. automodule:: networkx.algorithms.tree.coding
 .. autosummary::
    :toctree: generated/
-   :maxdepth: 2
 
    from_nested_tuple
    to_nested_tuple
@@ -58,7 +56,6 @@ Spanning Trees
 .. automodule:: networkx.algorithms.tree.mst
 .. autosummary::
    :toctree: generated/
-   :maxdepth: 2
 
    minimum_spanning_tree
    maximum_spanning_tree
