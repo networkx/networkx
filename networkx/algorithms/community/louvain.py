@@ -166,19 +166,21 @@ def louvain_partitions(
         graph.add_weighted_edges_from(G.edges(data=weight, default=1))
 
     m = graph.size(weight="weight")
-    while True:
-        partition, inner_partition, improvement = _one_level(
-            graph, m, partition, resolution, is_directed, seed
-        )
-        if not improvement:
-            break
+    partition, inner_partition, improvement = _one_level(
+        graph, m, partition, resolution, is_directed, seed
+    )
+    improvement = True
+    while improvement:
+        yield partition
         new_mod = modularity(
             graph, inner_partition, resolution=resolution, weight="weight"
         )
         if new_mod - mod <= threshold:
-            break
+            return
         graph = _gen_graph(graph, inner_partition)
-        yield partition
+        partition, inner_partition, improvement = _one_level(
+            graph, m, partition, resolution, is_directed, seed
+        )
 
 
 def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
