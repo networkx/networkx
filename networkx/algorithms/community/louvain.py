@@ -17,6 +17,9 @@ def louvain_communities(
     r"""Find the best partition of G using the Louvain Community Detection
     Algorithm.
 
+    Louvain Community Detection Algorithm is a simple method to extract the community
+    structure of a network. This is a heuristic method based on modularity optimization. [1]_
+
     The algorithm works in 2 steps. On the first step it assigns every node to be
     in its own community and then for each node it tries to find the maximum positive
     modularity gain by moving each node to all of its neighbor communities. If no positive
@@ -112,6 +115,9 @@ def louvain_partitions(
     G, weight="weight", resolution=1, threshold=0.0000001, seed=None
 ):
     """Yields partitions for each level of the Louvain Community Detection Algorithm
+
+    Louvain Community Detection Algorithm is a simple method to extract the community
+    structure of a network. This is a heuristic method based on modularity optimization. [1]_
 
     The partitions at each level (step of the algorithm) form a dendogram of communities.
     A dendrogram is a diagram representing a tree and each level represents
