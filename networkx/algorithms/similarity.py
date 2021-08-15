@@ -1511,12 +1511,7 @@ def simrank_similarity_numpy(
         stacklevel=2,
     )
     return _simrank_similarity_numpy(
-        G,
-        source,
-        target,
-        importance_factor,
-        max_iterations,
-        tolerance,
+        G, source, target, importance_factor, max_iterations, tolerance
     )
 
 

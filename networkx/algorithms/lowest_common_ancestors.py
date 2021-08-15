@@ -4,11 +4,7 @@ from collections.abc import Mapping, Set
 from itertools import chain, count
 
 import networkx as nx
-from networkx.utils import (
-    arbitrary_element,
-    not_implemented_for,
-    UnionFind,
-)
+from networkx.utils import arbitrary_element, not_implemented_for, UnionFind
 
 __all__ = [
     "all_pairs_lowest_common_ancestor",

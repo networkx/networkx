@@ -638,19 +638,12 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
         DEAF.node_list[t] for t in DEAF.edge_targets
     )  # Use original nodes.
     if not multigraph:
-        for e in zip(
-            DEAF.edge_sources,
-            DEAF.edge_targets,
-            DEAF.edge_flow,
-        ):
+        for e in zip(DEAF.edge_sources, DEAF.edge_targets, DEAF.edge_flow):
             add_entry(e)
         edges = G.edges(data=True)
     else:
         for e in zip(
-            DEAF.edge_sources,
-            DEAF.edge_targets,
-            DEAF.edge_keys,
-            DEAF.edge_flow,
+            DEAF.edge_sources, DEAF.edge_targets, DEAF.edge_keys, DEAF.edge_flow
         ):
             add_entry(e)
         edges = G.edges(data=True, keys=True)
