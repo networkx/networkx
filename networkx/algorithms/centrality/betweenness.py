@@ -460,15 +460,12 @@ def _add_edge_keys(G, betweenness, weight=None):
     The BC value is divided among edges of equal weight.
     """
     _keys = _get_edge_keys(G, weight)
-    betweenness.update(dict.fromkeys(G.edges(keys=True), 0.0))
 
-    for u, v in G.edges():
+    edge_bc = dict.fromkeys(G.edges, 0.0)
+    for (u, v) in betweenness:
         keys = _keys(u, v, G[u][v])
+        bc = betweenness[(u, v)] / len(keys)
         for k in keys:
-            betweenness[(u, v, k)] = betweenness[(u, v)] / len(keys)
+            edge_bc[(u, v, k)] = bc
 
-    for e in G.edges():  # Remove edges without key
-        if e in betweenness:
-            del betweenness[e]
-
-    return betweenness
+    return edge_bc
