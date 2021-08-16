@@ -859,8 +859,8 @@ class ArborescenceIterator:
         self.weight = weight
         self.kind = "min" if minimum else "max"
         # Randomly create a key for an edge attribute to hold the partition data
-        self.partition_key = "".join(
-            [random.choice(string.ascii_letters) for _ in range(15)]
+        self.partition_key = (
+            "ArborescenceIterators super secret partition " "attribute name"
         )
         if init_partition is not None:
             partition_dict = {}
@@ -914,6 +914,7 @@ class ArborescenceIterator:
             arbitrarily.
         """
         if self.partition_queue.empty():
+            del self.G, self.partition_queue
             raise StopIteration
 
         partition = self.partition_queue.get()
@@ -1010,9 +1011,3 @@ class ArborescenceIterator:
         for u, v, d in G.edges(data=True):
             if self.partition_key in d:
                 del d[self.partition_key]
-
-    def __del__(self):
-        """
-        Delete the copy of the graph
-        """
-        del self.G

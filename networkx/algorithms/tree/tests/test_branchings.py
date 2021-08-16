@@ -147,11 +147,6 @@ def assert_equal_branchings(G1, G2, attr="weight", default=1):
     e1 = sorted_edges(G1, attr, default)
     e2 = sorted_edges(G2, attr, default)
 
-    # If we have an exception, let's see the edges.
-    # print(e1)
-    # print(e2)
-    # print
-
     for a, b in zip(e1, e2):
         assert a[:2] == b[:2]
         np.testing.assert_almost_equal(a[2], b[2])
@@ -456,10 +451,8 @@ def test_edge_attribute_discard():
 
 def test_partition_spanning_arborescence():
     """
-    This method tests an internal function in branching.py which and was written
-    for development purposes.
-
-    To re-engage this test, all 'partition_spanning_arborescence' to __all__
+    Test that we can generate minimum spanning arborescences which respect the
+    given partition.
     """
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     G[3][0]["partition"] = EdgePartition.EXCLUDED
@@ -506,8 +499,7 @@ def test_arborescence_iterator_min():
     for B in branchings.ArborescenceIterator(G):
         arborescence_count += 1
         new_arborescence_weight = B.size(weight="weight")
-        if new_arborescence_weight < arborescence_weight:
-            assert False
+        assert new_arborescence_weight >= arborescence_weight
         arborescence_weight = new_arborescence_weight
 
     assert arborescence_count == 680
@@ -534,8 +526,7 @@ def test_arborescence_iterator_max():
     for B in branchings.ArborescenceIterator(G, minimum=False):
         arborescence_count += 1
         new_arborescence_weight = B.size(weight="weight")
-        if new_arborescence_weight > arborescence_weight:
-            assert False
+        assert new_arborescence_weight <= arborescence_weight
         arborescence_weight = new_arborescence_weight
 
     assert arborescence_count == 680
@@ -561,13 +552,10 @@ def test_arborescence_iterator_initial_partition():
     ):
         arborescence_count += 1
         new_arborescence_weight = B.size(weight="weight")
-        if new_arborescence_weight < arborescence_weight:
-            assert False
+        assert new_arborescence_weight >= arborescence_weight
         arborescence_weight = new_arborescence_weight
         for e in included_edges:
-            if e not in B.edges():
-                assert False
+            assert e in B.edges
         for e in excluded_edges:
-            if e in B.edges():
-                assert False
+            assert e not in B.edges
     assert arborescence_count == 16

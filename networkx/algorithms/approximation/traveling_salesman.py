@@ -208,7 +208,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     Edge weights in the new graph are the lengths of the paths
     between each pair of nodes in the original graph.
     Second, an algorithm (default: `christofides` for undirected and
-    `asadpour_atsp for directed) is used to approximate the minimal Hamiltonian
+    `asadpour_atsp` for directed) is used to approximate the minimal Hamiltonian
     cycle on this new graph. The available algorithms are:
 
      - christofides
@@ -334,7 +334,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
 
 
 @not_implemented_for("undirected")
-def asadpour_atsp(G, weight="weight", random=None, source=None):
+def asadpour_atsp(G, weight="weight", seed=None, source=None):
     """
     Returns an approximate solution to the traveling salesman problem.
 
@@ -362,9 +362,9 @@ def asadpour_atsp(G, weight="weight", random=None, source=None):
         Edge data key corresponding to the edge weight.
         If any edge does not have this attribute the weight is set to 1.
 
-    random : int or random.Random, optional
-        An random.Random instance or int used as the seed for the random number
-        generator in `sample_spanning_tree`.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     source : node label (default=`None`)
         If given, return the cycle starting and ending at the given node.
@@ -381,8 +381,11 @@ def asadpour_atsp(G, weight="weight", random=None, source=None):
         If `G` is not complete, the algorithm raises an exception.
 
     NetworkXError
-        if 'source` is not `None` and is not a node in `G`, the algorithm raises
+        If 'source` is not `None` and is not a node in `G`, the algorithm raises
         an exception.
+
+    NetworkXNotImplemented
+        If `G` is an undirected graph.
 
     References
     ----------
@@ -397,7 +400,7 @@ def asadpour_atsp(G, weight="weight", random=None, source=None):
     >>> import networkx.algorithms.approximation as approx
     >>> G = nx.complete_graph(3, create_using=nx.DiGraph)
     >>> nx.set_edge_attributes(G, {(0, 1): 2, (1, 2): 2, (2, 0): 2, (0, 2): 1, (2, 1): 1, (1, 0): 1}, "weight")
-    >>> tour = approx.asadpour_atsp(G, source=0)
+    >>> tour = approx.asadpour_atsp(G,source=0)
     >>> tour
     [0, 2, 1, 0]
     """
@@ -445,7 +448,7 @@ def asadpour_atsp(G, weight="weight", random=None, source=None):
     minimum_sampled_tree = None
     minimum_sampled_tree_weight = math.inf
     for _ in range(2 * ceil(ln(G.number_of_nodes()))):
-        sampled_tree = sample_spanning_tree(z_support, "lambda_key", random)
+        sampled_tree = sample_spanning_tree(z_support, "lambda_key", seed)
         sampled_tree_weight = sampled_tree.size(weight)
         if sampled_tree_weight < minimum_sampled_tree_weight:
             minimum_sampled_tree = sampled_tree.copy()
@@ -793,9 +796,10 @@ def held_karp_ascent(G, weight="weight"):
     return next(k_max.__iter__()).size(weight), z_star
 
 
-def krichhoffs(G, weight=None):
+def total_spanning_tree_weight(G, weight=None):
     """
-    Apply Krichhoff's Tree Matrix Theorem a graph.
+    Apply Kirchhoff's Tree Matrix Theorem a graph in order to find the total
+    weight of all spanning trees.
 
     The theorem states that the determinant of any cofactor of the Laplacian
     matrix of a graph is the number of spanning trees in the graph. For a
@@ -806,7 +810,8 @@ def krichhoffs(G, weight=None):
     Parameters
     ----------
     G : NetworkX Graph
-        The graph to use Krichhoff's theorem on.
+        The graph to use Kirchhoff's theorem on.
+
     weight : string or None
         The key for the edge attribute holding the edge weight. If `None`, then
         each edge is assumed to have a weight of 1.
@@ -879,9 +884,9 @@ def spanning_tree_distribution(G, z):
         # Create the laplacian matrices
         for u, v, d in G.edges(data=True):
             d[lambda_key] = exp(gamma[(u, v)])
-        G_Krichhoff = krichhoffs(G, lambda_key)
+        G_Krichhoff = total_spanning_tree_weight(G, lambda_key)
         G_e = nx.contracted_edge(G, e, self_loops=False)
-        G_e_Krichhoff = krichhoffs(G_e, lambda_key)
+        G_e_Krichhoff = total_spanning_tree_weight(G_e, lambda_key)
 
         # Multiply by the weight of the contracted edge since it is not included
         # in the total weight of the contracted graph.
@@ -896,7 +901,7 @@ def spanning_tree_distribution(G, z):
     EPSILON = 0.2
 
     # pick an edge attribute name that is unlikely to be in the graph
-    lambda_key = "".join([random.choice(string.ascii_letters) for _ in range(15)])
+    lambda_key = "spanning_tree_distribution's secret attribute name for lambda"
 
     while True:
         # We need to know that know that no values of q_e are greater than
@@ -935,7 +940,7 @@ def spanning_tree_distribution(G, z):
 
 
 @py_random_state(2)
-def sample_spanning_tree(G, lambda_key, random=None):
+def sample_spanning_tree(G, lambda_key, seed=None):
     """
     Sample a spanning tree using the edges weights of the graph.
 
@@ -960,9 +965,9 @@ def sample_spanning_tree(G, lambda_key, random=None):
     lambda_key : string
         The edge key for the edge attribute holding edge weight.
 
-    random : int or random.Random instance
-        The random number generator used to shuffle the edges and find
-        probabilies
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -981,8 +986,8 @@ def sample_spanning_tree(G, lambda_key, random=None):
         representative in the graph. Each node which is not in merged_nodes
         is still its own representative. Since a representative can be later
         contracted, we need to recursively search though the dict to find
-        the final representative, but only we know it we can use path
-        compression speed the access of the representative for next time.
+        the final representative, but once we know it we can use path
+        compression to speed up the access of the representative for next time.
 
         Parameters
         ----------
@@ -1048,11 +1053,11 @@ def sample_spanning_tree(G, lambda_key, random=None):
     U = set()
     V = set(G.edges())
     shuffled_edges = list(G.edges())
-    random.shuffle(shuffled_edges)
+    seed.shuffle(shuffled_edges)
 
     for u, v in shuffled_edges:
         node_map, prepared_G = prepare_graph()
-        G_total_tree_weight = krichhoffs(prepared_G, lambda_key)
+        G_total_tree_weight = total_spanning_tree_weight(prepared_G, lambda_key)
         # Add the edge to U so that we can compute the total tree weight
         # assuming we include that edge
         U.add((u, v))
@@ -1064,10 +1069,10 @@ def sample_spanning_tree(G, lambda_key, random=None):
         # Check to see if the 'representative edge' for the current edge is
         # in prepared_G. If so, then we can pick it.
         if rep_edge in prepared_G.edges:
-            G_e_total_tree_weight = krichhoffs(prepared_G_e, lambda_key)
+            G_e_total_tree_weight = total_spanning_tree_weight(prepared_G_e, lambda_key)
         else:
             G_e_total_tree_weight = 0.0
-        z = random.uniform(0.0, 1.0)
+        z = seed.uniform(0.0, 1.0)
         # This will be useful if I move this random spanning tree method to
         # the boarder NetworkX library
         e_weight = G[u][v][lambda_key] if lambda_key is not None else 1

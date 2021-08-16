@@ -691,7 +691,42 @@ def test_spanning_tree_distribution():
     assert {key: round(gamma[key], 4) for key in gamma} == solution_gamma
 
 
-def test_spanning_tree_sample():
+def test_sample_spanning_tree():
+    """
+    Using a fixed seed, sample one tree for repeatability.
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+    from math import exp
+
+    gamma = {
+        (0, 1): -0.6383,
+        (0, 2): -0.6827,
+        (0, 5): 0,
+        (1, 2): -1.0781,
+        (1, 4): 0,
+        (2, 3): 0,
+        (5, 3): -0.2820,
+        (5, 4): -0.3327,
+        (4, 3): -0.9927,
+    }
+
+    # The undirected support of gamma
+    G = nx.Graph()
+    for u, v in gamma:
+        if (u, v) in G.edges or (v, u) in G.edges:
+            continue
+        G.add_edge(u, v, lambda_key=exp(gamma[(u, v)]))
+
+    solution_edges = [(2, 3), (3, 4), (0, 5), (5, 4), (4, 1)]
+    solution = nx.Graph()
+    solution.add_edges_from(solution_edges)
+
+    sampled_tree = tsp.sample_spanning_tree(G, "lambda_key", 42)
+
+    assert nx.utils.edges_equal(solution.edges, sampled_tree.edges)
+
+
+def test_sample_spanning_tree_large_sample():
     """
     Sample a single spanning tree from the distribution created in the last test
     """
@@ -770,7 +805,7 @@ def test_spanning_tree_sample():
                 tree_actual[t] += 1
 
     # Conduct a Chi squared test to see if the actual distribution matches the
-    # expected one at an alpha = 0.01 significance level.
+    # expected one at an alpha = 0.05 significance level.
     #
     # H_0: The distribution of trees in tree_actual matches the normalized product
     # of the edge weights in the tree.
@@ -781,7 +816,7 @@ def test_spanning_tree_sample():
 
     # Assert that p is greater than the significance level so that we do not
     # reject the null hypothesis
-    assert not p < 0.01
+    assert not p < 0.05
 
 
 def test_asadpour_tsp():
@@ -948,16 +983,11 @@ def test_asadpour_disconnected_graph():
 
     G = nx.complete_graph(4, create_using=nx.DiGraph)
     # have to set edge weights so that if the exception is not raised, the
-    # function will complete and we hit the assert False statement
+    # function will complete and we will fail the test
     nx.set_edge_attributes(G, 1, "weight")
     G.add_node(5)
 
-    try:
-        nx_app.asadpour_atsp(G)
-
-        assert False
-    except nx.NetworkXError:
-        pass
+    pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
 
 
 def test_asadpour_incomplete_graph():
@@ -968,16 +998,11 @@ def test_asadpour_incomplete_graph():
 
     G = nx.complete_graph(4, create_using=nx.DiGraph)
     # have to set edge weights so that if the exception is not raised, the
-    # function will complete and we hit the assert False statement
+    # function will complete and we will fail the test
     nx.set_edge_attributes(G, 1, "weight")
     G.remove_edge(0, 1)
 
-    try:
-        nx_app.asadpour_atsp(G)
-
-        assert False
-    except nx.NetworkXError:
-        pass
+    pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
 
 
 def test_asadpour_integral_held_karp():
@@ -1015,7 +1040,7 @@ def test_asadpour_integral_held_karp():
         assert [1, 3, 2, 5, 2, 6, 4, 0, 1] == tour
 
 
-def test_asadpour_impossible():
+def test_directed_tsp_impossible():
     """
     Test the asadpour algorithm with a graph without a hamiltonian circuit
     """
@@ -1037,9 +1062,4 @@ def test_asadpour_impossible():
     G = nx.DiGraph()
     G.add_weighted_edges_from(edges)
 
-    try:
-        nx_app.traveling_salesman_problem(G)
-
-        assert False
-    except nx.NetworkXError:
-        pass
+    pytest.raises(nx.NetworkXError, nx_app.traveling_salesman_problem, G)
