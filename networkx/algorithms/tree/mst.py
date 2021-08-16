@@ -174,9 +174,9 @@ def kruskal_mst_edges(
     Yields
     ------
     edge tuple
-        An tuple describing the always at least `(u, v)` but possibly
-        `(u, v, d)` or `(u, v, k, d)` depending on the `key` and `data`
-        parameters
+        The edges as discovered by Kruskal's method. Each edge can
+        take the following forms: `(u, v)`, `(u, v, d)` or `(u, v, k, d)` 
+        depending on the `key` and `data` parameters
     """
     subtrees = UnionFind()
     if G.is_multigraph():

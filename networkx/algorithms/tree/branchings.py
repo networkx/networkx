@@ -803,10 +803,10 @@ class ArborescenceIterator:
 
     Notes
     -----
-    This iterator uses the partition scheme from [1]_ as well as a modified
-    Edmonds' Algorithm to generate minimum spanning arborescences which respect
-    the partition of edges. For arborescences with the same weight, ties are
-    broken arbitrarily.
+    This iterator uses the partition scheme from [1]_ (included edges, excluded edges 
+    and open edges). It generates minimum spanning arborescences using a modified
+    Edmonds' Algorithm which respects the partition of edges. For arborescences with
+    the same weight, ties are broken arbitrarily.
 
     References
     ----------
