@@ -698,6 +698,8 @@ def test_sample_spanning_tree():
     import networkx.algorithms.approximation.traveling_salesman as tsp
     from math import exp
 
+    pytest.importorskip("numpy")
+
     gamma = {
         (0, 1): -0.6383,
         (0, 2): -0.6827,
