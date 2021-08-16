@@ -472,9 +472,7 @@ def test_partition_spanning_arborescence():
         (6, 2, 21),
     ]
 
-    B = branchings.partition_spanning_arborescence(
-        G, "weight", kind="min", partition="partition"
-    )
+    B = branchings.minimum_spanning_arborescence(G, partition="partition")
     assert_equal_branchings(build_branching(actual_edges), B)
 
 

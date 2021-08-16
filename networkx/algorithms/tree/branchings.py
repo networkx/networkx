@@ -45,6 +45,7 @@ __all__ = [
     "minimum_branching",
     "maximum_spanning_arborescence",
     "minimum_spanning_arborescence",
+    "EdgePartition",
     "ArborescenceIterator",
     "Edmonds",
 ]
@@ -684,26 +685,47 @@ class Edmonds:
         return H
 
 
-def maximum_branching(G, attr="weight", default=1, preserve_attrs=False):
+def maximum_branching(
+    G, attr="weight", default=1, preserve_attrs=False, partition=None
+):
     ed = Edmonds(G)
     B = ed.find_optimum(
-        attr, default, kind="max", style="branching", preserve_attrs=preserve_attrs
+        attr,
+        default,
+        kind="max",
+        style="branching",
+        preserve_attrs=preserve_attrs,
+        partition=partition,
     )
     return B
 
 
-def minimum_branching(G, attr="weight", default=1, preserve_attrs=False):
+def minimum_branching(
+    G, attr="weight", default=1, preserve_attrs=False, partition=None
+):
     ed = Edmonds(G)
     B = ed.find_optimum(
-        attr, default, kind="min", style="branching", preserve_attrs=preserve_attrs
+        attr,
+        default,
+        kind="min",
+        style="branching",
+        preserve_attrs=preserve_attrs,
+        partition=partition,
     )
     return B
 
 
-def maximum_spanning_arborescence(G, attr="weight", default=1, preserve_attrs=False):
+def maximum_spanning_arborescence(
+    G, attr="weight", default=1, preserve_attrs=False, partition=None
+):
     ed = Edmonds(G)
     B = ed.find_optimum(
-        attr, default, kind="max", style="arborescence", preserve_attrs=preserve_attrs
+        attr,
+        default,
+        kind="max",
+        style="arborescence",
+        preserve_attrs=preserve_attrs,
+        partition=partition,
     )
     if not is_arborescence(B):
         msg = "No maximum spanning arborescence in G."
@@ -711,32 +733,21 @@ def maximum_spanning_arborescence(G, attr="weight", default=1, preserve_attrs=Fa
     return B
 
 
-def minimum_spanning_arborescence(G, attr="weight", default=1, preserve_attrs=False):
-    ed = Edmonds(G)
-    B = ed.find_optimum(
-        attr, default, kind="min", style="arborescence", preserve_attrs=preserve_attrs
-    )
-    if not is_arborescence(B):
-        msg = "No minimum spanning arborescence in G."
-        raise nx.exception.NetworkXException(msg)
-    return B
-
-
-def partition_spanning_arborescence(
-    G, attr="weight", default=1, kind="min", partition=None, preserve_attrs=True
+def minimum_spanning_arborescence(
+    G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
     ed = Edmonds(G)
     B = ed.find_optimum(
         attr,
         default,
-        kind=kind,
+        kind="min",
         style="arborescence",
-        partition=partition,
         preserve_attrs=preserve_attrs,
+        partition=partition,
     )
-
     if not is_arborescence(B):
-        return None
+        msg = "No minimum spanning arborescence in G."
+        raise nx.exception.NetworkXException(msg)
     return B
 
 
@@ -755,6 +766,10 @@ default : float
 preserve_attrs : bool
     If True, preserve the other attributes of the original graph (that are not
     passed to `attr`)
+partition : str
+    The key for the edge attribute containing the partition
+    data on the graph. Edges can be included, excluded or open using the
+    `EdgePartition` enum.
 
 Returns
 -------
@@ -791,6 +806,16 @@ minimum_spanning_arborescence.__doc__ = docstring_arborescence.format(
 
 
 class EdgePartition(Enum):
+    """
+    An enum to store the state of an edge partition. The enum is written to the
+    edges of a graph before finding the arboresence or branching in question.
+    Options are:
+
+    - EdgePartition.OPEN
+    - EdgePartition.INCLUDED
+    - EdgePartition.EXCLUDED
+    """
+
     OPEN = 0
     INCLUDED = 1
     EXCLUDED = 2
@@ -798,15 +823,16 @@ class EdgePartition(Enum):
 
 class ArborescenceIterator:
     """
-    Iterate over all spanning arborescences of a graph in order of increasing
-    cost.
+    Iterate over all spanning arborescences of a graph in either increasing or
+    decreasing cost.
 
     Notes
     -----
-    This iterator uses the partition scheme from [1]_ (included edges, excluded edges 
-    and open edges). It generates minimum spanning arborescences using a modified
-    Edmonds' Algorithm which respects the partition of edges. For arborescences with
-    the same weight, ties are broken arbitrarily.
+    This iterator uses the partition scheme from [1]_ (included edges,
+    excluded edges and open edges). It generates minimum spanning
+    arborescences using a modified Edmonds' Algorithm which respects the
+    partition of edges. For arborescences with the same weight, ties are
+    broken arbitrarily.
 
     References
     ----------
@@ -857,7 +883,10 @@ class ArborescenceIterator:
         """
         self.G = G.copy()
         self.weight = weight
-        self.kind = "min" if minimum else "max"
+        self.minimum = minimum
+        self.method = (
+            minimum_spanning_arborescence if minimum else maximum_spanning_arborescence
+        )
         # Randomly create a key for an edge attribute to hold the partition data
         self.partition_key = (
             "ArborescenceIterators super secret partition " "attribute name"
@@ -886,17 +915,16 @@ class ArborescenceIterator:
         if self.init_partition is not None:
             self._write_partition(self.init_partition)
 
-        mst_weight = partition_spanning_arborescence(
+        mst_weight = self.method(
             self.G,
             self.weight,
-            kind=self.kind,
             partition=self.partition_key,
             preserve_attrs=True,
         ).size(weight=self.weight)
 
         self.partition_queue.put(
             self.Partition(
-                mst_weight if self.kind else -mst_weight,
+                mst_weight if self.minimum else -mst_weight,
                 dict()
                 if self.init_partition is None
                 else self.init_partition.partition_dict,
@@ -919,10 +947,9 @@ class ArborescenceIterator:
 
         partition = self.partition_queue.get()
         self._write_partition(partition)
-        next_arborescence = partition_spanning_arborescence(
+        next_arborescence = self.method(
             self.G,
             self.weight,
-            kind=self.kind,
             partition=self.partition_key,
             preserve_attrs=True,
         )
@@ -955,19 +982,20 @@ class ArborescenceIterator:
                 p2.partition_dict[e] = EdgePartition.INCLUDED
 
                 self._write_partition(p1)
-                p1_mst = partition_spanning_arborescence(
-                    self.G,
-                    self.weight,
-                    kind=self.kind,
-                    partition=self.partition_key,
-                    preserve_attrs=True,
-                )
-                if p1_mst is not None:
-                    p1_mst_weight = p1_mst.size(weight=self.weight)
-                    p1.mst_weight = (
-                        p1_mst_weight if self.kind == "min" else -p1_mst_weight
+                try:
+                    p1_mst = self.method(
+                        self.G,
+                        self.weight,
+                        partition=self.partition_key,
+                        preserve_attrs=True,
                     )
+
+                    p1_mst_weight = p1_mst.size(weight=self.weight)
+                    p1.mst_weight = p1_mst_weight if self.minimum else -p1_mst_weight
                     self.partition_queue.put(p1.__copy__())
+                except nx.NetworkXException:
+                    pass
+
                 p1.partition_dict = p2.partition_dict.copy()
 
     def _write_partition(self, partition):

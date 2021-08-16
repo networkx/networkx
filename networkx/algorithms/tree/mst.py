@@ -18,6 +18,7 @@ __all__ = [
     "maximum_spanning_edges",
     "minimum_spanning_tree",
     "maximum_spanning_tree",
+    "partition_spanning_tree",
     "EdgePartition",
     "SpanningTreeIterator",
 ]
@@ -175,7 +176,7 @@ def kruskal_mst_edges(
     ------
     edge tuple
         The edges as discovered by Kruskal's method. Each edge can
-        take the following forms: `(u, v)`, `(u, v, d)` or `(u, v, k, d)` 
+        take the following forms: `(u, v)`, `(u, v, d)` or `(u, v, k, d)`
         depending on the `key` and `data` parameters
     """
     subtrees = UnionFind()
@@ -202,7 +203,7 @@ def kruskal_mst_edges(
                 continue
             raise ValueError(f"NaN found as an edge weight. Edge {e}")
 
-        edge = tuple(wt) + e
+        edge = (wt,) + e
         if d.get(partition) == EdgePartition.INCLUDED:
             included_edges.append(edge)
         elif d.get(partition) == EdgePartition.EXCLUDED:
@@ -595,15 +596,17 @@ def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     return T
 
 
-def partition_minimum_spanning_tree(
+def partition_spanning_tree(
     G, minimum=True, weight="weight", partition="partition", ignore_nan=False
 ):
     """
-    Uses Kruskal's algorithm to create a minimum spanning tree which requires
-    certain edges to be in the tree and other to be excluded from the tree.
+    Find a spanning tree while respecting a partition of edges.
 
-    This is used in the tree iterators to create new partitions following the
-    algorithm of Sörensen and Janssens.
+    Edges can be flagged as either `INLCUDED` which are required to be in the
+    returned tree, `EXCLUDED`, which cannot be in the returned tree and `OPEN`.
+
+    This is used in the SpanningTreeIterator to create new partitions following
+    the algorithm of Sörensen and Janssens [1]_.
 
     Parameters
     ----------
@@ -618,9 +621,9 @@ def partition_minimum_spanning_tree(
         Data key to use for edge weights.
 
     partition : str
-        The key for the edge attribute containing the partition data on the
-        graph. Edges can be included, excluded or open using the enum in
-        `tree_iterators`.
+        The key for the edge attribute containing the partition
+        data on the graph. Edges can be included, excluded or open using the
+        `EdgePartition` enum.
 
     ignore_nan : bool (default: False)
         If a NaN is found as an edge weight normally an exception is raised.
@@ -632,6 +635,13 @@ def partition_minimum_spanning_tree(
     G : NetworkX Graph
         A minimum spanning tree using all of the included edges in the graph and
         none of the excluded edges.
+
+    References
+    ----------
+    .. [1] G.K. Janssens, K. Sörensen, An algorithm to generate all spanning
+           trees in order of increasing cost, Pesquisa Operacional, 2005-08,
+           Vol. 25 (2), p. 219-229,
+           https://www.scielo.br/j/pope/a/XHswBwRwJyrfL88dmMwYNWp/?lang=en
     """
     edges = kruskal_mst_edges(
         G,
@@ -713,14 +723,15 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
 
 class SpanningTreeIterator:
     """
-    Iterate over all spanning trees of a graph in order of increasing cost.
+    Iterate over all spanning trees of a graph in either increasing or
+    decreasing cost.
 
     Notes
     -----
-    This iterator uses the partition scheme from [1]_ as well as a modified
-    Kruskal's Algorithm to generate minimum spanning trees which respect the
-    partition of edges. For spanning trees with the same weight, ties are
-    broken arbitrarily.
+    This iterator uses the partition scheme from [1]_ (included edges,
+    excluded edges and open edges) as well as a modified Kruskal's Algorithm
+    to generate minimum spanning trees which respect the partition of edges.
+    For spanning trees with the same weight, ties are broken arbitrarily.
 
     References
     ----------
@@ -783,7 +794,7 @@ class SpanningTreeIterator:
         """
         self.partition_queue = PriorityQueue()
         self._clear_partition(self.G)
-        mst_weight = partition_minimum_spanning_tree(
+        mst_weight = partition_spanning_tree(
             self.G, self.minimum, self.weight, self.partition_key, self.ignore_nan
         ).size(weight=self.weight)
 
@@ -807,7 +818,7 @@ class SpanningTreeIterator:
 
         partition = self.partition_queue.get()
         self._write_partition(partition)
-        next_tree = partition_minimum_spanning_tree(
+        next_tree = partition_spanning_tree(
             self.G, self.minimum, self.weight, self.partition_key, self.ignore_nan
         )
         self._partition(partition, next_tree)
@@ -839,7 +850,7 @@ class SpanningTreeIterator:
                 p2.partition_dict[e] = EdgePartition.INCLUDED
 
                 self._write_partition(p1)
-                p1_mst = partition_minimum_spanning_tree(
+                p1_mst = partition_spanning_tree(
                     self.G,
                     self.minimum,
                     self.weight,
