@@ -400,44 +400,6 @@ def _rescale_e(betweenness, n, normalized, directed=False, k=None):
 
 
 @not_implemented_for("graph")
-def _get_edge_keys(G, weight):
-    r"""Similar to `_weight_function`. Returns a function that
-    returns the keys of edges with the lowest weight between
-    two nodes.
-
-    This function is only suitable for multigraphs.
-
-    Parameters
-    ----------
-    G : NetworkX graph.
-
-    weight : string or function
-        If it is callable, `weight` itself is returned. If it is a string,
-        it is assumed to be the name of the edge attribute that represents
-        the weight of an edge. In that case, a function is returned that
-        gets the edge weight according to the specified edge attribute.
-
-    Returns
-    -------
-    function
-        This function returns a callable that accepts exactly three inputs:
-        a node `u`, a node adjacent to the first one `v` and the edge attribute
-        dictionary `d` for the edge joining those nodes. That function returns
-        a list with edge keys of those edges matching the lowest `weight` of
-        edges between `u` and `v`.
-
-    If any edge does not have an attribute with key `weight`, it is assumed to
-    have weight one.
-    """
-    _weight = _weight_function(G, weight)
-
-    def get_keys(u, v, d):
-        w = _weight(u, v, d)
-        return [k for k in d if d[k].get(weight, 1) == w]
-
-    return get_keys
-
-
 def _add_edge_keys(G, betweenness, weight=None):
     r"""Adds the corrected betweenness centrality (BC) values for multigraphs.
 
@@ -459,11 +421,13 @@ def _add_edge_keys(G, betweenness, weight=None):
 
     The BC value is divided among edges of equal weight.
     """
-    _keys = _get_edge_keys(G, weight)
+    _weight = _weight_function(G, weight)
 
     edge_bc = dict.fromkeys(G.edges, 0.0)
-    for (u, v) in betweenness:
-        keys = _keys(u, v, G[u][v])
+    for u, v in betweenness:
+        d = G[u][v]
+        wt = _weight(u, v, d)
+        keys = [k for k in d if d[k].get(weight, 1) == wt]
         bc = betweenness[(u, v)] / len(keys)
         for k in keys:
             edge_bc[(u, v, k)] = bc
