@@ -427,7 +427,7 @@ def _add_edge_keys(G, betweenness, weight=None):
     for u, v in betweenness:
         d = G[u][v]
         wt = _weight(u, v, d)
-        keys = [k for k in d if d[k].get(weight, 1) == wt]
+        keys = [k for k in d if _weight(u, v, {k: d[k]}) == wt]
         bc = betweenness[(u, v)] / len(keys)
         for k in keys:
             edge_bc[(u, v, k)] = bc
