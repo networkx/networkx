@@ -616,20 +616,19 @@ def transitive_closure(G, reflexive=False):
 
     Examples
     --------
-    The treatment of trivial (i.e. length 0) cycles
-    is controlled by the `reflexive` parameter.
+    The treatment of trivial (i.e. length 0) cycles is controlled by the
+    `reflexive` parameter.
 
-    Trivial (i.e. length 0) cycles
-    do not create self-loops
-    when ``reflexive=False`` (the default)::
+    Trivial (i.e. length 0) cycles do not create self-loops when
+    ``reflexive=False`` (the default)::
 
         >>> DG = nx.DiGraph([(1, 2), (2, 3)])
         >>> TC = nx.transitive_closure(DG, reflexive=False)
         >>> TC.edges()
         OutEdgeView([(1, 2), (1, 3), (2, 3)])
 
-    However, nontrivial (i.e. length greater then 0) cycles
-    create self-loops when ``reflexive=False`` (the default)::
+    However, nontrivial (i.e. length greater then 0) cycles create self-loops
+    when ``reflexive=False`` (the default)::
 
         >>> DG = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
         >>> TC = nx.transitive_closure(DG, reflexive=False)
