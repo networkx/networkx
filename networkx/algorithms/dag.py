@@ -40,19 +40,30 @@ def descendants(G, source):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-        A directed graph
+    G : NetworkX Graph
     source : node in `G`
 
     Returns
     -------
     set()
         The descendants of `source` in `G`
+
+    Raises
+    ------
+    NetworkXError
+        If node `source` is not in `G`.
+
+    Examples
+    --------
+    >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
+    >>> sorted(list(nx.descendants(DG, 2)))
+    [3, 4]
+
+    See also
+    --------
+    ancestors
     """
-    if not G.has_node(source):
-        raise nx.NetworkXError(f"The node {source} is not in the graph.")
-    des = {n for n, d in nx.shortest_path_length(G, source=source).items()}
-    return des - {source}
+    return {child for parent, child in nx.bfs_edges(G, source)}
 
 
 def ancestors(G, source):
@@ -60,19 +71,30 @@ def ancestors(G, source):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-        A directed graph
+    G : NetworkX Graph
     source : node in `G`
 
     Returns
     -------
     set()
-        The ancestors of source in G
+        The ancestors of `source` in `G`
+
+    Raises
+    ------
+    NetworkXError
+        If node `source` is not in `G`.
+
+    Examples
+    --------
+    >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
+    >>> sorted(list(nx.ancestors(DG, 2)))
+    [0, 1]
+
+    See also
+    --------
+    descendants
     """
-    if not G.has_node(source):
-        raise nx.NetworkXError(f"The node {source} is not in the graph.")
-    anc = {n for n, d in nx.shortest_path_length(G, target=source).items()}
-    return anc - {source}
+    return {child for parent, child in nx.bfs_edges(G, source, reverse=True)}
 
 
 def has_cycle(G):
