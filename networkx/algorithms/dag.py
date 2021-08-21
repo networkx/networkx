@@ -511,40 +511,31 @@ def is_aperiodic(G):
 
     Examples
     --------
-    A graph consisting of one cycle,
-    the length of which is 2
-    (k = 2 divides the length of every cycle in the graph
-    and therefore the graph is *not aperiodic*)::
+    A graph consisting of one cycle, the length of which is 2. Therefore ``k = 2``
+    divides the length of every cycle in the graph and thus the graph
+    is *not aperiodic*::
 
         >>> DG = nx.DiGraph([(1, 2), (2, 1)])
         >>> nx.is_aperiodic(DG)
         False
 
-    A graph consisting of two cycles,
-    the length of which differs by one
-    (cycle lengths are coprime,
-    so there is no single value of k,
-    where k > 1 that divides each cycle length
-    and therefore the graph is *aperiodic*)::
+    A graph consisting of two cycles: one of length 2 and the other of length 3.
+    The cycle lengths are coprime, so there is no single value of k where ``k > 1``
+    that divides each cycle length and therefore the graph is *aperiodic*::
 
         >>> DG = nx.DiGraph([(1, 2), (2, 3), (3, 1), (1, 4), (4, 1)])
         >>> nx.is_aperiodic(DG)
         True
 
-    A graph consisting of two cycles,
-    lengths 2 and 4
-    (the lengths of the cycles
-    share a common factor k = 2,
-    and therefore the graph is *not aperiodic*)::
+    A graph consisting of two cycles: one of length 2 and the other of length 4.
+    The lengths of the cycles share a common factor ``k = 2``, and therefore
+    the graph is *not aperiodic*::
 
         >>> DG = nx.DiGraph([(1, 2), (2, 1), (3, 4), (4, 5), (5, 6), (6, 3)])
         >>> nx.is_aperiodic(DG)
         False
 
-    Graph without cycles
-    (the lengths of all cycles are equal to zero,
-    so every k > 1 dividing each cycle length
-    and therefore the graph is *not aperiodic*)::
+    An acyclic graph, therefore the graph is *not aperiodic*::
 
         >>> DG = nx.DiGraph([(1, 2), (2, 3)])
         >>> nx.is_aperiodic(DG)
