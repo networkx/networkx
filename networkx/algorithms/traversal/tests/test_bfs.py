@@ -1,6 +1,8 @@
 from functools import partial
 import networkx as nx
 
+import pytest
+
 
 class TestBFS:
     @classmethod
@@ -51,6 +53,10 @@ class TestBFS:
     def test_descendants_at_distance(self):
         for distance, descendants in enumerate([{0}, {1}, {2, 3}, {4}]):
             assert nx.descendants_at_distance(self.G, 0, distance) == descendants
+
+    def test_descendants_at_distance_missing_source(self):
+        with pytest.raises(nx.NetworkXError):
+            nx.descendants_at_distance(self.G, "abc", 0)
 
 
 class TestBreadthLimitedSearch:

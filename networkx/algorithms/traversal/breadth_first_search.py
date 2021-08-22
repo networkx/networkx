@@ -401,24 +401,19 @@ def descendants_at_distance(G, source, distance):
     if not G.has_node(source):
         raise nx.NetworkXError(f"The node {source} is not in the graph.")
     current_distance = 0
-    queue = {source}
+    current_layer = {source}
     visited = {source}
 
-    # this is basically BFS, except that the queue only stores the nodes at
+    # this is basically BFS, except that the current layer only stores the nodes at
     # current_distance from source at each iteration
-    while queue:
-        if current_distance == distance:
-            return queue
-
-        current_distance += 1
-
-        next_vertices = set()
-        for vertex in queue:
+    while current_distance < distance:
+        next_layer = set()
+        for vertex in current_layer:
             for child in G[vertex]:
                 if child not in visited:
                     visited.add(child)
-                    next_vertices.add(child)
+                    next_layer.add(child)
+        current_layer = next_layer
+        current_distance += 1
 
-        queue = next_vertices
-
-    return set()
+    return current_layer
