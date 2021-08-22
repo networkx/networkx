@@ -378,7 +378,8 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     Raises
     ------
     NetworkXError
-        If `G` is not complete, the algorithm raises an exception.
+        If `G` is not complete or has less than two nodes, the algorithm raises
+        an exception.
 
     NetworkXError
         If 'source` is not `None` and is not a node in `G`, the algorithm raises
@@ -410,10 +411,11 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
 
     # Check that G is a complete graph
     N = len(G) - 1
+    if N < 2:
+        raise nx.NetworkXError("G must have at least two nodes")
     # This check ignores selfloops which is what we want here.
     if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
-        raise nx.NetworkXError("G must be a complete graph.")
-
+        raise nx.NetworkXError("G is not a complete DiGraph")
     # Check that the source vertex, if given, is in the graph
     if source is not None and source not in G.nodes:
         raise nx.NetworkXError("Given source node not in G.")
@@ -423,7 +425,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     # Test to see if the ascent method found an integer solution or a fractional
     # solution. If it is integral then z_star is a nx.Graph, otherwise it is
     # a dict
-    if type(z_star) is not dict:
+    if not isinstance(z_star, dict):
         # Here we are using the shortcutting method to go from the list of edges
         # returned from eularian_circuit to a list of nodes
         return _shortcutting(nx.eulerian_circuit(z_star, source=source))
@@ -825,13 +827,8 @@ def total_spanning_tree_weight(G, weight=None):
     import numpy as np
 
     G_laplacian = nx.laplacian_matrix(G, weight=weight).toarray()
-    # Delete the first row and column from both laplacian matrices
-    # Since I need to delete a row and a column, two calls to numpy are
-    # needed
-    G_laplacian = np.delete(G_laplacian, 0, 0)
-    G_laplacian = np.delete(G_laplacian, 0, 1)
-
-    return abs(np.linalg.det(G_laplacian))
+    # Determinant ignoring first row and column
+    return abs(np.linalg.det(G_laplacian[1:, 1:]))
 
 
 def spanning_tree_distribution(G, z):
@@ -864,8 +861,6 @@ def spanning_tree_distribution(G, z):
     """
     from math import exp
     from math import log as ln
-    import random
-    import string
 
     def q(e):
         """
@@ -924,7 +919,9 @@ def spanning_tree_distribution(G, z):
                 new_q_e = q(e)
                 desired_q_e = (1 + EPSILON / 2) * z_e
                 if round(new_q_e, 8) != round(desired_q_e, 8):
-                    raise Exception
+                    raise nx.NetworkXError(
+                        f"Unable to modify probability for edge ({u}, {v})"
+                    )
             else:
                 in_range_count += 1
         # Check if the for loop terminated without changing any gamma

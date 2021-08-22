@@ -7,7 +7,6 @@ np = pytest.importorskip("numpy")
 import networkx as nx
 
 from networkx.algorithms.tree import branchings
-from networkx.algorithms.tree.branchings import EdgePartition
 from networkx.algorithms.tree import recognition
 
 #
@@ -455,11 +454,11 @@ def test_partition_spanning_arborescence():
     given partition.
     """
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    G[3][0]["partition"] = EdgePartition.EXCLUDED
-    G[2][3]["partition"] = EdgePartition.INCLUDED
-    G[7][3]["partition"] = EdgePartition.EXCLUDED
-    G[0][2]["partition"] = EdgePartition.EXCLUDED
-    G[6][2]["partition"] = EdgePartition.INCLUDED
+    G[3][0]["partition"] = nx.EdgePartition.EXCLUDED
+    G[2][3]["partition"] = nx.EdgePartition.INCLUDED
+    G[7][3]["partition"] = nx.EdgePartition.EXCLUDED
+    G[0][2]["partition"] = nx.EdgePartition.EXCLUDED
+    G[6][2]["partition"] = nx.EdgePartition.INCLUDED
 
     actual_edges = [
         (0, 4, 12),

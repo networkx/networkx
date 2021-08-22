@@ -782,7 +782,7 @@ class SpanningTreeIterator:
         self.ignore_nan = ignore_nan
         # Randomly create a key for an edge attribute to hold the partition data
         self.partition_key = (
-            "SpanningTreeIterators super secret partition " "attribute name"
+            "SpanningTreeIterators super secret partition attribute name"
         )
 
     def __iter__(self):

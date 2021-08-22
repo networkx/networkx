@@ -600,4 +600,4 @@ def contracted_edge(G, edge, self_loops=True, copy=True):
     u, v = edge[:2]
     if not G.has_edge(u, v):
         raise ValueError(f"Edge {edge} does not exist in graph G; cannot contract it")
-    return contracted_nodes(G, u, v, self_loops=self_loops)
+    return contracted_nodes(G, u, v, self_loops=self_loops, copy=copy)

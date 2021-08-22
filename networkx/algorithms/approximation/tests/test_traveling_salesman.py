@@ -544,7 +544,13 @@ def test_ascent_method_asymmetric_2():
 def test_held_karp_ascent_asymmetric_3():
     """
     Tests the ascent method using a truly asymmetric graph with a fractional
-    solution for which the solution has been brute forced
+    solution for which the solution has been brute forced.
+
+    In this graph their are two different optimal, integral solutions (which
+    are also the overall atsp solutions) to the Held Karp relaxation. However,
+    this particular graph has two different tours of optimal value and the
+    possible solutions in the held_karp_ascent function are not stored in an
+    ordered data structure.
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
@@ -633,14 +639,14 @@ def test_held_karp_ascent_fractional_asymmetric():
 
 def test_spanning_tree_distribution():
     """
-    For the moment, this test is not a 'real' test as it checks the program
-    against a solution from that same piece of code. It will would fail if the
-    program returns a different result.
+    Test that we can create an exponential distribution of spanning trees such
+    that the probability of each tree is proportional to the product of edge
+    weights.
 
-    More through tests will be implemented upon the completion of the
-    sample_spanning_tree function.
+    Results of this test have been confirmed with hypothesis testing from the
+    created distribution.
 
-    This test is more the symmetric, fractional held karp graph.
+    This test uses the symmetric, fractional Held Karp solution.
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
@@ -715,8 +721,6 @@ def test_sample_spanning_tree():
     # The undirected support of gamma
     G = nx.Graph()
     for u, v in gamma:
-        if (u, v) in G.edges or (v, u) in G.edges:
-            continue
         G.add_edge(u, v, lambda_key=exp(gamma[(u, v)]))
 
     solution_edges = [(2, 3), (3, 4), (0, 5), (5, 4), (4, 1)]
@@ -754,8 +758,6 @@ def test_sample_spanning_tree_large_sample():
     # The undirected support of gamma
     G = nx.Graph()
     for u, v in gamma:
-        if (u, v) in G.edges or (v, u) in G.edges:
-            continue
         G.add_edge(u, v, lambda_key=exp(gamma[(u, v)]))
 
     # Find the multiplicative weight for each tree.
@@ -1003,6 +1005,15 @@ def test_asadpour_incomplete_graph():
     # function will complete and we will fail the test
     nx.set_edge_attributes(G, 1, "weight")
     G.remove_edge(0, 1)
+
+    pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
+
+
+def test_asadpour_empty_graph():
+    """
+    Test the asadpour_atsp function with an empty graph
+    """
+    G = nx.DiGraph()
 
     pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
 

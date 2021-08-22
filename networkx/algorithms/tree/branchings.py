@@ -26,7 +26,6 @@ This implementation is based on:
 #    pages={109-122},
 #    language={English}
 # }
-import random
 import string
 from dataclasses import dataclass, field
 from enum import Enum
@@ -45,7 +44,6 @@ __all__ = [
     "minimum_branching",
     "maximum_spanning_arborescence",
     "minimum_spanning_arborescence",
-    "EdgePartition",
     "ArborescenceIterator",
     "Edmonds",
 ]
@@ -429,11 +427,11 @@ class Edmonds:
             weight = -INF
             for u, _, key, data in G.in_edges(v, data=True, keys=True):
                 # Skip excluded edges
-                if data.get(partition) == EdgePartition.EXCLUDED:
+                if data.get(partition) == nx.EdgePartition.EXCLUDED:
                     continue
                 new_weight = data[attr]
                 # Return the included edge
-                if data.get(partition) == EdgePartition.INCLUDED:
+                if data.get(partition) == nx.EdgePartition.INCLUDED:
                     weight = new_weight
                     edge = (u, v, key, new_weight, data)
                     return edge, weight
@@ -533,7 +531,7 @@ class Edmonds:
                             # the minimum edge in the circuit
                             w = data[attr]
                             Q_incoming_weight[v] = w
-                            if data.get(partition) == EdgePartition.INCLUDED:
+                            if data.get(partition) == nx.EdgePartition.INCLUDED:
                                 continue
                             if w < minweight:
                                 minweight = w
@@ -805,22 +803,6 @@ minimum_spanning_arborescence.__doc__ = docstring_arborescence.format(
 )
 
 
-class EdgePartition(Enum):
-    """
-    An enum to store the state of an edge partition. The enum is written to the
-    edges of a graph before finding the arboresence or branching in question.
-    Options are:
-
-    - EdgePartition.OPEN
-    - EdgePartition.INCLUDED
-    - EdgePartition.EXCLUDED
-    """
-
-    OPEN = 0
-    INCLUDED = 1
-    EXCLUDED = 2
-
-
 class ArborescenceIterator:
     """
     Iterate over all spanning arborescences of a graph in either increasing or
@@ -889,14 +871,14 @@ class ArborescenceIterator:
         )
         # Randomly create a key for an edge attribute to hold the partition data
         self.partition_key = (
-            "ArborescenceIterators super secret partition " "attribute name"
+            "ArborescenceIterators super secret partition attribute name"
         )
         if init_partition is not None:
             partition_dict = {}
             for e in init_partition[0]:
-                partition_dict[e] = EdgePartition.INCLUDED
+                partition_dict[e] = nx.EdgePartition.INCLUDED
             for e in init_partition[1]:
-                partition_dict[e] = EdgePartition.EXCLUDED
+                partition_dict[e] = nx.EdgePartition.EXCLUDED
             self.init_partition = ArborescenceIterator.Partition(0, partition_dict)
         else:
             self.init_partition = None
@@ -978,8 +960,8 @@ class ArborescenceIterator:
             # determine if the edge was open or included
             if e not in partition.partition_dict:
                 # This is an open edge
-                p1.partition_dict[e] = EdgePartition.EXCLUDED
-                p2.partition_dict[e] = EdgePartition.INCLUDED
+                p1.partition_dict[e] = nx.EdgePartition.EXCLUDED
+                p2.partition_dict[e] = nx.EdgePartition.INCLUDED
 
                 self._write_partition(p1)
                 try:
@@ -1015,22 +997,22 @@ class ArborescenceIterator:
             if (u, v) in partition.partition_dict:
                 d[self.partition_key] = partition.partition_dict[(u, v)]
             else:
-                d[self.partition_key] = EdgePartition.OPEN
+                d[self.partition_key] = nx.EdgePartition.OPEN
 
         for n in self.G:
             included_count = 0
             excluded_count = 0
             for u, v, d in self.G.in_edges(nbunch=n, data=True):
-                if d.get(self.partition_key) == EdgePartition.INCLUDED:
+                if d.get(self.partition_key) == nx.EdgePartition.INCLUDED:
                     included_count += 1
-                elif d.get(self.partition_key) == EdgePartition.EXCLUDED:
+                elif d.get(self.partition_key) == nx.EdgePartition.EXCLUDED:
                     excluded_count += 1
             # Check that if there is an included edges, all other incoming ones
             # are excluded. If not fix it!
             if included_count == 1 and excluded_count != self.G.in_degree(n) - 1:
                 for u, v, d in self.G.in_edges(nbunch=n, data=True):
-                    if d.get(self.partition_key) != EdgePartition.INCLUDED:
-                        d[self.partition_key] = EdgePartition.EXCLUDED
+                    if d.get(self.partition_key) != nx.EdgePartition.INCLUDED:
+                        d[self.partition_key] = nx.EdgePartition.EXCLUDED
 
     def _clear_partition(self, G):
         """
