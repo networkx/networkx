@@ -879,13 +879,13 @@ def spanning_tree_distribution(G, z):
         # Create the laplacian matrices
         for u, v, d in G.edges(data=True):
             d[lambda_key] = exp(gamma[(u, v)])
-        G_Krichhoff = total_spanning_tree_weight(G, lambda_key)
+        G_Kirchhoff = total_spanning_tree_weight(G, lambda_key)
         G_e = nx.contracted_edge(G, e, self_loops=False)
-        G_e_Krichhoff = total_spanning_tree_weight(G_e, lambda_key)
+        G_e_Kirchhoff = total_spanning_tree_weight(G_e, lambda_key)
 
         # Multiply by the weight of the contracted edge since it is not included
         # in the total weight of the contracted graph.
-        return exp(gamma[(e[0], e[1])]) * G_e_Krichhoff / G_Krichhoff
+        return exp(gamma[(e[0], e[1])]) * G_e_Kirchhoff / G_Kirchhoff
 
     # initialize gamma to the zero dict
     gamma = {}
@@ -1059,7 +1059,7 @@ def sample_spanning_tree(G, lambda_key, seed=None):
         # assuming we include that edge
         U.add((u, v))
         # Now, if (u, v) cannot exist in G because it is fully contracted out
-        # of existence, then it by definition cannot influence G_e's krichhoff
+        # of existence, then it by definition cannot influence G_e's Kirchhoff
         # value. But, we also cannot pick it.
         _, prepared_G_e = prepare_graph()
         rep_edge = (find_node(node_map, u), find_node(node_map, v))
