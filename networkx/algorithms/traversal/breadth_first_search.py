@@ -383,6 +383,20 @@ def descendants_at_distance(G, source, distance):
     -------
     set()
         The descendants of `source` in `G` at the given `distance` from `source`
+
+    Examples
+    --------
+    >>> G = nx.path_graph(3)
+    >>> nx.descendants_at_distance(G, 0, 2)
+    {2}
+    >>> H = nx.DiGraph()
+    >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
+    >>> nx.descendants_at_distance(H, 0, 2)
+    {3, 4, 5, 6}
+    >>> nx.descendants_at_distance(H, 5, 0)
+    {5}
+    >>> nx.descendants_at_distance(H, 5, 1)
+    set()
     """
     if not G.has_node(source):
         raise nx.NetworkXError(f"The node {source} is not in the graph.")

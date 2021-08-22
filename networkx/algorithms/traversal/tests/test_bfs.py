@@ -48,6 +48,10 @@ class TestBFS:
         assert sorted(T.nodes()) == [1]
         assert sorted(T.edges()) == []
 
+    def test_descendants_at_distance(self):
+        for distance, descendants in enumerate([{0}, {1}, {2, 3}, {4}]):
+            assert nx.descendants_at_distance(self.G, 0, distance) == descendants
+
 
 class TestBreadthLimitedSearch:
     @classmethod
@@ -98,3 +102,11 @@ class TestBreadthLimitedSearch:
     def test_limited_bfs_edges(self):
         edges = nx.bfs_edges(self.G, source=9, depth_limit=4)
         assert list(edges) == [(9, 8), (9, 10), (8, 7), (7, 2), (2, 1), (2, 3)]
+
+    def test_limited_descendants_at_distance(self):
+        for distance, descendants in enumerate(
+            [{0}, {1}, {2}, {3, 7}, {4, 8}, {5, 9}, {6, 10}]
+        ):
+            assert nx.descendants_at_distance(self.G, 0, distance) == descendants
+        for distance, descendants in enumerate([{2}, {3, 7}, {8}, {9}, {10}]):
+            assert nx.descendants_at_distance(self.D, 2, distance) == descendants
