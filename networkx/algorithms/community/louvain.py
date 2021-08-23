@@ -14,7 +14,7 @@ __all__ = ["louvain_communities", "louvain_partitions"]
 def louvain_communities(
     G, weight="weight", resolution=1, threshold=0.0000001, seed=None
 ):
-    r"""Find the best partition of G using the Louvain Community Detection
+    r"""Find the best partition of a graph using the Louvain Community Detection
     Algorithm.
 
     Louvain Community Detection Algorithm is a simple method to extract the community
@@ -26,7 +26,7 @@ def louvain_communities(
     gain is achieved the node remains in its original community.
 
     The modularity gain obtained by moving an isolated node $i$ into a community $C$ can
-    easily be calculated by the following formula:
+    easily be calculated by the following formula (combining [1]_ [2]_ and some algebra):
 
     .. math::
         \Delta Q = \frac{k_{i,in}}{2m} - \gamma\frac{ \Sigma_{tot} \cdot k_i}{2m^2}
@@ -47,9 +47,6 @@ def louvain_communities(
     to nodes in $C$.
 
     The first phase continues until no individual move can improve the modularity.
-
-    > Note: The order in which the nodes are considered can affect the final output. In the algorithm
-    the ordering happens using a random shuffle.
 
     The second phase consists in building a new network whose nodes are now the communities
     found in the first phase. To do so, the weights of the links between the new nodes are given by
@@ -91,14 +88,19 @@ def louvain_communities(
     >>> nx_comm.louvain_communities(G, seed=123)
     [{0, 4, 5, 7, 9}, {1, 2, 3, 6, 8}]
 
+    Notes
+    -----
+    The order in which the nodes are considered can affect the final output. In the algorithm
+    the ordering happens using a random shuffle.
+
     References
     ----------
     .. [1] Blondel, V.D. et al. Fast unfolding of communities in
-       large networks. J. Stat. Mech 10008, 1-12(2008)
+       large networks. J. Stat. Mech 10008, 1-12(2008). https://doi.org/10.1088/1742-5468/2008/10/P10008
     .. [2] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
        well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
     .. [3] Nicolas Dugué, Anthony Perez. Directed Louvain : maximizing modularity in directed networks.
-        [Research Report] Université d’Orléans. 2015. hal-01231784
+        [Research Report] Université d’Orléans. 2015. hal-01231784. https://hal.archives-ouvertes.fr/hal-01231784
 
     See Also
     --------
