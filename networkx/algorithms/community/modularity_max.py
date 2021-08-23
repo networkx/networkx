@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 
-def greedy_modularity_communities(G, weight=None, resolution=1):
+def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1):
     r"""Find communities in G using greedy modularity maximization.
 
     This function uses Clauset-Newman-Moore greedy modularity maximization [2]_.
@@ -19,7 +19,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
 
     Greedy modularity maximization begins with each node in its own community
     and joins the pair of communities that most increases modularity until no
-    such pair exists.
+    such pair exists or until number of communities `n_communities` is reached.
 
     This function maximizes the generalized modularity, where `resolution`
     is the resolution parameter, often expressed as $\gamma$.
@@ -37,6 +37,14 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     resolution : float (default=1)
         If resolution is less than 1, modularity favors larger communities.
         Greater than 1 favors smaller communities.
+
+    n_communities: int
+        Desired number of communities: the community merging process is
+        terminated once this number of communities is reached, or until
+        modularity can not be further increased. Must be between 1 and the
+        total number of nodes in `G`. Default is ``1``, meaning the community
+        merging process continues until all nodes are in the same community
+        or until the best community structure is found.
 
     Returns
     -------
@@ -71,6 +79,11 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     N = len(G.nodes())
     m = sum([d.get(weight, 1) for u, v, d in G.edges(data=True)])
     q0 = 1.0 / (2.0 * m)
+
+    if (n_communities < 1) or (n_communities > N):
+        raise ValueError(
+            f"n_communities must be between 1 and {len(G.nodes())}. Got {n_communities}"
+        )
 
     # Map node labels to contiguous integers
     label_for_node = {i: v for i, v in enumerate(G.nodes())}
@@ -111,8 +124,9 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     ]
     H = MappedQueue([dq_heap[i].h[0] for i in range(N) if len(dq_heap[i]) > 0])
 
-    # Merge communities until we can't improve modularity
-    while len(H) > 1:
+    # Merge communities until we can't improve modularity or until desired number of
+    # communities (n_communities) is reached.
+    while len(H) > n_communities:
         # Find best merge
         # Remove from heap of row maxes
         # Ties will be broken by choosing the pair with lowest min community id
