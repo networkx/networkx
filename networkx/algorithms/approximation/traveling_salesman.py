@@ -864,6 +864,11 @@ def spanning_tree_distribution(G, z):
 
     def q(e):
         """
+        The value of q(e) is described in the Asadpour paper is "the
+        probability that edge e will be included in a spanning tree T that is
+        chosen with probability proportional to exp(gamma(T))" which
+        basically means that it is the total probability of the edge appearing
+        across the whole distribution.
 
         Parameters
         ----------

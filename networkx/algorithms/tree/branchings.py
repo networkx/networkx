@@ -832,7 +832,7 @@ class ArborescenceIterator:
         partition dict.
         """
 
-        mst_weight: int
+        mst_weight: float
         partition_dict: dict = field(compare=False)
 
         def __copy__(self):

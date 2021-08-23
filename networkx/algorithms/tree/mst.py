@@ -748,7 +748,7 @@ class SpanningTreeIterator:
         data and the weight of the minimum spanning tree of the partition dict.
         """
 
-        mst_weight: int
+        mst_weight: float
         partition_dict: dict = field(compare=False)
 
         def __copy__(self):
