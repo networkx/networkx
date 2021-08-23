@@ -216,20 +216,8 @@ class TestSimulatedAnnealingTSP:
         pytest.raises(nx.NetworkXError, self.tsp, self.UG, "weight")
 
     def test_not_complete_graph(self):
-        pytest.raises(
-            nx.NetworkXError,
-            self.tsp,
-            self.incompleteUG,
-            "greedy",
-            source=0,
-        )
-        pytest.raises(
-            nx.NetworkXError,
-            self.tsp,
-            self.incompleteDG,
-            "greedy",
-            source=0,
-        )
+        pytest.raises(nx.NetworkXError, self.tsp, self.incompleteUG, "greedy", source=0)
+        pytest.raises(nx.NetworkXError, self.tsp, self.incompleteDG, "greedy", source=0)
 
     def test_ignore_selfloops(self):
         G = nx.complete_graph(5)
@@ -301,12 +289,7 @@ class TestThresholdAcceptingTSP(TestSimulatedAnnealingTSP):
         # set threshold too low
         initial_sol = ["D", "A", "B", "C", "D"]
         cycle = self.tsp(
-            self.DG,
-            initial_sol,
-            source="D",
-            move="1-0",
-            threshold=-3,
-            seed=42,
+            self.DG, initial_sol, source="D", move="1-0", threshold=-3, seed=42
         )
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         assert cost > self.DG_cost
@@ -355,10 +338,7 @@ def test_TSP_weighted():
         [6, 7, 8, 0, 1, 2, 3, 2, 1, 0, 8, 7, 6],
     )
     # path through all nodes
-    expected_tourpaths = (
-        [5, 6, 7, 8, 0, 1, 2, 3, 4],
-        [4, 3, 2, 1, 0, 8, 7, 6, 5],
-    )
+    expected_tourpaths = ([5, 6, 7, 8, 0, 1, 2, 3, 4], [4, 3, 2, 1, 0, 8, 7, 6, 5])
 
     # Check default method
     cycle = tsp(G, nodes=[3, 6], weight="weight")
@@ -402,3 +382,697 @@ def test_TSP_incomplete_graph_short_path():
     path = nx_app.traveling_salesman_problem(G, cycle=False)
     print(path)
     assert len(path) == 13 and len(set(path)) == 12
+
+
+def test_held_karp_ascent():
+    """
+    Test the Held-Karp relaxation with the ascent method
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
+
+    # Adjacency matrix from page 1153 of the 1970 Held and Karp paper
+    # which have been edited to be directional, but also symmetric
+    G_array = np.array(
+        [
+            [0, 97, 60, 73, 17, 52],
+            [97, 0, 41, 52, 90, 30],
+            [60, 41, 0, 21, 35, 41],
+            [73, 52, 21, 0, 95, 46],
+            [17, 90, 35, 95, 0, 81],
+            [52, 30, 41, 46, 81, 0],
+        ]
+    )
+
+    solution_edges = [(1, 3), (2, 4), (3, 2), (4, 0), (5, 1), (0, 5)]
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    opt_hk, z_star = tsp.held_karp_ascent(G)
+
+    # Check that the optimal weights are the same
+    assert round(opt_hk, 2) == 207.00
+    # Check that the z_stars are the same
+    solution = nx.DiGraph()
+    solution.add_edges_from(solution_edges)
+    assert nx.utils.edges_equal(z_star.edges, solution.edges)
+
+
+def test_ascent_fractional_solution():
+    """
+    Test the ascent method using a modified version of Figure 2 on page 1140
+    in 'The Traveling Salesman Problem and Minimum Spanning Trees' by Held and
+    Karp
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
+
+    # This version of Figure 2 has all of the edge weights multiplied by 100
+    # and is a complete directed graph with infinite edge weights for the
+    # edges not listed in the original graph
+    G_array = np.array(
+        [
+            [0, 100, 100, 100000, 100000, 1],
+            [100, 0, 100, 100000, 1, 100000],
+            [100, 100, 0, 1, 100000, 100000],
+            [100000, 100000, 1, 0, 100, 100],
+            [100000, 1, 100000, 100, 0, 100],
+            [1, 100000, 100000, 100, 100, 0],
+        ]
+    )
+
+    solution_z_star = {
+        (0, 1): 5 / 12,
+        (0, 2): 5 / 12,
+        (0, 5): 5 / 6,
+        (1, 0): 5 / 12,
+        (1, 2): 1 / 3,
+        (1, 4): 5 / 6,
+        (2, 0): 5 / 12,
+        (2, 1): 1 / 3,
+        (2, 3): 5 / 6,
+        (3, 2): 5 / 6,
+        (3, 4): 1 / 3,
+        (3, 5): 1 / 2,
+        (4, 1): 5 / 6,
+        (4, 3): 1 / 3,
+        (4, 5): 1 / 2,
+        (5, 0): 5 / 6,
+        (5, 3): 1 / 2,
+        (5, 4): 1 / 2,
+    }
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    opt_hk, z_star = tsp.held_karp_ascent(G)
+
+    # Check that the optimal weights are the same
+    assert round(opt_hk, 2) == 303.00
+    # Check that the z_stars are the same
+    assert {key: round(z_star[key], 4) for key in z_star} == {
+        key: round(solution_z_star[key], 4) for key in solution_z_star
+    }
+
+
+def test_ascent_method_asymmetric():
+    """
+    Tests the ascent method using a truly asymmetric graph for which the
+    solution has been brute forced
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            [0, 26, 63, 59, 69, 31, 41],
+            [62, 0, 91, 53, 75, 87, 47],
+            [47, 82, 0, 90, 15, 9, 18],
+            [68, 19, 5, 0, 58, 34, 93],
+            [11, 58, 53, 55, 0, 61, 79],
+            [88, 75, 13, 76, 98, 0, 40],
+            [41, 61, 55, 88, 46, 45, 0],
+        ]
+    )
+
+    solution_edges = [(0, 1), (1, 3), (3, 2), (2, 5), (5, 6), (4, 0), (6, 4)]
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    opt_hk, z_star = tsp.held_karp_ascent(G)
+
+    # Check that the optimal weights are the same
+    assert round(opt_hk, 2) == 190.00
+    # Check that the z_stars match.
+    solution = nx.DiGraph()
+    solution.add_edges_from(solution_edges)
+    assert nx.utils.edges_equal(z_star.edges, solution.edges)
+
+
+def test_ascent_method_asymmetric_2():
+    """
+    Tests the ascent method using a truly asymmetric graph for which the
+    solution has been brute forced
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            [0, 45, 39, 92, 29, 31],
+            [72, 0, 4, 12, 21, 60],
+            [81, 6, 0, 98, 70, 53],
+            [49, 71, 59, 0, 98, 94],
+            [74, 95, 24, 43, 0, 47],
+            [56, 43, 3, 65, 22, 0],
+        ]
+    )
+
+    solution_edges = [(0, 5), (5, 4), (1, 3), (3, 0), (2, 1), (4, 2)]
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    opt_hk, z_star = tsp.held_karp_ascent(G)
+
+    # Check that the optimal weights are the same
+    assert round(opt_hk, 2) == 144.00
+    # Check that the z_stars match.
+    solution = nx.DiGraph()
+    solution.add_edges_from(solution_edges)
+    assert nx.utils.edges_equal(z_star.edges, solution.edges)
+
+
+def test_held_karp_ascent_asymmetric_3():
+    """
+    Tests the ascent method using a truly asymmetric graph with a fractional
+    solution for which the solution has been brute forced.
+
+    In this graph their are two different optimal, integral solutions (which
+    are also the overall atsp solutions) to the Held Karp relaxation. However,
+    this particular graph has two different tours of optimal value and the
+    possible solutions in the held_karp_ascent function are not stored in an
+    ordered data structure.
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            [0, 1, 5, 2, 7, 4],
+            [7, 0, 7, 7, 1, 4],
+            [4, 7, 0, 9, 2, 1],
+            [7, 2, 7, 0, 4, 4],
+            [5, 5, 4, 4, 0, 3],
+            [3, 9, 1, 3, 4, 0],
+        ]
+    )
+
+    solution1_edges = [(0, 3), (1, 4), (2, 5), (3, 1), (4, 2), (5, 0)]
+
+    solution2_edges = [(0, 3), (3, 1), (1, 4), (4, 5), (2, 0), (5, 2)]
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    opt_hk, z_star = tsp.held_karp_ascent(G)
+
+    assert round(opt_hk, 2) == 13.00
+    # Check that the z_stars are the same
+    solution1 = nx.DiGraph()
+    solution1.add_edges_from(solution1_edges)
+    solution2 = nx.DiGraph()
+    solution2.add_edges_from(solution2_edges)
+    assert nx.utils.edges_equal(z_star.edges, solution1.edges) or nx.utils.edges_equal(
+        z_star.edges, solution2.edges
+    )
+
+
+def test_held_karp_ascent_fractional_asymmetric():
+    """
+    Tests the ascent method using a truly asymmetric graph with a fractional
+    solution for which the solution has been brute forced
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            [0, 100, 150, 100000, 100000, 1],
+            [150, 0, 100, 100000, 1, 100000],
+            [100, 150, 0, 1, 100000, 100000],
+            [100000, 100000, 1, 0, 150, 100],
+            [100000, 2, 100000, 100, 0, 150],
+            [2, 100000, 100000, 150, 100, 0],
+        ]
+    )
+
+    solution_z_star = {
+        (0, 1): 5 / 12,
+        (0, 2): 5 / 12,
+        (0, 5): 5 / 6,
+        (1, 0): 5 / 12,
+        (1, 2): 5 / 12,
+        (1, 4): 5 / 6,
+        (2, 0): 5 / 12,
+        (2, 1): 5 / 12,
+        (2, 3): 5 / 6,
+        (3, 2): 5 / 6,
+        (3, 4): 5 / 12,
+        (3, 5): 5 / 12,
+        (4, 1): 5 / 6,
+        (4, 3): 5 / 12,
+        (4, 5): 5 / 12,
+        (5, 0): 5 / 6,
+        (5, 3): 5 / 12,
+        (5, 4): 5 / 12,
+    }
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    opt_hk, z_star = tsp.held_karp_ascent(G)
+
+    # Check that the optimal weights are the same
+    assert round(opt_hk, 2) == 304.00
+    # Check that the z_stars are the same
+    assert {key: round(z_star[key], 4) for key in z_star} == {
+        key: round(solution_z_star[key], 4) for key in solution_z_star
+    }
+
+
+def test_spanning_tree_distribution():
+    """
+    Test that we can create an exponential distribution of spanning trees such
+    that the probability of each tree is proportional to the product of edge
+    weights.
+
+    Results of this test have been confirmed with hypothesis testing from the
+    created distribution.
+
+    This test uses the symmetric, fractional Held Karp solution.
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+
+    pytest.importorskip("numpy")
+
+    z_star = {
+        (0, 1): 5 / 12,
+        (0, 2): 5 / 12,
+        (0, 5): 5 / 6,
+        (1, 0): 5 / 12,
+        (1, 2): 1 / 3,
+        (1, 4): 5 / 6,
+        (2, 0): 5 / 12,
+        (2, 1): 1 / 3,
+        (2, 3): 5 / 6,
+        (3, 2): 5 / 6,
+        (3, 4): 1 / 3,
+        (3, 5): 1 / 2,
+        (4, 1): 5 / 6,
+        (4, 3): 1 / 3,
+        (4, 5): 1 / 2,
+        (5, 0): 5 / 6,
+        (5, 3): 1 / 2,
+        (5, 4): 1 / 2,
+    }
+
+    solution_gamma = {
+        (0, 1): -0.6383,
+        (0, 2): -0.6827,
+        (0, 5): 0,
+        (1, 2): -1.0781,
+        (1, 4): 0,
+        (2, 3): 0,
+        (5, 3): -0.2820,
+        (5, 4): -0.3327,
+        (4, 3): -0.9927,
+    }
+
+    # The undirected support of z_star
+    G = nx.MultiGraph()
+    for u, v in z_star:
+        if (u, v) in G.edges or (v, u) in G.edges:
+            continue
+        G.add_edge(u, v)
+
+    gamma = tsp.spanning_tree_distribution(G, z_star)
+
+    assert {key: round(gamma[key], 4) for key in gamma} == solution_gamma
+
+
+def test_sample_spanning_tree():
+    """
+    Using a fixed seed, sample one tree for repeatability.
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+    from math import exp
+
+    pytest.importorskip("numpy")
+
+    gamma = {
+        (0, 1): -0.6383,
+        (0, 2): -0.6827,
+        (0, 5): 0,
+        (1, 2): -1.0781,
+        (1, 4): 0,
+        (2, 3): 0,
+        (5, 3): -0.2820,
+        (5, 4): -0.3327,
+        (4, 3): -0.9927,
+    }
+
+    # The undirected support of gamma
+    G = nx.Graph()
+    for u, v in gamma:
+        G.add_edge(u, v, lambda_key=exp(gamma[(u, v)]))
+
+    solution_edges = [(2, 3), (3, 4), (0, 5), (5, 4), (4, 1)]
+    solution = nx.Graph()
+    solution.add_edges_from(solution_edges)
+
+    sampled_tree = tsp.sample_spanning_tree(G, "lambda_key", 42)
+
+    assert nx.utils.edges_equal(solution.edges, sampled_tree.edges)
+
+
+def test_sample_spanning_tree_large_sample():
+    """
+    Sample a single spanning tree from the distribution created in the last test
+    """
+    import networkx.algorithms.approximation.traveling_salesman as tsp
+    from math import exp
+    from random import Random
+
+    pytest.importorskip("numpy")
+    stats = pytest.importorskip("scipy.stats")
+
+    gamma = {
+        (0, 1): -0.6383,
+        (0, 2): -0.6827,
+        (0, 5): 0,
+        (1, 2): -1.0781,
+        (1, 4): 0,
+        (2, 3): 0,
+        (5, 3): -0.2820,
+        (5, 4): -0.3327,
+        (4, 3): -0.9927,
+    }
+
+    # The undirected support of gamma
+    G = nx.Graph()
+    for u, v in gamma:
+        G.add_edge(u, v, lambda_key=exp(gamma[(u, v)]))
+
+    # Find the multiplicative weight for each tree.
+    total_weight = 0
+    tree_expected = {}
+    for t in nx.SpanningTreeIterator(G):
+        # Find the multiplicative weight of the spanning tree
+        weight = 1
+        for u, v, d in t.edges(data="lambda_key"):
+            weight *= d
+        tree_expected[t] = weight
+        total_weight += weight
+
+    # Assert that every tree has an entry in the expected distribution
+    assert len(tree_expected) == 75
+
+    # Set the sample size and then calculate the expected number of times we
+    # expect to see each tree. This test uses a near minimum sample size where
+    # the most unlikely tree has an expected frequency of 5.15.
+    # (Minimum required is 5)
+    #
+    # Here we also initialize the tree_actual dict so that we know the keys
+    # match between the two. We will later take advantage of the fact that since
+    # python 3.7 dict order is guaranteed so the expected and actual data will
+    # have the same order.
+    sample_size = 1200
+    tree_actual = {}
+    for t in tree_expected:
+        tree_expected[t] = (tree_expected[t] / total_weight) * sample_size
+        tree_actual[t] = 0
+
+    # Sample the spanning trees
+    #
+    # Assert that they are actually trees and record which of the 75 trees we
+    # have sampled.
+    #
+    # For repeatability, we want to take advantage of the decorators in NetworkX
+    # to randomly sample the same sample each time. However, if we pass in a
+    # constant seed to sample_spanning_tree we will get the same tree each time.
+    # Instead, we can create our own random number generator with a fixed seed
+    # and pass those into sample_spanning_tree.
+    rng = Random(37)
+    for _ in range(sample_size):
+        sampled_tree = tsp.sample_spanning_tree(G, "lambda_key", rng)
+        assert nx.is_tree(sampled_tree)
+
+        for t in tree_expected:
+            if nx.utils.edges_equal(t.edges, sampled_tree.edges):
+                tree_actual[t] += 1
+
+    # Conduct a Chi squared test to see if the actual distribution matches the
+    # expected one at an alpha = 0.05 significance level.
+    #
+    # H_0: The distribution of trees in tree_actual matches the normalized product
+    # of the edge weights in the tree.
+    #
+    # H_a: The distribution of trees in tree_actual follows some other
+    # distribution of spanning trees.
+    chisq, p = stats.chisquare(list(tree_actual.values()), list(tree_expected.values()))
+
+    # Assert that p is greater than the significance level so that we do not
+    # reject the null hypothesis
+    assert not p < 0.05
+
+
+def test_asadpour_tsp():
+    """
+    Test the complete asadpour tsp algorithm with the fractional, symmetric
+    Held Karp solution. This test also uses an incomplete graph as input.
+    """
+    # This version of Figure 2 has all of the edge weights multiplied by 100
+    # and the 0 weight edges have a weight of 1.
+    pytest.importorskip("numpy")
+
+    edge_list = [
+        (0, 1, 100),
+        (0, 2, 100),
+        (0, 5, 1),
+        (1, 2, 100),
+        (1, 4, 1),
+        (2, 3, 1),
+        (3, 4, 100),
+        (3, 5, 100),
+        (4, 5, 100),
+        (1, 0, 100),
+        (2, 0, 100),
+        (5, 0, 1),
+        (2, 1, 100),
+        (4, 1, 1),
+        (3, 2, 1),
+        (4, 3, 100),
+        (5, 3, 100),
+        (5, 4, 100),
+    ]
+
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(edge_list)
+
+    def fixed_asadpour(G, weight):
+        return nx_app.asadpour_atsp(G, weight, 19)
+
+    tour = nx_app.traveling_salesman_problem(G, weight="weight", method=fixed_asadpour)
+
+    # Check that the returned list is a valid tour. Because this is an
+    # incomplete graph, the conditions are not as strict. We need the tour to
+    #
+    #   Start and end at the same node
+    #   Pass through every vertex at least once
+    #   Have a total cost at most ln(6) / ln(ln(6)) = 3.0723 times the optimal
+    #
+    # For the second condition it is possible to have the tour pass through the
+    # same vertex more then. Imagine that the tour on the complete version takes
+    # an edge not in the original graph. In the output this is substituted with
+    # the shortest path between those vertices, allowing vertices to appear more
+    # than once.
+    #
+    # However, we are using a fixed random number generator so we know what the
+    # expected tour is.
+    expected_tours = [[1, 4, 5, 0, 2, 3, 2, 1], [3, 2, 0, 1, 4, 5, 3]]
+
+    assert tour in expected_tours
+
+
+def test_asadpour_real_world():
+    """
+    This test uses airline prices between the six largest cities in the US.
+
+        * New York City -> JFK
+        * Los Angeles -> LAX
+        * Chicago -> ORD
+        * Houston -> IAH
+        * Phoenix -> PHX
+        * Philadelphia -> PHL
+
+    Flight prices from August 2021 using Delta or American airlines to get
+    nonstop flight. The brute force solution found the optimal tour to cost $872
+
+    This test also uses the `source` keyword argument to ensure that the tour
+    always starts at city 0.
+    """
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            # JFK  LAX  ORD  IAH  PHX  PHL
+            [0, 243, 199, 208, 169, 183],  # JFK
+            [277, 0, 217, 123, 127, 252],  # LAX
+            [297, 197, 0, 197, 123, 177],  # ORD
+            [303, 169, 197, 0, 117, 117],  # IAH
+            [257, 127, 160, 117, 0, 319],  # PHX
+            [183, 332, 217, 117, 319, 0],  # PHL
+        ]
+    )
+
+    node_map = {0: "JFK", 1: "LAX", 2: "ORD", 3: "IAH", 4: "PHX", 5: "PHL"}
+
+    expected_tours = [
+        ["JFK", "LAX", "PHX", "ORD", "IAH", "PHL", "JFK"],
+        ["JFK", "ORD", "PHX", "LAX", "IAH", "PHL", "JFK"],
+    ]
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    nx.relabel_nodes(G, node_map, copy=False)
+
+    def fixed_asadpour(G, weight):
+        return nx_app.asadpour_atsp(G, weight, 37, source="JFK")
+
+    tour = nx_app.traveling_salesman_problem(G, weight="weight", method=fixed_asadpour)
+
+    assert tour in expected_tours
+
+
+def test_asadpour_real_world_path():
+    """
+    This test uses airline prices between the six largest cities in the US. This
+    time using a path, not a cycle.
+
+        * New York City -> JFK
+        * Los Angeles -> LAX
+        * Chicago -> ORD
+        * Houston -> IAH
+        * Phoenix -> PHX
+        * Philadelphia -> PHL
+
+    Flight prices from August 2021 using Delta or American airlines to get
+    nonstop flight. The brute force solution found the optimal tour to cost $872
+    """
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            # JFK  LAX  ORD  IAH  PHX  PHL
+            [0, 243, 199, 208, 169, 183],  # JFK
+            [277, 0, 217, 123, 127, 252],  # LAX
+            [297, 197, 0, 197, 123, 177],  # ORD
+            [303, 169, 197, 0, 117, 117],  # IAH
+            [257, 127, 160, 117, 0, 319],  # PHX
+            [183, 332, 217, 117, 319, 0],  # PHL
+        ]
+    )
+
+    node_map = {0: "JFK", 1: "LAX", 2: "ORD", 3: "IAH", 4: "PHX", 5: "PHL"}
+
+    expected_paths = [
+        ["ORD", "PHX", "LAX", "IAH", "PHL", "JFK"],
+        ["JFK", "PHL", "IAH", "ORD", "PHX", "LAX"],
+    ]
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    nx.relabel_nodes(G, node_map, copy=False)
+
+    def fixed_asadpour(G, weight):
+        return nx_app.asadpour_atsp(G, weight, 56)
+
+    path = nx_app.traveling_salesman_problem(
+        G, weight="weight", cycle=False, method=fixed_asadpour
+    )
+
+    assert path in expected_paths
+
+
+def test_asadpour_disconnected_graph():
+    """
+    Test that the proper exception is raised when asadpour_atsp is given an
+    disconnected graph.
+    """
+
+    G = nx.complete_graph(4, create_using=nx.DiGraph)
+    # have to set edge weights so that if the exception is not raised, the
+    # function will complete and we will fail the test
+    nx.set_edge_attributes(G, 1, "weight")
+    G.add_node(5)
+
+    pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
+
+
+def test_asadpour_incomplete_graph():
+    """
+    Test that the proper exception is raised when asadpour_atsp is given an
+    incomplete graph
+    """
+
+    G = nx.complete_graph(4, create_using=nx.DiGraph)
+    # have to set edge weights so that if the exception is not raised, the
+    # function will complete and we will fail the test
+    nx.set_edge_attributes(G, 1, "weight")
+    G.remove_edge(0, 1)
+
+    pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
+
+
+def test_asadpour_empty_graph():
+    """
+    Test the asadpour_atsp function with an empty graph
+    """
+    G = nx.DiGraph()
+
+    pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
+
+
+def test_asadpour_integral_held_karp():
+    """
+    This test uses an integral held karp solution and the held karp function
+    will return a graph rather than a dict, bypassing most of the asadpour
+    algorithm.
+
+    At first glance, this test probably doesn't look like it ensures that we
+    skip the rest of the asadpour algorithm, but it does. We are not fixing a
+    see for the random number generator, so if we sample any spanning trees
+    the approximation would be different basically every time this test is
+    executed but it is not since held karp is deterministic and we do not
+    reach the portion of the code with the dependence on random numbers.
+    """
+    np = pytest.importorskip("numpy")
+
+    G_array = np.array(
+        [
+            [0, 26, 63, 59, 69, 31, 41],
+            [62, 0, 91, 53, 75, 87, 47],
+            [47, 82, 0, 90, 15, 9, 18],
+            [68, 19, 5, 0, 58, 34, 93],
+            [11, 58, 53, 55, 0, 61, 79],
+            [88, 75, 13, 76, 98, 0, 40],
+            [41, 61, 55, 88, 46, 45, 0],
+        ]
+    )
+
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+
+    for _ in range(2):
+        tour = nx_app.traveling_salesman_problem(G, method=nx_app.asadpour_atsp)
+
+        assert [1, 3, 2, 5, 2, 6, 4, 0, 1] == tour
+
+
+def test_directed_tsp_impossible():
+    """
+    Test the asadpour algorithm with a graph without a hamiltonian circuit
+    """
+    pytest.importorskip("numpy")
+
+    # In this graph, once we leave node 0 we cannot return
+    edges = [
+        (0, 1, 10),
+        (0, 2, 11),
+        (0, 3, 12),
+        (1, 2, 4),
+        (1, 3, 6),
+        (2, 1, 3),
+        (2, 3, 2),
+        (3, 1, 5),
+        (3, 2, 1),
+    ]
+
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(edges)
+
+    pytest.raises(nx.NetworkXError, nx_app.traveling_salesman_problem, G)
