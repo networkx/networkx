@@ -386,9 +386,9 @@ def descendants_at_distance(G, source, distance):
 
     Examples
     --------
-    >>> G = nx.path_graph(3)
-    >>> nx.descendants_at_distance(G, 0, 2)
-    {2}
+    >>> G = nx.path_graph(5)
+    >>> nx.descendants_at_distance(G, 2, 2)
+    {0, 4}
     >>> H = nx.DiGraph()
     >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
     >>> nx.descendants_at_distance(H, 0, 2)
@@ -408,8 +408,8 @@ def descendants_at_distance(G, source, distance):
     # current_distance from source at each iteration
     while current_distance < distance:
         next_layer = set()
-        for vertex in current_layer:
-            for child in G[vertex]:
+        for node in current_layer:
+            for child in G[node]:
                 if child not in visited:
                     visited.add(child)
                     next_layer.add(child)
