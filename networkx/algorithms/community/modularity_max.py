@@ -14,26 +14,27 @@ __all__ = [
 class _HeapProxy:
     def __init__(self, dq, i, j):
         self.data = (dq, i, j)
-        self.priority, *self.edge = self.data
-    
+        self.priority = dq
+        self.edge = (i, j)
+
     def __lt__(self, other):
         return self.priority < other.priority
-    
+
     def __gt__(self, other):
         return self.priority > other.priority
-    
+
     def __eq__(self, other):
         return self.edge == other.edge
-    
+
     def __hash__(self):
         return hash(self.edge)
-    
-    def __getitem__(self, key):
-        return self.data[key]
-    
+
+    def __getitem__(self, indx):
+        return self.data[indx]
+
     def __iter__(self):
         return iter(self.data)
-    
+
 
 def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1):
     r"""Find communities in G using greedy modularity maximization.
@@ -144,7 +145,8 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
         for i in range(N)
     }
     dq_heap = [
-        MappedQueue([_HeapProxy(-dq, i, j) for j, dq in dq_dict[i].items()]) for i in range(N)
+        MappedQueue([_HeapProxy(-dq, i, j) for j, dq in dq_dict[i].items()])
+        for i in range(N)
     ]
     H = MappedQueue([dq_heap[i].h[0] for i in range(N) if len(dq_heap[i]) > 0])
 
