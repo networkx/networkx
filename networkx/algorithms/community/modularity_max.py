@@ -10,26 +10,30 @@ __all__ = [
     "_naive_greedy_modularity_communities",
 ]
 
+
 class _HeapProxy:
     def __init__(self, dq, i, j):
         self.data = (dq, i, j)
+        self.priority, *self.edge = self.data
     
     def __lt__(self, other):
-        return self.data < other.data
+        return self.priority < other.priority
     
     def __gt__(self, other):
-        return self.data > other.data
+        return self.priority > other.priority
     
     def __eq__(self, other):
-        return self.data[1:] == other.data[1:]
+        return self.edge == other.edge
     
     def __hash__(self):
-        return hash(self.data[1:])
+        return hash(self.edge)
     
     def __getitem__(self, key):
         return self.data[key]
     
-
+    def __iter__(self):
+        return iter(self.data)
+    
 
 def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1):
     r"""Find communities in G using greedy modularity maximization.

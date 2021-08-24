@@ -290,11 +290,13 @@ def geographical_threshold_graph(
 
     .. math::
 
-       (w_u + w_v)h(r) \ge \theta
+       (w_u + w_v)p_{dist}(r) \ge \theta
 
-    where `r` is the distance between `u` and `v`, h(r) is a probability of
-    connection as a function of `r`, and :math:`\theta` as the threshold
-    parameter. h(r) corresponds to the p_dist parameter.
+    where `r` is the distance between `u` and `v`, `p_dist` is any function of
+    `r`, and :math:`\theta` as the threshold parameter. `p_dist` is used to
+    give weight to the distance between nodes when deciding whether or not
+    they should be connected. The larger `p_dist` is, the more prone nodes
+    separated by `r` are to be connected, and vice versa.
 
     Parameters
     ----------
@@ -326,17 +328,17 @@ def geographical_threshold_graph(
 
         .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
     p_dist : function, optional
-        A probability density function computing the probability of
-        connecting two nodes that are of distance, r, computed by metric.
-        The probability density function, `p_dist`, must
-        be any function that takes the metric value as input
-        and outputs a single probability value between 0-1.
-        The scipy.stats package has many probability distribution functions
-        implemented and tools for custom probability distribution
-        definitions [2], and passing the .pdf method of scipy.stats
-        distributions can be used here. If the probability
-        function, `p_dist`, is not supplied, the default exponential function
-        :math: `r^{-2}` is used.
+        Any function used to give weight to the distance between nodes when
+        deciding whether or not they should be connected. `p_dist` was
+        originally conceived as a probability density function giving the
+        probability of connecting two nodes that are of metric distance `r`
+        apart. The implementation here allows for more arbitrary definitions
+        of `p_dist` that do not need to correspond to valid probability
+        density functions. The :mod:`scipy.stats` package has many
+        probability density functions implemented and tools for custom
+        probability density definitions, and passing the ``.pdf`` method of
+        scipy.stats distributions can be used here. If ``p_dist=None``
+        (the default), the exponential function :math:`r^{-2}` is used.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.

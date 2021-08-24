@@ -479,15 +479,7 @@ class TestDAG:
 
 def test_topological_generations():
     G = nx.DiGraph(
-        {
-            1: [2, 3],
-            2: [4, 5],
-            3: [7],
-            4: [],
-            5: [6, 7],
-            6: [],
-            7: [],
-        }
+        {1: [2, 3], 2: [4, 5], 3: [7], 4: [], 5: [6, 7], 6: [], 7: []}
     ).reverse()
     # order within each generation is inconsequential
     generations = [sorted(gen) for gen in nx.topological_generations(G)]

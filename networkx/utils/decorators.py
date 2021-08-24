@@ -128,11 +128,11 @@ def open_file(path_arg, mode="r"):
            pass
 
        @open_file(1,"w")
-       def write_function(G, pathname="graph.dot")
+       def write_function(G, pathname="graph.dot"):
            pass
 
        @open_file("pathname","w")
-       def write_function(G, pathname="graph.dot")
+       def write_function(G, pathname="graph.dot"):
            pass
 
        @open_file("path", "w+")
@@ -146,7 +146,7 @@ def open_file(path_arg, mode="r"):
     specified as a string, but it does not handle the situation when the
     function wants to accept a default of None (and then handle it).
 
-    Here is an example of how to handle this case:
+    Here is an example of how to handle this case::
 
       @open_file("path")
       def some_function(arg1, arg2, path=None):
@@ -1076,6 +1076,8 @@ class argmap:
         sig : argmap.Signature
             The Signature of f
 
+        Notes
+        -----
         The Signature is a namedtuple with names:
 
             name : a unique version of the name of the decorated function
@@ -1084,8 +1086,8 @@ class argmap:
             call_sig : a string used as code to call the decorated function
             names : a dict keyed by argument name and index to the argument's name
             n_positional : the number of positional arguments in the signature
-            args : the name of the VAR_POSITIONAL argument if any, i.e. *theseargs
-            kwargs : the name of the VAR_KEYWORDS argument if any, i.e. **kwargs
+            args : the name of the VAR_POSITIONAL argument if any, i.e. \*theseargs
+            kwargs : the name of the VAR_KEYWORDS argument if any, i.e. \*\*kwargs
 
         These named attributes of the signature are used in `assemble` and `compile`
         to construct a string of source code for the decorated function.
