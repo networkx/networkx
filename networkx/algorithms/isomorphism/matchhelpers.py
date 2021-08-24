@@ -188,12 +188,10 @@ def numerical_node_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08)
                     values2.append(x)
                 values1.sort()
                 values2.sort()
-                # TODO: Use functional approach
-                for xi, yi in zip(values1, values2):
-                    if not allclose(xi, yi, rtol=rtol, atol=atol):
-                        return False
-                else:
-                    return True
+                return all(
+                    allclose(xi, yi, rtol=rtol, atol=atol)
+                    for xi, yi in zip(values1, values2)
+                )
             else:
                 values1 = [datasets1.get(attr, d) for attr, d in attrs]
                 values2 = [datasets2.get(attr, d) for attr, d in attrs]
@@ -300,12 +298,10 @@ def generic_node_match(attr, default, op):
             if isinstance(datasets1, AtlasView) and isinstance(datasets2, AtlasView):
                 return multimatch(datasets1, datasets2)
             else:
-                # TODO : make functional
-                for attr, d, operator in attrs:
-                    if not operator(data1.get(attr, d), data2.get(attr, d)):
-                        return False
-                else:
-                    return True
+                return all(
+                    operator(data1.get(attr, d), data2.get(attr, d))
+                    for attr, d, operator in attrs
+                )
 
     return match
 
