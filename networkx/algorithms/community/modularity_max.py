@@ -10,9 +10,28 @@ __all__ = [
     "_naive_greedy_modularity_communities",
 ]
 
-_SIG_FIGS=6
+class _HeapProxy:
+    def __init__(self, dq, i, j):
+        self.data = (dq, i, j)
+    
+    def __lt__(self, other):
+        return self.data < other.data
+    
+    def __gt__(self, other):
+        return self.data > other.data
+    
+    def __eq__(self, other):
+        return self.data[1:] == other.data[1:]
+    
+    def __hash__(self):
+        return hash(self.data[1:])
+    
+    def __getitem__(self, key):
+        return self.data[key]
+    
 
-def greedy_modularity_communities(G, weight=None, resolution=1):
+
+def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1):
     r"""Find communities in G using greedy modularity maximization.
 
     This function uses Clauset-Newman-Moore greedy modularity maximization [2]_.
@@ -20,7 +39,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
 
     Greedy modularity maximization begins with each node in its own community
     and joins the pair of communities that most increases modularity until no
-    such pair exists.
+    such pair exists or until number of communities `n_communities` is reached.
 
     This function maximizes the generalized modularity, where `resolution`
     is the resolution parameter, often expressed as $\gamma$.
@@ -29,10 +48,23 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     Parameters
     ----------
     G : NetworkX graph
+
     weight : string or None, optional (default=None)
-       The name of an edge attribute that holds the numerical value used
-       as a weight.  If None, then each edge has weight 1.
-       The degree is the sum of the edge weights adjacent to the node.
+        The name of an edge attribute that holds the numerical value used
+        as a weight.  If None, then each edge has weight 1.
+        The degree is the sum of the edge weights adjacent to the node.
+
+    resolution : float (default=1)
+        If resolution is less than 1, modularity favors larger communities.
+        Greater than 1 favors smaller communities.
+
+    n_communities: int
+        Desired number of communities: the community merging process is
+        terminated once this number of communities is reached, or until
+        modularity can not be further increased. Must be between 1 and the
+        total number of nodes in `G`. Default is ``1``, meaning the community
+        merging process continues until all nodes are in the same community
+        or until the best community structure is found.
 
     Returns
     -------
@@ -44,7 +76,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     --------
     >>> from networkx.algorithms.community import greedy_modularity_communities
     >>> G = nx.karate_club_graph()
-    >>> c = list(greedy_modularity_communities(G))
+    >>> c = greedy_modularity_communities(G)
     >>> sorted(c[0])
     [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
 
@@ -65,8 +97,13 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
 
     # Count nodes and edges
     N = len(G.nodes())
-    m = sum([d.get("weight", 1) for u, v, d in G.edges(data=True)])
+    m = sum([d.get(weight, 1) for u, v, d in G.edges(data=True)])
     q0 = 1.0 / (2.0 * m)
+
+    if (n_communities < 1) or (n_communities > N):
+        raise ValueError(
+            f"n_communities must be between 1 and {len(G.nodes())}. Got {n_communities}"
+        )
 
     # Map node labels to contiguous integers
     label_for_node = {i: v for i, v in enumerate(G.nodes())}
@@ -93,20 +130,23 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
     a = [k[i] * q0 for i in range(N)]
     dq_dict = {
         i: {
-            j: round(2 * q0 * G.get_edge_data(i, j).get(weight, 1.0)
-            - 2 * resolution * k[i] * k[j] * q0 * q0, _SIG_FIGS)
+            j: 2
+            * q0
+            * G.get_edge_data(label_for_node[i], label_for_node[j]).get(weight, 1.0)
+            - 2 * resolution * k[i] * k[j] * q0 * q0
             for j in [node_for_label[u] for u in G.neighbors(label_for_node[i])]
             if j != i
         }
         for i in range(N)
     }
     dq_heap = [
-        MappedQueue([(-dq, i, j) for j, dq in dq_dict[i].items()]) for i in range(N)
+        MappedQueue([_HeapProxy(-dq, i, j) for j, dq in dq_dict[i].items()]) for i in range(N)
     ]
     H = MappedQueue([dq_heap[i].h[0] for i in range(N) if len(dq_heap[i]) > 0])
 
-    # Merge communities until we can't improve modularity
-    while len(H) > 1:
+    # Merge communities until we can't improve modularity or until desired number of
+    # communities (n_communities) is reached.
+    while len(H) > n_communities:
         # Find best merge
         # Remove from heap of row maxes
         # Ties will be broken by choosing the pair with lowest min community id
@@ -122,16 +162,17 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
             H.push(dq_heap[i].h[0])
         # If this element was also at the root of row j, we need to remove the
         # duplicate entry from H
-        if dq_heap[j].h[0] == (-dq, j, i):
-            H.remove((-dq, j, i))
+        e_ji = _HeapProxy(-dq, j, i)
+        if dq_heap[j].h[0] == e_ji:
+            H.remove(e_ji)
             # Remove best merge from row j heap
-            dq_heap[j].remove((-dq, j, i))
+            dq_heap[j].remove(e_ji)
             # Push new row max onto H
             if len(dq_heap[j]) > 0:
                 H.push(dq_heap[j].h[0])
         else:
             # Duplicate wasn't in H, just remove from row j heap
-            dq_heap[j].remove((-dq, j, i))
+            dq_heap[j].remove(e_ji)
         # Stop when change is non-positive
         if dq <= 0:
             break
@@ -151,17 +192,17 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
         for k in all_set:
             # Calculate new dq value
             if k in both_set:
-                dq_jk = round(dq_dict[j][k] + dq_dict[i][k],_SIG_FIGS)
+                dq_jk = dq_dict[j][k] + dq_dict[i][k]
             elif k in j_set:
-                dq_jk = round(dq_dict[j][k] - 2.0 * resolution * a[i] * a[k],_SIG_FIGS)
+                dq_jk = dq_dict[j][k] - 2.0 * resolution * a[i] * a[k]
             else:
                 # k in i_set
-                dq_jk = round(dq_dict[i][k] - 2.0 * resolution * a[j] * a[k], _SIG_FIGS)
+                dq_jk = dq_dict[i][k] - 2.0 * resolution * a[j] * a[k]
             # Update rows j and k
             for row, col in [(j, k), (k, j)]:
                 # Save old value for finding heap index
                 if k in j_set:
-                    d_old = (-dq_dict[row][col], row, col)
+                    d_old = _HeapProxy(-dq_dict[row][col], row, col)
                 else:
                     d_old = None
                 # Update dict for j,k only (i is removed below)
@@ -172,7 +213,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
                 else:
                     d_oldmax = None
                 # Add/update heaps
-                d = (-dq_jk, row, col)
+                d = _HeapProxy(-dq_jk, row, col)
                 if d_old is None:
                     # We're creating a new nonzero element, add to heap
                     dq_heap[row].push(d)
@@ -199,7 +240,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1):
                 # Remove both row and column
                 for row, col in [(k, i), (i, k)]:
                     # Check if replaced dq is row max
-                    d_old = (-dq_old, row, col)
+                    d_old = _HeapProxy(-dq_old, row, col)
                     if dq_heap[row].h[0] == d_old:
                         # Update per-row heap and heap of row maxes
                         dq_heap[row].remove(d_old)
@@ -242,6 +283,10 @@ def naive_greedy_modularity_communities(G, resolution=1):
     ----------
     G : NetworkX graph
 
+    resolution : float (default=1)
+        If resolution is less than 1, modularity favors larger communities.
+        Greater than 1 favors smaller communities.
+
     Returns
     -------
     list
@@ -250,9 +295,10 @@ def naive_greedy_modularity_communities(G, resolution=1):
 
     Examples
     --------
-    >>> from networkx.algorithms.community import greedy_modularity_communities
+    >>> from networkx.algorithms.community import \
+    ... naive_greedy_modularity_communities
     >>> G = nx.karate_club_graph()
-    >>> c = list(greedy_modularity_communities(G))
+    >>> c = naive_greedy_modularity_communities(G)
     >>> sorted(c[0])
     [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
 
