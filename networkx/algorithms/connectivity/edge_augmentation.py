@@ -1124,15 +1124,16 @@ def complement_edges(G):
     >>> sorted(complement_edges(G))
     []
     """
+    adj = G.adj
     if G.is_directed():
         for u, v in it.combinations(G.nodes(), 2):
-            if v not in G.adj[u]:
+            if v not in adj[u]:
                 yield (u, v)
-            if u not in G.adj[v]:
+            if u not in adj[v]:
                 yield (v, u)
     else:
         for u, v in it.combinations(G.nodes(), 2):
-            if v not in G.adj[u]:
+            if v not in adj[u]:
                 yield (u, v)
 
 
