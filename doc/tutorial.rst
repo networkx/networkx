@@ -220,11 +220,17 @@ classes you can specify data in several formats.
 .. nbplot::
 
     >>> G.add_edge(1, 2)
-    >>> H = nx.DiGraph(G)   # create a DiGraph using the connections from G
+    >>> H = nx.DiGraph(G)  # create a DiGraph using the connections from G
     >>> list(H.edges())
     [(1, 2), (2, 1)]
     >>> edgelist = [(0, 1), (1, 2), (2, 3)]
-    >>> H = nx.Graph(edgelist)
+    >>> H = nx.Graph(edgelist)  # create a graph from an edge list
+    >>> list(H.edges())
+    [(0, 1), (1, 2), (2, 3)]
+    >>> adjacency_dict = {0: (1, 2), 1: (0, 2), 2: (0, 1)}
+    >>> H = nx.Graph(adjacency_dict)  # create a Graph dict mapping nodes to nbrs
+    >>> list(H.edges())
+    [(0, 1), (0, 2), (1, 2)]
 
 What to use as nodes and edges
 ------------------------------
