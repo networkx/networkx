@@ -135,9 +135,10 @@ At this stage the graph ``G`` consists of 8 nodes and 3 edges, as can be seen by
 
 .. note:: 
    
-   The order of adjacency reporting (e.g., G.adj, G.successors,
-   G.predecessors) is the order of edge addition. However, 
-   the order of G.edges is the order of the adjacencies
+   The order of adjacency reporting (e.g., :meth:`G.adj <networkx.Graph.adj>`,
+   :meth:`G.successors <networkx.DiGraph.successors>`,
+   :meth:`G.predecessors <networkx.DiGraph.predecessors>`) is the order of
+   edge addition. However, the order of G.edges is the order of the adjacencies
    which includes both the order of the nodes and each 
    node's adjacencies. See example below:
 
