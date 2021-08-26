@@ -554,8 +554,8 @@ Drawing graphs
 
 NetworkX is not primarily a graph drawing package but basic drawing with
 Matplotlib as well as an interface to use the open source Graphviz software
-package are included.  These are part of the ``networkx.drawing`` module and will
-be imported if possible.
+package are included.  These are part of the :doc:`networkx.drawing <reference/drawing>`
+module and will be imported if possible.
 
 First import Matplotlib's plot interface (pylab works too)
 
@@ -563,7 +563,8 @@ First import Matplotlib's plot interface (pylab works too)
 
     >>> import matplotlib.pyplot as plt
 
-To test if the import of ``networkx.drawing`` was successful draw ``G`` using one of
+To test if the import of `~networkx.drawing.nx_pylab` was successful draw ``G``
+using one of
 
 .. nbplot::
 
