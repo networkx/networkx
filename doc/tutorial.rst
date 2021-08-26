@@ -161,7 +161,7 @@ are set-like views of the nodes, edges, neighbors (adjacencies), and degrees
 of nodes in a graph. They offer a continually updated read-only view into
 the graph structure. They are also dict-like in that you can look up node
 and edge data attributes via the views and iterate with data attributes
-using methods ``.items()``, ``.data('span')``.
+using methods ``.items()``, ``.data()``.
 If you want a specific container type instead of a view, you can specify one.
 Here we use lists, though sets, dicts, tuples and other containers may be
 better in other contexts.
