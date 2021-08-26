@@ -378,11 +378,11 @@ Directed graphs
 The :class:`DiGraph` class provides additional methods and properties specific
 to directed edges, e.g.,
 :attr:`DiGraph.out_edges`, :attr:`DiGraph.in_degree`,
-:meth:`DiGraph.predecessors`, :meth:`DiGraph.successors` etc.
+`DiGraph.predecessors`, `DiGraph.successors` etc.
 To allow algorithms to work with both classes easily, the directed versions of
-``neighbors()`` is equivalent to ``successors()`` while ``degree`` reports
-the sum of ``in_degree`` and ``out_degree`` even though that may feel
-inconsistent at times.
+:meth:`neighbors <DiGraph.neighbors>` is equivalent to
+`successors <DiGraph.successors>` while `~DiGraph.degree` reports the sum
+of `~DiGraph.in_degree` and `~DiGraph.out_degree` even though that may feel inconsistent at times.
 
 .. nbplot::
 
