@@ -1647,9 +1647,7 @@ def single_source_bellman_ford(G, source, target=None, weight="weight"):
     """
     if source == target:
         if source not in G:
-            raise nx.NodeNotFound(
-                "Source {source} or target {target} not in G".format(source, target)
-            )
+            raise nx.NodeNotFound(f"Node {source} is not found in the graph")
         return (0, [source])
 
     weight = _weight_function(G, weight)
