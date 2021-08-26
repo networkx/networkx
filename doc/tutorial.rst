@@ -22,7 +22,7 @@ another Graph, a customized node object, etc.
 
 .. note:: Python's ``None`` object is not allowed to be used as a node. It
     determines whether optional function arguments have been assigned in many
-    functions. And it can be used as a sentinel object meaning "not a node".
+    functions.
 
 Nodes
 -----
