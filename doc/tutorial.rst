@@ -599,7 +599,7 @@ command if you are not using matplotlib in interactive mode (see
     >>> nx.draw_shell(G, nlist=[range(5,10), range(5)], **options)
 
 You can find additional options via :func:`~drawing.nx_pylab.draw_networkx` and
-layouts via :mod:`layout <networkx.drawing.layout>`.
+layouts via the :mod:`layout module<networkx.drawing.layout>`.
 You can use multiple shells with :func:`~drawing.nx_pylab.draw_shell`.
 
 .. nbplot::
@@ -613,10 +613,11 @@ To save drawings to a file, use, for example
 >>> nx.draw(G)
 >>> plt.savefig("path.png")
 
-writes to the file ``path.png`` in the local directory. If Graphviz and
+This writes to the file ``path.png`` in the local directory. If Graphviz and
 PyGraphviz or pydot, are available on your system, you can also use
-``nx_agraph.graphviz_layout(G)`` or ``nx_pydot.graphviz_layout(G)`` to get the
-node positions, or write the graph in dot format for further processing.
+`networkx.drawing.nx_agraph.graphviz_layout` or
+`networkx.drawing.nx_pydot.graphviz_layout` to get the node positions, or write
+the graph in dot format for further processing.
 
 >>> from networkx.drawing.nx_pydot import write_dot
 >>> pos = nx.nx_agraph.graphviz_layout(G)
