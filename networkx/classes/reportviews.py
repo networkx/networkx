@@ -207,6 +207,67 @@ class NodeView(Mapping, Set):
         return NodeDataView(self._nodes, data, default)
 
     def data(self, data=True, default=None):
+        """
+        Return a read-only view of node data.
+
+        Parameters
+        ----------
+        data : bool or node data key, default=True
+            If ``data=True`` (the default), return a `NodeDataView` object that
+            maps each node to *all* of its attributes. `data` may also be an
+            arbitrary key, in which case the `NodeDataView` maps each node to
+            the value for the keyed attribute. In this case, if a node does
+            not have the `data` attribute, the `default` value is used.
+        default : object, default=None
+            The value used when a node does not have a specific attribute.
+
+        Returns
+        -------
+        NodeDataView
+            The layout of the returned NodeDataView depends on the value of the
+            `data` parameter.
+
+        Notes
+        -----
+        If ``data=False``, returns a `NodeView` object without data.
+
+        See Also
+        --------
+        NodeDataView
+
+        Examples
+        --------
+        >>> G = nx.Graph()
+        >>> G.add_nodes_from([
+        ...     (0, {"color": "red", "weight": 10}),
+        ...     (1, {"color": "blue"}),
+        ...     (2, {"color": "yellow", "weight": 2})
+        ... ])
+
+        Accessing node data with ``data=True`` (the default) returns a
+        NodeDataView mapping each node to all of its attributes:
+
+        >>> G.nodes.data()
+        NodeDataView({0: {'color': 'red', 'weight': 10}, 1: {'color': 'blue'}, 2: {'color': 'yellow', 'weight': 2}})
+
+        If `data` represents  a key in the node attribute dict, a NodeDataView mapping
+        the nodes to the value for that specific key is returned:
+
+        >>> G.nodes.data("color")
+        NodeDataView({0: 'red', 1: 'blue', 2: 'yellow'}, data='color')
+
+        If a specific key is not found in an attribute dict, the value specified
+        by `default` is returned:
+
+        >>> G.nodes.data("weight", default=-999)
+        NodeDataView({0: 10, 1: -999, 2: 2}, data='weight')
+
+        Note that there is no check that the `data` key is in any of the
+        node attribute dictionaries:
+
+        >>> G.nodes.data("height")
+        NodeDataView({0: None, 1: None, 2: None}, data='height')
+        """
         if data is False:
             return self
         return NodeDataView(self._nodes, data, default)
@@ -1038,6 +1099,9 @@ class OutEdgeView(Set, Mapping):
         return self.dataview(self, nbunch, data, default)
 
     def data(self, data=True, default=None, nbunch=None):
+        """
+        Return a NodeDataView
+        """
         if nbunch is None and data is False:
             return self
         return self.dataview(self, nbunch, data, default)
