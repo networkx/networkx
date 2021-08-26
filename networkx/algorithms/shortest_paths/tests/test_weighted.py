@@ -263,6 +263,7 @@ class TestWeightedPath(WeightedTestBase):
             nx.dijkstra_predecessor_and_distance,
         ):
             pytest.raises(nx.NodeNotFound, fn, G, 3, 0)
+            pytest.raises(nx.NodeNotFound, fn, G, 3, 3)
 
     def test_dijkstra_predecessor1(self):
         G = nx.path_graph(4)
