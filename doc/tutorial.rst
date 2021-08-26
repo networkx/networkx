@@ -27,8 +27,9 @@ another Graph, a customized node object, etc.
 Nodes
 -----
 
-The graph ``G`` can be grown in several ways.  NetworkX includes many graph
-generator functions and facilities to read and write graphs in many formats.
+The graph ``G`` can be grown in several ways.  NetworkX includes many
+:doc:`graph generator functions <reference/generators>` and
+:doc:`facilities to read and write graphs in many formats <reference/readwrite/index>`.
 To get started though we'll look at simple manipulations.  You can add one node
 at a time,
 
