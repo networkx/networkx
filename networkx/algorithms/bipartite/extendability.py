@@ -1,12 +1,14 @@
-""" Provides a function for computing the extendability of a
-graph which is undirected, simple, connected and bipartite. """
+""" Provides a function for computing the extendability of a graph which is
+undirected, simple, connected and bipartite and contains at least one perfect matching."""
 
 
 import networkx as nx
 from networkx.utils import not_implemented_for
 
 
-__all__ = ["k_extendability"]
+__all__ = [
+    "k_extendability"
+]
 
 
 @not_implemented_for("directed")
@@ -33,13 +35,12 @@ def k_extendability(G):
     graph $G_M$ is strongly connected and there are $k$ vertex-disjoint directed
     paths between every vertex of U and every vertex of V.
 
-    Let A = {G : G is undirected, simple, connected and bipartite and contains a perfect matching}.
-
-    Assuming that input graph G belongs to the group A and M is a perfect matching
-    of G, this function constructs the residual graph $G_M$ of G and returns the
-    minimum value among the maximum vertex-disjoint directed paths between every
-    vertex of U and every vertex of V in $G_M$. By combining the second definition
-    and the lemma, notice that this value represents the extendability of the graph G.
+    Assuming that input graph G is undirected, simple, connected, bipartite and contains
+    a perfect matching M is a perfect matching, this function constructs the residual
+    graph $G_M$ of G and returns the minimum value among the maximum vertex-disjoint
+    directed paths between every vertex of U and every vertex of V in $G_M$. By combining
+    the second definition and the lemma, notice that this value represents the extendability
+    of the graph G.
 
     Parameters
     ----------
