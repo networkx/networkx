@@ -4,7 +4,7 @@ np = pytest.importorskip("numpy")
 
 import networkx as nx
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
-from networkx.testing.utils import assert_graphs_equal
+from networkx.utils import graphs_equal
 
 
 def test_to_numpy_matrix_deprecation():
@@ -151,7 +151,7 @@ class TestConvertNumpyMatrix:
         pytest.raises(TypeError, nx.from_numpy_matrix, A)
 
         G = nx.cycle_graph(3)
-        A = nx.adj_matrix(G).todense()
+        A = nx.adjacency_matrix(G).todense()
         H = nx.from_numpy_matrix(A)
         assert all(type(m) == int and type(n) == int for m, n in H.edges())
         H = nx.from_numpy_array(A)
@@ -201,9 +201,9 @@ class TestConvertNumpyMatrix:
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         expected.add_edge(1, 1, weight=2)
         actual = nx.from_numpy_matrix(A, parallel_edges=True, create_using=nx.DiGraph)
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         actual = nx.from_numpy_matrix(A, parallel_edges=False, create_using=nx.DiGraph)
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         # Now each integer entry in the adjacency matrix is interpreted as the
         # number of parallel edges in the graph if the appropriate keyword
         # argument is specified.
@@ -213,7 +213,7 @@ class TestConvertNumpyMatrix:
         actual = nx.from_numpy_matrix(
             A, parallel_edges=True, create_using=nx.MultiDiGraph
         )
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         expected = nx.MultiDiGraph()
         expected.add_edges_from(set(edges), weight=1)
         # The sole self-loop (edge 0) on vertex 1 should have weight 2.
@@ -221,7 +221,7 @@ class TestConvertNumpyMatrix:
         actual = nx.from_numpy_matrix(
             A, parallel_edges=False, create_using=nx.MultiDiGraph
         )
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
 
     def test_symmetric(self):
         """Tests that a symmetric matrix has edges added only once to an
@@ -232,7 +232,7 @@ class TestConvertNumpyMatrix:
         G = nx.from_numpy_matrix(A, create_using=nx.MultiGraph)
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
-        assert_graphs_equal(G, expected)
+        assert graphs_equal(G, expected)
 
     def test_dtype_int_graph(self):
         """Test that setting dtype int actually gives an integer matrix.
@@ -375,9 +375,9 @@ class TestConvertNumpyArray:
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         expected.add_edge(1, 1, weight=2)
         actual = nx.from_numpy_array(A, parallel_edges=True, create_using=nx.DiGraph)
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         actual = nx.from_numpy_array(A, parallel_edges=False, create_using=nx.DiGraph)
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         # Now each integer entry in the adjacency matrix is interpreted as the
         # number of parallel edges in the graph if the appropriate keyword
         # argument is specified.
@@ -387,7 +387,7 @@ class TestConvertNumpyArray:
         actual = nx.from_numpy_array(
             A, parallel_edges=True, create_using=nx.MultiDiGraph
         )
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
         expected = nx.MultiDiGraph()
         expected.add_edges_from(set(edges), weight=1)
         # The sole self-loop (edge 0) on vertex 1 should have weight 2.
@@ -395,7 +395,7 @@ class TestConvertNumpyArray:
         actual = nx.from_numpy_array(
             A, parallel_edges=False, create_using=nx.MultiDiGraph
         )
-        assert_graphs_equal(actual, expected)
+        assert graphs_equal(actual, expected)
 
     def test_symmetric(self):
         """Tests that a symmetric array has edges added only once to an
@@ -406,7 +406,7 @@ class TestConvertNumpyArray:
         G = nx.from_numpy_array(A, create_using=nx.MultiGraph)
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
-        assert_graphs_equal(G, expected)
+        assert graphs_equal(G, expected)
 
     def test_dtype_int_graph(self):
         """Test that setting dtype int actually gives an integer array.
@@ -479,11 +479,7 @@ def test_to_numpy_recarray_default_dtype_no_weight():
 def recarray_nodelist_test_graph():
     G = nx.Graph()
     G.add_edges_from(
-        [
-            (0, 1, {"weight": 1.0}),
-            (0, 2, {"weight": 2.0}),
-            (1, 2, {"weight": 0.5}),
-        ]
+        [(0, 1, {"weight": 1.0}), (0, 2, {"weight": 2.0}), (1, 2, {"weight": 0.5})]
     )
     return G
 
@@ -495,10 +491,7 @@ def test_to_numpy_recarray_nodelist(recarray_nodelist_test_graph):
 
 @pytest.mark.parametrize(
     ("nodelist", "errmsg"),
-    (
-        ([2, 3], "in nodelist is not in G"),
-        ([1, 1], "nodelist contains duplicates"),
-    ),
+    (([2, 3], "in nodelist is not in G"), ([1, 1], "nodelist contains duplicates")),
 )
 def test_to_numpy_recarray_bad_nodelist(recarray_nodelist_test_graph, nodelist, errmsg):
     with pytest.raises(nx.NetworkXError, match=errmsg):
@@ -519,14 +512,7 @@ def multigraph_test_graph():
     return G
 
 
-@pytest.mark.parametrize(
-    ("operator", "expected"),
-    (
-        (sum, 77),
-        (min, 7),
-        (max, 70),
-    ),
-)
+@pytest.mark.parametrize(("operator", "expected"), ((sum, 77), (min, 7), (max, 70)))
 def test_numpy_multigraph(multigraph_test_graph, operator, expected):
     A = nx.to_numpy_array(multigraph_test_graph, multigraph_weight=operator)
     assert A[1, 0] == expected

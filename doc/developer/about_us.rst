@@ -143,6 +143,7 @@ to add your name to the bottom of the list.
 - James Trimble, Github: `jamestrimble <https://github.com/jamestrimble>`_
 - Matthias Bruhns, Github `<https://github.com/mbruhns>`_ 
 - Philip Boalch
+- Matt Schwennesen, Github: `mjschwenne <https://github.com/mjschwenne>`_
 
 A supplementary (but still incomplete) list of contributors is given by the
 list of names that have commits in ``networkx``'s

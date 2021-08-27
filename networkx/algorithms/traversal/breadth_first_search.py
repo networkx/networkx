@@ -108,10 +108,10 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
         A function that takes the list of neighbors of given node as input, and
         returns an *iterator* over these neighbors but with custom ordering.
 
-    Returns
-    -------
-    edges: generator
-       A generator of edges in the breadth-first-search.
+    Yields
+    ------
+    edge: 2-tuple of nodes
+       Yields edges resulting from the breadth-first search.
 
     Examples
     --------
@@ -134,27 +134,30 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
 
     Notes
     -----
-    The naming of this function is very similar to edge_bfs. The difference
-    is that 'edge_bfs' yields edges even if they extend back to an already
-    explored node while 'bfs_edges' yields the edges of the tree that results
+    The naming of this function is very similar to
+    :func:`~networkx.algorithms.traversal.edgebfs.edge_bfs`. The difference
+    is that ``edge_bfs`` yields edges even if they extend back to an already
+    explored node while this generator yields the edges of the tree that results
     from a breadth-first-search (BFS) so no edges are reported if they extend
-    to already explored nodes. That means 'edge_bfs' reports all edges while
-    'bfs_edges' only reports those traversed by a node-based BFS. Yet another
-    description is that 'bfs_edges' reports the edges traversed during BFS
-    while 'edge_bfs' reports all edges in the order they are explored.
+    to already explored nodes. That means ``edge_bfs`` reports all edges while
+    ``bfs_edges`` only reports those traversed by a node-based BFS. Yet another
+    description is that ``bfs_edges`` reports the edges traversed during BFS
+    while ``edge_bfs`` reports all edges in the order they are explored.
 
-    Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py.
-    by D. Eppstein, July 2004. The modifications
-    to allow depth limits based on the Wikipedia article
-    "`Depth-limited-search`_".
+    Based on the breadth-first search implementation in PADS [1]_
+    by D. Eppstein, July 2004; with modifications to allow depth limits
+    as described in [2]_.
 
-    .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search
+    References
+    ----------
+    .. [1] http://www.ics.uci.edu/~eppstein/PADS/BFS.py.
+    .. [2] https://en.wikipedia.org/wiki/Depth-limited_search
 
     See Also
     --------
     bfs_tree
-    dfs_edges
-    edge_bfs
+    :func:`~networkx.algorithms.traversal.depth_first_search.dfs_edges`
+    :func:`~networkx.algorithms.traversal.edgebfs.edge_bfs`
 
     """
     if reverse and G.is_directed():
@@ -371,8 +374,8 @@ def descendants_at_distance(G, source, distance):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-        A directed graph
+    G : NetworkX graph
+        A graph
     source : node in `G`
     distance : the distance of the wanted nodes from `source`
 
@@ -380,28 +383,37 @@ def descendants_at_distance(G, source, distance):
     -------
     set()
         The descendants of `source` in `G` at the given `distance` from `source`
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> nx.descendants_at_distance(G, 2, 2)
+    {0, 4}
+    >>> H = nx.DiGraph()
+    >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
+    >>> nx.descendants_at_distance(H, 0, 2)
+    {3, 4, 5, 6}
+    >>> nx.descendants_at_distance(H, 5, 0)
+    {5}
+    >>> nx.descendants_at_distance(H, 5, 1)
+    set()
     """
     if not G.has_node(source):
         raise nx.NetworkXError(f"The node {source} is not in the graph.")
     current_distance = 0
-    queue = {source}
+    current_layer = {source}
     visited = {source}
 
-    # this is basically BFS, except that the queue only stores the nodes at
+    # this is basically BFS, except that the current layer only stores the nodes at
     # current_distance from source at each iteration
-    while queue:
-        if current_distance == distance:
-            return queue
-
-        current_distance += 1
-
-        next_vertices = set()
-        for vertex in queue:
-            for child in G[vertex]:
+    while current_distance < distance:
+        next_layer = set()
+        for node in current_layer:
+            for child in G[node]:
                 if child not in visited:
                     visited.add(child)
-                    next_vertices.add(child)
+                    next_layer.add(child)
+        current_layer = next_layer
+        current_distance += 1
 
-        queue = next_vertices
-
-    return set()
+    return current_layer

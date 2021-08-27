@@ -78,7 +78,7 @@ def prefix_tree(paths):
         >>> list(T.edges)
         [(0, 1), (1, 2), (1, 4), (2, -1), (2, 3), (3, -1), (4, -1)]
 
-    The leaf nodes can be obtained as predecessors of the nil node.
+    The leaf nodes can be obtained as predecessors of the nil node::
 
         >>> root, NIL = 0, -1
         >>> list(T.predecessors(NIL))
@@ -320,8 +320,8 @@ def random_tree(n, seed=None, create_using=None):
     *n* nodes, the tree is chosen uniformly at random from the set of
     all trees on *n* nodes.
 
-    Example
-    -------
+    Examples
+    --------
     >>> tree = nx.random_tree(n=10, seed=0)
     >>> print(nx.forest_str(tree, sources=[0]))
     ╙── 0

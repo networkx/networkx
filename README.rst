@@ -1,12 +1,6 @@
 NetworkX
 ========
 
-.. image:: https://img.shields.io/pypi/v/networkx.svg
-   :target: https://pypi.org/project/networkx/
-
-.. image:: https://img.shields.io/pypi/pyversions/networkx.svg
-   :target: https://pypi.org/project/networkx/
-
 .. image:: https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main
   :target: https://github.com/networkx/networkx/actions?query=workflow%3A%22test%22
 
@@ -25,6 +19,8 @@ of complex networks.
 - **Mailing list:** https://groups.google.com/forum/#!forum/networkx-discuss
 - **Source:** https://github.com/networkx/networkx
 - **Bug reports:** https://github.com/networkx/networkx/issues
+- **Tutorial:** https://networkx.org/documentation/latest/tutorial.html
+- **GitHub Discussions:** https://github.com/networkx/networkx/discussions
 
 Simple example
 --------------

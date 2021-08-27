@@ -54,19 +54,14 @@ def average_degree_connectivity(
     --------
     >>> G = nx.path_graph(4)
     >>> G.edges[1, 2]["weight"] = 3
-    >>> nx.k_nearest_neighbors(G)
+    >>> nx.average_degree_connectivity(G)
     {1: 2.0, 2: 1.5}
-    >>> nx.k_nearest_neighbors(G, weight="weight")
+    >>> nx.average_degree_connectivity(G, weight="weight")
     {1: 2.0, 2: 1.75}
 
-    See also
+    See Also
     --------
-    neighbors_average_degree
-
-    Notes
-    -----
-    This algorithm is sometimes called "k nearest neighbors" and is also
-    available as `k_nearest_neighbors`.
+    average_neighbor_degree
 
     References
     ----------
@@ -116,13 +111,22 @@ def average_degree_connectivity(
         dsum[k] += s
 
     # normalize
-    dc = {}
-    for k, avg in dsum.items():
-        dc[k] = avg
-        norm = dnorm[k]
-        if avg > 0 and norm > 0:
-            dc[k] /= norm
-    return dc
+    return {k: avg if dnorm[k] == 0 else avg / dnorm[k] for k, avg in dsum.items()}
 
 
-k_nearest_neighbors = average_degree_connectivity
+def k_nearest_neighbors(G, source="in+out", target="in+out", nodes=None, weight=None):
+    """Compute the average degree connectivity of graph.
+
+    .. deprecated 2.6
+
+      k_nearest_neighbors function is deprecated and will be removed in v3.0.
+      Use `average_degree_connectivity` instead.
+    """
+    import warnings
+
+    msg = (
+        "k_nearest_neighbors function is deprecated and will be removed in v3.0.\n"
+        "Use `average_degree_connectivity` instead."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
+    return average_degree_connectivity(G, source, target, nodes, weight)

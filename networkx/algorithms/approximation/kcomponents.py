@@ -94,12 +94,12 @@ def k_components(G, min_density=0.95):
 
     .. [2]  White, Douglas R., and Mark Newman (2001) A Fast Algorithm for
             Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
-            http://eclectic.ss.uci.edu/~drwhite/working.pdf
+            https://www.santafe.edu/research/results/working-papers/fast-approximation-algorithms-for-finding-node-ind
 
     .. [3]  Moody, J. and D. White (2003). Social cohesion and embeddedness:
             A hierarchical conception of social groups.
             American Sociological Review 68(1), 103--28.
-            http://www2.asanet.org/journals/ASRFeb03MoodyWhite.pdf
+            https://doi.org/10.2307/3088904
 
     """
     # Dictionary with connectivity level (k) as keys and a list of

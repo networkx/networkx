@@ -1,6 +1,6 @@
+from pytest import approx
 from networkx import is_connected, neighbors
 from networkx.generators.internet_as_graphs import random_internet_as_graph
-from networkx.testing import almost_equal
 
 
 class TestInternetASTopology:
@@ -174,16 +174,16 @@ class TestInternetASTopology:
                         attributes"
                 )
 
-        assert almost_equal(d_m / len(self.M), 2 + (2.5 * self.n) / 10000, places=0)
-        assert almost_equal(d_cp / len(self.CP), 2 + (1.5 * self.n) / 10000, places=0)
-        assert almost_equal(d_c / len(self.C), 1 + (5 * self.n) / 100000, places=0)
+        assert d_m / len(self.M) == approx((2 + (2.5 * self.n) / 10000), abs=1e-0)
+        assert d_cp / len(self.CP) == approx((2 + (1.5 * self.n) / 10000), abs=1e-0)
+        assert d_c / len(self.C) == approx((1 + (5 * self.n) / 100000), abs=1e-0)
 
-        assert almost_equal(p_m_m / len(self.M), 1 + (2 * self.n) / 10000, places=0)
-        assert almost_equal(p_cp_m / len(self.CP), 0.2 + (2 * self.n) / 10000, places=0)
-        assert almost_equal(
-            p_cp_cp / len(self.CP), 0.05 + (2 * self.n) / 100000, places=0
+        assert p_m_m / len(self.M) == approx((1 + (2 * self.n) / 10000), abs=1e-0)
+        assert p_cp_m / len(self.CP) == approx((0.2 + (2 * self.n) / 10000), abs=1e-0)
+        assert p_cp_cp / len(self.CP) == approx(
+            (0.05 + (2 * self.n) / 100000), abs=1e-0
         )
 
-        assert almost_equal(t_m / d_m, 0.375, places=1)
-        assert almost_equal(t_cp / d_cp, 0.375, places=1)
-        assert almost_equal(t_c / d_c, 0.125, places=1)
+        assert t_m / d_m == approx(0.375, abs=1e-1)
+        assert t_cp / d_cp == approx(0.375, abs=1e-1)
+        assert t_c / d_c == approx(0.125, abs=1e-1)

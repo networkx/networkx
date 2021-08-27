@@ -195,7 +195,7 @@ class TestCliques:
 
     def test_directed(self):
         with pytest.raises(nx.NetworkXNotImplemented):
-            cliques = nx.find_cliques(nx.DiGraph())
+            next(nx.find_cliques(nx.DiGraph()))
 
 
 class TestEnumerateAllCliques:

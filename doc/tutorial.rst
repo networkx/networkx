@@ -20,8 +20,9 @@ identified pairs of nodes (called edges, links, etc).  In NetworkX, nodes can
 be any :py:term:`hashable` object e.g., a text string, an image, an XML object,
 another Graph, a customized node object, etc.
 
-.. note:: Python's ``None`` object should not be used as a node as it determines
-   whether optional function arguments have been assigned in many functions.
+.. note:: Python's ``None`` object is not allowed to be used as a node. It
+    determines whether optional function arguments have been assigned in many
+    functions. And it can be used as a sentinel object meaning "not a node".
 
 Nodes
 -----
@@ -141,13 +142,13 @@ At this stage the graph ``G`` consists of 8 nodes and 3 edges, as can be seen by
 
 .. nbplot::
 
-    >>> G = nx.DiGraph()
-    >>> G.add_edge(2, 1)   # adds the nodes in order 2, 1
-    >>> G.add_edge(1, 3)
-    >>> G.add_edge(2, 4)
-    >>> G.add_edge(1, 2)
-    >>> assert list(G.successors(2)) == [1, 4]
-    >>> assert list(G.edges) == [(2, 1), (2, 4), (1, 3), (1, 2)]
+    >>> DG = nx.DiGraph()
+    >>> DG.add_edge(2, 1)   # adds the nodes in order 2, 1
+    >>> DG.add_edge(1, 3)
+    >>> DG.add_edge(2, 4)
+    >>> DG.add_edge(1, 2)
+    >>> assert list(DG.successors(2)) == [1, 4]
+    >>> assert list(DG.edges) == [(2, 1), (2, 4), (1, 3), (1, 2)]
 
 Examining elements of a graph
 -----------------------------
@@ -552,21 +553,18 @@ To test if the import of ``networkx.drawing`` was successful draw ``G`` using on
 .. nbplot::
 
     >>> G = nx.petersen_graph()
-    >>> plt.subplot(121)
-    <matplotlib.axes._subplots.AxesSubplot object at ...>
+    >>> subax1 = plt.subplot(121)
     >>> nx.draw(G, with_labels=True, font_weight='bold')
-    >>> plt.subplot(122)
-    <matplotlib.axes._subplots.AxesSubplot object at ...>
+    >>> subax2 = plt.subplot(122)
     >>> nx.draw_shell(G, nlist=[range(5, 10), range(5)], with_labels=True, font_weight='bold')
 
 when drawing to an interactive display.  Note that you may need to issue a
 Matplotlib
 
->>> plt.show()
+>>> plt.show()  # doctest: +SKIP
 
 command if you are not using matplotlib in interactive mode (see
-`Matplotlib FAQ <http://matplotlib.org/faq/installing_faq.html#matplotlib-compiled-fine-but-nothing-shows-up-when-i-use-it>`_
-).
+:doc:`this Matplotlib FAQ <faq/installing_faq>`).
 
 .. nbplot::
 
@@ -575,17 +573,13 @@ command if you are not using matplotlib in interactive mode (see
     ...     'node_size': 100,
     ...     'width': 3,
     ... }
-    >>> plt.subplot(221)
-    <matplotlib.axes._subplots.AxesSubplot object at ...>
+    >>> subax1 = plt.subplot(221)
     >>> nx.draw_random(G, **options)
-    >>> plt.subplot(222)
-    <matplotlib.axes._subplots.AxesSubplot object at ...>
+    >>> subax2 = plt.subplot(222)
     >>> nx.draw_circular(G, **options)
-    >>> plt.subplot(223)
-    <matplotlib.axes._subplots.AxesSubplot object at ...>
+    >>> subax3 = plt.subplot(223)
     >>> nx.draw_spectral(G, **options)
-    >>> plt.subplot(224)
-    <matplotlib.axes._subplots.AxesSubplot object at ...>
+    >>> subax4 = plt.subplot(224)
     >>> nx.draw_shell(G, nlist=[range(5,10), range(5)], **options)
 
 You can find additional options via :func:`~drawing.nx_pylab.draw_networkx` and
