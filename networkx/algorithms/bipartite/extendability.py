@@ -6,15 +6,13 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 
 
-__all__ = [
-    "k_extendability"
-]
+__all__ = ["k_extendability"]
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def k_extendability(G):
-    """ Computes the extendability of a graph.
+    """Computes the extendability of a graph.
 
     Definition:
     Graph G is $k$-extendable if and only if G has a perfect matching and every
