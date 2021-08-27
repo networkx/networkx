@@ -228,7 +228,7 @@ def dijkstra_path_length(G, source, target, weight="weight"):
 
     if source == target:
         if source not in G:
-            raise nx.NodeNotFound(nx.NodeNotFound(f"Node {source} not found in graph"))
+            raise nx.NodeNotFound(f"Node {source} not found in graph")
         return 0
     weight = _weight_function(G, weight)
     length = _dijkstra(G, source, weight, target=target)
@@ -1455,9 +1455,7 @@ def bellman_ford_path_length(G, source, target, weight="weight"):
     """
     if source == target:
         if source not in G:
-            raise nx.NodeNotFound(
-                "Source {source} or target {target} not in G".format(source, target)
-            )
+            raise nx.NodeNotFound(f"Node {source} not found in graph")
         return 0
 
     weight = _weight_function(G, weight)
@@ -2065,8 +2063,6 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
         raise nx.NodeNotFound(msg)
 
     if source == target:
-        if source not in G:
-            raise nx.NodeNotFound(f"Node {source} not found in graph")
         return (0, [source])
 
     weight = _weight_function(G, weight)
