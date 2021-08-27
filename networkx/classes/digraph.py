@@ -855,7 +855,7 @@ class DiGraph(Graph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes.
+            The view will only report edges from these nodes (outgoing if directed).
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
@@ -911,7 +911,7 @@ class DiGraph(Graph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes.
+            The view will only report edges from these nodes (outgoing if directed).
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
@@ -947,7 +947,7 @@ class DiGraph(Graph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes.
+            The view will only report edges from these nodes (outgoing if directed).
 
         weight : string or None, optional (default=None)
            The name of an edge attribute that holds the numerical value used
@@ -994,7 +994,7 @@ class DiGraph(Graph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes.
+            The view will only report edges from these nodes (outgoing if directed).
 
         weight : string or None, optional (default=None)
            The name of an edge attribute that holds the numerical value used
@@ -1041,7 +1041,7 @@ class DiGraph(Graph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes.
+            The view will only report edges from these nodes (outgoing if directed).
 
         weight : string or None, optional (default=None)
            The name of an edge attribute that holds the numerical value used
