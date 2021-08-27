@@ -34,11 +34,10 @@ def k_extendability(G):
     paths between every vertex of U and every vertex of V.
 
     Assuming that input graph G is undirected, simple, connected, bipartite and contains
-    a perfect matching M is a perfect matching, this function constructs the residual
-    graph $G_M$ of G and returns the minimum value among the maximum vertex-disjoint
-    directed paths between every vertex of U and every vertex of V in $G_M$. By combining
-    the second definition and the lemma, notice that this value represents the extendability
-    of the graph G.
+    a perfect matching M, this function constructs the residual graph $G_M$ of G and
+    returns the minimum value among the maximum vertex-disjoint directed paths between
+    every vertex of U and every vertex of V in $G_M$. By combining the second definition
+    and the lemma, notice that this value represents the extendability of the graph G.
 
     Parameters
     ----------
