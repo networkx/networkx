@@ -507,6 +507,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
             nx.single_source_bellman_ford,
         ):
             pytest.raises(nx.NodeNotFound, fn, G, 3, 0)
+            pytest.raises(nx.NodeNotFound, fn, G, 3, 3)
 
     def test_absent_source_goldberg_radzik(self):
         with pytest.raises(nx.NodeNotFound):
