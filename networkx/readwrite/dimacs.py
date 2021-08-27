@@ -16,6 +16,10 @@ from networkx.utils import open_file
 __all__ = ["parse_dimacs", "read_dimacs", "generate_dimacs", "write_dimacs"]
 
 
+class DimacsValidationError(Exception):
+    pass
+
+
 def parse_dimacs(lines, create_using=None):
     """Parse lines of a DIMACS representation of a graph.
 
@@ -67,12 +71,15 @@ def parse_dimacs(lines, create_using=None):
             else:
                 raise ValueError(f"Unknown line start: {line[0]}")
 
-    assert (
-        expected_num_nodes == g.number_of_nodes()
-    ), f"Expected to read {expected_num_nodes} nodes but found {g.number_of_nodes()}"
-    assert (
-        expected_num_edges == g.number_of_edges()
-    ), f"Expected to read {expected_num_edges} edges but found {g.number_of_edges()}"
+    if not expected_num_nodes == g.number_of_nodes():
+        raise DimacsValidationError(
+            f"Expected to read {expected_num_nodes} nodes but found {g.number_of_nodes()}"
+        )
+    if not expected_num_edges == g.number_of_edges():
+        raise DimacsValidationError(
+            f"Expected to read {expected_num_edges} edges but found {g.number_of_edges()}"
+        )
+
     return g
 
 
