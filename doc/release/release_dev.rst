@@ -28,6 +28,9 @@ Improvements
 - [`#4317 <https://github.com/networkx/networkx/pull/4317>`_]
   New ``source`` argument to ``has_eulerian_path`` to look for path starting at
   source.
+- [`#4640 <https://github.com/networkx/networkx/pull/4640>`_]
+  ``prefix_tree`` now uses a non-recursive algorithm. The original recursive
+  algorithm is still available via ``prefix_tree_recursive``.
 
 API Changes
 -----------
@@ -50,11 +53,20 @@ API Changes
   `relabel_nodes` used to raise a KeyError for a key in `mapping` that is not
   a node in the graph, but it only did this when `copy` was `False`. Now
   any keys in `mapping` which are not in the graph are ignored.
+- [`#4573 <https://github.com/networkx/networkx/pull/4573>`_]
+  `label_propagation_communities` returns a `dict_values` object of community
+  sets of nodes instead of a generator of community sets. It is still iterable,
+  so likely will still work in most user code and a simple fix otherwise:
+  e.g., add `iter( ... )` surrounding the function call.
 - [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
   `prefix_tree` used to return `tree, root` but root is now always 0
   instead of a UUID generate string. So the function returns `tree`.
 - [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
   The variable `NIL` ="NIL" has been removed from `networkx.generators.trees`
+- [`#3620 <https://github.com/networkx/networkx/pull/3620>`_]
+  The function `naive_greedy_modularity_communities` now returns a
+  list of communities (like `greedy_modularity_communities`) instead
+  of a generator of communities.
 
 Deprecations
 ------------
@@ -87,6 +99,14 @@ Deprecations
   Deprecate ``iterable``.
 - [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
   Deprecate ``generate_unique_node``.
+- [`#4599 <https://github.com/networkx/networkx/pull/4599>`_]
+  Deprecate ``empty_generator``.
+- [`#4617 <https://github.com/networkx/networkx/pull/4617>`_]
+  Deprecate ``hub_matrix`` and ``authority_matrix``
+- [`#4629 <https://github.com/networkx/networkx/pull/4629>`_]
+  Deprecate the ``Ordered`` graph classes.
+
+
 
 Contributors to this release
 ----------------------------

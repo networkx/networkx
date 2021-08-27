@@ -1,5 +1,5 @@
 decorator>=4.4
 numpy>=1.19; platform_python_implementation!='PyPy' and python_version<'3.10'
-scipy>=1.5; platform_python_implementation!='PyPy' and python_version<'3.10'
+scipy>=1.5,!=1.6.1; platform_python_implementation!='PyPy' and python_version<'3.10'
 matplotlib>=3.3; platform_python_implementation!='PyPy' and python_version<'3.10'
 pandas>=1.1; platform_python_implementation!='PyPy' and python_version<'3.10'

@@ -92,6 +92,13 @@ def is_matching(G, matching):
     """
     if isinstance(matching, dict):
         matching = matching_dict_to_set(matching)
+
+    for edge in matching:
+        if len(edge) != 2:
+            return False
+        if not G.has_edge(*edge):
+            return False
+
     # TODO This is parallelizable.
     return all(len(set(e1) & set(e2)) == 0 for e1, e2 in combinations(matching, 2))
 

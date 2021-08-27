@@ -49,6 +49,8 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     Returns
     -------
@@ -143,6 +145,8 @@ def edge_betweenness_centrality_subset(
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     Returns
     -------
