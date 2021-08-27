@@ -1140,7 +1140,7 @@ class OutEdgeView(Set, Mapping):
         >>> G.add_edges_from([
         ...     (0, 1, {"dist": 3, "capacity": 20}),
         ...     (1, 2, {"dist": 4}),
-        ...     (2, 0, {"dist": 5})])
+        ...     (2, 0, {"dist": 5})
         ... ])
 
         Accessing edge data with ``data=True`` (the default) returns an
