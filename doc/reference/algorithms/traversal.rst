@@ -7,6 +7,16 @@ Traversal
    :maxdepth: 2
 
 
+Reachability problems
+---------------------
+.. automodule:: networkx.algorithms.traversal.reachability
+.. autosummary::
+   :toctree: generated/
+
+   descendants
+   descendants_at_distance
+   ancestors
+   transitive_closure
 
 Depth First Search
 ------------------
@@ -32,7 +42,6 @@ Breadth First Search
    bfs_tree
    bfs_predecessors
    bfs_successors
-   descendants_at_distance
 
 Beam search
 -----------
