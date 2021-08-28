@@ -8,6 +8,7 @@ from .current_flow_betweenness_subset import *
 from .degree_alg import *
 from .dispersion import *
 from .eigenvector import *
+from .leverage import *
 from .group import *
 from .harmonic import *
 from .katz import *
