@@ -10,12 +10,13 @@ import networkx as nx
 from networkx.utils import nodes_or_number, py_random_state
 
 __all__ = [
+    "geometric_edges",
     "geographical_threshold_graph",
-    "waxman_graph",
     "navigable_small_world_graph",
     "random_geometric_graph",
     "soft_random_geometric_graph",
     "thresholded_random_geometric_graph",
+    "waxman_graph",
 ]
 
 
