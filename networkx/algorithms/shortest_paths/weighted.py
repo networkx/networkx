@@ -225,7 +225,6 @@ def dijkstra_path_length(G, source, target, weight="weight"):
     single_source_dijkstra
 
     """
-
     if source == target:
         if source not in G:
             raise nx.NodeNotFound(f"Node {source} not found in graph")
@@ -621,6 +620,9 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None, weight="weight"):
     """
     if not sources:
         raise ValueError("sources must not be empty")
+    for s in sources:
+        if s not in G:
+            raise nx.NodeNotFound(f"Node {s} not found in graph")
     weight = _weight_function(G, weight)
     return _dijkstra_multisource(G, sources, weight, cutoff=cutoff)
 
