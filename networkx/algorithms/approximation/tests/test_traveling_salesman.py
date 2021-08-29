@@ -732,6 +732,7 @@ def test_sample_spanning_tree():
     assert nx.utils.edges_equal(solution.edges, sampled_tree.edges)
 
 
+@pytest.mark.slow
 def test_sample_spanning_tree_large_sample():
     """
     Sample a single spanning tree from the distribution created in the last test
@@ -1018,6 +1019,7 @@ def test_asadpour_empty_graph():
     pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
 
 
+@pytest.mark.slow
 def test_asadpour_integral_held_karp():
     """
     This test uses an integral held karp solution and the held karp function
