@@ -613,7 +613,7 @@ To save drawings to a file, use, for example
 >>> nx.draw(G)
 >>> plt.savefig("path.png")
 
-This writes to the file ``path.png`` in the local directory. If Graphviz and
+This function writes to the file ``path.png`` in the local directory. If Graphviz and
 PyGraphviz or pydot, are available on your system, you can also use
 `networkx.drawing.nx_agraph.graphviz_layout` or
 `networkx.drawing.nx_pydot.graphviz_layout` to get the node positions, or write
