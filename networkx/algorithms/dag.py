@@ -601,7 +601,6 @@ def is_aperiodic(G):
         return g == 1 and nx.is_aperiodic(G.subgraph(set(G) - set(levels)))
 
 
-@not_implemented_for("undirected")
 def transitive_closure(G, reflexive=False):
     """Returns transitive closure of a directed graph
 
@@ -617,8 +616,8 @@ def transitive_closure(G, reflexive=False):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-        A directed graph
+    G : NetworkX Graph
+        A directed/undirected graph/multigraph.
     reflexive : Bool or None, optional (default: False)
         Determines when cycles create self-loops in the Transitive Closure.
         If True, trivial cycles (length 0) create self-loops. The result
@@ -635,6 +634,8 @@ def transitive_closure(G, reflexive=False):
     ------
     NetworkXNotImplemented
         If `G` is not directed
+    NetworkXError
+        If `reflexive` not in `{None, True, False}`
 
     Examples
     --------
@@ -673,28 +674,28 @@ def transitive_closure(G, reflexive=False):
 
     References
     ----------
-    .. [1] http://www.ics.uci.edu/~eppstein/PADS/PartialOrder.py
+    .. [1] https://www.ics.uci.edu/~eppstein/PADS/PartialOrder.py
 
     TODO this function applies to all directed graphs and is probably misplaced
          here in dag.py
     """
-    if reflexive is None:
-        TC = G.copy()
-        for v in G:
-            edges = ((v, u) for u in nx.dfs_preorder_nodes(G, v) if v != u)
-            TC.add_edges_from(edges)
-        return TC
-    if reflexive is True:
-        TC = G.copy()
-        for v in G:
-            edges = ((v, u) for u in nx.dfs_preorder_nodes(G, v))
-            TC.add_edges_from(edges)
-        return TC
-    # reflexive is False
     TC = G.copy()
+
+    if reflexive not in {None, True, False}:
+        raise nx.NetworkXError("Incorrect value for the parameter `reflexive`")
+
     for v in G:
-        edges = ((v, w) for u, w in nx.edge_dfs(G, v))
-        TC.add_edges_from(edges)
+        if reflexive is None:
+            TC.add_edges_from(((v, u) for u in nx.descendants(G, v) if u not in TC[v]))
+        elif reflexive is True:
+            TC.add_edges_from(
+                ((v, u) for u in nx.descendants(G, v) | {v} if u not in TC[v])
+            )
+        elif reflexive is False:
+            TC.add_edges_from(
+                ((v, e[1]) for e in nx.edge_bfs(G, v) if e[1] not in TC[v])
+            )
+
     return TC
 
 
