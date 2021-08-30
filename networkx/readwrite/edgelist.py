@@ -183,7 +183,8 @@ def parse_edgelist(
     lines : list or iterator of strings
         Input data in edgelist format
     comments : string, optional
-       Marker for comment lines. Default is `'#'`
+       Marker for comment lines. Default is `'#'`. To specify that no character
+       should be treated as a comment, use ``comments=None``.
     delimiter : string, optional
        Separator for node labels. Default is `None`, meaning any whitespace.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
@@ -317,7 +318,8 @@ def read_edgelist(
        opened in 'rb' mode.
        Filenames ending in .gz or .bz2 will be uncompressed.
     comments : string, optional
-       The character used to indicate the start of a comment.
+       The character used to indicate the start of a comment. To specify that
+       no character should be treated as a comment, use ``comments=None``.
     delimiter : string, optional
        The string used to separate values.  The default is whitespace.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
