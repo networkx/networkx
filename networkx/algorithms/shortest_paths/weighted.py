@@ -728,9 +728,6 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None, weight="weight")
     """
     if not sources:
         raise ValueError("sources must not be empty")
-    for s in sources:
-        if s not in G:
-            raise nx.NodeNotFound(f"Node {s} not found in graph")
     if target in sources:
         return (0, [target])
     weight = _weight_function(G, weight)
