@@ -852,10 +852,10 @@ def draw_networkx_edges(
     # Draw the edges
     if use_linecollection:
         edge_viz_obj = _draw_networkx_edges_line_collection()
-        # Make sure selfloop edges are also drawn.
-        edgelist = list(nx.selfloop_edges(G))
-        if edgelist:
-            edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
+        # Make sure selfloop edges are also drawn
+        selfloops_to_draw = [loop for loop in nx.selfloop_edges(G) if loop in edgelist]
+        if selfloops_to_draw:
+            edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in selfloops_to_draw])
             arrowstyle = "-"
             _draw_networkx_edges_fancy_arrow_patch()
     else:
