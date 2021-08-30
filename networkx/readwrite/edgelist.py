@@ -238,11 +238,14 @@ def parse_edgelist(
 
     G = nx.empty_graph(0, create_using)
     for line in lines:
-        p = line.find(comments)
-        if p >= 0:
-            line = line[:p]
-        if not line:
-            continue
+        try:  # Ignore case where comments=None
+            p = line.find(comments)
+            if p >= 0:
+                line = line[:p]
+            if not line:
+                continue
+        except TypeError:
+            pass
         # split line, should have 2 or more
         s = line.strip().split(delimiter)
         if len(s) < 2:
