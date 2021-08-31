@@ -411,7 +411,7 @@ def _add_edge_keys(G, betweenness, weight=None):
         Dictionary mapping adjacent node tuples to betweenness centrality values.
 
     weight : string or function
-        See `_get_edge_keys` for details. Defaults to `None`.
+        See `_weight_function´ for details. Defaults to `None`.
 
     Returns
     -------
