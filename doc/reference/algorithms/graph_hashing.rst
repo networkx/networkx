@@ -7,4 +7,4 @@ Graph Hashing
    :toctree: generated/
 
    weisfeiler_lehman_graph_hash
-   weisfeiler_lehman_hash_subgraphs
+   weisfeiler_lehman_subgraph_hashes

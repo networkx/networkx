@@ -45,9 +45,7 @@ def weisfeiler_lehman_graph_hash(
     a hashed histogram of resulting labels is returned as the final hash.
 
     Hashes are identical for isomorphic graphs and strong guarantees that
-    non-isomorphic graphs will get different hashes. See [1] for details.
-
-    Note: Similarity between hashes does not imply similarity between graphs.
+    non-isomorphic graphs will get different hashes. See [1]_ for details.
 
     If no node or edge attributes are provided, the degree of each node
     is used as its initial label.
@@ -58,18 +56,17 @@ def weisfeiler_lehman_graph_hash(
     G: graph
         The graph to be hashed.
         Can have node and/or edge attributes. Can also have no attributes.
-    edge_attr: string
+    edge_attr: string, default=None
         The key in edge attribute dictionary to be used for hashing.
         If None, edge labels are ignored.
-    node_attr: string
+    node_attr: string, default=None
         The key in node attribute dictionary to be used for hashing.
-        If None, and no edge_attr given, use
-        degree of node as label.
-    iterations: int
+        If None, and no edge_attr given, use the degrees of the nodes as labels.
+    iterations: int, default=3
         Number of neighbor aggregations to perform.
         Should be larger for larger graphs.
-    digest_size: int
-        Size of blake2b hash digest to use for hashing node labels.
+    digest_size: int, default=16
+        Size (in bits) of blake2b hash digest to use for hashing node labels.
 
     Returns
     -------
@@ -115,12 +112,23 @@ def weisfeiler_lehman_graph_hash(
     >>> nx.weisfeiler_lehman_graph_hash(G2, edge_attr="label")
     '43e9b18eeb859b669ad2269ecc6d43bf'
 
+    Notes
+    -----
+    To return the WL hashes of each subgraph of a graph, use
+    `weisfeiler_lehman_subgraph_hashes`
+
+    Similarity between hashes does not imply similarity between graphs.
+
     References
     ----------
     .. [1] Shervashidze, Nino, Pascal Schweitzer, Erik Jan Van Leeuwen,
        Kurt Mehlhorn, and Karsten M. Borgwardt. Weisfeiler Lehman
        Graph Kernels. Journal of Machine Learning Research. 2011.
        http://www.jmlr.org/papers/volume12/shervashidze11a/shervashidze11a.pdf
+
+    See also
+    --------
+    weisfeiler_lehman_subgraph_hashes
     """
 
     def weisfeiler_lehman_step(G, labels, edge_attr=None):
@@ -157,27 +165,29 @@ def weisfeiler_lehman_subgraph_hashes(
     iteration depth.
 
     The function iteratively aggregates and hashes neighbourhoods of each node.
-    At each iteration i, this effectively computes the W-L hash for each
-    subgraph induced by traversing along i edges from each node in G.
-    After each node's neighbors are hashed to obtain updated node labels, a
-    dictionary of lists, indexed by node and containing subgraph hashes in
-    order of iteration depth from the node.
+    This is achieved for each step by replacing for each node its label from
+    the previous iteration with its hashed 1-hop neighborhood aggregate.
+    The new node label is then appended to a list of node labels for each
+    node.
 
-    At the $n$th iteration, all nodes within $2n$ distance influence any given
-    node's hash.
+    To aggregate neighborhoods at each step for a node $n$, all labels of
+    nodes adjacent to $n$ are concatenated. If the `edge_attr` parameter is set,
+    labels for each neighboring node are prefixed with the value of this attribute
+    along the connecting edge from this neighbor to node $n$. The resulting string
+    is then hashed to compress this information into a fixed digest size.
+
+    Thus, at the $i$th iteration nodes within $2i$ distance influence any given
+    hashed node label. We can therefore say that at depth $i$ for node $n$
+    we have a hash for a subgraph induced by the $2i$-hop neighborhood of $n$.
 
     Can be used to to create general Weisfeiler-Lehman graph kernels, or
-    generate features for graphs or nodes, for example to generate 'words' as
-    seen in the 'graph2vec' algorithm.
-    See [1] & [2] respectively for details.
+    generate features for graphs or nodes, for example to generate 'words' in a
+    graph as seen in the 'graph2vec' algorithm.
+    See [1]_ & [2]_ respectively for details.
 
     Hashes are identical for isomorphic subgraphs and there exist strong
     guarantees that non-isomorphic graphs will get different hashes.
-    See [1] for details.
-
-    Note: to hash the full graph when subgraph hashes are not needed, use
-    `weisfeiler_lehman_graph_hash` for efficiency.
-    Note: Similarity between hashes does not imply similarity between graphs.
+    See [1]_ for details.
 
     If no node or edge attributes are provided, the degree of each node
     is used as its initial label.
@@ -188,20 +198,18 @@ def weisfeiler_lehman_subgraph_hashes(
     G: graph
         The graph to be hashed.
         Can have node and/or edge attributes. Can also have no attributes.
-    edge_attr: string
+    edge_attr: string, default=None
         The key in edge attribute dictionary to be used for hashing.
         If None, edge labels are ignored.
-    node_attr: string
+    node_attr: string, default=None
         The key in node attribute dictionary to be used for hashing.
-        If None, and no edge_attr given, use
-        degree of node as label.
-    iterations: int
+        If None, and no edge_attr given, use the degrees of the nodes as labels.
+    iterations: int, default=3
         Number of neighbor aggregations to perform.
         Should be larger for larger graphs.
-    digest_size: int
-        Size of hash digest to use for hashing node labels.
-        Passed into whatever hash_label function is given (default blake2b).
-        Default digest size is 16 bits.
+    digest_size: int, default=16
+        Size (in bits) of blake2b hash digest to use for hashing node labels.
+        The default size is 16 bits
 
     Returns
     -------
@@ -242,6 +250,12 @@ def weisfeiler_lehman_subgraph_hashes(
     These nodes may be candidates to be classified together since their local topology
     is similar.
 
+    Notes
+    -----
+    To hash the full graph when subgraph hashes are not needed, use
+    `weisfeiler_lehman_graph_hash` for efficiency.
+
+    Similarity between hashes does not imply similarity between graphs.
 
     References
     -------
@@ -253,6 +267,10 @@ def weisfeiler_lehman_subgraph_hashes(
        Lihui Chen, Yang Liu and Shantanu Jaiswa. graph2vec: Learning
        Distributed Representations of Graphs. arXiv. 2017
        https://arxiv.org/pdf/1707.05005.pdf
+
+    See also
+    --------
+    weisfeiler_lehman_graph_hash
     """
 
     def weisfeiler_lehman_step(G, labels, node_subgraph_hashes, edge_attr=None):
