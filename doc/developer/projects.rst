@@ -61,16 +61,17 @@ Implement the VF2++ Graph Isomorphism Algorithm
 .. _VF2++: https://doi.org/10.1016/j.dam.2018.02.018
 
 
-Project Idea Template
----------------------
-
-- Abstract:
-
-- Recommended Skills:
-
-- Expected Outcome:
-
-- Complexity;
-
-- Interested Mentors:
-
+..
+   Project Idea Template
+   ---------------------
+   
+   - Abstract:
+   
+   - Recommended Skills:
+   
+   - Expected Outcome:
+   
+   - Complexity;
+   
+   - Interested Mentors:
+   
