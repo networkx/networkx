@@ -36,35 +36,6 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
   `@MridulS <https://github.com/MridulS/>`__,
   `@rossbar <https://github.com/rossbar/>`__
 
-Directed Version of Traveling Salesman Problem
-----------------------------------------------
-
-- Abstract: NetworkX has recently added a couple methods for solving
-  the Traveling Salesman Problem (see `#4607`_). The best approximation
-  for undirected graphs is the Christofides method. But the best algorithm
-  for directed graphs is by `Asapour`_ et.al. and has not yet been implemented.
-  The goal of this project is to learn the API used for implemented methods
-  and then implement the Asadpour method for directed graphs with similar API.
-  Other even more recent papers discussing algorithm improvements for directed
-  TSP (also called Asymmetric TSP or ATSP) include `Svensson`_ and `Traub`_.
-  The Traub paper may be most useful for implementing the algorithm as all three
-  are focused on proving asymptotic computation requirements rather than coding.
-
-- Recommended Skills: Python, graph algorithms
-
-- Expected Outcome: A new function in NetworkX which implements the Asapour algorithm.
-
-- Complexity: Moderate
-
-- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
-  `@MridulS <https://github.com/MridulS/>`__, `@boothby <https://github.com/boothby/>`__,
-
-.. _#4607: https://github.com/networkx/networkx/pull/4607
-.. _Asapour: https://pubsonline.informs.org/doi/pdf/10.1287/opre.2017.1603
-.. _Svensson: https://doi.org/10.1109/FOCS.2015.10  (https://arxiv.org/abs/1502.02051)
-.. _Traub: https://doi.org/10.1145/3357713.3384233 (https://arxiv.org/abs/1912.00670)
-
-
 Implement the VF2++ Graph Isomorphism Algorithm
 -----------------------------------------------
 
