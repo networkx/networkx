@@ -222,11 +222,6 @@ class TestRandomState:
         global np
         np = pytest.importorskip("numpy")
 
-    @random_state(1)
-    def instantiate_random_state(self, random_state):
-        assert isinstance(random_state, np.random.RandomState)
-        return random_state.random_sample()
-
     @np_random_state(1)
     def instantiate_np_random_state(self, random_state):
         assert isinstance(random_state, np.random.RandomState)
@@ -243,8 +238,6 @@ class TestRandomState:
         np.random.seed(42)
         rv = np.random.random_sample()
         np.random.seed(42)
-        assert rv == self.instantiate_random_state(None)
-        np.random.seed(42)
         assert rv == self.instantiate_np_random_state(None)
 
         random.seed(42)
@@ -255,8 +248,6 @@ class TestRandomState:
     def test_random_state_np_random(self):
         np.random.seed(42)
         rv = np.random.random_sample()
-        np.random.seed(42)
-        assert rv == self.instantiate_random_state(np.random)
         np.random.seed(42)
         assert rv == self.instantiate_np_random_state(np.random)
         np.random.seed(42)
@@ -270,10 +261,6 @@ class TestRandomState:
 
         np.random.seed(42)
         seed = 1
-        rval = self.instantiate_random_state(seed)
-        rval_expected = np.random.RandomState(seed).rand()
-        assert rval, rval_expected
-
         rval = self.instantiate_np_random_state(seed)
         rval_expected = np.random.RandomState(seed).rand()
         assert rval, rval_expected
@@ -294,10 +281,6 @@ class TestRandomState:
         np.random.seed(42)
         seed = 1
         rng = np.random.RandomState(seed)
-        rval = self.instantiate_random_state(rng)
-        rval_expected = np.random.RandomState(seed).rand()
-        assert rval, rval_expected
-
         rval = self.instantiate_np_random_state(seed)
         rval_expected = np.random.RandomState(seed).rand()
         assert rval, rval_expected
@@ -314,14 +297,13 @@ class TestRandomState:
         rv = self.instantiate_py_random_state(rng)
         assert rv, random.Random(seed).random()
 
-        pytest.raises(ValueError, self.instantiate_random_state, rng)
         pytest.raises(ValueError, self.instantiate_np_random_state, rng)
 
 
 def test_random_state_string_arg_index():
     with pytest.raises(nx.NetworkXError):
 
-        @random_state("a")
+        @np_random_state("a")
         def make_random_state(rs):
             pass
 
@@ -341,7 +323,7 @@ def test_py_random_state_string_arg_index():
 def test_random_state_invalid_arg_index():
     with pytest.raises(nx.NetworkXError):
 
-        @random_state(2)
+        @np_random_state(2)
         def make_random_state(rs):
             pass
 
