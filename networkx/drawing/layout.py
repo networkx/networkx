@@ -16,7 +16,7 @@ Warning: Most layout routines have only been tested in 2-dimensions.
 
 """
 import networkx as nx
-from networkx.utils import random_state
+from networkx.utils import np_random_state
 
 __all__ = [
     "bipartite_layout",
@@ -56,7 +56,7 @@ def _process_params(G, center, dim):
     return G, center
 
 
-@random_state(3)
+@np_random_state(3)
 def random_layout(G, center=None, dim=2, seed=None):
     """Position nodes uniformly at random in the unit square.
 
@@ -342,7 +342,7 @@ def bipartite_layout(
     return pos
 
 
-@random_state(10)
+@np_random_state(10)
 def spring_layout(
     G,
     k=None,
@@ -499,7 +499,7 @@ def spring_layout(
 fruchterman_reingold_layout = spring_layout
 
 
-@random_state(7)
+@np_random_state(7)
 def _fruchterman_reingold(
     A, k=None, pos=None, fixed=None, iterations=50, threshold=1e-4, dim=2, seed=None
 ):
@@ -562,7 +562,7 @@ def _fruchterman_reingold(
     return pos
 
 
-@random_state(7)
+@np_random_state(7)
 def _sparse_fruchterman_reingold(
     A, k=None, pos=None, fixed=None, iterations=50, threshold=1e-4, dim=2, seed=None
 ):
