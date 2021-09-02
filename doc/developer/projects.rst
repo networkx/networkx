@@ -11,36 +11,6 @@ NumFOCUS Small Development Grants and university course/project credits (if
 your university allows contribution to open source for credit).
 
 
-Community Detection Algorithms
---------------------------------
-
-- Abstract: Community detection involves a set of algorithms in network science which
-  deal with grouping nodes from a network according to their similar properties
-  such as belonging to dense clusters. NetworkX already contains a
-  :mod:`variety of community detection algorithms <networkx.algorithms.community>`
-  dealing with computing the community structure of a network. There are also
-  multiple PRs/issues which deal with adding the Louvain community detection
-  algorithm to NetworkX, e.g. `#1090`_, `#1092`_ `#951`_. Users who want to work with
-  NetworkX and Louvain Community Detection often use
-  https://github.com/taynaud/python-louvain. This project would focus on getting
-  Louvain community detection algorithms implemented into NetworkX.
-
-- Recommended Skills: Python, graph algorithms
-
-- Expected Outcome: We would like to see Louvain community detection
-  implemented inside NetworkX, or construct code and documented examples
-  in NetworkX that would interface with other Louvain projects.
-
-- Complexity: Moderate
-
-- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
-  `@MridulS <https://github.com/MridulS/>`__,
-
-.. _#1090: https://github.com/networkx/networkx/pull/1090
-.. _#1092: https://github.com/networkx/networkx/pull/1092
-.. _#951: https://github.com/networkx/networkx/issues/951
-
-
 Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 ------------------------------------------------------------------------
 
