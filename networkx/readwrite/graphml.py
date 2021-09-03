@@ -765,7 +765,12 @@ class GraphMLWriterLxml(GraphMLWriter):
         for k, v in graphdata.items():
             self.attribute_types[(str(k), "graph")].add(type(v))
         for k, v in graphdata.items():
-            element_type = self.xml_type[self.attr_type(k, "graph", v)]
+            try:
+                element_type = self.xml_type[self.attr_type(k, "graph", v)]
+            except KeyError as e:
+                raise TypeError(
+                    f"GraphML does not support {type(v)} as data values."
+                ) from e
             self.get_key(str(k), element_type, "graph", None)
         # Nodes and data
         for node, d in G.nodes(data=True):
