@@ -429,7 +429,7 @@ class GraphML:
                 (np.intp, "int"),
             ] + types
 
-        self.xml_type = dict(types)
+        self._xml_type = dict(types)
         self.python_type = dict(reversed(a) for a in types)
 
     # This page says that data types in GraphML follow Java(TM).
@@ -446,6 +446,14 @@ class GraphML:
         "1": True,
         1: True,
     }
+
+    def xml_type(self, key):
+        try:
+            return self._xml_type[key]
+        except KeyError as e:
+            raise TypeError(
+                f"GraphML does not support type {type(key)} as data values."
+            ) from e
 
 
 class GraphMLWriter(GraphML):
@@ -504,7 +512,7 @@ class GraphMLWriter(GraphML):
             types = self.attribute_types[(name, scope)]
 
             if len(types) > 1:
-                types = {self.xml_type[t] for t in types}
+                types = {self.xml_type(t) for t in types}
                 if "string" in types:
                     return str
                 elif "float" in types or "double" in types:
@@ -547,11 +555,11 @@ class GraphMLWriter(GraphML):
         Make a data element for an edge or a node. Keep a log of the
         type in the keys table.
         """
-        if element_type not in self.xml_type:
+        if element_type not in self._xml_type:
             raise nx.NetworkXError(
                 f"GraphML writer does not support {element_type} as data values."
             )
-        keyid = self.get_key(name, self.xml_type[element_type], scope, default)
+        keyid = self.get_key(name, self.xml_type(element_type), scope, default)
         data_element = self.myElement("data", key=keyid)
         data_element.text = str(value)
         return data_element
@@ -765,12 +773,7 @@ class GraphMLWriterLxml(GraphMLWriter):
         for k, v in graphdata.items():
             self.attribute_types[(str(k), "graph")].add(type(v))
         for k, v in graphdata.items():
-            try:
-                element_type = self.xml_type[self.attr_type(k, "graph", v)]
-            except KeyError as e:
-                raise TypeError(
-                    f"GraphML does not support {type(v)} as data values."
-                ) from e
+            element_type = self.xml_type(self.attr_type(k, "graph", v))
             self.get_key(str(k), element_type, "graph", None)
         # Nodes and data
         for node, d in G.nodes(data=True):
@@ -778,7 +781,7 @@ class GraphMLWriterLxml(GraphMLWriter):
                 self.attribute_types[(str(k), "node")].add(type(v))
         for node, d in G.nodes(data=True):
             for k, v in d.items():
-                T = self.xml_type[self.attr_type(k, "node", v)]
+                T = self.xml_type(self.attr_type(k, "node", v))
                 self.get_key(str(k), T, "node", node_default.get(k))
         # Edges and data
         if G.is_multigraph():
@@ -787,7 +790,7 @@ class GraphMLWriterLxml(GraphMLWriter):
                     self.attribute_types[(str(k), "edge")].add(type(v))
             for u, v, ekey, d in G.edges(keys=True, data=True):
                 for k, v in d.items():
-                    T = self.xml_type[self.attr_type(k, "edge", v)]
+                    T = self.xml_type(self.attr_type(k, "edge", v))
                     self.get_key(str(k), T, "edge", edge_default.get(k))
         else:
             for u, v, d in G.edges(data=True):
@@ -795,7 +798,7 @@ class GraphMLWriterLxml(GraphMLWriter):
                     self.attribute_types[(str(k), "edge")].add(type(v))
             for u, v, d in G.edges(data=True):
                 for k, v in d.items():
-                    T = self.xml_type[self.attr_type(k, "edge", v)]
+                    T = self.xml_type(self.attr_type(k, "edge", v))
                     self.get_key(str(k), T, "edge", edge_default.get(k))
 
         # Now add attribute keys to the xml file
