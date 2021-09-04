@@ -68,7 +68,7 @@ def communicability(G):
     import numpy as np
 
     nodelist = list(G)  # ordering of nodes in matrix
-    A = nx.to_numpy_array(G, nodelist)
+    A = nx.to_numpy_array(G, nodelist=nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
     w, vec = np.linalg.eigh(A)
@@ -147,7 +147,7 @@ def communicability_exp(G):
     import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
-    A = nx.to_numpy_array(G, nodelist)
+    A = nx.to_numpy_array(G, nodelist=nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
     # communicability matrix
