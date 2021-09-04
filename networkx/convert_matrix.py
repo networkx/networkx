@@ -44,6 +44,7 @@ __all__ = [
 
 def to_pandas_adjacency(
     G,
+    *,
     nodelist=None,
     dtype=None,
     order=None,
@@ -148,7 +149,7 @@ def to_pandas_adjacency(
     return pd.DataFrame(data=M, index=nodelist, columns=nodelist)
 
 
-def from_pandas_adjacency(df, create_using=None):
+def from_pandas_adjacency(df, *, create_using=None):
     r"""Returns a graph from Pandas DataFrame.
 
     The Pandas DataFrame is interpreted as an adjacency matrix for the graph.
@@ -210,6 +211,7 @@ def from_pandas_adjacency(df, create_using=None):
 
 def to_pandas_edgelist(
     G,
+    *,
     source="source",
     target="target",
     nodelist=None,
@@ -308,6 +310,7 @@ def to_pandas_edgelist(
 
 def from_pandas_edgelist(
     df,
+    *,
     source="source",
     target="target",
     edge_attr=None,
@@ -376,7 +379,9 @@ def from_pandas_edgelist(
     0       4     7  A  D
     1       7     1  B  A
     2      10     9  C  E
-    >>> G = nx.from_pandas_edgelist(df, 0, "b", ["weight", "cost"])
+    >>> G = nx.from_pandas_edgelist(
+    ...     df, source=0, target="b", edge_attr=["weight", "cost"]
+    ... )
     >>> G["E"]["C"]["weight"]
     10
     >>> G["E"]["C"]["cost"]
@@ -471,6 +476,7 @@ def from_pandas_edgelist(
 
 def to_numpy_matrix(
     G,
+    *,
     nodelist=None,
     dtype=None,
     order=None,
@@ -592,7 +598,7 @@ def to_numpy_matrix(
     return M
 
 
-def from_numpy_matrix(A, parallel_edges=False, create_using=None):
+def from_numpy_matrix(A, *, parallel_edges=False, create_using=None):
     """Returns a graph from numpy matrix.
 
     The numpy matrix is interpreted as an adjacency matrix for the graph.
@@ -688,7 +694,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
 
 
 @not_implemented_for("multigraph")
-def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
+def to_numpy_recarray(G, *, nodelist=None, dtype=None, order=None):
     """Returns the graph adjacency matrix as a NumPy recarray.
 
     Parameters
@@ -768,7 +774,9 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     return M.view(np.recarray)
 
 
-def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format="csr"):
+def to_scipy_sparse_matrix(
+    G, *, nodelist=None, dtype=None, weight="weight", format="csr"
+):
     """Returns the graph adjacency matrix as a SciPy sparse matrix.
 
     Parameters
@@ -964,7 +972,7 @@ def _generate_weighted_edges(A):
 
 
 def from_scipy_sparse_matrix(
-    A, parallel_edges=False, create_using=None, edge_attribute="weight"
+    A, *, parallel_edges=False, create_using=None, edge_attribute="weight"
 ):
     """Creates a new graph from an adjacency matrix given as a SciPy sparse
     matrix.
@@ -1070,6 +1078,7 @@ def from_scipy_sparse_matrix(
 
 def to_numpy_array(
     G,
+    *,
     nodelist=None,
     dtype=None,
     order=None,
@@ -1252,7 +1261,7 @@ def to_numpy_array(
     return A
 
 
-def from_numpy_array(A, parallel_edges=False, create_using=None):
+def from_numpy_array(A, *, parallel_edges=False, create_using=None):
     """Returns a graph from a 2D NumPy array.
 
     The 2D NumPy array is interpreted as an adjacency matrix for the graph.
