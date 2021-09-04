@@ -1,4 +1,41 @@
-from networkx.utils.mapped_queue import MappedQueue
+import pytest
+from networkx.utils.mapped_queue import _HeapElement, MappedQueue
+
+
+def test_HeapElement_gtlt():
+    bar = _HeapElement(1.1, "a")
+    foo = _HeapElement(1, "b")
+    assert foo < bar
+    assert bar > foo
+    assert foo < 1.1
+    assert 1 < bar
+
+
+def test_HeapElement_eq():
+    bar = _HeapElement(1.1, "a")
+    foo = _HeapElement(1, "a")
+    assert foo == bar
+    assert bar == foo
+    assert foo == "a"
+
+
+def test_HeapElement_iter():
+    foo = _HeapElement(1, "a")
+    bar = _HeapElement(1.1, (3, 2, 1))
+    assert list(foo) == [1, "a"]
+    assert list(bar) == [1.1, 3, 2, 1]
+
+
+def test_HeapElement_getitem():
+    foo = _HeapElement(1, "a")
+    bar = _HeapElement(1.1, (3, 2, 1))
+    assert foo[1] == "a"
+    assert foo[0] == 1
+    assert bar[0] == 1.1
+    assert bar[2] == 2
+    assert bar[3] == 1
+    pytest.raises(IndexError, bar.__getitem__, 4)
+    pytest.raises(IndexError, foo.__getitem__, 2)
 
 
 class TestMappedQueue:
@@ -66,7 +103,7 @@ class TestMappedQueue:
 
     def test_siftup_multiple(self):
         h = [0, 1, 2, 4, 3, 5, 6]
-        h_sifted = [1, 3, 2, 4, 0, 5, 6]
+        h_sifted = [0, 1, 2, 4, 3, 5, 6]
         q = self._make_mapped_queue(h)
         q._siftup(0)
         assert q.h == h_sifted
@@ -76,7 +113,7 @@ class TestMappedQueue:
         h = [2]
         h_sifted = [2]
         q = self._make_mapped_queue(h)
-        q._siftdown(0)
+        q._siftdown(0, 0)
         assert q.h == h_sifted
         self._check_map(q)
 
@@ -84,7 +121,7 @@ class TestMappedQueue:
         h = [1, 0]
         h_sifted = [0, 1]
         q = self._make_mapped_queue(h)
-        q._siftdown(len(h) - 1)
+        q._siftdown(0, len(h) - 1)
         assert q.h == h_sifted
         self._check_map(q)
 
@@ -92,7 +129,7 @@ class TestMappedQueue:
         h = [1, 2, 3, 4, 5, 6, 7, 0]
         h_sifted = [0, 1, 3, 2, 5, 6, 7, 4]
         q = self._make_mapped_queue(h)
-        q._siftdown(len(h) - 1)
+        q._siftdown(0, len(h) - 1)
         assert q.h == h_sifted
         self._check_map(q)
 
@@ -122,9 +159,7 @@ class TestMappedQueue:
         h_sorted = sorted(h)
         q = self._make_mapped_queue(h)
         q._heapify()
-        popped = []
-        for elt in sorted(h):
-            popped.append(q.pop())
+        popped = [q.pop() for _ in range(len(h))]
         assert popped == h_sorted
         self._check_map(q)
 
@@ -154,4 +189,45 @@ class TestMappedQueue:
         h_updated = [10, 20, 35, 60, 30, 50, 40]
         q = self._make_mapped_queue(h)
         removed = q.update(0, 35)
+        assert q.h == h_updated
+
+
+class TestMappedDict(TestMappedQueue):
+    def _make_mapped_queue(self, h):
+        priority_dict = {elt: elt for elt in h}
+        return MappedQueue(priority_dict)
+
+    def test_push(self):
+        to_push = [6, 1, 4, 3, 2, 5, 0]
+        h_sifted = [0, 2, 1, 6, 3, 5, 4]
+        q = MappedQueue()
+        for elt in to_push:
+            q.push(elt, priority=elt)
+        assert q.h == h_sifted
+        self._check_map(q)
+
+    def test_push_duplicate(self):
+        to_push = [2, 1, 0]
+        h_sifted = [0, 2, 1]
+        q = MappedQueue()
+        for elt in to_push:
+            inserted = q.push(elt, priority=elt)
+            assert inserted
+        assert q.h == h_sifted
+        self._check_map(q)
+        inserted = q.push(1, priority=1)
+        assert not inserted
+
+    def test_update_leaf(self):
+        h = [0, 20, 10, 60, 30, 50, 40]
+        h_updated = [0, 15, 10, 60, 20, 50, 40]
+        q = self._make_mapped_queue(h)
+        removed = q.update(30, 15, priority=15)
+        assert q.h == h_updated
+
+    def test_update_root(self):
+        h = [0, 20, 10, 60, 30, 50, 40]
+        h_updated = [10, 20, 35, 60, 30, 50, 40]
+        q = self._make_mapped_queue(h)
+        removed = q.update(0, 35, priority=35)
         assert q.h == h_updated
