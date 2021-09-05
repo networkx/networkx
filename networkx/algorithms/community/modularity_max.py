@@ -111,7 +111,7 @@ def _greedy_modularity_communities_init(G, weight=None, resolution=1):
 
     # Use -dq to get a max_heap instead of a min_heap
     dq_heap = {u: MappedQueue({(u, v): -dq for v, dq in dq_dict[u].items()}) for u in G}
-    H = MappedQueue([dq_heap[n].h[0] for n in G if len(dq_heap[n]) > 0])
+    H = MappedQueue([dq_heap[n].heap[0] for n in G if len(dq_heap[n]) > 0])
 
     return dq_dict, dq_heap, H, a, b
 
@@ -210,16 +210,16 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
         dq_heap[i].pop()
         # Push new row max onto H
         if len(dq_heap[i]) > 0:
-            H.push(dq_heap[i].h[0])
+            H.push(dq_heap[i].heap[0])
         # If this element was also at the root of row j, we need to remove the
         # duplicate entry from H
-        if dq_heap[j].h[0] == (j, i):
+        if dq_heap[j].heap[0] == (j, i):
             H.remove((j, i))
             # Remove best merge from row j heap
             dq_heap[j].remove((j, i))
             # Push new row max onto H
             if len(dq_heap[j]) > 0:
-                H.push(dq_heap[j].h[0])
+                H.push(dq_heap[j].heap[0])
         else:
             # Duplicate wasn't in H, just remove from row j heap
             dq_heap[j].remove((j, i))
@@ -265,7 +265,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
                 dq_dict[row][col] = dq_jk
                 # Save old max of per-row heap
                 if len(dq_heap_row) > 0:
-                    d_oldmax = dq_heap_row.h[0]
+                    d_oldmax = dq_heap_row.heap[0]
                 else:
                     d_oldmax = None
                 # Add/update heaps
@@ -283,7 +283,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
                     H.push(d, priority=d_negdq)
                 else:
                     # We've updated an entry in this row, has the max changed?
-                    row_max = dq_heap_row.h[0]
+                    row_max = dq_heap_row.heap[0]
                     if d_oldmax != row_max or d_oldmax.priority != row_max.priority:
                         H.update(d_oldmax, row_max)
 
@@ -300,13 +300,13 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
                     dq_heap_row = dq_heap[row]
                     # Check if replaced dq is row max
                     d_old = (row, col)
-                    if dq_heap_row.h[0] == d_old:
+                    if dq_heap_row.heap[0] == d_old:
                         # Update per-row heap and heap of row maxes
                         dq_heap_row.remove(d_old)
                         H.remove(d_old)
                         # Update row max
                         if len(dq_heap_row) > 0:
-                            H.push(dq_heap_row.h[0])
+                            H.push(dq_heap_row.heap[0])
                     else:
                         # Only update per-row heap
                         dq_heap_row.remove(d_old)

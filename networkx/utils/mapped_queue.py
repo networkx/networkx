@@ -17,7 +17,7 @@ class _HeapElement:
     and equality (and hash) to look at the element to enable
     updates to the priority.
 
-    Unfortunately, this class can tricky to work with if you forget that
+    Unfortunately, this class can be tricky to work with if you forget that
     `__lt__` compares the priority while `__eq__` compares the element.
     In `greedy_modularity_communities()` the following code is
     used to check that two _HeapElements differ in either element or priority:
@@ -103,7 +103,7 @@ class MappedQueue:
     >>> q = MappedQueue([916, 50, 4609, 493, 237])
     >>> q.push(1310)
     True
-    >>> [q.pop() for i in range(len(q.h))]
+    >>> [q.pop() for i in range(len(q.heap))]
     [50, 237, 493, 916, 1310, 4609]
 
     Elements can also be updated or removed from anywhere in the queue.
@@ -111,7 +111,7 @@ class MappedQueue:
     >>> q = MappedQueue([916, 50, 4609, 493, 237])
     >>> q.remove(493)
     >>> q.update(237, 1117)
-    >>> [q.pop() for i in range(len(q.h))]
+    >>> [q.pop() for i in range(len(q.heap))]
     [50, 916, 1117, 4609]
 
     References
@@ -125,33 +125,33 @@ class MappedQueue:
     def __init__(self, data=[]):
         """Priority queue class with updatable priorities."""
         if isinstance(data, dict):
-            self.h = [_HeapElement(v, k) for k, v in data.items()]
+            self.heap = [_HeapElement(v, k) for k, v in data.items()]
         else:
-            self.h = list(data)
-        self.d = dict()
+            self.heap = list(data)
+        self.position = dict()
         self._heapify()
 
     def _heapify(self):
         """Restore heap invariant and recalculate map."""
-        heapq.heapify(self.h)
-        self.d = {elt: pos for pos, elt in enumerate(self.h)}
-        if len(self.h) != len(self.d):
+        heapq.heapify(self.heap)
+        self.position = {elt: pos for pos, elt in enumerate(self.heap)}
+        if len(self.heap) != len(self.position):
             raise AssertionError("Heap contains duplicate elements")
 
     def __len__(self):
-        return len(self.h)
+        return len(self.heap)
 
     def push(self, elt, priority=None):
         """Add an element to the queue."""
         if priority is not None:
             elt = _HeapElement(priority, elt)
         # If element is already in queue, do nothing
-        if elt in self.d:
+        if elt in self.position:
             return False
         # Add element to heap and dict
-        pos = len(self.h)
-        self.h.append(elt)
-        self.d[elt] = pos
+        pos = len(self.heap)
+        self.heap.append(elt)
+        self.position[elt] = pos
         # Restore invariant by sifting down
         self._siftdown(0, pos)
         return True
@@ -159,16 +159,16 @@ class MappedQueue:
     def pop(self):
         """Remove and return the smallest element in the queue."""
         # Remove smallest element
-        elt = self.h[0]
-        del self.d[elt]
+        elt = self.heap[0]
+        del self.position[elt]
         # If elt is last item, remove and return
-        if len(self.h) == 1:
-            self.h.pop()
+        if len(self.heap) == 1:
+            self.heap.pop()
             return elt
         # Replace root with last element
-        last = self.h.pop()
-        self.h[0] = last
-        self.d[last] = 0
+        last = self.heap.pop()
+        self.heap[0] = last
+        self.position[last] = 0
         # Restore invariant by sifting up
         self._siftup(0)
         # Return smallest element
@@ -179,10 +179,10 @@ class MappedQueue:
         if priority is not None:
             new = _HeapElement(priority, new)
         # Replace
-        pos = self.d[elt]
-        self.h[pos] = new
-        del self.d[elt]
-        self.d[new] = pos
+        pos = self.position[elt]
+        self.heap[pos] = new
+        del self.position[elt]
+        self.position[new] = pos
         # Restore invariant by sifting up
         self._siftup(pos)
 
@@ -190,19 +190,19 @@ class MappedQueue:
         """Remove an element from the queue."""
         # Find and remove element
         try:
-            pos = self.d[elt]
-            del self.d[elt]
+            pos = self.position[elt]
+            del self.position[elt]
         except KeyError:
             # Not in queue
             raise
         # If elt is last item, remove and return
-        if pos == len(self.h) - 1:
-            self.h.pop()
+        if pos == len(self.heap) - 1:
+            self.heap.pop()
             return
         # Replace elt with last element
-        last = self.h.pop()
-        self.h[pos] = last
-        self.d[last] = pos
+        last = self.heap.pop()
+        self.heap[pos] = last
+        self.position[last] = pos
         # Restore invariant by sifting up
         self._siftup(pos)
 
@@ -212,38 +212,38 @@ class MappedQueue:
         Built to mimic code for heapq._siftup
         only updating position dict too.
         """
-        h, d = self.h, self.d
-        end_pos = len(h)
+        heap, position = self.heap, self.position
+        end_pos = len(heap)
         startpos = pos
-        newitem = h[pos]
+        newitem = heap[pos]
         # Shift up the smaller child until hitting a leaf
         child_pos = (pos << 1) + 1  # start with leftmost child position
         while child_pos < end_pos:
             # Set child_pos to index of smaller child.
-            child = h[child_pos]
+            child = heap[child_pos]
             right_pos = child_pos + 1
             if right_pos < end_pos:
-                right = h[right_pos]
+                right = heap[right_pos]
                 if not child < right:
                     child = right
                     child_pos = right_pos
             # Move the smaller child up.
-            h[pos] = child
-            d[child] = pos
+            heap[pos] = child
+            position[child] = pos
             pos = child_pos
             child_pos = (pos << 1) + 1
         # pos is a leaf position. Put newitem there, and bubble it up
         # to its final resting place (by sifting its parents down).
         while pos > 0:
             parent_pos = (pos - 1) >> 1
-            parent = h[parent_pos]
+            parent = heap[parent_pos]
             if not newitem < parent:
                 break
-            h[pos] = parent
-            d[parent] = pos
+            heap[pos] = parent
+            position[parent] = pos
             pos = parent_pos
-        h[pos] = newitem
-        d[newitem] = pos
+        heap[pos] = newitem
+        position[newitem] = pos
 
     def _siftdown(self, start_pos, pos):
         """Restore invariant. keep swapping with parent until smaller.
@@ -251,17 +251,17 @@ class MappedQueue:
         Built to mimic code for heapq._siftdown
         only updating position dict too.
         """
-        h, d = self.h, self.d
-        newitem = h[pos]
+        heap, position = self.heap, self.position
+        newitem = heap[pos]
         # Follow the path to the root, moving parents down until finding a place
         # newitem fits.
         while pos > start_pos:
             parent_pos = (pos - 1) >> 1
-            parent = h[parent_pos]
+            parent = heap[parent_pos]
             if not newitem < parent:
                 break
-            h[pos] = parent
-            d[parent] = pos
+            heap[pos] = parent
+            position[parent] = pos
             pos = parent_pos
-        h[pos] = newitem
-        d[newitem] = pos
+        heap[pos] = newitem
+        position[newitem] = pos
