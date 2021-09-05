@@ -100,7 +100,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
 
     # this preliminary step collects the edge weights for each node pair
     # It handles multigraph and digraph and works fine for graph.
-    dq_dict = defaultdict(lambda : defaultdict(float))
+    dq_dict = defaultdict(lambda: defaultdict(float))
     for u, v, wt in G.edges(data=weight, default=1):
         if u == v:
             continue
@@ -128,59 +128,54 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
         # Remove from heap of row maxes
         # Ties will be broken by choosing the pair with lowest min community id
         try:
-            negdq, i, j = H.pop()
+            negdq, u, v = H.pop()
         except IndexError:
             break
         dq = -negdq
-        # Remove best merge from row i heap
-        dq_heap[i].pop()
+        # Remove best merge from row u heap
+        dq_heap[u].pop()
         # Push new row max onto H
-        if len(dq_heap[i]) > 0:
-            H.push(dq_heap[i].heap[0])
-        # If this element was also at the root of row j, we need to remove the
+        if len(dq_heap[u]) > 0:
+            H.push(dq_heap[u].heap[0])
+        # If this element was also at the root of row v, we need to remove the
         # duplicate entry from H
-        if dq_heap[j].heap[0] == (j, i):
-            H.remove((j, i))
-            # Remove best merge from row j heap
-            dq_heap[j].remove((j, i))
+        if dq_heap[v].heap[0] == (v, u):
+            H.remove((v, u))
+            # Remove best merge from row v heap
+            dq_heap[v].remove((v, u))
             # Push new row max onto H
-            if len(dq_heap[j]) > 0:
-                H.push(dq_heap[j].heap[0])
+            if len(dq_heap[v]) > 0:
+                H.push(dq_heap[v].heap[0])
         else:
-            # Duplicate wasn't in H, just remove from row j heap
-            dq_heap[j].remove((j, i))
+            # Duplicate wasn't in H, just remove from row v heap
+            dq_heap[v].remove((v, u))
         # Stop when change is non-positive (no improvement possible)
         if dq <= 0:
             break
 
         # Perform merge
-        communities[j] = frozenset(communities[i] | communities[j])
-        del communities[i]
+        communities[v] = frozenset(communities[u] | communities[v])
+        del communities[u]
 
-        # Get list of communities connected to merged communities
-        i_set = set(dq_dict[i].keys())
-        j_set = set(dq_dict[j].keys())
-        all_set = (i_set | j_set) - {i, j}
-        both_set = i_set & j_set
-        # Merge i into j and update dQ
-        for k in all_set:
+        # Get neighbor communities connected to the merged communities
+        u_nbrs = set(dq_dict[u])
+        v_nbrs = set(dq_dict[v])
+        all_nbrs = (u_nbrs | v_nbrs) - {u, v}
+        both_nbrs = u_nbrs & v_nbrs
+        # Update dq for merge of u into v
+        for w in all_nbrs:
             # Calculate new dq value
-            if k in both_set:
-                dq_jk = dq_dict[j][k] + dq_dict[i][k]
-            elif k in j_set:
-                dq_jk = dq_dict[j][k] - resolution * (a[i] * b[k] + a[k] * b[i])
-            else:  # k in i_set
-                dq_jk = dq_dict[i][k] - resolution * (a[j] * b[k] + a[k] * b[j])
-            # Update rows j and k
-            for row, col in [(j, k), (k, j)]:
+            if w in both_nbrs:
+                dq_vw = dq_dict[v][w] + dq_dict[u][w]
+            elif w in v_nbrs:
+                dq_vw = dq_dict[v][w] - resolution * (a[u] * b[w] + a[w] * b[u])
+            else:  # w in u_nbrs
+                dq_vw = dq_dict[u][w] - resolution * (a[v] * b[w] + a[w] * b[v])
+            # Update rows v and w
+            for row, col in [(v, w), (w, v)]:
                 dq_heap_row = dq_heap[row]
-                # Save old value for finding heap index
-                if k in j_set:
-                    d_old = (row, col)
-                else:
-                    d_old = None
-                # Update dict for j,k only (i is removed below)
-                dq_dict[row][col] = dq_jk
+                # Update dict for v,w only (u is removed below)
+                dq_dict[row][col] = dq_vw
                 # Save old max of per-row heap
                 if len(dq_heap_row) > 0:
                     d_oldmax = dq_heap_row.heap[0]
@@ -188,13 +183,14 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
                     d_oldmax = None
                 # Add/update heaps
                 d = (row, col)
-                d_negdq = -dq_jk
-                if d_old is None:
-                    # We're creating a new nonzero element, add to heap
-                    dq_heap[row].push(d, priority=d_negdq)
-                else:
+                d_negdq = -dq_vw
+                # Save old value for finding heap index
+                if w in v_nbrs:
                     # Update existing element in per-row heap
-                    dq_heap[row].update(d_old, d, priority=d_negdq)
+                    dq_heap_row.update(d, d, priority=d_negdq)
+                else:
+                    # We're creating a new nonzero element, add to heap
+                    dq_heap_row.push(d, priority=d_negdq)
                 # Update heap of row maxes if necessary
                 if d_oldmax is None:
                     # No entries previously in this row, push new max
@@ -205,16 +201,15 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
                     if d_oldmax != row_max or d_oldmax.priority != row_max.priority:
                         H.update(d_oldmax, row_max)
 
-        # Remove row/col i from matrix
-        i_neighbors = dq_dict[i].keys()
-        for k in i_neighbors:
+        # Remove row/col u from dq_dict matrix
+        for w in dq_dict[u]:
             # Remove from dict
-            dq_old = dq_dict[k][i]
-            del dq_dict[k][i]
+            dq_old = dq_dict[w][u]
+            del dq_dict[w][u]
             # Remove from heaps if we haven't already
-            if k != j:
+            if w != v:
                 # Remove both row and column
-                for row, col in [(k, i), (i, k)]:
+                for row, col in [(w, u), (u, w)]:
                     dq_heap_row = dq_heap[row]
                     # Check if replaced dq is row max
                     d_old = (row, col)
@@ -229,15 +224,15 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
                         # Only update per-row heap
                         dq_heap_row.remove(d_old)
 
-        del dq_dict[i]
-        # Mark row i as deleted, but keep placeholder
-        dq_heap[i] = MappedQueue()
-        # Merge i into j and update a
-        a[j] += a[i]
-        a[i] = 0
+        del dq_dict[u]
+        # Mark row u as deleted, but keep placeholder
+        dq_heap[u] = MappedQueue()
+        # Merge u into v and update a
+        a[v] += a[u]
+        a[u] = 0
         if directed:
-            b[j] += b[i]
-            b[i] = 0
+            b[v] += b[u]
+            b[u] = 0
 
     return sorted(communities.values(), key=len, reverse=True)
 
