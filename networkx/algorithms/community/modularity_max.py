@@ -1,6 +1,6 @@
 """Functions for detecting communities based on modularity."""
 
-from collections import Counter
+from collections import defaultdict
 
 import networkx as nx
 from networkx.algorithms.community.quality import modularity
@@ -12,108 +12,6 @@ __all__ = [
     "naive_greedy_modularity_communities",
     "_naive_greedy_modularity_communities",
 ]
-
-
-def _greedy_modularity_communities_init(G, weight=None, resolution=1):
-    r"""Initializes the data structures for greedy_modularity_communities().
-
-    Clauset-Newman-Moore Eq 8-9. Eq 8 was missing a factor of 2 (from A_ij + A_ji).
-    See [2]_ at :func:`greedy_modularity_communities`.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-
-    weight : string or None, optional (default=None)
-        The name of an edge attribute that holds the numerical value used
-        as a weight.  If None, then each edge has weight 1.
-        The degree is the sum of the edge weights adjacent to the node.
-
-    resolution : float (default=1)
-        If resolution is less than 1, modularity favors larger communities.
-        Greater than 1 favors smaller communities.
-
-    Returns
-    -------
-    dq_dict : dict of dict's
-        dq_dict[i][j]: dQ for merging community i, j
-
-    dq_heap : dict of MappedQueue's
-        dq_heap[i][n] : (-dq, i, j) for communitiy i nth largest dQ
-
-    H : MappedQueue
-        (-dq, i, j) for community with nth largest max_j(dQ_ij)
-
-    a, b : dict
-        undirected:
-            a[i]: fraction of (total weight of) edges within community i
-            b : None
-        directed:
-            a[i]: fraction of (total weight of) edges with tails within community i
-            b[i]: fraction of (total weight of) edges with heads within community i
-
-    See Also
-    --------
-    :func:`greedy_modularity_communities`
-    :func:`~networkx.algorithms.community.quality.modularity`
-    """
-    # Count edges (or the sum of edge-weights for weighted graphs)
-    m = G.size(weight)
-
-    # Calculate degrees
-    if G.is_directed():
-        k_in = dict(G.in_degree(weight=weight))
-        k_out = dict(G.out_degree(weight=weight))
-        q0 = 1.0 / m
-    else:
-        k_in = k_out = dict(G.degree(weight=weight))
-        q0 = 1.0 / (2.0 * m)
-
-    a = {node: kout * q0 for node, kout in k_out.items()}
-    if G.is_directed():
-        b = {node: kin * q0 for node, kin in k_in.items()}
-    else:
-        b = None
-
-    dq_dict = {
-        i: {
-            j: q0
-            * (
-                G.get_edge_data(i, j, default={weight: 0}).get(weight, 1.0)
-                + G.get_edge_data(j, i, default={weight: 0}).get(weight, 1.0)
-                - resolution * q0 * (k_out[i] * k_in[j] + k_in[i] * k_out[j])
-            )
-            for j in nx.all_neighbors(G, i)
-            if j != i
-        }
-        for i in G.nodes()
-    }
-
-    # dq correction for multi-edges
-    # In case of multi-edges, get_edge_data(i, j) returns the key: data dict of the i, j
-    # edges, which does not have a 'weight' key. Therefore, when calculating dq for i, j
-    # Aij is always 1.0 and a correction is required.
-    if G.is_multigraph():
-        edges_count = dict(Counter(G.edges()))
-        multi_edges = [edge for edge, count in edges_count.items() if count > 1]
-        for edge in multi_edges:
-            total_wt = sum(d.get(weight, 1) for d in G.get_edge_data(*edge).values())
-            if G.is_directed():
-                # The correction applies only to the direction of the edge. The edge at
-                # the other direction is either not a multiedge (where the weight is
-                # added correctly), non-existent or it is also a multiedge, in which
-                # case it will be handled singly when its turn in the loop comes.
-                q00 = q0
-            else:
-                q00 = 2 * q0
-            dq_dict[edge[0]][edge[1]] += q00 * (total_wt - 1)
-            dq_dict[edge[1]][edge[0]] += q00 * (total_wt - 1)
-
-    # Use -dq to get a max_heap instead of a min_heap
-    dq_heap = {u: MappedQueue({(u, v): -dq for v, dq in dq_dict[u].items()}) for u in G}
-    H = MappedQueue([dq_heap[n].heap[0] for n in G if len(dq_heap[n]) > 0])
-
-    return dq_dict, dq_heap, H, a, b
 
 
 def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1):
@@ -180,20 +78,48 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
     .. [4] Newman, M. E. J."Analysis of weighted networks"
        Physical Review E 70(5 Pt 2):056131, 2004.
     """
+    directed = G.is_directed()
     N = G.number_of_nodes()
     if (n_communities < 1) or (n_communities > N):
         raise ValueError(
             f"n_communities must be between 1 and {N}. Got {n_communities}"
         )
 
-    # Initialize data structures
-    dq_dict, dq_heap, H, a, b = _greedy_modularity_communities_init(
-        G, weight, resolution
-    )
+    # Count edges (or the sum of edge-weights for weighted graphs)
+    m = G.size(weight)
+    q0 = 1 / m
+
+    # Calculate degrees (notation from the papers)
+    # a : the fraction of (weighted) out-degree for each node
+    # b : the fraction of (weighted) in-degree for each node
+    if directed:
+        a = {node: deg_out * q0 for node, deg_out in G.out_degree(weight=weight)}
+        b = {node: deg_in * q0 for node, deg_in in G.in_degree(weight=weight)}
+    else:
+        a = b = {node: deg * q0 * 0.5 for node, deg in G.degree(weight=weight)}
+
+    # this preliminary step collects the edge weights for each node pair
+    # It handles multigraph and digraph and works fine for graph.
+    dq_dict = defaultdict(lambda : defaultdict(float))
+    for u, v, wt in G.edges(data=weight, default=1):
+        if u == v:
+            continue
+        dq_dict[u][v] += wt
+        dq_dict[v][u] += wt
+
+    # now scale and subtract the expected edge-weights term
+    for u, nbrdict in dq_dict.items():
+        for v, wt in nbrdict.items():
+            dq_dict[u][v] = q0 * wt - resolution * (a[u] * b[v] + b[u] * a[v])
+
+    # Use -dq to get a max_heap instead of a min_heap
+    # dq_heap holds a heap for each node's neighbors
+    dq_heap = {u: MappedQueue({(u, v): -dq for v, dq in dq_dict[u].items()}) for u in G}
+    # H -> all_dq_heap holds a heap with the best items for each node
+    H = MappedQueue([dq_heap[n].heap[0] for n in G if len(dq_heap[n]) > 0])
+
     # Initialize single-node communities
-    communities = {i: frozenset([i]) for i in G.nodes()}
-    # Initial modularity
-    q_cnm = modularity(G, communities.values(), resolution=resolution)
+    communities = {n: frozenset([n]) for n in G}
 
     # Merge communities until we can't improve modularity or until desired number of
     # communities (n_communities) is reached.
@@ -230,8 +156,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
         # Perform merge
         communities[j] = frozenset(communities[i] | communities[j])
         del communities[i]
-        # New modularity
-        q_cnm += dq
+
         # Get list of communities connected to merged communities
         i_set = set(dq_dict[i].keys())
         j_set = set(dq_dict[j].keys())
@@ -243,16 +168,9 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
             if k in both_set:
                 dq_jk = dq_dict[j][k] + dq_dict[i][k]
             elif k in j_set:
-                if G.is_directed():
-                    dq_jk = dq_dict[j][k] - resolution * (a[i] * b[k] + a[k] * b[i])
-                else:
-                    dq_jk = dq_dict[j][k] - 2.0 * resolution * a[i] * a[k]
-            else:
-                # k in i_set
-                if G.is_directed():
-                    dq_jk = dq_dict[i][k] - resolution * (a[j] * b[k] + a[k] * b[j])
-                else:
-                    dq_jk = dq_dict[i][k] - 2.0 * resolution * a[j] * a[k]
+                dq_jk = dq_dict[j][k] - resolution * (a[i] * b[k] + a[k] * b[i])
+            else:  # k in i_set
+                dq_jk = dq_dict[i][k] - resolution * (a[j] * b[k] + a[k] * b[j])
             # Update rows j and k
             for row, col in [(j, k), (k, j)]:
                 dq_heap_row = dq_heap[row]
@@ -317,7 +235,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
         # Merge i into j and update a
         a[j] += a[i]
         a[i] = 0
-        if G.is_directed():
+        if directed:
             b[j] += b[i]
             b[i] = 0
 
