@@ -283,9 +283,9 @@ def modularity(G, communities, weight="weight", resolution=1):
         These node sets must represent a partition of G's nodes.
 
     weight : string or None, optional (default="weight")
-            The edge attribute that holds the numerical value used
-            as a weight. If None or an edge does not have that attribute,
-            then that edge has weight 1.
+        The edge attribute that holds the numerical value used
+        as a weight. If None or an edge does not have that attribute,
+        then that edge has weight 1.
 
     resolution : float (default=1)
         If resolution is less than 1, modularity favors larger communities.

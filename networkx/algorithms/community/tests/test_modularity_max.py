@@ -53,6 +53,33 @@ def test_greedy_modularity_communities_relabeled():
     assert greedy_modularity_communities(G) == expected
 
 
+def test_greedy_modularity_communities_directed():
+    G = nx.DiGraph(
+        [
+            ("a", "b"),
+            ("a", "c"),
+            ("b", "c"),
+            ("b", "d"),  # inter-community edge
+            ("d", "e"),
+            ("d", "f"),
+            ("d", "g"),
+            ("f", "g"),
+            ("d", "e"),
+            ("f", "e"),
+        ]
+    )
+    expected = [frozenset({"f", "g", "e", "d"}), frozenset({"a", "b", "c"})]
+    assert greedy_modularity_communities(G) == expected
+
+    # with loops
+    G = nx.DiGraph()
+    G.add_edges_from(
+        [(1, 1), (1, 2), (1, 3), (2, 3), (1, 4), (4, 4), (5, 5), (4, 5), (4, 6), (5, 6)]
+    )
+    expected = [frozenset({1, 2, 3}), frozenset({4, 5, 6})]
+    assert greedy_modularity_communities(G) == expected
+
+
 def test_modularity_communities_weighted():
     G = nx.balanced_tree(2, 3)
     for (a, b) in G.edges:
@@ -63,6 +90,161 @@ def test_modularity_communities_weighted():
 
     expected = [{0, 1, 3, 4, 7, 8, 9, 10}, {2, 5, 6, 11, 12, 13, 14}]
 
+    assert greedy_modularity_communities(G, weight="weight") == expected
+
+
+def test_modularity_communities_directed_weighted():
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(
+        [
+            (1, 2, 5),
+            (1, 3, 3),
+            (2, 3, 6),
+            (2, 6, 1),
+            (1, 4, 1),
+            (4, 5, 3),
+            (4, 6, 7),
+            (5, 6, 2),
+            (5, 7, 5),
+            (5, 8, 4),
+            (6, 8, 3),
+        ]
+    )
+    expected = [frozenset({4, 5, 6, 7, 8}), frozenset({1, 2, 3})]
+    assert greedy_modularity_communities(G, weight="weight") == expected
+
+    # A large weight of the edge (2, 6) causes 6 to change group, even if it shares
+    # only one connection with the new group and 3 with the old one.
+    G[2][6]["weight"] = 20
+    expected = [frozenset({1, 2, 3, 6}), frozenset({4, 5, 7, 8})]
+    assert greedy_modularity_communities(G, weight="weight") == expected
+
+
+def test_greedy_modularity_communities_multigraph():
+    G = nx.MultiGraph()
+    G.add_edges_from(
+        [
+            (1, 2),
+            (1, 2),
+            (1, 3),
+            (2, 3),
+            (1, 4),
+            (2, 4),
+            (4, 5),
+            (5, 6),
+            (5, 7),
+            (5, 7),
+            (6, 7),
+            (7, 8),
+            (5, 8),
+        ]
+    )
+    expected = [frozenset({1, 2, 3, 4}), frozenset({5, 6, 7, 8})]
+    assert greedy_modularity_communities(G) == expected
+
+    # Converting (4, 5) into a multi-edge causes node 4 to change group.
+    G.add_edge(4, 5)
+    expected = [frozenset({4, 5, 6, 7, 8}), frozenset({1, 2, 3})]
+    assert greedy_modularity_communities(G) == expected
+
+
+def test_greedy_modularity_communities_multigraph_weighted():
+    G = nx.MultiGraph()
+    G.add_weighted_edges_from(
+        [
+            (1, 2, 5),
+            (1, 2, 3),
+            (1, 3, 6),
+            (1, 3, 6),
+            (2, 3, 4),
+            (1, 4, 1),
+            (1, 4, 1),
+            (2, 4, 3),
+            (2, 4, 3),
+            (4, 5, 1),
+            (5, 6, 3),
+            (5, 6, 7),
+            (5, 6, 4),
+            (5, 7, 9),
+            (5, 7, 9),
+            (6, 7, 8),
+            (7, 8, 2),
+            (7, 8, 2),
+            (5, 8, 6),
+            (5, 8, 6),
+        ]
+    )
+    expected = [frozenset({1, 2, 3, 4}), frozenset({5, 6, 7, 8})]
+    assert greedy_modularity_communities(G, weight="weight") == expected
+
+    # Adding multi-edge (4, 5, 16) causes node 4 to change group.
+    G.add_edge(4, 5, weight=16)
+    expected = [frozenset({4, 5, 6, 7, 8}), frozenset({1, 2, 3})]
+    assert greedy_modularity_communities(G, weight="weight") == expected
+
+    # Increasing the weight of edge (1, 4) causes node 4 to return to the former group.
+    G[1][4][1]["weight"] = 3
+    expected = [frozenset({1, 2, 3, 4}), frozenset({5, 6, 7, 8})]
+    assert greedy_modularity_communities(G, weight="weight") == expected
+
+
+def test_greed_modularity_communities_multidigraph():
+    G = nx.MultiDiGraph()
+    G.add_edges_from(
+        [
+            (1, 2),
+            (1, 2),
+            (3, 1),
+            (2, 3),
+            (2, 3),
+            (3, 2),
+            (1, 4),
+            (2, 4),
+            (4, 2),
+            (4, 5),
+            (5, 6),
+            (5, 6),
+            (6, 5),
+            (5, 7),
+            (6, 7),
+            (7, 8),
+            (5, 8),
+            (8, 4),
+        ]
+    )
+    expected = [frozenset({1, 2, 3, 4}), frozenset({5, 6, 7, 8})]
+    assert greedy_modularity_communities(G, weight="weight") == expected
+
+
+def test_greed_modularity_communities_multidigraph_weighted():
+    G = nx.MultiDiGraph()
+    G.add_weighted_edges_from(
+        [
+            (1, 2, 5),
+            (1, 2, 3),
+            (3, 1, 6),
+            (1, 3, 6),
+            (3, 2, 4),
+            (1, 4, 2),
+            (1, 4, 5),
+            (2, 4, 3),
+            (3, 2, 8),
+            (4, 2, 3),
+            (4, 3, 5),
+            (4, 5, 2),
+            (5, 6, 3),
+            (5, 6, 7),
+            (6, 5, 4),
+            (5, 7, 9),
+            (5, 7, 9),
+            (7, 6, 8),
+            (7, 8, 2),
+            (8, 7, 2),
+            (5, 8, 6),
+            (5, 8, 6),
+        ]
+    )
+    expected = [frozenset({1, 2, 3, 4}), frozenset({5, 6, 7, 8})]
     assert greedy_modularity_communities(G, weight="weight") == expected
 
 
