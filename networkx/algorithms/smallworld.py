@@ -336,7 +336,7 @@ def omega(G, niter=100, nrand=10, seed=None):
     Returns
     -------
     omega : float
-        The small-work coefficient (omega)
+        The small-world coefficient (omega)
 
     Notes
     -----
