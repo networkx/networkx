@@ -82,7 +82,7 @@ class _HeapElement:
 class MappedQueue:
     """The MappedQueue class implements a min-heap with removal and update-priority.
 
-    The min heap uses heapq as well as sutom written _siftup and _siftdown
+    The min heap uses heapq as well as custom written _siftup and _siftdown
     methods to allow the heap positions to be tracked by an additional dict
     keyed by element to position. The smallest element can be popped in O(1) time,
     new elements can be pushed in O(log n) time, and any element can be removed
