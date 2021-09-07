@@ -1,3 +1,4 @@
+from networkx.generators import directed
 import pytest
 import networkx as nx
 
@@ -37,10 +38,27 @@ def test_directed():
         G_directed = nx.gn_graph(10 + r, seed=100 + i)
         G_undirected = nx.to_undirected(G_directed)
 
-        h_directed = nx.weisfeiler_lehman_subgraph_hashes(G_directed)
-        h_undirected = nx.weisfeiler_lehman_subgraph_hashes(G_undirected)
+        h_directed = nx.weisfeiler_lehman_graph_hash(G_directed)
+        h_undirected = nx.weisfeiler_lehman_graph_hash(G_undirected)
 
         assert h_directed != h_undirected
+
+
+def test_reversed():
+    """
+    A directed graph with no bi-directional edges should yield different a graph hash
+    to the same graph taken with edge directions reversed if there are no hash collisions.
+    Here we test a cycle graph which is the minimal counterexample
+    """
+    G = nx.cycle_graph(5, create_using=nx.DiGraph)
+    nx.set_node_attributes(G, {n: str(n) for n in G.nodes()}, name="label")
+
+    G_reversed = G.reverse()
+
+    h = nx.weisfeiler_lehman_graph_hash(G, node_attr="label")
+    h_reversed = nx.weisfeiler_lehman_graph_hash(G_reversed, node_attr="label")
+
+    assert h != h_reversed
 
 
 def test_isomorphic():
@@ -253,7 +271,7 @@ def hexdigest_sizes_correct(a, digest_size):
     return all(list_digest_sizes_correct(hashes) for hashes in a.values())
 
 
-def test_empty_graph():
+def test_empty_graph_subgraph_hash():
     """ "
     empty graphs should give empty dict subgraph hashes regardless of other params
     """
@@ -272,7 +290,7 @@ def test_empty_graph():
     assert subgraph_hashes5 == {}
 
 
-def test_directed():
+def test_directed_subgraph_hash():
     """
     A directed graph with no bi-directional edges should yield different subgraph hashes
     to the same graph taken as undirected, if all hashes don't collide.
@@ -288,7 +306,24 @@ def test_directed():
         assert directed_subgraph_hashes != undirected_subgraph_hashes
 
 
-def test_isomorphic():
+def test_reversed_subgraph_hash():
+    """
+    A directed graph with no bi-directional edges should yield different subgraph hashes
+    to the same graph taken with edge directions reversed if there are no hash collisions.
+    Here we test a cycle graph which is the minimal counterexample
+    """
+    G = nx.cycle_graph(5, create_using=nx.DiGraph)
+    nx.set_node_attributes(G, {n: str(n) for n in G.nodes()}, name="label")
+
+    G_reversed = G.reverse()
+
+    h = nx.weisfeiler_lehman_subgraph_hashes(G, node_attr="label")
+    h_reversed = nx.weisfeiler_lehman_subgraph_hashes(G_reversed, node_attr="label")
+
+    assert h != h_reversed
+
+
+def test_isomorphic_subgraph_hash():
     """
     the subgraph hashes should be invariant to node-relabeling when the output is reindexed
     by the same mapping and all hashes don't collide.
@@ -305,7 +340,7 @@ def test_isomorphic():
         assert g1_subgraph_hashes == {-1 * k: v for k, v in g2_subgraph_hashes.items()}
 
 
-def test_isomorphic_edge_attr():
+def test_isomorphic_edge_attr_subgraph_hash():
     """
     Isomorphic graphs with differing edge attributes should yield different subgraph
     hashes if the 'edge_attr' argument is supplied and populated in the graph, and
@@ -350,7 +385,7 @@ def test_isomorphic_edge_attr():
         }
 
 
-def test_missing_edge_attr():
+def test_missing_edge_attr_subgraph_hash():
     """
     If the 'edge_attr' argument is supplied but is missing from an edge in the graph,
     we should raise a KeyError
@@ -362,7 +397,7 @@ def test_missing_edge_attr():
     )
 
 
-def test_isomorphic_node_attr():
+def test_isomorphic_node_attr_subgraph_hash():
     """
     Isomorphic graphs with differing node attributes should yield different subgraph
     hashes if the 'node_attr' argument is supplied and populated in the graph, and
@@ -407,7 +442,7 @@ def test_isomorphic_node_attr():
         }
 
 
-def test_missing_node_attr():
+def test_missing_node_attr_subgraph_hash():
     """
     If the 'node_attr' argument is supplied but is missing from a node in the graph,
     we should raise a KeyError
@@ -602,7 +637,7 @@ def test_iteration_depth_node_edge_attr():
         assert is_subiteration(depth3, depth5)
 
 
-def test_digest_size():
+def test_digest_size_subgraph_hash():
     """
     The hash string lengths should be as expected for a variety of graphs and
     digest sizes

@@ -28,11 +28,11 @@ def _neighborhood_aggregate(G, node, node_labels, edge_attr=None):
     Compute new labels for given node by aggregating
     the labels of each node's neighbors.
     """
-    label_list = [node_labels[node]]
+    label_list = []
     for nbr in G.neighbors(node):
         prefix = "" if edge_attr is None else str(G[node][nbr][edge_attr])
         label_list.append(prefix + node_labels[nbr])
-    return "".join(sorted(label_list))
+    return node_labels[node] + "".join(sorted(label_list))
 
 
 def weisfeiler_lehman_graph_hash(
@@ -100,17 +100,17 @@ def weisfeiler_lehman_graph_hash(
     Omitting the `edge_attr` option, results in identical hashes.
 
     >>> nx.weisfeiler_lehman_graph_hash(G1)
-    '3108a936907b3ee3704642f9eeab34fe'
+    '7bc4dde9a09d0b94c5097b219891d81a'
     >>> nx.weisfeiler_lehman_graph_hash(G2)
-    '3108a936907b3ee3704642f9eeab34fe'
+    '7bc4dde9a09d0b94c5097b219891d81a'
 
     With edge labels, the graphs are no longer assigned
     the same hash digest.
 
     >>> nx.weisfeiler_lehman_graph_hash(G1, edge_attr="label")
-    'd0819438f9cc0cd60ea93a6c70c2f939'
+    'c653d85538bcf041d88c011f4f905f10'
     >>> nx.weisfeiler_lehman_graph_hash(G2, edge_attr="label")
-    '43e9b18eeb859b669ad2269ecc6d43bf'
+    '3dcd84af1ca855d0eff3c978d88e7ec7'
 
     Notes
     -----
@@ -160,9 +160,12 @@ def weisfeiler_lehman_graph_hash(
 def weisfeiler_lehman_subgraph_hashes(
     G, edge_attr=None, node_attr=None, iterations=3, digest_size=16
 ):
-    """Return a dictionary indexed by node, giving a list of Weisfeiler-Lehman
-    (WL) hashes for each subgraph originating from each node, ordered by
-    iteration depth.
+    """
+    Return a dictionary of subgraph hashes by node.
+
+    The dictionary is keyed by node to a list of hashes in increasingly
+    sized induced subgraphs containing the nodes within 2*k edges
+    of the key node for increasing integer k until all nodes are included.
 
     The function iteratively aggregates and hashes neighbourhoods of each node.
     This is achieved for each step by replacing for each node its label from
@@ -235,9 +238,9 @@ def weisfeiler_lehman_subgraph_hashes(
     the hash sequence of depth 3 for node 1 in G1 and node 5 in G2 are similar:
 
     >>> g1_hashes[1]
-    ['a93b64973cfc8897', 'c82391d740bfbe09', 'd45fb49e284520c3']
+    ['a93b64973cfc8897', 'db1b43ae35a1878f', '57872a7d2059c1c0']
     >>> g2_hashes[5]
-    ['a93b64973cfc8897', 'c82391d740bfbe09', '3f26cdb3d5ad86e7']
+    ['a93b64973cfc8897', 'db1b43ae35a1878f', '1716d2a4012fa4bc']
 
     The first 2 WL subgraph hashes match. From this we can conclude that it's very
     likely the neighborhood of 4 hops around these nodes are isomorphic: each
