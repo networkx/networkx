@@ -22,7 +22,7 @@ jobs:
     - name: Before install
       run: |
         sudo apt-get update
-        sudo apt-get install libgdal-dev graphviz graphviz-dev
+        sudo apt-get install graphviz graphviz-dev
         sudo apt-get install texlive texlive-latex-extra latexmk texlive-xetex
         sudo apt-get install fonts-freefont-otf xindy
         sudo apt-get install libspatialindex-dev
@@ -34,9 +34,6 @@ jobs:
         pip install -r requirements/extra.txt
         pip install -r requirements/example.txt
         pip install -U -r requirements/doc.txt
-        export CPLUS_INCLUDE_PATH=/usr/include/gdal
-        export C_INCLUDE_PATH=/usr/include/gdal
-        pip install gdal==3.0.4
         pip install .
         pip list
 
