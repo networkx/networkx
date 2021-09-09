@@ -37,16 +37,19 @@ _deprecated_names = [
 
 
 def __getattr__(name):
-    f = getattr(nx, name)
+    f = getattr(nx.algorithms.traversal.reachability, name)
 
     if name in _deprecated_names:
         from warnings import warn
-        from inspect import getmodule
 
         msg = (
-            f"\nThe function {name} will be moved "
-            f"to {getmodule(f).__name__} in "
-            "networkx 2.7\n"
+            f"\nThe function {name} has been moved to "
+            "`networkx.algorithms.traversal.reachability` "
+            f"\nIt is available from the top-level namespace, "
+            f"e.g. `from networkx import {name}` "
+            "or from the reachability module, "
+            f"e.g. `from networkx.algorithms.traversal.reachability import {name}`"
+            "\nThis move will become permanent in networkx 3.0\n"
         )
 
         warn(msg, FutureWarning, stacklevel=2)
