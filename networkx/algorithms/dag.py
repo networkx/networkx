@@ -602,7 +602,7 @@ def is_aperiodic(G):
 
 
 def transitive_closure(G, reflexive=False):
-    """Returns transitive closure of a directed graph
+    """Returns transitive closure of a graph
 
     The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
     for all v, w in V there is an edge (v, w) in E+ if and only if there
@@ -627,13 +627,11 @@ def transitive_closure(G, reflexive=False):
 
     Returns
     -------
-    NetworkX DiGraph
+    NetworkX graph
         The transitive closure of `G`
 
     Raises
     ------
-    NetworkXNotImplemented
-        If `G` is not directed
     NetworkXError
         If `reflexive` not in `{None, True, False}`
 
@@ -676,7 +674,7 @@ def transitive_closure(G, reflexive=False):
     ----------
     .. [1] https://www.ics.uci.edu/~eppstein/PADS/PartialOrder.py
 
-    TODO this function applies to all directed graphs and is probably misplaced
+    TODO this function applies to all graphs and is probably misplaced
          here in dag.py
     """
     TC = G.copy()
