@@ -261,7 +261,7 @@ def weisfeiler_lehman_subgraph_hashes(
     Similarity between hashes does not imply similarity between graphs.
 
     References
-    -------
+    ----------
     .. [1] Shervashidze, Nino, Pascal Schweitzer, Erik Jan Van Leeuwen,
        Kurt Mehlhorn, and Karsten M. Borgwardt. Weisfeiler Lehman
        Graph Kernels. Journal of Machine Learning Research. 2011.
