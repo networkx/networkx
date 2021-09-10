@@ -144,6 +144,7 @@ def read_gml(path, label="label", destringizer=None):
     See Also
     --------
     write_gml, parse_gml
+    literal_destringizer
 
     Notes
     -----
@@ -622,6 +623,10 @@ def generate_gml(G, stringizer=None):
         If `stringizer` cannot convert a value into a string, or the value to
         convert is not a string while `stringizer` is None.
 
+    See Also
+    --------
+    literal_stringizer
+
     Notes
     -----
     Graph attributes named 'directed', 'multigraph', 'node' or
@@ -813,6 +818,7 @@ def write_gml(G, path, stringizer=None):
     See Also
     --------
     read_gml, generate_gml
+    literal_stringizer
 
     Notes
     -----
