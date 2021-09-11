@@ -84,19 +84,24 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
     if directed:
         G = nx.DiGraph(G)
         # Nodes in graph are from 0,n-1 (start with v as the first node index).
+
+        # For every (v, w) pair such that 0 <= v <= n-1 and 0 <= w <= n-2, the
+        # algorithm generates an edge with probability p.  We mustn't generate
+        # self loops; therefore if w >= v when adding an edge we add the edge
+        # from v to w+1 rather than to w.  This is also the reason why w has a
+        # maximum value of n-2 and not n-1.
         v = 0
         while v < n:
             lr = math.log(1.0 - seed.random())
             w = w + 1 + int(lr / lp)
-            if v == w:  # avoid self loops
-                w = w + 1
-            while v < n <= w:
-                w = w - n
+            while w >= n - 1 and v < n:
+                w = w - (n - 1)
                 v = v + 1
-                if v == w:  # avoid self loops
-                    w = w + 1
             if v < n:
-                G.add_edge(v, w)
+                if w >= v:
+                    G.add_edge(v, w + 1)
+                else:
+                    G.add_edge(v, w)
     else:
         # Nodes in graph are from 0,n-1 (start with v as the second node index).
         v = 1
