@@ -60,6 +60,20 @@ Implement the VF2++ Graph Isomorphism Algorithm
 .. _`Graph Isomorphism Problem`: https://en.wikipedia.org/wiki/Graph_isomorphism_problem
 .. _VF2++: https://doi.org/10.1016/j.dam.2018.02.018
 
+Completed Projects
+==================
+
+- `Louvain community detection algorithm`_ (GSoC 2021)
+- `Asadpour algorithm for directed travelling salesman problem`_ (GSoC 2021)
+- Pedagogical notebook: `Directed acyclic graphs and topological sort`_ (GSoC 2021)
+- Pedagogical notebook: `Graph assortativity`_ (GSoC 2021)
+- Pedagogical notebook: `Network flow analysis and Dinitz algorithm`_ (GSoC 2021)
+
+.. _`Louvain community detection algorithm`: https://github.com/networkx/networkx/pull/4929
+.. _`Asadpour algorithm for directed travelling salesman problem`: https://github.com/networkx/networkx/pull/4740
+.. _`Directed acyclic graphs and topological sort`: https://github.com/networkx/nx-guides/pull/44
+.. _`Graph assortativity`: https://github.com/networkx/nx-guides/pull/42
+.. _`Network flow analysis and Dinitz algorithm`: https://github.com/networkx/nx-guides/pull/46
 
 ..
    Project Idea Template
