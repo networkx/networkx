@@ -225,6 +225,8 @@ def dijkstra_path_length(G, source, target, weight="weight"):
     single_source_dijkstra
 
     """
+    if source not in G:
+        raise nx.NodeNotFound(f"Node {source} not found in graph")
     if source == target:
         return 0
     weight = _weight_function(G, weight)
@@ -618,6 +620,9 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None, weight="weight"):
     """
     if not sources:
         raise ValueError("sources must not be empty")
+    for s in sources:
+        if s not in G:
+            raise nx.NodeNotFound(f"Node {s} not found in graph")
     weight = _weight_function(G, weight)
     return _dijkstra_multisource(G, sources, weight, cutoff=cutoff)
 
@@ -723,6 +728,9 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None, weight="weight")
     """
     if not sources:
         raise ValueError("sources must not be empty")
+    for s in sources:
+        if s not in G:
+            raise nx.NodeNotFound(f"Node {s} not found in graph")
     if target in sources:
         return (0, [target])
     weight = _weight_function(G, weight)
@@ -815,8 +823,6 @@ def _dijkstra_multisource(
     c = count()
     fringe = []
     for source in sources:
-        if source not in G:
-            raise nx.NodeNotFound(f"Source {source} not in G")
         seen[source] = 0
         push(fringe, (0, next(c), source))
     while fringe:
@@ -923,7 +929,8 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
     >>> sorted(dist.items())
     [(0, 0), (1, 1)]
     """
-
+    if source not in G:
+        raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
     pred = {source: []}  # dictionary of predecessors
     return (pred, _dijkstra(G, source, weight, pred=pred, cutoff=cutoff))
@@ -1448,6 +1455,8 @@ def bellman_ford_path_length(G, source, target, weight="weight"):
     dijkstra_path_length, bellman_ford_path
     """
     if source == target:
+        if source not in G:
+            raise nx.NodeNotFound(f"Node {source} not found in graph")
         return 0
 
     weight = _weight_function(G, weight)
@@ -1633,6 +1642,8 @@ def single_source_bellman_ford(G, source, target=None, weight="weight"):
     single_source_bellman_ford_path_length
     """
     if source == target:
+        if source not in G:
+            raise nx.NodeNotFound(f"Node {source} is not found in the graph")
         return (0, [source])
 
     weight = _weight_function(G, weight)
