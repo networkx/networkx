@@ -56,8 +56,8 @@ Decorators
    open_file
    not_implemented_for
    nodes_or_number
-   preserve_random_state
-   random_state
+   np_random_state
+   py_random_state
    argmap
 
 Cuthill-Mckee Ordering

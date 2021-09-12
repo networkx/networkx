@@ -2,7 +2,6 @@ from collections import defaultdict
 from os.path import splitext
 from contextlib import contextmanager
 from pathlib import Path
-import warnings
 
 import networkx as nx
 from networkx.utils import create_random_state, create_py_random_state
@@ -285,6 +284,8 @@ def preserve_random_state(func):
     -----
     If numpy.random is not importable, the state is not saved or restored.
     """
+    import warnings
+
     msg = "preserve_random_state is deprecated and will be removed in 3.0."
     warnings.warn(msg, DeprecationWarning)
 
@@ -310,7 +311,7 @@ def preserve_random_state(func):
         return func
 
 
-def random_state(random_state_argument):
+def np_random_state(random_state_argument):
     """Decorator to generate a `numpy.random.RandomState` instance.
 
     The decorator processes the argument indicated by `random_state_argument`
@@ -354,7 +355,25 @@ def random_state(random_state_argument):
     return argmap(create_random_state, random_state_argument)
 
 
-np_random_state = random_state
+def random_state(random_state_argument):
+    """Decorator to generate a `numpy.random.RandomState` instance.
+
+    .. deprecated:: 2.7
+
+       This function is a deprecated alias for `np_random_state` and will be
+       removed in version 3.0. Use np_random_state instead.
+    """
+    import warnings
+
+    warnings.warn(
+        (
+            "`random_state` is a deprecated alias for `np_random_state`\n"
+            "and will be removed in version 3.0. Use `np_random_state` instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return np_random_state(random_state_argument)
 
 
 def py_random_state(random_state_argument):
