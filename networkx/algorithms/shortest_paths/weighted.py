@@ -823,8 +823,6 @@ def _dijkstra_multisource(
     c = count()
     fringe = []
     for source in sources:
-        if source not in G:
-            raise nx.NodeNotFound(f"Source {source} not in G")
         seen[source] = 0
         push(fringe, (0, next(c), source))
     while fringe:
