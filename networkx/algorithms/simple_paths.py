@@ -825,6 +825,8 @@ def _bidirectional_dijkstra(
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
         raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
     if source == target:
+        if source not in G:
+            raise nx.NodeNotFound(f"Node {source} not in graph")
         return (0, [source])
 
     # handle either directed or undirected
