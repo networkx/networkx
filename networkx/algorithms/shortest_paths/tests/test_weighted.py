@@ -250,9 +250,6 @@ class TestWeightedPath(WeightedTestBase):
             path = nx.bidirectional_dijkstra(G, 1, 6)
 
     def test_absent_source(self):
-        # the check is in _dijkstra_multisource, but this will provide
-        # regression testing against later changes to any of the "client"
-        # Dijkstra or Bellman-Ford functions
         G = nx.path_graph(2)
         for fn in (
             nx.dijkstra_path,
@@ -263,6 +260,8 @@ class TestWeightedPath(WeightedTestBase):
             nx.dijkstra_predecessor_and_distance,
         ):
             pytest.raises(nx.NodeNotFound, fn, G, 3, 0)
+            # Test when source == target, which is handled specially by some
+            # functions
             pytest.raises(nx.NodeNotFound, fn, G, 3, 3)
 
     def test_dijkstra_predecessor1(self):
