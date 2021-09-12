@@ -225,9 +225,9 @@ def dijkstra_path_length(G, source, target, weight="weight"):
     single_source_dijkstra
 
     """
+    if source not in G:
+        raise nx.NodeNotFound(f"Node {source} not found in graph")
     if source == target:
-        if source not in G:
-            raise nx.NodeNotFound(f"Node {source} not found in graph")
         return 0
     weight = _weight_function(G, weight)
     length = _dijkstra(G, source, weight, target=target)
@@ -929,7 +929,8 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
     >>> sorted(dist.items())
     [(0, 0), (1, 1)]
     """
-
+    if source not in G:
+        raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
     pred = {source: []}  # dictionary of predecessors
     return (pred, _dijkstra(G, source, weight, pred=pred, cutoff=cutoff))
