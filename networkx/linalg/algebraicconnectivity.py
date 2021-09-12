@@ -5,7 +5,7 @@ from functools import partial
 import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.utils import reverse_cuthill_mckee_ordering
-from networkx.utils import random_state
+from networkx.utils import np_random_state
 
 __all__ = ["algebraic_connectivity", "fiedler_vector", "spectral_ordering"]
 
@@ -321,7 +321,7 @@ def _get_fiedler_func(method):
     return find_fiedler
 
 
-@random_state(5)
+@np_random_state(5)
 @not_implemented_for("directed")
 def algebraic_connectivity(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
@@ -403,7 +403,7 @@ def algebraic_connectivity(
     return sigma
 
 
-@random_state(5)
+@np_random_state(5)
 @not_implemented_for("directed")
 def fiedler_vector(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
@@ -488,7 +488,7 @@ def fiedler_vector(
     return fiedler
 
 
-@random_state(5)
+@np_random_state(5)
 def spectral_ordering(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):

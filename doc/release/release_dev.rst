@@ -42,6 +42,9 @@ API Changes
 Deprecations
 ------------
 
+- [`#5055 <https://github.com/networkx/networkx/pull/5055>`_]
+  Deprecate the ``random_state`` alias in favor of ``np_random_state``
+
 
 Merged PRs
 ----------
