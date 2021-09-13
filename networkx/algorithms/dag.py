@@ -673,9 +673,6 @@ def transitive_closure(G, reflexive=False):
     References
     ----------
     .. [1] https://www.ics.uci.edu/~eppstein/PADS/PartialOrder.py
-
-    TODO this function applies to all graphs and is probably misplaced
-         here in dag.py
     """
     TC = G.copy()
 
