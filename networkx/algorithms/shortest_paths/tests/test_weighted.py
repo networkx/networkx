@@ -471,6 +471,8 @@ class TestMultiSourceDijkstra:
         G = nx.path_graph(2)
         with pytest.raises(nx.NodeNotFound):
             fn(G, [3], 0)
+        with pytest.raises(nx.NodeNotFound):
+            fn(G, [3], 3)
 
     def test_two_sources(self):
         edges = [(0, 1, 1), (1, 2, 1), (2, 3, 10), (3, 4, 1)]
