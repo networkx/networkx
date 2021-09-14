@@ -290,7 +290,6 @@ class TestDAG:
         solution = [(1, 2), (2, 1), (2, 3), (3, 2), (1, 3), (3, 1)]
         soln = sorted(solution + [(n, n) for n in G])
         assert edges_equal(sorted(nx.transitive_closure(G).edges()), soln)
-        G = nx.Graph([(1, 2), (2, 3), (3, 4)])
 
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
