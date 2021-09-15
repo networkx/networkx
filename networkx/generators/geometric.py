@@ -10,12 +10,13 @@ import networkx as nx
 from networkx.utils import nodes_or_number, py_random_state
 
 __all__ = [
+    "geometric_edges",
     "geographical_threshold_graph",
-    "waxman_graph",
     "navigable_small_world_graph",
     "random_geometric_graph",
     "soft_random_geometric_graph",
     "thresholded_random_geometric_graph",
+    "waxman_graph",
 ]
 
 
@@ -30,10 +31,52 @@ def euclidean(x, y):
 
 
 def geometric_edges(G, radius, p):
-    """Returns edge list of node pairs within `radius` of each other
+    """Returns edge list of node pairs within `radius` of each other.
 
+    Parameters
+    ----------
+    G : networkx graph
+        The graph from which to generate the edge list. The nodes in `G` should
+        have an attribute ``pos`` corresponding to the node position, which is
+        used to compute the distance to other nodes.
+    radius : scalar
+        The distance threshold. Edges are included in the edge list if the
+        distance between the two nodes is less than `radius`.
+    p : scalar
+        The `Minkowski distance metric
+        <https://en.wikipedia.org/wiki/Minkowski_distance>`_ use to compute
+        distances.
+
+    Returns
+    -------
+    edges : list
+        List of edges whose distances are less than `radius`
+
+    Notes
+    -----
     Radius uses Minkowski distance metric `p`.
-    If scipy available, use scipy cKDTree to speed computation.
+    If scipy is available, `scipy.spatial.cKDTree` is used to speed computation.
+
+    Examples
+    --------
+    Create a graph with nodes that have a "pos" attribute representing 2D
+    coordinates.
+
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([
+    ...     (0, {"pos": (0, 0)}),
+    ...     (1, {"pos": (3, 0)}),
+    ...     (2, {"pos": (8, 0)}),
+    ... ])
+    >>> p = 2  # Euclidean distance
+    >>> nx.geometric_edges(G, radius=1, p=p)
+    []
+    >>> nx.geometric_edges(G, radius=4, p=p)
+    [(0, 1)]
+    >>> nx.geometric_edges(G, radius=6, p=p)
+    [(0, 1), (1, 2)]
+    >>> nx.geometric_edges(G, radius=9, p=p)
+    [(0, 1), (0, 2), (1, 2)]
     """
     nodes_pos = G.nodes(data="pos")
     try:
