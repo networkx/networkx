@@ -1,14 +1,39 @@
 """Basic algorithms for breadth-first searching the nodes of a graph."""
-import networkx as nx
 from collections import deque
+
+import networkx as nx
 
 __all__ = [
     "bfs_edges",
     "bfs_tree",
     "bfs_predecessors",
     "bfs_successors",
+]
+
+_deprecated_names = [
     "descendants_at_distance",
 ]
+
+
+def __getattr__(name):
+    f = getattr(nx.algorithms.traversal.reachability, name)
+
+    if name in _deprecated_names:
+        from warnings import warn
+
+        msg = (
+            f"\nThe function {name} has been moved to "
+            "`networkx.algorithms.traversal.reachability` "
+            f"\nIt is available from the top-level namespace, "
+            f"e.g. `from networkx import {name}` "
+            "or from the reachability module, "
+            f"e.g. `from networkx.algorithms.traversal.reachability import {name}`"
+            "\nThis move will become permanent in networkx 3.0\n"
+        )
+
+        warn(msg, FutureWarning, stacklevel=2)
+
+    return f
 
 
 def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbors=None):
@@ -367,53 +392,3 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
         children = [c]
         parent = p
     yield (parent, children)
-
-
-def descendants_at_distance(G, source, distance):
-    """Returns all nodes at a fixed `distance` from `source` in `G`.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        A graph
-    source : node in `G`
-    distance : the distance of the wanted nodes from `source`
-
-    Returns
-    -------
-    set()
-        The descendants of `source` in `G` at the given `distance` from `source`
-
-    Examples
-    --------
-    >>> G = nx.path_graph(5)
-    >>> nx.descendants_at_distance(G, 2, 2)
-    {0, 4}
-    >>> H = nx.DiGraph()
-    >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
-    >>> nx.descendants_at_distance(H, 0, 2)
-    {3, 4, 5, 6}
-    >>> nx.descendants_at_distance(H, 5, 0)
-    {5}
-    >>> nx.descendants_at_distance(H, 5, 1)
-    set()
-    """
-    if not G.has_node(source):
-        raise nx.NetworkXError(f"The node {source} is not in the graph.")
-    current_distance = 0
-    current_layer = {source}
-    visited = {source}
-
-    # this is basically BFS, except that the current layer only stores the nodes at
-    # current_distance from source at each iteration
-    while current_distance < distance:
-        next_layer = set()
-        for node in current_layer:
-            for child in G[node]:
-                if child not in visited:
-                    visited.add(child)
-                    next_layer.add(child)
-        current_layer = next_layer
-        current_distance += 1
-
-    return current_layer
