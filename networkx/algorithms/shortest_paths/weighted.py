@@ -1289,6 +1289,36 @@ def _bellman_ford(
     if dist is None:
         dist = {v: 0 for v in source}
 
+    def raise_negative_cycle_error(v, pred):
+        # negative weight cycle detected... find it
+        neg_cycle = []
+        stack = [(v, list(pred[v]))]
+        seen = {v}
+        while stack:
+            node, preds = stack[-1]
+            if v in preds:
+                # found the cycle
+                neg_cycle.extend([node, v])
+                neg_cycle = list(reversed(neg_cycle))
+                msg = f"Negative cost cycle detected: {neg_cycle}"
+                raise nx.NetworkXUnbounded(msg)
+            if preds:
+                nbr = preds.pop()
+                if nbr not in seen:
+                    stack.append((nbr, list(pred[nbr])))
+                    neg_cycle.append(node)
+                    seen.add(nbr)
+            else:
+                stack.pop()
+                if neg_cycle:
+                    neg_cycle.pop()
+                else:
+                    msg = "Negative cost cycle detected. Check self-loop on node {v}"
+                    raise nx.NetworkXUnbounded(msg)
+        # should not get here...
+        msg = "negative cost cycle detected but not identified"
+        raise nx.NetworkXUnbounded(msg)
+
     # Heuristic Storage setup. Note: use None because nodes cannot be None
     nonexistent_edge = (None, None)
     pred_edge = {v: None for v in source}
@@ -1320,7 +1350,8 @@ def _bellman_ford(
                     # therefore u is always in the dict recent_update
                     if heuristic:
                         if v in recent_update[u]:
-                            raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+                            # Negative weight cycle found!
+                            raise_negative_cycle_error(v, pred)
                         # Transfer the recent update info from u to v if the
                         # same source node is the head of the update path.
                         # If the source node is responsible for the cost update,
@@ -1335,7 +1366,8 @@ def _bellman_ford(
                         in_q.add(v)
                         count_v = count.get(v, 0) + 1
                         if count_v == n:
-                            raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+                            # Negative weight cycle found!
+                            raise_negative_cycle_error(v, pred)
                         count[v] = count_v
                     dist[v] = dist_v
                     pred[v] = [u]

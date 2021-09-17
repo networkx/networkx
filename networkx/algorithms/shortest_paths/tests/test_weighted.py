@@ -580,7 +580,18 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
             nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, G, 1
         )
         pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 1)
-        # no negative cycle but negative weight
+
+    def test_report_negative_cycle(self):
+        G = nx.cycle_graph(5, create_using=nx.DiGraph())
+        nx.add_cycle(G, [3, 5, 6, 7, 8, 9])
+        G.add_edge(1, 2, weight=-30)
+        bf = nx.bellman_ford_predecessor_and_distance
+        pytest.raises(nx.NetworkXUnbounded, bf, G, 1, 2, heuristic=False)
+        pytest.raises(nx.NetworkXUnbounded, bf, G, 7, 8, heuristic=False)
+        pytest.raises(nx.NetworkXUnbounded, bf, G, 1, 2, heuristic=True)
+        pytest.raises(nx.NetworkXUnbounded, bf, G, 7, 8, heuristic=True)
+
+    def test_negative_weight(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
         G.add_edge(1, 2, weight=-3)
         assert nx.single_source_bellman_ford_path(G, 0) == {
