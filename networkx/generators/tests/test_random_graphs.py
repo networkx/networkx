@@ -254,7 +254,7 @@ class TestGeneratorsRandom:
                 for directed in [False, True]:
                     edge_counts = [[0] * 5 for row in range(5)]
                     for i in range(runs):
-                        G = nx.generators.random_graphs.fast_gnp_random_graph(
+                        G = generator(
                             n, p, directed=directed
                         )
                         for (v, w) in G.edges:
