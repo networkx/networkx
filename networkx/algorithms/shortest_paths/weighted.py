@@ -1118,6 +1118,11 @@ def bellman_ford_predecessor_and_distance(
     nodes and $m$ is the number of edges.  It is slower than Dijkstra but
     can handle negative edge weights.
 
+    If a negative cycle is detected, you can use :func:`find_negative_cycle`
+    to return the cycle and examine it. Shoftest paths are not defined when
+    a negative cycle exists because once reached, the path can cycle forever
+    to build up arbitrarily low weights.
+
     Parameters
     ----------
     G : NetworkX graph
@@ -1188,7 +1193,8 @@ def bellman_ford_predecessor_and_distance(
 
     See Also
     --------
-    If a negative cycle is detected, you can use `find_negative_cycle`
+    find_negative_cycle
+
     Notes
     -----
     Edge weight attributes must be numerical.
