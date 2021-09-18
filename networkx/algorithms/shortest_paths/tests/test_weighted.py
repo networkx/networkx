@@ -512,7 +512,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
             G = nx.path_graph(2)
             nx.goldberg_radzik(G, 3, 0)
 
-    def test_negative_weight_cycle_heuristic(self):
+    def test_negative_cycle_heuristic(self):
         G = nx.DiGraph()
         G.add_edge(0, 1, weight=-1)
         G.add_edge(1, 2, weight=-1)
@@ -524,7 +524,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G.edges[2, 0]["weight"] = 2
         assert not nx.negative_edge_cycle(G, heuristic=True)
 
-    def test_negative_weight_cycle_consistency(self):
+    def test_negative_cycle_consistency(self):
         import random
 
         unif = random.uniform
@@ -541,7 +541,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                         with_heuristic = nx.negative_edge_cycle(G, heuristic=True)
                         assert no_heuristic == with_heuristic
 
-    def test_negative_weight_cycle(self):
+    def test_negative_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
         G.add_edge(1, 2, weight=-7)
         for i in range(5):
@@ -581,15 +581,15 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         )
         pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 1)
 
-    def test_report_negative_cycle(self):
+    def test_find_negative_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
         nx.add_cycle(G, [3, 5, 6, 7, 8, 9])
         G.add_edge(1, 2, weight=-30)
-        bf = nx.bellman_ford_predecessor_and_distance
-        pytest.raises(nx.NetworkXUnbounded, bf, G, 1, 2, heuristic=False)
-        pytest.raises(nx.NetworkXUnbounded, bf, G, 7, 8, heuristic=False)
-        pytest.raises(nx.NetworkXUnbounded, bf, G, 1, 2, heuristic=True)
-        pytest.raises(nx.NetworkXUnbounded, bf, G, 7, 8, heuristic=True)
+        assert nx.find_negative_cycle(G, 1) == [0, 1, 2, 3, 4, 0]
+        assert nx.find_negative_cycle(G, 7) == [2, 3, 4, 0, 1, 2]
+        # if no negative weight cycle
+        G.remove_edge(1, 2)
+        pytest.raises(nx.NetworkXError, nx.find_negative_cycle, G, 7)
 
     def test_negative_weight(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())

@@ -32,6 +32,7 @@ __all__ = [
     "all_pairs_bellman_ford_path_length",
     "bellman_ford_predecessor_and_distance",
     "negative_edge_cycle",
+    "find_negative_cycle",
     "goldberg_radzik",
     "johnson",
 ]
@@ -1185,6 +1186,9 @@ def bellman_ford_predecessor_and_distance(
         ...
     networkx.exception.NetworkXUnbounded: Negative cost cycle detected.
 
+    See Also
+    --------
+    If a negative cycle is detected, you can use `find_negative_cycle`
     Notes
     -----
     Edge weight attributes must be numerical.
@@ -1221,7 +1225,15 @@ def bellman_ford_predecessor_and_distance(
 
 
 def _bellman_ford(
-    G, source, weight, pred=None, paths=None, dist=None, target=None, heuristic=True
+    G,
+    source,
+    weight,
+    pred=None,
+    paths=None,
+    dist=None,
+    target=None,
+    heuristic=True,
+    return_negative_cycle_info=False,
 ):
     """Relaxation loop for Bellman–Ford algorithm.
 
@@ -1289,36 +1301,6 @@ def _bellman_ford(
     if dist is None:
         dist = {v: 0 for v in source}
 
-    def raise_negative_cycle_error(v, pred):
-        # negative weight cycle detected... find it
-        neg_cycle = []
-        stack = [(v, list(pred[v]))]
-        seen = {v}
-        while stack:
-            node, preds = stack[-1]
-            if v in preds:
-                # found the cycle
-                neg_cycle.extend([node, v])
-                neg_cycle = list(reversed(neg_cycle))
-                msg = f"Negative cost cycle detected: {neg_cycle}"
-                raise nx.NetworkXUnbounded(msg)
-            if preds:
-                nbr = preds.pop()
-                if nbr not in seen:
-                    stack.append((nbr, list(pred[nbr])))
-                    neg_cycle.append(node)
-                    seen.add(nbr)
-            else:
-                stack.pop()
-                if neg_cycle:
-                    neg_cycle.pop()
-                else:
-                    msg = "Negative cost cycle detected. Check self-loop on node {v}"
-                    raise nx.NetworkXUnbounded(msg)
-        # should not get here...
-        msg = "negative cost cycle detected but not identified"
-        raise nx.NetworkXUnbounded(msg)
-
     # Heuristic Storage setup. Note: use None because nodes cannot be None
     nonexistent_edge = (None, None)
     pred_edge = {v: None for v in source}
@@ -1351,7 +1333,12 @@ def _bellman_ford(
                     if heuristic:
                         if v in recent_update[u]:
                             # Negative weight cycle found!
-                            raise_negative_cycle_error(v, pred)
+                            if return_negative_cycle_info:
+                                return v, pred
+                            raise nx.NetworkXUnbounded(
+                                "Negative weight cycle detected."
+                            )
+
                         # Transfer the recent update info from u to v if the
                         # same source node is the head of the update path.
                         # If the source node is responsible for the cost update,
@@ -1367,7 +1354,11 @@ def _bellman_ford(
                         count_v = count.get(v, 0) + 1
                         if count_v == n:
                             # Negative weight cycle found!
-                            raise_negative_cycle_error(v, pred)
+                            if return_negative_cycle_info:
+                                return v, pred
+                            raise nx.NetworkXUnbounded(
+                                "Negative weight cycle detected."
+                            )
                         count[v] = count_v
                     dist[v] = dist_v
                     pred[v] = [u]
@@ -2005,6 +1996,88 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
     finally:
         G.remove_node(newnode)
     return False
+
+
+def find_negative_cycle(G, source, weight="weight"):
+    """Returns a cycle with negative total weight if it exists.
+
+    Bellman-Ford is used to find shortest_paths. That algorithm
+    stops if there exists a negative weight cycle. This algorithm
+    picks up from there and returns the found negative weight cycle.
+
+    The cycle consists of a list of 2-tuple edge representatives.
+    You can look up the edge weights in the original graph. In the case
+    of multigraphs the relevant edge is the minimal weight edge between
+    the nodes in the 2-tuple.
+
+    If the graph has no negative weight cycle, a NetworkXError is raised.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source: list of nodes
+        List of source nodes. The search starts from all of the source
+        nodes in the list.
+
+    weight : string or function
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
+
+    Returns
+    -------
+    Returns a dict keyed by node to the distance from the source.
+    Dicts for paths and pred are in the mutated input dicts by those names.
+
+    Raises
+    ------
+    NetworkXError
+        If no negative weight cycle is found.
+    """
+    weight = _weight_function(G, weight)
+    result = _bellman_ford(G, [source], weight=weight, return_negative_cycle_info=True)
+    if len(result) != 2:
+        raise nx.NetworkXError("No negative weight cycles detected.")
+    v, pred = result
+    # negative weight cycle detected... find it
+    neg_cycle = []
+    stack = [(v, list(pred[v]))]
+    seen = {v}
+    while stack:
+        node, preds = stack[-1]
+        if v in preds:
+            # found the cycle
+            neg_cycle.extend([node, v])
+            neg_cycle = list(reversed(neg_cycle))
+            return neg_cycle
+
+        if preds:
+            nbr = preds.pop()
+            if nbr not in seen:
+                stack.append((nbr, list(pred[nbr])))
+                neg_cycle.append(node)
+                seen.add(nbr)
+        else:
+            stack.pop()
+            if neg_cycle:
+                neg_cycle.pop()
+            else:
+                if v in G[v] and weight(G, v, v) < 0:
+                    return [v, v]
+                # should not reach here
+                raise nx.NetworkXerror("Negative cycle is detected but not found")
+    # should not get here...
+    msg = "negative cost cycle detected but not identified"
+    raise nx.NetworkXUnbounded(msg)
 
 
 def bidirectional_dijkstra(G, source, target, weight="weight"):
