@@ -254,9 +254,7 @@ class TestGeneratorsRandom:
                 for directed in [False, True]:
                     edge_counts = [[0] * 5 for row in range(5)]
                     for i in range(runs):
-                        G = generator(
-                            n, p, directed=directed
-                        )
+                        G = generator(n, p, directed=directed)
                         for (v, w) in G.edges:
                             edge_counts[v][w] += 1
                             if not directed:
