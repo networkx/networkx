@@ -1159,10 +1159,10 @@ def bellman_ford_predecessor_and_distance(
         If `source` is not in `G`.
 
     NetworkXUnbounded
-        If the (di)graph contains a negative cost (di)cycle, the
+        If the (di)graph contains a negative (di)cycle, the
         algorithm raises an exception to indicate the presence of the
-        negative cost (di)cycle.  Note: any negative weight edge in an
-        undirected graph is a negative cost cycle.
+        negative (di)cycle.  Note: any negative weight edge in an
+        undirected graph is a negative cycle.
 
     Examples
     --------
@@ -1184,7 +1184,7 @@ def bellman_ford_predecessor_and_distance(
     >>> nx.bellman_ford_predecessor_and_distance(G, 0)
     Traceback (most recent call last):
         ...
-    networkx.exception.NetworkXUnbounded: Negative cost cycle detected.
+    networkx.exception.NetworkXUnbounded: Negative cycle detected.
 
     See Also
     --------
@@ -1198,7 +1198,7 @@ def bellman_ford_predecessor_and_distance(
     the source.
 
     In the case where the (di)graph is not connected, if a component
-    not containing the source contains a negative cost (di)cycle, it
+    not containing the source contains a negative (di)cycle, it
     will not be detected.
 
     In NetworkX v2.1 and prior, the source node had predecessor `[None]`.
@@ -1208,7 +1208,7 @@ def bellman_ford_predecessor_and_distance(
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
     if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
-        raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     dist = {source: 0}
     pred = {source: []}
@@ -1286,10 +1286,10 @@ def _bellman_ford(
         If any of `source` is not in `G`.
 
     NetworkXUnbounded
-        If the (di)graph contains a negative cost (di)cycle, the
+        If the (di)graph contains a negative (di)cycle, the
         algorithm raises an exception to indicate the presence of the
-        negative cost (di)cycle.  Note: any negative weight edge in an
-        undirected graph is a negative cost cycle
+        negative (di)cycle.  Note: any negative weight edge in an
+        undirected graph is a negative cycle
     """
     for s in source:
         if s not in G:
@@ -1332,12 +1332,10 @@ def _bellman_ford(
                     # therefore u is always in the dict recent_update
                     if heuristic:
                         if v in recent_update[u]:
-                            # Negative weight cycle found!
+                            # Negative cycle found!
                             if return_negative_cycle_info:
                                 return v, pred
-                            raise nx.NetworkXUnbounded(
-                                "Negative weight cycle detected."
-                            )
+                            raise nx.NetworkXUnbounded("Negative cycle detected.")
 
                         # Transfer the recent update info from u to v if the
                         # same source node is the head of the update path.
@@ -1353,12 +1351,10 @@ def _bellman_ford(
                         in_q.add(v)
                         count_v = count.get(v, 0) + 1
                         if count_v == n:
-                            # Negative weight cycle found!
+                            # Negative cycle found!
                             if return_negative_cycle_info:
                                 return v, pred
-                            raise nx.NetworkXUnbounded(
-                                "Negative weight cycle detected."
-                            )
+                            raise nx.NetworkXUnbounded("Negative cycle detected.")
                         count[v] = count_v
                     dist[v] = dist_v
                     pred[v] = [u]
@@ -1795,10 +1791,10 @@ def goldberg_radzik(G, source, weight="weight"):
         If `source` is not in `G`.
 
     NetworkXUnbounded
-        If the (di)graph contains a negative cost (di)cycle, the
+        If the (di)graph contains a negative (di)cycle, the
         algorithm raises an exception to indicate the presence of the
-        negative cost (di)cycle.  Note: any negative weight edge in an
-        undirected graph is a negative cost cycle.
+        negative (di)cycle.  Note: any negative weight edge in an
+        undirected graph is a negative cycle.
 
     Examples
     --------
@@ -1814,7 +1810,7 @@ def goldberg_radzik(G, source, weight="weight"):
     >>> nx.goldberg_radzik(G, 0)
     Traceback (most recent call last):
         ...
-    networkx.exception.NetworkXUnbounded: Negative cost cycle detected.
+    networkx.exception.NetworkXUnbounded: Negative cycle detected.
 
     Notes
     -----
@@ -1825,7 +1821,7 @@ def goldberg_radzik(G, source, weight="weight"):
     the source.
 
     In the case where the (di)graph is not connected, if a component
-    not containing the source contains a negative cost (di)cycle, it
+    not containing the source contains a negative (di)cycle, it
     will not be detected.
 
     """
@@ -1833,7 +1829,7 @@ def goldberg_radzik(G, source, weight="weight"):
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
     if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
-        raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     if len(G) == 1:
         return {source: None}, {source: 0}
@@ -1900,7 +1896,7 @@ def goldberg_radzik(G, source, weight="weight"):
                         # path v to u and (u, v) contains at least one edge of
                         # negative reduced cost. The cycle must be of negative
                         # cost.
-                        raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+                        raise nx.NetworkXUnbounded("Negative cycle detected.")
         to_scan.reverse()
         return to_scan
 
@@ -2002,15 +1998,15 @@ def find_negative_cycle(G, source, weight="weight"):
     """Returns a cycle with negative total weight if it exists.
 
     Bellman-Ford is used to find shortest_paths. That algorithm
-    stops if there exists a negative weight cycle. This algorithm
-    picks up from there and returns the found negative weight cycle.
+    stops if there exists a negative cycle. This algorithm
+    picks up from there and returns the found negative cycle.
 
     The cycle consists of a list of 2-tuple edge representatives.
     You can look up the edge weights in the original graph. In the case
     of multigraphs the relevant edge is the minimal weight edge between
     the nodes in the 2-tuple.
 
-    If the graph has no negative weight cycle, a NetworkXError is raised.
+    If the graph has no negative cycle, a NetworkXError is raised.
 
     Parameters
     ----------
@@ -2041,14 +2037,14 @@ def find_negative_cycle(G, source, weight="weight"):
     Raises
     ------
     NetworkXError
-        If no negative weight cycle is found.
+        If no negative cycle is found.
     """
     weight = _weight_function(G, weight)
     result = _bellman_ford(G, [source], weight=weight, return_negative_cycle_info=True)
     if len(result) != 2:
-        raise nx.NetworkXError("No negative weight cycles detected.")
+        raise nx.NetworkXError("No negative cycles detected.")
     v, pred = result
-    # negative weight cycle detected... find it
+    # negative cycle detected... find it
     neg_cycle = []
     stack = [(v, list(pred[v]))]
     seen = {v}
@@ -2076,7 +2072,7 @@ def find_negative_cycle(G, source, weight="weight"):
                 # should not reach here
                 raise nx.NetworkXerror("Negative cycle is detected but not found")
     # should not get here...
-    msg = "negative cost cycle detected but not identified"
+    msg = "negative cycle detected but not identified"
     raise nx.NetworkXUnbounded(msg)
 
 

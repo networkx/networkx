@@ -587,7 +587,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G.add_edge(1, 2, weight=-30)
         assert nx.find_negative_cycle(G, 1) == [0, 1, 2, 3, 4, 0]
         assert nx.find_negative_cycle(G, 7) == [2, 3, 4, 0, 1, 2]
-        # if no negative weight cycle
+        # if no negative cycle
         G.remove_edge(1, 2)
         pytest.raises(nx.NetworkXError, nx.find_negative_cycle, G, 7)
 
@@ -655,7 +655,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         )
 
         # not connected, with a component not containing the source that
-        # contains a negative cost cycle.
+        # contains a negative cycle.
         G = nx.complete_graph(6)
         G.add_edges_from(
             [
