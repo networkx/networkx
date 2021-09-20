@@ -247,6 +247,27 @@ class TestGeneratorsRandom:
                 edges += sum(1 for _ in generator(10, 0.99999, directed=True).edges())
             assert abs(edges / float(runs) - 90) <= runs * 2.0 / 100
 
+            # assert that edges are generated with correct probability
+            runs = 5000
+            n = 5
+            for p in [0.2, 0.8]:
+                for directed in [False, True]:
+                    edge_counts = [[0] * 5 for row in range(5)]
+                    for i in range(runs):
+                        G = generator(n, p, directed=directed)
+                        for (v, w) in G.edges:
+                            edge_counts[v][w] += 1
+                            if not directed:
+                                edge_counts[w][v] += 1
+                    for v in range(n):
+                        for w in range(n):
+                            if v == w:
+                                # There should be no loops
+                                assert edge_counts[v][w] == 0
+                            else:
+                                # Each edge should have been generated with probability close to p
+                                assert abs(edge_counts[v][w] / float(runs) - p) <= 0.03
+
     def test_gnm(self):
         G = nx.gnm_random_graph(10, 3)
         assert len(G) == 10
