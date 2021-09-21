@@ -203,7 +203,7 @@ class TestGeneratorsRandom:
         seed = 42
         G = nx.random_regular_graph(0, 10, seed)
         assert len(G) == 10
-        assert sum(1 for _ in G.edges()) == 0
+        assert G.number_of_edges() == 0
 
     def test_gnp(self):
         for generator in [
@@ -214,7 +214,7 @@ class TestGeneratorsRandom:
         ]:
             G = generator(10, -1.1)
             assert len(G) == 10
-            assert sum(1 for _ in G.edges()) == 0
+            assert G.number_of_edges() == 0
 
             G = generator(10, 0.1)
             assert len(G) == 10
@@ -224,12 +224,12 @@ class TestGeneratorsRandom:
 
             G = generator(10, 1.1)
             assert len(G) == 10
-            assert sum(1 for _ in G.edges()) == 45
+            assert G.number_of_edges() == 45
 
             G = generator(10, -1.1, directed=True)
             assert G.is_directed()
             assert len(G) == 10
-            assert sum(1 for _ in G.edges()) == 0
+            assert G.number_of_edges() == 0
 
             G = generator(10, 0.1, directed=True)
             assert G.is_directed()
@@ -238,13 +238,13 @@ class TestGeneratorsRandom:
             G = generator(10, 1.1, directed=True)
             assert G.is_directed()
             assert len(G) == 10
-            assert sum(1 for _ in G.edges()) == 90
+            assert G.number_of_edges() == 90
 
             # assert that random graphs generate all edges for p close to 1
             edges = 0
             runs = 100
             for i in range(runs):
-                edges += sum(1 for _ in generator(10, 0.99999, directed=True).edges())
+                edges += generator(10, 0.99999, directed=True).number_of_edges()
             assert abs(edges / float(runs) - 90) <= runs * 2.0 / 100
 
             # assert that edges are generated with correct probability
@@ -271,23 +271,23 @@ class TestGeneratorsRandom:
     def test_gnm(self):
         G = nx.gnm_random_graph(10, 3)
         assert len(G) == 10
-        assert sum(1 for _ in G.edges()) == 3
+        assert G.number_of_edges() == 3
 
         G = nx.gnm_random_graph(10, 3, seed=42)
         assert len(G) == 10
-        assert sum(1 for _ in G.edges()) == 3
+        assert G.number_of_edges() == 3
 
         G = nx.gnm_random_graph(10, 100)
         assert len(G) == 10
-        assert sum(1 for _ in G.edges()) == 45
+        assert G.number_of_edges() == 45
 
         G = nx.gnm_random_graph(10, 100, directed=True)
         assert len(G) == 10
-        assert sum(1 for _ in G.edges()) == 90
+        assert G.number_of_edges() == 90
 
         G = nx.gnm_random_graph(10, -1.1)
         assert len(G) == 10
-        assert sum(1 for _ in G.edges()) == 0
+        assert G.number_of_edges() == 0
 
     def test_watts_strogatz_big_k(self):
         # Test to make sure than n <= k
