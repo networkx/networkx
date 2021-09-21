@@ -1119,7 +1119,7 @@ def bellman_ford_predecessor_and_distance(
     can handle negative edge weights.
 
     If a negative cycle is detected, you can use :func:`find_negative_cycle`
-    to return the cycle and examine it. Shoftest paths are not defined when
+    to return the cycle and examine it. Shortest paths are not defined when
     a negative cycle exists because once reached, the path can cycle forever
     to build up arbitrarily low weights.
 
