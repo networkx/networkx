@@ -1185,4 +1185,4 @@ def rescale_layout_dict(pos, scale=1):
         return {}
     pos_v = np.array(list(pos.values()))
     pos_v = rescale_layout(pos_v, scale=scale)
-    return {k: np.asarray(v) for k, v in zip(pos.keys(), pos_v)}
+    return dict(zip(pos, pos_v))
