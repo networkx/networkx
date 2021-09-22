@@ -268,7 +268,7 @@ def difference(G, H):
     >>> H.add_edges_from([(0, 1), (1, 2), (0, 3)])
     >>> R = difference(G, H)
     >>> R.nodes
-    NodeView((0, 1, 2))
+    NodeView((0, 1, 2, 3))
     >>> R.edges
     EdgeView([(0, 2), (1, 3)])
     """
