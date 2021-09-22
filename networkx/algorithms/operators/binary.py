@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-def union(G, H, rename=(None, None), name=None):
+def union(G, H, rename=(None, None)):
     """Return the union of graphs G and H.
 
     Graphs G and H must be disjoint, otherwise an exception is raised.
@@ -24,13 +24,10 @@ def union(G, H, rename=(None, None), name=None):
     G,H : graph
        A NetworkX graph
 
-    rename : bool , default=(None, None)
+    rename : tuple , default=(None, None)
        Node names of G and H can be changed by specifying the tuple
        rename=('G-','H-') (for example).  Node "u" in G is then renamed
        "G-u" and "v" in H is renamed "H-v".
-
-    name : string
-       Specify the name for the union graph
 
     Returns
     -------
@@ -44,6 +41,20 @@ def union(G, H, rename=(None, None), name=None):
     Graph, edge, and node attributes are propagated from G and H
     to the union graph.  If a graph attribute is present in both
     G and H the value from H is used.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.operators import *
+    >>> G = nx.Graph()
+    >>> H = nx.Graph()
+    >>> G.add_edges_from([(0, 1), (0, 2), (1, 2)])
+    >>> H.add_edges_from([(3, 4), (3, 6), (4, 5), (5, 6)])
+    >>> U = union(G, H, rename=("G", "H"))
+    >>> U.nodes
+    NodeView(('G0', 'G1', 'G2', 'H3', 'H4', 'H6', 'H5'))
+    >>> U.edges
+    EdgeView([('G0', 'G1'), ('G0', 'G2'), ('G1', 'G2'), ('H3', 'H4'), ('H3', 'H6'), ('H4', 'H5'), ('H6', 'H5')])
 
     See Also
     --------
@@ -88,16 +99,11 @@ def union(G, H, rename=(None, None), name=None):
         H_edges = H.edges(data=True)
 
     # add nodes
-    R.add_nodes_from(G)
-    R.add_nodes_from(H)
+    R.add_nodes_from(G.nodes(data=True))
+    R.add_nodes_from(H.nodes(data=True))
     # add edges
     R.add_edges_from(G_edges)
     R.add_edges_from(H_edges)
-    # add node attributes
-    for n in G:
-        R.nodes[n].update(G.nodes[n])
-    for n in H:
-        R.nodes[n].update(H.nodes[n])
 
     return R
 
@@ -127,6 +133,22 @@ def disjoint_union(G, H):
     Graph, edge, and node attributes are propagated from G and H
     to the union graph.  If a graph attribute is present in both
     G and H the value from H is used.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.operators import *
+    >>> G = nx.Graph()
+    >>> H = nx.Graph()
+    >>> G.add_edges_from([(0, 1), (0, 2), (1, 2)])
+    >>> H.add_edges_from([(0, 3), (1, 2), (2, 3)])
+    >>> G.nodes[0]["key1"] = 5
+    >>> H.nodes[0]["key2"] = 10
+    >>> U = disjoint_union(G, H)
+    >>> U.nodes(data=True)
+    NodeDataView({0: {'key1': 5}, 1: {}, 2: {}, 3: {'key2': 10}, 4: {}, 5: {}, 6: {}})
+    >>> U.edges
+    EdgeView([(0, 1), (0, 2), (1, 2), (3, 4), (4, 6), (5, 6)])
     """
     R1 = nx.convert_node_labels_to_integers(G)
     R2 = nx.convert_node_labels_to_integers(H, first_label=len(R1))
@@ -166,6 +188,19 @@ def intersection(G, H):
     >>> R = G.copy()
     >>> R.remove_nodes_from(n for n in G if n not in H)
     >>> R.remove_edges_from(e for e in G.edges if e not in H.edges)
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.operators import *
+    >>> G = nx.Graph()
+    >>> H = nx.Graph()
+    >>> G.add_edges_from([(0, 1), (0, 2), (1, 2)])
+    >>> H.add_edges_from([(0, 3), (1, 2), (2, 3)])
+    >>> R.nodes
+    NodeView((0, 1, 2))
+    >>> R.edges
+    EdgeView([(1, 2)])
     """
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
@@ -204,7 +239,7 @@ def difference(G, H):
     Parameters
     ----------
     G,H : graph
-       A NetworkX graph.  G and H must have the same node sets.
+       A NetworkX graph. G and H must have the same node sets.
 
     Returns
     -------
@@ -221,6 +256,20 @@ def difference(G, H):
     >>> H = nx.path_graph(5)
     >>> R = G.copy()
     >>> R.remove_nodes_from(n for n in G if n in H)
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.operators import *
+    >>> G = nx.Graph()
+    >>> H = nx.Graph()
+    >>> G.add_edges_from([(0, 1), (0, 2), (1, 2), (1, 3)])
+    >>> H.add_edges_from([(0, 1), (1, 2), (0, 3)])
+    >>> R = difference(G, H)
+    >>> R.nodes
+    NodeView((0, 1, 2))
+    >>> R.edges
+    EdgeView([(0, 2)])
     """
     # create new graph
     if not G.is_multigraph() == H.is_multigraph():
@@ -258,6 +307,20 @@ def symmetric_difference(G, H):
     -----
     Attributes from the graph, nodes, and edges are not copied to the new
     graph.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.operators import *
+    >>> G = nx.Graph()
+    >>> H = nx.Graph()
+    >>> G.add_edges_from([(0, 1), (0, 2), (1, 2), (1, 3)])
+    >>> H.add_edges_from([(0, 1), (1, 2), (0, 3)])
+    >>> R = symmetric_difference(G, H)
+    >>> R.nodes
+    NodeView((0, 1, 2, 3))
+    >>> R.edges
+    EdgeView([(0, 2), (0, 3), (1, 3)])
     """
     # create new graph
     if not G.is_multigraph() == H.is_multigraph():
@@ -315,6 +378,20 @@ def compose(G, H):
     For MultiGraphs, the edges are identified by incident nodes AND edge-key.
     This can cause surprises (i.e., edge `(1, 2)` may or may not be the same
     in two graphs) if you use MultiGraph without keeping track of edge keys.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.operators import *
+    >>> G = nx.Graph()
+    >>> H = nx.Graph()
+    >>> G.add_edges_from([(0, 1), (0, 2)])
+    >>> H.add_edges_from([(0, 1), (1, 2)])
+    >>> R = compose(G, H)
+    >>> R.nodes
+    NodeView((0, 1, 2))
+    >>> R.edges
+    EdgeView([(0, 1), (0, 2), (1, 2)])
     """
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
@@ -351,7 +428,7 @@ def full_join(G, H, rename=(None, None)):
     G, H : graph
        A NetworkX graph
 
-    rename : bool , default=(None, None)
+    rename : tuple , default=(None, None)
        Node names of G and H can be changed by specifying the tuple
        rename=('G-','H-') (for example).  Node "u" in G is then renamed
        "G-u" and "v" in H is renamed "H-v".
@@ -375,6 +452,20 @@ def full_join(G, H, rename=(None, None)):
     Graph, edge, and node attributes are propagated from G and H
     to the union graph.  If a graph attribute is present in both
     G and H the value from H is used.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.operators import *
+    >>> G = nx.Graph()
+    >>> H = nx.Graph()
+    >>> G.add_edges_from([(0, 1), (0, 2)])
+    >>> H.add_edge(3, 4)
+    >>> R = full_join(G, H, rename=("G", "H"))
+    >>> R.nodes
+    NodeView(('G0', 'G1', 'G2', 'H3', 'H4'))
+    >>> R.edges
+    EdgeView([('G0', 'G1'), ('G0', 'G2'), ('G0', 'H3'), ('G0', 'H4'), ('G1', 'H3'), ('G1', 'H4'), ('G2', 'H3'), ('G2', 'H4'), ('H3', 'H4')])
 
     See Also
     --------
