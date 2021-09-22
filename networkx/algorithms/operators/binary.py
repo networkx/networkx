@@ -197,6 +197,7 @@ def intersection(G, H):
     >>> H = nx.Graph()
     >>> G.add_edges_from([(0, 1), (0, 2), (1, 2)])
     >>> H.add_edges_from([(0, 3), (1, 2), (2, 3)])
+    >>> R = intersection(G, H)
     >>> R.nodes
     NodeView((0, 1, 2))
     >>> R.edges
