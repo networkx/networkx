@@ -270,7 +270,7 @@ def difference(G, H):
     >>> R.nodes
     NodeView((0, 1, 2))
     >>> R.edges
-    EdgeView([(0, 2)])
+    EdgeView([(0, 2), (1, 3)])
     """
     # create new graph
     if not G.is_multigraph() == H.is_multigraph():
