@@ -44,17 +44,13 @@ def union(G, H, rename=(None, None)):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> from networkx.algorithms.operators import *
-    >>> G = nx.Graph()
-    >>> H = nx.Graph()
-    >>> G.add_edges_from([(0, 1), (0, 2), (1, 2)])
-    >>> H.add_edges_from([(3, 4), (3, 6), (4, 5), (5, 6)])
-    >>> U = union(G, H, rename=("G", "H"))
+    >>> G = nx.Graph([(0, 1), (0, 2), (1, 2)])
+    >>> H = nx.Graph([(0, 1), (0, 3), (1, 3), (1, 2)])
+    >>> U = nx.union(G, H, rename=("G", "H"))
     >>> U.nodes
-    NodeView(('G0', 'G1', 'G2', 'H3', 'H4', 'H6', 'H5'))
+    NodeView(('G0', 'G1', 'G2', 'H0', 'H1', 'H3', 'H2'))
     >>> U.edges
-    EdgeView([('G0', 'G1'), ('G0', 'G2'), ('G1', 'G2'), ('H3', 'H4'), ('H3', 'H6'), ('H4', 'H5'), ('H6', 'H5')])
+    EdgeView([('G0', 'G1'), ('G0', 'G2'), ('G1', 'G2'), ('H0', 'H1'), ('H0', 'H3'), ('H1', 'H3'), ('H1', 'H2')])
 
     See Also
     --------
@@ -136,15 +132,11 @@ def disjoint_union(G, H):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> from networkx.algorithms.operators import *
-    >>> G = nx.Graph()
-    >>> H = nx.Graph()
-    >>> G.add_edges_from([(0, 1), (0, 2), (1, 2)])
-    >>> H.add_edges_from([(0, 3), (1, 2), (2, 3)])
+    >>> G = nx.Graph([(0, 1), (0, 2), (1, 2)])
+    >>> H = nx.Graph([(0, 3), (1, 2), (2, 3)])
     >>> G.nodes[0]["key1"] = 5
     >>> H.nodes[0]["key2"] = 10
-    >>> U = disjoint_union(G, H)
+    >>> U = nx.disjoint_union(G, H)
     >>> U.nodes(data=True)
     NodeDataView({0: {'key1': 5}, 1: {}, 2: {}, 3: {'key2': 10}, 4: {}, 5: {}, 6: {}})
     >>> U.edges
@@ -191,13 +183,9 @@ def intersection(G, H):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> from networkx.algorithms.operators import *
-    >>> G = nx.Graph()
-    >>> H = nx.Graph()
-    >>> G.add_edges_from([(0, 1), (0, 2), (1, 2)])
-    >>> H.add_edges_from([(0, 3), (1, 2), (2, 3)])
-    >>> R = intersection(G, H)
+    >>> G = nx.Graph([(0, 1), (0, 2), (1, 2)])
+    >>> H = nx.Graph([(0, 3), (1, 2), (2, 3)])
+    >>> R = nx.intersection(G, H)
     >>> R.nodes
     NodeView((0, 1, 2))
     >>> R.edges
@@ -260,13 +248,9 @@ def difference(G, H):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> from networkx.algorithms.operators import *
-    >>> G = nx.Graph()
-    >>> H = nx.Graph()
-    >>> G.add_edges_from([(0, 1), (0, 2), (1, 2), (1, 3)])
-    >>> H.add_edges_from([(0, 1), (1, 2), (0, 3)])
-    >>> R = difference(G, H)
+    >>> G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3)])
+    >>> H = nx.Graph([(0, 1), (1, 2), (0, 3)])
+    >>> R = nx.difference(G, H)
     >>> R.nodes
     NodeView((0, 1, 2, 3))
     >>> R.edges
@@ -311,15 +295,11 @@ def symmetric_difference(G, H):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> from networkx.algorithms.operators import *
-    >>> G = nx.Graph()
-    >>> H = nx.Graph()
-    >>> G.add_edges_from([(0, 1), (0, 2), (1, 2), (1, 3)])
-    >>> H.add_edges_from([(0, 1), (1, 2), (0, 3)])
-    >>> R = symmetric_difference(G, H)
+    >>> G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3)])
+    >>> H = nx.Graph([(0, 1), (1, 2), (0, 3)])
+    >>> R = nx.symmetric_difference(G, H)
     >>> R.nodes
-    NodeView((0, 1, 2, 3))
+    NodeView((0, 1, 2, 3, 4))
     >>> R.edges
     EdgeView([(0, 2), (0, 3), (1, 3)])
     """
@@ -382,13 +362,9 @@ def compose(G, H):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> from networkx.algorithms.operators import *
-    >>> G = nx.Graph()
-    >>> H = nx.Graph()
-    >>> G.add_edges_from([(0, 1), (0, 2)])
-    >>> H.add_edges_from([(0, 1), (1, 2)])
-    >>> R = compose(G, H)
+    >>> G = nx.Graph([(0, 1), (0, 2)])
+    >>> H = nx.Graph([(0, 1), (1, 2)])
+    >>> R = nx.compose(G, H)
     >>> R.nodes
     NodeView((0, 1, 2))
     >>> R.edges
@@ -456,13 +432,9 @@ def full_join(G, H, rename=(None, None)):
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> from networkx.algorithms.operators import *
-    >>> G = nx.Graph()
-    >>> H = nx.Graph()
-    >>> G.add_edges_from([(0, 1), (0, 2)])
-    >>> H.add_edge(3, 4)
-    >>> R = full_join(G, H, rename=("G", "H"))
+    >>> G = nx.Graph([(0, 1), (0, 2)])
+    >>> H = nx.Graph(3, 4)
+    >>> R = nx.full_join(G, H, rename=("G", "H"))
     >>> R.nodes
     NodeView(('G0', 'G1', 'G2', 'H3', 'H4'))
     >>> R.edges
