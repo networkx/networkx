@@ -17,7 +17,8 @@ __all__ = [
 def union(G, H, rename=(None, None)):
     """Return the union of graphs G and H.
 
-    Graphs G and H must be disjoint, otherwise an exception is raised.
+    Graphs G and H must be disjoint after the renaming takes place,
+    otherwise an exception is raised.
 
     Parameters
     ----------
