@@ -299,7 +299,7 @@ def symmetric_difference(G, H):
     >>> H = nx.Graph([(0, 1), (1, 2), (0, 3)])
     >>> R = nx.symmetric_difference(G, H)
     >>> R.nodes
-    NodeView((0, 1, 2, 3, 4))
+    NodeView((0, 1, 2, 3))
     >>> R.edges
     EdgeView([(0, 2), (0, 3), (1, 3)])
     """
@@ -433,7 +433,7 @@ def full_join(G, H, rename=(None, None)):
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (0, 2)])
-    >>> H = nx.Graph(3, 4)
+    >>> H = nx.Graph([(3, 4)])
     >>> R = nx.full_join(G, H, rename=("G", "H"))
     >>> R.nodes
     NodeView(('G0', 'G1', 'G2', 'H3', 'H4'))
