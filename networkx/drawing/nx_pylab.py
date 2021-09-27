@@ -354,7 +354,7 @@ def draw_networkx_nodes(
     edgecolors=None,
     label=None,
     margins=None,
-    picker=None
+    picker=None,
 ):
     """Draw the nodes of the graph G.
 
@@ -476,7 +476,7 @@ def draw_networkx_nodes(
         linewidths=linewidths,
         edgecolors=edgecolors,
         label=label,
-        picker=picker
+        picker=picker,
     )
     ax.tick_params(
         axis="both",
