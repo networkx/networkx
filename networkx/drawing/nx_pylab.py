@@ -281,6 +281,7 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
         "linewidths",
         "edgecolors",
         "label",
+        "picker",
     )
 
     valid_edge_kwds = (
@@ -353,6 +354,7 @@ def draw_networkx_nodes(
     edgecolors=None,
     label=None,
     margins=None,
+    picker=None
 ):
     """Draw the nodes of the graph G.
 
@@ -414,6 +416,8 @@ def draw_networkx_nodes(
         be in the range ``[0, 1]``. See :meth:`matplotlib.axes.Axes.margins`
         for details. The default is `None`, which uses the Matplotlib default.
 
+    picker : [None | True | False | callback] Passed to matplotlib's ax.scatter. This allows users to pick nodes.
+
     Returns
     -------
     matplotlib.collections.PathCollection
@@ -472,6 +476,7 @@ def draw_networkx_nodes(
         linewidths=linewidths,
         edgecolors=edgecolors,
         label=label,
+        picker=picker
     )
     ax.tick_params(
         axis="both",
