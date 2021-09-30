@@ -11,36 +11,6 @@ NumFOCUS Small Development Grants and university course/project credits (if
 your university allows contribution to open source for credit).
 
 
-Community Detection Algorithms
---------------------------------
-
-- Abstract: Community detection involves a set of algorithms in network science which
-  deal with grouping nodes from a network according to their similar properties
-  such as belonging to dense clusters. NetworkX already contains a
-  :mod:`variety of community detection algorithms <networkx.algorithms.community>`
-  dealing with computing the community structure of a network. There are also
-  multiple PRs/issues which deal with adding the Louvain community detection
-  algorithm to NetworkX, e.g. `#1090`_, `#1092`_ `#951`_. Users who want to work with
-  NetworkX and Louvain Community Detection often use
-  https://github.com/taynaud/python-louvain. This project would focus on getting
-  Louvain community detection algorithms implemented into NetworkX.
-
-- Recommended Skills: Python, graph algorithms
-
-- Expected Outcome: We would like to see Louvain community detection
-  implemented inside NetworkX, or construct code and documented examples
-  in NetworkX that would interface with other Louvain projects.
-
-- Complexity: Moderate
-
-- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
-  `@MridulS <https://github.com/MridulS/>`__,
-
-.. _#1090: https://github.com/networkx/networkx/pull/1090
-.. _#1092: https://github.com/networkx/networkx/pull/1092
-.. _#951: https://github.com/networkx/networkx/issues/951
-
-
 Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 ------------------------------------------------------------------------
 
@@ -66,35 +36,6 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
   `@MridulS <https://github.com/MridulS/>`__,
   `@rossbar <https://github.com/rossbar/>`__
 
-Directed Version of Traveling Salesman Problem
-----------------------------------------------
-
-- Abstract: NetworkX has recently added a couple methods for solving
-  the Traveling Salesman Problem (see `#4607`_). The best approximation
-  for undirected graphs is the Christofides method. But the best algorithm
-  for directed graphs is by `Asapour`_ et.al. and has not yet been implemented.
-  The goal of this project is to learn the API used for implemented methods
-  and then implement the Asadpour method for directed graphs with similar API.
-  Other even more recent papers discussing algorithm improvements for directed
-  TSP (also called Asymmetric TSP or ATSP) include `Svensson`_ and `Traub`_.
-  The Traub paper may be most useful for implementing the algorithm as all three
-  are focused on proving asymptotic computation requirements rather than coding.
-
-- Recommended Skills: Python, graph algorithms
-
-- Expected Outcome: A new function in NetworkX which implements the Asapour algorithm.
-
-- Complexity: Moderate
-
-- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
-  `@MridulS <https://github.com/MridulS/>`__, `@boothby <https://github.com/boothby/>`__,
-
-.. _#4607: https://github.com/networkx/networkx/pull/4607
-.. _Asapour: https://pubsonline.informs.org/doi/pdf/10.1287/opre.2017.1603
-.. _Svensson: https://doi.org/10.1109/FOCS.2015.10  (https://arxiv.org/abs/1502.02051)
-.. _Traub: https://doi.org/10.1145/3357713.3384233 (https://arxiv.org/abs/1912.00670)
-
-
 Implement the VF2++ Graph Isomorphism Algorithm
 -----------------------------------------------
 
@@ -119,17 +60,32 @@ Implement the VF2++ Graph Isomorphism Algorithm
 .. _`Graph Isomorphism Problem`: https://en.wikipedia.org/wiki/Graph_isomorphism_problem
 .. _VF2++: https://doi.org/10.1016/j.dam.2018.02.018
 
+Completed Projects
+==================
 
-Project Idea Template
----------------------
+- `Louvain community detection algorithm`_ (GSoC 2021)
+- `Asadpour algorithm for directed travelling salesman problem`_ (GSoC 2021)
+- Pedagogical notebook: `Directed acyclic graphs and topological sort`_ (GSoC 2021)
+- Pedagogical notebook: `Graph assortativity`_ (GSoC 2021)
+- Pedagogical notebook: `Network flow analysis and Dinitz algorithm`_ (GSoC 2021)
 
-- Abstract:
+.. _`Louvain community detection algorithm`: https://github.com/networkx/networkx/pull/4929
+.. _`Asadpour algorithm for directed travelling salesman problem`: https://github.com/networkx/networkx/pull/4740
+.. _`Directed acyclic graphs and topological sort`: https://github.com/networkx/nx-guides/pull/44
+.. _`Graph assortativity`: https://github.com/networkx/nx-guides/pull/42
+.. _`Network flow analysis and Dinitz algorithm`: https://github.com/networkx/nx-guides/pull/46
 
-- Recommended Skills:
-
-- Expected Outcome:
-
-- Complexity;
-
-- Interested Mentors:
-
+..
+   Project Idea Template
+   ---------------------
+   
+   - Abstract:
+   
+   - Recommended Skills:
+   
+   - Expected Outcome:
+   
+   - Complexity;
+   
+   - Interested Mentors:
+   
