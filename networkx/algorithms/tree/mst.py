@@ -11,13 +11,14 @@ from math import isnan
 from queue import PriorityQueue
 
 import networkx as nx
-from networkx.utils import UnionFind, not_implemented_for
+from networkx.utils import UnionFind, not_implemented_for, py_random_state
 
 __all__ = [
     "minimum_spanning_edges",
     "maximum_spanning_edges",
     "minimum_spanning_tree",
     "maximum_spanning_tree",
+    "random_spanning_tree",
     "partition_spanning_tree",
     "EdgePartition",
     "SpanningTreeIterator",
@@ -719,6 +720,161 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     T.add_nodes_from(G.nodes.items())
     T.add_edges_from(edges)
     return T
+
+
+@py_random_state(2)
+def random_spanning_tree(G, weight, seed=None):
+    """
+    Sample a spanning tree using the edges weights of the graph.
+
+    The edge weights are multiplicative, so the probability of each tree is
+    proportional to the product of edge weights.
+
+    The algorithm itself uses algorithm A8 in [1]_ .
+
+    We 'shuffle' the edges in the graph, and then probabilistically
+    determine weather to add the edge conditioned on all of the previous
+    edges which where added to the tree. Probabilities are calculated using
+    Kirchhoff's Matrix Tree Theorem and a weighted Laplacian matrix.
+
+    At each iteration, we contract the edges we have decided to include in the
+    sampled tree and delete those which we have decided not to include.
+
+    Parameters
+    ----------
+    G : nx.Graph
+        An undirected version of the original graph.
+
+    weight : string
+        The edge key for the edge attribute holding edge weight.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    nx.Graph
+        A spanning tree using the distribution defined by `gamma`.
+
+    References
+    ----------
+    .. [1] V. Kulkarni, Generating random combinatorial objects, Journal of
+       algorithms, 11 (1990), pp. 185–207
+    """
+
+    def find_node(merged_nodes, n):
+        """
+        We can think of clusters of contracted nodes as having one
+        representative in the graph. Each node which is not in merged_nodes
+        is still its own representative. Since a representative can be later
+        contracted, we need to recursively search though the dict to find
+        the final representative, but once we know it we can use path
+        compression to speed up the access of the representative for next time.
+
+        This cannot be replaced by the standard NetworkX union_find since that
+        data structure will merge nodes with less representing nodes into the
+        one with more representing nodes but this function requires we merge
+        then using the order that contract_edges contracts using.
+
+        Parameters
+        ----------
+        merged_nodes : dict
+            The dict storing the mapping from node to representative
+        n
+            The node whose representative we seek
+
+        Returns
+        -------
+        The representative of the `n`
+        """
+        if n not in merged_nodes:
+            return n
+        else:
+            rep = find_node(merged_nodes, merged_nodes[n])
+            merged_nodes[n] = rep
+            return rep
+
+    def prepare_graph():
+        """
+        For the graph `G`, remove all edges not in the set `V` and then
+        contract all edges in the set `U`.
+
+        Returns
+        -------
+        A copy of `G` which has had all edges not in `V` removed and all edges
+        in `U` contracted.
+        """
+
+        # The result is a MultiGraph version of G so that parallel edges are
+        # allowed during edge contraction
+        result = nx.MultiGraph(incoming_graph_data=G)
+
+        # Remove all edges not in V
+        edges_to_remove = set(result.edges()).difference(V)
+        result.remove_edges_from(edges_to_remove)
+
+        # Contract all edges in U
+        #
+        # Imagine that you have two edges to contract and they share an
+        # endpoint like this:
+        #                        [0] ----- [1] ----- [2]
+        # If we contract (0, 1) first, the contraction function will always
+        # delete the second node it is passed so the resulting graph would be
+        #                             [0] ----- [2]
+        # and edge (1, 2) no longer exists but (0, 2) would need to be contracted
+        # in its place now. That is why I use the below dict as a merge-find
+        # data structure with path compression to track how the nodes are merged.
+        merged_nodes = {}
+
+        for u, v in U:
+            u_rep = find_node(merged_nodes, u)
+            v_rep = find_node(merged_nodes, v)
+            # We cannot contract a node with itself
+            if u_rep == v_rep:
+                continue
+            nx.contracted_nodes(result, u_rep, v_rep, self_loops=False, copy=False)
+            merged_nodes[v_rep] = u_rep
+
+        return merged_nodes, result
+
+    U = set()
+    V = set(G.edges())
+    shuffled_edges = list(G.edges())
+    seed.shuffle(shuffled_edges)
+
+    for u, v in shuffled_edges:
+        node_map, prepared_G = prepare_graph()
+        G_total_tree_weight = nx.total_spanning_tree_weight(prepared_G, weight)
+        # Add the edge to U so that we can compute the total tree weight
+        # assuming we include that edge
+        U.add((u, v))
+        # Now, if (u, v) cannot exist in G because it is fully contracted out
+        # of existence, then it by definition cannot influence G_e's Kirchhoff
+        # value. But, we also cannot pick it.
+        _, prepared_G_e = prepare_graph()
+        rep_edge = (find_node(node_map, u), find_node(node_map, v))
+        # Check to see if the 'representative edge' for the current edge is
+        # in prepared_G. If so, then we can pick it.
+        if rep_edge in prepared_G.edges:
+            G_e_total_tree_weight = nx.total_spanning_tree_weight(prepared_G_e, weight)
+        else:
+            G_e_total_tree_weight = 0.0
+        z = seed.uniform(0.0, 1.0)
+        # This will be useful if I move this random spanning tree method to
+        # the boarder NetworkX library
+        e_weight = G[u][v][weight] if weight is not None else 1
+        if z > e_weight * G_e_total_tree_weight / G_total_tree_weight:
+            # Remove the edge from U since we did not decide to include it in
+            # the sampled spanning tree. Also remove the edge from V because if
+            # we did not decide to include it we must reject it.
+            U.remove((u, v))
+            V.remove((u, v))
+        # If we decide to keep an edge, it may complete the spanning tree.
+        elif len(U) == G.number_of_nodes() - 1:
+            spanning_tree = nx.Graph()
+            spanning_tree.add_edges_from(U)
+            return spanning_tree
 
 
 class SpanningTreeIterator:
