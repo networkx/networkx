@@ -91,3 +91,4 @@ Version 3.0
 * In ``algorithms/assortativity/mixing.py`` remove ``numeric_mixing_matrix``.
 * In ``algorithms/assortativity/connectivity.py`` remove ``k_nearest_neighbors``.
 * In ``utils/decorators.py`` remove ``random_state``.
+* In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.

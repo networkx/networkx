@@ -44,6 +44,8 @@ Deprecations
 
 - [`#5055 <https://github.com/networkx/networkx/pull/5055>`_]
   Deprecate the ``random_state`` alias in favor of ``np_random_state``
+- [`#5099 <https://github.com/networkx/networkx/pull/5099>`_]
+  Deprecate the ``name`` kwarg from ``union`` as it isn't used.
 
 
 Merged PRs
