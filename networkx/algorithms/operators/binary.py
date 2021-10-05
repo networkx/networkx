@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-def union(G, H, rename=(None, None)):
+def union(G, H, rename=(None, None), name=None):
     """Return the union of graphs G and H.
 
     Graphs G and H must be disjoint after the renaming takes place,
@@ -29,6 +29,9 @@ def union(G, H, rename=(None, None)):
        Node names of G and H can be changed by specifying the tuple
        rename=('G-','H-') (for example).  Node "u" in G is then renamed
        "G-u" and "v" in H is renamed "H-v".
+
+    name : string
+       Specify the name for the union graph
 
     Returns
     -------
