@@ -32,6 +32,9 @@ def union(G, H, rename=(None, None), name=None):
     name : string
        Specify the name for the union graph
 
+       .. deprecated:: 2.7
+           This is deprecated and will be removed in version v3.0.
+
     Returns
     -------
     U : A union graph with the same type as G.
@@ -49,6 +52,15 @@ def union(G, H, rename=(None, None), name=None):
     --------
     disjoint_union
     """
+    if name is not None:
+        import warnings
+
+        warnings.warn(
+            "name parameter is deprecated and will be removed in version 3.0",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
     # Union is the same type as G
