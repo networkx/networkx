@@ -204,7 +204,7 @@ NetworkX development is guided by the following core team:
              alt="Avatar picture of @vdshk"
            />
         </div>
-        Vadim
+        Vadim Abzalov
      </a>
      <div class="team-member-handle">@vdshk</div>
    </div>
