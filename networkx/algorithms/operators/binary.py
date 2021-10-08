@@ -247,26 +247,7 @@ def compose(G, H):
     This can cause surprises (i.e., edge `(1, 2)` may or may not be the same
     in two graphs) if you use MultiGraph without keeping track of edge keys.
     """
-    if not G.is_multigraph() == H.is_multigraph():
-        raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
-
-    R = G.__class__()
-    # add graph attributes, H attributes take precedent over G attributes
-    R.graph.update(G.graph)
-    R.graph.update(H.graph)
-
-    R.add_nodes_from(G.nodes(data=True))
-    R.add_nodes_from(H.nodes(data=True))
-
-    if G.is_multigraph():
-        R.add_edges_from(G.edges(keys=True, data=True))
-    else:
-        R.add_edges_from(G.edges(data=True))
-    if H.is_multigraph():
-        R.add_edges_from(H.edges(keys=True, data=True))
-    else:
-        R.add_edges_from(H.edges(data=True))
-    return R
+    return nx.compose_all([G, H])
 
 
 def full_join(G, H, rename=(None, None)):
