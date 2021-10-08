@@ -55,13 +55,6 @@ def union_all(graphs, rename=(None,)):
     if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
         raise nx.NetworkXError('All graphs must be graphs or multigraphs.')
 
-    # Union is the same type as first graph
-    R = U.__class__()
-
-    # add graph attributes, later attributes take precedent over earlier ones
-    for G in graphs:
-        R.graph.update(G.graph)
-
     # rename graph to obtain disjoint node labels
     def add_prefix(graph, prefix):
         if prefix is None:
@@ -84,17 +77,23 @@ def union_all(graphs, rename=(None,)):
                                '=(G1prefix,G2prefix,...,GNprefix)'
                                'or use disjoint_union(G1,G2,...,GN).')
 
-    if U.is_multigraph():
-        graph_edges = [G.edges(keys=True, data=True) for G in graphs]
-    else:
-        graph_edges = [G.edges(data=True) for G in graphs]
+    # Union is the same type as first graph
+    R = U.__class__()
 
-    # add nodes and edges
-    for G, G_edges in zip(graphs, graph_edges):
-        R.add_nodes_from(G)
-        R.add_edges_from(G_edges)
-        for n in G:
-            R.nodes[n].update(G.nodes[n])
+    # add graph attributes, later attributes take precedent over earlier ones
+    for G in graphs:
+        R.graph.update(G.graph)
+
+    # add nodes and attributes
+    for G in graphs:
+        R.add_nodes_from(G.nodes(data=True))
+
+    if U.is_multigraph():
+        for G in graphs:
+            R.add_edges_from(G.edges(keys=True, data=True))
+    else:
+        for G in graphs:
+            R.add_edges_from(G.edges(data=True))
 
     return R
 
