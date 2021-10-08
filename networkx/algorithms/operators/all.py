@@ -53,7 +53,7 @@ def union_all(graphs, rename=(None,)):
     U = graphs[0]
 
     if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
-        raise nx.NetworkXError('All graphs must be graphs or multigraphs.')
+        raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
 
     # rename graph to obtain disjoint node labels
     def add_prefix(graph, prefix):
@@ -72,10 +72,12 @@ def union_all(graphs, rename=(None,)):
     graphs = [add_prefix(G, name) for G, name in zip_longest(graphs, rename)]
 
     if sum([len(G) for G in graphs]) != len(set().union(*graphs)):
-        raise nx.NetworkXError('The node sets of the graphs are not disjoint.',
-                               'Use appropriate rename'
-                               '=(G1prefix,G2prefix,...,GNprefix)'
-                               'or use disjoint_union(G1,G2,...,GN).')
+        raise nx.NetworkXError(
+            "The node sets of the graphs are not disjoint.",
+            "Use appropriate rename"
+            "=(G1prefix,G2prefix,...,GNprefix)"
+            "or use disjoint_union(G1,G2,...,GN).",
+        )
 
     # Union is the same type as first graph
     R = U.__class__()
@@ -135,8 +137,10 @@ def disjoint_union_all(graphs):
     for G in graphs[:-1]:
         first_labels.append(len(G) + first_labels[-1])
 
-    relabeled = [nx.convert_node_labels_to_integers(G, first_label=first_label)
-                 for G, first_label in zip(graphs, first_labels)]
+    relabeled = [
+        nx.convert_node_labels_to_integers(G, first_label=first_label)
+        for G, first_label in zip(graphs, first_labels)
+    ]
     R = union_all(relabeled)
     for G in graphs:
         R.graph.update(G.graph)
@@ -180,7 +184,7 @@ def compose_all(graphs):
     U = graphs[0]
 
     if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
-        raise nx.NetworkXError('All graphs must be graphs or multigraphs.')
+        raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
 
     R = U.__class__()
     # add graph attributes, H attributes take precedent over G attributes
@@ -230,7 +234,7 @@ def intersection_all(graphs):
     U = graphs[0]
 
     if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
-        raise nx.NetworkXError('All graphs must be graphs or multigraphs.')
+        raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
 
     # create new graph
     node_intersection = set.intersection(*[set(G.nodes) for G in graphs])
