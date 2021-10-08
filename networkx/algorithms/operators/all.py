@@ -127,13 +127,21 @@ def disjoint_union_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
+    graphs = list(graphs)
+
     if not graphs:
         raise ValueError("cannot apply disjoint_union_all to an empty list")
-    graphs = iter(graphs)
-    U = next(graphs)
-    for H in graphs:
-        U = nx.disjoint_union(U, H)
-    return U
+
+    first_labels = [0]
+    for G in graphs[:-1]:
+        first_labels.append(len(G) + first_labels[-1])
+
+    relabeled = [nx.convert_node_labels_to_integers(G, first_label=first_label)
+                 for G, first_label in zip(graphs, first_labels)]
+    R = union_all(relabeled)
+    for G in graphs:
+        R.graph.update(G.graph)
+    return R
 
 
 def compose_all(graphs):
