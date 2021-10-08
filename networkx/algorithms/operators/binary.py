@@ -90,12 +90,7 @@ def disjoint_union(G, H):
     to the union graph.  If a graph attribute is present in both
     G and H the value from H is used.
     """
-    R1 = nx.convert_node_labels_to_integers(G)
-    R2 = nx.convert_node_labels_to_integers(H, first_label=len(R1))
-    R = union(R1, R2)
-    R.graph.update(G.graph)
-    R.graph.update(H.graph)
-    return R
+    return nx.disjoint_union_all([G, H])
 
 
 def intersection(G, H):
