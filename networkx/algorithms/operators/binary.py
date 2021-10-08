@@ -61,57 +61,7 @@ def union(G, H, rename=(None, None), name=None):
             stacklevel=2,
         )
 
-    if not G.is_multigraph() == H.is_multigraph():
-        raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
-    # Union is the same type as G
-    R = G.__class__()
-    # add graph attributes, H attributes take precedent over G attributes
-    R.graph.update(G.graph)
-    R.graph.update(H.graph)
-
-    # rename graph to obtain disjoint node labels
-    def add_prefix(graph, prefix):
-        if prefix is None:
-            return graph
-
-        def label(x):
-            if isinstance(x, str):
-                name = prefix + x
-            else:
-                name = prefix + repr(x)
-            return name
-
-        return nx.relabel_nodes(graph, label)
-
-    G = add_prefix(G, rename[0])
-    H = add_prefix(H, rename[1])
-    if set(G) & set(H):
-        raise nx.NetworkXError(
-            "The node sets of G and H are not disjoint.",
-            "Use appropriate rename=(Gprefix,Hprefix)" "or use disjoint_union(G,H).",
-        )
-    if G.is_multigraph():
-        G_edges = G.edges(keys=True, data=True)
-    else:
-        G_edges = G.edges(data=True)
-    if H.is_multigraph():
-        H_edges = H.edges(keys=True, data=True)
-    else:
-        H_edges = H.edges(data=True)
-
-    # add nodes
-    R.add_nodes_from(G)
-    R.add_nodes_from(H)
-    # add edges
-    R.add_edges_from(G_edges)
-    R.add_edges_from(H_edges)
-    # add node attributes
-    for n in G:
-        R.nodes[n].update(G.nodes[n])
-    for n in H:
-        R.nodes[n].update(H.nodes[n])
-
-    return R
+    return nx.union_all([G, H], rename)
 
 
 def disjoint_union(G, H):
