@@ -205,10 +205,27 @@ def intersection_all(graphs):
     Attributes from the graph, nodes, and edges are not copied to the new
     graph.
     """
+    graphs = list(graphs)
+
     if not graphs:
         raise ValueError("cannot apply intersection_all to an empty list")
-    graphs = iter(graphs)
-    R = next(graphs)
-    for H in graphs:
-        R = nx.intersection(R, H)
+
+    U = graphs[0]
+
+    if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
+        raise nx.NetworkXError('All graphs must be graphs or multigraphs.')
+
+    # create new graph
+    node_intersection = set.intersection(*[set(G.nodes) for G in graphs])
+    R = U.__class__()
+    R.add_nodes_from(node_intersection)
+
+    if U.is_multigraph():
+        edge_sets = [set(G.edges(keys=True)) for G in graphs]
+    else:
+        edge_sets = [set(G.edges()) for G in graphs]
+
+    edge_intersection = set.intersection(*edge_sets)
+    R.add_edges_from(edge_intersection)
+
     return R
