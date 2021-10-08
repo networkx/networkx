@@ -44,14 +44,59 @@ def union_all(graphs, rename=(None,)):
     union
     disjoint_union_all
     """
+    # collect the graphs in case an iterator was passed
+    graphs = list(graphs)
+
     if not graphs:
         raise ValueError("cannot apply union_all to an empty list")
-    graphs_names = zip_longest(graphs, rename)
-    U, gname = next(graphs_names)
-    for H, hname in graphs_names:
-        U = nx.union(U, H, (gname, hname))
-        gname = None
-    return U
+
+    U = graphs[0]
+
+    if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
+        raise nx.NetworkXError('All graphs must be graphs or multigraphs.')
+
+    # Union is the same type as first graph
+    R = U.__class__()
+
+    # add graph attributes, later attributes take precedent over earlier ones
+    for G in graphs:
+        R.graph.update(G.graph)
+
+    # rename graph to obtain disjoint node labels
+    def add_prefix(graph, prefix):
+        if prefix is None:
+            return graph
+
+        def label(x):
+            if isinstance(x, str):
+                name = prefix + x
+            else:
+                name = prefix + repr(x)
+            return name
+
+        return nx.relabel_nodes(graph, label)
+
+    graphs = [add_prefix(G, name) for G, name in zip_longest(graphs, rename)]
+
+    if sum([len(G) for G in graphs]) != len(set().union(*graphs)):
+        raise nx.NetworkXError('The node sets of the graphs are not disjoint.',
+                               'Use appropriate rename'
+                               '=(G1prefix,G2prefix,...,GNprefix)'
+                               'or use disjoint_union(G1,G2,...,GN).')
+
+    if U.is_multigraph():
+        graph_edges = [G.edges(keys=True, data=True) for G in graphs]
+    else:
+        graph_edges = [G.edges(data=True) for G in graphs]
+
+    # add nodes and edges
+    for G, G_edges in zip(graphs, graph_edges):
+        R.add_nodes_from(G)
+        R.add_edges_from(G_edges)
+        for n in G:
+            R.nodes[n].update(G.nodes[n])
+
+    return R
 
 
 def disjoint_union_all(graphs):
