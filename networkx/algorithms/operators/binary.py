@@ -124,33 +124,7 @@ def intersection(G, H):
     >>> R.remove_nodes_from(n for n in G if n not in H)
     >>> R.remove_edges_from(e for e in G.edges if e not in H.edges)
     """
-    if not G.is_multigraph() == H.is_multigraph():
-        raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
-
-    # create new graph
-    if set(G) != set(H):
-        R = G.__class__()
-        R.add_nodes_from(set(G.nodes).intersection(set(H.nodes)))
-    else:
-        R = nx.create_empty_copy(G)
-
-    if G.number_of_edges() <= H.number_of_edges():
-        if G.is_multigraph():
-            edges = G.edges(keys=True)
-        else:
-            edges = G.edges()
-        for e in edges:
-            if H.has_edge(*e):
-                R.add_edge(*e)
-    else:
-        if H.is_multigraph():
-            edges = H.edges(keys=True)
-        else:
-            edges = H.edges()
-        for e in edges:
-            if G.has_edge(*e):
-                R.add_edge(*e)
-    return R
+    return nx.intersection_all([G, H])
 
 
 def difference(G, H):
