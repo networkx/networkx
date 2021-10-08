@@ -173,13 +173,31 @@ def compose_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
+    graphs = list(graphs)
+
     if not graphs:
         raise ValueError("cannot apply compose_all to an empty list")
-    graphs = iter(graphs)
-    C = next(graphs)
-    for H in graphs:
-        C = nx.compose(C, H)
-    return C
+
+    U = graphs[0]
+
+    if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
+        raise nx.NetworkXError('All graphs must be graphs or multigraphs.')
+
+    R = U.__class__()
+    # add graph attributes, H attributes take precedent over G attributes
+    for G in graphs:
+        R.graph.update(G.graph)
+
+    for G in graphs:
+        R.add_nodes_from(G.nodes(data=True))
+
+    if U.is_multigraph():
+        for G in graphs:
+            R.add_edges_from(G.edges(keys=True, data=True))
+    else:
+        for G in graphs:
+            R.add_edges_from(G.edges(data=True))
+    return R
 
 
 def intersection_all(graphs):
