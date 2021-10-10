@@ -21,6 +21,7 @@ import networkx as nx
 from networkx.drawing.layout import (
     shell_layout,
     circular_layout,
+    hierarchy_layout,
     kamada_kawai_layout,
     spectral_layout,
     spring_layout,
