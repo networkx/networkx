@@ -3,7 +3,7 @@ name: Mypy
 on: [push, pull_request]
 
 jobs:
-  format:
+  type-check:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,8 +21,10 @@ jobs:
         run: |
           pip install --upgrade pip wheel setuptools
           pip install -r requirements/developer.txt
-          pip install .
+          # Rm below when yaml no longer a dep
+          pip install types-PyYAML
+          pip install -e .
           pip list
 
-      - name: run type check
+      - name: run mypy
         run: mypy -p networkx
