@@ -92,10 +92,10 @@ def not_implemented_for(*graph_types):
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
 # Then add the extension to _dispatch_dict.
-_dispatch_dict = defaultdict(lambda: open)
-_dispatch_dict[".gz"] = gzip.open
-_dispatch_dict[".bz2"] = bz2.BZ2File
-_dispatch_dict[".gzip"] = gzip.open
+_dispatch_dict = defaultdict(lambda: open)  # type: ignore
+_dispatch_dict[".gz"] = gzip.open  # type: ignore
+_dispatch_dict[".bz2"] = bz2.BZ2File  # type: ignore
+_dispatch_dict[".gzip"] = gzip.open  # type: ignore
 
 
 def open_file(path_arg, mode="r"):

@@ -183,7 +183,7 @@ def lukes_partitioning(G, max_size: int, node_weight=None, edge_weight=None) -> 
         weight_of_x = safe_G.nodes[x_node][node_weight]
         best_value = 0
         best_partition = None
-        bp_buffer = dict()
+        bp_buffer = dict()  # type: ignore
         x_descendants = nx.descendants(t_G, x_node)
         for i_node in x_descendants:
             for j in range(weight_of_x, max_size + 1):
