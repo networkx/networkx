@@ -63,17 +63,41 @@ Implement the VF2++ Graph Isomorphism Algorithm
 Completed Projects
 ==================
 
-- `Louvain community detection algorithm`_ (GSoC 2021)
-- `Asadpour algorithm for directed travelling salesman problem`_ (GSoC 2021)
-- Pedagogical notebook: `Directed acyclic graphs and topological sort`_ (GSoC 2021)
-- Pedagogical notebook: `Graph assortativity`_ (GSoC 2021)
-- Pedagogical notebook: `Network flow analysis and Dinitz algorithm`_ (GSoC 2021)
+- `Louvain community detection algorithm`_ 
+    - Program: Google Summer of Code 2021
+    - Contributor: `@z3y50n <https://github.com/z3y50n/>`__
+    - Link to Proposal:  `GSoC 2021: Community Detection Algorithms <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2021-Community-Detection-Algorithms.pdf>`__ 
+
+- `Asadpour algorithm for directed travelling salesman problem`_
+    - Program: Google Summer of Code 2021
+    - Contributor: `@mjschwenne <https://github.com/mjschwenne/>`__
+    - Link to Proposal:  `GSoC 2021: Asadpour algorithm <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2021-Asadpour-Asymmetric-Traveling%20Salesman-Problem.pdf>`__ 
+
+- Pedagogical notebook: `Directed acyclic graphs and topological sort`_
+    - Program: Google Summer of Code 2021
+    - Contributor:  `@vdshk <https://github.com/vdshk>`__
+
+- Pedagogical notebooks: `Graph assortativity`_ & `Network flow analysis and Dinitz algorithm`_
+    - Program: Google Summer of Code 2021
+    - Contributor: `@harshal-dupare <https://github.com/harshal-dupare/>`__
+
+- Add On system for NetworkX: `NetworkX-Metis`_
+    - Program: Google Summer of Code 2015
+    - Contributor: `@OrkoHunter <https://github.com/OrkoHunter/>`__
+    - Link to Proposal:  `GSoC 2015: Add On System for NetworkX <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2015-Add-on-system-for-NetworkX.md>`__
+
+- `NetworkX 2.0 API`_
+    - Program: Google Summer of Code 2015
+    - Contributor: `@MridulS <https://github.com/MridulS/>`__
+    - Link to Proposal: `GSoC 2015: NetworkX 2.0 API <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2015-NetworkX-2.0-api.md>`__
 
 .. _`Louvain community detection algorithm`: https://github.com/networkx/networkx/pull/4929
 .. _`Asadpour algorithm for directed travelling salesman problem`: https://github.com/networkx/networkx/pull/4740
 .. _`Directed acyclic graphs and topological sort`: https://github.com/networkx/nx-guides/pull/44
 .. _`Graph assortativity`: https://github.com/networkx/nx-guides/pull/42
 .. _`Network flow analysis and Dinitz algorithm`: https://github.com/networkx/nx-guides/pull/46
+.. _`NetworkX-Metis`: https://github.com/networkx/networkx-metis
+.. _`NetworkX 2.0 API`: https://networkx.org/documentation/latest/release/migration_guide_from_1.x_to_2.0.html
 
 ..
    Project Idea Template
