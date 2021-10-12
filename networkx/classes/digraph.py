@@ -260,67 +260,18 @@ class DiGraph(Graph):
     True
     """
 
-    def __init__(self, incoming_graph_data=None, **attr):
-        """Initialize a graph with edges, name, or graph attributes.
-
-        Parameters
-        ----------
-        incoming_graph_data : input graph (optional, default: None)
-            Data to initialize graph.  If None (default) an empty
-            graph is created.  The data can be an edge list, or any
-            NetworkX graph object.  If the corresponding optional Python
-            packages are installed the data can also be a 2D NumPy array, a
-            SciPy sparse matrix, or a PyGraphviz graph.
-
-        attr : keyword arguments, optional (default= no attributes)
-            Attributes to add to graph as key=value pairs.
-
-        See Also
-        --------
-        convert
-
-        Examples
-        --------
-        >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G = nx.Graph(name="my graph")
-        >>> e = [(1, 2), (2, 3), (3, 4)]  # list of edges
-        >>> G = nx.Graph(e)
-
-        Arbitrary graph attribute pairs (key=value) may be assigned
-
-        >>> G = nx.Graph(e, day="Friday")
-        >>> G.graph
-        {'day': 'Friday'}
-
-        """
-        self.graph_attr_dict_factory = self.graph_attr_dict_factory
-        self.node_dict_factory = self.node_dict_factory
-        self.node_attr_dict_factory = self.node_attr_dict_factory
-        self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
-        self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
-        self.edge_attr_dict_factory = self.edge_attr_dict_factory
-
-        self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
-        self._node = self.node_dict_factory()  # dictionary for node attr
+    def _create_attributes(self):
+        super()._create_attributes()
         # We store two adjacency lists:
         # the predecessors of node n are stored in the dict self._pred
         # the successors of node n are stored in the dict self._succ=self._adj
-        self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         self._pred = self.adjlist_outer_dict_factory()  # predecessor
         self._succ = self._adj  # successor
         # clear cached adjacency properties
-        if hasattr(self, "adj"):
-            delattr(self, "adj")
         if hasattr(self, "pred"):
             delattr(self, "pred")
         if hasattr(self, "succ"):
             delattr(self, "succ")
-
-        # attempt to load graph with data
-        if incoming_graph_data is not None:
-            convert.to_networkx_graph(incoming_graph_data, create_using=self)
-        # load graph attributes (must be after convert)
-        self.graph.update(attr)
 
     @cached_property
     def adj(self):

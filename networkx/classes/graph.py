@@ -315,6 +315,17 @@ class Graph:
         {'day': 'Friday'}
 
         """
+        super().__init__()
+        # Create object attributes.
+        self._create_attributes()
+        # Attempt to load graph with data.
+        if incoming_graph_data is not None:
+            convert.to_networkx_graph(incoming_graph_data, create_using=self)
+        # Load graph attributes (must be after convert).
+        self.graph.update(attr)
+
+    def _create_attributes(self):
+        # Copy class attributes to members.
         self.graph_attr_dict_factory = self.graph_attr_dict_factory
         self.node_dict_factory = self.node_dict_factory
         self.node_attr_dict_factory = self.node_attr_dict_factory
@@ -322,17 +333,14 @@ class Graph:
         self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
         self.edge_attr_dict_factory = self.edge_attr_dict_factory
 
-        self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
+        # Create graph members.
+        # dictionary for graph attributes
+        self.graph = self.graph_attr_dict_factory()
         self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
         # clear cached adjacency properties
         if hasattr(self, "adj"):
             delattr(self, "adj")
-        # attempt to load graph with data
-        if incoming_graph_data is not None:
-            convert.to_networkx_graph(incoming_graph_data, create_using=self)
-        # load graph attributes (must be after convert)
-        self.graph.update(attr)
 
     @cached_property
     def adj(self):
