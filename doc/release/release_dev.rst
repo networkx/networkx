@@ -38,6 +38,10 @@ Improvements
 API Changes
 -----------
 
+- The values in the dictionary returned by
+  `~networkx.drawing.layout.rescale_layout_dict` are now `numpy.ndarray` objects
+  instead of tuples. This makes the return type of ``rescale_layout_dict``
+  consistent with that of all of the other layout functions.
 
 Deprecations
 ------------
