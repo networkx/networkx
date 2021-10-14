@@ -519,8 +519,8 @@ class DiGraph(Graph):
         try:
             nbrs = self._succ[n]
             del self._node[n]
-        except KeyError as e:  # NetworkXError if n not in self
-            raise NetworkXError(f"The node {n} is not in the digraph.") from e
+        except KeyError as err:  # NetworkXError if n not in self
+            raise NetworkXError(f"The node {n} is not in the digraph.") from err
         for u in nbrs:
             del self._pred[u][n]  # remove all edges n-u in digraph
         del self._succ[n]  # remove node from succ
@@ -730,8 +730,8 @@ class DiGraph(Graph):
         try:
             del self._succ[u][v]
             del self._pred[v][u]
-        except KeyError as e:
-            raise NetworkXError(f"The edge {u}-{v} not in graph.") from e
+        except KeyError as err:
+            raise NetworkXError(f"The edge {u}-{v} not in graph.") from err
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -805,8 +805,8 @@ class DiGraph(Graph):
         """
         try:
             return iter(self._succ[n])
-        except KeyError as e:
-            raise NetworkXError(f"The node {n} is not in the digraph.") from e
+        except KeyError as err:
+            raise NetworkXError(f"The node {n} is not in the digraph.") from err
 
     # digraph definitions
     neighbors = successors
@@ -833,8 +833,8 @@ class DiGraph(Graph):
         """
         try:
             return iter(self._pred[n])
-        except KeyError as e:
-            raise NetworkXError(f"The node {n} is not in the digraph.") from e
+        except KeyError as err:
+            raise NetworkXError(f"The node {n} is not in the digraph.") from err
 
     @property
     def edges(self):

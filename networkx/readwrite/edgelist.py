@@ -256,10 +256,10 @@ def parse_edgelist(
             try:
                 u = nodetype(u)
                 v = nodetype(v)
-            except Exception as e:
+            except Exception as err:
                 raise TypeError(
                     f"Failed to convert nodes {u},{v} to type {nodetype}."
-                ) from e
+                ) from err
 
         if len(d) == 0 or data is False:
             # no data or data type specified
@@ -272,10 +272,10 @@ def parse_edgelist(
                 else:
                     edgedata_str = " ".join(d)
                 edgedata = dict(literal_eval(edgedata_str.strip()))
-            except Exception as e:
+            except Exception as err:
                 raise TypeError(
                     f"Failed to convert edge data ({d}) to dictionary."
-                ) from e
+                ) from err
         else:
             # convert edge data to dictionary with specified keys and type
             if len(d) != len(data):
@@ -286,11 +286,11 @@ def parse_edgelist(
             for (edge_key, edge_type), edge_value in zip(data, d):
                 try:
                     edge_value = edge_type(edge_value)
-                except Exception as e:
+                except Exception as err:
                     raise TypeError(
                         f"Failed to convert {edge_key} data {edge_value} "
                         f"to type {edge_type}."
-                    ) from e
+                    ) from err
                 edgedata.update({edge_key: edge_value})
         G.add_edge(u, v, **edgedata)
     return G

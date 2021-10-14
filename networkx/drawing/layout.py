@@ -509,9 +509,9 @@ def _fruchterman_reingold(
 
     try:
         nnodes, _ = A.shape
-    except AttributeError as e:
+    except AttributeError as err:
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg) from e
+        raise nx.NetworkXError(msg) from err
 
     if pos is None:
         # random initial positions
@@ -575,9 +575,9 @@ def _sparse_fruchterman_reingold(
 
     try:
         nnodes, _ = A.shape
-    except AttributeError as e:
+    except AttributeError as err:
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg) from e
+        raise nx.NetworkXError(msg) from err
     # make sure we have a LIst of Lists representation
     try:
         A = A.tolil()
@@ -848,9 +848,9 @@ def _spectral(A, dim=2):
 
     try:
         nnodes, _ = A.shape
-    except AttributeError as e:
+    except AttributeError as err:
         msg = "spectral() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg) from e
+        raise nx.NetworkXError(msg) from err
 
     # form Laplacian matrix where D is diagonal of degrees
     D = np.identity(nnodes, dtype=A.dtype) * np.sum(A, axis=1)
@@ -873,9 +873,9 @@ def _sparse_spectral(A, dim=2):
 
     try:
         nnodes, _ = A.shape
-    except AttributeError as e:
+    except AttributeError as err:
         msg = "sparse_spectral() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg) from e
+        raise nx.NetworkXError(msg) from err
 
     # form Laplacian matrix
     data = np.asarray(A.sum(axis=1).T)

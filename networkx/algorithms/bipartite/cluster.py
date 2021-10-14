@@ -110,10 +110,10 @@ def latapy_clustering(G, nodes=None, mode="dot"):
 
     try:
         cc_func = modes[mode]
-    except KeyError as e:
+    except KeyError as err:
         raise nx.NetworkXError(
             "Mode for bipartite clustering must be: dot, min or max"
-        ) from e
+        ) from err
 
     if nodes is None:
         nodes = G

@@ -129,8 +129,8 @@ def generate_edgelist(G, delimiter=" ", data=True):
     """
     try:
         part0 = [n for n, d in G.nodes.items() if d["bipartite"] == 0]
-    except BaseException as e:
-        raise AttributeError("Missing node attribute `bipartite`") from e
+    except BaseException as err:
+        raise AttributeError("Missing node attribute `bipartite`") from err
     if data is True or data is False:
         for n in part0:
             for e in G.edges(n, data=data):
@@ -228,10 +228,10 @@ def parse_edgelist(
             try:
                 u = nodetype(u)
                 v = nodetype(v)
-            except BaseException as e:
+            except BaseException as err:
                 raise TypeError(
                     f"Failed to convert nodes {u},{v} " f"to type {nodetype}."
-                ) from e
+                ) from err
 
         if len(d) == 0 or data is False:
             # no data or data type specified
@@ -240,10 +240,10 @@ def parse_edgelist(
             # no edge types specified
             try:  # try to evaluate as dictionary
                 edgedata = dict(literal_eval(" ".join(d)))
-            except BaseException as e:
+            except BaseException as err:
                 raise TypeError(
                     f"Failed to convert edge data ({d})" f"to dictionary."
-                ) from e
+                ) from err
         else:
             # convert edge data to dictionary with specified keys and type
             if len(d) != len(data):
@@ -254,11 +254,11 @@ def parse_edgelist(
             for (edge_key, edge_type), edge_value in zip(data, d):
                 try:
                     edge_value = edge_type(edge_value)
-                except BaseException as e:
+                except BaseException as err:
                     raise TypeError(
                         f"Failed to convert {edge_key} data "
                         f"{edge_value} to type {edge_type}."
-                    ) from e
+                    ) from err
                 edgedata.update({edge_key: edge_value})
         G.add_node(u, bipartite=0)
         G.add_node(v, bipartite=1)

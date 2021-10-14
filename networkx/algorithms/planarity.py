@@ -875,9 +875,9 @@ class PlanarEmbedding(nx.DiGraph):
         for v in self:
             try:
                 sorted_nbrs = set(self.neighbors_cw_order(v))
-            except KeyError as e:
+            except KeyError as err:
                 msg = f"Bad embedding. Missing orientation for a neighbor of {v}"
-                raise nx.NetworkXException(msg) from e
+                raise nx.NetworkXException(msg) from err
 
             unsorted_nbrs = set(self[v])
             if sorted_nbrs != unsorted_nbrs:

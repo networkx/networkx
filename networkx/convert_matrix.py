@@ -196,10 +196,10 @@ def from_pandas_adjacency(df, create_using=None):
 
     try:
         df = df[df.index]
-    except Exception as e:
+    except Exception as err:
         missing = list(set(df.index).difference(set(df.columns)))
         msg = f"{missing} not in columns"
-        raise nx.NetworkXError("Columns must match Indices.", msg) from e
+        raise nx.NetworkXError("Columns must match Indices.", msg) from err
 
     A = df.values
     G = from_numpy_array(A, create_using=create_using)
@@ -439,9 +439,9 @@ def from_pandas_edgelist(
 
     try:
         attribute_data = zip(*[df[col] for col in attr_col_headings])
-    except (KeyError, TypeError) as e:
+    except (KeyError, TypeError) as err:
         msg = f"Invalid edge_attr argument: {edge_attr}"
-        raise nx.NetworkXError(msg) from e
+        raise nx.NetworkXError(msg) from err
 
     if g.is_multigraph():
         # => append the edge keys from the df to the bundled data
@@ -449,9 +449,9 @@ def from_pandas_edgelist(
             try:
                 multigraph_edge_keys = df[edge_key]
                 attribute_data = zip(attribute_data, multigraph_edge_keys)
-            except (KeyError, TypeError) as e:
+            except (KeyError, TypeError) as err:
                 msg = f"Invalid edge_key argument: {edge_key}"
-                raise nx.NetworkXError(msg) from e
+                raise nx.NetworkXError(msg) from err
 
         for s, t, attrs in zip(df[source], df[target], attribute_data):
             if edge_key is not None:
@@ -900,8 +900,8 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
         return M.asformat(format)
     # From Scipy 1.1.0, asformat will throw a ValueError instead of an
     # AttributeError if the format if not recognized.
-    except (AttributeError, ValueError) as e:
-        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from e
+    except (AttributeError, ValueError) as err:
+        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from err
 
 
 def _csr_gen_triples(A):
@@ -1225,8 +1225,8 @@ def to_numpy_array(
         operator = {sum: np.nansum, min: np.nanmin, max: np.nanmax}
         try:
             op = operator[multigraph_weight]
-        except Exception as e:
-            raise ValueError("multigraph_weight must be sum, min, or max") from e
+        except Exception as err:
+            raise ValueError("multigraph_weight must be sum, min, or max") from err
 
         for u, v, attrs in G.edges(data=True):
             if (u in nodeset) and (v in nodeset):
@@ -1358,8 +1358,8 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     dt = A.dtype
     try:
         python_type = kind_to_python_type[dt.kind]
-    except Exception as e:
-        raise TypeError(f"Unknown numpy data type: {dt}") from e
+    except Exception as err:
+        raise TypeError(f"Unknown numpy data type: {dt}") from err
 
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n))
