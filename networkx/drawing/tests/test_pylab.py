@@ -144,28 +144,42 @@ def test_linestyle():
         nx.draw_networkx_labels(G, pos)
 
         # edge with default style
-        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0,2), (1,2)])
+        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0, 2), (1, 2)])
 
         # edge with string style
-        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0,2), (1,2)], style="dashed")
+        nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style="dashed"
+        )
 
         # edge with simplified string style
-        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0,2), (1,2)], style="--")
+        nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style="--"
+        )
 
         # edge with string style in list
-        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0,2), (1,2)], style=["dashed"])
+        nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=["dashed"]
+        )
 
         # edge with simplified string style in list
-        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0,2), (1,2)], style=["--"])
+        nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=["--"]
+        )
 
         # edges with styles for each edge
-        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0,2), (1,2)], style=["--", "-", ":"])
+        nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=["--", "-", ":"]
+        )
 
         # edges with fewer styles than edges
-        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0,2), (1,2)], style=["--", "-"])
+        nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=["--", "-"]
+        )
 
         # edges with more stules than edges
-        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0,2), (1,2)], style=["--", "-", ":", "-."])
+        nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=["--", "-", ":", "-."]
+        )
 
         # plt.show()
 
