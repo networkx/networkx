@@ -137,6 +137,7 @@ def test_edge_colors_and_widths():
 
         # plt.show()
 
+
 def test_linestyle():
     pos = nx.circular_layout(barbell)
     for G in (barbell, barbell.to_directed()):
@@ -181,7 +182,7 @@ def test_linestyle():
 
 
 def test_labels_and_colors():
-    G = nx.cubical_graph()Y
+    G = nx.cubical_graph()
     pos = nx.spring_layout(G)  # positions for all nodes
     # nodes
     nx.draw_networkx_nodes(
