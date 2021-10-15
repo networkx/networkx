@@ -212,8 +212,8 @@ def topological_generations(G):
             for child in G.neighbors(node):
                 try:
                     indegree_map[child] -= len(G[node][child]) if multigraph else 1
-                except KeyError as e:
-                    raise RuntimeError("Graph changed during iteration") from e
+                except KeyError as err:
+                    raise RuntimeError("Graph changed during iteration") from err
                 if indegree_map[child] == 0:
                     zero_indegree.append(child)
                     del indegree_map[child]
@@ -378,8 +378,8 @@ def lexicographical_topological_sort(G, key=None):
         for _, child in G.edges(node):
             try:
                 indegree_map[child] -= 1
-            except KeyError as e:
-                raise RuntimeError("Graph changed during iteration") from e
+            except KeyError as err:
+                raise RuntimeError("Graph changed during iteration") from err
             if indegree_map[child] == 0:
                 heapq.heappush(zero_indegree, create_tuple(child))
                 del indegree_map[child]

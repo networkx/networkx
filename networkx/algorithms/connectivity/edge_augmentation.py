@@ -985,9 +985,9 @@ def weighted_bridge_augmentation(G, avail, weight=None):
         # Note the original edges must be directed towards to root for the
         # branching to give us a bridge-augmentation.
         A = _minimum_rooted_branching(D, root)
-    except nx.NetworkXException as e:
+    except nx.NetworkXException as err:
         # If there is no branching then augmentation is not possible
-        raise nx.NetworkXUnfeasible("no 2-edge-augmentation possible") from e
+        raise nx.NetworkXUnfeasible("no 2-edge-augmentation possible") from err
 
     # For each edge e, in the branching that did not belong to the directed
     # tree T, add the corresponding edge that **GENERATED** it (this is not

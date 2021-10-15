@@ -617,8 +617,8 @@ class Graph:
         try:
             nbrs = list(adj[n])  # list handles self-loops (allows mutation)
             del self._node[n]
-        except KeyError as e:  # NetworkXError if n not in self
-            raise NetworkXError(f"The node {n} is not in the graph.") from e
+        except KeyError as err:  # NetworkXError if n not in self
+            raise NetworkXError(f"The node {n} is not in the graph.") from err
         for u in nbrs:
             del adj[u][n]  # remove all edges n-u in graph
         del adj[n]  # now remove node
@@ -1017,8 +1017,8 @@ class Graph:
             del self._adj[u][v]
             if u != v:  # self-loop needs only one entry removed
                 del self._adj[v][u]
-        except KeyError as e:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph") from e
+        except KeyError as err:
+            raise NetworkXError(f"The edge {u}-{v} is not in the graph") from err
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -1251,8 +1251,8 @@ class Graph:
         """
         try:
             return iter(self._adj[n])
-        except KeyError as e:
-            raise NetworkXError(f"The node {n} is not in the graph.") from e
+        except KeyError as err:
+            raise NetworkXError(f"The node {n} is not in the graph.") from err
 
     @property
     def edges(self):
@@ -1911,8 +1911,8 @@ class Graph:
                     for n in nlist:
                         if n in adj:
                             yield n
-                except TypeError as e:
-                    exc, message = e, e.args[0]
+                except TypeError as err:
+                    exc, message = err, err.args[0]
                     # capture error for non-sequence/iterator nbunch.
                     if "iter" in message:
                         exc = NetworkXError(

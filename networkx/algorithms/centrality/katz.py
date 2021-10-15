@@ -157,12 +157,12 @@ def katz_centrality(
 
     try:
         b = dict.fromkeys(G, float(beta))
-    except (TypeError, ValueError, AttributeError) as e:
+    except (TypeError, ValueError, AttributeError) as err:
         b = beta
         if set(beta) != set(G):
             raise nx.NetworkXError(
                 "beta dictionary " "must have a value for every node"
-            ) from e
+            ) from err
 
     # make up to max_iter iterations
     for i in range(max_iter):
@@ -319,8 +319,8 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
         nodelist = list(G)
         try:
             b = np.ones((len(nodelist), 1)) * float(beta)
-        except (TypeError, ValueError, AttributeError) as e:
-            raise nx.NetworkXError("beta must be a number") from e
+        except (TypeError, ValueError, AttributeError) as err:
+            raise nx.NetworkXError("beta must be a number") from err
 
     A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = A.shape[0]

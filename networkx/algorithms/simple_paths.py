@@ -224,8 +224,8 @@ def all_simple_paths(G, source, target, cutoff=None):
     else:
         try:
             targets = set(target)
-        except TypeError as e:
-            raise nx.NodeNotFound(f"target node {target} not in graph") from e
+        except TypeError as err:
+            raise nx.NodeNotFound(f"target node {target} not in graph") from err
     if source in targets:
         return _empty_generator()
     if cutoff is None:

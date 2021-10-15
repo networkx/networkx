@@ -175,8 +175,8 @@ def freeze(G):
     >>> G = nx.freeze(G)
     >>> try:
     ...     G.add_edge(4, 5)
-    ... except nx.NetworkXError as e:
-    ...     print(str(e))
+    ... except nx.NetworkXError as err:
+    ...     print(str(err))
     Frozen graph can't be modified
 
     Notes
