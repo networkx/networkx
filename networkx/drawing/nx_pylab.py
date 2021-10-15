@@ -821,6 +821,13 @@ def draw_networkx_edges(
                     line_width = width[i % len(width)]
             else:
                 line_width = width
+              
+            if len(style) == len(edge_pos):
+                linestyle = style[i]
+            elif len(style) == 1:
+                linestyle = style[0]
+            else:  # Cycle through colors
+                linestyle = style[i % len(style)]
 
             arrow = mpl.patches.FancyArrowPatch(
                 (x1, y1),
@@ -832,7 +839,7 @@ def draw_networkx_edges(
                 color=arrow_color,
                 linewidth=line_width,
                 connectionstyle=_connectionstyle,
-                linestyle=style,
+                linestyle=linestyle,
                 zorder=1,
             )  # arrows go behind nodes
 
