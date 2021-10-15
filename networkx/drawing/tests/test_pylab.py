@@ -179,8 +179,9 @@ def test_linestyle():
 
         # plt.show()
 
+
 def test_labels_and_colors():
-    G = nx.cubical_graph()
+    G = nx.cubical_graph()Y
     pos = nx.spring_layout(G)  # positions for all nodes
     # nodes
     nx.draw_networkx_nodes(
