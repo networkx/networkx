@@ -34,8 +34,8 @@ def run(verbosity=1, doctest=False):
 
     try:
         code = pytest.main(pytest_args)
-    except SystemExit as exc:
-        code = exc.code
+    except SystemExit as err:
+        code = err.code
 
     return code == 0
 

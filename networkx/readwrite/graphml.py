@@ -453,10 +453,10 @@ class GraphML:
         supported by GraphML."""
         try:
             return self.xml_type[key]
-        except KeyError as e:
+        except KeyError as err:
             raise TypeError(
                 f"GraphML does not support type {type(key)} as data values."
-            ) from e
+            ) from err
 
 
 class GraphMLWriter(GraphML):
@@ -965,8 +965,8 @@ class GraphMLReader(GraphML):
             try:
                 data_name = graphml_keys[key]["name"]
                 data_type = graphml_keys[key]["type"]
-            except KeyError as e:
-                raise nx.NetworkXError(f"Bad GraphML data: no key {key}") from e
+            except KeyError as err:
+                raise nx.NetworkXError(f"Bad GraphML data: no key {key}") from err
             text = data_element.text
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element)) == 0:

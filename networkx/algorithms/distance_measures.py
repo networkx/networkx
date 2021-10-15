@@ -251,8 +251,8 @@ def eccentricity(G, v=None, sp=None):
             try:
                 length = sp[n]
                 L = len(length)
-            except TypeError as e:
-                raise nx.NetworkXError('Format of "sp" is invalid.') from e
+            except TypeError as err:
+                raise nx.NetworkXError('Format of "sp" is invalid.') from err
         if L != order:
             if G.is_directed():
                 msg = (

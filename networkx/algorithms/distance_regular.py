@@ -158,8 +158,8 @@ def intersection_array(G):
         for v in G:
             try:
                 i = path_length[u][v]
-            except KeyError as e:  # graph must be connected
-                raise nx.NetworkXError("Graph is not distance regular.") from e
+            except KeyError as err:  # graph must be connected
+                raise nx.NetworkXError("Graph is not distance regular.") from err
             # number of neighbors of v at a distance of i-1 from u
             c = len([n for n in G[v] if path_length[n][u] == i - 1])
             # number of neighbors of v at a distance of i+1 from u

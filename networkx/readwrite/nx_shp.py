@@ -83,8 +83,8 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
     warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         from osgeo import ogr
-    except ImportError as e:
-        raise ImportError("read_shp requires OGR: http://www.gdal.org/") from e
+    except ImportError as err:
+        raise ImportError("read_shp requires OGR: http://www.gdal.org/") from err
 
     if not isinstance(path, str):
         return
@@ -159,10 +159,10 @@ def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
     warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         from osgeo import ogr
-    except ImportError as e:
+    except ImportError as err:
         raise ImportError(
             "edges_from_line requires OGR: " "http://www.gdal.org/"
-        ) from e
+        ) from err
 
     if geom.GetGeometryType() == ogr.wkbLineString:
         if simplify:
@@ -229,8 +229,8 @@ def write_shp(G, outdir):
     warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         from osgeo import ogr
-    except ImportError as e:
-        raise ImportError("write_shp requires OGR: http://www.gdal.org/") from e
+    except ImportError as err:
+        raise ImportError("write_shp requires OGR: http://www.gdal.org/") from err
     # easier to debug in python if ogr throws exceptions
     ogr.UseExceptions()
 
