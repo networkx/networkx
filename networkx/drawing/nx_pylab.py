@@ -824,7 +824,7 @@ def draw_networkx_edges(
 
             if isinstance(style, str):
                 linestyle = style
-            if len(style) == len(edge_pos):
+            elif len(style) == len(edge_pos):
                 linestyle = style[i]
             elif len(style) == 1:
                 linestyle = style[0]
