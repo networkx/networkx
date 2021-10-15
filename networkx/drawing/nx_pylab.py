@@ -824,12 +824,13 @@ def draw_networkx_edges(
 
             if isinstance(style, str):
                 linestyle = style
-            elif len(style) == len(edge_pos):
-                linestyle = style[i]
-            elif len(style) == 1:
-                linestyle = style[0]
-            else:  # Cycle through styles
-                linestyle = style[i % len(style)]
+            elif np.iterable(style):
+                if len(style) == len(edge_pos):
+                    linestyle = style[i]
+                else:  # Cycle through styles
+                    linestyle = style[i % len(style)]
+            else:
+                linestyle = style
 
             arrow = mpl.patches.FancyArrowPatch(
                 (x1, y1),
