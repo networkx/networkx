@@ -152,9 +152,7 @@ def test_linestyle():
         )
 
         # edge with simplified string style
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style="--"
-        )
+        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style="--")
 
         # edge with string style in list
         nx.draw_networkx_edges(
@@ -162,9 +160,7 @@ def test_linestyle():
         )
 
         # edge with simplified string style in list
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=["--"]
-        )
+        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=["--"])
 
         # edges with styles for each edge
         nx.draw_networkx_edges(
