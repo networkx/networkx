@@ -826,7 +826,7 @@ def draw_networkx_edges(
                 linestyle = style[i]
             elif len(style) == 1:
                 linestyle = style[0]
-            else:  # Cycle through colors
+            else:  # Cycle through styles
                 linestyle = style[i % len(style)]
 
             arrow = mpl.patches.FancyArrowPatch(
