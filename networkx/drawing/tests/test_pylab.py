@@ -3,13 +3,12 @@ import os
 import itertools
 
 import pytest
-import numpy as np
-from matplotlib.collections import LineCollection
 
 mpl = pytest.importorskip("matplotlib")
 mpl.use("PS")
 plt = pytest.importorskip("matplotlib.pyplot")
 plt.rcParams["text.usetex"] = False
+
 
 import networkx as nx
 
@@ -142,9 +141,12 @@ def test_edge_colors_and_widths():
 
 
 def test_linestyle():
+
+    np = pytest.importorskip("numpy")
+
     def test_styles(edges, style="solid"):
         """Function to test actually set styles"""
-        if not isinstance(edges, LineCollection):
+        if not isinstance(edges, mpl.collections.LineCollection):
             for i, edge in enumerate(edges):
                 if isinstance(style, str) or isinstance(style, tuple):
                     linestyle = style
