@@ -70,18 +70,11 @@ def _get_color(drawn_edges):
     return drawn_edges[0].get_edgecolor()
 
 
-@pytest.mark.parametrize(
-    ("graph_type", "expected_mpl_object", "expected_color"),
-    (
-        (nx.Graph, mpl.collections.LineCollection, "k"),
-        (nx.DiGraph, list, "k"),
-    ),
-)
-def test_edge_color_default(graph_type, expected_mpl_object, expected_color):
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_edge_color_default(graph_type):
     G = nx.path_graph(3, create_using=graph_type)
     drawn_edges = nx.draw_networkx_edges(G, pos=nx.random_layout(G))
-    assert isinstance(drawn_edges, expected_mpl_object)
-    assert mpl.colors.same_color(_get_color(drawn_edges), expected_color)
+    assert mpl.colors.same_color(_get_color(drawn_edges), "black")
 
 
 def test_edge_colors_and_widths():
