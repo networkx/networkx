@@ -828,9 +828,11 @@ def draw_networkx_edges(
             else:
                 line_width = width
 
-            if isinstance(style, str) or isinstance(style, tuple):
-                linestyle = style
-            elif np.iterable(style):
+            if (
+                np.iterable(style)
+                and not isinstance(style, str)
+                and not isinstance(style, tuple)
+            ):
                 if len(style) == len(edge_pos):
                     linestyle = style[i]
                 else:  # Cycle through styles
