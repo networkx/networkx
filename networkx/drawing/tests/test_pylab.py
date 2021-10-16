@@ -1,7 +1,10 @@
 """Unit tests for matplotlib drawing functions."""
 import os
 import itertools
+
 import pytest
+import numpy as np
+from matplotlib.collections import LineCollection
 
 mpl = pytest.importorskip("matplotlib")
 mpl.use("PS")
@@ -139,6 +142,21 @@ def test_edge_colors_and_widths():
 
 
 def test_linestyle():
+    def test_styles(edges, style="solid"):
+        """Function to test actually set styles"""
+        if not isinstance(edges, LineCollection):
+            for i, edge in enumerate(edges):
+                if isinstance(style, str) or isinstance(style, tuple):
+                    linestyle = style
+                elif np.iterable(style):
+                    if len(style) == len(edges):
+                        linestyle = style[i]
+                    else:  # Cycle through styles
+                        linestyle = style[i % len(style)]
+                else:
+                    linestyle = style
+                assert edge.get_linestyle() == linestyle
+
     pos = nx.circular_layout(barbell)
     for G in (barbell, barbell.to_directed()):
 
@@ -146,48 +164,77 @@ def test_linestyle():
         nx.draw_networkx_labels(G, pos)
 
         # edge with default style
-        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0, 2), (1, 2)])
+        drawn_edges = nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0, 2), (1, 2)])
+        test_styles(drawn_edges)
+
+        # global style
 
         # edge with string style
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style="dashed"
+        style = "dashed"
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
         )
-
-        # edge with tuple style
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=(1, (1, 1))
-        )
-
-        # edge with tuple style as list
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=[(1, (1, 1))]
-        )
+        test_styles(drawn_edges, style=style)
 
         # edge with simplified string style
-        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style="--")
+        style = "--"
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
+        )
+        test_styles(drawn_edges, style=style)
+
+        # edge with tuple style
+        style = (1, (1, 1))
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
+        )
+        test_styles(drawn_edges, style=style)
+
+        # global style in list
 
         # edge with string style in list
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=["dashed"]
+        style = ["dashed"]
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
         )
+        test_styles(drawn_edges, style=style)
 
         # edge with simplified string style in list
-        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=["--"])
+        style = ["--"]
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
+        )
+        test_styles(drawn_edges, style=style)
+
+        # edge with tuple style as list
+        style = [(1, (1, 1))]
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
+        )
+        test_styles(drawn_edges, style=style)
+
+        # styles for each edge
 
         # edges with styles for each edge
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=["--", "-", ":"]
+        style = ["--", "-", ":"]
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
         )
+        test_styles(drawn_edges, style=style)
 
         # edges with fewer styles than edges
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=["--", "-"]
+        style = ["--", "-"]
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
         )
+        test_styles(drawn_edges, style=style)
 
-        # edges with more stules than edges
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=["--", "-", ":", "-."]
+        # edges with more styles than edges
+        style = ["--", "-", ":", "-."]
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
         )
+        test_styles(drawn_edges, style=style)
 
         # plt.show()
 
