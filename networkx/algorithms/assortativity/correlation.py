@@ -237,7 +237,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
 
     Notes
     -----
-    This computes Eq. (21) in Ref. [1]_ , which is the pearson correlation
+    This computes Eq. (21) in Ref. [1]_ , which is the Pearson correlation
     coefficient of the specified (scalar valued) attribute across edges.
 
     References
