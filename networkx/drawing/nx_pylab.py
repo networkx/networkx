@@ -540,9 +540,15 @@ def draw_networkx_edges(
         floats from 0-1. If numeric values are specified they will be
         mapped to colors using the edge_cmap and edge_vmin,edge_vmax parameters.
 
-    style : string (default=solid line)
+    style : string or array of strings (default='solid')
         Edge line style e.g.: '-', '--', '-.', ':'
         or words like 'solid' or 'dashed'.
+        Can be a single style or a sequence of styles with the same
+        length as the edge list.
+        If less styles than edges are given the styles will cycle.
+        If more styles than edges are given the styles will be used sequentially
+        and not be exhausted.
+        Also, `(offset, onoffseq)` tuples can be used as style instead of a strings.
         (See `matplotlib.patches.FancyArrowPatch`: `linestyle`)
 
     alpha : float or None (default=None)
@@ -822,7 +828,7 @@ def draw_networkx_edges(
             else:
                 line_width = width
 
-            if isinstance(style, str):
+            if isinstance(style, str) or isinstance(style, tuple):
                 linestyle = style
             elif np.iterable(style):
                 if len(style) == len(edge_pos):

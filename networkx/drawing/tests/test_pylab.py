@@ -141,6 +141,7 @@ def test_edge_colors_and_widths():
 def test_linestyle():
     pos = nx.circular_layout(barbell)
     for G in (barbell, barbell.to_directed()):
+
         nx.draw_networkx_nodes(G, pos, node_color=[(1.0, 1.0, 0.2, 0.5)])
         nx.draw_networkx_labels(G, pos)
 
@@ -150,6 +151,16 @@ def test_linestyle():
         # edge with string style
         nx.draw_networkx_edges(
             G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style="dashed"
+        )
+
+        # edge with tuple style
+        nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=(1, (1, 1))
+        )
+
+        # edge with tuple style as list
+        nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=[(1, (1, 1))]
         )
 
         # edge with simplified string style
