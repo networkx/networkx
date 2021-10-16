@@ -160,9 +160,10 @@ def test_directed_edges_linestyle_default():
         (1, (1, 1)),  # edge with (offset, onoffseq) style
     ),
 )
-def test_directed_edges_linestyle_string(style):
-    """Tests support for strings specifying linestyles in ``draw_networkx_edges`` for
-    FancyArrowPatch outputs (e.g. directed edges)."""
+def test_directed_edges_linestyle_single_value(style):
+    """Tests support for specifying linestyles with a single value to be applied to
+    all edges in ``draw_networkx_edges`` for FancyArrowPatch outputs
+    (e.g. directed edges)."""
 
     G = nx.path_graph(4, create_using=nx.DiGraph)  # Graph with 3 edges
     pos = {n: (n, n) for n in range(len(G))}
