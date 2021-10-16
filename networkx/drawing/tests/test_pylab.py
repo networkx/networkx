@@ -145,7 +145,12 @@ def test_linestyle():
     np = pytest.importorskip("numpy")
 
     def test_styles(edges, style="solid"):
-        """Function to test actually set styles"""
+        """
+        Function to test the styles set for edges drawn as FancyArrowPatch(es)
+        TODO: It would be nice to run the same tests for LineCollection(s)
+        """
+
+        # we assume that if edges are not a LineCollection, they are drawn as FanceArrowPatches
         if not isinstance(edges, mpl.collections.LineCollection):
             for i, edge in enumerate(edges):
                 if isinstance(style, str) or isinstance(style, tuple):
