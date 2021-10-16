@@ -13,13 +13,13 @@ def node_attribute_xy(G, attribute, nodes=None):
        The node attribute key.
 
     nodes: list or iterable (optional)
-        Use only edges that are adjacency to specified nodes.
+        Use only edges that are incident to specified nodes.
         The default is all nodes.
 
     Returns
     -------
-    (x,y): 2-tuple
-        Generates 2-tuple of (attribute,attribute) values.
+    (x, y): 2-tuple
+        Generates 2-tuple of (attribute, attribute) values.
 
     Examples
     --------
@@ -33,7 +33,7 @@ def node_attribute_xy(G, attribute, nodes=None):
     Notes
     -----
     For undirected graphs each edge is produced twice, once for each edge
-    representation (u,v) and (v,u), with the exception of self-loop edges
+    representation (u, v) and (v, u), with the exception of self-loop edges
     which only appear once.
     """
     if nodes is None:
@@ -80,8 +80,8 @@ def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
 
     Returns
     -------
-    (x,y): 2-tuple
-        Generates 2-tuple of (degree,degree) values.
+    (x, y): 2-tuple
+        Generates 2-tuple of (degree, degree) values.
 
 
     Examples
@@ -96,21 +96,22 @@ def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
     Notes
     -----
     For undirected graphs each edge is produced twice, once for each edge
-    representation (u,v) and (v,u), with the exception of self-loop edges
+    representation (u, v) and (v, u), with the exception of self-loop edges
     which only appear once.
     """
     if nodes is None:
         nodes = set(G)
     else:
         nodes = set(nodes)
-    xdeg = G.degree
-    ydeg = G.degree
     if G.is_directed():
         direction = {"out": G.out_degree, "in": G.in_degree}
         xdeg = direction[x]
         ydeg = direction[y]
+    else:
+        xdeg = ydeg = G.degree
 
     for u, degu in xdeg(nodes, weight=weight):
+        # use G.edges to treat multigraphs correctly
         neighbors = (nbr for _, nbr in G.edges(u) if nbr in nodes)
         for v, degv in ydeg(neighbors, weight=weight):
             yield degu, degv
