@@ -63,18 +63,55 @@ def test_arrows():
     # plt.show()
 
 
-def _get_color(drawn_edges):
-    """Return the color of an edge instance."""
-    if isinstance(drawn_edges, mpl.collections.LineCollection):
-        return drawn_edges.get_color()
-    return drawn_edges[0].get_edgecolor()
+@pytest.mark.parametrize(
+    ("edge_color", "expected"),
+    (
+        (None, "black"),  # Default
+        ("r", "red"),  # Non-default color string
+        (["r"], "red"),  # Single non-default color in a list
+        ((1.0, 1.0, 0.0), "yellow"),  # single color as rgb tuple
+        ([(1.0, 1.0, 0.0)], "yellow"),  # single color as rgb tuple in list
+        ((0, 1, 0, 1), "lime"),  # single color as rgba tuple
+        ([(0, 1, 0, 1)], "lime"),  # single color as rgba tuple in list
+        ("#0000ff", "blue"),  # single color hex code
+        (["#0000ff"], "blue"),  # hex code in list
+    ),
+)
+def test_single_edge_color_undirected(edge_color, expected):
+    """Tests ways of specifying all edges have a single color for edges
+    drawn with a LineCollection"""
+
+    G = nx.path_graph(3)
+    drawn_edges = nx.draw_networkx_edges(
+        G, pos=nx.random_layout(G), edge_color=edge_color
+    )
+    assert mpl.colors.same_color(drawn_edges.get_color(), expected)
 
 
-@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
-def test_edge_color_default(graph_type):
-    G = nx.path_graph(3, create_using=graph_type)
-    drawn_edges = nx.draw_networkx_edges(G, pos=nx.random_layout(G))
-    assert mpl.colors.same_color(_get_color(drawn_edges), "black")
+@pytest.mark.parametrize(
+    ("edge_color", "expected"),
+    (
+        (None, "black"),  # Default
+        ("r", "red"),  # Non-default color string
+        (["r"], "red"),  # Single non-default color in a list
+        ((1.0, 1.0, 0.0), "yellow"),  # single color as rgb tuple
+        ([(1.0, 1.0, 0.0)], "yellow"),  # single color as rgb tuple in list
+        ((0, 1, 0, 1), "lime"),  # single color as rgba tuple
+        ([(0, 1, 0, 1)], "lime"),  # single color as rgba tuple in list
+        ("#0000ff", "blue"),  # single color hex code
+        (["#0000ff"], "blue"),  # hex code in list
+    ),
+)
+def test_single_edge_color_directed(edge_color, expected):
+    """Tests ways of specifying all edges have a single color for edges drawn
+    with FancyArrowPatches"""
+
+    G = nx.path_graph(3, create_using=nx.DiGraph)
+    drawn_edges = nx.draw_networkx_edges(
+        G, pos=nx.random_layout(G), edge_color=edge_color
+    )
+    for fap in drawn_edges:
+        assert mpl.colors.same_color(fap.get_edgecolor(), expected)
 
 
 def test_edge_colors_and_widths():
