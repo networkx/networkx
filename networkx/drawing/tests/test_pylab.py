@@ -267,31 +267,28 @@ def test_edge_width_single_value_directed(edgewidth, expected):
         assert fap.get_linewidth() == expected
 
 
+@pytest.mark.parametrize(
+    "edgelist",
+    (
+        [(0, 1), (1, 2), (2, 3)],  # one width specification per edge
+        None,  #  fewer widths than edges - widths cycle
+        [(0, 1), (1, 2)],  # More widths than edges - unused widths ignored
+    ),
+)
+def test_edge_width_sequence(edgelist):
+    G = barbell.to_directed()
+    pos = nx.random_layout(G)
+    widths = (0.5, 2.0, 12.0)
+    drawn_edges = nx.draw_networkx_edges(G, pos, edgelist=edgelist, width=widths)
+    for fap, expected_width in zip(drawn_edges, itertools.cycle(widths)):
+        assert fap.get_linewidth() == expected_width
+
+
 def test_edge_colors_and_widths():
     pos = nx.circular_layout(barbell)
     for G in (barbell, barbell.to_directed()):
         nx.draw_networkx_nodes(G, pos, node_color=[(1.0, 1.0, 0.2, 0.5)])
         nx.draw_networkx_labels(G, pos)
-        # edges with color strings and widths for each edge
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 2), (0, 3)], width=[1, 3], edge_color=["r", "b"]
-        )
-        # edges with fewer color strings and widths than edges
-        nx.draw_networkx_edges(
-            G,
-            pos,
-            edgelist=[(1, 2), (1, 3), (2, 3), (3, 4)],
-            width=[1, 3],
-            edge_color=["g", "m", "c"],
-        )
-        # edges with more color strings and widths than edges
-        nx.draw_networkx_edges(
-            G,
-            pos,
-            edgelist=[(3, 4)],
-            width=[1, 2, 3, 4],
-            edge_color=["r", "b", "g", "k"],
-        )
         # edge_color as numeric using vmin, vmax
         nx.draw_networkx_edges(
             G,
