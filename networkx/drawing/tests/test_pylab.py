@@ -195,6 +195,35 @@ def test_more_edge_colors_than_num_edges_directed():
         assert mpl.colors.same_color(fap.get_edgecolor(), expected)
 
 
+def test_edge_color_string_with_gloabl_alpha_undirected():
+    edge_collection = nx.draw_networkx_edges(
+        barbell,
+        pos=nx.random_layout(barbell),
+        edgelist=[(0, 1), (1, 2)],
+        edge_color="purple",
+        alpha=0.2,
+    )
+    ec = edge_collection.get_color().squeeze()  # as rgba tuple
+    assert len(edge_collection.get_paths()) == 2
+    assert mpl.colors.same_color(ec[:-1], "purple")
+    assert ec[-1] == 0.2
+
+
+def test_edge_color_string_with_global_alpha_directed():
+    drawn_edges = nx.draw_networkx_edges(
+        barbell.to_directed(),
+        pos=nx.random_layout(barbell),
+        edgelist=[(0, 1), (1, 2)],
+        edge_color="purple",
+        alpha=0.2,
+    )
+    assert len(drawn_edges) == 2
+    for fap in drawn_edges:
+        ec = fap.get_edgecolor()  # As rgba tuple
+        assert mpl.colors.same_color(ec[:-1], "purple")
+        assert ec[-1] == 0.2
+
+
 def test_edge_colors_and_widths():
     pos = nx.circular_layout(barbell)
     for G in (barbell, barbell.to_directed()):
@@ -226,11 +255,6 @@ def test_edge_colors_and_widths():
             width=[1, 2, 3, 4],
             edge_color=["r", "b", "g", "k"],
         )
-        # with color string and global alpha
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(11, 12), (11, 13)], edge_color="purple", alpha=0.2
-        )
-
         # edge_color as numeric using vmin, vmax
         nx.draw_networkx_edges(
             G,
