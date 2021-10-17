@@ -284,22 +284,20 @@ def test_edge_width_sequence(edgelist):
         assert fap.get_linewidth() == expected_width
 
 
-def test_edge_colors_and_widths():
-    pos = nx.circular_layout(barbell)
-    for G in (barbell, barbell.to_directed()):
-        nx.draw_networkx_nodes(G, pos, node_color=[(1.0, 1.0, 0.2, 0.5)])
-        nx.draw_networkx_labels(G, pos)
-        # edge_color as numeric using vmin, vmax
-        nx.draw_networkx_edges(
-            G,
-            pos,
-            edgelist=[(7, 8), (8, 9)],
-            edge_color=[0.2, 0.5],
-            edge_vmin=0.1,
-            edge_vmax=0.6,
-        )
-
-        # plt.show()
+def test_edge_color_with_edge_vmin_vmax():
+    """Test that edge_vmin and edge_vmax properly set the dynamic range of the
+    color map when num edges == len(edge_colors)."""
+    G = nx.path_graph(3, create_using=nx.DiGraph)
+    pos = nx.random_layout(G)
+    # Extract colors from the original (unscaled) colormap
+    drawn_edges = nx.draw_networkx_edges(G, pos, edge_color=[0, 1.0])
+    orig_colors = [e.get_edgecolor() for e in drawn_edges]
+    # Colors from scaled colormap
+    drawn_edges = nx.draw_networkx_edges(
+        G, pos, edge_color=[0.2, 0.8], edge_vmin=0.2, edge_vmax=0.8
+    )
+    scaled_colors = [e.get_edgecolor() for e in drawn_edges]
+    assert mpl.colors.same_color(orig_colors, scaled_colors)
 
 
 def test_linestyle():
