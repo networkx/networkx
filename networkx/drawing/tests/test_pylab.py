@@ -224,17 +224,54 @@ def test_edge_color_string_with_global_alpha_directed():
         assert ec[-1] == 0.2
 
 
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_edge_width_default_value(graph_type):
+    """Test the default linewidth for edges drawn either via LineCollection or
+    FancyArrowPatches."""
+    G = nx.path_graph(2, create_using=graph_type)
+    pos = {n: (n, n) for n in range(len(G))}
+    drawn_edges = nx.draw_networkx_edges(G, pos)
+    if isinstance(drawn_edges, list):  # directed case: list of FancyArrowPatch
+        drawn_edges = drawn_edges[0]
+    assert drawn_edges.get_linewidth() == 1
+
+
+@pytest.mark.parametrize(
+    ("edgewidth", "expected"),
+    (
+        (3, 3),  # single-value, non-default
+        ([3], 3),  # Single value as a list
+    ),
+)
+def test_edge_width_single_value_undirected(edgewidth, expected):
+    G = nx.path_graph(4)
+    pos = {n: (n, n) for n in range(len(G))}
+    drawn_edges = nx.draw_networkx_edges(G, pos, width=edgewidth)
+    assert len(drawn_edges.get_paths()) == 3
+    assert drawn_edges.get_linewidth() == expected
+
+
+@pytest.mark.parametrize(
+    ("edgewidth", "expected"),
+    (
+        (3, 3),  # single-value, non-default
+        ([3], 3),  # Single value as a list
+    ),
+)
+def test_edge_width_single_value_directed(edgewidth, expected):
+    G = nx.path_graph(4, create_using=nx.DiGraph)
+    pos = {n: (n, n) for n in range(len(G))}
+    drawn_edges = nx.draw_networkx_edges(G, pos, width=edgewidth)
+    assert len(drawn_edges) == 3
+    for fap in drawn_edges:
+        assert fap.get_linewidth() == expected
+
+
 def test_edge_colors_and_widths():
     pos = nx.circular_layout(barbell)
     for G in (barbell, barbell.to_directed()):
         nx.draw_networkx_nodes(G, pos, node_color=[(1.0, 1.0, 0.2, 0.5)])
         nx.draw_networkx_labels(G, pos)
-        # edge with default color and width
-        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1)], width=None, edge_color=None)
-        # edges with global color strings and widths in lists
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 2), (0, 3)], width=[3], edge_color=["r"]
-        )
         # edges with color strings and widths for each edge
         nx.draw_networkx_edges(
             G, pos, edgelist=[(0, 2), (0, 3)], width=[1, 3], edge_color=["r", "b"]
