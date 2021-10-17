@@ -230,12 +230,6 @@ def test_edge_colors_and_widths():
         nx.draw_networkx_edges(
             G, pos, edgelist=[(11, 12), (11, 13)], edge_color="purple", alpha=0.2
         )
-        # with color string in a list
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(11, 12), (11, 13)], edge_color=["purple"]
-        )
-        # with single edge and hex color string
-        nx.draw_networkx_edges(G, pos, edgelist=[(12, 13)], edge_color="#1f78b4f0")
 
         # edge_color as numeric using vmin, vmax
         nx.draw_networkx_edges(
