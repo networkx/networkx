@@ -1,19 +1,102 @@
-"""Unit tests for the :mod:`networkx.generators.random_graphs` module.
-
-"""
+"""Unit tests for the :mod:`networkx.generators.random_graphs` module."""
 import networkx as nx
 import pytest
+
+
+_gnp_generators = [
+    nx.gnp_random_graph,
+    nx.fast_gnp_random_graph,
+    nx.binomial_graph,
+    nx.erdos_renyi_graph,
+]
+
+
+@pytest.mark.parametrize("generator", _gnp_generators)
+@pytest.mark.parametrize("directed", (True, False))
+def test_gnp_generators_negative_edge_probability(generator, directed):
+    """If the edge probability `p` is <=0, the resulting graph should have no edges."""
+    G = generator(10, -1.1, directed=directed)
+    assert len(G) == 10
+    assert G.number_of_edges() == 0
+    assert G.is_directed() == directed
+
+
+@pytest.mark.parametrize("generator", _gnp_generators)
+@pytest.mark.parametrize(
+    ("directed", "expected_num_edges"),
+    [(False, 45), (True, 90)],
+)
+def test_gnp_generators_greater_than_1_edge_probability(
+    generator, directed, expected_num_edges
+):
+    """If the edge probability `p` is >=1, the resulting graph should be complete."""
+    G = generator(10, 1.1, directed=directed)
+    assert len(G) == 10
+    assert G.number_of_edges() == expected_num_edges
+    assert G.is_directed() == directed
+
+
+@pytest.mark.parametrize("generator", _gnp_generators)
+@pytest.mark.parametrize("directed", (True, False))
+def test_gnp_generators_basic(generator, directed):
+    """If the edge probability `p` is >0 and <1, test only the basic properties."""
+    G = generator(10, 0.1, directed=directed)
+    assert len(G) == 10
+    assert G.is_directed() == directed
+
+
+@pytest.mark.parametrize("generator", _gnp_generators)
+def test_gnp_generators_for_p_close_to_1(generator):
+    """If the edge probability `p` is close to 1, the resulting graph should have all edges."""
+    runs = 100
+    edges = sum(
+        [generator(10, 0.99999, directed=True).number_of_edges() for _ in range(runs)]
+    )
+    assert abs(edges / float(runs) - 90) <= runs * 2.0 / 100
+
+
+@pytest.mark.parametrize("generator", _gnp_generators)
+@pytest.mark.parametrize("p", (0.2, 0.8))
+@pytest.mark.parametrize("directed", (True, False))
+def test_gnp_generators_edge_probability(generator, p, directed):
+    """Test that gnp generators generate edges according to the their probability `p`."""
+    runs = 5000
+    n = 5
+    edge_counts = [[0] * n for _ in range(n)]
+    for i in range(runs):
+        G = generator(n, p, directed=directed)
+        for (v, w) in G.edges:
+            edge_counts[v][w] += 1
+            if not directed:
+                edge_counts[w][v] += 1
+    for v in range(n):
+        for w in range(n):
+            if v == w:
+                # There should be no loops
+                assert edge_counts[v][w] == 0
+            else:
+                # Each edge should have been generated with probability close to p
+                assert abs(edge_counts[v][w] / float(runs) - p) <= 0.03
+
+
+@pytest.mark.parametrize(
+    "generator", [nx.gnp_random_graph, nx.binomial_graph, nx.erdos_renyi_graph]
+)
+@pytest.mark.parametrize(
+    ("seed", "directed", "expected_num_edges"),
+    [(42, False, 1219), (42, True, 2454), (314, False, 1247), (314, True, 2476)],
+)
+def test_gnp_random_graph_aliases(generator, seed, directed, expected_num_edges):
+    """Test that aliases give the same result with the same seed."""
+    G = generator(100, 0.25, seed=seed, directed=directed)
+    assert len(G) == 100
+    assert G.number_of_edges() == expected_num_edges
+    assert G.is_directed() == directed
 
 
 class TestGeneratorsRandom:
     def test_random_graph(self):
         seed = 42
-        G = nx.gnp_random_graph(100, 0.25, seed)
-        G = nx.gnp_random_graph(100, 0.25, seed, directed=True)
-        G = nx.binomial_graph(100, 0.25, seed)
-        G = nx.erdos_renyi_graph(100, 0.25, seed)
-        G = nx.fast_gnp_random_graph(100, 0.25, seed)
-        G = nx.fast_gnp_random_graph(100, 0.25, seed, directed=True)
         G = nx.gnm_random_graph(100, 20, seed)
         G = nx.gnm_random_graph(100, 20, seed, directed=True)
         G = nx.dense_gnm_random_graph(100, 20, seed)
@@ -204,69 +287,6 @@ class TestGeneratorsRandom:
         G = nx.random_regular_graph(0, 10, seed)
         assert len(G) == 10
         assert G.number_of_edges() == 0
-
-    def test_gnp(self):
-        for generator in [
-            nx.gnp_random_graph,
-            nx.binomial_graph,
-            nx.erdos_renyi_graph,
-            nx.fast_gnp_random_graph,
-        ]:
-            G = generator(10, -1.1)
-            assert len(G) == 10
-            assert G.number_of_edges() == 0
-
-            G = generator(10, 0.1)
-            assert len(G) == 10
-
-            G = generator(10, 0.1, seed=42)
-            assert len(G) == 10
-
-            G = generator(10, 1.1)
-            assert len(G) == 10
-            assert G.number_of_edges() == 45
-
-            G = generator(10, -1.1, directed=True)
-            assert G.is_directed()
-            assert len(G) == 10
-            assert G.number_of_edges() == 0
-
-            G = generator(10, 0.1, directed=True)
-            assert G.is_directed()
-            assert len(G) == 10
-
-            G = generator(10, 1.1, directed=True)
-            assert G.is_directed()
-            assert len(G) == 10
-            assert G.number_of_edges() == 90
-
-            # assert that random graphs generate all edges for p close to 1
-            edges = 0
-            runs = 100
-            for i in range(runs):
-                edges += generator(10, 0.99999, directed=True).number_of_edges()
-            assert abs(edges / float(runs) - 90) <= runs * 2.0 / 100
-
-            # assert that edges are generated with correct probability
-            runs = 5000
-            n = 5
-            for p in [0.2, 0.8]:
-                for directed in [False, True]:
-                    edge_counts = [[0] * 5 for row in range(5)]
-                    for i in range(runs):
-                        G = generator(n, p, directed=directed)
-                        for (v, w) in G.edges:
-                            edge_counts[v][w] += 1
-                            if not directed:
-                                edge_counts[w][v] += 1
-                    for v in range(n):
-                        for w in range(n):
-                            if v == w:
-                                # There should be no loops
-                                assert edge_counts[v][w] == 0
-                            else:
-                                # Each edge should have been generated with probability close to p
-                                assert abs(edge_counts[v][w] / float(runs) - p) <= 0.03
 
     def test_gnm(self):
         G = nx.gnm_random_graph(10, 3)
