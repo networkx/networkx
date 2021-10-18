@@ -1,5 +1,6 @@
 """Modularity matrix of graphs.
 """
+import numpy as np
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -67,7 +68,7 @@ def modularity_matrix(G, nodelist=None, weight=None):
     k = A.sum(axis=1)
     m = k.sum() * 0.5
     # Expected adjacency matrix
-    X = k * k.transpose() / (2 * m)
+    X = np.outer(k, k) / (2 * m)
     return A - X
 
 
@@ -154,5 +155,5 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
     k_out = A.sum(axis=1)
     m = k_in.sum()
     # Expected adjacency matrix
-    X = k_out * k_in / m
+    X = np.outer(k_out, k_in) / m
     return A - X
