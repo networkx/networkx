@@ -509,9 +509,9 @@ def _fruchterman_reingold(
 
     try:
         nnodes, _ = A.shape
-    except AttributeError as e:
+    except AttributeError as err:
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg) from e
+        raise nx.NetworkXError(msg) from err
 
     if pos is None:
         # random initial positions
@@ -575,9 +575,9 @@ def _sparse_fruchterman_reingold(
 
     try:
         nnodes, _ = A.shape
-    except AttributeError as e:
+    except AttributeError as err:
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg) from e
+        raise nx.NetworkXError(msg) from err
     # make sure we have a LIst of Lists representation
     try:
         A = A.tolil()
@@ -848,9 +848,9 @@ def _spectral(A, dim=2):
 
     try:
         nnodes, _ = A.shape
-    except AttributeError as e:
+    except AttributeError as err:
         msg = "spectral() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg) from e
+        raise nx.NetworkXError(msg) from err
 
     # form Laplacian matrix where D is diagonal of degrees
     D = np.identity(nnodes, dtype=A.dtype) * np.sum(A, axis=1)
@@ -873,9 +873,9 @@ def _sparse_spectral(A, dim=2):
 
     try:
         nnodes, _ = A.shape
-    except AttributeError as e:
+    except AttributeError as err:
         msg = "sparse_spectral() takes an adjacency matrix as input"
-        raise nx.NetworkXError(msg) from e
+        raise nx.NetworkXError(msg) from err
 
     # form Laplacian matrix
     data = np.asarray(A.sum(axis=1).T)
@@ -1167,13 +1167,14 @@ def rescale_layout_dict(pos, scale=1):
 
     Examples
     --------
-    >>> pos = {0: (0, 0), 1: (1, 1), 2: (0.5, 0.5)}
+    >>> import numpy as np
+    >>> pos = {0: np.array((0, 0)), 1: np.array((1, 1)), 2: np.array((0.5, 0.5))}
     >>> nx.rescale_layout_dict(pos)
-    {0: (-1.0, -1.0), 1: (1.0, 1.0), 2: (0.0, 0.0)}
+    {0: array([-1., -1.]), 1: array([1., 1.]), 2: array([0., 0.])}
 
-    >>> pos = {0: (0, 0), 1: (-1, 1), 2: (-0.5, 0.5)}
+    >>> pos = {0: np.array((0, 0)), 1: np.array((-1, 1)), 2: np.array((-0.5, 0.5))}
     >>> nx.rescale_layout_dict(pos, scale=2)
-    {0: (2.0, -2.0), 1: (-2.0, 2.0), 2: (0.0, 0.0)}
+    {0: array([ 2., -2.]), 1: array([-2.,  2.]), 2: array([0., 0.])}
 
     See Also
     --------
@@ -1185,4 +1186,4 @@ def rescale_layout_dict(pos, scale=1):
         return {}
     pos_v = np.array(list(pos.values()))
     pos_v = rescale_layout(pos_v, scale=scale)
-    return {k: tuple(v) for k, v in zip(pos.keys(), pos_v)}
+    return dict(zip(pos, pos_v))

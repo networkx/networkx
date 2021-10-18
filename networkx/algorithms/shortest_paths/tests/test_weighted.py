@@ -249,20 +249,24 @@ class TestWeightedPath(WeightedTestBase):
             nx.add_path(G, [4, 5, 6])
             path = nx.bidirectional_dijkstra(G, 1, 6)
 
-    def test_absent_source(self):
-        G = nx.path_graph(2)
-        for fn in (
+    @pytest.mark.parametrize(
+        "fn",
+        (
             nx.dijkstra_path,
             nx.dijkstra_path_length,
             nx.single_source_dijkstra_path,
             nx.single_source_dijkstra_path_length,
             nx.single_source_dijkstra,
             nx.dijkstra_predecessor_and_distance,
-        ):
-            pytest.raises(nx.NodeNotFound, fn, G, 3, 0)
-            # Test when source == target, which is handled specially by some
-            # functions
-            pytest.raises(nx.NodeNotFound, fn, G, 3, 3)
+        ),
+    )
+    def test_absent_source(self, fn):
+        G = nx.path_graph(2)
+        with pytest.raises(nx.NodeNotFound):
+            fn(G, 3, 0)
+        # Test when source == target, which is handled specially by some functions
+        with pytest.raises(nx.NodeNotFound):
+            fn(G, 3, 3)
 
     def test_dijkstra_predecessor1(self):
         G = nx.path_graph(4)
@@ -455,14 +459,20 @@ class TestMultiSourceDijkstra:
         with pytest.raises(ValueError):
             nx.multi_source_dijkstra_path_length(nx.Graph(), {})
 
-    def test_absent_source(self):
-        G = nx.path_graph(2)
-        for fn in (
+    @pytest.mark.parametrize(
+        "fn",
+        (
             nx.multi_source_dijkstra_path,
             nx.multi_source_dijkstra_path_length,
             nx.multi_source_dijkstra,
-        ):
-            pytest.raises(nx.NodeNotFound, fn, G, [3], 0)
+        ),
+    )
+    def test_absent_source(self, fn):
+        G = nx.path_graph(2)
+        with pytest.raises(nx.NodeNotFound):
+            fn(G, [3], 0)
+        with pytest.raises(nx.NodeNotFound):
+            fn(G, [3], 3)
 
     def test_two_sources(self):
         edges = [(0, 1, 1), (1, 2, 1), (2, 3, 10), (3, 4, 1)]

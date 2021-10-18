@@ -107,8 +107,8 @@ def literal_destringizer(rep):
         orig_rep = rep
         try:
             return literal_eval(rep)
-        except SyntaxError as e:
-            raise ValueError(f"{orig_rep!r} is not a valid Python literal") from e
+        except SyntaxError as err:
+            raise ValueError(f"{orig_rep!r} is not a valid Python literal") from err
     else:
         raise ValueError(f"{rep!r} is not a string")
 
@@ -184,8 +184,8 @@ def read_gml(path, label="label", destringizer=None):
         for line in lines:
             try:
                 line = line.decode("ascii")
-            except UnicodeDecodeError as e:
-                raise NetworkXError("input is not ASCII-encoded") from e
+            except UnicodeDecodeError as err:
+                raise NetworkXError("input is not ASCII-encoded") from err
             if not isinstance(line, str):
                 lines = str(lines)
             if line and line[-1] == "\n":
@@ -249,8 +249,8 @@ def parse_gml(lines, label="label", destringizer=None):
         if isinstance(line, bytes):
             try:
                 line.decode("ascii")
-            except UnicodeDecodeError as e:
-                raise NetworkXError("input is not ASCII-encoded") from e
+            except UnicodeDecodeError as err:
+                raise NetworkXError("input is not ASCII-encoded") from err
         if not isinstance(line, str):
             line = str(line)
         return line
@@ -444,8 +444,8 @@ def parse_gml_lines(lines, label, destringizer):
     def pop_attr(dct, category, attr, i):
         try:
             return dct.pop(attr)
-        except KeyError as e:
-            raise NetworkXError(f"{category} #{i} has no {attr!r} attribute") from e
+        except KeyError as err:
+            raise NetworkXError(f"{category} #{i} has no {attr!r} attribute") from err
 
     nodes = graph.get("node", [])
     mapping = {}
@@ -742,10 +742,10 @@ def generate_gml(G, stringizer=None):
                 if stringizer:
                     try:
                         value = stringizer(value)
-                    except ValueError as e:
+                    except ValueError as err:
                         raise NetworkXError(
                             f"{value!r} cannot be converted into a string"
-                        ) from e
+                        ) from err
                 if not isinstance(value, str):
                     raise NetworkXError(f"{value!r} is not a string")
                 yield indent + key + ' "' + escape(value) + '"'

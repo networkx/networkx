@@ -582,5 +582,5 @@ def _community(G, u, community):
     node_u = G.nodes[u]
     try:
         return node_u[community]
-    except KeyError as e:
-        raise nx.NetworkXAlgorithmError("No community information") from e
+    except KeyError as err:
+        raise nx.NetworkXAlgorithmError("No community information") from err

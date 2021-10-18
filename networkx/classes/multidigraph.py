@@ -334,10 +334,10 @@ class MultiDiGraph(MultiGraph, DiGraph):
                     incoming_graph_data, create_using=self, multigraph_input=True
                 )
                 self.graph.update(attr)
-            except Exception as e:
+            except Exception as err:
                 if multigraph_input is True:
                     raise nx.NetworkXError(
-                        f"converting multigraph_input raised:\n{type(e)}: {e}"
+                        f"converting multigraph_input raised:\n{type(err)}: {err}"
                     )
                 DiGraph.__init__(self, incoming_graph_data, **attr)
         else:
@@ -540,17 +540,17 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         try:
             d = self._adj[u][v]
-        except KeyError as e:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph.") from e
+        except KeyError as err:
+            raise NetworkXError(f"The edge {u}-{v} is not in the graph.") from err
         # remove the edge with specified data
         if key is None:
             d.popitem()
         else:
             try:
                 del d[key]
-            except KeyError as e:
+            except KeyError as err:
                 msg = f"The edge {u}-{v} with key {key} is not in the graph."
-                raise NetworkXError(msg) from e
+                raise NetworkXError(msg) from err
         if len(d) == 0:
             # remove the key entries if last edge
             del self._succ[u][v]

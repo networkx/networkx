@@ -1,12 +1,14 @@
 """Unit tests for matplotlib drawing functions."""
 import os
 import itertools
+
 import pytest
 
 mpl = pytest.importorskip("matplotlib")
 mpl.use("PS")
 plt = pytest.importorskip("matplotlib.pyplot")
 plt.rcParams["text.usetex"] = False
+
 
 import networkx as nx
 
@@ -134,6 +136,112 @@ def test_edge_colors_and_widths():
             edge_vmin=0.1,
             edge_vmax=0.6,
         )
+
+        # plt.show()
+
+
+def test_linestyle():
+
+    np = pytest.importorskip("numpy")
+
+    def test_styles(edges, style="solid"):
+        """
+        Function to test the styles set for edges drawn as FancyArrowPatch(es)
+        TODO: It would be nice to run the same tests for LineCollection(s)
+        """
+
+        # we assume that if edges are not a LineCollection, they are drawn as FanceArrowPatches
+        if not isinstance(edges, mpl.collections.LineCollection):
+            for i, edge in enumerate(edges):
+                if isinstance(style, str) or isinstance(style, tuple):
+                    linestyle = style
+                elif np.iterable(style):
+                    if len(style) == len(edges):
+                        linestyle = style[i]
+                    else:  # Cycle through styles
+                        linestyle = style[i % len(style)]
+                else:
+                    linestyle = style
+                assert edge.get_linestyle() == linestyle
+
+    pos = nx.circular_layout(barbell)
+    for G in (barbell, barbell.to_directed()):
+
+        nx.draw_networkx_nodes(G, pos, node_color=[(1.0, 1.0, 0.2, 0.5)])
+        nx.draw_networkx_labels(G, pos)
+
+        # edge with default style
+        drawn_edges = nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0, 2), (1, 2)])
+        test_styles(drawn_edges)
+
+        # global style
+
+        # edge with string style
+        style = "dashed"
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
+        )
+        test_styles(drawn_edges, style=style)
+
+        # edge with simplified string style
+        style = "--"
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
+        )
+        test_styles(drawn_edges, style=style)
+
+        # edge with tuple style
+        style = (1, (1, 1))
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
+        )
+        test_styles(drawn_edges, style=style)
+
+        # global style in list
+
+        # edge with string style in list
+        style = ["dashed"]
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
+        )
+        test_styles(drawn_edges, style=style)
+
+        # edge with simplified string style in list
+        style = ["--"]
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
+        )
+        test_styles(drawn_edges, style=style)
+
+        # edge with tuple style as list
+        style = [(1, (1, 1))]
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
+        )
+        test_styles(drawn_edges, style=style)
+
+        # styles for each edge
+
+        # edges with styles for each edge
+        style = ["--", "-", ":"]
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
+        )
+        test_styles(drawn_edges, style=style)
+
+        # edges with fewer styles than edges
+        style = ["--", "-"]
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
+        )
+        test_styles(drawn_edges, style=style)
+
+        # edges with more styles than edges
+        style = ["--", "-", ":", "-."]
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
+        )
+        test_styles(drawn_edges, style=style)
 
         # plt.show()
 

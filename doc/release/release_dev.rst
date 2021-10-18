@@ -38,12 +38,18 @@ Improvements
 API Changes
 -----------
 
+- The values in the dictionary returned by
+  `~networkx.drawing.layout.rescale_layout_dict` are now `numpy.ndarray` objects
+  instead of tuples. This makes the return type of ``rescale_layout_dict``
+  consistent with that of all of the other layout functions.
 
 Deprecations
 ------------
 
 - [`#5055 <https://github.com/networkx/networkx/pull/5055>`_]
   Deprecate the ``random_state`` alias in favor of ``np_random_state``
+- [`#5114 <https://github.com/networkx/networkx/pull/5114>`_]
+  Deprecate the ``name`` kwarg from ``union`` as it isn't used.
 
 
 Merged PRs

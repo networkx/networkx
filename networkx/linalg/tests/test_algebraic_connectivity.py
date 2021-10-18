@@ -284,8 +284,8 @@ class TestAlgebraicConnectivity:
             ) == pytest.approx(sigma, abs=1e-7)
             x = nx.fiedler_vector(G, normalized=normalized, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
-        except nx.NetworkXError as e:
-            if e.args not in (
+        except nx.NetworkXError as err:
+            if err.args not in (
                 ("Cholesky solver unavailable.",),
                 ("LU solver unavailable.",),
             ):
@@ -385,8 +385,8 @@ class TestSpectralOrdering:
         A = nx.laplacian_matrix(G).todense()
         try:
             order = nx.spectral_ordering(G, normalized=normalized, method=method)
-        except nx.NetworkXError as e:
-            if e.args not in (
+        except nx.NetworkXError as err:
+            if err.args not in (
                 ("Cholesky solver unavailable.",),
                 ("LU solver unavailable.",),
             ):
