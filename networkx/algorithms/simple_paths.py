@@ -207,6 +207,11 @@ def all_simple_paths(G, source, target, cutoff=None):
     number of simple paths in a graph can be very large, e.g. $O(n!)$ in
     the complete graph of order $n$.
 
+    This function does not check that a path exists between `source` and
+    `target`. For large graphs, this may result in very long runtimes.
+    Consider using `has_path` to check that a path exists between `source` and
+    `target` before calling this function on large graphs.
+
     References
     ----------
     .. [1] R. Sedgewick, "Algorithms in C, Part 5: Graph Algorithms",
@@ -214,7 +219,7 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     See Also
     --------
-    all_shortest_paths, shortest_path
+    all_shortest_paths, shortest_path, has_path
 
     """
     if source not in G:
