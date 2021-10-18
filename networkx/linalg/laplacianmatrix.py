@@ -346,28 +346,26 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
         else:
             walk_type = "pagerank"
 
-    M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
-    n, m = M.shape
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
+    n, m = A.shape
     if walk_type in ["random", "lazy"]:
-        DI = sp.sparse.spdiags(1.0 / np.array(M.sum(axis=1).flat), [0], n, n)
+        DI = sp.sparse.csr_array(sp.sparse.spdiags(1.0 / A.sum(axis=1), 0, n, n))
         if walk_type == "random":
-            P = DI * M
+            P = DI @ A
         else:
-            I = sp.sparse.identity(n)
-            P = (I + DI * M) / 2.0
+            I = sp.sparse.csr_array(sp.sparse.identity(n))
+            P = (I + DI @ A) / 2.0
 
     elif walk_type == "pagerank":
         if not (0 < alpha < 1):
             raise nx.NetworkXError("alpha must be between 0 and 1")
-        # this is using a dense representation
-        M = M.todense()
+        # this is using a dense representation. NOTE: This should be sparsified!
+        A = A.toarray()
         # add constant to dangling nodes' row
-        dangling = np.where(M.sum(axis=1) == 0)
-        for d in dangling[0]:
-            M[d] = 1.0 / n
+        A[A.sum(axis=1) == 0, :] = 1 / n
         # normalize
-        M = M / M.sum(axis=1)
-        P = alpha * M + (1 - alpha) / n
+        A = A / A.sum(axis=1)[np.newaxis, :].T
+        P = alpha * A + (1 - alpha) / n
     else:
         raise nx.NetworkXError("walk_type must be random, lazy, or pagerank")
 
