@@ -288,11 +288,10 @@ def directed_combinatorial_laplacian_matrix(
     evals, evecs = sp.sparse.linalg.eigs(P.T, k=1)
     v = evecs.flatten().real
     p = v / v.sum()
-    Phi = sp.sparse.spdiags(p, [0], n, n)
+    # NOTE: could be improved by not densifying
+    Phi = sp.sparse.csr_array(sp.sparse.spdiags(p, 0, n, n)).toarray()
 
-    Phi = Phi.todense()
-
-    return Phi - (Phi * P + P.T * Phi) / 2.0
+    return Phi - (Phi @ P + P.T @ Phi) / 2.0
 
 
 def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=0.95):
