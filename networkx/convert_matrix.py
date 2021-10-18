@@ -881,7 +881,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
         row, col, data = [], [], []
 
     if G.is_directed():
-        M = sp.sparse.coo_matrix((data, (row, col)), shape=(nlen, nlen), dtype=dtype)
+        M = sp.sparse.coo_array((data, (row, col)), shape=(nlen, nlen), dtype=dtype)
     else:
         # symmetrize matrix
         d = data + data
@@ -895,7 +895,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
             d += diag_data
             r += diag_index
             c += diag_index
-        M = sp.sparse.coo_matrix((d, (r, c)), shape=(nlen, nlen), dtype=dtype)
+        M = sp.sparse.coo_array((d, (r, c)), shape=(nlen, nlen), dtype=dtype)
     try:
         return M.asformat(format)
     # From Scipy 1.1.0, asformat will throw a ValueError instead of an
