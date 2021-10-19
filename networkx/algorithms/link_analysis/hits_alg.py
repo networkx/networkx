@@ -75,16 +75,16 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
 
     if len(G) == 0:
         return {}, {}
-    M = nx.adjacency_matrix(G, nodelist=list(G), dtype=float)
+    A = nx.adjacency_matrix(G, nodelist=list(G), dtype=float)
 
     if nstart is None:
-        u, s, vt = sp.sparse.linalg.svds(M, k=1, maxiter=max_iter, tol=tol)
+        u, s, vt = sp.sparse.linalg.svds(A, k=1, maxiter=max_iter, tol=tol)
     else:
         nstart = np.array(list(nstart.values()))
-        u, s, vt = sp.sparse.linalg.svds(M, k=1, v0=nstart, maxiter=max_iter, tol=tol)
+        u, s, vt = sp.sparse.linalg.svds(A, k=1, v0=nstart, maxiter=max_iter, tol=tol)
 
     a = vt.flatten().real
-    h = np.asarray(M * a).flatten()
+    h = A @ a
     if normalized:
         h = h / h.sum()
         a = a / a.sum()
@@ -365,12 +365,10 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
         return {}, {}
     M = nx.to_scipy_sparse_matrix(G, nodelist=list(G))
     (n, m) = M.shape  # should be square
-    A = M.T * M  # authority matrix
+    A = M.T @ M  # authority matrix
     x = np.ones((n, 1)) / n  # initial guess
     # choose fixed starting vector if not given
-    if nstart is None:
-        x = np.ones((n, 1)) / n  # initial guess
-    else:
+    if nstart is not None:
         x = np.array([nstart.get(n, 0) for n in list(G)], dtype=float)
         x = x / x.sum()
 
@@ -378,8 +376,8 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
     i = 0
     while True:
         xlast = x
-        x = A * x
-        x = x / x.max()
+        x = A @ x
+        x /= x.max()
         # check convergence, l1 norm
         err = np.absolute(x - xlast).sum()
         if err < tol:
@@ -388,9 +386,8 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
             raise nx.PowerIterationFailedConvergence(max_iter)
         i += 1
 
-    a = np.asarray(x).flatten()
-    # h=M*a
-    h = np.asarray(M * a).flatten()
+    a = x.flatten()
+    h = M @ a
     if normalized:
         h = h / h.sum()
         a = a / a.sum()
