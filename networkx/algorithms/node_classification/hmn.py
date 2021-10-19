@@ -81,9 +81,9 @@ def harmonic_function(G, max_iter=30, label_name="label"):
             Propagation matrix
 
         """
-        degrees = X.sum(axis=0).A[0]
+        degrees = X.sum(axis=0).squeeze()
         degrees[degrees == 0] = 1  # Avoid division by 0
-        D = sp.sparse.diags((1.0 / degrees), offsets=0)
+        D = sp.sparse.csr_array(sp.sparse.diags((1 / degrees), offsets=0))
         P = (D @ X).tolil()
         P[labels[:, 0]] = 0  # labels[:, 0] indicates IDs of labeled nodes
         return P
@@ -121,7 +121,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
     n_samples = X.shape[0]
     n_classes = label_dict.shape[0]
 
-    F = _init_label_matrix(n_samples, n_classes)
+    F = np.zeros((n_samples, n_classes))
 
     P = _build_propagation_matrix(X, labels)
     B = _build_base_matrix(X, labels, n_classes)
