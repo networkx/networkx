@@ -582,7 +582,7 @@ def _sparse_fruchterman_reingold(
     try:
         A = A.tolil()
     except AttributeError:
-        A = (sp.sparse.coo_matrix(A)).tolil()
+        A = (sp.sparse.coo_array(A)).tolil()
 
     if pos is None:
         # random initial positions
@@ -619,7 +619,7 @@ def _sparse_fruchterman_reingold(
             # enforce minimum distance of 0.01
             distance = np.where(distance < 0.01, 0.01, distance)
             # the adjacency matrix row
-            Ai = np.asarray(A.getrowview(i).toarray())
+            Ai = A[0]
             # displacement "force"
             displacement[:, i] += (
                 delta * (k * k / distance ** 2 - Ai * distance / k)
@@ -878,8 +878,7 @@ def _sparse_spectral(A, dim=2):
         raise nx.NetworkXError(msg) from err
 
     # form Laplacian matrix
-    data = np.asarray(A.sum(axis=1).T)
-    D = sp.sparse.spdiags(data, 0, nnodes, nnodes)
+    D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, nnodes, nnodes))
     L = D - A
 
     k = dim + 1
