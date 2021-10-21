@@ -3,7 +3,7 @@ Next Release
 
 Release date: TBD
 
-Supports Python ...
+Supports Python 3.8, 3.9, and ...
 
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
