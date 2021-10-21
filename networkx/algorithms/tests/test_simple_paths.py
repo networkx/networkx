@@ -449,7 +449,7 @@ def test_shortest_simple_paths():
     assert next(paths) == [1, 2, 3, 4, 8, 12]
     assert next(paths) == [1, 5, 6, 7, 8, 12]
     assert [len(path) for path in nx.shortest_simple_paths(G, 1, 12)] == sorted(
-        [len(path) for path in nx.all_simple_paths(G, 1, 12)]
+        len(path) for path in nx.all_simple_paths(G, 1, 12)
     )
 
 
@@ -469,7 +469,7 @@ def test_shortest_simple_paths_directed_with_weight_fucntion():
     assert next(paths) == [1, 5, 6, 7, 8, 12]
     assert [
         len(path) for path in nx.shortest_simple_paths(G, 1, 12, weight=cost)
-    ] == sorted([len(path) for path in nx.all_simple_paths(G, 1, 12)])
+    ] == sorted(len(path) for path in nx.all_simple_paths(G, 1, 12))
 
 
 def test_shortest_simple_paths_with_weight_fucntion():

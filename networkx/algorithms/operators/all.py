@@ -71,7 +71,7 @@ def union_all(graphs, rename=(None,)):
 
     graphs = [add_prefix(G, name) for G, name in zip_longest(graphs, rename)]
 
-    if sum([len(G) for G in graphs]) != len(set().union(*graphs)):
+    if sum(len(G) for G in graphs) != len(set().union(*graphs)):
         raise nx.NetworkXError(
             "The node sets of the graphs are not disjoint.",
             "Use appropriate rename"

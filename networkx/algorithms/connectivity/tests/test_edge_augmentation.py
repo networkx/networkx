@@ -351,7 +351,7 @@ def _augment_and_check(
         # Find the weight of the augmentation
         num_edges = len(aug_edges)
         if avail is not None:
-            total_weight = sum([avail_dict[e] for e in aug_edges])
+            total_weight = sum(avail_dict[e] for e in aug_edges)
         else:
             total_weight = num_edges
 

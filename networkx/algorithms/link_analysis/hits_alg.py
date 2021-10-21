@@ -129,7 +129,7 @@ def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
         for n in a:
             a[n] *= s
         # check convergence, l1 norm
-        err = sum([abs(h[n] - hlast[n]) for n in h])
+        err = sum(abs(h[n] - hlast[n]) for n in h)
         if err < tol:
             break
     else:

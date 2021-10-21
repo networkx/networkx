@@ -132,14 +132,14 @@ def lukes_partitioning(G, max_size: int, node_weight=None, edge_weight=None) -> 
     @lru_cache(CLUSTER_EVAL_CACHE_SIZE)
     def _value_of_cluster(cluster: frozenset):
         valid_edges = [e for e in safe_G.edges if e[0] in cluster and e[1] in cluster]
-        return sum([safe_G.edges[e][edge_weight] for e in valid_edges])
+        return sum(safe_G.edges[e][edge_weight] for e in valid_edges)
 
     def _value_of_partition(partition: list):
-        return sum([_value_of_cluster(frozenset(c)) for c in partition])
+        return sum(_value_of_cluster(frozenset(c)) for c in partition)
 
     @lru_cache(CLUSTER_EVAL_CACHE_SIZE)
     def _weight_of_cluster(cluster: frozenset):
-        return sum([safe_G.nodes[n][node_weight] for n in cluster])
+        return sum(safe_G.nodes[n][node_weight] for n in cluster)
 
     def _pivot(partition: list, node):
         ccx = [c for c in partition if node in c]

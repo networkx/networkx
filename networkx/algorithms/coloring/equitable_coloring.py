@@ -447,7 +447,7 @@ def equitable_color(G, num_colors):
 
     # Basic graph statistics and sanity check.
     if len(G.nodes) > 0:
-        r_ = max([G.degree(node) for node in G.nodes])
+        r_ = max(G.degree(node) for node in G.nodes)
     else:
         r_ = 0
 

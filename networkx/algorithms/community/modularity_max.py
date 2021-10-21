@@ -282,7 +282,7 @@ def naive_greedy_modularity_communities(G, resolution=1):
     modularity
     """
     # First create one community for each node
-    communities = list([frozenset([u]) for u in G.nodes()])
+    communities = list(frozenset([u]) for u in G.nodes())
     # Track merges
     merges = []
     # Greedily merge communities until no improvement is possible

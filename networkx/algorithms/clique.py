@@ -485,11 +485,11 @@ def node_clique_number(G, nodes=None, cliques=None):
     if not isinstance(nodes, list):  # check for a list
         v = nodes
         # assume it is a single value
-        d = max([len(c) for c in cliques if v in c])
+        d = max(len(c) for c in cliques if v in c)
     else:
         d = {}
         for v in nodes:
-            d[v] = max([len(c) for c in cliques if v in c])
+            d[v] = max(len(c) for c in cliques if v in c)
     return d
 
     # if nodes is None:                 # none, use entire graph
@@ -554,7 +554,7 @@ def cliques_containing_node(G, nodes=None, cliques=None):
     return vcliques
 
 
-class MaxWeightClique(object):
+class MaxWeightClique:
     """A class for the maximum weight clique algorithm.
 
     This class is a helper for the `max_weight_clique` function.  The class

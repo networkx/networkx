@@ -55,7 +55,7 @@ class TestCore:
     def test_find_cores(self):
         core = nx.find_cores(self.G)
         nodes_by_core = [
-            sorted([n for n in core if core[n] == val]) for val in range(4)
+            sorted(n for n in core if core[n] == val) for val in range(4)
         ]
         assert nodes_equal(nodes_by_core[0], [21])
         assert nodes_equal(nodes_by_core[1], [17, 18, 19, 20])
@@ -69,7 +69,7 @@ class TestCore:
     def test_find_cores2(self):
         core = nx.find_cores(self.H)
         nodes_by_core = [
-            sorted([n for n in core if core[n] == val]) for val in range(3)
+            sorted(n for n in core if core[n] == val) for val in range(3)
         ]
         assert nodes_equal(nodes_by_core[0], [0])
         assert nodes_equal(nodes_by_core[1], [1, 3])
@@ -169,7 +169,7 @@ class TestCore:
     def test_onion_layers(self):
         layers = nx.onion_layers(self.G)
         nodes_by_layer = [
-            sorted([n for n in layers if layers[n] == val]) for val in range(1, 7)
+            sorted(n for n in layers if layers[n] == val) for val in range(1, 7)
         ]
         assert nodes_equal(nodes_by_layer[0], [21])
         assert nodes_equal(nodes_by_layer[1], [17, 18, 19, 20])

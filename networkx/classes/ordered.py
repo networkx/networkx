@@ -73,7 +73,7 @@ class OrderedGraph(Graph):
             DeprecationWarning,
             stacklevel=2,
         )
-        super(OrderedGraph, self).__init__(incoming_graph_data, **attr)
+        super().__init__(incoming_graph_data, **attr)
 
 
 class OrderedDiGraph(DiGraph):
@@ -101,7 +101,7 @@ class OrderedDiGraph(DiGraph):
             DeprecationWarning,
             stacklevel=2,
         )
-        super(OrderedDiGraph, self).__init__(incoming_graph_data, **attr)
+        super().__init__(incoming_graph_data, **attr)
 
 
 class OrderedMultiGraph(MultiGraph):
@@ -130,7 +130,7 @@ class OrderedMultiGraph(MultiGraph):
             DeprecationWarning,
             stacklevel=2,
         )
-        super(OrderedMultiGraph, self).__init__(incoming_graph_data, **attr)
+        super().__init__(incoming_graph_data, **attr)
 
 
 class OrderedMultiDiGraph(MultiDiGraph):
@@ -159,4 +159,4 @@ class OrderedMultiDiGraph(MultiDiGraph):
             DeprecationWarning,
             stacklevel=2,
         )
-        super(OrderedMultiDiGraph, self).__init__(incoming_graph_data, **attr)
+        super().__init__(incoming_graph_data, **attr)

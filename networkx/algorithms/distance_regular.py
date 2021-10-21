@@ -151,7 +151,7 @@ def intersection_array(G):
             raise nx.NetworkXError("Graph is not distance regular.")
         k = knext
     path_length = dict(nx.all_pairs_shortest_path_length(G))
-    diameter = max([max(path_length[n].values()) for n in path_length])
+    diameter = max(max(path_length[n].values()) for n in path_length)
     bint = {}  # 'b' intersection array
     cint = {}  # 'c' intersection array
     for u in G:
