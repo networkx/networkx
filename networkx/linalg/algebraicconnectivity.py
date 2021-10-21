@@ -201,8 +201,8 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # Form the normalized Laplacian matrix and determine the eigenvector of
         # its nullspace.
         e = np.sqrt(L.diagonal())
-        D = sp.sparse.spdiags(1.0 / e, [0], n, n, format="csr")
-        L = D * L * D
+        D = sp.sparse.spdiags(1 / e, 0, n, n, format="csr")
+        L = D @ L @ D
         e *= 1.0 / np.linalg.norm(e, 2)
 
     if normalized:
