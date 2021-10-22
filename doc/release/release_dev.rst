@@ -31,6 +31,8 @@ X contributors. Highlights include:
 
 .. _gh-4946: https://github.com/networkx/networkx/pull/4946#issuecomment-914623654
 
+- Dropped support for Python 3.7.
+
 Improvements
 ------------
 
