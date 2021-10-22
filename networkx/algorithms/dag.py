@@ -687,9 +687,7 @@ def transitive_closure(G, reflexive=False):
                 (v, u) for u in nx.descendants(G, v) | {v} if u not in TC[v]
             )
         elif reflexive is False:
-            TC.add_edges_from(
-                (v, e[1]) for e in nx.edge_bfs(G, v) if e[1] not in TC[v]
-            )
+            TC.add_edges_from((v, e[1]) for e in nx.edge_bfs(G, v) if e[1] not in TC[v])
 
     return TC
 
