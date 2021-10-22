@@ -52,6 +52,8 @@ Deprecations
   Deprecate the ``random_state`` alias in favor of ``np_random_state``
 - [`#5114 <https://github.com/networkx/networkx/pull/5114>`_]
   Deprecate the ``name`` kwarg from ``union`` as it isn't used.
+- [`#5143 <https://github.com/networkx/networkx/pull/5143>`_]
+  Deprecate ``euclidean`` in favor of ``math.dist``.
 
 
 Merged PRs

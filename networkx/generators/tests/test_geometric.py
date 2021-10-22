@@ -1,10 +1,8 @@
 from itertools import combinations
-from math import sqrt
+import math
 import random
 
-
 import networkx as nx
-from networkx.generators.geometric import euclidean
 
 
 def l1dist(x, y):
@@ -30,15 +28,14 @@ class TestRandomGeometricGraph:
         """
         # Use the Euclidean metric, the default according to the
         # documentation.
-        dist = euclidean
         G = nx.random_geometric_graph(50, 0.25)
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
+                assert math.dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
             # Nonadjacent vertices must be at greater distance.
             else:
-                assert not dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
+                assert not math.dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
 
     def test_p(self):
         """Tests for providing an alternate distance metric to the
@@ -46,15 +43,14 @@ class TestRandomGeometricGraph:
 
         """
         # Use the L1 metric.
-        dist = l1dist
         G = nx.random_geometric_graph(50, 0.25, p=1)
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
+                assert l1dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
             # Nonadjacent vertices must be at greater distance.
             else:
-                assert not dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
+                assert not l1dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
 
     def test_node_names(self):
         """Tests using values other than sequential numbers as node IDs."""
@@ -64,14 +60,13 @@ class TestRandomGeometricGraph:
         G = nx.random_geometric_graph(nodes, 0.25)
         assert len(G) == len(nodes)
 
-        dist = euclidean
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
+                assert math.dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
             # Nonadjacent vertices must be at greater distance.
             else:
-                assert not dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
+                assert not math.dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
 
 
 class TestSoftRandomGeometricGraph:
@@ -93,14 +88,11 @@ class TestSoftRandomGeometricGraph:
         """
         # Use the Euclidean metric, the default according to the
         # documentation.
-        def dist(x, y):
-            return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
-
         G = nx.soft_random_geometric_graph(50, 0.25)
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
+                assert math.dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
 
     def test_p(self):
         """Tests for providing an alternate distance metric to the
@@ -125,13 +117,10 @@ class TestSoftRandomGeometricGraph:
         G = nx.soft_random_geometric_graph(nodes, 0.25)
         assert len(G) == len(nodes)
 
-        def dist(x, y):
-            return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
-
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
+                assert math.dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
 
     def test_p_dist_default(self):
         """Tests default p_dict = 0.5 returns graph with edge count <= RGG with
@@ -192,15 +181,14 @@ class TestGeographicalThresholdGraph:
         """
         # Use the Euclidean metric and alpha = -2
         # the default according to the documentation.
-        dist = euclidean
         G = nx.geographical_threshold_graph(50, 10)
         for u, v in combinations(G, 2):
             # Adjacent vertices must exceed the threshold.
             if v in G[u]:
-                assert join(G, u, v, 10, -2, dist)
+                assert join(G, u, v, 10, -2, math.dist)
             # Nonadjacent vertices must not exceed the threshold.
             else:
-                assert not join(G, u, v, 10, -2, dist)
+                assert not join(G, u, v, 10, -2, math.dist)
 
     def test_metric(self):
         """Tests for providing an alternate distance metric to the
@@ -208,15 +196,14 @@ class TestGeographicalThresholdGraph:
 
         """
         # Use the L1 metric.
-        dist = l1dist
-        G = nx.geographical_threshold_graph(50, 10, metric=dist)
+        G = nx.geographical_threshold_graph(50, 10, metric=l1dist)
         for u, v in combinations(G, 2):
             # Adjacent vertices must exceed the threshold.
             if v in G[u]:
-                assert join(G, u, v, 10, -2, dist)
+                assert join(G, u, v, 10, -2, l1dist)
             # Nonadjacent vertices must not exceed the threshold.
             else:
-                assert not join(G, u, v, 10, -2, dist)
+                assert not join(G, u, v, 10, -2, l1dist)
 
     def test_p_dist_zero(self):
         """Tests if p_dict = 0 returns disconencted graph with 0 edges"""
@@ -249,8 +236,7 @@ class TestWaxmanGraph:
 
         """
         # Use the L1 metric.
-        dist = l1dist
-        G = nx.waxman_graph(50, 0.5, 0.1, metric=dist)
+        G = nx.waxman_graph(50, 0.5, 0.1, metric=l1dist)
         assert len(G) == 50
 
 
@@ -288,14 +274,11 @@ class TestThresholdedRandomGeometricGraph:
         """
         # Use the Euclidean metric, the default according to the
         # documentation.
-        def dist(x, y):
-            return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
-
         G = nx.thresholded_random_geometric_graph(50, 0.25, 0.1)
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
+                assert math.dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
 
     def test_p(self):
         """Tests for providing an alternate distance metric to the
@@ -320,13 +303,10 @@ class TestThresholdedRandomGeometricGraph:
         G = nx.thresholded_random_geometric_graph(nodes, 0.25, 0.1)
         assert len(G) == len(nodes)
 
-        def dist(x, y):
-            return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
-
         for u, v in combinations(G, 2):
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
-                assert dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
+                assert math.dist(G.nodes[u]["pos"], G.nodes[v]["pos"]) <= 0.25
 
     def test_theta(self):
         """Tests that pairs of vertices adjacent if and only if their sum
