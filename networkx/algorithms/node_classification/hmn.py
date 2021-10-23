@@ -12,7 +12,6 @@ from networkx.utils.decorators import not_implemented_for
 from networkx.algorithms.node_classification.utils import (
     _get_label_info,
     _propagate,
-    _predict,
 )
 
 __all__ = ["harmonic_function"]
@@ -130,6 +129,6 @@ def harmonic_function(G, max_iter=30, label_name="label"):
         F = _propagate(P, F, B)
         remaining_iter -= 1
 
-    predicted = _predict(F, label_dict)
+    predicted = label_dict[np.argmax(F, axis=1)].tolist()
 
     return predicted

@@ -53,26 +53,3 @@ def _get_label_info(G, label_name):
         [label for label, _ in sorted(label_to_id.items(), key=lambda x: x[1])]
     )
     return (labels, label_dict)
-
-
-def _predict(F, label_dict):
-    """Predict labels by learnt label matrix
-
-    Parameters
-    ----------
-    F : numpy array, shape = [n_samples, n_classes]
-        Learnt (resulting) label matrix
-    label_dict : numpy array, shape = [n_classes]
-        Array of labels
-        i-th element contains the label corresponding label ID `i`
-
-    Returns
-    ----------
-    predicted : numpy array, shape = [n_samples]
-        Array of predicted labels
-    """
-    import numpy as np
-
-    predicted_label_ids = np.argmax(F, axis=1)
-    predicted = label_dict[predicted_label_ids].tolist()
-    return predicted
