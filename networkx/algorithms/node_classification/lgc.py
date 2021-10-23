@@ -86,6 +86,4 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     for _ in range(max_iter):
         F = (P @ F) + B
 
-    predicted = label_dict[np.argmax(F, axis=1)].tolist()
-
-    return predicted
+    return label_dict[np.argmax(F, axis=1)].tolist()
