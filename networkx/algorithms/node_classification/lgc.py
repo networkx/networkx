@@ -30,13 +30,13 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
 
     Returns
     -------
-    predicted : array, shape = [n_samples]
-        Array of predicted labels
+    predicted : list
+        List of length ``len(G)`` with the predicted labels for each node.
 
     Raises
     ------
     NetworkXError
-        If no nodes on `G` has `label_name`.
+        If no nodes in `G` have attribute `label_name`.
 
     Examples
     --------
@@ -51,7 +51,6 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     >>> predicted = node_classification.local_and_global_consistency(G)
     >>> predicted
     ['A', 'A', 'B', 'B']
-
 
     References
     ----------
