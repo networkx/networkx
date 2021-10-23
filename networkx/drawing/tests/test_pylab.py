@@ -140,110 +140,62 @@ def test_edge_colors_and_widths():
         # plt.show()
 
 
-def test_linestyle():
+def test_directed_edges_linestyle_default():
+    """Test default linestyle for edges drawn with FancyArrowPatches."""
+    G = nx.path_graph(4, create_using=nx.DiGraph)  # Graph with 3 edges
+    pos = {n: (n, n) for n in range(len(G))}
 
-    np = pytest.importorskip("numpy")
+    # edge with default style
+    drawn_edges = nx.draw_networkx_edges(G, pos)
+    assert len(drawn_edges) == 3
+    for fap in drawn_edges:
+        assert fap.get_linestyle() == "solid"
 
-    def test_styles(edges, style="solid"):
-        """
-        Function to test the styles set for edges drawn as FancyArrowPatch(es)
-        TODO: It would be nice to run the same tests for LineCollection(s)
-        """
 
-        # we assume that if edges are not a LineCollection, they are drawn as FanceArrowPatches
-        if not isinstance(edges, mpl.collections.LineCollection):
-            for i, edge in enumerate(edges):
-                if isinstance(style, str) or isinstance(style, tuple):
-                    linestyle = style
-                elif np.iterable(style):
-                    if len(style) == len(edges):
-                        linestyle = style[i]
-                    else:  # Cycle through styles
-                        linestyle = style[i % len(style)]
-                else:
-                    linestyle = style
-                assert edge.get_linestyle() == linestyle
+@pytest.mark.parametrize(
+    "style",
+    (
+        "dashed",  # edge with string style
+        "--",  # edge with simplified string style
+        (1, (1, 1)),  # edge with (offset, onoffseq) style
+    ),
+)
+def test_directed_edges_linestyle_single_value(style):
+    """Tests support for specifying linestyles with a single value to be applied to
+    all edges in ``draw_networkx_edges`` for FancyArrowPatch outputs
+    (e.g. directed edges)."""
 
-    pos = nx.circular_layout(barbell)
-    for G in (barbell, barbell.to_directed()):
+    G = nx.path_graph(4, create_using=nx.DiGraph)  # Graph with 3 edges
+    pos = {n: (n, n) for n in range(len(G))}
 
-        nx.draw_networkx_nodes(G, pos, node_color=[(1.0, 1.0, 0.2, 0.5)])
-        nx.draw_networkx_labels(G, pos)
+    drawn_edges = nx.draw_networkx_edges(G, pos, style=style)
+    assert len(drawn_edges) == 3
+    for fap in drawn_edges:
+        assert fap.get_linestyle() == style
 
-        # edge with default style
-        drawn_edges = nx.draw_networkx_edges(G, pos, edgelist=[(0, 1), (0, 2), (1, 2)])
-        test_styles(drawn_edges)
 
-        # global style
+@pytest.mark.parametrize(
+    "style_seq",
+    (
+        ["dashed"],  # edge with string style in list
+        ["--"],  # edge with simplified string style in list
+        [(1, (1, 1))],  # edge with (offset, onoffseq) style in list
+        ["--", "-", ":"],  # edges with styles for each edge
+        ["--", "-"],  # edges with fewer styles than edges (styles cycle)
+        ["--", "-", ":", "-."],  # edges with more styles than edges (extra unused)
+    ),
+)
+def test_directed_edges_linestyle_sequence(style_seq):
+    """Tests support for specifying linestyles with sequences in
+    ``draw_networkx_edges`` for FancyArrowPatch outputs (e.g. directed edges)."""
 
-        # edge with string style
-        style = "dashed"
-        drawn_edges = nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
-        )
-        test_styles(drawn_edges, style=style)
+    G = nx.path_graph(4, create_using=nx.DiGraph)  # Graph with 3 edges
+    pos = {n: (n, n) for n in range(len(G))}
 
-        # edge with simplified string style
-        style = "--"
-        drawn_edges = nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
-        )
-        test_styles(drawn_edges, style=style)
-
-        # edge with tuple style
-        style = (1, (1, 1))
-        drawn_edges = nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
-        )
-        test_styles(drawn_edges, style=style)
-
-        # global style in list
-
-        # edge with string style in list
-        style = ["dashed"]
-        drawn_edges = nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
-        )
-        test_styles(drawn_edges, style=style)
-
-        # edge with simplified string style in list
-        style = ["--"]
-        drawn_edges = nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
-        )
-        test_styles(drawn_edges, style=style)
-
-        # edge with tuple style as list
-        style = [(1, (1, 1))]
-        drawn_edges = nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
-        )
-        test_styles(drawn_edges, style=style)
-
-        # styles for each edge
-
-        # edges with styles for each edge
-        style = ["--", "-", ":"]
-        drawn_edges = nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
-        )
-        test_styles(drawn_edges, style=style)
-
-        # edges with fewer styles than edges
-        style = ["--", "-"]
-        drawn_edges = nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
-        )
-        test_styles(drawn_edges, style=style)
-
-        # edges with more styles than edges
-        style = ["--", "-", ":", "-."]
-        drawn_edges = nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 1), (0, 2), (1, 2)], style=style
-        )
-        test_styles(drawn_edges, style=style)
-
-        # plt.show()
+    drawn_edges = nx.draw_networkx_edges(G, pos, style=style_seq)
+    assert len(drawn_edges) == 3
+    for fap, style in zip(drawn_edges, itertools.cycle(style_seq)):
+        assert fap.get_linestyle() == style
 
 
 def test_labels_and_colors():
