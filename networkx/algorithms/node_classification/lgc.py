@@ -11,7 +11,6 @@ import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 from networkx.algorithms.node_classification.utils import (
     _get_label_info,
-    _init_label_matrix,
     _propagate,
     _predict,
 )
@@ -127,7 +126,7 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
 
     n_samples = X.shape[0]
     n_classes = label_dict.shape[0]
-    F = _init_label_matrix(n_samples, n_classes)
+    F = np.zeros((n_samples, n_classes))
 
     P = _build_propagation_matrix(X, labels, alpha)
     B = _build_base_matrix(X, labels, alpha, n_classes)

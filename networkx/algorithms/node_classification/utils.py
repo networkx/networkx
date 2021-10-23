@@ -55,27 +55,6 @@ def _get_label_info(G, label_name):
     return (labels, label_dict)
 
 
-def _init_label_matrix(n_samples, n_classes):
-    """Create and return zero matrix
-
-    Parameters
-    ----------
-    n_samples : integer
-        The number of nodes (samples) on the input graph
-    n_classes : integer
-        The number of classes (distinct labels) on the input graph
-
-    Returns
-    ----------
-    F : numpy array, shape = [n_samples, n_classes]
-        Label matrix
-    """
-    import numpy as np
-
-    F = np.zeros((n_samples, n_classes))
-    return F
-
-
 def _predict(F, label_dict):
     """Predict labels by learnt label matrix
 
