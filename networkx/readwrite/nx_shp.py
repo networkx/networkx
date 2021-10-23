@@ -116,7 +116,7 @@ def read_shp(path, simplify=True, geom_attrs=True, strict=True):
             else:
                 if strict:
                     raise nx.NetworkXError(
-                        "GeometryType {} not supported".format(g.GetGeometryType())
+                        f"GeometryType {g.GetGeometryType()} not supported"
                     )
 
     return net

@@ -1080,7 +1080,7 @@ class argmap:
 
     @classmethod
     def signature(cls, f):
-        """Construct a Signature object describing `f`
+        r"""Construct a Signature object describing `f`
 
         Compute a Signature so that we can write a function wrapping f with
         the same signature and call-type.

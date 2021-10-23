@@ -271,8 +271,8 @@ def scale_free_graph(
         raise ValueError("delta_out must be >= 0.")
 
     # pre-populate degree states
-    vs = sum([count * [idx] for idx, count in G.out_degree()], [])
-    ws = sum([count * [idx] for idx, count in G.in_degree()], [])
+    vs = sum((count * [idx] for idx, count in G.out_degree()), [])
+    ws = sum((count * [idx] for idx, count in G.in_degree()), [])
 
     # pre-populate node state
     node_list = list(G.nodes())
@@ -281,7 +281,7 @@ def scale_free_graph(
     numeric_nodes = [n for n in node_list if isinstance(n, numbers.Number)]
     if len(numeric_nodes) > 0:
         # set cursor for new nodes appropriately
-        cursor = max([int(n.real) for n in numeric_nodes]) + 1
+        cursor = max(int(n.real) for n in numeric_nodes) + 1
     else:
         # or start at zero
         cursor = 0

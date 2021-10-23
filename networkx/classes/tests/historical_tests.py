@@ -404,7 +404,7 @@ class HistoricalTests:
             G.edges(), [("A", "B"), ("A", "C"), ("B", "D"), ("C", "B"), ("C", "D")]
         )
 
-        assert sorted([v for k, v in G.degree()]) == [0, 0, 0, 2, 2, 3, 3]
+        assert sorted(v for k, v in G.degree()) == [0, 0, 0, 2, 2, 3, 3]
         assert sorted(G.degree(), key=str) == [
             ("A", 2),
             ("B", 3),

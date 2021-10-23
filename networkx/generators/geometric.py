@@ -3,7 +3,6 @@
 
 from bisect import bisect_left
 from itertools import accumulate, combinations, product
-from math import sqrt
 import math
 
 import networkx as nx
@@ -26,8 +25,16 @@ def euclidean(x, y):
     Each of ``x`` and ``y`` can be any iterable of numbers. The
     iterables must be of the same length.
 
+     .. deprecated:: 2.7
     """
-    return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
+    import warnings
+
+    msg = (
+        "euclidean is deprecated and will be removed in 3.0."
+        "Use math.dist(x, y) instead."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
+    return math.dist(x, y)
 
 
 def geometric_edges(G, radius, p):
@@ -450,7 +457,7 @@ def geographical_threshold_graph(
         pos = {v: [seed.random() for i in range(dim)] for v in nodes}
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
-        metric = euclidean
+        metric = math.dist
     nx.set_node_attributes(G, weight, "weight")
     nx.set_node_attributes(G, pos, "pos")
 
@@ -571,7 +578,7 @@ def waxman_graph(
     nx.set_node_attributes(G, pos, "pos")
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
-        metric = euclidean
+        metric = math.dist
     # If the maximum distance L is not specified (that is, we are in the
     # Waxman-1 model), then find the maximum distance between any pair
     # of nodes.

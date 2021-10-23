@@ -166,7 +166,7 @@ def _pagerank_python(
                 x[nbr] += alpha * xlast[n] * wt
             x[n] += danglesum * dangling_weights.get(n, 0) + (1.0 - alpha) * p.get(n, 0)
         # check convergence, l1 norm
-        err = sum([abs(x[n] - xlast[n]) for n in x])
+        err = sum(abs(x[n] - xlast[n]) for n in x)
         if err < N * tol:
             return x
     raise nx.PowerIterationFailedConvergence(max_iter)

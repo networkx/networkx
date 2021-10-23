@@ -190,7 +190,7 @@ class TestGeneratorThreshold:
 
         wseq = nxt.creation_sequence_to_weights("ddidiiidididid")
         ws = [s / float(12) for s in [6, 6, 5, 7, 4, 4, 4, 8, 3, 9, 2, 10, 1, 11]]
-        assert sum([abs(c - d) for c, d in zip(wseq, ws)]) < 1e-14
+        assert sum(abs(c - d) for c, d in zip(wseq, ws)) < 1e-14
 
     def test_finding_routines(self):
         G = nx.Graph({1: [2], 2: [3], 3: [4], 4: [5], 5: [6]})
@@ -223,11 +223,11 @@ class TestGeneratorThreshold:
 
         c1 = nxt.cluster_sequence(cs)
         c2 = list(nx.clustering(G).values())
-        assert sum([abs(c - d) for c, d in zip(c1, c2)]) == pytest.approx(0, abs=1e-7)
+        assert sum(abs(c - d) for c, d in zip(c1, c2)) == pytest.approx(0, abs=1e-7)
 
         b1 = nx.betweenness_centrality(G).values()
         b2 = nxt.betweenness_sequence(cs)
-        assert sum([abs(c - d) for c, d in zip(b1, b2)]) < 1e-14
+        assert sum(abs(c - d) for c, d in zip(b1, b2)) < 1e-14
 
         assert nxt.eigenvalues(cs) == [0, 1, 3, 3, 5, 7, 7, 8]
 

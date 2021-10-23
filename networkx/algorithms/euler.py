@@ -74,7 +74,7 @@ def _find_path_start(G):
         return arbitrary_element(G)
 
     if G.is_directed():
-        v1, v2 = [v for v in G if G.in_degree(v) != G.out_degree(v)]
+        v1, v2 = (v for v in G if G.in_degree(v) != G.out_degree(v))
         # Determines which is the 'start' node (as opposed to the 'end')
         if G.out_degree(v1) > G.in_degree(v1):
             return v1
