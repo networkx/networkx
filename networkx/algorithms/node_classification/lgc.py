@@ -89,31 +89,6 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
         S = alpha * ((D2 @ X) @ D2)
         return S
 
-    def _build_base_matrix(X, labels, alpha, n_classes):
-        """Build base matrix of Local and global consistency
-
-        Parameters
-        ----------
-        X : scipy sparse matrix, shape = [n_samples, n_samples]
-            Adjacency matrix
-        labels : array, shape = [n_samples, 2]
-            Array of pairs of node id and label id
-        alpha : float
-            Clamping factor
-        n_classes : integer
-            The number of classes (distinct labels) on the input graph
-
-        Returns
-        -------
-        B : array, shape = [n_samples, n_classes]
-            Base matrix
-        """
-
-        n_samples = X.shape[0]
-        B = np.zeros((n_samples, n_classes))
-        B[labels[:, 0], labels[:, 1]] = 1 - alpha
-        return B
-
     X = nx.to_scipy_sparse_matrix(G)  # adjacency matrix
     labels, label_dict = _get_label_info(G, label_name)
 
@@ -127,7 +102,9 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     F = np.zeros((n_samples, n_classes))
 
     P = _build_propagation_matrix(X, labels, alpha)
-    B = _build_base_matrix(X, labels, alpha, n_classes)
+    # Build base matrix
+    B = np.zeros((n_samples, n_classes))
+    B[labels[:, 0], labels[:, 1]] = 1 - alpha
 
     remaining_iter = max_iter
     while remaining_iter > 0:
