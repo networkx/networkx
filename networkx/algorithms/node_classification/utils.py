@@ -1,24 +1,3 @@
-def _propagate(P, F, B):
-    """Propagate labels by one step
-
-    Parameters
-    ----------
-    P : scipy sparse matrix, shape = [n_samples, n_samples]
-        Propagation matrix
-    F : numpy array, shape = [n_samples, n_classes]
-        Label matrix
-    B : numpy array, shape = [n_samples, n_classes]
-        Base matrix
-
-    Returns
-    ----------
-    F_new : array, shape = [n_samples, n_classes]
-        Label matrix
-    """
-    F_new = (P @ F) + B
-    return F_new
-
-
 def _get_label_info(G, label_name):
     """Get and return information of labels from the input graph
 
