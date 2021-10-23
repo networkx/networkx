@@ -9,9 +9,7 @@ In ICML (Vol. 3, pp. 912-919).
 import networkx as nx
 
 from networkx.utils.decorators import not_implemented_for
-from networkx.algorithms.node_classification.utils import (
-    _get_label_info,
-)
+from networkx.algorithms.node_classification.utils import _get_label_info
 
 __all__ = ["harmonic_function"]
 
@@ -90,7 +88,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
 
     if labels.shape[0] == 0:
         raise nx.NetworkXError(
-            "No node on the input graph is labeled by '" + label_name + "'."
+            f"No node on the input graph is labeled by '{label_name}'."
         )
 
     n_samples = X.shape[0]
@@ -103,10 +101,8 @@ def harmonic_function(G, max_iter=30, label_name="label"):
     B = np.zeros((n_samples, n_classes))
     B[labels[:, 0], labels[:, 1]] = 1
 
-    remaining_iter = max_iter
-    while remaining_iter > 0:
+    for _ in range(max_iter):
         F = (P @ F) + B
-        remaining_iter -= 1
 
     predicted = label_dict[np.argmax(F, axis=1)].tolist()
 
