@@ -3,7 +3,7 @@ Next Release
 
 Release date: TBD
 
-Supports Python ...
+Supports Python 3.8, 3.9, and ...
 
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
@@ -31,6 +31,8 @@ X contributors. Highlights include:
 
 .. _gh-4946: https://github.com/networkx/networkx/pull/4946#issuecomment-914623654
 
+- Dropped support for Python 3.7.
+
 Improvements
 ------------
 
@@ -50,6 +52,8 @@ Deprecations
   Deprecate the ``random_state`` alias in favor of ``np_random_state``
 - [`#5114 <https://github.com/networkx/networkx/pull/5114>`_]
   Deprecate the ``name`` kwarg from ``union`` as it isn't used.
+- [`#5143 <https://github.com/networkx/networkx/pull/5143>`_]
+  Deprecate ``euclidean`` in favor of ``math.dist``.
 
 
 Merged PRs

@@ -217,7 +217,7 @@ def min_weight_matching(G, maxcardinality=False, weight="weight"):
     if len(G.edges) == 0:
         return max_weight_matching(G, maxcardinality, weight)
     G_edges = G.edges(data=weight, default=1)
-    min_weight = min([w for _, _, w in G_edges])
+    min_weight = min(w for _, _, w in G_edges)
     InvG = nx.Graph()
     edges = ((u, v, 1 / (1 + w - min_weight)) for u, v, w in G_edges)
     InvG.add_weighted_edges_from(edges, weight=weight)

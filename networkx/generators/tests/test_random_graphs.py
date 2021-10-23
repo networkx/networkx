@@ -50,7 +50,7 @@ def test_gnp_generators_for_p_close_to_1(generator):
     """If the edge probability `p` is close to 1, the resulting graph should have all edges."""
     runs = 100
     edges = sum(
-        [generator(10, 0.99999, directed=True).number_of_edges() for _ in range(runs)]
+        generator(10, 0.99999, directed=True).number_of_edges() for _ in range(runs)
     )
     assert abs(edges / float(runs) - 90) <= runs * 2.0 / 100
 
@@ -180,7 +180,7 @@ class TestGeneratorsRandom:
             return is_caterpillar(g.subgraph(non_leafs))
 
         G = nx.random_lobster(10, 0.1, 0.5, seed)
-        assert max([G.degree(n) for n in G.nodes()]) > 3
+        assert max(G.degree(n) for n in G.nodes()) > 3
         assert is_lobster(G)
         pytest.raises(nx.NetworkXError, nx.random_lobster, 10, 0.1, 1, seed)
         pytest.raises(nx.NetworkXError, nx.random_lobster, 10, 1, 1, seed)

@@ -198,8 +198,8 @@ def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1
     if isinstance(attr, str):
 
         def match(datasets1, datasets2):
-            values1 = sorted([data.get(attr, default) for data in datasets1.values()])
-            values2 = sorted([data.get(attr, default) for data in datasets2.values()])
+            values1 = sorted(data.get(attr, default) for data in datasets1.values())
+            values2 = sorted(data.get(attr, default) for data in datasets2.values())
             return allclose(values1, values2, rtol=rtol, atol=atol)
 
     else:

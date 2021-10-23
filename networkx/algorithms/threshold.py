@@ -772,7 +772,7 @@ def spectral_projection(u, eigenpairs):
     coeff = []
     evect = eigenpairs[1]
     for ev in evect:
-        c = sum([evv * uv for (evv, uv) in zip(ev, u)])
+        c = sum(evv * uv for (evv, uv) in zip(ev, u))
         coeff.append(c)
     return coeff
 
