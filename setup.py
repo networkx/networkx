@@ -167,7 +167,7 @@ extras_require = {
     for dep in ["default", "developer", "doc", "extra", "test"]
 }
 
-with open("README.rst", "r") as fh:
+with open("README.rst") as fh:
     long_description = fh.read()
 
 if __name__ == "__main__":
