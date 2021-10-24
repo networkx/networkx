@@ -120,7 +120,8 @@ def test_score_sequence_triangle():
 
 def test_tournament_matrix():
     np = pytest.importorskip("numpy")
-    npt = pytest.importorskip("numpy.testing")
+    pytest.importorskip("scipy")
+    npt = np.testing
     G = DiGraph([(0, 1)])
     m = tournament_matrix(G)
     npt.assert_array_equal(m.todense(), np.array([[0, 1], [-1, 0]]))
