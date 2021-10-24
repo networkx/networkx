@@ -1,5 +1,5 @@
 """Katz centrality."""
-from math import sqrt
+import math
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -181,7 +181,7 @@ def katz_centrality(
             if normalized:
                 # normalize vector
                 try:
-                    s = 1.0 / sqrt(sum(v ** 2 for v in x.values()))
+                    s = 1.0 / math.hypot(*x.values())
                 # this should never be zero?
                 except ZeroDivisionError:
                     s = 1.0
