@@ -391,6 +391,7 @@ def test_held_karp_ascent():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     # Adjacency matrix from page 1153 of the 1970 Held and Karp paper
     # which have been edited to be directional, but also symmetric
@@ -427,6 +428,7 @@ def test_ascent_fractional_solution():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     # This version of Figure 2 has all of the edge weights multiplied by 100
     # and is a complete directed graph with infinite edge weights for the
@@ -482,6 +484,7 @@ def test_ascent_method_asymmetric():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     G_array = np.array(
         [
@@ -516,6 +519,7 @@ def test_ascent_method_asymmetric_2():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     G_array = np.array(
         [
@@ -555,6 +559,7 @@ def test_held_karp_ascent_asymmetric_3():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     G_array = np.array(
         [
@@ -593,6 +598,7 @@ def test_held_karp_ascent_fractional_asymmetric():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     G_array = np.array(
         [
@@ -651,6 +657,7 @@ def test_spanning_tree_distribution():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     z_star = {
         (0, 1): 5 / 12,
@@ -705,6 +712,7 @@ def test_sample_spanning_tree():
     from math import exp
 
     pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     gamma = {
         (0, 1): -0.6383,
@@ -832,6 +840,7 @@ def test_asadpour_tsp():
     # This version of Figure 2 has all of the edge weights multiplied by 100
     # and the 0 weight edges have a weight of 1.
     pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     edge_list = [
         (0, 1, 100),
@@ -900,6 +909,7 @@ def test_asadpour_real_world():
     always starts at city 0.
     """
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     G_array = np.array(
         [
@@ -947,6 +957,7 @@ def test_asadpour_real_world_path():
     nonstop flight. The brute force solution found the optimal tour to cost $872
     """
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     G_array = np.array(
         [
