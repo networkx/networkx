@@ -63,81 +63,241 @@ def test_arrows():
     # plt.show()
 
 
-def test_edge_colors_and_widths():
-    pos = nx.circular_layout(barbell)
-    for G in (barbell, barbell.to_directed()):
-        nx.draw_networkx_nodes(G, pos, node_color=[(1.0, 1.0, 0.2, 0.5)])
-        nx.draw_networkx_labels(G, pos)
-        # edge with default color and width
-        nx.draw_networkx_edges(G, pos, edgelist=[(0, 1)], width=None, edge_color=None)
-        # edges with global color strings and widths in lists
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 2), (0, 3)], width=[3], edge_color=["r"]
-        )
-        # edges with color strings and widths for each edge
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(0, 2), (0, 3)], width=[1, 3], edge_color=["r", "b"]
-        )
-        # edges with fewer color strings and widths than edges
-        nx.draw_networkx_edges(
-            G,
-            pos,
-            edgelist=[(1, 2), (1, 3), (2, 3), (3, 4)],
-            width=[1, 3],
-            edge_color=["g", "m", "c"],
-        )
-        # edges with more color strings and widths than edges
-        nx.draw_networkx_edges(
-            G,
-            pos,
-            edgelist=[(3, 4)],
-            width=[1, 2, 3, 4],
-            edge_color=["r", "b", "g", "k"],
-        )
-        # with rgb tuple and 3 edges - is interpreted with cmap
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(4, 5), (5, 6), (6, 7)], edge_color=(1.0, 0.4, 0.3)
-        )
-        # with rgb tuple in list
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(7, 8), (8, 9)], edge_color=[(0.4, 1.0, 0.0)]
-        )
-        # with rgba tuple and 4 edges - is interpretted with cmap
-        nx.draw_networkx_edges(
-            G,
-            pos,
-            edgelist=[(9, 10), (10, 11), (10, 12), (10, 13)],
-            edge_color=(0.0, 1.0, 1.0, 0.5),
-        )
-        # with rgba tuple in list
-        nx.draw_networkx_edges(
-            G,
-            pos,
-            edgelist=[(9, 10), (10, 11), (10, 12), (10, 13)],
-            edge_color=[(0.0, 1.0, 1.0, 0.5)],
-        )
-        # with color string and global alpha
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(11, 12), (11, 13)], edge_color="purple", alpha=0.2
-        )
-        # with color string in a list
-        nx.draw_networkx_edges(
-            G, pos, edgelist=[(11, 12), (11, 13)], edge_color=["purple"]
-        )
-        # with single edge and hex color string
-        nx.draw_networkx_edges(G, pos, edgelist=[(12, 13)], edge_color="#1f78b4f0")
+@pytest.mark.parametrize(
+    ("edge_color", "expected"),
+    (
+        (None, "black"),  # Default
+        ("r", "red"),  # Non-default color string
+        (["r"], "red"),  # Single non-default color in a list
+        ((1.0, 1.0, 0.0), "yellow"),  # single color as rgb tuple
+        ([(1.0, 1.0, 0.0)], "yellow"),  # single color as rgb tuple in list
+        ((0, 1, 0, 1), "lime"),  # single color as rgba tuple
+        ([(0, 1, 0, 1)], "lime"),  # single color as rgba tuple in list
+        ("#0000ff", "blue"),  # single color hex code
+        (["#0000ff"], "blue"),  # hex code in list
+    ),
+)
+@pytest.mark.parametrize("edgelist", (None, [(0, 1)]))
+def test_single_edge_color_undirected(edge_color, expected, edgelist):
+    """Tests ways of specifying all edges have a single color for edges
+    drawn with a LineCollection"""
 
-        # edge_color as numeric using vmin, vmax
-        nx.draw_networkx_edges(
-            G,
-            pos,
-            edgelist=[(7, 8), (8, 9)],
-            edge_color=[0.2, 0.5],
-            edge_vmin=0.1,
-            edge_vmax=0.6,
-        )
+    G = nx.path_graph(3)
+    drawn_edges = nx.draw_networkx_edges(
+        G, pos=nx.random_layout(G), edgelist=edgelist, edge_color=edge_color
+    )
+    assert mpl.colors.same_color(drawn_edges.get_color(), expected)
 
-        # plt.show()
+
+@pytest.mark.parametrize(
+    ("edge_color", "expected"),
+    (
+        (None, "black"),  # Default
+        ("r", "red"),  # Non-default color string
+        (["r"], "red"),  # Single non-default color in a list
+        ((1.0, 1.0, 0.0), "yellow"),  # single color as rgb tuple
+        ([(1.0, 1.0, 0.0)], "yellow"),  # single color as rgb tuple in list
+        ((0, 1, 0, 1), "lime"),  # single color as rgba tuple
+        ([(0, 1, 0, 1)], "lime"),  # single color as rgba tuple in list
+        ("#0000ff", "blue"),  # single color hex code
+        (["#0000ff"], "blue"),  # hex code in list
+    ),
+)
+@pytest.mark.parametrize("edgelist", (None, [(0, 1)]))
+def test_single_edge_color_directed(edge_color, expected, edgelist):
+    """Tests ways of specifying all edges have a single color for edges drawn
+    with FancyArrowPatches"""
+
+    G = nx.path_graph(3, create_using=nx.DiGraph)
+    drawn_edges = nx.draw_networkx_edges(
+        G, pos=nx.random_layout(G), edgelist=edgelist, edge_color=edge_color
+    )
+    for fap in drawn_edges:
+        assert mpl.colors.same_color(fap.get_edgecolor(), expected)
+
+
+def test_edge_color_tuple_interpretation():
+    """If edge_color is a sequence with the same length as edgelist, then each
+    value in edge_color is mapped onto each edge via colormap."""
+    G = nx.path_graph(6, create_using=nx.DiGraph)
+    pos = {n: (n, n) for n in range(len(G))}
+
+    # num edges != 3 or 4 --> edge_color interpreted as rgb(a)
+    for ec in ((0, 0, 1), (0, 0, 1, 1)):
+        # More than 4 edges
+        drawn_edges = nx.draw_networkx_edges(G, pos, edge_color=ec)
+        for fap in drawn_edges:
+            assert mpl.colors.same_color(fap.get_edgecolor(), ec)
+        # Fewer than 3 edges
+        drawn_edges = nx.draw_networkx_edges(
+            G, pos, edgelist=[(0, 1), (1, 2)], edge_color=ec
+        )
+        for fap in drawn_edges:
+            assert mpl.colors.same_color(fap.get_edgecolor(), ec)
+
+    # num edges == 3, len(edge_color) == 4: interpreted as rgba
+    drawn_edges = nx.draw_networkx_edges(
+        G, pos, edgelist=[(0, 1), (1, 2), (2, 3)], edge_color=(0, 0, 1, 1)
+    )
+    for fap in drawn_edges:
+        assert mpl.colors.same_color(fap.get_edgecolor(), "blue")
+
+    # num edges == 4, len(edge_color) == 3: interpreted as rgb
+    drawn_edges = nx.draw_networkx_edges(
+        G, pos, edgelist=[(0, 1), (1, 2), (2, 3), (3, 4)], edge_color=(0, 0, 1)
+    )
+    for fap in drawn_edges:
+        assert mpl.colors.same_color(fap.get_edgecolor(), "blue")
+
+    # num edges == len(edge_color) == 3: interpreted with cmap, *not* as rgb
+    drawn_edges = nx.draw_networkx_edges(
+        G, pos, edgelist=[(0, 1), (1, 2), (2, 3)], edge_color=(0, 0, 1)
+    )
+    assert mpl.colors.same_color(
+        drawn_edges[0].get_edgecolor(), drawn_edges[1].get_edgecolor()
+    )
+    for fap in drawn_edges:
+        assert not mpl.colors.same_color(fap.get_edgecolor(), "blue")
+
+    # num edges == len(edge_color) == 4: interpreted with cmap, *not* as rgba
+    drawn_edges = nx.draw_networkx_edges(
+        G, pos, edgelist=[(0, 1), (1, 2), (2, 3), (3, 4)], edge_color=(0, 0, 1, 1)
+    )
+    assert mpl.colors.same_color(
+        drawn_edges[0].get_edgecolor(), drawn_edges[1].get_edgecolor()
+    )
+    assert mpl.colors.same_color(
+        drawn_edges[2].get_edgecolor(), drawn_edges[3].get_edgecolor()
+    )
+    for fap in drawn_edges:
+        assert not mpl.colors.same_color(fap.get_edgecolor(), "blue")
+
+
+def test_fewer_edge_colors_than_num_edges_directed():
+    """Test that the edge colors are cycled when there are fewer specified
+    colors than edges."""
+    G = barbell.to_directed()
+    pos = nx.random_layout(barbell)
+    edgecolors = ("r", "g", "b")
+    drawn_edges = nx.draw_networkx_edges(G, pos, edge_color=edgecolors)
+    for fap, expected in zip(drawn_edges, itertools.cycle(edgecolors)):
+        assert mpl.colors.same_color(fap.get_edgecolor(), expected)
+
+
+def test_more_edge_colors_than_num_edges_directed():
+    """Test that extra edge colors are ignored when there are more specified
+    colors than edges."""
+    G = nx.path_graph(4, create_using=nx.DiGraph)  # 3 edges
+    pos = nx.random_layout(barbell)
+    edgecolors = ("r", "g", "b", "c")  # 4 edge colors
+    drawn_edges = nx.draw_networkx_edges(G, pos, edge_color=edgecolors)
+    for fap, expected in zip(drawn_edges, edgecolors[:-1]):
+        assert mpl.colors.same_color(fap.get_edgecolor(), expected)
+
+
+def test_edge_color_string_with_gloabl_alpha_undirected():
+    edge_collection = nx.draw_networkx_edges(
+        barbell,
+        pos=nx.random_layout(barbell),
+        edgelist=[(0, 1), (1, 2)],
+        edge_color="purple",
+        alpha=0.2,
+    )
+    ec = edge_collection.get_color().squeeze()  # as rgba tuple
+    assert len(edge_collection.get_paths()) == 2
+    assert mpl.colors.same_color(ec[:-1], "purple")
+    assert ec[-1] == 0.2
+
+
+def test_edge_color_string_with_global_alpha_directed():
+    drawn_edges = nx.draw_networkx_edges(
+        barbell.to_directed(),
+        pos=nx.random_layout(barbell),
+        edgelist=[(0, 1), (1, 2)],
+        edge_color="purple",
+        alpha=0.2,
+    )
+    assert len(drawn_edges) == 2
+    for fap in drawn_edges:
+        ec = fap.get_edgecolor()  # As rgba tuple
+        assert mpl.colors.same_color(ec[:-1], "purple")
+        assert ec[-1] == 0.2
+
+
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_edge_width_default_value(graph_type):
+    """Test the default linewidth for edges drawn either via LineCollection or
+    FancyArrowPatches."""
+    G = nx.path_graph(2, create_using=graph_type)
+    pos = {n: (n, n) for n in range(len(G))}
+    drawn_edges = nx.draw_networkx_edges(G, pos)
+    if isinstance(drawn_edges, list):  # directed case: list of FancyArrowPatch
+        drawn_edges = drawn_edges[0]
+    assert drawn_edges.get_linewidth() == 1
+
+
+@pytest.mark.parametrize(
+    ("edgewidth", "expected"),
+    (
+        (3, 3),  # single-value, non-default
+        ([3], 3),  # Single value as a list
+    ),
+)
+def test_edge_width_single_value_undirected(edgewidth, expected):
+    G = nx.path_graph(4)
+    pos = {n: (n, n) for n in range(len(G))}
+    drawn_edges = nx.draw_networkx_edges(G, pos, width=edgewidth)
+    assert len(drawn_edges.get_paths()) == 3
+    assert drawn_edges.get_linewidth() == expected
+
+
+@pytest.mark.parametrize(
+    ("edgewidth", "expected"),
+    (
+        (3, 3),  # single-value, non-default
+        ([3], 3),  # Single value as a list
+    ),
+)
+def test_edge_width_single_value_directed(edgewidth, expected):
+    G = nx.path_graph(4, create_using=nx.DiGraph)
+    pos = {n: (n, n) for n in range(len(G))}
+    drawn_edges = nx.draw_networkx_edges(G, pos, width=edgewidth)
+    assert len(drawn_edges) == 3
+    for fap in drawn_edges:
+        assert fap.get_linewidth() == expected
+
+
+@pytest.mark.parametrize(
+    "edgelist",
+    (
+        [(0, 1), (1, 2), (2, 3)],  # one width specification per edge
+        None,  #  fewer widths than edges - widths cycle
+        [(0, 1), (1, 2)],  # More widths than edges - unused widths ignored
+    ),
+)
+def test_edge_width_sequence(edgelist):
+    G = barbell.to_directed()
+    pos = nx.random_layout(G)
+    widths = (0.5, 2.0, 12.0)
+    drawn_edges = nx.draw_networkx_edges(G, pos, edgelist=edgelist, width=widths)
+    for fap, expected_width in zip(drawn_edges, itertools.cycle(widths)):
+        assert fap.get_linewidth() == expected_width
+
+
+def test_edge_color_with_edge_vmin_vmax():
+    """Test that edge_vmin and edge_vmax properly set the dynamic range of the
+    color map when num edges == len(edge_colors)."""
+    G = nx.path_graph(3, create_using=nx.DiGraph)
+    pos = nx.random_layout(G)
+    # Extract colors from the original (unscaled) colormap
+    drawn_edges = nx.draw_networkx_edges(G, pos, edge_color=[0, 1.0])
+    orig_colors = [e.get_edgecolor() for e in drawn_edges]
+    # Colors from scaled colormap
+    drawn_edges = nx.draw_networkx_edges(
+        G, pos, edge_color=[0.2, 0.8], edge_vmin=0.2, edge_vmax=0.8
+    )
+    scaled_colors = [e.get_edgecolor() for e in drawn_edges]
+    assert mpl.colors.same_color(orig_colors, scaled_colors)
 
 
 def test_directed_edges_linestyle_default():
