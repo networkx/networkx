@@ -286,6 +286,9 @@ class TestLayout:
         sizes = (0, 5, 7, 2, 8)
         G = nx.complete_multipartite_graph(*sizes)
 
+        G.add_node("a", subset=5)
+        G.add_node("b", subset="s0")
+
         vpos = nx.multipartite_layout(G)
         assert len(vpos) == len(G)
 
