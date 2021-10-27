@@ -157,8 +157,7 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
 
     arrowsize : int or list (default=10)
         For directed graphs, choose the size of the arrow head's length and
-        width.
-        If `list`, assign different size on each arrow head's length and width.
+        width. A list of values can be passed in to assign a different size for arrow head's length and width.
         See `matplotlib.patches.FancyArrowPatch` for attribute `mutation_scale`
         for more info.
 
