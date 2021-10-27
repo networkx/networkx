@@ -286,9 +286,6 @@ class TestLayout:
         sizes = (0, 5, 7, 2, 8)
         G = nx.complete_multipartite_graph(*sizes)
 
-        G.add_node("a", subset=5)
-        G.add_node("b", subset="s0")
-
         vpos = nx.multipartite_layout(G)
         assert len(vpos) == len(G)
 
@@ -415,3 +412,15 @@ class TestLayout:
         }
         for k, v in expectation.items():
             assert (s_vpos[k] == v).all()
+
+
+def test_multipartite_layout_nonnumeric_partition_labels():
+    """See gh-5123."""
+    G = nx.Graph()
+    G.add_node(0, subset="s0")
+    G.add_node(1, subset="s0")
+    G.add_node(2, subset="s1")
+    G.add_node(3, subset="s1")
+    G.add_edges_from([(0, 2), (0, 3), (1, 2)])
+    pos = nx.multipartite_layout(G)
+    assert len(pos) == len(G)
