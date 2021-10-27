@@ -754,7 +754,7 @@ def draw_networkx_edges(
 
         if isinstance(arrowsize, list):
             if len(arrowsize) != len(edge_pos):
-                raise ValueError("arrowsize should have the same length as G.edges")
+                raise ValueError("arrowsize should have the same length as edgelist")
         else:
             mutation_scale = arrowsize  # scale factor of arrow head
 
