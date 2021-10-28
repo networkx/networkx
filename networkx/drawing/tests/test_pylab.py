@@ -478,6 +478,28 @@ def test_error_invalid_kwds():
         nx.draw(barbell, foo="bar")
 
 
+def test_draw_networkx_arrowsize_incorrect_size():
+    G = nx.DiGraph([(0, 1), (0, 2), (0, 3), (1, 3)])
+    arrowsize = [1, 2, 3]
+    with pytest.raises(
+        ValueError, match="arrowsize should have the same length as edgelist"
+    ):
+        nx.draw(G, arrowsize=arrowsize)
+
+
+@pytest.mark.parametrize("arrowsize", (30, [10, 20, 30]))
+def test_draw_edges_arrowsize(arrowsize):
+    G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
+    pos = {0: (0, 0), 1: (0, 1), 2: (1, 0)}
+    edges = nx.draw_networkx_edges(G, pos=pos, arrowsize=arrowsize)
+
+    arrowsize = itertools.repeat(arrowsize) if isinstance(arrowsize, int) else arrowsize
+
+    for fap, expected in zip(edges, arrowsize):
+        assert isinstance(fap, mpl.patches.FancyArrowPatch)
+        assert fap.get_mutation_scale() == expected
+
+
 def test_np_edgelist():
     # see issue #4129
     np = pytest.importorskip("numpy")

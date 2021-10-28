@@ -155,10 +155,11 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
         For directed graphs, choose the style of the arrowsheads.
         See `matplotlib.patches.ArrowStyle` for more options.
 
-    arrowsize : int (default=10)
+    arrowsize : int or list (default=10)
         For directed graphs, choose the size of the arrow head's length and
-        width. See `matplotlib.patches.FancyArrowPatch` for attribute
-        `mutation_scale` for more info.
+        width. A list of values can be passed in to assign a different size for arrow head's length and width.
+        See `matplotlib.patches.FancyArrowPatch` for attribute `mutation_scale`
+        for more info.
 
     with_labels :  bool (default=True)
         Set to True to draw labels on the nodes.
@@ -750,7 +751,12 @@ def draw_networkx_edges(
 
         # Draw arrows with `matplotlib.patches.FancyarrowPatch`
         arrow_collection = []
-        mutation_scale = arrowsize  # scale factor of arrow head
+
+        if isinstance(arrowsize, list):
+            if len(arrowsize) != len(edge_pos):
+                raise ValueError("arrowsize should have the same length as edgelist")
+        else:
+            mutation_scale = arrowsize  # scale factor of arrow head
 
         base_connection_style = mpl.patches.ConnectionStyle(connectionstyle)
 
@@ -798,6 +804,11 @@ def draw_networkx_edges(
             x2, y2 = dst
             shrink_source = 0  # space from source to tail
             shrink_target = 0  # space from  head to target
+
+            if isinstance(arrowsize, list):
+                # Scale each factor of each arrow based on arrowsize list
+                mutation_scale = arrowsize[i]
+
             if np.iterable(node_size):  # many node sizes
                 source, target = edgelist[i][:2]
                 source_node_size = node_size[nodelist.index(source)]
