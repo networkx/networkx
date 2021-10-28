@@ -394,7 +394,10 @@ Please `report bugs on GitHub <https://github.com/networkx/networkx/issues>`_.
 Policies
 --------
 
-We follow these policies:
+All interactions with the project are subject to the
+:doc:`NetworkX code of conduct <code_of_conduct>`.
 
-* https://networkx.org/documentation/stable/developer/deprecations.html
-* https://numpy.org/neps/nep-0029-deprecation_policy.html
+We also follow these policies:
+
+* :doc:`NetworkX deprecation policy <deprecations>`
+* :doc:`Python version support <nep-0029-deprecation_policy>`
