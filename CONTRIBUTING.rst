@@ -390,3 +390,11 @@ Bugs
 ----
 
 Please `report bugs on GitHub <https://github.com/networkx/networkx/issues>`_.
+
+Policies
+--------
+
+We follow these policies:
+
+* https://networkx.org/documentation/stable/developer/deprecations.html
+* https://numpy.org/neps/nep-0029-deprecation_policy.html
