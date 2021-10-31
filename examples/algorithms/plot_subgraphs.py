@@ -112,10 +112,10 @@ def graph_partitioning(G, plotting=True):
 # ----------------------------------
 #
 # This directed graph has one input node labeled `in` and plotted in blue color
-# and one output node labaled `put` and plotted in magenta color.
-# The other six nodes are classified as four supported plotted in green color
-# and two unsupported plotted in red color. THe goad is compuiting a list
-# of subgraphs that contain only entirely supported or unsupported nodes.
+# and one output node labeled `out` and plotted in magenta color.
+# The other six nodes are classified as four `supported` plotted in green color
+# and two `unsupported` plotted in red color. The goal is compuiting a list
+# of subgraphs that contain only entirely `supported` or `unsupported` nodes.
 G_ex = nx.DiGraph()
 G_ex.add_nodes_from(["In"], node_type="input", node_color="b")
 G_ex.add_nodes_from(["A", "C", "E", "F"], node_type="supported", node_color="g")
