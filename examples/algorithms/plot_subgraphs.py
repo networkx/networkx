@@ -70,7 +70,7 @@ def graph_partitioning(G, plotting=True):
         plt.figure(figsize=(8, 8))
         nx.draw_networkx_edges(H, _pos, alpha=0.3, edge_color="k")
         nx.draw_networkx_nodes(H, _pos, node_color=_node_color_list)
-        nx.draw_networkx_labels(H, _pos, fontsize=14)
+        nx.draw_networkx_labels(H, _pos, font_size=14)
         plt.axis("off")
         plt.title("The stripped graph with the edges removed.")
         plt.show()
@@ -79,7 +79,7 @@ def graph_partitioning(G, plotting=True):
         plt.figure(figsize=(8, 8))
         nx.draw_networkx_edges(G_minus_H, _pos, alpha=0.3, edge_color="k")
         # nx.draw_networkx_nodes(G_minus_H, _pos, node_color=_node_color_list)
-        nx.draw_networkx_labels(G_minus_H, _pos, fontsize=14)
+        nx.draw_networkx_labels(G_minus_H, _pos, font_size=14)
         plt.axis("off")
         plt.title("The edges removed.")
         plt.show()
@@ -99,7 +99,7 @@ def graph_partitioning(G, plotting=True):
             nx.draw_networkx_edges(H_c, _pos, alpha=0.3, edge_color="k")
             _node_color_list_c = [v[1]["node_color"] for v in H_c.nodes(data=True)]
             nx.draw_networkx_nodes(H_c, _pos, node_color=_node_color_list_c)
-            nx.draw_networkx_labels(H_c, _pos, fontsize=14)
+            nx.draw_networkx_labels(H_c, _pos, font_size=14)
             plt.axis("off")
             plt.title("One of the subgraphs.")
             plt.show()
@@ -114,18 +114,16 @@ G_ex.add_nodes_from(["A", "C", "E", "F"], node_type="supported", node_color="g")
 G_ex.add_nodes_from(["B", "D"], node_type="unsupported", node_color="r")
 G_ex.add_nodes_from(["Out"], node_type="output", node_color="m")
 G_ex.add_edges_from(
-    (
-        [
-            ("In", "A"),
-            ("A", "B"),
-            ("B", "C"),
-            ("B", "D"),
-            ("D", "E"),
-            ("C", "F"),
-            ("E", "F"),
-            ("F", "Out"),
-        ]
-    )
+    [
+        ("In", "A"),
+        ("A", "B"),
+        ("B", "C"),
+        ("B", "D"),
+        ("D", "E"),
+        ("C", "F"),
+        ("E", "F"),
+        ("F", "Out"),
+    ]
 )
 
 # Plot the original graph.
@@ -134,7 +132,7 @@ pos = nx.spectral_layout(G_ex)
 plt.figure(figsize=(8, 8))
 nx.draw_networkx_edges(G_ex, pos, alpha=0.3, edge_color="k")
 nx.draw_networkx_nodes(G_ex, pos, alpha=0.8, node_color=node_color_list)
-nx.draw_networkx_labels(G_ex, pos, fontsize=14)
+nx.draw_networkx_labels(G_ex, pos, font_size=14)
 plt.axis("off")
 plt.title("The original graph.")
 plt.show()
@@ -148,7 +146,7 @@ for subgraph in subgraphs_of_G_ex:
     nx.draw_networkx_edges(subgraph, _pos, alpha=0.3, edge_color="k")
     node_color_list_c = [v[1]["node_color"] for v in subgraph.nodes(data=True)]
     nx.draw_networkx_nodes(subgraph, _pos, node_color=node_color_list_c)
-    nx.draw_networkx_labels(subgraph, _pos, fontsize=14)
+    nx.draw_networkx_labels(subgraph, _pos, font_size=14)
     plt.axis("off")
     plt.title("One of the subgraphs.")
     plt.show()
@@ -170,7 +168,7 @@ pos = nx.spectral_layout(G_ex_r)
 plt.figure(figsize=(8, 8))
 nx.draw_networkx_edges(G_ex_r, pos, alpha=0.3, edge_color="k")
 nx.draw_networkx_nodes(G_ex_r, pos, alpha=0.8, node_color=node_color_list)
-nx.draw_networkx_labels(G_ex_r, pos, fontsize=14)
+nx.draw_networkx_labels(G_ex_r, pos, font_size=14)
 plt.axis("off")
 plt.title("The reconstructed graph.")
 plt.show()
