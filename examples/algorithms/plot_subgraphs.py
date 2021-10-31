@@ -248,7 +248,7 @@ def test_graph_partitioning():
 
 
 ###############################################################################
-#Run the unit test function for graph_partitioning.
+# Run the unit test function for graph_partitioning.
 # ----------------------------------
 #
 test_graph_partitioning()
