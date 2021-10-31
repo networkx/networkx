@@ -137,7 +137,7 @@ plt.axis("off")
 plt.title("The original graph.")
 plt.show()
 
-subgraphs_of_G_ex, removed_edges = graph_partitioning(G_ex, plotting=False)
+subgraphs_of_G_ex, removed_edges = graph_partitioning(G_ex, plotting=True)
 
 # Plot every subgraph in the list.
 for subgraph in subgraphs_of_G_ex:
@@ -196,7 +196,7 @@ def test_graph_partitioning():
 
     subgraphs_of_G_u_true = [G_us, G_uu]
 
-    subgraphs_of_G_u, _removed_edges = graph_partitioning(G_u, plotting=False)
+    subgraphs_of_G_u, _removed_edges = graph_partitioning(G_u, plotting=True)
 
     _check = nx.is_isomorphic(
         subgraphs_of_G_u[0], subgraphs_of_G_u_true[0]
