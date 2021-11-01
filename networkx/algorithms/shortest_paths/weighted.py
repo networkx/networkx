@@ -1231,17 +1231,9 @@ def bellman_ford_predecessor_and_distance(
 
 
 def _bellman_ford(
-    G,
-    source,
-    weight,
-    pred=None,
-    paths=None,
-    dist=None,
-    target=None,
-    heuristic=True,
-    return_negative_cycle_info=False,
+    G, source, weight, pred=None, paths=None, dist=None, target=None, heuristic=True,
 ):
-    """Relaxation loop for Bellman–Ford algorithm.
+    """Calls relaxation loop for Bellman–Ford algorithm and builds paths
 
     This is an implementation of the SPFA variant.
     See https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm
@@ -1283,8 +1275,9 @@ def _bellman_ford(
 
     Returns
     -------
-    Returns a dict keyed by node to the distance from the source.
-    Dicts for paths and pred are in the mutated input dicts by those names.
+    dist : dict
+        Returns a dict keyed by node to the distance from the source.
+        Dicts for paths and pred are in the mutated input dicts by those names.
 
     Raises
     ------
@@ -1297,28 +1290,95 @@ def _bellman_ford(
         negative (di)cycle.  Note: any negative weight edge in an
         undirected graph is a negative cycle
     """
-    for s in source:
-        if s not in G:
-            raise nx.NodeNotFound(f"Source {s} not in G")
-
     if pred is None:
         pred = {v: [] for v in source}
 
     if dist is None:
         dist = {v: 0 for v in source}
 
+    negative_cycle_found = _inner_bellman_ford(
+        G, source, weight, pred, dist, heuristic,
+    )
+    if negative_cycle_found is not None:
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
+
+    if paths is not None:
+        sources = set(source)
+        dsts = [target] if target is not None else pred
+        for dst in dsts:
+            gen = _build_paths_from_predecessors(sources, dst, pred)
+            paths[dst] = next(gen)
+
+    return dist
+
+
+def _inner_bellman_ford(
+    G, sources, weight, pred, dist=None, heuristic=True,
+):
+    """Inner Relaxation loop for Bellman–Ford algorithm.
+
+    This is an implementation of the SPFA variant.
+    See https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source: list
+        List of source nodes. The shortest path from any of the source
+        nodes will be found if multiple sources are provided.
+
+    weight : function
+        The weight of an edge is the value returned by the function. The
+        function must accept exactly three positional arguments: the two
+        endpoints of an edge and the dictionary of edge attributes for
+        that edge. The function must return a number.
+
+    pred: dict of lists
+        dict to store a list of predecessors keyed by that node
+
+    dist: dict, optional (default=None)
+        dict to store distance from source to the keyed node
+        If None, returned dist dict contents default to 0 for every node in the
+        source list
+
+    heuristic : bool
+        Determines whether to use a heuristic to early detect negative
+        cycles at a hopefully negligible cost.
+
+    Returns
+    -------
+    node or None
+        Return a node `v` where processing discovered a negative cycle.
+        If no negative cycle found, return None.
+
+    Raises
+    ------
+    NodeNotFound
+        If any of `source` is not in `G`.
+    """
+    for s in sources:
+        if s not in G:
+            raise nx.NodeNotFound(f"Source {s} not in G")
+
+    if pred is None:
+        pred = {v: [] for v in sources}
+
+    if dist is None:
+        dist = {v: 0 for v in sources}
+
     # Heuristic Storage setup. Note: use None because nodes cannot be None
     nonexistent_edge = (None, None)
-    pred_edge = {v: None for v in source}
-    recent_update = {v: nonexistent_edge for v in source}
+    pred_edge = {v: None for v in sources}
+    recent_update = {v: nonexistent_edge for v in sources}
 
     G_succ = G.succ if G.is_directed() else G.adj
     inf = float("inf")
     n = len(G)
 
     count = {}
-    q = deque(source)
-    in_q = set(source)
+    q = deque(sources)
+    in_q = set(sources)
     while q:
         u = q.popleft()
         in_q.remove(u)
@@ -1339,10 +1399,8 @@ def _bellman_ford(
                     if heuristic:
                         if v in recent_update[u]:
                             # Negative cycle found!
-                            if return_negative_cycle_info:
-                                pred[v].append(u)
-                                return v, pred
-                            raise nx.NetworkXUnbounded("Negative cycle detected.")
+                            pred[v].append(u)
+                            return v
 
                         # Transfer the recent update info from u to v if the
                         # same source node is the head of the update path.
@@ -1359,9 +1417,8 @@ def _bellman_ford(
                         count_v = count.get(v, 0) + 1
                         if count_v == n:
                             # Negative cycle found!
-                            if return_negative_cycle_info:
-                                return v, pred
-                            raise nx.NetworkXUnbounded("Negative cycle detected.")
+                            return v
+
                         count[v] = count_v
                     dist[v] = dist_v
                     pred[v] = [u]
@@ -1370,14 +1427,8 @@ def _bellman_ford(
                 elif dist.get(v) is not None and dist_v == dist.get(v):
                     pred[v].append(u)
 
-    if paths is not None:
-        sources = set(source)
-        dsts = [target] if target is not None else pred
-        for dst in dsts:
-            gen = _build_paths_from_predecessors(sources, dst, pred)
-            paths[dst] = next(gen)
-
-    return dist
+    # successfully found shortest_path. No negative cycles found.
+    return None
 
 
 def bellman_ford_path(G, source, target, weight="weight"):
@@ -2047,15 +2098,15 @@ def find_negative_cycle(G, source, weight="weight"):
         If no negative cycle is found.
     """
     weight = _weight_function(G, weight)
-    result = _bellman_ford(G, [source], weight=weight, return_negative_cycle_info=True)
-    try:
-        v, pred = result
-        preds = list(pred[v])
-    except:
+    pred = {source: []}
+
+    v = _inner_bellman_ford(G, [source], weight, pred=pred)
+    if v is None:
         raise nx.NetworkXError("No negative cycles detected.")
+
     # negative cycle detected... find it
     neg_cycle = []
-    stack = [(v, preds)]
+    stack = [(v, list(pred[v]))]
     seen = {v}
     while stack:
         node, preds = stack[-1]
