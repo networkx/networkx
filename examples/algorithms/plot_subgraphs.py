@@ -80,7 +80,7 @@ def graph_partitioning(G, plotting=True):
         nx.draw_networkx_edges(G_minus_H, _pos, alpha=0.3, edge_color="k")
         Gn = G.nodes(data=True)
         Gmn = G_minus_H.nodes(data=True)
-        nd = {v:dict(Gn[v]) for v in dict(Gn) if v in dict(Gmn)}
+        nd = {v: dict(Gn[v]) for v in dict(Gn) if v in dict(Gmn)}
         ndl = [nd[v]["node_color"] for v in nd]
         nx.draw_networkx_labels(G_minus_H, _pos, font_size=14)
         plt.axis("off")
