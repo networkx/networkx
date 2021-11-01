@@ -2,15 +2,22 @@
 
 
 import pytest
+import sys
+
+
+# NOTE: It is necessary to prevent previous imports in the test suite from
+# "contaminating" the tests for the deprecation warnings by removing
+# node_classification from sys.modules.
 
 
 def test_hmn_deprecation_warning():
-    # The `lgc` and `hmn` modules are deprecated
+    sys.modules.pop("networkx.algorithms.node_classification")
     with pytest.warns(DeprecationWarning):
         from networkx.algorithms.node_classification import hmn
 
 
 def test_lgc_deprecation_warning():
+    sys.modules.pop("networkx.algorithms.node_classification")
     with pytest.warns(DeprecationWarning):
         from networkx.algorithms.node_classification import lgc
 
