@@ -204,7 +204,7 @@ def dijkstra_path_length(G, source, target, weight="weight"):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> print(nx.dijkstra_path_length(G, 0, 4))
+    >>> nx.dijkstra_path_length(G, 0, 4)
     4
 
     Notes
@@ -428,7 +428,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight="weight")
     --------
     >>> G = nx.path_graph(5)
     >>> length, path = nx.single_source_dijkstra(G, 0)
-    >>> print(length[4])
+    >>> length[4]
     4
     >>> for node in [0, 1, 2, 3, 4]:
     ...     print(f"{node}: {length[node]}")
@@ -967,7 +967,7 @@ def all_pairs_dijkstra(G, cutoff=None, weight="weight"):
     --------
     >>> G = nx.path_graph(5)
     >>> len_path = dict(nx.all_pairs_dijkstra(G))
-    >>> print(len_path[3][0][1])
+    >>> len_path[3][0][1]
     2
     >>> for node in [0, 1, 2, 3, 4]:
     ...     print(f"3 - {node}: {len_path[3][0][node]}")
@@ -1089,7 +1089,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
     --------
     >>> G = nx.path_graph(5)
     >>> path = dict(nx.all_pairs_dijkstra_path(G))
-    >>> print(path[0][4])
+    >>> path[0][4]
     [0, 1, 2, 3, 4]
 
     Notes
@@ -1340,6 +1340,7 @@ def _bellman_ford(
                         if v in recent_update[u]:
                             # Negative cycle found!
                             if return_negative_cycle_info:
+                                pred[v].append(u)
                                 return v, pred
                             raise nx.NetworkXUnbounded("Negative cycle detected.")
 
@@ -1411,7 +1412,7 @@ def bellman_ford_path(G, source, target, weight="weight"):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> print(nx.bellman_ford_path(G, 0, 4))
+    >>> nx.bellman_ford_path(G, 0, 4)
     [0, 1, 2, 3, 4]
 
     Notes
@@ -1460,7 +1461,7 @@ def bellman_ford_path_length(G, source, target, weight="weight"):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> print(nx.bellman_ford_path_length(G, 0, 4))
+    >>> nx.bellman_ford_path_length(G, 0, 4)
     4
 
     Notes
@@ -1629,7 +1630,7 @@ def single_source_bellman_ford(G, source, target=None, weight="weight"):
     --------
     >>> G = nx.path_graph(5)
     >>> length, path = nx.single_source_bellman_ford(G, 0)
-    >>> print(length[4])
+    >>> length[4]
     4
     >>> for node in [0, 1, 2, 3, 4]:
     ...     print(f"{node}: {length[node]}")
@@ -1736,7 +1737,7 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
     --------
     >>> G = nx.path_graph(5)
     >>> path = dict(nx.all_pairs_bellman_ford_path(G))
-    >>> print(path[0][4])
+    >>> path[0][4]
     [0, 1, 2, 3, 4]
 
     Notes
@@ -2047,12 +2048,14 @@ def find_negative_cycle(G, source, weight="weight"):
     """
     weight = _weight_function(G, weight)
     result = _bellman_ford(G, [source], weight=weight, return_negative_cycle_info=True)
-    if len(result) != 2:
+    try:
+        v, pred = result
+        preds = list(pred[v])
+    except:
         raise nx.NetworkXError("No negative cycles detected.")
-    v, pred = result
     # negative cycle detected... find it
     neg_cycle = []
-    stack = [(v, list(pred[v]))]
+    stack = [(v, preds)]
     seen = {v}
     while stack:
         node, preds = stack[-1]
@@ -2076,7 +2079,7 @@ def find_negative_cycle(G, source, weight="weight"):
                 if v in G[v] and weight(G, v, v) < 0:
                     return [v, v]
                 # should not reach here
-                raise nx.NetworkXerror("Negative cycle is detected but not found")
+                raise nx.NetworkXError("Negative cycle is detected but not found")
     # should not get here...
     msg = "negative cycle detected but not identified"
     raise nx.NetworkXUnbounded(msg)
