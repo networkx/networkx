@@ -93,3 +93,6 @@ Version 3.0
 * In ``utils/decorators.py`` remove ``random_state``.
 * In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.
 * In ``networkx/generators/geometric.py`` remove ``euclidean`` and tests.
+* In ``networkx/algorithms/node_classification/`` remove ``hmn.py``, ``lgc.py``,
+  and ``utils.py`` after moving the functions defined therein into the newly created
+  ``node_classification.py`` module, which will replace the current package.
