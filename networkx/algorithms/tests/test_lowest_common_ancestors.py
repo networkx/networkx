@@ -294,11 +294,8 @@ class TestDAGLCA:
         assert ans == [((3, 3), 3)]
 
     def test_all_pairs_lowest_common_ancestor10(self):
-        """Test that it works on a small graph that previously revealed a bug."""
-        G = nx.DiGraph()
-        G.add_edge(0, 2)
-        G.add_edge(1, 2)
-        G.add_edge(2, 3)
+        """Test that it works on a small graph that previously revealed a bug gh-4942"""
+        G = nx.DiGraph([(0, 2), (1, 2), (2, 3)])
         ans = list(all_pairs_lca(G))
         assert len(ans) == 9
 
