@@ -1231,7 +1231,14 @@ def bellman_ford_predecessor_and_distance(
 
 
 def _bellman_ford(
-    G, source, weight, pred=None, paths=None, dist=None, target=None, heuristic=True,
+    G,
+    source,
+    weight,
+    pred=None,
+    paths=None,
+    dist=None,
+    target=None,
+    heuristic=True,
 ):
     """Calls relaxation loop for Bellman–Ford algorithm and builds paths
 
@@ -1297,7 +1304,12 @@ def _bellman_ford(
         dist = {v: 0 for v in source}
 
     negative_cycle_found = _inner_bellman_ford(
-        G, source, weight, pred, dist, heuristic,
+        G,
+        source,
+        weight,
+        pred,
+        dist,
+        heuristic,
     )
     if negative_cycle_found is not None:
         raise nx.NetworkXUnbounded("Negative cycle detected.")
@@ -1313,7 +1325,12 @@ def _bellman_ford(
 
 
 def _inner_bellman_ford(
-    G, sources, weight, pred, dist=None, heuristic=True,
+    G,
+    sources,
+    weight,
+    pred,
+    dist=None,
+    heuristic=True,
 ):
     """Inner Relaxation loop for Bellman–Ford algorithm.
 
