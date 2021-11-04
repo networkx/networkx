@@ -1092,7 +1092,7 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     nodes = []
 
     width = len(layers)
-    for i, layer in layers.items():
+    for i, layer in enumerate(layers.values()):
         height = len(layer)
         xs = np.repeat(i, height)
         ys = np.arange(0, height, dtype=float)
