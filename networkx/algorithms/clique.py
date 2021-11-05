@@ -102,7 +102,7 @@ def enumerate_all_cliques(G):
 
 
 @not_implemented_for("directed")
-def find_cliques(G):
+def find_cliques(G, nodes=None):
     """Returns all maximal cliques in an undirected graph.
 
     For each node *v*, a *maximal clique for v* is a largest complete
@@ -113,16 +113,27 @@ def find_cliques(G):
     list of nodes. It is an iterative implementation, so should not
     suffer from recursion depth issues.
 
+    This function can accept a list of nodes and only the maximal cliques
+    containing all of these nodes are returned. It can considerably speed up
+    the running time if some specific cliques are desired.
+
     Parameters
     ----------
     G : NetworkX graph
         An undirected graph.
 
+    nodes : list, optional
+        If provided, the iterator returned will only iterate over *maximal
+        cliques* containing all nodes in `nodes`. If `nodes` isn't a clique
+        itself, an error is raised.
+
     Returns
     -------
     iterator
         An iterator over maximal cliques, each of which is a list of
-        nodes in `G`. The order of cliques is arbitrary.
+        nodes in `G`. If `nodes` is provided, only the maximal cliques
+        containing all the nodes in `nodes` are returned. The order of
+        cliques is arbitrary.
 
     See Also
     --------
@@ -174,13 +185,29 @@ def find_cliques(G):
         return
 
     adj = {u: {v for v in G[u] if v != u} for u in G}
-    Q = [None]
 
     subg = set(G)
     cand = set(G)
+    stack = []
+
+    if nodes is None:
+        nodes = []
+
+    # Initialize Q with the given nodes
+    Q = nodes[:]
+    for node in nodes:
+        if node not in cand:
+            raise ValueError("The given `nodes` %s do not form a clique" % str(nodes))
+        subg &= adj[node]
+        cand &= adj[node]
+
+    if not subg:
+        yield Q[:]
+        return
+
     u = max(subg, key=lambda u: len(cand & adj[u]))
     ext_u = cand - adj[u]
-    stack = []
+    Q.append(None)
 
     try:
         while True:
