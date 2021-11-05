@@ -104,7 +104,7 @@ def betweenness_centrality(
     are floating point numbers (overflows and roundoff errors can
     cause problems). As a workaround you can use integer numbers by
     multiplying the relevant edge attributes by a convenient
-    constant factor (eg 100).
+    constant factor (eg 100) and converting to integers.
 
     References
     ----------
