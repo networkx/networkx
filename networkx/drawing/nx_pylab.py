@@ -727,7 +727,6 @@ def draw_networkx_edges(
             linewidths=width,
             antialiaseds=(1,),
             linestyle=style,
-            transOffset=ax.transData,
             alpha=alpha,
         )
         edge_collection.set_cmap(edge_cmap)
