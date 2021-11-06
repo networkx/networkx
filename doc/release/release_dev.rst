@@ -54,6 +54,8 @@ Deprecations
   Deprecate the ``name`` kwarg from ``union`` as it isn't used.
 - [`#5143 <https://github.com/networkx/networkx/pull/5143>`_]
   Deprecate ``euclidean`` in favor of ``math.dist``.
+- [`#5166 <https://github.com/networkx/networkx/pull/5166>`_]
+  Deprecate the ``hmn`` and ``lgc`` modules in ``node_classification``.
 
 
 Merged PRs
