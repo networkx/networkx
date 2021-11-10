@@ -2076,7 +2076,8 @@ def find_negative_cycle(G, source, weight="weight"):
     stops if there exists a negative cycle. This algorithm
     picks up from there and returns the found negative cycle.
 
-    The cycle consists of a list of 2-tuple edge representatives.
+    The cycle consists of a list of nodes in the cycle order. The last
+    node equals the first to make it a cycle.
     You can look up the edge weights in the original graph. In the case
     of multigraphs the relevant edge is the minimal weight edge between
     the nodes in the 2-tuple.
@@ -2106,8 +2107,9 @@ def find_negative_cycle(G, source, weight="weight"):
 
     Returns
     -------
-    Returns a dict keyed by node to the distance from the source.
-    Dicts for paths and pred are in the mutated input dicts by those names.
+    cycle : list
+        A list of nodes in the order of the cycle found. The last node
+        equals the first to indicate a cycle.
 
     Raises
     ------
