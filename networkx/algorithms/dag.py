@@ -94,7 +94,13 @@ def ancestors(G, source):
     --------
     descendants
     """
-    return {child for parent, child in nx.bfs_edges(G, source, reverse=True)}
+    prev_nodes = [*G.predecessors(source)]
+    nodes = set(prev_nodes)
+    if not prev_nodes:
+        return set()
+    for prev_node in prev_nodes:
+        nodes |= ancestors(G, prev_node)
+    return nodes
 
 
 def has_cycle(G):
