@@ -32,6 +32,7 @@ __all__ = [
     "all_pairs_bellman_ford_path_length",
     "bellman_ford_predecessor_and_distance",
     "negative_edge_cycle",
+    "find_negative_cycle",
     "goldberg_radzik",
     "johnson",
 ]
@@ -203,7 +204,7 @@ def dijkstra_path_length(G, source, target, weight="weight"):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> print(nx.dijkstra_path_length(G, 0, 4))
+    >>> nx.dijkstra_path_length(G, 0, 4)
     4
 
     Notes
@@ -429,7 +430,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight="weight")
     --------
     >>> G = nx.path_graph(5)
     >>> length, path = nx.single_source_dijkstra(G, 0)
-    >>> print(length[4])
+    >>> length[4]
     4
     >>> for node in [0, 1, 2, 3, 4]:
     ...     print(f"{node}: {length[node]}")
@@ -973,7 +974,7 @@ def all_pairs_dijkstra(G, cutoff=None, weight="weight"):
     --------
     >>> G = nx.path_graph(5)
     >>> len_path = dict(nx.all_pairs_dijkstra(G))
-    >>> print(len_path[3][0][1])
+    >>> len_path[3][0][1]
     2
     >>> for node in [0, 1, 2, 3, 4]:
     ...     print(f"3 - {node}: {len_path[3][0][node]}")
@@ -1095,7 +1096,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
     --------
     >>> G = nx.path_graph(5)
     >>> path = dict(nx.all_pairs_dijkstra_path(G))
-    >>> print(path[0][4])
+    >>> path[0][4]
     [0, 1, 2, 3, 4]
 
     Notes
@@ -1123,6 +1124,11 @@ def bellman_ford_predecessor_and_distance(
     The algorithm has a running time of $O(mn)$ where $n$ is the number of
     nodes and $m$ is the number of edges.  It is slower than Dijkstra but
     can handle negative edge weights.
+
+    If a negative cycle is detected, you can use :func:`find_negative_cycle`
+    to return the cycle and examine it. Shortest paths are not defined when
+    a negative cycle exists because once reached, the path can cycle forever
+    to build up arbitrarily low weights.
 
     Parameters
     ----------
@@ -1165,10 +1171,10 @@ def bellman_ford_predecessor_and_distance(
         If `source` is not in `G`.
 
     NetworkXUnbounded
-        If the (di)graph contains a negative cost (di)cycle, the
+        If the (di)graph contains a negative (di)cycle, the
         algorithm raises an exception to indicate the presence of the
-        negative cost (di)cycle.  Note: any negative weight edge in an
-        undirected graph is a negative cost cycle.
+        negative (di)cycle.  Note: any negative weight edge in an
+        undirected graph is a negative cycle.
 
     Examples
     --------
@@ -1190,7 +1196,11 @@ def bellman_ford_predecessor_and_distance(
     >>> nx.bellman_ford_predecessor_and_distance(G, 0)
     Traceback (most recent call last):
         ...
-    networkx.exception.NetworkXUnbounded: Negative cost cycle detected.
+    networkx.exception.NetworkXUnbounded: Negative cycle detected.
+
+    See Also
+    --------
+    find_negative_cycle
 
     Notes
     -----
@@ -1201,7 +1211,7 @@ def bellman_ford_predecessor_and_distance(
     the source.
 
     In the case where the (di)graph is not connected, if a component
-    not containing the source contains a negative cost (di)cycle, it
+    not containing the source contains a negative (di)cycle, it
     will not be detected.
 
     In NetworkX v2.1 and prior, the source node had predecessor `[None]`.
@@ -1211,7 +1221,7 @@ def bellman_ford_predecessor_and_distance(
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
     if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
-        raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     dist = {source: 0}
     pred = {source: []}
@@ -1228,9 +1238,16 @@ def bellman_ford_predecessor_and_distance(
 
 
 def _bellman_ford(
-    G, source, weight, pred=None, paths=None, dist=None, target=None, heuristic=True
+    G,
+    source,
+    weight,
+    pred=None,
+    paths=None,
+    dist=None,
+    target=None,
+    heuristic=True,
 ):
-    """Relaxation loop for Bellman–Ford algorithm.
+    """Calls relaxation loop for Bellman–Ford algorithm and builds paths
 
     This is an implementation of the SPFA variant.
     See https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm
@@ -1272,8 +1289,9 @@ def _bellman_ford(
 
     Returns
     -------
-    Returns a dict keyed by node to the distance from the source.
-    Dicts for paths and pred are in the mutated input dicts by those names.
+    dist : dict
+        Returns a dict keyed by node to the distance from the source.
+        Dicts for paths and pred are in the mutated input dicts by those names.
 
     Raises
     ------
@@ -1281,33 +1299,110 @@ def _bellman_ford(
         If any of `source` is not in `G`.
 
     NetworkXUnbounded
-        If the (di)graph contains a negative cost (di)cycle, the
+        If the (di)graph contains a negative (di)cycle, the
         algorithm raises an exception to indicate the presence of the
-        negative cost (di)cycle.  Note: any negative weight edge in an
-        undirected graph is a negative cost cycle
+        negative (di)cycle.  Note: any negative weight edge in an
+        undirected graph is a negative cycle
     """
-    for s in source:
-        if s not in G:
-            raise nx.NodeNotFound(f"Source {s} not in G")
-
     if pred is None:
         pred = {v: [] for v in source}
 
     if dist is None:
         dist = {v: 0 for v in source}
 
+    negative_cycle_found = _inner_bellman_ford(
+        G,
+        source,
+        weight,
+        pred,
+        dist,
+        heuristic,
+    )
+    if negative_cycle_found is not None:
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
+
+    if paths is not None:
+        sources = set(source)
+        dsts = [target] if target is not None else pred
+        for dst in dsts:
+            gen = _build_paths_from_predecessors(sources, dst, pred)
+            paths[dst] = next(gen)
+
+    return dist
+
+
+def _inner_bellman_ford(
+    G,
+    sources,
+    weight,
+    pred,
+    dist=None,
+    heuristic=True,
+):
+    """Inner Relaxation loop for Bellman–Ford algorithm.
+
+    This is an implementation of the SPFA variant.
+    See https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source: list
+        List of source nodes. The shortest path from any of the source
+        nodes will be found if multiple sources are provided.
+
+    weight : function
+        The weight of an edge is the value returned by the function. The
+        function must accept exactly three positional arguments: the two
+        endpoints of an edge and the dictionary of edge attributes for
+        that edge. The function must return a number.
+
+    pred: dict of lists
+        dict to store a list of predecessors keyed by that node
+
+    dist: dict, optional (default=None)
+        dict to store distance from source to the keyed node
+        If None, returned dist dict contents default to 0 for every node in the
+        source list
+
+    heuristic : bool
+        Determines whether to use a heuristic to early detect negative
+        cycles at a hopefully negligible cost.
+
+    Returns
+    -------
+    node or None
+        Return a node `v` where processing discovered a negative cycle.
+        If no negative cycle found, return None.
+
+    Raises
+    ------
+    NodeNotFound
+        If any of `source` is not in `G`.
+    """
+    for s in sources:
+        if s not in G:
+            raise nx.NodeNotFound(f"Source {s} not in G")
+
+    if pred is None:
+        pred = {v: [] for v in sources}
+
+    if dist is None:
+        dist = {v: 0 for v in sources}
+
     # Heuristic Storage setup. Note: use None because nodes cannot be None
     nonexistent_edge = (None, None)
-    pred_edge = {v: None for v in source}
-    recent_update = {v: nonexistent_edge for v in source}
+    pred_edge = {v: None for v in sources}
+    recent_update = {v: nonexistent_edge for v in sources}
 
     G_succ = G.succ if G.is_directed() else G.adj
     inf = float("inf")
     n = len(G)
 
     count = {}
-    q = deque(source)
-    in_q = set(source)
+    q = deque(sources)
+    in_q = set(sources)
     while q:
         u = q.popleft()
         in_q.remove(u)
@@ -1327,7 +1422,10 @@ def _bellman_ford(
                     # therefore u is always in the dict recent_update
                     if heuristic:
                         if v in recent_update[u]:
-                            raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+                            # Negative cycle found!
+                            pred[v].append(u)
+                            return v
+
                         # Transfer the recent update info from u to v if the
                         # same source node is the head of the update path.
                         # If the source node is responsible for the cost update,
@@ -1342,7 +1440,9 @@ def _bellman_ford(
                         in_q.add(v)
                         count_v = count.get(v, 0) + 1
                         if count_v == n:
-                            raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+                            # Negative cycle found!
+                            return v
+
                         count[v] = count_v
                     dist[v] = dist_v
                     pred[v] = [u]
@@ -1351,14 +1451,8 @@ def _bellman_ford(
                 elif dist.get(v) is not None and dist_v == dist.get(v):
                     pred[v].append(u)
 
-    if paths is not None:
-        sources = set(source)
-        dsts = [target] if target is not None else pred
-        for dst in dsts:
-            gen = _build_paths_from_predecessors(sources, dst, pred)
-            paths[dst] = next(gen)
-
-    return dist
+    # successfully found shortest_path. No negative cycles found.
+    return None
 
 
 def bellman_ford_path(G, source, target, weight="weight"):
@@ -1393,7 +1487,7 @@ def bellman_ford_path(G, source, target, weight="weight"):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> print(nx.bellman_ford_path(G, 0, 4))
+    >>> nx.bellman_ford_path(G, 0, 4)
     [0, 1, 2, 3, 4]
 
     Notes
@@ -1442,7 +1536,7 @@ def bellman_ford_path_length(G, source, target, weight="weight"):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> print(nx.bellman_ford_path_length(G, 0, 4))
+    >>> nx.bellman_ford_path_length(G, 0, 4)
     4
 
     Notes
@@ -1613,7 +1707,7 @@ def single_source_bellman_ford(G, source, target=None, weight="weight"):
     --------
     >>> G = nx.path_graph(5)
     >>> length, path = nx.single_source_bellman_ford(G, 0)
-    >>> print(length[4])
+    >>> length[4]
     4
     >>> for node in [0, 1, 2, 3, 4]:
     ...     print(f"{node}: {length[node]}")
@@ -1722,7 +1816,7 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
     --------
     >>> G = nx.path_graph(5)
     >>> path = dict(nx.all_pairs_bellman_ford_path(G))
-    >>> print(path[0][4])
+    >>> path[0][4]
     [0, 1, 2, 3, 4]
 
     Notes
@@ -1783,10 +1877,10 @@ def goldberg_radzik(G, source, weight="weight"):
         If `source` is not in `G`.
 
     NetworkXUnbounded
-        If the (di)graph contains a negative cost (di)cycle, the
+        If the (di)graph contains a negative (di)cycle, the
         algorithm raises an exception to indicate the presence of the
-        negative cost (di)cycle.  Note: any negative weight edge in an
-        undirected graph is a negative cost cycle.
+        negative (di)cycle.  Note: any negative weight edge in an
+        undirected graph is a negative cycle.
 
     Examples
     --------
@@ -1802,7 +1896,7 @@ def goldberg_radzik(G, source, weight="weight"):
     >>> nx.goldberg_radzik(G, 0)
     Traceback (most recent call last):
         ...
-    networkx.exception.NetworkXUnbounded: Negative cost cycle detected.
+    networkx.exception.NetworkXUnbounded: Negative cycle detected.
 
     Notes
     -----
@@ -1813,7 +1907,7 @@ def goldberg_radzik(G, source, weight="weight"):
     the source.
 
     In the case where the (di)graph is not connected, if a component
-    not containing the source contains a negative cost (di)cycle, it
+    not containing the source contains a negative (di)cycle, it
     will not be detected.
 
     """
@@ -1821,7 +1915,7 @@ def goldberg_radzik(G, source, weight="weight"):
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
     if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
-        raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     if len(G) == 1:
         return {source: None}, {source: 0}
@@ -1888,7 +1982,7 @@ def goldberg_radzik(G, source, weight="weight"):
                         # path v to u and (u, v) contains at least one edge of
                         # negative reduced cost. The cycle must be of negative
                         # cost.
-                        raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+                        raise nx.NetworkXUnbounded("Negative cycle detected.")
         to_scan.reverse()
         return to_scan
 
@@ -1984,6 +2078,92 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
     finally:
         G.remove_node(newnode)
     return False
+
+
+def find_negative_cycle(G, source, weight="weight"):
+    """Returns a cycle with negative total weight if it exists.
+
+    Bellman-Ford is used to find shortest_paths. That algorithm
+    stops if there exists a negative cycle. This algorithm
+    picks up from there and returns the found negative cycle.
+
+    The cycle consists of a list of nodes in the cycle order. The last
+    node equals the first to make it a cycle.
+    You can look up the edge weights in the original graph. In the case
+    of multigraphs the relevant edge is the minimal weight edge between
+    the nodes in the 2-tuple.
+
+    If the graph has no negative cycle, a NetworkXError is raised.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source: list of nodes
+        List of source nodes. The search starts from all of the source
+        nodes in the list.
+
+    weight : string or function
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
+
+    Returns
+    -------
+    cycle : list
+        A list of nodes in the order of the cycle found. The last node
+        equals the first to indicate a cycle.
+
+    Raises
+    ------
+    NetworkXError
+        If no negative cycle is found.
+    """
+    weight = _weight_function(G, weight)
+    pred = {source: []}
+
+    v = _inner_bellman_ford(G, [source], weight, pred=pred)
+    if v is None:
+        raise nx.NetworkXError("No negative cycles detected.")
+
+    # negative cycle detected... find it
+    neg_cycle = []
+    stack = [(v, list(pred[v]))]
+    seen = {v}
+    while stack:
+        node, preds = stack[-1]
+        if v in preds:
+            # found the cycle
+            neg_cycle.extend([node, v])
+            neg_cycle = list(reversed(neg_cycle))
+            return neg_cycle
+
+        if preds:
+            nbr = preds.pop()
+            if nbr not in seen:
+                stack.append((nbr, list(pred[nbr])))
+                neg_cycle.append(node)
+                seen.add(nbr)
+        else:
+            stack.pop()
+            if neg_cycle:
+                neg_cycle.pop()
+            else:
+                if v in G[v] and weight(G, v, v) < 0:
+                    return [v, v]
+                # should not reach here
+                raise nx.NetworkXError("Negative cycle is detected but not found")
+    # should not get here...
+    msg = "negative cycle detected but not identified"
+    raise nx.NetworkXUnbounded(msg)
 
 
 def bidirectional_dijkstra(G, source, target, weight="weight"):
