@@ -126,4 +126,4 @@ Q: What is the policy for deciding whether to include a new algorithm?
 There is no official policy setting explicit inclusion criteria for new
 algorithms in NetworkX. New algorithms are more likely to be included if they
 have been published and are cited by others. More important than number of
-citations is how well proposed additions fit the project :doc:`mission_and_values`.
+citations is how well proposed additions fit the project :ref:`mission and values <values>`.
