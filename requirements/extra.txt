@@ -1,5 +1,3 @@
 lxml>=4.5
 pygraphviz>=1.7
 pydot>=1.4.1
-# Temporary fix for gh-5155
-pyparsing==3.0.0
