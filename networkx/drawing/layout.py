@@ -32,6 +32,7 @@ __all__ = [
     "fruchterman_reingold_layout",
     "spiral_layout",
     "multipartite_layout",
+    "bfs_layout",
 ]
 
 
@@ -1187,3 +1188,68 @@ def rescale_layout_dict(pos, scale=1):
     pos_v = np.array(list(pos.values()))
     pos_v = rescale_layout(pos_v, scale=scale)
     return dict(zip(pos, pos_v))
+
+
+def bfs(G, start):
+    """BFS algorithm that keep track of the depth of each vertex."""
+    import collections
+
+    visited = set()
+    depths = collections.defaultdict(list)
+    queue = collections.deque([(start, 0)])
+    while queue:
+        current_vertex, current_depth = queue.pop()
+        if current_vertex in visited:
+            continue
+        for neighbor in G.neighbors(current_vertex):
+            queue.appendleft((neighbor, current_depth + 1))
+        visited.add(current_vertex)
+        depths[current_depth].append(current_vertex)
+    return depths
+
+
+def bfs_layout(G, start, center=None):
+    """Position nodes according to breadth-first search algorithm.
+
+    Parameters
+    ----------
+    G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
+
+    start : string
+        Starting point.
+
+    center : array-like or None
+        Coordinate pair around which to center the layout.
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> pos = nx.bfs_layout(G, 0)
+
+    Notes
+    -----
+    This algorithm currently only works in two dimensions and does not
+    try to minimize edge crossings.
+
+    """
+    import numpy as np
+
+    G, center = _process_params(G, center, 2)
+
+    depths = bfs(G, start)
+    max_depth = max(depths.keys())
+
+    layout = {}
+
+    ys = dict(zip(range(max_depth + 1), np.linspace(0, 1, max_depth + 1)))
+    for depth, vertexes in depths.items():
+        xs = np.linspace(0, 1, len(vertexes) + 2)[1:-1]
+        for i, vertex in enumerate(vertexes):
+            layout[vertex] = [xs[i], ys[depth]]
+    return layout
