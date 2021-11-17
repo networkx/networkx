@@ -922,3 +922,28 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         validate_path(self.XG3, 0, 3, 15, nx.johnson(self.XG3)[0][3])
         validate_path(self.XG4, 0, 2, 4, nx.johnson(self.XG4)[0][2])
         validate_path(self.MXG4, 0, 2, 4, nx.johnson(self.MXG4)[0][2])
+
+
+class TestDialsAlgorithm(WeightedTestBase):
+    def test_missing_source(self):
+        with pytest.raises(nx.NodeNotFound):
+            G = nx.DiGraph()
+            nx.dial_predecessor_and_distance(G, 0)
+
+    def test_invalid_weights(self):
+        with pytest.raises(ValueError):
+            G = nx.DiGraph()
+            G.add_weighted_edges_from([(0, 1, 3.14)])
+            nx.dial_predecessor_and_distance(G, 0)
+
+    def test_graphs(self):
+        for graph, source, target, expected_distance in [
+            (self.XG, "s", "v", 9),
+            (self.MXG, "s", "v", 9),
+            (self.XG2, 1, 3, 4),
+            (self.XG3, 0, 3, 15),
+            (self.XG4, 0, 2, 4),
+            (self.MXG4, 0, 2, 4),
+        ]:
+            pred, distance = nx.dial_predecessor_and_distance(graph, source)
+            assert distance[target] == expected_distance

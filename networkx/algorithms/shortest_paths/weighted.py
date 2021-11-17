@@ -4,7 +4,7 @@ Shortest path algorithms for weighted graphs.
 
 from collections import deque
 from heapq import heappush, heappop
-from itertools import count
+from itertools import count, starmap
 import networkx as nx
 from networkx.algorithms.shortest_paths.generic import _build_paths_from_predecessors
 
@@ -35,6 +35,7 @@ __all__ = [
     "find_negative_cycle",
     "goldberg_radzik",
     "johnson",
+    "dial_predecessor_and_distance",
 ]
 
 
@@ -2396,3 +2397,200 @@ def johnson(G, weight="weight"):
         return paths
 
     return {v: dist_path(v) for v in G}
+
+
+def _dial_multisource(
+    G, sources, weight, pred=None, paths=None, cutoff=None, target=None
+):
+    """Uses Dial's algorithm to find shortest weighted paths in a graph
+    with non-negative integer edge weights
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    sources : non-empty iterable of nodes
+        Starting nodes for paths. If this is just an iterable containing
+        a single node, then all paths computed by this function will
+        start from that node. If there are two or more nodes in this
+        iterable, the computed paths may begin from any one of the start
+        nodes.
+
+    weight: function
+        Function with (u, v, data) input that returns that edges weight
+
+    pred: dict of lists, optional(default=None)
+        dict to store a list of predecessors keyed by that node
+        If None, predecessors are not stored.
+
+    paths: dict, optional (default=None)
+        dict to store the path list from source to each node, keyed by node.
+        If None, paths are not stored.
+
+    target : node label, optional
+        Ending node for path. Search is halted when target is found.
+
+    cutoff : integer or float, optional
+        Length (sum of edge weights) at which the search is stopped.
+        If cutoff is provided, only return paths with summed weight <= cutoff.
+
+    Returns
+    -------
+    distance : dictionary
+        A mapping from node to shortest distance to that node from one
+        of the source nodes.
+
+    Raises
+    ------
+    NodeNotFound
+        If any of `sources` is not in `G`.
+    ValueError
+        If any edge weight in `G` is not a non-negative integer.
+
+
+    Notes
+    -----
+    The optional predecessor and path dictionaries can be accessed by
+    the caller through the original pred and paths objects passed
+    as arguments. No need to explicitly return pred or paths.
+
+    """
+    G_succ = G._succ if G.is_directed() else G._adj
+
+    # Check edge weights and find maximum edge weight
+    if G.is_multigraph():
+        edge_weights = [weight(u, v, d) for u in G for v, d in G_succ[u].items()]
+    else:
+        edge_weights = list(starmap(weight, G.edges(data=True)))
+    if any(wt != abs(int(wt)) for wt in edge_weights):
+        raise ValueError("Edge weights must be non-negative integers!")
+    max_edge_weight = max(edge_weights)
+
+    # Fringe is a bucket queue of size W*|V| + 1
+    n_nodes = G.number_of_nodes()
+    num_buckets = n_nodes * max_edge_weight + 1
+    buckets = [set() for _ in range(num_buckets)]
+
+    dist = {}  # dictionary of final distances
+    seen = {}
+    for source in sources:
+        seen[source] = 0
+        buckets[0].add(source)
+
+    current_bucket_idx = 0
+    while current_bucket_idx < num_buckets:
+        current_bucket = buckets[current_bucket_idx]
+        if not current_bucket:
+            current_bucket_idx += 1
+            continue
+
+        v = current_bucket.pop()
+        if v in dist:
+            continue  # already searched this node.
+        dist[v] = current_bucket_idx
+        if v == target:
+            break
+        for u, e in G_succ[v].items():
+            cost = weight(v, u, e)
+            if cost is None:
+                continue
+            vu_dist = dist[v] + cost
+            if cutoff is not None:
+                if vu_dist > cutoff:
+                    continue
+            if u in dist:
+                u_dist = dist[u]
+                if vu_dist < u_dist:
+                    raise ValueError("Contradictory paths found:", "negative weights?")
+                elif pred is not None and vu_dist == u_dist:
+                    pred[u].append(v)
+            elif u not in seen or vu_dist < seen[u]:
+                if u in seen:
+                    buckets[seen[u]].discard(u)
+                seen[u] = vu_dist
+                buckets[vu_dist].add(u)
+                if paths is not None:
+                    paths[u] = paths[v] + [u]
+                if pred is not None:
+                    pred[u] = [v]
+            elif vu_dist == seen[u]:
+                if pred is not None:
+                    pred[u].append(v)
+
+    # The optional predecessor and path dictionaries can be accessed
+    # by the caller via the pred and paths objects passed as arguments.
+    return dist
+
+
+def dial_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
+    """Compute weighted shortest path length and predecessors.
+
+    Uses Dial's algorithm to obtain the shortest weighted paths
+    and return dictionaries of predecessors for each node and
+    distance for each node from the `source`.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node label
+        Starting node for path
+
+    cutoff : integer or float, optional
+        Length (sum of edge weights) at which the search is stopped.
+        If cutoff is provided, only return paths with summed weight <= cutoff.
+
+    weight : string or function
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
+
+    Returns
+    -------
+    pred, distance : dictionaries
+        Returns two dictionaries representing a list of predecessors
+        of a node and the distance to each node.
+        Warning: If target is specified, the dicts are incomplete as they
+        only contain information for the nodes along a path to target.
+
+    Raises
+    ------
+    NodeNotFound
+        If `source` is not in `G`.
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
+    The list of predecessors contains more than one element only when
+    there are more than one shortest paths to the key node.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5, create_using=nx.DiGraph())
+    >>> pred, dist = nx.dial_predecessor_and_distance(G, 0)
+    >>> sorted(pred.items())
+    [(0, []), (1, [0]), (2, [1]), (3, [2]), (4, [3])]
+    >>> sorted(dist.items())
+    [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
+
+    >>> pred, dist = nx.dial_predecessor_and_distance(G, 0, 1)
+    >>> sorted(pred.items())
+    [(0, []), (1, [0])]
+    >>> sorted(dist.items())
+    [(0, 0), (1, 1)]
+    """
+    if source not in G:
+        raise nx.NodeNotFound(f"Node {source} is not found in the graph")
+    weight = _weight_function(G, weight)
+    pred = {source: []}  # dictionary of predecessors
+    return (pred, _dial_multisource(G, {source}, weight, pred=pred, cutoff=cutoff))
