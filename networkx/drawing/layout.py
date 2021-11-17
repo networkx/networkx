@@ -556,8 +556,7 @@ def _fruchterman_reingold(
         pos += delta_pos
         # cool temperature
         t -= dt
-        err = np.linalg.norm(delta_pos) / nnodes
-        if err < threshold:
+        if (np.linalg.norm(delta_pos) / nnodes) < threshold:
             break
     return pos
 
@@ -631,8 +630,7 @@ def _sparse_fruchterman_reingold(
         pos += delta_pos
         # cool temperature
         t -= dt
-        err = np.linalg.norm(delta_pos) / nnodes
-        if err < threshold:
+        if (np.linalg.norm(delta_pos) / nnodes) < threshold:
             break
     return pos
 
