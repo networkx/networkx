@@ -114,12 +114,12 @@ def _node_func(G):
     """
     if G.is_multigraph():
 
-        def sorted_node(u, v, key):
+        def sorted_node(u, v, key=None):
             return (u, v, key) if u <= v else (v, u, key)
 
     else:
 
-        def sorted_node(u, v):
+        def sorted_node(u, v, key=None):
             return (u, v) if u <= v else (v, u)
 
     return sorted_node

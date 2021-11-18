@@ -838,7 +838,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert pred[3] == 0
         assert dist == {0: 0, 1: 1, 2: 2, 3: 1}
 
-    def test_negative_weight(self):
+    def test_negative_weight_bf_path(self):
         G = nx.DiGraph()
         G.add_nodes_from("abcd")
         G.add_edge("a", "d", weight=0)
