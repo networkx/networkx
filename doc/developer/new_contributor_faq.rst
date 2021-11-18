@@ -43,8 +43,9 @@ Q: I've found an issue I'm interested in, can I have it assigned to me?
 NetworkX doesn't typically assign issues to contributors. If you find an issue
 or feature request on the issue tracker that you'd like to work on, you should
 first check the issue thread to see if there are any linked pull requests.
-If not, then feel free to open a new PR to address the issue - there's no need
-to ask for permission!
+If not, then feel free to open a new PR to address the issue - no need
+to ask for permission - and don't forget to reference the issue number in the PR
+comments so that others know you are now working on it!
 
 Q: How do I contribute an example to the Gallery?
 -------------------------------------------------
