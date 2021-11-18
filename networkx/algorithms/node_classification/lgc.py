@@ -89,6 +89,7 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
         degrees = X.sum(axis=0).squeeze()
         degrees[degrees == 0] = 1  # Avoid division by 0
         diag = 1 / np.sqrt(degrees)
+        # TODO: Rm wrapper when diags sparse array becomes available.
         D2 = sp.sparse.csr_array(sp.sparse.diags(diag, offsets=0))
         S = alpha * ((D2 @ X) @ D2)
         return S

@@ -289,6 +289,7 @@ def directed_combinatorial_laplacian_matrix(
     v = evecs.flatten().real
     p = v / v.sum()
     # NOTE: could be improved by not densifying
+    # TODO: Rm csr_array wrapper when spdiags array creation becomes available
     Phi = sp.sparse.csr_array(sp.sparse.spdiags(p, 0, n, n)).toarray()
 
     return Phi - (Phi @ P + P.T @ Phi) / 2.0
@@ -348,10 +349,12 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
     n, m = A.shape
     if walk_type in ["random", "lazy"]:
+        # TODO: Rm csr_array wrapper when spdiags array creation becomes available
         DI = sp.sparse.csr_array(sp.sparse.spdiags(1.0 / A.sum(axis=1), 0, n, n))
         if walk_type == "random":
             P = DI @ A
         else:
+            # TODO: Rm csr_array wrapper when identity array creation becomes available
             I = sp.sparse.csr_array(sp.sparse.identity(n))
             P = (I + DI @ A) / 2.0
 

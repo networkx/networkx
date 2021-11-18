@@ -83,6 +83,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
         """
         degrees = X.sum(axis=0).squeeze()
         degrees[degrees == 0] = 1  # Avoid division by 0
+        # TODO: Rm csr_wrapper when array-diags is available
         D = sp.sparse.csr_array(sp.sparse.diags((1 / degrees), offsets=0))
         P = (D @ X).tolil()
         P[labels[:, 0]] = 0  # labels[:, 0] indicates IDs of labeled nodes
