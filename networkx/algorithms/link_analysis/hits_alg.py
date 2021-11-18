@@ -363,9 +363,9 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
 
     if len(G) == 0:
         return {}, {}
-    M = nx.to_scipy_sparse_matrix(G, nodelist=list(G))
-    (n, m) = M.shape  # should be square
-    A = M.T @ M  # authority matrix
+    A = nx.to_scipy_sparse_matrix(G, nodelist=list(G))
+    (n, m) = A.shape  # should be square
+    ATA = A.T @ A  # authority matrix
     x = np.ones((n, 1)) / n  # initial guess
     # choose fixed starting vector if not given
     if nstart is not None:
@@ -376,7 +376,7 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
     i = 0
     while True:
         xlast = x
-        x = A @ x
+        x = ATA @ x
         x /= x.max()
         # check convergence, l1 norm
         err = np.absolute(x - xlast).sum()
@@ -387,7 +387,7 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
         i += 1
 
     a = x.flatten()
-    h = M @ a
+    h = A @ a
     if normalized:
         h = h / h.sum()
         a = a / a.sum()
