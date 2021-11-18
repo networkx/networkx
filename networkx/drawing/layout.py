@@ -619,7 +619,7 @@ def _sparse_fruchterman_reingold(
             # enforce minimum distance of 0.01
             distance = np.where(distance < 0.01, 0.01, distance)
             # the adjacency matrix row
-            Ai = A[0]
+            Ai = A.getrowview(i).toarray()  # TODO: revisit w/ sparse 1D container
             # displacement "force"
             displacement[:, i] += (
                 delta * (k * k / distance ** 2 - Ai * distance / k)
