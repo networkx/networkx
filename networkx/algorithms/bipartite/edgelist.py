@@ -133,17 +133,17 @@ def generate_edgelist(G, delimiter=" ", data=True):
         raise AttributeError("Missing node attribute `bipartite`") from err
     if data is True or data is False:
         for n in part0:
-            for e in G.edges(n, data=data):
-                yield delimiter.join(map(str, e))
+            for edge in G.edges(n, data=data):
+                yield delimiter.join(map(str, edge))
     else:
         for n in part0:
             for u, v, d in G.edges(n, data=True):
-                e = [u, v]
+                edge = [u, v]
                 try:
-                    e.extend(d[k] for k in data)
+                    edge.extend(d[k] for k in data)
                 except KeyError:
                     pass  # missing data for this edge, should warn?
-                yield delimiter.join(map(str, e))
+                yield delimiter.join(map(str, edge))
 
 
 def parse_edgelist(

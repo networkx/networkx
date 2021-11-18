@@ -327,10 +327,10 @@ def write_shp(G, outdir):
     # New edge attribute write support merged into edge loop
     edge_fields = {}  # storage for field names and their data types
 
-    for e in G.edges(data=True):
-        data = G.get_edge_data(*e)
-        g = netgeometry(e, data)
-        attributes, edges = create_attributes(e[2], edge_fields, edges)
+    for edge in G.edges(data=True):
+        data = G.get_edge_data(*edge)
+        g = netgeometry(edge, data)
+        attributes, edges = create_attributes(edge[2], edge_fields, edges)
         create_feature(g, edges, attributes)
 
     nodes, edges = None, None

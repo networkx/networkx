@@ -288,7 +288,7 @@ graph
 ]"""
         assert data == answer
 
-    def test_float_label(self):
+    def test_special_float_label(self):
         special_floats = [float("nan"), float("+inf"), float("-inf")]
         try:
             import numpy as np
