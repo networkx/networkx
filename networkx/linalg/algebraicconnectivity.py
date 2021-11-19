@@ -67,21 +67,6 @@ class _PCGSolver:
             p = sp.linalg.blas.daxpy(p, z, a=beta)
 
 
-class _CholeskySolver:
-    """Cholesky factorization.
-
-    To solve Ax = b:
-        solver = _CholeskySolver(A)
-        x = solver.solve(b)
-
-    optional argument `tol` on solve method is ignored but included
-    to match _PCGsolver API.
-    """
-
-    def __init__(self, A):
-        raise nx.NetworkXError("Cholesky solver removed.  Use LU solver instead.")
-
-
 class _LUSolver:
     """LU factorization.
 
@@ -224,7 +209,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     if method == "tracemin_pcg":
         D = L.diagonal().astype(float)
         solver = _PCGSolver(lambda x: L * x, lambda x: D * x)
-    elif method == "tracemin_lu" or method == "tracemin_chol":
+    elif method == "tracemin_lu":
         # Convert A to CSC to suppress SparseEfficiencyWarning.
         A = sp.sparse.csc_matrix(L, dtype=float, copy=True)
         # Force A to be nonsingular. Since A is the Laplacian matrix of a
@@ -233,10 +218,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # corresponding element in the solution.
         i = (A.indptr[1:] - A.indptr[:-1]).argmax()
         A[i, i] = float("inf")
-        if method == "tracemin_chol":
-            solver = _CholeskySolver(A)
-        else:
-            solver = _LUSolver(A)
+        solver = _LUSolver(A)
     else:
         raise nx.NetworkXError("Unknown linear system solver: " + method)
 
@@ -274,7 +256,7 @@ def _get_fiedler_func(method):
 
     if method == "tracemin":  # old style keyword <v2.1
         method = "tracemin_pcg"
-    if method in ("tracemin_pcg", "tracemin_chol", "tracemin_lu"):
+    if method in ("tracemin_pcg", "tracemin_lu"):
 
         def find_fiedler(L, x, normalized, tol, seed):
             q = 1 if method == "tracemin_pcg" else min(4, L.shape[0] - 1)
