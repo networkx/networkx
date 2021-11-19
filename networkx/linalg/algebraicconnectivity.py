@@ -21,7 +21,7 @@ class _PCGSolver:
     The inputs A and M are functions which compute
     matrix multiplication on the argument.
     A - multiply by the matrix A in Ax=b
-    M - multiply by M, the preconditioner surragate for A
+    M - multiply by M, the preconditioner surrogate for A
 
     Warning: There is no limit on number of iterations.
     """
