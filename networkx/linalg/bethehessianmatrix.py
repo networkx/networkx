@@ -48,7 +48,6 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     See Also
     --------
     bethe_hessian_spectrum
-    to_numpy_array
     adjacency_matrix
     laplacian_matrix
 
@@ -73,7 +72,8 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
         )
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format="csr")
     n, m = A.shape
-    diags = A.sum(axis=1)
-    D = sp.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
-    I = sp.sparse.eye(m, n, format="csr")
+    # TODO: Rm csr_array wrapper when spdiags array creation becomes available
+    D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, m, n, format="csr"))
+    # TODO: Rm csr_array wrapper when eye array creation becomes available
+    I = sp.sparse.csr_array(sp.sparse.eye(m, n, format="csr"))
     return (r ** 2 - 1) * I - r * A + D
