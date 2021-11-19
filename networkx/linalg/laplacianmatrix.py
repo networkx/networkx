@@ -199,6 +199,7 @@ def directed_laplacian_matrix(
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
+    # P has type ndarray if walk_type=="pagerank", else csr_array
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
     )
