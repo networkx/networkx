@@ -53,8 +53,8 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
         nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
-    diags = A.sum(axis=1)
-    D = sp.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
+    # TODO: rm csr_array wrapper when spdiags can produce arrays
+    D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, m, n, format="csr"))
     return D - A
 
 
@@ -118,13 +118,15 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
         nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
-    diags = A.sum(axis=1).flatten()
-    D = sp.sparse.spdiags(diags, [0], m, n, format="csr")
+    diags = A.sum(axis=1)
+    # TODO: rm csr_array wrapper when spdiags can produce arrays
+    D = sp.sparse.csr_array(sp.sparse.spdiags(diags, 0, m, n, format="csr"))
     L = D - A
     with sp.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
-    DH = sp.sparse.spdiags(diags_sqrt, [0], m, n, format="csr")
+    # TODO: rm csr_array wrapper when spdiags can produce arrays
+    DH = sp.sparse.csr_array(sp.sparse.spdiags(diags_sqrt, 0, m, n, format="csr"))
     return DH @ (L @ DH)
 
 
