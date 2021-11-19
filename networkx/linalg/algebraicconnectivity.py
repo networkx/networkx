@@ -220,7 +220,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         A[i, i] = float("inf")
         solver = _LUSolver(A)
     else:
-        raise nx.NetworkXError("Unknown linear system solver: " + method)
+        raise nx.NetworkXError(f"Unknown linear system solver: {method}")
 
     # Initialize.
     Lnorm = abs(L).sum(axis=1).flatten().max()
