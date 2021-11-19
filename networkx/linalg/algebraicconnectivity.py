@@ -201,7 +201,8 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # Form the normalized Laplacian matrix and determine the eigenvector of
         # its nullspace.
         e = np.sqrt(L.diagonal())
-        D = sp.sparse.spdiags(1 / e, 0, n, n, format="csr")
+        # TODO: rm csr_array wrapper when spdiags array creation becomes available
+        D = sp.sparse.csr_array(sp.sparse.spdiags(1 / e, 0, n, n, format="csr"))
         L = D @ L @ D
         e *= 1.0 / np.linalg.norm(e, 2)
 
@@ -223,10 +224,10 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
 
     if method == "tracemin_pcg":
         D = L.diagonal().astype(float)
-        solver = _PCGSolver(lambda x: L * x, lambda x: D * x)
+        solver = _PCGSolver(lambda x: L @ x, lambda x: D * x)
     elif method == "tracemin_lu" or method == "tracemin_chol":
         # Convert A to CSC to suppress SparseEfficiencyWarning.
-        A = sp.sparse.csc_matrix(L, dtype=float, copy=True)
+        A = sp.sparse.csc_array(L, dtype=float, copy=True)
         # Force A to be nonsingular. Since A is the Laplacian matrix of a
         # connected graph, its rank deficiency is one, and thus one diagonal
         # element needs to modified. Changing to infinity forces a zero in the
