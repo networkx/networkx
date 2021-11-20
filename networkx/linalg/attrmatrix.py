@@ -440,7 +440,7 @@ def attr_sparse_matrix(
     N = len(ordering)
     undirected = not G.is_directed()
     index = dict(zip(ordering, range(N)))
-    M = sp.sparse.lil_matrix((N, N), dtype=dtype)
+    M = sp.sparse.lil_array((N, N), dtype=dtype)
 
     seen = set()
     for u, nbrdict in G.adjacency():
@@ -456,9 +456,7 @@ def attr_sparse_matrix(
             seen.add(u)
 
     if normalized:
-        norms = np.asarray(M.sum(axis=1)).ravel()
-        for i, norm in enumerate(norms):
-            M[i, :] /= norm
+        M *= 1 / M.sum(axis=1)  # in-place multiplication preserves sparse
 
     if rc_order is None:
         return M, ordering
