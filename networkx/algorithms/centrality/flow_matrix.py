@@ -13,9 +13,8 @@ def flow_matrix_row(G, weight=None, dtype=float, solver="lu"):
         "cg": CGInverseLaplacian,
     }
     n = G.number_of_nodes()
-    L = laplacian_sparse_matrix(
-        G, nodelist=range(n), weight=weight, dtype=dtype, format="csc"
-    )
+    L = nx.laplacian_matrix(G, nodelist=range(n), weight=weight).asformat("csc")
+    L = L.astype(dtype)
     C = solvername[solver](L, dtype=dtype)  # initialize solver
     w = C.w  # w is the Laplacian matrix width
     # row-by-row flow matrix
