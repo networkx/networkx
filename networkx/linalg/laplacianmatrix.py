@@ -198,8 +198,9 @@ def directed_laplacian_matrix(
     import numpy as np
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
-    # P has type ndarray if walk_type=="pagerank", else csr_array
+    # NOTE: P has type ndarray if walk_type=="pagerank", else csr_array
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
     )
@@ -211,10 +212,13 @@ def directed_laplacian_matrix(
     p = v / v.sum()
     sqrtp = np.sqrt(p)
     Q = (
-        sp.sparse.spdiags(sqrtp, [0], n, n)
-        * P
-        * sp.sparse.spdiags(1.0 / sqrtp, [0], n, n)
+        # TODO: rm csr_array wrapper when spdiags creates arrays
+        sp.sparse.csr_array(sp.sparse.spdiags(sqrtp, 0, n, n))
+        @ P
+        # TODO: rm csr_array wrapper when spdiags creates arrays
+        @ sp.sparse.csr_array(sp.sparse.spdiags(1.0 / sqrtp, 0, n, n))
     )
+    # NOTE: This could be sparsified for the non-pagerank cases
     I = np.identity(len(G))
 
     return I - (Q + Q.T) / 2.0
@@ -281,6 +285,7 @@ def directed_combinatorial_laplacian_matrix(
     """
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
