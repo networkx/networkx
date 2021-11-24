@@ -107,31 +107,6 @@ class TestResistanceDistance:
         G.add_edge(1, 4, weight=3)
         self.G = G
 
-    def test_laplacian_submatrix(self):
-        from networkx.algorithms.distance_measures import _laplacian_submatrix
-
-        M = sp.sparse.csr_matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=np.float32)
-        N = sp.sparse.csr_matrix([[5, 6], [8, 9]], dtype=np.float32)
-        Mn, Mn_nodelist = _laplacian_submatrix(1, M, [1, 2, 3])
-        assert Mn_nodelist == [2, 3]
-        assert np.allclose(Mn.toarray(), N.toarray())
-
-    def test_laplacian_submatrix_square(self):
-        with pytest.raises(nx.NetworkXError):
-            from networkx.algorithms.distance_measures import _laplacian_submatrix
-
-            M = sp.sparse.csr_matrix([[1, 2], [4, 5], [7, 8]], dtype=np.float32)
-            _laplacian_submatrix(1, M, [1, 2, 3])
-
-    def test_laplacian_submatrix_matrix_node_dim(self):
-        with pytest.raises(nx.NetworkXError):
-            from networkx.algorithms.distance_measures import _laplacian_submatrix
-
-            M = sp.sparse.csr_matrix(
-                [[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=np.float32
-            )
-            _laplacian_submatrix(1, M, [1, 2, 3, 4])
-
     def test_resistance_distance(self):
         rd = nx.resistance_distance(self.G, 1, 3, "weight", True)
         test_data = 1 / (1 / (2 + 4) + 1 / (1 + 3))
