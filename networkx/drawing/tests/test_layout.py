@@ -15,17 +15,6 @@ class TestLayout:
         nx.add_path(cls.Gs, "abcdef")
         cls.bigG = nx.grid_2d_graph(25, 25)  # > 500 nodes for sparse
 
-    @staticmethod
-    def collect_node_distances(positions):
-        distances = []
-        prev_val = None
-        for k in positions:
-            if prev_val is not None:
-                diff = positions[k] - prev_val
-                distances.append((diff @ diff) ** 0.5)
-            prev_val = positions[k]
-        return distances
-
     def test_spring_fixed_without_pos(self):
         G = nx.path_graph(4)
         pytest.raises(ValueError, nx.spring_layout, G, fixed=[0])
@@ -367,20 +356,20 @@ class TestLayout:
         # intuitively, the total distance from the start and end nodes
         # via each node in between (transiting through each) will be less,
         # assuming rescaling does not occur on the computed node positions
-        pos_standard = nx.spiral_layout(G, resolution=0.35)
-        pos_tighter = nx.spiral_layout(G, resolution=0.34)
-        distances = self.collect_node_distances(pos_standard)
-        distances_tighter = self.collect_node_distances(pos_tighter)
+        pos_standard = np.array(list(nx.spiral_layout(G, resolution=0.35).values()))
+        pos_tighter = np.array(list(nx.spiral_layout(G, resolution=0.34).values()))
+        distances = np.linalg.norm(pos_standard[:-1] - pos_standard[1:], axis=1)
+        distances_tighter = np.linalg.norm(pos_tighter[:-1] - pos_tighter[1:], axis=1)
         assert sum(distances) > sum(distances_tighter)
 
         # return near-equidistant points after the first value if set to true
-        pos_equidistant = nx.spiral_layout(G, equidistant=True)
-        distances_equidistant = self.collect_node_distances(pos_equidistant)
-        for d in range(1, len(distances_equidistant) - 1):
-            # test similarity to two decimal places
-            assert distances_equidistant[d] == pytest.approx(
-                distances_equidistant[d + 1], abs=1e-2
-            )
+        pos_equidistant = np.array(list(nx.spiral_layout(G, equidistant=True).values()))
+        distances_equidistant = np.linalg.norm(
+            pos_equidistant[:-1] - pos_equidistant[1:], axis=1
+        )
+        assert np.allclose(
+            distances_equidistant[1:], distances_equidistant[-1], atol=0.01
+        )
 
     def test_rescale_layout_dict(self):
         G = nx.empty_graph()
