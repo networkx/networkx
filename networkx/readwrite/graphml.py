@@ -999,14 +999,14 @@ class GraphMLReader(GraphML):
                     data["label"] = node_label.text
 
                 # check all the different types of edges avaivable in yEd.
-                for e in [
+                for edge_type in [
                     "PolyLineEdge",
                     "SplineEdge",
                     "QuadCurveEdge",
                     "BezierEdge",
                     "ArcEdge",
                 ]:
-                    pref = f"{{{self.NS_Y}}}{e}/{{{self.NS_Y}}}"
+                    pref = f"{{{self.NS_Y}}}{edge_type}/{{{self.NS_Y}}}"
                     edge_label = data_element.find(f"{pref}EdgeLabel")
                     if edge_label is not None:
                         break

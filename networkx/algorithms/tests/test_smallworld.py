@@ -7,7 +7,6 @@ import random
 from networkx import random_reference, lattice_reference, sigma, omega
 import networkx as nx
 
-rng = random.Random(0)
 rng = 42
 
 

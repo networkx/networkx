@@ -196,6 +196,7 @@ def directed_laplacian_matrix(
     import numpy as np
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
@@ -278,6 +279,7 @@ def directed_combinatorial_laplacian_matrix(
     """
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha

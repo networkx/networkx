@@ -277,17 +277,27 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
            https://doi.org/10.1038/s41598-019-57304-y
     """
 
-    spl = dict(nx.shortest_path_length(G))
-    inf = float("inf")
+    # When alpha == 1, the CCPA score simplifies to the number of common neighbors.
+    if alpha == 1:
 
-    def predict(u, v):
-        if u == v:
-            raise nx.NetworkXAlgorithmError("Self links are not supported")
-        path_len = spl[u].get(v, inf)
+        def predict(u, v):
+            if u == v:
+                raise nx.NetworkXAlgorithmError("Self links are not supported")
 
-        return alpha * sum(1 for _ in nx.common_neighbors(G, u, v)) + (1 - alpha) * (
-            G.number_of_nodes() / path_len
-        )
+            return sum(1 for _ in nx.common_neighbors(G, u, v))
+
+    else:
+        spl = dict(nx.shortest_path_length(G))
+        inf = float("inf")
+
+        def predict(u, v):
+            if u == v:
+                raise nx.NetworkXAlgorithmError("Self links are not supported")
+            path_len = spl[u].get(v, inf)
+
+            return alpha * sum(1 for _ in nx.common_neighbors(G, u, v)) + (
+                1 - alpha
+            ) * (G.number_of_nodes() / path_len)
 
     return _apply_prediction(G, predict, ebunch)
 

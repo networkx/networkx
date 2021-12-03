@@ -176,8 +176,8 @@ def katz_centrality(
             x[n] = alpha * x[n] + b[n]
 
         # check convergence
-        err = sum(abs(x[n] - xlast[n]) for n in x)
-        if err < nnodes * tol:
+        error = sum(abs(x[n] - xlast[n]) for n in x)
+        if error < nnodes * tol:
             if normalized:
                 # normalize vector
                 try:

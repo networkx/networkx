@@ -1,5 +1,5 @@
 """
-Shortest path algorithms for weighed graphs.
+Shortest path algorithms for weighted graphs.
 """
 
 from collections import deque
