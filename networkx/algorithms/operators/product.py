@@ -459,3 +459,67 @@ def rooted_product(G, H, root):
     R.add_edges_from(((g, e[0]), (g, e[1])) for g in G for e in H.edges())
 
     return R
+
+
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+def corona_product(G, H):
+    r"""Returns the Corona product f G and H.
+
+    The Cartesian product $P$ of the graphs $G$ and $H$ has a node set that
+    is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
+    $P$ has an edge $((u,v),(x,y))$ if and only if either $u$ is equal to $x$
+    and both $v$ and $y$ are adjacent in $H$ or if $v$ is equal to $y$ and
+    both $u$ and $x$ are adjacent in $G$.
+
+    Parameters
+    ----------
+    G, H: graphs
+     Networkx graphs.
+
+    Returns
+    -------
+    P: NetworkX graph
+     The Cartesian product of G and H. P will be a multi-graph if either G
+     or H is a multi-graph. Will be a directed if G and H are directed,
+     and undirected if G and H are undirected.
+
+    Raises
+    ------
+    NetworkXError
+     If G and H are not both directed or both undirected.
+
+    Notes
+    -----
+    Node attributes in P are two-tuple of the G and H node attributes.
+    Missing attributes are assigned None.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> H = nx.Graph()
+    >>> G.add_node(0, a1=True)
+    >>> H.add_node("a", a2="Spam")
+    >>> P = nx.cartesian_product(G, H)
+    >>> list(P)
+    [(0, 'a')]
+
+    Edge attributes and edge keys (for multigraphs) are also copied to the
+    new product graph
+    """
+    GH = _init_product_graph(G, H)
+    GH.add_nodes_from(G)
+    GH.add_edges_from(G.edges)
+
+    new_nodes = []
+    new_edges = []
+
+    for G_node in GH:
+        H_copy = H.deepcopy()
+        new_nodes.extend(H_copy.nodes(data=True))
+        for H_node in H_copy:
+            new_edges.append((G_node, H_node))
+
+    GH.add_nodes_from(new_nodes)
+    GH.add_edges_from(new_edges)
+    return GH
