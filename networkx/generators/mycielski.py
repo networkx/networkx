@@ -54,9 +54,9 @@ def mycielskian(G, iterations=1):
     """
 
     M = nx.convert_node_labels_to_integers(G)
+    n = M.number_of_nodes()
 
     for i in range(iterations):
-        n = M.number_of_nodes()
         M.add_nodes_from(range(n, 2 * n))
         old_edges = list(M.edges())
         M.add_edges_from((u, v + n) for u, v in old_edges)
