@@ -515,10 +515,16 @@ def corona_product(G, H):
     new_edges = []
 
     for G_node in GH:
-        H_copy = H.deepcopy()
-        new_nodes.extend(H_copy.nodes(data=True))
-        for H_node in H_copy:
-            new_edges.append((G_node, H_node))
+
+        # copy nodes of H in GH, call it H_i
+        new_nodes.extend([(G_node, v) for v in H])
+
+        # copy edges of H_i based on H
+        new_edges.extend([((G_node, e0), (G_node, e1), d)
+                         for e0, e1, d in H.edges.data()])
+
+        # creating new edges between H_i and G's node
+        new_edges.extend([(G_node, (G_node, H_node)) for H_node in H])
 
     GH.add_nodes_from(new_nodes)
     GH.add_edges_from(new_edges)
