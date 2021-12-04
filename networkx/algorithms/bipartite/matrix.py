@@ -102,11 +102,11 @@ def biadjacency_matrix(
                 if u in row_index and v in col_index
             )
         )
-    M = sp.sparse.coo_matrix((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
+    A = sp.sparse.coo_array((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
     try:
-        return M.asformat(format)
+        return A.asformat(format)
     except ValueError as err:
-        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from err
+        raise nx.NetworkXError(f"Unknown sparse array format: {format}") from err
 
 
 def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
