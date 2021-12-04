@@ -68,7 +68,7 @@ class TestConvertScipy:
 
     def test_shape(self):
         "Conversion from non-square sparse array."
-        A = sp.sparse.lil_matrix([[1, 2, 3], [4, 5, 6]])
+        A = sp.sparse.lil_array([[1, 2, 3], [4, 5, 6]])
         pytest.raises(nx.NetworkXError, nx.from_scipy_sparse_matrix, A)
 
     def test_identity_graph_matrix(self):
@@ -220,7 +220,7 @@ class TestConvertScipy:
         creating a multigraph.
 
         """
-        A = sp.sparse.csr_matrix([[1, 1], [1, 2]])
+        A = sp.sparse.csr_array([[1, 1], [1, 2]])
         # First, with a simple graph, each integer entry in the adjacency
         # matrix is interpreted as the weight of a single edge in the graph.
         expected = nx.DiGraph()
@@ -260,7 +260,7 @@ class TestConvertScipy:
         :func:`networkx.from_scipy_sparse_matrix`.
 
         """
-        A = sp.sparse.csr_matrix([[0, 1], [1, 0]])
+        A = sp.sparse.csr_array([[0, 1], [1, 0]])
         G = nx.from_scipy_sparse_matrix(A, create_using=nx.MultiGraph)
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
@@ -282,5 +282,5 @@ def test_from_scipy_sparse_matrix_formats(sparse_format):
             (2, 1, {"weight": 1}),
         ]
     )
-    A = sp.sparse.coo_matrix([[0, 3, 2], [3, 0, 1], [2, 1, 0]]).asformat(sparse_format)
+    A = sp.sparse.coo_array([[0, 3, 2], [3, 0, 1], [2, 1, 0]]).asformat(sparse_format)
     assert graphs_equal(expected, nx.from_scipy_sparse_matrix(A))
