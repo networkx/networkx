@@ -1009,17 +1009,9 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
             pos.append([np.cos(theta) * r, np.sin(theta) * r])
 
     else:
-        # set the starting angle and step
-        step = 1
-        angle = 0.0
-        dist = 0.0
-        # set the radius for the spiral to the number of nodes in the graph
-        radius = len(G)
-
-        while dist * np.hypot(np.cos(angle), np.sin(angle)) < radius:
-            pos.append([dist * np.cos(angle), dist * np.sin(angle)])
-            dist += step
-            angle += resolution
+        dist = np.arange(len(G), dtype=float)
+        angle = resolution * dist
+        pos = np.transpose(dist * np.array([np.cos(angle), np.sin(angle)]))
 
     pos = rescale_layout(np.array(pos), scale=scale) + center
 
