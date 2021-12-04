@@ -1295,7 +1295,7 @@ def path_weight(G, path, weight):
         raise nx.NetworkXNoPath("path does not exist")
     for node, nbr in nx.utils.pairwise(path):
         if multigraph:
-            cost += min([v[weight] for v in G[node][nbr].values()])
+            cost += min(v[weight] for v in G[node][nbr].values())
         else:
             cost += G[node][nbr][weight]
     return cost

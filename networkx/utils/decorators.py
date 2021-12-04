@@ -92,10 +92,12 @@ def not_implemented_for(*graph_types):
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
 # Then add the extension to _dispatch_dict.
-_dispatch_dict = defaultdict(lambda: open)
-_dispatch_dict[".gz"] = gzip.open
-_dispatch_dict[".bz2"] = bz2.BZ2File
-_dispatch_dict[".gzip"] = gzip.open
+fopeners = {
+    ".gz": gzip.open,
+    ".gzip": gzip.open,
+    ".bz2": bz2.BZ2File,
+}
+_dispatch_dict = defaultdict(lambda: open, **fopeners)  # type: ignore
 
 
 def open_file(path_arg, mode="r"):
@@ -1033,7 +1035,7 @@ class argmap:
                 name = ", ".join(get_name(x, False) for x in arg)
                 return name if first else f"({name})"
             if arg in applied:
-                raise nx.NetworkXError(f"argument {name} is specified multiple times")
+                raise nx.NetworkXError(f"argument {arg} is specified multiple times")
             applied.add(arg)
             if arg in sig.names:
                 return sig.names[arg]
@@ -1080,7 +1082,7 @@ class argmap:
 
     @classmethod
     def signature(cls, f):
-        """Construct a Signature object describing `f`
+        r"""Construct a Signature object describing `f`
 
         Compute a Signature so that we can write a function wrapping f with
         the same signature and call-type.

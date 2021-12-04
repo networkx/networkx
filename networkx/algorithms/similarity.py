@@ -1515,48 +1515,6 @@ def simrank_similarity_numpy(
     )
 
 
-# TODO replace w/ math.comb(n, k) for Python 3.8+
-def _n_choose_k(n, k):
-    """Pure Python implementation of the binomial coefficient
-
-    The general equation is n! / (k! * (n - k)!). The below
-    implementation is a more efficient version.
-
-    Note: this will be removed in favor of Python 3.8's ``math.comb(n, k)``.
-
-    Parameters
-    ----------
-    n : int
-        Set of ``n`` elements
-    k : int
-        Unordered chosen subset of length ``k``
-
-    Returns
-    -------
-    binomial_coeff : int
-        The number of ways (disregarding order) that k objects
-        can be chosen from among n objects.
-
-    Examples
-    --------
-    >>> _n_choose_k(5, 2)
-    10
-    >>> _n_choose_k(5, 4)
-    5
-    >>> _n_choose_k(100, 100)
-    1
-
-    """
-    if k > n:
-        return 0
-    if n == k:
-        return 1
-    elif k < n - k:
-        return reduce(mul, range(n - k + 1, n + 1)) // math.factorial(k)
-    else:
-        return reduce(mul, range(k + 1, n + 1)) // math.factorial(n - k)
-
-
 def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     r"""Returns the Panther similarity of nodes in the graph `G` to node ``v``.
 
@@ -1623,7 +1581,7 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
 
     # Calculate the sample size ``R`` for how many paths
     # to randomly generate
-    t_choose_2 = _n_choose_k(path_length, 2)
+    t_choose_2 = math.comb(path_length, 2)
     sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
     index_map = {}
     _ = list(

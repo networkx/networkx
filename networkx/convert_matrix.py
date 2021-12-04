@@ -760,7 +760,7 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     for u, v, attrs in G.edges(data=True):
         if (u in nodeset) and (v in nodeset):
             i, j = index[u], index[v]
-            values = tuple([attrs[n] for n in names])
+            values = tuple(attrs[n] for n in names)
             M[i, j] = values
             if undirected:
                 M[j, i] = M[i, j]
@@ -898,9 +898,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
         M = sp.sparse.coo_array((d, (r, c)), shape=(nlen, nlen), dtype=dtype)
     try:
         return M.asformat(format)
-    # From Scipy 1.1.0, asformat will throw a ValueError instead of an
-    # AttributeError if the format if not recognized.
-    except (AttributeError, ValueError) as err:
+    except ValueError as err:
         raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from err
 
 

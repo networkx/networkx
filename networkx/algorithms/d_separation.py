@@ -67,7 +67,7 @@ __all__ = ["d_separated"]
 
 
 @not_implemented_for("undirected")
-def d_separated(G: nx.DiGraph, x: AbstractSet, y: AbstractSet, z: AbstractSet) -> bool:
+def d_separated(G, x, y, z):
     """
     Return whether node sets ``x`` and ``y`` are d-separated by ``z``.
 

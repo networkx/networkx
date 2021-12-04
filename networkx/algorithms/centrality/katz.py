@@ -1,5 +1,5 @@
 """Katz centrality."""
-from math import sqrt
+import math
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -176,12 +176,12 @@ def katz_centrality(
             x[n] = alpha * x[n] + b[n]
 
         # check convergence
-        err = sum([abs(x[n] - xlast[n]) for n in x])
-        if err < nnodes * tol:
+        error = sum(abs(x[n] - xlast[n]) for n in x)
+        if error < nnodes * tol:
             if normalized:
                 # normalize vector
                 try:
-                    s = 1.0 / sqrt(sum(v ** 2 for v in x.values()))
+                    s = 1.0 / math.hypot(*x.values())
                 # this should never be zero?
                 except ZeroDivisionError:
                     s = 1.0

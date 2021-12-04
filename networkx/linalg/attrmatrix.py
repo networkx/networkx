@@ -102,7 +102,7 @@ def _edge_value(G, edge_attr):
             if G.is_multigraph():
 
                 def value(u, v):
-                    return sum([d.get(edge_attr, 1) for d in G[u][v].values()])
+                    return sum(d.get(edge_attr, 1) for d in G[u][v].values())
 
             else:
 
@@ -114,7 +114,7 @@ def _edge_value(G, edge_attr):
             if G.is_multigraph():
 
                 def value(u, v):
-                    return sum([d[edge_attr] for d in G[u][v].values()])
+                    return sum(d[edge_attr] for d in G[u][v].values())
 
             else:
 

@@ -39,83 +39,84 @@ def test_christofides_ignore_selfloops():
 
 
 # set up graphs for other tests
-@classmethod
-def _setup_class(cls):
-    cls.DG = nx.DiGraph()
-    cls.DG.add_weighted_edges_from(
-        {
-            ("A", "B", 3),
-            ("A", "C", 17),
-            ("A", "D", 14),
-            ("B", "A", 3),
-            ("B", "C", 12),
-            ("B", "D", 16),
-            ("C", "A", 13),
-            ("C", "B", 12),
-            ("C", "D", 4),
-            ("D", "A", 14),
-            ("D", "B", 15),
-            ("D", "C", 2),
-        }
-    )
-    cls.DG_cycle = ["D", "C", "B", "A", "D"]
-    cls.DG_cost = 31.0
+class TestBase:
+    @classmethod
+    def setup_class(cls):
+        cls.DG = nx.DiGraph()
+        cls.DG.add_weighted_edges_from(
+            {
+                ("A", "B", 3),
+                ("A", "C", 17),
+                ("A", "D", 14),
+                ("B", "A", 3),
+                ("B", "C", 12),
+                ("B", "D", 16),
+                ("C", "A", 13),
+                ("C", "B", 12),
+                ("C", "D", 4),
+                ("D", "A", 14),
+                ("D", "B", 15),
+                ("D", "C", 2),
+            }
+        )
+        cls.DG_cycle = ["D", "C", "B", "A", "D"]
+        cls.DG_cost = 31.0
 
-    cls.DG2 = nx.DiGraph()
-    cls.DG2.add_weighted_edges_from(
-        {
-            ("A", "B", 3),
-            ("A", "C", 17),
-            ("A", "D", 14),
-            ("B", "A", 30),
-            ("B", "C", 2),
-            ("B", "D", 16),
-            ("C", "A", 33),
-            ("C", "B", 32),
-            ("C", "D", 34),
-            ("D", "A", 14),
-            ("D", "B", 15),
-            ("D", "C", 2),
-        }
-    )
-    cls.DG2_cycle = ["D", "A", "B", "C", "D"]
-    cls.DG2_cost = 53.0
+        cls.DG2 = nx.DiGraph()
+        cls.DG2.add_weighted_edges_from(
+            {
+                ("A", "B", 3),
+                ("A", "C", 17),
+                ("A", "D", 14),
+                ("B", "A", 30),
+                ("B", "C", 2),
+                ("B", "D", 16),
+                ("C", "A", 33),
+                ("C", "B", 32),
+                ("C", "D", 34),
+                ("D", "A", 14),
+                ("D", "B", 15),
+                ("D", "C", 2),
+            }
+        )
+        cls.DG2_cycle = ["D", "A", "B", "C", "D"]
+        cls.DG2_cost = 53.0
 
-    cls.unweightedUG = nx.complete_graph(5, nx.Graph())
-    cls.unweightedDG = nx.complete_graph(5, nx.DiGraph())
+        cls.unweightedUG = nx.complete_graph(5, nx.Graph())
+        cls.unweightedDG = nx.complete_graph(5, nx.DiGraph())
 
-    cls.incompleteUG = nx.Graph()
-    cls.incompleteUG.add_weighted_edges_from({(0, 1, 1), (1, 2, 3)})
-    cls.incompleteDG = nx.DiGraph()
-    cls.incompleteDG.add_weighted_edges_from({(0, 1, 1), (1, 2, 3)})
+        cls.incompleteUG = nx.Graph()
+        cls.incompleteUG.add_weighted_edges_from({(0, 1, 1), (1, 2, 3)})
+        cls.incompleteDG = nx.DiGraph()
+        cls.incompleteDG.add_weighted_edges_from({(0, 1, 1), (1, 2, 3)})
 
-    cls.UG = nx.Graph()
-    cls.UG.add_weighted_edges_from(
-        {
-            ("A", "B", 3),
-            ("A", "C", 17),
-            ("A", "D", 14),
-            ("B", "C", 12),
-            ("B", "D", 16),
-            ("C", "D", 4),
-        }
-    )
-    cls.UG_cycle = ["D", "C", "B", "A", "D"]
-    cls.UG_cost = 33.0
+        cls.UG = nx.Graph()
+        cls.UG.add_weighted_edges_from(
+            {
+                ("A", "B", 3),
+                ("A", "C", 17),
+                ("A", "D", 14),
+                ("B", "C", 12),
+                ("B", "D", 16),
+                ("C", "D", 4),
+            }
+        )
+        cls.UG_cycle = ["D", "C", "B", "A", "D"]
+        cls.UG_cost = 33.0
 
-    cls.UG2 = nx.Graph()
-    cls.UG2.add_weighted_edges_from(
-        {
-            ("A", "B", 1),
-            ("A", "C", 15),
-            ("A", "D", 5),
-            ("B", "C", 16),
-            ("B", "D", 8),
-            ("C", "D", 3),
-        }
-    )
-    cls.UG2_cycle = ["D", "C", "B", "A", "D"]
-    cls.UG2_cost = 25.0
+        cls.UG2 = nx.Graph()
+        cls.UG2.add_weighted_edges_from(
+            {
+                ("A", "B", 1),
+                ("A", "C", 15),
+                ("A", "D", 5),
+                ("B", "C", 16),
+                ("B", "D", 8),
+                ("C", "D", 3),
+            }
+        )
+        cls.UG2_cycle = ["D", "C", "B", "A", "D"]
+        cls.UG2_cost = 25.0
 
 
 def validate_solution(soln, cost, exp_soln, exp_cost):
@@ -128,9 +129,7 @@ def validate_symmetric_solution(soln, cost, exp_soln, exp_cost):
     assert cost == exp_cost
 
 
-class TestGreedyTSP:
-    setup_class = _setup_class
-
+class TestGreedyTSP(TestBase):
     def test_greedy(self):
         cycle = nx_app.greedy_tsp(self.DG, source="D")
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
@@ -170,8 +169,7 @@ class TestGreedyTSP:
         assert len(cycle) - 1 == len(G) == len(set(cycle))
 
 
-class TestSimulatedAnnealingTSP:
-    setup_class = _setup_class
+class TestSimulatedAnnealingTSP(TestBase):
     tsp = staticmethod(nx_app.simulated_annealing_tsp)
 
     def test_simulated_annealing_directed(self):
@@ -391,6 +389,7 @@ def test_held_karp_ascent():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     # Adjacency matrix from page 1153 of the 1970 Held and Karp paper
     # which have been edited to be directional, but also symmetric
@@ -427,6 +426,7 @@ def test_ascent_fractional_solution():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     # This version of Figure 2 has all of the edge weights multiplied by 100
     # and is a complete directed graph with infinite edge weights for the
@@ -482,6 +482,7 @@ def test_ascent_method_asymmetric():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     G_array = np.array(
         [
@@ -516,6 +517,7 @@ def test_ascent_method_asymmetric_2():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     G_array = np.array(
         [
@@ -555,6 +557,7 @@ def test_held_karp_ascent_asymmetric_3():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     G_array = np.array(
         [
@@ -593,6 +596,7 @@ def test_held_karp_ascent_fractional_asymmetric():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     G_array = np.array(
         [
@@ -651,6 +655,7 @@ def test_spanning_tree_distribution():
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     z_star = {
         (0, 1): 5 / 12,
@@ -705,6 +710,7 @@ def test_sample_spanning_tree():
     from math import exp
 
     pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     gamma = {
         (0, 1): -0.6383,
@@ -832,6 +838,7 @@ def test_asadpour_tsp():
     # This version of Figure 2 has all of the edge weights multiplied by 100
     # and the 0 weight edges have a weight of 1.
     pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     edge_list = [
         (0, 1, 100),
@@ -900,6 +907,7 @@ def test_asadpour_real_world():
     always starts at city 0.
     """
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     G_array = np.array(
         [
@@ -947,6 +955,7 @@ def test_asadpour_real_world_path():
     nonstop flight. The brute force solution found the optimal tour to cost $872
     """
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     G_array = np.array(
         [

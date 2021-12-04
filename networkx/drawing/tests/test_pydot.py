@@ -10,6 +10,7 @@ import pytest
 pydot = pytest.importorskip("pydot")
 
 
+@pytest.mark.xfail
 class TestPydot:
     def pydot_checks(self, G, prog):
         """
@@ -53,21 +54,19 @@ class TestPydot:
         Pin = Pin_list[0]
 
         # Sorted list of all nodes in the original "pydot.Dot" instance.
-        n1 = sorted([p.get_name() for p in P.get_node_list()])
+        n1 = sorted(p.get_name() for p in P.get_node_list())
 
         # Sorted list of all nodes in the deserialized "pydot.Dot" instance.
-        n2 = sorted([p.get_name() for p in Pin.get_node_list()])
+        n2 = sorted(p.get_name() for p in Pin.get_node_list())
 
         # Validate these instances to contain the same nodes.
         assert n1 == n2
 
         # Sorted list of all edges in the original "pydot.Dot" instance.
-        e1 = sorted([(e.get_source(), e.get_destination()) for e in P.get_edge_list()])
+        e1 = sorted((e.get_source(), e.get_destination()) for e in P.get_edge_list())
 
         # Sorted list of all edges in the original "pydot.Dot" instance.
-        e2 = sorted(
-            [(e.get_source(), e.get_destination()) for e in Pin.get_edge_list()]
-        )
+        e2 = sorted((e.get_source(), e.get_destination()) for e in Pin.get_edge_list())
 
         # Validate these instances to contain the same edges.
         assert e1 == e2

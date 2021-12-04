@@ -1385,11 +1385,11 @@ class TestWriteGraphML(BaseGraphML):
 
         assert nodes_equal(G.nodes(), H.nodes())
         assert edges_equal(G.edges(), H.edges())
-        assert sorted([data.get("eid") for u, v, data in H.edges(data=True)]) == sorted(
+        assert sorted(data.get("eid") for u, v, data in H.edges(data=True)) == sorted(
             edge_attributes.values()
         )
         # NetworkX uses edge_ids as keys in multigraphs if no key
-        assert sorted([key for u, v, key in H.edges(keys=True)]) == sorted(
+        assert sorted(key for u, v, key in H.edges(keys=True)) == sorted(
             edge_attributes.values()
         )
 
@@ -1412,11 +1412,11 @@ class TestWriteGraphML(BaseGraphML):
 
         assert nodes_equal(G.nodes(), J.nodes())
         assert edges_equal(G.edges(), J.edges())
-        assert sorted([data.get("eid") for u, v, data in J.edges(data=True)]) == sorted(
+        assert sorted(data.get("eid") for u, v, data in J.edges(data=True)) == sorted(
             edge_attributes.values()
         )
         # NetworkX uses edge_ids as keys in multigraphs if no key
-        assert sorted([key for u, v, key in J.edges(keys=True)]) == sorted(
+        assert sorted(key for u, v, key in J.edges(keys=True)) == sorted(
             edge_attributes.values()
         )
 

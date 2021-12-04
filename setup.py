@@ -3,9 +3,9 @@ import os
 import sys
 from setuptools import setup
 
-if sys.version_info[:2] < (3, 7):
+if sys.version_info[:2] < (3, 8):
     error = (
-        "NetworkX 2.6+ requires Python 3.7 or later (%d.%d detected). \n"
+        "NetworkX 2.7+ requires Python 3.8 or later (%d.%d detected). \n"
         "For Python 2.7, please install version 2.2 using: \n"
         "$ pip install 'networkx==2.2'" % sys.version_info[:2]
     )
@@ -45,9 +45,9 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
@@ -168,7 +168,7 @@ extras_require = {
     for dep in ["default", "developer", "doc", "extra", "test"]
 }
 
-with open("README.rst", "r") as fh:
+with open("README.rst") as fh:
     long_description = fh.read()
 
 if __name__ == "__main__":
@@ -192,6 +192,6 @@ if __name__ == "__main__":
         package_data=package_data,
         install_requires=install_requires,
         extras_require=extras_require,
-        python_requires=">=3.7",
+        python_requires=">=3.8",
         zip_safe=False,
     )

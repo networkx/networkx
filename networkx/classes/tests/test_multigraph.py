@@ -217,7 +217,7 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
     dol = {"a": ["b"]}
 
     multiple_edge = [("a", "b", "traits", etraits), ("a", "b", "graphics", egraphics)]
-    single_edge = [("a", "b", 0, {})]
+    single_edge = [("a", "b", 0, {})]  # type: ignore
     single_edge1 = [("a", "b", 0, edata)]
     single_edge2 = [("a", "b", 0, etraits)]
     single_edge3 = [("a", "b", 0, {"traits": etraits, "s": "foo"})]

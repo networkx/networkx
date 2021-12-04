@@ -556,8 +556,7 @@ def _fruchterman_reingold(
         pos += delta_pos
         # cool temperature
         t -= dt
-        err = np.linalg.norm(delta_pos) / nnodes
-        if err < threshold:
+        if (np.linalg.norm(delta_pos) / nnodes) < threshold:
             break
     return pos
 
@@ -631,8 +630,7 @@ def _sparse_fruchterman_reingold(
         pos += delta_pos
         # cool temperature
         t -= dt
-        err = np.linalg.norm(delta_pos) / nnodes
-        if err < threshold:
+        if (np.linalg.norm(delta_pos) / nnodes) < threshold:
             break
     return pos
 
@@ -1011,17 +1009,9 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
             pos.append([np.cos(theta) * r, np.sin(theta) * r])
 
     else:
-        # set the starting angle and step
-        step = 1
-        angle = 0.0
-        dist = 0.0
-        # set the radius for the spiral to the number of nodes in the graph
-        radius = len(G)
-
-        while dist * np.hypot(np.cos(angle), np.sin(angle)) < radius:
-            pos.append([dist * np.cos(angle), dist * np.sin(angle)])
-            dist += step
-            angle += resolution
+        dist = np.arange(len(G), dtype=float)
+        angle = resolution * dist
+        pos = np.transpose(dist * np.array([np.cos(angle), np.sin(angle)]))
 
     pos = rescale_layout(np.array(pos), scale=scale) + center
 
@@ -1092,7 +1082,7 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     nodes = []
 
     width = len(layers)
-    for i, layer in layers.items():
+    for i, layer in enumerate(layers.values()):
         height = len(layer)
         xs = np.repeat(i, height)
         ys = np.arange(0, height, dtype=float)

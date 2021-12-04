@@ -153,13 +153,13 @@ def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
     if G.is_multigraph():
         Adj = FilterMultiAdjacency
 
-        def reverse_edge(u, v, k):
+        def reverse_edge(u, v, k=None):
             return filter_edge(v, u, k)
 
     else:
         Adj = FilterAdjacency
 
-        def reverse_edge(u, v):
+        def reverse_edge(u, v, k=None):
             return filter_edge(v, u)
 
     if G.is_directed():
