@@ -236,10 +236,11 @@ def google_matrix(
     if nodelist is None:
         nodelist = list(G)
 
-    M = np.asmatrix(nx.to_numpy_array(G, nodelist=nodelist, weight=weight))
+    A = nx.to_numpy_array(G, nodelist=nodelist, weight=weight)
     N = len(G)
     if N == 0:
-        return M
+        # TODO: Remove np.asmatrix wrapper in version 3.0
+        return np.asmatrix(A)
 
     # Personalization vector
     if personalization is None:
@@ -257,15 +258,15 @@ def google_matrix(
         # Convert the dangling dictionary into an array in nodelist order
         dangling_weights = np.array([dangling.get(n, 0) for n in nodelist], dtype=float)
         dangling_weights /= dangling_weights.sum()
-    dangling_nodes = np.where(M.sum(axis=1) == 0)[0]
+    dangling_nodes = np.where(A.sum(axis=1) == 0)[0]
 
     # Assign dangling_weights to any dangling nodes (nodes with no out links)
-    for node in dangling_nodes:
-        M[node] = dangling_weights
+    A[dangling_nodes] = dangling_weights
 
-    M /= M.sum(axis=1)  # Normalize rows to sum to 1
+    A /= A.sum(axis=1)[:, np.newaxis]  # Normalize rows to sum to 1
 
-    return alpha * M + (1 - alpha) * p
+    # TODO: Remove np.asmatrix wrapper in version 3.0
+    return np.asmatrix(alpha * A + (1 - alpha) * p)
 
 
 def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", dangling=None):
