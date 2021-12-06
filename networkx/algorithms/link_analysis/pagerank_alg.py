@@ -233,6 +233,16 @@ def google_matrix(
     """
     import numpy as np
 
+    # TODO: Remove this warning in version 3.0
+    import warnings
+
+    warnings.warn(
+        "google_matrix will return an np.ndarray instead of a np.matrix in\n"
+        "NetworkX version 3.0.",
+        FutureWarning,
+        stacklevel=2,
+    )
+
     if nodelist is None:
         nodelist = list(G)
 
