@@ -466,11 +466,11 @@ def rooted_product(G, H, root):
 def corona_product(G, H):
     r"""Returns the Corona product f G and H.
 
-    The Cartesian product $P$ of the graphs $G$ and $H$ has a node set that
-    is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
-    $P$ has an edge $((u,v),(x,y))$ if and only if either $u$ is equal to $x$
-    and both $v$ and $y$ are adjacent in $H$ or if $v$ is equal to $y$ and
-    both $u$ and $x$ are adjacent in $G$.
+
+    The corona product of $G$ and $H$ is the graph $C = G \circ H$ obtained by
+    taking one copy of $G$, called the center graph, $|V(G)|$ copies of $H$, called the outer graph,
+    and making the $i$-th vertex of $G$ adjacent to every vertex of the $i$-th copy of $H$,
+    where $1 ≤ i ≤ |V (G)|$.
 
     Parameters
     ----------
@@ -479,33 +479,29 @@ def corona_product(G, H):
 
     Returns
     -------
-    P: NetworkX graph
-     The Cartesian product of G and H. P will be a multi-graph if either G
-     or H is a multi-graph. Will be a directed if G and H are directed,
-     and undirected if G and H are undirected.
+    C: NetworkX graph
+     The Corona product of G and H.
 
     Raises
     ------
     NetworkXError
      If G and H are not both directed or both undirected.
 
-    Notes
-    -----
-    Node attributes in P are two-tuple of the G and H node attributes.
-    Missing attributes are assigned None.
-
+    References
+    ----------
+    [1] M. Tavakoli, F. Rahbarnia, and A. R. Ashrafi, “Studying the corona product of graphs under some graph invariants,” Transactions on Combinatorics, vol. 3, no. 3, pp. 43–49, Sep. 2014, doi: 10.22108/toc.2014.5542.
+    [2] A. Faraji, “Corona Product in Graph Theory,” Ali Faraji, May 11, 2021. https://blog.alifaraji.ir/math/graph-theory/corona-product.html (accessed Dec. 07, 2021).
+‌
     Examples
     --------
-    >>> G = nx.Graph()
-    >>> H = nx.Graph()
-    >>> G.add_node(0, a1=True)
-    >>> H.add_node("a", a2="Spam")
-    >>> P = nx.cartesian_product(G, H)
-    >>> list(P)
-    [(0, 'a')]
+    >>> G = nx.cycle_graph(6)
+    >>> H = nx.path_graph(2)
+    >>> C = nx.algorithms.product.corona_product(G, H)
+    >>> list(C)
+    [0, 1, 2, 3, 4, 5, (0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1), (3, 0), (3, 1), (4, 0), (4, 1), (5, 0), (5, 1)]
+    >>> nx.info(C)
+    'Graph with 18 nodes and 24 edges'
 
-    Edge attributes and edge keys (for multigraphs) are also copied to the
-    new product graph
     """
     GH = _init_product_graph(G, H)
     GH.add_nodes_from(G)
