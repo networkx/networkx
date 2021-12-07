@@ -27,7 +27,6 @@ extensions = [
     "matplotlib.sphinxext.plot_directive",
     "myst_nb",
 ]
-execution_excludepatterns = ["auto_examples/", "build/"]
 
 # https://github.com/sphinx-gallery/sphinx-gallery
 sphinx_gallery_conf = {
@@ -79,7 +78,7 @@ source_suffix = ".rst"
 source_encoding = "utf-8"
 
 # Do not include release announcement template
-exclude_patterns = ["release/release_template.rst", "build/"]
+exclude_patterns = ["release/release_template.rst", "build/*"]
 
 # General substitutions.
 project = "NetworkX"
@@ -259,6 +258,9 @@ plot_formats = [("png", 100)]
 def setup(app):
     app.add_css_file("custom.css")
     app.add_js_file("copybutton.js")
+    # Workaround to prevent duplicate file warnings from sphinx.
+    # See executablebooks/MyST-NB#363
+    app.registry.source_suffix.pop(".ipynb")
 
 
 # Monkeypatch numpydoc to show "Backends" section
