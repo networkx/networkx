@@ -51,34 +51,36 @@ module. Check your installation and your `PYTHONPATH`.
 
 The following basic graph types are provided as Python classes:
 
-{class}`Graph`
+- {class}`Graph`
 
-: This class implements an undirected graph. It ignores
+  This class implements an undirected graph. It ignores
   multiple edges between two nodes.  It does allow self-loop
   edges between a node and itself.
 
-{class}`DiGraph`
+- {class}`DiGraph`
 
-: Directed graphs, that is, graphs with directed edges.
+  Directed graphs, that is, graphs with directed edges.
   Provides operations common to directed graphs,
   (a subclass of Graph).
 
-{class}`MultiGraph`
+- {class}`MultiGraph`
 
-: A flexible graph class that allows multiple undirected edges between
+  A flexible graph class that allows multiple undirected edges between
   pairs of nodes.  The additional flexibility leads to some degradation
   in performance, though usually not significant.
 
-{class}`MultiDiGraph`
+- {class}`MultiDiGraph`
 
-: A directed version of a MultiGraph.
+  A directed version of a MultiGraph.
 
 Empty graph-like objects are created with
 
-    >>> G = nx.Graph()
-    >>> G = nx.DiGraph()
-    >>> G = nx.MultiGraph()
-    >>> G = nx.MultiDiGraph()
+```{code-block}
+>>> G = nx.Graph()
+>>> G = nx.DiGraph()
+>>> G = nx.MultiGraph()
+>>> G = nx.MultiDiGraph()
+```
 
 All graph classes allow any {term}`hashable` object as a node.
 Hashable objects include strings, tuples, integers, and more.
