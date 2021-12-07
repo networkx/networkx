@@ -13,6 +13,7 @@ __all__ = [
     "strong_product",
     "power",
     "rooted_product",
+    "corona_product",
 ]
 
 
