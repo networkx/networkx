@@ -22,11 +22,12 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
-    "nb2plots",
     "texext",
     "numpydoc",
     "matplotlib.sphinxext.plot_directive",
+    "myst_nb",
 ]
+execution_excludepatterns = ["auto_examples/", "build/"]
 
 # https://github.com/sphinx-gallery/sphinx-gallery
 sphinx_gallery_conf = {
@@ -78,7 +79,7 @@ source_suffix = ".rst"
 source_encoding = "utf-8"
 
 # Do not include release announcement template
-exclude_patterns = ["release/release_template.rst"]
+exclude_patterns = ["release/release_template.rst", "build/"]
 
 # General substitutions.
 project = "NetworkX"
