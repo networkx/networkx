@@ -77,8 +77,9 @@ source_suffix = ".rst"
 # The encoding of source files.
 source_encoding = "utf-8"
 
-# Do not include release announcement template
-exclude_patterns = ["release/release_template.rst", "build/*"]
+# Items to exclude during source collection, including release announcement template,
+# build outpus and README
+exclude_patterns = ["release/release_template.rst", "build/*", "README.md"]
 
 # General substitutions.
 project = "NetworkX"
