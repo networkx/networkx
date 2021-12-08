@@ -1,6 +1,6 @@
 """Betweenness centrality measures."""
 from heapq import heappush, heappop
-from queue import Queue
+from collections import deque
 from itertools import count
 import warnings
 
@@ -262,16 +262,15 @@ def _single_source_shortest_path_basic(G, s):
     D = {}
     sigma[s] = 1.0
     D[s] = 0
-    Q = Queue()
-    Q.put(s)
-    while not Q.empty():  # use BFS to find shortest paths
-        v = Q.get()
+    Q = deque([s])
+    while Q:  # use BFS to find shortest paths
+        v = Q.popleft()
         S.append(v)
         Dv = D[v]
         sigmav = sigma[v]
         for w in G[v]:
             if w not in D:
-                Q.put(w)
+                Q.append(w)
                 D[w] = Dv + 1
             if D[w] == Dv + 1:  # this is a shortest path, count paths
                 sigma[w] += sigmav
