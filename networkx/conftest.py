@@ -176,6 +176,11 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="preserve_random_state"
     )
+    warnings.filterwarnings(
+        "ignore",
+        category=FutureWarning,
+        message="google_matrix will return an np.ndarray instead of a np.matrix",
+    )
 
 
 @pytest.fixture(autouse=True)
