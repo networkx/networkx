@@ -139,9 +139,9 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     try:
         import numpy as np
 
-        if isinstance(data, (np.matrix, np.ndarray)):
+        if isinstance(data, np.ndarray):
             try:
-                return nx.from_numpy_matrix(data, create_using=create_using)
+                return nx.from_numpy_array(data, create_using=create_using)
             except Exception as err:
                 raise nx.NetworkXError(
                     "Input is not a correct numpy matrix or array."

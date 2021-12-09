@@ -177,7 +177,7 @@ class TestConvertScipy:
         G = nx.Graph()
         G.add_node(1)
         M = nx.to_scipy_sparse_matrix(G)
-        np.testing.assert_equal(M.todense(), np.matrix([[0]]))
+        np.testing.assert_equal(M.toarray(), np.array([[0]]))
 
     def test_ordering(self):
         G = nx.DiGraph()
@@ -186,29 +186,29 @@ class TestConvertScipy:
         G.add_edge(3, 1)
         M = nx.to_scipy_sparse_matrix(G, nodelist=[3, 2, 1])
         np.testing.assert_equal(
-            M.todense(), np.matrix([[0, 0, 1], [1, 0, 0], [0, 1, 0]])
+            M.toarray(), np.array([[0, 0, 1], [1, 0, 0], [0, 1, 0]])
         )
 
     def test_selfloop_graph(self):
         G = nx.Graph([(1, 1)])
         M = nx.to_scipy_sparse_matrix(G)
-        np.testing.assert_equal(M.todense(), np.matrix([[1]]))
+        np.testing.assert_equal(M.toarray(), np.array([[1]]))
 
         G.add_edges_from([(2, 3), (3, 4)])
         M = nx.to_scipy_sparse_matrix(G, nodelist=[2, 3, 4])
         np.testing.assert_equal(
-            M.todense(), np.matrix([[0, 1, 0], [1, 0, 1], [0, 1, 0]])
+            M.toarray(), np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])
         )
 
     def test_selfloop_digraph(self):
         G = nx.DiGraph([(1, 1)])
         M = nx.to_scipy_sparse_matrix(G)
-        np.testing.assert_equal(M.todense(), np.matrix([[1]]))
+        np.testing.assert_equal(M.toarray(), np.array([[1]]))
 
         G.add_edges_from([(2, 3), (3, 4)])
         M = nx.to_scipy_sparse_matrix(G, nodelist=[2, 3, 4])
         np.testing.assert_equal(
-            M.todense(), np.matrix([[0, 1, 0], [0, 0, 1], [0, 0, 0]])
+            M.toarray(), np.array([[0, 1, 0], [0, 0, 1], [0, 0, 0]])
         )
 
     def test_from_scipy_sparse_matrix_parallel_edges(self):
