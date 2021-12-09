@@ -1,7 +1,7 @@
 """
-==========
+=========
 Subgraphs
-==========
+=========
 Example of partitioning a directed graph with nodes labeled as
 supported and unsupported nodes into a list of subgraphs
 that contain only entirely supported or entirely unsupported nodes.
@@ -113,7 +113,7 @@ def graph_partitioning(G, plotting=True):
 
 ###############################################################################
 # Create an example directed graph.
-# ----------------------------------
+# ---------------------------------
 #
 # This directed graph has one input node labeled `in` and plotted in blue color
 # and one output node labeled `out` and plotted in magenta color.
@@ -140,7 +140,7 @@ G_ex.add_edges_from(
 
 ###############################################################################
 # Plot the original graph.
-# ----------------------------------
+# ------------------------
 #
 node_color_list = [v[1]["node_color"] for v in G_ex.nodes(data=True)]
 pos = nx.spectral_layout(G_ex)
@@ -154,13 +154,13 @@ plt.show()
 
 ###############################################################################
 # Calculate the subgraphs with plotting all results of intemediate steps.
-# ----------------------------------
+# -----------------------------------------------------------------------
 #
 subgraphs_of_G_ex, removed_edges = graph_partitioning(G_ex, plotting=True)
 
 ###############################################################################
 # Plot the results: every subgraph in the list.
-# ----------------------------------
+# ---------------------------------------------
 #
 for subgraph in subgraphs_of_G_ex:
     _pos = nx.spring_layout(subgraph)
@@ -175,7 +175,7 @@ for subgraph in subgraphs_of_G_ex:
 
 ###############################################################################
 # Put the graph back from the list of subgraphs
-# ----------------------------------
+# ---------------------------------------------
 #
 G_ex_r = nx.DiGraph()
 # Composing all subgraphs.
@@ -186,14 +186,14 @@ G_ex_r.add_edges_from(removed_edges.edges())
 
 ###############################################################################
 # Check that the original grapg and the reconstructed graphs are isomorphic.
-# ----------------------------------
+# --------------------------------------------------------------------------
 #
 check = nx.is_isomorphic(G_ex, G_ex_r)
 print("The reconstruction is", check)
 
 ###############################################################################
 # Plot the reconstructed graph.
-# ----------------------------------
+# -----------------------------
 #
 node_color_list = [v[1]["node_color"] for v in G_ex_r.nodes(data=True)]
 pos = nx.spectral_layout(G_ex_r)
@@ -208,7 +208,7 @@ plt.show()
 
 ###############################################################################
 # A unit test function for graph_partitioning.
-# ----------------------------------
+# --------------------------------------------
 #
 def test_graph_partitioning():
     """Unit test for graph partitioning."""
@@ -253,6 +253,6 @@ def test_graph_partitioning():
 
 ###############################################################################
 # Run the unit test function for graph_partitioning.
-# ----------------------------------
+# --------------------------------------------------
 #
 test_graph_partitioning()
