@@ -891,9 +891,9 @@ class DiGraph(Graph):
         OutEdgeDataView([(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})])
         >>> G.edges.data("weight", default=1)
         OutEdgeDataView([(0, 1, 1), (1, 2, 1), (2, 3, 5)])
-        >>> G.edges([0, 2])  # only edges incident to these nodes
+        >>> G.edges([0, 2])  # only edges originating from these nodes
         OutEdgeDataView([(0, 1), (2, 3)])
-        >>> G.edges(0)  # only edges incident to a single node (use G.adj[0]?)
+        >>> G.edges(0)  # only edges from node 0
         OutEdgeDataView([(0, 1)])
 
         """
