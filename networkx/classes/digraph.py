@@ -947,7 +947,7 @@ class DiGraph(Graph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges from these nodes (outgoing if directed).
+            The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)
            The name of an edge attribute that holds the numerical value used
@@ -994,7 +994,7 @@ class DiGraph(Graph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges from these nodes (outgoing if directed).
+            The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)
            The name of an edge attribute that holds the numerical value used
@@ -1041,7 +1041,7 @@ class DiGraph(Graph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges from these nodes (outgoing if directed).
+            The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)
            The name of an edge attribute that holds the numerical value used
