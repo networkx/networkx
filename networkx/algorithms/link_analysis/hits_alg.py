@@ -366,9 +366,10 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
     A = nx.to_scipy_sparse_matrix(G, nodelist=list(G))
     (n, m) = A.shape  # should be square
     ATA = A.T @ A  # authority matrix
-    x = np.ones((n, 1)) / n  # initial guess
     # choose fixed starting vector if not given
-    if nstart is not None:
+    if nstart is None:
+        x = np.ones((n, 1)) / n
+    else:
         x = np.array([nstart.get(n, 0) for n in list(G)], dtype=float)
         x = x / x.sum()
 
