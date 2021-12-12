@@ -165,8 +165,7 @@ G_ex_r.add_edges_from(removed_edges.edges())
 # Check that the original graph and the reconstructed graphs are isomorphic.
 # --------------------------------------------------------------------------
 #
-check = nx.is_isomorphic(G_ex, G_ex_r)
-print("The reconstruction is", check)
+assert nx.is_isomorphic(G_ex, G_ex_r)
 
 ###############################################################################
 # Plot the reconstructed graph.
