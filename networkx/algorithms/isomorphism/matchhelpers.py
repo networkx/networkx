@@ -251,7 +251,7 @@ Examples
 >>> from operator import eq
 >>> from math import isclose
 >>> from networkx.algorithms.isomorphism import generic_node_match
->>> nm = generic_node_match("weight", 1.0, close)
+>>> nm = generic_node_match("weight", 1.0, isclose)
 >>> nm = generic_node_match("color", "red", eq)
 >>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [isclose, eq])
 
@@ -311,7 +311,7 @@ def generic_multiedge_match(attr, default, op):
     >>> from operator import eq
     >>> from math import isclose
     >>> from networkx.algorithms.isomorphism import generic_node_match
-    >>> nm = generic_node_match("weight", 1.0, close)
+    >>> nm = generic_node_match("weight", 1.0, isclose)
     >>> nm = generic_node_match("color", "red", eq)
     >>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [isclose, eq])
     ...
