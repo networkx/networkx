@@ -69,21 +69,9 @@ def graph_partitioning(G, plotting=True):
     # And use the sets, specifying the components, to partition
     # the original directed graph into a list of directed subgraphs
     # that contain only entirely supported or entirely unsupported nodes.
-    # Plot the resulting subgraphs.
-    subgraphs = []
-    for c in nx.connected_components(H.to_undirected()):
-        H_c = H.subgraph(c).copy()
-        subgraphs.append(H_c)
-        if plotting:
-            _pos = nx.spring_layout(H_c)
-            plt.figure(figsize=(8, 8))
-            nx.draw_networkx_edges(H_c, _pos, alpha=0.3, edge_color="k")
-            _node_color_list_c = [nc for _, nc in H_c.nodes(data="node_color")]
-            nx.draw_networkx_nodes(H_c, _pos, node_color=_node_color_list_c)
-            nx.draw_networkx_labels(H_c, _pos, font_size=14)
-            plt.axis("off")
-            plt.title("One of the subgraphs.")
-            plt.show()
+    subgraphs = [
+        H.subgraph(c).copy() for c in nx.connected_components(H.to_undirected())
+    ]
 
     return subgraphs, G_minus_H
 
