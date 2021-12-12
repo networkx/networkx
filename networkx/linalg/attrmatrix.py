@@ -456,7 +456,7 @@ def attr_sparse_matrix(
             seen.add(u)
 
     if normalized:
-        M *= 1 / M.sum(axis=1)  # in-place multiplication preserves sparse
+        M *= 1 / M.sum(axis=1)[:, np.newaxis]  # in-place mult preserves sparse
 
     if rc_order is None:
         return M, ordering
