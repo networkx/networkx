@@ -45,11 +45,11 @@ def graph_partitioning(G, plotting=True):
 
     if plotting:
         # Plot the stripped graph with the edges removed.
-        _node_color_list = [v[1]["node_color"] for v in H.nodes(data=True)]
+        _node_colors = [c for _, c in H.nodes(data="node_color")]
         _pos = nx.spring_layout(H)
         plt.figure(figsize=(8, 8))
         nx.draw_networkx_edges(H, _pos, alpha=0.3, edge_color="k")
-        nx.draw_networkx_nodes(H, _pos, node_color=_node_color_list)
+        nx.draw_networkx_nodes(H, _pos, node_color=_node_colors)
         nx.draw_networkx_labels(H, _pos, font_size=14)
         plt.axis("off")
         plt.title("The stripped graph with the edges removed.")
@@ -57,18 +57,15 @@ def graph_partitioning(G, plotting=True):
         # Plot the the edges removed.
         _pos = nx.spring_layout(G_minus_H)
         plt.figure(figsize=(8, 8))
+        ncl = [G.nodes[n]["node_color"] for n in G_minus_H.nodes]
         nx.draw_networkx_edges(G_minus_H, _pos, alpha=0.3, edge_color="k")
-        Gn = G.nodes(data=True)
-        Gmn = G_minus_H.nodes(data=True)
-        nd = {v: dict(Gn[v]) for v in dict(Gn) if v in dict(Gmn)}
-        ncl = [nd[v]["node_color"] for v in nd]
         nx.draw_networkx_nodes(G_minus_H, _pos, node_color=ncl)
         nx.draw_networkx_labels(G_minus_H, _pos, font_size=14)
         plt.axis("off")
-        plt.title("The edges removed.")
+        plt.title("The removed edges.")
         plt.show()
 
-    # Find the connected componets in the stripped undirected graph.
+    # Find the connected components in the stripped undirected graph.
     # And use the sets, specifying the components, to partition
     # the original directed graph into a list of directed subgraphs
     # that contain only entirely supported or entirely unsupported nodes.
@@ -81,7 +78,7 @@ def graph_partitioning(G, plotting=True):
             _pos = nx.spring_layout(H_c)
             plt.figure(figsize=(8, 8))
             nx.draw_networkx_edges(H_c, _pos, alpha=0.3, edge_color="k")
-            _node_color_list_c = [v[1]["node_color"] for v in H_c.nodes(data=True)]
+            _node_color_list_c = [nc for _, nc in H_c.nodes(data="node_color")]
             nx.draw_networkx_nodes(H_c, _pos, node_color=_node_color_list_c)
             nx.draw_networkx_labels(H_c, _pos, font_size=14)
             plt.axis("off")
@@ -122,7 +119,7 @@ G_ex.add_edges_from(
 # Plot the original graph.
 # ------------------------
 #
-node_color_list = [v[1]["node_color"] for v in G_ex.nodes(data=True)]
+node_color_list = [nc for _, nc in G_ex.nodes(data="node_color")]
 pos = nx.spectral_layout(G_ex)
 plt.figure(figsize=(8, 8))
 nx.draw_networkx_edges(G_ex, pos, alpha=0.3, edge_color="k")
@@ -146,7 +143,7 @@ for subgraph in subgraphs_of_G_ex:
     _pos = nx.spring_layout(subgraph)
     plt.figure(figsize=(8, 8))
     nx.draw_networkx_edges(subgraph, _pos, alpha=0.3, edge_color="k")
-    node_color_list_c = [v[1]["node_color"] for v in subgraph.nodes(data=True)]
+    node_color_list_c = [nc for _, nc in subgraph.nodes(data="node_color")]
     nx.draw_networkx_nodes(subgraph, _pos, node_color=node_color_list_c)
     nx.draw_networkx_labels(subgraph, _pos, font_size=14)
     plt.axis("off")
@@ -175,7 +172,7 @@ print("The reconstruction is", check)
 # Plot the reconstructed graph.
 # -----------------------------
 #
-node_color_list = [v[1]["node_color"] for v in G_ex_r.nodes(data=True)]
+node_color_list = [nc for _, nc in G_ex_r.nodes(data="node_color")]
 pos = nx.spectral_layout(G_ex_r)
 plt.figure(figsize=(8, 8))
 nx.draw_networkx_edges(G_ex_r, pos, alpha=0.3, edge_color="k")
