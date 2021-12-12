@@ -43,12 +43,10 @@ def graph_partitioning(G, plotting=True):
         for nbr, d in nbrs.items()
         if nbr in node_supported_index
     )
-    H.graph.update(G.graph)
 
     # Collect all removed edges for reconstruction.
     G_minus_H = nx.DiGraph()
     G_minus_H.add_edges_from(set(G.edges) - set(H.edges))
-    G_minus_H.graph.update(G.graph)
 
     if plotting:
         # Plot the stripped graph with the edges removed.
