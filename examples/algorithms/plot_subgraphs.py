@@ -17,14 +17,9 @@ def graph_partitioning(G, plotting=True):
     """Partition a directed graph into a list of subgraphs that contain
     only entirely supported or entirely unsupported nodes.
     """
-    # Determine indexes of all supported and unsupported nodes.
-    node_supported_index = []
-    node_unsupported_index = []
-    for v in G.nodes(data=True):
-        if v[1]["node_type"] == "supported":
-            node_supported_index.append(v[0])
-        if v[1]["node_type"] == "unsupported":
-            node_unsupported_index.append(v[0])
+    # Categorize nodes by their node_type attribute
+    supported_nodes = {n for n, d in G.nodes(data="node_type") if d == "supported"}
+    unsupported_nodes = {n for n, d in G.nodes(data="node_type") if d == "unsupported"}
 
     # Make a copy of the graph.
     H = G.copy()
@@ -32,16 +27,16 @@ def graph_partitioning(G, plotting=True):
     H.remove_edges_from(
         (n, nbr, d)
         for n, nbrs in G.adj.items()
-        if n in node_supported_index
+        if n in supported_nodes
         for nbr, d in nbrs.items()
-        if nbr in node_unsupported_index
+        if nbr in unsupported_nodes
     )
     H.remove_edges_from(
         (n, nbr, d)
         for n, nbrs in G.adj.items()
-        if n in node_unsupported_index
+        if n in unsupported_nodes
         for nbr, d in nbrs.items()
-        if nbr in node_supported_index
+        if nbr in supported_nodes
     )
 
     # Collect all removed edges for reconstruction.
