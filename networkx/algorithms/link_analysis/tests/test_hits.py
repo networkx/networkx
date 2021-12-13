@@ -73,7 +73,7 @@ class TestHITS:
             _hits_python(G, max_iter=0)
         with pytest.raises(ValueError):
             nx.hits(G, max_iter=0)
-        with pytest.raises(sp.sparse.linalg.eigen.arpack.ArpackNoConvergence):
+        with pytest.raises(sp.sparse.linalg.ArpackNoConvergence):
             nx.hits(G, max_iter=1)
 
 
