@@ -22,14 +22,20 @@ def test_lgc_deprecation_warning():
         from networkx.algorithms.node_classification import lgc
 
 
-def test_no_warn_on_function_or_package_import():
+def test_no_warn_on_function_import(recwarn):
     # Accessing the functions shouldn't raise any warning
-    with pytest.warns(None) as record:
-        from networkx.algorithms.node_classification import (
-            harmonic_function,
-            local_and_global_consistency,
-        )
-    assert len(record) == 0
-    with pytest.warns(None) as record:
-        from networkx.algorithms import node_classification
-    assert len(record) == 0
+    sys.modules.pop("networkx.algorithms.node_classification")
+    from networkx.algorithms.node_classification import (
+        harmonic_function,
+        local_and_global_consistency,
+    )
+
+    assert len(recwarn) == 0
+
+
+def test_no_warn_on_package_import(recwarn):
+    # Accessing the package shouldn't raise any warning
+    sys.modules.pop("networkx.algorithms.node_classification")
+    from networkx.algorithms import node_classification
+
+    assert len(recwarn) == 0

@@ -383,13 +383,5 @@ class TestSpectralOrdering:
         nx.add_path(G, path, weight=5)
         G.add_edge(path[-1], path[0], weight=1)
         A = nx.laplacian_matrix(G).todense()
-        try:
-            order = nx.spectral_ordering(G, normalized=normalized, method=method)
-        except nx.NetworkXError as err:
-            if err.args not in (
-                ("Cholesky solver unavailable.",),
-                ("LU solver unavailable.",),
-            ):
-                raise
-        else:
-            assert order in expected_order
+        order = nx.spectral_ordering(G, normalized=normalized, method=method)
+        assert order in expected_order
