@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1):
+def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1, enforce_n_communities=False):
     r"""Find communities in G using greedy modularity maximization.
 
     This function uses Clauset-Newman-Moore greedy modularity maximization [2]_.
@@ -40,13 +40,22 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
         If resolution is less than 1, modularity favors larger communities.
         Greater than 1 favors smaller communities.
 
-    n_communities: int
+    n_communities : int (default=1)
         Desired number of communities: the community merging process is
         terminated once this number of communities is reached, or until
         modularity can not be further increased. Must be between 1 and the
         total number of nodes in `G`. Default is ``1``, meaning the community
         merging process continues until all nodes are in the same community
         or until the best community structure is found.
+
+    enforce_n_communities : bool (default=False)
+        By default, if n_communities is lower than the number where the best community
+        structure is found, then n_communities can not be reached because the merging
+        process terminates as soon as the best community structure is found.
+        If enforce_n_communities is ``True``, then the merging proceeds continues
+        until the number of communities ``n_communities`` is reached, even if
+        this does not further improve the community structure. In this case those
+        nodes are aggregated that decrease modularity the least.
 
     Returns
     -------
@@ -150,7 +159,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
             # Duplicate wasn't in H, just remove from row v heap
             dq_heap[v].remove((v, u))
         # Stop when change is non-positive (no improvement possible)
-        if dq <= 0:
+        if (dq <= 0) and (enforce_n_communities is False):
             break
 
         # Perform merge

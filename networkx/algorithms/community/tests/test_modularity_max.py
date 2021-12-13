@@ -298,3 +298,22 @@ def test_n_communities_parameter():
     # Default aggregation case (here, 2 communities emerge)
     expected = [frozenset(range(0, 4)), frozenset(range(4, 8))]
     assert greedy_modularity_communities(G, n_communities=1) == expected
+
+
+def test_enforce_n_communities_parameter():
+    G = nx.barbell_graph(5, 3)
+
+    # Same result as without enforcing n_communities:
+    n_communities = 3
+    expected = [frozenset(range(5)), frozenset(range(8, 13)), frozenset(range(5, 8))]
+    assert greedy_modularity_communities(G, n_communities=n_communities, enforce_n_communities=True) == expected
+
+    # One additional merging step:
+    n_communities = 2
+    expected = [frozenset(range(8)), frozenset(range(8, 13))]
+    assert greedy_modularity_communities(G, n_communities=n_communities, enforce_n_communities=True) == expected
+
+    # Tne additional merging steps:
+    n_communities = 1
+    expected = [frozenset(range(0, 13))]
+    assert greedy_modularity_communities(G, n_communities=n_communities, enforce_n_communities=True) == expected
