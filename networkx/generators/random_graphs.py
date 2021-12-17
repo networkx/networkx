@@ -206,7 +206,7 @@ def dense_gnm_random_graph(n, m, seed=None):
     .. [1] Donald E. Knuth, The Art of Computer Programming,
         Volume 2/Seminumerical algorithms, Third Edition, Addison-Wesley, 1997.
     """
-    mmax = n * (n - 1) / 2
+    mmax = n * (n - 1) // 2
     if m >= mmax:
         G = complete_graph(n)
     else:
