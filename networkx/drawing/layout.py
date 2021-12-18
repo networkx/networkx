@@ -1190,25 +1190,7 @@ def rescale_layout_dict(pos, scale=1):
     return dict(zip(pos, pos_v))
 
 
-def bfs(G, start):
-    """BFS algorithm that keep track of the depth of each vertex."""
-    import collections
-
-    visited = set()
-    depths = collections.defaultdict(list)
-    queue = collections.deque([(start, 0)])
-    while queue:
-        current_vertex, current_depth = queue.pop()
-        if current_vertex in visited:
-            continue
-        for neighbor in G.neighbors(current_vertex):
-            queue.appendleft((neighbor, current_depth + 1))
-        visited.add(current_vertex)
-        depths[current_depth].append(current_vertex)
-    return depths
-
-
-def bfs_layout(G, start, center=None):
+def bfs_layout(G, start, center=None, **kwargs):
     """Position nodes according to breadth-first search algorithm.
 
     Parameters
@@ -1238,18 +1220,22 @@ def bfs_layout(G, start, center=None):
     try to minimize edge crossings.
 
     """
-    import numpy as np
+    from collections import deque
 
     G, center = _process_params(G, center, 2)
+    H = G.copy()  # So original graph remains unmodified
 
-    depths = bfs(G, start)
-    max_depth = max(depths.keys())
+    # Compute layers with BFS
+    visited = set()
+    queue = deque([(start, 0)])
+    while queue:
+        current_vertex, current_depth = queue.pop()
+        if current_vertex in visited:
+            continue
+        for nbr in H.neighbors(current_vertex):
+            queue.appendleft((nbr, current_depth + 1))
+        visited.add(current_vertex)
+        H.nodes[current_vertex]["layer"] = current_depth
 
-    layout = {}
-
-    ys = dict(zip(range(max_depth + 1), np.linspace(0, 1, max_depth + 1)))
-    for depth, vertexes in depths.items():
-        xs = np.linspace(0, 1, len(vertexes) + 2)[1:-1]
-        for i, vertex in enumerate(vertexes):
-            layout[vertex] = [xs[i], ys[depth]]
-    return layout
+    # Compute node positions with multipartite_layout
+    return multipartite_layout(H, subset_key="layer", **kwargs)
