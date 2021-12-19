@@ -181,7 +181,26 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
 
 
 def bull_graph(create_using=None):
-    """Returns the Bull graph."""
+    """
+    Creates a bull graph with 5 nodes and 5 edges.
+    "... the bull graph is a planar undirected graph with 5 vertices and 5 edges,
+          in the form of a triangle with two disjoint pendant edges" [1]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        A bull graph with 5 nodes
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Bull_graph.
+
+    """
     description = [
         "adjacencylist",
         "Bull Graph",
@@ -193,7 +212,26 @@ def bull_graph(create_using=None):
 
 
 def chvatal_graph(create_using=None):
-    """Returns the Chvátal graph."""
+    """
+    Creates a undirected Chvatal graph with 12 nodes and 24 edges.
+    "The Chvátal graph is a quartic Hamiltonian graph on 12 nodes and 24 edges.
+        It has chromatic number 4, and girth 4 and unlabelled kernel number 3." [1]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        A Chvatal graph with 12 nodes and 24 edges
+
+    References
+    ----------
+    .. [1] https://digraph3.readthedocs.io/en/latest/_static/GraphDataSets/Chvatal.html
+
+    """
     description = [
         "adjacencylist",
         "Chvatal Graph",
@@ -218,7 +256,27 @@ def chvatal_graph(create_using=None):
 
 
 def cubical_graph(create_using=None):
-    """Returns the 3-regular Platonic Cubical graph."""
+    """
+    Creates a undirected cubical graph with 12 nodes and 24 edges.
+    "The skeleton of the cube (the vertices and edges) form a graph, with 8 vertices, and 12 edges.
+       It is a special case of the hypercube graph. It is one of 5 Platonic graphs, each a skeleton
+       of its Platonic solid." [1]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        A cubical graph with 8 nodes and 12 edges
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Cube#Cubical_graph
+
+    """
     description = [
         "adjacencylist",
         "Platonic Cubical Graph",
@@ -239,14 +297,50 @@ def cubical_graph(create_using=None):
 
 
 def desargues_graph(create_using=None):
-    """Return the Desargues graph."""
+    """
+    Creates Desargues Graph with 20 nodes and 30 edges using the LCF notation.
+    "... is a distance-transitive cubic graph with 20 vertices and 30 edges.
+    The Desargues graph is a symmetric graph: it has symmetries that take any
+    vertex to any other vertex and any edge to any other edge. " [1]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Desargues Graph with 20 nodes and 30 edges
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Desargues_graph
+    """
     G = LCF_graph(20, [5, -5, 9, -9], 5, create_using)
     G.name = "Desargues Graph"
     return G
 
 
 def diamond_graph(create_using=None):
-    """Returns the Diamond graph."""
+    """
+    Creates Planar undirected graph with 4 nodes and 5 edges.
+    "The diamond graph is the simple graph on 4 nodes and 5 edges.
+    The diamond graph is also sometimes known as the double triangle graph" [1]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Diamond Graph with 4 nodes and 5 edges
+
+    References
+    ----------
+    .. [1] https://mathworld.wolfram.com/DiamondGraph.html"""
     description = [
         "adjacencylist",
         "Diamond Graph",
