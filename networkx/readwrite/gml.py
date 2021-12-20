@@ -300,7 +300,7 @@ def parse_gml_lines(lines, label, destringizer):
 
     def tokenize():
         patterns = [
-            r"[A-Za-z][0-9A-Za-z_]*\b",  # keys
+            r"[A-Za-z][0-9A-Za-z_\.]*\b",  # keys
             # reals
             r"[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*|INF)(?:[Ee][+-]?[0-9]+)?",
             r"[+-]?[0-9]+",  # ints
@@ -682,7 +682,7 @@ def generate_gml(G, stringizer=None):
       ]
     ]
     """
-    valid_keys = re.compile("^[A-Za-z][0-9A-Za-z_]*$")
+    valid_keys = re.compile("^[A-Za-z][0-9A-Za-z_\.]*$")
 
     def stringize(key, value, ignored_keys, indent, in_list=False):
         if not isinstance(key, str):
