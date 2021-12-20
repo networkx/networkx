@@ -182,9 +182,12 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
 
 def bull_graph(create_using=None):
     """
-    Creates a bull graph with 5 nodes and 5 edges.
-    "... the bull graph is a planar undirected graph with 5 vertices and 5 edges,
-          in the form of a triangle with two disjoint pendant edges" [1]
+    Returns the Bull Graph
+
+    The Bull Graph has 5 nodes and 5 edges. It is a planar undirected
+    graph in the form of a triangle with two disjoint pendant edges [1]
+    The name comes from the triangle and pendant edges representing
+    respectively the body and legs of a bull.
 
     Parameters
     ----------
@@ -213,9 +216,11 @@ def bull_graph(create_using=None):
 
 def chvatal_graph(create_using=None):
     """
-    Creates a undirected Chvatal graph with 12 nodes and 24 edges.
-    "The Chvátal graph is a quartic Hamiltonian graph on 12 nodes and 24 edges.
-        It has chromatic number 4, and girth 4 and unlabelled kernel number 3." [1]
+    Returns Chvátal Graph
+
+    The Chvátal Graph is an Undirected graph with 12 nodes and 24 edges [1]
+    It has 370 distinct (directed) Hamiltonian cycles, giving a unique generalized
+    LCF notation of order 4, two of order 6 , and 43 of order 1. [2]
 
     Parameters
     ----------
@@ -229,7 +234,8 @@ def chvatal_graph(create_using=None):
 
     References
     ----------
-    .. [1] https://digraph3.readthedocs.io/en/latest/_static/GraphDataSets/Chvatal.html
+    [1] https://en.wikipedia.org/wiki/Chv%C3%A1tal_graph
+    [2] https://mathworld.wolfram.com/ChvatalGraph.html
 
     """
     description = [
@@ -257,10 +263,14 @@ def chvatal_graph(create_using=None):
 
 def cubical_graph(create_using=None):
     """
-    Creates a undirected cubical graph with 12 nodes and 24 edges.
-    "The skeleton of the cube (the vertices and edges) form a graph, with 8 vertices, and 12 edges.
-       It is a special case of the hypercube graph. It is one of 5 Platonic graphs, each a skeleton
-       of its Platonic solid." [1]
+    Returns Cubical Grpah
+
+    The skeleton of the cube (the nodes and edges) form a graph, with 8
+    nodes, and 12 edges. It is a special case of the hypercube graph.
+    It is one of 5 Platonic graphs, each a skeleton of its
+    Platonic solid. [1]
+    Such graphs arise in parallel processing in computers.
+
 
     Parameters
     ----------
@@ -298,10 +308,12 @@ def cubical_graph(create_using=None):
 
 def desargues_graph(create_using=None):
     """
-    Creates Desargues Graph with 20 nodes and 30 edges using the LCF notation.
-    "... is a distance-transitive cubic graph with 20 vertices and 30 edges.
-    The Desargues graph is a symmetric graph: it has symmetries that take any
-    vertex to any other vertex and any edge to any other edge. " [1]
+    Returns a Desargues Graph
+
+    Desargues Graph is a non-planar, distance-transitive cubic graph
+    with 20 nodes and 30 edges.[1]
+    It is a symmetric graph. It can be represented in LCF notation
+    as [5,-5,9,-9]^5. [2]
 
     Parameters
     ----------
@@ -315,7 +327,8 @@ def desargues_graph(create_using=None):
 
     References
     ----------
-    .. [1] https://en.wikipedia.org/wiki/Desargues_graph
+    [1] https://en.wikipedia.org/wiki/Desargues_graph
+    [2] https://mathworld.wolfram.com/DesarguesGraph.html
     """
     G = LCF_graph(20, [5, -5, 9, -9], 5, create_using)
     G.name = "Desargues Graph"
@@ -324,9 +337,10 @@ def desargues_graph(create_using=None):
 
 def diamond_graph(create_using=None):
     """
-    Creates Planar undirected graph with 4 nodes and 5 edges.
-    "The diamond graph is the simple graph on 4 nodes and 5 edges.
-    The diamond graph is also sometimes known as the double triangle graph" [1]
+    Returns diamond graph
+
+    The diamond graph is  planar undirected graph on 4 nodes and 5 edges.
+    It is also sometimes known as the double triangle graph or kite graph [1]
 
     Parameters
     ----------
@@ -340,7 +354,7 @@ def diamond_graph(create_using=None):
 
     References
     ----------
-    .. [1] https://mathworld.wolfram.com/DiamondGraph.html"""
+    [1] https://mathworld.wolfram.com/DiamondGraph.html"""
     description = [
         "adjacencylist",
         "Diamond Graph",
@@ -352,7 +366,30 @@ def diamond_graph(create_using=None):
 
 
 def dodecahedral_graph(create_using=None):
-    """Return the Platonic Dodecahedral graph."""
+    """
+    Returns the Platonic Dodecahedral graph.
+
+    The dodecahedral graph has 20 nodes, 30 edges.The skeleton of the
+    dodecahedron form a graph. It is one of 5 Platonic graphs. [1]
+    It can be described in LCF notation as:
+    [10, 7, 4, -4, -7, 10, -4, 7, -7, 4]^2.[2]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Dodecahedral Graph with 20 nodes and 30 edges
+
+    References
+    ----------
+    [1] https://en.wikipedia.org/wiki/Regular_dodecahedron#Dodecahedral_graph
+    [2] https://mathworld.wolfram.com/DodecahedralGraph.html
+
+    """
     G = LCF_graph(20, [10, 7, 4, -4, -7, 10, -4, 7, -7, 4], 2, create_using)
     G.name = "Dodecahedral Graph"
     return G
@@ -363,6 +400,23 @@ def frucht_graph(create_using=None):
 
     The Frucht Graph is the smallest cubical graph whose
     automorphism group consists only of the identity element.
+    It has 12 nodes and 18 edges and no non trivial symmetries.
+    It is planar and hamiltonian.
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Frucht Graph with 12 nodes and 18 edges
+
+    References
+    ----------
+    [1] https://en.wikipedia.org/wiki/Frucht_graph
+    [2] https://mathworld.wolfram.com/FruchtGraph.html
 
     """
     G = cycle_graph(7, create_using)
@@ -387,7 +441,33 @@ def frucht_graph(create_using=None):
 
 
 def heawood_graph(create_using=None):
-    """Return the Heawood graph, a (3,6) cage."""
+    """
+    Return the Heawood graph, a (3,6) cage.
+
+    The Heawood graph is an undirected graph with 14 nodes and 21 edges,
+    named after Percy John Heawood. [1]
+    It is cubic symmetric,nonplanar, Hamiltonian, and can be represented
+    in LCF notation as [5,-5]^7.[2]
+    It is the unique (3,6)-cage: the regular cubic graph of girth 6 with
+    minimal number of vertices. [3]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Heawood Graph with 14 nodes and 21 edges
+
+    References
+    ----------
+    [1] https://en.wikipedia.org/wiki/Heawood_graph
+    [2] https://mathworld.wolfram.com/HeawoodGraph.html
+    [3] https://www.win.tue.nl/~aeb/graphs/Heawood.html
+
+    """
     G = LCF_graph(14, [5, -5], 7, create_using)
     G.name = "Heawood Graph"
     return G
