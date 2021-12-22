@@ -2288,16 +2288,11 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
             return (finaldist, finalpath)
 
         for w, d in neighs[dir][v].items():
-            if dir == 0:  # forward
-                cost = weight(v, w, d)
-                if cost is None:
-                    continue
-                vwLength = dists[dir][v] + cost
-            else:  # back, must remember to change v,w->w,v
-                cost = weight(w, v, d)
-                if cost is None:
-                    continue
-                vwLength = dists[dir][v] + cost
+            # weight(v, w, d) for forward and weight(w, v, d) for back direction
+            cost = weight(v, w, d) if dir == 0 else weight(w, v, d)
+            if cost is None:
+                continue
+            vwLength = dists[dir][v] + cost
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
                     raise ValueError("Contradictory paths found: negative weights?")
