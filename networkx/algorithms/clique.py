@@ -236,7 +236,7 @@ def find_cliques(G, nodes=None):
 
 
 # TODO Should this also be not implemented for directed graphs?
-def find_cliques_recursive(G):
+def find_cliques_recursive(G, nodes=None):
     """Returns all maximal cliques in a graph.
 
     For each node *v*, a *maximal clique for v* is a largest complete
@@ -247,15 +247,26 @@ def find_cliques_recursive(G):
     list of nodes. It is a recursive implementation, so may suffer from
     recursion depth issues.
 
+    This function can accept a list of nodes and only the maximal cliques
+    containing all of these nodes are returned. It can considerably speed up
+    the running time if some specific cliques are desired.
+
     Parameters
     ----------
     G : NetworkX graph
+
+    nodes : list, optional
+        If provided, the iterator returned will only iterate over *maximal
+        cliques* containing all nodes in `nodes`. If `nodes` isn't a clique
+        itself, an error is raised.
 
     Returns
     -------
     iterator
         An iterator over maximal cliques, each of which is a list of
-        nodes in `G`. The order of cliques is arbitrary.
+        nodes in `G`. If `nodes` is provided, only the maximal cliques
+        containing all the nodes in `nodes` are returned. The order of
+        cliques is arbitrary.
 
     See Also
     --------
@@ -305,7 +316,23 @@ def find_cliques_recursive(G):
         return iter([])
 
     adj = {u: {v for v in G[u] if v != u} for u in G}
-    Q = []
+
+    subg_init = set(G)
+    cand_init = set(G)
+
+    if nodes is None:
+        nodes = []
+
+    # Initialize Q with the given nodes
+    Q = nodes[:]
+    for node in nodes:
+        if node not in cand_init:
+            raise ValueError("The given `nodes` %s do not form a clique" % str(nodes))
+        subg_init &= adj[node]
+        cand_init &= adj[node]
+
+    if not subg_init:
+        return iter([Q])
 
     def expand(subg, cand):
         u = max(subg, key=lambda u: len(cand & adj[u]))
@@ -322,7 +349,7 @@ def find_cliques_recursive(G):
                     yield from expand(subg_q, cand_q)
             Q.pop()
 
-    return expand(set(G), set(G))
+    return expand(subg_init, cand_init)
 
 
 def make_max_clique_graph(G, create_using=None):
@@ -490,6 +517,18 @@ def node_clique_number(G, nodes=None, cliques=None):
 
     Returns a single or list depending on input nodes.
     Optional list of cliques can be input if already computed.
+
+    See Also
+    --------
+    find_cliques
+        This function accepts a `nodes` argument, and will return the maximal
+        cliques containing all the given `nodes`.
+        The search for the cliques is optimized for `nodes`.
+
+    find_cliques_recursive
+        This function accepts a `nodes` argument, and will return the maximal
+        cliques containing all the given `nodes`.
+        The search for the cliques is optimized for `nodes`.
     """
     if cliques is None:
         if nodes is not None:
