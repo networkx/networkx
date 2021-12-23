@@ -113,8 +113,8 @@ def find_cliques(G, nodes=None):
     list of nodes. It is an iterative implementation, so should not
     suffer from recursion depth issues.
 
-    This function can accept a list of nodes and only the maximal cliques
-    containing all of these nodes are returned. It can considerably speed up
+    This function accepts a list of `nodes` and only the maximal cliques
+    containing all of these `nodes` are returned. It can considerably speed up
     the running time if some specific cliques are desired.
 
     Parameters
@@ -247,8 +247,8 @@ def find_cliques_recursive(G, nodes=None):
     list of nodes. It is a recursive implementation, so may suffer from
     recursion depth issues.
 
-    This function can accept a list of nodes and only the maximal cliques
-    containing all of these nodes are returned. It can considerably speed up
+    This function accepts a list of `nodes` and only the maximal cliques
+    containing all of these `nodes` are returned. It can considerably speed up
     the running time if some specific cliques are desired.
 
     Parameters
