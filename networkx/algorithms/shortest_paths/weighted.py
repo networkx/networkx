@@ -2220,6 +2220,10 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
+    The weight function can be used to hide edges by returning None.
+    So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+    will find the shortest red path.
+
     In practice  bidirectional Dijkstra is much more than twice as fast as
     ordinary Dijkstra.
 
@@ -2284,10 +2288,11 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
             return (finaldist, finalpath)
 
         for w, d in neighs[dir][v].items():
-            if dir == 0:  # forward
-                vwLength = dists[dir][v] + weight(v, w, d)
-            else:  # back, must remember to change v,w->w,v
-                vwLength = dists[dir][v] + weight(w, v, d)
+            # weight(v, w, d) for forward and weight(w, v, d) for back direction
+            cost = weight(v, w, d) if dir == 0 else weight(w, v, d)
+            if cost is None:
+                continue
+            vwLength = dists[dir][v] + cost
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
                     raise ValueError("Contradictory paths found: negative weights?")
