@@ -396,7 +396,8 @@ def dodecahedral_graph(create_using=None):
 
 
 def frucht_graph(create_using=None):
-    """Returns the Frucht Graph.
+    """
+    Returns the Frucht Graph.
 
     The Frucht Graph is the smallest cubical graph whose
     automorphism group consists only of the identity element.
@@ -442,7 +443,7 @@ def frucht_graph(create_using=None):
 
 def heawood_graph(create_using=None):
     """
-    Return the Heawood graph, a (3,6) cage.
+    Returns the Heawood graph, a (3,6) cage.
 
     The Heawood graph is an undirected graph with 14 nodes and 21 edges,
     named after Percy John Heawood. [1]
@@ -474,7 +475,35 @@ def heawood_graph(create_using=None):
 
 
 def hoffman_singleton_graph():
-    """Return the Hoffman-Singleton Graph."""
+    """
+    Returns the Hoffman-Singleton Graph.
+
+    The Hoffman–Singleton graph is a symmetrical undirected graph
+    with 50 nodes and 175 edges.
+    All indices lie in Z/5: that is, the integers mod 5. [1]
+    It is the only regular graph of vertex degree 7, diameter 2, and girth 5.
+    It is the unique (7,5)-cage graph and Moore graph, and contains many
+    copies of the Petersen graph. [2]
+    Construction from Pentagon and Pentagram: Take five pentagons Ph
+    and five pentagrams Qi . Join vertex j of Ph to vertex h·i+j of Qi.
+    (All indices are modulo 5.) [3]
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    G : networkx Graph
+        Hoffman–Singleton Graph with 50 nodes and 175 edges
+
+    References
+    ----------
+    [1] https://blogs.ams.org/visualinsight/2016/02/01/hoffman-singleton-graph/
+    [2] https://mathworld.wolfram.com/Hoffman-SingletonGraph.html
+    [3] https://en.wikipedia.org/wiki/Hoffman%E2%80%93Singleton_graph
+
+    """
     G = nx.Graph()
     for i in range(5):
         for j in range(5):
@@ -490,7 +519,27 @@ def hoffman_singleton_graph():
 
 
 def house_graph(create_using=None):
-    """Returns the House graph (square with triangle on top)."""
+    """
+    Returns the House graph (square with triangle on top)
+
+    The house graph is a simple undirected graph with
+    5 nodes and 6 edges. [1]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        House graph in the form of a square with a
+    triangle on top
+
+    References
+    ----------
+    [1] https://mathworld.wolfram.com/HouseGraph.html
+    """
     description = [
         "adjacencylist",
         "House Graph",
@@ -502,7 +551,28 @@ def house_graph(create_using=None):
 
 
 def house_x_graph(create_using=None):
-    """Returns the House graph with a cross inside the house square."""
+    """
+    Returns the House graph with a cross inside the house square.
+
+    The house X-graph is the house graph plus the two edges connecting diagonally
+    opposite vertices of the square base. It is also one of the two graphs
+    obtained by removing two edges from the pentatope graph.
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        House graph in the form of a square with a
+    triangle on top
+
+    References
+    ----------
+    [1] https://mathworld.wolfram.com/HouseGraph.html
+    """
     description = [
         "adjacencylist",
         "House-with-X-inside Graph",
@@ -514,7 +584,27 @@ def house_x_graph(create_using=None):
 
 
 def icosahedral_graph(create_using=None):
-    """Returns the Platonic Icosahedral graph."""
+    """
+    Returns the Platonic Icosahedral graph.
+
+    The icosahedral graph has 12 nodes and 30 edges. It is a Platonic graph
+    whose nodes have the connectivity of the icosahedron. It is undirected,
+    regular and Hamiltonian.
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Icosahedral graph with 12 nodes and 30 edges.
+
+    References
+    ----------
+    [1] https://mathworld.wolfram.com/IcosahedralGraph.html
+    """
     description = [
         "adjacencylist",
         "Platonic Icosahedral Graph",
@@ -540,13 +630,27 @@ def icosahedral_graph(create_using=None):
 
 def krackhardt_kite_graph(create_using=None):
     """
-    Return the Krackhardt Kite Social Network.
+    Returns the Krackhardt Kite Social Network.
 
     A 10 actor social network introduced by David Krackhardt
     to illustrate: degree, betweenness, centrality, closeness, etc.
     The traditional labeling is:
     Andre=1, Beverley=2, Carol=3, Diane=4,
     Ed=5, Fernando=6, Garth=7, Heather=8, Ike=9, Jane=10.
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Krackhardt Kite graph with 10 nodes and 18 edges
+
+    References
+    ----------
+    [1] https://mathworld.wolfram.com/KrackhardtKite.html
 
     """
     description = [
@@ -571,14 +675,59 @@ def krackhardt_kite_graph(create_using=None):
 
 
 def moebius_kantor_graph(create_using=None):
-    """Returns the Moebius-Kantor graph."""
+    """
+    Returns the Moebius-Kantor graph.
+
+    The Möbius-Kantor graph is the cubic symmetric graph on 16 nodes.
+    Its LCF notation is [5,-5]^8, and it is isomorphic to the generalized
+    Petersen graph.[1]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Moebius-Kantor graph
+
+    References
+    ----------
+    [1] https://mathworld.wolfram.com/Moebius-KantorGraph.html
+
+    """
     G = LCF_graph(16, [5, -5], 8, create_using)
     G.name = "Moebius-Kantor Graph"
     return G
 
 
 def octahedral_graph(create_using=None):
-    """Returns the Platonic Octahedral graph."""
+    """
+    Returns the Platonic Octahedral graph.
+
+    The octahedral graph is the 6-node 12-edge Platonic graph having the
+    connectivity of the octahedron.[1] If 6 couples go to a party,
+    and each person shakes hands with every person except his or her partner,
+    then this graph describes the set of handshakes that take place;
+    for this reason it is also called the cocktail party graph.[2]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Octahedral graph
+
+    References
+    ----------
+    [1] https://mathworld.wolfram.com/OctahedralGraph.html
+    [2] https://en.wikipedia.org/wiki/Tur%C3%A1n_graph#Special_cases
+
+    """
     description = [
         "adjacencylist",
         "Platonic Octahedral Graph",
@@ -590,14 +739,55 @@ def octahedral_graph(create_using=None):
 
 
 def pappus_graph():
-    """Return the Pappus graph."""
+    """
+    Returns the Pappus graph.
+
+    The Pappus graph is a cubic symmetric distance-regular graph with 18 nodes
+    and 27 edges. It is Hamiltonian and can be represented in LCF notation as
+    [5,7,-7,7,-7,-5]^3
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    G : networkx Graph
+        Pappus graph
+
+    References
+    ----------
+    [1] https://mathworld.wolfram.com/PappusGraph.html
+    """
     G = LCF_graph(18, [5, 7, -7, 7, -7, -5], 3)
     G.name = "Pappus Graph"
     return G
 
 
 def petersen_graph(create_using=None):
-    """Returns the Petersen graph."""
+    """
+    Returns the Petersen graph.
+
+    Peterson graph is cubic, undirected graph with 10 nodes and 15 edges.[1]
+    Julius Petersen constructed the graph as the smallest counterexample
+    against the claim that a connected bridgeless cubic graph
+    has an edge colouring with three colours.[2]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Petersen graph
+
+    References
+    ----------
+    [1] https://en.wikipedia.org/wiki/Petersen_graph#cite_note-1
+    [2] https://www.win.tue.nl/~aeb/drg/graphs/Petersen.html
+    """
     description = [
         "adjacencylist",
         "Petersen Graph",
@@ -626,6 +816,20 @@ def sedgewick_maze_graph(create_using=None):
     This is the maze used in Sedgewick,3rd Edition, Part 5, Graph
     Algorithms, Chapter 18, e.g. Figure 18.2 and following.
     Nodes are numbered 0,..,7
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Small maze with a cycle
+
+    References
+    ----------
+    Figure 18.2, Chapter 18, Graph Algorithms (3rd Ed), Sedgewick
     """
     G = empty_graph(0, create_using)
     G.add_nodes_from(range(8))
@@ -638,14 +842,58 @@ def sedgewick_maze_graph(create_using=None):
 
 
 def tetrahedral_graph(create_using=None):
-    """Return the 3-regular Platonic Tetrahedral graph."""
+    """
+    Returns the 3-regular Platonic Tetrahedral graph.
+
+    Tetrahedral graph has 4 nodes and 6 edges.  It is a
+    special case of the complete graph, K4, and wheel graph, W4.
+    It is one of the 5 platonic graphs. [1]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Tetrahedral Grpah
+
+    References
+    ----------
+    [1] https://en.wikipedia.org/wiki/Tetrahedron#Tetrahedral_graph
+
+    """
     G = complete_graph(4, create_using)
     G.name = "Platonic Tetrahedral graph"
     return G
 
 
 def truncated_cube_graph(create_using=None):
-    """Returns the skeleton of the truncated cube."""
+    """
+    Returns the skeleton of the truncated cube.
+
+    The truncated cube, is an Archimedean solid. It has 14 regular
+    faces (6 octagonal and 8 triangular), 36 edges and 24 nodes.[1]
+    The truncated cube is created by truncating (cutting off) the tips
+    of the cube one third of the way into each edge. [2]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Skeleton of the truncated cube
+
+    References
+    ----------
+    [1] https://en.wikipedia.org/wiki/Truncated_cube
+    [2] https://www.coolmath.com/reference/polyhedra-truncated-cube
+
+    """
     description = [
         "adjacencylist",
         "Truncated Cube Graph",
@@ -682,7 +930,28 @@ def truncated_cube_graph(create_using=None):
 
 
 def truncated_tetrahedron_graph(create_using=None):
-    """Returns the skeleton of the truncated Platonic tetrahedron."""
+    """
+    Returns the skeleton of the truncated Platonic tetrahedron.
+
+    The truncated tetrahedron is an Archimedean solid. It has 4 regular hexagonal faces,
+    4 equilateral triangle faces, 12 nodes and 18 edges. It can be constructed by truncating
+    all 4 vertices of a regular tetrahedron at one third of the original edge length.[1]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Skeleton of the truncated tetrahedron
+
+    References
+    ----------
+    [1] https://en.wikipedia.org/wiki/Truncated_tetrahedron
+
+    """
     G = path_graph(12, create_using)
     #    G.add_edges_from([(1,3),(1,10),(2,7),(4,12),(5,12),(6,8),(9,11)])
     G.add_edges_from([(0, 2), (0, 9), (1, 6), (3, 11), (4, 11), (5, 7), (8, 10)])
@@ -691,7 +960,30 @@ def truncated_tetrahedron_graph(create_using=None):
 
 
 def tutte_graph(create_using=None):
-    """Returns the Tutte graph."""
+    """
+    Returns the Tutte graph.
+
+    The Tutte graph is a cubic polyhedral, non-hamiltonian graph. It has
+    46 nodes and 69 edges.
+    It is a counterexample to Tait's conjecture that every 3-regular polyhedron
+    has a Hamiltonian cycle.
+    It can be realized geometrically from a tetrahedron by multiply truncating
+    three of its vertices.[1]
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Tutte graph
+
+    References
+    ----------
+    [1] https://en.wikipedia.org/wiki/Tutte_graph
+    """
     description = [
         "adjacencylist",
         "Tutte's Graph",
