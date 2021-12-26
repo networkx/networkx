@@ -502,7 +502,7 @@ def pagerank_scipy(
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
         xlast = x
-        x = alpha * (x * A + sum(x[is_dangling]) * dangling_weights) + (1 - alpha) * p
+        x = alpha * (x @ A + sum(x[is_dangling]) * dangling_weights) + (1 - alpha) * p
         # check convergence, l1 norm
         err = np.absolute(x - xlast).sum()
         if err < N * tol:
