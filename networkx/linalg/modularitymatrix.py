@@ -1,6 +1,5 @@
 """Modularity matrix of graphs.
 """
-import numpy as np
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -62,6 +61,8 @@ def modularity_matrix(G, nodelist=None, weight=None):
     .. [1] M. E. J. Newman, "Modularity and community structure in networks",
            Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
     """
+    import numpy as np
+
     if nodelist is None:
         nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
@@ -148,6 +149,8 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
         "Community structure in directed networks",
         Phys. Rev Lett., vol. 100, no. 11, p. 118703, 2008.
     """
+    import numpy as np
+
     if nodelist is None:
         nodelist = list(G)
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
