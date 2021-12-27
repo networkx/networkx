@@ -20,8 +20,11 @@ See Also
  - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
 from locale import getpreferredencoding
-from networkx.utils import open_file
+
 import networkx as nx
+from networkx.utils import open_file
+
+pydot = nx.lazy_imports.load("pydot")
 
 __all__ = [
     "write_dot",
@@ -67,8 +70,6 @@ def read_dot(path):
     Use `G = nx.Graph(read_dot(path))` to return a :class:`Graph` instead of a
     :class:`MultiGraph`.
     """
-    import pydot
-
     data = path.read()
 
     # List of one or more "pydot.Dot" instances deserialized from this file.
@@ -185,8 +186,6 @@ def to_pydot(N):
     -----
 
     """
-    import pydot
-
     # set Graphviz graph type
     if N.is_directed():
         graph_type = "digraph"
@@ -301,8 +300,6 @@ def pydot_layout(G, prog="neato", root=None):
         G_layout = {H.nodes[n]['node_label']: p for n, p in H_layout.items()}
 
     """
-    import pydot
-
     P = to_pydot(G)
     if root is not None:
         P.set("root", str(root))

@@ -2,6 +2,9 @@
 from warnings import warn
 import networkx as nx
 
+np = nx.lazy_imports.load("numpy")
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
 
 
@@ -231,8 +234,6 @@ def google_matrix(
     --------
     pagerank, pagerank_numpy, pagerank_scipy
     """
-    import numpy as np
-
     # TODO: Remove this warning in version 3.0
     import warnings
 
@@ -349,8 +350,6 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight="weight", danglin
     """
     msg = "networkx.pagerank_numpy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
     warn(msg, DeprecationWarning, stacklevel=2)
-    import numpy as np
-
     if len(G) == 0:
         return {}
     M = google_matrix(
@@ -459,8 +458,6 @@ def pagerank_scipy(
     """
     msg = "networkx.pagerank_scipy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
     warn(msg, DeprecationWarning, stacklevel=2)
-    import numpy as np
-    import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
     N = len(G)

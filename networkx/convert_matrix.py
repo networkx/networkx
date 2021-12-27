@@ -24,8 +24,14 @@ nx_agraph, nx_pydot
 
 import itertools
 import warnings
+
 import networkx as nx
 from networkx.utils import not_implemented_for
+
+np = nx.lazy_imports.load("numpy")
+pd = nx.lazy_imports.load("pandas")
+sp = nx.lazy_imports.load("scipy")
+
 
 __all__ = [
     "from_numpy_matrix",
@@ -132,8 +138,6 @@ def to_pandas_adjacency(
     2  0  0  4
 
     """
-    import pandas as pd
-
     M = to_numpy_array(
         G,
         nodelist=nodelist,
@@ -276,8 +280,6 @@ def to_pandas_edgelist(
     1      A      B     9     1
 
     """
-    import pandas as pd
-
     if nodelist is None:
         edgelist = G.edges(data=True)
     else:
@@ -577,8 +579,6 @@ def to_numpy_matrix(
         DeprecationWarning,
     )
 
-    import numpy as np
-
     A = to_numpy_array(
         G,
         nodelist=nodelist,
@@ -734,8 +734,6 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
      [5 0]]
 
     """
-    import numpy as np
-
     if dtype is None:
         dtype = [("weight", float)]
 
@@ -848,7 +846,6 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
     .. [1] Scipy Dev. References, "Sparse Matrices",
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
-    import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
     if len(G) == 0:
@@ -1166,8 +1163,6 @@ def to_numpy_array(
            [0., 0., 4.]])
 
     """
-    import numpy as np
-
     if nodelist is None:
         nodelist = list(G)
         nodeset = G

@@ -12,14 +12,17 @@ and/or `optimize_edit_paths`.
 At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
-
 from functools import reduce
 from itertools import product
 import math
 from operator import mul
 import time
 import warnings
+
 import networkx as nx
+
+np = nx.lazy_imports.load("numpy")
+sp = nx.lazy_imports.load("scipy")
 
 __all__ = [
     "graph_edit_distance",
@@ -667,9 +670,6 @@ def optimize_edit_paths(
 
     """
     # TODO: support DiGraph
-
-    import numpy as np
-    import scipy as sp
     import scipy.optimize  # call as sp.optimize
 
     class CostMatrix:
@@ -1300,8 +1300,6 @@ def simrank_similarity(
            International Conference on Knowledge Discovery and Data Mining,
            pp. 538--543. ACM Press, 2002.
     """
-    import numpy as np
-
     nodelist = list(G)
     s_indx = None if source is None else nodelist.index(source)
     t_indx = None if target is None else nodelist.index(target)
@@ -1457,8 +1455,6 @@ def _simrank_similarity_numpy(
     #
     # where C is the importance factor, A is the column normalized
     # adjacency matrix, and I is the identity matrix.
-    import numpy as np
-
     adjacency_matrix = nx.to_numpy_array(G)
 
     # column-normalize the ``adjacency_matrix``
@@ -1562,8 +1558,6 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
            on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).
            Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
     """
-    import numpy as np
-
     num_nodes = G.number_of_nodes()
     if num_nodes < k:
         warnings.warn(
@@ -1666,8 +1660,6 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
            on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).
            Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
     """
-    import numpy as np
-
     # Calculate transition probabilities between
     # every pair of vertices according to Eq. (3)
     adj_mat = nx.to_numpy_array(G)

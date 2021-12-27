@@ -17,7 +17,13 @@ See Also
  - :obj:`matplotlib.patches.FancyArrowPatch`
 """
 from numbers import Number
+import warnings
+
 import networkx as nx
+
+np = nx.lazy_imports.load("numpy")
+mpl = nx.lazy_imports.load("matplotlib")
+
 from networkx.drawing.layout import (
     shell_layout,
     circular_layout,
@@ -27,7 +33,6 @@ from networkx.drawing.layout import (
     random_layout,
     planar_layout,
 )
-import warnings
 
 __all__ = [
     "draw",
@@ -437,8 +442,6 @@ def draw_networkx_nodes(
     draw_networkx_edge_labels
     """
     from collections.abc import Iterable
-    import numpy as np
-    import matplotlib as mpl
     import matplotlib.collections  # call as mpl.collections
     import matplotlib.pyplot as plt
 
@@ -667,8 +670,6 @@ def draw_networkx_edges(
     draw_networkx_edge_labels
 
     """
-    import numpy as np
-    import matplotlib as mpl
     import matplotlib.colors  # call as mpl.colors
     import matplotlib.patches  # call as mpl.patches
     import matplotlib.collections  # call as mpl.collections
@@ -1122,7 +1123,6 @@ def draw_networkx_edge_labels(
     draw_networkx_labels
     """
     import matplotlib.pyplot as plt
-    import numpy as np
 
     if ax is None:
         ax = plt.gca()
@@ -1349,8 +1349,6 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
 
     """
     from itertools import islice, cycle
-    import numpy as np
-    import matplotlib as mpl
     import matplotlib.colors  # call as mpl.colors
     import matplotlib.cm  # call as mpl.cm
 

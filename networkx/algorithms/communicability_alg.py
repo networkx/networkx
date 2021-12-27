@@ -4,6 +4,9 @@ Communicability.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+np = nx.lazy_imports.load("numpy")
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = ["communicability", "communicability_exp"]
 
 
@@ -65,8 +68,6 @@ def communicability(G):
     >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
     >>> c = nx.communicability(G)
     """
-    import numpy as np
-
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
@@ -143,7 +144,6 @@ def communicability_exp(G):
     >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
     >>> c = nx.communicability_exp(G)
     """
-    import scipy as sp
     import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix

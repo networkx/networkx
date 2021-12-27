@@ -3,6 +3,9 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+np = nx.lazy_imports.load("numpy")
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = [
     "laplacian_matrix",
     "normalized_laplacian_matrix",
@@ -46,7 +49,6 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     normalized_laplacian_matrix
     laplacian_spectrum
     """
-    import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
@@ -110,8 +112,6 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
        Laplacian, Electronic Journal of Linear Algebra, Volume 16, pp. 90-98,
        March 2007.
     """
-    import numpy as np
-    import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
@@ -193,8 +193,6 @@ def directed_laplacian_matrix(
        Laplacians and the Cheeger inequality for directed graphs.
        Annals of Combinatorics, 9(1), 2005
     """
-    import numpy as np
-    import scipy as sp
     import scipy.sparse  # call as sp.sparse
     import scipy.sparse.linalg  # call as sp.sparse.linalg
 
@@ -277,7 +275,6 @@ def directed_combinatorial_laplacian_matrix(
        Laplacians and the Cheeger inequality for directed graphs.
        Annals of Combinatorics, 9(1), 2005
     """
-    import scipy as sp
     import scipy.sparse  # call as sp.sparse
     import scipy.sparse.linalg  # call as sp.sparse.linalg
 
@@ -335,8 +332,6 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
     NetworkXError
         If walk_type not specified or alpha not in valid range
     """
-    import numpy as np
-    import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
     if walk_type is None:

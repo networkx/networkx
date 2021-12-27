@@ -3,6 +3,8 @@ Spectral bipartivity measure.
 """
 import networkx as nx
 
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = ["spectral_bipartivity"]
 
 
@@ -47,7 +49,6 @@ def spectral_bipartivity(G, nodes=None, weight="weight"):
     .. [1] E. Estrada and J. A. Rodríguez-Velázquez, "Spectral measures of
        bipartivity in complex networks", PhysRev E 72, 046105 (2005)
     """
-    import scipy as sp
     import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix

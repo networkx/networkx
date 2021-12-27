@@ -7,6 +7,11 @@ from networkx.algorithms.assortativity.mixing import (
 )
 from networkx.algorithms.assortativity.pairs import node_degree_xy
 
+import networkx as nx
+
+np = nx.lazy_imports.load("numpy")
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = [
     "degree_pearson_correlation_coefficient",
     "degree_assortativity_coefficient",
@@ -150,7 +155,6 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     .. [2] Foster, J.G., Foster, D.V., Grassberger, P. & Paczuski, M.
        Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
     """
-    import scipy as sp
     import scipy.stats  # call as sp.stats
 
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
@@ -283,8 +287,6 @@ def attribute_ac(M):
 def numeric_ac(M, mapping):
     # M is a numpy matrix or array
     # numeric assortativity coefficient, pearsonr
-    import numpy as np
-
     if M.sum() != 1.0:
         M = M / float(M.sum())
     nx, ny = M.shape  # nx=ny
