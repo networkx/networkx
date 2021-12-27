@@ -1,5 +1,6 @@
 import sys
 import importlib
+import types
 import pytest
 
 import networkx.lazy_imports as lazy
@@ -30,7 +31,7 @@ def test_load_impact_on_sys_modules():
     math = lazy.load("math")
     anything_not_real = lazy.load("anything_not_real")
 
-    assert type(math) == importlib.types.ModuleType
+    assert type(math) == types.ModuleType
     assert "math" in sys.modules
     assert type(anything_not_real) == lazy.DelayedImportErrorModule
     assert "anything_not_real" not in sys.modules
@@ -38,12 +39,12 @@ def test_load_impact_on_sys_modules():
     # only do this if numpy is installed
     np_test = pytest.importorskip("numpy")
     np = lazy.load("numpy")
-    assert type(np) == importlib.types.ModuleType
+    assert type(np) == types.ModuleType
     assert "numpy" in sys.modules
 
     np.pi  # trigger load of numpy
 
-    assert type(np) == importlib.types.ModuleType
+    assert type(np) == types.ModuleType
     assert "numpy" in sys.modules
 
 
