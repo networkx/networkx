@@ -11,6 +11,9 @@ import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 from networkx.algorithms.node_classification.utils import _get_label_info
 
+np = nx.lazy_imports.load("numpy")
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = ["local_and_global_consistency"]
 
 
@@ -58,8 +61,6 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     Learning with local and global consistency.
     Advances in neural information processing systems, 16(16), 321-328.
     """
-    import numpy as np
-    import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
     X = nx.to_scipy_sparse_array(G)  # adjacency matrix

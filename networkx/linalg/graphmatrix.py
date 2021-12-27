@@ -3,6 +3,8 @@ Adjacency matrix and incidence matrix of graphs.
 """
 import networkx as nx
 
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = ["incidence_matrix", "adj_matrix", "adjacency_matrix"]
 
 
@@ -56,7 +58,6 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
     .. [1] Gil Strang, Network applications: A = incidence matrix,
        http://videolectures.net/mit18085f07_strang_lec03/
     """
-    import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:

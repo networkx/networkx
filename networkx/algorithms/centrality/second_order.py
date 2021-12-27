@@ -33,6 +33,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+np = nx.lazy_imports.load("numpy")
+
 # Authors: Erwan Le Merrer (erwan.lemerrer@technicolor.com)
 """ Second order centrality measure."""
 
@@ -95,8 +97,6 @@ def second_order_centrality(G):
        "Second order centrality: Distributed assessment of nodes criticity in
        complex networks", Elsevier Computer Communications 34(5):619-628, 2011.
     """
-    import numpy as np
-
     n = len(G)
 
     if n == 0:

@@ -7,6 +7,8 @@ import itertools
 from networkx.convert_matrix import _generate_weighted_edges
 import networkx as nx
 
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = ["biadjacency_matrix", "from_biadjacency_matrix"]
 
 
@@ -73,7 +75,6 @@ def biadjacency_matrix(
     .. [2] Scipy Dev. References, "Sparse Matrices",
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
-    import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
     nlen = len(row_order)

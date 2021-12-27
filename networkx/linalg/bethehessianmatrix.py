@@ -2,6 +2,8 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = ["bethe_hessian_matrix"]
 
 
@@ -60,7 +62,6 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
        "Estimating the number of communities in networks by spectral methods"
        arXiv:1507.00827, 2015.
     """
-    import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:

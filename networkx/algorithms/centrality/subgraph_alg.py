@@ -4,6 +4,9 @@ Subraph centrality and communicability betweenness.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+np = nx.lazy_imports.load("numpy")
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = [
     "subgraph_centrality_exp",
     "subgraph_centrality",
@@ -83,7 +86,6 @@ def subgraph_centrality_exp(G):
     ['1 3.90', '2 3.90', '3 3.64', '4 3.71', '5 3.64', '6 3.71', '7 3.64', '8 3.90']
     """
     # alternative implementation that calculates the matrix exponential
-    import scipy as sp
     import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
@@ -171,8 +173,6 @@ def subgraph_centrality(G):
        https://arxiv.org/abs/cond-mat/0504730
 
     """
-    import numpy as np
-
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
@@ -253,8 +253,6 @@ def communicability_betweenness_centrality(G):
     >>> print([f"{node} {cbc[node]:0.2f}" for node in sorted(cbc)])
     ['0 0.03', '1 0.45', '2 0.51', '3 0.45', '4 0.40', '5 0.19', '6 0.03']
     """
-    import numpy as np
-    import scipy as sp
     import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix

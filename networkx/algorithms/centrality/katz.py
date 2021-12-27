@@ -4,6 +4,8 @@ import math
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+np = nx.lazy_imports.load("numpy")
+
 __all__ = ["katz_centrality", "katz_centrality_numpy"]
 
 
@@ -304,8 +306,6 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
        Psychometrika 18(1):39–43, 1953
        https://link.springer.com/content/pdf/10.1007/BF02289026.pdf
     """
-    import numpy as np
-
     if len(G) == 0:
         return {}
     try:

@@ -4,6 +4,9 @@
 import networkx as nx
 from networkx.utils import np_random_state
 
+np = nx.lazy_imports.load("numpy")
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = ["spectral_graph_forge"]
 
 
@@ -44,8 +47,6 @@ def _mat_spect_approx(A, level, sorteigs=True, reverse=False, absolute=True):
     ..  [2] L. Mirsky, Symmetric gauge functions and unitarily invariant norms
 
     """
-    import numpy as np
-
     d, V = np.linalg.eigh(A)
     d = np.ravel(d)
     n = len(d)
@@ -140,8 +141,6 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     >>> H = nx.spectral_graph_forge(G, 0.3)
     >>>
     """
-    import numpy as np
-    import scipy as sp
     import scipy.stats  # call as sp.stats
 
     available_transformations = ["identity", "modularity"]

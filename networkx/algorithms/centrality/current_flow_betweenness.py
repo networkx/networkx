@@ -12,6 +12,9 @@ from networkx.utils import (
     py_random_state,
 )
 
+np = nx.lazy_imports.load("numpy")
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = [
     "current_flow_betweenness_centrality",
     "approximate_current_flow_betweenness_centrality",
@@ -96,8 +99,6 @@ def approximate_current_flow_betweenness_centrality(
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
        https://doi.org/10.1007/978-3-540-31856-9_44
     """
-    import numpy as np
-
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     solvername = {

@@ -7,6 +7,9 @@ from networkx.utils import not_implemented_for
 from networkx.utils import reverse_cuthill_mckee_ordering
 from networkx.utils import np_random_state
 
+np = nx.lazy_imports.load("numpy")
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = ["algebraic_connectivity", "fiedler_vector", "spectral_ordering"]
 
 
@@ -31,8 +34,6 @@ class _PCGSolver:
         self._M = M
 
     def solve(self, B, tol):
-        import numpy as np
-
         # Densifying step - can this be kept sparse?
         B = np.asarray(B)
         X = np.ndarray(B.shape, order="F")
@@ -41,8 +42,6 @@ class _PCGSolver:
         return X
 
     def _solve(self, b, tol):
-        import numpy as np
-        import scipy as sp
         import scipy.linalg.blas  # call as sp.linalg.blas
 
         A = self._A
@@ -80,7 +79,6 @@ class _LUSolver:
     """
 
     def __init__(self, A):
-        import scipy as sp
         import scipy.sparse.linalg  # call as sp.sparse.linalg
 
         self._LU = sp.sparse.linalg.splu(
@@ -91,8 +89,6 @@ class _LUSolver:
         )
 
     def solve(self, B, tol=None):
-        import numpy as np
-
         B = np.asarray(B)
         X = np.ndarray(B.shape, order="F")
         for j in range(B.shape[1]):
@@ -128,8 +124,6 @@ def _preprocess_graph(G, weight):
 
 def _rcm_estimate(G, nodelist):
     """Estimate the Fiedler vector using the reverse Cuthill-McKee ordering."""
-    import numpy as np
-
     G = G.subgraph(nodelist)
     order = reverse_cuthill_mckee_ordering(G)
     n = len(nodelist)
@@ -175,8 +169,6 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         As this is for Fiedler vectors, the zero eigenvalue (and
         constant eigenvector) are avoided.
     """
-    import numpy as np
-    import scipy as sp
     import scipy.linalg  # call as sp.linalg
     import scipy.linalg.blas  # call as sp.linalg.blas
     import scipy.sparse  # call as sp.sparse
@@ -254,8 +246,6 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
 
 def _get_fiedler_func(method):
     """Returns a function that solves the Fiedler eigenvalue problem."""
-    import numpy as np
-
     if method == "tracemin":  # old style keyword <v2.1
         method = "tracemin_pcg"
     if method in ("tracemin_pcg", "tracemin_lu"):
@@ -269,7 +259,6 @@ def _get_fiedler_func(method):
     elif method == "lanczos" or method == "lobpcg":
 
         def find_fiedler(L, x, normalized, tol, seed):
-            import scipy as sp
             import scipy.sparse  # call as sp.sparse
             import scipy.sparse.linalg  # call as sp.sparse.linalg
 
@@ -458,8 +447,6 @@ def fiedler_vector(
     --------
     laplacian_matrix
     """
-    import numpy as np
-
     if len(G) < 2:
         raise nx.NetworkXError("graph has less than two nodes.")
     G = _preprocess_graph(G, weight)

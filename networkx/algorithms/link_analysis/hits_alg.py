@@ -2,6 +2,9 @@
 """
 import networkx as nx
 
+np = nx.lazy_imports.load("numpy")
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = ["hits", "hits_numpy", "hits_scipy", "authority_matrix", "hub_matrix"]
 
 
@@ -69,8 +72,6 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    import numpy as np
-    import scipy as sp
     import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if len(G) == 0:
@@ -245,7 +246,6 @@ def hits_numpy(G, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    import numpy as np
     import warnings
 
     warnings.warn(
@@ -349,7 +349,6 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    import numpy as np
     import warnings
 
     warnings.warn(

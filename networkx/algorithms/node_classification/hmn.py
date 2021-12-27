@@ -11,6 +11,9 @@ import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 from networkx.algorithms.node_classification.utils import _get_label_info
 
+np = nx.lazy_imports.load("numpy")
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = ["harmonic_function"]
 
 
@@ -56,8 +59,6 @@ def harmonic_function(G, max_iter=30, label_name="label"):
     Semi-supervised learning using gaussian fields and harmonic functions.
     In ICML (Vol. 3, pp. 912-919).
     """
-    import numpy as np
-    import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
     X = nx.to_scipy_sparse_array(G)  # adjacency matrix

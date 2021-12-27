@@ -1,6 +1,10 @@
 """
     Functions for constructing matrix-like objects from graph attributes.
 """
+import networkx.lazy_imports as lazy
+
+np = lazy.load("numpy")
+sp = lazy.load("scipy")
 
 __all__ = ["attr_matrix", "attr_sparse_matrix"]
 
@@ -267,8 +271,6 @@ def attr_matrix(
         (blue, blue) is 0   # there are no edges with blue endpoints
 
     """
-    import numpy as np
-
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)
 
@@ -425,8 +427,6 @@ def attr_sparse_matrix(
         (blue, blue) is 0   # there are no edges with blue endpoints
 
     """
-    import numpy as np
-    import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
     edge_value = _edge_value(G, edge_attr)

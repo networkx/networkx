@@ -4,6 +4,9 @@ import math
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+np = nx.lazy_imports.load("numpy")
+sp = nx.lazy_imports.load("scipy")
+
 __all__ = ["eigenvector_centrality", "eigenvector_centrality_numpy"]
 
 
@@ -212,8 +215,6 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
        Networks: An Introduction.
        Oxford University Press, USA, 2010, pp. 169.
     """
-    import numpy as np
-    import scipy as sp
     import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if len(G) == 0:
