@@ -397,6 +397,16 @@ class TestConvertNumpyArray:
         )
         assert graphs_equal(actual, expected)
 
+    def test_to_numpy_array_complex(self):
+        """Test that the :func:`networkx.to_numpy_array` function
+        works for complex weights.
+
+        """
+        A = np.array([[1 + 2j]])
+        G = nx.from_numpy_array(A)
+        A_again = nx.to_numpy_array(G)
+        assert A.item() == A_again.item()
+
     def test_symmetric(self):
         """Tests that a symmetric array has edges added only once to an
         undirected multigraph when using :func:`networkx.from_numpy_array`.
