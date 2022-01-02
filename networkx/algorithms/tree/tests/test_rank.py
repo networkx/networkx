@@ -14,7 +14,8 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms.isomorphism import generic_edge_match
-from networkx.algorithms.isomorphism.matchhelpers import close
+# from networkx.algorithms.isomorphism.matchhelpers import close
+from math import isclose
 from networkx.algorithms.tree import rank
 
 NODES = {"b1", "b2", "b3", "b4"}
@@ -23,7 +24,7 @@ SOURCE_MAP = {"e1": "b1", "e2": "b1", "e3": "b2", "e4": "b3", "e5": "b2", "e6": 
 TARGET_MAP = {"e1": "b2", "e2": "b4", "e3": "b3", "e4": "b2", "e5": "b4", "e6": "b4"}
 WEIGHT_MAP = {"e1": 6, "e2": 1, "e3": 10, "e4": 10, "e5": 12, "e6": 8}
 DEEP_CYCLES = [{"e3", "e4"}, {"e4", "e5", "e6"}]
-EM = generic_edge_match(["weight", "label"], [0, "b1"], [close, eq])
+EM = generic_edge_match(["weight", "label"], [0, "b1"], [isclose, eq])
 _ATTR_LABEL = "label"
 _ATTR = "weight"
 
