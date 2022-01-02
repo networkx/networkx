@@ -1216,9 +1216,17 @@ def to_numpy_array(
     # will, in general, depend on the combinator function---sensible defaults
     # can be provided.
 
+    # Determine the lowest common dtype (necessary for edges with complex weights)
+    if not G.number_of_edges():
+        init_dtype = float
+    else:
+        u, v = next(iter(G.edges()))
+        edge_type = type(G[u][v].get(weight, 1))
+        init_dtype = np.find_common_type([], [float, edge_type])
+
     if G.is_multigraph():
         # Handle MultiGraphs and MultiDiGraphs
-        A = np.full((nlen, nlen), np.nan, order=order)
+        A = np.full((nlen, nlen), np.nan, order=order, dtype=init_dtype)
         # use numpy nan-aware operations
         operator = {sum: np.nansum, min: np.nanmin, max: np.nanmax}
         try:
@@ -1235,7 +1243,7 @@ def to_numpy_array(
                     A[j, i] = A[i, j]
     else:
         # Graph or DiGraph, this is much faster than above
-        A = np.full((nlen, nlen), np.nan, order=order)
+        A = np.full((nlen, nlen), np.nan, order=order, dtype=init_dtype)
         for u, nbrdict in G.adjacency():
             for v, d in nbrdict.items():
                 try:
