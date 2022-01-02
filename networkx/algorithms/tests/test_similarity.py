@@ -5,7 +5,6 @@ from networkx.algorithms.similarity import (
     graph_edit_distance,
     optimal_edit_paths,
     optimize_graph_edit_distance,
-    _n_choose_k,
 )
 from networkx.generators.classic import (
     circular_ladder_graph,
@@ -524,10 +523,7 @@ class TestSimilarity:
         assert graph_edit_distance(G1, G2, node_match=nmatch, edge_match=ematch) == 1
 
     # note: nx.simrank_similarity_numpy not included because returns np.array
-    simrank_algs = [
-        nx.simrank_similarity,
-        nx.similarity._simrank_similarity_python,
-    ]
+    simrank_algs = [nx.simrank_similarity, nx.similarity._simrank_similarity_python]
 
     @pytest.mark.parametrize("simrank_similarity", simrank_algs)
     def test_simrank_no_source_no_target(self, simrank_similarity):
@@ -793,18 +789,6 @@ class TestSimilarity:
         expected = 1.0
         actual = nx.similarity._simrank_similarity_numpy(G, source=0, target=0)
         np.testing.assert_allclose(expected, actual, atol=1e-7)
-
-    def test_n_choose_k_small_k(self):
-        assert _n_choose_k(10, 4) == 210
-
-    def test_n_choose_k_big_k(self):
-        assert _n_choose_k(10, 8) == 45
-
-    def test_n_choose_k_same(self):
-        assert _n_choose_k(10, 10) == 1
-
-    def test_n_choose_k_k_bigger_than_n(self):
-        assert _n_choose_k(5, 10) == 0
 
     def test_panther_similarity_unweighted(self):
         np.random.seed(42)

@@ -105,8 +105,8 @@ def biadjacency_matrix(
     M = sp.sparse.coo_matrix((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
     try:
         return M.asformat(format)
-    except ValueError as e:
-        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from e
+    except ValueError as err:
+        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from err
 
 
 def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):

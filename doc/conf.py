@@ -127,11 +127,7 @@ html_theme_options = {
     "navigation_depth": 2,
     "show_prev_next": False,
     "icon_links": [
-        {
-            "name": "Home Page",
-            "url": "https://networkx.org",
-            "icon": "fas fa-home",
-        },
+        {"name": "Home Page", "url": "https://networkx.org", "icon": "fas fa-home"},
         {
             "name": "GitHub",
             "url": "https://github.com/networkx/networkx",
@@ -190,8 +186,7 @@ htmlhelp_basename = "NetworkX"
 html_context = {
     "versions_dropdown": {
         "latest": "devel (latest)",
-        "stable": "v2.5 (stable)",
-        "networkx-2.4": "v2.4",
+        "stable": "current (stable)",
     },
 }
 
@@ -225,6 +220,7 @@ latex_appendices = ["tutorial"]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
+    "neps": ("https://numpy.org/neps", None),
     "matplotlib": ("https://matplotlib.org/stable", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),

@@ -207,8 +207,8 @@ class TestShp:
         G.add_edge(1, 2, Wkt=line[0])
         try:
             nx.write_shp(G, tpath)
-        except Exception as e:
-            assert False, e
+        except Exception as err:
+            assert False, err
         shpdir = ogr.Open(tpath)
         self.checkgeom(shpdir.GetLayerByName("nodes"), points)
         self.checkgeom(shpdir.GetLayerByName("edges"), line)

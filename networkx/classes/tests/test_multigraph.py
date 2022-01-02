@@ -216,11 +216,8 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
     dodod3 = {"a": {"b": {"traits": etraits, "s": "foo"}}}
     dol = {"a": ["b"]}
 
-    multiple_edge = [
-        ("a", "b", "traits", etraits),
-        ("a", "b", "graphics", egraphics),
-    ]
-    single_edge = [("a", "b", 0, {})]
+    multiple_edge = [("a", "b", "traits", etraits), ("a", "b", "graphics", egraphics)]
+    single_edge = [("a", "b", 0, {})]  # type: ignore
     single_edge1 = [("a", "b", 0, edata)]
     single_edge2 = [("a", "b", 0, etraits)]
     single_edge3 = [("a", "b", 0, {"traits": etraits, "s": "foo"})]
@@ -257,12 +254,7 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
     @pytest.mark.parametrize("dod", raise_cases)
     def test_non_multigraph_input_raise(self, dod):
         # cases where NetworkXError is raised
-        pytest.raises(
-            nx.NetworkXError,
-            self.Graph,
-            dod,
-            multigraph_input=True,
-        )
+        pytest.raises(nx.NetworkXError, self.Graph, dod, multigraph_input=True)
         pytest.raises(
             nx.NetworkXError,
             nx.to_networkx_graph,

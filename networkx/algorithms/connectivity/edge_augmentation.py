@@ -985,9 +985,9 @@ def weighted_bridge_augmentation(G, avail, weight=None):
         # Note the original edges must be directed towards to root for the
         # branching to give us a bridge-augmentation.
         A = _minimum_rooted_branching(D, root)
-    except nx.NetworkXException as e:
+    except nx.NetworkXException as err:
         # If there is no branching then augmentation is not possible
-        raise nx.NetworkXUnfeasible("no 2-edge-augmentation possible") from e
+        raise nx.NetworkXUnfeasible("no 2-edge-augmentation possible") from err
 
     # For each edge e, in the branching that did not belong to the directed
     # tree T, add the corresponding edge that **GENERATED** it (this is not
@@ -1124,15 +1124,16 @@ def complement_edges(G):
     >>> sorted(complement_edges(G))
     []
     """
+    G_adj = G._adj  # Store as a variable to eliminate attribute lookup
     if G.is_directed():
         for u, v in it.combinations(G.nodes(), 2):
-            if v not in G.adj[u]:
+            if v not in G_adj[u]:
                 yield (u, v)
-            if u not in G.adj[v]:
+            if u not in G_adj[v]:
                 yield (v, u)
     else:
         for u, v in it.combinations(G.nodes(), 2):
-            if v not in G.adj[u]:
+            if v not in G_adj[u]:
                 yield (u, v)
 
 

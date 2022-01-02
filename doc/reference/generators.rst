@@ -182,12 +182,13 @@ Geometric
 .. autosummary::
    :toctree: generated/
 
+   geometric_edges
+   geographical_threshold_graph
+   navigable_small_world_graph
    random_geometric_graph
    soft_random_geometric_graph
-   geographical_threshold_graph
-   waxman_graph
-   navigable_small_world_graph
    thresholded_random_geometric_graph
+   waxman_graph
 
 Line Graph
 ----------

@@ -26,16 +26,7 @@ from networkx.utils import (
 nested_depth = (
     1,
     2,
-    (
-        3,
-        4,
-        (
-            (5, 6, (7,), (8, (9, 10), 11), (12, 13, (14, 15)), 16),
-            17,
-        ),
-        18,
-        19,
-    ),
+    (3, 4, ((5, 6, (7,), (8, (9, 10), 11), (12, 13, (14, 15)), 16), 17), 18, 19),
     20,
 )
 
@@ -57,10 +48,7 @@ nested_mixed = [
 
 
 @pytest.mark.parametrize("result", [None, [], ["existing"], ["existing1", "existing2"]])
-@pytest.mark.parametrize(
-    "nested",
-    [nested_depth, nested_mixed, nested_set],
-)
+@pytest.mark.parametrize("nested", [nested_depth, nested_mixed, nested_set])
 def test_flatten(nested, result):
     if result is None:
         val = flatten(nested, result)
@@ -275,13 +263,7 @@ def test_PythonRandomInterface():
 
 
 @pytest.mark.parametrize(
-    ("iterable_type", "expected"),
-    (
-        (list, 1),
-        (tuple, 1),
-        (str, "["),
-        (set, 1),
-    ),
+    ("iterable_type", "expected"), ((list, 1), (tuple, 1), (str, "["), (set, 1))
 )
 def test_arbitrary_element(iterable_type, expected):
     iterable = iterable_type([1, 2, 3])
@@ -289,11 +271,7 @@ def test_arbitrary_element(iterable_type, expected):
 
 
 @pytest.mark.parametrize(
-    "iterator",
-    (
-        (i for i in range(3)),  # generator
-        iter([1, 2, 3]),
-    ),
+    "iterator", ((i for i in range(3)), iter([1, 2, 3]))  # generator
 )
 def test_arbitrary_element_raises(iterator):
     """Value error is raised when input is an iterator."""

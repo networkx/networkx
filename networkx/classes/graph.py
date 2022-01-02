@@ -28,7 +28,7 @@ class Graph:
     (parallel) edges are not.
 
     Nodes can be arbitrary (hashable) Python objects with optional
-    key/value attributes. By convention `None` is not used as a node.
+    key/value attributes, except that `None` is not allowed as a node.
 
     Edges are represented as links between nodes with optional
     key/value attributes.
@@ -515,6 +515,8 @@ class Graph:
         doesn't change on mutables.
         """
         if node_for_adding not in self._node:
+            if node_for_adding is None:
+                raise ValueError("None cannot be a node")
             self._adj[node_for_adding] = self.adjlist_inner_dict_factory()
             attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
             attr_dict.update(attr)
@@ -575,6 +577,8 @@ class Graph:
                 newdict = attr.copy()
                 newdict.update(ndict)
             if newnode:
+                if n is None:
+                    raise ValueError("None cannot be a node")
                 self._adj[n] = self.adjlist_inner_dict_factory()
                 self._node[n] = self.node_attr_dict_factory()
             self._node[n].update(newdict)
@@ -613,8 +617,8 @@ class Graph:
         try:
             nbrs = list(adj[n])  # list handles self-loops (allows mutation)
             del self._node[n]
-        except KeyError as e:  # NetworkXError if n not in self
-            raise NetworkXError(f"The node {n} is not in the graph.") from e
+        except KeyError as err:  # NetworkXError if n not in self
+            raise NetworkXError(f"The node {n} is not in the graph.") from err
         for u in nbrs:
             del adj[u][n]  # remove all edges n-u in graph
         del adj[n]  # now remove node
@@ -873,9 +877,13 @@ class Graph:
         u, v = u_of_edge, v_of_edge
         # add nodes
         if u not in self._node:
+            if u is None:
+                raise ValueError("None cannot be a node")
             self._adj[u] = self.adjlist_inner_dict_factory()
             self._node[u] = self.node_attr_dict_factory()
         if v not in self._node:
+            if v is None:
+                raise ValueError("None cannot be a node")
             self._adj[v] = self.adjlist_inner_dict_factory()
             self._node[v] = self.node_attr_dict_factory()
         # add the edge
@@ -932,9 +940,13 @@ class Graph:
             else:
                 raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
             if u not in self._node:
+                if u is None:
+                    raise ValueError("None cannot be a node")
                 self._adj[u] = self.adjlist_inner_dict_factory()
                 self._node[u] = self.node_attr_dict_factory()
             if v not in self._node:
+                if v is None:
+                    raise ValueError("None cannot be a node")
                 self._adj[v] = self.adjlist_inner_dict_factory()
                 self._node[v] = self.node_attr_dict_factory()
             datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
@@ -1005,8 +1017,8 @@ class Graph:
             del self._adj[u][v]
             if u != v:  # self-loop needs only one entry removed
                 del self._adj[v][u]
-        except KeyError as e:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph") from e
+        except KeyError as err:
+            raise NetworkXError(f"The edge {u}-{v} is not in the graph") from err
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -1088,7 +1100,7 @@ class Graph:
         It you want to update the graph using an adjacency structure
         it is straightforward to obtain the edges/nodes from adjacency.
         The following examples provide common cases, your adjacency may
-        be slightly different and require tweaks of these examples.
+        be slightly different and require tweaks of these examples::
 
         >>> # dict-of-set/list/tuple
         >>> adj = {1: {2, 3}, 2: {1, 3}, 3: {1, 2}}
@@ -1239,8 +1251,8 @@ class Graph:
         """
         try:
             return iter(self._adj[n])
-        except KeyError as e:
-            raise NetworkXError(f"The node {n} is not in the graph.") from e
+        except KeyError as err:
+            raise NetworkXError(f"The node {n} is not in the graph.") from err
 
     @property
     def edges(self):
@@ -1261,7 +1273,7 @@ class Graph:
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes.
+            The view will only report edges from these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
@@ -1292,9 +1304,9 @@ class Graph:
         EdgeDataView([(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})])
         >>> G.edges.data("weight", default=1)
         EdgeDataView([(0, 1, 1), (1, 2, 1), (2, 3, 5)])
-        >>> G.edges([0, 3])  # only edges incident to these nodes
+        >>> G.edges([0, 3])  # only edges from these nodes
         EdgeDataView([(0, 1), (3, 2)])
-        >>> G.edges(0)  # only edges incident to a single node (use G.adj[0]?)
+        >>> G.edges(0)  # only edges from node 0
         EdgeDataView([(0, 1)])
         """
         return EdgeView(self)
@@ -1899,8 +1911,8 @@ class Graph:
                     for n in nlist:
                         if n in adj:
                             yield n
-                except TypeError as e:
-                    exc, message = e, e.args[0]
+                except TypeError as err:
+                    exc, message = err, err.args[0]
                     # capture error for non-sequence/iterator nbunch.
                     if "iter" in message:
                         exc = NetworkXError(

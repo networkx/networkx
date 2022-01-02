@@ -32,7 +32,7 @@ class TestDiGraphHistorical(HistoricalTests):
         G = self.G()
         G.add_nodes_from("GJK")
         G.add_edges_from([("A", "B"), ("A", "C"), ("B", "D"), ("B", "C"), ("C", "D")])
-        assert sorted([v for k, v in G.in_degree()]) == [0, 0, 0, 0, 1, 2, 2]
+        assert sorted(v for k, v in G.in_degree()) == [0, 0, 0, 0, 1, 2, 2]
         assert dict(G.out_degree()) == {
             "A": 2,
             "C": 1,

@@ -1,10 +1,6 @@
 name: test
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push, pull_request]
 
 jobs:
 
@@ -13,7 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        python-version: [3.7, 3.8, 3.9]
+        python-version: ['3.8', '3.9', '3.10']
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -24,7 +20,7 @@ jobs:
     - name: Install packages
       run: |
         python -m pip install --upgrade pip wheel setuptools
-        python -m pip install -r requirements.txt
+        python -m pip install -r requirements/default.txt -r requirements/test.txt
         python -m pip install .
         python -m pip list
 
@@ -37,7 +33,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos]
-        python-version: [pypy-3.7]
+        python-version: ['pypy-3.8']
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -49,7 +45,7 @@ jobs:
       run: |
         pip install --upgrade pip wheel setuptools
         pip install -r requirements/test.txt
-        pip install decorator . --no-deps
+        pip install .
         pip list
 
     - name: Test NetworkX
@@ -61,7 +57,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04, macos-latest, windows-latest]
-        python-version: [3.7, 3.8, 3.9]
+        python-version: ['3.8', '3.9', '3.10']
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -85,7 +81,7 @@ jobs:
       if: runner.os == 'Linux' || runner.os == 'macOS'
       run: |
         pip install --upgrade pip wheel setuptools
-        pip install -r requirements.txt
+        pip install -r requirements/default.txt -r requirements/test.txt
         pip install -r requirements/extra.txt
         pip install .
         pip list
@@ -95,7 +91,7 @@ jobs:
       run: |
         echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         python -m pip install --upgrade pip wheel setuptools
-        python -m pip install -r requirements.txt
+        python -m pip install -r requirements/default.txt -r requirements/test.txt
         python -m pip install --global-option=build_ext `
                               --global-option="-IC:\Program Files\Graphviz\include" `
                               --global-option="-LC:\Program Files\Graphviz\lib" `
@@ -113,7 +109,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos]
-        python-version: [3.7, 3.8, 3.9]
+        python-version: ['3.8', '3.9', '3.10']
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -124,7 +120,7 @@ jobs:
     - name: Install packages
       run: |
         pip install --upgrade pip wheel setuptools
-        pip install --pre -r requirements.txt
+        pip install --pre -r requirements/default.txt -r requirements/test.txt
         pip install .
         pip list
 

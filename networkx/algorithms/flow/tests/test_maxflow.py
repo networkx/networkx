@@ -19,7 +19,7 @@ flow_funcs = [
 ]
 max_min_funcs = [nx.maximum_flow, nx.minimum_cut]
 flow_value_funcs = [nx.maximum_flow_value, nx.minimum_cut_value]
-interface_funcs = sum([max_min_funcs, flow_value_funcs], [])
+interface_funcs = max_min_funcs + flow_value_funcs
 all_funcs = sum([flow_funcs, interface_funcs], [])
 
 

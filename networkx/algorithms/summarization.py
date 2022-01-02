@@ -174,7 +174,7 @@ def dedensify(G, threshold, prefix=None, copy=True):
 
     degrees = G.in_degree if G.is_directed() else G.degree
     # Group nodes based on degree threshold
-    high_degree_nodes = set([n for n, d in degrees if d > threshold])
+    high_degree_nodes = {n for n, d in degrees if d > threshold}
     low_degree_nodes = G.nodes() - high_degree_nodes
 
     auxillary = {}
@@ -262,7 +262,7 @@ def _snap_build_graph(
     node_label_lookup = dict()
     for index, group_id in enumerate(groups):
         group_set = groups[group_id]
-        supernode = "%s%s" % (prefix, index)
+        supernode = f"{prefix}{index}"
         node_label_lookup[group_id] = supernode
         supernode_attributes = {
             attr: G.nodes[next(iter(group_set))][attr] for attr in node_attributes
@@ -354,12 +354,7 @@ def _snap_eligible_group(G, groups, group_lookup, edge_types):
     return None, neighbor_info
 
 
-def _snap_split(
-    groups,
-    neighbor_info,
-    group_lookup,
-    group_id,
-):
+def _snap_split(groups, neighbor_info, group_lookup, group_id):
     """
     Splits a group based on edge types and updates the groups accordingly
 

@@ -78,28 +78,12 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
     if p <= 0 or p >= 1:
         return nx.gnp_random_graph(n, p, seed=seed, directed=directed)
 
-    w = -1
     lp = math.log(1.0 - p)
 
     if directed:
         G = nx.DiGraph(G)
-        # Nodes in graph are from 0,n-1 (start with v as the first node index).
-        v = 0
-        while v < n:
-            lr = math.log(1.0 - seed.random())
-            w = w + 1 + int(lr / lp)
-            if v == w:  # avoid self loops
-                w = w + 1
-            while v < n <= w:
-                w = w - n
-                v = v + 1
-                if v == w:  # avoid self loops
-                    w = w + 1
-            if v < n:
-                G.add_edge(v, w)
-    else:
-        # Nodes in graph are from 0,n-1 (start with v as the second node index).
         v = 1
+        w = -1
         while v < n:
             lr = math.log(1.0 - seed.random())
             w = w + 1 + int(lr / lp)
@@ -107,7 +91,19 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
                 w = w - v
                 v = v + 1
             if v < n:
-                G.add_edge(v, w)
+                G.add_edge(w, v)
+
+    # Nodes in graph are from 0,n-1 (start with v as the second node index).
+    v = 1
+    w = -1
+    while v < n:
+        lr = math.log(1.0 - seed.random())
+        w = w + 1 + int(lr / lp)
+        while w >= v and v < n:
+            w = w - v
+            v = v + 1
+        if v < n:
+            G.add_edge(v, w)
     return G
 
 
@@ -210,7 +206,7 @@ def dense_gnm_random_graph(n, m, seed=None):
     .. [1] Donald E. Knuth, The Art of Computer Programming,
         Volume 2/Seminumerical algorithms, Third Edition, Addison-Wesley, 1997.
     """
-    mmax = n * (n - 1) / 2
+    mmax = n * (n - 1) // 2
     if m >= mmax:
         G = complete_graph(n)
     else:

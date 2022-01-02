@@ -5,7 +5,6 @@ from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
 from networkx.algorithms.centrality.flow_matrix import (
     CGInverseLaplacian,
     FullInverseLaplacian,
-    laplacian_sparse_matrix,
     SuperLUInverseLaplacian,
 )
 
@@ -82,9 +81,8 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
     betweenness = dict.fromkeys(H, 0.0)  # b[v]=0 for v in H
     n = H.number_of_nodes()
-    L = laplacian_sparse_matrix(
-        H, nodelist=range(n), weight=weight, dtype=dtype, format="csc"
-    )
+    L = nx.laplacian_matrix(H, nodelist=range(n), weight=weight).asformat("csc")
+    L = L.astype(dtype)
     C2 = solvername[solver](L, width=1, dtype=dtype)  # initialize solver
     for v in H:
         col = C2.get_row(v)

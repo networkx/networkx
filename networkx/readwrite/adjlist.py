@@ -193,19 +193,18 @@ def parse_adjlist(
         if nodetype is not None:
             try:
                 u = nodetype(u)
-            except BaseException as e:
+            except BaseException as err:
                 raise TypeError(
                     f"Failed to convert node ({u}) to type " f"{nodetype}"
-                ) from e
+                ) from err
         G.add_node(u)
         if nodetype is not None:
             try:
                 vlist = list(map(nodetype, vlist))
-            except BaseException as e:
+            except BaseException as err:
                 raise TypeError(
-                    f"Failed to convert nodes ({','.join(vlist)}) "
-                    f"to type {nodetype}"
-                ) from e
+                    f"Failed to convert nodes ({','.join(vlist)}) to type {nodetype}"
+                ) from err
         G.add_edges_from([(u, v) for v in vlist])
     return G
 

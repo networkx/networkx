@@ -213,7 +213,7 @@ class _AntiGraph(nx.Graph):
     def single_edge_dict(self):
         return self.all_edge_dict
 
-    edge_attr_dict_factory = single_edge_dict
+    edge_attr_dict_factory = single_edge_dict  # type: ignore
 
     def __getitem__(self, n):
         """Returns a dict of neighbors of node n in the dense graph.
@@ -240,8 +240,8 @@ class _AntiGraph(nx.Graph):
         """
         try:
             return iter(set(self._adj) - set(self._adj[n]) - {n})
-        except KeyError as e:
-            raise NetworkXError(f"The node {n} is not in the graph.") from e
+        except KeyError as err:
+            raise NetworkXError(f"The node {n} is not in the graph.") from err
 
     class AntiAtlasView(Mapping):
         """An adjacency inner dict for AntiGraph"""

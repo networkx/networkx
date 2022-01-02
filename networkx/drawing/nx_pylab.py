@@ -124,7 +124,7 @@ def draw(G, pos=None, ax=None, **kwds):
     return
 
 
-def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
+def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
     r"""Draw the graph G using Matplotlib.
 
     Draw the graph with Matplotlib with options for node positions,
@@ -142,7 +142,12 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
         See :py:mod:`networkx.drawing.layout` for functions that
         compute node positions.
 
-    arrows : bool (default=True)
+    arrows : bool or None, optional (default=None)
+        If `None`, directed graphs draw arrowheads with
+        `~matplotlib.patches.FancyArrowPatch`, while undirected graphs draw edges
+        via `~matplotlib.collections.LineCollection` for speed.
+        If `True`, draw arrowheads with FancyArrowPatches (bendable and stylish).
+        If `False`, draw edges using LineCollection (linear and fast).
         For directed graphs, if True draw arrowheads.
         Note: Arrows will be the same color as edges.
 
@@ -150,10 +155,11 @@ def draw_networkx(G, pos=None, arrows=True, with_labels=True, **kwds):
         For directed graphs, choose the style of the arrowsheads.
         See `matplotlib.patches.ArrowStyle` for more options.
 
-    arrowsize : int (default=10)
+    arrowsize : int or list (default=10)
         For directed graphs, choose the size of the arrow head's length and
-        width. See `matplotlib.patches.FancyArrowPatch` for attribute
-        `mutation_scale` for more info.
+        width. A list of values can be passed in to assign a different size for arrow head's length and width.
+        See `matplotlib.patches.FancyArrowPatch` for attribute `mutation_scale`
+        for more info.
 
     with_labels :  bool (default=True)
         Set to True to draw labels on the nodes.
@@ -447,8 +453,8 @@ def draw_networkx_nodes(
 
     try:
         xy = np.asarray([pos[v] for v in nodelist])
-    except KeyError as e:
-        raise nx.NetworkXError(f"Node {e} has no position.") from e
+    except KeyError as err:
+        raise nx.NetworkXError(f"Node {err} has no position.") from err
 
     if isinstance(alpha, Iterable):
         node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
@@ -535,9 +541,15 @@ def draw_networkx_edges(
         floats from 0-1. If numeric values are specified they will be
         mapped to colors using the edge_cmap and edge_vmin,edge_vmax parameters.
 
-    style : string (default=solid line)
+    style : string or array of strings (default='solid')
         Edge line style e.g.: '-', '--', '-.', ':'
         or words like 'solid' or 'dashed'.
+        Can be a single style or a sequence of styles with the same
+        length as the edge list.
+        If less styles than edges are given the styles will cycle.
+        If more styles than edges are given the styles will be used sequentially
+        and not be exhausted.
+        Also, `(offset, onoffseq)` tuples can be used as style instead of a strings.
         (See `matplotlib.patches.FancyArrowPatch`: `linestyle`)
 
     alpha : float or None (default=None)
@@ -715,7 +727,6 @@ def draw_networkx_edges(
             linewidths=width,
             antialiaseds=(1,),
             linestyle=style,
-            transOffset=ax.transData,
             alpha=alpha,
         )
         edge_collection.set_cmap(edge_cmap)
@@ -739,7 +750,12 @@ def draw_networkx_edges(
 
         # Draw arrows with `matplotlib.patches.FancyarrowPatch`
         arrow_collection = []
-        mutation_scale = arrowsize  # scale factor of arrow head
+
+        if isinstance(arrowsize, list):
+            if len(arrowsize) != len(edge_pos):
+                raise ValueError("arrowsize should have the same length as edgelist")
+        else:
+            mutation_scale = arrowsize  # scale factor of arrow head
 
         base_connection_style = mpl.patches.ConnectionStyle(connectionstyle)
 
@@ -787,6 +803,11 @@ def draw_networkx_edges(
             x2, y2 = dst
             shrink_source = 0  # space from source to tail
             shrink_target = 0  # space from  head to target
+
+            if isinstance(arrowsize, list):
+                # Scale each factor of each arrow based on arrowsize list
+                mutation_scale = arrowsize[i]
+
             if np.iterable(node_size):  # many node sizes
                 source, target = edgelist[i][:2]
                 source_node_size = node_size[nodelist.index(source)]
@@ -817,6 +838,18 @@ def draw_networkx_edges(
             else:
                 line_width = width
 
+            if (
+                np.iterable(style)
+                and not isinstance(style, str)
+                and not isinstance(style, tuple)
+            ):
+                if len(style) == len(edge_pos):
+                    linestyle = style[i]
+                else:  # Cycle through styles
+                    linestyle = style[i % len(style)]
+            else:
+                linestyle = style
+
             arrow = mpl.patches.FancyArrowPatch(
                 (x1, y1),
                 (x2, y2),
@@ -827,7 +860,7 @@ def draw_networkx_edges(
                 color=arrow_color,
                 linewidth=line_width,
                 connectionstyle=_connectionstyle,
-                linestyle=style,
+                linestyle=linestyle,
                 zorder=1,
             )  # arrows go behind nodes
 
@@ -847,10 +880,10 @@ def draw_networkx_edges(
     # Draw the edges
     if use_linecollection:
         edge_viz_obj = _draw_networkx_edges_line_collection()
-        # Make sure selfloop edges are also drawn.
-        edgelist = list(nx.selfloop_edges(G))
-        if edgelist:
-            edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
+        # Make sure selfloop edges are also drawn
+        selfloops_to_draw = [loop for loop in nx.selfloop_edges(G) if loop in edgelist]
+        if selfloops_to_draw:
+            edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in selfloops_to_draw])
             arrowstyle = "-"
             _draw_networkx_edges_fancy_arrow_patch()
     else:

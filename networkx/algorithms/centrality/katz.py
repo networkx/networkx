@@ -1,5 +1,5 @@
 """Katz centrality."""
-from math import sqrt
+import math
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -157,12 +157,12 @@ def katz_centrality(
 
     try:
         b = dict.fromkeys(G, float(beta))
-    except (TypeError, ValueError, AttributeError) as e:
+    except (TypeError, ValueError, AttributeError) as err:
         b = beta
         if set(beta) != set(G):
             raise nx.NetworkXError(
                 "beta dictionary " "must have a value for every node"
-            ) from e
+            ) from err
 
     # make up to max_iter iterations
     for i in range(max_iter):
@@ -176,12 +176,12 @@ def katz_centrality(
             x[n] = alpha * x[n] + b[n]
 
         # check convergence
-        err = sum([abs(x[n] - xlast[n]) for n in x])
-        if err < nnodes * tol:
+        error = sum(abs(x[n] - xlast[n]) for n in x)
+        if error < nnodes * tol:
             if normalized:
                 # normalize vector
                 try:
-                    s = 1.0 / sqrt(sum(v ** 2 for v in x.values()))
+                    s = 1.0 / math.hypot(*x.values())
                 # this should never be zero?
                 except ZeroDivisionError:
                     s = 1.0
@@ -298,7 +298,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     ----------
     .. [1] Mark E. J. Newman:
        Networks: An Introduction.
-       Oxford University Press, USA, 2010, p. 720.
+       Oxford University Press, USA, 2010, p. 173.
     .. [2] Leo Katz:
        A New Status Index Derived from Sociometric Index.
        Psychometrika 18(1):39–43, 1953
@@ -319,8 +319,8 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
         nodelist = list(G)
         try:
             b = np.ones((len(nodelist), 1)) * float(beta)
-        except (TypeError, ValueError, AttributeError) as e:
-            raise nx.NetworkXError("beta must be a number") from e
+        except (TypeError, ValueError, AttributeError) as err:
+            raise nx.NetworkXError("beta must be a number") from err
 
     A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = A.shape[0]

@@ -40,19 +40,30 @@ def descendants(G, source):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-        A directed graph
+    G : NetworkX Graph
     source : node in `G`
 
     Returns
     -------
     set()
         The descendants of `source` in `G`
+
+    Raises
+    ------
+    NetworkXError
+        If node `source` is not in `G`.
+
+    Examples
+    --------
+    >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
+    >>> sorted(list(nx.descendants(DG, 2)))
+    [3, 4]
+
+    See also
+    --------
+    ancestors
     """
-    if not G.has_node(source):
-        raise nx.NetworkXError(f"The node {source} is not in the graph.")
-    des = {n for n, d in nx.shortest_path_length(G, source=source).items()}
-    return des - {source}
+    return {child for parent, child in nx.bfs_edges(G, source)}
 
 
 def ancestors(G, source):
@@ -60,19 +71,30 @@ def ancestors(G, source):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-        A directed graph
+    G : NetworkX Graph
     source : node in `G`
 
     Returns
     -------
     set()
-        The ancestors of source in G
+        The ancestors of `source` in `G`
+
+    Raises
+    ------
+    NetworkXError
+        If node `source` is not in `G`.
+
+    Examples
+    --------
+    >>> DG = nx.path_graph(5, create_using=nx.DiGraph)
+    >>> sorted(list(nx.ancestors(DG, 2)))
+    [0, 1]
+
+    See also
+    --------
+    descendants
     """
-    if not G.has_node(source):
-        raise nx.NetworkXError(f"The node {source} is not in the graph.")
-    anc = {n for n, d in nx.shortest_path_length(G, target=source).items()}
-    return anc - {source}
+    return {child for parent, child in nx.bfs_edges(G, source, reverse=True)}
 
 
 def has_cycle(G):
@@ -98,6 +120,30 @@ def is_directed_acyclic_graph(G):
     -------
     bool
         True if `G` is a DAG, False otherwise
+
+    Examples
+    --------
+    Undirected graph::
+
+        >>> G = nx.Graph([(1, 2), (2, 3)])
+        >>> nx.is_directed_acyclic_graph(G)
+        False
+
+    Directed graph with cycle::
+
+        >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
+        >>> nx.is_directed_acyclic_graph(G)
+        False
+
+    Directed acyclic graph::
+
+        >>> G = nx.DiGraph([(1, 2), (2, 3)])
+        >>> nx.is_directed_acyclic_graph(G)
+        True
+
+    See also
+    --------
+    topological_sort
     """
     return G.is_directed() and not has_cycle(G)
 
@@ -166,8 +212,8 @@ def topological_generations(G):
             for child in G.neighbors(node):
                 try:
                     indegree_map[child] -= len(G[node][child]) if multigraph else 1
-                except KeyError as e:
-                    raise RuntimeError("Graph changed during iteration") from e
+                except KeyError as err:
+                    raise RuntimeError("Graph changed during iteration") from err
                 if indegree_map[child] == 0:
                     zero_indegree.append(child)
                     del indegree_map[child]
@@ -264,10 +310,10 @@ def lexicographical_topological_sort(G, key=None):
         This function maps nodes to keys with which to resolve ambiguities in
         the sort order.  Defaults to the identity function.
 
-    Returns
-    -------
-    iterable
-        An iterable of node names in lexicographical topological sort order.
+    Yields
+    ------
+    nodes
+        Yields the nodes in lexicographical topological sort order.
 
     Raises
     ------
@@ -282,6 +328,14 @@ def lexicographical_topological_sort(G, key=None):
 
     RuntimeError
         If `G` is changed while the returned iterator is being processed.
+
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(2, 1), (2, 5), (1, 3), (1, 4), (5, 4)])
+    >>> list(nx.lexicographical_topological_sort(DG))
+    [2, 1, 3, 5, 4]
+    >>> list(nx.lexicographical_topological_sort(DG, key=lambda x: -x))
+    [2, 5, 1, 4, 3]
 
     Notes
     -----
@@ -324,8 +378,8 @@ def lexicographical_topological_sort(G, key=None):
         for _, child in G.edges(node):
             try:
                 indegree_map[child] -= 1
-            except KeyError as e:
-                raise RuntimeError("Graph changed during iteration") from e
+            except KeyError as err:
+                raise RuntimeError("Graph changed during iteration") from err
             if indegree_map[child] == 0:
                 heapq.heappush(zero_indegree, create_tuple(child))
                 del indegree_map[child]
@@ -350,10 +404,10 @@ def all_topological_sorts(G):
     G : NetworkX DiGraph
         A directed graph
 
-    Returns
-    -------
-    generator
-        All topological sorts of the digraph G
+    Yields
+    ------
+    topological_sort_order : list
+        a list of nodes in `G`, representing one of the topological sort orders
 
     Raises
     ------
@@ -477,6 +531,38 @@ def is_aperiodic(G):
     NetworkXError
         If `G` is not directed
 
+    Examples
+    --------
+    A graph consisting of one cycle, the length of which is 2. Therefore ``k = 2``
+    divides the length of every cycle in the graph and thus the graph
+    is *not aperiodic*::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 1)])
+        >>> nx.is_aperiodic(DG)
+        False
+
+    A graph consisting of two cycles: one of length 2 and the other of length 3.
+    The cycle lengths are coprime, so there is no single value of k where ``k > 1``
+    that divides each cycle length and therefore the graph is *aperiodic*::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 3), (3, 1), (1, 4), (4, 1)])
+        >>> nx.is_aperiodic(DG)
+        True
+
+    A graph consisting of two cycles: one of length 2 and the other of length 4.
+    The lengths of the cycles share a common factor ``k = 2``, and therefore
+    the graph is *not aperiodic*::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 1), (3, 4), (4, 5), (5, 6), (6, 3)])
+        >>> nx.is_aperiodic(DG)
+        False
+
+    An acyclic graph, therefore the graph is *not aperiodic*::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+        >>> nx.is_aperiodic(DG)
+        False
+
     Notes
     -----
     This uses the method outlined in [1]_, which runs in $O(m)$ time
@@ -515,9 +601,8 @@ def is_aperiodic(G):
         return g == 1 and nx.is_aperiodic(G.subgraph(set(G) - set(levels)))
 
 
-@not_implemented_for("undirected")
 def transitive_closure(G, reflexive=False):
-    """Returns transitive closure of a directed graph
+    """Returns transitive closure of a graph
 
     The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
     for all v, w in V there is an edge (v, w) in E+ if and only if there
@@ -531,8 +616,8 @@ def transitive_closure(G, reflexive=False):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-        A directed graph
+    G : NetworkX Graph
+        A directed/undirected graph/multigraph.
     reflexive : Bool or None, optional (default: False)
         Determines when cycles create self-loops in the Transitive Closure.
         If True, trivial cycles (length 0) create self-loops. The result
@@ -542,38 +627,68 @@ def transitive_closure(G, reflexive=False):
 
     Returns
     -------
-    NetworkX DiGraph
+    NetworkX graph
         The transitive closure of `G`
 
     Raises
     ------
-    NetworkXNotImplemented
-        If `G` is not directed
+    NetworkXError
+        If `reflexive` not in `{None, True, False}`
+
+    Examples
+    --------
+    The treatment of trivial (i.e. length 0) cycles is controlled by the
+    `reflexive` parameter.
+
+    Trivial (i.e. length 0) cycles do not create self-loops when
+    ``reflexive=False`` (the default)::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+        >>> TC = nx.transitive_closure(DG, reflexive=False)
+        >>> TC.edges()
+        OutEdgeView([(1, 2), (1, 3), (2, 3)])
+
+    However, nontrivial (i.e. length greater then 0) cycles create self-loops
+    when ``reflexive=False`` (the default)::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
+        >>> TC = nx.transitive_closure(DG, reflexive=False)
+        >>> TC.edges()
+        OutEdgeView([(1, 2), (1, 3), (1, 1), (2, 3), (2, 1), (2, 2), (3, 1), (3, 2), (3, 3)])
+
+    Trivial cycles (length 0) create self-loops when ``reflexive=True``::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+        >>> TC = nx.transitive_closure(DG, reflexive=True)
+        >>> TC.edges()
+        OutEdgeView([(1, 2), (1, 1), (1, 3), (2, 3), (2, 2), (3, 3)])
+
+    And the third option is not to create self-loops at all when ``reflexive=None``::
+
+        >>> DG = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
+        >>> TC = nx.transitive_closure(DG, reflexive=None)
+        >>> TC.edges()
+        OutEdgeView([(1, 2), (1, 3), (2, 3), (2, 1), (3, 1), (3, 2)])
 
     References
     ----------
-    .. [1] http://www.ics.uci.edu/~eppstein/PADS/PartialOrder.py
-
-    TODO this function applies to all directed graphs and is probably misplaced
-         here in dag.py
+    .. [1] https://www.ics.uci.edu/~eppstein/PADS/PartialOrder.py
     """
-    if reflexive is None:
-        TC = G.copy()
-        for v in G:
-            edges = ((v, u) for u in nx.dfs_preorder_nodes(G, v) if v != u)
-            TC.add_edges_from(edges)
-        return TC
-    if reflexive is True:
-        TC = G.copy()
-        for v in G:
-            edges = ((v, u) for u in nx.dfs_preorder_nodes(G, v))
-            TC.add_edges_from(edges)
-        return TC
-    # reflexive is False
     TC = G.copy()
+
+    if reflexive not in {None, True, False}:
+        raise nx.NetworkXError("Incorrect value for the parameter `reflexive`")
+
     for v in G:
-        edges = ((v, w) for u, w in nx.edge_dfs(G, v))
-        TC.add_edges_from(edges)
+        if reflexive is None:
+            TC.add_edges_from((v, u) for u in nx.descendants(G, v) if u not in TC[v])
+        elif reflexive is True:
+            TC.add_edges_from(
+                (v, u) for u in nx.descendants(G, v) | {v} if u not in TC[v]
+            )
+        elif reflexive is False:
+            TC.add_edges_from((v, e[1]) for e in nx.edge_bfs(G, v) if e[1] not in TC[v])
+
     return TC
 
 
@@ -607,6 +722,13 @@ def transitive_closure_dag(G, topo_order=None):
         If `G` is not directed
     NetworkXUnfeasible
         If `G` has a cycle
+
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(1, 2), (2, 3)])
+    >>> TC = nx.transitive_closure_dag(DG)
+    >>> TC.edges()
+    OutEdgeView([(1, 2), (1, 3), (2, 3)])
 
     Notes
     -----
@@ -713,9 +835,10 @@ def antichains(G, topo_order=None):
     topo_order: list or tuple, optional
         A topological order for G (if None, the function will compute one)
 
-    Returns
-    -------
-    generator object
+    Yields
+    ------
+    antichain : list
+        a list of nodes in `G` representing an antichain
 
     Raises
     ------
@@ -724,6 +847,12 @@ def antichains(G, topo_order=None):
 
     NetworkXUnfeasible
         If `G` contains a cycle
+
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(1, 2), (1, 3)])
+    >>> list(nx.antichains(DG))
+    [[], [3], [2], [2, 3], [1]]
 
     Notes
     -----
@@ -788,6 +917,16 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     NetworkXNotImplemented
         If `G` is not directed
 
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(0, 1, {'cost':1}), (1, 2, {'cost':1}), (0, 2, {'cost':42})])
+    >>> list(nx.all_simple_paths(DG, 0, 2))
+    [[0, 1, 2], [0, 2]]
+    >>> nx.dag_longest_path(DG)
+    [0, 1, 2]
+    >>> nx.dag_longest_path(DG, weight="cost")
+    [0, 2]
+
     See also
     --------
     dag_longest_path_length
@@ -847,6 +986,16 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
     ------
     NetworkXNotImplemented
         If `G` is not directed
+
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(0, 1, {'cost':1}), (1, 2, {'cost':1}), (0, 2, {'cost':42})])
+    >>> list(nx.all_simple_paths(DG, 0, 2))
+    [[0, 1, 2], [0, 2]]
+    >>> nx.dag_longest_path_length(DG)
+    2
+    >>> nx.dag_longest_path_length(DG, weight="cost")
+    42
 
     See also
     --------

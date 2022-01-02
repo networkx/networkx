@@ -208,10 +208,7 @@ class TestPageRankScipy(TestPageRank):
         assert nx.pagerank_scipy(G) == {}
 
 
-@pytest.mark.parametrize(
-    "pagerank_alg",
-    (nx.pagerank_numpy, nx.pagerank_scipy),
-)
+@pytest.mark.parametrize("pagerank_alg", (nx.pagerank_numpy, nx.pagerank_scipy))
 def test_deprecation_warnings(pagerank_alg):
     """Make sure deprecation warnings are raised.
 

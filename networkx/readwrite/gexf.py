@@ -1,5 +1,10 @@
 """Read and write graphs in GEXF format.
 
+.. warning::
+    This parser uses the standard xml library present in Python, which is
+    insecure - see :doc:`library/xml` for additional information.
+    Only parse GEFX files you trust.
+
 GEXF (Graph Exchange XML Format) is a language for describing complex
 network structures, their associated data and dynamics.
 
@@ -960,8 +965,8 @@ class GEXFReader(GEXF):
                 key = a.get("for")  # for is required
                 try:  # should be in our gexf_keys dictionary
                     title = gexf_keys[key]["title"]
-                except KeyError as e:
-                    raise nx.NetworkXError(f"No attribute defined for={key}.") from e
+                except KeyError as err:
+                    raise nx.NetworkXError(f"No attribute defined for={key}.") from err
                 atype = gexf_keys[key]["type"]
                 value = a.get("value")
                 if atype == "boolean":
@@ -1031,10 +1036,10 @@ def relabel_gexf_graph(G):
     # build mapping of node labels, do some error checking
     try:
         mapping = [(u, G.nodes[u]["label"]) for u in G]
-    except KeyError as e:
+    except KeyError as err:
         raise nx.NetworkXError(
             "Failed to relabel nodes: missing node labels found. Use relabel=False."
-        ) from e
+        ) from err
     x, y = zip(*mapping)
     if len(set(y)) != len(G):
         raise nx.NetworkXError(

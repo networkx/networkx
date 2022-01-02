@@ -7,7 +7,7 @@ General guidelines for writing good tests:
 - doctests always assume ``import networkx as nx`` so don't add that
 - prefer pytest fixtures over classes with setup methods.
 - use the ``@pytest.mark.parametrize``  decorator
-- use ``pytest.importskip`` for numpy, scipy, pandas, and matplotlib b/c of PyPy.
+- use ``pytest.importorskip`` for numpy, scipy, pandas, and matplotlib b/c of PyPy.
   and add the module to the relevant entries below.
 
 """
@@ -40,6 +40,12 @@ def pytest_collection_modifyitems(config, items):
 # TODO: The warnings below need to be dealt with, but for now we silence them.
 @pytest.fixture(autouse=True)
 def set_warnings():
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="k_nearest_neighbors"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="numeric_mixing_matrix"
+    )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message=r"Ordered.* is deprecated"
     )
@@ -170,6 +176,11 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="preserve_random_state"
     )
+    warnings.filterwarnings(
+        "ignore",
+        category=FutureWarning,
+        message="google_matrix will return an np.ndarray instead of a np.matrix",
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -241,6 +252,7 @@ except ImportError:
 collect_ignore = []
 
 needs_numpy = [
+    "algorithms/approximation/traveling_salesman.py",
     "algorithms/centrality/current_flow_closeness.py",
     "algorithms/node_classification/__init__.py",
     "algorithms/non_randomness.py",
@@ -250,6 +262,7 @@ needs_numpy = [
     "utils/misc.py",
 ]
 needs_scipy = [
+    "algorithms/approximation/traveling_salesman.py",
     "algorithms/assortativity/correlation.py",
     "algorithms/assortativity/mixing.py",
     "algorithms/assortativity/pairs.py",
@@ -264,6 +277,7 @@ needs_scipy = [
     "algorithms/communicability_alg.py",
     "algorithms/link_analysis/hits_alg.py",
     "algorithms/link_analysis/pagerank_alg.py",
+    "algorithms/node_classification/__init__.py",
     "algorithms/node_classification/hmn.py",
     "algorithms/node_classification/lgc.py",
     "algorithms/similarity.py",
@@ -272,6 +286,7 @@ needs_scipy = [
     "generators/spectral_graph_forge.py",
     "linalg/algebraicconnectivity.py",
     "linalg/attrmatrix.py",
+    "linalg/bethehessianmatrix.py",
     "linalg/graphmatrix.py",
     "linalg/modularitymatrix.py",
     "linalg/spectrum.py",

@@ -251,8 +251,8 @@ def eccentricity(G, v=None, sp=None):
             try:
                 length = sp[n]
                 L = len(length)
-            except TypeError as e:
-                raise nx.NetworkXError('Format of "sp" is invalid.') from e
+            except TypeError as err:
+                raise nx.NetworkXError('Format of "sp" is invalid.') from err
         if L != order:
             if G.is_directed():
                 msg = (
@@ -461,29 +461,6 @@ def barycenter(G, weight=None, attr=None, sp=None):
     return barycenter_vertices
 
 
-def _laplacian_submatrix(node, mat, node_list):
-    """Removes row/col from a sparse matrix and returns the submatrix"""
-    j = node_list.index(node)
-    n = list(range(len(node_list)))
-    n.pop(j)
-
-    if mat.shape[0] != mat.shape[1]:
-        raise nx.NetworkXError("Matrix must be square")
-    elif len(node_list) != mat.shape[0]:
-        msg = "Node list length does not match matrix dimentions"
-        raise nx.NetworkXError(msg)
-
-    mat = mat.tocsr()
-    mat = mat[n, :]
-
-    mat = mat.tocsc()
-    mat = mat[:, n]
-
-    node_list.pop(j)
-
-    return mat, node_list
-
-
 def _count_lu_permutations(perm_array):
     """Counts the number of permutations in SuperLU perm_c or perm_r"""
     perm_cnt = 0
@@ -575,15 +552,19 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 
     # Using determinants to compute the effective resistance is more memory
     # efficent than directly calculating the psuedo-inverse
-    L = nx.laplacian_matrix(G, node_list, weight=weight)
-
-    Lsub_a, node_list_a = _laplacian_submatrix(nodeA, L.copy(), node_list[:])
-    Lsub_ab, node_list_ab = _laplacian_submatrix(nodeB, Lsub_a.copy(), node_list_a[:])
+    L = nx.laplacian_matrix(G, node_list, weight=weight).asformat("csc")
+    indices = list(range(L.shape[0]))
+    # w/ nodeA removed
+    indices.remove(node_list.index(nodeA))
+    L_a = L[indices, :][:, indices]
+    # Both nodeA and nodeB removed
+    indices.remove(node_list.index(nodeB))
+    L_ab = L[indices, :][:, indices]
 
     # Factorize Laplacian submatrixes and extract diagonals
     # Order the diagonals to minimize the likelihood over overflows
     # during computing the determinant
-    lu_a = sp.sparse.linalg.splu(Lsub_a, options=dict(SymmetricMode=True))
+    lu_a = sp.sparse.linalg.splu(L_a, options=dict(SymmetricMode=True))
     LdiagA = lu_a.U.diagonal()
     LdiagA_s = np.product(np.sign(LdiagA)) * np.product(lu_a.L.diagonal())
     LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_r)
@@ -591,7 +572,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     LdiagA = np.absolute(LdiagA)
     LdiagA = np.sort(LdiagA)
 
-    lu_ab = sp.sparse.linalg.splu(Lsub_ab, options=dict(SymmetricMode=True))
+    lu_ab = sp.sparse.linalg.splu(L_ab, options=dict(SymmetricMode=True))
     LdiagAB = lu_ab.U.diagonal()
     LdiagAB_s = np.product(np.sign(LdiagAB)) * np.product(lu_ab.L.diagonal())
     LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_r)
@@ -599,7 +580,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     LdiagAB = np.absolute(LdiagAB)
     LdiagAB = np.sort(LdiagAB)
 
-    # Calculate the ratio of determinant, rd = det(Lsub_ab)/det(Lsub_a)
+    # Calculate the ratio of determinant, rd = det(L_ab)/det(L_a)
     Ldet = np.product(np.divide(np.append(LdiagAB, [1]), LdiagA))
     rd = Ldet * LdiagAB_s / LdiagA_s
 

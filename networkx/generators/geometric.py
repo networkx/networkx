@@ -3,19 +3,19 @@
 
 from bisect import bisect_left
 from itertools import accumulate, combinations, product
-from math import sqrt
 import math
 
 import networkx as nx
 from networkx.utils import nodes_or_number, py_random_state
 
 __all__ = [
+    "geometric_edges",
     "geographical_threshold_graph",
-    "waxman_graph",
     "navigable_small_world_graph",
     "random_geometric_graph",
     "soft_random_geometric_graph",
     "thresholded_random_geometric_graph",
+    "waxman_graph",
 ]
 
 
@@ -25,15 +25,65 @@ def euclidean(x, y):
     Each of ``x`` and ``y`` can be any iterable of numbers. The
     iterables must be of the same length.
 
+     .. deprecated:: 2.7
     """
-    return sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
+    import warnings
+
+    msg = (
+        "euclidean is deprecated and will be removed in 3.0."
+        "Use math.dist(x, y) instead."
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
+    return math.dist(x, y)
 
 
 def geometric_edges(G, radius, p):
-    """Returns edge list of node pairs within `radius` of each other
+    """Returns edge list of node pairs within `radius` of each other.
 
+    Parameters
+    ----------
+    G : networkx graph
+        The graph from which to generate the edge list. The nodes in `G` should
+        have an attribute ``pos`` corresponding to the node position, which is
+        used to compute the distance to other nodes.
+    radius : scalar
+        The distance threshold. Edges are included in the edge list if the
+        distance between the two nodes is less than `radius`.
+    p : scalar
+        The `Minkowski distance metric
+        <https://en.wikipedia.org/wiki/Minkowski_distance>`_ use to compute
+        distances.
+
+    Returns
+    -------
+    edges : list
+        List of edges whose distances are less than `radius`
+
+    Notes
+    -----
     Radius uses Minkowski distance metric `p`.
-    If scipy available, use scipy cKDTree to speed computation.
+    If scipy is available, `scipy.spatial.cKDTree` is used to speed computation.
+
+    Examples
+    --------
+    Create a graph with nodes that have a "pos" attribute representing 2D
+    coordinates.
+
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([
+    ...     (0, {"pos": (0, 0)}),
+    ...     (1, {"pos": (3, 0)}),
+    ...     (2, {"pos": (8, 0)}),
+    ... ])
+    >>> p = 2  # Euclidean distance
+    >>> nx.geometric_edges(G, radius=1, p=p)
+    []
+    >>> nx.geometric_edges(G, radius=4, p=p)
+    [(0, 1)]
+    >>> nx.geometric_edges(G, radius=6, p=p)
+    [(0, 1), (1, 2)]
+    >>> nx.geometric_edges(G, radius=9, p=p)
+    [(0, 1), (0, 2), (1, 2)]
     """
     nodes_pos = G.nodes(data="pos")
     try:
@@ -290,11 +340,13 @@ def geographical_threshold_graph(
 
     .. math::
 
-       (w_u + w_v)h(r) \ge \theta
+       (w_u + w_v)p_{dist}(r) \ge \theta
 
-    where `r` is the distance between `u` and `v`, h(r) is a probability of
-    connection as a function of `r`, and :math:`\theta` as the threshold
-    parameter. h(r) corresponds to the p_dist parameter.
+    where `r` is the distance between `u` and `v`, `p_dist` is any function of
+    `r`, and :math:`\theta` as the threshold parameter. `p_dist` is used to
+    give weight to the distance between nodes when deciding whether or not
+    they should be connected. The larger `p_dist` is, the more prone nodes
+    separated by `r` are to be connected, and vice versa.
 
     Parameters
     ----------
@@ -326,17 +378,17 @@ def geographical_threshold_graph(
 
         .. _metric: https://en.wikipedia.org/wiki/Metric_%28mathematics%29
     p_dist : function, optional
-        A probability density function computing the probability of
-        connecting two nodes that are of distance, r, computed by metric.
-        The probability density function, `p_dist`, must
-        be any function that takes the metric value as input
-        and outputs a single probability value between 0-1.
-        The scipy.stats package has many probability distribution functions
-        implemented and tools for custom probability distribution
-        definitions [2], and passing the .pdf method of scipy.stats
-        distributions can be used here. If the probability
-        function, `p_dist`, is not supplied, the default exponential function
-        :math: `r^{-2}` is used.
+        Any function used to give weight to the distance between nodes when
+        deciding whether or not they should be connected. `p_dist` was
+        originally conceived as a probability density function giving the
+        probability of connecting two nodes that are of metric distance `r`
+        apart. The implementation here allows for more arbitrary definitions
+        of `p_dist` that do not need to correspond to valid probability
+        density functions. The :mod:`scipy.stats` package has many
+        probability density functions implemented and tools for custom
+        probability density definitions, and passing the ``.pdf`` method of
+        scipy.stats distributions can be used here. If ``p_dist=None``
+        (the default), the exponential function :math:`r^{-2}` is used.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -405,7 +457,7 @@ def geographical_threshold_graph(
         pos = {v: [seed.random() for i in range(dim)] for v in nodes}
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
-        metric = euclidean
+        metric = math.dist
     nx.set_node_attributes(G, weight, "weight")
     nx.set_node_attributes(G, pos, "pos")
 
@@ -526,7 +578,7 @@ def waxman_graph(
     nx.set_node_attributes(G, pos, "pos")
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
-        metric = euclidean
+        metric = math.dist
     # If the maximum distance L is not specified (that is, we are in the
     # Waxman-1 model), then find the maximum distance between any pair
     # of nodes.

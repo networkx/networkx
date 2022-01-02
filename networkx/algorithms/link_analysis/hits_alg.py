@@ -129,7 +129,7 @@ def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
         for n in a:
             a[n] *= s
         # check convergence, l1 norm
-        err = sum([abs(h[n] - hlast[n]) for n in h])
+        err = sum(abs(h[n] - hlast[n]) for n in h)
         if err < tol:
             break
     else:
@@ -224,7 +224,7 @@ def hits_numpy(G, normalized=True):
     `hits_numpy` maps the eigenvector corresponding to the maximum eigenvalue
     of the respective matrices to the nodes in `G`:
 
-    >>> hubs, authority = hits_numpy(G)
+    >>> hubs, authority = nx.hits_numpy(G)
 
     Notes
     -----

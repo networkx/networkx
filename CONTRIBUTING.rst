@@ -45,7 +45,7 @@ Development Workflow
          # Activate it
          source networkx-dev/bin/activate
          # Install main development and runtime dependencies of networkx
-         pip install -r requirements.txt -r requirements/developer.txt
+         pip install -r requirements/default.txt -r requirements/test.txt -r requirements/developer.txt
          #
          # (Optional) Install pygraphviz, pydot, and gdal packages
          # These packages require that you have your system properly configured
@@ -74,7 +74,7 @@ Development Workflow
          # conda install -c conda-forge --file requirements/extra.txt
          #
          # Install networkx from source
-         pip install -e . --no-deps
+         pip install -e .
          # Test your installation
          PYTHONPATH=. pytest networkx
 
@@ -390,3 +390,14 @@ Bugs
 ----
 
 Please `report bugs on GitHub <https://github.com/networkx/networkx/issues>`_.
+
+Policies
+--------
+
+All interactions with the project are subject to the
+:doc:`NetworkX code of conduct <code_of_conduct>`.
+
+We also follow these policies:
+
+* :doc:`NetworkX deprecation policy <deprecations>`
+* :doc:`Python version support <nep-0029-deprecation_policy>`
