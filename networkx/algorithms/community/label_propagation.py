@@ -12,7 +12,7 @@ __all__ = ["label_propagation_communities", "asyn_lpa_communities"]
 
 
 @py_random_state(2)
-def asyn_lpa_communities(G, weight=None, seed=None):
+def asyn_lpa_communities(G, weight=None, seed=None, max_iter=float("inf")):
     """Returns communities in `G` as detected by asynchronous label
     propagation.
 
@@ -46,6 +46,9 @@ def asyn_lpa_communities(G, weight=None, seed=None):
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
 
+    max_iter: integer or float('inf') (default).  Maximum number of iteration
+        to go through before the algorithm exits.
+
     Returns
     -------
     communities : iterable
@@ -61,10 +64,11 @@ def asyn_lpa_communities(G, weight=None, seed=None):
            linear time algorithm to detect community structures in large-scale
            networks." Physical Review E 76.3 (2007): 036106.
     """
-
     labels = {n: i for i, n in enumerate(G)}
     cont = True
-    while cont:
+    c = 0
+    while cont and c < max_iter:
+        c += 1
         cont = False
         nodes = list(G)
         seed.shuffle(nodes)
