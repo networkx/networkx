@@ -181,6 +181,39 @@ def set_warnings():
         category=FutureWarning,
         message="google_matrix will return an np.ndarray instead of a np.matrix",
     )
+    ### Future warnings from scipy.sparse array transition
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="biadjacency_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="bethe_hessian_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="incidence_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="laplacian_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="normalized_laplacian_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="directed_laplacian_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=FutureWarning,
+        message="directed_combinatorial_laplacian_matrix",
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="modularity_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="directed_modularity_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="adjacency_matrix"
+    )
 
 
 @pytest.fixture(autouse=True)

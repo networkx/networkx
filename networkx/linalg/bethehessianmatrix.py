@@ -35,7 +35,7 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
 
     Returns
     -------
-    H : Numpy matrix
+    H : scipy.sparse.csr_matrix
       The Bethe Hessian matrix of G, with paramter r.
 
     Examples
@@ -73,4 +73,12 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, m, n, format="csr"))
     # TODO: Rm csr_array wrapper when eye array creation becomes available
     I = sp.sparse.csr_array(sp.sparse.eye(m, n, format="csr"))
-    return (r ** 2 - 1) * I - r * A + D
+    import warnings
+
+    warnings.warn(
+        "bethe_hessian_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0",
+        FutureWarning,
+        stacklevel=2,
+    )
+    # TODO: Remove the csr_matrix wrapper in NetworkX 3.0
+    return sp.sparse.csr_matrix((r ** 2 - 1) * I - r * A + D)

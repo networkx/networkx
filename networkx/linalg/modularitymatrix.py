@@ -70,7 +70,16 @@ def modularity_matrix(G, nodelist=None, weight=None):
     m = k.sum() * 0.5
     # Expected adjacency matrix
     X = np.outer(k, k) / (2 * m)
-    return A - X
+
+    import warnings
+
+    warnings.warn(
+        "modularity_matrix will return a numpy array instead of a matrix in NetworkX 3.0.",
+        FutureWarning,
+        stacklevel=2,
+    )
+    # TODO: rm np.asmatrix for networkx 3.0
+    return np.asmatrix(A - X)
 
 
 @not_implemented_for("undirected")
@@ -159,4 +168,13 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
     m = k_in.sum()
     # Expected adjacency matrix
     X = np.outer(k_out, k_in) / m
-    return A - X
+
+    import warnings
+
+    warnings.warn(
+        "directed_modularity_matrix will return a numpy array instead of a matrix in NetworkX 3.0.",
+        FutureWarning,
+        stacklevel=2,
+    )
+    # TODO: rm np.asmatrix for networkx 3.0
+    return np.asmatrix(A - X)
