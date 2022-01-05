@@ -64,31 +64,38 @@ def asyn_lpa_communities(G, weight=None, seed=None):
 
     labels = {n: i for i, n in enumerate(G)}
     cont = True
+
     while cont:
         cont = False
         nodes = list(G)
         seed.shuffle(nodes)
-        # Calculate the label for each node
+
         for node in nodes:
-            if len(G[node]) < 1:
+            adj = G[node]
+            if not adj:
                 continue
 
-            # Get label frequencies. Depending on the order they are processed
-            # in some nodes with be in t and others in t-1, making the
-            # algorithm asynchronous.
+            # Get label frequencies among adjacent nodes.
+            # Depending on the order they are processed in,
+            # some nodes will be in iteration t and others in t-1,
+            # making the algorithm asynchronous.
             label_freq = Counter()
-            for v in G[node]:
-                label_freq.update(
-                    {labels[v]: G.edges[node, v][weight] if weight else 1}
-                )
-            # Choose the label with the highest frecuency. If more than 1 label
-            # has the highest frecuency choose one randomly.
+            if weight is None:
+                label_freq.update([labels[v] for v in adj])
+            else:
+                for v in adj:
+                    label_freq.update({labels[v]: G.edges[node, v][weight]})
+
+            # Get the labels that appear with maximum frequency.
             max_freq = max(label_freq.values())
             best_labels = [
                 label for label, freq in label_freq.items() if freq == max_freq
             ]
 
-            # Continue until all nodes have a majority label
+            # If the node does not have one of the maximum frequency labels,
+            # randomly choose one of them and update the node's label.
+            # Continue the iteration as long as at least one node
+            # doesn't have a maximum frequency label.
             if labels[node] not in best_labels:
                 labels[node] = seed.choice(best_labels)
                 cont = True
