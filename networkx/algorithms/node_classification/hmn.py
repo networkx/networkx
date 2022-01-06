@@ -60,7 +60,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
-    X = nx.to_scipy_sparse_matrix(G)  # adjacency matrix
+    X = nx.to_scipy_sparse_array(G)  # adjacency matrix
     labels, label_dict = _get_label_info(G, label_name)
 
     if labels.shape[0] == 0:

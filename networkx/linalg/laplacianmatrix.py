@@ -51,7 +51,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
     # TODO: rm csr_array wrapper when spdiags can produce arrays
     D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, m, n, format="csr"))
@@ -124,7 +124,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
     diags = A.sum(axis=1)
     # TODO: rm csr_array wrapper when spdiags can produce arrays
@@ -388,7 +388,7 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
         else:
             walk_type = "pagerank"
 
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
     n, m = A.shape
     if walk_type in ["random", "lazy"]:
         # TODO: Rm csr_array wrapper when spdiags array creation becomes available

@@ -65,7 +65,7 @@ def modularity_matrix(G, nodelist=None, weight=None):
 
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     k = A.sum(axis=1)
     m = k.sum() * 0.5
     # Expected adjacency matrix
@@ -162,7 +162,7 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
 
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     k_in = A.sum(axis=0)
     k_out = A.sum(axis=1)
     m = k_in.sum()

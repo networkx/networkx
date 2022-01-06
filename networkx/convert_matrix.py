@@ -36,6 +36,7 @@ __all__ = [
     "to_pandas_edgelist",
     "to_numpy_recarray",
     "from_scipy_sparse_matrix",
+    "to_scipy_sparse_array",
     "to_scipy_sparse_matrix",
     "from_numpy_array",
     "to_numpy_array",
@@ -768,8 +769,8 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     return M.view(np.recarray)
 
 
-def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format="csr"):
-    """Returns the graph adjacency matrix as a SciPy sparse matrix.
+def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format="csr"):
+    """Returns the graph adjacency matrix as a SciPy sparse array.
 
     Parameters
     ----------
@@ -795,7 +796,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
 
     Returns
     -------
-    M : SciPy sparse matrix
+    A : SciPy sparse array
        Graph adjacency matrix.
 
     Notes
@@ -819,11 +820,11 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
     resulting Scipy sparse matrix can be modified as follows:
 
     >>> G = nx.Graph([(1, 1)])
-    >>> A = nx.to_scipy_sparse_matrix(G)
+    >>> A = nx.to_scipy_sparse_array(G)
     >>> print(A.todense())
     [[1]]
     >>> A.setdiag(A.diagonal() * 2)
-    >>> print(A.todense())
+    >>> print(A.toarray())
     [[2]]
 
     Examples
@@ -837,8 +838,8 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
     0
     >>> G.add_edge(2, 2)
     1
-    >>> S = nx.to_scipy_sparse_matrix(G, nodelist=[0, 1, 2])
-    >>> print(S.todense())
+    >>> S = nx.to_scipy_sparse_array(G, nodelist=[0, 1, 2])
+    >>> print(S.toarray())
     [[0 2 0]
      [1 0 0]
      [0 0 4]]
@@ -881,7 +882,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
         row, col, data = [], [], []
 
     if G.is_directed():
-        M = sp.sparse.coo_array((data, (row, col)), shape=(nlen, nlen), dtype=dtype)
+        A = sp.sparse.coo_array((data, (row, col)), shape=(nlen, nlen), dtype=dtype)
     else:
         # symmetrize matrix
         d = data + data
@@ -895,11 +896,114 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
             d += diag_data
             r += diag_index
             c += diag_index
-        M = sp.sparse.coo_array((d, (r, c)), shape=(nlen, nlen), dtype=dtype)
+        A = sp.sparse.coo_array((d, (r, c)), shape=(nlen, nlen), dtype=dtype)
     try:
-        return M.asformat(format)
+        return A.asformat(format)
     except ValueError as err:
         raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from err
+
+
+def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format="csr"):
+    """Returns the graph adjacency matrix as a SciPy sparse matrix.
+
+    .. deprecated:: 2.7
+
+       NetworkX will use the array interface to scipy.sparse in NetworkX 3.0.
+       Consider `to_scipy_sparse_array` instead.
+
+    Parameters
+    ----------
+    G : graph
+        The NetworkX graph used to construct the sparse matrix.
+
+    nodelist : list, optional
+       The rows and columns are ordered according to the nodes in `nodelist`.
+       If `nodelist` is None, then the ordering is produced by G.nodes().
+
+    dtype : NumPy data-type, optional
+        A valid NumPy dtype used to initialize the array. If None, then the
+        NumPy default is used.
+
+    weight : string or None   optional (default='weight')
+        The edge attribute that holds the numerical value used for
+        the edge weight.  If None then all edge weights are 1.
+
+    format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok'}
+        The type of the matrix to be returned (default 'csr').  For
+        some algorithms different implementations of sparse matrices
+        can perform better.  See [1]_ for details.
+
+    Returns
+    -------
+    A : SciPy sparse matrix
+       Graph adjacency matrix.
+
+    Notes
+    -----
+    For directed graphs, matrix entry i,j corresponds to an edge from i to j.
+
+    The matrix entries are populated using the edge attribute held in
+    parameter weight. When an edge does not have that attribute, the
+    value of the entry is 1.
+
+    For multiple edges the matrix values are the sums of the edge weights.
+
+    When `nodelist` does not contain every node in `G`, the adjacency matrix
+    is built from the subgraph of `G` that is induced by the nodes in
+    `nodelist`.
+
+    The convention used for self-loop edges in graphs is to assign the
+    diagonal matrix entry value to the weight attribute of the edge
+    (or the number 1 if the edge has no weight attribute).  If the
+    alternate convention of doubling the edge weight is desired the
+    resulting Scipy sparse matrix can be modified as follows:
+
+    >>> G = nx.Graph([(1, 1)])
+    >>> A = nx.to_scipy_sparse_matrix(G)
+    >>> print(A.todense())
+    [[1]]
+    >>> A.setdiag(A.diagonal() * 2)
+    >>> print(A.todense())
+    [[2]]
+
+    Examples
+    --------
+    >>> G = nx.MultiDiGraph()
+    >>> G.add_edge(0, 1, weight=2)
+    0
+    >>> G.add_edge(1, 0)
+    0
+    >>> G.add_edge(2, 2, weight=3)
+    0
+    >>> G.add_edge(2, 2)
+    1
+    >>> S = nx.to_scipy_sparse_array(G, nodelist=[0, 1, 2])
+    >>> print(S.todense())
+    [[0 2 0]
+     [1 0 0]
+     [0 0 4]]
+
+    References
+    ----------
+    .. [1] Scipy Dev. References, "Sparse Matrices",
+       https://docs.scipy.org/doc/scipy/reference/sparse.html
+    """
+    import scipy as sp
+    import scipy.sparse
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\nThe scipy.sparse array containers will be used instead of matrices\n"
+            "in Networkx 3.0. Consider using `to_scipy_sparse_array` instead."
+        ),
+        FutureWarning,
+        stacklevel=2,
+    )
+    A = to_scipy_sparse_array(
+        G, nodelist=nodelist, dtype=dtype, weight=weight, format=format
+    )
+    return sp.sparse.csr_matrix(A).asformat(format)
 
 
 def _csr_gen_triples(A):

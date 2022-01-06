@@ -363,7 +363,7 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
 
     if len(G) == 0:
         return {}, {}
-    A = nx.to_scipy_sparse_matrix(G, nodelist=list(G))
+    A = nx.to_scipy_sparse_array(G, nodelist=list(G))
     (n, m) = A.shape  # should be square
     ATA = A.T @ A  # authority matrix
     # choose fixed starting vector if not given

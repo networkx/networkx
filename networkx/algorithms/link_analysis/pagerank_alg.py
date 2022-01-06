@@ -468,7 +468,7 @@ def pagerank_scipy(
         return {}
 
     nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
     S = A.sum(axis=1)
     S[S != 0] = 1.0 / S[S != 0]
     # TODO: csr_array

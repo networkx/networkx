@@ -158,7 +158,7 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     See Also
     --------
     to_numpy_array
-    to_scipy_sparse_matrix
+    to_scipy_sparse_array
     to_dict_of_dicts
     adjacency_spectrum
     """
