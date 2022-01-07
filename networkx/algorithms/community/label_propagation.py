@@ -81,7 +81,7 @@ def asyn_lpa_communities(G, weight=None, seed=None):
             # making the algorithm asynchronous.
             label_freq = Counter()
             if weight is None:
-                label_freq.update([labels[v] for v in adj])
+                label_freq.update(map(labels.get, adj))
             else:
                 for v in adj:
                     label_freq.update({labels[v]: G.edges[node, v][weight]})
