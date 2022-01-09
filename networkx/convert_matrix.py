@@ -1181,44 +1181,16 @@ def to_numpy_array(
                     raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
             raise nx.NetworkXError("nodelist contains duplicates.")
 
-    undirected = not G.is_directed()
-    index = dict(zip(nodelist, range(nlen)))
+    A = np.full((nlen, nlen), fill_value=nonedge, order=order)
 
-    # Initially, we start with an array of nans.  Then we populate the array
-    # using data from the graph.  Afterwards, any leftover nans will be
-    # converted to the value of `nonedge`.  Note, we use nans initially,
-    # instead of zero, for two reasons:
-    #
-    #   1) It can be important to distinguish a real edge with the value 0
-    #      from a nonedge with the value 0.
-    #
-    #   2) When working with multi(di)graphs, we must combine the values of all
-    #      edges between any two nodes in some manner.  This often takes the
-    #      form of a sum, min, or max.  Using the value 0 for a nonedge would
-    #      have undesirable effects with min and max, but using nanmin and
-    #      nanmax with initially nan values is not problematic at all.
-    #
-    # That said, there are still some drawbacks to this approach. Namely, if
-    # a real edge is nan, then that value is a) not distinguishable from
-    # nonedges and b) is ignored by the default combinator (nansum, nanmin,
-    # nanmax) functions used for multi(di)graphs. If this becomes an issue,
-    # an alternative approach is to use masked arrays.  Initially, every
-    # element is masked and set to some `initial` value. As we populate the
-    # graph, elements are unmasked (automatically) when we combine the initial
-    # value with the values given by real edges.  At the end, we convert all
-    # masked values to `nonedge`. Using masked arrays fully addresses reason 1,
-    # but for reason 2, we would still have the issue with min and max if the
-    # initial values were 0.0.  Note: an initial value of +inf is appropriate
-    # for min, while an initial value of -inf is appropriate for max. When
-    # working with sum, an initial value of zero is appropriate. Ideally then,
-    # we'd want to allow users to specify both a value for nonedges and also
-    # an initial value.  For multi(di)graphs, the choice of the initial value
-    # will, in general, depend on the combinator function---sensible defaults
-    # can be provided.
+    u, v = np.array(G.edges()).T
+    wts = [w for _, _, w in G.edges(data=weight, default=1)]
+    A[u, v] = wts
+    if not G.is_directed():
+        A[v, u] = wts
 
     if G.is_multigraph():
         # Handle MultiGraphs and MultiDiGraphs
-        A = np.full((nlen, nlen), np.nan, order=order)
         # use numpy nan-aware operations
         operator = {sum: np.nansum, min: np.nanmin, max: np.nanmax}
         try:
@@ -1233,20 +1205,7 @@ def to_numpy_array(
                 A[i, j] = op([e_weight, A[i, j]])
                 if undirected:
                     A[j, i] = A[i, j]
-    else:
-        # Graph or DiGraph, this is much faster than above
-        A = np.full((nlen, nlen), np.nan, order=order)
-        for u, nbrdict in G.adjacency():
-            for v, d in nbrdict.items():
-                try:
-                    A[index[u], index[v]] = d.get(weight, 1)
-                except KeyError:
-                    # This occurs when there are fewer desired nodes than
-                    # there are nodes in the graph: len(nodelist) < len(G)
-                    pass
 
-    A[np.isnan(A)] = nonedge
-    A = np.asarray(A, dtype=dtype)
     return A
 
 
