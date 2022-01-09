@@ -498,12 +498,6 @@ def test_to_numpy_recarray_bad_nodelist(recarray_nodelist_test_graph, nodelist, 
         A = nx.to_numpy_recarray(recarray_nodelist_test_graph, nodelist=nodelist)
 
 
-def test_to_numpy_array_multigraph_weight():
-    G = nx.MultiGraph()
-    with pytest.raises(ValueError, match="must be sum, min, or max"):
-        nx.to_numpy_array(G, multigraph_weight=np.median)
-
-
 @pytest.fixture
 def multigraph_test_graph():
     G = nx.MultiGraph()
