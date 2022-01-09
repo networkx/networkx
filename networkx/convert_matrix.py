@@ -24,6 +24,7 @@ nx_agraph, nx_pydot
 
 import itertools
 import warnings
+from collections import defaultdict
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -1181,30 +1182,27 @@ def to_numpy_array(
                     raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
             raise nx.NetworkXError("nodelist contains duplicates.")
 
-    A = np.full((nlen, nlen), fill_value=nonedge, order=order)
+    A = np.full((nlen, nlen), fill_value=nonedge, dtype=dtype, order=order)
 
-    u, v = np.array(G.edges()).T
-    wts = [w for _, _, w in G.edges(data=weight, default=1)]
+    # Corner case: empty node list
+    if not nodelist:
+        return A
+
+    G = nx.convert_node_labels_to_integers(G.subgraph(nodelist))
+
+    if G.is_multigraph():
+        d = defaultdict(list)
+        for u, v, wt in G.edges(data="weight", default=1.0):
+            d[(u, v)].append(wt)
+        u, v = np.array(list(d.keys())).T  # indices
+        wts = [multigraph_weight(ws) for ws in d.values()]  # reduced weights
+    else:
+        u, v = np.array(G.edges()).T  # indices
+        wts = [w for _, _, w in G.edges(data=weight, default=1.0)]  # weights
+
     A[u, v] = wts
     if not G.is_directed():
         A[v, u] = wts
-
-    if G.is_multigraph():
-        # Handle MultiGraphs and MultiDiGraphs
-        # use numpy nan-aware operations
-        operator = {sum: np.nansum, min: np.nanmin, max: np.nanmax}
-        try:
-            op = operator[multigraph_weight]
-        except Exception as err:
-            raise ValueError("multigraph_weight must be sum, min, or max") from err
-
-        for u, v, attrs in G.edges(data=True):
-            if (u in nodeset) and (v in nodeset):
-                i, j = index[u], index[v]
-                e_weight = attrs.get(weight, 1)
-                A[i, j] = op([e_weight, A[i, j]])
-                if undirected:
-                    A[j, i] = A[i, j]
 
     return A
 
