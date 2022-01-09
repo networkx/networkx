@@ -1171,16 +1171,14 @@ def to_numpy_array(
 
     if nodelist is None:
         nodelist = list(G)
-        nodeset = G
-        nlen = len(G)
-    else:
-        nlen = len(nodelist)
-        nodeset = set(G.nbunch_iter(nodelist))
-        if nlen != len(nodeset):
-            for n in nodelist:
-                if n not in G:
-                    raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
-            raise nx.NetworkXError("nodelist contains duplicates.")
+    nlen = len(nodelist)
+
+    # Input validation
+    nodeset = set(nodelist)
+    if nodeset - set(G):
+        raise nx.NetworkXError(f"Node {nodeset - set(G)} in nodelist is not in G")
+    if len(nodeset) < nlen:
+        raise nx.NetworkXError("nodelist contains duplicates.")
 
     A = np.full((nlen, nlen), fill_value=nonedge, dtype=dtype, order=order)
 
@@ -1188,21 +1186,22 @@ def to_numpy_array(
     if nlen == 0 or G.number_of_edges() == 0:
         return A
 
-    G = nx.convert_node_labels_to_integers(G.subgraph(nodelist))
+    # Map nodes to row/col in matrix
+    idx = dict(zip(nodelist, range(nlen)))
+    G = G.subgraph(nodelist)
 
-    if G.is_multigraph():
-        d = defaultdict(list)
-        for u, v, wt in G.edges(data="weight", default=1.0):
-            d[(u, v)].append(wt)
-        u, v = np.array(list(d.keys())).T  # indices
-        wts = [multigraph_weight(ws) for ws in d.values()]  # reduced weights
-    else:
-        u, v = np.array(G.edges()).T  # indices
-        wts = [w for _, _, w in G.edges(data=weight, default=1.0)]  # weights
+    # TODO: Add separate code paths for graph/multigraphs to speed up
+    # non-multigraph case
+    d = defaultdict(list)
+    for u, v, wt in G.edges(data=weight, default=1.0):
+        d[(idx[u], idx[v])].append(wt)
+    i, j = np.array(list(d.keys())).T  # indices
+    wts = [multigraph_weight(ws) for ws in d.values()]  # reduced weights
 
-    A[u, v] = wts
+    # Set array values with advanced indexing
+    A[i, j] = wts
     if not G.is_directed():
-        A[v, u] = wts
+        A[j, i] = wts
 
     return A
 
