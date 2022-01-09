@@ -1184,8 +1184,8 @@ def to_numpy_array(
 
     A = np.full((nlen, nlen), fill_value=nonedge, dtype=dtype, order=order)
 
-    # Corner case: empty node list
-    if not nodelist:
+    # Corner cases: empty nodelist or graph without any edges
+    if nlen == 0 or G.number_of_edges() == 0:
         return A
 
     G = nx.convert_node_labels_to_integers(G.subgraph(nodelist))
