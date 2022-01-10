@@ -1176,7 +1176,7 @@ def to_numpy_array(
     # Input validation
     nodeset = set(nodelist)
     if nodeset - set(G):
-        raise nx.NetworkXError(f"Node {nodeset - set(G)} in nodelist is not in G")
+        raise nx.NetworkXError(f"Nodes {nodeset - set(G)} in nodelist is not in G")
     if len(nodeset) < nlen:
         raise nx.NetworkXError("nodelist contains duplicates.")
 
