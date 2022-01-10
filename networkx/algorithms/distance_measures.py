@@ -306,9 +306,9 @@ def harmonic_diameter(G, sp=None):
     """Returns the harmonic diameter of G.
 
     The harmonic diameter of a graph is the harmonic mean of the distances
-    between all pairs of distinct vertices. Graph that are not strongly
+    between all pairs of distinct vertices. Graphs that are not strongly
     connected have infinite diameter and mean distance, making such
-    measures not useful. Restricting the diameter or mean distance to the
+    measures not useful. Restricting the diameter or mean distance to
     finite distances yields paradoxical values (e.g., a perfect match
     would have diameter one). The harmonic mean handles gracefully
     infinite distances (e.g., a perfect match has harmonic diameter equal
