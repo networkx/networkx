@@ -7,6 +7,7 @@ __all__ = [
     "extrema_bounding",
     "eccentricity",
     "diameter",
+    "harmonic_diameter",
     "radius",
     "periphery",
     "center",
@@ -298,6 +299,57 @@ def diameter(G, e=None, usebounds=False):
     if e is None:
         e = eccentricity(G)
     return max(e.values())
+
+
+def harmonic_diameter(G, sp=None):
+    """Returns the harmonic diameter of G.
+
+    The harmonic diameter of a graph is the harmonic mean of the distances
+    between all pairs of distinct vertices. Graph that are not strongly
+    connected have infinite diameter and mean distance, making such
+    measures not useful. Restricting the diameter or mean distance to the
+    finite distances yields paradoxical values (e.g., a perfect match
+    would have diameter one). The harmonic mean handles gracefully
+    infinite distances (e.g., a perfect match has harmonic diameter equal
+    to the number of vertices minus one), making it possible to assign a
+    meaningful value to all graphs.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       A graph
+
+    sp : dict of dicts, optional
+       All pairs shortest path lengths as a dictionary of dictionaries
+
+    Returns
+    -------
+    hd : float
+       The harmonic diameter of G.
+
+    References
+    ----------
+    .. [1] Massimo Marchiori and Vito Latora, "Harmony in the small-world"
+           *Physica A: Statistical Mechanics and Its Applications* 285, 539-546.
+           <https://doi.org/10.1016/S0378-4371(00)00311-3>
+    """
+    order = G.order()
+
+    sum_invd = 0
+    for n in G:
+        if sp is None:
+            length = nx.single_source_shortest_path_length(G, n)
+        else:
+            try:
+                length = sp[n]
+                L = len(length)
+            except TypeError as err:
+                raise nx.NetworkXError('Format of "sp" is invalid.') from err
+
+       for d in length.values():
+            sum_invd += 1 / d
+
+    return order * (order - 1) / sum_invd
 
 
 def periphery(G, e=None, usebounds=False):
