@@ -331,7 +331,8 @@ def harmonic_diameter(G, sp=None):
     References
     ----------
     .. [1] Massimo Marchiori and Vito Latora, "Harmony in the small-world"
-           *Physica A: Statistical Mechanics and Its Applications* 285, 539-546.
+           *Physica A: Statistical Mechanics and Its Applications*
+           285, pages 539-546, 2000.
            <https://doi.org/10.1016/S0378-4371(00)00311-3>
     """
     order = G.order()
