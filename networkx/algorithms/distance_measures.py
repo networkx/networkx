@@ -1,6 +1,7 @@
 """Graph diameter, radius, eccentricity and other properties."""
 
 import networkx as nx
+import math
 from networkx.utils import not_implemented_for
 
 __all__ = [
@@ -346,10 +347,17 @@ def harmonic_diameter(G, sp=None):
             except TypeError as err:
                 raise nx.NetworkXError('Format of "sp" is invalid.') from err
 
-       for d in length.values():
-            sum_invd += 1 / d
+        for d in length.values():
+            # Note that this will skip the zero distance from n to itself,
+            # as it should be, but also zero-weight paths in weighted graphs.
+            if d != 0:
+                sum_invd += 1 / d
 
-    return order * (order - 1) / sum_invd
+    if sum_invd != 0:
+        return order * (order - 1) / sum_invd
+    if order > 1:
+        return math.inf
+    return math.nan
 
 
 def periphery(G, e=None, usebounds=False):
