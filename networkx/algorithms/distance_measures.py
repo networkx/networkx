@@ -303,7 +303,7 @@ def diameter(G, e=None, usebounds=False):
 
 
 def harmonic_diameter(G, sp=None):
-    """Returns the harmonic diameter of G.
+    """Returns the harmonic diameter of the graph G.
 
     The harmonic diameter of a graph is the harmonic mean of the distances
     between all pairs of distinct vertices. Graphs that are not strongly
@@ -321,18 +321,18 @@ def harmonic_diameter(G, sp=None):
        A graph
 
     sp : dict of dicts, optional
-       All pairs shortest path lengths as a dictionary of dictionaries
+       All-pairs shortest path lengths as a dictionary of dictionaries
 
     Returns
     -------
     hd : float
-       The harmonic diameter of G.
+       Harmonic diameter of graph
 
     References
     ----------
-    .. [1] Massimo Marchiori and Vito Latora, "Harmony in the small-world"
+    .. [1] Massimo Marchiori and Vito Latora, "Harmony in the small-world".
            *Physica A: Statistical Mechanics and Its Applications*
-           285, pages 539-546, 2000.
+           285(3-4), pages 539-546, 2000.
            <https://doi.org/10.1016/S0378-4371(00)00311-3>
     """
     order = G.order()
