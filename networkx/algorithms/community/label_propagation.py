@@ -71,20 +71,24 @@ def asyn_lpa_communities(G, weight=None, seed=None):
         seed.shuffle(nodes)
 
         for node in nodes:
-            adj = G[node]
-            if not adj:
+
+            if not G[node]:
                 continue
 
             # Get label frequencies among adjacent nodes.
             # Depending on the order they are processed in,
             # some nodes will be in iteration t and others in t-1,
             # making the algorithm asynchronous.
-            label_freq = Counter()
             if weight is None:
-                label_freq.update(map(labels.get, adj))
+                # initialising a Counter from an iterator of labels is
+                # faster for getting unweighted label frequencies
+                label_freq = Counter(map(labels.get, G[node]))
             else:
-                for v in adj:
-                    label_freq.update({labels[v]: G.edges[node, v][weight]})
+                # updating a defaultdict is substantially faster
+                # for getting weighted label frequencies
+                label_freq = defaultdict(float)
+                for _, v, wt in G.edges(node, data=weight, default=1):
+                    label_freq[labels[v]] += wt
 
             # Get the labels that appear with maximum frequency.
             max_freq = max(label_freq.values())
