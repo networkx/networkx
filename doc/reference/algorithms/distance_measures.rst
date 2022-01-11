@@ -9,6 +9,7 @@ Distance Measures
    barycenter
    center
    diameter
+   harmonic_diameter
    eccentricity
    extrema_bounding
    periphery
