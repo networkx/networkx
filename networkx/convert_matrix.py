@@ -1191,13 +1191,19 @@ def to_numpy_array(
     if len(nodelist) < len(G):
         G = G.subgraph(nodelist).copy()
 
-    # TODO: Add separate code paths for graph/multigraphs to speed up
-    # non-multigraph case
-    d = defaultdict(list)
-    for u, v, wt in G.edges(data=weight, default=1.0):
-        d[(idx[u], idx[v])].append(wt)
-    i, j = np.array(list(d.keys())).T  # indices
-    wts = [multigraph_weight(ws) for ws in d.values()]  # reduced weights
+    # Collect all edge weights and reduce with `multigraph_weights`
+    if G.is_multigraph():
+        d = defaultdict(list)
+        for u, v, wt in G.edges(data=weight, default=1.0):
+            d[(idx[u], idx[v])].append(wt)
+        i, j = np.array(list(d.keys())).T  # indices
+        wts = [multigraph_weight(ws) for ws in d.values()]  # reduced weights
+    else:
+        i, j, wts = [], [], []
+        for u, v, wt in G.edges(data=weight, default=1.0):
+            i.append(idx[u])
+            j.append(idx[v])
+            wts.append(wt)
 
     # Set array values with advanced indexing
     A[i, j] = wts
