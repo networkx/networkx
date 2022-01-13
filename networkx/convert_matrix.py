@@ -1188,7 +1188,8 @@ def to_numpy_array(
 
     # Map nodes to row/col in matrix
     idx = dict(zip(nodelist, range(nlen)))
-    G = G.subgraph(nodelist)
+    if len(nodelist) < len(G):
+        G = G.subgraph(nodelist).copy()
 
     # TODO: Add separate code paths for graph/multigraphs to speed up
     # non-multigraph case
