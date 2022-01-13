@@ -1085,12 +1085,10 @@ def to_numpy_array(
 
     nodelist : list, optional
         The rows and columns are ordered according to the nodes in `nodelist`.
-        If `nodelist` is None, then the ordering is produced by G.nodes().
+        If `nodelist` is ``None``, then the ordering is produced by ``G.nodes()``.
 
     dtype : NumPy data type, optional
-        A valid single NumPy data type used to initialize the array.
-        This must be a simple type such as int or numpy.float64 and
-        not a compound data type (see to_numpy_recarray)
+        A NumPy data type used to initialize the array.
         If None, then the NumPy default is used.
 
     order : {'C', 'F'}, optional
@@ -1098,20 +1096,22 @@ def to_numpy_array(
         (row- or column-wise) order in memory. If None, then the NumPy default
         is used.
 
-    multigraph_weight : {sum, min, max}, optional
-        An operator that determines how weights in multigraphs are handled.
-        The default is to sum the weights of the multiple edges.
+    multigraph_weight : callable, optional
+        An function that determines how weights in multigraphs are handled.
+        The function should accept a sequence of weights and return a single
+        value. The default is to sum the weights of the multiple edges.
 
     weight : string or None optional (default = 'weight')
         The edge attribute that holds the numerical value used for
         the edge weight. If an edge does not have that attribute, then the
         value 1 is used instead.
 
-    nonedge : float (default = 0.0)
+    nonedge : array_like (default = 0.0)
+        The value used to represent non-edges in the adjaceny matrix.
         The array values corresponding to nonedges are typically set to zero.
         However, this could be undesirable if there are array values
         corresponding to actual edges that also have the value zero. If so,
-        one might prefer nonedges to have some other value, such as nan.
+        one might prefer nonedges to have some other value, such as ``nan``.
 
     Returns
     -------
@@ -1124,9 +1124,9 @@ def to_numpy_array(
 
     Notes
     -----
-    For directed graphs, entry i,j corresponds to an edge from i to j.
+    For directed graphs, entry ``i, j`` corresponds to an edge from ``i`` to ``j``.
 
-    Entries in the adjacency matrix are assigned to the weight edge attribute.
+    Entries in the adjacency matrix are given by the `weight` edge attribute.
     When an edge does not have a weight attribute, the value of the entry is
     set to the number 1.  For multiple (parallel) edges, the values of the
     entries are determined by the `multigraph_weight` parameter. The default is
