@@ -214,11 +214,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=FutureWarning, message="adjacency_matrix"
     )
-    warnings.filterwarnings(
-        "ignore",
-        category=FutureWarning,
-        message="\n\nThe scipy.sparse array containers",
-    )
 
 
 @pytest.fixture(autouse=True)

@@ -907,11 +907,6 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
 def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format="csr"):
     """Returns the graph adjacency matrix as a SciPy sparse matrix.
 
-    .. deprecated:: 2.7
-
-       NetworkX will use the array interface to scipy.sparse in NetworkX 3.0.
-       Use `to_scipy_sparse_array` instead.
-
     Parameters
     ----------
     G : graph
@@ -991,16 +986,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
     """
     import scipy as sp
     import scipy.sparse
-    import warnings
 
-    warnings.warn(
-        (
-            "\n\nThe scipy.sparse array containers will be used instead of matrices\n"
-            "in Networkx 3.0. Consider using `to_scipy_sparse_array` instead."
-        ),
-        FutureWarning,
-        stacklevel=2,
-    )
     A = to_scipy_sparse_array(
         G, nodelist=nodelist, dtype=dtype, weight=weight, format=format
     )
@@ -1012,11 +998,6 @@ def from_scipy_sparse_matrix(
 ):
     """Creates a new graph from an adjacency matrix given as a SciPy sparse
     matrix.
-
-    .. deprecated:: 2.7
-
-       NetworkX will use the array interface to scipy.sparse in NetworkX 3.0.
-       Use `from_scipy_sparse_array` instead.
 
     Parameters
     ----------
@@ -1080,16 +1061,6 @@ def from_scipy_sparse_matrix(
     AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
 
     """
-    import warnings
-
-    warnings.warn(
-        (
-            "\n\nThe scipy.sparse array containers will be used instead of matrices\n"
-            "in Networkx 3.0. Use `from_scipy_sparse_array` instead."
-        ),
-        FutureWarning,
-        stacklevel=2,
-    )
     return from_scipy_sparse_array(
         A,
         parallel_edges=parallel_edges,
