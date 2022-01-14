@@ -34,7 +34,7 @@ class TestConvertScipy:
         return G
 
     def identity_conversion(self, G, A, create_using):
-        GG = nx.from_scipy_sparse_matrix(A, create_using=create_using)
+        GG = nx.from_scipy_sparse_array(A, create_using=create_using)
         assert nx.is_isomorphic(G, GG)
 
         GW = nx.to_networkx_graph(A, create_using=create_using)
@@ -66,7 +66,7 @@ class TestConvertScipy:
     def test_shape(self):
         "Conversion from non-square sparse array."
         A = sp.sparse.lil_array([[1, 2, 3], [4, 5, 6]])
-        pytest.raises(nx.NetworkXError, nx.from_scipy_sparse_matrix, A)
+        pytest.raises(nx.NetworkXError, nx.from_scipy_sparse_array, A)
 
     def test_identity_graph_matrix(self):
         "Conversion from graph to sparse matrix to graph."
@@ -211,8 +211,8 @@ class TestConvertScipy:
             M.toarray(), np.array([[0, 1, 0], [0, 0, 1], [0, 0, 0]])
         )
 
-    def test_from_scipy_sparse_matrix_parallel_edges(self):
-        """Tests that the :func:`networkx.from_scipy_sparse_matrix` function
+    def test_from_scipy_sparse_array_parallel_edges(self):
+        """Tests that the :func:`networkx.from_scipy_sparse_array` function
         interprets integer weights as the number of parallel edges when
         creating a multigraph.
 
@@ -224,11 +224,11 @@ class TestConvertScipy:
         edges = [(0, 0), (0, 1), (1, 0)]
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         expected.add_edge(1, 1, weight=2)
-        actual = nx.from_scipy_sparse_matrix(
+        actual = nx.from_scipy_sparse_array(
             A, parallel_edges=True, create_using=nx.DiGraph
         )
         assert graphs_equal(actual, expected)
-        actual = nx.from_scipy_sparse_matrix(
+        actual = nx.from_scipy_sparse_array(
             A, parallel_edges=False, create_using=nx.DiGraph
         )
         assert graphs_equal(actual, expected)
@@ -238,7 +238,7 @@ class TestConvertScipy:
         edges = [(0, 0), (0, 1), (1, 0), (1, 1), (1, 1)]
         expected = nx.MultiDiGraph()
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
-        actual = nx.from_scipy_sparse_matrix(
+        actual = nx.from_scipy_sparse_array(
             A, parallel_edges=True, create_using=nx.MultiDiGraph
         )
         assert graphs_equal(actual, expected)
@@ -246,7 +246,7 @@ class TestConvertScipy:
         expected.add_edges_from(set(edges), weight=1)
         # The sole self-loop (edge 0) on vertex 1 should have weight 2.
         expected[1][1][0]["weight"] = 2
-        actual = nx.from_scipy_sparse_matrix(
+        actual = nx.from_scipy_sparse_array(
             A, parallel_edges=False, create_using=nx.MultiDiGraph
         )
         assert graphs_equal(actual, expected)
@@ -254,18 +254,18 @@ class TestConvertScipy:
     def test_symmetric(self):
         """Tests that a symmetric matrix has edges added only once to an
         undirected multigraph when using
-        :func:`networkx.from_scipy_sparse_matrix`.
+        :func:`networkx.from_scipy_sparse_array`.
 
         """
         A = sp.sparse.csr_array([[0, 1], [1, 0]])
-        G = nx.from_scipy_sparse_matrix(A, create_using=nx.MultiGraph)
+        G = nx.from_scipy_sparse_array(A, create_using=nx.MultiGraph)
         expected = nx.MultiGraph()
         expected.add_edge(0, 1, weight=1)
         assert graphs_equal(G, expected)
 
 
 @pytest.mark.parametrize("sparse_format", ("csr", "csc", "dok"))
-def test_from_scipy_sparse_matrix_formats(sparse_format):
+def test_from_scipy_sparse_array_formats(sparse_format):
     """Test all formats supported by _generate_weighted_edges."""
     # trinode complete graph with non-uniform edge weights
     expected = nx.Graph()
@@ -280,4 +280,4 @@ def test_from_scipy_sparse_matrix_formats(sparse_format):
         ]
     )
     A = sp.sparse.coo_array([[0, 3, 2], [3, 0, 1], [2, 1, 0]]).asformat(sparse_format)
-    assert graphs_equal(expected, nx.from_scipy_sparse_matrix(A))
+    assert graphs_equal(expected, nx.from_scipy_sparse_array(A))
