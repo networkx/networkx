@@ -140,7 +140,8 @@ def _relabel_inplace(G, mapping):
             ) from err
     else:
         # non-overlapping label sets
-        nodes = old_labels
+        # not using old_labels as it modifies node order
+        nodes = mapping.keys()
 
     multigraph = G.is_multigraph()
     directed = G.is_directed()
