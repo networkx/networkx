@@ -124,9 +124,7 @@ def relabel_nodes(G, mapping, copy=True):
 
 
 def _relabel_inplace(G, mapping):
-    old_labels = set(mapping.keys())
-    new_labels = set(mapping.values())
-    if len(old_labels & new_labels) > 0:
+    if len(mapping.keys() & mapping.values()) > 0:
         # labels sets overlap
         # can we topological sort and still do the relabeling?
         D = nx.DiGraph(list(mapping.items()))
@@ -140,7 +138,6 @@ def _relabel_inplace(G, mapping):
             ) from err
     else:
         # non-overlapping label sets
-        # not using old_labels as it modifies node order
         nodes = mapping.keys()
 
     multigraph = G.is_multigraph()
