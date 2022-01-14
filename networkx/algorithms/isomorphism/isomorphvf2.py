@@ -669,7 +669,7 @@ class DiGraphMatcher(GraphMatcher):
         # For each predecessor n' of n in the partial mapping, the
         # corresponding node m' is a predecessor of m, and vice versa. Also,
         # the number of edges must be equal
-        if self.test != "mono":
+        if self.test != "mono" and self.test != "subgraph":
             for predecessor in self.G1.pred[G1_node]:
                 if predecessor in self.core_1:
                     if not (self.core_1[predecessor] in self.G2.pred[G2_node]):
@@ -699,7 +699,7 @@ class DiGraphMatcher(GraphMatcher):
         # For each successor n' of n in the partial mapping, the corresponding
         # node m' is a successor of m, and vice versa. Also, the number of
         # edges must be equal.
-        if self.test != "mono":
+        if self.test != "mono" and self.test != "subrgaph":
             for successor in self.G1[G1_node]:
                 if successor in self.core_1:
                     if not (self.core_1[successor] in self.G2[G2_node]):
@@ -799,45 +799,45 @@ class DiGraphMatcher(GraphMatcher):
                 if not (num1 >= num2):
                     return False
 
-            # Look ahead 2
+            # # Look ahead 2
 
-            # R_new
+            # # R_new
 
-            # The number of predecessors of n that are neither in the core_1 nor
-            # T_1^{in} nor T_1^{out} is equal to the number of predecessors of m
-            # that are neither in core_2 nor T_2^{in} nor T_2^{out}.
-            num1 = 0
-            for predecessor in self.G1.pred[G1_node]:
-                if (predecessor not in self.in_1) and (predecessor not in self.out_1):
-                    num1 += 1
-            num2 = 0
-            for predecessor in self.G2.pred[G2_node]:
-                if (predecessor not in self.in_2) and (predecessor not in self.out_2):
-                    num2 += 1
-            if self.test == "graph":
-                if not (num1 == num2):
-                    return False
-            else:  # self.test == 'subgraph'
-                if not (num1 >= num2):
-                    return False
+            # # The number of predecessors of n that are neither in the core_1 nor
+            # # T_1^{in} nor T_1^{out} is equal to the number of predecessors of m
+            # # that are neither in core_2 nor T_2^{in} nor T_2^{out}.
+            # num1 = 0
+            # for predecessor in self.G1.pred[G1_node]:
+            #     if (predecessor not in self.in_1) and (predecessor not in self.out_1):
+            #         num1 += 1
+            # num2 = 0
+            # for predecessor in self.G2.pred[G2_node]:
+            #     if (predecessor not in self.in_2) and (predecessor not in self.out_2):
+            #         num2 += 1
+            # if self.test == "graph":
+            #     if not (num1 == num2):
+            #         return False
+            # else:  # self.test == 'subgraph'
+            #     if not (num1 >= num2):
+            #         return False
 
-            # The number of successors of n that are neither in the core_1 nor
-            # T_1^{in} nor T_1^{out} is equal to the number of successors of m
-            # that are neither in core_2 nor T_2^{in} nor T_2^{out}.
-            num1 = 0
-            for successor in self.G1[G1_node]:
-                if (successor not in self.in_1) and (successor not in self.out_1):
-                    num1 += 1
-            num2 = 0
-            for successor in self.G2[G2_node]:
-                if (successor not in self.in_2) and (successor not in self.out_2):
-                    num2 += 1
-            if self.test == "graph":
-                if not (num1 == num2):
-                    return False
-            else:  # self.test == 'subgraph'
-                if not (num1 >= num2):
-                    return False
+            # # The number of successors of n that are neither in the core_1 nor
+            # # T_1^{in} nor T_1^{out} is equal to the number of successors of m
+            # # that are neither in core_2 nor T_2^{in} nor T_2^{out}.
+            # num1 = 0
+            # for successor in self.G1[G1_node]:
+            #     if (successor not in self.in_1) and (successor not in self.out_1):
+            #         num1 += 1
+            # num2 = 0
+            # for successor in self.G2[G2_node]:
+            #     if (successor not in self.in_2) and (successor not in self.out_2):
+            #         num2 += 1
+            # if self.test == "graph":
+            #     if not (num1 == num2):
+            #         return False
+            # else:  # self.test == 'subgraph'
+            #     if not (num1 >= num2):
+            #         return False
 
         # Otherwise, this node pair is syntactically feasible!
         return True
