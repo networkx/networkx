@@ -990,7 +990,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
     warnings.warn(
         (
             "\n\nThe scipy.sparse array containers will be used instead of matrices\n"
-            "in Networkx 3.0. Consider using `to_scipy_sparse_array` instead."
+            "in Networkx 3.0. Use `to_scipy_sparse_array` instead."
         ),
         DeprecationWarning,
         stacklevel=2,
