@@ -1192,7 +1192,11 @@ def draw_networkx_edge_labels(
 
 
 def draw_circular(G, **kwargs):
-    """Draw the graph G with a circular layout.
+    """Draw the graph `G` with a circular layout.
+
+    This is a convenience function equivalent to::
+
+        >>> nx.draw(G, pos=nx.circular_layout(G), **kwargs)
 
     Parameters
     ----------
@@ -1200,15 +1204,33 @@ def draw_circular(G, **kwargs):
         A networkx graph
 
     kwargs : optional keywords
-        See networkx.draw_networkx() for a description of optional keywords,
-        with the exception of the pos parameter which is not used by this
-        function.
+        See `draw_networkx` for a description of optional keywords.
+
+    Notes
+    -----
+    The layout is computed each time this function is called. For
+    repeated drawing it is much more efficient to call `circular_layout`
+    directly and reuse the result::
+
+        >>> G = nx.complete_graph(5)
+        >>> pos = nx.circular_layout(G)
+        >>> nx.draw(G, pos=pos)  # Draw the original graph
+        >>> # Draw a subgraph, reusing the same node positions
+        >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    See Also
+    --------
+    circular_layout
     """
     draw(G, circular_layout(G), **kwargs)
 
 
 def draw_kamada_kawai(G, **kwargs):
-    """Draw the graph G with a Kamada-Kawai force-directed layout.
+    """Draw the graph `G` with a Kamada-Kawai force-directed layout.
+
+    This is a convenience function equivalent to::
+
+        >>> nx.draw(G, pos=nx.kamada_kawai_layout(G), **kwargs)
 
     Parameters
     ----------
@@ -1216,15 +1238,33 @@ def draw_kamada_kawai(G, **kwargs):
         A networkx graph
 
     kwargs : optional keywords
-        See networkx.draw_networkx() for a description of optional keywords,
-        with the exception of the pos parameter which is not used by this
-        function.
+        See `draw_networkx` for a description of optional keywords.
+
+    Notes
+    -----
+    The layout is computed each time this function is called.
+    For repeated drawing it is much more efficient to call `kamada_kawai_layout`
+    directly and reuse the result::
+
+        >>> G = nx.complete_graph(5)
+        >>> pos = nx.kamada_kawai_layout(G)
+        >>> nx.draw(G, pos=pos)  # Draw the original graph
+        >>> # Draw a subgraph, reusing the same node positions
+        >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    See Also
+    --------
+    kamada_kawai_layout
     """
     draw(G, kamada_kawai_layout(G), **kwargs)
 
 
 def draw_random(G, **kwargs):
-    """Draw the graph G with a random layout.
+    """Draw the graph `G` with a random layout.
+
+    This is a convenience function equivalent to::
+
+        >>> nx.draw(G, pos=nx.random_layout(G), **kwargs)
 
     Parameters
     ----------
@@ -1232,20 +1272,36 @@ def draw_random(G, **kwargs):
         A networkx graph
 
     kwargs : optional keywords
-        See networkx.draw_networkx() for a description of optional keywords,
-        with the exception of the pos parameter which is not used by this
-        function.
+        See `draw_networkx` for a description of optional keywords.
+
+    Notes
+    -----
+    The layout is computed each time this function is called.
+    For repeated drawing it is much more efficient to call `random_layout`
+    directly and reuse the result::
+
+        >>> G = nx.complete_graph(5)
+        >>> pos = nx.random_layout(G)
+        >>> nx.draw(G, pos=pos)  # Draw the original graph
+        >>> # Draw a subgraph, reusing the same node positions
+        >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    See Also
+    --------
+    random_layout
     """
     draw(G, random_layout(G), **kwargs)
 
 
 def draw_spectral(G, **kwargs):
-    """Draw the graph G with a spectral 2D layout.
+    """Draw the graph `G` with a spectral 2D layout.
 
-    Using the unnormalized Laplacian, the layout shows possible clusters of
-    nodes which are an approximation of the ratio cut. The positions are the
-    entries of the second and third eigenvectors corresponding to the
-    ascending eigenvalues starting from the second one.
+    This is a convenience function equivalent to::
+
+        >>> nx.draw(G, pos=nx.spectral_layout(G), **kwargs)
+
+    For more information about how node positions are determined, see
+    `spectral_layout`.
 
     Parameters
     ----------
@@ -1253,15 +1309,33 @@ def draw_spectral(G, **kwargs):
         A networkx graph
 
     kwargs : optional keywords
-        See networkx.draw_networkx() for a description of optional keywords,
-        with the exception of the pos parameter which is not used by this
-        function.
+        See `draw_networkx` for a description of optional keywords.
+
+    Notes
+    -----
+    The layout is computed each time this function is called.
+    For repeated drawing it is much more efficient to call `spectral_layout`
+    directly and reuse the result::
+
+        >>> G = nx.complete_graph(5)
+        >>> pos = nx.spectral_layout(G)
+        >>> nx.draw(G, pos=pos)  # Draw the original graph
+        >>> # Draw a subgraph, reusing the same node positions
+        >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    See Also
+    --------
+    spectral_layout
     """
     draw(G, spectral_layout(G), **kwargs)
 
 
 def draw_spring(G, **kwargs):
-    """Draw the graph G with a spring layout.
+    """Draw the graph `G` with a spring layout.
+
+    This is a convenience function equivalent to::
+
+        >>> nx.draw(G, pos=nx.spring_layout(G), **kwargs)
 
     Parameters
     ----------
@@ -1269,9 +1343,27 @@ def draw_spring(G, **kwargs):
         A networkx graph
 
     kwargs : optional keywords
-        See networkx.draw_networkx() for a description of optional keywords,
-        with the exception of the pos parameter which is not used by this
-        function.
+        See `draw_networkx` for a description of optional keywords.
+
+    Notes
+    -----
+    `spring_layout` is also the default layout for `draw`, so this function
+    is equivalent to `draw`.
+
+    The layout is computed each time this function is called.
+    For repeated drawing it is much more efficient to call `spring_layout`
+    directly and reuse the result::
+
+        >>> G = nx.complete_graph(5)
+        >>> pos = nx.spring_layout(G)
+        >>> nx.draw(G, pos=pos)  # Draw the original graph
+        >>> # Draw a subgraph, reusing the same node positions
+        >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    See Also
+    --------
+    draw
+    spring_layout
     """
     draw(G, spring_layout(G), **kwargs)
 
@@ -1296,7 +1388,11 @@ def draw_shell(G, **kwargs):
 
 
 def draw_planar(G, **kwargs):
-    """Draw a planar networkx graph with planar layout.
+    """Draw a planar networkx graph `G` with planar layout.
+
+    This is a convenience function equivalent to::
+
+        >>> nx.draw(G, pos=nx.planar_layout(G), **kwargs)
 
     Parameters
     ----------
@@ -1304,9 +1400,28 @@ def draw_planar(G, **kwargs):
         A planar networkx graph
 
     kwargs : optional keywords
-        See networkx.draw_networkx() for a description of optional keywords,
-        with the exception of the pos parameter which is not used by this
-        function.
+        See `draw_networkx` for a description of optional keywords.
+
+    Raises
+    ------
+    NetworkXException
+        When `G` is not planar
+
+    Notes
+    -----
+    The layout is computed each time this function is called.
+    For repeated drawing it is much more efficient to call `planar_layout`
+    directly and reuse the result::
+
+        >>> G = nx.complete_graph(5)
+        >>> pos = nx.planar_layout(G)
+        >>> nx.draw(G, pos=pos)  # Draw the original graph
+        >>> # Draw a subgraph, reusing the same node positions
+        >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    See Also
+    --------
+    planar_layout
     """
     draw(G, planar_layout(G), **kwargs)
 
