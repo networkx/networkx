@@ -1195,7 +1195,7 @@ def draw_circular(G, **kwargs):
 
     This is a convenience function equivalent to::
 
-        >>> nx.draw(G, pos=nx.circular_layout(G), **kwargs)
+        nx.draw(G, pos=nx.circular_layout(G), **kwargs)
 
     Parameters
     ----------
@@ -1229,7 +1229,7 @@ def draw_kamada_kawai(G, **kwargs):
 
     This is a convenience function equivalent to::
 
-        >>> nx.draw(G, pos=nx.kamada_kawai_layout(G), **kwargs)
+        nx.draw(G, pos=nx.kamada_kawai_layout(G), **kwargs)
 
     Parameters
     ----------
@@ -1263,7 +1263,7 @@ def draw_random(G, **kwargs):
 
     This is a convenience function equivalent to::
 
-        >>> nx.draw(G, pos=nx.random_layout(G), **kwargs)
+        nx.draw(G, pos=nx.random_layout(G), **kwargs)
 
     Parameters
     ----------
@@ -1297,7 +1297,7 @@ def draw_spectral(G, **kwargs):
 
     This is a convenience function equivalent to::
 
-        >>> nx.draw(G, pos=nx.spectral_layout(G), **kwargs)
+        nx.draw(G, pos=nx.spectral_layout(G), **kwargs)
 
     For more information about how node positions are determined, see
     `spectral_layout`.
@@ -1334,7 +1334,7 @@ def draw_spring(G, **kwargs):
 
     This is a convenience function equivalent to::
 
-        >>> nx.draw(G, pos=nx.spring_layout(G), **kwargs)
+        nx.draw(G, pos=nx.spring_layout(G), **kwargs)
 
     Parameters
     ----------
@@ -1372,7 +1372,7 @@ def draw_shell(G, nlist=None, **kwargs):
 
     This is a convenience function equivalent to::
 
-        >>> nx.draw(G, pos=nx.shell_layout(G, nlist=nlist), **kwargs)
+        nx.draw(G, pos=nx.shell_layout(G, nlist=nlist), **kwargs)
 
     Parameters
     ----------
@@ -1411,7 +1411,7 @@ def draw_planar(G, **kwargs):
 
     This is a convenience function equivalent to::
 
-        >>> nx.draw(G, pos=nx.planar_layout(G), **kwargs)
+        nx.draw(G, pos=nx.planar_layout(G), **kwargs)
 
     Parameters
     ----------
