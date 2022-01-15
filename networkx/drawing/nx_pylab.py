@@ -1432,7 +1432,7 @@ def draw_planar(G, **kwargs):
     For repeated drawing it is much more efficient to call `planar_layout`
     directly and reuse the result::
 
-        >>> G = nx.complete_graph(5)
+        >>> G = nx.path_graph(5)
         >>> pos = nx.planar_layout(G)
         >>> nx.draw(G, pos=pos)  # Draw the original graph
         >>> # Draw a subgraph, reusing the same node positions
