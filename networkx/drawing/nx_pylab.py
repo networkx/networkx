@@ -27,7 +27,6 @@ from networkx.drawing.layout import (
     random_layout,
     planar_layout,
 )
-import warnings
 
 __all__ = [
     "draw",
