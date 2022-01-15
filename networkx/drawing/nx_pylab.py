@@ -1208,8 +1208,8 @@ def draw_circular(G, **kwargs):
     Notes
     -----
     The layout is computed each time this function is called. For
-    repeated drawing it is much more efficient to call `circular_layout`
-    directly and reuse the result::
+    repeated drawing it is much more efficient to call
+    `~networkx.drawing.layout.circular_layout` directly and reuse the result::
 
         >>> G = nx.complete_graph(5)
         >>> pos = nx.circular_layout(G)
@@ -1219,7 +1219,7 @@ def draw_circular(G, **kwargs):
 
     See Also
     --------
-    circular_layout
+    :func:`~networkx.drawing.layout.circular_layout`
     """
     draw(G, circular_layout(G), **kwargs)
 
@@ -1242,8 +1242,9 @@ def draw_kamada_kawai(G, **kwargs):
     Notes
     -----
     The layout is computed each time this function is called.
-    For repeated drawing it is much more efficient to call `kamada_kawai_layout`
-    directly and reuse the result::
+    For repeated drawing it is much more efficient to call
+    `~networkx.drawing.layout.kamada_kawai_layout` directly and reuse the
+    result::
 
         >>> G = nx.complete_graph(5)
         >>> pos = nx.kamada_kawai_layout(G)
@@ -1253,7 +1254,7 @@ def draw_kamada_kawai(G, **kwargs):
 
     See Also
     --------
-    kamada_kawai_layout
+    :func:`~networkx.drawing.layout.kamada_kawai_layout`
     """
     draw(G, kamada_kawai_layout(G), **kwargs)
 
@@ -1276,8 +1277,8 @@ def draw_random(G, **kwargs):
     Notes
     -----
     The layout is computed each time this function is called.
-    For repeated drawing it is much more efficient to call `random_layout`
-    directly and reuse the result::
+    For repeated drawing it is much more efficient to call
+    `~networkx.drawing.layout.random_layout` directly and reuse the result::
 
         >>> G = nx.complete_graph(5)
         >>> pos = nx.random_layout(G)
@@ -1287,7 +1288,7 @@ def draw_random(G, **kwargs):
 
     See Also
     --------
-    random_layout
+    :func:`~networkx.drawing.layout.random_layout`
     """
     draw(G, random_layout(G), **kwargs)
 
@@ -1300,7 +1301,7 @@ def draw_spectral(G, **kwargs):
         nx.draw(G, pos=nx.spectral_layout(G), **kwargs)
 
     For more information about how node positions are determined, see
-    `spectral_layout`.
+    `~networkx.drawing.layout.spectral_layout`.
 
     Parameters
     ----------
@@ -1313,8 +1314,8 @@ def draw_spectral(G, **kwargs):
     Notes
     -----
     The layout is computed each time this function is called.
-    For repeated drawing it is much more efficient to call `spectral_layout`
-    directly and reuse the result::
+    For repeated drawing it is much more efficient to call
+    `~networkx.drawing.layout.spectral_layout` directly and reuse the result::
 
         >>> G = nx.complete_graph(5)
         >>> pos = nx.spectral_layout(G)
@@ -1324,7 +1325,7 @@ def draw_spectral(G, **kwargs):
 
     See Also
     --------
-    spectral_layout
+    :func:`~networkx.drawing.layout.spectral_layout`
     """
     draw(G, spectral_layout(G), **kwargs)
 
@@ -1346,12 +1347,12 @@ def draw_spring(G, **kwargs):
 
     Notes
     -----
-    `spring_layout` is also the default layout for `draw`, so this function
-    is equivalent to `draw`.
+    `~networkx.drawing.layout.spring_layout` is also the default layout for
+    `draw`, so this function is equivalent to `draw`.
 
     The layout is computed each time this function is called.
-    For repeated drawing it is much more efficient to call `spring_layout`
-    directly and reuse the result::
+    For repeated drawing it is much more efficient to call
+    `~networkx.drawing.layout.spring_layout` directly and reuse the result::
 
         >>> G = nx.complete_graph(5)
         >>> pos = nx.spring_layout(G)
@@ -1362,7 +1363,7 @@ def draw_spring(G, **kwargs):
     See Also
     --------
     draw
-    spring_layout
+    :func:`~networkx.drawing.layout.spring_layout`
     """
     draw(G, spring_layout(G), **kwargs)
 
@@ -1382,7 +1383,7 @@ def draw_shell(G, nlist=None, **kwargs):
     nlist : list of list of nodes, optional
         A list containing lists of nodes representing the shells.
         Default is `None`, meaning all nodes are in a single shell.
-        See `shell_layout` for details.
+        See `~networkx.drawing.layout.shell_layout` for details.
 
     kwargs : optional keywords
         See `draw_networkx` for a description of optional keywords.
@@ -1390,8 +1391,8 @@ def draw_shell(G, nlist=None, **kwargs):
     Notes
     -----
     The layout is computed each time this function is called.
-    For repeated drawing it is much more efficient to call `shell_layout`
-    directly and reuse the result::
+    For repeated drawing it is much more efficient to call
+    `~networkx.drawing.layout.shell_layout` directly and reuse the result::
 
         >>> G = nx.complete_graph(5)
         >>> pos = nx.spring_layout(G)
@@ -1401,7 +1402,7 @@ def draw_shell(G, nlist=None, **kwargs):
 
     See Also
     --------
-    shell_layout
+    :func:`~networkx.drawing.layout.shell_layout`
     """
     draw(G, shell_layout(G, nlist=nlist), **kwargs)
 
@@ -1429,8 +1430,8 @@ def draw_planar(G, **kwargs):
     Notes
     -----
     The layout is computed each time this function is called.
-    For repeated drawing it is much more efficient to call `planar_layout`
-    directly and reuse the result::
+    For repeated drawing it is much more efficient to call
+    `~networkx.drawing.layout.planar_layout` directly and reuse the result::
 
         >>> G = nx.path_graph(5)
         >>> pos = nx.planar_layout(G)
@@ -1440,7 +1441,7 @@ def draw_planar(G, **kwargs):
 
     See Also
     --------
-    planar_layout
+    :func:`~networkx.drawing.layout.planar_layout`
     """
     draw(G, planar_layout(G), **kwargs)
 
