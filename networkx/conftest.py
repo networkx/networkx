@@ -305,6 +305,11 @@ needs_yaml = ["readwrite/nx_yaml.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
 needs_ogr = ["readwrite/nx_shp.py"]
+needs_sympy = [
+    "algorithms/polynomials/__init__.py",
+    "algorithms/polynomials/tutte.py",
+    "algorithms/polynomials/tests/test_tutte.py"
+]
 
 if not has_numpy:
     collect_ignore += needs_numpy
