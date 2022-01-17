@@ -3,9 +3,7 @@ import sympy
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = [
-    "tutte_polynomial"
-]
+__all__ = ["tutte_polynomial"]
 
 
 @not_implemented_for("directed")
@@ -51,18 +49,15 @@ def tutte_polynomial(G, simplify=True):
 
     cut_edges = _get_cut_edges(G)
     loops = [e for e in G.edges if e[0] == e[1]]
-    edges_not_cuts_loops = [i for i in G.edges
-                            if i not in cut_edges and i not in loops]
+    edges_not_cuts_loops = [i for i in G.edges if i not in cut_edges and i not in loops]
 
     if not edges_not_cuts_loops:
-        return sympy.Symbol('x')**len(cut_edges) \
-            * sympy.Symbol('y')**len(loops)
+        return sympy.Symbol("x") ** len(cut_edges) * sympy.Symbol("y") ** len(loops)
 
     e = edges_not_cuts_loops[0]
     # deletion-contraction
     C = nx.contracted_edge(G, e, self_loops=True)
-    contraction_loops = [i for i in C.edges
-                         if i[0] == i[1] and i not in G.edges]
+    contraction_loops = [i for i in C.edges if i[0] == i[1] and i not in G.edges]
     if contraction_loops:
         C.remove_edge(*contraction_loops[0])
     G.remove_edge(*e)

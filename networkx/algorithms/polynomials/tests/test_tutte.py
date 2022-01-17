@@ -4,28 +4,24 @@ import sympy
 
 class TestTutte:
     def test_tutte_polynomial_K1(self):
-        """Check the Tutte polynomial for $K_1$.
-        """
+        """Check the Tutte polynomial for $K_1$."""
         G = nx.complete_graph(1)
         assert nx.tutte_polynomial(G) == 1
 
     def test_tutte_polynomial_K4(self):
-        """Check the Tutte polynomial for $K_4$.
-        """
+        """Check the Tutte polynomial for $K_4$."""
         G = nx.complete_graph(4)
         t = "x**3 + 3*x**2 + 4*x*y + 2*x + y**3 + 3*y**2 + 2*y"
         assert str(nx.tutte_polynomial(G)) == t
 
     def test_tutte_polynomial_C5(self):
-        """Check the Tutte polynomial for $C_5$.
-        """
+        """Check the Tutte polynomial for $C_5$."""
         G = nx.cycle_graph(5)
         t = "x**4 + x**3 + x**2 + x + y"
         assert str(nx.tutte_polynomial(G)) == t
 
     def test_tutte_polynomial_diamond(self):
-        """Check the Tutte polynomial for the diamond graph.
-        """
+        """Check the Tutte polynomial for the diamond graph."""
         G = nx.diamond_graph()
         t = "x**3 + 2*x**2 + 2*x*y + x + y**2 + y"
         assert str(nx.tutte_polynomial(G)) == t
