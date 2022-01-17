@@ -2,4 +2,5 @@ numpy>=1.19
 scipy>=1.6.2
 matplotlib>=3.4
 pandas>=1.2
+mpmath>=1.2
 sympy>=1.0
