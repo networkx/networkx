@@ -246,6 +246,13 @@ try:
 except ImportError:
     has_ogr = False
 
+try:
+    import sympy
+
+    has_sympy = True
+except ImportError:
+    has_sympy = False
+
 
 # List of files that pytest should ignore
 
@@ -315,6 +322,8 @@ if not has_pydot:
     collect_ignore += needs_pydot
 if not has_ogr:
     collect_ignore += needs_ogr
+if not has_sympy:
+    collect_ignore += needs_sympy
 
 # FIXME:  This is to avoid errors on AppVeyor
 if sys.platform.startswith("win"):
