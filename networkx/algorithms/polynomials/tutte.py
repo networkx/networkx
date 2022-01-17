@@ -35,8 +35,7 @@ def tutte_polynomial(G, simplify=True):
 
     >>> K = nx.complete_graph(5)
     >>> nx.tutte_polynomial(K)
-    x**4 + 6*x**3 + 10*x**2*y + 11*x**2 + 5*x*y**3 + 15*x*y**2 + 20*x*y + 6*x +
-    y**6 + 4*y**5 + 10*y**4 + 15*y**3 + 15*y**2 + 6*y
+    x**4 + 6*x**3 + 10*x**2*y + 11*x**2 + 5*x*y**3 + 15*x*y**2 + 20*x*y + 6*x + y**6 + 4*y**5 + 10*y**4 + 15*y**3 + 15*y**2 + 6*y
     """
     G = nx.MultiGraph(G)
 
