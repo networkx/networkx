@@ -973,7 +973,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
     0
     >>> G.add_edge(2, 2)
     1
-    >>> S = nx.to_scipy_sparse_array(G, nodelist=[0, 1, 2])
+    >>> S = nx.to_scipy_sparse_matrix(G, nodelist=[0, 1, 2])
     >>> print(S.todense())
     [[0 2 0]
      [1 0 0]
@@ -1173,14 +1173,14 @@ def from_scipy_sparse_array(
     >>> import scipy as sp
     >>> import scipy.sparse  # call as sp.sparse
     >>> A = sp.sparse.eye(2, 2, 1)
-    >>> G = nx.from_scipy_sparse_matrix(A)
+    >>> G = nx.from_scipy_sparse_array(A)
 
     If `create_using` indicates a multigraph and the matrix has only integer
     entries and `parallel_edges` is False, then the entries will be treated
     as weights for edges joining the nodes (without creating parallel edges):
 
-    >>> A = sp.sparse.csr_matrix([[1, 1], [1, 2]])
-    >>> G = nx.from_scipy_sparse_matrix(A, create_using=nx.MultiGraph)
+    >>> A = sp.sparse.csr_array([[1, 1], [1, 2]])
+    >>> G = nx.from_scipy_sparse_array(A, create_using=nx.MultiGraph)
     >>> G[1][1]
     AtlasView({0: {'weight': 2}})
 
@@ -1188,8 +1188,8 @@ def from_scipy_sparse_array(
     entries and `parallel_edges` is True, then the entries will be treated
     as the number of parallel edges joining those two vertices:
 
-    >>> A = sp.sparse.csr_matrix([[1, 1], [1, 2]])
-    >>> G = nx.from_scipy_sparse_matrix(
+    >>> A = sp.sparse.csr_array([[1, 1], [1, 2]])
+    >>> G = nx.from_scipy_sparse_array(
     ...     A, parallel_edges=True, create_using=nx.MultiGraph
     ... )
     >>> G[1][1]
