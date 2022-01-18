@@ -1026,7 +1026,5 @@ def tutte_graph(create_using=None):
         },
         create_using=create_using,
     )
-    if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
     G.name = "Tutte's Graph"
     return G
