@@ -17,6 +17,9 @@ Warning: Most layout routines have only been tested in 2-dimensions.
 """
 import networkx as nx
 from networkx.utils import np_random_state
+import matplotlib.pyplot as plt
+from random import sample
+from math import sqrt
 
 __all__ = [
     "bipartite_layout",
@@ -1177,3 +1180,80 @@ def rescale_layout_dict(pos, scale=1):
     pos_v = np.array(list(pos.values()))
     pos_v = rescale_layout(pos_v, scale=scale)
     return dict(zip(pos, pos_v))
+
+
+def draw_sudoku(G, layout='grid'):
+    """Return a sudoku graph with labeled nodes and colored edges.
+    This visualization is a useful way to understand 
+    Sudoku as a Graph coloring problem,
+    where each number in the cells is a node and 
+    two numbers being in the same row, column or box 
+    is interpreted as an edge between their nodes.
+
+    Parameters
+    ----------
+    G : Networkx Graph generated from nx.sudoku_graph()
+
+   layout : preference of layout for positioning of nodes (default: grid, optional, type: string)
+            grid - grid layout returns a sudoku like figure with nodes and edges instead of cells
+            circle - circular layout returns concentric circles with the sudoku's graph, 
+            it doesn't hold any special meaning, it is visually appealing to look at for n=3.
+        
+
+    Returns
+    -------
+    plot : Matplotlib plot or figure
+
+    Examples
+    --------
+    >>> G = nx.sudoku_graph()
+    >>> nx.draw_sudoku(G)
+
+    """
+    def generate_random_sudoku(n):
+        base  = n
+        side  = base*base
+        def pattern(r,c): return (base*(r%base)+r//base+c)%side
+        def shuffle(s): return sample(s,len(s)) 
+        rBase = range(base) 
+        rows  = [ g*base + r for g in shuffle(rBase) for r in shuffle(rBase) ] 
+        cols  = [ g*base + c for g in shuffle(rBase) for c in shuffle(rBase) ]
+        nums  = shuffle(range(1,base*base+1))
+        board=[]
+        for r in rows:
+            board += [nums[pattern(r,c)] for c in cols]
+        return board
+
+    n = int(sqrt(sqrt(len(G.nodes()))))
+    board = generate_random_sudoku(n)
+    box_edges=[]
+    row_edges=[]
+    column_edges=[]
+    
+    l=[]
+    for i in range(n):
+        l.append((n*n)-i)
+        l.append(i)
+    
+    for i,j in G.edges():
+            val = abs(i-j)
+            if i//n*n==j//n*n:
+                column_edges.append((i,j))
+            if val%n*n==0:
+                row_edges.append((i,j))
+            if val%(n*n) in l and val<(n*n)*(n-1)+n:
+                box_edges.append((i,j))
+
+    if layout=='circular':
+        pos=nx.circular_layout(G)
+    if layout=='grid':
+        pos = dict(zip(list(G.nodes()), nx.grid_2d_graph(n*n,n*n)))
+        
+    mapping = dict(zip(G.nodes(), board))
+    
+    plt.figure(1,figsize=(12,12)) 
+    nx.draw(G, labels=mapping, pos=pos, with_labels=True, node_color='white')
+    nx.draw_networkx_edges(G,pos,edgelist=box_edges,width=2, alpha=0.5, edge_color="tab:red")
+    nx.draw_networkx_edges(G,pos,edgelist=row_edges,width=2, alpha=0.5, edge_color="tab:green")
+    nx.draw_networkx_edges(G,pos,edgelist=column_edges,width=2, alpha=0.5, edge_color="tab:blue")
+    plt.show()
