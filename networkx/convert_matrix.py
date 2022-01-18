@@ -35,7 +35,9 @@ __all__ = [
     "from_pandas_edgelist",
     "to_pandas_edgelist",
     "to_numpy_recarray",
+    "from_scipy_sparse_array",
     "from_scipy_sparse_matrix",
+    "to_scipy_sparse_array",
     "to_scipy_sparse_matrix",
     "from_numpy_array",
     "to_numpy_array",
@@ -768,6 +770,140 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     return M.view(np.recarray)
 
 
+def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format="csr"):
+    """Returns the graph adjacency matrix as a SciPy sparse array.
+
+    Parameters
+    ----------
+    G : graph
+        The NetworkX graph used to construct the sparse matrix.
+
+    nodelist : list, optional
+       The rows and columns are ordered according to the nodes in `nodelist`.
+       If `nodelist` is None, then the ordering is produced by G.nodes().
+
+    dtype : NumPy data-type, optional
+        A valid NumPy dtype used to initialize the array. If None, then the
+        NumPy default is used.
+
+    weight : string or None   optional (default='weight')
+        The edge attribute that holds the numerical value used for
+        the edge weight.  If None then all edge weights are 1.
+
+    format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok'}
+        The type of the matrix to be returned (default 'csr').  For
+        some algorithms different implementations of sparse matrices
+        can perform better.  See [1]_ for details.
+
+    Returns
+    -------
+    A : SciPy sparse array
+       Graph adjacency matrix.
+
+    Notes
+    -----
+    For directed graphs, matrix entry i,j corresponds to an edge from i to j.
+
+    The matrix entries are populated using the edge attribute held in
+    parameter weight. When an edge does not have that attribute, the
+    value of the entry is 1.
+
+    For multiple edges the matrix values are the sums of the edge weights.
+
+    When `nodelist` does not contain every node in `G`, the adjacency matrix
+    is built from the subgraph of `G` that is induced by the nodes in
+    `nodelist`.
+
+    The convention used for self-loop edges in graphs is to assign the
+    diagonal matrix entry value to the weight attribute of the edge
+    (or the number 1 if the edge has no weight attribute).  If the
+    alternate convention of doubling the edge weight is desired the
+    resulting Scipy sparse matrix can be modified as follows:
+
+    >>> G = nx.Graph([(1, 1)])
+    >>> A = nx.to_scipy_sparse_array(G)
+    >>> print(A.todense())
+    [[1]]
+    >>> A.setdiag(A.diagonal() * 2)
+    >>> print(A.toarray())
+    [[2]]
+
+    Examples
+    --------
+    >>> G = nx.MultiDiGraph()
+    >>> G.add_edge(0, 1, weight=2)
+    0
+    >>> G.add_edge(1, 0)
+    0
+    >>> G.add_edge(2, 2, weight=3)
+    0
+    >>> G.add_edge(2, 2)
+    1
+    >>> S = nx.to_scipy_sparse_array(G, nodelist=[0, 1, 2])
+    >>> print(S.toarray())
+    [[0 2 0]
+     [1 0 0]
+     [0 0 4]]
+
+    References
+    ----------
+    .. [1] Scipy Dev. References, "Sparse Matrices",
+       https://docs.scipy.org/doc/scipy/reference/sparse.html
+    """
+    import scipy as sp
+    import scipy.sparse  # call as sp.sparse
+
+    if len(G) == 0:
+        raise nx.NetworkXError("Graph has no nodes or edges")
+
+    if nodelist is None:
+        nodelist = list(G)
+        nlen = len(G)
+    else:
+        nlen = len(nodelist)
+        if nlen == 0:
+            raise nx.NetworkXError("nodelist has no nodes")
+        nodeset = set(G.nbunch_iter(nodelist))
+        if nlen != len(nodeset):
+            for n in nodelist:
+                if n not in G:
+                    raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
+            raise nx.NetworkXError("nodelist contains duplicates.")
+        if nlen < len(G):
+            G = G.subgraph(nodelist)
+
+    index = dict(zip(nodelist, range(nlen)))
+    coefficients = zip(
+        *((index[u], index[v], wt) for u, v, wt in G.edges(data=weight, default=1))
+    )
+    try:
+        row, col, data = coefficients
+    except ValueError:
+        # there is no edge in the subgraph
+        row, col, data = [], [], []
+
+    if G.is_directed():
+        A = sp.sparse.coo_array((data, (row, col)), shape=(nlen, nlen), dtype=dtype)
+    else:
+        # symmetrize matrix
+        d = data + data
+        r = row + col
+        c = col + row
+        # selfloop entries get double counted when symmetrizing
+        # so we subtract the data on the diagonal
+        selfloops = list(nx.selfloop_edges(G, data=weight, default=1))
+        if selfloops:
+            diag_index, diag_data = zip(*((index[u], -wt) for u, v, wt in selfloops))
+            d += diag_data
+            r += diag_index
+            c += diag_index
+        A = sp.sparse.coo_array((d, (r, c)), shape=(nlen, nlen), dtype=dtype)
+    try:
+        return A.asformat(format)
+    except ValueError as err:
+        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from err
+
+
 def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format="csr"):
     """Returns the graph adjacency matrix as a SciPy sparse matrix.
 
@@ -795,7 +931,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
 
     Returns
     -------
-    M : SciPy sparse matrix
+    A : SciPy sparse matrix
        Graph adjacency matrix.
 
     Notes
@@ -849,116 +985,12 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
+    import scipy.sparse
 
-    if len(G) == 0:
-        raise nx.NetworkXError("Graph has no nodes or edges")
-
-    if nodelist is None:
-        nodelist = list(G)
-        nlen = len(G)
-    else:
-        nlen = len(nodelist)
-        if nlen == 0:
-            raise nx.NetworkXError("nodelist has no nodes")
-        nodeset = set(G.nbunch_iter(nodelist))
-        if nlen != len(nodeset):
-            for n in nodelist:
-                if n not in G:
-                    raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
-            raise nx.NetworkXError("nodelist contains duplicates.")
-        if nlen < len(G):
-            G = G.subgraph(nodelist)
-
-    index = dict(zip(nodelist, range(nlen)))
-    coefficients = zip(
-        *((index[u], index[v], wt) for u, v, wt in G.edges(data=weight, default=1))
+    A = to_scipy_sparse_array(
+        G, nodelist=nodelist, dtype=dtype, weight=weight, format=format
     )
-    try:
-        row, col, data = coefficients
-    except ValueError:
-        # there is no edge in the subgraph
-        row, col, data = [], [], []
-
-    if G.is_directed():
-        M = sp.sparse.coo_matrix((data, (row, col)), shape=(nlen, nlen), dtype=dtype)
-    else:
-        # symmetrize matrix
-        d = data + data
-        r = row + col
-        c = col + row
-        # selfloop entries get double counted when symmetrizing
-        # so we subtract the data on the diagonal
-        selfloops = list(nx.selfloop_edges(G, data=weight, default=1))
-        if selfloops:
-            diag_index, diag_data = zip(*((index[u], -wt) for u, v, wt in selfloops))
-            d += diag_data
-            r += diag_index
-            c += diag_index
-        M = sp.sparse.coo_matrix((d, (r, c)), shape=(nlen, nlen), dtype=dtype)
-    try:
-        return M.asformat(format)
-    except ValueError as err:
-        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from err
-
-
-def _csr_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Compressed Sparse Row** format to
-    an iterable of weighted edge triples.
-
-    """
-    nrows = A.shape[0]
-    data, indices, indptr = A.data, A.indices, A.indptr
-    for i in range(nrows):
-        for j in range(indptr[i], indptr[i + 1]):
-            yield i, indices[j], data[j]
-
-
-def _csc_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Compressed Sparse Column** format to
-    an iterable of weighted edge triples.
-
-    """
-    ncols = A.shape[1]
-    data, indices, indptr = A.data, A.indices, A.indptr
-    for i in range(ncols):
-        for j in range(indptr[i], indptr[i + 1]):
-            yield indices[j], i, data[j]
-
-
-def _coo_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Coordinate** format to an iterable
-    of weighted edge triples.
-
-    """
-    row, col, data = A.row, A.col, A.data
-    return zip(row, col, data)
-
-
-def _dok_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Dictionary of Keys** format to an
-    iterable of weighted edge triples.
-
-    """
-    for (r, c), v in A.items():
-        yield r, c, v
-
-
-def _generate_weighted_edges(A):
-    """Returns an iterable over (u, v, w) triples, where u and v are adjacent
-    vertices and w is the weight of the edge joining u and v.
-
-    `A` is a SciPy sparse matrix (in any format).
-
-    """
-    if A.format == "csr":
-        return _csr_gen_triples(A)
-    if A.format == "csc":
-        return _csc_gen_triples(A)
-    if A.format == "dok":
-        return _dok_gen_triples(A)
-    # If A is in any other format (including COO), convert it to COO format.
-    return _coo_gen_triples(A.tocoo())
+    return sp.sparse.csr_matrix(A).asformat(format)
 
 
 def from_scipy_sparse_matrix(
@@ -1023,6 +1055,141 @@ def from_scipy_sparse_matrix(
 
     >>> A = sp.sparse.csr_matrix([[1, 1], [1, 2]])
     >>> G = nx.from_scipy_sparse_matrix(
+    ...     A, parallel_edges=True, create_using=nx.MultiGraph
+    ... )
+    >>> G[1][1]
+    AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
+
+    """
+    return from_scipy_sparse_array(
+        A,
+        parallel_edges=parallel_edges,
+        create_using=create_using,
+        edge_attribute=edge_attribute,
+    )
+
+
+def _csr_gen_triples(A):
+    """Converts a SciPy sparse matrix in **Compressed Sparse Row** format to
+    an iterable of weighted edge triples.
+
+    """
+    nrows = A.shape[0]
+    data, indices, indptr = A.data, A.indices, A.indptr
+    for i in range(nrows):
+        for j in range(indptr[i], indptr[i + 1]):
+            yield i, indices[j], data[j]
+
+
+def _csc_gen_triples(A):
+    """Converts a SciPy sparse matrix in **Compressed Sparse Column** format to
+    an iterable of weighted edge triples.
+
+    """
+    ncols = A.shape[1]
+    data, indices, indptr = A.data, A.indices, A.indptr
+    for i in range(ncols):
+        for j in range(indptr[i], indptr[i + 1]):
+            yield indices[j], i, data[j]
+
+
+def _coo_gen_triples(A):
+    """Converts a SciPy sparse matrix in **Coordinate** format to an iterable
+    of weighted edge triples.
+
+    """
+    row, col, data = A.row, A.col, A.data
+    return zip(row, col, data)
+
+
+def _dok_gen_triples(A):
+    """Converts a SciPy sparse matrix in **Dictionary of Keys** format to an
+    iterable of weighted edge triples.
+
+    """
+    for (r, c), v in A.items():
+        yield r, c, v
+
+
+def _generate_weighted_edges(A):
+    """Returns an iterable over (u, v, w) triples, where u and v are adjacent
+    vertices and w is the weight of the edge joining u and v.
+
+    `A` is a SciPy sparse matrix (in any format).
+
+    """
+    if A.format == "csr":
+        return _csr_gen_triples(A)
+    if A.format == "csc":
+        return _csc_gen_triples(A)
+    if A.format == "dok":
+        return _dok_gen_triples(A)
+    # If A is in any other format (including COO), convert it to COO format.
+    return _coo_gen_triples(A.tocoo())
+
+
+def from_scipy_sparse_array(
+    A, parallel_edges=False, create_using=None, edge_attribute="weight"
+):
+    """Creates a new graph from an adjacency matrix given as a SciPy sparse
+    array.
+
+    Parameters
+    ----------
+    A: scipy.sparse array
+      An adjacency matrix representation of a graph
+
+    parallel_edges : Boolean
+      If this is True, `create_using` is a multigraph, and `A` is an
+      integer matrix, then entry *(i, j)* in the matrix is interpreted as the
+      number of parallel edges joining vertices *i* and *j* in the graph.
+      If it is False, then the entries in the matrix are interpreted as
+      the weight of a single edge joining the vertices.
+
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    edge_attribute: string
+       Name of edge attribute to store matrix numeric value. The data will
+       have the same type as the matrix entry (int, float, (real,imag)).
+
+    Notes
+    -----
+    For directed graphs, explicitly mention create_using=nx.DiGraph,
+    and entry i,j of A corresponds to an edge from i to j.
+
+    If `create_using` is :class:`networkx.MultiGraph` or
+    :class:`networkx.MultiDiGraph`, `parallel_edges` is True, and the
+    entries of `A` are of type :class:`int`, then this function returns a
+    multigraph (constructed from `create_using`) with parallel edges.
+    In this case, `edge_attribute` will be ignored.
+
+    If `create_using` indicates an undirected multigraph, then only the edges
+    indicated by the upper triangle of the matrix `A` will be added to the
+    graph.
+
+    Examples
+    --------
+    >>> import scipy as sp
+    >>> import scipy.sparse  # call as sp.sparse
+    >>> A = sp.sparse.eye(2, 2, 1)
+    >>> G = nx.from_scipy_sparse_array(A)
+
+    If `create_using` indicates a multigraph and the matrix has only integer
+    entries and `parallel_edges` is False, then the entries will be treated
+    as weights for edges joining the nodes (without creating parallel edges):
+
+    >>> A = sp.sparse.csr_array([[1, 1], [1, 2]])
+    >>> G = nx.from_scipy_sparse_array(A, create_using=nx.MultiGraph)
+    >>> G[1][1]
+    AtlasView({0: {'weight': 2}})
+
+    If `create_using` indicates a multigraph and the matrix has only integer
+    entries and `parallel_edges` is True, then the entries will be treated
+    as the number of parallel edges joining those two vertices:
+
+    >>> A = sp.sparse.csr_array([[1, 1], [1, 2]])
+    >>> G = nx.from_scipy_sparse_array(
     ...     A, parallel_edges=True, create_using=nx.MultiGraph
     ... )
     >>> G[1][1]

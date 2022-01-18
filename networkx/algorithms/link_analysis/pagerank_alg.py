@@ -468,11 +468,12 @@ def pagerank_scipy(
         return {}
 
     nodelist = list(G)
-    M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
-    S = np.array(M.sum(axis=1)).flatten()
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
+    S = A.sum(axis=1)
     S[S != 0] = 1.0 / S[S != 0]
-    Q = sp.sparse.spdiags(S.T, 0, *M.shape, format="csr")
-    M = Q * M
+    # TODO: csr_array
+    Q = sp.sparse.csr_array(sp.sparse.spdiags(S.T, 0, *A.shape))
+    A = Q @ A
 
     # initial vector
     if nstart is None:
@@ -501,7 +502,7 @@ def pagerank_scipy(
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
         xlast = x
-        x = alpha * (x * M + sum(x[is_dangling]) * dangling_weights) + (1 - alpha) * p
+        x = alpha * (x @ A + sum(x[is_dangling]) * dangling_weights) + (1 - alpha) * p
         # check convergence, l1 norm
         err = np.absolute(x - xlast).sum()
         if err < N * tol:
