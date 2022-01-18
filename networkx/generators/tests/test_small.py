@@ -186,3 +186,25 @@ class TestGeneratorsSmall:
         pytest.raises(nx.NetworkXError, nx.tutte_graph, create_using=nx.DiGraph)
         MG = nx.tutte_graph(create_using=nx.MultiGraph)
         assert sorted(MG.edges()) == sorted(G.edges())
+
+
+@pytest.mark.parametrize(
+    "fn",
+    (
+        nx.bull_graph,
+        nx.chvatal_graph,
+        nx.cubical_graph,
+        nx.diamond_graph,
+        nx.house_graph,
+        nx.house_x_graph,
+        nx.icosahedral_graph,
+        nx.krackhardt_kite_graph,
+        nx.octahedral_graph,
+        nx.petersen_graph,
+        nx.truncated_cube_graph,
+        nx.tutte_graph,
+    ),
+)
+def tests_raises_with_directed_create_using(fn):
+    with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
+        fn(create_using=nx.DiGraph)
