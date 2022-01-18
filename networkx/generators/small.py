@@ -30,6 +30,7 @@ __all__ = [
     "tutte_graph",
 ]
 
+from functools import wraps
 import networkx as nx
 from networkx.generators.classic import (
     empty_graph,
@@ -38,6 +39,24 @@ from networkx.generators.classic import (
     complete_graph,
 )
 from networkx.exception import NetworkXError
+
+
+def _raise_on_directed(func):
+    """
+    A decorator which inspects the `create_using` argument and raises a
+    NetworkX exception when `create_using` is a DiGraph (class or instance) for
+    graph generators that do not support directed outputs.
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if kwargs.get("create_using") is not None:
+            G = nx.empty_graph(create_using=kwargs["create_using"])
+            if G.is_directed():
+                raise NetworkXError("Directed Graph not supported")
+        return func(*args, **kwargs)
+
+    return wrapper
 
 
 def make_small_undirected_graph(graph_description, create_using=None):
@@ -180,6 +199,7 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
 # -------------------------------------------------------------------------------
 
 
+@_raise_on_directed
 def bull_graph(create_using=None):
     """
     Returns the Bull Graph
@@ -212,6 +232,7 @@ def bull_graph(create_using=None):
     return G
 
 
+@_raise_on_directed
 def chvatal_graph(create_using=None):
     """
     Returns the Chvátal Graph
@@ -255,6 +276,7 @@ def chvatal_graph(create_using=None):
     return G
 
 
+@_raise_on_directed
 def cubical_graph(create_using=None):
     """
     Returns the 3-regular Platonic Cubical Graph
@@ -326,6 +348,7 @@ def desargues_graph(create_using=None):
     return G
 
 
+@_raise_on_directed
 def diamond_graph(create_using=None):
     """
     Returns the Diamond graph
@@ -505,6 +528,7 @@ def hoffman_singleton_graph():
     return G
 
 
+@_raise_on_directed
 def house_graph(create_using=None):
     """
     Returns the House graph (square with triangle on top)
@@ -534,6 +558,7 @@ def house_graph(create_using=None):
     return G
 
 
+@_raise_on_directed
 def house_x_graph(create_using=None):
     """
     Returns the House graph with a cross inside the house square.
@@ -562,6 +587,7 @@ def house_x_graph(create_using=None):
     return G
 
 
+@_raise_on_directed
 def icosahedral_graph(create_using=None):
     """
     Returns the Platonic Icosahedral graph.
@@ -603,6 +629,7 @@ def icosahedral_graph(create_using=None):
     return G
 
 
+@_raise_on_directed
 def krackhardt_kite_graph(create_using=None):
     """
     Returns the Krackhardt Kite Social Network.
@@ -680,6 +707,7 @@ def moebius_kantor_graph(create_using=None):
     return G
 
 
+@_raise_on_directed
 def octahedral_graph(create_using=None):
     """
     Returns the Platonic Octahedral graph.
@@ -736,6 +764,7 @@ def pappus_graph():
     return G
 
 
+@_raise_on_directed
 def petersen_graph(create_using=None):
     """
     Returns the Petersen graph.
@@ -839,6 +868,7 @@ def tetrahedral_graph(create_using=None):
     return G
 
 
+@_raise_on_directed
 def truncated_cube_graph(create_using=None):
     """
     Returns the skeleton of the truncated cube.
@@ -925,6 +955,7 @@ def truncated_tetrahedron_graph(create_using=None):
     return G
 
 
+@_raise_on_directed
 def tutte_graph(create_using=None):
     """
     Returns the Tutte graph.

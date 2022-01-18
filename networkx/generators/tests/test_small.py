@@ -205,6 +205,9 @@ class TestGeneratorsSmall:
         nx.tutte_graph,
     ),
 )
-def tests_raises_with_directed_create_using(fn):
+@pytest.mark.parametrize(
+    "create_using", (nx.DiGraph, nx.MultiDiGraph, nx.DiGraph([(0, 1)]))
+)
+def tests_raises_with_directed_create_using(fn, create_using):
     with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
-        fn(create_using=nx.DiGraph)
+        fn(create_using=create_using)
