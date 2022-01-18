@@ -315,6 +315,10 @@ def harmonic_diameter(G, sp=None):
     to the number of vertices minus one), making it possible to assign a
     meaningful value to all graphs.
 
+    Note that in [1] the harmonic diameter is called "connectivity length":
+    however, "harmonic diameter" is a more standard name from the 
+    theory of metric spaces.
+
     Parameters
     ----------
     G : NetworkX graph
