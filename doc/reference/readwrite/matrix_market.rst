@@ -72,7 +72,7 @@ sparse matrices::
     >>> fh = io.BytesIO()
 
     >>> G = nx.path_graph(5)
-    >>> m = nx.to_scipy_sparse_matrix(G)
+    >>> m = nx.to_scipy_sparse_array(G)
     >>> print(m)
       (0, 1)        1
       (1, 0)        1
