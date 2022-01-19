@@ -308,7 +308,7 @@ needs_ogr = ["readwrite/nx_shp.py"]
 needs_sympy = [
     "algorithms/polynomials/__init__.py",
     "algorithms/polynomials/tutte.py",
-    "algorithms/polynomials/tests/test_tutte.py"
+    "algorithms/polynomials/tests/test_tutte.py",
 ]
 
 if not has_numpy:

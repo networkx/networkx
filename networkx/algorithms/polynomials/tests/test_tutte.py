@@ -1,5 +1,7 @@
 import networkx as nx
-import sympy
+import pytest
+
+sympy = pytest.importorskip("sympy")
 
 
 class TestTutte:

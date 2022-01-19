@@ -1,5 +1,4 @@
 """Functions supporting the computation of the Tutte polynomial of a graph."""
-import sympy
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -37,6 +36,8 @@ def tutte_polynomial(G, simplify=True):
     >>> nx.tutte_polynomial(K)
     x**4 + 6*x**3 + 10*x**2*y + 11*x**2 + 5*x*y**3 + 15*x*y**2 + 20*x*y + 6*x + y**6 + 4*y**5 + 10*y**4 + 15*y**3 + 15*y**2 + 6*y
     """
+    import sympy
+
     G = nx.MultiGraph(G)
 
     components = list(nx.connected_components(G))
