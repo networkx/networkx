@@ -118,7 +118,8 @@ def relabel_nodes(G, mapping, copy=True):
     if not hasattr(mapping, "__getitem__"):
         m = {n: mapping(n) for n in G}
     else:
-        m = mapping
+        # enforce a complete mapping (if only partial mapping is defined)
+        m = {n: mapping.get(n, n) for n in G}
     if copy:
         return _relabel_copy(G, m)
     else:
@@ -126,9 +127,6 @@ def relabel_nodes(G, mapping, copy=True):
 
 
 def _relabel_inplace(G, mapping):
-    # enforce a complete mapping (if only partial mapping is defined)
-    mapping = {n: mapping.get(n, n) for n in G}
-
     if len(mapping.keys() & mapping.values()) > 0:
         # labels sets overlap
         # can we topological sort and still do the relabeling?
