@@ -307,7 +307,7 @@ class TestRelabel:
         H = nx.relabel_nodes(G, mapping, copy=False)
         new_order = list(H.nodes())
         assert [mapping.get(i, i) for i in original_order] == new_order
-        
+
     def test_relabel_preserve_node_order_partial_mapping(self):
         G = nx.path_graph(3)
         original_order = list(G.nodes())
