@@ -4,7 +4,9 @@ __all__ = ["convert_node_labels_to_integers", "relabel_nodes"]
 
 
 def relabel_nodes(G, mapping, copy=True):
-    """Relabel the nodes of the graph G according to a given mapping.
+    """Relabel the nodes of the graph G according to a given mapping. Note
+    that the original node ordering is preserved (even if mapping is defined
+    partially).
 
     Parameters
     ----------
