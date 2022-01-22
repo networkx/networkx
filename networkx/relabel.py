@@ -140,8 +140,8 @@ def _relabel_inplace(G, mapping):
                 "resolve the mapping. Use copy=True."
             ) from err
     else:
-        # non-overlapping label sets
-        nodes = mapping.keys()
+        # non-overlapping label sets, so can use the original nodes
+        nodes = list(G.nodes())
 
     multigraph = G.is_multigraph()
     directed = G.is_directed()
