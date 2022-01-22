@@ -134,8 +134,7 @@ def _relabel_inplace(G, mapping):
         D = nx.DiGraph(list(mapping.items()))
         D.remove_edges_from(nx.selfloop_edges(D))
         try:
-            # only keep the nodes in the original graph
-            nodes = [n for n in nx.topological_sort(D) if n in mapping.keys()]
+            nodes = reversed(list(nx.topological_sort(D)))
         except nx.NetworkXUnfeasible as err:
             raise nx.NetworkXUnfeasible(
                 "The node label sets are overlapping and no ordering can "
@@ -149,8 +148,14 @@ def _relabel_inplace(G, mapping):
     directed = G.is_directed()
 
     for old in nodes:
-        new = mapping.get(old, old)
-        G.add_node(new, **G.nodes.get(old, {}))
+        # Test that old is in both mapping and G, otherwise ignore.
+        try:
+            new = mapping[old]
+            G.add_node(new, **G.nodes[old])
+        except KeyError:
+            continue
+        if new == old:
+            continue
         if multigraph:
             new_edges = [
                 (new, new if old == target else target, key, data)
