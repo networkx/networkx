@@ -119,8 +119,7 @@ def relabel_nodes(G, mapping, copy=True):
     if not hasattr(mapping, "__getitem__"):
         m = {n: mapping(n) for n in G}
     else:
-        # enforce a complete mapping (if only partial mapping is defined)
-        m = {n: mapping.get(n, n) for n in G}
+        m = mapping
     if copy:
         return _relabel_copy(G, m)
     else:
