@@ -303,7 +303,7 @@ class TestRelabel:
     def test_relabel_preserve_node_order_full_mapping_with_copy_true(self):
         G = nx.path_graph(3)
         original_order = list(G.nodes())
-        mapping = {2: "a", 1: "b", 0: "c"} # dictionary keys out of order on purpose
+        mapping = {2: "a", 1: "b", 0: "c"}  # dictionary keys out of order on purpose
         H = nx.relabel_nodes(G, mapping, copy=True)
         new_order = list(H.nodes())
         assert [mapping.get(i, i) for i in original_order] == new_order
@@ -311,7 +311,7 @@ class TestRelabel:
     def test_relabel_preserve_node_order_partial_mapping_with_copy_true(self):
         G = nx.path_graph(3)
         original_order = list(G.nodes())
-        mapping = {0: "a", 1: "b"} # partial mapping on purpose
+        mapping = {0: "a", 1: "b"}  # partial mapping on purpose
         H = nx.relabel_nodes(G, mapping, copy=True)
         new_order = list(H.nodes())
         assert [mapping.get(i, i) for i in original_order] == new_order
