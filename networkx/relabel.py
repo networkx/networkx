@@ -5,6 +5,7 @@ __all__ = ["convert_node_labels_to_integers", "relabel_nodes"]
 
 def relabel_nodes(G, mapping, copy=True):
     """Relabel the nodes of the graph G according to a given mapping.
+    
     The original node ordering is not preserved if the mapping includes overlap
     between old and new labels. 
 
