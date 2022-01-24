@@ -29,4 +29,4 @@ Deprecated code
 ---------------
 
 The 2.6 release deprecates over 30 functions.
-See :ref:`NetworkX 2.6`.
+See :ref:`networkx_2.6`.
