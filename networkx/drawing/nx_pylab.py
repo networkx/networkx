@@ -1395,7 +1395,7 @@ def draw_shell(G, nlist=None, **kwargs):
     `~networkx.drawing.layout.shell_layout` directly and reuse the result::
 
         >>> G = nx.complete_graph(5)
-        >>> pos = nx.spring_layout(G)
+        >>> pos = nx.shell_layout(G)
         >>> nx.draw(G, pos=pos)  # Draw the original graph
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
