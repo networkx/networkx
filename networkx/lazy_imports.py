@@ -5,10 +5,10 @@ import os
 import sys
 
 
-__all__ = ["lazy_attach", "lazy_import"]
+__all__ = ["attach", "lazy_import"]
 
 
-def lazy_attach(module_name, submodules=None, submod_attrs=None):
+def attach(module_name, submodules=None, submod_attrs=None):
     """Attach lazily loaded submodules, and functions or other attributes.
 
     Typically, modules import submodules and attributes as follows::
