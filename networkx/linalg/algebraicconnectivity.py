@@ -7,8 +7,8 @@ from networkx.utils import not_implemented_for
 from networkx.utils import reverse_cuthill_mckee_ordering
 from networkx.utils import np_random_state
 
-np = nx.lazy_imports.load("numpy")
-sp = nx.lazy_imports.load("scipy")
+np = nx.lazy_import("numpy")
+sp = nx.lazy_import("scipy")
 
 __all__ = ["algebraic_connectivity", "fiedler_vector", "spectral_ordering"]
 

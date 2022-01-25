@@ -29,9 +29,9 @@ from collections import defaultdict
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-np = nx.lazy_imports.load("numpy")
-pd = nx.lazy_imports.load("pandas")
-sp = nx.lazy_imports.load("scipy")
+np = nx.lazy_import("numpy")
+pd = nx.lazy_import("pandas")
+sp = nx.lazy_import("scipy")
 
 
 __all__ = [

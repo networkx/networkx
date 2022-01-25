@@ -33,7 +33,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-np = nx.lazy_imports.load("numpy")
+np = nx.lazy_import("numpy")
 
 # Authors: Erwan Le Merrer (erwan.lemerrer@technicolor.com)
 """ Second order centrality measure."""

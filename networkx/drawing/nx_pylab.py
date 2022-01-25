@@ -21,8 +21,8 @@ import warnings
 
 import networkx as nx
 
-np = nx.lazy_imports.load("numpy")
-mpl = nx.lazy_imports.load("matplotlib")
+np = nx.lazy_import("numpy")
+mpl = nx.lazy_import("matplotlib")
 
 from networkx.drawing.layout import (
     shell_layout,

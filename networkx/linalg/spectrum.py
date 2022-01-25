@@ -3,7 +3,7 @@ Eigenvalue spectrum of graphs.
 """
 import networkx as nx
 
-sp = nx.lazy_imports.load("scipy")
+sp = nx.lazy_import("scipy")
 
 __all__ = [
     "laplacian_spectrum",

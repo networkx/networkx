@@ -7,7 +7,7 @@ import itertools
 from networkx.convert_matrix import _generate_weighted_edges
 import networkx as nx
 
-sp = nx.lazy_imports.load("scipy")
+sp = nx.lazy_import("scipy")
 
 __all__ = ["biadjacency_matrix", "from_biadjacency_matrix"]
 
