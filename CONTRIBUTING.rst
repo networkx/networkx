@@ -259,20 +259,27 @@ Guidelines
   and widely-used.  New default dependencies should be easy to install on all
   platforms, widely-used in the community, and have demonstrated potential for
   wide-spread use in NetworkX.
-* Use the following import conventions::
+* We use a lazy import system so users without e.g. numpy can still use NetworkX.
+  Use the following import conventions::
 
-   import numpy as np
-   import scipy as sp
-   import matplotlib as mpl
-   import matplotlib.pyplot as plt
-   import pandas as pd
    import networkx as nx
+   np = nx.lazy_import("numpy")  # instead of import numpy as np
+   sp = nx.lazy_import("scipy")
+   mpl = nx.lazy_import("matplotlib")
+   plt = nx.lazy_import("matplotlib.pyplot")
+   pd = nx.lazy_import("pandas")
+
+* For subpackage importing we use notation to indicate the source of the subpackage.
+  For example, many libraries have a ``linalg`` subpackage: ``nx.linalg``,
+  ``np.linalg``, ``sp.linalg``, ``sp.sparse.linalg``.
+  We use an import pattern that makes the origin of a particular ``linalg`` explicit.
 
   After importing `sp`` for ``scipy``::
 
-   import scipy as sp
+   sp = nx.lazy_import("scipy")
 
-  use the following imports::
+  use the following import idioms. These should be used **within**
+  the functions that they will be used or the lazy loading expires::
 
    import scipy.linalg  # call as sp.linalg
    import scipy.sparse  # call as sp.sparse
@@ -280,9 +287,6 @@ Guidelines
    import scipy.stats  # call as sp.stats
    import scipy.optimize  # call as sp.optimize
 
-  For example, many libraries have a ``linalg`` subpackage: ``nx.linalg``,
-  ``np.linalg``, ``sp.linalg``, ``sp.sparse.linalg``. The above import
-  pattern makes the origin of any particular instance of ``linalg`` explicit.
 
 * Use the decorator ``not_implemented_for`` in ``networkx/utils/decorators.py``
   to designate that a function doesn't accept 'directed', 'undirected',
