@@ -5,10 +5,10 @@ import os
 import sys
 
 
-__all__ = ["attach", "load"]
+__all__ = ["lazy_attach", "lazy_import"]
 
 
-def attach(module_name, submodules=None, submod_attrs=None):
+def lazy_attach(module_name, submodules=None, submod_attrs=None):
     """Attach lazily loaded submodules, and functions or other attributes.
 
     Typically, modules import submodules and attributes as follows::
@@ -81,7 +81,7 @@ def attach(module_name, submodules=None, submod_attrs=None):
     return __getattr__, __dir__, list(__all__)
 
 
-def load(fullname):
+def lazy_import(fullname):
     """Return a lazily imported proxy for a module or library.
 
     We often see the following pattern::

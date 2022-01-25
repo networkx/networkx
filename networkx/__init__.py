@@ -52,7 +52,7 @@ def __getattr__(name):
 
 
 # These are imported in order as listed
-from networkx import lazy_imports
+from networkx.lazy_imports import lazy_import
 
 from networkx.exception import *
 
