@@ -24,7 +24,7 @@ from locale import getpreferredencoding
 import networkx as nx
 from networkx.utils import open_file
 
-pydot = nx.lazy_imports.load("pydot")
+pydot = nx.lazy_import("pydot")
 
 __all__ = [
     "write_dot",

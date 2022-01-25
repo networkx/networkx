@@ -21,8 +21,8 @@ import warnings
 
 import networkx as nx
 
-np = nx.lazy_imports.load("numpy")
-sp = nx.lazy_imports.load("scipy")
+np = nx.lazy_import("numpy")
+sp = nx.lazy_import("scipy")
 
 __all__ = [
     "graph_edit_distance",

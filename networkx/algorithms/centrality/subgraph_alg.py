@@ -4,8 +4,8 @@ Subraph centrality and communicability betweenness.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-np = nx.lazy_imports.load("numpy")
-sp = nx.lazy_imports.load("scipy")
+np = nx.lazy_import("numpy")
+sp = nx.lazy_import("scipy")
 
 __all__ = [
     "subgraph_centrality_exp",

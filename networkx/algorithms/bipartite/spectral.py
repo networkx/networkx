@@ -3,7 +3,7 @@ Spectral bipartivity measure.
 """
 import networkx as nx
 
-sp = nx.lazy_imports.load("scipy")
+sp = nx.lazy_import("scipy")
 
 __all__ = ["spectral_bipartivity"]
 

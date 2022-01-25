@@ -3,7 +3,7 @@ Adjacency matrix and incidence matrix of graphs.
 """
 import networkx as nx
 
-sp = nx.lazy_imports.load("scipy")
+sp = nx.lazy_import("scipy")
 
 __all__ = ["incidence_matrix", "adj_matrix", "adjacency_matrix"]
 

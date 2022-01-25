@@ -4,8 +4,8 @@ import math
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-np = nx.lazy_imports.load("numpy")
-sp = nx.lazy_imports.load("scipy")
+np = nx.lazy_import("numpy")
+sp = nx.lazy_import("scipy")
 
 __all__ = ["eigenvector_centrality", "eigenvector_centrality_numpy"]
 

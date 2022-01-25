@@ -2,8 +2,8 @@
 from warnings import warn
 import networkx as nx
 
-np = nx.lazy_imports.load("numpy")
-sp = nx.lazy_imports.load("scipy")
+np = nx.lazy_import("numpy")
+sp = nx.lazy_import("scipy")
 
 __all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
 

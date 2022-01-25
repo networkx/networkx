@@ -4,7 +4,7 @@ import math
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-np = nx.lazy_imports.load("numpy")
+np = nx.lazy_import("numpy")
 
 __all__ = ["katz_centrality", "katz_centrality_numpy"]
 

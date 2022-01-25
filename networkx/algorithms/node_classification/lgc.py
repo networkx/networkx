@@ -11,8 +11,8 @@ import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 from networkx.algorithms.node_classification.utils import _get_label_info
 
-np = nx.lazy_imports.load("numpy")
-sp = nx.lazy_imports.load("scipy")
+np = nx.lazy_import("numpy")
+sp = nx.lazy_import("scipy")
 
 __all__ = ["local_and_global_consistency"]
 

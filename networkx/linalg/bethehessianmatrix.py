@@ -2,7 +2,7 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-sp = nx.lazy_imports.load("scipy")
+sp = nx.lazy_import("scipy")
 
 __all__ = ["bethe_hessian_matrix"]
 

@@ -3,7 +3,7 @@ import networkx as nx
 from networkx.algorithms.centrality.flow_matrix import flow_matrix_row
 from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
 
-np = nx.lazy_imports.load("numpy")
+np = nx.lazy_import("numpy")
 
 __all__ = [
     "current_flow_betweenness_centrality_subset",
