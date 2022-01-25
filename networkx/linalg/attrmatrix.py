@@ -1,10 +1,10 @@
 """
     Functions for constructing matrix-like objects from graph attributes.
 """
-import networkx.lazy_imports as lazy
+import networkx as nx
 
-np = lazy.load("numpy")
-sp = lazy.load("scipy")
+np = nx.lazy_import("numpy")
+sp = nx.lazy_import("scipy")
 
 __all__ = ["attr_matrix", "attr_sparse_matrix"]
 
