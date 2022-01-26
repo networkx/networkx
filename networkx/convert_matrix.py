@@ -987,6 +987,14 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, weight="weight", format
     import scipy as sp
     import scipy.sparse
 
+    warnings.warn(
+        (
+            "\n\nThe scipy.sparse array containers will be used instead of matrices\n"
+            "in Networkx 3.0. Use `to_scipy_sparse_array` instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     A = to_scipy_sparse_array(
         G, nodelist=nodelist, dtype=dtype, weight=weight, format=format
     )
@@ -1061,6 +1069,14 @@ def from_scipy_sparse_matrix(
     AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
 
     """
+    warnings.warn(
+        (
+            "\n\nThe scipy.sparse array containers will be used instead of matrices\n"
+            "in Networkx 3.0. Use `from_scipy_sparse_array` instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return from_scipy_sparse_array(
         A,
         parallel_edges=parallel_edges,

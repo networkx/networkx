@@ -99,3 +99,5 @@ Version 3.0
 * In ``networkx/algorithms/link_analysis/pagerank_alg.py``, remove the
   ``np.asmatrix`` wrappers on the return values of ``google_matrix`` and remove
   the associated FutureWarning.
+* In ``networkx/convert_matrix.py`` remove ``from_scipy_sparse_matrix`` and
+  ``to_scipy_sparse_matrix``.
