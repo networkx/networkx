@@ -101,3 +101,5 @@ Version 3.0
   the associated FutureWarning.
 * In ``networkx/convert_matrix.py`` remove ``from_scipy_sparse_matrix`` and
   ``to_scipy_sparse_matrix``.
+* In ``networkx/generators/small.py`` remove ``make_small_graph`` and
+  ``make_small_undirected_graph``.
