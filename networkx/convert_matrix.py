@@ -24,6 +24,7 @@ nx_agraph, nx_pydot
 
 import itertools
 import warnings
+from collections import defaultdict
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -1267,12 +1268,10 @@ def to_numpy_array(
 
     nodelist : list, optional
         The rows and columns are ordered according to the nodes in `nodelist`.
-        If `nodelist` is None, then the ordering is produced by G.nodes().
+        If `nodelist` is ``None``, then the ordering is produced by ``G.nodes()``.
 
     dtype : NumPy data type, optional
-        A valid single NumPy data type used to initialize the array.
-        This must be a simple type such as int or numpy.float64 and
-        not a compound data type (see to_numpy_recarray)
+        A NumPy data type used to initialize the array.
         If None, then the NumPy default is used.
 
     order : {'C', 'F'}, optional
@@ -1280,20 +1279,22 @@ def to_numpy_array(
         (row- or column-wise) order in memory. If None, then the NumPy default
         is used.
 
-    multigraph_weight : {sum, min, max}, optional
-        An operator that determines how weights in multigraphs are handled.
-        The default is to sum the weights of the multiple edges.
+    multigraph_weight : callable, optional
+        An function that determines how weights in multigraphs are handled.
+        The function should accept a sequence of weights and return a single
+        value. The default is to sum the weights of the multiple edges.
 
     weight : string or None optional (default = 'weight')
         The edge attribute that holds the numerical value used for
         the edge weight. If an edge does not have that attribute, then the
         value 1 is used instead.
 
-    nonedge : float (default = 0.0)
+    nonedge : array_like (default = 0.0)
+        The value used to represent non-edges in the adjaceny matrix.
         The array values corresponding to nonedges are typically set to zero.
         However, this could be undesirable if there are array values
         corresponding to actual edges that also have the value zero. If so,
-        one might prefer nonedges to have some other value, such as nan.
+        one might prefer nonedges to have some other value, such as ``nan``.
 
     Returns
     -------
@@ -1306,9 +1307,9 @@ def to_numpy_array(
 
     Notes
     -----
-    For directed graphs, entry i,j corresponds to an edge from i to j.
+    For directed graphs, entry ``i, j`` corresponds to an edge from ``i`` to ``j``.
 
-    Entries in the adjacency matrix are assigned to the weight edge attribute.
+    Entries in the adjacency matrix are given by the `weight` edge attribute.
     When an edge does not have a weight attribute, the value of the entry is
     set to the number 1.  For multiple (parallel) edges, the values of the
     entries are determined by the `multigraph_weight` parameter. The default is
@@ -1353,83 +1354,45 @@ def to_numpy_array(
 
     if nodelist is None:
         nodelist = list(G)
-        nodeset = G
-        nlen = len(G)
-    else:
-        nlen = len(nodelist)
-        nodeset = set(G.nbunch_iter(nodelist))
-        if nlen != len(nodeset):
-            for n in nodelist:
-                if n not in G:
-                    raise nx.NetworkXError(f"Node {n} in nodelist is not in G")
-            raise nx.NetworkXError("nodelist contains duplicates.")
+    nlen = len(nodelist)
 
-    undirected = not G.is_directed()
-    index = dict(zip(nodelist, range(nlen)))
+    # Input validation
+    nodeset = set(nodelist)
+    if nodeset - set(G):
+        raise nx.NetworkXError(f"Nodes {nodeset - set(G)} in nodelist is not in G")
+    if len(nodeset) < nlen:
+        raise nx.NetworkXError("nodelist contains duplicates.")
 
-    # Initially, we start with an array of nans.  Then we populate the array
-    # using data from the graph.  Afterwards, any leftover nans will be
-    # converted to the value of `nonedge`.  Note, we use nans initially,
-    # instead of zero, for two reasons:
-    #
-    #   1) It can be important to distinguish a real edge with the value 0
-    #      from a nonedge with the value 0.
-    #
-    #   2) When working with multi(di)graphs, we must combine the values of all
-    #      edges between any two nodes in some manner.  This often takes the
-    #      form of a sum, min, or max.  Using the value 0 for a nonedge would
-    #      have undesirable effects with min and max, but using nanmin and
-    #      nanmax with initially nan values is not problematic at all.
-    #
-    # That said, there are still some drawbacks to this approach. Namely, if
-    # a real edge is nan, then that value is a) not distinguishable from
-    # nonedges and b) is ignored by the default combinator (nansum, nanmin,
-    # nanmax) functions used for multi(di)graphs. If this becomes an issue,
-    # an alternative approach is to use masked arrays.  Initially, every
-    # element is masked and set to some `initial` value. As we populate the
-    # graph, elements are unmasked (automatically) when we combine the initial
-    # value with the values given by real edges.  At the end, we convert all
-    # masked values to `nonedge`. Using masked arrays fully addresses reason 1,
-    # but for reason 2, we would still have the issue with min and max if the
-    # initial values were 0.0.  Note: an initial value of +inf is appropriate
-    # for min, while an initial value of -inf is appropriate for max. When
-    # working with sum, an initial value of zero is appropriate. Ideally then,
-    # we'd want to allow users to specify both a value for nonedges and also
-    # an initial value.  For multi(di)graphs, the choice of the initial value
-    # will, in general, depend on the combinator function---sensible defaults
-    # can be provided.
+    A = np.full((nlen, nlen), fill_value=nonedge, dtype=dtype, order=order)
 
+    # Corner cases: empty nodelist or graph without any edges
+    if nlen == 0 or G.number_of_edges() == 0:
+        return A
+
+    # Map nodes to row/col in matrix
+    idx = dict(zip(nodelist, range(nlen)))
+    if len(nodelist) < len(G):
+        G = G.subgraph(nodelist).copy()
+
+    # Collect all edge weights and reduce with `multigraph_weights`
     if G.is_multigraph():
-        # Handle MultiGraphs and MultiDiGraphs
-        A = np.full((nlen, nlen), np.nan, order=order)
-        # use numpy nan-aware operations
-        operator = {sum: np.nansum, min: np.nanmin, max: np.nanmax}
-        try:
-            op = operator[multigraph_weight]
-        except Exception as err:
-            raise ValueError("multigraph_weight must be sum, min, or max") from err
-
-        for u, v, attrs in G.edges(data=True):
-            if (u in nodeset) and (v in nodeset):
-                i, j = index[u], index[v]
-                e_weight = attrs.get(weight, 1)
-                A[i, j] = op([e_weight, A[i, j]])
-                if undirected:
-                    A[j, i] = A[i, j]
+        d = defaultdict(list)
+        for u, v, wt in G.edges(data=weight, default=1.0):
+            d[(idx[u], idx[v])].append(wt)
+        i, j = np.array(list(d.keys())).T  # indices
+        wts = [multigraph_weight(ws) for ws in d.values()]  # reduced weights
     else:
-        # Graph or DiGraph, this is much faster than above
-        A = np.full((nlen, nlen), np.nan, order=order)
-        for u, nbrdict in G.adjacency():
-            for v, d in nbrdict.items():
-                try:
-                    A[index[u], index[v]] = d.get(weight, 1)
-                except KeyError:
-                    # This occurs when there are fewer desired nodes than
-                    # there are nodes in the graph: len(nodelist) < len(G)
-                    pass
+        i, j, wts = [], [], []
+        for u, v, wt in G.edges(data=weight, default=1.0):
+            i.append(idx[u])
+            j.append(idx[v])
+            wts.append(wt)
 
-    A[np.isnan(A)] = nonedge
-    A = np.asarray(A, dtype=dtype)
+    # Set array values with advanced indexing
+    A[i, j] = wts
+    if not G.is_directed():
+        A[j, i] = wts
+
     return A
 
 
