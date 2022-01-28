@@ -121,4 +121,4 @@ def test_threshold():
     mod1 = modularity(G, partition1)
     mod2 = modularity(G, partition2)
 
-    assert mod1 < 0.512 < mod2
+    assert mod1 < mod2
