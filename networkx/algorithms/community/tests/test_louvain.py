@@ -44,7 +44,7 @@ def test_partition():
 
 
 def test_none_weight_param():
-    G = nx.karate_club_graph()
+    G = nx.karate_club_graph(weighted=True)
     nx.set_edge_attributes(
         G, {edge: i * i for i, edge in enumerate(G.edges)}, name="foo"
     )
@@ -57,8 +57,12 @@ def test_none_weight_param():
     ]
     partition1 = louvain_communities(G, weight=None, seed=2)
     partition2 = louvain_communities(G, weight="foo", seed=2)
+    partition3 = louvain_communities(G, weight="weight", seed=2)
 
-    assert part == partition1 != partition2
+    assert part == partition1
+    assert part != partition2
+    assert part != partition3
+    assert partition2 != partition3
 
 
 def test_quality():
