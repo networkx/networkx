@@ -44,7 +44,7 @@ def test_partition():
 
 
 def test_none_weight_param():
-    G = nx.karate_club_graph(weighted=True)
+    G = nx.karate_club_graph()
     nx.set_edge_attributes(
         G, {edge: i * i for i, edge in enumerate(G.edges)}, name="foo"
     )

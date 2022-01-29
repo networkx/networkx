@@ -11,18 +11,13 @@ __all__ = [
 ]
 
 
-def karate_club_graph(weighted=False):
+def karate_club_graph():
     """Returns Zachary's Karate Club graph.
 
     Each node in the returned graph has a node attribute 'club' that
     indicates the name of the club to which the member represented by that node
     belongs, either 'Mr. Hi' or 'Officer'. Each edge has a weight based on the
     number of contexts in which that edge's incident node members interacted.
-
-    Parameters
-    ----------
-    weighted : boolean
-        Whether or not edges in the graph will be weighted.
 
     Examples
     --------
@@ -89,10 +84,7 @@ def karate_club_graph(weighted=False):
         thisrow = [int(b) for b in line.split()]
         for col, entry in enumerate(thisrow):
             if entry >= 1:
-                if weighted:
-                    G.add_edge(row, col, weight=entry)
-                else:
-                    G.add_edge(row, col)
+                G.add_edge(row, col, weight=entry)
 
     # Add the name of each member's club as a node attribute.
     for v in G:
