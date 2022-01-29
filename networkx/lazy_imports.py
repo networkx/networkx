@@ -128,6 +128,15 @@ def lazy_import(fullname):
     except:
         pass
 
+    # handle subpackage imports
+    subnames = fullname.split(".")
+    if len(subnames) > 1:
+        firstname = subnames[0]
+        spec = importlib.util.find_spec(firstname)
+        if spec is None:
+            # module not found so just use firstname
+            fullname = firstname
+
     # Not previously loaded -- look it up
     spec = importlib.util.find_spec(fullname)
 
@@ -169,3 +178,12 @@ class DelayedImportErrorModule(types.ModuleType):
             "Reporting was Lazy -- delayed until module attributes accessed.\n"
             f"Most likely, {spec.name} is not installed"
         )
+
+    def __setattribute__(self, attr, value):
+        if not isinstance(value, DelayedImportErrorModule):
+            raise ModuleNotFoundError(
+                f"Delayed Report: module named '{spec.name}' not found.\n"
+                "Reporting was Lazy -- delayed until module attributes accessed.\n"
+                f"Most likely, {spec.name} is not installed"
+            )
+        super().__setattribute__(attr, value)

@@ -48,6 +48,28 @@ def test_lazy_import_impact_on_sys_modules():
     assert "numpy" in sys.modules
 
 
+def test_lazy_import_subpackages():
+    sp = lazy.lazy_import("scipy")
+    sp.sparse = lazy.lazy_import("scipy.sparse")
+    if isinstance(sp, lazy.DelayedImportErrorModule):
+        try:
+            sp.sparse.diags
+            assert False
+        except ModuleNotFoundError:
+            pass
+    else:
+        sp.sparse.diags
+
+    anything_not_real = lazy.lazy_import("anything_not_real")
+    anything_not_real.subpkg = lazy.lazy_import("anything_not_real.subpkg")
+    assert type(anything_not_real) == lazy.DelayedImportErrorModule
+    try:
+        anything_not_real.subpkg
+        assert False
+    except ModuleNotFoundError:
+        pass
+
+
 def test_lazy_import_nonbuiltins():
     sp = lazy.lazy_import("scipy")
     np = lazy.lazy_import("numpy")
