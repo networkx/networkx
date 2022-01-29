@@ -16,8 +16,8 @@ def karate_club_graph(weighted=False):
 
     Each node in the returned graph has a node attribute 'club' that
     indicates the name of the club to which the member represented by that node
-    belongs, either 'Mr. Hi' or 'Officer'. Each has a weight based on the
-    number of contexts in which the correspnding members interacted.
+    belongs, either 'Mr. Hi' or 'Officer'. Each edge has a weight based on the
+    number of contexts in which that edge's incident node members interacted.
 
     Parameters
     ----------
