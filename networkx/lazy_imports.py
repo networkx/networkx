@@ -128,34 +128,53 @@ def lazy_import(fullname):
     except:
         pass
 
+    # Not previously loaded -- look it up
     # handle subpackage imports
     subnames = fullname.split(".")
-    if len(subnames) > 1:
-        firstname = subnames[0]
-        spec = importlib.util.find_spec(firstname)
-        if spec is None:
-            # module not found so just use firstname
-            fullname = firstname
+    spec = importlib.util.find_spec(subnames[0])
 
-    # Not previously loaded -- look it up
-    spec = importlib.util.find_spec(fullname)
-
-    if spec is None:
-        # module not found - construct a DelayedImportErrorModule
-        spec = importlib.util.spec_from_loader(fullname, loader=None)
+    # check if module found
+    if spec is not None:
+        # Module found
+        if len(subnames) > 1:
+            spec = importlib.util.find_spec(fullname)
         module = importlib.util.module_from_spec(spec)
-        tmp_loader = importlib.machinery.SourceFileLoader(module, path=None)
-        loader = DelayedImportErrorLoader(tmp_loader)
+        sys.modules[fullname] = module
+
+        loader = importlib.util.LazyLoader(spec.loader)
         loader.exec_module(module)
-        # dont add to sys.modules. The module wasn't found.
+
         return module
 
+    # Module Not Found
+    name = subnames[0]
+    # check for a previously imported DelayedImportErrorModule
+    delayed_name = "__" + name + "__DelayedImportErrorModule"
+    try:
+        return sys.modules[delayed_name]
+    except:
+        pass
+
+    # delayed module not found - construct a DelayedImportErrorModule
+    module = make_delayed_import_error_module(name)
+    # Add delayed module to sys.modules.
+    sys.modules[delayed_name] = module
+
+    # handle subpackages
+    for subname in subnames[1:]:
+        name += "." + subname
+        prev_mod = module
+        module = make_delayed_import_error_module(name)
+        prev_mod.__setattribute__(subname, module)
+    return module
+
+
+def make_delayed_import_error_module(name):
+    spec = importlib.util.spec_from_loader(name, loader=None)
     module = importlib.util.module_from_spec(spec)
-    sys.modules[fullname] = module
-
-    loader = importlib.util.LazyLoader(spec.loader)
+    tmp_loader = importlib.machinery.SourceFileLoader(module, path=None)
+    loader = DelayedImportErrorLoader(tmp_loader)
     loader.exec_module(module)
-
     return module
 
 
@@ -169,9 +188,16 @@ class DelayedImportErrorModule(types.ModuleType):
     def __getattribute__(self, attr):
         """Trigger a ModuleNotFoundError upon attribute access"""
         spec = super().__getattribute__("__spec__")
-        # allows isinstance and type functions to work without raising error
-        if attr in ["__class__"]:
-            return super().__getattribute__("__class__")
+        # allow isinstance and type functions to work without raising error
+        if attr in ["__class__", "__setattribute__", "setattr"]:
+            return super().__getattribute__(attr)
+        # allow subpackage names that point to DelayedImportErrorModules
+        try:
+            value = super().__getattribute__(attr)
+            if isinstance(value, DelayedImportErrorModule):
+                return value
+        except AttributeError:
+            pass
 
         raise ModuleNotFoundError(
             f"Delayed Report: module named '{spec.name}' not found.\n"
@@ -186,4 +212,4 @@ class DelayedImportErrorModule(types.ModuleType):
                 "Reporting was Lazy -- delayed until module attributes accessed.\n"
                 f"Most likely, {spec.name} is not installed"
             )
-        super().__setattribute__(attr, value)
+        setattr(self, attr, value)  # super().__setattribute__(attr, value)

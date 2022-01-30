@@ -32,6 +32,7 @@ from networkx.utils import not_implemented_for
 np = nx.lazy_import("numpy")
 pd = nx.lazy_import("pandas")
 sp = nx.lazy_import("scipy")
+sp.sparse = nx.lazy_import("scipy.sparse")
 
 
 __all__ = [

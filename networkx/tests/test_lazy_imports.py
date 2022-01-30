@@ -48,6 +48,31 @@ def test_lazy_import_impact_on_sys_modules():
     assert "numpy" in sys.modules
 
 
+def test_lazy_import_subpackage_naming_system():
+    # have to make sp before sp.sparse
+    try:
+        sp.sparse = lazy.lazy_import("scipy.sparse")
+        assert False
+    except NameError:
+        pass
+    sp = lazy.lazy_import("scipy")
+    # but sp.sparse gets constructed while importing scipy.sparse.linalg
+    sp.sparse.linalg = lazy.lazy_import("scipy.sparse.linalg")
+    if isinstance(sp, lazy.DelayedImportErrorModule):
+        try:
+            sp.sparse.linalg.eigs
+            assert False
+        except ModuleNotFoundError:
+            pass
+
+    # can't use a nickname for a middle layer
+    try:
+        sp.newname.linalg = lazy.lazy_import("scipy.sparse.linalg")
+        assert False
+    except (AttributeError, ModuleNotFoundError):
+        pass
+
+
 def test_lazy_import_subpackages():
     sp = lazy.lazy_import("scipy")
     sp.sparse = lazy.lazy_import("scipy.sparse")
@@ -60,11 +85,23 @@ def test_lazy_import_subpackages():
     else:
         sp.sparse.diags
 
+    sp.sparse.linalg = lazy.lazy_import("scipy.sparse.linalg")
+    if isinstance(sp, lazy.DelayedImportErrorModule):
+        try:
+            sp.sparse.linalg.eigs
+            assert False
+        except ModuleNotFoundError:
+            pass
+    else:
+        sp.sparse.linalg.eigs
+
     anything_not_real = lazy.lazy_import("anything_not_real")
     anything_not_real.subpkg = lazy.lazy_import("anything_not_real.subpkg")
     assert type(anything_not_real) == lazy.DelayedImportErrorModule
+    assert type(anything_not_real.subpkg) == lazy.DelayedImportErrorModule
+    anything_not_real.subpkg
     try:
-        anything_not_real.subpkg
+        anything_not_real.subpkg.pi
         assert False
     except ModuleNotFoundError:
         pass

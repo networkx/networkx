@@ -1,7 +1,10 @@
 """Graph diameter, radius, eccentricity and other properties."""
-
 import networkx as nx
 from networkx.utils import not_implemented_for
+
+np = nx.lazy_import("numpy")
+sp = nx.lazy_import("scipy")
+sp.sparse.linalg = nx.lazy_import("scipy.sparse.linalg")
 
 __all__ = [
     "extrema_bounding",
@@ -521,10 +524,6 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     Mathematisch Instituut, Universiteit Leiden, Leiden, Netherlands, 2016
     Available: `Link to thesis <https://www.universiteitleiden.nl/binaries/content/assets/science/mi/scripties/master/vos_vaya_master.pdf>`_
     """
-    import numpy as np
-    import scipy as sp
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
-
     if not nx.is_connected(G):
         msg = "Graph G must be strongly connected."
         raise nx.NetworkXError(msg)
