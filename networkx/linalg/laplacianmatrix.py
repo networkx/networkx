@@ -5,6 +5,9 @@ from networkx.utils import not_implemented_for
 
 np = nx.lazy_import("numpy")
 sp = nx.lazy_import("scipy")
+sp.sparse = nx.lazy_import("scipy.sparse")
+sp.sparse.linalg = nx.lazy_import("scipy.sparse.linalg")
+
 
 __all__ = [
     "laplacian_matrix",
@@ -49,8 +52,6 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     normalized_laplacian_matrix
     laplacian_spectrum
     """
-    import scipy.sparse  # call as sp.sparse
-
     if nodelist is None:
         nodelist = list(G)
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
@@ -120,8 +121,6 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
        Laplacian, Electronic Journal of Linear Algebra, Volume 16, pp. 90-98,
        March 2007.
     """
-    import scipy.sparse  # call as sp.sparse
-
     if nodelist is None:
         nodelist = list(G)
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
@@ -211,9 +210,6 @@ def directed_laplacian_matrix(
        Laplacians and the Cheeger inequality for directed graphs.
        Annals of Combinatorics, 9(1), 2005
     """
-    import scipy.sparse  # call as sp.sparse
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
-
     # NOTE: P has type ndarray if walk_type=="pagerank", else csr_array
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
@@ -305,9 +301,6 @@ def directed_combinatorial_laplacian_matrix(
        Laplacians and the Cheeger inequality for directed graphs.
        Annals of Combinatorics, 9(1), 2005
     """
-    import scipy.sparse  # call as sp.sparse
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
-
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
     )
@@ -329,8 +322,6 @@ def directed_combinatorial_laplacian_matrix(
         stacklevel=2,
     )
     # TODO: Rm np.asmatrix for networkx 3.0
-    import numpy as np
-
     return np.asmatrix(Phi - (Phi @ P + P.T @ Phi) / 2.0)
 
 
@@ -372,8 +363,6 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
     NetworkXError
         If walk_type not specified or alpha not in valid range
     """
-    import scipy.sparse  # call as sp.sparse
-
     if walk_type is None:
         if nx.is_strongly_connected(G):
             if nx.is_aperiodic(G):

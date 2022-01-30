@@ -9,6 +9,9 @@ from networkx.utils import np_random_state
 
 np = nx.lazy_import("numpy")
 sp = nx.lazy_import("scipy")
+sp.linalg.blas = nx.lazy_import("scipy.linalg.blas")
+sp.sparse.linalg = nx.lazy_import("scipy.sparse.linalg")  # call as sp.sparse.linalg
+
 
 __all__ = ["algebraic_connectivity", "fiedler_vector", "spectral_ordering"]
 
@@ -42,8 +45,6 @@ class _PCGSolver:
         return X
 
     def _solve(self, b, tol):
-        import scipy.linalg.blas  # call as sp.linalg.blas
-
         A = self._A
         M = self._M
         tol *= sp.linalg.blas.dasum(b)
@@ -79,8 +80,6 @@ class _LUSolver:
     """
 
     def __init__(self, A):
-        import scipy.sparse.linalg  # call as sp.sparse.linalg
-
         self._LU = sp.sparse.linalg.splu(
             A,
             permc_spec="MMD_AT_PLUS_A",
@@ -169,10 +168,6 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         As this is for Fiedler vectors, the zero eigenvalue (and
         constant eigenvector) are avoided.
     """
-    import scipy.linalg  # call as sp.linalg
-    import scipy.linalg.blas  # call as sp.linalg.blas
-    import scipy.sparse  # call as sp.sparse
-
     n = X.shape[0]
 
     if normalized:
@@ -259,9 +254,6 @@ def _get_fiedler_func(method):
     elif method == "lanczos" or method == "lobpcg":
 
         def find_fiedler(L, x, normalized, tol, seed):
-            import scipy.sparse  # call as sp.sparse
-            import scipy.sparse.linalg  # call as sp.sparse.linalg
-
             L = sp.sparse.csc_array(L, dtype=float)
             n = L.shape[0]
             if normalized:

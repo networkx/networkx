@@ -2,11 +2,13 @@
 # Lazy computations for inverse Laplacian and flow-matrix rows.
 import networkx as nx
 
+np = nx.lazy_import("numpy")
+sp = nx.lazy_import("scipy")
+sp.sparse.linalg = nx.lazy_import("scipy.sparse.linalg")  # call as sp.sparse.linalg
+
 
 def flow_matrix_row(G, weight=None, dtype=float, solver="lu"):
     # Generate a row of the current-flow matrix
-    import numpy as np
-
     solvername = {
         "full": FullInverseLaplacian,
         "lu": SuperLUInverseLaplacian,
@@ -34,9 +36,6 @@ def flow_matrix_row(G, weight=None, dtype=float, solver="lu"):
 # inverse laplacian matrix
 class InverseLaplacian:
     def __init__(self, L, width=None, dtype=None):
-        global np
-        import numpy as np
-
         (n, n) = L.shape
         self.dtype = dtype
         self.n = n
@@ -94,9 +93,6 @@ class FullInverseLaplacian(InverseLaplacian):
 
 class SuperLUInverseLaplacian(InverseLaplacian):
     def init_solver(self, L):
-        import scipy as sp
-        import scipy.sparse.linalg  # call as sp.sparse.linalg
-
         self.lusolve = sp.sparse.linalg.factorized(self.L1.tocsc())
 
     def solve_inverse(self, r):
@@ -112,10 +108,6 @@ class SuperLUInverseLaplacian(InverseLaplacian):
 
 class CGInverseLaplacian(InverseLaplacian):
     def init_solver(self, L):
-        global sp
-        import scipy as sp
-        import scipy.sparse.linalg  # call as sp.sparse.linalg
-
         ilu = sp.sparse.linalg.spilu(self.L1.tocsc())
         n = self.n - 1
         self.M = sp.sparse.linalg.LinearOperator(shape=(n, n), matvec=ilu.solve)

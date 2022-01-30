@@ -20,6 +20,10 @@ from networkx.utils import np_random_state
 
 np = nx.lazy_import("numpy")
 sp = nx.lazy_import("scipy")
+sp.sparse = nx.lazy_import("scipy.sparse")  # call as sp.sparse
+sp.sparse.linalg = nx.lazy_import("scipy.sparse.linalg")  # call as sp.sparse.linalg
+sp.optimize = nx.lazy_import("scipy.optimize")  # call as sp.optimize
+
 
 __all__ = [
     "bipartite_layout",
@@ -556,8 +560,6 @@ def _sparse_fruchterman_reingold(
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     # Sparse version
-    import scipy.sparse  # call as sp.sparse
-
     try:
         nnodes, _ = A.shape
     except AttributeError as err:
@@ -700,8 +702,6 @@ def _kamada_kawai_solve(dist_mtx, pos_arr, dim):
     # Anneal node locations based on the Kamada-Kawai cost-function,
     # using the supplied matrix of preferred inter-node distances,
     # and starting locations.
-    import scipy.optimize  # call as sp.optimize
-
     meanwt = 1e-3
     costargs = (np, 1 / (dist_mtx + np.eye(dist_mtx.shape[0]) * 1e-3), meanwt, dim)
 
@@ -841,9 +841,6 @@ def _sparse_spectral(A, dim=2):
     # Input adjacency matrix A
     # Uses sparse eigenvalue solver from scipy
     # Could use multilevel methods here, see Koren "On spectral graph drawing"
-    import scipy.sparse  # call as sp.sparse
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
-
     try:
         nnodes, _ = A.shape
     except AttributeError as err:

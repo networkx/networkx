@@ -8,6 +8,7 @@ from networkx.convert_matrix import _generate_weighted_edges
 import networkx as nx
 
 sp = nx.lazy_import("scipy")
+sp.sparse = nx.lazy_import("scipy.sparse")  # call as sp.sparse
 
 __all__ = ["biadjacency_matrix", "from_biadjacency_matrix"]
 
@@ -75,8 +76,6 @@ def biadjacency_matrix(
     .. [2] Scipy Dev. References, "Sparse Matrices",
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
-    import scipy.sparse  # call as sp.sparse
-
     nlen = len(row_order)
     if nlen == 0:
         raise nx.NetworkXError("row_order is empty list")

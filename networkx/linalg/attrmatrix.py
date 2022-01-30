@@ -5,6 +5,8 @@ import networkx as nx
 
 np = nx.lazy_import("numpy")
 sp = nx.lazy_import("scipy")
+sp.sparse = nx.lazy_import("scipy.sparse")  # call as sp.sparse
+
 
 __all__ = ["attr_matrix", "attr_sparse_matrix"]
 
@@ -427,8 +429,6 @@ def attr_sparse_matrix(
         (blue, blue) is 0   # there are no edges with blue endpoints
 
     """
-    import scipy.sparse  # call as sp.sparse
-
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)
 

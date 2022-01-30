@@ -4,6 +4,8 @@ import networkx as nx
 
 np = nx.lazy_import("numpy")
 sp = nx.lazy_import("scipy")
+sp.sparse.linalg = nx.lazy_import("scipy.sparse.linalg")  # call as sp.sparse.linalg
+
 
 __all__ = ["hits", "hits_numpy", "hits_scipy", "authority_matrix", "hub_matrix"]
 
@@ -72,8 +74,6 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
-
     if len(G) == 0:
         return {}, {}
     A = nx.adjacency_matrix(G, nodelist=list(G), dtype=float)

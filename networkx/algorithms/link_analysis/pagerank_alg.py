@@ -4,6 +4,8 @@ import networkx as nx
 
 np = nx.lazy_import("numpy")
 sp = nx.lazy_import("scipy")
+sp.sparse = nx.lazy_import("scipy.sparse")  # call as sp.sparse
+
 
 __all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
 
@@ -458,8 +460,6 @@ def pagerank_scipy(
     """
     msg = "networkx.pagerank_scipy is deprecated and will be removed in NetworkX 3.0, use networkx.pagerank instead."
     warn(msg, DeprecationWarning, stacklevel=2)
-    import scipy.sparse  # call as sp.sparse
-
     N = len(G)
     if N == 0:
         return {}
