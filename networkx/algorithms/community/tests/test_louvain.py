@@ -38,7 +38,7 @@ def test_partition():
         {23, 25, 27, 28, 24, 31},
         {32, 33, 8, 14, 15, 18, 20, 22, 26, 29, 30},
     ]
-    partition = louvain_communities(G, seed=2)
+    partition = louvain_communities(G, seed=2, weight=None)
 
     assert part == partition
 
