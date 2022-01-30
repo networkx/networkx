@@ -218,7 +218,8 @@ def find_cliques_recursive(G):
 
     This function returns an iterator over cliques, each of which is a
     list of nodes. It is a recursive implementation, so may suffer from
-    recursion depth issues.
+    recursion depth issues, but is included for pedagogical reasons.
+    For a non-recursive implementation, see :func:`find_cliques`.
 
     Parameters
     ----------

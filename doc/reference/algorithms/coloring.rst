@@ -7,6 +7,7 @@ Coloring
    :toctree: generated/
 
    greedy_color
+   greedy_coloring_with_interchange
    equitable_color
 
 Some node ordering strategies are provided for use with :func:`greedy_color`.
