@@ -18,7 +18,7 @@ def test_modularity_communities(func):
     mr_hi = frozenset([0, 4, 5, 6, 10, 11, 16, 19])
     overlap = frozenset([1, 2, 3, 7, 9, 12, 13, 17, 21])
     expected = {john_a, overlap, mr_hi}
-    assert set(func(G)) == expected
+    assert set(func(G, weight=None)) == expected
 
 
 @pytest.mark.parametrize(
