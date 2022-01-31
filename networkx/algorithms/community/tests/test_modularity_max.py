@@ -18,7 +18,7 @@ def test_modularity_communities(func):
     mr_hi = frozenset([0, 4, 5, 6, 10, 11, 16, 19])
     overlap = frozenset([1, 2, 3, 7, 9, 12, 13, 17, 21])
     expected = {john_a, overlap, mr_hi}
-    assert set(func(G)) == expected
+    assert set(func(G, weight=None)) == expected
 
 
 @pytest.mark.parametrize(
@@ -80,7 +80,10 @@ def test_greedy_modularity_communities_directed():
     assert greedy_modularity_communities(G) == expected
 
 
-def test_modularity_communities_weighted():
+@pytest.mark.parametrize(
+    "func", (greedy_modularity_communities, naive_greedy_modularity_communities)
+)
+def test_modularity_communities_weighted(func):
     G = nx.balanced_tree(2, 3)
     for (a, b) in G.edges:
         if ((a == 1) or (a == 2)) and (b != 0):
@@ -90,10 +93,10 @@ def test_modularity_communities_weighted():
 
     expected = [{0, 1, 3, 4, 7, 8, 9, 10}, {2, 5, 6, 11, 12, 13, 14}]
 
-    assert greedy_modularity_communities(G, weight="weight") == expected
-    assert greedy_modularity_communities(G, weight="weight", resolution=0.9) == expected
-    assert greedy_modularity_communities(G, weight="weight", resolution=0.3) == expected
-    assert greedy_modularity_communities(G, weight="weight", resolution=1.1) != expected
+    assert func(G, weight="weight") == expected
+    assert func(G, weight="weight", resolution=0.9) == expected
+    assert func(G, weight="weight", resolution=0.3) == expected
+    assert func(G, weight="weight", resolution=1.1) != expected
 
 
 def test_modularity_communities_floating_point():
