@@ -115,10 +115,10 @@ class TestGeneratorsBipartite:
         assert not G.is_directed()
         assert sorted(d for n, d in G.degree()) == [1, 1, 1, 2, 2, 2, 3, 3, 3]
 
-        GU = nx.project(nx.Graph(G), range(len(aseq)))
+        GU = nx.projected_graph(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
 
-        GD = nx.project(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
+        GD = nx.projected_graph(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
         assert GD.number_of_nodes() == 3
 
         G = reverse_havel_hakimi_graph(aseq, bseq, create_using=nx.Graph)
@@ -166,10 +166,10 @@ class TestGeneratorsBipartite:
         assert not G.is_directed()
         assert sorted(d for n, d in G.degree()) == [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
-        GU = nx.project(nx.Graph(G), range(len(aseq)))
+        GU = nx.projected_graph(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
 
-        GD = nx.project(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
+        GD = nx.projected_graph(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
         assert GD.number_of_nodes() == 4
 
         G = reverse_havel_hakimi_graph(aseq, bseq, create_using=nx.Graph)
@@ -222,10 +222,10 @@ class TestGeneratorsBipartite:
         assert not G.is_directed()
         assert sorted(d for n, d in G.degree()) == [1, 1, 1, 2, 2, 2, 3, 3, 3]
 
-        GU = nx.project(nx.Graph(G), range(len(aseq)))
+        GU = nx.projected_graph(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
 
-        GD = nx.project(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
+        GD = nx.projected_graph(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
         assert GD.number_of_nodes() == 3
 
         G = reverse_havel_hakimi_graph(aseq, bseq, create_using=nx.Graph)
@@ -286,10 +286,10 @@ class TestGeneratorsBipartite:
         assert not G.is_directed()
         assert sorted(d for n, d in G.degree()) == [1, 1, 1, 2, 2, 2, 3, 3, 3]
 
-        GU = nx.project(nx.Graph(G), range(len(aseq)))
+        GU = nx.projected_graph(nx.Graph(G), range(len(aseq)))
         assert GU.number_of_nodes() == 6
 
-        GD = nx.project(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
+        GD = nx.projected_graph(nx.Graph(G), range(len(aseq), len(aseq) + len(bseq)))
         assert GD.number_of_nodes() == 3
 
         G = reverse_havel_hakimi_graph(aseq, bseq, create_using=nx.Graph)
