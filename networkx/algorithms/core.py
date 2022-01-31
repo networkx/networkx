@@ -317,7 +317,7 @@ def k_crust(G, k=None, core_number=None):
     # Default for k is one less than in _core_subgraph, so just inline.
     #    Filter is c[v] <= k
     if core_number is None:
-        core_number = core_number(G)
+        core_number = nx.core_number(G)
     if k is None:
         k = max(core_number.values()) - 1
     nodes = (v for v in core_number if core_number[v] <= k)
