@@ -254,10 +254,6 @@ def recursive_simple_cycles(G):
     >>> nx.recursive_simple_cycles(G)
     [[0], [2], [0, 1, 2], [0, 2], [1, 2]]
 
-    See Also
-    --------
-    cycle_basis (for undirected graphs)
-
     Notes
     -----
     The implementation follows pp. 79-80 in [1]_.
