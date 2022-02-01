@@ -219,6 +219,12 @@ def set_warnings():
         category=DeprecationWarning,
         message="\n\nThe scipy.sparse array containers",
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="networkx.project"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\nfind_cores"
+    )
 
 
 @pytest.fixture(autouse=True)
