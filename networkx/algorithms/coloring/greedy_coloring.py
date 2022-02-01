@@ -363,7 +363,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
 
 
 # Tools for coloring with interchanges
-class Node:
+class _Node:
     __slots__ = ["node_id", "color", "adj_list", "adj_color"]
 
     def __init__(self, node_id, n):
@@ -406,7 +406,7 @@ class Node:
             adj_color_node = adj_color_node.col_next
 
 
-class AdjEntry:
+class _AdjEntry:
     __slots__ = ["node_id", "next", "mate", "col_next", "col_prev"]
 
     def __init__(self, node_id):
@@ -457,11 +457,11 @@ def _greedy_coloring_with_interchange(G, nodes):
     """
     n = len(G)
 
-    graph = {node: Node(node, n) for node in G}
+    graph = {node: _Node(node, n) for node in G}
 
     for (node1, node2) in G.edges():
-        adj_entry1 = AdjEntry(node2)
-        adj_entry2 = AdjEntry(node1)
+        adj_entry1 = _AdjEntry(node2)
+        adj_entry2 = _AdjEntry(node1)
         adj_entry1.mate = adj_entry2
         adj_entry2.mate = adj_entry1
         node1_head = graph[node1].adj_list
