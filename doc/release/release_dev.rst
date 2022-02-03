@@ -59,6 +59,9 @@ Deprecations
   Deprecate ``euclidean`` in favor of ``math.dist``.
 - [`#5166 <https://github.com/networkx/networkx/pull/5166>`_]
   Deprecate the ``hmn`` and ``lgc`` modules in ``node_classification``.
+- [`#5262 <https://github.com/networkx/networkx/pull/5262>`_]
+  Deprecate ``to_scipy_sparse_matrix`` and ``from_scipy_sparse_matrix`` in
+  favor of ``to_scipy_sparse_array`` and ``from_scipy_sparse_array``, respectively.
 
 
 Merged PRs

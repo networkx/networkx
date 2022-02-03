@@ -235,6 +235,7 @@ def recursive_simple_cycles(G):
     This version uses a recursive algorithm to build a list of cycles.
     You should probably use the iterator version called simple_cycles().
     Warning: This recursive version uses lots of RAM!
+    It appears in NetworkX for pedagogical value.
 
     Parameters
     ----------
@@ -252,10 +253,6 @@ def recursive_simple_cycles(G):
     >>> G = nx.DiGraph(edges)
     >>> nx.recursive_simple_cycles(G)
     [[0], [2], [0, 1, 2], [0, 2], [1, 2]]
-
-    See Also
-    --------
-    cycle_basis (for undirected graphs)
 
     Notes
     -----

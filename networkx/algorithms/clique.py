@@ -218,7 +218,8 @@ def find_cliques_recursive(G):
 
     This function returns an iterator over cliques, each of which is a
     list of nodes. It is a recursive implementation, so may suffer from
-    recursion depth issues.
+    recursion depth issues, but is included for pedagogical reasons.
+    For a non-recursive implementation, see :func:`find_cliques`.
 
     Parameters
     ----------
@@ -324,7 +325,7 @@ def make_max_clique_graph(G, create_using=None):
         import networkx as nx
         G = nx.make_clique_bipartite(G)
         cliques = [v for v in G.nodes() if G.nodes[v]['bipartite'] == 0]
-        G = nx.bipartite.project(G, cliques)
+        G = nx.bipartite.projected_graph(G, cliques)
         G = nx.relabel_nodes(G, {-v: v - 1 for v in G})
 
     It should be faster, though, since it skips all the intermediate

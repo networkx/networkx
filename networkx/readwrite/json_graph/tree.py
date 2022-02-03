@@ -75,6 +75,8 @@ def tree_data(G, root, attrs=None, ident="id", children="children"):
         raise TypeError("G is not a tree.")
     if not G.is_directed():
         raise TypeError("G is not directed.")
+    if not nx.is_weakly_connected(G):
+        raise TypeError("G is not weakly connected.")
 
     # NOTE: to be removed in 3.0
     if attrs is not None:

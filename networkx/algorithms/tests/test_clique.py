@@ -169,10 +169,10 @@ class TestCliques:
         B = nx.make_clique_bipartite(G)
         assert sorted(B) == [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
         # Project onto the nodes of the original graph.
-        H = nx.project(B, range(1, 12))
+        H = nx.projected_graph(B, range(1, 12))
         assert H.adj == G.adj
         # Project onto the nodes representing the cliques.
-        H1 = nx.project(B, range(-5, 0))
+        H1 = nx.projected_graph(B, range(-5, 0))
         # Relabel the negative numbers as positive ones.
         H1 = nx.relabel_nodes(H1, {-v: v for v in range(1, 6)})
         assert sorted(H1) == [1, 2, 3, 4, 5]
@@ -186,7 +186,7 @@ class TestCliques:
         G = self.G
         B = nx.make_clique_bipartite(G)
         # Project onto the nodes representing the cliques.
-        H1 = nx.project(B, range(-5, 0))
+        H1 = nx.projected_graph(B, range(-5, 0))
         # Relabel the negative numbers as nonnegative ones, starting at
         # 0.
         H1 = nx.relabel_nodes(H1, {-v: v - 1 for v in range(1, 6)})
