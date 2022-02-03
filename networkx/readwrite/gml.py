@@ -729,7 +729,7 @@ def generate_gml(G, stringizer=None):
                     yield from stringize(key, value, (), next_indent)
                 yield indent + "]"
             elif (
-                isinstance(value, (list, tuple))
+                isinstance(value, (list, tuple, set))
                 and key != "label"
                 and value
                 and not in_list
