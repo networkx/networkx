@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-def extrema_bounding(G, compute="diameter"):
+def extrema_bounding(G, compute="diameter", weight=None):
     """Compute requested extreme distance metric of undirected graph G
 
     Computation is based on smart lower and upper bounds, and in practice
@@ -32,6 +32,9 @@ def extrema_bounding(G, compute="diameter"):
        "radius" for the minimal eccentricity value,
        "periphery" for the set of nodes with eccentricity equal to the diameter
        "center" for the set of nodes with eccentricity equal to the radius
+    
+    weight : string, optional
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -89,7 +92,11 @@ def extrema_bounding(G, compute="diameter"):
         high = not high
 
         # get distances from/to current node and derive eccentricity
-        dist = dict(nx.single_source_shortest_path_length(G, current))
+        if weight is None:
+            dist = dict(nx.single_source_shortest_path_length(G, current))
+        else:
+            dist = dict(nx.single_source_bellman_ford_path_length(G, current, weight))
+        
         if len(dist) != N:
             msg = "Cannot compute metric because graph is not connected."
             raise nx.NetworkXError(msg)
@@ -251,7 +258,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
             if weight is None:
                 length = nx.single_source_shortest_path_length(G, n)
             else:
-                length=nx.single_source_bellman_ford_path_length(G, n, weight)
+                length = dict(nx.single_source_bellman_ford_path_length(G, n, weight))
             L = len(length)
         else:
             try:
