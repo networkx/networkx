@@ -212,7 +212,7 @@ def extrema_bounding(G, compute="diameter"):
     return None
 
 
-def eccentricity(G, v=None, sp=None):
+def eccentricity(G, v=None, sp=None, weight=None):
     """Returns the eccentricity of nodes in G.
 
     The eccentricity of a node v is the maximum distance from v to
@@ -228,6 +228,9 @@ def eccentricity(G, v=None, sp=None):
 
     sp : dict of dicts, optional
        All pairs shortest path lengths as a dictionary of dictionaries
+    
+    weight : string, optional
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -245,7 +248,10 @@ def eccentricity(G, v=None, sp=None):
     e = {}
     for n in G.nbunch_iter(v):
         if sp is None:
-            length = nx.single_source_shortest_path_length(G, n)
+            if weight is None:
+                length = nx.single_source_shortest_path_length(G, n)
+            else:
+                length=nx.single_source_bellman_ford_path_length(G, n, weight)
             L = len(length)
         else:
             try:
