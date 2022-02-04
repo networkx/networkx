@@ -44,9 +44,12 @@ API Changes
   `~networkx.drawing.layout.rescale_layout_dict` are now `numpy.ndarray` objects
   instead of tuples. This makes the return type of ``rescale_layout_dict``
   consistent with that of all of the other layout functions.
-- A ``FutureWarning`` has been added to ``google_matrix`` to indicated that the
+- A ``FutureWarning`` has been added to ``google_matrix`` to indicate that the
   return type will change from a ``numpy.matrix`` object to a ``numpy.ndarray``
   in NetworkX 3.0.
+- A ``FutureWarning`` has been added to ``attr_matrix`` to indicate that the
+  return type will change from a ``numpy.matrix`` object to a ``numpy.ndarray``
+  object in NetworkX 3.0.
 
 Deprecations
 ------------
