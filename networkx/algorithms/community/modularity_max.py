@@ -223,9 +223,9 @@ def greedy_modularity_communities_generator(G, weight=None, resolution=1):
         yield sorted(communities.values(), key=len, reverse=True)
 
 
-def greedy_modularity_communities(G, weight=None, resolution=1,
-                                  cutoff=None, best_n_communities=None,
-                                  **aliases):
+def greedy_modularity_communities(
+        G, weight=None, resolution=1, cutoff=None, best_n_communities=None, **aliases
+):
 
     """
     Parameters
@@ -261,26 +261,26 @@ def greedy_modularity_communities(G, weight=None, resolution=1,
         A list of frozensets of nodes, one for each community.
         Sorted by length with largest communities first.
     """
-    if (cutoff is not None):
+    if cutoff is not None:
         if (cutoff < 1) or (cutoff > G.number_of_nodes()):
             raise ValueError(
-                f"cutoff must be between 1 and {G.number_of_nodes()}. "
-                f"Got {cutoff}"
+                f"cutoff must be between 1 and {G.number_of_nodes()}. Got {cutoff}"
             )
-    if (best_n_communities is not None):
+    if best_n_communities is not None:
         if (best_n_communities < 1) or (best_n_communities > G.number_of_nodes()):
             raise ValueError(
                 f"best_n_communities must be between 1 and {G.number_of_nodes()}. "
                 f"Got {best_n_communities}"
             )
 
-    if ('n_communities' in aliases):
+    if 'n_communities' in aliases:
         import warnings
         warnings.warn(
             "kwarg ``n_communities`` in greedy_modularity_communities is deprecated. "
-            "Use ``cutoff`` instead.", DeprecationWarning
+            "Use ``cutoff`` instead.",
+            DeprecationWarning
         )
-        cutoff = aliases.pop('n_communities')
+        cutoff = aliases.pop("n_communities")
 
     # retrieve generator object to construct output
     community_gen = greedy_modularity_communities_generator(G, weight=weight, resolution=resolution)
@@ -292,31 +292,37 @@ def greedy_modularity_communities(G, weight=None, resolution=1,
     communities_nxt = community_gen.__next__()
 
     # calculate modularity for these partitions/communities
-    modularity_prv = modularity(G, communities_prv, resolution=resolution, weight=weight)
-    modularity_nxt = modularity(G, communities_nxt, resolution=resolution, weight=weight)
+    modularity_prv = modularity(
+        G, communities_prv, resolution=resolution, weight=weight
+    )
+    modularity_nxt = modularity(
+        G, communities_nxt, resolution=resolution, weight=weight
+    )
     dq = modularity_nxt - modularity_prv
 
-    while (len(communities_prv) > 1):
+    while len(communities_prv) > 1:
         # verify stopping criteria for ...
         # ... for cutoff parameter (desired number of communities communities is reached)
-        if ((dq > 0) and (cutoff is not None)):
+        if (dq > 0) and (cutoff is not None):
             if (len(communities_prv) <= cutoff):
                 break
         # ... best community structure (modularity can not be further improved)
-        if ((dq < 0) and (best_n_communities is None)):
+        if (dq < 0) and (best_n_communities is None):
             break
         # ... best_n_communities parameter
-        elif ((dq < 0) and (len(communities_prv)<=best_n_communities)):
+        elif (dq < 0) and (len(communities_prv)<=best_n_communities):
             break
 
         # update communities and construct next one if another union is possible
         communities_prv = communities_nxt
-        if (len(communities_prv) > 1):
+        if len(communities_prv) > 1:
             communities_nxt = community_gen.__next__()
 
         # update modularity
         modularity_prv = modularity_nxt
-        modularity_nxt = modularity(G, communities_nxt, resolution=resolution, weight=weight)
+        modularity_nxt = modularity(
+            G, communities_nxt, resolution=resolution, weight=weight
+        )
         dq = modularity_nxt - modularity_prv
 
     return communities_prv
