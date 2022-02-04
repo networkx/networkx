@@ -32,18 +32,16 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
        The rows and columns are ordered according to the nodes in nodelist.
        If nodelist is None, then the ordering is produced by G.nodes().
 
-
     Returns
     -------
     H : scipy.sparse.csr_matrix
-      The Bethe Hessian matrix of G, with paramter r.
+      The Bethe Hessian matrix of G, with parameter r.
 
     Examples
     --------
     >>> k = [3, 2, 2, 1, 0]
     >>> G = nx.havel_hakimi_graph(k)
     >>> H = nx.modularity_matrix(G)
-
 
     See Also
     --------
@@ -53,10 +51,10 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
 
     References
     ----------
-    .. [1] A. Saade, F. Krzakala and L. Zdeborová
-       "Spectral clustering of graphs with the bethe hessian",
-       Advances in Neural Information Processing Systems. 2014.
-    .. [2] C. M. Lee, E. Levina
+    .. [1] A. Saade, F. Krzakala and L. Zdeborová,
+       "Spectral Clustering of Graphs with the Bethe Hessian",
+       Advances in Neural Information Processing Systems (NIPS 2014), 2014.
+    .. [2] C. M. Le, E. Levina,
        "Estimating the number of communities in networks by spectral methods"
        arXiv:1507.00827, 2015.
     """
@@ -66,7 +64,9 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     if nodelist is None:
         nodelist = list(G)
     if r is None:
-        r = sum(d ** 2 for v, d in nx.degree(G)) / sum(d for v, d in nx.degree(G)) - 1
+        c = [d for v, d in nx.degree(G)]
+        r = sum(d ** 2 for d in c) / sum(c) - 1
+    
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, format="csr")
     n, m = A.shape
     # TODO: Rm csr_array wrapper when spdiags array creation becomes available
