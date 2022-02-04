@@ -224,7 +224,7 @@ def greedy_modularity_communities_generator(G, weight=None, resolution=1):
 
 
 def greedy_modularity_communities(
-        G, weight=None, resolution=1, cutoff=None, best_n_communities=None, **aliases
+    G, weight=None, resolution=1, cutoff=None, best_n_communities=None, **aliases
 ):
 
     """
@@ -273,17 +273,19 @@ def greedy_modularity_communities(
                 f"Got {best_n_communities}"
             )
 
-    if 'n_communities' in aliases:
+    if "n_communities" in aliases:
         import warnings
         warnings.warn(
             "kwarg ``n_communities`` in greedy_modularity_communities is deprecated. "
             "Use ``cutoff`` instead.",
-            DeprecationWarning
+            DeprecationWarning,
         )
         cutoff = aliases.pop("n_communities")
 
     # retrieve generator object to construct output
-    community_gen = greedy_modularity_communities_generator(G, weight=weight, resolution=resolution)
+    community_gen = greedy_modularity_communities_generator(
+        G, weight=weight, resolution=resolution
+    )
 
     # construct the first two best partitions
     communities_prv = community_gen.__next__()
@@ -304,13 +306,13 @@ def greedy_modularity_communities(
         # verify stopping criteria for ...
         # ... for cutoff parameter (desired number of communities communities is reached)
         if (dq > 0) and (cutoff is not None):
-            if (len(communities_prv) <= cutoff):
+            if len(communities_prv) <= cutoff:
                 break
         # ... best community structure (modularity can not be further improved)
         if (dq < 0) and (best_n_communities is None):
             break
         # ... best_n_communities parameter
-        elif (dq < 0) and (len(communities_prv)<=best_n_communities):
+        elif (dq < 0) and (len(communities_prv) <= best_n_communities):
             break
 
         # update communities and construct next one if another union is possible
