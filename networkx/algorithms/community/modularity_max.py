@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1, enforce_n_communities=False):
+def greedy_modularity_communities_generator(G, weight=None, resolution=1):
     r"""Find communities in G using greedy modularity maximization.
 
     This function uses Clauset-Newman-Moore greedy modularity maximization [2]_.
@@ -39,23 +39,6 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1,
     resolution : float (default=1)
         If resolution is less than 1, modularity favors larger communities.
         Greater than 1 favors smaller communities.
-
-    n_communities : int (default=1)
-        Desired number of communities: the community merging process is
-        terminated once this number of communities is reached, or until
-        modularity can not be further increased. Must be between 1 and the
-        total number of nodes in `G`. Default is ``1``, meaning the community
-        merging process continues until all nodes are in the same community
-        or until the best community structure is found.
-
-    enforce_n_communities : bool (default=False)
-        By default, if n_communities is lower than the number where the best community
-        structure is found, then n_communities can not be reached because the merging
-        process terminates as soon as the best community structure is found.
-        If enforce_n_communities is ``True``, then the merging proceeds continues
-        until the number of communities ``n_communities`` is reached, even if
-        this does not further improve the community structure. In this case those
-        nodes are aggregated that decrease modularity the least.
 
     Returns
     -------
@@ -89,10 +72,6 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1,
     """
     directed = G.is_directed()
     N = G.number_of_nodes()
-    if (n_communities < 1) or (n_communities > N):
-        raise ValueError(
-            f"n_communities must be between 1 and {N}. Got {n_communities}"
-        )
 
     # Count edges (or the sum of edge-weights for weighted graphs)
     m = G.size(weight)
@@ -129,10 +108,11 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1,
 
     # Initialize single-node communities
     communities = {n: frozenset([n]) for n in G}
+    yield sorted(communities.values(), key=len, reverse=True)
 
     # Merge communities until we can't improve modularity or until desired number of
     # communities (n_communities) is reached.
-    while len(H) > n_communities:
+    while len(H) > 1:
         # Find best merge
         # Remove from heap of row maxes
         # Ties will be broken by choosing the pair with lowest min community id
@@ -158,9 +138,6 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1,
         else:
             # Duplicate wasn't in H, just remove from row v heap
             dq_heap[v].remove((v, u))
-        # Stop when change is non-positive (no improvement possible)
-        if (dq <= 0) and (enforce_n_communities is False):
-            break
 
         # Perform merge
         communities[v] = frozenset(communities[u] | communities[v])
@@ -243,7 +220,106 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1,
             b[v] += b[u]
             b[u] = 0
 
-    return sorted(communities.values(), key=len, reverse=True)
+        yield sorted(communities.values(), key=len, reverse=True)
+
+
+def greedy_modularity_communities(G, weight=None, resolution=1,
+                                  cutoff=None, best_n_communities=None,
+                                  **aliases):
+
+    """
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    weight : string or None, optional (default=None)
+        The name of an edge attribute that holds the numerical value used
+        as a weight.  If None, then each edge has weight 1.
+        The degree is the sum of the edge weights adjacent to the node.
+
+    resolution : float, optional (default=1)
+        If resolution is less than 1, modularity favors larger communities.
+        Greater than 1 favors smaller communities.
+
+    cutoff : int or None, optional (default=None)
+        stop iterating when reaching ``cutoff`` community size: the community merging
+        process is terminated once this number of communities is reached, or until
+        modularity can not be further increased. Must be between 1 and the
+        total number of nodes in `G`. Default is ``None``, meaning the community
+        merging process continues until all nodes are either in (a) the same community
+        or (b) until the best community structure is found.
+
+    best_n_communities : int or None, optional (default=None)
+        the merging proceeds continues until the number of communities
+        ``best_n_communities`` is reached, even if this does not further improve the
+        community structure. In this case those nodes are aggregated that decrease
+        modularity the least.
+
+    Returns
+    -------
+    partition: list
+        A list of frozensets of nodes, one for each community.
+        Sorted by length with largest communities first.
+    """
+    if (cutoff is not None):
+        if (cutoff < 1) or (cutoff > G.number_of_nodes()):
+            raise ValueError(
+                f"cutoff must be between 1 and {G.number_of_nodes()}. "
+                f"Got {cutoff}"
+            )
+    if (best_n_communities is not None):
+        if (best_n_communities < 1) or (best_n_communities > G.number_of_nodes()):
+            raise ValueError(
+                f"best_n_communities must be between 1 and {G.number_of_nodes()}. "
+                f"Got {best_n_communities}"
+            )
+
+    if ('n_communities' in aliases):
+        import warnings
+        warnings.warn(
+            "kwarg ``n_communities`` in greedy_modularity_communities is deprecated. "
+            "Use ``cutoff`` instead.", DeprecationWarning
+        )
+        cutoff = aliases.pop('n_communities')
+
+    # retrieve generator object to construct output
+    community_gen = greedy_modularity_communities_generator(G, weight=weight, resolution=resolution)
+
+    # construct the first two best partitions
+    communities_prv = community_gen.__next__()
+    if len(communities_prv) == 1:
+        return communities_prv
+    communities_nxt = community_gen.__next__()
+
+    # calculate modularity for these partitions/communities
+    modularity_prv = modularity(G, communities_prv, resolution=resolution, weight=weight)
+    modularity_nxt = modularity(G, communities_nxt, resolution=resolution, weight=weight)
+    dq = modularity_nxt - modularity_prv
+
+    while (len(communities_prv) > 1):
+        # verify stopping criteria for ...
+        # ... for cutoff parameter (desired number of communities communities is reached)
+        if ((dq > 0) and (cutoff is not None)):
+            if (len(communities_prv) <= cutoff):
+                break
+        # ... best community structure (modularity can not be further improved)
+        if ((dq < 0) and (best_n_communities is None)):
+            break
+        # ... best_n_communities parameter
+        elif ((dq < 0) and (len(communities_prv)<=best_n_communities)):
+            break
+
+        # update communities and construct next one if another union is possible
+        communities_prv = communities_nxt
+        if (len(communities_prv) > 1):
+            communities_nxt = community_gen.__next__()
+
+        # update modularity
+        modularity_prv = modularity_nxt
+        modularity_nxt = modularity(G, communities_nxt, resolution=resolution, weight=weight)
+        dq = modularity_nxt - modularity_prv
+
+    return communities_prv
 
 
 @not_implemented_for("directed")
