@@ -101,3 +101,6 @@ Version 3.0
   the associated FutureWarning.
 * In ``networkx/convert_matrix.py`` remove ``from_scipy_sparse_matrix`` and
   ``to_scipy_sparse_matrix``.
+* In ``networkx/linalg/attrmatrix.py`` remove the FutureWarning, update the
+  return type by removing ``np.asmatrix``, and update the docstring to
+  reflect that the function returns a ``numpy.ndarray`` instance.
