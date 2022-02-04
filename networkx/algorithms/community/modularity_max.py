@@ -20,8 +20,8 @@ def greedy_modularity_communities_generator(G, weight=None, resolution=1):
     This function uses Clauset-Newman-Moore greedy modularity maximization [2]_.
 
     Greedy modularity maximization begins with each node in its own community
-    and joins the pair of communities that most increases modularity until no
-    such pair exists or until number of communities `n_communities` is reached.
+    and joins the pair of communities that most increases or least decreases
+    modularity until all nodes are in one community.
 
     This function maximizes the generalized modularity, where `resolution`
     is the resolution parameter, often expressed as $\gamma$.
@@ -110,8 +110,8 @@ def greedy_modularity_communities_generator(G, weight=None, resolution=1):
     communities = {n: frozenset([n]) for n in G}
     yield sorted(communities.values(), key=len, reverse=True)
 
-    # Merge communities until we can't improve modularity or until desired number of
-    # communities (n_communities) is reached.
+    # Merge nodes that increase modularity the most or those that decrease
+    # modularity the least
     while len(H) > 1:
         # Find best merge
         # Remove from heap of row maxes
@@ -275,6 +275,7 @@ def greedy_modularity_communities(
 
     if "n_communities" in aliases:
         import warnings
+
         warnings.warn(
             "kwarg ``n_communities`` in greedy_modularity_communities is deprecated. "
             "Use ``cutoff`` instead.",
