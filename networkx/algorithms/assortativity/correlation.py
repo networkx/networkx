@@ -3,7 +3,6 @@
 from networkx.algorithms.assortativity.mixing import (
     degree_mixing_matrix,
     attribute_mixing_matrix,
-    numeric_mixing_matrix,
 )
 from networkx.algorithms.assortativity.pairs import node_degree_xy
 
@@ -96,7 +95,7 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     mapping = {d: i for i, d, in enumerate(degrees)}
     M = degree_mixing_matrix(G, x=x, y=y, nodes=nodes, weight=weight, mapping=mapping)
 
-    return numeric_ac(M, mapping=mapping)
+    return _numeric_ac(M, mapping=mapping)
 
 
 def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, nodes=None):
@@ -150,12 +149,11 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     .. [2] Foster, J.G., Foster, D.V., Grassberger, P. & Paczuski, M.
        Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
     """
-    import scipy as sp
-    import scipy.stats  # call as sp.stats
+    import scipy.stats
 
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
-    return sp.stats.pearsonr(x, y)[0]
+    return scipy.stats.pearsonr(x, y)[0]
 
 
 def attribute_assortativity_coefficient(G, attribute, nodes=None):
@@ -250,7 +248,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
     vals = {G.nodes[n][attribute] for n in nodes}
     mapping = {d: i for i, d, in enumerate(vals)}
     M = attribute_mixing_matrix(G, attribute, nodes, mapping)
-    return numeric_ac(M, mapping)
+    return _numeric_ac(M, mapping)
 
 
 def attribute_ac(M):
@@ -280,14 +278,13 @@ def attribute_ac(M):
     return r
 
 
-def numeric_ac(M, mapping):
+def _numeric_ac(M, mapping):
     # M is a numpy matrix or array
     # numeric assortativity coefficient, pearsonr
     import numpy as np
 
     if M.sum() != 1.0:
         M = M / float(M.sum())
-    nx, ny = M.shape  # nx=ny
     x = np.array(list(mapping.keys()))
     y = x  # x and y have the same support
     idx = list(mapping.values())
