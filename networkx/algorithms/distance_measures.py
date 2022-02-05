@@ -32,7 +32,7 @@ def extrema_bounding(G, compute="diameter", weight=None):
        "radius" for the minimal eccentricity value,
        "periphery" for the set of nodes with eccentricity equal to the diameter
        "center" for the set of nodes with eccentricity equal to the radius
-    
+
     weight : string, optional
        Edge data key corresponding to the edge weight.
 
@@ -96,7 +96,7 @@ def extrema_bounding(G, compute="diameter", weight=None):
             dist = dict(nx.single_source_shortest_path_length(G, current))
         else:
             dist = dict(nx.single_source_bellman_ford_path_length(G, current, weight))
-        
+
         if len(dist) != N:
             msg = "Cannot compute metric because graph is not connected."
             raise nx.NetworkXError(msg)
@@ -235,7 +235,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
 
     sp : dict of dicts, optional
        All pairs shortest path lengths as a dictionary of dictionaries
-    
+
     weight : string, optional
        Edge data key corresponding to the edge weight.
 
