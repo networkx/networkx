@@ -94,12 +94,11 @@ def extrema_bounding(G, compute="diameter", weighted=False):
         # get distances from/to current node and derive eccentricity
         if weighted:
             dist = dict(nx.single_source_bellman_ford_path_length(G, current))
-            decimal_places = max(
-                [
-                    str(w)[::-1].find(".")
-                    for w in nx.get_edge_attributes(G, "weight").values()
-                ]
-            )
+            decimal_places = [
+                str(w)[::-1].find(".")
+                for w in nx.get_edge_attributes(G, "weight").values()
+            ]
+            decimal_places = max(decimal_places)
             for k in dist.keys():
                 dist[k] = round(dist[k], decimal_places)
         else:
@@ -214,15 +213,15 @@ def extrema_bounding(G, compute="diameter", weighted=False):
     # return the correct value of the requested metric
     if compute == "diameter":
         return maxlower
-    elif compute == "radius":
+    if compute == "radius":
         return minupper
-    elif compute == "periphery":
+    if compute == "periphery":
         p = [v for v in G if ecc_lower[v] == maxlower]
         return p
-    elif compute == "center":
+    if compute == "center":
         c = [v for v in G if ecc_upper[v] == minupper]
         return c
-    elif compute == "eccentricities":
+    if compute == "eccentricities":
         return ecc_lower
     return None
 
@@ -265,12 +264,11 @@ def eccentricity(G, v=None, sp=None, weighted=False):
         if sp is None:
             if weighted:
                 length = nx.single_source_bellman_ford_path_length(G, n)
-                decimal_places = max(
-                    [
-                        str(w)[::-1].find(".")
-                        for w in nx.get_edge_attributes(G, "weight").values()
-                    ]
-                )
+                decimal_places = [
+                    str(w)[::-1].find(".")
+                    for w in nx.get_edge_attributes(G, "weight").values()
+                ]
+                decimal_places = max(decimal_places)
                 for k in length.keys():
                     length[k] = round(length[k], decimal_places)
             else:
@@ -296,8 +294,7 @@ def eccentricity(G, v=None, sp=None, weighted=False):
 
     if v in G:
         return e[v]  # return single value
-    else:
-        return e
+    return e
 
 
 def diameter(G, e=None, usebounds=False, weighted=False):
@@ -560,7 +557,8 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     Additional details:
     Vaya Sapobi Samui Vos, “Methods for determining the effective resistance,” M.S.,
     Mathematisch Instituut, Universiteit Leiden, Leiden, Netherlands, 2016
-    Available: `Link to thesis <https://www.universiteitleiden.nl/binaries/content/assets/science/mi/scripties/master/vos_vaya_master.pdf>`_
+    Available: `Link to thesis: <https://www.universiteitleiden.nl/binaries/
+    content/assets/science/mi/scripties/master/vos_vaya_master.pdf>`_
     """
     import numpy as np
     import scipy as sp
