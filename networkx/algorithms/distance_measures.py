@@ -284,7 +284,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
         return e
 
 
-def diameter(G, e=None, usebounds=False):
+def diameter(G, e=None, usebounds=False, weight=None):
     """Returns the diameter of the graph G.
 
     The diameter is the maximum eccentricity.
@@ -296,6 +296,9 @@ def diameter(G, e=None, usebounds=False):
 
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
+
+    weight : string, optional
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -313,7 +316,7 @@ def diameter(G, e=None, usebounds=False):
     return max(e.values())
 
 
-def periphery(G, e=None, usebounds=False):
+def periphery(G, e=None, usebounds=False, weight=None):
     """Returns the periphery of the graph G.
 
     The periphery is the set of nodes with eccentricity equal to the diameter.
@@ -325,6 +328,9 @@ def periphery(G, e=None, usebounds=False):
 
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
+
+    weight : string, optional
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -345,7 +351,7 @@ def periphery(G, e=None, usebounds=False):
     return p
 
 
-def radius(G, e=None, usebounds=False):
+def radius(G, e=None, usebounds=False, weight=None):
     """Returns the radius of the graph G.
 
     The radius is the minimum eccentricity.
@@ -357,6 +363,9 @@ def radius(G, e=None, usebounds=False):
 
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
+
+    weight : string, optional
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -370,7 +379,7 @@ def radius(G, e=None, usebounds=False):
     return min(e.values())
 
 
-def center(G, e=None, usebounds=False):
+def center(G, e=None, usebounds=False, weight=None):
     """Returns the center of the graph G.
 
     The center is the set of nodes with eccentricity equal to radius.
@@ -382,6 +391,9 @@ def center(G, e=None, usebounds=False):
 
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
+
+    weight : string, optional
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
