@@ -65,8 +65,8 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
         nodelist = list(G)
     if r is None:
         c = [d for v, d in nx.degree(G)]
-        r = sum(d ** 2 for d in c) / sum(c) - 1
-    
+        r = sum(d**2 for d in c) / sum(c) - 1
+
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, format="csr")
     n, m = A.shape
     # TODO: Rm csr_array wrapper when spdiags array creation becomes available
@@ -81,4 +81,4 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
         stacklevel=2,
     )
     # TODO: Remove the csr_matrix wrapper in NetworkX 3.0
-    return sp.sparse.csr_matrix((r ** 2 - 1) * I - r * A + D)
+    return sp.sparse.csr_matrix((r**2 - 1) * I - r * A + D)
