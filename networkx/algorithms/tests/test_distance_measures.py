@@ -91,6 +91,64 @@ class TestDistance:
             nx.eccentricity(DG)
 
 
+class TestWeightedDistance:
+    def setup_method(self):
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=0.6)
+        G.add_edge(0, 2, weight=0.2)
+        G.add_edge(2, 3, weight=0.1)
+        G.add_edge(2, 4, weight=0.7)
+        G.add_edge(2, 5, weight=0.9)
+        G.add_edge(1, 5, weight=0.3)
+        self.G = G
+
+    def test_eccentricity(self):
+        assert nx.eccentricity(self.G, 1, weighted=True) == 1.5
+        e = nx.eccentricity(self.G, weighted=True)
+        assert e[1] == 1.5
+
+        e = nx.eccentricity(self.G, v=1, weighted=True)
+        assert e == 1.5
+
+        # This behavior changed in version 1.8 (ticket #739)
+        e = nx.eccentricity(self.G, v=[1, 1], weighted=True)
+        assert e[1] == 1.5
+        e = nx.eccentricity(self.G, v=[1, 2], weighted=True)
+        assert e[1] == 1.5
+
+    def test_diameter(self):
+        assert nx.diameter(self.G, weighted=True) == 1.6
+
+    def test_radius(self):
+        assert nx.radius(self.G, weighted=True) == 0.9
+
+    def test_periphery(self):
+        for v in set(nx.periphery(self.G, weighted=True)):
+            assert nx.eccentricity(self.G, v, weighted=True) == nx.diameter(
+                self.G, weighted=True
+            )
+
+    def test_center(self):
+        for v in set(nx.center(self.G, weighted=True)):
+            assert nx.eccentricity(self.G, v, weighted=True) == nx.radius(
+                self.G, weighted=True
+            )
+
+    def test_bound_diameter(self):
+        assert nx.diameter(self.G, usebounds=True, weighted=True) == 1.6
+
+    def test_bound_radius(self):
+        assert nx.radius(self.G, usebounds=True, weighted=True) == 0.9
+
+    def test_bound_periphery(self):
+        result = {4, 5}
+        assert set(nx.periphery(self.G, usebounds=True, weighted=True)) == result
+
+    def test_bound_center(self):
+        result = {0, 2}
+        assert set(nx.center(self.G, usebounds=True, weighted=True)) == result
+
+
 class TestResistanceDistance:
     @classmethod
     def setup_class(cls):
