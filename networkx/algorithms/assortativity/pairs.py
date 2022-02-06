@@ -48,7 +48,7 @@ def node_attribute_xy(G, attribute, nodes=None):
         if G.is_multigraph():
             for v, keys in nbrsdict.items():
                 vattr = Gnodes[v].get(attribute, None)
-                for _ in range(len(keys)):
+                for _ in keys:
                     yield (uattr, vattr)
         else:
             for v in nbrsdict:
