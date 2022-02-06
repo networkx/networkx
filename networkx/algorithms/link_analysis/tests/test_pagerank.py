@@ -1,7 +1,8 @@
 import random
 
-import networkx as nx
 import pytest
+
+import networkx as nx
 
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")

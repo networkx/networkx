@@ -1,5 +1,6 @@
 """PageRank analysis of graph structure. """
 from warnings import warn
+
 import networkx as nx
 
 __all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
@@ -231,10 +232,10 @@ def google_matrix(
     --------
     pagerank, pagerank_numpy, pagerank_scipy
     """
-    import numpy as np
-
     # TODO: Remove this warning in version 3.0
     import warnings
+
+    import numpy as np
 
     warnings.warn(
         "google_matrix will return an np.ndarray instead of a np.matrix in\n"

@@ -245,8 +245,9 @@ def hits_numpy(G, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    import numpy as np
     import warnings
+
+    import numpy as np
 
     warnings.warn(
         (
@@ -349,8 +350,9 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    import numpy as np
     import warnings
+
+    import numpy as np
 
     warnings.warn(
         (
