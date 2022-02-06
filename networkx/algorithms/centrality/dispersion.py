@@ -69,12 +69,12 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
                 norm_disp = ((total + b) ** alpha) / (embededness + c)
             else:
                 norm_disp = (total + b) ** alpha
-            dispersion = norm_disp
+            disper = norm_disp
 
         else:
-            dispersion = total
+            disper = total
 
-        return dispersion
+        return disper
 
     if u is None:
         # v and u are not specified

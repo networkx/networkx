@@ -108,7 +108,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
         nodes = G.nodes
     else:
         nodes = [u]
-    closeness_centrality = {}
+    closeness_cen = {}
     for n in nodes:
         sp = path_length(G, n)
         totsp = sum(sp.values())
@@ -120,11 +120,10 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
             if wf_improved:
                 s = (len(sp) - 1.0) / (len_G - 1)
                 _closeness_centrality *= s
-        closeness_centrality[n] = _closeness_centrality
+        closeness_cen[n] = _closeness_centrality
     if u is not None:
-        return closeness_centrality[u]
-    else:
-        return closeness_centrality
+        return closeness_cen[u]
+    return closeness_cen
 
 
 @not_implemented_for("directed")
@@ -245,10 +244,10 @@ def incremental_closeness_centrality(
         return nx.closeness_centrality(G)
 
     nodes = G.nodes()
-    closeness_centrality = {}
+    closeness_cen = {}
     for n in nodes:
         if n in du and n in dv and abs(du[n] - dv[n]) <= 1:
-            closeness_centrality[n] = prev_cc[n]
+            closeness_cen[n] = prev_cc[n]
         else:
             sp = path_length(G, n)
             totsp = sum(sp.values())
@@ -260,7 +259,7 @@ def incremental_closeness_centrality(
                 if wf_improved:
                     s = (len(sp) - 1.0) / (len_G - 1)
                     _closeness_centrality *= s
-            closeness_centrality[n] = _closeness_centrality
+            closeness_cen[n] = _closeness_centrality
 
     # Leave the graph as we found it
     if insertion:
@@ -268,4 +267,4 @@ def incremental_closeness_centrality(
     else:
         G.add_edge(u, v)
 
-    return closeness_centrality
+    return closeness_cen

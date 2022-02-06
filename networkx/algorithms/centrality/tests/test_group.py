@@ -81,7 +81,7 @@ class TestGroupBetweennessCentrality:
         Node(s) in C not in graph, raises NodeNotFound exception
         """
         with pytest.raises(nx.NodeNotFound):
-            b = nx.group_betweenness_centrality(nx.path_graph(5), [4, 7, 8])
+            nx.group_betweenness_centrality(nx.path_graph(5), [4, 7, 8])
 
     def test_group_betweenness_directed_weighted(self):
         """
@@ -151,7 +151,7 @@ class TestProminentGroup:
         Node(s) in C not in graph, raises NodeNotFound exception
         """
         with pytest.raises(nx.NodeNotFound):
-            b, g = nx.prominent_group(nx.path_graph(5), 1, C=[10])
+            nx.prominent_group(nx.path_graph(5), 1, C=[10])
 
     def test_group_betweenness_directed_weighted(self):
         """
@@ -216,7 +216,7 @@ class TestGroupClosenessCentrality:
         Node(s) in S not in graph, raises NodeNotFound exception
         """
         with pytest.raises(nx.NodeNotFound):
-            c = nx.group_closeness_centrality(nx.path_graph(5), [6, 7, 8])
+            nx.group_closeness_centrality(nx.path_graph(5), [6, 7, 8])
 
 
 class TestGroupDegreeCentrality:
@@ -274,4 +274,4 @@ class TestGroupDegreeCentrality:
         Node(s) in S not in graph, raises NetworkXError
         """
         with pytest.raises(nx.NetworkXError):
-            b = nx.group_degree_centrality(nx.path_graph(5), [6, 7, 8])
+            nx.group_degree_centrality(nx.path_graph(5), [6, 7, 8])

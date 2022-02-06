@@ -65,7 +65,6 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
             if order <= 2:
                 return betweenness  # no normalization b=0 for all nodes
             betweenness *= 1.0 / ((order - 1) * (order - 2))
-        return betweenness
     else:
         betweenness = {}.fromkeys(G, 0.0)
         for source in betweenness:
@@ -79,7 +78,7 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
             scale = 1.0 / ((order - 1) * (order - 2))
             for v in betweenness:
                 betweenness[v] *= scale
-        return betweenness  # all nodes
+    return betweenness  # all nodes
 
 
 def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):

@@ -100,7 +100,7 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
             S, P, sigma, _ = dijkstra(G, s, weight)
         # accumulation
         percolation = _accumulate_percolation(
-            percolation, G, S, P, sigma, s, states, p_sigma_x_t
+            percolation, S, P, sigma, s, states, p_sigma_x_t
         )
 
     n = len(G)
@@ -111,7 +111,7 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
     return percolation
 
 
-def _accumulate_percolation(percolation, G, S, P, sigma, s, states, p_sigma_x_t):
+def _accumulate_percolation(percolation, S, P, sigma, s, states, p_sigma_x_t):
     delta = dict.fromkeys(S, 0)
     while S:
         w = S.pop()

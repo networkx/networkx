@@ -194,8 +194,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
         GBC.append(GBC_group)
     if list_of_groups:
         return GBC
-    else:
-        return GBC[0]
+    return GBC[0]
 
 
 def _group_preprocessing(G, set_v, weight):
@@ -515,7 +514,7 @@ def _heuristic(k, root, DF_tree, D, nodes, greedy):
             zip(np.diag(DF_tree.nodes[node_p]["betweenness"]), nodes), reverse=True
         )
     ]
-    [CL.remove(m) for m in CL if m in DF_tree.nodes[node_p]["GM"]]
+    _ = [CL.remove(m) for m in CL if m in DF_tree.nodes[node_p]["GM"]]
     DF_tree.nodes[node_p]["CL"] = CL
     DF_tree.nodes[node_p]["cont"] = dict(
         zip(nodes, np.diag(DF_tree.nodes[node_p]["betweenness"]))
