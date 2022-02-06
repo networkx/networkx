@@ -1,4 +1,5 @@
 from collections import defaultdict
+
 import networkx as nx
 
 __all__ = ["average_degree_connectivity", "k_nearest_neighbors"]

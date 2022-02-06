@@ -4,6 +4,7 @@ np = pytest.importorskip("numpy")
 
 
 import networkx as nx
+
 from .base_test import (
     BaseTestAttributeMixing,
     BaseTestDegreeMixing,
