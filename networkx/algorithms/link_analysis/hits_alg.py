@@ -86,8 +86,8 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     a = vt.flatten().real
     h = A @ a
     if normalized:
-        h = h / h.sum()
-        a = a / a.sum()
+        h /= h.sum()
+        a /= a.sum()
     hubs = dict(zip(G, map(float, h)))
     authorities = dict(zip(G, map(float, a)))
     return hubs, authorities
@@ -270,11 +270,11 @@ def hits_numpy(G, normalized=True):
     e, ev = np.linalg.eig(A)
     a = ev[:, np.argmax(e)]  # eigenvector corresponding to the maximum eigenvalue
     if normalized:
-        h = h / h.sum()
-        a = a / a.sum()
+        h /= h.sum()
+        a /= a.sum()
     else:
-        h = h / h.max()
-        a = a / a.max()
+        h /= h.max()
+        a /= a.max()
     hubs = dict(zip(G, map(float, h)))
     authorities = dict(zip(G, map(float, a)))
     return hubs, authorities
@@ -373,7 +373,7 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
         x = np.ones((n, 1)) / n
     else:
         x = np.array([nstart.get(n, 0) for n in list(G)], dtype=float)
-        x = x / x.sum()
+        x /= x.sum()
 
     # power iteration on authority matrix
     i = 0
@@ -392,8 +392,8 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
     a = x.flatten()
     h = A @ a
     if normalized:
-        h = h / h.sum()
-        a = a / a.sum()
+        h /= h.sum()
+        a /= a.sum()
     hubs = dict(zip(G, map(float, h)))
     authorities = dict(zip(G, map(float, a)))
     return hubs, authorities
