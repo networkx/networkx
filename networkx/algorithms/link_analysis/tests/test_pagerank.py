@@ -80,7 +80,7 @@ class TestPageRank:
     def test_google_matrix(self):
         G = self.G
         M = nx.google_matrix(G, alpha=0.9, nodelist=sorted(G))
-        e, ev = np.linalg.eig(M.T)
+        _, ev = np.linalg.eig(M.T)
         p = np.array(ev[:, 0] / ev[:, 0].sum())[:, 0]
         for (a, b) in zip(p, self.G.pagerank.values()):
             assert a == pytest.approx(b, abs=1e-7)
@@ -216,4 +216,4 @@ def test_deprecation_warnings(pagerank_alg):
     """
     G = nx.DiGraph(nx.path_graph(4))
     with pytest.warns(DeprecationWarning):
-        pr = pagerank_alg(G, alpha=0.9)
+        pagerank_alg(G, alpha=0.9)

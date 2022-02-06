@@ -78,10 +78,10 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     A = nx.adjacency_matrix(G, nodelist=list(G), dtype=float)
 
     if nstart is None:
-        u, s, vt = sp.sparse.linalg.svds(A, k=1, maxiter=max_iter, tol=tol)
+        _, _, vt = sp.sparse.linalg.svds(A, k=1, maxiter=max_iter, tol=tol)
     else:
         nstart = np.array(list(nstart.values()))
-        u, s, vt = sp.sparse.linalg.svds(A, k=1, v0=nstart, maxiter=max_iter, tol=tol)
+        _, _, vt = sp.sparse.linalg.svds(A, k=1, v0=nstart, maxiter=max_iter, tol=tol)
 
     a = vt.flatten().real
     h = A @ a
@@ -94,7 +94,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
 
 
 def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
-    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
+    if isinstance(G, (nx.MultiGraph, nx.MultiDiGraph)):
         raise Exception("hits() not defined for graphs with multiedges.")
     if len(G) == 0:
         return {}, {}
@@ -364,7 +364,7 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
     if len(G) == 0:
         return {}, {}
     A = nx.to_scipy_sparse_array(G, nodelist=list(G))
-    (n, m) = A.shape  # should be square
+    (n, _) = A.shape  # should be square
     ATA = A.T @ A  # authority matrix
     # choose fixed starting vector if not given
     if nstart is None:

@@ -85,4 +85,4 @@ def test_deprecation_warnings(hits_alg):
     """
     G = nx.DiGraph(nx.path_graph(4))
     with pytest.warns(DeprecationWarning):
-        pr = hits_alg(G)
+        hits_alg(G)
