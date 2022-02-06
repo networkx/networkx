@@ -1,12 +1,12 @@
 """Betweenness centrality measures."""
-from heapq import heappush, heappop
-from collections import deque
-from itertools import count
 import warnings
+from collections import deque
+from heapq import heappop, heappush
+from itertools import count
 
+from networkx.algorithms.shortest_paths.weighted import _weight_function
 from networkx.utils import py_random_state
 from networkx.utils.decorators import not_implemented_for
-from networkx.algorithms.shortest_paths.weighted import _weight_function
 
 __all__ = ["betweenness_centrality", "edge_betweenness_centrality", "edge_betweenness"]
 

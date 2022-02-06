@@ -2,6 +2,7 @@
 Tests for closeness centrality.
 """
 import pytest
+
 import networkx as nx
 
 

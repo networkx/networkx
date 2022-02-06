@@ -1,4 +1,5 @@
 import math
+
 import pytest
 
 np = pytest.importorskip("numpy")
