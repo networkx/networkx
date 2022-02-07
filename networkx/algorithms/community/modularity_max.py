@@ -242,12 +242,9 @@ def greedy_modularity_communities(
         Greater than 1 favors smaller communities.
 
     cutoff : int or None, optional (default=None)
-        stop iterating when reaching ``cutoff`` community size: the community merging
-        process is terminated once this number of communities is reached, or until
-        modularity can not be further increased. Must be between 1 and the
-        total number of nodes in `G`. Default is ``None``, meaning the community
-        merging process continues until all nodes are either in (a) the same community
-        or (b) until the best community structure is found.
+        The number of communities in the partition at which the merging process
+        will stop even if a maximum is not yet reached.  If None, continue until
+        a maximum modularity is reached or all nodes are in a single community.
 
     best_n_communities : int or None, optional (default=None)
         the merging proceeds continues until the number of communities
