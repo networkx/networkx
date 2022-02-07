@@ -110,8 +110,7 @@ def greedy_modularity_communities_generator(G, weight=None, resolution=1):
     communities = {n: frozenset([n]) for n in G}
     yield sorted(communities.values(), key=len, reverse=True)
 
-    # Merge nodes that increase modularity the most or those that decrease
-    # modularity the least
+    # Merge the two communities that most increase or least decrease modularity
     while len(H) > 1:
         # Find best merge
         # Remove from heap of row maxes
