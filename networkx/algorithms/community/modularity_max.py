@@ -259,11 +259,15 @@ def greedy_modularity_communities(
             raise ValueError(
                 f"cutoff must be between 1 and {G.number_of_nodes()}. Got {cutoff}"
             )
+    else:
+        cutoff = 1
     if best_n is not None:
         if (best_n < 1) or (best_n > G.number_of_nodes()):
             raise ValueError(
                 f"best_n must be between 1 and {G.number_of_nodes()}. Got {best_n}"
             )
+    else:
+        best_n = G.number_of_nodes()
     if "n_communities" in aliases:
         import warnings
 
@@ -291,25 +295,16 @@ def greedy_modularity_communities(
     dq = mod_nxt - mod_prv
 
     while len(prv) > 1:
-        # verify stopping criteria for ...
-        # ... for cutoff parameter (desired number of communities communities is reached)
-        if (dq > 0) and (cutoff is not None):
-            if len(prv) <= cutoff:
-                break
-        # ... best community structure (modularity can not be further improved)
-        if (dq < 0) and (best_n is None):
-            break
-        # ... best_n parameter
-        elif (dq < 0) and (len(prv) <= best_n):
+        # additional breaking critera based on kwargs
+        if (dq > 0 and len(prv) <= cutoff) or (dq < 0 and len(prv) <= best_n):
             break
 
         # update communities and construct next one if another union is possible
-        prv = nxt
+        prv, mod_prv = nxt, mod_nxt
         if len(prv) > 1:
             nxt = next(community_gen)
 
         # update modularity
-        mod_prv = mod_nxt
         mod_nxt = modularity(G, nxt, resolution=resolution, weight=weight)
         dq = mod_nxt - mod_prv
 
