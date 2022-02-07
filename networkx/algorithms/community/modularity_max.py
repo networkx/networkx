@@ -277,8 +277,8 @@ def greedy_modularity_communities(
         import warnings
 
         warnings.warn(
-            "kwarg ``n_communities`` in greedy_modularity_communities is deprecated. "
-            "Use ``cutoff`` instead.",
+            "kwarg ``n_communities`` in greedy_modularity_communities is deprecated"
+            "and will be removed in version 3.0.   Use ``cutoff`` instead.",
             DeprecationWarning,
         )
         cutoff = aliases.pop("n_communities")
