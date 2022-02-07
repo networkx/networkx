@@ -223,9 +223,8 @@ def greedy_modularity_communities_generator(G, weight=None, resolution=1):
 
 
 def greedy_modularity_communities(
-    G, weight=None, resolution=1, cutoff=None, best_n_communities=None, **aliases
+    G, weight=None, resolution=1, cutoff=None, best_n=None, **aliases
 ):
-
     """
     Parameters
     ----------
@@ -262,13 +261,12 @@ def greedy_modularity_communities(
             raise ValueError(
                 f"cutoff must be between 1 and {G.number_of_nodes()}. Got {cutoff}"
             )
-    if best_n_communities is not None:
-        if (best_n_communities < 1) or (best_n_communities > G.number_of_nodes()):
+    if best_n is not None:
+        if (best_n < 1) or (best_n > G.number_of_nodes()):
             raise ValueError(
-                f"best_n_communities must be between 1 and {G.number_of_nodes()}. "
-                f"Got {best_n_communities}"
+                f"best_n must be between 1 and {G.number_of_nodes()}. "
+                f"Got {best_n}"
             )
-
     if "n_communities" in aliases:
         import warnings
 
@@ -285,10 +283,10 @@ def greedy_modularity_communities(
     )
 
     # construct the first two best partitions
-    communities_prv = community_gen.__next__()
+    communities_prv = next(community_gen)
     if len(communities_prv) == 1:
         return communities_prv
-    communities_nxt = community_gen.__next__()
+    communities_nxt = next(community_gen)
 
     # calculate modularity for these partitions/communities
     modularity_prv = modularity(
@@ -306,16 +304,16 @@ def greedy_modularity_communities(
             if len(communities_prv) <= cutoff:
                 break
         # ... best community structure (modularity can not be further improved)
-        if (dq < 0) and (best_n_communities is None):
+        if (dq < 0) and (best_n is None):
             break
-        # ... best_n_communities parameter
-        elif (dq < 0) and (len(communities_prv) <= best_n_communities):
+        # ... best_n parameter
+        elif (dq < 0) and (len(communities_prv) <= best_n):
             break
 
         # update communities and construct next one if another union is possible
         communities_prv = communities_nxt
         if len(communities_prv) > 1:
-            communities_nxt = community_gen.__next__()
+            communities_nxt = next(community_gen)
 
         # update modularity
         modularity_prv = modularity_nxt
