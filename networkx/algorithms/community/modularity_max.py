@@ -246,7 +246,7 @@ def greedy_modularity_communities(
 
     best_n : int or None, optional (default=None)
         Force community merging to continue until `best_n` communities remain
-        even if the modularity decreases. 
+        even if the modularity decreases.
         If ``None``, don't force it to continue beyond a maximum.
 
     Returns
@@ -263,8 +263,7 @@ def greedy_modularity_communities(
     if best_n is not None:
         if (best_n < 1) or (best_n > G.number_of_nodes()):
             raise ValueError(
-                f"best_n must be between 1 and {G.number_of_nodes()}. "
-                f"Got {best_n}"
+                f"best_n must be between 1 and {G.number_of_nodes()}. Got {best_n}"
             )
     if "n_communities" in aliases:
         import warnings
