@@ -244,11 +244,10 @@ def greedy_modularity_communities(
         will stop even if a maximum is not yet reached.  If None, continue until
         a maximum modularity is reached or all nodes are in a single community.
 
-    best_n_communities : int or None, optional (default=None)
-        the merging proceeds continues until the number of communities
-        ``best_n_communities`` is reached, even if this does not further improve the
-        community structure. In this case those nodes are aggregated that decrease
-        modularity the least.
+    best_n : int or None, optional (default=None)
+        Force community merging to continue until `best_n` communities remain
+        even if the modularity decreases. 
+        If ``None``, don't force it to continue beyond a maximum.
 
     Returns
     -------
