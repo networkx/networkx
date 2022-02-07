@@ -44,7 +44,6 @@ def greedy_modularity_communities_generator(G, weight=None, resolution=1):
     -------
     partition: list
         A list of frozensets of nodes, one for each community.
-        Sorted by length with largest communities first.
 
     Examples
     --------
@@ -108,7 +107,7 @@ def greedy_modularity_communities_generator(G, weight=None, resolution=1):
 
     # Initialize single-node communities
     communities = {n: frozenset([n]) for n in G}
-    yield sorted(communities.values(), key=len, reverse=True)
+    yield list(communities.values())
 
     # Merge the two communities that most increase or least decrease modularity
     while len(H) > 1:
@@ -219,7 +218,7 @@ def greedy_modularity_communities_generator(G, weight=None, resolution=1):
             b[v] += b[u]
             b[u] = 0
 
-        yield sorted(communities.values(), key=len, reverse=True)
+        yield list(communities.values())
 
 
 def greedy_modularity_communities(
@@ -281,46 +280,40 @@ def greedy_modularity_communities(
     )
 
     # construct the first two best partitions
-    communities_prv = next(community_gen)
-    if len(communities_prv) == 1:
-        return communities_prv
-    communities_nxt = next(community_gen)
+    prv = next(community_gen)
+    if len(prv) == 1:
+        return prv
+    nxt = next(community_gen)
 
     # calculate modularity for these partitions/communities
-    modularity_prv = modularity(
-        G, communities_prv, resolution=resolution, weight=weight
-    )
-    modularity_nxt = modularity(
-        G, communities_nxt, resolution=resolution, weight=weight
-    )
-    dq = modularity_nxt - modularity_prv
+    mod_prv = modularity(G, prv, resolution=resolution, weight=weight)
+    mod_nxt = modularity(G, nxt, resolution=resolution, weight=weight)
+    dq = mod_nxt - mod_prv
 
-    while len(communities_prv) > 1:
+    while len(prv) > 1:
         # verify stopping criteria for ...
         # ... for cutoff parameter (desired number of communities communities is reached)
         if (dq > 0) and (cutoff is not None):
-            if len(communities_prv) <= cutoff:
+            if len(prv) <= cutoff:
                 break
         # ... best community structure (modularity can not be further improved)
         if (dq < 0) and (best_n is None):
             break
         # ... best_n parameter
-        elif (dq < 0) and (len(communities_prv) <= best_n):
+        elif (dq < 0) and (len(prv) <= best_n):
             break
 
         # update communities and construct next one if another union is possible
-        communities_prv = communities_nxt
-        if len(communities_prv) > 1:
-            communities_nxt = next(community_gen)
+        prv = nxt
+        if len(prv) > 1:
+            nxt = next(community_gen)
 
         # update modularity
-        modularity_prv = modularity_nxt
-        modularity_nxt = modularity(
-            G, communities_nxt, resolution=resolution, weight=weight
-        )
-        dq = modularity_nxt - modularity_prv
+        mod_prv = mod_nxt
+        mod_nxt = modularity(G, nxt, resolution=resolution, weight=weight)
+        dq = mod_nxt - mod_prv
 
-    return communities_prv
+    return sorted(prv, key=len, reverse=True)
 
 
 @not_implemented_for("directed")
