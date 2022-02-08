@@ -5,7 +5,7 @@ NXEP 2 — API design of view slices
 ==================================
 
 :Author: Mridul Seth
-:Status: Draft
+:Status: Accepted
 :Type: Standards Track
 :Created: 2020-07-23
 
@@ -303,3 +303,18 @@ course of action is proposed:
    - The improved error message is not in itself a sufficient solution
    - Other use-cases are identified for which adding slicing to the `*View`
      objects would be a nice improvement (e.g. improved performance).
+
+Resolution
+----------
+
+To make slicing intuitive for new users, we went ahead with **Option 1** in the
+discussion above. Users will now see `NetworkXError` when they try to slice a
+`*View` object.::
+   >>> G.edges()[0:10]
+   Traceback (most recent call last)
+      ...
+   NetworkXError: EdgeView does not support slicing, try list(G.edges)[0:10:None]
+
+
+The implementation is available at https://github.com/networkx/networkx/pull/4300 and
+https://github.com/networkx/networkx/pull/4304.

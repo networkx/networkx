@@ -225,6 +225,7 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nfind_cores"
     )
+    warnings.filterwarnings("ignore", category=FutureWarning, message="attr_matrix")
 
 
 @pytest.fixture(autouse=True)
