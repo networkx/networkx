@@ -10,27 +10,29 @@ __all__ = ["bridging_centrality"]
 
 
 @not_implemented_for("multigraph")
-def bridging_centrality(G, k=None, normalized=True, weight=None, endpoints=False, seed=None):
+def bridging_centrality(
+    G, k=None, normalized=True, weight=None, endpoints=False, seed=None
+):
 
     r"""Compute the bridging centrality for all nodes in the graph G.
 
     A bridging node is a node lying between modules, i.e., a
     node connecting densely connected components in a graph.
-    The bridging nodes in a graph are identified by their high value of 
-    bridging centrality. The bridging centrality of a node is the product 
-    of the betweenness centrality (CB) and the bridging coefficient (BC), 
+    The bridging nodes in a graph are identified by their high value of
+    bridging centrality. The bridging centrality of a node is the product
+    of the betweenness centrality (CB) and the bridging coefficient (BC),
     which respectively measure the global and local features of a node.
 
     .. math::
 
        C_{R}(v)   = CB(v) \cdot BC(v)
-    
+
     where CB(v) = \sum_{s,t \in V} \frac{\sigma(s, t|v)}{\sigma(s, t)}
     and BC(v) = \frac{d^{-1}(v)}{\sum_{i \in N(v)} \frac{1}{d(i)}}
     Here, d(v) is the degree of v and N(v) is the set of neighbors of v.
 
     For more information on betweenness centrality, see centrality\betweenness.py
-    
+
      Parameters
     ----------
     G : graph
@@ -75,7 +77,7 @@ def bridging_centrality(G, k=None, normalized=True, weight=None, endpoints=False
     It relates the betweenness centrality of a node, a global feature,
     to its bridging coefficient, a local feature. It is used primarily
     to identify bridging nodes, which connect densely connected components
-    of a graph. 
+    of a graph.
 
     This implementation uses the betweenness_centrality method. This method
     comes with a number of subtleties, more on this can be found in the
@@ -83,15 +85,15 @@ def bridging_centrality(G, k=None, normalized=True, weight=None, endpoints=False
 
     References
     ----------
-    .. [1] Ramanathan, M., Zhang, A., Cho, Y., & Hwang, W. (2006). 
+    .. [1] Ramanathan, M., Zhang, A., Cho, Y., & Hwang, W. (2006).
         Bridging Centrality: Identifying Bridging Nodes in Scale-free Networks.
 
     """
     if len(G) == 0:
-      raise nx.NetworkXPointlessConcept(
-          "cannot compute centrality for the null graph"
-      )
-    
+        raise nx.NetworkXPointlessConcept(
+            "cannot compute centrality for the null graph"
+        )
+
     bc = betweenness_centrality(G, k, normalized, weight, endpoints, seed)
     bridge_centrality = {}
 
@@ -105,4 +107,4 @@ def bridging_centrality(G, k=None, normalized=True, weight=None, endpoints=False
         bridge_coef = sum_neighbor_deg / deg_n
         bridge_centrality[n] = bc[n] * bridge_coef
 
-    return bridge_centrality   
+    return bridge_centrality
