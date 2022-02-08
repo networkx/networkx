@@ -513,7 +513,10 @@ def _heuristic(k, root, DF_tree, D, nodes, greedy):
             zip(np.diag(DF_tree.nodes[node_p]["betweenness"]), nodes), reverse=True
         )
     ]
-    _ = [CL.remove(m) for m in CL if m in DF_tree.nodes[node_p]["GM"]]
+    added_nodes = DF_tree.nodes[node_p]["GM"]
+    for m in CL:
+        if m in added_nodes:
+            CL.remove(m)  
     DF_tree.nodes[node_p]["CL"] = CL
     DF_tree.nodes[node_p]["cont"] = dict(
         zip(nodes, np.diag(DF_tree.nodes[node_p]["betweenness"]))
