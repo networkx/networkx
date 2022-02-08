@@ -32,6 +32,7 @@ __all__ = [
     "fruchterman_reingold_layout",
     "spiral_layout",
     "multipartite_layout",
+    "forceatlas2_layout",
 ]
 
 
@@ -342,6 +343,70 @@ def bipartite_layout(
     return pos
 
 
+def forceatlas2_layout(
+    G: nx.Graph or nx.DiGraph,
+    pos: dict = None,
+    weight_attr=None,
+    iterations: int = 100,
+    outboundAttractionDistribution: bool = False,
+    linLogMode: bool = False,
+    edgeWeightInfluence: float = 1.0,
+    jitterTolerance: float = 1.0,
+    barnesHutOptimize: bool = True,
+    barnesHutTheta: float = 1.2,
+    scalingRatio: float = 2.0,
+    strongGravityMode: bool = False,
+    gravity: float = 1.0,
+    verbose: bool = True,
+):
+    """ForceAtlas2 implementation in python from https://github.com/bhargavchippada/forceatlas2
+
+    Parameters
+    ----------
+    G : nx.Graph or nx.DiGraph
+        Networkx graph
+    pos : dict, opt
+       Starting position for forceatlas2 simulation
+    iterations : int
+        Number of iterations to simulate forceatlas2 for
+    outboundAttractionDistribution : bool
+        Disuade hubs
+    linLogMode : bool
+        Scale distances with linear log
+    edgeWeightInfluence : float
+        Use edge weights
+    jitterTolerance : float
+        Performance parameter
+    barnesHutOptimize : bool
+        Performance parameter
+    barnesHutTheta : float
+        Performance parameter
+    scalingRatio : float
+        Performance parameter
+    strongGravityMode : bool
+        Attraction of hub formation
+    gravity : float
+        Attraction control
+    verbose : bool
+        Show progress
+
+    Examples
+    --------
+    >>> G = nx.lollipop_graph(4, 3)
+    >>> pos = nx.forceatlas2_layout(G)
+    """
+    # origin implementation from https://github.com/bhargavchippada/forceatlas2
+    # fork used from https://github.com/cvanelteren/forceatlas2/ which includes
+    # integrated the linLog implementation
+    do_not_include = "G pos iterations weight_attr do_not_include".split()
+    settings = {k: v for k, v in locals().items() if k not in do_not_include}
+    from networkx.drawing.fa2.fa2.forceatlas2 import ForceAtlas2
+
+    return ForceAtlas2(**settings).forceatlas2_networkx_layout(
+        G, pos=pos, iterations=iterations, weight_attr=weight_attr
+    )
+
+
 @np_random_state(10)
 def spring_layout(
     G,
@@ -544,7 +609,7 @@ def _fruchterman_reingold(
         np.clip(distance, 0.01, None, out=distance)
         # displacement "force"
         displacement = np.einsum(
-            "ijk,ij->ik", delta, (k * k / distance ** 2 - A * distance / k)
+            "ijk,ij->ik", delta, (k * k / distance**2 - A * distance / k)
         )
         # update positions
         length = np.linalg.norm(displacement, axis=-1)
@@ -615,17 +680,17 @@ def _sparse_fruchterman_reingold(
             # difference between this row's node position and all others
             delta = (pos[i] - pos).T
             # distance between points
-            distance = np.sqrt((delta ** 2).sum(axis=0))
+            distance = np.sqrt((delta**2).sum(axis=0))
             # enforce minimum distance of 0.01
             distance = np.where(distance < 0.01, 0.01, distance)
             # the adjacency matrix row
             Ai = np.asarray(A.getrowview(i).toarray())
             # displacement "force"
             displacement[:, i] += (
-                delta * (k * k / distance ** 2 - Ai * distance / k)
+                delta * (k * k / distance**2 - Ai * distance / k)
             ).sum(axis=1)
         # update positions
-        length = np.sqrt((displacement ** 2).sum(axis=0))
+        length = np.sqrt((displacement**2).sum(axis=0))
         length = np.where(length < 0.01, 0.1, length)
         delta_pos = (displacement * t / length).T
         pos += delta_pos
@@ -749,14 +814,14 @@ def _kamada_kawai_costfn(pos_vec, np, invdist, meanweight, dim):
     offset = nodesep * invdist - 1.0
     offset[np.diag_indices(nNodes)] = 0
 
-    cost = 0.5 * np.sum(offset ** 2)
+    cost = 0.5 * np.sum(offset**2)
     grad = np.einsum("ij,ij,ijk->ik", invdist, offset, direction) - np.einsum(
         "ij,ij,ijk->jk", invdist, offset, direction
     )
 
     # Additional parabolic term to encourage mean position to be near origin:
     sumpos = np.sum(pos_arr, axis=0)
-    cost += 0.5 * meanweight * np.sum(sumpos ** 2)
+    cost += 0.5 * meanweight * np.sum(sumpos**2)
     grad += meanweight * sumpos
 
     return (cost, grad.ravel())

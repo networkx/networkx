@@ -85,6 +85,7 @@ packages = [
     "networkx.classes",
     "networkx.generators",
     "networkx.drawing",
+    "networkx.drawing.fa2.fa2",
     "networkx.linalg",
     "networkx.readwrite",
     "networkx.readwrite.json_graph",
@@ -92,6 +93,7 @@ packages = [
     "networkx.testing",
     "networkx.utils",
 ]
+
 
 docdirbase = "share/doc/networkx-%s" % version
 # add basic documentation
@@ -167,6 +169,7 @@ extras_require = {
     dep: parse_requirements_file("requirements/" + dep + ".txt")
     for dep in ["default", "developer", "doc", "extra", "test"]
 }
+
 
 with open("README.rst", "r") as fh:
     long_description = fh.read()

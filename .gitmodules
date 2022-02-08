@@ -1,0 +1,3 @@
+[submodule "networkx/drawing/fa2"]
+	path = networkx/drawing/fa2
+	url = https://github.com/cvanelteren/forceatlas2/
