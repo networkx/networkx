@@ -164,7 +164,7 @@ def parse_requirements_file(filename):
     return requires
 
 
-install_requires = []
+install_requires = ["fa2 @ git+https://github.com/cvanelteren/forceatlas2.git"]
 extras_require = {
     dep: parse_requirements_file("requirements/" + dep + ".txt")
     for dep in ["default", "developer", "doc", "extra", "test"]
