@@ -3,7 +3,7 @@
 The Tutte polynomial $T_G(x, y)$ is a fundamental graph polynomial invariant in
 two variables. It encodes a wide array of information related to the
 edge-connectivity of a graph; "Many problems about graphs can be reduced to
-problems of finding and evaluating the Tutte polynomial at certain values" [1].
+problems of finding and evaluating the Tutte polynomial at certain values" [1]_.
 For instance, at $y=0$, the Tutte polynomial retrieves the chromatic polynomial.
 Some more specializations:
 - $T_G(1, 1)$ counts the number of spanning trees of $G$
@@ -15,7 +15,7 @@ Some more specializations:
 Practically, up-front computation of the Tutte polynomial may be useful when
 users wish to repeatedly calculate edge-connectivity-related information about
 one or more graphs. A general treatment of the Tutte polynomial is provided in
-[2].
+[2]_.
 
 References
 ----------
@@ -35,34 +35,39 @@ __all__ = ["tutte_polynomial"]
 
 @not_implemented_for("directed")
 def tutte_polynomial(G, simplify=True):
-    """Compute a graph's Tutte polynomial via deletion-contraction.
+    r"""Compute a graph's Tutte polynomial via deletion-contraction.
 
-    The Tutte polynomial $T_G(x, y)$ is a fundamental graph polynomial invariant
+    The Tutte polynomial `T_G(x, y)` is a fundamental graph polynomial invariant
     in two variables, encoding a wide array of information related to the
     edge-connectivity of a graph. There are several equivalent definitions; here
     are three:
 
-    Def 1 (rank-nullity expansion): For $G$ an undirected graph, $n(G)$ the
-    number of vertices of $G$, $E$ the edge set of $G$, and $c(A)$ the number of
-    connected components of $A$ [1]:
+    Def 1 (rank-nullity expansion): For `G` an undirected graph, `n(G)` the
+    number of vertices of `G`, `E` the edge set of `G`, and `c(A)`` the number of
+    connected components of `A` [1]_:
 
-    $T_G(x, y) = \sum_{A \in E} (x-1)^{c(A) - c(G)} (y-1)^{c(A) + |A| - n(G)}$
+    .. math::
 
-    Def 2 (spanning tree expansion): For $G$ an undirected graph, $T$ a spanning
-    tree of $G$, $i(T)$ the internal activity of $T$, and $e(T)$ the external
-    activity of $T$ [2]:
+        T_G(x, y) = \sum_{A \in E} (x-1)^{c(A) - c(G)} (y-1)^{c(A) + |A| - n(G)}
 
-    $T_G(x, y) = \sum_{T \text{ a spanning tree of } G} x^{i(T)} y^{e(T)}$
+    Def 2 (spanning tree expansion): For `G` an undirected graph, `T` a spanning
+    tree of `G`, `i(T)` the internal activity of `T`, and `e(T)` the external
+    activity of `T` [2]_:
 
-    Def 3 (deletion-contraction recurrence): For $G$ an undirected graph, $G-e$
-    the graph obtained from $G$ by deleting edge $e$, $G/e$ the graph obtained
-    from $G$ by contracting edge $e$, $k(G)$ the number of cut-edges of $G$,
-    and $l(G)$ the number of loops of $G$:
+    .. math::
 
-    $T_G(x, y) = \begin{cases}
-	   x^{k(G)} y^{l(G)}, & \text{if all edges of $G$ are cut-edges or loops} \\
-       T_{G-e}(x, y) + T_{G/e}(x, y), & \text{otherwise, for $e$ not a cut-edge or loop}
-    \end{cases}$
+        T_G(x, y) = \sum_{T \text{ a spanning tree of } G} x^{i(T)} y^{e(T)}
+
+    Def 3 (deletion-contraction recurrence): For `G` an undirected graph, `G-e`
+    the graph obtained from `G` by deleting edge `e`, `G/e` the graph obtained
+    from `G` by contracting edge `e`, `k(G)` the number of cut-edges of `G`,
+    and `l(G)` the number of loops of `G`:
+
+    .. math::
+        T_G(x, y) = \begin{cases}
+    	   x^{k(G)} y^{l(G)}, & \text{if all edges of $G$ are cut-edges or loops} \\
+           T_{G-e}(x, y) + T_{G/e}(x, y), & \text{otherwise, for $e$ not a cut-edge or loop}
+        \end{cases}
 
     Parameters
     ----------
@@ -88,14 +93,15 @@ def tutte_polynomial(G, simplify=True):
 
     >>> K = nx.complete_graph(5)
     >>> nx.tutte_polynomial(K)
-    x**4 + 6*x**3 + 10*x**2*y + 11*x**2 + 5*x*y**3 + 15*x*y**2 + 20*x*y + 6*x + y**6 + 4*y**5 + 10*y**4 + 15*y**3 + 15*y**2 + 6*y
+    x**4 + 6*x**3 + 10*x**2*y + 11*x**2 + 5*x*y**3 + 15*x*y**2 + 20*x*y + 6*x +
+    y**6 + 4*y**5 + 10*y**4 + 15*y**3 + 15*y**2 + 6*y
 
     Notes
     -----
     This function implements the deletion-contraction recurrence (Definition 3,
     described above). Edge contraction is defined and deletion-contraction is
-    introduced in [3]. Combinatorial meaning of the coefficients is introduced
-    in [4]. Universality, properties, and applications are discussed in [5].
+    introduced in [3]_. Combinatorial meaning of the coefficients is introduced
+    in [4]_. Universality, properties, and applications are discussed in [5]_.
 
     See Also
     --------
@@ -154,7 +160,7 @@ def _get_cut_edges(G):
     """Finds the cut-edges of a provided graph.
 
     Cut-edges are edges whose deletion increases the number of components of a
-    graph [1]. A cut-edge is an edge that is not a member of any cycle.
+    graph [1]_. A cut-edge is an edge that is not a member of any cycle.
 
     Parameters
     ----------
