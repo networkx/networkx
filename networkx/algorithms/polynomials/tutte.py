@@ -1,16 +1,16 @@
 """Functions supporting the computation of the Tutte polynomial of a graph.
 
-The Tutte polynomial $T_G(x, y)$ is a fundamental graph polynomial invariant in
+The Tutte polynomial `T_G(x, y)` is a fundamental graph polynomial invariant in
 two variables. It encodes a wide array of information related to the
 edge-connectivity of a graph; "Many problems about graphs can be reduced to
 problems of finding and evaluating the Tutte polynomial at certain values" [1]_.
-For instance, at $y=0$, the Tutte polynomial retrieves the chromatic polynomial.
+For instance, at `y=0`, the Tutte polynomial retrieves the chromatic polynomial.
 Some more specializations:
-- $T_G(1, 1)$ counts the number of spanning trees of $G$
-- $T_G(1, 2)$ counts the number of connected spanning subgraphs of $G$
-- $T_G(2, 1)$ counts the number of spanning forests in $G$
-- $T_G(0, 2)$ counts the number of strong orientations of $G$
-- $T_G(2, 0)$ counts the number of acyclic orientations of $G$
+- `T_G(1, 1)` counts the number of spanning trees of `G`
+- `T_G(1, 2)` counts the number of connected spanning subgraphs of `G`
+- `T_G(2, 1)` counts the number of spanning forests in `G`
+- `T_G(0, 2)` counts the number of strong orientations of `G`
+- `T_G(2, 0)` counts the number of acyclic orientations of `G`
 
 Practically, up-front computation of the Tutte polynomial may be useful when
 users wish to repeatedly calculate edge-connectivity-related information about
@@ -65,7 +65,7 @@ def tutte_polynomial(G, simplify=True):
 
     .. math::
         T_G(x, y) = \begin{cases}
-    	   x^{k(G)} y^{l(G)}, & \text{if all edges of $G$ are cut-edges or loops} \\
+    	   x^{k(G)} y^{l(G)}, & \text{if all edges are cut-edges or loops} \\
            T_{G-e}(x, y) + T_{G/e}(x, y), & \text{otherwise, for $e$ not a cut-edge or loop}
         \end{cases}
 
@@ -90,10 +90,6 @@ def tutte_polynomial(G, simplify=True):
     >>> D = nx.diamond_graph()
     >>> nx.tutte_polynomial(D)
     x**3 + 2*x**2 + 2*x*y + x + y**2 + y
-
-    >>> K = nx.complete_graph(5)
-    >>> nx.tutte_polynomial(K)
-    x**4 + 6*x**3 + 10*x**2*y + 11*x**2 + 5*x*y**3 + 15*x*y**2 + 20*x*y + 6*x + y**6 + 4*y**5 + 10*y**4 + 15*y**3 + 15*y**2 + 6*y
 
     Notes
     -----
