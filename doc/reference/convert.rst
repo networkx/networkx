@@ -48,6 +48,7 @@ Scipy
 .. autosummary::
    :toctree: generated/
 
+   to_scipy_sparse_array
    to_scipy_sparse_matrix
    from_scipy_sparse_matrix
 

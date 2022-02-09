@@ -269,7 +269,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
     ancestors = {}
     for v in dag:
         if pairs is None or v in pairset:
-            my_ancestors = nx.dag.ancestors(dag, v)
+            my_ancestors = nx.ancestors(G, v)
             my_ancestors.add(v)
             ancestors[v] = sorted(my_ancestors, key=euler_tour_pos.get)
 

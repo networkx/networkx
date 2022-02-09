@@ -579,8 +579,7 @@ Matplotlib
 
 >>> plt.show()  # doctest: +SKIP
 
-command if you are not using matplotlib in interactive mode (see
-:doc:`this Matplotlib FAQ <faq/installing_faq>`).
+command if you are not using matplotlib in interactive mode.
 
 .. nbplot::
 

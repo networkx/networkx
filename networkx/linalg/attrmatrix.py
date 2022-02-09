@@ -298,6 +298,17 @@ def attr_matrix(
     if normalized:
         M /= M.sum(axis=1).reshape((N, 1))
 
+    import warnings
+
+    warnings.warn(
+        (
+            "attr_matrix will return an numpy.ndarray instead of a numpy.matrix "
+            "in NetworkX 3.0."
+        ),
+        category=FutureWarning,
+        stacklevel=2,
+    )
+    # TODO: Remove asmatrix in NetworkX 3.0
     M = np.asmatrix(M)
 
     if rc_order is None:
@@ -375,18 +386,18 @@ def attr_sparse_matrix(
     >>> G.add_edge(0, 2, thickness=2)
     >>> G.add_edge(1, 2, thickness=3)
     >>> M = nx.attr_sparse_matrix(G, rc_order=[0, 1, 2])
-    >>> M.todense()
-    matrix([[0., 1., 1.],
-            [1., 0., 1.],
-            [1., 1., 0.]])
+    >>> M.toarray()
+    array([[0., 1., 1.],
+           [1., 0., 1.],
+           [1., 1., 0.]])
 
     Alternatively, we can obtain the matrix describing edge thickness.
 
     >>> M = nx.attr_sparse_matrix(G, edge_attr="thickness", rc_order=[0, 1, 2])
-    >>> M.todense()
-    matrix([[0., 1., 2.],
-            [1., 0., 3.],
-            [2., 3., 0.]])
+    >>> M.toarray()
+    array([[0., 1., 2.],
+           [1., 0., 3.],
+           [2., 3., 0.]])
 
     We can also color the nodes and ask for the probability distribution over
     all edges (u,v) describing:
@@ -398,9 +409,9 @@ def attr_sparse_matrix(
     >>> G.nodes[2]["color"] = "blue"
     >>> rc = ["red", "blue"]
     >>> M = nx.attr_sparse_matrix(G, node_attr="color", normalized=True, rc_order=rc)
-    >>> M.todense()
-    matrix([[0.33333333, 0.66666667],
-            [1.        , 0.        ]])
+    >>> M.toarray()
+    array([[0.33333333, 0.66666667],
+           [1.        , 0.        ]])
 
     For example, the above tells us that for all edges (u,v):
 
@@ -413,9 +424,9 @@ def attr_sparse_matrix(
     Finally, we can obtain the total weights listed by the node colors.
 
     >>> M = nx.attr_sparse_matrix(G, edge_attr="weight", node_attr="color", rc_order=rc)
-    >>> M.todense()
-    matrix([[3., 2.],
-            [2., 0.]])
+    >>> M.toarray()
+    array([[3., 2.],
+           [2., 0.]])
 
     Thus, the total weight over all edges (u,v) with u and v having colors:
 
@@ -440,7 +451,7 @@ def attr_sparse_matrix(
     N = len(ordering)
     undirected = not G.is_directed()
     index = dict(zip(ordering, range(N)))
-    M = sp.sparse.lil_matrix((N, N), dtype=dtype)
+    M = sp.sparse.lil_array((N, N), dtype=dtype)
 
     seen = set()
     for u, nbrdict in G.adjacency():
@@ -456,9 +467,7 @@ def attr_sparse_matrix(
             seen.add(u)
 
     if normalized:
-        norms = np.asarray(M.sum(axis=1)).ravel()
-        for i, norm in enumerate(norms):
-            M[i, :] /= norm
+        M *= 1 / M.sum(axis=1)[:, np.newaxis]  # in-place mult preserves sparse
 
     if rc_order is None:
         return M, ordering
