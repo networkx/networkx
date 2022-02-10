@@ -5,7 +5,7 @@ __all__ = ["tree_data", "tree_graph"]
 
 
 # NOTE: Remove attrs from signature in 3.0
-def tree_data(G, root, attrs=None, ident="id", children="children"):
+def tree_data(G, root, attrs=None, ident="id", children="children", attr="attr"):
     """Returns data in tree format that is suitable for JSON serialization
     and use in Javascript documents.
 
@@ -33,11 +33,15 @@ def tree_data(G, root, attrs=None, ident="id", children="children"):
 
     ident : string
         Attribute name for storing NetworkX-internal graph data. `ident` must
-        have a different value than `children`. The default is 'id'.
+        have a different value than `children` and `attr`. The default is 'id'.
 
     children : string
         Attribute name for storing NetworkX-internal graph data. `children`
-        must have a different value than `ident`. The default is 'children'.
+        must have a different value than `ident` and `attr`. The default is 'children'.
+
+    attr : string
+        Attribute name for storing NetworkX graph attribute data. `attr`
+        must have a different value than `ident` and `children`. The default is 'attr'.
 
     Returns
     -------
@@ -47,7 +51,7 @@ def tree_data(G, root, attrs=None, ident="id", children="children"):
     Raises
     ------
     NetworkXError
-        If `children` and `ident` attributes are identical.
+        If `children`, `ident` and `attr` attributes are identical.
 
     Examples
     --------
@@ -100,8 +104,10 @@ def tree_data(G, root, attrs=None, ident="id", children="children"):
         ident = attrs["id"]
         children = attrs["children"]
 
-    if ident == children:
-        raise nx.NetworkXError("The values for `id` and `children` must be different.")
+    if (ident == children) or (ident == attr) or (attr == children):
+        raise nx.NetworkXError(
+            "The values for `id`, `children`, `attr` and must be different."
+        )
 
     def add_children(n, G):
         nbrs = G[n]
@@ -118,10 +124,12 @@ def tree_data(G, root, attrs=None, ident="id", children="children"):
 
     data = dict(chain(G.nodes[root].items(), [(ident, root)]))
     data[children] = add_children(root, G)
+    data[attr] = G.graph
+
     return data
 
 
-def tree_graph(data, attrs=None, ident="id", children="children"):
+def tree_graph(data, attrs=None, ident="id", children="children", attr="attr"):
     """Returns graph from tree data format.
 
     Parameters
@@ -129,10 +137,10 @@ def tree_graph(data, attrs=None, ident="id", children="children"):
     data : dict
         Tree formatted graph data
     attrs : dict
-        A dictionary that contains two keys 'id' and 'children'. The
+        A dictionary that contains two keys 'id', 'children', and (optionally) 'attr'. The
         corresponding values provide the attribute names for storing
         NetworkX-internal graph data. The values should be unique. Default
-        value: :samp:`dict(id='id', children='children')`.
+        value: :samp:`dict(id='id', children='children', attr='attr')`.
 
         .. deprecated:: 2.6
 
@@ -141,11 +149,15 @@ def tree_graph(data, attrs=None, ident="id", children="children"):
 
     ident : string
         Attribute name for storing NetworkX-internal graph data. `ident` must
-        have a different value than `children`. The default is 'id'.
+        have a different value than `children` and `attr`. The default is 'id'.
 
     children : string
         Attribute name for storing NetworkX-internal graph data. `children`
-        must have a different value than `ident`. The default is 'children'.
+        must have a different value than `ident` and `attr`. The default is 'children'.
+
+    attr : string
+        Attribute name for storing NetworkX graph attribute data. `attr`
+        must have a different value than `ident` and `children`. The default is 'attr'.
 
     Returns
     -------
@@ -162,7 +174,16 @@ def tree_graph(data, attrs=None, ident="id", children="children"):
     --------
     tree_data, node_link_data, adjacency_data
     """
-    graph = nx.DiGraph()
+
+    if (ident == children) or (ident == attr) or (attr == children):
+        raise nx.NetworkXError(
+            "The values for `id`, `children`, `attr` and must be different."
+        )
+
+    attr_data = data[attr] if attr in data else {}
+
+    graph = nx.DiGraph(**attr_data)
+
     if attrs is not None:
         import warnings
 
