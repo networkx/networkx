@@ -706,7 +706,7 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     dtype : NumPy data-type, optional
         A valid NumPy named dtype used to initialize the NumPy recarray.
         The data type names are assumed to be keys in the graph edge attribute
-        dictionary.
+        dictionary. The default is ``dtype([("weight", float)])``.
 
     order : {'C', 'F'}, optional
         Whether to store multidimensional data in C- or Fortran-contiguous
