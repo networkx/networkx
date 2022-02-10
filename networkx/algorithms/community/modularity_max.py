@@ -219,7 +219,7 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
 
 
 def greedy_modularity_communities(
-    G, weight=None, resolution=1, cutoff=1, best_n=None, **aliases
+    G, weight=None, resolution=1, cutoff=1, best_n=None, n_communities=None
 ):
     """
     Parameters
@@ -271,7 +271,7 @@ def greedy_modularity_communities(
             raise ValueError(f"Must have best_n >= cutoff. Got {best_n} < {cutoff}")
     else:
         best_n = G.number_of_nodes()
-    if "n_communities" in aliases:
+    if n_communities is not None:
         import warnings
 
         warnings.warn(
@@ -279,7 +279,10 @@ def greedy_modularity_communities(
             "and will be removed in version 3.0.   Use ``cutoff`` instead.",
             DeprecationWarning,
         )
-        cutoff = aliases.pop("n_communities")
+        if cutoff == 1:
+            cutoff = n_communities
+        else:
+            raise ValueError(f"Can not set both n_communities and cutoff.")
 
     # retrieve generator object to construct output
     community_gen = _greedy_modularity_communities_generator(
