@@ -103,7 +103,7 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
 
     # Initialize single-node communities
     communities = {n: frozenset([n]) for n in G}
-    yield list(communities.values())
+    yield communities.values()
 
     # Merge the two communities that most increase or least decrease modularity
     while len(H) > 1:
@@ -215,7 +215,7 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
             b[v] += b[u]
             b[u] = 0
 
-        yield list(communities.values())
+        yield communities.values()
 
 
 def greedy_modularity_communities(
