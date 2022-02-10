@@ -55,8 +55,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
          iterator (e.g. itertools.chain) that produces edges
          generator of edges
          Pandas DataFrame (row per edge)
-         numpy matrix
-         numpy ndarray
+         2D numpy array
          scipy sparse matrix
          pygraphviz agraph
 
