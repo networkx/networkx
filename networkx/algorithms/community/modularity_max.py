@@ -263,19 +263,12 @@ def greedy_modularity_communities(
     modularity
     """
     if (cutoff < 1) or (cutoff > G.number_of_nodes()):
-        raise ValueError(
-            f"``cutoff`` must be between 1 and {G.number_of_nodes()}. Got {cutoff}."
-        )
+        raise ValueError(f"best_n must be between 1 and {len(G)}. Got {best_n}.)"
     if best_n is not None:
         if (best_n < 1) or (best_n > G.number_of_nodes()):
-            raise ValueError(
-                f"``best_n`` must be between 1 and {G.number_of_nodes()}. Got {best_n}."
-            )
+            raise ValueError(f"best_n must be between 1 and {len(G)}. Got {best_n}.")
         if best_n < cutoff:
-            raise ValueError(
-                f"``best_n`` (got {best_n}) must be greater or equal than ``cutoff`` "
-                f"(got {cutoff})."
-            )
+            raise ValueError(f"Must have best_n >= cutoff. Got {best_n} < {cutoff}")
     else:
         best_n = G.number_of_nodes()
     if "n_communities" in aliases:
