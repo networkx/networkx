@@ -115,6 +115,7 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
         except IndexError:
             break
         dq = -negdq
+        yield dq
         # Remove best merge from row u heap
         dq_heap[u].pop()
         # Push new row max onto H
@@ -132,7 +133,6 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
         else:
             # Duplicate wasn't in H, just remove from row v heap
             dq_heap[v].remove((v, u))
-        yield dq
 
         # Perform merge
         communities[v] = frozenset(communities[u] | communities[v])
@@ -263,7 +263,7 @@ def greedy_modularity_communities(
     modularity
     """
     if (cutoff < 1) or (cutoff > G.number_of_nodes()):
-        raise ValueError(f"best_n must be between 1 and {len(G)}. Got {best_n}.)"
+        raise ValueError(f"cutoff must be between 1 and {len(G)}. Got {cutoff}.")
     if best_n is not None:
         if (best_n < 1) or (best_n > G.number_of_nodes()):
             raise ValueError(f"best_n must be between 1 and {len(G)}. Got {best_n}.")
