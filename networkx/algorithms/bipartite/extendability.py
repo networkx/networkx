@@ -42,34 +42,35 @@ def k_extendability(G):
     Parameters
     ----------
 
-        G : NetworkX Graph
+    G : NetworkX Graph
+        A fully-connected bipartite graph without self-loops
 
     Returns
     -------
 
-        extendability: int
+    extendability : int
 
     Raises
     ------
 
-        NetworkXError
-           If the graph G is not simple.
-           If the graph G is disconnected.
-           If the graph G is not bipartite.
-           If the graph G does not contain a perfect matching.
-           If the residual graph of G is not strongly connected.
+    NetworkXError
+       If the graph G is not simple (contains self-loops)
+       If the graph G is disconnected.
+       If the graph G is not bipartite.
+       If the graph G does not contain a perfect matching.
+       If the residual graph of G is not strongly connected.
 
     Notes
     -----
 
-        Time complexity O($n^3$ $m^2$)) where $n$ is the number of vertices
-        and $m$ is the number of edges.
+    Time complexity O($n^3$ $m^2$)) where $n$ is the number of vertices
+    and $m$ is the number of edges.
 
     References
     ----------
 
-        ..[1] "A polynomial algorithm for the extendability problem in bipartite graphs",
-              J. Lakhal, L. Litzler, Information Processing Letters, 1998.
+    ..[1] "A polynomial algorithm for the extendability problem in bipartite graphs",
+          J. Lakhal, L. Litzler, Information Processing Letters, 1998.
 
     """
 
