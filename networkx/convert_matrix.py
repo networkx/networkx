@@ -1369,6 +1369,12 @@ def to_numpy_array(
     if nlen == 0 or G.number_of_edges() == 0:
         return A
 
+    # If dtype is structured and weight is None, use dtype field names as
+    # edge attributes
+    edge_attrs = None  # Only single edge attribute by default
+    if A.dtype.names and weight is None:
+        edge_attrs = dtype.names
+
     # Map nodes to row/col in matrix
     idx = dict(zip(nodelist, range(nlen)))
     if len(nodelist) < len(G):
@@ -1376,6 +1382,10 @@ def to_numpy_array(
 
     # Collect all edge weights and reduce with `multigraph_weights`
     if G.is_multigraph():
+        if edge_attrs:
+            raise nx.NetworkXError(
+                "Structured arrays are not supported for MultiGraphs"
+            )
         d = defaultdict(list)
         for u, v, wt in G.edges(data=weight, default=1.0):
             d[(idx[u], idx[v])].append(wt)
@@ -1383,15 +1393,29 @@ def to_numpy_array(
         wts = [multigraph_weight(ws) for ws in d.values()]  # reduced weights
     else:
         i, j, wts = [], [], []
-        for u, v, wt in G.edges(data=weight, default=1.0):
-            i.append(idx[u])
-            j.append(idx[v])
-            wts.append(wt)
+        if edge_attrs:  # Extract multiple edge attributes for structured dtypes
+            for u, v, data in G.edges(data=True):
+                i.append(idx[u])
+                j.append(idx[v])
+                wts.append(data)
+        else:
+            for u, v, wt in G.edges(data=weight, default=1.0):
+                i.append(idx[u])
+                j.append(idx[v])
+                wts.append(wt)
 
-    # Set array values with advanced indexing
-    A[i, j] = wts
-    if not G.is_directed():
-        A[j, i] = wts
+    # Additional step for structured arrays: create structured data
+    if edge_attrs:
+        for attr in edge_attrs:
+            attr_data = [wt[attr] for wt in wts]
+            A[attr][i, j] = attr_data
+            if not G.is_directed():
+                A[attr][j, i] = attr_data
+    else:
+        # Set array values with advanced indexing
+        A[i, j] = wts
+        if not G.is_directed():
+            A[j, i] = wts
 
     return A
 
