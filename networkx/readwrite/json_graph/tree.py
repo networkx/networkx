@@ -167,7 +167,7 @@ def tree_graph(data, attrs=None, ident="id", children="children", attr="attr"):
     ------
     NetworkXError
         If `children`, `ident`, and `attr` attributes are identical.
-        
+
     Examples
     --------
     >>> from networkx.readwrite import json_graph
