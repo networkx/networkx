@@ -1393,29 +1393,32 @@ def to_numpy_array(
         wts = [multigraph_weight(ws) for ws in d.values()]  # reduced weights
     else:
         i, j, wts = [], [], []
-        if edge_attrs:  # Extract multiple edge attributes for structured dtypes
+
+        # Special branch: multi-attr adjacency from structured dtypes
+        if edge_attrs:
+            # Extract edges with all data
             for u, v, data in G.edges(data=True):
                 i.append(idx[u])
                 j.append(idx[v])
                 wts.append(data)
-        else:
-            for u, v, wt in G.edges(data=weight, default=1.0):
-                i.append(idx[u])
-                j.append(idx[v])
-                wts.append(wt)
+            # Map each attribute to the appropriate named field in the
+            # structured dtype
+            for attr in edge_attrs:
+                attr_data = [wt[attr] for wt in wts]
+                A[attr][i, j] = attr_data
+                if not G.is_directed():
+                    A[attr][j, i] = attr_data
+            return A
 
-    # Additional step for structured arrays: create structured data
-    if edge_attrs:
-        for attr in edge_attrs:
-            attr_data = [wt[attr] for wt in wts]
-            A[attr][i, j] = attr_data
-            if not G.is_directed():
-                A[attr][j, i] = attr_data
-    else:
-        # Set array values with advanced indexing
-        A[i, j] = wts
-        if not G.is_directed():
-            A[j, i] = wts
+        for u, v, wt in G.edges(data=weight, default=1.0):
+            i.append(idx[u])
+            j.append(idx[v])
+            wts.append(wt)
+
+    # Set array values with advanced indexing
+    A[i, j] = wts
+    if not G.is_directed():
+        A[j, i] = wts
 
     return A
 
