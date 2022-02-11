@@ -51,7 +51,7 @@ def tree_data(G, root, attrs=None, ident="id", children="children", attr="attr")
     Raises
     ------
     NetworkXError
-        If `children`, `ident` and `attr` attributes are identical.
+        If `children`, `ident`, and `attr` attributes are identical.
 
     Examples
     --------
@@ -163,6 +163,11 @@ def tree_graph(data, attrs=None, ident="id", children="children", attr="attr"):
     -------
     G : NetworkX DiGraph
 
+    Raises
+    ------
+    NetworkXError
+        If `children`, `ident`, and `attr` attributes are identical.
+        
     Examples
     --------
     >>> from networkx.readwrite import json_graph
