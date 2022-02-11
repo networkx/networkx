@@ -58,6 +58,8 @@ def test_exceptions():
         G = nx.MultiDiGraph()
         G.add_node(0)
         tree_data(G, 0, attr="children", children="children", ident="children")
+    with pytest.raises(nx.NetworkXError, match="must be different."):
+        tree_graph({}, 0, attr="children", children="children", ident="children")
 
 
 # NOTE: To be removed when deprecation expires in 3.0
