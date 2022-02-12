@@ -413,6 +413,9 @@ Then create a baseline image to compare against later::
 
     $ pytest -k test_barbell --mpl-generate-path=networkx/drawing/tests/baseline
 
+.. note: In order to keep the size of the repository from becoming too large, we
+   prefer to limit the size and number of baseline images we include.
+
 And test::
 
     $ pytest -k test_barbell --mpl

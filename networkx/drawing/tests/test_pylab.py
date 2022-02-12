@@ -417,19 +417,40 @@ def test_labels_and_colors():
 
 
 @pytest.mark.mpl_image_compare
+def test_house_with_colors():
+    G = nx.house_graph()
+    # explicitly set positions
+    fig, ax = plt.subplots()
+    pos = {0: (0, 0), 1: (1, 0), 2: (0, 1), 3: (1, 1), 4: (0.5, 2.0)}
+
+    # Plot nodes with different properties for the "wall" and "roof" nodes
+    nx.draw_networkx_nodes(
+        G,
+        pos,
+        node_size=3000,
+        nodelist=[0, 1, 2, 3],
+        node_color="tab:blue",
+    )
+    nx.draw_networkx_nodes(
+        G, pos, node_size=2000, nodelist=[4], node_color="tab:orange"
+    )
+    nx.draw_networkx_edges(G, pos, alpha=0.5, width=6)
+    # Customize axes
+    ax.margins(0.11)
+    plt.tight_layout()
+    plt.axis("off")
+    return fig
+
+
 def test_axes():
     fig, ax = plt.subplots()
-    nx.draw(barbell, pos=nx.spring_layout(barbell, seed=42), ax=ax)
+    nx.draw(barbell, ax=ax)
     nx.draw_networkx_edge_labels(barbell, nx.circular_layout(barbell), ax=ax)
-    return fig
 
 
-@pytest.mark.mpl_image_compare
 def test_empty_graph():
-    fig, ax = plt.subplots()
     G = nx.Graph()
     nx.draw(G)
-    return fig
 
 
 def test_draw_empty_nodes_return_values():
@@ -454,15 +475,11 @@ def test_draw_empty_nodes_return_values():
     assert nx.draw_networkx_edges(DG, pos, edgelist=[], arrows=True) == []
 
 
-@pytest.mark.mpl_image_compare
 def test_multigraph_edgelist_tuples():
     # See Issue #3295
-    fig, ax = plt.subplots()
     G = nx.path_graph(3, create_using=nx.MultiDiGraph)
-    pos = nx.spring_layout(G, seed=42)
-    nx.draw_networkx(G, pos=pos, edgelist=[(0, 1, 0)])
-    nx.draw_networkx(G, pos=pos, edgelist=[(0, 1, 0)], node_size=[10, 20, 0])
-    return fig
+    nx.draw_networkx(G, edgelist=[(0, 1, 0)])
+    nx.draw_networkx(G, edgelist=[(0, 1, 0)], node_size=[10, 20, 0])
 
 
 def test_alpha_iter():
