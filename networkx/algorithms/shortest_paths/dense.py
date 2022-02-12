@@ -35,8 +35,8 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
 
     Returns
     -------
-    distance : NumPy matrix
-        A matrix of shortest path distances between nodes.
+    distance : 2D numpy.ndarray
+        A numpy array of shortest path distances between nodes.
         If there is no path between two nodes the value is Inf.
 
     Notes

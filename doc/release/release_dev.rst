@@ -65,6 +65,9 @@ Deprecations
 - [`#5262 <https://github.com/networkx/networkx/pull/5262>`_]
   Deprecate ``to_scipy_sparse_matrix`` and ``from_scipy_sparse_matrix`` in
   favor of ``to_scipy_sparse_array`` and ``from_scipy_sparse_array``, respectively.
+- [`#5283 <https://github.com/networkx/networkx/pull/5283>`_]
+  Deprecate ``make_small_graph`` and ``make_small_undirected_graph`` from the
+  ``networkx.generators.small`` module.
 
 
 Merged PRs

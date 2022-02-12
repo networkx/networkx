@@ -280,7 +280,7 @@ def attribute_ac(M):
 
 
 def _numeric_ac(M, mapping):
-    # M is a numpy matrix or array
+    # M is a 2D numpy array
     # numeric assortativity coefficient, pearsonr
     import numpy as np
 

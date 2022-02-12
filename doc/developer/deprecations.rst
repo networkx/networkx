@@ -104,3 +104,5 @@ Version 3.0
 * In ``networkx/linalg/attrmatrix.py`` remove the FutureWarning, update the
   return type by removing ``np.asmatrix``, and update the docstring to
   reflect that the function returns a ``numpy.ndarray`` instance.
+* In ``networkx/generators/small.py`` remove ``make_small_graph`` and
+  ``make_small_undirected_graph``.
