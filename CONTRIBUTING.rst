@@ -386,6 +386,40 @@ General guidelines for making a good gallery plot:
 * Describe the feature that you're showcasing and link to other relevant parts of the
   documentation.
 
+Image comparison
+----------------
+
+To run image comparisons::
+
+    $ PYTHONPATH=. pytest --mpl --pyargs networkx.drawing
+
+The ``--mpl`` tells ``pytest`` to use ``pytest-mpl`` to compare the generated plots
+with baseline ones stored in ``networkx/drawing/tests/baseline``.
+
+To add a new test, add a test function to ``networkx/drawing/tests`` that
+returns a Matplotlib figure (or any figure object that has a savefig method)
+and decorate it as follows::
+
+    @pytest.mark.mpl_image_compare
+    def test_barbell():
+        fig = plt.figure()
+        barbell = nx.barbell_graph(4, 6)
+        # make sure to fix any randomness
+        pos = nx.spring_layout(barbell, seed=42)
+        nx.draw(barbell, pos=pos)
+        return fig
+
+Then create a baseline image to compare against later::
+
+    $ pytest -k test_barbell --mpl-generate-path=networkx/drawing/tests/baseline
+
+.. note: In order to keep the size of the repository from becoming too large, we
+   prefer to limit the size and number of baseline images we include.
+
+And test::
+
+    $ pytest -k test_barbell --mpl
+
 Bugs
 ----
 

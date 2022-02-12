@@ -1,11 +1,11 @@
 # See: https://circleci.com/docs/2.0/language-python/
 
-version: 2
+version: 2.1
 jobs:
-  build:
-    working_directory: ~/repo
+
+  documentation:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.9
 
     steps:
       - checkout
@@ -69,3 +69,41 @@ jobs:
 
       - store_artifacts:
           path: doc/build/html
+
+  image:
+    docker:
+      - image: cimg/python:3.9
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install Python dependencies
+          command: |
+            python -m venv venv
+            source venv/bin/activate
+            pip install --upgrade pip wheel setuptools
+            pip install -r requirements/default.txt -r requirements/test.txt
+            pip list
+
+      - run:
+          name: Install
+          command: |
+            source venv/bin/activate
+            pip install -e .
+
+      - run:
+          name: Test NetworkX drawing
+          command: |
+            source venv/bin/activate
+            pytest --mpl --mpl-generate-summary=html --mpl-results-path=results --pyargs networkx.drawing
+
+      - store_artifacts:
+          path: results
+
+
+workflows:
+  documentation_and_image_comparison:
+    jobs:
+      - documentation
+      - image
