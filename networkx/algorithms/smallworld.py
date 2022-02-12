@@ -309,10 +309,10 @@ def omega(G, niter=5, nrand=10, seed=None):
     of an equivalent random graph and Cl is the average clustering coefficient
     of an equivalent lattice graph.
 
-    The small-world coefficient (omega) ranges between -1 and 1. Values close
-    to 0 means the G features small-world characteristics. Values close to -1
-    means G has a lattice shape whereas values close to 1 means G is a random
-    graph.
+    The small-world coefficient (omega) measures how much G is like a lattice
+    or a random graph. Negative values mean G is similar to a lattice whereas
+    positive values mean G is a random graph.
+    Values close to 0 mean that G has small-world characteristics.
 
     Parameters
     ----------
