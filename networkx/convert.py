@@ -71,7 +71,9 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
 
     """
     # NX graph
-    if hasattr(data, "adj"):
+    from networkx import Graph
+
+    if isinstance(data, Graph):
         try:
             result = from_dict_of_dicts(
                 data.adj,

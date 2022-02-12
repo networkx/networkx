@@ -2,17 +2,16 @@
 from copy import deepcopy
 
 import networkx as nx
-from networkx.classes.graph import Graph
 from networkx.classes.coreviews import AdjacencyView
+from networkx.classes.graph import Graph
 from networkx.classes.reportviews import (
-    OutEdgeView,
-    InEdgeView,
     DiDegreeView,
     InDegreeView,
+    InEdgeView,
     OutDegreeView,
+    OutEdgeView,
 )
 from networkx.exception import NetworkXError
-import networkx.convert as convert
 
 __all__ = ["DiGraph"]
 
@@ -247,8 +246,9 @@ class DiGraph(Graph):
     >>> class ThinGraph(nx.Graph):
     ...     all_edge_dict = {"weight": 1}
     ...
-    ...     def single_edge_dict(self):
-    ...         return self.all_edge_dict
+    ...     @staticmethod
+    ...     def single_edge_dict():
+    ...         return ThinGraph.all_edge_dict
     ...
     ...     edge_attr_dict_factory = single_edge_dict
     >>> G = ThinGraph()
@@ -265,60 +265,10 @@ class DiGraph(Graph):
     a dictionary-like object.
     """
 
-    def __init__(self, incoming_graph_data=None, **attr):
-        """Initialize a graph with edges, name, or graph attributes.
-
-        Parameters
-        ----------
-        incoming_graph_data : input graph (optional, default: None)
-            Data to initialize graph.  If None (default) an empty
-            graph is created.  The data can be an edge list, or any
-            NetworkX graph object.  If the corresponding optional Python
-            packages are installed the data can also be a NumPy matrix
-            or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
-
-        attr : keyword arguments, optional (default= no attributes)
-            Attributes to add to graph as key=value pairs.
-
-        See Also
-        --------
-        convert
-
-        Examples
-        --------
-        >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G = nx.Graph(name="my graph")
-        >>> e = [(1, 2), (2, 3), (3, 4)]  # list of edges
-        >>> G = nx.Graph(e)
-
-        Arbitrary graph attribute pairs (key=value) may be assigned
-
-        >>> G = nx.Graph(e, day="Friday")
-        >>> G.graph
-        {'day': 'Friday'}
-
-        """
-        self.graph_attr_dict_factory = self.graph_attr_dict_factory
-        self.node_dict_factory = self.node_dict_factory
-        self.node_attr_dict_factory = self.node_attr_dict_factory
-        self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
-        self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
-        self.edge_attr_dict_factory = self.edge_attr_dict_factory
-
-        self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
-        self._node = self.node_dict_factory()  # dictionary for node attr
-        # We store two adjacency lists:
-        # the predecessors of node n are stored in the dict self._pred
-        # the successors of node n are stored in the dict self._succ=self._adj
-        self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
+    def _create_attributes(self):
+        super()._create_attributes()
         self._pred = self.adjlist_outer_dict_factory()  # predecessor
         self._succ = self._adj  # successor
-
-        # attempt to load graph with data
-        if incoming_graph_data is not None:
-            convert.to_networkx_graph(incoming_graph_data, create_using=self)
-        # load graph attributes (must be after convert)
-        self.graph.update(attr)
 
     @property
     def adj(self):
@@ -425,67 +375,6 @@ class DiGraph(Graph):
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
 
-    def add_nodes_from(self, nodes_for_adding, **attr):
-        """Add multiple nodes.
-
-        Parameters
-        ----------
-        nodes_for_adding : iterable container
-            A container of nodes (list, dict, set, etc.).
-            OR
-            A container of (node, attribute dict) tuples.
-            Node attributes are updated using the attribute dict.
-        attr : keyword arguments, optional (default= no attributes)
-            Update attributes for all nodes in nodes.
-            Node attributes specified in nodes as a tuple take
-            precedence over attributes specified via keyword arguments.
-
-        See Also
-        --------
-        add_node
-
-        Examples
-        --------
-        >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_nodes_from("Hello")
-        >>> K3 = nx.Graph([(0, 1), (1, 2), (2, 0)])
-        >>> G.add_nodes_from(K3)
-        >>> sorted(G.nodes(), key=str)
-        [0, 1, 2, 'H', 'e', 'l', 'o']
-
-        Use keywords to update specific node attributes for every node.
-
-        >>> G.add_nodes_from([1, 2], size=10)
-        >>> G.add_nodes_from([3, 4], weight=0.4)
-
-        Use (node, attrdict) tuples to update attributes for specific nodes.
-
-        >>> G.add_nodes_from([(1, dict(size=11)), (2, {"color": "blue"})])
-        >>> G.nodes[1]["size"]
-        11
-        >>> H = nx.Graph()
-        >>> H.add_nodes_from(G.nodes(data=True))
-        >>> H.nodes[1]["size"]
-        11
-
-        """
-        for n in nodes_for_adding:
-            try:
-                newnode = n not in self._node
-                newdict = attr
-            except TypeError:
-                n, ndict = n
-                newnode = n not in self._node
-                newdict = attr.copy()
-                newdict.update(ndict)
-            if newnode:
-                if n is None:
-                    raise ValueError("None cannot be a node")
-                self._succ[n] = self.adjlist_inner_dict_factory()
-                self._pred[n] = self.adjlist_inner_dict_factory()
-                self._node[n] = self.node_attr_dict_factory()
-            self._node[n].update(newdict)
-
     def remove_node(self, n):
         """Remove node n.
 
@@ -527,43 +416,6 @@ class DiGraph(Graph):
         for u in self._pred[n]:
             del self._succ[u][n]  # remove all edges n-u in digraph
         del self._pred[n]  # remove node from pred
-
-    def remove_nodes_from(self, nodes):
-        """Remove multiple nodes.
-
-        Parameters
-        ----------
-        nodes : iterable container
-            A container of nodes (list, dict, set, etc.).  If a node
-            in the container is not in the graph it is silently ignored.
-
-        See Also
-        --------
-        remove_node
-
-        Examples
-        --------
-        >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> e = list(G.nodes)
-        >>> e
-        [0, 1, 2]
-        >>> G.remove_nodes_from(e)
-        >>> list(G.nodes)
-        []
-
-        """
-        for n in nodes:
-            try:
-                succs = self._succ[n]
-                del self._node[n]
-                for u in succs:
-                    del self._pred[u][n]  # remove all edges n-u in digraph
-                del self._succ[n]  # now remove node
-                for u in self._pred[n]:
-                    del self._succ[u][n]  # remove all edges n-u in digraph
-                del self._pred[n]  # now remove node
-            except KeyError:
-                pass  # silent failure on remove
 
     def add_edge(self, u_of_edge, v_of_edge, **attr):
         """Add an edge between u and v.
@@ -676,9 +528,9 @@ class DiGraph(Graph):
         for e in ebunch_to_add:
             ne = len(e)
             if ne == 3:
-                u, v, dd = e
+                u, v, dd = e  # type: ignore
             elif ne == 2:
-                u, v = e
+                u, v = e  # type: ignore
                 dd = {}
             else:
                 raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
@@ -1178,13 +1030,13 @@ class DiGraph(Graph):
         [(0, 1)]
         """
         graph_class = self.to_undirected_class()
-        if as_view is True:
+        if as_view:
             return nx.graphviews.generic_graph_view(self, graph_class)
         # deepcopy when not a view
         G = graph_class()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
-        if reciprocal is True:
+        if reciprocal:
             G.add_edges_from(
                 (u, v, deepcopy(d))
                 for u, nbrs in self._adj.items()

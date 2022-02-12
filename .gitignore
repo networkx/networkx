@@ -39,6 +39,9 @@ networkx.egg-info/
 # IPython Notebook Checkpoints
 .ipynb_checkpoints/
 
+# MyPy
+.mypy_cache
+
 # Vim's swap files
 *.sw[op]
 
