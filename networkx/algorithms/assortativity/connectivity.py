@@ -1,5 +1,7 @@
 from collections import defaultdict
 
+import networkx as nx
+
 __all__ = ["average_degree_connectivity", "k_nearest_neighbors"]
 
 
@@ -46,9 +48,10 @@ def average_degree_connectivity(
 
     Raises
     ------
-    ValueError
+    NetworkXError
         If either `source` or `target` are not one of 'in',
         'out', or 'in+out'.
+        If either `source` or `target` is passed for an undirected graph.
 
     Examples
     --------
@@ -72,9 +75,9 @@ def average_degree_connectivity(
     # First, determine the type of neighbors and the type of degree to use.
     if G.is_directed():
         if source not in ("in", "out", "in+out"):
-            raise ValueError('source must be one of "in", "out", or "in+out"')
+            raise nx.NetworkXError('source must be one of "in", "out", or "in+out"')
         if target not in ("in", "out", "in+out"):
-            raise ValueError('target must be one of "in", "out", or "in+out"')
+            raise nx.NetworkXError('target must be one of "in", "out", or "in+out"')
         direction = {"out": G.out_degree, "in": G.in_degree, "in+out": G.degree}
         neighbor_funcs = {
             "out": G.successors,
@@ -88,6 +91,10 @@ def average_degree_connectivity(
         # computing the weight of an edge.
         reverse = source == "in"
     else:
+        if source != "in+out" or target != "in+out":
+            raise nx.NetworkXError(
+                f"source and target arguments are only supported for directed graphs"
+            )
         source_degree = G.degree
         target_degree = G.degree
         neighbors = G.neighbors

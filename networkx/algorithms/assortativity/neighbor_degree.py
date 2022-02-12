@@ -1,3 +1,5 @@
+import networkx as nx
+
 __all__ = ["average_neighbor_degree"]
 
 
@@ -48,6 +50,13 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
     d: dict
        A dictionary keyed by node with average neighbors degree value.
 
+    Raises
+    ------
+    NetworkXError
+        If either `source` or `target` are not one of 'in',
+        'out', or 'in+out'.
+        If either `source` or `target` is passed for an undirected graph.
+
     Examples
     --------
     >>> G = nx.path_graph(4)
@@ -82,14 +91,14 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
        "The architecture of complex weighted networks".
        PNAS 101 (11): 3747–3752 (2004).
     """
-    source_degree = G.degree
-    target_degree = G.degree
     if G.is_directed():
         if source == "in":
             source_degree = G.in_degree
         elif source == "out":
             source_degree = G.out_degree
-        elif source != "in+out":
+        elif source == "in+out":
+            source_degree = G.degree
+        else:
             raise nx.NetworkXError(
                 f"source argument {source} must be 'in', 'out' or 'in+out'"
             )
@@ -98,10 +107,19 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
             target_degree = G.in_degree
         elif target == "out":
             target_degree = G.out_degree
-        elif target != "in+out":
+        elif target == "in+out":
+            target_degree = G.degree
+        else:
             raise nx.NetworkXError(
                 f"target argument {target} must be 'in', 'out' or 'in+out'"
             )
+    else:
+        if source != "out" or target != "out":
+            raise nx.NetworkXError(
+                f"source and target arguments are only supported for directed graphs"
+            )
+        source_degree = G.degree
+        target_degree = G.degree
 
     # precompute target degrees -- should *not* be weighted degree
     tgt_deg = dict(target_degree())
