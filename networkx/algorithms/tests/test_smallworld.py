@@ -55,8 +55,6 @@ def test_omega():
     omegal = omega(Gl, niter=1, nrand=1, seed=rng)
     omegar = omega(Gr, niter=1, nrand=1, seed=rng)
     omegas = omega(Gs, niter=1, nrand=1, seed=rng)
-    print("omegas, omegal, omegar")
-    print(omegas, omegal, omegar)
     assert omegal < omegas and omegas < omegar
 
     # Test that omega lies within the [-1, 1] bounds
