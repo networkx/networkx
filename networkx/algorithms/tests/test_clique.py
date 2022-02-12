@@ -176,6 +176,8 @@ class TestCliques:
             10: 2,
             11: 2,
         }
+        assert nx.node_clique_number(G, [1, 2], cliques=self.cl) == {1: 4, 2: 4}
+        assert nx.node_clique_number(G, 1, cliques=self.cl) == 4
 
     def test_cliques_containing_node(self):
         G = self.G
