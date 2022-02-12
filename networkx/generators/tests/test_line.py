@@ -5,48 +5,6 @@ import networkx.generators.line as line
 from networkx.utils import edges_equal
 
 
-def test_node_func():
-    # graph
-    G = nx.Graph()
-    G.add_edge(1, 2)
-    nf = line._node_func(G)
-    assert nf(1, 2) == (1, 2)
-    assert nf(2, 1) == (1, 2)
-
-    # multigraph
-    G = nx.MultiGraph()
-    G.add_edge(1, 2)
-    G.add_edge(1, 2)
-    nf = line._node_func(G)
-    assert nf(1, 2, 0) == (1, 2, 0)
-    assert nf(2, 1, 0) == (1, 2, 0)
-
-
-def test_edge_func():
-    # graph
-    G = nx.Graph()
-    G.add_edge(1, 2)
-    G.add_edge(2, 3)
-    ef = line._edge_func(G)
-    expected = [(1, 2), (2, 3)]
-    assert edges_equal(ef(), expected)
-
-    # digraph
-    G = nx.MultiDiGraph()
-    G.add_edge(1, 2)
-    G.add_edge(2, 3)
-    G.add_edge(2, 3)
-    ef = line._edge_func(G)
-    expected = [(1, 2, 0), (2, 3, 0), (2, 3, 1)]
-    result = sorted(ef())
-    assert expected == result
-
-
-def test_sorted_edge():
-    assert (1, 2) == line._sorted_edge(1, 2)
-    assert (1, 2) == line._sorted_edge(2, 1)
-
-
 class TestGeneratorLine:
     def test_star(self):
         G = nx.star_graph(5)
