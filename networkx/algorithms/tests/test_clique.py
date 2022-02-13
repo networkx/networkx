@@ -33,6 +33,39 @@ class TestCliques:
         hcl = list(nx.find_cliques(self.H))
         assert sorted(map(sorted, hcl)) == [[1, 2], [1, 4, 5, 6], [2, 3], [3, 4, 6]]
 
+    def test_find_cliques3(self):
+        # all cliques are [[2, 6, 1, 3], [2, 6, 4], [5, 4, 7], [8, 9], [10, 11]]
+
+        cl = list(nx.find_cliques(self.G, [2]))
+        rcl = nx.find_cliques_recursive(self.G, [2])
+        expected = [[2, 6, 1, 3], [2, 6, 4]]
+        assert sorted(map(sorted, rcl)) == sorted(map(sorted, expected))
+        assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
+
+        cl = list(nx.find_cliques(self.G, [2, 3]))
+        rcl = nx.find_cliques_recursive(self.G, [2, 3])
+        expected = [[2, 6, 1, 3]]
+        assert sorted(map(sorted, rcl)) == sorted(map(sorted, expected))
+        assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
+
+        cl = list(nx.find_cliques(self.G, [2, 6, 4]))
+        rcl = nx.find_cliques_recursive(self.G, [2, 6, 4])
+        expected = [[2, 6, 4]]
+        assert sorted(map(sorted, rcl)) == sorted(map(sorted, expected))
+        assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
+
+        cl = list(nx.find_cliques(self.G, [2, 6, 4]))
+        rcl = nx.find_cliques_recursive(self.G, [2, 6, 4])
+        expected = [[2, 6, 4]]
+        assert sorted(map(sorted, rcl)) == sorted(map(sorted, expected))
+        assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
+
+        with pytest.raises(ValueError):
+            list(nx.find_cliques(self.G, [2, 6, 4, 1]))
+
+        with pytest.raises(ValueError):
+            list(nx.find_cliques_recursive(self.G, [2, 6, 4, 1]))
+
     def test_clique_number(self):
         G = self.G
         assert nx.graph_clique_number(G) == 4
@@ -143,6 +176,8 @@ class TestCliques:
             10: 2,
             11: 2,
         }
+        assert nx.node_clique_number(G, [1, 2], cliques=self.cl) == {1: 4, 2: 4}
+        assert nx.node_clique_number(G, 1, cliques=self.cl) == 4
 
     def test_cliques_containing_node(self):
         G = self.G
