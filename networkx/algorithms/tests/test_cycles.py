@@ -1,5 +1,4 @@
 import pytest
-import networkx
 import networkx as nx
 
 from networkx.algorithms import find_cycle
@@ -10,7 +9,7 @@ from networkx.algorithms.traversal.edgedfs import FORWARD, REVERSE
 class TestCycles:
     @classmethod
     def setup_class(cls):
-        G = networkx.Graph()
+        G = nx.Graph()
         nx.add_cycle(G, [0, 1, 2, 3])
         nx.add_cycle(G, [0, 3, 4, 5])
         nx.add_cycle(G, [0, 1, 6, 7, 8])
@@ -25,48 +24,48 @@ class TestCycles:
         return any(l[i : i + n] == b for i in range(n))
 
     def test_cycle_basis(self):
-        cy = networkx.cycle_basis(self.G)
+        cy = nx.cycle_basis(self.G)
         sort_cy = sorted(sorted(c) for c in cy)
         assert_equal(sort_cy, [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5]])
 
     def test_cycle_basis_alternate_root(self):
-        cy = networkx.cycle_basis(self.G, 1)
+        cy = nx.cycle_basis(self.G, 1)
         sort_cy = sorted(sorted(c) for c in cy)
         assert_equal(sort_cy, [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5]])
 
-        cy = networkx.cycle_basis(self.G, 9)
+        cy = nx.cycle_basis(self.G, 9)
         sort_cy = sorted(sorted(c) for c in cy)
         assert_equal(sort_cy, [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5]])
 
     def test_cycle_basis_disconnected(self):
         """Tests for cycle basis on disconnected graphs."""
         nx.add_cycle(self.G, "ABC")
-        cy = networkx.cycle_basis(self.G, 9)
+        cy = nx.cycle_basis(self.G, 9)
         sort_cy = sorted(sorted(c) for c in cy[:-1]) + [sorted(cy[-1])]
         assert_equal(sort_cy, [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5],
-                               ['A','B','C']])
+                               ['A', 'B', 'C']])
 
     def test_cycle_basis_undirected_multigraph(self):
         """Tests for cycle basis on undirected multigraphs."""
         edges = [(1, 2), (1, 2), (1, 2), (3, 1), (3, 2)]
         G = nx.MultiGraph(edges)
-        Z = networkx.cycle_basis(G, 3)
+        Z = nx.cycle_basis(G, 3)
         assert_equal(Z, [[1, 2], [1, 2], [1, 2, 3]])
 
-    def test_cycle_basis_undirected_multigraph(self):
+    def test_cycle_basis_undirected_multigraph_data(self):
         """Tests for cycle basis on undirected multigraphs with keys and data.
 
         """
         edges = [(1, 2, {"val": 10}), (1, 2, {"val": 10}), (1, 2, {"val": 1}),
                  (1, 3, {"val": 0}), (3, 2, {"val": 0})]
         G = nx.MultiGraph(edges)
-        Z = networkx.cycle_basis(G, 3)
+        Z = nx.cycle_basis(G, 3)
         assert_equal(Z, [[1, 2], [1, 2], [1, 2, 3]])
 
     def test_cycle_basis2(self):
         with pytest.raises(nx.NetworkXNotImplemented):
             G = nx.DiGraph()
-            cy = networkx.cycle_basis(G, 0)
+            cy = nx.cycle_basis(G, 0)
 
     def test_simple_cycles(self):
         edges = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)]
@@ -82,13 +81,39 @@ class TestCycles:
             G = nx.Graph()
             c = sorted(nx.simple_cycles(G))
 
-    def test_unsortable(self):
-        #  TODO What does this test do?  das 6/2013
-        G = nx.DiGraph()
-        nx.add_cycle(G, ["a", 1])
-        c = list(nx.simple_cycles(G))
+    def test_unorderable_nodes(self):
+        """Tests that computing simple cycles does not depend on
+        nodes being orderable.
 
-    def test_simple_cycles_small(self):
+        For a similar issue with the longest path function for directed
+        acyclic graphs, see issue #1989.
+
+        """
+        # TODO In Python 3, instances of the `object` class are
+        # unorderable by default, so we wouldn't need to define our own
+        # class here, we could just instantiate an instance of the
+        # `object` class. However, we still support Python 2; when
+        # support for Python 2 is dropped, this test can be simplified
+        # by replacing `Unorderable()` by `object()`.
+        class Unorderable(object):
+
+            def __le__(self):
+                raise NotImplemented
+
+            def __ge__(self):
+                raise NotImplemented
+
+        # Create the directed path graph on four nodes, with nodes
+        # represented as (unorderable) Python objects.
+        nodes = [Unorderable() for n in range(4)]
+        G = nx.DiGraph()
+        nx.add_cycle(G, nodes)
+        cycles = list(nx.simple_cycles(G))
+        assert_equal(len(cycles), 1)
+        assert_true(self.is_cyclic_permutation(cycles[0], nodes))
+
+    def test_disjoint_cycles(self):
+        nodes = [1, 2, 3]
         G = nx.DiGraph()
         nx.add_cycle(G, [1, 2, 3])
         c = sorted(nx.simple_cycles(G))
@@ -101,11 +126,11 @@ class TestCycles:
         for c in cc:
             assert any(self.is_cyclic_permutation(c, rc) for rc in ca)
 
-    def test_simple_cycles_empty(self):
+    def test_empty_graph(self):
         G = nx.DiGraph()
         assert list(nx.simple_cycles(G)) == []
 
-    def test_complete_directed_graph(self):
+    def test_complete_directed_graphs(self):
         # see table 2 in Johnson's paper
         ncircuits = [1, 5, 20, 84, 409, 2365, 16064]
         for n, c in zip(range(2, 9), ncircuits):
@@ -176,7 +201,6 @@ class TestCycles:
             assert any(self.is_cyclic_permutation(c, rc) for rc in rcc)
         for rc in rcc:
             assert any(self.is_cyclic_permutation(rc, c) for c in cc)
-
 
 
 # These tests might fail with hash randomization since they depend on
@@ -373,28 +397,31 @@ class TestCycleBasisMatrix:
         except ImportError:
             raise SkipTest('Scipy not available.')
 
-    def test_cycle_basis_matrix(self):
+    def test_undirected_multigraph(self):
         # Testing undirected multigraph
-        cables = [(1,2),(1,2),(1,2),(3,1),(3,2)]
+        cables = [(1, 2), (1, 2), (1, 2), (3, 1), (3, 2)]
         G = nx.MultiGraph(cables)
-        M = networkx.cycle_basis_matrix(G)
-        assert_equal(M, np.array([-1,-1,-1],[1,0,0],[0,1,0],[0,0,1],[0,0,1]))
+        M = nx.cycle_basis_matrix(G)
+        assert_true((M == np.array([[-1, -1, -1], [1, 0, 0], [0, 1, 0],
+                                   [0, 0, 1], [0, 0, 1]])).all())
 
+    def test_undirected_multigraph_data(self):
         # Testing undirected multigraph with keys and data
-        cables = [(1,2,{"val":10}),(1,2,{"val":10}),(1,2,{"val":1}),(1,3,{"val":0}),(3,2,{"val":0})]
+        cables = [(1, 2, {"val": 10}), (1, 2, {"val": 10}), (1, 2, {"val": 1}),
+                  (1, 3, {"val": 0}), (3, 2, {"val": 0})]
         G = nx.MultiGraph(cables)
-        M = networkx.cycle_basis_matrix(G)
+        M = nx.cycle_basis_matrix(G)
         assert_equal(M, np.array([-1,-1,-1],[1,0,0],[0,1,0],[0,0,1],[0,0,1]))
 
     def test_cycle_basis_matrix(self):
         # Testing sparse matrix
         with pytest.raises(nx.NetworkXNotImplemented):
             G=nx.Graph()
-            cy=networkx.cycle_basis_matrix(G,sparse=True)
+            cy=nx.cycle_basis_matrix(G,sparse=True)
 
     def test_cycle_basis_matrix(self):
         # Testing directed multigraph
         with pytest.raises(nx.NetworkXNotImplemented):
             cables = [(1,2),(1,2),(1,2),(1,3),(3,2)]
             G = nx.MultiDiGraph(cables)
-            M = networkx.cycle_basis_matrix(G)
+            M = nx.cycle_basis_matrix(G)
