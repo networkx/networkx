@@ -1,6 +1,7 @@
 """Functions for generating line graphs."""
 from itertools import combinations
 from collections import defaultdict
+from functools import partial
 
 import networkx as nx
 from networkx.utils import arbitrary_element
@@ -124,7 +125,7 @@ def _lg_directed(G, create_using=None):
     L = nx.empty_graph(0, create_using, default=G.__class__)
 
     # Create a graph specific edge function.
-    get_edges = G.edges
+    get_edges = partial(G.edges, keys=True) if G.is_multigraph() else G.edges
 
     for from_node in get_edges():
         # from_node is: (u,v) or (u,v,key)
@@ -161,8 +162,8 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     """
     L = nx.empty_graph(0, create_using, default=G.__class__)
 
-    # Graph specific functions for edges and sorted nodes.
-    get_edges = G.edges
+    # Graph specific functions for edges.
+    get_edges = partial(G.edges, keys=True) if G.is_multigraph() else G.edges
 
     # Determine if we include self-loops or not.
     shift = 0 if selfloops else 1
@@ -170,7 +171,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     edges = set()
     for u in G:
         # Label nodes as a sorted tuple of nodes in original graph.
-        nodes = [tuple(sorted(x)) for x in get_edges(u)]
+        nodes = [tuple(sorted(x[:2])) + x[2:] for x in get_edges(u)]
 
         if len(nodes) == 1:
             # Then the edge will be an isolated node in L.
