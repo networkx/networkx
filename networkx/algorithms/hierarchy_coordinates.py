@@ -49,7 +49,7 @@ __all__ = [
 def graphs_from_thresholds(
     A, num_thresholds=8, threshold_distribution=None, verbose=False
 ):
-    """Creates a series of networkx graphs based on generated edge weight thresholds
+    r"""Creates a series of networkx graphs based on generated edge weight thresholds
 
     Transforms a weighted NetworkX DiGraph into a set of unweighted NetworkX DiGraphs.
     The series of output graphs are determined by the number of thresholds and
@@ -649,7 +649,7 @@ def _feedforwardness_iteration(G):
         for min_node in min_layer:
             for path in nx.all_simple_paths(G, source=max_node, target=min_node):
                 # where each path calculation is F(path)
-                g += len(path) / sum([weights[node] for node in path])
+                g += len(path) / sum(weights[node] for node in path)
                 num_paths += 1
     return g, num_paths
 
@@ -674,12 +674,17 @@ def feedforwardness(DAG):
 
 
     More formally, total feedfowardness is given by
-    .. math:: F(G) = \frac{g(G_C) + \sum_{k < L(G_C)} g(G_k)}{|\prod_{M \mu}(G_c)| + \sum_{k < L_{G_C}} |\prod_{M \mu} (G_k)|}
-    where :math:`\mu` (M) is the set of minimal (maximal) nodes, :math:`G_C` is the DAG, :math:`\prod_{M \mu}` is the
-    set of paths from maximal to minimal nodes, :math:`L_{G_C}` is the set of layers produced by removing maximal nodes,
-    and :math:`g(G_k) = \sum_{\pi_i \in \prod_{M \mu}(G_k)} F(\pi_i)` where
-    :math:`F(\pi_k) = \frac{|v(\pi_k)|}{\sum_{v_i \in v(\pi_k)} \alpha_i}`, with :math:`v_k` and :math:`\alpha_k` being
-    the k-ths node and its weight, respectively.
+    .. math::
+
+        F(G) = \frac{g(G_C) + \\sum_{k < L(G_C)} g(G_k)}{|\\prod_{M \\mu}(G_c)|
+        + \\sum_{k < L_{G_C}} |\\prod_{M \\mu} (G_k)|}
+
+    where :math:`\\mu` (M) is the set of minimal (maximal) nodes, :math:`G_C` is
+    the DAG, :math:`\\prod_{M \\mu}` is the set of paths from maximal to minimal
+    nodes, :math:`L_{G_C}` is the set of layers produced by removing maximal nodes,
+    and :math:`g(G_k) = \\sum_{\\pi_i \\in \\prod_{M \\mu}(G_k)} F(\\pi_i)` where
+    :math:`F(\\pi_k) = \frac{|v(\\pi_k)|}{\\sum_{v_i \\in v(\\pi_k)} \alpha_i}`,
+    with :math:`v_k` the k-th node and :math:`\alpha_k` its weight.
 
     The original algorithm was given in
         "On the origins of hierarchy in complex networks."[1]_
@@ -771,8 +776,8 @@ def analytic_graph_entropy(DAG, forward_entropy=False):
     DAG: NetworkX Graph
         Directed Acyclic Graph
     forward_entropy: Bool, default: False
-        if True, calculates entropy from maximal nodes (k_in = 0) nodes to others.
-        Otherwise calculates using paths from the bottom (minimal nodes) of the network.
+        if True, calculates entropy from maximal nodes (k_in = 0) to others.
+        Otherwise calculates using paths from minimal nodes the bottom.
 
     Return
     -------
@@ -792,11 +797,14 @@ def analytic_graph_entropy(DAG, forward_entropy=False):
     ...     [0, 0, 0, 0, 0, 0, 0],
     ... ])
 
-    >>> condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_array(b, create_using=nx.DiGraph)))
-    >>> fwd_graph_entropy = [round(nx.graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
-    >>> bkwd_graph_entropy = [round(nx.graph_entropy(net), 3) for net in condensed_network_layers]
-    >>> print("graph entropy (forwards | backwards): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
-    graph entropy (forwards | backwards): [0.347, 0.0] | [1.04, 0.0]
+    >>> A = nx.from_numpy_array(b, create_using=nx.DiGraph)
+    >>> condensed_layers = nx.recursive_leaf_removal(nx.condensation(A))
+    >>> fwd_entropy, bkwd_entropy = [], []
+    >>> for net in condensed_layers:
+    ...     fwd_entropy.append(round(nx.graph_entropy(net, forward_entropy=True), 3))
+    ...     bkwd_entropy.append(round(nx.graph_entropy(net), 3))
+    >>> print(f"graph entropy, fwds: {fwd_entropy}; bkwd: {bkwd_entropy}")
+    graph entropy, fwds: [0.347, 0.0]; bkwd: [1.04, 0.0]
 
     Notes
     ______
@@ -805,11 +813,18 @@ def analytic_graph_entropy(DAG, forward_entropy=False):
     following a path from n_i.
 
     _Forward_ entropy:
-    .. math:: H_f(G_C) = \frac{1}{|M|} \sum_{v_i \in M} \sum_{v_k \in V \setminus \mu} P(v_i \right v_k) \cdot log k_{out}(v_k)
+    .. math::
+        H_f(G_C) = \frac{1}{|M|} \\sum_{v_i \\in M} \\sum_{v_k \\in V \\setminus \\mu}
+        P(v_i \right v_k) \\cdot log k_{out}(v_k)
+
     _Backward_ entropy:
-    .. math:: H_b(G_C) = \frac{1}{|\mu|} \sum_{v_i \in \mu} \sum_{v_k \in V_C \setminus M} P(v_i \leftarrow v_k) \cdot log k_{in}(v_k)
-    where :math:`\mu` (M) is the set of minimal (maximal) nodes, and :math:`P(v_i \leftarrow v_k)` indicates
-    the probability of transition between :math:`v_k` and :math:`v_i`.
+    .. math::
+        H_b(G_C) = \frac{1}{|\\mu|} \\sum_{v_i \\in \\mu} \\sum_{v_k \\in V_C \\setminus M}
+        P(v_i \\leftarrow v_k) \\cdot log k_{in}(v_k)
+
+    where :math:`\\mu` (M) is the set of minimal (maximal) nodes,
+    and :math:`P(v_i \\leftarrow v_k)` indicates the probability of
+    transition between :math:`v_k` and :math:`v_i`.
 
     .. [1] "On the origins of hierarchy in complex networks."
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
@@ -843,7 +858,7 @@ def analytic_graph_entropy(DAG, forward_entropy=False):
     B = B / sums
     B = B if forward_entropy else B.T
     # +1 as k \in ( 1, L(G_C) )
-    P = sum([np.linalg.matrix_power(B, k) for k in range(1, L_GC + 1)])
+    P = sum(np.linalg.matrix_power(B, k) for k in range(1, L_GC + 1))
     boundary_layer = max_min_layers(dag, max_layer=forward_entropy)
     non_extremal_nodes = set(dag.nodes() - boundary_layer)
     # Eliminates zero degree nodes from log; as
@@ -893,11 +908,14 @@ def graph_entropy(DAG, forward_entropy=False):
     ...     [0, 0, 0, 0, 0, 0, 0],
     ... ])
 
-    >>> condensed_network_layers = nx.recursive_leaf_removal(nx.condensation(nx.from_numpy_array(b, create_using=nx.DiGraph)))
-    >>> fwd_graph_entropy = [round(nx.graph_entropy(net, forward_entropy=True), 3) for net in condensed_network_layers]
-    >>> bkwd_graph_entropy = [round(nx.graph_entropy(net), 3) for net in condensed_network_layers]
-    >>> print("graph entropy (forwards | backwards): {0} | {1}".format(fwd_graph_entropy, bkwd_graph_entropy))
-    graph entropy (forwards | backwards): [0.347, 0.0] | [1.04, 0.0]
+    >>> A = nx.from_numpy_array(b, create_using=nx.DiGraph)
+    >>> condensed_layers = nx.recursive_leaf_removal(nx.condensation(A))
+    >>> fwd_entropy, bkwd_entropy = [], []
+    >>> for net in condensed_layers:
+    ...     fwd_entropy.append(round(nx.graph_entropy(net, forward_entropy=True), 3))
+    ...     bkwd_entropy.append(round(nx.graph_entropy(net), 3))
+    >>> print(f"graph entropy, fwds: {fwd_entropy}; bkwd: {bkwd_entropy}")
+    graph entropy, fwds: [0.347, 0.0]; bkwd: [1.04, 0.0]
 
     Notes
     ______
@@ -906,11 +924,19 @@ def graph_entropy(DAG, forward_entropy=False):
     following a path from n_i.
 
     _Forward_ entropy:
-    .. math:: H_f(G_C) = \frac{1}{|M|} \sum_{v_i \in M} \sum_{v_k \in V \setminus \mu} P(v_i \right v_k) \cdot log k_{out}(v_k)
+    .. math::
+        H_f(G_C) = \frac{1}{|M|} \\sum_{v_i \\in M} \\sum_{v_k \\in V \\setminus \\mu}
+        P(v_i \right v_k) \\cdot log k_{out}(v_k)
+
     _Backward_ entropy:
-    .. math:: H_b(G_C) = \frac{1}{|\mu|} \sum_{v_i \in \mu} \sum_{v_k \in V_C \setminus M} P(v_i \leftarrow v_k) \cdot log k_{in}(v_k)
-    where :math:`\mu` (M) is the set of minimal (maximal) nodes, and :math:`P(v_i \leftarrow v_k)` indicates
-    the probability of transition between :math:`v_k` and :math:`v_i`, as the inverse of the sum of non-binary branchings.
+    .. math::
+        H_b(G_C) = \frac{1}{|\\mu|} \\sum_{v_i \\in \\mu} \\sum_{v_k \\in V_C \\setminus M}
+        P(v_i \\leftarrow v_k) \\cdot log k_{in}(v_k)
+
+    where :math:`\\mu` (M) is the set of minimal (maximal) nodes,
+    and :math:`P(v_i \\leftarrow v_k)` indicates the probability of
+    transition between :math:`v_k` and :math:`v_i`, as the inverse
+    of the sum of non-binary branchings.
 
     .. [1] "On the origins of hierarchy in complex networks."
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
