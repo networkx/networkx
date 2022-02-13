@@ -36,6 +36,10 @@ X contributors. Highlights include:
 Improvements
 ------------
 
+- [`#5216 <https://github.com/networkx/networkx/pull/5216>`_]
+  Make ``omega()`` closer to the published algorithm. The value changes slightly.
+  The ``niter`` parameter default changes from 1->5 in ``lattice_reference()``
+  and from 100->5 in ``omega``.
 
 API Changes
 -----------
