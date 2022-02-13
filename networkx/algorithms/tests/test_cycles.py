@@ -42,8 +42,9 @@ class TestCycles:
         nx.add_cycle(self.G, "ABC")
         cy = nx.cycle_basis(self.G, 9)
         sort_cy = sorted(sorted(c) for c in cy[:-1]) + [sorted(cy[-1])]
-        assert_equal(sort_cy, [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5],
-                               ['A', 'B', 'C']])
+        assert_equal(
+            sort_cy, [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5], ["A", "B", "C"]]
+        )
 
     def test_cycle_basis_undirected_multigraph(self):
         """Tests for cycle basis on undirected multigraphs."""
@@ -53,11 +54,14 @@ class TestCycles:
         assert_equal(Z, [[1, 2], [1, 2], [1, 2, 3]])
 
     def test_cycle_basis_undirected_multigraph_data(self):
-        """Tests for cycle basis on undirected multigraphs with keys and data.
-
-        """
-        edges = [(1, 2, {"val": 10}), (1, 2, {"val": 10}), (1, 2, {"val": 1}),
-                 (1, 3, {"val": 0}), (3, 2, {"val": 0})]
+        """Tests for cycle basis on undirected multigraphs with keys and data."""
+        edges = [
+            (1, 2, {"val": 10}),
+            (1, 2, {"val": 10}),
+            (1, 2, {"val": 1}),
+            (1, 3, {"val": 0}),
+            (3, 2, {"val": 0}),
+        ]
         G = nx.MultiGraph(edges)
         Z = nx.cycle_basis(G, 3)
         assert_equal(Z, [[1, 2], [1, 2], [1, 2, 3]])
@@ -96,7 +100,6 @@ class TestCycles:
         # support for Python 2 is dropped, this test can be simplified
         # by replacing `Unorderable()` by `object()`.
         class Unorderable(object):
-
             def __le__(self):
                 raise NotImplemented
 
@@ -395,33 +398,44 @@ class TestCycleBasisMatrix:
         try:
             import scipy as np
         except ImportError:
-            raise SkipTest('Scipy not available.')
+            raise SkipTest("Scipy not available.")
 
     def test_undirected_multigraph(self):
         # Testing undirected multigraph
         cables = [(1, 2), (1, 2), (1, 2), (3, 1), (3, 2)]
         G = nx.MultiGraph(cables)
         M = nx.cycle_basis_matrix(G)
-        assert_true((M == np.array([[-1, -1, -1], [1, 0, 0], [0, 1, 0],
-                                   [0, 0, 1], [0, 0, 1]])).all())
+        assert_true(
+            (
+                M
+                == np.array([[-1, -1, -1], [1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 0, 1]])
+            ).all()
+        )
 
     def test_undirected_multigraph_data(self):
         # Testing undirected multigraph with keys and data
-        cables = [(1, 2, {"val": 10}), (1, 2, {"val": 10}), (1, 2, {"val": 1}),
-                  (1, 3, {"val": 0}), (3, 2, {"val": 0})]
+        cables = [
+            (1, 2, {"val": 10}),
+            (1, 2, {"val": 10}),
+            (1, 2, {"val": 1}),
+            (1, 3, {"val": 0}),
+            (3, 2, {"val": 0}),
+        ]
         G = nx.MultiGraph(cables)
         M = nx.cycle_basis_matrix(G)
-        assert_equal(M, np.array([-1,-1,-1],[1,0,0],[0,1,0],[0,0,1],[0,0,1]))
+        assert_equal(
+            M, np.array([-1, -1, -1], [1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 0, 1])
+        )
 
     def test_cycle_basis_matrix(self):
         # Testing sparse matrix
         with pytest.raises(nx.NetworkXNotImplemented):
-            G=nx.Graph()
-            cy=nx.cycle_basis_matrix(G,sparse=True)
+            G = nx.Graph()
+            cy = nx.cycle_basis_matrix(G, sparse=True)
 
     def test_cycle_basis_matrix(self):
         # Testing directed multigraph
         with pytest.raises(nx.NetworkXNotImplemented):
-            cables = [(1,2),(1,2),(1,2),(1,3),(3,2)]
+            cables = [(1, 2), (1, 2), (1, 2), (1, 3), (3, 2)]
             G = nx.MultiDiGraph(cables)
             M = nx.cycle_basis_matrix(G)

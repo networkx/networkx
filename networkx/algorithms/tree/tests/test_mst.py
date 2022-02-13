@@ -370,16 +370,16 @@ class TestSpanningTreeIterator:
 
     def test_maximum_spanning_tree_as_multigraph(self):
         G = nx.MultiGraph()
-        G.add_edge(0, 1, key='a', weight=2)
-        G.add_edge(0, 1, key='b', weight=1)
+        G.add_edge(0, 1, key="a", weight=2)
+        G.add_edge(0, 1, key="b", weight=1)
         T = nx.maximum_spanning_tree(G, as_multigraph=True)
         assert T.is_multigraph()
-        assert [(0, 1, 'a', 2)] == list(T.edges(keys=True, data='weight'))
+        assert [(0, 1, "a", 2)] == list(T.edges(keys=True, data="weight"))
 
     def test_minimum_spanning_tree_as_multigraph(self):
         G = nx.MultiGraph()
-        G.add_edge(0, 1, key='a', weight=2)
-        G.add_edge(0, 1, key='b', weight=1)
+        G.add_edge(0, 1, key="a", weight=2)
+        G.add_edge(0, 1, key="b", weight=1)
         T = nx.minimum_spanning_tree(G, as_multigraph=True)
         assert T.is_multigraph()
-        assert [(0, 1, 'b', 1)] == list(T.edges(keys=True, data='weight'))
+        assert [(0, 1, "b", 1)] == list(T.edges(keys=True, data="weight"))

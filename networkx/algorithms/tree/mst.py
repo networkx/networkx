@@ -537,13 +537,12 @@ def maximum_spanning_edges(
     )
 
 
-@not_implemented_for('directed')
-def _optimum_spanning_tree(G, algorithm, minimum, weight,
-                           ignore_nan, as_multigraph):
+@not_implemented_for("directed")
+def _optimum_spanning_tree(G, algorithm, minimum, weight, ignore_nan, as_multigraph):
     try:
         algo = ALGORITHMS[algorithm]
     except KeyError:
-        msg = '{} is not a valid choice for an algorithm.'.format(algorithm)
+        msg = "{} is not a valid choice for an algorithm.".format(algorithm)
         raise ValueError(msg)
 
     # If `as_multigraph` is False, we can ignore the key used to
@@ -564,8 +563,9 @@ def _optimum_spanning_tree(G, algorithm, minimum, weight,
     return T
 
 
-def minimum_spanning_tree(G, weight='weight', algorithm='kruskal',
-                          ignore_nan=False, as_multigraph=False):
+def minimum_spanning_tree(
+    G, weight="weight", algorithm="kruskal", ignore_nan=False, as_multigraph=False
+):
     """Returns a minimum spanning tree or forest on an undirected graph `G`.
 
     Parameters
@@ -688,7 +688,9 @@ def partition_spanning_tree(
     return T
 
 
-def maximum_spanning_tree(G, weight='weight', algorithm='kruskal', ignore_nan=False, as_multigraph=False):
+def maximum_spanning_tree(
+    G, weight="weight", algorithm="kruskal", ignore_nan=False, as_multigraph=False
+):
     """Returns a maximum spanning tree or forest on an undirected graph `G`.
 
     Parameters

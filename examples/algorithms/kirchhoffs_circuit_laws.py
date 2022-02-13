@@ -16,11 +16,13 @@
 import networkx as nx
 
 # Create a graph representing three resistors in series.
-resistors = [(1, 2, "R0", {"volt": "V0", "curr": "I0"}),
-             (1, 2, "R1", {"volt": "V1", "curr": "I1"}),
-             (1, 2, "R2", {"volt": "V2", "curr": "I2"}),
-             (1, 3, "c0", {"volt": "Vcc", "curr": "Icc"}),
-             (3, 2, "c1", {"volt": "Vss", "curr": "Iss"})]
+resistors = [
+    (1, 2, "R0", {"volt": "V0", "curr": "I0"}),
+    (1, 2, "R1", {"volt": "V1", "curr": "I1"}),
+    (1, 2, "R2", {"volt": "V2", "curr": "I2"}),
+    (1, 3, "c0", {"volt": "Vcc", "curr": "Icc"}),
+    (3, 2, "c1", {"volt": "Vss", "curr": "Iss"}),
+]
 G = nx.MultiGraph(resistors)
 volt = [voltage for u, v, voltage in G.edges(data="volt")]
 curr = [current for u, v, current in G.edges(data="curr")]
@@ -32,8 +34,7 @@ KVL = []
 M = nx.cycle_basis_matrix(G).T
 for row in M:
     ind = row.nonzero()[0]
-    token = "".join(" {} {}".format("+" if row[j] > 0 else "-", volt[j])
-                    for j in ind)
+    token = "".join(" {} {}".format("+" if row[j] > 0 else "-", volt[j]) for j in ind)
     KVL.append(token + " = 0")
 
 # Kirchhoff's current law states that the sum of currents flowing
@@ -44,8 +45,7 @@ KCL = []
 M = nx.incidence_matrix(G, oriented=True).toarray()[:-1]
 for row in M:
     ind = row.nonzero()[0]
-    token = "".join(" {} {}".format("+" if row[j] > 0 else "-", curr[j])
-                    for j in ind)
+    token = "".join(" {} {}".format("+" if row[j] > 0 else "-", curr[j]) for j in ind)
     KCL.append(token + " = 0")
 
 print("Kirchhoff's laws for three resistors in series:")

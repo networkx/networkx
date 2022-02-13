@@ -27,7 +27,7 @@ __all__ = [
 ]
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def cycle_basis(G, root=None, T=None):
     """Returns a list of cycles which form a basis for cycles of G.
 
@@ -137,7 +137,7 @@ def cycle_basis(G, root=None, T=None):
     return cycles
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
 def cycle_basis_matrix(G, T=None):
     """Returns the matrix describing the fundamental cycles in ``G``.
 
@@ -177,8 +177,9 @@ def cycle_basis_matrix(G, T=None):
 
     """
     if not is_scipy_available:
-        raise nx.NetworkXError('This function requires SciPy:'
-                               ' https://www.scipy.org/')
+        raise nx.NetworkXError(
+            "This function requires SciPy:" " https://www.scipy.org/"
+        )
     C, T = chords(G, T=T, output_tree=True)
     nrow = G.number_of_edges()
     ncol = C.number_of_edges()
@@ -219,7 +220,7 @@ def cycle_basis_matrix(G, T=None):
                 cyc_e = []
 
                 for idx, node in enumerate(cyc):
-                    if idx < len(cyc)-1:
+                    if idx < len(cyc) - 1:
                         cyc_e.append((node, cyc[idx + 1]))
                     else:
                         cyc_e.append((node, cyc[0]))
@@ -229,8 +230,10 @@ def cycle_basis_matrix(G, T=None):
                     # so invert all edges of the cycle.
                     cyc_e = [i[::-1] for i in cyc_e]
                 elif edge not in cyc_e:
-                    raise NameError('Something went wrong! The edge {} is not'
-                                    ' in cycle {}'.format(e, cyc))
+                    raise NameError(
+                        "Something went wrong! The edge {} is not"
+                        " in cycle {}".format(e, cyc)
+                    )
 
                 cyc_e.remove(edge)
                 for ce in cyc_e:
@@ -553,7 +556,7 @@ def chords(G, T=None, output_tree=False):
     return (C, T) if output_tree else C
 
 
-def find_cycle(G, source=None, orientation='original'):
+def find_cycle(G, source=None, orientation="original"):
     """Returns a cycle found via depth-first traversal.
 
     The cycle is a list of edges indicating the cyclic path.
