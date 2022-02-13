@@ -274,9 +274,9 @@ def test_analytic_graph_entropy():
     )
     # WIP
     fwd_entropy = [nx.analytic_graph_entropy(net, True) for net in condensed_layers]
-    #assert fwd_entropy == [0.347, 0.0]
+    # assert fwd_entropy == [0.347, 0.0]
     bkwd_entropy = [nx.analytic_graph_entropy(net) for net in condensed_layers]
-    #assert bkwd_entropy == [1.04, 0.0]
+    # assert bkwd_entropy == [1.04, 0.0]
 
 
 def test_graph_entropy():
