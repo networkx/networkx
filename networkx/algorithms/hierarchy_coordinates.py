@@ -207,8 +207,6 @@ def node_weighted_condense(nx_graphs):
     Condensed Node 1: Weight 2
     Condensed Node 2: Weight 1
 
-
-
     See Also
     -------
     weakly_connected_components
@@ -443,7 +441,6 @@ def leaf_removal(G, top=True):
     .. [1] "On the origins of hierarchy in complex networks."
      Corominas-Murtra, Bernat, Joaquín Goñi, Ricard V. Solé, and Carlos Rodríguez-Caso,
      Proceedings of the National Academy of Sciences 110, no. 33 (2013)
-
 
     See Also
     --------
