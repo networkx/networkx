@@ -134,6 +134,11 @@ def find_cliques(G, nodes=None):
         containing all the nodes in `nodes` are returned. The order of
         cliques is arbitrary.
 
+    Raises
+    ------
+    ValueError
+        If `nodes` is not a clique.
+
     See Also
     --------
     find_cliques_recursive
@@ -261,6 +266,11 @@ def find_cliques_recursive(G, nodes=None):
         nodes in `G`. If `nodes` is provided, only the maximal cliques
         containing all the nodes in `nodes` are yielded. The order of
         cliques is arbitrary.
+
+    Raises
+    ------
+    ValueError
+        If `nodes` is not a clique.
 
     See Also
     --------
