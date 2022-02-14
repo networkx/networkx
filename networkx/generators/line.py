@@ -1,6 +1,7 @@
 """Functions for generating line graphs."""
 from itertools import combinations
 from collections import defaultdict
+from functools import partial
 
 import networkx as nx
 from networkx.utils import arbitrary_element
@@ -105,55 +106,6 @@ def line_graph(G, create_using=None):
     return L
 
 
-def _node_func(G):
-    """Returns a function which returns a sorted node for line graphs.
-
-    When constructing a line graph for undirected graphs, we must normalize
-    the ordering of nodes as they appear in the edge.
-
-    """
-    if G.is_multigraph():
-
-        def sorted_node(u, v, key=None):
-            return (u, v, key) if u <= v else (v, u, key)
-
-    else:
-
-        def sorted_node(u, v, key=None):
-            return (u, v) if u <= v else (v, u)
-
-    return sorted_node
-
-
-def _edge_func(G):
-    """Returns the edges from G, handling keys for multigraphs as necessary."""
-    if G.is_multigraph():
-
-        def get_edges(nbunch=None):
-            return G.edges(nbunch, keys=True)
-
-    else:
-
-        def get_edges(nbunch=None):
-            return G.edges(nbunch)
-
-    return get_edges
-
-
-def _sorted_edge(u, v):
-    """Returns a sorted edge.
-
-    During the construction of a line graph for undirected graphs, the data
-    structure can be a multigraph even though the line graph will never have
-    multiple edges between its nodes.  For this reason, we must make sure not
-    to add any edge more than once.  This requires that we build up a list of
-    edges to add and then remove all duplicates.  And so, we must normalize
-    the representation of the edges.
-
-    """
-    return (u, v) if u <= v else (v, u)
-
-
 def _lg_directed(G, create_using=None):
     """Returns the line graph L of the (multi)digraph G.
 
@@ -173,7 +125,7 @@ def _lg_directed(G, create_using=None):
     L = nx.empty_graph(0, create_using, default=G.__class__)
 
     # Create a graph specific edge function.
-    get_edges = _edge_func(G)
+    get_edges = partial(G.edges, keys=True) if G.is_multigraph() else G.edges
 
     for from_node in get_edges():
         # from_node is: (u,v) or (u,v,key)
@@ -210,9 +162,8 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     """
     L = nx.empty_graph(0, create_using, default=G.__class__)
 
-    # Graph specific functions for edges and sorted nodes.
-    get_edges = _edge_func(G)
-    sorted_node = _node_func(G)
+    # Graph specific functions for edges.
+    get_edges = partial(G.edges, keys=True) if G.is_multigraph() else G.edges
 
     # Determine if we include self-loops or not.
     shift = 0 if selfloops else 1
@@ -220,7 +171,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     edges = set()
     for u in G:
         # Label nodes as a sorted tuple of nodes in original graph.
-        nodes = [sorted_node(*x) for x in get_edges(u)]
+        nodes = [tuple(sorted(x[:2])) + x[2:] for x in get_edges(u)]
 
         if len(nodes) == 1:
             # Then the edge will be an isolated node in L.
@@ -230,7 +181,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
         # especially important for multigraphs, we store the edges in
         # canonical form in a set.
         for i, a in enumerate(nodes):
-            edges.update([_sorted_edge(a, b) for b in nodes[i + shift :]])
+            edges.update([tuple(sorted((a, b))) for b in nodes[i + shift :]])
 
     L.add_edges_from(edges)
     return L
