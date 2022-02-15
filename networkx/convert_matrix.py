@@ -1404,7 +1404,7 @@ def to_numpy_array(
             # Map each attribute to the appropriate named field in the
             # structured dtype
             for attr in edge_attrs:
-                attr_data = [wt[attr] for wt in wts]
+                attr_data = [wt.get(attr, 1.0) for wt in wts]
                 A[attr][i, j] = attr_data
                 if not G.is_directed():
                     A[attr][j, i] = attr_data

@@ -577,6 +577,14 @@ def test_to_numpy_array_structured_dtype_attrs_from_fields():
     npt.assert_array_equal(A, expected)
 
 
+def test_to_numpy_array_structured_dtype_single_attr_default():
+    G = nx.path_graph(3)
+    dtype = np.dtype([("weight", float)])  # A single named field
+    A = nx.to_numpy_array(G, dtype=dtype, weight=None)
+    expected = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]], dtype=float)
+    npt.assert_array_equal(A["weight"], expected)
+
+
 @pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.MultiDiGraph))
 def test_to_numpy_array_structured_multigraph_raises(graph_type):
     G = nx.path_graph(3, create_using=graph_type)
