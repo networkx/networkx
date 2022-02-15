@@ -101,7 +101,7 @@ def all_simple_paths(G, source, target, cutoff=None):
        If an integer is passed then specifies the depth to stop the search.
        Only paths of length <= cutoff are returned.
        If a dictionary is passed then multiple cutoffs can be used.
-       (e.g. {'weight1': cutoff_value1, 'weight2': cutoff_value2})
+       (e.g. {'weight1': cutoff1, 'weight2': cutoff2})
        The depth of the search can be specified by using `None` as key (e.g. {None: cutoff})
 
     Returns
@@ -279,7 +279,7 @@ def _is_path_under_cutoff(G, path, cutoff):
     for u, v in pairwise(path):
         if G.is_multigraph():
             for w in cutoff_c:
-                cost[w] += min([k.get(w, 1) for k in G[u][v].values()])
+                cost[w] += min(k.get(w, 1) for k in G[u][v].values())
         else:
             for w in cutoff_c:
                 cost[w] += G[u][v].get(w, 1)
