@@ -33,6 +33,7 @@ class _PCGSolver:
     def solve(self, B, tol):
         import numpy as np
 
+        # Densifying step - can this be kept sparse?
         B = np.asarray(B)
         X = np.ndarray(B.shape, order="F")
         for j in range(B.shape[1]):
@@ -186,8 +187,9 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # Form the normalized Laplacian matrix and determine the eigenvector of
         # its nullspace.
         e = np.sqrt(L.diagonal())
-        D = sp.sparse.spdiags(1.0 / e, [0], n, n, format="csr")
-        L = D * L * D
+        # TODO: rm csr_array wrapper when spdiags array creation becomes available
+        D = sp.sparse.csr_array(sp.sparse.spdiags(1 / e, 0, n, n, format="csr"))
+        L = D @ L @ D
         e *= 1.0 / np.linalg.norm(e, 2)
 
     if normalized:
@@ -208,10 +210,10 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
 
     if method == "tracemin_pcg":
         D = L.diagonal().astype(float)
-        solver = _PCGSolver(lambda x: L * x, lambda x: D * x)
+        solver = _PCGSolver(lambda x: L @ x, lambda x: D * x)
     elif method == "tracemin_lu":
         # Convert A to CSC to suppress SparseEfficiencyWarning.
-        A = sp.sparse.csc_matrix(L, dtype=float, copy=True)
+        A = sp.sparse.csc_array(L, dtype=float, copy=True)
         # Force A to be nonsingular. Since A is the Laplacian matrix of a
         # connected graph, its rank deficiency is one, and thus one diagonal
         # element needs to modified. Changing to infinity forces a zero in the
@@ -271,13 +273,16 @@ def _get_fiedler_func(method):
             import scipy.sparse  # call as sp.sparse
             import scipy.sparse.linalg  # call as sp.sparse.linalg
 
-            L = sp.sparse.csc_matrix(L, dtype=float)
+            L = sp.sparse.csc_array(L, dtype=float)
             n = L.shape[0]
             if normalized:
-                D = sp.sparse.spdiags(
-                    1.0 / np.sqrt(L.diagonal()), [0], n, n, format="csc"
+                # TODO: rm csc_array wrapping when spdiags array becomes available
+                D = sp.sparse.csc_array(
+                    sp.sparse.spdiags(
+                        1.0 / np.sqrt(L.diagonal()), [0], n, n, format="csc"
+                    )
                 )
-                L = D * L * D
+                L = D @ L @ D
             if method == "lanczos" or n < 10:
                 # Avoid LOBPCG when n < 10 due to
                 # https://github.com/scipy/scipy/issues/3592
@@ -288,7 +293,8 @@ def _get_fiedler_func(method):
                 return sigma[1], X[:, 1]
             else:
                 X = np.asarray(np.atleast_2d(x).T)
-                M = sp.sparse.spdiags(1.0 / L.diagonal(), [0], n, n)
+                # TODO: rm csr_array wrapping when spdiags array becomes available
+                M = sp.sparse.csr_array(sp.sparse.spdiags(1.0 / L.diagonal(), 0, n, n))
                 Y = np.ones(n)
                 if normalized:
                     Y /= D.diagonal()

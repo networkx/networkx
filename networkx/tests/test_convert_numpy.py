@@ -1,6 +1,7 @@
 import pytest
 
 np = pytest.importorskip("numpy")
+npt = pytest.importorskip("numpy.testing")
 
 import networkx as nx
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
@@ -498,12 +499,6 @@ def test_to_numpy_recarray_bad_nodelist(recarray_nodelist_test_graph, nodelist, 
         A = nx.to_numpy_recarray(recarray_nodelist_test_graph, nodelist=nodelist)
 
 
-def test_to_numpy_array_multigraph_weight():
-    G = nx.MultiGraph()
-    with pytest.raises(ValueError, match="must be sum, min, or max"):
-        nx.to_numpy_array(G, multigraph_weight=np.median)
-
-
 @pytest.fixture
 def multigraph_test_graph():
     G = nx.MultiGraph()
@@ -524,3 +519,48 @@ def test_to_numpy_array_multigraph_nodelist(multigraph_test_graph):
     A = nx.to_numpy_array(G, nodelist=[1, 2])
     assert A.shape == (2, 2)
     assert A[1, 0] == 77
+
+
+@pytest.mark.parametrize(
+    "G, expected",
+    [
+        (nx.Graph(), np.array([[0, 1 + 2j], [1 + 2j, 0]], dtype=complex)),
+        (nx.DiGraph(), np.array([[0, 1 + 2j], [0, 0]], dtype=complex)),
+    ],
+)
+def test_to_numpy_array_complex_weights(G, expected):
+    G.add_edge(0, 1, weight=1 + 2j)
+    A = nx.to_numpy_array(G, dtype=complex)
+    npt.assert_array_equal(A, expected)
+
+
+def test_to_numpy_array_arbitrary_weights():
+    G = nx.DiGraph()
+    w = 922337203685477580102  # Out of range for int64
+    G.add_edge(0, 1, weight=922337203685477580102)  # val not representable by int64
+    A = nx.to_numpy_array(G, dtype=object)
+    expected = np.array([[0, w], [0, 0]], dtype=object)
+    npt.assert_array_equal(A, expected)
+
+    # Undirected
+    A = nx.to_numpy_array(G.to_undirected(), dtype=object)
+    expected = np.array([[0, w], [w, 0]], dtype=object)
+    npt.assert_array_equal(A, expected)
+
+
+@pytest.mark.parametrize(
+    "func, expected",
+    ((min, -1), (max, 10), (sum, 11), (np.mean, 11 / 3), (np.median, 2)),
+)
+def test_to_numpy_array_multiweight_reduction(func, expected):
+    """Test various functions for reducing multiedge weights."""
+    G = nx.MultiDiGraph()
+    weights = [-1, 2, 10.0]
+    for w in weights:
+        G.add_edge(0, 1, weight=w)
+    A = nx.to_numpy_array(G, multigraph_weight=func, dtype=float)
+    assert np.allclose(A, [[0, expected], [0, 0]])
+
+    # Undirected case
+    A = nx.to_numpy_array(G.to_undirected(), multigraph_weight=func, dtype=float)
+    assert np.allclose(A, [[0, expected], [expected, 0]])

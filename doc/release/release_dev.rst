@@ -36,6 +36,10 @@ X contributors. Highlights include:
 Improvements
 ------------
 
+- [`#5216 <https://github.com/networkx/networkx/pull/5216>`_]
+  Make ``omega()`` closer to the published algorithm. The value changes slightly.
+  The ``niter`` parameter default changes from 1->5 in ``lattice_reference()``
+  and from 100->5 in ``omega``.
 
 API Changes
 -----------
@@ -44,6 +48,12 @@ API Changes
   `~networkx.drawing.layout.rescale_layout_dict` are now `numpy.ndarray` objects
   instead of tuples. This makes the return type of ``rescale_layout_dict``
   consistent with that of all of the other layout functions.
+- A ``FutureWarning`` has been added to ``google_matrix`` to indicate that the
+  return type will change from a ``numpy.matrix`` object to a ``numpy.ndarray``
+  in NetworkX 3.0.
+- A ``FutureWarning`` has been added to ``attr_matrix`` to indicate that the
+  return type will change from a ``numpy.matrix`` object to a ``numpy.ndarray``
+  object in NetworkX 3.0.
 
 Deprecations
 ------------
@@ -56,6 +66,12 @@ Deprecations
   Deprecate ``euclidean`` in favor of ``math.dist``.
 - [`#5166 <https://github.com/networkx/networkx/pull/5166>`_]
   Deprecate the ``hmn`` and ``lgc`` modules in ``node_classification``.
+- [`#5262 <https://github.com/networkx/networkx/pull/5262>`_]
+  Deprecate ``to_scipy_sparse_matrix`` and ``from_scipy_sparse_matrix`` in
+  favor of ``to_scipy_sparse_array`` and ``from_scipy_sparse_array``, respectively.
+- [`#5283 <https://github.com/networkx/networkx/pull/5283>`_]
+  Deprecate ``make_small_graph`` and ``make_small_undirected_graph`` from the
+  ``networkx.generators.small`` module.
 
 
 Merged PRs

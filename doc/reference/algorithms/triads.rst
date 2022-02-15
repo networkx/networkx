@@ -10,5 +10,6 @@ Triads
    random_triad
    triads_by_type
    triad_type
+   is_triad
    all_triads
    all_triplets

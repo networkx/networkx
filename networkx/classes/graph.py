@@ -39,8 +39,8 @@ class Graph:
         Data to initialize graph. If None (default) an empty
         graph is created.  The data can be any format that is supported
         by the to_networkx_graph() function, currently including edge list,
-        dict of dicts, dict of lists, NetworkX graph, NumPy matrix
-        or 2d ndarray, SciPy sparse matrix, or PyGraphviz graph.
+        dict of dicts, dict of lists, NetworkX graph, 2D NumPy array, SciPy
+        sparse matrix, or PyGraphviz graph.
 
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
@@ -295,8 +295,8 @@ class Graph:
             Data to initialize graph. If None (default) an empty
             graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
-            packages are installed the data can also be a NumPy matrix
-            or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+            packages are installed the data can also be a 2D NumPy array, a
+            SciPy sparse matrix, or a PyGraphviz graph.
 
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to graph as key=value pairs.
@@ -1273,7 +1273,7 @@ class Graph:
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes.
+            The view will only report edges from these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
@@ -1304,9 +1304,9 @@ class Graph:
         EdgeDataView([(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})])
         >>> G.edges.data("weight", default=1)
         EdgeDataView([(0, 1, 1), (1, 2, 1), (2, 3, 5)])
-        >>> G.edges([0, 3])  # only edges incident to these nodes
+        >>> G.edges([0, 3])  # only edges from these nodes
         EdgeDataView([(0, 1), (3, 2)])
-        >>> G.edges(0)  # only edges incident to a single node (use G.adj[0]?)
+        >>> G.edges(0)  # only edges from node 0
         EdgeDataView([(0, 1)])
         """
         return EdgeView(self)

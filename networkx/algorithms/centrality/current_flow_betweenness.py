@@ -4,7 +4,6 @@ from networkx.algorithms.centrality.flow_matrix import (
     CGInverseLaplacian,
     flow_matrix_row,
     FullInverseLaplacian,
-    laplacian_sparse_matrix,
     SuperLUInverseLaplacian,
 )
 from networkx.utils import (
@@ -111,9 +110,8 @@ def approximate_current_flow_betweenness_centrality(
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
     H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
-    L = laplacian_sparse_matrix(
-        H, nodelist=range(n), weight=weight, dtype=dtype, format="csc"
-    )
+    L = nx.laplacian_matrix(H, nodelist=range(n), weight=weight).asformat("csc")
+    L = L.astype(dtype)
     C = solvername[solver](L, dtype=dtype)  # initialize solver
     betweenness = dict.fromkeys(H, 0.0)
     nb = (n - 1.0) * (n - 2.0)  # normalization factor

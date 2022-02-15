@@ -1468,8 +1468,18 @@ def bellman_ford_path(G, source, target, weight="weight"):
     target : node
         Ending node
 
-    weight: string, optional (default='weight')
-        Edge data key corresponding to the edge weight
+    weight : string or function (default="weight")
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
 
     Returns
     -------
@@ -1517,8 +1527,18 @@ def bellman_ford_path_length(G, source, target, weight="weight"):
     target : node label
         ending node for path
 
-    weight: string, optional (default='weight')
-        Edge data key corresponding to the edge weight
+    weight : string or function (default="weight")
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
 
     Returns
     -------
@@ -1574,8 +1594,18 @@ def single_source_bellman_ford_path(G, source, weight="weight"):
     source : node
         Starting node for path.
 
-    weight: string, optional (default='weight')
-        Edge data key corresponding to the edge weight
+    weight : string or function (default="weight")
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
 
     Returns
     -------
@@ -1619,8 +1649,18 @@ def single_source_bellman_ford_path_length(G, source, weight="weight"):
     source : node label
         Starting node for path
 
-    weight: string, optional (default='weight')
-        Edge data key corresponding to the edge weight.
+    weight : string or function (default="weight")
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
 
     Returns
     -------
@@ -1760,8 +1800,18 @@ def all_pairs_bellman_ford_path_length(G, weight="weight"):
     ----------
     G : NetworkX graph
 
-    weight: string, optional (default='weight')
-        Edge data key corresponding to the edge weight
+    weight : string or function (default="weight")
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
 
     Returns
     -------
@@ -1804,8 +1854,18 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
     ----------
     G : NetworkX graph
 
-    weight: string, optional (default='weight')
-        Edge data key corresponding to the edge weight
+    weight : string or function (default="weight")
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
 
     Returns
     -------
@@ -2220,6 +2280,10 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
+    The weight function can be used to hide edges by returning None.
+    So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+    will find the shortest red path.
+
     In practice  bidirectional Dijkstra is much more than twice as fast as
     ordinary Dijkstra.
 
@@ -2284,10 +2348,11 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
             return (finaldist, finalpath)
 
         for w, d in neighs[dir][v].items():
-            if dir == 0:  # forward
-                vwLength = dists[dir][v] + weight(v, w, d)
-            else:  # back, must remember to change v,w->w,v
-                vwLength = dists[dir][v] + weight(w, v, d)
+            # weight(v, w, d) for forward and weight(w, v, d) for back direction
+            cost = weight(v, w, d) if dir == 0 else weight(w, v, d)
+            if cost is None:
+                continue
+            vwLength = dists[dir][v] + cost
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
                     raise ValueError("Contradictory paths found: negative weights?")

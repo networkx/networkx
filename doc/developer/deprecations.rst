@@ -96,3 +96,13 @@ Version 3.0
 * In ``networkx/algorithms/node_classification/`` remove ``hmn.py``, ``lgc.py``,
   and ``utils.py`` after moving the functions defined therein into the newly created
   ``node_classification.py`` module, which will replace the current package.
+* In ``networkx/algorithms/link_analysis/pagerank_alg.py``, remove the
+  ``np.asmatrix`` wrappers on the return values of ``google_matrix`` and remove
+  the associated FutureWarning.
+* In ``networkx/convert_matrix.py`` remove ``from_scipy_sparse_matrix`` and
+  ``to_scipy_sparse_matrix``.
+* In ``networkx/linalg/attrmatrix.py`` remove the FutureWarning, update the
+  return type by removing ``np.asmatrix``, and update the docstring to
+  reflect that the function returns a ``numpy.ndarray`` instance.
+* In ``networkx/generators/small.py`` remove ``make_small_graph`` and
+  ``make_small_undirected_graph``.

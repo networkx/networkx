@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 
 np = pytest.importorskip("numpy")
@@ -73,7 +74,7 @@ class TestHITS:
             _hits_python(G, max_iter=0)
         with pytest.raises(ValueError):
             nx.hits(G, max_iter=0)
-        with pytest.raises(sp.sparse.linalg.eigen.arpack.ArpackNoConvergence):
+        with pytest.raises(sp.sparse.linalg.ArpackNoConvergence):
             nx.hits(G, max_iter=1)
 
 
@@ -85,4 +86,4 @@ def test_deprecation_warnings(hits_alg):
     """
     G = nx.DiGraph(nx.path_graph(4))
     with pytest.warns(DeprecationWarning):
-        pr = hits_alg(G)
+        hits_alg(G)

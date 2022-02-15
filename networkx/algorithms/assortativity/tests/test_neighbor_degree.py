@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 
 
@@ -89,3 +90,15 @@ class TestAverageNeighbor:
         assert nd == 1.8
         nd = nx.average_neighbor_degree(G, weight="weight")[5]
         assert nd == pytest.approx(3.222222, abs=1e-5)
+
+    def test_error_invalid_source_target(self):
+        G = nx.path_graph(4)
+        with pytest.raises(nx.NetworkXError):
+            nx.average_neighbor_degree(G, "error")
+        with pytest.raises(nx.NetworkXError):
+            nx.average_neighbor_degree(G, "in", "error")
+        G = G.to_directed()
+        with pytest.raises(nx.NetworkXError):
+            nx.average_neighbor_degree(G, "error")
+        with pytest.raises(nx.NetworkXError):
+            nx.average_neighbor_degree(G, "in", "error")

@@ -17,7 +17,10 @@ import warnings
 import sys
 import uuid
 from itertools import tee, chain
+
 import networkx as nx
+
+np = nx.lazy_import("numpy")
 
 __all__ = [
     "is_string_like",
@@ -236,8 +239,6 @@ def dict_to_numpy_array2(d, mapping=None):
     with optional mapping.
 
     """
-    import numpy as np
-
     if mapping is None:
         s = set(d.keys())
         for k, v in d.items():
@@ -259,8 +260,6 @@ def dict_to_numpy_array1(d, mapping=None):
     with optional mapping.
 
     """
-    import numpy as np
-
     if mapping is None:
         s = set(d.keys())
         mapping = dict(zip(s, range(len(s))))
@@ -430,8 +429,6 @@ def create_random_state(random_state=None):
         if None or numpy.random, return the global random number generator used
         by numpy.random.
     """
-    import numpy as np
-
     if random_state is None or random_state is np.random:
         return np.random.mtrand._rand
     if isinstance(random_state, np.random.RandomState):

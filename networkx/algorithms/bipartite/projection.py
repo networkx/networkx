@@ -513,4 +513,14 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
 
 
 def project(B, nodes, create_using=None):
+    import warnings
+
+    warnings.warn(
+        (
+            "networkx.project is deprecated and will be removed"
+            "in NetworkX 3.0, use networkx.projected_graph instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return projected_graph(B, nodes)

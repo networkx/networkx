@@ -10,6 +10,7 @@ recursive-include doc *.py *.rst Makefile *.html *.png *.txt *.css *.inc *.js
 recursive-include requirements *.txt *.md
 
 include networkx/tests/*.py
+include networkx/drawing/tests/baseline/*png
 include networkx/*/tests/*.txt
 include networkx/*/tests/*.py
 include networkx/*/*/tests/*.py
