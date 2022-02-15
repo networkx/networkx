@@ -151,15 +151,15 @@ def intersection_array(G):
             raise nx.NetworkXError("Graph is not distance regular.")
         k = knext
     path_length = dict(nx.all_pairs_shortest_path_length(G))
-    diameter = max([max(path_length[n].values()) for n in path_length])
+    diameter = max(max(path_length[n].values()) for n in path_length)
     bint = {}  # 'b' intersection array
     cint = {}  # 'c' intersection array
     for u in G:
         for v in G:
             try:
                 i = path_length[u][v]
-            except KeyError as e:  # graph must be connected
-                raise nx.NetworkXError("Graph is not distance regular.") from e
+            except KeyError as err:  # graph must be connected
+                raise nx.NetworkXError("Graph is not distance regular.") from err
             # number of neighbors of v at a distance of i-1 from u
             c = len([n for n in G[v] if path_length[n][u] == i - 1])
             # number of neighbors of v at a distance of i+1 from u

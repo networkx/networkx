@@ -1,4 +1,5 @@
-# https://github.com/scikit-image/scikit-image/blob/master/doc/release/contribs.py
+# https://github.com/networkx/networkx/pull/2542
+# https://github.com/scikit-image/scikit-image/blob/main/tools/generate_release_notes.py
 from subprocess import check_output
 import sys
 import string

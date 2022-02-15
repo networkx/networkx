@@ -96,8 +96,8 @@ def latapy_clustering(G, nodes=None, mode="dot"):
     See Also
     --------
     robins_alexander_clustering
-    square_clustering
     average_clustering
+    networkx.algorithms.cluster.square_clustering
 
     References
     ----------
@@ -110,10 +110,10 @@ def latapy_clustering(G, nodes=None, mode="dot"):
 
     try:
         cc_func = modes[mode]
-    except KeyError as e:
+    except KeyError as err:
         raise nx.NetworkXError(
             "Mode for bipartite clustering must be: dot, min or max"
-        ) from e
+        ) from err
 
     if nodes is None:
         nodes = G
@@ -239,7 +239,7 @@ def robins_alexander_clustering(G):
     See Also
     --------
     latapy_clustering
-    square_clustering
+    networkx.algorithms.cluster.square_clustering
 
     References
     ----------

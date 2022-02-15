@@ -51,11 +51,19 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
-    diags = A.sum(axis=1)
-    D = sp.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
-    return D - A
+    # TODO: rm csr_array wrapper when spdiags can produce arrays
+    D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, m, n, format="csr"))
+    import warnings
+
+    warnings.warn(
+        "laplacian_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.",
+        FutureWarning,
+        stacklevel=2,
+    )
+    # TODO: rm sp.sparse.csr_matrix in version 3.0
+    return sp.sparse.csr_matrix(D - A)
 
 
 @not_implemented_for("directed")
@@ -116,16 +124,26 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
-    diags = A.sum(axis=1).flatten()
-    D = sp.sparse.spdiags(diags, [0], m, n, format="csr")
+    diags = A.sum(axis=1)
+    # TODO: rm csr_array wrapper when spdiags can produce arrays
+    D = sp.sparse.csr_array(sp.sparse.spdiags(diags, 0, m, n, format="csr"))
     L = D - A
     with sp.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
-    DH = sp.sparse.spdiags(diags_sqrt, [0], m, n, format="csr")
-    return DH @ (L @ DH)
+    # TODO: rm csr_array wrapper when spdiags can produce arrays
+    DH = sp.sparse.csr_array(sp.sparse.spdiags(diags_sqrt, 0, m, n, format="csr"))
+    import warnings
+
+    warnings.warn(
+        "normalized_laplacian_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.",
+        FutureWarning,
+        stacklevel=2,
+    )
+    # TODO: rm csr_matrix wrapper for NX 3.0
+    return sp.sparse.csr_matrix(DH @ (L @ DH))
 
 
 ###############################################################################
@@ -196,7 +214,9 @@ def directed_laplacian_matrix(
     import numpy as np
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
+    # NOTE: P has type ndarray if walk_type=="pagerank", else csr_array
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
     )
@@ -208,13 +228,24 @@ def directed_laplacian_matrix(
     p = v / v.sum()
     sqrtp = np.sqrt(p)
     Q = (
-        sp.sparse.spdiags(sqrtp, [0], n, n)
-        * P
-        * sp.sparse.spdiags(1.0 / sqrtp, [0], n, n)
+        # TODO: rm csr_array wrapper when spdiags creates arrays
+        sp.sparse.csr_array(sp.sparse.spdiags(sqrtp, 0, n, n))
+        @ P
+        # TODO: rm csr_array wrapper when spdiags creates arrays
+        @ sp.sparse.csr_array(sp.sparse.spdiags(1.0 / sqrtp, 0, n, n))
     )
+    # NOTE: This could be sparsified for the non-pagerank cases
     I = np.identity(len(G))
 
-    return I - (Q + Q.T) / 2.0
+    import warnings
+
+    warnings.warn(
+        "directed_laplacian_matrix will return a numpy array instead of a matrix in NetworkX 3.0",
+        FutureWarning,
+        stacklevel=2,
+    )
+    # TODO: rm np.asmatrix for networkx 3.0
+    return np.asmatrix(I - (Q + Q.T) / 2.0)
 
 
 @not_implemented_for("undirected")
@@ -278,6 +309,7 @@ def directed_combinatorial_laplacian_matrix(
     """
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
@@ -288,11 +320,21 @@ def directed_combinatorial_laplacian_matrix(
     evals, evecs = sp.sparse.linalg.eigs(P.T, k=1)
     v = evecs.flatten().real
     p = v / v.sum()
-    Phi = sp.sparse.spdiags(p, [0], n, n)
+    # NOTE: could be improved by not densifying
+    # TODO: Rm csr_array wrapper when spdiags array creation becomes available
+    Phi = sp.sparse.csr_array(sp.sparse.spdiags(p, 0, n, n)).toarray()
 
-    Phi = Phi.todense()
+    import warnings
 
-    return Phi - (Phi * P + P.T * Phi) / 2.0
+    warnings.warn(
+        "directed_combinatorial_laplacian_matrix will return a numpy array instead of a matrix in NetworkX 3.0",
+        FutureWarning,
+        stacklevel=2,
+    )
+    # TODO: Rm np.asmatrix for networkx 3.0
+    import numpy as np
+
+    return np.asmatrix(Phi - (Phi @ P + P.T @ Phi) / 2.0)
 
 
 def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=0.95):
@@ -325,7 +367,7 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
 
     Returns
     -------
-    P : NumPy matrix
+    P : numpy.ndarray
       transition matrix of G.
 
     Raises
@@ -346,28 +388,28 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
         else:
             walk_type = "pagerank"
 
-    M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
-    n, m = M.shape
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
+    n, m = A.shape
     if walk_type in ["random", "lazy"]:
-        DI = sp.sparse.spdiags(1.0 / np.array(M.sum(axis=1).flat), [0], n, n)
+        # TODO: Rm csr_array wrapper when spdiags array creation becomes available
+        DI = sp.sparse.csr_array(sp.sparse.spdiags(1.0 / A.sum(axis=1), 0, n, n))
         if walk_type == "random":
-            P = DI * M
+            P = DI @ A
         else:
-            I = sp.sparse.identity(n)
-            P = (I + DI * M) / 2.0
+            # TODO: Rm csr_array wrapper when identity array creation becomes available
+            I = sp.sparse.csr_array(sp.sparse.identity(n))
+            P = (I + DI @ A) / 2.0
 
     elif walk_type == "pagerank":
         if not (0 < alpha < 1):
             raise nx.NetworkXError("alpha must be between 0 and 1")
-        # this is using a dense representation
-        M = M.todense()
+        # this is using a dense representation. NOTE: This should be sparsified!
+        A = A.toarray()
         # add constant to dangling nodes' row
-        dangling = np.where(M.sum(axis=1) == 0)
-        for d in dangling[0]:
-            M[d] = 1.0 / n
+        A[A.sum(axis=1) == 0, :] = 1 / n
         # normalize
-        M = M / M.sum(axis=1)
-        P = alpha * M + (1 - alpha) / n
+        A = A / A.sum(axis=1)[np.newaxis, :].T
+        P = alpha * A + (1 - alpha) / n
     else:
         raise nx.NetworkXError("walk_type must be random, lazy, or pagerank")
 

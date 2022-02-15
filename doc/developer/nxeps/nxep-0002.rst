@@ -5,7 +5,7 @@ NXEP 2 — API design of view slices
 ==================================
 
 :Author: Mridul Seth
-:Status: Draft
+:Status: Accepted
 :Type: Standards Track
 :Created: 2020-07-23
 
@@ -16,10 +16,10 @@ Abstract
 Iterating over a subset of nodes or edges in a graph is a very common 
 operation in networkx analysis.
 The graph classes in NetworkX (e.g. :class:`~networkx.Graph`,
-:class:`~newtorkx.DiGraph`, :class:`~networkx.MultiGraph`, etc.) expose the
-node and edge data of the graph via :meth:`nodes` and :meth:`edges`, which 
-return dict view objects, `NodeView` (or `NodeDataView`) and `EdgeView` 
-(or `EdgeDataView`), respectively.
+:class:`~networkx.DiGraph`, :class:`~networkx.MultiGraph`, etc.) expose the
+node and edge data of the graph via :meth:`~networkx.Graph.nodes` and
+:meth:`~networkx.Graph.edges`, which return dict view objects, `NodeView`
+(or `NodeDataView`) and `EdgeView` (or `EdgeDataView`), respectively.
 The node and edge `View` classes have dict-like semantics for item access,
 returning the data dict corresponding to a given node or edge.
 This NXEP proposes adding support for slicing to the relevant node & edge
@@ -303,3 +303,19 @@ course of action is proposed:
    - The improved error message is not in itself a sufficient solution
    - Other use-cases are identified for which adding slicing to the `*View`
      objects would be a nice improvement (e.g. improved performance).
+
+Resolution
+----------
+
+To make slicing intuitive for new users, we went ahead with **Option 1** in the
+discussion above. Users will now see `NetworkXError` when they try to slice a
+`*View` object.::
+
+   >>> G.edges()[0:10]
+   Traceback (most recent call last)
+      ...
+   NetworkXError: EdgeView does not support slicing, try list(G.edges)[0:10:None]
+
+
+The implementation is available at https://github.com/networkx/networkx/pull/4300 and
+https://github.com/networkx/networkx/pull/4304.

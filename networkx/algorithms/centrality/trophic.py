@@ -34,7 +34,7 @@ def trophic_levels(G, weight="weight"):
     Returns
     -------
     nodes : dict
-        Dictionary of nodes with trophic level as the vale.
+        Dictionary of nodes with trophic level as the value.
 
     References
     ----------

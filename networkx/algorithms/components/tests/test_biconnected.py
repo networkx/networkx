@@ -4,8 +4,8 @@ from networkx import NetworkXNotImplemented
 
 
 def assert_components_edges_equal(x, y):
-    sx = {frozenset([frozenset(e) for e in c]) for c in x}
-    sy = {frozenset([frozenset(e) for e in c]) for c in y}
+    sx = {frozenset(frozenset(e) for e in c) for c in x}
+    sy = {frozenset(frozenset(e) for e in c) for c in y}
     assert sx == sy
 
 
@@ -78,7 +78,7 @@ def test_biconnected_components_cycle():
 
 def test_biconnected_components1():
     # graph example from
-    # http://www.ibluemojo.com/school/articul_algorithm.html
+    # https://web.archive.org/web/20121229123447/http://www.ibluemojo.com/school/articul_algorithm.html
     edges = [
         (0, 1),
         (0, 5),
@@ -238,7 +238,10 @@ def test_null_graph():
 
 def test_connected_raise():
     DG = nx.DiGraph()
-    pytest.raises(NetworkXNotImplemented, nx.biconnected_components, DG)
-    pytest.raises(NetworkXNotImplemented, nx.biconnected_component_edges, DG)
-    pytest.raises(NetworkXNotImplemented, nx.articulation_points, DG)
+    with pytest.raises(NetworkXNotImplemented):
+        next(nx.biconnected_components(DG))
+    with pytest.raises(NetworkXNotImplemented):
+        next(nx.biconnected_component_edges(DG))
+    with pytest.raises(NetworkXNotImplemented):
+        next(nx.articulation_points(DG))
     pytest.raises(NetworkXNotImplemented, nx.is_biconnected, DG)

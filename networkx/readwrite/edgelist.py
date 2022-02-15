@@ -183,7 +183,8 @@ def parse_edgelist(
     lines : list or iterator of strings
         Input data in edgelist format
     comments : string, optional
-       Marker for comment lines. Default is `'#'`
+       Marker for comment lines. Default is `'#'`. To specify that no character
+       should be treated as a comment, use ``comments=None``.
     delimiter : string, optional
        Separator for node labels. Default is `None`, meaning any whitespace.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
@@ -238,11 +239,12 @@ def parse_edgelist(
 
     G = nx.empty_graph(0, create_using)
     for line in lines:
-        p = line.find(comments)
-        if p >= 0:
-            line = line[:p]
-        if not line:
-            continue
+        if comments is not None:
+            p = line.find(comments)
+            if p >= 0:
+                line = line[:p]
+            if not line:
+                continue
         # split line, should have 2 or more
         s = line.strip().split(delimiter)
         if len(s) < 2:
@@ -254,10 +256,10 @@ def parse_edgelist(
             try:
                 u = nodetype(u)
                 v = nodetype(v)
-            except Exception as e:
+            except Exception as err:
                 raise TypeError(
                     f"Failed to convert nodes {u},{v} to type {nodetype}."
-                ) from e
+                ) from err
 
         if len(d) == 0 or data is False:
             # no data or data type specified
@@ -270,10 +272,10 @@ def parse_edgelist(
                 else:
                     edgedata_str = " ".join(d)
                 edgedata = dict(literal_eval(edgedata_str.strip()))
-            except Exception as e:
+            except Exception as err:
                 raise TypeError(
                     f"Failed to convert edge data ({d}) to dictionary."
-                ) from e
+                ) from err
         else:
             # convert edge data to dictionary with specified keys and type
             if len(d) != len(data):
@@ -284,11 +286,11 @@ def parse_edgelist(
             for (edge_key, edge_type), edge_value in zip(data, d):
                 try:
                     edge_value = edge_type(edge_value)
-                except Exception as e:
+                except Exception as err:
                     raise TypeError(
                         f"Failed to convert {edge_key} data {edge_value} "
                         f"to type {edge_type}."
-                    ) from e
+                    ) from err
                 edgedata.update({edge_key: edge_value})
         G.add_edge(u, v, **edgedata)
     return G
@@ -314,7 +316,8 @@ def read_edgelist(
        opened in 'rb' mode.
        Filenames ending in .gz or .bz2 will be uncompressed.
     comments : string, optional
-       The character used to indicate the start of a comment.
+       The character used to indicate the start of a comment. To specify that
+       no character should be treated as a comment, use ``comments=None``.
     delimiter : string, optional
        The string used to separate values.  The default is whitespace.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)

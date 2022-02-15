@@ -59,10 +59,10 @@ For more information on graph summarization, see `Graph Summarization Methods
 and Applications: A Survey <https://dl.acm.org/doi/abs/10.1145/3186727>`_
 """
 import networkx as nx
+from collections import Counter, defaultdict
 
-__all__ = [
-    "dedensify",
-]
+
+__all__ = ["dedensify", "snap_aggregation"]
 
 
 def dedensify(G, threshold, prefix=None, copy=True):
@@ -174,7 +174,7 @@ def dedensify(G, threshold, prefix=None, copy=True):
 
     degrees = G.in_degree if G.is_directed() else G.degree
     # Group nodes based on degree threshold
-    high_degree_nodes = set([n for n, d in degrees if d > threshold])
+    high_degree_nodes = {n for n, d in degrees if d > threshold}
     low_degree_nodes = G.nodes() - high_degree_nodes
 
     auxillary = {}
@@ -210,3 +210,347 @@ def dedensify(G, threshold, prefix=None, copy=True):
             G.add_edge(compression_node, node)
         compressor_nodes.add(compression_node)
     return G, compressor_nodes
+
+
+def _snap_build_graph(
+    G,
+    groups,
+    node_attributes,
+    edge_attributes,
+    neighbor_info,
+    edge_types,
+    prefix,
+    supernode_attribute,
+    superedge_attribute,
+):
+    """
+    Build the summary graph from the data structures produced in the SNAP aggregation algorithm
+
+    Used in the SNAP aggregation algorithm to build the output summary graph and supernode
+    lookup dictionary.  This process uses the original graph and the data structures to
+    create the supernodes with the correct node attributes, and the superedges with the correct
+    edge attributes
+
+    Parameters
+    ----------
+    G: networkx.Graph
+        the original graph to be summarized
+    groups: dict
+        A dictionary of unique group IDs and their corresponding node groups
+    node_attributes: iterable
+        An iterable of the node attributes considered in the summarization process
+    edge_attributes: iterable
+        An iterable of the edge attributes considered in the summarization process
+    neighbor_info: dict
+        A data structure indicating the number of edges a node has with the
+        groups in the current summarization of each edge type
+    edge_types: dict
+        dictionary of edges in the graph and their corresponding attributes recognized
+        in the summarization
+    prefix: string
+        The prefix to be added to all supernodes
+    supernode_attribute: str
+        The node attribute for recording the supernode groupings of nodes
+    superedge_attribute: str
+        The edge attribute for recording the edge types represented by superedges
+
+    Returns
+    -------
+    summary graph: Networkx graph
+    """
+    output = G.__class__()
+    node_label_lookup = dict()
+    for index, group_id in enumerate(groups):
+        group_set = groups[group_id]
+        supernode = f"{prefix}{index}"
+        node_label_lookup[group_id] = supernode
+        supernode_attributes = {
+            attr: G.nodes[next(iter(group_set))][attr] for attr in node_attributes
+        }
+        supernode_attributes[supernode_attribute] = group_set
+        output.add_node(supernode, **supernode_attributes)
+
+    for group_id in groups:
+        group_set = groups[group_id]
+        source_supernode = node_label_lookup[group_id]
+        for other_group, group_edge_types in neighbor_info[
+            next(iter(group_set))
+        ].items():
+            if group_edge_types:
+                target_supernode = node_label_lookup[other_group]
+                summary_graph_edge = (source_supernode, target_supernode)
+
+                edge_types = [
+                    dict(zip(edge_attributes, edge_type))
+                    for edge_type in group_edge_types
+                ]
+
+                has_edge = output.has_edge(*summary_graph_edge)
+                if output.is_multigraph():
+                    if not has_edge:
+                        for edge_type in edge_types:
+                            output.add_edge(*summary_graph_edge, **edge_type)
+                    elif not output.is_directed():
+                        existing_edge_data = output.get_edge_data(*summary_graph_edge)
+                        for edge_type in edge_types:
+                            if edge_type not in existing_edge_data.values():
+                                output.add_edge(*summary_graph_edge, **edge_type)
+                else:
+                    superedge_attributes = {superedge_attribute: edge_types}
+                    output.add_edge(*summary_graph_edge, **superedge_attributes)
+
+    return output
+
+
+def _snap_eligible_group(G, groups, group_lookup, edge_types):
+    """
+    Determines if a group is eligible to be split.
+
+    A group is eligible to be split if all nodes in the group have edges of the same type(s)
+    with the same other groups.
+
+    Parameters
+    ----------
+    G: graph
+        graph to be summarized
+    groups: dict
+        A dictionary of unique group IDs and their corresponding node groups
+    group_lookup: dict
+        dictionary of nodes and their current corresponding group ID
+    edge_types: dict
+        dictionary of edges in the graph and their corresponding attributes recognized
+        in the summarization
+
+    Returns
+    -------
+    tuple: group ID to split, and neighbor-groups participation_counts data structure
+    """
+    neighbor_info = {node: {gid: Counter() for gid in groups} for node in group_lookup}
+    for group_id in groups:
+        current_group = groups[group_id]
+
+        # build neighbor_info for nodes in group
+        for node in current_group:
+            neighbor_info[node] = {group_id: Counter() for group_id in groups}
+            edges = G.edges(node, keys=True) if G.is_multigraph() else G.edges(node)
+            for edge in edges:
+                neighbor = edge[1]
+                edge_type = edge_types[edge]
+                neighbor_group_id = group_lookup[neighbor]
+                neighbor_info[node][neighbor_group_id][edge_type] += 1
+
+        # check if group_id is eligible to be split
+        group_size = len(current_group)
+        for other_group_id in groups:
+            edge_counts = Counter()
+            for node in current_group:
+                edge_counts.update(neighbor_info[node][other_group_id].keys())
+
+            if not all(count == group_size for count in edge_counts.values()):
+                # only the neighbor_info of the returned group_id is required for handling group splits
+                return group_id, neighbor_info
+
+    # if no eligible groups, complete neighbor_info is calculated
+    return None, neighbor_info
+
+
+def _snap_split(groups, neighbor_info, group_lookup, group_id):
+    """
+    Splits a group based on edge types and updates the groups accordingly
+
+    Splits the group with the given group_id based on the edge types
+    of the nodes so that each new grouping will all have the same
+    edges with other nodes.
+
+    Parameters
+    ----------
+    groups: dict
+        A dictionary of unique group IDs and their corresponding node groups
+    neighbor_info: dict
+        A data structure indicating the number of edges a node has with the
+        groups in the current summarization of each edge type
+    edge_types: dict
+        dictionary of edges in the graph and their corresponding attributes recognized
+        in the summarization
+    group_lookup: dict
+        dictionary of nodes and their current corresponding group ID
+    group_id: object
+        ID of group to be split
+
+    Returns
+    -------
+    dict
+        The updated groups based on the split
+    """
+    new_group_mappings = defaultdict(set)
+    for node in groups[group_id]:
+        signature = tuple(
+            frozenset(edge_types) for edge_types in neighbor_info[node].values()
+        )
+        new_group_mappings[signature].add(node)
+
+    # leave the biggest new_group as the original group
+    new_groups = sorted(new_group_mappings.values(), key=len)
+    for new_group in new_groups[:-1]:
+        # Assign unused integer as the new_group_id
+        # ids are tuples, so will not interact with the original group_ids
+        new_group_id = len(groups)
+        groups[new_group_id] = new_group
+        groups[group_id] -= new_group
+        for node in new_group:
+            group_lookup[node] = new_group_id
+
+    return groups
+
+
+def snap_aggregation(
+    G,
+    node_attributes,
+    edge_attributes=(),
+    prefix="Supernode-",
+    supernode_attribute="group",
+    superedge_attribute="types",
+):
+    """Creates a summary graph based on attributes and connectivity.
+
+    This function uses the Summarization by Grouping Nodes on Attributes
+    and Pairwise edges (SNAP) algorithm for summarizing a given
+    graph by grouping nodes by node attributes and their edge attributes
+    into supernodes in a summary graph.  This name SNAP should not be
+    confused with the Stanford Network Analysis Project (SNAP).
+
+    Here is a high-level view of how this algorithm works:
+
+    1) Group nodes by node attribute values.
+
+    2) Iteratively split groups until all nodes in each group have edges
+    to nodes in the same groups. That is, until all the groups are homogeneous
+    in their member nodes' edges to other groups.  For example,
+    if all the nodes in group A only have edge to nodes in group B, then the
+    group is homogeneous and does not need to be split. If all nodes in group B
+    have edges with nodes in groups {A, C}, but some also have edges with other
+    nodes in B, then group B is not homogeneous and needs to be split into
+    groups have edges with {A, C} and a group of nodes having
+    edges with {A, B, C}.  This way, viewers of the summary graph can
+    assume that all nodes in the group have the exact same node attributes and
+    the exact same edges.
+
+    3) Build the output summary graph, where the groups are represented by
+    super-nodes. Edges represent the edges shared between all the nodes in each
+    respective groups.
+
+    A SNAP summary graph can be used to visualize graphs that are too large to display
+    or visually analyze, or to efficiently identify sets of similar nodes with similar connectivity
+    patterns to other sets of similar nodes based on specified node and/or edge attributes in a graph.
+
+    Parameters
+    ----------
+    G: graph
+        Networkx Graph to be summarized
+    edge_attributes: iterable, optional
+        An iterable of the edge attributes considered in the summarization process.  If provided, unique
+        combinations of the attribute values found in the graph are used to
+        determine the edge types in the graph.  If not provided, all edges
+        are considered to be of the same type.
+    prefix: str
+        The prefix used to denote supernodes in the summary graph. Defaults to 'Supernode-'.
+    supernode_attribute: str
+        The node attribute for recording the supernode groupings of nodes. Defaults to 'group'.
+    superedge_attribute: str
+        The edge attribute for recording the edge types of multiple edges. Defaults to 'types'.
+
+    Returns
+    -------
+    networkx.Graph: summary graph
+
+    Examples
+    --------
+    SNAP aggregation takes a graph and summarizes it in the context of user-provided
+    node and edge attributes such that a viewer can more easily extract and
+    analyze the information represented by the graph
+
+    >>> nodes = {
+    ...     "A": dict(color="Red"),
+    ...     "B": dict(color="Red"),
+    ...     "C": dict(color="Red"),
+    ...     "D": dict(color="Red"),
+    ...     "E": dict(color="Blue"),
+    ...     "F": dict(color="Blue"),
+    ... }
+    >>> edges = [
+    ...     ("A", "E", "Strong"),
+    ...     ("B", "F", "Strong"),
+    ...     ("C", "E", "Weak"),
+    ...     ("D", "F", "Weak"),
+    ... ]
+    >>> G = nx.Graph()
+    >>> for node in nodes:
+    ...     attributes = nodes[node]
+    ...     G.add_node(node, **attributes)
+    ...
+    >>> for source, target, type in edges:
+    ...     G.add_edge(source, target, type=type)
+    ...
+    >>> node_attributes = ('color', )
+    >>> edge_attributes = ('type', )
+    >>> summary_graph = nx.snap_aggregation(G, node_attributes=node_attributes, edge_attributes=edge_attributes)
+
+    Notes
+    -----
+    The summary graph produced is called a maximum Attribute-edge
+    compatible (AR-compatible) grouping.  According to [1]_, an
+    AR-compatible grouping means that all nodes in each group have the same
+    exact node attribute values and the same exact edges and
+    edge types to one or more nodes in the same groups.  The maximal
+    AR-compatible grouping is the grouping with the minimal cardinality.
+
+    The AR-compatible grouping is the most detailed grouping provided by
+    any of the SNAP algorithms.
+
+    References
+    ----------
+    .. [1] Y. Tian, R. A. Hankins, and J. M. Patel. Efficient aggregation
+       for graph summarization. In Proc. 2008 ACM-SIGMOD Int. Conf.
+       Management of Data (SIGMOD’08), pages 567–580, Vancouver, Canada,
+       June 2008.
+    """
+    edge_types = {
+        edge: tuple(attrs.get(attr) for attr in edge_attributes)
+        for edge, attrs in G.edges.items()
+    }
+    if not G.is_directed():
+        if G.is_multigraph():
+            # list is needed to avoid mutating while iterating
+            edges = [((v, u, k), etype) for (u, v, k), etype in edge_types.items()]
+        else:
+            # list is needed to avoid mutating while iterating
+            edges = [((v, u), etype) for (u, v), etype in edge_types.items()]
+        edge_types.update(edges)
+
+    group_lookup = {
+        node: tuple(attrs[attr] for attr in node_attributes)
+        for node, attrs in G.nodes.items()
+    }
+    groups = defaultdict(set)
+    for node, node_type in group_lookup.items():
+        groups[node_type].add(node)
+
+    eligible_group_id, neighbor_info = _snap_eligible_group(
+        G, groups, group_lookup, edge_types
+    )
+    while eligible_group_id:
+        groups = _snap_split(groups, neighbor_info, group_lookup, eligible_group_id)
+        eligible_group_id, neighbor_info = _snap_eligible_group(
+            G, groups, group_lookup, edge_types
+        )
+    return _snap_build_graph(
+        G,
+        groups,
+        node_attributes,
+        edge_attributes,
+        neighbor_info,
+        edge_types,
+        prefix,
+        supernode_attribute,
+        superedge_attribute,
+    )

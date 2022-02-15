@@ -64,31 +64,42 @@ def asyn_lpa_communities(G, weight=None, seed=None):
 
     labels = {n: i for i, n in enumerate(G)}
     cont = True
+
     while cont:
         cont = False
         nodes = list(G)
         seed.shuffle(nodes)
-        # Calculate the label for each node
+
         for node in nodes:
-            if len(G[node]) < 1:
+
+            if not G[node]:
                 continue
 
-            # Get label frequencies. Depending on the order they are processed
-            # in some nodes with be in t and others in t-1, making the
-            # algorithm asynchronous.
-            label_freq = Counter()
-            for v in G[node]:
-                label_freq.update(
-                    {labels[v]: G.edges[node, v][weight] if weight else 1}
-                )
-            # Choose the label with the highest frecuency. If more than 1 label
-            # has the highest frecuency choose one randomly.
+            # Get label frequencies among adjacent nodes.
+            # Depending on the order they are processed in,
+            # some nodes will be in iteration t and others in t-1,
+            # making the algorithm asynchronous.
+            if weight is None:
+                # initialising a Counter from an iterator of labels is
+                # faster for getting unweighted label frequencies
+                label_freq = Counter(map(labels.get, G[node]))
+            else:
+                # updating a defaultdict is substantially faster
+                # for getting weighted label frequencies
+                label_freq = defaultdict(float)
+                for _, v, wt in G.edges(node, data=weight, default=1):
+                    label_freq[labels[v]] += wt
+
+            # Get the labels that appear with maximum frequency.
             max_freq = max(label_freq.values())
             best_labels = [
                 label for label, freq in label_freq.items() if freq == max_freq
             ]
 
-            # Continue until all nodes have a majority label
+            # If the node does not have one of the maximum frequency labels,
+            # randomly choose one of them and update the node's label.
+            # Continue the iteration as long as at least one node
+            # doesn't have a maximum frequency label.
             if labels[node] not in best_labels:
                 labels[node] = seed.choice(best_labels)
                 cont = True

@@ -44,14 +44,60 @@ def union_all(graphs, rename=(None,)):
     union
     disjoint_union_all
     """
+    # collect the graphs in case an iterator was passed
+    graphs = list(graphs)
+
     if not graphs:
         raise ValueError("cannot apply union_all to an empty list")
-    graphs_names = zip_longest(graphs, rename)
-    U, gname = next(graphs_names)
-    for H, hname in graphs_names:
-        U = nx.union(U, H, (gname, hname))
-        gname = None
-    return U
+
+    U = graphs[0]
+
+    if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
+        raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
+
+    # rename graph to obtain disjoint node labels
+    def add_prefix(graph, prefix):
+        if prefix is None:
+            return graph
+
+        def label(x):
+            if isinstance(x, str):
+                name = prefix + x
+            else:
+                name = prefix + repr(x)
+            return name
+
+        return nx.relabel_nodes(graph, label)
+
+    graphs = [add_prefix(G, name) for G, name in zip_longest(graphs, rename)]
+
+    if sum(len(G) for G in graphs) != len(set().union(*graphs)):
+        raise nx.NetworkXError(
+            "The node sets of the graphs are not disjoint.",
+            "Use appropriate rename"
+            "=(G1prefix,G2prefix,...,GNprefix)"
+            "or use disjoint_union(G1,G2,...,GN).",
+        )
+
+    # Union is the same type as first graph
+    R = U.__class__()
+
+    # add graph attributes, later attributes take precedent over earlier ones
+    for G in graphs:
+        R.graph.update(G.graph)
+
+    # add nodes and attributes
+    for G in graphs:
+        R.add_nodes_from(G.nodes(data=True))
+
+    if U.is_multigraph():
+        for G in graphs:
+            R.add_edges_from(G.edges(keys=True, data=True))
+    else:
+        for G in graphs:
+            R.add_edges_from(G.edges(data=True))
+
+    return R
 
 
 def disjoint_union_all(graphs):
@@ -82,13 +128,23 @@ def disjoint_union_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
+    graphs = list(graphs)
+
     if not graphs:
         raise ValueError("cannot apply disjoint_union_all to an empty list")
-    graphs = iter(graphs)
-    U = next(graphs)
-    for H in graphs:
-        U = nx.disjoint_union(U, H)
-    return U
+
+    first_labels = [0]
+    for G in graphs[:-1]:
+        first_labels.append(len(G) + first_labels[-1])
+
+    relabeled = [
+        nx.convert_node_labels_to_integers(G, first_label=first_label)
+        for G, first_label in zip(graphs, first_labels)
+    ]
+    R = union_all(relabeled)
+    for G in graphs:
+        R.graph.update(G.graph)
+    return R
 
 
 def compose_all(graphs):
@@ -120,13 +176,31 @@ def compose_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
+    graphs = list(graphs)
+
     if not graphs:
         raise ValueError("cannot apply compose_all to an empty list")
-    graphs = iter(graphs)
-    C = next(graphs)
-    for H in graphs:
-        C = nx.compose(C, H)
-    return C
+
+    U = graphs[0]
+
+    if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
+        raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
+
+    R = U.__class__()
+    # add graph attributes, H attributes take precedent over G attributes
+    for G in graphs:
+        R.graph.update(G.graph)
+
+    for G in graphs:
+        R.add_nodes_from(G.nodes(data=True))
+
+    if U.is_multigraph():
+        for G in graphs:
+            R.add_edges_from(G.edges(keys=True, data=True))
+    else:
+        for G in graphs:
+            R.add_edges_from(G.edges(data=True))
+    return R
 
 
 def intersection_all(graphs):
@@ -152,10 +226,27 @@ def intersection_all(graphs):
     Attributes from the graph, nodes, and edges are not copied to the new
     graph.
     """
+    graphs = list(graphs)
+
     if not graphs:
         raise ValueError("cannot apply intersection_all to an empty list")
-    graphs = iter(graphs)
-    R = next(graphs)
-    for H in graphs:
-        R = nx.intersection(R, H)
+
+    U = graphs[0]
+
+    if any(G.is_multigraph() != U.is_multigraph() for G in graphs):
+        raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
+
+    # create new graph
+    node_intersection = set.intersection(*[set(G.nodes) for G in graphs])
+    R = U.__class__()
+    R.add_nodes_from(node_intersection)
+
+    if U.is_multigraph():
+        edge_sets = [set(G.edges(keys=True)) for G in graphs]
+    else:
+        edge_sets = [set(G.edges()) for G in graphs]
+
+    edge_intersection = set.intersection(*edge_sets)
+    R.add_edges_from(edge_intersection)
+
     return R

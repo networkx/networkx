@@ -17,7 +17,37 @@ import warnings
 import sys
 import uuid
 from itertools import tee, chain
+
 import networkx as nx
+
+np = nx.lazy_import("numpy")
+
+__all__ = [
+    "is_string_like",
+    "iterable",
+    "empty_generator",
+    "flatten",
+    "make_list_of_ints",
+    "is_list_of_ints",
+    "make_str",
+    "generate_unique_node",
+    "default_opener",
+    "dict_to_numpy_array",
+    "dict_to_numpy_array1",
+    "dict_to_numpy_array2",
+    "is_iterator",
+    "arbitrary_element",
+    "consume",
+    "pairwise",
+    "groups",
+    "to_tuple",
+    "create_random_state",
+    "create_py_random_state",
+    "PythonRandomInterface",
+    "nodes_equal",
+    "edges_equal",
+    "graphs_equal",
+]
 
 
 # some cookbook stuff
@@ -65,14 +95,13 @@ def empty_generator():
     .. deprecated:: 2.6
     """
     warnings.warn(
-        "empty_generator is deprecated and will be removed in v3.0.",
-        DeprecationWarning,
+        "empty_generator is deprecated and will be removed in v3.0.", DeprecationWarning
     )
     return (i for i in ())
 
 
 def flatten(obj, result=None):
-    """ Return flattened version of (possibly nested) iterable object. """
+    """Return flattened version of (possibly nested) iterable object."""
     if not isinstance(obj, (Iterable, Sized)) or isinstance(obj, str):
         return obj
     if result is None:
@@ -210,8 +239,6 @@ def dict_to_numpy_array2(d, mapping=None):
     with optional mapping.
 
     """
-    import numpy as np
-
     if mapping is None:
         s = set(d.keys())
         for k, v in d.items():
@@ -233,8 +260,6 @@ def dict_to_numpy_array1(d, mapping=None):
     with optional mapping.
 
     """
-    import numpy as np
-
     if mapping is None:
         s = set(d.keys())
         mapping = dict(zip(s, range(len(s))))
@@ -287,27 +312,27 @@ def arbitrary_element(iterable):
     --------
     Arbitrary elements from common Iterable objects:
 
-    >>> arbitrary_element([1, 2, 3])  # list
+    >>> nx.utils.arbitrary_element([1, 2, 3])  # list
     1
-    >>> arbitrary_element((1, 2, 3))  # tuple
+    >>> nx.utils.arbitrary_element((1, 2, 3))  # tuple
     1
-    >>> arbitrary_element({1, 2, 3})  # set
+    >>> nx.utils.arbitrary_element({1, 2, 3})  # set
     1
     >>> d = {k: v for k, v in zip([1, 2, 3], [3, 2, 1])}
-    >>> arbitrary_element(d)  # dict_keys
+    >>> nx.utils.arbitrary_element(d)  # dict_keys
     1
-    >>> arbitrary_element(d.values())   # dict values
+    >>> nx.utils.arbitrary_element(d.values())   # dict values
     3
 
     `str` is also an Iterable:
 
-    >>> arbitrary_element("hello")
+    >>> nx.utils.arbitrary_element("hello")
     'h'
 
     :exc:`ValueError` is raised if `iterable` is an iterator:
 
     >>> iterator = iter([1, 2, 3])  # Iterator, *not* Iterable
-    >>> arbitrary_element(iterator)
+    >>> nx.utils.arbitrary_element(iterator)
     Traceback (most recent call last):
         ...
     ValueError: cannot return an arbitrary item from an iterator
@@ -318,9 +343,9 @@ def arbitrary_element(iterable):
     ordered, sequential calls will return the same value::
 
         >>> l = [1, 2, 3]
-        >>> arbitrary_element(l)
+        >>> nx.utils.arbitrary_element(l)
         1
-        >>> arbitrary_element(l)
+        >>> nx.utils.arbitrary_element(l)
         1
 
     """
@@ -404,8 +429,6 @@ def create_random_state(random_state=None):
         if None or numpy.random, return the global random number generator used
         by numpy.random.
     """
-    import numpy as np
-
     if random_state is None or random_state is np.random:
         return np.random.mtrand._rand
     if isinstance(random_state, np.random.RandomState):
@@ -516,3 +539,107 @@ def create_py_random_state(random_state=None):
         return random.Random(random_state)
     msg = f"{random_state} cannot be used to generate a random.Random instance"
     raise ValueError(msg)
+
+
+def nodes_equal(nodes1, nodes2):
+    """Check if nodes are equal.
+
+    Equality here means equal as Python objects.
+    Node data must match if included.
+    The order of nodes is not relevant.
+
+    Parameters
+    ----------
+    nodes1, nodes2 : iterables of nodes, or (node, datadict) tuples
+
+    Returns
+    -------
+    bool
+        True if nodes are equal, False otherwise.
+    """
+    nlist1 = list(nodes1)
+    nlist2 = list(nodes2)
+    try:
+        d1 = dict(nlist1)
+        d2 = dict(nlist2)
+    except (ValueError, TypeError):
+        d1 = dict.fromkeys(nlist1)
+        d2 = dict.fromkeys(nlist2)
+    return d1 == d2
+
+
+def edges_equal(edges1, edges2):
+    """Check if edges are equal.
+
+    Equality here means equal as Python objects.
+    Edge data must match if included.
+    The order of the edges is not relevant.
+
+    Parameters
+    ----------
+    edges1, edges2 : iterables of with u, v nodes as
+        edge tuples (u, v), or
+        edge tuples with data dicts (u, v, d), or
+        edge tuples with keys and data dicts (u, v, k, d)
+
+    Returns
+    -------
+    bool
+        True if edges are equal, False otherwise.
+    """
+    from collections import defaultdict
+
+    d1 = defaultdict(dict)
+    d2 = defaultdict(dict)
+    c1 = 0
+    for c1, e in enumerate(edges1):
+        u, v = e[0], e[1]
+        data = [e[2:]]
+        if v in d1[u]:
+            data = d1[u][v] + data
+        d1[u][v] = data
+        d1[v][u] = data
+    c2 = 0
+    for c2, e in enumerate(edges2):
+        u, v = e[0], e[1]
+        data = [e[2:]]
+        if v in d2[u]:
+            data = d2[u][v] + data
+        d2[u][v] = data
+        d2[v][u] = data
+    if c1 != c2:
+        return False
+    # can check one direction because lengths are the same.
+    for n, nbrdict in d1.items():
+        for nbr, datalist in nbrdict.items():
+            if n not in d2:
+                return False
+            if nbr not in d2[n]:
+                return False
+            d2datalist = d2[n][nbr]
+            for data in datalist:
+                if datalist.count(data) != d2datalist.count(data):
+                    return False
+    return True
+
+
+def graphs_equal(graph1, graph2):
+    """Check if graphs are equal.
+
+    Equality here means equal as Python objects (not isomorphism).
+    Node, edge and graph data must match.
+
+    Parameters
+    ----------
+    graph1, graph2 : graph
+
+    Returns
+    -------
+    bool
+        True if graphs are equal, False otherwise.
+    """
+    return (
+        graph1.adj == graph2.adj
+        and graph1.nodes == graph2.nodes
+        and graph1.graph == graph2.graph
+    )

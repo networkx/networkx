@@ -40,6 +40,8 @@ def current_flow_betweenness_centrality_subset(
     weight : string or None, optional (default=None)
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype: data type (float)
       Default data type for internal matrices.
@@ -82,7 +84,7 @@ def current_flow_betweenness_centrality_subset(
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
+       https://doi.org/10.1007/978-3-540-31856-9_44
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
@@ -147,6 +149,8 @@ def edge_current_flow_betweenness_centrality_subset(
     weight : string or None, optional (default=None)
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype: data type (float)
       Default data type for internal matrices.
@@ -188,7 +192,7 @@ def edge_current_flow_betweenness_centrality_subset(
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
+       https://doi.org/10.1007/978-3-540-31856-9_44
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).

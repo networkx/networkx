@@ -13,7 +13,7 @@ letter, resulting in 14,135 edges. This example is described in Section 1.1 of
 
 The data file can be found at:
 
-- https://github.com/networkx/networkx/blob/master/examples/graph/words_dat.txt.gz
+- https://github.com/networkx/networkx/blob/main/examples/graph/words_dat.txt.gz
 """
 
 import gzip
@@ -81,11 +81,7 @@ G.add_nodes_from(shortest_path, color="red")
 G.add_nodes_from(boundary, color="blue")
 H = G.subgraph(shortest_path + boundary)
 colors = nx.get_node_attributes(H, "color")
-options = {
-    "node_size": 1500,
-    "alpha": 0.3,
-    "node_color": colors.values(),
-}
+options = {"node_size": 1500, "alpha": 0.3, "node_color": colors.values()}
 pos = nx.kamada_kawai_layout(H)
 nx.draw(H, pos, **options)
 nx.draw_networkx_labels(H, pos, font_weight="bold")

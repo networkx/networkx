@@ -4,7 +4,6 @@ from networkx.algorithms.centrality.flow_matrix import (
     CGInverseLaplacian,
     flow_matrix_row,
     FullInverseLaplacian,
-    laplacian_sparse_matrix,
     SuperLUInverseLaplacian,
 )
 from networkx.utils import (
@@ -50,6 +49,8 @@ def approximate_current_flow_betweenness_centrality(
     weight : string or None, optional (default=None)
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype : data type (float)
       Default data type for internal matrices.
@@ -93,7 +94,7 @@ def approximate_current_flow_betweenness_centrality(
        Centrality Measures Based on Current Flow.
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
+       https://doi.org/10.1007/978-3-540-31856-9_44
     """
     import numpy as np
 
@@ -109,9 +110,8 @@ def approximate_current_flow_betweenness_centrality(
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
     H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
-    L = laplacian_sparse_matrix(
-        H, nodelist=range(n), weight=weight, dtype=dtype, format="csc"
-    )
+    L = nx.laplacian_matrix(H, nodelist=range(n), weight=weight).asformat("csc")
+    L = L.astype(dtype)
     C = solvername[solver](L, dtype=dtype)  # initialize solver
     betweenness = dict.fromkeys(H, 0.0)
     nb = (n - 1.0) * (n - 2.0)  # normalization factor
@@ -167,6 +167,8 @@ def current_flow_betweenness_centrality(
     weight : string or None, optional (default=None)
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype : data type (float)
       Default data type for internal matrices.
@@ -209,7 +211,7 @@ def current_flow_betweenness_centrality(
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
+       https://doi.org/10.1007/978-3-540-31856-9_44
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
@@ -261,6 +263,8 @@ def edge_current_flow_betweenness_centrality(
     weight : string or None, optional (default=None)
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype : data type (default=float)
       Default data type for internal matrices.
@@ -309,7 +313,7 @@ def edge_current_flow_betweenness_centrality(
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
+       https://doi.org/10.1007/978-3-540-31856-9_44
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).

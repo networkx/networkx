@@ -6,6 +6,9 @@ from networkx.classes.graph import Graph
 from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.reportviews import MultiEdgeView, MultiDegreeView
 from networkx import NetworkXError
+import networkx.convert as convert
+
+__all__ = ["MultiGraph"]
 
 
 class MultiGraph(Graph):
@@ -29,8 +32,21 @@ class MultiGraph(Graph):
         Data to initialize graph. If None (default) an empty
         graph is created.  The data can be any format that is supported
         by the to_networkx_graph() function, currently including edge list,
-        dict of dicts, dict of lists, NetworkX graph, NumPy matrix
-        or 2d ndarray, SciPy sparse matrix, or PyGraphviz graph.
+        dict of dicts, dict of lists, NetworkX graph, 2D NumPy array,
+        SciPy sparse matrix, or PyGraphviz graph.
+
+    multigraph_input : bool or None (default None)
+        Note: Only used when `incoming_graph_data` is a dict.
+        If True, `incoming_graph_data` is assumed to be a
+        dict-of-dict-of-dict-of-dict structure keyed by
+        node to neighbor to edge keys to edge data for multi-edges.
+        A NetworkXError is raised if this is not the case.
+        If False, :func:`to_networkx_graph` is used to try to determine
+        the dict's graph data structure as either a dict-of-dict-of-dict
+        keyed by node to neighbor to edge data, or a dict-of-iterable
+        keyed by node to neighbors.
+        If None, the treatment for True is tried, but if it fails,
+        the treatment for False is tried.
 
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
@@ -272,7 +288,7 @@ class MultiGraph(Graph):
         """
         return MultiGraph
 
-    def __init__(self, incoming_graph_data=None, **attr):
+    def __init__(self, incoming_graph_data=None, multigraph_input=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
         Parameters
@@ -281,8 +297,21 @@ class MultiGraph(Graph):
             Data to initialize graph.  If incoming_graph_data=None (default)
             an empty graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
-            packages are installed the data can also be a NumPy matrix
-            or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+            packages are installed the data can also be a 2D NumPy array, a
+            SciPy sparse matrix, or a PyGraphviz graph.
+
+        multigraph_input : bool or None (default None)
+            Note: Only used when `incoming_graph_data` is a dict.
+            If True, `incoming_graph_data` is assumed to be a
+            dict-of-dict-of-dict-of-dict structure keyed by
+            node to neighbor to edge keys to edge data for multi-edges.
+            A NetworkXError is raised if this is not the case.
+            If False, :func:`to_networkx_graph` is used to try to determine
+            the dict's graph data structure as either a dict-of-dict-of-dict
+            keyed by node to neighbor to edge data, or a dict-of-iterable
+            keyed by node to neighbors.
+            If None, the treatment for True is tried, but if it fails,
+            the treatment for False is tried.
 
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to graph as key=value pairs.
@@ -306,7 +335,22 @@ class MultiGraph(Graph):
 
         """
         self.edge_key_dict_factory = self.edge_key_dict_factory
-        Graph.__init__(self, incoming_graph_data, **attr)
+        # multigraph_input can be None/True/False. So check "is not False"
+        if isinstance(incoming_graph_data, dict) and multigraph_input is not False:
+            Graph.__init__(self)
+            try:
+                convert.from_dict_of_dicts(
+                    incoming_graph_data, create_using=self, multigraph_input=True
+                )
+                self.graph.update(attr)
+            except Exception as err:
+                if multigraph_input is True:
+                    raise nx.NetworkXError(
+                        f"converting multigraph_input raised:\n{type(err)}: {err}"
+                    )
+                Graph.__init__(self, incoming_graph_data, **attr)
+        else:
+            Graph.__init__(self, incoming_graph_data, **attr)
 
     @property
     def adj(self):
@@ -425,9 +469,13 @@ class MultiGraph(Graph):
         u, v = u_for_edge, v_for_edge
         # add nodes
         if u not in self._adj:
+            if u is None:
+                raise ValueError("None cannot be a node")
             self._adj[u] = self.adjlist_inner_dict_factory()
             self._node[u] = self.node_attr_dict_factory()
         if v not in self._adj:
+            if v is None:
+                raise ValueError("None cannot be a node")
             self._adj[v] = self.adjlist_inner_dict_factory()
             self._node[v] = self.node_attr_dict_factory()
         if key is None:
@@ -574,17 +622,17 @@ class MultiGraph(Graph):
         """
         try:
             d = self._adj[u][v]
-        except KeyError as e:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph.") from e
+        except KeyError as err:
+            raise NetworkXError(f"The edge {u}-{v} is not in the graph.") from err
         # remove the edge with specified data
         if key is None:
             d.popitem()
         else:
             try:
                 del d[key]
-            except KeyError as e:
+            except KeyError as err:
                 msg = f"The edge {u}-{v} with key {key} is not in the graph."
-                raise NetworkXError(msg) from e
+                raise NetworkXError(msg) from err
         if len(d) == 0:
             # remove the key entries if last edge
             del self._adj[u][v]
@@ -712,7 +760,7 @@ class MultiGraph(Graph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes.
+            The view will only report edges from these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
@@ -1043,7 +1091,7 @@ class MultiGraph(Graph):
         See the Python copy module for more information on shallow
         and deep copies, https://docs.python.org/3/library/copy.html.
 
-        Warning: If you have subclassed MultiiGraph to use dict-like
+        Warning: If you have subclassed MultiGraph to use dict-like
         objects in the data structure, those changes do not transfer
         to the MultiGraph created by this method.
 

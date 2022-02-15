@@ -24,6 +24,7 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
     weight : None or string, optional (default=None)
       If None, edge weights are ignored.
       Otherwise holds the name of the edge attribute used as weight.
+      The weight of an edge is treated as the length or distance between the two sides.
 
     cutoff : bool, optional (default=None)
       If specified, only consider paths of length <= cutoff.
@@ -52,7 +53,7 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
     .. [2] Kwang-Il Goh, Byungnam Kahng and Doochul Kim
        Universal behavior of Load Distribution in Scale-Free Networks.
        Physical Review Letters 87(27):1–4, 2001.
-       http://phya.snu.ac.kr/~dkim/PRL87278701.pdf
+       https://doi.org/10.1103/PhysRevLett.87.278701
     """
     if v is not None:  # only one node
         betweenness = 0.0

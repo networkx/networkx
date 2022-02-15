@@ -5,7 +5,7 @@ from functools import partial
 import networkx as nx
 from networkx.utils import not_implemented_for
 from networkx.utils import reverse_cuthill_mckee_ordering
-from networkx.utils import random_state
+from networkx.utils import np_random_state
 
 __all__ = ["algebraic_connectivity", "fiedler_vector", "spectral_ordering"]
 
@@ -21,7 +21,7 @@ class _PCGSolver:
     The inputs A and M are functions which compute
     matrix multiplication on the argument.
     A - multiply by the matrix A in Ax=b
-    M - multiply by M, the preconditioner surragate for A
+    M - multiply by M, the preconditioner surrogate for A
 
     Warning: There is no limit on number of iterations.
     """
@@ -33,6 +33,7 @@ class _PCGSolver:
     def solve(self, B, tol):
         import numpy as np
 
+        # Densifying step - can this be kept sparse?
         B = np.asarray(B)
         X = np.ndarray(B.shape, order="F")
         for j in range(B.shape[1]):
@@ -65,21 +66,6 @@ class _PCGSolver:
             beta = sp.linalg.blas.ddot(r, z)
             beta, rz = beta / rz, beta
             p = sp.linalg.blas.daxpy(p, z, a=beta)
-
-
-class _CholeskySolver:
-    """Cholesky factorization.
-
-    To solve Ax = b:
-        solver = _CholeskySolver(A)
-        x = solver.solve(b)
-
-    optional argument `tol` on solve method is ignored but included
-    to match _PCGsolver API.
-    """
-
-    def __init__(self, A):
-        raise nx.NetworkXError("Cholesky solver removed.  Use LU solver instead.")
 
 
 class _LUSolver:
@@ -201,8 +187,9 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # Form the normalized Laplacian matrix and determine the eigenvector of
         # its nullspace.
         e = np.sqrt(L.diagonal())
-        D = sp.sparse.spdiags(1.0 / e, [0], n, n, format="csr")
-        L = D * L * D
+        # TODO: rm csr_array wrapper when spdiags array creation becomes available
+        D = sp.sparse.csr_array(sp.sparse.spdiags(1 / e, 0, n, n, format="csr"))
+        L = D @ L @ D
         e *= 1.0 / np.linalg.norm(e, 2)
 
     if normalized:
@@ -223,22 +210,19 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
 
     if method == "tracemin_pcg":
         D = L.diagonal().astype(float)
-        solver = _PCGSolver(lambda x: L * x, lambda x: D * x)
-    elif method == "tracemin_lu" or method == "tracemin_chol":
+        solver = _PCGSolver(lambda x: L @ x, lambda x: D * x)
+    elif method == "tracemin_lu":
         # Convert A to CSC to suppress SparseEfficiencyWarning.
-        A = sp.sparse.csc_matrix(L, dtype=float, copy=True)
+        A = sp.sparse.csc_array(L, dtype=float, copy=True)
         # Force A to be nonsingular. Since A is the Laplacian matrix of a
         # connected graph, its rank deficiency is one, and thus one diagonal
         # element needs to modified. Changing to infinity forces a zero in the
         # corresponding element in the solution.
         i = (A.indptr[1:] - A.indptr[:-1]).argmax()
         A[i, i] = float("inf")
-        if method == "tracemin_chol":
-            solver = _CholeskySolver(A)
-        else:
-            solver = _LUSolver(A)
+        solver = _LUSolver(A)
     else:
-        raise nx.NetworkXError("Unknown linear system solver: " + method)
+        raise nx.NetworkXError(f"Unknown linear system solver: {method}")
 
     # Initialize.
     Lnorm = abs(L).sum(axis=1).flatten().max()
@@ -274,7 +258,7 @@ def _get_fiedler_func(method):
 
     if method == "tracemin":  # old style keyword <v2.1
         method = "tracemin_pcg"
-    if method in ("tracemin_pcg", "tracemin_chol", "tracemin_lu"):
+    if method in ("tracemin_pcg", "tracemin_lu"):
 
         def find_fiedler(L, x, normalized, tol, seed):
             q = 1 if method == "tracemin_pcg" else min(4, L.shape[0] - 1)
@@ -289,13 +273,16 @@ def _get_fiedler_func(method):
             import scipy.sparse  # call as sp.sparse
             import scipy.sparse.linalg  # call as sp.sparse.linalg
 
-            L = sp.sparse.csc_matrix(L, dtype=float)
+            L = sp.sparse.csc_array(L, dtype=float)
             n = L.shape[0]
             if normalized:
-                D = sp.sparse.spdiags(
-                    1.0 / np.sqrt(L.diagonal()), [0], n, n, format="csc"
+                # TODO: rm csc_array wrapping when spdiags array becomes available
+                D = sp.sparse.csc_array(
+                    sp.sparse.spdiags(
+                        1.0 / np.sqrt(L.diagonal()), [0], n, n, format="csc"
+                    )
                 )
-                L = D * L * D
+                L = D @ L @ D
             if method == "lanczos" or n < 10:
                 # Avoid LOBPCG when n < 10 due to
                 # https://github.com/scipy/scipy/issues/3592
@@ -306,7 +293,8 @@ def _get_fiedler_func(method):
                 return sigma[1], X[:, 1]
             else:
                 X = np.asarray(np.atleast_2d(x).T)
-                M = sp.sparse.spdiags(1.0 / L.diagonal(), [0], n, n)
+                # TODO: rm csr_array wrapping when spdiags array becomes available
+                M = sp.sparse.csr_array(sp.sparse.spdiags(1.0 / L.diagonal(), 0, n, n))
                 Y = np.ones(n)
                 if normalized:
                     Y /= D.diagonal()
@@ -321,7 +309,7 @@ def _get_fiedler_func(method):
     return find_fiedler
 
 
-@random_state(5)
+@np_random_state(5)
 @not_implemented_for("directed")
 def algebraic_connectivity(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
@@ -403,7 +391,7 @@ def algebraic_connectivity(
     return sigma
 
 
-@random_state(5)
+@np_random_state(5)
 @not_implemented_for("directed")
 def fiedler_vector(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
@@ -488,7 +476,7 @@ def fiedler_vector(
     return fiedler
 
 
-@random_state(5)
+@np_random_state(5)
 def spectral_ordering(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):

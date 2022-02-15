@@ -3,9 +3,8 @@ import warnings
 
 from networkx.algorithms.centrality.betweenness import (
     _single_source_dijkstra_path_basic as dijkstra,
-)
-from networkx.algorithms.centrality.betweenness import (
     _single_source_shortest_path_basic as shortest_path,
+    _add_edge_keys,
 )
 
 __all__ = [
@@ -49,6 +48,8 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     Returns
     -------
@@ -92,11 +93,11 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     ----------
     .. [1] Ulrik Brandes, A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
-       http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+       https://doi.org/10.1080/0022250X.2001.9990249
     .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
-       http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
+       https://doi.org/10.1016/j.socnet.2007.11.001
     """
     b = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     for s in sources:
@@ -143,6 +144,8 @@ def edge_betweenness_centrality_subset(
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     Returns
     -------
@@ -171,11 +174,11 @@ def edge_betweenness_centrality_subset(
     ----------
     .. [1] Ulrik Brandes, A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
-       http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+       https://doi.org/10.1080/0022250X.2001.9990249
     .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
-       http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
+       https://doi.org/10.1016/j.socnet.2007.11.001
     """
     b = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     b.update(dict.fromkeys(G.edges(), 0.0))  # b[e] for e in G.edges()
@@ -189,6 +192,8 @@ def edge_betweenness_centrality_subset(
     for n in G:  # remove nodes to only return edges
         del b[n]
     b = _rescale_e(b, len(G), normalized=normalized, directed=G.is_directed())
+    if G.is_multigraph():
+        b = _add_edge_keys(G, b, weight=weight)
     return b
 
 

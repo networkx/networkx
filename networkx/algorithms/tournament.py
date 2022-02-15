@@ -59,8 +59,8 @@ def index_satisfying(iterable, condition):
     # exception.
     try:
         return i + 1
-    except NameError as e:
-        raise ValueError("iterable must be non-empty") from e
+    except NameError as err:
+        raise ValueError("iterable must be non-empty") from err
 
 
 @not_implemented_for("undirected")
@@ -276,7 +276,6 @@ def is_reachable(G, s, t):
            tournaments."
            *Electronic Colloquium on Computational Complexity*. 2001.
            <http://eccc.hpi-web.de/report/2001/092/>
-
     """
 
     def two_neighborhood(G, v):

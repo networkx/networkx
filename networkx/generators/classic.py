@@ -278,7 +278,7 @@ def circular_ladder_graph(n, create_using=None):
 
 
 def circulant_graph(n, offsets, create_using=None):
-    """Returns the circulant graph $Ci_n(x_1, x_2, ..., x_m)$ with $n$ nodes.
+    r"""Returns the circulant graph $Ci_n(x_1, x_2, ..., x_m)$ with $n$ nodes.
 
     The circulant graph $Ci_n(x_1, ..., x_m)$ consists of $n$ nodes $0, ..., n-1$
     such that node $i$ is connected to nodes $(i + x) \mod n$ and $(i - x) \mod n$
@@ -762,8 +762,8 @@ def complete_multipartite_graph(*subset_sizes):
     try:
         for (i, subset) in enumerate(subsets):
             G.add_nodes_from(subset, subset=i)
-    except TypeError as e:
-        raise NetworkXError("Arguments must be all ints or all iterables") from e
+    except TypeError as err:
+        raise NetworkXError("Arguments must be all ints or all iterables") from err
 
     # Across subsets, all nodes should be adjacent.
     # We can use itertools.combinations() because undirected.

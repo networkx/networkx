@@ -3,6 +3,7 @@
 """
 
 from operator import eq
+import math
 
 import networkx as nx
 import networkx.algorithms.isomorphism as iso
@@ -150,7 +151,7 @@ class TestEdgeMatch_MultiGraph:
             self.emg2 = iso.generic_multiedge_match(
                 ["color", "weight", "size"],
                 ["red", 1, 0.5],
-                [eq, eq, iso.matchhelpers.close],
+                [eq, eq, math.isclose],
             )
         else:
             self.em = iso.numerical_edge_match("weight", 1)
@@ -160,7 +161,7 @@ class TestEdgeMatch_MultiGraph:
             self.emg2 = iso.generic_edge_match(
                 ["color", "weight", "size"],
                 ["red", 1, 0.5],
-                [eq, eq, iso.matchhelpers.close],
+                [eq, eq, math.isclose],
             )
 
     def test_weights_only(self):

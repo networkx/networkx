@@ -3,7 +3,7 @@
 import pytest
 
 import networkx as nx
-from networkx.testing import assert_nodes_equal, assert_edges_equal
+from networkx.utils import nodes_equal, edges_equal
 
 
 def test_unknown_algorithm():
@@ -13,20 +13,17 @@ def test_unknown_algorithm():
 
 class MinimumSpanningTreeTestBase:
     """Base class for test classes for minimum spanning tree algorithms.
-
     This class contains some common tests that will be inherited by
     subclasses. Each subclass must have a class attribute
     :data:`algorithm` that is a string representing the algorithm to
     run, as described under the ``algorithm`` keyword argument for the
     :func:`networkx.minimum_spanning_edges` function.  Subclasses can
     then implement any algorithm-specific tests.
-
     """
 
     def setup_method(self, method):
         """Creates an example graph and stores the expected minimum and
         maximum spanning tree edges.
-
         """
         # This stores the class attribute `algorithm` in an instance attribute.
         self.algo = self.algorithm
@@ -69,14 +66,14 @@ class MinimumSpanningTreeTestBase:
         # Edges from the spanning edges functions don't come in sorted
         # orientation, so we need to sort each edge individually.
         actual = sorted((min(u, v), max(u, v), d) for u, v, d in edges)
-        assert_edges_equal(actual, self.minimum_spanning_edgelist)
+        assert edges_equal(actual, self.minimum_spanning_edgelist)
 
     def test_maximum_edges(self):
         edges = nx.maximum_spanning_edges(self.G, algorithm=self.algo)
         # Edges from the spanning edges functions don't come in sorted
         # orientation, so we need to sort each edge individually.
         actual = sorted((min(u, v), max(u, v), d) for u, v, d in edges)
-        assert_edges_equal(actual, self.maximum_spanning_edgelist)
+        assert edges_equal(actual, self.maximum_spanning_edgelist)
 
     def test_without_data(self):
         edges = nx.minimum_spanning_edges(self.G, algorithm=self.algo, data=False)
@@ -84,7 +81,7 @@ class MinimumSpanningTreeTestBase:
         # orientation, so we need to sort each edge individually.
         actual = sorted((min(u, v), max(u, v)) for u, v in edges)
         expected = [(u, v) for u, v, d in self.minimum_spanning_edgelist]
-        assert_edges_equal(actual, expected)
+        assert edges_equal(actual, expected)
 
     def test_nan_weights(self):
         # Edge weights NaN never appear in the spanning tree. see #2164
@@ -95,7 +92,7 @@ class MinimumSpanningTreeTestBase:
         )
         actual = sorted((min(u, v), max(u, v)) for u, v in edges)
         expected = [(u, v) for u, v, d in self.minimum_spanning_edgelist]
-        assert_edges_equal(actual, expected)
+        assert edges_equal(actual, expected)
         # Now test for raising exception
         edges = nx.minimum_spanning_edges(
             G, algorithm=self.algo, data=False, ignore_nan=False
@@ -130,7 +127,7 @@ class MinimumSpanningTreeTestBase:
         )
         actual = sorted((min(u, v), max(u, v)) for u, v in edges)
         shift = [(u + 1, v + 1) for u, v, d in self.minimum_spanning_edgelist]
-        assert_edges_equal(actual, shift)
+        assert edges_equal(actual, shift)
 
     def test_isolated_node(self):
         # now try again with an isolated node
@@ -155,28 +152,28 @@ class MinimumSpanningTreeTestBase:
         )
         actual = sorted((min(u, v), max(u, v)) for u, v in edges)
         shift = [(u + 1, v + 1) for u, v, d in self.minimum_spanning_edgelist]
-        assert_edges_equal(actual, shift)
+        assert edges_equal(actual, shift)
 
     def test_minimum_tree(self):
         T = nx.minimum_spanning_tree(self.G, algorithm=self.algo)
         actual = sorted(T.edges(data=True))
-        assert_edges_equal(actual, self.minimum_spanning_edgelist)
+        assert edges_equal(actual, self.minimum_spanning_edgelist)
 
     def test_maximum_tree(self):
         T = nx.maximum_spanning_tree(self.G, algorithm=self.algo)
         actual = sorted(T.edges(data=True))
-        assert_edges_equal(actual, self.maximum_spanning_edgelist)
+        assert edges_equal(actual, self.maximum_spanning_edgelist)
 
     def test_disconnected(self):
         G = nx.Graph([(0, 1, dict(weight=1)), (2, 3, dict(weight=2))])
         T = nx.minimum_spanning_tree(G, algorithm=self.algo)
-        assert_nodes_equal(list(T), list(range(4)))
-        assert_edges_equal(list(T.edges()), [(0, 1), (2, 3)])
+        assert nodes_equal(list(T), list(range(4)))
+        assert edges_equal(list(T.edges()), [(0, 1), (2, 3)])
 
     def test_empty_graph(self):
         G = nx.empty_graph(3)
         T = nx.minimum_spanning_tree(G, algorithm=self.algo)
-        assert_nodes_equal(sorted(T), list(range(3)))
+        assert nodes_equal(sorted(T), list(range(3)))
         assert T.number_of_edges() == 0
 
     def test_attributes(self):
@@ -187,7 +184,7 @@ class MinimumSpanningTreeTestBase:
         G.graph["foo"] = "bar"
         T = nx.minimum_spanning_tree(G, algorithm=self.algo)
         assert T.graph == G.graph
-        assert_nodes_equal(T, G)
+        assert nodes_equal(T, G)
         for u, v in T.edges():
             assert T.adj[u][v] == G.adj[u][v]
 
@@ -198,17 +195,16 @@ class MinimumSpanningTreeTestBase:
         G.add_edge(1, 2, weight=1, distance=1)
         G.add_node(3)
         T = nx.minimum_spanning_tree(G, algorithm=self.algo, weight="distance")
-        assert_nodes_equal(sorted(T), list(range(4)))
-        assert_edges_equal(sorted(T.edges()), [(0, 2), (1, 2)])
+        assert nodes_equal(sorted(T), list(range(4)))
+        assert edges_equal(sorted(T.edges()), [(0, 2), (1, 2)])
         T = nx.maximum_spanning_tree(G, algorithm=self.algo, weight="distance")
-        assert_nodes_equal(sorted(T), list(range(4)))
-        assert_edges_equal(sorted(T.edges()), [(0, 1), (0, 2)])
+        assert nodes_equal(sorted(T), list(range(4)))
+        assert edges_equal(sorted(T.edges()), [(0, 1), (0, 2)])
 
 
 class TestBoruvka(MinimumSpanningTreeTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
     using Borůvka's algorithm.
-
     """
 
     algorithm = "boruvka"
@@ -216,13 +212,12 @@ class TestBoruvka(MinimumSpanningTreeTestBase):
     def test_unicode_name(self):
         """Tests that using a Unicode string can correctly indicate
         Borůvka's algorithm.
-
         """
         edges = nx.minimum_spanning_edges(self.G, algorithm="borůvka")
         # Edges from the spanning edges functions don't come in sorted
         # orientation, so we need to sort each edge individually.
         actual = sorted((min(u, v), max(u, v), d) for u, v, d in edges)
-        assert_edges_equal(actual, self.minimum_spanning_edgelist)
+        assert edges_equal(actual, self.minimum_spanning_edgelist)
 
 
 class MultigraphMSTTestBase(MinimumSpanningTreeTestBase):
@@ -231,32 +226,29 @@ class MultigraphMSTTestBase(MinimumSpanningTreeTestBase):
     def test_multigraph_keys_min(self):
         """Tests that the minimum spanning edges of a multigraph
         preserves edge keys.
-
         """
         G = nx.MultiGraph()
         G.add_edge(0, 1, key="a", weight=2)
         G.add_edge(0, 1, key="b", weight=1)
         min_edges = nx.minimum_spanning_edges
         mst_edges = min_edges(G, algorithm=self.algo, data=False)
-        assert_edges_equal([(0, 1, "b")], list(mst_edges))
+        assert edges_equal([(0, 1, "b")], list(mst_edges))
 
     def test_multigraph_keys_max(self):
         """Tests that the maximum spanning edges of a multigraph
         preserves edge keys.
-
         """
         G = nx.MultiGraph()
         G.add_edge(0, 1, key="a", weight=2)
         G.add_edge(0, 1, key="b", weight=1)
         max_edges = nx.maximum_spanning_edges
         mst_edges = max_edges(G, algorithm=self.algo, data=False)
-        assert_edges_equal([(0, 1, "a")], list(mst_edges))
+        assert edges_equal([(0, 1, "a")], list(mst_edges))
 
 
 class TestKruskal(MultigraphMSTTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
     using Kruskal's algorithm.
-
     """
 
     algorithm = "kruskal"
@@ -265,7 +257,6 @@ class TestKruskal(MultigraphMSTTestBase):
 class TestPrim(MultigraphMSTTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
     using Prim's algorithm.
-
     """
 
     algorithm = "prim"
@@ -275,11 +266,104 @@ class TestPrim(MultigraphMSTTestBase):
         G.add_edge(0, 1, key="a", weight=2)
         G.add_edge(0, 1, key="b", weight=1)
         T = nx.minimum_spanning_tree(G)
-        assert_edges_equal([(0, 1, 1)], list(T.edges(data="weight")))
+        assert edges_equal([(0, 1, 1)], list(T.edges(data="weight")))
 
     def test_multigraph_keys_tree_max(self):
         G = nx.MultiGraph()
         G.add_edge(0, 1, key="a", weight=2)
         G.add_edge(0, 1, key="b", weight=1)
         T = nx.maximum_spanning_tree(G)
-        assert_edges_equal([(0, 1, 2)], list(T.edges(data="weight")))
+        assert edges_equal([(0, 1, 2)], list(T.edges(data="weight")))
+
+
+class TestSpanningTreeIterator:
+    """
+    Tests the spanning tree iterator on the example graph in the 2005 Sörensen
+    and Janssens paper An Algorithm to Generate all Spanning Trees of a Graph in
+    Order of Increasing Cost
+    """
+
+    def setup(self):
+        # Original Graph
+        edges = [(0, 1, 5), (1, 2, 4), (1, 4, 6), (2, 3, 5), (2, 4, 7), (3, 4, 3)]
+        self.G = nx.Graph()
+        self.G.add_weighted_edges_from(edges)
+        # List of lists of spanning trees in increasing order
+        self.spanning_trees = [
+            # 1, MST, cost = 17
+            [
+                (0, 1, {"weight": 5}),
+                (1, 2, {"weight": 4}),
+                (2, 3, {"weight": 5}),
+                (3, 4, {"weight": 3}),
+            ],
+            # 2, cost = 18
+            [
+                (0, 1, {"weight": 5}),
+                (1, 2, {"weight": 4}),
+                (1, 4, {"weight": 6}),
+                (3, 4, {"weight": 3}),
+            ],
+            # 3, cost = 19
+            [
+                (0, 1, {"weight": 5}),
+                (1, 4, {"weight": 6}),
+                (2, 3, {"weight": 5}),
+                (3, 4, {"weight": 3}),
+            ],
+            # 4, cost = 19
+            [
+                (0, 1, {"weight": 5}),
+                (1, 2, {"weight": 4}),
+                (2, 4, {"weight": 7}),
+                (3, 4, {"weight": 3}),
+            ],
+            # 5, cost = 20
+            [
+                (0, 1, {"weight": 5}),
+                (1, 2, {"weight": 4}),
+                (1, 4, {"weight": 6}),
+                (2, 3, {"weight": 5}),
+            ],
+            # 6, cost = 21
+            [
+                (0, 1, {"weight": 5}),
+                (1, 4, {"weight": 6}),
+                (2, 4, {"weight": 7}),
+                (3, 4, {"weight": 3}),
+            ],
+            # 7, cost = 21
+            [
+                (0, 1, {"weight": 5}),
+                (1, 2, {"weight": 4}),
+                (2, 3, {"weight": 5}),
+                (2, 4, {"weight": 7}),
+            ],
+            # 8, cost = 23
+            [
+                (0, 1, {"weight": 5}),
+                (1, 4, {"weight": 6}),
+                (2, 3, {"weight": 5}),
+                (2, 4, {"weight": 7}),
+            ],
+        ]
+
+    def test_minimum_spanning_tree_iterator(self):
+        """
+        Tests that the spanning trees are correctly returned in increasing order
+        """
+        tree_index = 0
+        for tree in nx.SpanningTreeIterator(self.G):
+            actual = sorted(tree.edges(data=True))
+            assert edges_equal(actual, self.spanning_trees[tree_index])
+            tree_index += 1
+
+    def test_maximum_spanning_tree_iterator(self):
+        """
+        Tests that the spanning trees are correctly returned in decreasing order
+        """
+        tree_index = 7
+        for tree in nx.SpanningTreeIterator(self.G, minimum=False):
+            actual = sorted(tree.edges(data=True))
+            assert edges_equal(actual, self.spanning_trees[tree_index])
+            tree_index -= 1

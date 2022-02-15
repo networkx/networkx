@@ -75,6 +75,7 @@ def strongly_connected_components(G):
     scc_found = set()
     scc_queue = []
     i = 0  # Preorder counter
+    neighbors = {v: iter(G[v]) for v in G}
     for source in G:
         if source not in scc_found:
             queue = [source]
@@ -84,7 +85,7 @@ def strongly_connected_components(G):
                     i = i + 1
                     preorder[v] = i
                 done = True
-                for w in G[v]:
+                for w in neighbors[v]:
                     if w not in preorder:
                         queue.append(w)
                         done = False
@@ -121,7 +122,7 @@ def kosaraju_strongly_connected_components(G, source=None):
     Returns
     -------
     comp : generator of sets
-        A genrator of sets of nodes, one for each strongly connected
+        A generator of sets of nodes, one for each strongly connected
         component of G.
 
     Raises

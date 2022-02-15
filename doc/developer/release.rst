@@ -20,20 +20,17 @@ Release Process
   6. Copy ``doc/release/release_template.rst`` to
      ``doc/release/release_dev.rst`` for the next release.
 
-  7. Update ``doc/news.rst``.
+  7. Add ``release_<major>.<minor>`` to ``doc/release/index.rst``.
 
-- Delete the following from ``doc/_templates/layout.html``::
+- Delete developer banner on docs::
 
-    {% block document %}
-      {% include "dev_banner.html" %}
-      {{ super() }}
-    {% endblock %}
+   git rm doc/_templates/layout.html
 
-- Toggle ``dev = True`` to ``dev = False`` in ``networkx/release.py``.
+- Update ``__version__`` in ``networkx/__init__.py``.
 
 - Commit changes::
 
-   git add networkx/release.py
+   git add networkx/__init__.py
    git commit -m "Designate X.X release"
 
 - Add the version number as a tag in git::
@@ -45,7 +42,7 @@ Release Process
 
 - Push the new meta-data to github::
 
-   git push --tags upstream master
+   git push --tags upstream main
 
   (where ``upstream`` is the name of the
    ``github.com:networkx/networkx`` repository.)
@@ -54,12 +51,21 @@ Release Process
 
    https://github.com/networkx/networkx/releases
 
+- Pin badges in ``README.rst``::
+
+  - https://github.com/networkx/networkx/workflows/test/badge.svg?tag=networkx-<major>.<minor>
+  - https://github.com/networkx/networkx/actions?query=branch%3Anetworkx-<major>.<minor>
+
 - Publish on PyPi::
 
    git clean -fxd
    pip install -r requirements/release.txt
    python setup.py sdist bdist_wheel
    twine upload -s dist/*
+
+- Unpin badges in ``README.rst``::
+
+   git restore README.rst 
 
 - Update documentation on the web:
   The documentation is kept in a separate repo: networkx/documentation
@@ -81,11 +87,11 @@ Release Process
       # you will then need to force the push so be careful!
       git push
 
- - Increase the version number
+- Update ``__version__`` in ``networkx/__init__.py``.
 
-  - Toggle ``dev = False`` to ``dev = True`` in ``networkx/release.py``.
-  - Update ``major`` and ``minor`` in ``networkx/release.py``.
-  - Append the following to ``doc/_templates/layout.html``::
+- Create ``doc/_templates/layout.html`` with::
+
+    {% extends "!layout.html" %}
 
     {% block document %}
       {% include "dev_banner.html" %}
@@ -94,9 +100,9 @@ Release Process
 
  - Commit and push changes::
 
-    git add networkx/release.py doc/_templates/layout.html
+    git add networkx/__init__.py doc/_templates/layout.html
     git commit -m "Bump release version"
-    git push upstream master
+    git push upstream main
 
 - Update the web frontpage:
   The webpage is kept in a separate repo: networkx/website

@@ -35,7 +35,7 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
 
     Returns
     -------
-    H : Numpy matrix
+    H : scipy.sparse.csr_matrix
       The Bethe Hessian matrix of G, with paramter r.
 
     Examples
@@ -48,7 +48,6 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     See Also
     --------
     bethe_hessian_spectrum
-    to_numpy_array
     adjacency_matrix
     laplacian_matrix
 
@@ -67,13 +66,19 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     if nodelist is None:
         nodelist = list(G)
     if r is None:
-        r = (
-            sum([d ** 2 for v, d in nx.degree(G)]) / sum([d for v, d in nx.degree(G)])
-            - 1
-        )
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format="csr")
+        r = sum(d ** 2 for v, d in nx.degree(G)) / sum(d for v, d in nx.degree(G)) - 1
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, format="csr")
     n, m = A.shape
-    diags = A.sum(axis=1)
-    D = sp.sparse.spdiags(diags.flatten(), [0], m, n, format="csr")
-    I = sp.sparse.eye(m, n, format="csr")
-    return (r ** 2 - 1) * I - r * A + D
+    # TODO: Rm csr_array wrapper when spdiags array creation becomes available
+    D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, m, n, format="csr"))
+    # TODO: Rm csr_array wrapper when eye array creation becomes available
+    I = sp.sparse.csr_array(sp.sparse.eye(m, n, format="csr"))
+    import warnings
+
+    warnings.warn(
+        "bethe_hessian_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0",
+        FutureWarning,
+        stacklevel=2,
+    )
+    # TODO: Remove the csr_matrix wrapper in NetworkX 3.0
+    return sp.sparse.csr_matrix((r ** 2 - 1) * I - r * A + D)

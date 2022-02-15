@@ -235,6 +235,7 @@ def recursive_simple_cycles(G):
     This version uses a recursive algorithm to build a list of cycles.
     You should probably use the iterator version called simple_cycles().
     Warning: This recursive version uses lots of RAM!
+    It appears in NetworkX for pedagogical value.
 
     Parameters
     ----------
@@ -252,10 +253,6 @@ def recursive_simple_cycles(G):
     >>> G = nx.DiGraph(edges)
     >>> nx.recursive_simple_cycles(G)
     [[0], [2], [0, 1, 2], [0, 2], [1, 2]]
-
-    See Also
-    --------
-    cycle_basis (for undirected graphs)
 
     Notes
     -----
@@ -392,11 +389,10 @@ def find_cycle(G, source=None, orientation=None):
     is also known as a polytree).
 
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
-    >>> try:
-    ...     nx.find_cycle(G, orientation="original")
-    ... except:
-    ...     pass
-    ...
+    >>> nx.find_cycle(G, orientation="original")
+    Traceback (most recent call last):
+        ...
+    networkx.exception.NetworkXNoCycle: No cycle found.
     >>> list(nx.find_cycle(G, orientation="ignore"))
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 

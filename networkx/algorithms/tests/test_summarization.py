@@ -1,9 +1,8 @@
 """
-Unit tests for dedensification/densification
+Unit tests for dedensification and graph summarization
 """
-
+import pytest
 import networkx as nx
-from networkx.algorithms.summarization import dedensify
 
 
 class TestDirectedDedensification:
@@ -45,7 +44,7 @@ class TestDirectedDedensification:
         Verify that an empty directed graph results in no compressor nodes
         """
         G = nx.DiGraph()
-        compressed_graph, c_nodes = dedensify(G, threshold=2)
+        compressed_graph, c_nodes = nx.dedensify(G, threshold=2)
         assert c_nodes == set()
 
     @staticmethod
@@ -92,7 +91,7 @@ class TestDirectedDedensification:
         """
         G = self.build_original_graph()
         compressed_G = self.build_compressed_graph()
-        compressed_graph, c_nodes = dedensify(G, threshold=2)
+        compressed_graph, c_nodes = nx.dedensify(G, threshold=2)
         for s, t in compressed_graph.edges():
             o_s = "".join(sorted(s))
             o_t = "".join(sorted(t))
@@ -108,7 +107,7 @@ class TestDirectedDedensification:
         """
         G = self.build_original_graph()
         original_edge_count = len(G.edges())
-        c_G, c_nodes = dedensify(G, threshold=2)
+        c_G, c_nodes = nx.dedensify(G, threshold=2)
         compressed_edge_count = len(c_G.edges())
         assert compressed_edge_count <= original_edge_count
         compressed_G = self.build_compressed_graph()
@@ -164,14 +163,11 @@ class TestUnDirectedDedensification:
         Verify that an empty undirected graph results in no compressor nodes
         """
         G = nx.Graph()
-        compressed_G, c_nodes = dedensify(G, threshold=2)
+        compressed_G, c_nodes = nx.dedensify(G, threshold=2)
         assert c_nodes == set()
 
     def setup_method(self):
-        self.c_nodes = (
-            "6AB",
-            "ABC",
-        )
+        self.c_nodes = ("6AB", "ABC")
 
     def build_compressed_graph(self):
         compressed_matrix = [
@@ -197,7 +193,7 @@ class TestUnDirectedDedensification:
         correct edges to/from the compressor nodes in an undirected graph
         """
         G = self.build_original_graph()
-        c_G, c_nodes = dedensify(G, threshold=2)
+        c_G, c_nodes = nx.dedensify(G, threshold=2)
         v_compressed_G = self.build_compressed_graph()
         for s, t in c_G.edges():
             o_s = "".join(sorted(s))
@@ -213,10 +209,432 @@ class TestUnDirectedDedensification:
         undirected graph
         """
         G = self.build_original_graph()
-        c_G, c_nodes = dedensify(G, threshold=2, copy=True)
+        c_G, c_nodes = nx.dedensify(G, threshold=2, copy=True)
         compressed_edge_count = len(c_G.edges())
         verified_original_edge_count = len(G.edges())
         assert compressed_edge_count <= verified_original_edge_count
         verified_compressed_G = self.build_compressed_graph()
         verified_compressed_edge_count = len(verified_compressed_G.edges())
         assert compressed_edge_count == verified_compressed_edge_count
+
+
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
+def test_summarization_empty(graph_type):
+    G = graph_type()
+    summary_graph = nx.snap_aggregation(G, node_attributes=("color",))
+    assert nx.is_isomorphic(summary_graph, G)
+
+
+class AbstractSNAP:
+    node_attributes = ("color",)
+
+    def build_original_graph(self):
+        pass
+
+    def build_summary_graph(self):
+        pass
+
+    def test_summary_graph(self):
+        original_graph = self.build_original_graph()
+        summary_graph = self.build_summary_graph()
+
+        relationship_attributes = ("type",)
+        generated_summary_graph = nx.snap_aggregation(
+            original_graph, self.node_attributes, relationship_attributes
+        )
+        relabeled_summary_graph = self.deterministic_labels(generated_summary_graph)
+        assert nx.is_isomorphic(summary_graph, relabeled_summary_graph)
+
+    def deterministic_labels(self, G):
+        node_labels = list(G.nodes)
+        node_labels = sorted(node_labels, key=lambda n: sorted(G.nodes[n]["group"])[0])
+        node_labels.sort()
+
+        label_mapping = dict()
+        for index, node in enumerate(node_labels):
+            label = "Supernode-%s" % index
+            label_mapping[node] = label
+
+        return nx.relabel_nodes(G, label_mapping)
+
+
+class TestSNAPNoEdgeTypes(AbstractSNAP):
+    relationship_attributes = ()
+
+    def test_summary_graph(self):
+        original_graph = self.build_original_graph()
+        summary_graph = self.build_summary_graph()
+
+        relationship_attributes = ("type",)
+        generated_summary_graph = nx.snap_aggregation(
+            original_graph, self.node_attributes
+        )
+        relabeled_summary_graph = self.deterministic_labels(generated_summary_graph)
+        assert nx.is_isomorphic(summary_graph, relabeled_summary_graph)
+
+    def build_original_graph(self):
+        nodes = {
+            "A": dict(color="Red"),
+            "B": dict(color="Red"),
+            "C": dict(color="Red"),
+            "D": dict(color="Red"),
+            "E": dict(color="Blue"),
+            "F": dict(color="Blue"),
+            "G": dict(color="Blue"),
+            "H": dict(color="Blue"),
+            "I": dict(color="Yellow"),
+            "J": dict(color="Yellow"),
+            "K": dict(color="Yellow"),
+            "L": dict(color="Yellow"),
+        }
+        edges = [
+            ("A", "B"),
+            ("A", "C"),
+            ("A", "E"),
+            ("A", "I"),
+            ("B", "D"),
+            ("B", "J"),
+            ("B", "F"),
+            ("C", "G"),
+            ("D", "H"),
+            ("I", "J"),
+            ("J", "K"),
+            ("I", "L"),
+        ]
+        G = nx.Graph()
+        for node in nodes:
+            attributes = nodes[node]
+            G.add_node(node, **attributes)
+
+        for source, target in edges:
+            G.add_edge(source, target)
+
+        return G
+
+    def build_summary_graph(self):
+        nodes = {
+            "Supernode-0": dict(color="Red"),
+            "Supernode-1": dict(color="Red"),
+            "Supernode-2": dict(color="Blue"),
+            "Supernode-3": dict(color="Blue"),
+            "Supernode-4": dict(color="Yellow"),
+            "Supernode-5": dict(color="Yellow"),
+        }
+        edges = [
+            ("Supernode-0", "Supernode-0"),
+            ("Supernode-0", "Supernode-1"),
+            ("Supernode-0", "Supernode-2"),
+            ("Supernode-0", "Supernode-4"),
+            ("Supernode-1", "Supernode-3"),
+            ("Supernode-4", "Supernode-4"),
+            ("Supernode-4", "Supernode-5"),
+        ]
+        G = nx.Graph()
+        for node in nodes:
+            attributes = nodes[node]
+            G.add_node(node, **attributes)
+
+        for source, target in edges:
+            G.add_edge(source, target)
+
+        supernodes = {
+            "Supernode-0": {"A", "B"},
+            "Supernode-1": {"C", "D"},
+            "Supernode-2": {"E", "F"},
+            "Supernode-3": {"G", "H"},
+            "Supernode-4": {"I", "J"},
+            "Supernode-5": {"K", "L"},
+        }
+        nx.set_node_attributes(G, supernodes, "group")
+        return G
+
+
+class TestSNAPUndirected(AbstractSNAP):
+    def build_original_graph(self):
+        nodes = {
+            "A": dict(color="Red"),
+            "B": dict(color="Red"),
+            "C": dict(color="Red"),
+            "D": dict(color="Red"),
+            "E": dict(color="Blue"),
+            "F": dict(color="Blue"),
+            "G": dict(color="Blue"),
+            "H": dict(color="Blue"),
+            "I": dict(color="Yellow"),
+            "J": dict(color="Yellow"),
+            "K": dict(color="Yellow"),
+            "L": dict(color="Yellow"),
+        }
+        edges = [
+            ("A", "B", "Strong"),
+            ("A", "C", "Weak"),
+            ("A", "E", "Strong"),
+            ("A", "I", "Weak"),
+            ("B", "D", "Weak"),
+            ("B", "J", "Weak"),
+            ("B", "F", "Strong"),
+            ("C", "G", "Weak"),
+            ("D", "H", "Weak"),
+            ("I", "J", "Strong"),
+            ("J", "K", "Strong"),
+            ("I", "L", "Strong"),
+        ]
+        G = nx.Graph()
+        for node in nodes:
+            attributes = nodes[node]
+            G.add_node(node, **attributes)
+
+        for source, target, type in edges:
+            G.add_edge(source, target, type=type)
+
+        return G
+
+    def build_summary_graph(self):
+        nodes = {
+            "Supernode-0": dict(color="Red"),
+            "Supernode-1": dict(color="Red"),
+            "Supernode-2": dict(color="Blue"),
+            "Supernode-3": dict(color="Blue"),
+            "Supernode-4": dict(color="Yellow"),
+            "Supernode-5": dict(color="Yellow"),
+        }
+        edges = [
+            ("Supernode-0", "Supernode-0", "Strong"),
+            ("Supernode-0", "Supernode-1", "Weak"),
+            ("Supernode-0", "Supernode-2", "Strong"),
+            ("Supernode-0", "Supernode-4", "Weak"),
+            ("Supernode-1", "Supernode-3", "Weak"),
+            ("Supernode-4", "Supernode-4", "Strong"),
+            ("Supernode-4", "Supernode-5", "Strong"),
+        ]
+        G = nx.Graph()
+        for node in nodes:
+            attributes = nodes[node]
+            G.add_node(node, **attributes)
+
+        for source, target, type in edges:
+            G.add_edge(source, target, types=[dict(type=type)])
+
+        supernodes = {
+            "Supernode-0": {"A", "B"},
+            "Supernode-1": {"C", "D"},
+            "Supernode-2": {"E", "F"},
+            "Supernode-3": {"G", "H"},
+            "Supernode-4": {"I", "J"},
+            "Supernode-5": {"K", "L"},
+        }
+        nx.set_node_attributes(G, supernodes, "group")
+        return G
+
+
+class TestSNAPDirected(AbstractSNAP):
+    def build_original_graph(self):
+        nodes = {
+            "A": dict(color="Red"),
+            "B": dict(color="Red"),
+            "C": dict(color="Green"),
+            "D": dict(color="Green"),
+            "E": dict(color="Blue"),
+            "F": dict(color="Blue"),
+            "G": dict(color="Yellow"),
+            "H": dict(color="Yellow"),
+        }
+        edges = [
+            ("A", "C", "Strong"),
+            ("A", "E", "Strong"),
+            ("A", "F", "Weak"),
+            ("B", "D", "Strong"),
+            ("B", "E", "Weak"),
+            ("B", "F", "Strong"),
+            ("C", "G", "Strong"),
+            ("C", "F", "Strong"),
+            ("D", "E", "Strong"),
+            ("D", "H", "Strong"),
+            ("G", "E", "Strong"),
+            ("H", "F", "Strong"),
+        ]
+        G = nx.DiGraph()
+        for node in nodes:
+            attributes = nodes[node]
+            G.add_node(node, **attributes)
+
+        for source, target, type in edges:
+            G.add_edge(source, target, type=type)
+
+        return G
+
+    def build_summary_graph(self):
+        nodes = {
+            "Supernode-0": dict(color="Red"),
+            "Supernode-1": dict(color="Green"),
+            "Supernode-2": dict(color="Blue"),
+            "Supernode-3": dict(color="Yellow"),
+        }
+        edges = [
+            ("Supernode-0", "Supernode-1", [{"type": "Strong"}]),
+            ("Supernode-0", "Supernode-2", [{"type": "Weak"}, {"type": "Strong"}]),
+            ("Supernode-1", "Supernode-2", [{"type": "Strong"}]),
+            ("Supernode-1", "Supernode-3", [{"type": "Strong"}]),
+            ("Supernode-3", "Supernode-2", [{"type": "Strong"}]),
+        ]
+        G = nx.DiGraph()
+        for node in nodes:
+            attributes = nodes[node]
+            G.add_node(node, **attributes)
+
+        for source, target, types in edges:
+            G.add_edge(source, target, types=types)
+
+        supernodes = {
+            "Supernode-0": {"A", "B"},
+            "Supernode-1": {"C", "D"},
+            "Supernode-2": {"E", "F"},
+            "Supernode-3": {"G", "H"},
+            "Supernode-4": {"I", "J"},
+            "Supernode-5": {"K", "L"},
+        }
+        nx.set_node_attributes(G, supernodes, "group")
+        return G
+
+
+class TestSNAPUndirectedMulti(AbstractSNAP):
+    def build_original_graph(self):
+        nodes = {
+            "A": dict(color="Red"),
+            "B": dict(color="Red"),
+            "C": dict(color="Red"),
+            "D": dict(color="Blue"),
+            "E": dict(color="Blue"),
+            "F": dict(color="Blue"),
+            "G": dict(color="Yellow"),
+            "H": dict(color="Yellow"),
+            "I": dict(color="Yellow"),
+        }
+        edges = [
+            ("A", "D", ["Weak", "Strong"]),
+            ("B", "E", ["Weak", "Strong"]),
+            ("D", "I", ["Strong"]),
+            ("E", "H", ["Strong"]),
+            ("F", "G", ["Weak"]),
+            ("I", "G", ["Weak", "Strong"]),
+            ("I", "H", ["Weak", "Strong"]),
+            ("G", "H", ["Weak", "Strong"]),
+        ]
+        G = nx.MultiGraph()
+        for node in nodes:
+            attributes = nodes[node]
+            G.add_node(node, **attributes)
+
+        for source, target, types in edges:
+            for type in types:
+                G.add_edge(source, target, type=type)
+
+        return G
+
+    def build_summary_graph(self):
+        nodes = {
+            "Supernode-0": dict(color="Red"),
+            "Supernode-1": dict(color="Blue"),
+            "Supernode-2": dict(color="Yellow"),
+            "Supernode-3": dict(color="Blue"),
+            "Supernode-4": dict(color="Yellow"),
+            "Supernode-5": dict(color="Red"),
+        }
+        edges = [
+            ("Supernode-1", "Supernode-2", [{"type": "Weak"}]),
+            ("Supernode-2", "Supernode-4", [{"type": "Weak"}, {"type": "Strong"}]),
+            ("Supernode-3", "Supernode-4", [{"type": "Strong"}]),
+            ("Supernode-3", "Supernode-5", [{"type": "Weak"}, {"type": "Strong"}]),
+            ("Supernode-4", "Supernode-4", [{"type": "Weak"}, {"type": "Strong"}]),
+        ]
+        G = nx.MultiGraph()
+        for node in nodes:
+            attributes = nodes[node]
+            G.add_node(node, **attributes)
+
+        for source, target, types in edges:
+            for type in types:
+                G.add_edge(source, target, type=type)
+
+        supernodes = {
+            "Supernode-0": {"A", "B"},
+            "Supernode-1": {"C", "D"},
+            "Supernode-2": {"E", "F"},
+            "Supernode-3": {"G", "H"},
+            "Supernode-4": {"I", "J"},
+            "Supernode-5": {"K", "L"},
+        }
+        nx.set_node_attributes(G, supernodes, "group")
+        return G
+
+
+class TestSNAPDirectedMulti(AbstractSNAP):
+    def build_original_graph(self):
+        nodes = {
+            "A": dict(color="Red"),
+            "B": dict(color="Red"),
+            "C": dict(color="Green"),
+            "D": dict(color="Green"),
+            "E": dict(color="Blue"),
+            "F": dict(color="Blue"),
+            "G": dict(color="Yellow"),
+            "H": dict(color="Yellow"),
+        }
+        edges = [
+            ("A", "C", ["Weak", "Strong"]),
+            ("A", "E", ["Strong"]),
+            ("A", "F", ["Weak"]),
+            ("B", "D", ["Weak", "Strong"]),
+            ("B", "E", ["Weak"]),
+            ("B", "F", ["Strong"]),
+            ("C", "G", ["Weak", "Strong"]),
+            ("C", "F", ["Strong"]),
+            ("D", "E", ["Strong"]),
+            ("D", "H", ["Weak", "Strong"]),
+            ("G", "E", ["Strong"]),
+            ("H", "F", ["Strong"]),
+        ]
+        G = nx.MultiDiGraph()
+        for node in nodes:
+            attributes = nodes[node]
+            G.add_node(node, **attributes)
+
+        for source, target, types in edges:
+            for type in types:
+                G.add_edge(source, target, type=type)
+
+        return G
+
+    def build_summary_graph(self):
+        nodes = {
+            "Supernode-0": dict(color="Red"),
+            "Supernode-1": dict(color="Blue"),
+            "Supernode-2": dict(color="Yellow"),
+            "Supernode-3": dict(color="Blue"),
+        }
+        edges = [
+            ("Supernode-0", "Supernode-1", ["Weak", "Strong"]),
+            ("Supernode-0", "Supernode-2", ["Weak", "Strong"]),
+            ("Supernode-1", "Supernode-2", ["Strong"]),
+            ("Supernode-1", "Supernode-3", ["Weak", "Strong"]),
+            ("Supernode-3", "Supernode-2", ["Strong"]),
+        ]
+        G = nx.MultiDiGraph()
+        for node in nodes:
+            attributes = nodes[node]
+            G.add_node(node, **attributes)
+
+        for source, target, types in edges:
+            for type in types:
+                G.add_edge(source, target, type=type)
+
+        supernodes = {
+            "Supernode-0": {"A", "B"},
+            "Supernode-1": {"C", "D"},
+            "Supernode-2": {"E", "F"},
+            "Supernode-3": {"G", "H"},
+        }
+        nx.set_node_attributes(G, supernodes, "group")
+        return G

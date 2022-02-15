@@ -14,6 +14,8 @@ from networkx.classes.reportviews import (
 from networkx.exception import NetworkXError
 import networkx.convert as convert
 
+__all__ = ["DiGraph"]
+
 
 class DiGraph(Graph):
     """
@@ -36,8 +38,8 @@ class DiGraph(Graph):
         Data to initialize graph. If None (default) an empty
         graph is created.  The data can be any format that is supported
         by the to_networkx_graph() function, currently including edge list,
-        dict of dicts, dict of lists, NetworkX graph, NumPy matrix
-        or 2d ndarray, SciPy sparse matrix, or PyGraphviz graph.
+        dict of dicts, dict of lists, NetworkX graph, 2D NumPy array, SciPy
+        sparse matrix, or PyGraphviz graph.
 
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
@@ -272,8 +274,8 @@ class DiGraph(Graph):
             Data to initialize graph.  If None (default) an empty
             graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
-            packages are installed the data can also be a NumPy matrix
-            or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+            packages are installed the data can also be a 2D NumPy array, a
+            SciPy sparse matrix, or a PyGraphviz graph.
 
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to graph as key=value pairs.
@@ -414,6 +416,8 @@ class DiGraph(Graph):
         doesn't change on mutables.
         """
         if node_for_adding not in self._succ:
+            if node_for_adding is None:
+                raise ValueError("None cannot be a node")
             self._succ[node_for_adding] = self.adjlist_inner_dict_factory()
             self._pred[node_for_adding] = self.adjlist_inner_dict_factory()
             attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
@@ -475,6 +479,8 @@ class DiGraph(Graph):
                 newdict = attr.copy()
                 newdict.update(ndict)
             if newnode:
+                if n is None:
+                    raise ValueError("None cannot be a node")
                 self._succ[n] = self.adjlist_inner_dict_factory()
                 self._pred[n] = self.adjlist_inner_dict_factory()
                 self._node[n] = self.node_attr_dict_factory()
@@ -513,8 +519,8 @@ class DiGraph(Graph):
         try:
             nbrs = self._succ[n]
             del self._node[n]
-        except KeyError as e:  # NetworkXError if n not in self
-            raise NetworkXError(f"The node {n} is not in the digraph.") from e
+        except KeyError as err:  # NetworkXError if n not in self
+            raise NetworkXError(f"The node {n} is not in the digraph.") from err
         for u in nbrs:
             del self._pred[u][n]  # remove all edges n-u in digraph
         del self._succ[n]  # remove node from succ
@@ -612,10 +618,14 @@ class DiGraph(Graph):
         u, v = u_of_edge, v_of_edge
         # add nodes
         if u not in self._succ:
+            if u is None:
+                raise ValueError("None cannot be a node")
             self._succ[u] = self.adjlist_inner_dict_factory()
             self._pred[u] = self.adjlist_inner_dict_factory()
             self._node[u] = self.node_attr_dict_factory()
         if v not in self._succ:
+            if v is None:
+                raise ValueError("None cannot be a node")
             self._succ[v] = self.adjlist_inner_dict_factory()
             self._pred[v] = self.adjlist_inner_dict_factory()
             self._node[v] = self.node_attr_dict_factory()
@@ -673,10 +683,14 @@ class DiGraph(Graph):
             else:
                 raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
             if u not in self._succ:
+                if u is None:
+                    raise ValueError("None cannot be a node")
                 self._succ[u] = self.adjlist_inner_dict_factory()
                 self._pred[u] = self.adjlist_inner_dict_factory()
                 self._node[u] = self.node_attr_dict_factory()
             if v not in self._succ:
+                if v is None:
+                    raise ValueError("None cannot be a node")
                 self._succ[v] = self.adjlist_inner_dict_factory()
                 self._pred[v] = self.adjlist_inner_dict_factory()
                 self._node[v] = self.node_attr_dict_factory()
@@ -716,8 +730,8 @@ class DiGraph(Graph):
         try:
             del self._succ[u][v]
             del self._pred[v][u]
-        except KeyError as e:
-            raise NetworkXError(f"The edge {u}-{v} not in graph.") from e
+        except KeyError as err:
+            raise NetworkXError(f"The edge {u}-{v} not in graph.") from err
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -791,8 +805,8 @@ class DiGraph(Graph):
         """
         try:
             return iter(self._succ[n])
-        except KeyError as e:
-            raise NetworkXError(f"The node {n} is not in the digraph.") from e
+        except KeyError as err:
+            raise NetworkXError(f"The node {n} is not in the digraph.") from err
 
     # digraph definitions
     neighbors = successors
@@ -819,8 +833,8 @@ class DiGraph(Graph):
         """
         try:
             return iter(self._pred[n])
-        except KeyError as e:
-            raise NetworkXError(f"The node {n} is not in the digraph.") from e
+        except KeyError as err:
+            raise NetworkXError(f"The node {n} is not in the digraph.") from err
 
     @property
     def edges(self):
@@ -841,7 +855,7 @@ class DiGraph(Graph):
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes.
+            The view will only report edges from these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
@@ -877,9 +891,9 @@ class DiGraph(Graph):
         OutEdgeDataView([(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})])
         >>> G.edges.data("weight", default=1)
         OutEdgeDataView([(0, 1, 1), (1, 2, 1), (2, 3, 5)])
-        >>> G.edges([0, 2])  # only edges incident to these nodes
+        >>> G.edges([0, 2])  # only edges originating from these nodes
         OutEdgeDataView([(0, 1), (2, 3)])
-        >>> G.edges(0)  # only edges incident to a single node (use G.adj[0]?)
+        >>> G.edges(0)  # only edges from node 0
         OutEdgeDataView([(0, 1)])
 
         """
@@ -1165,9 +1179,9 @@ class DiGraph(Graph):
         """
         graph_class = self.to_undirected_class()
         if as_view is True:
-            return nx.graphviews.generic_graph_view(self, Graph)
+            return nx.graphviews.generic_graph_view(self, graph_class)
         # deepcopy when not a view
-        G = Graph()
+        G = graph_class()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         if reciprocal is True:
