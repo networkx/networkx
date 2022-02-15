@@ -607,6 +607,18 @@ def test_to_numpy_array_structured_dtype_single_attr(field_name, expected_attr_v
     npt.assert_array_equal(A[field_name], expected)
 
 
+def test_to_numpy_array_structured_dtype_with_weight_raises():
+    """Using both a structured dtype (with named fields) and specifying a `weight`
+    parameter is ambiguous."""
+    G = nx.path_graph(3)
+    dtype = np.dtype([("weight", int), ("cost", int)])
+    exception_msg = "Specifying `weight` not supported for structured dtypes"
+    with pytest.raises(ValueError, match=exception_msg):
+        nx.to_numpy_array(G, dtype=dtype)  # Default is weight="weight"
+    with pytest.raises(ValueError, match=exception_msg):
+        nx.to_numpy_array(G, dtype=dtype, weight="cost")
+
+
 @pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.MultiDiGraph))
 def test_to_numpy_array_structured_multigraph_raises(graph_type):
     G = nx.path_graph(3, create_using=graph_type)

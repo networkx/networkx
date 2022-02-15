@@ -1372,8 +1372,14 @@ def to_numpy_array(
     # If dtype is structured and weight is None, use dtype field names as
     # edge attributes
     edge_attrs = None  # Only single edge attribute by default
-    if A.dtype.names and weight is None:
-        edge_attrs = dtype.names
+    if A.dtype.names:
+        if weight is None:
+            edge_attrs = dtype.names
+        else:
+            raise ValueError(
+                "Specifying `weight` not supported for structured dtypes\n."
+                "To create adjacency matrices from structured dtypes, use `weight=None`."
+            )
 
     # Map nodes to row/col in matrix
     idx = dict(zip(nodelist, range(nlen)))
