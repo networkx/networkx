@@ -100,10 +100,9 @@ def all_simple_paths(G, source, target, cutoff=None):
     cutoff : integer, dict, optional
        If an integer is passed then specifies the depth to stop the search.
        Only paths of length <= cutoff are returned.
-       If a dictionary is passed then different cutoffs can be used
-       for different weights.
+       If a dictionary is passed then multiple cutoffs can be used.
        (e.g. {'weight1': cutoff_value1, 'weight2': cutoff_value2})
-       The depth of search can be specified by using `None` as key (e.g. {None: cutoff})
+       The depth of the search can be specified by using `None` as key (e.g. {None: cutoff})
 
     Returns
     -------
