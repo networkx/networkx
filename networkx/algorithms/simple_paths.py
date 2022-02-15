@@ -471,14 +471,14 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
 
     """
     if source not in G:
-        raise nx.NodeNotFound("source node %s not in graph" % source)
+        raise nx.NodeNotFound(f"source node {source} not in graph")
     if target in G:
         targets = {target}
     else:
         try:
             targets = set(target)
         except TypeError:
-            raise nx.NodeNotFound("target node %s not in graph" % target)
+            raise nx.NodeNotFound(f"target node {target} not in graph")
     if source in targets:
         return []
     if cutoff is None:

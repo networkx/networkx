@@ -241,7 +241,7 @@ def test_all_simple_paths_weighted_multigraph_with_multiple_cutoffs():
     assert len(paths) == 4
     assert paths[0] == [0, 1, 4]
     assert paths[-1] == [0, 4]
-    assert max([len(p) for p in paths]) == 3
+    assert max(len(p) for p in paths) == 3
 
 
 def test_all_simple_paths_directed():
