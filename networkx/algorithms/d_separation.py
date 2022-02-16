@@ -58,7 +58,6 @@ References
 """
 
 from collections import deque
-from typing import AbstractSet
 
 import networkx as nx
 from networkx.utils import not_implemented_for, UnionFind

@@ -114,7 +114,7 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
 @py_random_state(4)
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
+def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
     """Latticize the given graph by swapping edges.
 
     Parameters
@@ -181,12 +181,12 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
             D[v, :] = D[nnodes - v - 1, :][::-1]
 
     niter = niter * nedges
-    ntries = int(nnodes * nedges / (nnodes * (nnodes - 1) / 2))
-    swapcount = 0
+    # maximal number of rewiring attempts per 'niter'
+    max_attempts = int(nnodes * nedges / (nnodes * (nnodes - 1) / 2))
 
-    for i in range(niter):
+    for _ in range(niter):
         n = 0
-        while n < ntries:
+        while n < max_attempts:
             # pick two random edges without creating edge list
             # choose source node indices from discrete distribution
             (ai, ci) = discrete_sequence(2, cdistribution=cdf, seed=seed)
@@ -220,7 +220,6 @@ def lattice_reference(G, niter=1, D=None, connectivity=True, seed=None):
                         G.add_edge(a, b)
                         G.add_edge(c, d)
                     else:
-                        swapcount += 1
                         break
             n += 1
 
@@ -298,7 +297,7 @@ def sigma(G, niter=100, nrand=10, seed=None):
 @py_random_state(3)
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def omega(G, niter=100, nrand=10, seed=None):
+def omega(G, niter=5, nrand=10, seed=None):
     """Returns the small-world coefficient (omega) of a graph
 
     The small-world coefficient of a graph G is:
@@ -310,22 +309,22 @@ def omega(G, niter=100, nrand=10, seed=None):
     of an equivalent random graph and Cl is the average clustering coefficient
     of an equivalent lattice graph.
 
-    The small-world coefficient (omega) ranges between -1 and 1. Values close
-    to 0 means the G features small-world characteristics. Values close to -1
-    means G has a lattice shape whereas values close to 1 means G is a random
-    graph.
+    The small-world coefficient (omega) measures how much G is like a lattice
+    or a random graph. Negative values mean G is similar to a lattice whereas
+    positive values mean G is a random graph.
+    Values close to 0 mean that G has small-world characteristics.
 
     Parameters
     ----------
     G : NetworkX graph
         An undirected graph.
 
-    niter: integer (optional, default=100)
+    niter: integer (optional, default=5)
         Approximate number of rewiring per edge to compute the equivalent
         random graph.
 
     nrand: integer (optional, default=10)
-        Number of random graphs generated to compute the average clustering
+        Number of random graphs generated to compute the maximal clustering
         coefficient (Cr) and average shortest path length (Lr).
 
     seed : integer, random_state, or None (default)
@@ -354,15 +353,31 @@ def omega(G, niter=100, nrand=10, seed=None):
     # Compute the mean clustering coefficient and average shortest path length
     # for an equivalent random graph
     randMetrics = {"C": [], "L": []}
-    for i in range(nrand):
-        Gr = random_reference(G, niter=niter, seed=seed)
-        Gl = lattice_reference(G, niter=niter, seed=seed)
-        randMetrics["C"].append(nx.transitivity(Gl))
+
+    # Calculate initial average clustering coefficient which potentially will
+    # get replaced by higher clustering coefficients from generated lattice
+    # reference graphs
+    Cl = nx.average_clustering(G)
+
+    niter_lattice_reference = niter
+    niter_random_reference = niter * 2
+
+    for _ in range(nrand):
+        # Generate random graph
+        Gr = random_reference(G, niter=niter_random_reference, seed=seed)
         randMetrics["L"].append(nx.average_shortest_path_length(Gr))
 
-    C = nx.transitivity(G)
+        # Generate lattice graph
+        Gl = lattice_reference(G, niter=niter_lattice_reference, seed=seed)
+
+        # Replace old clustering coefficient, if clustering is higher in
+        # generated lattice reference
+        Cl_temp = nx.average_clustering(Gl)
+        if Cl_temp > Cl:
+            Cl = Cl_temp
+
+    C = nx.average_clustering(G)
     L = nx.average_shortest_path_length(G)
-    Cl = np.mean(randMetrics["C"])
     Lr = np.mean(randMetrics["L"])
 
     omega = (Lr / L) - (C / Cl)

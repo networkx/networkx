@@ -63,8 +63,26 @@ def make_small_undirected_graph(graph_description, create_using=None):
     """
     Return a small undirected graph described by graph_description.
 
+    .. deprecated:: 2.7
+
+       make_small_undirected_graph is deprecated and will be removed in
+       version 3.0. If "ltype" == "adjacencylist", convert the list to a dict
+       and use `from_dict_of_lists`. If "ltype" == "edgelist", use
+       `from_edgelist`.
+
     See make_small_graph.
     """
+    import warnings
+
+    msg = (
+        "\n\nmake_small_undirected_graph is deprecated and will be removed in "
+        "version 3.0.\n"
+        "If `ltype` == 'adjacencylist', convert `xlist` to a dict and use\n"
+        "`from_dict_of_lists` instead.\n"
+        "If `ltype` == 'edgelist', use `from_edgelist` instead."
+    )
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+
     G = empty_graph(0, create_using)
     if G.is_directed():
         raise NetworkXError("Directed Graph not supported")
@@ -74,6 +92,13 @@ def make_small_undirected_graph(graph_description, create_using=None):
 def make_small_graph(graph_description, create_using=None):
     """
     Return the small graph described by graph_description.
+
+    .. deprecated:: 2.7
+
+       make_small_graph is deprecated and will be removed in
+       version 3.0. If "ltype" == "adjacencylist", convert the list to a dict
+       and use `from_dict_of_lists`. If "ltype" == "edgelist", use
+       `from_edgelist`.
 
     graph_description is a list of the form [ltype,name,n,xlist]
 
@@ -105,6 +130,15 @@ def make_small_graph(graph_description, create_using=None):
 
     Use the create_using argument to choose the graph class/type.
     """
+    import warnings
+
+    msg = (
+        "\n\nmake_small_graph is deprecated and will be removed in version 3.0.\n"
+        "If `ltype` == 'adjacencylist', convert `xlist` to a dict and use\n"
+        "`from_dict_of_lists` instead.\n"
+        "If `ltype` == 'edgelist', use `from_edgelist` instead."
+    )
+    warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
 
     if graph_description[0] not in ("adjacencylist", "edgelist"):
         raise NetworkXError("ltype must be either adjacencylist or edgelist")

@@ -367,7 +367,7 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
 
     Returns
     -------
-    P : NumPy matrix
+    P : numpy.ndarray
       transition matrix of G.
 
     Raises

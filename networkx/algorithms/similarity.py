@@ -1421,12 +1421,12 @@ def _simrank_similarity_numpy(
 
     Returns
     -------
-    similarity : numpy matrix, numpy array or float
+    similarity : numpy array or float
         If ``source`` and ``target`` are both ``None``, this returns a
-        Matrix containing SimRank scores of the nodes.
+        2D array containing SimRank scores of the nodes.
 
         If ``source`` is not ``None`` but ``target`` is, this returns an
-        Array containing SimRank scores of ``source`` and that
+        1D array containing SimRank scores of ``source`` and that
         node.
 
         If neither ``source`` nor ``target`` is ``None``, this returns
