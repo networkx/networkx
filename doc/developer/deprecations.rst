@@ -106,3 +106,4 @@ Version 3.0
   reflect that the function returns a ``numpy.ndarray`` instance.
 * In ``networkx/generators/small.py`` remove ``make_small_graph`` and
   ``make_small_undirected_graph``.
+* In ``networkx/convert_matrix.py`` remove ``to_numpy_recarray``.
