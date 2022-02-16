@@ -221,7 +221,18 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
 def greedy_modularity_communities(
     G, weight=None, resolution=1, cutoff=1, best_n=None, n_communities=None
 ):
-    """
+    r"""Find communities in G using greedy modularity maximization.
+
+    This function uses Clauset-Newman-Moore greedy modularity maximization [2]_.
+
+    Greedy modularity maximization begins with each node in its own community
+    and joins the pair of communities that most increases or least decreases
+    modularity until all nodes are in one community.
+
+    This function maximizes the generalized modularity, where `resolution`
+    is the resolution parameter, often expressed as $\gamma$.
+    See :func:`~networkx.algorithms.community.quality.modularity`.
+
     Parameters
     ----------
     G : NetworkX graph
@@ -235,13 +246,13 @@ def greedy_modularity_communities(
         If resolution is less than 1, modularity favors larger communities.
         Greater than 1 favors smaller communities.
 
-    cutoff : int or None, optional (default=1)
+    cutoff : int, optional (default=1)
         The number of communities in the partition at which the merging process
         will stop even if a maximum is not yet reached.
 
     best_n : int or None, optional (default=None)
-        Force community merging to continue until `best_n` communities remain
-        even if the modularity decreases.
+        Force community merging to continue after modularity already has started
+        to decrease until `best_n` communities remain.
         If ``None``, don't force it to continue beyond a maximum.
 
     Returns
@@ -261,6 +272,18 @@ def greedy_modularity_communities(
     See Also
     --------
     modularity
+
+    References
+    ----------
+    .. [1] Newman, M. E. J. "Networks: An Introduction", page 224
+       Oxford University Press 2011.
+    .. [2] Clauset, A., Newman, M. E., & Moore, C.
+       "Finding community structure in very large networks."
+       Physical Review E 70(6), 2004.
+    .. [3] Reichardt and Bornholdt "Statistical Mechanics of Community
+       Detection" Phys. Rev. E74, 2006.
+    .. [4] Newman, M. E. J."Analysis of weighted networks"
+       Physical Review E 70(5 Pt 2):056131, 2004.
     """
     if (cutoff < 1) or (cutoff > G.number_of_nodes()):
         raise ValueError(f"cutoff must be between 1 and {len(G)}. Got {cutoff}.")
@@ -291,16 +314,13 @@ def greedy_modularity_communities(
 
     # construct the first best community
     communities = next(community_gen)
-    if len(communities) == 1:
-        return communities
-    dq = next(community_gen)
 
-    while len(communities) > cutoff and not (dq < 0 and len(communities) <= best_n):
-        # update communities and construct next one if another union is possible
-        communities = next(community_gen)
-        if len(communities) == 1:
-            break
+    # continue merging communities until one of the breaking criteria is satisfied
+    while len(communities) > cutoff:
         dq = next(community_gen)
+        if dq < 0 and len(communities) <= best_n:
+            break
+        communities = next(community_gen)
 
     return sorted(communities, key=len, reverse=True)
 
