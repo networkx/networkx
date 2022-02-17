@@ -392,6 +392,7 @@ def boundary_expansion(G, S):
     """
     return len(nx.node_boundary(G, S)) / len(S)
 
+
 def cut_edges(G):
     """Finds the cut-edges of a provided graph.
 
