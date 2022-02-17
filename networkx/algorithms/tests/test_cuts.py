@@ -173,3 +173,21 @@ class TestMixingExpansion:
         # five, plus one more for the bridge.
         expected = 1 / (2 * (5 * 4 + 1))
         assert expected == expansion
+
+class TestCutEdges:
+    """Unit tests for the :func:`~networkx.cut_edges` function."""
+
+    def test_get_cut_edges_barbell_3_3(self):
+        G = nx.barbell_graph(3, 3)
+        cut_edges = nx.cut_edges(G)
+        assert len(cut_edges) == 4
+
+    def test_get_cut_edges_barbell_3_10(self):
+        G = nx.barbell_graph(3, 10)
+        cut_edges = nx.cut_edges(G)
+        assert len(cut_edges) == 11
+
+    def test_get_cut_edges_barbell_K4(self):
+        G = nx.complete_graph(4)
+        cut_edges = nx.cut_edges(G)
+        assert len(cut_edges) == 0

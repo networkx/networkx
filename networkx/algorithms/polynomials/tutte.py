@@ -122,7 +122,6 @@ def tutte_polynomial(G, simplify=True):
     import sympy
 
     G = nx.MultiGraph(G)
-
     components = list(nx.connected_components(G))
     if len(components) > 1:
         t = 1
@@ -130,8 +129,8 @@ def tutte_polynomial(G, simplify=True):
             t *= tutte_polynomial(G.subgraph(component), False)
         return sympy.simplify(t)
 
-    cut_edges = _get_cut_edges(G)
-    loops = [e for e in G.edges if e[0] == e[1]]
+    cut_edges = nx.cut_edges(G)
+    loops = list(nx.selfloop_edges(G, keys=True))
     edges_not_cuts_loops = [i for i in G.edges if i not in cut_edges and i not in loops]
 
     if not edges_not_cuts_loops:
@@ -140,41 +139,10 @@ def tutte_polynomial(G, simplify=True):
     e = edges_not_cuts_loops[0]
     # deletion-contraction
     C = nx.contracted_edge(G, e, self_loops=True)
-    contraction_loops = [i for i in C.edges if i[0] == i[1] and i not in G.edges]
-    if contraction_loops:
-        C.remove_edge(*contraction_loops[0])
+    C.remove_edge(*(e[0], e[0]))
     G.remove_edge(*e)
 
     t = tutte_polynomial(G, False) + tutte_polynomial(C, False)
     if simplify:
         return sympy.simplify(t)
     return t
-
-
-def _get_cut_edges(G):
-    """Finds the cut-edges of a provided graph.
-
-    Cut-edges are edges whose deletion increases the number of components of a
-    graph [1]_. A cut-edge is an edge that is not a member of any cycle.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-
-    Returns
-    -------
-    list
-        A list of all cut-edges of `G`.
-
-    References
-    ----------
-    .. [1] D. B. West,
-       "Introduction to Graph Theory," p. 23
-    """
-    cut_edges = []
-    for e in G.edges:
-        G_copy = G.copy()
-        G_copy.remove_edge(*e)
-        if len(list(nx.connected_components(G_copy))) > 1:
-            cut_edges.append(e)
-    return cut_edges

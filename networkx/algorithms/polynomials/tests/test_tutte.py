@@ -67,18 +67,3 @@ class TestTutte:
         H = nx.disjoint_union(G, G)
         t_H = nx.tutte_polynomial(H)
         assert sympy.simplify(t_G * t_G) == t_H
-
-    def test_get_cut_edges_barbell_3_3(self):
-        G = nx.barbell_graph(3, 3)
-        cut_edges = nx.algorithms.polynomials.tutte._get_cut_edges(G)
-        assert len(cut_edges) == 4
-
-    def test_get_cut_edges_barbell_3_10(self):
-        G = nx.barbell_graph(3, 10)
-        cut_edges = nx.algorithms.polynomials.tutte._get_cut_edges(G)
-        assert len(cut_edges) == 11
-
-    def test_get_cut_edges_barbell_K4(self):
-        G = nx.complete_graph(4)
-        cut_edges = nx.algorithms.polynomials.tutte._get_cut_edges(G)
-        assert len(cut_edges) == 0

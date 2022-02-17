@@ -15,6 +15,7 @@ __all__ = [
     "node_expansion",
     "normalized_cut_size",
     "volume",
+    "cut_edges",
 ]
 
 
@@ -390,3 +391,32 @@ def boundary_expansion(G, S):
 
     """
     return len(nx.node_boundary(G, S)) / len(S)
+
+def cut_edges(G):
+    """Finds the cut-edges of a provided graph.
+
+    Cut-edges are edges whose deletion increases the number of components of a
+    graph [1]_. A cut-edge is an edge that is not a member of any cycle.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    Returns
+    -------
+    list
+        A list of all cut-edges of `G`.
+
+    References
+    ----------
+    .. [1] D. B. West,
+       "Introduction to Graph Theory," p. 23
+    """
+    G_copy = G.copy()
+    cut_edges = []
+    for e in G.edges:
+        G_copy.remove_edge(*e)
+        if len(list(nx.connected_components(G_copy))) > 1:
+            cut_edges.append(e)
+        G_copy.add_edge(*e)
+    return cut_edges
