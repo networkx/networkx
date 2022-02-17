@@ -73,10 +73,7 @@ class TestVolume:
 
 
 class TestNormalizedCutSize:
-    """Unit tests for the :func:`~networkx.normalized_cut_size`
-    function.
-
-    """
+    """Unit tests for the :func:`~networkx.normalized_cut_size` function."""
 
     def test_graph(self):
         G = nx.path_graph(4)
@@ -174,20 +171,24 @@ class TestMixingExpansion:
         expected = 1 / (2 * (5 * 4 + 1))
         assert expected == expansion
 
+
 class TestCutEdges:
     """Unit tests for the :func:`~networkx.cut_edges` function."""
 
-    def test_get_cut_edges_barbell_3_3(self):
-        G = nx.barbell_graph(3, 3)
-        cut_edges = nx.cut_edges(G)
+    def test_cut_edges_barbell_3_3(self):
+        """Check that cut-edges are retrieved correctly for a barbell graph."""
+        barbell = nx.barbell_graph(3, 3)
+        cut_edges = nx.cut_edges(barbell)
         assert len(cut_edges) == 4
 
-    def test_get_cut_edges_barbell_3_10(self):
-        G = nx.barbell_graph(3, 10)
-        cut_edges = nx.cut_edges(G)
+    def test_cut_edges_barbell_3_10(self):
+        """Check that cut-edges are retrieved correctly for a barbell graph."""
+        barbell = nx.barbell_graph(3, 10)
+        cut_edges = nx.cut_edges(barbell)
         assert len(cut_edges) == 11
 
-    def test_get_cut_edges_barbell_K4(self):
-        G = nx.complete_graph(4)
-        cut_edges = nx.cut_edges(G)
+    def test_cut_edges_k4(self):
+        """Check that cut-edges are retrieved correctly for $K_4$."""
+        k = nx.complete_graph(4)
+        cut_edges = nx.cut_edges(k)
         assert len(cut_edges) == 0
