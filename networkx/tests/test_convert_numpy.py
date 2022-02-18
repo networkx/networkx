@@ -564,3 +564,107 @@ def test_to_numpy_array_multiweight_reduction(func, expected):
     # Undirected case
     A = nx.to_numpy_array(G.to_undirected(), multigraph_weight=func, dtype=float)
     assert np.allclose(A, [[0, expected], [expected, 0]])
+
+
+@pytest.mark.parametrize(
+    ("G, expected"),
+    [
+        (nx.Graph(), [[(0, 0), (10, 5)], [(10, 5), (0, 0)]]),
+        (nx.DiGraph(), [[(0, 0), (10, 5)], [(0, 0), (0, 0)]]),
+    ],
+)
+def test_to_numpy_array_structured_dtype_attrs_from_fields(G, expected):
+    """When `dtype` is structured (i.e. has names) and `weight` is None, use
+    the named fields of the dtype to look up edge attributes."""
+    G.add_edge(0, 1, weight=10, cost=5.0)
+    dtype = np.dtype([("weight", int), ("cost", int)])
+    A = nx.to_numpy_array(G, dtype=dtype, weight=None)
+    expected = np.asarray(expected, dtype=dtype)
+    npt.assert_array_equal(A, expected)
+
+
+def test_to_numpy_array_structured_dtype_single_attr_default():
+    G = nx.path_graph(3)
+    dtype = np.dtype([("weight", float)])  # A single named field
+    A = nx.to_numpy_array(G, dtype=dtype, weight=None)
+    expected = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]], dtype=float)
+    npt.assert_array_equal(A["weight"], expected)
+
+
+@pytest.mark.parametrize(
+    ("field_name", "expected_attr_val"),
+    [
+        ("weight", 1),
+        ("cost", 3),
+    ],
+)
+def test_to_numpy_array_structured_dtype_single_attr(field_name, expected_attr_val):
+    G = nx.Graph()
+    G.add_edge(0, 1, cost=3)
+    dtype = np.dtype([(field_name, float)])
+    A = nx.to_numpy_array(G, dtype=dtype, weight=None)
+    expected = np.array([[0, expected_attr_val], [expected_attr_val, 0]], dtype=float)
+    npt.assert_array_equal(A[field_name], expected)
+
+
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+@pytest.mark.parametrize(
+    "edge",
+    [
+        (0, 1),  # No edge attributes
+        (0, 1, {"weight": 10}),  # One edge attr
+        (0, 1, {"weight": 5, "flow": -4}),  # Multiple but not all edge attrs
+        (0, 1, {"weight": 2.0, "cost": 10, "flow": -45}),  # All attrs
+    ],
+)
+def test_to_numpy_array_structured_dtype_multiple_fields(graph_type, edge):
+    G = graph_type([edge])
+    dtype = np.dtype([("weight", float), ("cost", float), ("flow", float)])
+    A = nx.to_numpy_array(G, dtype=dtype, weight=None)
+    for attr in dtype.names:
+        expected = nx.to_numpy_array(G, dtype=float, weight=attr)
+        npt.assert_array_equal(A[attr], expected)
+
+
+@pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
+def test_to_numpy_array_structured_dtype_scalar_nonedge(G):
+    G.add_edge(0, 1, weight=10)
+    dtype = np.dtype([("weight", float), ("cost", float)])
+    A = nx.to_numpy_array(G, dtype=dtype, weight=None, nonedge=np.nan)
+    for attr in dtype.names:
+        expected = nx.to_numpy_array(G, dtype=float, weight=attr, nonedge=np.nan)
+        npt.assert_array_equal(A[attr], expected)
+
+
+@pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
+def test_to_numpy_array_structured_dtype_nonedge_ary(G):
+    """Similar to the scalar case, except has a different non-edge value for
+    each named field."""
+    G.add_edge(0, 1, weight=10)
+    dtype = np.dtype([("weight", float), ("cost", float)])
+    nonedges = np.array([(0, np.inf)], dtype=dtype)
+    A = nx.to_numpy_array(G, dtype=dtype, weight=None, nonedge=nonedges)
+    for attr in dtype.names:
+        nonedge = nonedges[attr]
+        expected = nx.to_numpy_array(G, dtype=float, weight=attr, nonedge=nonedge)
+        npt.assert_array_equal(A[attr], expected)
+
+
+def test_to_numpy_array_structured_dtype_with_weight_raises():
+    """Using both a structured dtype (with named fields) and specifying a `weight`
+    parameter is ambiguous."""
+    G = nx.path_graph(3)
+    dtype = np.dtype([("weight", int), ("cost", int)])
+    exception_msg = "Specifying `weight` not supported for structured dtypes"
+    with pytest.raises(ValueError, match=exception_msg):
+        nx.to_numpy_array(G, dtype=dtype)  # Default is weight="weight"
+    with pytest.raises(ValueError, match=exception_msg):
+        nx.to_numpy_array(G, dtype=dtype, weight="cost")
+
+
+@pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.MultiDiGraph))
+def test_to_numpy_array_structured_multigraph_raises(graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    dtype = np.dtype([("weight", int), ("cost", int)])
+    with pytest.raises(nx.NetworkXError, match="Structured arrays are not supported"):
+        nx.to_numpy_array(G, dtype=dtype, weight=None)
