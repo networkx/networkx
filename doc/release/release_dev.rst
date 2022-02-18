@@ -54,6 +54,7 @@ API Changes
 - A ``FutureWarning`` has been added to ``attr_matrix`` to indicate that the
   return type will change from a ``numpy.matrix`` object to a ``numpy.ndarray``
   object in NetworkX 3.0.
+- The `is_*_matching` functions now raise exceptions for nodes not in G in any edge
 
 Deprecations
 ------------
