@@ -419,13 +419,15 @@ def to_tuple(x):
 
 
 def create_random_state(random_state=None):
-    """Returns a numpy.random.RandomState instance depending on input.
+    """Returns a numpy.random.RandomState or numpy.random.Generator instance
+    depending on input.
 
     Parameters
     ----------
-    random_state : int or RandomState instance or None  optional (default=None)
+    random_state : int or NumPy RandomState or Generator instance, optional (default=None)
         If int, return a numpy.random.RandomState instance set with seed=int.
-        if numpy.random.RandomState instance, return it.
+        if `numpy.random.RandomState` instance, return it.
+        if `numpy.random.Generator` instance, return it.
         if None or numpy.random, return the global random number generator used
         by numpy.random.
     """
@@ -435,8 +437,11 @@ def create_random_state(random_state=None):
         return random_state
     if isinstance(random_state, int):
         return np.random.RandomState(random_state)
+    if isinstance(random_state, np.random.Generator):
+        return random_state
     msg = (
-        f"{random_state} cannot be used to generate a numpy.random.RandomState instance"
+        f"{random_state} cannot be used to create a numpy.random.RandomState or\n"
+        "numpy.random.Generator instance"
     )
     raise ValueError(msg)
 
