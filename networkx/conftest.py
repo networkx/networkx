@@ -232,6 +232,7 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="to_numpy_recarray"
     )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="info")
 
 
 @pytest.fixture(autouse=True)

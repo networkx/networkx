@@ -574,7 +574,16 @@ def info(G, n=None):
     NetworkXError
         If n is not in the graph G
 
+    .. deprecated:: 2.7
+       ``info`` is deprecated and will be removed in NetworkX 3.0.
     """
+    import warnings
+
+    warnings.warn(
+        ("info is deprecated and will be removed in version 3.0.\n"),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if n is None:
         return str(G)
     if n not in G:
