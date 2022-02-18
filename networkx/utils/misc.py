@@ -470,8 +470,14 @@ class PythonRandomInterface:
             return self._rng.integers(a, b)
         return self._rng.randint(a, b)
 
+    # NOTE: the numpy implementations of `choice` don't support strings, so
+    # this cannot be replaced with self._rng.choice
     def choice(self, seq):
-        return self._rng.choice(seq)
+        if isinstance(self._rng, np.random.Generator):
+            idx = self._rng.integers(0, len(seq))
+        else:
+            idx = self._rng.randint(0, len(seq))
+        return seq[idx]
 
     def gauss(self, mu, sigma):
         return self._rng.normal(mu, sigma)
