@@ -460,16 +460,18 @@ class PythonRandomInterface:
             self._rng = rng
 
     def random(self):
-        return self._rng.random_sample()
+        return self._rng.random()
 
     def uniform(self, a, b):
-        return a + (b - a) * self._rng.random_sample()
+        return a + (b - a) * self._rng.random()
 
     def randrange(self, a, b=None):
+        if isinstance(self._rng, np.random.Generator):
+            return self._rng.integers(a, b)
         return self._rng.randint(a, b)
 
     def choice(self, seq):
-        return seq[self._rng.randint(0, len(seq))]
+        return self._rng.choice(seq)
 
     def gauss(self, mu, sigma):
         return self._rng.normal(mu, sigma)
@@ -484,6 +486,8 @@ class PythonRandomInterface:
         return self._rng.choice(list(seq), size=(k,), replace=False)
 
     def randint(self, a, b):
+        if isinstance(self._rng, np.random.Generator):
+            return self._rng.integers(a, b + 1)
         return self._rng.randint(a, b + 1)
 
     #    exponential as expovariate with 1/argument,
