@@ -16,6 +16,10 @@ def test_from_numpy_matrix_deprecation():
     pytest.deprecated_call(nx.from_numpy_matrix, np.eye(2))
 
 
+def test_to_numpy_recarray_deprecation():
+    pytest.deprecated_call(nx.to_numpy_recarray, nx.Graph())
+
+
 class TestConvertNumpyMatrix:
     # TODO: This entire class can be removed when to/from_numpy_matrix
     # deprecation expires

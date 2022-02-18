@@ -694,6 +694,12 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
 def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
     """Returns the graph adjacency matrix as a NumPy recarray.
 
+    .. deprecated:: 2.7
+
+       ``to_numpy_recarray`` is deprecated and will be removed in NetworkX 3.0.
+       Use ``nx.to_numpy_array(G, dtype=dtype, weight=None).view(np.recarray)``
+       instead.
+
     Parameters
     ----------
     G : graph
@@ -738,6 +744,17 @@ def to_numpy_recarray(G, nodelist=None, dtype=None, order=None):
 
     """
     import numpy as np
+    import warnings
+
+    warnings.warn(
+        (
+            "to_numpy_recarray is deprecated and will be removed in version 3.0.\n"
+            "Use to_numpy_array instead::\n\n"
+            "    nx.to_numpy_array(G, dtype=dtype, weight=None).view(np.recarray)"
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
     if dtype is None:
         dtype = [("weight", float)]

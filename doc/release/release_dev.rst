@@ -73,6 +73,9 @@ Deprecations
 - [`#5283 <https://github.com/networkx/networkx/pull/5283>`_]
   Deprecate ``make_small_graph`` and ``make_small_undirected_graph`` from the
   ``networkx.generators.small`` module.
+- [`#5330 <https://github.com/networkx/networkx/pull/5330>`_]
+  Deprecate ``to_numpy_recarray`` in favor of ``to_numpy_array`` with a
+  structured dtype.
 
 
 Merged PRs
