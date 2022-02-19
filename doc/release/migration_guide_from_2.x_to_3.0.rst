@@ -30,3 +30,29 @@ Deprecated code
 
 The 2.6 release deprecates over 30 functions.
 See :ref:`networkx_2.6`.
+
+---
+
+The functions `read_gpickle` and `write_gpickle` will be removed in 3.0.
+You can read and write NetworkX graphs as Python pickles.
+
+>>> import pickle
+>>> G = nx.path_graph(4)
+>>> with open('test.gpickle', 'wb') as f:
+...     pickle.dump(G, f, pickle.HIGHEST_PROTOCOL)
+... 
+>>> with open('test.gpickle', 'rb') as f:
+...     G = pickle.load(f)
+... 
+
+The functions `read_yaml` and `write_yaml` will be removed in 3.0.
+You can read and write NetworkX graphs in YAML format
+using pyyaml.
+
+>>> import yaml
+>>> G = nx.path_graph(4)
+>>> with open('test.yaml', 'w') as f:
+...     yaml.dump(G, f)
+... 
+>>> with open('test.yaml', 'r') as f:
+...     G = yaml.load(f, Loader=yaml.Loader)
