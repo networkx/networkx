@@ -6,7 +6,7 @@ NXEP 1 — Governance and Decision Making
 
 :Author: Jarrod Millman <millman@berkeley.edu>
 :Author: Dan Schult <dschult@colgate.edu>
-:Status: Draft
+:Status: Accepted
 :Type: Process
 :Created: 2020-06-25
 
