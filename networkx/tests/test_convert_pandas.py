@@ -18,7 +18,7 @@ class TestConvertPandas:
         self.df = df
 
         mdf = pd.DataFrame([[4, 16, "A", "D"]], columns=["weight", "cost", 0, "b"])
-        self.mdf = df.append(mdf)
+        self.mdf = pd.concat([df, mdf])
 
     def test_exceptions(self):
         G = pd.DataFrame(["a"])  # adj
