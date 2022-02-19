@@ -1,2 +1,3 @@
+build>=0.7
 twine>=3.8
 wheel>=0.37
