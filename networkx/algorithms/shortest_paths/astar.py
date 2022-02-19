@@ -80,24 +80,25 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
     pop = heappop
     weight = _weight_function(G, weight)
 
-    # The queue stores priority, node, cost to reach, and parent.
+    # The queue stores priority (which includes heuristic value), node, cost to reach, and parent.
     # Uses Python heapq to keep in priority order.
     # Add a counter to the queue to prevent the underlying heap from
     # attempting to compare the nodes themselves. The hash breaks ties in the
     # priority and is guaranteed unique for all nodes in the graph.
-    c = count()
-    queue = [(0, next(c), source, 0, None)]
-
-    # Maps enqueued nodes to distance of discovered paths and the
-    # computed heuristics to target. We avoid computing the heuristics
+    # We break ties using the heuristic value to prefer nodes we think are closer
+    # to the target. We avoid computing the heuristics
     # more than once and inserting the node into the queue too many times.
+    c = count()
+    queue = [(0, heuristic(source, target), next(c), source, 0, None)]
+
+    # Maps enqueued nodes to distance of discovered.
     enqueued = {}
     # Maps explored nodes to parent closest to the source.
     explored = {}
 
     while queue:
         # Pop the smallest item from queue.
-        _, __, curnode, dist, parent = pop(queue)
+        _, h, __, curnode, dist, parent = pop(queue)
 
         if curnode == target:
             path = [curnode]
@@ -114,7 +115,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
                 continue
 
             # Skip bad paths that were enqueued before finding a better one
-            qcost, h = enqueued[curnode]
+            qcost = enqueued[curnode]
             if qcost < dist:
                 continue
 
@@ -123,7 +124,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
         for neighbor, w in G[curnode].items():
             ncost = dist + weight(curnode, neighbor, w)
             if neighbor in enqueued:
-                qcost, h = enqueued[neighbor]
+                qcost = enqueued[neighbor]
                 # if qcost <= ncost, a less costly path from the
                 # neighbor to the source was already determined.
                 # Therefore, we won't attempt to push this neighbor
@@ -132,8 +133,8 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
                     continue
             else:
                 h = heuristic(neighbor, target)
-            enqueued[neighbor] = ncost, h
-            push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
+            enqueued[neighbor] = ncost
+            push(queue, (ncost + h, h, next(c), neighbor, ncost, curnode))
 
     raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
