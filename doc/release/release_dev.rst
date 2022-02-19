@@ -208,7 +208,8 @@ Deprecations
 - [`#5330 <https://github.com/networkx/networkx/pull/5330>`_]
   Deprecate ``to_numpy_recarray`` in favor of ``to_numpy_array`` with a
   structured dtype.
-
+- [`#5341` <https://github.com/networkx/networkx/pull/5341>`_]
+  Deprecate redundant ``info``.
 
 Merged PRs
 ----------
