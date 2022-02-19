@@ -14,6 +14,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
     using the A* ("A-star") algorithm.
 
     There may be more than one shortest path.  This returns only one.
+    Ties are broken based on the heuristic value (the smaller, the better).
 
     Parameters
     ----------
