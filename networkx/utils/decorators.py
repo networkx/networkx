@@ -289,7 +289,7 @@ def preserve_random_state(func):
     import warnings
 
     msg = "preserve_random_state is deprecated and will be removed in 3.0."
-    warnings.warn(msg, DeprecationWarning)
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
     try:
         import numpy as np
