@@ -104,9 +104,12 @@ def tree_data(G, root, attrs=None, ident="id", children="children", attr="attr")
         ident = attrs["id"]
         children = attrs["children"]
 
-    if (ident == children) or (ident == attr) or (attr == children):
+    if ident == children:
+        raise nx.NetworkXError("The values for `id` and `children` must be different.")
+
+    if attr in [ident, children] + list(G.nodes[root].keys()):
         raise nx.NetworkXError(
-            "The values for `id`, `children`, `attr` and must be different."
+            "The value for `attr` must be different from `id`, `children`, and all root node attributes name."
         )
 
     def add_children(n, G):
