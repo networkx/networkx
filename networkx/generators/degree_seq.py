@@ -834,7 +834,7 @@ class DegreeSequenceRandomGraph:
         rng = self.rng
         while len(remaining_deg) >= 2 * self.dmax:
             while True:
-                u, v = sorted(rng.sample(remaining_deg.keys(), 2))
+                u, v = sorted(rng.sample(list(remaining_deg.keys()), 2))
                 if self.graph.has_edge(u, v):
                     continue
                 if rng.random() < self.q(u, v):
