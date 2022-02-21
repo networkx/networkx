@@ -42,14 +42,14 @@ Release Process
 
 - Push the new meta-data to github::
 
-   git push --tags upstream main
+   git push --tags origin main
 
-  (where ``upstream`` is the name of the
+  (where ``origin`` is the name of the
    ``github.com:networkx/networkx`` repository.)
 
 - Review the github release page::
 
-   https://github.com/networkx/networkx/releases
+   https://github.com/networkx/networkx/tags
 
 - Pin badges in ``README.rst``::
 
@@ -60,7 +60,7 @@ Release Process
 
    git clean -fxd
    pip install -r requirements/release.txt
-   python setup.py sdist bdist_wheel
+   python -m build --sdist --wheel
    twine upload -s dist/*
 
 - Unpin badges in ``README.rst``::
@@ -102,7 +102,7 @@ Release Process
 
     git add networkx/__init__.py doc/_templates/layout.html
     git commit -m "Bump release version"
-    git push upstream main
+    git push origin main
 
 - Update the web frontpage:
   The webpage is kept in a separate repo: networkx/website
