@@ -1,21 +1,24 @@
 """Functions to convert NetworkX graphs to and from common data containers
-like numpy arrays, scipy sparse matrices, and pandas DataFrames.
+like numpy arrays, scipy sparse arrays, and pandas DataFrames.
 
 The preferred way of converting data to a NetworkX graph is through the
-graph constructor.  The constructor calls the to_networkx_graph() function
-which attempts to guess the input type and convert it automatically.
+graph constructor.  The constructor calls the `~networkx.convert.to_networkx_graph`
+function which attempts to guess the input type and convert it automatically.
 
 Examples
 --------
 Create a 10 node random graph from a numpy array
 
 >>> import numpy as np
->>> a = np.random.randint(0, 2, size=(10, 10))
->>> D = nx.DiGraph(a)
+>>> rng = np.random.default_rng()
+>>> a = rng.integers(low=0, high=2, size=(10, 10))
+>>> DG = nx.from_numpy_array(a, create_using=nx.DiGraph)
 
-or equivalently
+or equivalently:
 
->>> D = nx.to_networkx_graph(a, create_using=nx.DiGraph)
+>>> DG = nx.DiGraph(a)
+
+which calls `from_numpy_array` internally based on the type of ``a``.
 
 See Also
 --------
