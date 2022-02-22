@@ -15,13 +15,15 @@ __all__ = [
 
 
 def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
-    r"""Find communities in G using greedy modularity maximization.
+    r"""Yield community partitions of G and the modularity change at each step.
 
-    This function uses Clauset-Newman-Moore greedy modularity maximization [2]_.
+    This function performs Clauset-Newman-Moore greedy modularity maximization [2]_
+    At each step of the process it yields the change in modularity that will occur in
+    the next step followed by yielding the new community partition after that step.
 
     Greedy modularity maximization begins with each node in its own community
-    and joins the pair of communities that most increases or least decreases
-    modularity until all nodes are in one community.
+    and repeatedly joins the pair of communities that lead to the largest
+    modularity until one community contains all nodes (the partition has one set).
 
     This function maximizes the generalized modularity, where `resolution`
     is the resolution parameter, often expressed as $\gamma$.
@@ -40,14 +42,18 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
         If resolution is less than 1, modularity favors larger communities.
         Greater than 1 favors smaller communities.
 
-    Returns (altering between the following two)
-    --------------------------------------------
-    communities: list
-        A list of frozensets of nodes, one for each community.
+    Yields
+    ------
+    Alternating yield statements produce the following two objects:
+
+    communities: dict_values
+        A dict_values of frozensets of nodes, one for each community.
+        This represents a partition of the nodes of the graph into communities.
+        The first yield is the partition with each node in its own community.
 
     dq: float
-        The improvement/decrease of modularity when merging the next two nodes
-        that improves modularity the most or decreases it least.
+        The change in modularity when merging the next two communities
+        that lead to the largest modularity.
 
     See Also
     --------
@@ -105,7 +111,7 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
     communities = {n: frozenset([n]) for n in G}
     yield communities.values()
 
-    # Merge the two communities that most increase or least decrease modularity
+    # Merge the two communities that lead to the largest modularity
     while len(H) > 1:
         # Find best merge
         # Remove from heap of row maxes
@@ -223,11 +229,18 @@ def greedy_modularity_communities(
 ):
     r"""Find communities in G using greedy modularity maximization.
 
-    This function uses Clauset-Newman-Moore greedy modularity maximization [2]_.
+    This function uses Clauset-Newman-Moore greedy modularity maximization [2]_
+    to find the community partition with the largest modularity.
 
     Greedy modularity maximization begins with each node in its own community
-    and joins the pair of communities that most increases or least decreases
-    modularity until all nodes are in one community.
+    and repeatedly joins the pair of communities that lead to the largest
+    modularity until no futher increase in modularity is possible (a maximum).
+    Two keyword arguments adjust the stopping condition. `cutoff` is a lower
+    limit on the number of communities so you can stop the process before
+    reaching a maximum (used to save computation time). `best_n` is an upper
+    limit on the number of communities so you can make the process continue
+    until at most n communities remain even if the maximum modularity occurs
+    for more. To obtain exactly n communities, set both `cutoff` and `best_n` to n.
 
     This function maximizes the generalized modularity, where `resolution`
     is the resolution parameter, often expressed as $\gamma$.
@@ -247,12 +260,15 @@ def greedy_modularity_communities(
         Greater than 1 favors smaller communities.
 
     cutoff : int, optional (default=1)
-        The number of communities in the partition at which the merging process
-        will stop even if a maximum is not yet reached.
+        A minimum number of communities below which the merging process stops.
+        The process stops at this number of communities even if modularity
+        is not maximized. The goal is to let the user stop the process early.
+        The process stops before the cutoff if it finds a maximum of modularity.
 
     best_n : int or None, optional (default=None)
-        Force community merging to continue after modularity already has started
-        to decrease until `best_n` communities remain.
+        A maximum number of communities above which the merging process will
+        not stop. This forces community merging to continue after modularity
+        starts to decrease until `best_n` communities remain.
         If ``None``, don't force it to continue beyond a maximum.
 
     Returns
