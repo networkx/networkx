@@ -416,6 +416,32 @@ def test_labels_and_colors():
     # plt.show()
 
 
+@pytest.mark.mpl_image_compare
+def test_house_with_colors():
+    G = nx.house_graph()
+    # explicitly set positions
+    fig, ax = plt.subplots()
+    pos = {0: (0, 0), 1: (1, 0), 2: (0, 1), 3: (1, 1), 4: (0.5, 2.0)}
+
+    # Plot nodes with different properties for the "wall" and "roof" nodes
+    nx.draw_networkx_nodes(
+        G,
+        pos,
+        node_size=3000,
+        nodelist=[0, 1, 2, 3],
+        node_color="tab:blue",
+    )
+    nx.draw_networkx_nodes(
+        G, pos, node_size=2000, nodelist=[4], node_color="tab:orange"
+    )
+    nx.draw_networkx_edges(G, pos, alpha=0.5, width=6)
+    # Customize axes
+    ax.margins(0.11)
+    plt.tight_layout()
+    plt.axis("off")
+    return fig
+
+
 def test_axes():
     fig, ax = plt.subplots()
     nx.draw(barbell, ax=ax)
@@ -675,3 +701,18 @@ def test_edgelist_kwarg_not_ignored():
     nx.draw(G, edgelist=[(0, 1), (1, 2)], ax=ax)  # Exclude self-loop from edgelist
     assert not ax.patches
     plt.delaxes(ax)
+
+
+def test_draw_networkx_edge_label_multiedge_exception():
+    """
+    draw_networkx_edge_labels should raise an informative error message when
+    the edge label includes keys
+    """
+    exception_msg = "draw_networkx_edge_labels does not support multiedges"
+    G = nx.MultiGraph()
+    G.add_edge(0, 1, weight=10)
+    G.add_edge(0, 1, weight=20)
+    edge_labels = nx.get_edge_attributes(G, "weight")  # Includes edge keys
+    pos = {n: (n, n) for n in G}
+    with pytest.raises(nx.NetworkXError, match=exception_msg):
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
