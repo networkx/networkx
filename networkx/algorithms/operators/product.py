@@ -470,7 +470,7 @@ def corona_product(G, H):
 
         The corona product of $G$ and $H$ is the graph $C = G \circ H$ obtained by
         taking one copy of $G$, called the center graph, $|V(G)|$ copies of $H$,
-        called the outer graph, and making the $i$-th vertex of $G$ adjacent to 
+        called the outer graph, and making the $i$-th vertex of $G$ adjacent to
         every vertex of the $i$-th copy of $H$, where $1 ≤ i ≤ |V (G)|$.
 
         Parameters
@@ -490,11 +490,11 @@ def corona_product(G, H):
 
         References
         ----------
-        [1] M. Tavakoli, F. Rahbarnia, and A. R. Ashrafi, 
-            “Studying the corona product of graphs under some graph invariants,” 
-            Transactions on Combinatorics, vol. 3, no. 3, pp. 43–49, Sep. 2014, 
+        [1] M. Tavakoli, F. Rahbarnia, and A. R. Ashrafi,
+            “Studying the corona product of graphs under some graph invariants,”
+            Transactions on Combinatorics, vol. 3, no. 3, pp. 43–49, Sep. 2014,
             doi: 10.22108/toc.2014.5542.
-        [2] A. Faraji, “Corona Product in Graph Theory,” Ali Faraji, May 11, 2021. 
+        [2] A. Faraji, “Corona Product in Graph Theory,” Ali Faraji, May 11, 2021.
             https://blog.alifaraji.ir/math/graph-theory/corona-product.html (accessed Dec. 07, 2021).
     ‌
         Examples
@@ -515,14 +515,14 @@ def corona_product(G, H):
     for G_node in G:
 
         # copy nodes of H in GH, call it H_i
-        GH.add_nodes_from([(G_node, v) for v in H])
+        GH.add_nodes_from((G_node, v) for v in H)
 
         # copy edges of H_i based on H
         GH.add_edges_from(
-            [((G_node, e0), (G_node, e1), d) for e0, e1, d in H.edges.data()]
+            ((G_node, e0), (G_node, e1), d) for e0, e1, d in H.edges.data()
         )
 
         # creating new edges between H_i and a G's node
-        GH.add_edges_from([(G_node, (G_node, H_node)) for H_node in H])
+        GH.add_edges_from((G_node, (G_node, H_node)) for H_node in H)
 
     return GH
