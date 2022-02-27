@@ -371,6 +371,16 @@ class TestLayout:
             distances_equidistant[1:], distances_equidistant[-1], atol=0.01
         )
 
+    @pytest.mark.mpl_image_compare
+    def test_paramter_equidistant_for_spiral_layout(self):
+        import matplotlib.pyplot as plt
+
+        fig = plt.figure()
+        G = nx.path_graph(5)
+        pos = nx.spiral_layout(G, equidistant=True)
+        nx.draw(G, pos=pos)
+        return fig
+
     def test_rescale_layout_dict(self):
         G = nx.empty_graph()
         vpos = nx.random_layout(G, center=(1, 1))

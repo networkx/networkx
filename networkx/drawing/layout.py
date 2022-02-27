@@ -964,7 +964,10 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
         The compactness of the spiral layout returned.
         Lower values result in more compressed spiral layouts.
     equidistant : bool
-        If True, nodes will be plotted equidistant from each other.
+        If True, nodes will be positioned equidistant from each other
+        by decreasing angle further from center.
+        If False or by default, nodes will be positioned at equal angles
+        from each other by increasing separation further from center.
 
     Returns
     -------
