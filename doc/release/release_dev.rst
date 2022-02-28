@@ -33,7 +33,7 @@ X contributors. Highlights include:
 
 - Dropped support for Python 3.7.
 - Added the Asadpour algorithm for solving the asymmetric traveling salesman
-  problem: `~networkx.algorithms.approximation.asadpour_atsp`.
+  problem: `~networkx.algorithms.approximation.traveling_salesman.asadpour_atsp`.
 - Added the Louvain community detection algorithm:
   `~networkx.algorithms.community.louvain.louvain_communities` and
   `~networkx.algorithms.community.louvain.louvain_partitions`
@@ -51,23 +51,43 @@ X contributors. Highlights include:
   a `FutureWarning` to indicate that they will return sparse arrays instead in
   NetworkX 3.0.
 - Added generic dtype support to `~networkx.convert_matrix.to_numpy_array`.
-  This adds support for generic attributes, such as adjaceny matrices with
-  complex weights. This also add support for generic reduction functions in
+  This adds support for generic attributes, such as adjacency matrices with
+  complex weights. This also adds support for generic reduction functions in
   handling multigraph weights, such as ``mean`` or ``median``. Finally, this
   also includes support for structured dtypes, which enables the creation of
   multi-attribute adjacency matrices and replaces the less generic
   ``to_numpy_recarray``.
-
-**Maybes**
 - Added support for computing betweenness centrality on multigraphs
-  Add support for directed graphs and multigraphs to ``greedy_modularity_communities``.
-- Add note about MyPy? I vote no so as not to mislead users that we have
-  type annotations now.
+- Added support for directed graphs and multigraphs to ``greedy_modularity_communities``.
 
-**TODO**
 GSoC PRs
 --------
-4740, 4929, 5017, 5019, 5052
+
+We added the work from four Google Summer of Code projects:
+
+- `Louvain community detection algorithm`_
+    - Program: Google Summer of Code 2021
+    - Contributor: `@z3y50n <https://github.com/z3y50n/>`__
+    - Link to Proposal:  `GSoC 2021: Community Detection Algorithms <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2021-Community-Detection-Algorithms.pdf>`__
+
+- `Asadpour algorithm for directed travelling salesman problem`_
+    - Program: Google Summer of Code 2021
+    - Contributor: `@mjschwenne <https://github.com/mjschwenne/>`__
+    - Link to Proposal:  `GSoC 2021: Asadpour algorithm <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2021-Asadpour-Asymmetric-Traveling%20Salesman-Problem.pdf>`__
+
+- Pedagogical notebook: `Directed acyclic graphs and topological sort`_
+    - Program: Google Summer of Code 2021
+    - Contributor:  `@vdshk <https://github.com/vdshk>`__
+
+- Pedagogical notebooks: `Graph assortativity`_ & `Network flow analysis and Dinitz algorithm`_
+    - Program: Google Summer of Code 2021
+    - Contributor: `@harshal-dupare <https://github.com/harshal-dupare/>`__
+
+.. _`Louvain community detection algorithm`: https://github.com/networkx/networkx/pull/4929
+.. _`Asadpour algorithm for directed travelling salesman problem`: https://github.com/networkx/networkx/pull/4740
+.. _`Directed acyclic graphs and topological sort`: https://github.com/networkx/nx-guides/pull/44
+.. _`Graph assortativity`: https://github.com/networkx/nx-guides/pull/42
+.. _`Network flow analysis and Dinitz algorithm`: https://github.com/networkx/nx-guides/pull/46
 
 Improvements
 ------------
@@ -208,7 +228,7 @@ Deprecations
 - [`#5330 <https://github.com/networkx/networkx/pull/5330>`_]
   Deprecate ``to_numpy_recarray`` in favor of ``to_numpy_array`` with a
   structured dtype.
-- [`#5341` <https://github.com/networkx/networkx/pull/5341>`_]
+- [`#5341 <https://github.com/networkx/networkx/pull/5341>`_]
   Deprecate redundant ``info``.
 
 Merged PRs
