@@ -51,8 +51,8 @@ X contributors. Highlights include:
   a `FutureWarning` to indicate that they will return sparse arrays instead in
   NetworkX 3.0.
 - Added generic dtype support to `~networkx.convert_matrix.to_numpy_array`.
-  This adds support for generic attributes, such as adjaceny matrices with
-  complex weights. This also add support for generic reduction functions in
+  This adds support for generic attributes, such as adjacency matrices with
+  complex weights. This also adds support for generic reduction functions in
   handling multigraph weights, such as ``mean`` or ``median``. Finally, this
   also includes support for structured dtypes, which enables the creation of
   multi-attribute adjacency matrices and replaces the less generic
