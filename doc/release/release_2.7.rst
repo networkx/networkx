@@ -18,8 +18,8 @@ Please send comments and questions to the `networkx-discuss mailing list
 Highlights
 ----------
 
-This release is the result of X of work with over X pull requests by
-X contributors. Highlights include:
+This release is the result of 7 months of work with over 166 pull requests by
+33 contributors. Highlights include:
 
 .. warning::
    Hash values observed in outputs of 
