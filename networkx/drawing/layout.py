@@ -957,14 +957,17 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
         Scale factor for positions.
     center : array-like or None
         Coordinate pair around which to center the layout.
-    dim : int
+    dim : int, default=2
         Dimension of layout, currently only dim=2 is supported.
         Other dimension values result in a ValueError.
-    resolution : float
+    resolution : float, default=0.35
         The compactness of the spiral layout returned.
         Lower values result in more compressed spiral layouts.
-    equidistant : bool
-        If True, nodes will be plotted equidistant from each other.
+    equidistant : bool, default=False
+        If True, nodes will be positioned equidistant from each other
+        by decreasing angle further from center.
+        If False, nodes will be positioned at equal angles
+        from each other by increasing separation further from center.
 
     Returns
     -------
@@ -1003,6 +1006,7 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
         chord = 1
         step = 0.5
         theta = resolution
+        theta += chord / (step * theta)
         for _ in range(len(G)):
             r = step * theta
             theta += chord / r
