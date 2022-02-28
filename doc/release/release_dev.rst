@@ -56,7 +56,7 @@ X contributors. Highlights include:
   handling multigraph weights, such as ``mean`` or ``median``. Finally, this
   also includes support for structured dtypes, which enables the creation of
   multi-attribute adjacency matrices and replaces the less generic
-  `~networkx.convert_matrix.to_numpy_recarray`.
+  ``to_numpy_recarray``.
 - Added support for computing betweenness centrality on multigraphs
 - Added support for directed graphs and multigraphs to ``greedy_modularity_communities``.
 
