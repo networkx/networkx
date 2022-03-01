@@ -179,10 +179,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
         # Label nodes as a sorted tuple of nodes in original graph.
         # Decide on representation of {u, v} as (u, v) or (v, u) depending on node_index.
         # -> This ensures a canonical representation and avoids comparing values of different types.
-        nodes = [
-            tuple(sorted(x[:2], key=node_index.__getitem__)) + x[2:]
-            for x in get_edges(u)
-        ]
+        nodes = [tuple(sorted(x[:2], key=node_index.get)) + x[2:] for x in get_edges(u)]
 
         if len(nodes) == 1:
             # Then the edge will be an isolated node in L.
