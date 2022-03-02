@@ -93,7 +93,7 @@ Release Process
 
     {% extends "!layout.html" %}
 
-    {% block document %}
+    {% block content %}
       {% include "dev_banner.html" %}
       {{ super() }}
     {% endblock %}
