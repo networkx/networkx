@@ -87,7 +87,7 @@ class DelayedImportErrorModule(types.ModuleType):
         super().__init__(*args, **kwargs)
 
     def __getattr__(self, x):
-        if x.startswith("__"):
+        if x in ("__class__", "__file__", "__import_name"):
             super().__getattr__(x)
         else:
             raise ModuleNotFoundError(f"No module named '{self.__import_name}'")
