@@ -1058,7 +1058,7 @@ def draw_networkx_edge_labels(
         A dictionary with nodes as keys and positions as values.
         Positions should be sequences of length 2.
 
-    edge_labels : dictionary (default={})
+    edge_labels : dictionary (default=None)
         Edge labels in a dictionary of labels keyed by edge two-tuple.
         Only labels for the keys in the dictionary are drawn.
 
@@ -1125,7 +1125,7 @@ def draw_networkx_edge_labels(
 
     if ax is None:
         ax = plt.gca()
-    if edge_labels is None:
+    if edge_labels is None or len(edge_labels) == 0:
         labels = {(u, v): d for u, v, d in G.edges(data=True)}
     else:
         labels = edge_labels

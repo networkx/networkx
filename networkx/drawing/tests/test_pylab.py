@@ -413,6 +413,7 @@ def test_labels_and_colors():
     nx.draw_networkx_labels(G, pos, labels, font_size=16)
     nx.draw_networkx_edge_labels(G, pos, edge_labels=None, rotate=False)
     nx.draw_networkx_edge_labels(G, pos, edge_labels={(4, 5): "4-5"})
+    nx.draw_networkx_edge_labels(G, pos, edge_labels={})
     # plt.show()
 
 
