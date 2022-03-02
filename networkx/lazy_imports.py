@@ -81,6 +81,18 @@ def attach(module_name, submodules=None, submod_attrs=None):
     return __getattr__, __dir__, list(__all__)
 
 
+class DelayedImportErrorModule(types.ModuleType):
+    def __init__(self, import_name, *args, **kwargs):
+        self.__import_name = import_name
+        super().__init__(*args, **kwargs)
+
+    def __getattr__(self, x):
+        if x.startswith("__"):
+            super().__getattr__(x)
+        else:
+            raise ModuleNotFoundError(f"No module named '{self.__import_name}'")
+
+
 def lazy_import(fullname):
     """Return a lazily imported proxy for a module or library.
 
@@ -132,14 +144,7 @@ def lazy_import(fullname):
     spec = importlib.util.find_spec(fullname)
 
     if spec is None:
-        # module not found - construct a DelayedImportErrorModule
-        spec = importlib.util.spec_from_loader(fullname, loader=None)
-        module = importlib.util.module_from_spec(spec)
-        tmp_loader = importlib.machinery.SourceFileLoader(module, path=None)
-        loader = DelayedImportErrorLoader(tmp_loader)
-        loader.exec_module(module)
-        # dont add to sys.modules. The module wasn't found.
-        return module
+        return DelayedImportErrorModule(fullname, "DelayedImportErrorModule")
 
     module = importlib.util.module_from_spec(spec)
     sys.modules[fullname] = module
@@ -148,24 +153,3 @@ def lazy_import(fullname):
     loader.exec_module(module)
 
     return module
-
-
-class DelayedImportErrorLoader(importlib.util.LazyLoader):
-    def exec_module(self, module):
-        super().exec_module(module)
-        module.__class__ = DelayedImportErrorModule
-
-
-class DelayedImportErrorModule(types.ModuleType):
-    def __getattribute__(self, attr):
-        """Trigger a ModuleNotFoundError upon attribute access"""
-        spec = super().__getattribute__("__spec__")
-        # allows isinstance and type functions to work without raising error
-        if attr in ["__class__"]:
-            return super().__getattribute__("__class__")
-
-        raise ModuleNotFoundError(
-            f"Delayed Report: module named '{spec.name}' not found.\n"
-            "Reporting was Lazy -- delayed until module attributes accessed.\n"
-            f"Most likely, {spec.name} is not installed"
-        )
