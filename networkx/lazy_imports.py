@@ -1,5 +1,6 @@
 import importlib
 import importlib.util
+import inspect
 import types
 import os
 import sys
@@ -82,15 +83,21 @@ def attach(module_name, submodules=None, submod_attrs=None):
 
 
 class DelayedImportErrorModule(types.ModuleType):
-    def __init__(self, import_name, *args, **kwargs):
-        self.__import_name = import_name
+    def __init__(self, frame_data, *args, **kwargs):
+        self.__frame_data = frame_data
         super().__init__(*args, **kwargs)
 
     def __getattr__(self, x):
-        if x in ("__class__", "__file__", "__import_name"):
+        if x in ("__class__", "__file__", "__frame_data"):
             super().__getattr__(x)
         else:
-            raise ModuleNotFoundError(f"No module named '{self.__import_name}'")
+            fd = self.__frame_data
+            raise ModuleNotFoundError(
+                f"No module named '{fd['spec']}'\n\n"
+                "This error is lazily reported, having originally occured in\n"
+                f'  File {fd["filename"]}, line {fd["lineno"]}, in {fd["function"]}\n\n'
+                f'----> {"".join(fd["code_context"]).strip()}'
+            )
 
 
 def lazy_import(fullname):
@@ -144,7 +151,18 @@ def lazy_import(fullname):
     spec = importlib.util.find_spec(fullname)
 
     if spec is None:
-        return DelayedImportErrorModule(fullname, "DelayedImportErrorModule")
+        try:
+            parent = inspect.stack()[1]
+            frame_data = {
+                "spec": fullname,
+                "filename": parent.filename,
+                "lineno": parent.lineno,
+                "function": parent.function,
+                "code_context": parent.code_context,
+            }
+            return DelayedImportErrorModule(frame_data, "DelayedImportErrorModule")
+        finally:
+            del parent
 
     module = importlib.util.module_from_spec(spec)
     sys.modules[fullname] = module
