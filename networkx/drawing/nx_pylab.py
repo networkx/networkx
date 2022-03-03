@@ -1125,17 +1125,20 @@ def draw_networkx_edge_labels(
 
     if ax is None:
         ax = plt.gca()
-    if edge_labels is None or len(edge_labels) == 0:
+    if edge_labels is None:
         labels = {(u, v): d for u, v, d in G.edges(data=True)}
     else:
         labels = edge_labels
         # Informative exception for multiedges
         try:
-            (u, v), d = next(iter(labels.items()))
+            (u, v), d = next(iter(labels.items()))  # ensures no edge key provided
         except ValueError as err:
             raise nx.NetworkXError(
                 "draw_networkx_edge_labels does not support multiedges."
             ) from err
+        except StopIteration:
+            pass
+
     text_items = {}
     for (n1, n2), label in labels.items():
         (x1, y1) = pos[n1]
