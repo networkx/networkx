@@ -505,7 +505,7 @@ def corona_product(G, H):
         >>> list(C)
         [0, 1, 2, 3, (0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1), (3, 0), (3, 1)]
         >>> print(C)
-        'Graph with 12 nodes and 16 edges'
+        Graph with 12 nodes and 16 edges
 
     """
     GH = _init_product_graph(G, H)
