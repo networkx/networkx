@@ -1131,7 +1131,7 @@ def draw_networkx_edge_labels(
         labels = edge_labels
         # Informative exception for multiedges
         try:
-            (u, v), d = next(iter(labels.items()))  # ensures no edge key provided
+            (u, v) = next(iter(labels))  # ensures no edge key provided
         except ValueError as err:
             raise nx.NetworkXError(
                 "draw_networkx_edge_labels does not support multiedges."
