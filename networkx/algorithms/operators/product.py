@@ -476,6 +476,7 @@ def corona_product(G, H):
         ----------
         G, H: NetworkX graphs
             The graphs to take the carona product of.
+            `G` is the center graph and `H` is the outer graph
 
         Returns
         -------
