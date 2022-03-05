@@ -431,6 +431,4 @@ def test_corona_product():
     H = nx.path_graph(2)
     C = nx.corona_product(G, H)
     assert len(C) == (len(G) * len(H)) + len(G)
-    assert C.number_of_edges() == G.number_of_edges() + len(
-        G
-    ) * H.number_of_edges() + len(G) * len(H)
+    assert C.size() == G.size() + len(G) * H.size() + len(G) * len(H)
