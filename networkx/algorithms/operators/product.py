@@ -465,13 +465,12 @@ def rooted_product(G, H, root):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def corona_product(G, H):
-    r"""Returns the Corona product f G and H.
-
+    r"""Returns the Corona product of G and H.
 
         The corona product of $G$ and $H$ is the graph $C = G \circ H$ obtained by
         taking one copy of $G$, called the center graph, $|V(G)|$ copies of $H$,
         called the outer graph, and making the $i$-th vertex of $G$ adjacent to
-        every vertex of the $i$-th copy of $H$, where $1 ≤ i ≤ |V (G)|$.
+        every vertex of the $i$-th copy of $H$, where $1 ≤ i ≤ |V(G)|$.
 
         Parameters
         ----------
