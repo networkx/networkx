@@ -84,6 +84,7 @@ jobs:
             source venv/bin/activate
             pip install --upgrade pip wheel setuptools
             pip install -r requirements/default.txt -r requirements/test.txt
+            pip install pytest-mpl  # NOTE: specified here to avoid confusing conda
             pip list
 
       - run:
