@@ -316,7 +316,7 @@ def test_best_n():
     expected = [frozenset(range(8)), frozenset(range(8, 13))]
     assert greedy_modularity_communities(G, best_n=best_n) == expected
 
-    # Tne additional merging steps:
+    # Two additional merging steps:
     best_n = 1
     expected = [frozenset(range(0, 13))]
     assert greedy_modularity_communities(G, best_n=best_n) == expected
