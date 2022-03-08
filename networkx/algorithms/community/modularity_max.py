@@ -53,7 +53,7 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
 
     dq: float
         The change in modularity when merging the next two communities
-        that lead to the largest modularity.
+        that leads to the largest modularity.
 
     See Also
     --------
