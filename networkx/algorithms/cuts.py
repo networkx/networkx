@@ -417,7 +417,7 @@ def cut_edges(G):
     cut_edges = []
     for e in G.edges:
         G_copy.remove_edge(*e)
-        if len(list(nx.connected_components(G_copy))) > 1:
+        if nx.number_connected_components(G_copy) > nx.number_connected_components(G):
             cut_edges.append(e)
         G_copy.add_edge(*e)
     return cut_edges
