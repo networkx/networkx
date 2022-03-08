@@ -2,7 +2,7 @@
 Implements the calculation of a Rancic index for a graph._summary_
 """
 import networkx as nx
-import numpy as np
+from math import sqrt
 from networkx.utils import not_implemented_for
 
 __all__ = ["randic_index"]
@@ -50,8 +50,6 @@ def randic_index(G):
     """
 
     deg_dict = G.degree(G.nodes)
-    index = np.sum(
-        [(1 / np.sqrt(deg_dict[edge[0]] * deg_dict[edge[1]])) for edge in G.edges]
-    )
+    index = sum((1 / sqrt(deg_dict[edge[0]] * deg_dict[edge[1]])) for edge in G.edges)
 
     return index
