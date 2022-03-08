@@ -3,45 +3,42 @@ from itertools import permutations
 
 
 class GraphBenchmark:
-    def setup(self):
+    params = [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+    param_names = ["graph_type"]
+
+    def setup(self, graph_type):
         self.nodes = list(range(1, 1000))
         self.edges = list()
         self.subgraph_nodes = list(range(1, 100))
         self.subgraph_nodes_large = list(range(1, 900))
-        self.G = nx.Graph()
+        self.G = graph_type()
 
-    # Create a Graph object
-    def time_graph_create(self):
+    def time_graph_create(self, graph_type):
         _ = nx.Graph()
-    # Add multiple nodes
-    def time_add_nodes_from(self):
+
+    def time_add_nodes_from(self, graph_type):
         self.G.add_nodes_from(self.nodes)
 
-    # Add multiple edges
-    def time_add_edges_from(self):
+    def time_add_edges_from(self, graph_type):
         self.G.add_edges_from(self.edges)
 
-    # remove_nodes_from
-    def time_remove_nodes_from(self):
+    def time_remove_nodes_from(self, graph_type):
         self.G.remove_nodes_from(self.nodes)
 
-    # remove_edges_from
-    def time_remove_edges_from(self):
+    def time_remove_edges_from(self, graph_type):
         self.G.remove_edges_from(self.edges)
 
-    # copy
-    def time_copy(self):
+    def time_copy(self, graph_type):
         _ = self.G.copy()
 
-    def time_to_directed(self):
+    def time_to_directed(self, graph_type):
         _ = self.G.to_directed()
 
-    def time_to_undirected(self):
+    def time_to_undirected(self, graph_type):
         _ = self.G.to_undirected()
 
-    def time_subgraph(self):
+    def time_subgraph(self, graph_type):
         _ = self.G.subgraph(self.subgraph_nodes).copy()
 
-    def time_subgraph_large(self):
+    def time_subgraph_large(self, graph_type):
         _ = self.G.subgraph(self.subgraph_nodes_large).copy()
-
