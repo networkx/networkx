@@ -269,3 +269,9 @@ class TestGeneratorInverseLine:
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
+
+    def test_line_different_node_types(self):
+        G = nx.path_graph([1, 2, 3, "a", "b", "c"])
+        H = nx.line_graph(G)
+        J = nx.inverse_line_graph(H)
+        assert nx.is_isomorphic(G, J)

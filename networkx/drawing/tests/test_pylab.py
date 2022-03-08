@@ -716,3 +716,11 @@ def test_draw_networkx_edge_label_multiedge_exception():
     pos = {n: (n, n) for n in G}
     with pytest.raises(nx.NetworkXError, match=exception_msg):
         nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+
+
+def test_draw_networkx_edge_label_empty_dict():
+    """Regression test for draw_networkx_edge_labels with empty dict. See
+    gh-5372."""
+    G = nx.path_graph(3)
+    pos = {n: (n, n) for n in G.nodes}
+    assert nx.draw_networkx_edge_labels(G, pos, edge_labels={}) == {}
