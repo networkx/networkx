@@ -11,7 +11,7 @@ __all__ = ["randic_index"]
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def randic_index(G):
-    """Compute the Randic index of the graph.
+    r"""Compute the Randic index of the graph.
 
     Parameters
     ----------
@@ -37,15 +37,17 @@ def randic_index(G):
 
     Notes
     -----
-    ***Notes regarding bounds of Randic index go here***
+    The Randic index [1] is a theoretical characterization of molecular branching, where
+    the molecules can be represented as undirected graphs. The Randic index is calculated as:
+    $R(G) = \sum_{u,v \in E} (deg(u)deg(v))^{-1/2}$.
 
-    See Also
+    References
     --------
+        [1] Randic, M. (1975). Characterization of molecular branching.
+        Journal of the American Chemical Society, 97(23), 6609-6615.
+
 
     """
-    # TODO: add edge weights to graph?
-    #      Return graph with edges or just randic index?
-    #      Is there a way to store the randic index in the graph?
 
     deg_dict = G.degree(G.nodes)
     index = np.sum(
