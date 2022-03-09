@@ -528,8 +528,8 @@ def create_py_random_state(random_state=None):
         generator used by `random`.
         if np.random package, return the global numpy random number
         generator wrapped in a PythonRandomInterface class.
-        if np.random.RandomState instance, return it wrapped in
-        PythonRandomInterface
+        if np.random.RandomState or np.random.Generator instance, return it
+        wrapped in PythonRandomInterface
         if a PythonRandomInterface instance, return it
     """
     import random
@@ -539,7 +539,7 @@ def create_py_random_state(random_state=None):
 
         if random_state is np.random:
             return PythonRandomInterface(np.random.mtrand._rand)
-        if isinstance(random_state, np.random.RandomState):
+        if isinstance(random_state, (np.random.RandomState, np.random.Generator)):
             return PythonRandomInterface(random_state)
         if isinstance(random_state, PythonRandomInterface):
             return random_state
