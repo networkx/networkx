@@ -2,6 +2,7 @@
 Implements the calculation of a Rancic index for a graph._summary_
 """
 import networkx as nx
+
 from math import sqrt
 from networkx.utils import not_implemented_for
 
@@ -11,7 +12,8 @@ __all__ = ["randic_index"]
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def randic_index(G):
-    r"""Compute the Randic index of the graph.
+    r"""
+    Compute the Randic index of the graph.
 
     Parameters
     ----------
@@ -32,7 +34,7 @@ def randic_index(G):
     Examples
     --------
     >>> G = nx.erdos_renyi_graph(n=50, p=0.5)
-    >>> print(nx.randic_index(G))
+    >>> print(randic_index(G))
     25
 
     Notes
@@ -45,8 +47,6 @@ def randic_index(G):
     --------
         [1] Randic, M. (1975). Characterization of molecular branching.
         Journal of the American Chemical Society, 97(23), 6609-6615.
-
-
     """
 
     index = sum((1 / sqrt(G.degree(u) * G.degree(v))) for u, v in G.edges())
