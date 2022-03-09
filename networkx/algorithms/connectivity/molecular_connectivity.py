@@ -49,7 +49,5 @@ def randic_index(G):
 
     """
 
-    deg_dict = G.degree(G.nodes)
-    index = sum((1 / sqrt(deg_dict[edge[0]] * deg_dict[edge[1]])) for edge in G.edges)
-
+    index = sum((1 / sqrt(G.degree(u) * G.degree(v))) for u, v in G.edges())
     return index

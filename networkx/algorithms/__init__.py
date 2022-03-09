@@ -75,7 +75,6 @@ from networkx.algorithms import isomorphism
 from networkx.algorithms import link_analysis
 from networkx.algorithms import lowest_common_ancestors
 from networkx.algorithms import operators
-from networkx.algorithms import randic
 from networkx.algorithms import shortest_paths
 from networkx.algorithms import tournament
 from networkx.algorithms import traversal
