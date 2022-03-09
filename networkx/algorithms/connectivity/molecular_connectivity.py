@@ -33,9 +33,9 @@ def randic_index(G):
 
     Examples
     --------
-    >>> G = nx.erdos_renyi_graph(n=50, p=0.5)
-    >>> print(randic_index(G))
-    25
+    >>> g = nx.complete_graph(5)
+    >>> randic_index(g)
+    2.5
 
     Notes
     -----
