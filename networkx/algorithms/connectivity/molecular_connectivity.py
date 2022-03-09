@@ -1,5 +1,5 @@
 """
-Implements the calculation of a Rancic index for a graph._summary_
+Implements the calculation of a Randic index for a graph._summary_
 """
 import networkx as nx
 
