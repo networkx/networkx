@@ -192,8 +192,8 @@ class MultiDiGraph(MultiGraph, DiGraph):
     Simple graph information is obtained using methods and object-attributes.
     Reporting usually provides views instead of containers to reduce memory
     usage. The views update as the graph is updated similarly to dict-views.
-    The objects `nodes, `edges` and `adj` provide access to data attributes
-    via lookup (e.g. `nodes[n], `edges[u, v]`, `adj[u][v]`) and iteration
+    The objects `nodes`, `edges` and `adj` provide access to data attributes
+    via lookup (e.g. `nodes[n]`, `edges[u, v]`, `adj[u][v]`) and iteration
     (e.g. `nodes.items()`, `nodes.data('color')`,
     `nodes.data('color', default='blue')` and similarly for `edges`)
     Views exist for `nodes`, `edges`, `neighbors()`/`adj` and `degree`.
