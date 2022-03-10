@@ -50,7 +50,7 @@ def check_eigenvector(A, l, x):
     nx = np.linalg.norm(x)
     # Check zeroness.
     assert not nx == pytest.approx(0, abs=1e-7)
-    y = A * x
+    y = A @ x
     ny = np.linalg.norm(y)
     # Check collinearity.
     assert x @ y == pytest.approx(nx * ny, abs=1e-7)

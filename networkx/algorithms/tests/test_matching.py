@@ -421,19 +421,40 @@ class TestIsMatching:
         assert nx.is_matching(G, {(0, 1), (3, 2)})
         assert nx.is_matching(G, {(1, 0), (3, 2)})
 
-    def test_valid(self):
+    def test_valid_matching(self):
         G = nx.path_graph(4)
         assert nx.is_matching(G, {(0, 1), (2, 3)})
 
-    def test_invalid(self):
+    def test_invalid_input(self):
+        error = nx.NetworkXError
+        G = nx.path_graph(4)
+        # edge to node not in G
+        raises(error, nx.is_matching, G, {(0, 5), (2, 3)})
+        # edge not a 2-tuple
+        raises(error, nx.is_matching, G, {(0, 1, 2), (2, 3)})
+        raises(error, nx.is_matching, G, {(0,), (2, 3)})
+
+    def test_selfloops(self):
+        error = nx.NetworkXError
+        G = nx.path_graph(4)
+        # selfloop for node not in G
+        raises(error, nx.is_matching, G, {(5, 5), (2, 3)})
+        # selfloop edge not in G
+        assert not nx.is_matching(G, {(0, 0), (1, 2), (2, 3)})
+        # selfloop edge in G
+        G.add_edge(0, 0)
+        assert not nx.is_matching(G, {(0, 0), (1, 2), (2, 3)})
+
+    def test_invalid_matching(self):
         G = nx.path_graph(4)
         assert not nx.is_matching(G, {(0, 1), (1, 2), (2, 3)})
 
     def test_invalid_edge(self):
         G = nx.path_graph(4)
         assert not nx.is_matching(G, {(0, 3), (1, 2)})
-        assert not nx.is_matching(G, {(0, 4)})
-        G = nx.path_graph(4, create_using=nx.DiGraph)
+        raises(nx.NetworkXError, nx.is_matching, G, {(0, 55)})
+
+        G = nx.DiGraph(G.edges)
         assert nx.is_matching(G, {(0, 1)})
         assert not nx.is_matching(G, {(1, 0)})
 

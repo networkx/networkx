@@ -239,7 +239,7 @@ def greedy_modularity_communities(G, weight=None, resolution=1, n_communities=1)
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def naive_greedy_modularity_communities(G, resolution=1):
+def naive_greedy_modularity_communities(G, resolution=1, weight=None):
     r"""Find communities in G using greedy modularity maximization.
 
     This implementation is O(n^4), much slower than alternatives, but it is
@@ -260,6 +260,11 @@ def naive_greedy_modularity_communities(G, resolution=1):
     resolution : float (default=1)
         If resolution is less than 1, modularity favors larger communities.
         Greater than 1 favors smaller communities.
+
+    weight : string or None, optional (default=None)
+        The name of an edge attribute that holds the numerical value used
+        as a weight.  If None, then each edge has weight 1.
+        The degree is the sum of the edge weights adjacent to the node.
 
     Returns
     -------
@@ -287,7 +292,7 @@ def naive_greedy_modularity_communities(G, resolution=1):
     merges = []
     # Greedily merge communities until no improvement is possible
     old_modularity = None
-    new_modularity = modularity(G, communities, resolution=resolution)
+    new_modularity = modularity(G, communities, resolution=resolution, weight=weight)
     while old_modularity is None or new_modularity > old_modularity:
         # Save modularity for comparison
         old_modularity = new_modularity
@@ -303,7 +308,7 @@ def naive_greedy_modularity_communities(G, resolution=1):
                 trial_communities[j] = u | v
                 trial_communities[i] = frozenset([])
                 trial_modularity = modularity(
-                    G, trial_communities, resolution=resolution
+                    G, trial_communities, resolution=resolution, weight=weight
                 )
                 if trial_modularity >= new_modularity:
                     # Check if strictly better or tie

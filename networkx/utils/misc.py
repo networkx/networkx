@@ -17,7 +17,10 @@ import warnings
 import sys
 import uuid
 from itertools import tee, chain
+
 import networkx as nx
+
+np = nx.lazy_import("numpy")
 
 __all__ = [
     "is_string_like",
@@ -236,8 +239,6 @@ def dict_to_numpy_array2(d, mapping=None):
     with optional mapping.
 
     """
-    import numpy as np
-
     if mapping is None:
         s = set(d.keys())
         for k, v in d.items():
@@ -259,8 +260,6 @@ def dict_to_numpy_array1(d, mapping=None):
     with optional mapping.
 
     """
-    import numpy as np
-
     if mapping is None:
         s = set(d.keys())
         mapping = dict(zip(s, range(len(s))))
@@ -420,26 +419,29 @@ def to_tuple(x):
 
 
 def create_random_state(random_state=None):
-    """Returns a numpy.random.RandomState instance depending on input.
+    """Returns a numpy.random.RandomState or numpy.random.Generator instance
+    depending on input.
 
     Parameters
     ----------
-    random_state : int or RandomState instance or None  optional (default=None)
+    random_state : int or NumPy RandomState or Generator instance, optional (default=None)
         If int, return a numpy.random.RandomState instance set with seed=int.
-        if numpy.random.RandomState instance, return it.
+        if `numpy.random.RandomState` instance, return it.
+        if `numpy.random.Generator` instance, return it.
         if None or numpy.random, return the global random number generator used
         by numpy.random.
     """
-    import numpy as np
-
     if random_state is None or random_state is np.random:
         return np.random.mtrand._rand
     if isinstance(random_state, np.random.RandomState):
         return random_state
     if isinstance(random_state, int):
         return np.random.RandomState(random_state)
+    if isinstance(random_state, np.random.Generator):
+        return random_state
     msg = (
-        f"{random_state} cannot be used to generate a numpy.random.RandomState instance"
+        f"{random_state} cannot be used to create a numpy.random.RandomState or\n"
+        "numpy.random.Generator instance"
     )
     raise ValueError(msg)
 
@@ -458,16 +460,24 @@ class PythonRandomInterface:
             self._rng = rng
 
     def random(self):
-        return self._rng.random_sample()
+        return self._rng.random()
 
     def uniform(self, a, b):
-        return a + (b - a) * self._rng.random_sample()
+        return a + (b - a) * self._rng.random()
 
     def randrange(self, a, b=None):
+        if isinstance(self._rng, np.random.Generator):
+            return self._rng.integers(a, b)
         return self._rng.randint(a, b)
 
+    # NOTE: the numpy implementations of `choice` don't support strings, so
+    # this cannot be replaced with self._rng.choice
     def choice(self, seq):
-        return seq[self._rng.randint(0, len(seq))]
+        if isinstance(self._rng, np.random.Generator):
+            idx = self._rng.integers(0, len(seq))
+        else:
+            idx = self._rng.randint(0, len(seq))
+        return seq[idx]
 
     def gauss(self, mu, sigma):
         return self._rng.normal(mu, sigma)
@@ -482,6 +492,8 @@ class PythonRandomInterface:
         return self._rng.choice(list(seq), size=(k,), replace=False)
 
     def randint(self, a, b):
+        if isinstance(self._rng, np.random.Generator):
+            return self._rng.integers(a, b + 1)
         return self._rng.randint(a, b + 1)
 
     #    exponential as expovariate with 1/argument,

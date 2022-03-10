@@ -151,7 +151,7 @@ class TestLayout:
         assert pos.shape == (6, 2)
 
     def test_adjacency_interface_scipy(self):
-        A = nx.to_scipy_sparse_matrix(self.Gs, dtype="d")
+        A = nx.to_scipy_sparse_array(self.Gs, dtype="d")
         pos = nx.drawing.layout._sparse_fruchterman_reingold(A)
         assert pos.shape == (6, 2)
         pos = nx.drawing.layout._sparse_spectral(A)
@@ -370,6 +370,15 @@ class TestLayout:
         assert np.allclose(
             distances_equidistant[1:], distances_equidistant[-1], atol=0.01
         )
+
+    def test_spiral_layout_equidistant(self):
+        G = nx.path_graph(10)
+        pos = nx.spiral_layout(G, equidistant=True)
+        # Extract individual node positions as an array
+        p = np.array(list(pos.values()))
+        # Elementwise-distance between node positions
+        dist = np.linalg.norm(p[1:] - p[:-1], axis=1)
+        assert np.allclose(np.diff(dist), 0, atol=1e-3)
 
     def test_rescale_layout_dict(self):
         G = nx.empty_graph()

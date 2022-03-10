@@ -120,14 +120,21 @@ class TestNeighborConnectivity:
             assert c == cw
 
     def test_invalid_source(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(nx.NetworkXError):
             G = nx.DiGraph()
             nx.average_degree_connectivity(G, source="bogus")
 
     def test_invalid_target(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(nx.NetworkXError):
             G = nx.DiGraph()
             nx.average_degree_connectivity(G, target="bogus")
+
+    def test_invalid_undirected_graph(self):
+        G = nx.Graph()
+        with pytest.raises(nx.NetworkXError):
+            nx.average_degree_connectivity(G, target="bogus")
+        with pytest.raises(nx.NetworkXError):
+            nx.average_degree_connectivity(G, source="bogus")
 
     def test_single_node(self):
         # TODO Is this really the intended behavior for providing a
