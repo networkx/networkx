@@ -275,12 +275,10 @@ def greedy_modularity_communities(
     .. deprecated:: 3.0
        The `n_communities` parameter is deprecated - use `cutoff` and/or
        `best_n` to set bounds on the desired number of communities instead.
-        Desired number of communities: the community merging process is
-        terminated once this number of communities is reached, or until
-        modularity can not be further increased. Must be between 1 and the
-        total number of nodes in `G`. Default is ``None``, meaning the community
-        merging process continues until all nodes are in the same community
-        or until the best community structure is found.
+        A minimum number of communities below which the merging process stops.
+        The process stops at this number of communities even if modularity
+        is not maximized. The goal is to let the user stop the process early.
+        The process stops before the cutoff if it finds a maximum of modularity.
 
     Raises
     ------
