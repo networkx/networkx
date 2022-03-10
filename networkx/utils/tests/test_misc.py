@@ -240,10 +240,12 @@ def test_create_py_random_state():
 
     rs = np.random.RandomState
     rng = np.random.default_rng(1000)
+    rng_explicit = np.random.Generator(np.random.SFC64())
     nprs = PythonRandomInterface
     assert isinstance(create_py_random_state(np.random), nprs)
     assert isinstance(create_py_random_state(rs(1)), nprs)
     assert isinstance(create_py_random_state(rng), nprs)
+    assert isinstance(create_py_random_state(rng_explicit), nprs)
     # test default rng input
     assert isinstance(PythonRandomInterface(), nprs)
 
