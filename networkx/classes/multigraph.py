@@ -369,7 +369,7 @@ class MultiGraph(Graph):
         The neighbor information is also provided by subscripting the graph.
 
         Examples
-        -------
+        --------
         >>> e = [(1, 2), (1, 2), (1, 3), (3, 4)]  # list of edges
         >>> G = nx.MultiGraph(e)
         >>> G.edges[1, 2, 0]["weight"] = 3
