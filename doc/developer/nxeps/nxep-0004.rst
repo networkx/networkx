@@ -189,8 +189,32 @@ function is either an integer or `None`.
 Related Work
 ------------
 
-- NEP 19
-- TODO
+Scikit-learn has a similar pattern for imposing determinism on functions that
+depend on randomness.
+For example, many functions in ``scikit-learn`` have a ``random_state`` argument
+that functions similarly to how ``seed`` behaves in many NetworkX function
+signatures.
+One difference between ``scikit-learn`` and ``networkx`` is that scikit-learn
+**only** supports ``RandomState`` via the ``random_state`` keyword argument,
+whereas NetworkX implicitly supports both the built-in `random` module, as well
+as both the numpy ``RandomState`` and ``Generator`` instances (depending on
+the type of ``seed``).
+This is reflected in the name of the keyword argument as ``random_state``
+(used by scikit-learn) is les ambiguous than ``seed`` (used by NetworkX).
+
+There are multiple relevant discussions in the scikit-learn community about
+potential approaches to supporting the new NumPy random interface:
+
+- `scikit-learn/scikit-learn#16988 <sklearn16988>`_ covers strategies and concerns
+  related to enabling users to use the ``Generator``-based random number generators.
+- `scikit-learn/scikit-learn#14042 <sklearn14042>`_ is a higher-level discussion
+  that includes additional information about the design considerations and constraints
+  related to scikit-learn's ``random_state``.
+- There is also a releated `SLEP <slep011>`_.
+
+.. _sklearn16988: https://github.com/scikit-learn/scikit-learn/issues/16988
+.. _sklearn14042: https://github.com/scikit-learn/scikit-learn/issues/14042
+.. _slep011: https://github.com/scikit-learn/enhancement_proposals/pull/24
 
 Implementation
 --------------
