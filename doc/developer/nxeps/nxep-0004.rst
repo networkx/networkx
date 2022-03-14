@@ -219,11 +219,50 @@ potential approaches to supporting the new NumPy random interface:
 Implementation
 --------------
 
+The implementation itself is quite simple. The logic that determines how
+inputs are mapped to random number generators is encapsulated in the
+`~networkx.utils.misc.create_random_state` function (and the related
+`~networkx.utils.misc.create_py_random_state`).
+Currently (i.e. NetworkX <= 2.X), this function maps inputs like ``None``,
+``numpy.random``, and integers to ``RandomState`` instances::
 
-TODO: simple diff here
+    def create_random_state(random_state=None):
+        if random_state is None or random_state is np.random:
+            return np.random.mtrand._rand
+        if isinstance(random_state, np.random.RandomState):
+            return random_state
+        if isinstance(random_state, int):
+            return np.random.RandomState(random_state)
+        if isinstance(random_state, np.random.Generator):
+            return random_state
+        msg = (
+            f"{random_state} cannot be used to create a numpy.random.RandomState or\n"
+            "numpy.random.Generator instance"
+        )
+        raise ValueError(msg)
 
-The implementation itself is quite simple. Most of the work will go into
-improved/reorganized tests.
+This NXEP proposes to modify the function to produce ``Generator`` instances
+for these inputs. An example implementation might look something like::
+
+
+    def create_random_state(random_state=None):
+        if random_state is None or random_state is np.random:
+            return np.random.default_rng()
+        if isinstance(random_state, (np.random.RandomState, np.random.Generator)):
+            return random_state
+        if isinstance(random_state, int):
+            return np.random.default_rng(random_state)
+        msg = (
+            f"{random_state} cannot be used to create a numpy.random.RandomState or\n"
+            "numpy.random.Generator instance"
+        )
+        raise ValueError(msg)
+
+
+The above captures the essential change in logic, though implementation details
+may differ.
+Most of the work related implementing this change will be associated with
+improved/reorganized tests; including adding tests rng-stream reproducibility.
 
 Alternatives
 ------------
