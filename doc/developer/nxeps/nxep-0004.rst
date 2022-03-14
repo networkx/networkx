@@ -17,7 +17,7 @@ Pseudo-random numbers play an important role in many graph and network analysis
 algorithms in NetworkX.
 NetworkX provides a :ref:`standard interface to random number generators <randomness>`
 that includes support for `numpy.random` and the Python built-in `random` module.
-`numpy.random` is used extensively within NetworkX and in most cases is the
+`numpy.random` is used extensively within NetworkX and in several cases is the
 preferred package for random number generation.
 NumPy introduced a new interface in the `numpy.random` package in NumPy version
 1.17.
@@ -171,10 +171,11 @@ This can be addressed with a compatiblity class similar to the
 layer between `random` and `numpy.random.RandomState`.
 
 `create_random_state` currently returns the global ``numpy.random.mtrand._rand``
-`RandomState` instance when the input is `None` or the numpy.random module.
+`RandomState` instance when the input is `None` or the ``numpy.random`` module.
 By switching to `numpy.random.Generator`, this will no longer be possible as
 there is no global, internal `Generator` instance in the `numpy.random` module.
-This should have no effect on users.
+This should have no effect on users, as ``seed=None`` currently does not
+guarantee reproducible results.
 
 Detailed description
 --------------------
