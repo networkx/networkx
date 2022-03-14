@@ -272,9 +272,11 @@ def greedy_modularity_communities(
         If ``None``, don't force it to continue beyond a maximum.
 
     n_communities : int or None, optional (default=None)
-    .. deprecated:: 3.0
-       The `n_communities` parameter is deprecated - use `cutoff` and/or
-       `best_n` to set bounds on the desired number of communities instead.
+
+        .. deprecated:: 3.0
+           The `n_communities` parameter is deprecated - use `cutoff` and/or
+           `best_n` to set bounds on the desired number of communities instead.
+
         A minimum number of communities below which the merging process stops.
         The process stops at this number of communities even if modularity
         is not maximized. The goal is to let the user stop the process early.
