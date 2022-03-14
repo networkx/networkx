@@ -272,6 +272,28 @@ acceptable alternative.
 ``RandomState`` is not deprecated, and is expected to maintain its stream-compatibility
 guarantee in perpetuity.
 
+Another possible alternative would be to provide a package-level toggle that
+users could use to switch the behavior the ``seed`` kwarg for all functions
+decorated by ``np_random_state`` or ``py_random_state``.
+To illustrate (ignoring implementation details)::
+
+    
+    >>> import networkx as nx
+    >>> from networkx.utils.misc import create_random_state
+
+    # NetworkX 2.X behavior: RandomState by default
+
+    >>> type(create_random_state(12345))
+    numpy.random.mtrand.RandomState
+
+    # Change random backend by setting pkg attr
+
+    >>> nx._random_backend = "Generator"
+
+    >>> type(create_random_state(12345))
+    numpy.random._generator.Generator
+
+
 Discussion
 ----------
 
