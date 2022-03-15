@@ -32,6 +32,7 @@ __all__ = [
     "fruchterman_reingold_layout",
     "spiral_layout",
     "multipartite_layout",
+    "forceatlas2_layout",
 ]
 
 
@@ -554,7 +555,7 @@ def _fruchterman_reingold(
         np.clip(distance, 0.01, None, out=distance)
         # displacement "force"
         displacement = np.einsum(
-            "ijk,ij->ik", delta, (k * k / distance ** 2 - A * distance / k)
+            "ijk,ij->ik", delta, (k * k / distance**2 - A * distance / k)
         )
         # update positions
         length = np.linalg.norm(displacement, axis=-1)
@@ -625,17 +626,17 @@ def _sparse_fruchterman_reingold(
             # difference between this row's node position and all others
             delta = (pos[i] - pos).T
             # distance between points
-            distance = np.sqrt((delta ** 2).sum(axis=0))
+            distance = np.sqrt((delta**2).sum(axis=0))
             # enforce minimum distance of 0.01
             distance = np.where(distance < 0.01, 0.01, distance)
             # the adjacency matrix row
             Ai = np.asarray(A.getrowview(i).toarray())
             # displacement "force"
             displacement[:, i] += (
-                delta * (k * k / distance ** 2 - Ai * distance / k)
+                delta * (k * k / distance**2 - Ai * distance / k)
             ).sum(axis=1)
         # update positions
-        length = np.sqrt((displacement ** 2).sum(axis=0))
+        length = np.sqrt((displacement**2).sum(axis=0))
         length = np.where(length < 0.01, 0.1, length)
         delta_pos = (displacement * t / length).T
         pos += delta_pos
@@ -759,14 +760,14 @@ def _kamada_kawai_costfn(pos_vec, np, invdist, meanweight, dim):
     offset = nodesep * invdist - 1.0
     offset[np.diag_indices(nNodes)] = 0
 
-    cost = 0.5 * np.sum(offset ** 2)
+    cost = 0.5 * np.sum(offset**2)
     grad = np.einsum("ij,ij,ijk->ik", invdist, offset, direction) - np.einsum(
         "ij,ij,ijk->jk", invdist, offset, direction
     )
 
     # Additional parabolic term to encourage mean position to be near origin:
     sumpos = np.sum(pos_arr, axis=0)
-    cost += 0.5 * meanweight * np.sum(sumpos ** 2)
+    cost += 0.5 * meanweight * np.sum(sumpos**2)
     grad += meanweight * sumpos
 
     return (cost, grad.ravel())
@@ -1132,6 +1133,73 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
 
     msg = "align must be either vertical or horizontal."
     raise ValueError(msg)
+
+
+def forceatlas2_layout(
+    G,
+    pos=None,
+    n_iter=100,
+    jitter_tolerance=1.0,
+    scaling=2.0,
+    distributed_action=False,
+    strong_gravity=False,
+    prevent_overlap=False,
+    dissuade_hubs=False,
+    edge_weight=False,
+    linlog=False,
+):
+    """Forceatlas2 layout for networkx
+
+    See [1] for more info on the parameters
+
+    [1]: https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0098679&type=printable
+    Parameters
+    ----------
+    G : nx.Graph
+       Netwrorkx graph
+    pos: dict or None
+       Optional starting positions
+    n_iter: int
+        Simulation steps
+    jitter_tolerance : float
+        Jitter  tolerance  for  adjusting  speed  of  layout
+        generation
+    scaling : float
+        Controls  force scaling  constants k_attraction  and
+        k_repulsion
+    distributed_action : bool
+    strong_gravity : bool
+        Controls the  "pull" to  the center  of mass  of the
+        plot (0,0)
+    prevent_overlap : bool
+        Prevent node overlapping in the layout
+    dissuade_hubs : bool
+        Prevent hub clustering
+    edge_weight : bool
+        Generate layout with or without considering the edge
+        weights
+    linlog : bool
+        Use log attraction rather than linear attraction
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.florentine_family_graph()
+    >>> nx.draw(G, pos = nx.forceatlas2_layout(G))
+    """
+
+    from networkx.drawing.forceatlas2.force import Settings, forceatlas2
+
+    settings = Settings(
+        jitter_tolerance=jitter_tolerance,
+        scaling=scaling,
+        strong_gravity=strong_gravity,
+        prevent_overlap=prevent_overlap,
+        dissuade_hubs=dissuade_hubs,
+        edge_weight=edge_weight,
+        linlog=linlog,
+    )
+    return forceatlas2(G, pos, n_iter, settings)
 
 
 def rescale_layout(pos, scale=1):

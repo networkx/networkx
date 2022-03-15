@@ -166,6 +166,46 @@ extras_require = {
     for dep in ["developer", "doc", "extra", "test"]
 }
 
+# setup forceatlas2
+modules = []
+opts = {}
+try:
+    from Cython.Distutils import Extension
+    from Cython.Build import build_ext, cythonize
+    import numpy as np
+
+    print("Cython found, using cython")
+    ext = Extension(
+        "networkx.drawing.forceatlas2.force",
+        sources=[
+            "networkx/drawing/forceatlas2/force.py",
+            "networkx/drawing/forceatlas2/force.pxd",
+        ],
+        include_dirs=[np.get_include()],
+        cython_directives=dict(language_level=3),
+        extra_compile_args="-Ofast -march=native".split(),
+    )
+    modules.append(ext)
+    modules = cythonize(modules, annotate=1)
+    cmdclass = {"build_ext": build_ext}
+    opts = {"ext_modules": modules, "cmdclass": cmdclass}
+
+except ImportError:
+    from setuptools.extension import Extension
+
+    if Path("networkx/drawing/forceatlas2/force.cpp").exists():
+        print("Compiled force found")
+        ext = Extension(
+            "networkx.drawing.forceatlas2.force",
+            sources=["networkx/drawing/forceatlas2/force.cpp"],
+        )
+        cmdclass = {}
+        opts = {"ext_modules": ext_modules, "cmdclass": cmdclass}
+        modules.append(ext)
+    else:
+        print("Not using compiled version")
+
+
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
@@ -192,4 +232,5 @@ if __name__ == "__main__":
         extras_require=extras_require,
         python_requires=">=3.7",
         zip_safe=False,
+        **opts
     )

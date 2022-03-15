@@ -24,6 +24,7 @@ from networkx.drawing.layout import (
     spring_layout,
     random_layout,
     planar_layout,
+    forceatlas2_layout,
 )
 import warnings
 
@@ -41,6 +42,7 @@ __all__ = [
     "draw_spring",
     "draw_planar",
     "draw_shell",
+    "draw_forceatlas2",
 ]
 
 
@@ -1216,6 +1218,22 @@ def draw_planar(G, **kwargs):
        function.
     """
     draw(G, planar_layout(G), **kwargs)
+
+
+def draw_forceatlas2(G, **kwargs):
+    """Draw a networkx graph with forceatlas2 layout.
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+
+    kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this
+       function.
+    """
+    draw(G, forceatlas2_layout(G), **kwargs)
 
 
 def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
