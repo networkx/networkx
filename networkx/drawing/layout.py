@@ -1135,6 +1135,42 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     raise ValueError(msg)
 
 
+def estimate_factor(n, swing, traction, speed, speed_efficiency, jitter_tolerance):
+    """
+    ForceAtlas2 helper function
+    Computes scaling factor for force
+    """
+    import numpy as np
+
+    # estimate jitter
+    opt_jitter = 0.05 * np.sqrt(n)
+    min_jitter = np.sqrt(opt_jitter)
+    max_jitter = 10
+    min_speed_efficiency = 0.05
+
+    other = min(max_jitter, opt_jitter * traction / n**2)
+    jitter = jitter_tolerance * max(min_jitter, other)
+
+    if swing / traction > 2.0:
+        if speed_efficiency > min_speed_efficiency:
+            speed_efficiency *= 0.5
+        jitter = max(jitter, jitter_tolerance)
+    if swing == 0:
+        target_speed = np.inf
+    else:
+        target_speed = jitter * speed_efficiency * traction / swing
+    if swing > jitter * traction:
+        if speed_efficiency > min_speed_efficiency:
+            speed_efficiency *= 0.7
+    elif speed < 1000:
+        speed_efficiency *= 1.3
+
+    max_rise = 0.5
+    speed = speed + min(target_speed - speed, max_rise * speed)
+    factor = speed / (1.0 + np.sqrt(speed * swing))
+    return factor, speed, speed_efficiency
+
+
 def forceatlas2_layout(
     G,
     pos=None,
@@ -1187,19 +1223,89 @@ def forceatlas2_layout(
     >>> G = nx.florentine_family_graph()
     >>> nx.draw(G, pos = nx.forceatlas2_layout(G))
     """
+    import numpy as np
 
-    from networkx.drawing.forceatlas2.force import Settings, forceatlas2
+    if pos is None:
+        pos = nx.random_layout(G)
 
-    settings = Settings(
-        jitter_tolerance=jitter_tolerance,
-        scaling=scaling,
-        strong_gravity=strong_gravity,
-        prevent_overlap=prevent_overlap,
-        dissuade_hubs=dissuade_hubs,
-        edge_weight=edge_weight,
-        linlog=linlog,
+    pos = np.asarray([i.copy() for i in pos.values()])
+    mass = np.array(
+        [G.nodes[node].get("weight", G.degree(node) + 1) for node in G.nodes()]
     )
-    return forceatlas2(G, pos, n_iter, settings)
+    size = np.array([G.nodes[node].get("size", 1) for node in G.nodes()])
+
+    n = len(G)
+    gravity = np.zeros((n, 2))
+    attraction = np.zeros((n, 2))
+    repulsion = np.zeros((n, 2))
+    A = nx.adjacency_matrix(G)
+    if n < 1000:
+        A = A.todense()
+
+    assert np.all(np.allclose(A, A.T))
+
+    speed = 1
+    speed_efficiency = 1
+    swing = 1
+    traction = 1
+    for idx in range(n_iter):
+        # compute pairwise difference
+        diff = pos[:, None] - pos[None]
+        # compute pairwise distance
+        distance = np.linalg.norm(diff, axis=-1)
+
+        # linear attraction
+        if linlog:
+            attraction = -np.log(1 + distance) / distance
+            np.fill_diagonal(attraction, 0)
+            attraction = np.einsum("ij, ij -> ij", attraction, A)
+            attraction = np.einsum("ijk, ij -> ik", diff, attraction)
+
+        else:
+            attraction = -np.einsum("ijk, ij -> ik", diff, A)
+
+        if distributed_action:
+            attraction /= mass[:, None]
+
+        # repulsion
+        tmp = mass[:, None] @ mass[None]
+        if prevent_overlap:
+            distance += -size[:, None] - size[None]
+        d2 = distance**2
+        # remove self-interaction
+        np.fill_diagonal(tmp, 0)
+        np.fill_diagonal(d2, 0)
+        factor = (tmp / d2) * scaling
+        np.fill_diagonal(factor, 0)
+        repulsion = np.einsum("ijk, ij -> ik", diff, factor)
+
+        # gravity
+        gravity = -mass[:, None] * pos / np.linalg.norm(pos, axis=-1)[:, None]
+        if strong_gravity:
+            gravity *= np.linalg.norm(pos, axis=-1)
+        # total forces
+        update = attraction + repulsion + gravity
+
+        # compute total swing and traction
+        swing += (mass * np.linalg.norm(pos - update, axis=-1)).sum()
+        traction += (0.5 * mass * np.linalg.norm(pos + update, axis=-1)).sum()
+
+        factor, speed, speed_efficiency = estimate_factor(
+            n,
+            swing,
+            traction,
+            speed,
+            speed_efficiency,
+            jitter_tolerance,
+        )
+
+        # update pos
+        if abs((update * factor).sum()) < 1e-10:
+            print((update * factor).sum())
+            print(f"Breaking after {idx}")
+            break
+        pos += update * factor
+    return {node: pos[idx] for idx, node in enumerate(G.nodes())}
 
 
 def rescale_layout(pos, scale=1):
