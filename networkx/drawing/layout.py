@@ -1229,7 +1229,7 @@ def forceatlas2_layout(
         pos = nx.random_layout(G)
 
     pos = np.asarray([i.copy() for i in pos.values()])
-    dim = len(next(iter(pos.values)))
+    dim = len(next(iter(pos.values())))
     mass = np.array(
         [G.nodes[node].get("mass", G.degree(node) + 1) for node in G.nodes()]
     )
