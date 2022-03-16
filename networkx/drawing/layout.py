@@ -1230,7 +1230,7 @@ def forceatlas2_layout(
 
     pos = np.asarray([i.copy() for i in pos.values()])
     mass = np.array(
-        [G.nodes[node].get("weight", G.degree(node) + 1) for node in G.nodes()]
+        [G.nodes[node].get("mass", G.degree(node) + 1) for node in G.nodes()]
     )
     size = np.array([G.nodes[node].get("size", 1) for node in G.nodes()])
 
@@ -1238,7 +1238,10 @@ def forceatlas2_layout(
     gravity = np.zeros((n, 2))
     attraction = np.zeros((n, 2))
     repulsion = np.zeros((n, 2))
-    A = nx.adjacency_matrix(G)
+    weight = None
+    if edge_weight:
+        weight = "weight"
+    A = nx.adjacency_matrix(G, weight=weight)
     if n < 1000:
         A = A.todense()
 
