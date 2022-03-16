@@ -1229,15 +1229,16 @@ def forceatlas2_layout(
         pos = nx.random_layout(G)
 
     pos = np.asarray([i.copy() for i in pos.values()])
+    dim = len(next(iter(pos.values)))
     mass = np.array(
         [G.nodes[node].get("mass", G.degree(node) + 1) for node in G.nodes()]
     )
     size = np.array([G.nodes[node].get("size", 1) for node in G.nodes()])
 
     n = len(G)
-    gravity = np.zeros((n, 2))
-    attraction = np.zeros((n, 2))
-    repulsion = np.zeros((n, 2))
+    gravity = np.zeros((n, dim))
+    attraction = np.zeros((n, dim))
+    repulsion = np.zeros((n, dim))
     weight = None
     if edge_weight:
         weight = "weight"
