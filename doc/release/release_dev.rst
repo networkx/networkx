@@ -31,6 +31,10 @@ API Changes
 Deprecations
 ------------
 
+- [`#5227 <https://github.com/networkx/networkx/pull/5227>`_]
+  Deprecate the ``n_communities`` parameter name in ``greedy_modularity_communities``
+  in favor of ``cutoff``.
+
 
 Merged PRs
 ----------
