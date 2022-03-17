@@ -7,7 +7,6 @@ from networkx.utils import not_implemented_for
 __all__ = ["bridges", "has_bridges", "local_bridges"]
 
 
-@not_implemented_for("multigraph")
 @not_implemented_for("directed")
 def bridges(G, root=None):
     """Generate all bridges in a graph.
@@ -58,14 +57,23 @@ def bridges(G, root=None):
     ----------
     .. [1] https://en.wikipedia.org/wiki/Bridge_%28graph_theory%29#Bridge-Finding_with_Chain_Decompositions
     """
+    multi_edges = []
+    if isinstance(G, nx.MultiGraph):
+        multi_edges = [
+            (e[0], e[1]) for e in G.edges if G.number_of_edges(e[0], e[1]) > 1
+        ]
+        G = nx.Graph(G)
     chains = nx.chain_decomposition(G, root=root)
     chain_edges = set(chain.from_iterable(chains))
     for u, v in G.edges():
-        if (u, v) not in chain_edges and (v, u) not in chain_edges:
+        if (
+            (u, v) not in chain_edges
+            and (v, u) not in chain_edges
+            and (u, v) not in multi_edges
+        ):
             yield u, v
 
 
-@not_implemented_for("multigraph")
 @not_implemented_for("directed")
 def has_bridges(G, root=None):
     """Decide whether a graph has any bridges.
