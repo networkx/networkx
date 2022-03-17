@@ -168,10 +168,18 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     # Determine if we include self-loops or not.
     shift = 0 if selfloops else 1
 
+    # Introduce numbering of nodes
+    node_index = {n: i for i, n in enumerate(G)}
+
+    # Lift canonical representation of nodes to edges in line graph
+    edge_key_function = lambda edge: (node_index[edge[0]], node_index[edge[1]])
+
     edges = set()
     for u in G:
         # Label nodes as a sorted tuple of nodes in original graph.
-        nodes = [tuple(sorted(x[:2])) + x[2:] for x in get_edges(u)]
+        # Decide on representation of {u, v} as (u, v) or (v, u) depending on node_index.
+        # -> This ensures a canonical representation and avoids comparing values of different types.
+        nodes = [tuple(sorted(x[:2], key=node_index.get)) + x[2:] for x in get_edges(u)]
 
         if len(nodes) == 1:
             # Then the edge will be an isolated node in L.
@@ -181,7 +189,12 @@ def _lg_undirected(G, selfloops=False, create_using=None):
         # especially important for multigraphs, we store the edges in
         # canonical form in a set.
         for i, a in enumerate(nodes):
-            edges.update([tuple(sorted((a, b))) for b in nodes[i + shift :]])
+            edges.update(
+                [
+                    tuple(sorted((a, b), key=edge_key_function))
+                    for b in nodes[i + shift :]
+                ]
+            )
 
     L.add_edges_from(edges)
     return L

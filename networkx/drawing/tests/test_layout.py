@@ -371,6 +371,15 @@ class TestLayout:
             distances_equidistant[1:], distances_equidistant[-1], atol=0.01
         )
 
+    def test_spiral_layout_equidistant(self):
+        G = nx.path_graph(10)
+        pos = nx.spiral_layout(G, equidistant=True)
+        # Extract individual node positions as an array
+        p = np.array(list(pos.values()))
+        # Elementwise-distance between node positions
+        dist = np.linalg.norm(p[1:] - p[:-1], axis=1)
+        assert np.allclose(np.diff(dist), 0, atol=1e-3)
+
     def test_rescale_layout_dict(self):
         G = nx.empty_graph()
         vpos = nx.random_layout(G, center=(1, 1))
