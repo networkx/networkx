@@ -42,10 +42,10 @@ class TestBridges:
             (0, 1),
             (0, 2),
             (1, 2),
-            (1, 2), # should not impact bridges
+            (1, 2),
             (2, 3),
             (3, 4),
-            (3, 4)  # should not impact bridges
+            (3, 4),
         ]
         G = nx.MultiGraph(edges)
         assert list(nx.bridges(G)) == [(2, 3)]

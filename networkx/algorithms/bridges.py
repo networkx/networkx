@@ -65,12 +65,8 @@ def bridges(G, root=None):
         G = nx.Graph(G)
     chains = nx.chain_decomposition(G, root=root)
     chain_edges = set(chain.from_iterable(chains))
-    for u, v in G.edges():
-        if (
-            (u, v) not in chain_edges
-            and (v, u) not in chain_edges
-            and (u, v) not in multi_edges
-        ):
+    for u, v in set(G.edges()) - set(multi_edges):
+        if (u, v) not in chain_edges and (v, u) not in chain_edges:
             yield u, v
 
 
