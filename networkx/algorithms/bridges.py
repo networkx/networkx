@@ -13,7 +13,8 @@ def bridges(G, root=None):
 
     A *bridge* in a graph is an edge whose removal causes the number of
     connected components of the graph to increase.  Equivalently, a bridge is an
-    edge that does not belong to any cycle.
+    edge that does not belong to any cycle. Bridges are also known as cut-edges,
+    isthmuses, or cut arcs.
 
     Parameters
     ----------
