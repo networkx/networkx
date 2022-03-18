@@ -127,13 +127,13 @@ def tutte_polynomial(G):
     polynomial = 0
     while stack:
         G = stack.pop()
-        cut_edges = nx.cut_edges(G)
+        bridges = nx.cut_edges(G)
         loops = list(nx.selfloop_edges(G, keys=True))
         edges_not_cuts_loops = [
-            i for i in G.edges if i not in cut_edges and i not in loops
+            i for i in G.edges if i not in bridges and i not in loops
         ]
         if not edges_not_cuts_loops:
-            polynomial += x ** len(cut_edges) * y ** len(loops)
+            polynomial += x ** len(bridges) * y ** len(loops)
         else:
             e = edges_not_cuts_loops[0]
             # deletion-contraction
