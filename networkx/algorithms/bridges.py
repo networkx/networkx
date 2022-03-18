@@ -57,16 +57,14 @@ def bridges(G, root=None):
     ----------
     .. [1] https://en.wikipedia.org/wiki/Bridge_%28graph_theory%29#Bridge-Finding_with_Chain_Decompositions
     """
-    multi_edges = []
-    if isinstance(G, nx.MultiGraph):
-        multi_edges = [
-            (e[0], e[1]) for e in G.edges if G.number_of_edges(e[0], e[1]) > 1
-        ]
-        G = nx.Graph(G)
-    chains = nx.chain_decomposition(G, root=root)
+    multigraph = G.is_multigraph()
+    H = nx.Graph(G) if multigraph else G
+    chains = nx.chain_decomposition(H, root=root)
     chain_edges = set(chain.from_iterable(chains))
-    for u, v in set(G.edges()) - set(multi_edges):
+    for u, v in H.edges():
         if (u, v) not in chain_edges and (v, u) not in chain_edges:
+            if multigraph and len(G[u][v]) > 1:
+                continue
             yield u, v
 
 
