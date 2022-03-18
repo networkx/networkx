@@ -105,13 +105,6 @@ def laplacian_centrality(
     nodes : dictionary
        Dictionary of nodes with Laplacian centrality as the value.
 
-    Examples
-    --------
-    >>> nxg = nx.Graph()
-    >>> nxg.add_weighted_edges_from([(0,1,4),(0,2,2),(2,1,1),(1,3,2),(1,4,2),(4,5,1)])
-    >>> laplacian_centrality(nxg)
-    {0: 0.699,1: 0.899, 2: 0.279, 3: 0.219, 4: 0.26, 5: 0.0399}
-
     Notes
     -----
     The algorithm is implemented based on [1] with an extension to directed graphs using nx.directed_laplacian_matrix function.
