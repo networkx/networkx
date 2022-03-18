@@ -1288,7 +1288,7 @@ def path_weight(G, path, weight):
 
     Returns
     -------
-    cost: int
+    cost: float
         A integer representing the total cost with respect to the
         specified weight of the specified path
 
