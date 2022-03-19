@@ -49,6 +49,10 @@ def bridges(G, root=None):
     bridge if and only if it is not contained in any chain. Chains are found
     using the :func:`networkx.chain_decomposition` function.
 
+    The algorithm described in _[1] requires a simple graph. If the provided
+    graph is a multigraph, we convert it to a simple graph and verify that any
+    bridges discovered by the chain decomposition algorithm are not multi-edges.
+
     Ignoring polylogarithmic factors, the worst-case time complexity is the
     same as the :func:`networkx.chain_decomposition` function,
     $O(m + n)$, where $n$ is the number of nodes in the graph and $m$ is
