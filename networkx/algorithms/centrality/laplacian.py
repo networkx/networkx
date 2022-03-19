@@ -13,7 +13,7 @@ def delete_row_csr(mat, i):
     r"""Delete specific row from scipy matrix.
 
     Delete specific row from a scipy csr matrix based on the index.
-    
+
     Parameters
     ----------
     mat : sparse matrix
