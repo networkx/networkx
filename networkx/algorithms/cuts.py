@@ -414,10 +414,11 @@ def cut_edges(G):
        "Introduction to Graph Theory," p. 23
     """
     G_copy = G.copy()
+    ncc = nx.number_connected_components(G)
     cut_edges = []
     for e in G.edges:
         G_copy.remove_edge(*e)
-        if nx.number_connected_components(G_copy) > nx.number_connected_components(G):
+        if nx.number_connected_components(G_copy) > ncc:
             cut_edges.append(e)
         G_copy.add_edge(*e)
     return cut_edges
