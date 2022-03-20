@@ -53,7 +53,7 @@ def tutte_polynomial(G):
     .. math::
         T_G(x, y) = \begin{cases}
     	   x^{k(G)} y^{l(G)}, & \text{if all edges are cut-edges or loops} \\
-           T_{G-e}(x, y) + T_{G/e}(x, y), & \text{otherwise, for $e$ not a cut-edge or loop}
+           T_{G-e}(x, y) + T_{G/e}(x, y), & \text{otherwise, for an arbitrary edge $e$ not a cut-edge or loop}
         \end{cases}
 
     Parameters
