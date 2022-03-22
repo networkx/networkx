@@ -4,7 +4,15 @@ __all__ = ["average_neighbor_degree"]
 
 
 def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=None):
-    r"""Returns the average degree of the neighborhood of each node.
+    r"""Returns the average degree of the neighborhood of each node. 
+    
+    In an undirected graph, the neighborhood of a node is the list of nodes which are connected to the given node with an edge.   
+
+    In a directed graph, the neighborhood of a node will depend on the argument passed to source parameter when calling the function:
+    
+        - if source is 'in', then the neighborhood of the node is the list of nodes which are predecessors of the given node,
+        - if source is 'out', then the neighborhood of the node is the list of nodes which are successors of the given node,
+        - if source is 'in+out', then the neighborhood of the node is the list of nodes which are either predecessors or successors of the given node.
 
     The average neighborhood degree of a node `i` is
 
@@ -71,7 +79,7 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
     >>> G = nx.DiGraph()
     >>> nx.add_path(G, [0, 1, 2, 3])
     >>> nx.average_neighbor_degree(G, source="in", target="in")
-    {0: 0.0, 1: 1.0, 2: 1.0, 3: 0.0}
+    {0: 0.0, 1: 0.0, 2: 1.0, 3: 1.0}
 
     >>> nx.average_neighbor_degree(G, source="out", target="out")
     {0: 1.0, 1: 1.0, 2: 0.0, 3: 0.0}
@@ -125,12 +133,34 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
     tgt_deg = dict(target_degree())
     # average degree of neighbors
     avg = {}
+    # edges in the graph together with their weights
+    edges = G.edges(data=True)    
+    
     for n, deg in source_degree(nodes, weight=weight):
         # normalize but not by zero degree
         if deg == 0:
             avg[n] = 0.0
             continue
-        G_n = G[n]
+        
+        # if G is an undirected graph, G_n is neighbors of n
+        G_n = G[n]     
+
+        """
+        if G is a directed graph, 
+            if source is 'in', G_n will be predecessors of n
+            else if source is 'out', G_n will be successors of n
+        """        
+        if G.is_directed():            
+            G_n = {}
+            if source == "in":
+                for start, end, weight_dict in edges:
+                    if end == n:
+                        G_n[start] = weight_dict                    
+            elif source == "out":
+                for start, end, weight_dict in edges:
+                    if start == n:
+                        G_n[end] = weight_dict
+
         if weight is None:
             avg[n] = sum(tgt_deg[nbr] for nbr in G_n) / deg
         else:
