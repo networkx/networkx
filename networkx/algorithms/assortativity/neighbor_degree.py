@@ -4,12 +4,12 @@ __all__ = ["average_neighbor_degree"]
 
 
 def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=None):
-    r"""Returns the average degree of the neighborhood of each node. 
-    
-    In an undirected graph, the neighborhood of a node is the list of nodes which are connected to the given node with an edge.   
+    r"""Returns the average degree of the neighborhood of each node.
+
+    In an undirected graph, the neighborhood of a node is the list of nodes which are connected to the given node with an edge.
 
     In a directed graph, the neighborhood of a node will depend on the argument passed to source parameter when calling the function:
-    
+
         - if source is 'in', then the neighborhood of the node is the list of nodes which are predecessors of the given node,
         - if source is 'out', then the neighborhood of the node is the list of nodes which are successors of the given node,
         - if source is 'in+out', then the neighborhood of the node is the list of nodes which are either predecessors or successors of the given node.
@@ -134,28 +134,28 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
     # average degree of neighbors
     avg = {}
     # edges in the graph together with their weights
-    edges = G.edges(data=True)    
-    
+    edges = G.edges(data=True)
+
     for n, deg in source_degree(nodes, weight=weight):
         # normalize but not by zero degree
         if deg == 0:
             avg[n] = 0.0
             continue
-        
+
         # if G is an undirected graph, G_n is neighbors of n
-        G_n = G[n]     
+        G_n = G[n]
 
         """
         if G is a directed graph, 
             if source is 'in', G_n will be predecessors of n
             else if source is 'out', G_n will be successors of n
-        """        
-        if G.is_directed():            
+        """
+        if G.is_directed():
             G_n = {}
             if source == "in":
                 for start, end, weight_dict in edges:
                     if end == n:
-                        G_n[start] = weight_dict                    
+                        G_n[start] = weight_dict
             elif source == "out":
                 for start, end, weight_dict in edges:
                     if start == n:
