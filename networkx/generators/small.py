@@ -573,3 +573,32 @@ def tutte_graph(create_using=None):
     ]
     G = make_small_undirected_graph(description, create_using)
     return G
+
+
+def lemke_graph():
+    """Lemke graph
+
+    Lemke  graph consists  of 8  nodes with  13 edges  which
+    originally appeared in Lemke and Kleitman 1989
+
+    Examples
+    --------
+    >> nx.draw(nx.lemke_graph())
+    """
+
+    el = [
+        (0, 1),
+        (1, 2),
+        (2, 3),
+        (3, 4),
+        (4, 5),
+        (5, 6),
+        (6, 0),
+        (7, 6),
+        (7, 4),
+        (7, 2),
+        (6, 4),
+        (5, 2),
+        (3, 6),
+    ]
+    return nx.from_edgelist(el)
