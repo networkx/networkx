@@ -139,7 +139,7 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
     # based on the arguments passed to the method we will populate them or leave them empty
     G_P = G_S = {n: {} for n in G}
 
-    # if G is a directed graph,
+    # if G is a directed graph
     if G.is_directed():
         # if source includes 'in' ("in" or "in+out" cases), G_P will be populated with predecessors
         if "in" in source:
