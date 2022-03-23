@@ -30,19 +30,22 @@ def extrema_bounding(G, compute="diameter"):
     compute : string denoting the requesting metric
        "diameter" for the maximal eccentricity value,
        "radius" for the minimal eccentricity value,
-       "periphery" for the set of nodes with eccentricity equal to the diameter
-       "center" for the set of nodes with eccentricity equal to the radius
+       "periphery" for the set of nodes with eccentricity equal to the diameter,
+       "center" for the set of nodes with eccentricity equal to the radius,
+       "eccentricities" for the maximum distance from each node to all other nodes in G
 
     Returns
     -------
     value : value of the requested metric
        int for "diameter" and "radius" or
-       list of nodes for "center" and "periphery"
+       list of nodes for "center" and "periphery" or
+       dictionary of eccentricity values keyed by node for "eccentricities"
 
     Raises
     ------
     NetworkXError
-        If the graph consists of multiple components
+        If the graph consists of multiple components or
+        If the compute parameter is passed an invalid argument
 
     Notes
     -----
@@ -150,7 +153,11 @@ def extrema_bounding(G, compute="diameter"):
             }
 
         elif compute == "eccentricities":
-            ruled_out = {}
+            ruled_out = set([])
+
+        else:
+            msg = "The argument passed to compute parameter is invalid. Please enter one of the following extreme distance metrics: 'diameter', 'radius', 'periphery', 'center', 'eccentricities'"
+            raise nx.NetworkXError(msg)
 
         ruled_out.update(i for i in candidates if ecc_lower[i] == ecc_upper[i])
         candidates -= ruled_out
