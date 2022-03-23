@@ -128,14 +128,12 @@ def extrema_bounding(G, compute="diameter"):
                 for i in candidates
                 if ecc_upper[i] <= maxlower and 2 * ecc_lower[i] >= maxupper
             }
-
         elif compute == "radius":
             ruled_out = {
                 i
                 for i in candidates
                 if ecc_lower[i] >= minupper and ecc_upper[i] + 1 <= 2 * minlower
             }
-
         elif compute == "periphery":
             ruled_out = {
                 i
@@ -143,7 +141,6 @@ def extrema_bounding(G, compute="diameter"):
                 if ecc_upper[i] < maxlower
                 and (maxlower == maxupper or ecc_lower[i] > maxupper)
             }
-
         elif compute == "center":
             ruled_out = {
                 i
@@ -151,12 +148,10 @@ def extrema_bounding(G, compute="diameter"):
                 if ecc_lower[i] > minupper
                 and (minlower == minupper or ecc_upper[i] + 1 < 2 * minlower)
             }
-
         elif compute == "eccentricities":
-            ruled_out = set([])
-
+            ruled_out = set()
         else:
-            msg = "Please enter one of the following extreme distance metrics: diameter, radius, periphery, center, eccentricities."
+            msg = "The argument passed to compute parameter is invalid. Please enter one of the following extreme distance metrics: 'diameter', 'radius', 'periphery', 'center', 'eccentricities'"
             raise nx.NetworkXError(msg)
 
         ruled_out.update(i for i in candidates if ecc_lower[i] == ecc_upper[i])
