@@ -156,8 +156,7 @@ def extrema_bounding(G, compute="diameter"):
             ruled_out = set([])
 
         else:
-            msg = "The argument passed to compute parameter is invalid. \
-            Please enter one of the following extreme distance metrics: diameter, radius, periphery, center, eccentricities."
+            msg = "Please enter one of the following extreme distance metrics: diameter, radius, periphery, center, eccentricities."
             raise nx.NetworkXError(msg)
 
         ruled_out.update(i for i in candidates if ecc_lower[i] == ecc_upper[i])
