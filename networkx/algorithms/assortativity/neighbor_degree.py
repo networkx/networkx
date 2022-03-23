@@ -131,10 +131,25 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
 
     # precompute target degrees -- should *not* be weighted degree
     tgt_deg = dict(target_degree())
+
     # average degree of neighbors
     avg = {}
-    # edges in the graph together with their weights
-    edges = G.edges(data=True)
+
+    # default to empty neighbors dicts
+    # based on the arguments passed to the method we will populate them or leave them empty
+    G_P = G_S = {n: {} for n in G}
+
+    # if G is a directed graph,
+    if G.is_directed():
+        # if source includes 'in' ("in" or "in+out" cases), G_P will be populated with predecessors
+        if "in" in source:
+            G_P = G.pred
+        # if source includes 'out' ("out" or "in+out" cases), G_S will be populated with successors
+        if "out" in source:
+            G_S = G.succ
+    else:
+        # if G is an undirected graph, G_S will be populated with adjacency dict
+        G_S = G.adj
 
     for n, deg in source_degree(nodes, weight=weight):
         # normalize but not by zero degree
@@ -142,27 +157,19 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
             avg[n] = 0.0
             continue
 
-        # if G is an undirected graph, G_n is neighbors of n
-        G_n = G[n]
+        # these will hold the predecessors and successors of node n
+        P_n = G_P[n]
+        S_n = G_S[n]
 
-        """
-        if G is a directed graph, 
-            if source is 'in', G_n will be predecessors of n
-            else if source is 'out', G_n will be successors of n
-        """
-        if G.is_directed():
-            G_n = {}
-            if source == "in":
-                for start, end, weight_dict in edges:
-                    if end == n:
-                        G_n[start] = weight_dict
-            elif source == "out":
-                for start, end, weight_dict in edges:
-                    if start == n:
-                        G_n[end] = weight_dict
-
+        # when calculating average neighbor degree, we consider both P_n (predessors of n) and S_n (successors of n).
+        # note that one of these two dictionaries may be empty based on the arguments passed to the method.
         if weight is None:
-            avg[n] = sum(tgt_deg[nbr] for nbr in G_n) / deg
+            avg[n] = (
+                sum(tgt_deg[nbr] for nbr in S_n) + (sum(tgt_deg[nbr] for nbr in P_n))
+            ) / deg
         else:
-            avg[n] = sum(G_n[nbr].get(weight, 1) * tgt_deg[nbr] for nbr in G_n) / deg
+            avg[n] = (
+                sum(S_n[nbr].get(weight, 1) * tgt_deg[nbr] for nbr in S_n)
+                + sum(P_n[nbr].get(weight, 1) * tgt_deg[nbr] for nbr in P_n)
+            ) / deg
     return avg
