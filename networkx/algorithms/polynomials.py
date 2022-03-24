@@ -17,8 +17,10 @@ __all__ = ["tutte_polynomial"]
 
 @not_implemented_for("directed")
 def tutte_polynomial(G):
-    r"""Compute a graph's Tutte polynomial via an iterative version of the
-    deletion-contraction algorithm.
+    r"""Returns the Tutte polynomial of `G`
+    
+    This function computes the Tutte polynomial via an iterative version of
+    the deletion-contraction algorithm.
 
     The Tutte polynomial `T_G(x, y)` is a fundamental graph polynomial invariant in
     two variables. It encodes a wide array of information related to the
