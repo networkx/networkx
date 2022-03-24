@@ -30,20 +30,23 @@ def extrema_bounding(G, compute="diameter"):
     compute : string denoting the requesting metric
        "diameter" for the maximal eccentricity value,
        "radius" for the minimal eccentricity value,
-       "periphery" for the set of nodes with eccentricity equal to the diameter
-       "center" for the set of nodes with eccentricity equal to the radius
+       "periphery" for the set of nodes with eccentricity equal to the diameter,
+       "center" for the set of nodes with eccentricity equal to the radius,
+       "eccentricities" for the maximum distance from each node to all other nodes in G
 
     Returns
     -------
     value : value of the requested metric
        int for "diameter" and "radius" or
-       list of nodes for "center" and "periphery"
+       list of nodes for "center" and "periphery" or
+       dictionary of eccentricity values keyed by node for "eccentricities"
 
     Raises
     ------
     NetworkXError
         If the graph consists of multiple components
-
+    ValueError
+        If `compute` is not one of "diameter", "radius", "periphery", "center", or "eccentricities".
     Notes
     -----
     This algorithm was proposed in the following papers:
@@ -125,14 +128,12 @@ def extrema_bounding(G, compute="diameter"):
                 for i in candidates
                 if ecc_upper[i] <= maxlower and 2 * ecc_lower[i] >= maxupper
             }
-
         elif compute == "radius":
             ruled_out = {
                 i
                 for i in candidates
                 if ecc_lower[i] >= minupper and ecc_upper[i] + 1 <= 2 * minlower
             }
-
         elif compute == "periphery":
             ruled_out = {
                 i
@@ -140,7 +141,6 @@ def extrema_bounding(G, compute="diameter"):
                 if ecc_upper[i] < maxlower
                 and (maxlower == maxupper or ecc_lower[i] > maxupper)
             }
-
         elif compute == "center":
             ruled_out = {
                 i
@@ -148,9 +148,11 @@ def extrema_bounding(G, compute="diameter"):
                 if ecc_lower[i] > minupper
                 and (minlower == minupper or ecc_upper[i] + 1 < 2 * minlower)
             }
-
         elif compute == "eccentricities":
-            ruled_out = {}
+            ruled_out = set()
+        else:
+            msg = "compute must be one of 'diameter', 'radius', 'periphery', 'center', 'eccentricities'"
+            raise ValueError(msg)
 
         ruled_out.update(i for i in candidates if ecc_lower[i] == ecc_upper[i])
         candidates -= ruled_out

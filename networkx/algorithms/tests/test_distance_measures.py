@@ -7,6 +7,12 @@ import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 
 
+def test_extrema_bounding_invalid_compute_kwarg():
+    G = nx.path_graph(3)
+    with pytest.raises(ValueError, match="compute must be one of"):
+        nx.extrema_bounding(G, compute="spam")
+
+
 class TestDistance:
     def setup_method(self):
         G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
