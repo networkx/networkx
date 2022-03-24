@@ -44,9 +44,9 @@ def extrema_bounding(G, compute="diameter"):
     Raises
     ------
     NetworkXError
-        If the graph consists of multiple components or
-        If the compute parameter is passed an invalid argument
-
+        If the graph consists of multiple components
+    ValueError
+        If `compute` is not one of "diameter", "radius", "periphery", "center", or "eccentricities".
     Notes
     -----
     This algorithm was proposed in the following papers:
@@ -151,8 +151,8 @@ def extrema_bounding(G, compute="diameter"):
         elif compute == "eccentricities":
             ruled_out = set()
         else:
-            msg = "The argument passed to compute parameter is invalid. Please enter one of the following extreme distance metrics: 'diameter', 'radius', 'periphery', 'center', 'eccentricities'"
-            raise nx.NetworkXError(msg)
+            msg = "compute must be one of 'diameter', 'radius', 'periphery', 'center', 'eccentricities'"
+            raise ValueError(msg)
 
         ruled_out.update(i for i in candidates if ecc_lower[i] == ecc_upper[i])
         candidates -= ruled_out
