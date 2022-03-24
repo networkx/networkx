@@ -1159,6 +1159,7 @@ def estimate_factor(n, swing, traction, speed, speed_efficiency, jitter_toleranc
         target_speed = np.inf
     else:
         target_speed = jitter * speed_efficiency * traction / swing
+
     if swing > jitter * traction:
         if speed_efficiency > min_speed_efficiency:
             speed_efficiency *= 0.7
@@ -1167,8 +1168,7 @@ def estimate_factor(n, swing, traction, speed, speed_efficiency, jitter_toleranc
 
     max_rise = 0.5
     speed = speed + min(target_speed - speed, max_rise * speed)
-    factor = speed / (1.0 + np.sqrt(speed * swing))
-    return factor, speed, speed_efficiency
+    return speed, speed_efficiency
 
 
 def forceatlas2_layout(
@@ -1176,12 +1176,13 @@ def forceatlas2_layout(
     pos=None,
     n_iter=100,
     jitter_tolerance=1.0,
-    scaling=2.0,
+    scaling_ratio=2.0,
+    gravity=1.0,
     distributed_action=False,
     strong_gravity=False,
-    prevent_overlap=False,
+    adjust_sizes=False,
     dissuade_hubs=False,
-    edge_weight=False,
+    edge_weight_influence=False,
     linlog=False,
 ):
     """Forceatlas2 layout for networkx
@@ -1200,18 +1201,18 @@ def forceatlas2_layout(
     jitter_tolerance : float
         Jitter  tolerance  for  adjusting  speed  of  layout
         generation
-    scaling : float
+    scaling_ratio : float
         Controls  force scaling  constants k_attraction  and
         k_repulsion
     distributed_action : bool
     strong_gravity : bool
         Controls the  "pull" to  the center  of mass  of the
         plot (0,0)
-    prevent_overlap : bool
+    adjust_sizes: bool
         Prevent node overlapping in the layout
     dissuade_hubs : bool
         Prevent hub clustering
-    edge_weight : bool
+    edge_weight_influence : bool
         Generate layout with or without considering the edge
         weights
     linlog : bool
@@ -1228,19 +1229,19 @@ def forceatlas2_layout(
     if pos is None:
         pos = nx.random_layout(G)
 
-    pos = np.asarray([i.copy() for i in pos.values()])
     dim = len(next(iter(pos.values())))
+    pos = np.asarray([i.copy() for i in pos.values()])
     mass = np.array(
         [G.nodes[node].get("mass", G.degree(node) + 1) for node in G.nodes()]
     )
     size = np.array([G.nodes[node].get("size", 1) for node in G.nodes()])
 
     n = len(G)
-    gravity = np.zeros((n, dim))
+    gravities = np.zeros((n, dim))
     attraction = np.zeros((n, dim))
     repulsion = np.zeros((n, dim))
     weight = None
-    if edge_weight:
+    if edge_weight_influence:
         weight = "weight"
     A = nx.adjacency_matrix(G, weight=weight)
     if n < 1000:
@@ -1273,28 +1274,33 @@ def forceatlas2_layout(
 
         # repulsion
         tmp = mass[:, None] @ mass[None]
-        if prevent_overlap:
+        if adjust_sizes:
             distance += -size[:, None] - size[None]
+            # multiply negative distance * 100 (squared below)
+            distance[distance < 0] = 1 / 10
+
         d2 = distance**2
         # remove self-interaction
         np.fill_diagonal(tmp, 0)
         np.fill_diagonal(d2, 0)
-        factor = (tmp / d2) * scaling
+        factor = (tmp / d2) * scaling_ratio
         np.fill_diagonal(factor, 0)
         repulsion = np.einsum("ijk, ij -> ik", diff, factor)
 
         # gravity
-        gravity = -mass[:, None] * pos / np.linalg.norm(pos, axis=-1)[:, None]
+        gravities = (
+            -gravity * mass[:, None] * pos / np.linalg.norm(pos, axis=-1)[:, None]
+        )
         if strong_gravity:
-            gravity *= np.linalg.norm(pos, axis=-1)
+            gravities *= np.linalg.norm(pos, axis=-1)[:, None]
         # total forces
-        update = attraction + repulsion + gravity
+        update = attraction + repulsion + gravities
 
         # compute total swing and traction
         swing += (mass * np.linalg.norm(pos - update, axis=-1)).sum()
         traction += (0.5 * mass * np.linalg.norm(pos + update, axis=-1)).sum()
 
-        factor, speed, speed_efficiency = estimate_factor(
+        speed, speed_efficiency = estimate_factor(
             n,
             swing,
             traction,
@@ -1304,11 +1310,20 @@ def forceatlas2_layout(
         )
 
         # update pos
-        if abs((update * factor).sum()) < 1e-10:
-            print((update * factor).sum())
+        if adjust_sizes:
+            swinging = mass * np.linalg.norm(update, axis=-1)
+            factor = 0.1 * speed / (1 + np.sqrt(speed * swinging))
+            df = np.linalg.norm(update, axis=-1)
+            factor = np.minimum(factor * df, 10.0 * np.ones(df.shape)) / df
+        else:
+            swinging = mass * np.linalg.norm(update, axis=-1)
+            factor = speed / (1 + np.sqrt(speed * swinging))
+
+        pos += update * factor[:, None]
+        if abs((update * factor[:, None]).sum()) < 1e-10:
             print(f"Breaking after {idx}")
             break
-        pos += update * factor
+
     return {node: pos[idx] for idx, node in enumerate(G.nodes())}
 
 
