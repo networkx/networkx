@@ -1,5 +1,6 @@
 """PageRank analysis of graph structure. """
 from warnings import warn
+
 import networkx as nx
 
 __all__ = ["pagerank", "pagerank_numpy", "pagerank_scipy", "google_matrix"]
@@ -122,10 +123,7 @@ def _pagerank_python(
     if len(G) == 0:
         return {}
 
-    if not G.is_directed():
-        D = G.to_directed()
-    else:
-        D = G
+    D = G.to_directed()
 
     # Create a copy in (right) stochastic form
     W = nx.stochastic_graph(D, weight=weight)
@@ -231,10 +229,10 @@ def google_matrix(
     --------
     pagerank, pagerank_numpy, pagerank_scipy
     """
-    import numpy as np
-
     # TODO: Remove this warning in version 3.0
     import warnings
+
+    import numpy as np
 
     warnings.warn(
         "google_matrix will return an np.ndarray instead of a np.matrix in\n"
@@ -468,18 +466,19 @@ def pagerank_scipy(
         return {}
 
     nodelist = list(G)
-    M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, dtype=float)
-    S = np.array(M.sum(axis=1)).flatten()
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
+    S = A.sum(axis=1)
     S[S != 0] = 1.0 / S[S != 0]
-    Q = sp.sparse.spdiags(S.T, 0, *M.shape, format="csr")
-    M = Q * M
+    # TODO: csr_array
+    Q = sp.sparse.csr_array(sp.sparse.spdiags(S.T, 0, *A.shape))
+    A = Q @ A
 
     # initial vector
     if nstart is None:
         x = np.repeat(1.0 / N, N)
     else:
         x = np.array([nstart.get(n, 0) for n in nodelist], dtype=float)
-        x = x / x.sum()
+        x /= x.sum()
 
     # Personalization vector
     if personalization is None:
@@ -488,7 +487,7 @@ def pagerank_scipy(
         p = np.array([personalization.get(n, 0) for n in nodelist], dtype=float)
         if p.sum() == 0:
             raise ZeroDivisionError
-        p = p / p.sum()
+        p /= p.sum()
     # Dangling nodes
     if dangling is None:
         dangling_weights = p
@@ -501,7 +500,7 @@ def pagerank_scipy(
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
         xlast = x
-        x = alpha * (x * M + sum(x[is_dangling]) * dangling_weights) + (1 - alpha) * p
+        x = alpha * (x @ A + sum(x[is_dangling]) * dangling_weights) + (1 - alpha) * p
         # check convergence, l1 norm
         err = np.absolute(x - xlast).sum()
         if err < N * tol:

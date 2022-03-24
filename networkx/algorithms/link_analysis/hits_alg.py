@@ -75,26 +75,26 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
 
     if len(G) == 0:
         return {}, {}
-    M = nx.adjacency_matrix(G, nodelist=list(G), dtype=float)
+    A = nx.adjacency_matrix(G, nodelist=list(G), dtype=float)
 
     if nstart is None:
-        u, s, vt = sp.sparse.linalg.svds(M, k=1, maxiter=max_iter, tol=tol)
+        _, _, vt = sp.sparse.linalg.svds(A, k=1, maxiter=max_iter, tol=tol)
     else:
         nstart = np.array(list(nstart.values()))
-        u, s, vt = sp.sparse.linalg.svds(M, k=1, v0=nstart, maxiter=max_iter, tol=tol)
+        _, _, vt = sp.sparse.linalg.svds(A, k=1, v0=nstart, maxiter=max_iter, tol=tol)
 
     a = vt.flatten().real
-    h = np.asarray(M * a).flatten()
+    h = A @ a
     if normalized:
-        h = h / h.sum()
-        a = a / a.sum()
+        h /= h.sum()
+        a /= a.sum()
     hubs = dict(zip(G, map(float, h)))
     authorities = dict(zip(G, map(float, a)))
     return hubs, authorities
 
 
 def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
-    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
+    if isinstance(G, (nx.MultiGraph, nx.MultiDiGraph)):
         raise Exception("hits() not defined for graphs with multiedges.")
     if len(G) == 0:
         return {}, {}
@@ -245,8 +245,9 @@ def hits_numpy(G, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    import numpy as np
     import warnings
+
+    import numpy as np
 
     warnings.warn(
         (
@@ -269,11 +270,11 @@ def hits_numpy(G, normalized=True):
     e, ev = np.linalg.eig(A)
     a = ev[:, np.argmax(e)]  # eigenvector corresponding to the maximum eigenvalue
     if normalized:
-        h = h / h.sum()
-        a = a / a.sum()
+        h /= h.sum()
+        a /= a.sum()
     else:
-        h = h / h.max()
-        a = a / a.max()
+        h /= h.max()
+        a /= a.max()
     hubs = dict(zip(G, map(float, h)))
     authorities = dict(zip(G, map(float, a)))
     return hubs, authorities
@@ -349,8 +350,9 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    import numpy as np
     import warnings
+
+    import numpy as np
 
     warnings.warn(
         (
@@ -363,23 +365,22 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
 
     if len(G) == 0:
         return {}, {}
-    M = nx.to_scipy_sparse_matrix(G, nodelist=list(G))
-    (n, m) = M.shape  # should be square
-    A = M.T * M  # authority matrix
-    x = np.ones((n, 1)) / n  # initial guess
+    A = nx.to_scipy_sparse_array(G, nodelist=list(G))
+    (n, _) = A.shape  # should be square
+    ATA = A.T @ A  # authority matrix
     # choose fixed starting vector if not given
     if nstart is None:
-        x = np.ones((n, 1)) / n  # initial guess
+        x = np.ones((n, 1)) / n
     else:
         x = np.array([nstart.get(n, 0) for n in list(G)], dtype=float)
-        x = x / x.sum()
+        x /= x.sum()
 
     # power iteration on authority matrix
     i = 0
     while True:
         xlast = x
-        x = A * x
-        x = x / x.max()
+        x = ATA @ x
+        x /= x.max()
         # check convergence, l1 norm
         err = np.absolute(x - xlast).sum()
         if err < tol:
@@ -388,12 +389,11 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
             raise nx.PowerIterationFailedConvergence(max_iter)
         i += 1
 
-    a = np.asarray(x).flatten()
-    # h=M*a
-    h = np.asarray(M * a).flatten()
+    a = x.flatten()
+    h = A @ a
     if normalized:
-        h = h / h.sum()
-        a = a / a.sum()
+        h /= h.sum()
+        a /= a.sum()
     hubs = dict(zip(G, map(float, h)))
     authorities = dict(zip(G, map(float, a)))
     return hubs, authorities

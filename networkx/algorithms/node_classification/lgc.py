@@ -62,7 +62,7 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
 
-    X = nx.to_scipy_sparse_matrix(G)  # adjacency matrix
+    X = nx.to_scipy_sparse_array(G)  # adjacency matrix
     labels, label_dict = _get_label_info(G, label_name)
 
     if labels.shape[0] == 0:
@@ -75,9 +75,10 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     F = np.zeros((n_samples, n_classes))
 
     # Build propagation matrix
-    degrees = X.sum(axis=0).A[0]
+    degrees = X.sum(axis=0)
     degrees[degrees == 0] = 1  # Avoid division by 0
-    D2 = np.sqrt(sp.sparse.diags((1.0 / degrees), offsets=0))
+    # TODO: csr_array
+    D2 = np.sqrt(sp.sparse.csr_array(sp.sparse.diags((1.0 / degrees), offsets=0)))
     P = alpha * ((D2 @ X) @ D2)
     # Build base matrix
     B = np.zeros((n_samples, n_classes))

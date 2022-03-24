@@ -1452,6 +1452,7 @@ def threshold_accepting_tsp(
     move : "1-1" or "1-0" or function, optional (default="1-1")
         Indicator of what move to use when finding new trial solutions.
         Strings indicate two special built-in moves:
+
         - "1-1": 1-1 exchange which transposes the position
           of two elements of the current solution.
           The function called is :func:`swap_two_nodes`.

@@ -473,7 +473,7 @@ def spring_layout(
         # Sparse matrix
         if len(G) < 500:  # sparse solver for large graphs
             raise ValueError
-        A = nx.to_scipy_sparse_matrix(G, weight=weight, dtype="f")
+        A = nx.to_scipy_sparse_array(G, weight=weight, dtype="f")
         if k is None and fixed is not None:
             # We must adjust k by domain size for layouts not near 1x1
             nnodes, _ = A.shape
@@ -581,7 +581,7 @@ def _sparse_fruchterman_reingold(
     try:
         A = A.tolil()
     except AttributeError:
-        A = (sp.sparse.coo_matrix(A)).tolil()
+        A = (sp.sparse.coo_array(A)).tolil()
 
     if pos is None:
         # random initial positions
@@ -618,7 +618,7 @@ def _sparse_fruchterman_reingold(
             # enforce minimum distance of 0.01
             distance = np.where(distance < 0.01, 0.01, distance)
             # the adjacency matrix row
-            Ai = np.asarray(A.getrowview(i).toarray())
+            Ai = A.getrowview(i).toarray()  # TODO: revisit w/ sparse 1D container
             # displacement "force"
             displacement[:, i] += (
                 delta * (k * k / distance ** 2 - Ai * distance / k)
@@ -821,7 +821,7 @@ def spectral_layout(G, weight="weight", scale=1, center=None, dim=2):
         # Sparse matrix
         if len(G) < 500:  # dense solver is faster for small graphs
             raise ValueError
-        A = nx.to_scipy_sparse_matrix(G, weight=weight, dtype="d")
+        A = nx.to_scipy_sparse_array(G, weight=weight, dtype="d")
         # Symmetrize directed graphs
         if G.is_directed():
             A = A + np.transpose(A)
@@ -876,8 +876,8 @@ def _sparse_spectral(A, dim=2):
         raise nx.NetworkXError(msg) from err
 
     # form Laplacian matrix
-    data = np.asarray(A.sum(axis=1).T)
-    D = sp.sparse.spdiags(data, 0, nnodes, nnodes)
+    # TODO: Rm csr_array wrapper in favor of spdiags array constructor when available
+    D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, nnodes, nnodes))
     L = D - A
 
     k = dim + 1
@@ -957,14 +957,17 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
         Scale factor for positions.
     center : array-like or None
         Coordinate pair around which to center the layout.
-    dim : int
+    dim : int, default=2
         Dimension of layout, currently only dim=2 is supported.
         Other dimension values result in a ValueError.
-    resolution : float
+    resolution : float, default=0.35
         The compactness of the spiral layout returned.
         Lower values result in more compressed spiral layouts.
-    equidistant : bool
-        If True, nodes will be plotted equidistant from each other.
+    equidistant : bool, default=False
+        If True, nodes will be positioned equidistant from each other
+        by decreasing angle further from center.
+        If False, nodes will be positioned at equal angles
+        from each other by increasing separation further from center.
 
     Returns
     -------
@@ -1003,6 +1006,7 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
         chord = 1
         step = 0.5
         theta = resolution
+        theta += chord / (step * theta)
         for _ in range(len(G)):
             r = step * theta
             theta += chord / r

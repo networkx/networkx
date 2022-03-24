@@ -574,7 +574,16 @@ def info(G, n=None):
     NetworkXError
         If n is not in the graph G
 
+    .. deprecated:: 2.7
+       ``info`` is deprecated and will be removed in NetworkX 3.0.
     """
+    import warnings
+
+    warnings.warn(
+        ("info is deprecated and will be removed in version 3.0.\n"),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if n is None:
         return str(G)
     if n not in G:
@@ -1279,8 +1288,8 @@ def path_weight(G, path, weight):
 
     Returns
     -------
-    cost: int
-        A integer representing the total cost with respect to the
+    cost: int or float
+        An integer or a float representing the total cost with respect to the
         specified weight of the specified path
 
     Raises

@@ -181,6 +181,58 @@ def set_warnings():
         category=FutureWarning,
         message="google_matrix will return an np.ndarray instead of a np.matrix",
     )
+    ### Future warnings from scipy.sparse array transition
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="biadjacency_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="bethe_hessian_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="incidence_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="laplacian_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="normalized_laplacian_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="directed_laplacian_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=FutureWarning,
+        message="directed_combinatorial_laplacian_matrix",
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="modularity_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="directed_modularity_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message="adjacency_matrix"
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="\n\nThe scipy.sparse array containers",
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="networkx.project"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\nfind_cores"
+    )
+    warnings.filterwarnings("ignore", category=FutureWarning, message="attr_matrix")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message=r"\n\nmake_small_.*"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="to_numpy_recarray"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="info")
 
 
 @pytest.fixture(autouse=True)

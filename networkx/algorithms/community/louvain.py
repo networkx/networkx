@@ -185,6 +185,7 @@ def louvain_partitions(
         )
         if new_mod - mod <= threshold:
             return
+        mod = new_mod
         graph = _gen_graph(graph, inner_partition)
         partition, inner_partition, improvement = _one_level(
             graph, m, partition, resolution, is_directed, seed

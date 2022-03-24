@@ -38,7 +38,7 @@ def test_partition():
         {23, 25, 27, 28, 24, 31},
         {32, 33, 8, 14, 15, 18, 20, 22, 26, 29, 30},
     ]
-    partition = louvain_communities(G, seed=2)
+    partition = louvain_communities(G, seed=2, weight=None)
 
     assert part == partition
 
@@ -57,8 +57,12 @@ def test_none_weight_param():
     ]
     partition1 = louvain_communities(G, weight=None, seed=2)
     partition2 = louvain_communities(G, weight="foo", seed=2)
+    partition3 = louvain_communities(G, weight="weight", seed=2)
 
-    assert part == partition1 != partition2
+    assert part == partition1
+    assert part != partition2
+    assert part != partition3
+    assert partition2 != partition3
 
 
 def test_quality():
@@ -110,3 +114,15 @@ def test_resolution():
     partition3 = louvain_communities(G, resolution=2, seed=12)
 
     assert len(partition1) <= len(partition2) <= len(partition3)
+
+
+def test_threshold():
+    G = nx.LFR_benchmark_graph(
+        250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
+    )
+    partition1 = louvain_communities(G, threshold=0.2, seed=2)
+    partition2 = louvain_communities(G, seed=2)
+    mod1 = modularity(G, partition1)
+    mod2 = modularity(G, partition2)
+
+    assert mod1 < mod2

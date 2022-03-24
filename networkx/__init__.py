@@ -8,7 +8,7 @@ structure, dynamics, and functions of complex networks.
 See https://networkx.org for complete documentation.
 """
 
-__version__ = "2.7rc1.dev0"
+__version__ = "2.7.2rc1.dev0"
 
 
 def __getattr__(name):
@@ -51,7 +51,9 @@ def __getattr__(name):
     raise AttributeError(f"module {__name__} has no attribute {name}")
 
 
-# These are import orderwise
+# These are imported in order as listed
+from networkx.lazy_imports import lazy_import
+
 from networkx.exception import *
 
 from networkx import utils

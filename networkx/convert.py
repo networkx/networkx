@@ -55,8 +55,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
          iterator (e.g. itertools.chain) that produces edges
          generator of edges
          Pandas DataFrame (row per edge)
-         numpy matrix
-         numpy ndarray
+         2D numpy array
          scipy sparse matrix
          pygraphviz agraph
 
@@ -144,7 +143,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                 return nx.from_numpy_array(data, create_using=create_using)
             except Exception as err:
                 raise nx.NetworkXError(
-                    "Input is not a correct numpy matrix or array."
+                    f"Failed to interpret array as an adjacency matrix."
                 ) from err
     except ImportError:
         warnings.warn("numpy not found, skipping conversion test.", ImportWarning)

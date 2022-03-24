@@ -61,14 +61,25 @@ def modularity_matrix(G, nodelist=None, weight=None):
     .. [1] M. E. J. Newman, "Modularity and community structure in networks",
            Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
     """
+    import numpy as np
+
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     k = A.sum(axis=1)
     m = k.sum() * 0.5
     # Expected adjacency matrix
-    X = k * k.transpose() / (2 * m)
-    return A - X
+    X = np.outer(k, k) / (2 * m)
+
+    import warnings
+
+    warnings.warn(
+        "modularity_matrix will return a numpy array instead of a matrix in NetworkX 3.0.",
+        FutureWarning,
+        stacklevel=2,
+    )
+    # TODO: rm np.asmatrix for networkx 3.0
+    return np.asmatrix(A - X)
 
 
 @not_implemented_for("undirected")
@@ -147,12 +158,23 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
         "Community structure in directed networks",
         Phys. Rev Lett., vol. 100, no. 11, p. 118703, 2008.
     """
+    import numpy as np
+
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     k_in = A.sum(axis=0)
     k_out = A.sum(axis=1)
     m = k_in.sum()
     # Expected adjacency matrix
-    X = k_out * k_in / m
-    return A - X
+    X = np.outer(k_out, k_in) / m
+
+    import warnings
+
+    warnings.warn(
+        "directed_modularity_matrix will return a numpy array instead of a matrix in NetworkX 3.0.",
+        FutureWarning,
+        stacklevel=2,
+    )
+    # TODO: rm np.asmatrix for networkx 3.0
+    return np.asmatrix(A - X)

@@ -18,7 +18,7 @@ def test_modularity_communities(func):
     mr_hi = frozenset([0, 4, 5, 6, 10, 11, 16, 19])
     overlap = frozenset([1, 2, 3, 7, 9, 12, 13, 17, 21])
     expected = {john_a, overlap, mr_hi}
-    assert set(func(G)) == expected
+    assert set(func(G, weight=None)) == expected
 
 
 @pytest.mark.parametrize(
@@ -80,7 +80,10 @@ def test_greedy_modularity_communities_directed():
     assert greedy_modularity_communities(G) == expected
 
 
-def test_modularity_communities_weighted():
+@pytest.mark.parametrize(
+    "func", (greedy_modularity_communities, naive_greedy_modularity_communities)
+)
+def test_modularity_communities_weighted(func):
     G = nx.balanced_tree(2, 3)
     for (a, b) in G.edges:
         if ((a == 1) or (a == 2)) and (b != 0):
@@ -90,10 +93,10 @@ def test_modularity_communities_weighted():
 
     expected = [{0, 1, 3, 4, 7, 8, 9, 10}, {2, 5, 6, 11, 12, 13, 14}]
 
-    assert greedy_modularity_communities(G, weight="weight") == expected
-    assert greedy_modularity_communities(G, weight="weight", resolution=0.9) == expected
-    assert greedy_modularity_communities(G, weight="weight", resolution=0.3) == expected
-    assert greedy_modularity_communities(G, weight="weight", resolution=1.1) != expected
+    assert func(G, weight="weight") == expected
+    assert func(G, weight="weight", resolution=0.9) == expected
+    assert func(G, weight="weight", resolution=0.3) == expected
+    assert func(G, weight="weight", resolution=1.1) != expected
 
 
 def test_modularity_communities_floating_point():
@@ -284,17 +287,36 @@ def test_resolution_parameter_impact():
     assert naive_greedy_modularity_communities(G, resolution=gamma) == expected
 
 
-def test_n_communities_parameter():
+def test_cutoff_parameter():
     G = nx.circular_ladder_graph(4)
 
     # No aggregation:
     expected = [{k} for k in range(8)]
-    assert greedy_modularity_communities(G, n_communities=8) == expected
+    assert greedy_modularity_communities(G, cutoff=8) == expected
 
     # Aggregation to half order (number of nodes)
     expected = [{k, k + 1} for k in range(0, 8, 2)]
-    assert greedy_modularity_communities(G, n_communities=4) == expected
+    assert greedy_modularity_communities(G, cutoff=4) == expected
 
     # Default aggregation case (here, 2 communities emerge)
     expected = [frozenset(range(0, 4)), frozenset(range(4, 8))]
-    assert greedy_modularity_communities(G, n_communities=1) == expected
+    assert greedy_modularity_communities(G, cutoff=1) == expected
+
+
+def test_best_n():
+    G = nx.barbell_graph(5, 3)
+
+    # Same result as without enforcing n_communities:
+    best_n = 3
+    expected = [frozenset(range(5)), frozenset(range(8, 13)), frozenset(range(5, 8))]
+    assert greedy_modularity_communities(G, best_n=best_n) == expected
+
+    # One additional merging step:
+    best_n = 2
+    expected = [frozenset(range(8)), frozenset(range(8, 13))]
+    assert greedy_modularity_communities(G, best_n=best_n) == expected
+
+    # Two additional merging steps:
+    best_n = 1
+    expected = [frozenset(range(0, 13))]
+    assert greedy_modularity_communities(G, best_n=best_n) == expected
