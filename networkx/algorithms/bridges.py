@@ -45,11 +45,11 @@ def bridges(G, root=None):
 
     Notes
     -----
-    This is an implementation of the algorithm described in _[1].  An edge is a
+    This is an implementation of the algorithm described in [1]_.  An edge is a
     bridge if and only if it is not contained in any chain. Chains are found
     using the :func:`networkx.chain_decomposition` function.
 
-    The algorithm described in _[1] requires a simple graph. If the provided
+    The algorithm described in [1]_ requires a simple graph. If the provided
     graph is a multigraph, we convert it to a simple graph and verify that any
     bridges discovered by the chain decomposition algorithm are not multi-edges.
 
