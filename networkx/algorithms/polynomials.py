@@ -141,11 +141,11 @@ def tutte_polynomial(G):
     polynomial = 0
     while stack:
         G = stack.pop()
-        bridges = set(nx.cut_edges(G))
+        bridges = set(nx.bridges(G))
 
         e = None
         for i in G.edges:
-            if i not in bridges and i[0] != i[1]:
+            if (i[0], i[1]) not in bridges and i[0] != i[1]:
                 e = i
                 break
         if not e:
