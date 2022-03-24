@@ -1243,11 +1243,7 @@ def forceatlas2_layout(
     weight = None
     if edge_weight_influence:
         weight = "weight"
-    A = nx.adjacency_matrix(G, weight=weight)
-    if n < 1000:
-        A = A.todense()
-
-    assert np.all(np.allclose(A, A.T))
+    A = nx.adjacency_matrix(G, weight=weight).todense()
 
     speed = 1
     speed_efficiency = 1
