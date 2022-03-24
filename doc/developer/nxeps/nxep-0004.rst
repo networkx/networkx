@@ -36,9 +36,9 @@ Motivation and Scope
 The primary motivation for adopting `numpy.random.Generator` as the default
 random number generation engine in NetworkX is to allow users to benefit from
 the improvements in `numpy.random.Generator`, including:
- - Advances in statistical quality of modern pRNG's
- - Improved performance
- - Additional features
+- Advances in statistical quality of modern pRNG's
+- Improved performance
+- Additional features
 
 The `numpy.random.Generator` API is very similar to the `numpy.random.RandomState`
 API, so users can benefit from these improvements without any additional changes
