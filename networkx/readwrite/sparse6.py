@@ -1,5 +1,5 @@
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
-# The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
+# The original code at https://www.ics.uci.edu/~eppstein/PADS/ is public domain.
 """Functions for reading and writing graphs in the *sparse6* format.
 
 The *sparse6* file format is a space-efficient format for large sparse
@@ -8,7 +8,7 @@ format.
 
 For more information, see the `sparse6`_ homepage.
 
-.. _sparse6: http://users.cecs.anu.edu.au/~bdm/data/formats.html
+.. _sparse6: https://users.cecs.anu.edu.au/~bdm/data/formats.html
 
 """
 import networkx as nx
@@ -131,7 +131,7 @@ def from_sparse6_bytes(string):
     References
     ----------
     .. [1] Sparse6 specification
-           <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
+           <https://users.cecs.anu.edu.au/~bdm/data/formats.html>
 
     """
     if string.startswith(b">>sparse6<<"):
@@ -239,7 +239,7 @@ def to_sparse6_bytes(G, nodes=None, header=True):
     References
     ----------
     .. [1] Graph6 specification
-           <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
+           <https://users.cecs.anu.edu.au/~bdm/data/formats.html>
 
     """
     if nodes is not None:
@@ -296,7 +296,7 @@ def read_sparse6(path):
     References
     ----------
     .. [1] Sparse6 specification
-           <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
+           <https://users.cecs.anu.edu.au/~bdm/data/formats.html>
 
     """
     glist = []
@@ -364,7 +364,7 @@ def write_sparse6(G, path, nodes=None, header=True):
     References
     ----------
     .. [1] Sparse6 specification
-           <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
+           <https://users.cecs.anu.edu.au/~bdm/data/formats.html>
 
     """
     if nodes is not None:
