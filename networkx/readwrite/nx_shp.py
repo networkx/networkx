@@ -18,7 +18,14 @@ __all__ = ["read_shp", "write_shp"]
 
 
 def read_shp(path, simplify=True, geom_attrs=True, strict=True):
-    """Generates a networkx.DiGraph from shapefiles. Point geometries are
+    """Generates a networkx.DiGraph from shapefiles.
+
+    .. deprecated:: 2.6
+
+       read_shp is deprecated and will be removed in NetworkX 3.0.
+       See https://networkx.org/documentation/latest/auto_examples/index.html#geospatial.
+
+    Point geometries are
     translated into nodes, lines into edges. Coordinate tuples are used as
     keys. Attributes are preserved, line geometries are simplified into start
     and end coordinates. Accepts a single shapefile or directory of many
@@ -196,6 +203,12 @@ def edges_from_line(geom, attrs, simplify=True, geom_attrs=True):
 
 def write_shp(G, outdir):
     """Writes a networkx.DiGraph to two shapefiles, edges and nodes.
+
+    .. deprecated:: 2.6
+
+       write_shp is deprecated and will be removed in 3.0.
+       See https://networkx.org/documentation/latest/auto_examples/index.html#geospatial.
+
     Nodes and edges are expected to have a Well Known Binary (Wkb) or
     Well Known Text (Wkt) key in order to generate geometries. Also
     acceptable are nodes with a numeric tuple key (x,y).
