@@ -298,6 +298,13 @@ try:
 except ImportError:
     has_ogr = False
 
+try:
+    import sympy
+
+    has_sympy = True
+except ImportError:
+    has_sympy = False
+
 
 # List of files that pytest should ignore
 
@@ -350,6 +357,7 @@ needs_yaml = ["readwrite/nx_yaml.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
 needs_ogr = ["readwrite/nx_shp.py"]
+needs_sympy = ["algorithms/polynomials.py"]
 
 if not has_numpy:
     collect_ignore += needs_numpy
@@ -367,6 +375,8 @@ if not has_pydot:
     collect_ignore += needs_pydot
 if not has_ogr:
     collect_ignore += needs_ogr
+if not has_sympy:
+    collect_ignore += needs_sympy
 
 # FIXME:  This is to avoid errors on AppVeyor
 if sys.platform.startswith("win"):
