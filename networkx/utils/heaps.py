@@ -128,16 +128,6 @@ class MinHeap:
         return key in self._dict
 
 
-def _inherit_doc(cls):
-    """Decorator for inheriting docstrings from base classes."""
-
-    def func(fn):
-        fn.__doc__ = cls.__dict__[fn.__name__].__doc__
-        return fn
-
-    return func
-
-
 class PairingHeap(MinHeap):
     """A pairing heap."""
 
@@ -166,13 +156,11 @@ class PairingHeap(MinHeap):
         super().__init__()
         self._root = None
 
-    @_inherit_doc(MinHeap)
     def min(self):
         if self._root is None:
             raise nx.NetworkXError("heap is empty.")
         return (self._root.key, self._root.value)
 
-    @_inherit_doc(MinHeap)
     def pop(self):
         if self._root is None:
             raise nx.NetworkXError("heap is empty.")
@@ -181,12 +169,10 @@ class PairingHeap(MinHeap):
         del self._dict[min_node.key]
         return (min_node.key, min_node.value)
 
-    @_inherit_doc(MinHeap)
     def get(self, key, default=None):
         node = self._dict.get(key)
         return node.value if node is not None else default
 
-    @_inherit_doc(MinHeap)
     def insert(self, key, value, allow_increase=False):
         node = self._dict.get(key)
         root = self._root
@@ -300,7 +286,6 @@ class BinaryHeap(MinHeap):
         self._heap = []
         self._count = count()
 
-    @_inherit_doc(MinHeap)
     def min(self):
         dict = self._dict
         if not dict:
@@ -316,7 +301,6 @@ class BinaryHeap(MinHeap):
             pop(heap)
         return (key, value)
 
-    @_inherit_doc(MinHeap)
     def pop(self):
         dict = self._dict
         if not dict:
@@ -333,11 +317,9 @@ class BinaryHeap(MinHeap):
         del dict[key]
         return (key, value)
 
-    @_inherit_doc(MinHeap)
     def get(self, key, default=None):
         return self._dict.get(key, default)
 
-    @_inherit_doc(MinHeap)
     def insert(self, key, value, allow_increase=False):
         dict = self._dict
         if key in dict:
