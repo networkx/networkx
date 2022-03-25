@@ -18,6 +18,12 @@ __all__ = [
 def extrema_bounding(G, compute="diameter"):
     """Compute requested extreme distance metric of undirected graph G
 
+    .. deprecated:: 2.8
+
+       extrema_bounding is deprecated and will be removed in NetworkX 3.0.
+       Use the corresponding distance measure with the `usebounds=True` option
+       instead.
+
     Computation is based on smart lower and upper bounds, and in practice
     linear in the number of nodes, rather than quadratic (except for some
     border cases such as complete graphs or circle shaped graphs).
@@ -65,6 +71,16 @@ def extrema_bounding(G, compute="diameter"):
     Real-World Graphs, Theoretical Computer Science 586: 59-80, 2015.
     doi: https://doi.org/10.1016/j.tcs.2015.02.033
     """
+    import warnings
+
+    msg = "extrema_bounding is deprecated and will be removed in networkx 3.0\n"
+    # NOTE: _extrema_bounding does input checking, so it is skipped here
+    if compute in {"diameter", "radius", "periphery", "center"}:
+        msg += f"Use nx.{compute}(G, usebounds=True) instead."
+    if compute == "eccentricities":
+        msg += f"Use nx.eccentricity(G) instead."
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
+
     return _extrema_bounding(G, compute=compute)
 
 
