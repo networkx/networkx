@@ -91,6 +91,7 @@ def tutte_polynomial(G):
     Notes
     -----
     Some specializations of the Tutte polynomial:
+
     - `T_G(1, 1)` counts the number of spanning trees of `G`
     - `T_G(1, 2)` counts the number of connected spanning subgraphs of `G`
     - `T_G(2, 1)` counts the number of spanning forests in `G`
