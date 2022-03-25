@@ -111,3 +111,4 @@ Version 3.0
 * In ``algorithms/community/modularity_max.py``, remove the deprecated
   ``n_communities`` parameter from the ``greedy_modularity_communities``
   function.
+* In ``algorithms/distance_measures.py`` remove ``extrema_bounding``.
