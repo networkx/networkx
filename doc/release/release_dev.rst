@@ -34,6 +34,9 @@ Deprecations
 - [`#5227 <https://github.com/networkx/networkx/pull/5227>`_]
   Deprecate the ``n_communities`` parameter name in ``greedy_modularity_communities``
   in favor of ``cutoff``.
+- [`#5422 <https://github.com/networkx/networkx/pull/5422>`_]
+  Deprecate ``extrema_bounding``. Use the related distance measures with
+  ``usebounds=True`` instead.
 
 
 Merged PRs

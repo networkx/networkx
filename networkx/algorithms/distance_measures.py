@@ -18,6 +18,75 @@ __all__ = [
 def extrema_bounding(G, compute="diameter"):
     """Compute requested extreme distance metric of undirected graph G
 
+    .. deprecated:: 2.8
+
+       extrema_bounding is deprecated and will be removed in NetworkX 3.0.
+       Use the corresponding distance measure with the `usebounds=True` option
+       instead.
+
+    Computation is based on smart lower and upper bounds, and in practice
+    linear in the number of nodes, rather than quadratic (except for some
+    border cases such as complete graphs or circle shaped graphs).
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       An undirected graph
+
+    compute : string denoting the requesting metric
+       "diameter" for the maximal eccentricity value,
+       "radius" for the minimal eccentricity value,
+       "periphery" for the set of nodes with eccentricity equal to the diameter,
+       "center" for the set of nodes with eccentricity equal to the radius,
+       "eccentricities" for the maximum distance from each node to all other nodes in G
+
+    Returns
+    -------
+    value : value of the requested metric
+       int for "diameter" and "radius" or
+       list of nodes for "center" and "periphery" or
+       dictionary of eccentricity values keyed by node for "eccentricities"
+
+    Raises
+    ------
+    NetworkXError
+        If the graph consists of multiple components
+    ValueError
+        If `compute` is not one of "diameter", "radius", "periphery", "center", or "eccentricities".
+    Notes
+    -----
+    This algorithm was proposed in the following papers:
+
+    F.W. Takes and W.A. Kosters, Determining the Diameter of Small World
+    Networks, in Proceedings of the 20th ACM International Conference on
+    Information and Knowledge Management (CIKM 2011), pp. 1191-1196, 2011.
+    doi: https://doi.org/10.1145/2063576.2063748
+
+    F.W. Takes and W.A. Kosters, Computing the Eccentricity Distribution of
+    Large Graphs, Algorithms 6(1): 100-118, 2013.
+    doi: https://doi.org/10.3390/a6010100
+
+    M. Borassi, P. Crescenzi, M. Habib, W.A. Kosters, A. Marino and F.W. Takes,
+    Fast Graph Diameter and Radius BFS-Based Computation in (Weakly Connected)
+    Real-World Graphs, Theoretical Computer Science 586: 59-80, 2015.
+    doi: https://doi.org/10.1016/j.tcs.2015.02.033
+    """
+    import warnings
+
+    msg = "extrema_bounding is deprecated and will be removed in networkx 3.0\n"
+    # NOTE: _extrema_bounding does input checking, so it is skipped here
+    if compute in {"diameter", "radius", "periphery", "center"}:
+        msg += f"Use nx.{compute}(G, usebounds=True) instead."
+    if compute == "eccentricities":
+        msg += f"Use nx.eccentricity(G) instead."
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
+
+    return _extrema_bounding(G, compute=compute)
+
+
+def _extrema_bounding(G, compute="diameter"):
+    """Compute requested extreme distance metric of undirected graph G
+
     Computation is based on smart lower and upper bounds, and in practice
     linear in the number of nodes, rather than quadratic (except for some
     border cases such as complete graphs or circle shaped graphs).
@@ -296,7 +365,7 @@ def diameter(G, e=None, usebounds=False):
     eccentricity
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="diameter")
+        return _extrema_bounding(G, compute="diameter")
     if e is None:
         e = eccentricity(G)
     return max(e.values())
@@ -326,7 +395,7 @@ def periphery(G, e=None, usebounds=False):
     center
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="periphery")
+        return _extrema_bounding(G, compute="periphery")
     if e is None:
         e = eccentricity(G)
     diameter = max(e.values())
@@ -353,7 +422,7 @@ def radius(G, e=None, usebounds=False):
        Radius of graph
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="radius")
+        return _extrema_bounding(G, compute="radius")
     if e is None:
         e = eccentricity(G)
     return min(e.values())
@@ -383,7 +452,7 @@ def center(G, e=None, usebounds=False):
     periphery
     """
     if usebounds is True and e is None and not G.is_directed():
-        return extrema_bounding(G, compute="center")
+        return _extrema_bounding(G, compute="center")
     if e is None:
         e = eccentricity(G)
     radius = min(e.values())
