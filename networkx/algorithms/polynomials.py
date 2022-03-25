@@ -75,7 +75,7 @@ def tutte_polynomial(G):
 
     Returns
     -------
-    instance of :class:`sympy.core.add.Add`
+    instance of `sympy.core.add.Add`
         A Sympy expression representing the Tutte polynomial for `G`.
 
     Examples
