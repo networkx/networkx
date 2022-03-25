@@ -437,7 +437,7 @@ def make_clique_bipartite(G, fpos=None, create_using=None, name=None):
     B.clear()
     # The "bottom" nodes in the bipartite graph are the nodes of the
     # original graph, G.
-    B.add_nodes_from(G, bipartite=1)
+    B.add_nodes_from(G.nodes(data=True), bipartite=1)
     for i, cl in enumerate(find_cliques(G)):
         # The "top" nodes in the bipartite graph are the cliques. These
         # nodes get negative numbers as labels.
