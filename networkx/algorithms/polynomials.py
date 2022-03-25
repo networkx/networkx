@@ -43,16 +43,16 @@ def tutte_polynomial(G):
     Def 2 (spanning tree expansion): Let `G` be an undirected graph, `T` a spanning
     tree of `G`, and `E` the edge set of `G`. Let `E` have an arbitrary strict
     linear order `L`. Let `B_e` be the unique minimal nonempty edge cut of
-    `E \setminus T \cup {e}`. An edge `e` is internally active with respect to
+    $E \setminus T \cup {e}$. An edge `e` is internally active with respect to
     `T` and `L` if `e` is the least edge in `B_e` according to the linear order
     `L`. The internal activity of `T` (denoted `i(T)`) is the number of edges
-    in `E \setminus T` that are internally active with respect to `T` and `L`.
-    Let `P_e` be the unique path in `T \cup {e}` whose source and target vertex
+    in $E \setminus T$ that are internally active with respect to `T` and `L`.
+    Let `P_e` be the unique path in $T \cup {e}$ whose source and target vertex
     are the same. An edge `e` is externally active with respect to `T` and `L`
     if `e` is the least edge in `P_e` according to the linear order `L`. The
     external activity of `T` (denoted `e(T)`) is the number of edges in
-    `E \setminus T` that are externally active with respect to `T` and `L`.
-    Then [4, 5]_:
+    $E \setminus T$ that are externally active with respect to `T` and `L`.
+    Then [4]_ [5]_:
 
     .. math::
 
