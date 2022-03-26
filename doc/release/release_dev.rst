@@ -37,6 +37,9 @@ Deprecations
 - [`#5422 <https://github.com/networkx/networkx/pull/5422>`_]
   Deprecate ``extrema_bounding``. Use the related distance measures with
   ``usebounds=True`` instead.
+- [`#5427 <https://github.com/networkx/networkx/pull/5427>`_]
+  Deprecate ``dict_to_numpy_array1`` and ``dict_to_numpy_array2`` in favor of
+  ``dict_to_numpy_array``, which handles both.
 
 
 Merged PRs
