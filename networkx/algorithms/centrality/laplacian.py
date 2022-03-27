@@ -38,7 +38,7 @@ def laplacian_centrality(
         A networkx graph
 
     normalized : bool (default = True)
-        If True the Laplacian energy of a given node is divided by the Laplacian energy of the graph.
+        If True the Laplacian energy of a given node is divided by the Laplacian energy of the entire graph.
         If False the algorithm returns the Laplacian energy of a given node. 
 
     nbunch : list (default = None)
