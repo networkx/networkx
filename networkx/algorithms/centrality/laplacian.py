@@ -19,13 +19,15 @@ def laplacian_centrality(
     The Laplacian Centrality of a node `i` is measured by the drop in the Laplacian Energy
     after deleting node `i` from the graph.
 
+    Where the Laplacian Energy is the sum of the squared eigenvalues of graph `G`'s Laplacian matrix.
+
     .. math::
 
         C_L(u_i,G) = \frac{(\Delta E)_i}{E_L (G)} = \frac{E_L (G)-E_L (G_i)}{E_L (G)}
 
         E_L (G) = \sum_{i=0}^n \lambda_i^2
 
-    Where $E_L (G)$ (the sum of squared eigenvalues) is the Laplacian energy of graph `G`,
+    Where $E_L (G)$ is the Laplacian energy of graph `G`,
     E_L (G_i) is the Laplacian energy of graph `G` after deleting node `i`
     and $\lambda_i$ are the eigenvalues of `G`'s Laplacian matrix.
 
