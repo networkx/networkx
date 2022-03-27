@@ -1,10 +1,6 @@
 """Laplacian centrality measures."""
 
 import networkx as nx
-import numpy as np
-from scipy import linalg
-import scipy as sp
-from scipy import sparse
 
 __all__ = ["laplacian_centrality"]
 
@@ -77,6 +73,10 @@ def laplacian_centrality(
     https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf
 
     """
+    import numpy as np
+    import scipy as sp
+    import scipy.linalg # call as sp.linalg
+    import scipy.sparse # call as sp.sparse
 
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
@@ -84,7 +84,7 @@ def laplacian_centrality(
         )
 
     if G.is_directed():
-        lap_matrix = sparse.csr_matrix(
+        lap_matrix = sp.sparse.csr_matrix(
             nx.directed_laplacian_matrix(G, **directed_laplacian_matrix_args)
         )
     else:
@@ -92,7 +92,7 @@ def laplacian_centrality(
 
     if normalized:
         sum_of_full = np.power(
-            linalg.eigh(lap_matrix.toarray(), eigvals_only=True), 2
+            sp.linalg.eigh(lap_matrix.toarray(), eigvals_only=True), 2
         ).sum()
     else:
         sum_of_full = 1
@@ -111,7 +111,7 @@ def laplacian_centrality(
         A_2.setdiag(np.r_[new_diag[:i], new_diag[i + 1 :]])
 
         sum_of_eigen_values_2 = np.power(
-            linalg.eigh(A_2.toarray(), eigvals_only=True), 2
+            sp.linalg.eigh(A_2.toarray(), eigvals_only=True), 2
         ).sum()
 
         if normalized:
