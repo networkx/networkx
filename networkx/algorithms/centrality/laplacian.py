@@ -4,7 +4,7 @@ import networkx as nx
 
 __all__ = ["laplacian_centrality"]
 
-    # @not_implemented_for("multigraph")
+# @not_implemented_for("multigraph")
 
 
 def laplacian_centrality(
@@ -35,13 +35,13 @@ def laplacian_centrality(
 
     normalized : bool (default = True)
         If True the Laplacian energy of a given node is divided by the Laplacian energy of the entire graph.
-        If False the algorithm returns the Laplacian energy of a given node. 
+        If False the algorithm returns the Laplacian energy of a given node.
 
     nbunch : list (default = None)
         An nbunch is a single node, container of nodes or None (representing all nodes)
 
     directed_laplacian_matrix_args : dictionary (default = None)
-        Parameters of the nx.directed_laplacian_matrix function. 
+        Parameters of the nx.directed_laplacian_matrix function.
 
 
     Returns
@@ -75,8 +75,8 @@ def laplacian_centrality(
     """
     import numpy as np
     import scipy as sp
-    import scipy.linalg # call as sp.linalg
-    import scipy.sparse # call as sp.sparse
+    import scipy.linalg  # call as sp.linalg
+    import scipy.sparse  # call as sp.sparse
 
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
