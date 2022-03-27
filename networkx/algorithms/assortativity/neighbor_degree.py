@@ -6,13 +6,14 @@ __all__ = ["average_neighbor_degree"]
 def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=None):
     r"""Returns the average degree of the neighborhood of each node.
 
-    In an undirected graph, the neighborhood of a node is the list of nodes which are connected to the given node with an edge.
+    In an undirected graph, the neighborhood `N(i)` of node `i` contains the
+    nodes that are connected to `i` by an edge.
 
-    In a directed graph, the neighborhood of a node will depend on the argument passed to source parameter when calling the function:
+    For directed graphs, `N(i)` is defined according to the parameter `source`:
 
-        - if source is 'in', then the neighborhood of the node is the list of nodes which are predecessors of the given node,
-        - if source is 'out', then the neighborhood of the node is the list of nodes which are successors of the given node,
-        - if source is 'in+out', then the neighborhood of the node is the list of nodes which are either predecessors or successors of the given node.
+        - if source is 'in', then `N(i)` consists of predecessors of node `i`.
+        - if source is 'out', then `N(i)` consists of successors of node `i`.
+        - if source is 'in+out', then `N(i)` is both predecessors and successors.
 
     The average neighborhood degree of a node `i` is
 
@@ -37,17 +38,16 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
     ----------
     G : NetworkX graph
 
-    source : string ("in"|"out"|"in+out")
+    source : string ("in"|"out"|"in+out"), optional (default="out")
        Directed graphs only.
-       Use "in"- or "out"-degree for source node.
+       Use "in"- or "out"-neighbors of source node.
 
-    target : string ("in"|"out"|"in+out")
+    target : string ("in"|"out"|"in+out"), optional (default="out")
        Directed graphs only.
        Use "in"- or "out"-degree for target node.
 
-    nodes : list or iterable, optional
-        Compute neighbor degree for specified nodes.  The default is
-        all nodes in the graph.
+    nodes : list or iterable, optional (default=G.nodes)
+        Compute neighbor degree only for specified nodes.
 
     weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used as a weight.
@@ -56,13 +56,12 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
     Returns
     -------
     d: dict
-       A dictionary keyed by node with average neighbors degree value.
+       A dictionary keyed by node to the average degree of its neighbors.
 
     Raises
     ------
     NetworkXError
-        If either `source` or `target` are not one of 'in',
-        'out', or 'in+out'.
+        If either `source` or `target` are not one of 'in', 'out', or 'in+out'.
         If either `source` or `target` is passed for an undirected graph.
 
     Examples
@@ -83,11 +82,6 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
 
     >>> nx.average_neighbor_degree(G, source="out", target="out")
     {0: 1.0, 1: 1.0, 2: 0.0, 3: 0.0}
-
-    Notes
-    -----
-    For directed graphs you can also specify in-degree or out-degree
-    by passing keyword arguments.
 
     See Also
     --------
@@ -126,50 +120,40 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
             raise nx.NetworkXError(
                 f"source and target arguments are only supported for directed graphs"
             )
-        source_degree = G.degree
-        target_degree = G.degree
+        source_degree = target_degree = G.degree
 
     # precompute target degrees -- should *not* be weighted degree
-    tgt_deg = dict(target_degree())
+    t_deg = dict(target_degree())
 
-    # average degree of neighbors
-    avg = {}
-
-    # default to empty neighbors dicts
-    # based on the arguments passed to the method we will populate them or leave them empty
+    # Set up both predecessor and successor neighbor dicts leaving empty if not needed
     G_P = G_S = {n: {} for n in G}
-
-    # if G is a directed graph
     if G.is_directed():
-        # if source includes 'in' ("in" or "in+out" cases), G_P will be populated with predecessors
+        # "in" or "in+out" cases: G_P contains predecessors
         if "in" in source:
             G_P = G.pred
-        # if source includes 'out' ("out" or "in+out" cases), G_S will be populated with successors
+        # "out" or "in+out" cases: G_S contains successors
         if "out" in source:
             G_S = G.succ
     else:
-        # if G is an undirected graph, G_S will be populated with adjacency dict
+        # undirected leave G_P empty but G_S is the adjacency
         G_S = G.adj
 
+    # Main loop: Compute average degree of neighbors
+    avg = {}
     for n, deg in source_degree(nodes, weight=weight):
-        # normalize but not by zero degree
+        # handle degree zero average
         if deg == 0:
             avg[n] = 0.0
             continue
 
-        # these will hold the predecessors and successors of node n
-        P_n = G_P[n]
-        S_n = G_S[n]
-
-        # when calculating average neighbor degree, we consider both P_n (predessors of n) and S_n (successors of n).
-        # note that one of these two dictionaries may be empty based on the arguments passed to the method.
+        # we sum over both G_P and G_S, but one of the two is usually empty.
         if weight is None:
             avg[n] = (
-                sum(tgt_deg[nbr] for nbr in S_n) + (sum(tgt_deg[nbr] for nbr in P_n))
+                sum(t_deg[nbr] for nbr in G_S[n]) + sum(t_deg[nbr] for nbr in G_P[n])
             ) / deg
         else:
             avg[n] = (
-                sum(S_n[nbr].get(weight, 1) * tgt_deg[nbr] for nbr in S_n)
-                + sum(P_n[nbr].get(weight, 1) * tgt_deg[nbr] for nbr in P_n)
+                sum(dd.get(weight, 1) * t_deg[nbr] for nbr, dd in G_S[n].items())
+                + sum(dd.get(weight, 1) * t_deg[nbr] for nbr, dd in G_P[n].items())
             ) / deg
     return avg
