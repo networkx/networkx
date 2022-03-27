@@ -119,6 +119,6 @@ def laplacian_centrality(
         else:
             l_cent = sum_of_eigen_values_2
 
-        laplace_centralities_dict.update[node] = l_cent
+        laplace_centralities_dict[node] = l_cent
 
     return laplace_centralities_dict
