@@ -113,3 +113,4 @@ Version 3.0
   function.
 * In ``algorithms/distance_measures.py`` remove ``extrema_bounding``.
 * In ``utils/misc.py`` remove ``dict_to_numpy_array1`` and ``dict_to_numpy_array2``.
+* In ``utils/misc.py`` remove ``to_tuple``.
