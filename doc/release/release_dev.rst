@@ -40,6 +40,8 @@ Deprecations
 - [`#5427 <https://github.com/networkx/networkx/pull/5427>`_]
   Deprecate ``dict_to_numpy_array1`` and ``dict_to_numpy_array2`` in favor of
   ``dict_to_numpy_array``, which handles both.
+- [`#5428 <https://github.com/networkx/networkx/pull/5428>`_]
+  Deprecate ``utils.misc.to_tuple``.
 
 
 Merged PRs
