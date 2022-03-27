@@ -94,13 +94,8 @@ def laplacian_centrality(
     else:
         sum_of_full = 1
 
-    if nbunch is None:
-        vs = G.nodes()
-    else:
-        vs = [i for i, v in enumerate(G.nodes()) if v in nbunch]
-
     laplace_centralities_dict = {}
-    for i, v in enumerate(vs):
+    for i, node in enumerate(G.nbunch_iter(nbunch)):
 
         new_diag = lap_matrix.diagonal() - abs(lap_matrix.getcol(i).toarray().flatten())
 
