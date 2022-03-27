@@ -8,64 +8,6 @@ from scipy import sparse
 
 __all__ = ["laplacian_centrality"]
 
-
-def delete_row_csr(mat, i):
-    r"""Delete specific row from scipy matrix.
-
-    Delete specific row from a scipy csr matrix based on the index.
-
-    Parameters
-    ----------
-    mat : sparse matrix
-
-    i : index of the column to drop
-
-
-    Returns
-    -------
-    csr matrxix : sparse matrix
-
-    """
-    if not isinstance(mat, sp.sparse.csr_matrix):
-        raise ValueError("works only for CSR format -- use .tocsr() first")
-    n = mat.indptr[i + 1] - mat.indptr[i]
-    if n > 0:
-        mat.data[mat.indptr[i] : -n] = mat.data[mat.indptr[i + 1] :]
-        mat.data = mat.data[:-n]
-        mat.indices[mat.indptr[i] : -n] = mat.indices[mat.indptr[i + 1] :]
-        mat.indices = mat.indices[:-n]
-    mat.indptr[i:-1] = mat.indptr[i + 1 :]
-    mat.indptr[i:] -= n
-    mat.indptr = mat.indptr[:-1]
-    mat._shape = (mat._shape[0] - 1, mat._shape[1])
-
-    return mat
-
-
-def delete_col_csr(mat, i):
-    r"""Delete specific col from scipy matrix.
-
-    Delete specific column from a scipy csr matrix based on the index.
-
-    Parameters
-    ----------
-    mat : sparse matrix
-
-    i : index of the column to drop
-
-    Returns
-    -------
-    csr matrxix : sparse matrix
-
-    """
-    idx_to_drop = np.unique(i)
-    C = mat.tocoo()
-    keep = ~np.in1d(C.col, idx_to_drop)
-    C.data, C.row, C.col = C.data[keep], C.row[keep], C.col[keep]
-    C.col -= idx_to_drop.searchsorted(C.col)  # decrement column indices
-    C._shape = (C.shape[0], C.shape[1] - len(idx_to_drop))
-    return C.tocsr()
-
     # @not_implemented_for("multigraph")
 
 
