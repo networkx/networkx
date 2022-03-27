@@ -27,7 +27,7 @@ def laplacian_centrality(
 
     Where $E_L (G)$ (the sum of squared eigenvalues) is the Laplacian energy of graph `G`,
     E_L (G_i) is the Laplacian energy of graph `G` after deleting node `i`
-    and $\lambda_i$ are the eigenvalues of its Laplacian matrix.
+    and $\lambda_i$ are the eigenvalues of `G`'s Laplacian matrix.
 
     Parameters
     ----------
