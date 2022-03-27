@@ -25,7 +25,7 @@ def laplacian_centrality(
 
         E_L (G) = \sum_{i=0}^n \lambda_i^2
 
-    Where $E_L (G)$ is the Laplacian energy of graph `G`,
+    Where $E_L (G)$ (the sum of squared eigenvalues) is the Laplacian energy of graph `G`,
     E_L (G_i) is the Laplacian energy of graph `G` after deleting node `i`
     and $\lambda_i$ are the eigenvalues of its Laplacian matrix.
 
@@ -36,13 +36,14 @@ def laplacian_centrality(
         A networkx graph
 
     normalized : bool (default = True)
-        If False then the algorithm does't calculate Laplacian energy of entire graph `G`,
-        just the Laplacian energy of the given nodes.
+        If True the Laplacian energy of a given node is divided by the Laplacian energy of the graph.
+        If False the algorithm returns the Laplacian energy of a given node. 
 
     nbunch : list (default = None)
         An nbunch is a single node, container of nodes or None (representing all nodes)
 
-    directed_laplacian_matrix_args : dictiory (default = None)
+    directed_laplacian_matrix_args : dictionary (default = None)
+        Parameters of the nx.directed_laplacian_matrix function. 
 
 
     Returns
