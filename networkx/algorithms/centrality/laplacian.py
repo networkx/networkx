@@ -42,7 +42,7 @@ def laplacian_centrality(
     nbunch : list (default = None)
         An nbunch is a single node, container of nodes or None (representing all nodes)
 
-    b_keyword_args_dict : dictiory (default = None)
+    directed_laplacian_matrix_args : dictiory (default = None)
 
 
     Returns
