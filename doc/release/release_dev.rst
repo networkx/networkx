@@ -23,6 +23,25 @@ X contributors. Highlights include:
 Improvements
 ------------
 
+- Correction to the treatment of directed graphs for `average_neighbor_degree`
+  which used to sum the degrees of outgoing neighbors only but then divide by
+  the number of "in" or "out" or "in+out" neighbors. So it wasn't even an average.
+  The correction makes it an average degree of whatever population of neighbors
+  is specified by `source` = "in" or "out" or "in+out".
+  For example:
+
+      >>> G = nx.path_graph(3, create_using=nx.DiGraph)
+      >>> print(nx.average_neighbor_degree(G, source="in", target="in"))
+      {0: 0.0, 1: 1.0, 2: 1.0}
+
+  This used to produce `{0: 0.0, 1: 1.0, 2: 0.0}`
+  Note: node 0 and 2 were treated nonsensically.
+  Node 0 had calculated value 1/0 which was converted to 0.
+  (numerator looking at successors while denominator counting predecessors)
+  Node 2 had caluated value 0/1 = 0.0 (again succs on top, but preds in bottom)
+
+  Now node 0 has calculated value 0.0/0 which we treat as 0.0. And node 2 has
+  calculated value 1/1 = 1.0. Both handle the same nbrhood on top and bottom.
 
 API Changes
 -----------
