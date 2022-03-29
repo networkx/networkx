@@ -334,12 +334,12 @@ def modularity(G, communities, weight="weight", resolution=1):
         out_degree = dict(G.out_degree(weight=weight))
         in_degree = dict(G.in_degree(weight=weight))
         m = sum(out_degree.values())
-        norm = 1 / m ** 2
+        norm = 1 / m**2
     else:
         out_degree = in_degree = dict(G.degree(weight=weight))
         deg_sum = sum(out_degree.values())
         m = deg_sum / 2
-        norm = 1 / deg_sum ** 2
+        norm = 1 / deg_sum**2
 
     def community_contribution(community):
         comm = set(community)
