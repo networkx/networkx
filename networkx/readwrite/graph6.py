@@ -41,7 +41,7 @@ def _generate_graph6_bytes(G, nodes, header):
 
     """
     n = len(G)
-    if n >= 2 ** 36:
+    if n >= 2**36:
         raise ValueError(
             "graph6 is only defined if number of nodes is less " "than 2 ** 36"
         )

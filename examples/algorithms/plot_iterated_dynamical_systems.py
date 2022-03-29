@@ -109,7 +109,7 @@ def powersum(n, p, b=10):
     dlist = digitsrep(n, b)
     sum = 0
     for k in dlist:
-        sum += k ** p
+        sum += k**p
     return sum
 
 

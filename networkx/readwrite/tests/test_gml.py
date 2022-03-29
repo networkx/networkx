@@ -433,7 +433,7 @@ graph
         data = [
             True,
             False,
-            10 ** 20,
+            10**20,
             -2e33,
             "'",
             '"&&amp;&&#34;"',
@@ -592,13 +592,13 @@ graph
         # Test export for numbers that barely fit or don't fit into 32 bits,
         # and 3 numbers in the middle
         numbers = {
-            "toosmall": (-(2 ** 31)) - 1,
-            "small": -(2 ** 31),
+            "toosmall": (-(2**31)) - 1,
+            "small": -(2**31),
             "med1": -4,
             "med2": 0,
             "med3": 17,
-            "big": (2 ** 31) - 1,
-            "toobig": 2 ** 31,
+            "big": (2**31) - 1,
+            "toobig": 2**31,
         }
         G.add_node("Node", **numbers)
 

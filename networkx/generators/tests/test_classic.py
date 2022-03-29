@@ -26,9 +26,9 @@ class TestGeneratorClassic:
             assert t.size() == order - 1
             dh = nx.degree_histogram(t)
             assert dh[0] == 0  # no nodes of 0
-            assert dh[1] == r ** h  # nodes of degree 1 are leaves
+            assert dh[1] == r**h  # nodes of degree 1 are leaves
             assert dh[r] == 1  # root is degree r
-            assert dh[r + 1] == order - r ** h - 1  # everyone else is degree r+1
+            assert dh[r + 1] == order - r**h - 1  # everyone else is degree r+1
             assert len(dh) == r + 2
 
     def test_balanced_tree_star(self):
@@ -141,8 +141,8 @@ class TestGeneratorClassic:
         for create_using in graphs:
             for n in range(0, 4):
                 b = nx.binomial_tree(n, create_using)
-                assert nx.number_of_nodes(b) == 2 ** n
-                assert nx.number_of_edges(b) == (2 ** n - 1)
+                assert nx.number_of_nodes(b) == 2**n
+                assert nx.number_of_edges(b) == (2**n - 1)
 
     def test_complete_graph(self):
         # complete_graph(m) is a connected graph with

@@ -198,7 +198,7 @@ class TestWeightedPath(WeightedTestBase):
 
     def test_weight_functions(self):
         def heuristic(*z):
-            return sum(val ** 2 for val in z)
+            return sum(val**2 for val in z)
 
         def getpath(pred, v, s):
             return [v] if v == s else getpath(pred, pred[v], s) + [v]
@@ -223,7 +223,7 @@ class TestWeightedPath(WeightedTestBase):
         path = [6] + list(range(t + 1))
 
         def weight(u, v, _):
-            return 1 + v ** 2
+            return 1 + v**2
 
         length = sum(weight(u, v, None) for u, v in pairwise(path))
         vlp(G, s, t, length, nx.bidirectional_dijkstra, weight)

@@ -820,7 +820,7 @@ class DegreeSequenceRandomGraph:
     def phase1(self):
         # choose node pairs from (degree) weighted distribution
         rem_deg = self.remaining_degree
-        while sum(rem_deg.values()) >= 2 * self.dmax ** 2:
+        while sum(rem_deg.values()) >= 2 * self.dmax**2:
             u, v = sorted(random_weighted_sample(rem_deg, 2, self.rng))
             if self.graph.has_edge(u, v):
                 continue

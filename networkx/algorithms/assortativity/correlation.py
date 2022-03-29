@@ -291,8 +291,8 @@ def _numeric_ac(M, mapping):
     idx = list(mapping.values())
     a = M.sum(axis=0)
     b = M.sum(axis=1)
-    vara = (a[idx] * x ** 2).sum() - ((a[idx] * x).sum()) ** 2
-    varb = (b[idx] * y ** 2).sum() - ((b[idx] * y).sum()) ** 2
+    vara = (a[idx] * x**2).sum() - ((a[idx] * x).sum()) ** 2
+    varb = (b[idx] * y**2).sum() - ((b[idx] * y).sum()) ** 2
     xy = np.outer(x, y)
     ab = np.outer(a[idx], b[idx])
     return (xy * (M - ab)).sum() / np.sqrt(vara * varb)
