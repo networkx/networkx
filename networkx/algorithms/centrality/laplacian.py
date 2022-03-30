@@ -59,7 +59,8 @@ def laplacian_centrality(
 
     Notes
     -----
-    The algorithm is implemented based on [1] with an extension to directed graphs using nx.directed_laplacian_matrix function.
+    The algorithm is implemented based on [1] with an extension to directed graphs
+    using the `nx.directed_laplacian_matrix` function.
 
     Raises
     ------
