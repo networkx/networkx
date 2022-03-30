@@ -34,8 +34,9 @@ def laplacian_centrality(
         A networkx graph
 
     normalized : bool (default = True)
-        If True the Laplacian energy of a given node is divided by the Laplacian energy of the entire graph.
-        If False the algorithm returns the Laplacian energy of a given node.
+        If True the centrality score is scaled so the sum over all nodes is 1. 
+        If False the centrality score for each node is the drop in Laplacian 
+        energy when that node is removed.
 
     nbunch : list (default = None)
         An nbunch is a single node, container of nodes or None (representing all nodes)
