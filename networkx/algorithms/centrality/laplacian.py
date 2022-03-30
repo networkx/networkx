@@ -13,9 +13,8 @@ def laplacian_centrality(
     r"""Compute the Laplacian centrality for nodes in the graph `G`.
 
     The Laplacian Centrality of a node `i` is measured by the drop in the Laplacian Energy
-    after deleting node `i` from the graph.
-
-    Where the Laplacian Energy is the sum of the squared eigenvalues of graph `G`'s Laplacian matrix.
+    after deleting node `i` from the graph. The Laplacian Energy is the sum of the squared
+    eigenvalues of a graph's Laplacian matrix.
 
     .. math::
 
