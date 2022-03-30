@@ -25,7 +25,8 @@ def laplacian_centrality(
     Where $E_L (G)$ is the Laplacian energy of graph `G`,
     E_L (G_i) is the Laplacian energy of graph `G` after deleting node `i`
     and $\lambda_i$ are the eigenvalues of `G`'s Laplacian matrix.
-
+    This formula shows the normalized value. Without normalization,
+    the numerator on the right side is returned.
     Parameters
     ----------
 
