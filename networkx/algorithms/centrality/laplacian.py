@@ -27,6 +27,7 @@ def laplacian_centrality(
     and $\lambda_i$ are the eigenvalues of `G`'s Laplacian matrix.
     This formula shows the normalized value. Without normalization,
     the numerator on the right side is returned.
+
     Parameters
     ----------
 
@@ -34,8 +35,8 @@ def laplacian_centrality(
         A networkx graph
 
     normalized : bool (default = True)
-        If True the centrality score is scaled so the sum over all nodes is 1. 
-        If False the centrality score for each node is the drop in Laplacian 
+        If True the centrality score is scaled so the sum over all nodes is 1.
+        If False the centrality score for each node is the drop in Laplacian
         energy when that node is removed.
 
     nbunch : list (default = None)
@@ -43,7 +44,6 @@ def laplacian_centrality(
 
     directed_laplacian_matrix_args : dictionary (default = None)
         Parameters of the nx.directed_laplacian_matrix function.
-
 
     Returns
     -------
