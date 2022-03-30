@@ -24,6 +24,11 @@ Improvements
 ------------
 
 
+- `is_bipartite_node_set` now raises an exception when the tested nodes are
+  not distinct (previously this would not affect the outcome).
+  This is to avoid surprising behaviour when using node sets in other bipartite
+  algorithms, for example it yields incorrect results for `weighted_projected_graph`.
+
 API Changes
 -----------
 
