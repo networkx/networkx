@@ -238,12 +238,24 @@ def min_weight_matching(G, maxcardinality=None, weight="weight"):
     A maximal matching cannot add more edges and still be a matching.
     The cardinality of a matching is the number of matched edges.
 
-    This method replaces the edge weights with the maximum weight minus
-    the original edge weight. the difference between
-    the maximum weight of all edges (plus 1e-6 to avoid a zero weight edge).
-    `new_weight = (max_weight + 1e-6) - edge_weight`
-    then runs :func:`max_weight_matching`.
-    Read the documentation of max_weight_matching for more information.
+    This method replaces the edge weights with 1 plus the maximum edge weight
+    minus the original edge weight.
+
+    new_weight = (max_weight + 1) - edge_weight
+
+    then runs :func:`max_weight_matching` with the new weights.
+    The max weight matching with these new weights corresponds
+    to the min weight matching using the original weights.
+    Adding 1 to the max edge weight keeps all edge weights positive
+    and as integers if they started as integers.
+
+    You might worry that adding 1 to each weight would make the algorithm
+    favor matchings with more edges. But we use the parameter
+    `maxcardinality=True` in `max_weight_matching` to ensure that the
+    number of edges in the competing matchings are the same and thus
+    the optimum does not change due to changes in the number of edges.
+
+    Read the documentation of `max_weight_matching` for more information.
 
     Parameters
     ----------
@@ -251,9 +263,9 @@ def min_weight_matching(G, maxcardinality=None, weight="weight"):
       Undirected graph
 
     maxcardinality: bool
-        .. deprecated:: 3.0
+        .. deprecated:: 2.8
             The `maxcardinality` parameter will be removed in v3.0.
-            It doesn't make sense to set it to false when looking for
+            It doesn't make sense to set it to False when looking for
             a min weight matching because then we just return no edges.
 
         If maxcardinality is True, compute the maximum-cardinality matching
@@ -267,6 +279,10 @@ def min_weight_matching(G, maxcardinality=None, weight="weight"):
     -------
     matching : set
         A minimal weight matching of the graph.
+
+    See Also
+    --------
+    max_weight_matching
     """
     if maxcardinality not in (True, None):
         raise nx.NetworkXError(
@@ -277,7 +293,7 @@ def min_weight_matching(G, maxcardinality=None, weight="weight"):
     if len(G.edges) == 0:
         return max_weight_matching(G, maxcardinality=True, weight=weight)
     G_edges = G.edges(data=weight, default=1)
-    max_weight = 1e-6 + max(w for _, _, w in G_edges)
+    max_weight = 1 + max(w for _, _, w in G_edges)
     InvG = nx.Graph()
     edges = ((u, v, max_weight - w) for u, v, w in G_edges)
     InvG.add_weighted_edges_from(edges, weight=weight)
