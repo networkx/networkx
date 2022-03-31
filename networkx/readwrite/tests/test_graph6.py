@@ -108,13 +108,13 @@ class TestWriteGraph6:
             f.seek(0)
             assert f.read() == b">>graph6<<?\n"
 
-    def test_relabeling(self):
-        for edge in [(0, 1), (1, 2), (1, 42)]:
-            G = nx.Graph([edge])
-            f = BytesIO()
-            nx.write_graph6(G, f)
-            f.seek(0)
-            assert f.read() == b">>graph6<<A_\n"
+    @pytest.mark.parametrize("edge", ((0, 1), (1, 2), (1, 42)))
+    def test_relabeling(self, edge):
+        G = nx.Graph([edge])
+        f = BytesIO()
+        nx.write_graph6(G, f)
+        f.seek(0)
+        assert f.read() == b">>graph6<<A_\n"
 
 
 class TestToGraph6Bytes:
@@ -161,7 +161,7 @@ class TestToGraph6Bytes:
             assert nodes_equal(G.nodes(), H.nodes())
             assert edges_equal(G.edges(), H.edges())
 
-    def test_relabeling(self):
-        for edge in [(0, 1), (1, 2), (1, 42)]:
-            G = nx.Graph([edge])
-            assert g6.to_graph6_bytes(G) == b">>graph6<<A_\n"
+    @pytest.mark.parametrize("edge", ((0, 1), (1, 2), (1, 42)))
+    def test_relabeling(self, edge):
+        G = nx.Graph([edge])
+        assert g6.to_graph6_bytes(G) == b">>graph6<<A_\n"
