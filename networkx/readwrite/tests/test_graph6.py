@@ -79,9 +79,10 @@ class TestWriteGraph6:
         # The expected encoding here was verified by Sage.
         assert result.getvalue() == b"N??F~z{~Fw^_~?~?^_?\n"
 
-    def test_no_directed_graphs(self):
+    @pytest.mark.parametrize("G", (nx.MultiGraph(), nx.DiGraph()))
+    def test_no_directed_or_multi_graphs(self, G):
         with pytest.raises(nx.NetworkXNotImplemented):
-            nx.write_graph6(nx.DiGraph(), BytesIO())
+            nx.write_graph6(G, BytesIO())
 
     def test_length(self):
         for i in list(range(13)) + [31, 47, 62, 63, 64, 72]:
@@ -141,8 +142,8 @@ class TestToGraph6Bytes:
         G = nx.complete_bipartite_graph(6, 9)
         assert g6.to_graph6_bytes(G, header=False) == b"N??F~z{~Fw^_~?~?^_?\n"
 
-    def test_no_directed_graphs(self):
-        G = nx.DiGraph()
+    @pytest.mark.parametrize("G", (nx.MultiGraph(), nx.DiGraph()))
+    def test_no_directed_or_multi_graphs(self, G):
         with pytest.raises(nx.NetworkXNotImplemented):
             g6.to_graph6_bytes(G)
 
