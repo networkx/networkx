@@ -46,6 +46,10 @@ Improvements
 API Changes
 -----------
 
+- [`#5394 <https://github.com/networkx/networkx/pull/5394>`_]
+  The function ``min_weight_matching`` no longer acts upon the parameter ``maxcardinality``
+  because setting it to False would result in the min_weight_matching being no edges
+  at all. The only resonable option is True. The parameter will be removed completely in v3.0.
 
 Deprecations
 ------------
