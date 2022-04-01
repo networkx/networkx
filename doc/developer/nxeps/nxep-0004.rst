@@ -21,14 +21,14 @@ that includes support for `numpy.random` and the Python built-in `random` module
 preferred package for random number generation.
 NumPy introduced a new interface in the `numpy.random` package in NumPy version
 1.17.
-According to :doc:`NEP19`, the new interface based on `numpy.random.Generator`
+According to :doc:`NEP19 <nep-0019-rng-policy>`, the new interface based on
+`numpy.random.Generator`
 is recommended over the legacy `numpy.random.RandomState` as the former has
-`better statistical properties <pcg_table>`_, :ref:`more features <what's_new_or_different>`,
-and :doc:`improved performance <random/performance>`.
+`better statistical properties <https://www.pcg-random.org/index.html>`_,
+:doc:`more features <reference/random/new-or-different>`,
+and :doc:`improved performance <reference/random/performance>`.
 This NXEP proposes a strategy for adopting `numpy.random.Generator` as the
 **default** interface for random number generation within NetworkX.
-
-.. _pcg_table: https://www.pcg-random.org/index.html
 
 Motivation and Scope
 --------------------
@@ -36,9 +36,9 @@ Motivation and Scope
 The primary motivation for adopting `numpy.random.Generator` as the default
 random number generation engine in NetworkX is to allow users to benefit from
 the improvements in `numpy.random.Generator`, including:
- - Advances in statistical quality of modern pRNG's
- - Improved performance
- - Additional features
+- Advances in statistical quality of modern pRNG's
+- Improved performance
+- Additional features
 
 The `numpy.random.Generator` API is very similar to the `numpy.random.RandomState`
 API, so users can benefit from these improvements without any additional changes
@@ -50,7 +50,7 @@ or `~networkx.utils.decorators.py_random_state` (when the ``random_state`` argum
 involves ``numpy``).
 See the next section for details.
 
-.. [#f1] See note about the compatibility layer in the :ref:`Implementation section <Implementation>`
+.. [#f1] See note about the compatibility layer in the :ref:`Implementation section <implementation>`
 
 Usage and Impact
 ----------------
@@ -215,6 +215,8 @@ potential approaches to supporting the new NumPy random interface:
 .. _sklearn16988: https://github.com/scikit-learn/scikit-learn/issues/16988
 .. _sklearn14042: https://github.com/scikit-learn/scikit-learn/issues/14042
 .. _slep011: https://github.com/scikit-learn/enhancement_proposals/pull/24
+
+.. _implementation:
 
 Implementation
 --------------

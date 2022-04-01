@@ -1,11 +1,27 @@
 from itertools import chain, count
 import networkx as nx
-from networkx.utils import to_tuple
 
 __all__ = ["node_link_data", "node_link_graph"]
 
 
 _attrs = dict(source="source", target="target", name="id", key="key", link="links")
+
+
+def _to_tuple(x):
+    """Converts lists to tuples, including nested lists.
+
+    All other non-list inputs are passed through unmodified. This function is
+    intended to be used to convert potentially nested lists from json files
+    into valid nodes.
+
+    Examples
+    --------
+    >>> _to_tuple([1, 2, [3, 4]])
+    (1, 2, (3, 4))
+    """
+    if not isinstance(x, (tuple, list)):
+        return x
+    return tuple(map(_to_tuple, x))
 
 
 def node_link_data(G, attrs=None):
@@ -164,7 +180,7 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=None):
     graph.graph = data.get("graph", {})
     c = count()
     for d in data["nodes"]:
-        node = to_tuple(d.get(name, next(c)))
+        node = _to_tuple(d.get(name, next(c)))
         nodedata = {str(k): v for k, v in d.items() if k != name}
         graph.add_node(node, **nodedata)
     for d in data[links]:
