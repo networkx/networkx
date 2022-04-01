@@ -1423,11 +1423,11 @@ def to_numpy_array(
     >>> G.add_edge(2, 0, weight =0)
     >>> G.add_edge(2, 1, weight =0)
     >>> G.add_edge(3,0, weight = 1)
-    >>> nx.to_numpy_array(G, nonedge= "nan")
-    array([[nan,  2., nan,  1.],
-           [ 2., nan,  0., nan],
-           [nan,  0., nan,  0.],
-           [ 1., nan,  0., nan]])
+    >>> nx.to_numpy_array(G, nonedge= -1)
+    array([[-1.,  2., -1.,  1.],
+        [ 2., -1.,  0., -1.],
+        [-1.,  0., -1.,  0.],
+        [ 1., -1.,  0., -1.]])
 
     """
     import numpy as np
