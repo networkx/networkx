@@ -1348,7 +1348,7 @@ def to_numpy_array(
     to sum the weight attributes for each of the parallel edges.
 
     When `nodelist` does not contain every node in `G`, the adjacency matrix is
-    built from the subgraph of `G` that is induced by the nodes in `nodelist`. 
+    built from the subgraph of `G` that is induced by the nodes in `nodelist`.
 
     The convention used for self-loop edges in graphs is to assign the
     diagonal array entry value to the weight attribute of the edge
@@ -1381,7 +1381,7 @@ def to_numpy_array(
            [1., 0., 0.],
            [0., 0., 4.]])
 
-    When `nodelist` argument is used, nodes of `G` which do not appear in the `nodelist` 
+    When `nodelist` argument is used, nodes of `G` which do not appear in the `nodelist`
     and their edges are not included in the adjacency matrix. Here is an example:
 
     >>> G = nx.Graph()
@@ -1414,8 +1414,8 @@ def to_numpy_array(
            [ 0.,  5.,  0., -4.],
            [ 0.,  0., -4.,  0.]])
 
-    As stated above, the argument "nonedge" is useful especially when there are 
-    actually edges with weight 0 in the graph. Setting a nonedge value different than 0, 
+    As stated above, the argument "nonedge" is useful especially when there are
+    actually edges with weight 0 in the graph. Setting a nonedge value different than 0,
     makes it much clearer to differentiate such 0-weighted edges and actual nonedge values.
 
     >>> G = nx.Graph()
