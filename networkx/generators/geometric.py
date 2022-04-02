@@ -91,7 +91,7 @@ def geometric_edges(G, radius, p):
         import scipy.spatial  # call as sp.spatial
     except ImportError:
         # no scipy KDTree so compute by for-loop
-        radius_p = radius ** p
+        radius_p = radius**p
         edges = [
             (u, v)
             for (u, pu), (v, pv) in combinations(nodes_pos, 2)
@@ -465,7 +465,7 @@ def geographical_threshold_graph(
     if p_dist is None:
 
         def p_dist(r):
-            return r ** -2
+            return r**-2
 
     # Returns ``True`` if and only if the nodes whose attributes are
     # ``du`` and ``dv`` should be joined, according to the threshold
@@ -668,7 +668,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
             d = sum((abs(b - a) for a, b in zip(p1, p2)))
             if d <= p:
                 G.add_edge(p1, p2)
-            probs.append(d ** -r)
+            probs.append(d**-r)
         cdf = list(accumulate(probs))
         for _ in range(q):
             target = nodes[bisect_left(cdf, seed.uniform(0, cdf[-1]))]
