@@ -15,7 +15,7 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
      diagonal matrix of node degrees, and I is the identify matrix. It is equal
      to the graph laplacian when the regularizer r = 1.
 
-     The default choice of regularizer should be the ratio [2]
+     The default choice of regularizer should be the ratio [2]_
 
      .. math::
        r_m = \left(\sum k_i \right)^{-1}\left(\sum k_i^2 \right) - 1
@@ -43,20 +43,13 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     >>> k = [3, 2, 2, 1, 0]
     >>> G = nx.havel_hakimi_graph(k)
     >>> H = nx.bethe_hessian_matrix(G)
-    >>> print(H)
-    (0, 0)	3.5625
-    (0, 1)	-1.25
-    (0, 2)	-1.25
-    (0, 3)	-1.25
-    (1, 0)	-1.25
-    (1, 1)	2.5625
-    (1, 2)	-1.25
-    (2, 0)	-1.25
-    (2, 1)	-1.25
-    (2, 2)	2.5625
-    (3, 0)	-1.25
-    (3, 3)	1.5625
-    (4, 4)	0.5625
+    >>> H.todense()
+    matrix([[ 3.5625, -1.25  , -1.25  , -1.25  ,  0.    ],
+            [-1.25  ,  2.5625, -1.25  ,  0.    ,  0.    ],
+            [-1.25  , -1.25  ,  2.5625,  0.    ,  0.    ],
+            [-1.25  ,  0.    ,  0.    ,  1.5625,  0.    ],
+            [ 0.    ,  0.    ,  0.    ,  0.    ,  0.5625]])
+      
 
 
      See Also
@@ -67,10 +60,10 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
 
      References
      ----------
-     .. [1]_A. Saade, F. Krzakala and L. Zdeborová
+     .. [1] A. Saade, F. Krzakala and L. Zdeborová
         "Spectral clustering of graphs with the bethe hessian",
         Advances in Neural Information Processing Systems. 2014.
-     .. [2]_C. M. Lee, E. Levina
+     .. [2] C. M. Lee, E. Levina
         "Estimating the number of communities in networks by spectral methods"
         arXiv:1507.00827, 2015.
     """
