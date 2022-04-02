@@ -49,7 +49,7 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
             [-1.25  , -1.25  ,  2.5625,  0.    ,  0.    ],
             [-1.25  ,  0.    ,  0.    ,  1.5625,  0.    ],
             [ 0.    ,  0.    ,  0.    ,  0.    ,  0.5625]])
-      
+
 
 
      See Also
