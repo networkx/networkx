@@ -1420,14 +1420,14 @@ def to_numpy_array(
 
     >>> G = nx.Graph()
     >>> G.add_edge(3, 1, weight=2)
-    >>> G.add_edge(2, 0, weight =0)
-    >>> G.add_edge(2, 1, weight =0)
-    >>> G.add_edge(3,0, weight = 1)
-    >>> nx.to_numpy_array(G, nonedge= 0.1)
-    array([[0.1, 2. , 0.1, 1. ],
-           [2. , 0.1, 0. , 0.1],
-           [0.1, 0. , 0.1, 0. ],
-           [1. , 0.1, 0. , 0.1]])
+    >>> G.add_edge(2, 0, weight=0)
+    >>> G.add_edge(2, 1, weight=0)
+    >>> G.add_edge(3, 0, weight=1)
+    >>> nx.to_numpy_array(G, nonedge=-1.)
+    array([[-1.,  2., -1.,  1.],
+           [ 2., -1.,  0., -1.],
+           [-1.,  0., -1.,  0.],
+           [ 1., -1.,  0., -1.]])
     """
     import numpy as np
 
