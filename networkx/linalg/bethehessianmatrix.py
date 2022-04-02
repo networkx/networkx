@@ -42,7 +42,21 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     --------
     >>> k = [3, 2, 2, 1, 0]
     >>> G = nx.havel_hakimi_graph(k)
-    >>> H = nx.modularity_matrix(G)
+    >>> H = nx.bethe_hessian_matrix(G)
+    >>> print(H)
+    (0, 0)	3.5625
+    (0, 1)	-1.25
+    (0, 2)	-1.25
+    (0, 3)	-1.25
+    (1, 0)	-1.25
+    (1, 1)	2.5625
+    (1, 2)	-1.25
+    (2, 0)	-1.25
+    (2, 1)	-1.25
+    (2, 2)	2.5625
+    (3, 0)	-1.25
+    (3, 3)	1.5625
+    (4, 4)	0.5625
 
 
     See Also
@@ -53,10 +67,10 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
 
     References
     ----------
-    .. [1] A. Saade, F. Krzakala and L. Zdeborová
+    .. [1]_A. Saade, F. Krzakala and L. Zdeborová
        "Spectral clustering of graphs with the bethe hessian",
        Advances in Neural Information Processing Systems. 2014.
-    .. [2] C. M. Lee, E. Levina
+    .. [2]_C. M. Lee, E. Levina
        "Estimating the number of communities in networks by spectral methods"
        arXiv:1507.00827, 2015.
     """
@@ -66,7 +80,7 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     if nodelist is None:
         nodelist = list(G)
     if r is None:
-        r = sum(d ** 2 for v, d in nx.degree(G)) / sum(d for v, d in nx.degree(G)) - 1
+        r = sum(d**2 for v, d in nx.degree(G)) / sum(d for v, d in nx.degree(G)) - 1
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, format="csr")
     n, m = A.shape
     # TODO: Rm csr_array wrapper when spdiags array creation becomes available
@@ -81,4 +95,4 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
         stacklevel=2,
     )
     # TODO: Remove the csr_matrix wrapper in NetworkX 3.0
-    return sp.sparse.csr_matrix((r ** 2 - 1) * I - r * A + D)
+    return sp.sparse.csr_matrix((r**2 - 1) * I - r * A + D)
