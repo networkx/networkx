@@ -10,36 +10,36 @@ __all__ = ["bethe_hessian_matrix"]
 def bethe_hessian_matrix(G, r=None, nodelist=None):
     r"""Returns the Bethe Hessian matrix of G.
 
-    The Bethe Hessian is a family of matrices parametrized by r, defined as
-    H(r) = (r^2 - 1) I - r A + D where A is the adjacency matrix, D is the
-    diagonal matrix of node degrees, and I is the identify matrix. It is equal
-    to the graph laplacian when the regularizer r = 1.
+     The Bethe Hessian is a family of matrices parametrized by r, defined as
+     H(r) = (r^2 - 1) I - r A + D where A is the adjacency matrix, D is the
+     diagonal matrix of node degrees, and I is the identify matrix. It is equal
+     to the graph laplacian when the regularizer r = 1.
 
-    The default choice of regularizer should be the ratio [2]
+     The default choice of regularizer should be the ratio [2]
 
-    .. math::
-      r_m = \left(\sum k_i \right)^{-1}\left(\sum k_i^2 \right) - 1
+     .. math::
+       r_m = \left(\sum k_i \right)^{-1}\left(\sum k_i^2 \right) - 1
 
-    Parameters
-    ----------
-    G : Graph
-       A NetworkX graph
+     Parameters
+     ----------
+     G : Graph
+        A NetworkX graph
 
-    r : float
-       Regularizer parameter
+     r : float
+        Regularizer parameter
 
-    nodelist : list, optional
-       The rows and columns are ordered according to the nodes in nodelist.
-       If nodelist is None, then the ordering is produced by G.nodes().
+     nodelist : list, optional
+        The rows and columns are ordered according to the nodes in nodelist.
+        If nodelist is None, then the ordering is produced by G.nodes().
 
 
-    Returns
-    -------
-    H : scipy.sparse.csr_matrix
-      The Bethe Hessian matrix of G, with paramter r.
+     Returns
+     -------
+     H : scipy.sparse.csr_matrix
+       The Bethe Hessian matrix of G, with paramter r.
 
-    Examples
-    --------
+     Examples
+     --------
     >>> k = [3, 2, 2, 1, 0]
     >>> G = nx.havel_hakimi_graph(k)
     >>> H = nx.bethe_hessian_matrix(G)
@@ -59,20 +59,20 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     (4, 4)	0.5625
 
 
-    See Also
-    --------
-    bethe_hessian_spectrum
-    adjacency_matrix
-    laplacian_matrix
+     See Also
+     --------
+     bethe_hessian_spectrum
+     adjacency_matrix
+     laplacian_matrix
 
-    References
-    ----------
-    .. [1]_A. Saade, F. Krzakala and L. Zdeborová
-       "Spectral clustering of graphs with the bethe hessian",
-       Advances in Neural Information Processing Systems. 2014.
-    .. [2]_C. M. Lee, E. Levina
-       "Estimating the number of communities in networks by spectral methods"
-       arXiv:1507.00827, 2015.
+     References
+     ----------
+     .. [1]_A. Saade, F. Krzakala and L. Zdeborová
+        "Spectral clustering of graphs with the bethe hessian",
+        Advances in Neural Information Processing Systems. 2014.
+     .. [2]_C. M. Lee, E. Levina
+        "Estimating the number of communities in networks by spectral methods"
+        arXiv:1507.00827, 2015.
     """
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
