@@ -373,6 +373,7 @@ def condensation(G, scc=None):
 
     Examples
     -----
+    # Contracting two sets of strongly connected nodes, into two distinct SCC using the barbell graph.
     >>> G = nx.barbell_graph(4, 0)
     >>> G.remove_edge(3, 4)
     >>> G = nx.DiGraph(G)
@@ -382,9 +383,8 @@ def condensation(G, scc=None):
     >>> H.graph['mapping']
     {0: 0, 1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 1, 7: 1}
 
-    >>> G = nx.complete_graph(7)
-    >>> G = nx.DiGraph(G)
-
+    # Contracting a complete graph into one single SCC.
+    >>> G = nx.complete_graph(7, create_using=nx.DiGraph)
     >>> H = nx.condensation(G)
     >>> H.nodes
     NodeView((0,))
