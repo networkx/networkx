@@ -10,10 +10,10 @@ __all__ = ["bethe_hessian_matrix"]
 def bethe_hessian_matrix(G, r=None, nodelist=None):
     r"""Returns the Bethe Hessian matrix of G.
 
-     The Bethe Hessian is a family of matrices parametrized by r, defined as
-     H(r) = (r^2 - 1) I - r A + D where A is the adjacency matrix, D is the
-     diagonal matrix of node degrees, and I is the identify matrix. It is equal
-     to the graph laplacian when the regularizer r = 1.
+    The Bethe Hessian is a family of matrices parametrized by r, defined as
+    H(r) = (r^2 - 1) I - r A + D where A is the adjacency matrix, D is the
+    diagonal matrix of node degrees, and I is the identify matrix. It is equal
+    to the graph laplacian when the regularizer r = 1.
 
      The default choice of regularizer should be the ratio [2]_
 
