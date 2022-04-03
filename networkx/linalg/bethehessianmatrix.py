@@ -20,11 +20,10 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
      .. math::
        r_m = \left(\sum k_i \right)^{-1}\left(\sum k_i^2 \right) - 1
 
-     Parameters
-     ----------
-     G : Graph
-        A NetworkX graph
-
+    Parameters
+    ----------
+    G : Graph
+       A NetworkX graph
      r : float
         Regularizer parameter
 
