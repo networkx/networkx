@@ -55,11 +55,11 @@ def visualise(G):
         "Spectral Layout",
         "Spiral Layout",
     ]
-    for i in range(9):
-        pos = layouts[i]
+    for layout, title, ax in zip(layouts, titles, axes.flatten()):
+        pos = layout
         nx.draw_networkx(
             G,
-            ax=ax[i],
+            ax=ax,
             with_labels=True,
             node_color="maroon",
             font_color="white",
@@ -67,7 +67,7 @@ def visualise(G):
             font_size=14,
             pos=pos,
         )
-        ax[i].set_title(titles[i])
+        ax.set_title(title)
     plt.show()
 
 
