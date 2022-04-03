@@ -24,8 +24,8 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     ----------
     G : Graph
        A NetworkX graph
-     r : float
-        Regularizer parameter
+    r : float
+       Regularizer parameter
 
     nodelist : list, optional
        The rows and columns are ordered according to the nodes in nodelist.
