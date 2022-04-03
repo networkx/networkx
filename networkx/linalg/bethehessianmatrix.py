@@ -17,8 +17,8 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
 
     The default choice of regularizer should be the ratio [2]_
 
-     .. math::
-       r_m = \left(\sum k_i \right)^{-1}\left(\sum k_i^2 \right) - 1
+    .. math::
+      r_m = \left(\sum k_i \right)^{-1}\left(\sum k_i^2 \right) - 1
 
     Parameters
     ----------
