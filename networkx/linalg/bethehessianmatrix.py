@@ -38,8 +38,8 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
      H : scipy.sparse.csr_matrix
        The Bethe Hessian matrix of G, with paramter r.
 
-     Examples
-     --------
+    Examples
+    --------
     >>> k = [3, 2, 2, 1, 0]
     >>> G = nx.havel_hakimi_graph(k)
     >>> H = nx.bethe_hessian_matrix(G)
