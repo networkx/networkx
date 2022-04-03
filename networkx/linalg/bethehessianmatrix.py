@@ -15,7 +15,7 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     diagonal matrix of node degrees, and I is the identify matrix. It is equal
     to the graph laplacian when the regularizer r = 1.
 
-     The default choice of regularizer should be the ratio [2]_
+    The default choice of regularizer should be the ratio [2]_
 
      .. math::
        r_m = \left(\sum k_i \right)^{-1}\left(\sum k_i^2 \right) - 1
