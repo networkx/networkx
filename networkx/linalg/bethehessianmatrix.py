@@ -52,20 +52,20 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
 
 
 
-     See Also
-     --------
-     bethe_hessian_spectrum
-     adjacency_matrix
-     laplacian_matrix
+    See Also
+    --------
+    bethe_hessian_spectrum
+    adjacency_matrix
+    laplacian_matrix
 
-     References
-     ----------
-     .. [1] A. Saade, F. Krzakala and L. Zdeborová
-        "Spectral clustering of graphs with the bethe hessian",
-        Advances in Neural Information Processing Systems. 2014.
-     .. [2] C. M. Lee, E. Levina
-        "Estimating the number of communities in networks by spectral methods"
-        arXiv:1507.00827, 2015.
+    References
+    ----------
+    .. [1] A. Saade, F. Krzakala and L. Zdeborová
+       "Spectral clustering of graphs with the bethe hessian",
+       Advances in Neural Information Processing Systems. 2014.
+    .. [2] C. M. Lee, E. Levina
+       "Estimating the number of communities in networks by spectral methods"
+       arXiv:1507.00827, 2015.
     """
     import scipy as sp
     import scipy.sparse  # call as sp.sparse
