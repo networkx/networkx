@@ -27,9 +27,9 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
      r : float
         Regularizer parameter
 
-     nodelist : list, optional
-        The rows and columns are ordered according to the nodes in nodelist.
-        If nodelist is None, then the ordering is produced by G.nodes().
+    nodelist : list, optional
+       The rows and columns are ordered according to the nodes in nodelist.
+       If nodelist is None, then the ordering is produced by G.nodes().
 
 
      Returns
