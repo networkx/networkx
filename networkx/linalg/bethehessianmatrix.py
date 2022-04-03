@@ -32,10 +32,10 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
        If nodelist is None, then the ordering is produced by G.nodes().
 
 
-     Returns
-     -------
-     H : scipy.sparse.csr_matrix
-       The Bethe Hessian matrix of G, with paramter r.
+    Returns
+    -------
+    H : scipy.sparse.csr_matrix
+      The Bethe Hessian matrix of G, with paramter r.
 
     Examples
     --------
