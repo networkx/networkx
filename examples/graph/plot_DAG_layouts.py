@@ -32,7 +32,6 @@ def DAG():
 
 def visualise(G):
     fig, axes = plt.subplots(3, 3, figsize=(25, 12))
-    ax = axes.flatten()
     layouts = [
         None,
         nx.circular_layout(G),
