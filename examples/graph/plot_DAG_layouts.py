@@ -2,10 +2,8 @@
 ======================
 DAG in Various Layouts
 ======================
-
 Creates a Directed Acyclic Graph and shows the Graph in various layouts. 
 This can give an idea as to which layout can be chosen for these types of datasets.
-
 """
 
 import networkx as nx
@@ -26,7 +24,7 @@ G.add_edges_from(
         ("h", "f"),
     ]
 )
-   
+
 
 fig, axes = plt.subplots(3, 3, figsize=(25, 12))
 layouts = [
