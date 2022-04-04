@@ -6,8 +6,8 @@ Preparing for the 3.0 release
 
 .. note::
    Much of the work leading to the NetworkX 3.0 release will be included
-   in the NetworkX 2.6 and 2.7 releases.  For example, we are deprecating a lot
-   of old code in the 2.6 and 2.7 releases.  This guide will discuss this
+   in the NetworkX 2.6, 2.7, and 2.8 releases.  For example, we are deprecating a lot
+   of old code in these releases.  This guide will discuss this
    ongoing work and will help you understand what changes you can make now
    to minimize the disruption caused by the move to 3.0.
 
@@ -23,13 +23,85 @@ We plan to release 2.7 near the end of summer and 3.0 near the end of the year.
 Default dependencies
 --------------------
 
-We no longer depend on the "decorator" library.
+We no longer depend on the "decorator" library, thus NetworkX no longer has
+any dependencies.
+However, NetworkX 3.0 includes many changes and improvements centered around
+tighter integration with other scientific Python libraries; namely
+``numpy``, ``scipy``, ``matplotlib``, and ``pandas``.
+
+There are no dependencies for NetworkX's core funtionality, such as the data
+structures (``Graph``, ``DiGraph``, etc.) and common algorithms, but some
+functionality, e.g. functions found in the ``networkx.linalg`` package, are
+only available if these additional libraries are installed.
+
+**TODO**: Generate a table showing dependencies of individual nx objects?
+Probably overkill...
+
+Improved integration with scientific Python
+-------------------------------------------
+
+NetworkX 3.0 includes several changes to improve and modernize the usage of
+``numpy`` and ``scipy`` within networkx.
+
+**TODO** Flesh these bullets out
+
+- `numpy.random.Generator` support for random number generation
+- Replace explicit `numpy.recarray` support for more generic support of
+  structured dtypes
+- NumPy or SciPy implementations of some algorithms by default (e.g. pagerank)
+- Removal of matrix semantics
+  - Removing all uses of `numpy.matrix` in favor of `numpy.ndarray`
+  - Adoption of the scipy.sparse **array** interface
+  
+Supporting `numpy.random.Generator`
+-----------------------------------
+
+NumPy v1.17 introduced a new interface for pseudo-random number generation.
+The `~networkx.utils.misc.py_random_state` and `~networkx.utils.misc.np_random_state`
+decorators have added support for the new `numpy.random.Generator` instances;
+in other words, the ``seed`` argument no accepts `numpy.random.Generator` instances::
+
+    >>> G = nx.barbell_graph(6, 2)
+    >>> pos = nx.spring_layout(G, seed=np.random.default_rng(123456789))
+
+The `numpy.random.Generator` interface includes several improvements over the
+original `numpy.random.RandomState`, including better statistical properties
+and improved performance.
+However ``Generator`` is not stream-compatibile with ``RandomState`` and
+does not guarantee stream-compatibility with future versions of NumPy.
+Therefore, the best-practice is to be explicit when using random number
+generators.
+To guarantee **exact** reproducibility of random numbers across all versions
+of NetworkX (past and future), ``RandomState`` is recommended::
+
+    >>> rng = np.random.RandomState(12345)
+    >>> pos = nx.spring_layout(G, seed=rng)
+
+For new code or for situations where exact reproducibility are less important,
+``Generator`` is recommended::
+
+    >>>> rng = np.random.default_rng(12345)
+    >>> pos = nx.spring_layout(G, seed=rng)
+
+.. note::  Exact reproducibility of random numbers with ``Generator`` is still
+   possible but may require the specification of specific versions of numpy
+   to be installed.
+
+NumPy structured dtypes for multi-attribute adjacency matrices
+--------------------------------------------------------------
+
+Prior to NetworkX 3.0, multi-attribute adjacency matrices were supported
+through the ``nx.to_numpy_recarray`` conversion function.
+
 
 Deprecated code
 ---------------
 
 The 2.6 release deprecates over 30 functions.
 See :ref:`networkx_2.6`.
+
+**TODO**: A table summarizing one deprecation per row w/ 3 columns: 1. the
+deprecated function, 2. the old usage, 3. the replacement usage.
 
 ---
 
