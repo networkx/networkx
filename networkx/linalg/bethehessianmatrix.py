@@ -42,8 +42,8 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     >>> k = [3, 2, 2, 1, 0]
     >>> G = nx.havel_hakimi_graph(k)
     >>> H = nx.bethe_hessian_matrix(G)
-    >>> H.todense()
-    matrix([[ 3.5625, -1.25  , -1.25  , -1.25  ,  0.    ],
+    >>> H.toarray()
+    array([[ 3.5625, -1.25  , -1.25  , -1.25  ,  0.    ],
             [-1.25  ,  2.5625, -1.25  ,  0.    ,  0.    ],
             [-1.25  , -1.25  ,  2.5625,  0.    ,  0.    ],
             [-1.25  ,  0.    ,  0.    ,  1.5625,  0.    ],
