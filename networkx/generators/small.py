@@ -28,6 +28,7 @@ __all__ = [
     "truncated_cube_graph",
     "truncated_tetrahedron_graph",
     "tutte_graph",
+    "lemke_graph",
 ]
 
 import networkx as nx
