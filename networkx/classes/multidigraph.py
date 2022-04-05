@@ -481,7 +481,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             key = self.new_edge_key(u, v)
         if v in self._succ[u]:
             keydict = self._adj[u][v]
-            datadict = keydict.get(key, self.edge_key_dict_factory())
+            datadict = keydict.get(key, self.edge_attr_dict_factory())
             datadict.update(attr)
             keydict[key] = datadict
         else:

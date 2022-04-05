@@ -1,0 +1,190 @@
+Metadata-Version: 2.1
+Name: make
+Version: 0.1.6.post2
+Summary: Create project layout from jinja2 templates.
+Home-page: https://github.com/fholmer/make
+Author: Frode Holmer
+Author-email: fholmer+make@gmail.com
+License: BSD License
+Project-URL: Source Code, https://github.com/fholmer/make
+Keywords: make project template
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: Microsoft :: Windows
+Requires-Dist: Jinja2
+Requires-Dist: jinja2-time
+
+Make-Project
+============
+
+* Source Code: https://github.com/fholmer/make
+* PyPI: https://pypi.org/project/make/
+* License: BSD License
+
+Summary
+-------
+
+Create project layout from jinja2 templates.
+
+Installation
+------------
+
+.. code-block:: console
+
+    $ pip install make
+
+or
+
+.. code-block:: console
+
+    $ pip install --user make
+
+
+Usage
+-----
+
+In general:
+
+.. code-block:: console
+
+    $ python -m make project source-path
+
+Where ``source-path`` can be a local path:
+
+.. code-block:: console
+
+    $ python -m make project examples/ini_features
+
+A local zip file:
+
+.. code-block:: console
+
+    $ python -m make project examples/ini_features.zip
+
+Zip file over http or https:
+
+.. code-block:: console
+
+    $ python -m make project -p simple-master https://gitlab.com/fholmer/simple/-/archive/master/simple-master.zip
+
+Short url for Github:
+
+.. code-block:: console
+
+    $ python -m make project gh:fholmer/simple
+
+And Gitlab:
+
+.. code-block:: console
+
+    $ python -m make project gl:fholmer/simple
+
+Sub dirs is also supported for Gitlab:
+
+.. code-block:: console
+
+    $ python -m make project gl:fholmer/templates/proj1
+
+Simple cookiecutter templates is also supported.
+
+*We will use a popular cookiecutter template in this example*:
+
+.. code-block:: console
+
+    $ python -m make project gh:kragniz/cookiecutter-pypackage-minimal
+
+
+How to make your own project template
+-------------------------------------
+
+The ``source-path`` have to contain a file named ``project.conf`` or
+``project.json``.  Choose the format you prefer.
+
+Format of ``project.conf``:
+
+.. code-block:: ini
+
+    [project]
+    name = App
+    package = {{project.name.lower().replace(' ','_').replace('-', '_')}}
+    include_tests = json::["none", "pytest"]
+    include_docs = json::["none", "sphinx", "mkdocs"]
+
+    # this is a comment.
+    # section or keys starting with _ is non-interactive variables
+
+    _test_dir = {{ 'tests' if project.include_tests != 'none' else '' }}
+
+    [_docs]
+    dir=
+        {%%- if project.include_docs == 'sphinx' -%%}
+        docs
+        {%%- elif project.include_docs == 'mkdocs' -%%}
+        docz
+        {%%- else -%%}
+        {%%- endif -%%}
+
+The ini-format allows for multi line values, but ``%`` have to be escaped.
+Comments is allowed. Use the special prefix ``json::`` to serialize subsequent
+text as json.
+
+Format of ``project.json``:
+
+.. code-block:: json
+
+    {
+        "project": {
+
+            "name": "App",
+            "package": "{{project.name.lower().replace(' ','_').replace('-', '_')}}",
+            "include_tests": ["none", "pytest"],
+            "include_docs": ["none", "sphinx", "mkdocs"],
+            "_test_dir": "{{ 'tests' if project.include_tests != 'none' else '' }}"
+        },
+        "_docs": {
+            "dir": "{%- if project.include_docs == 'sphinx' -%}\ndocs\n{%- elif project.include_docs == 'mkdocs' -%}\ndocz\n{%- else -%}\n{%- endif -%}"
+        }
+    }
+
+The json-format do not have multi line but you can use multiple ``\n`` in one
+line.
+
+The source directory could be something like this:
+
+.. code-block:: text
+
+    /My-Project-Template
+      /{{project.name}}
+        /{{_docs.dir}}
+          conf.py
+        /{{project._test_dir}}
+        /{{project.package}}
+          __init__.py
+        setup.py
+        LICENSE
+        README.rst
+      project.conf
+
+``{{project.name}}/setup.py`` may look something like this:
+
+.. code-block:: python
+
+        from setuptools import setup, find_packages
+        from {{ project.package }} import __version__ as app_version
+
+        setup(
+            name="{{ project.name }}",
+            version=app_version,
+            packages=find_packages(include=['{{ project.package }}*']),
+        )
+
+

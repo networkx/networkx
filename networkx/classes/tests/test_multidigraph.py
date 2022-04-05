@@ -1,3 +1,5 @@
+from collections import UserDict
+
 import pytest
 from networkx.utils import edges_equal
 import networkx as nx
@@ -397,3 +399,46 @@ class TestEdgeSubgraph(_TestMultiGraphEdgeSubgraph):
         # the last edges.
         self.G = G
         self.H = G.edge_subgraph([(0, 1, 0), (3, 4, 1)])
+
+
+class CustomDictClass(UserDict):
+    pass
+
+
+class SubMultiDiGraph(nx.MultiDiGraph):
+    node_dict_factory = CustomDictClass  # type: ignore
+    node_attr_dict_factory = CustomDictClass  # type: ignore
+    adjlist_outer_dict_factory = CustomDictClass  # type: ignore
+    adjlist_inner_dict_factory = CustomDictClass  # type: ignore
+    edge_key_dict_factory = CustomDictClass  # type: ignore
+    edge_attr_dict_factory = CustomDictClass  # type: ignore
+    graph_attr_dict_factory = CustomDictClass  # type: ignore
+
+
+class TestMultiDiGraphSubclass(TestMultiDiGraph):
+    def setup_method(self):
+        self.Graph = SubMultiDiGraph
+        # build K3
+        self.k3edges = [(0, 1), (0, 2), (1, 2)]
+        self.k3nodes = [0, 1, 2]
+        self.K3 = self.Graph()
+        self.K3._adj = self.K3.adjlist_outer_dict_factory(
+            {
+                0: self.K3.adjlist_inner_dict_factory(),
+                1: self.K3.adjlist_inner_dict_factory(),
+                2: self.K3.adjlist_inner_dict_factory(),
+            }
+        )
+        self.K3._succ = self.K3._adj
+        self.K3._pred = {0: {}, 1: {}, 2: {}}
+        for u in self.k3nodes:
+            for v in self.k3nodes:
+                if u == v:
+                    continue
+                d = {0: {}}
+                self.K3._succ[u][v] = d
+                self.K3._pred[v][u] = d
+        self.K3._node = self.K3.node_dict_factory()
+        self.K3._node[0] = self.K3.node_attr_dict_factory()
+        self.K3._node[1] = self.K3.node_attr_dict_factory()
+        self.K3._node[2] = self.K3.node_attr_dict_factory()
