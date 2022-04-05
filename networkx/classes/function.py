@@ -792,17 +792,17 @@ def set_edge_attributes(G, values, name=None):
         >>> nx.set_edge_attributes(G, {(1, 2): {"weight": 2.0}})
         >>> (1, 2) in G.edges()
         False
-        
-    Note for multigraphs , values argument should be dicts with 3-tuples key 
+
+    Note for multigraphs , values argument should be dicts with 3-tuples key
     instead of 2-tuples key commonly used in non-multigraphs. The edge key has
     to be passed as the third value in the tuple::
-    
+
         >>> import networkx as nx
         >>> G = nx.MultiDiGraph()
         >>> edges = [(0,1), (0,1), (1,0), (2,2), (3, 4), (1,3)]
         >>> G.add_edges_from(edges)
         [0, 1, 0, 0, 0, 0]
-        >>> 
+        >>>
         >>> attributes = {(0,1,0): {"weight": 20, "cost": 21}, (2,2,4): {"weight": 10, "cost": 3}, (0,1,1): {"cost":7}}
         >>> nx.set_edge_attributes(G, attributes)
         >>> G[0][1][0]["cost"]
