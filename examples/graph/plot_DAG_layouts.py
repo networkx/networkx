@@ -26,26 +26,24 @@ G.add_edges_from(
 )
 
 
-fig, axes = plt.subplots(3, 3, figsize=(25, 12))
+fig, axes = plt.subplots(2, 4, figsize=(25, 12))
 layouts = [
-    None,
+    nx.spring_layout(G),
     nx.circular_layout(G),
     nx.kamada_kawai_layout(G),
     nx.planar_layout(G),
     nx.random_layout(G),
     nx.shell_layout(G),
-    nx.spring_layout(G),
     nx.spectral_layout(G),
     nx.spiral_layout(G),
 ]
 titles = [
-    "No Layout",
+    "Spring Layout - Default when given pos = None",
     "Circular Layout",
     "Kamada Kawai Layout",
     "Planar Layout",
     "Random Layout",
     "Shell Layout",
-    "Spring Layout",
     "Spectral Layout",
     "Spiral Layout",
 ]
