@@ -79,6 +79,11 @@ def number_connected_components(G):
     n : integer
        Number of connected components
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
+
     See Also
     --------
     connected_components
