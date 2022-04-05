@@ -391,7 +391,9 @@ Adding References
 
 If you are contributing a new algorithm (or an improvement to a current algorithm),
 a reference paper or resource should also be provided in the function docstring.
-For references to published papers, we try to follow the `Chicago Citation Style <https://en.wikipedia.org/wiki/The_Chicago_Manual_of_Style>`__. The quickest way of generating citation in this style is
+For references to published papers, we try to follow the
+`Chicago Citation Style <https://en.wikipedia.org/wiki/The_Chicago_Manual_of_Style>`__.
+The quickest way of generating citation in this style is
 by searching for the paper on `Google Scholar <https://scholar.google.com/>`_ and clicking on
 the ``cite`` button. It will pop up the citation of the paper in multiple formats, and copy the
 ``Chicago`` style.
