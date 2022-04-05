@@ -992,8 +992,6 @@ def spiral_layout(G, scale=1, center=None, dim=2, resolution=0.35, equidistant=F
        [2019]
        https://journals.sagepub.com/doi/full/10.1177/1473871618821740
 
-       https://journals.sagepub.com/doi/full/10.1177/1473871618821740
-
     Notes
     -----
     This algorithm currently only works in two dimensions.
