@@ -81,7 +81,7 @@ class TestWriteGraph6:
 
     @pytest.mark.parametrize("G", (nx.MultiGraph(), nx.DiGraph()))
     def test_no_directed_or_multi_graphs(self, G):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             nx.write_graph6(G, BytesIO())
 
     def test_length(self):
@@ -144,7 +144,7 @@ class TestToGraph6Bytes:
 
     @pytest.mark.parametrize("G", (nx.MultiGraph(), nx.DiGraph()))
     def test_no_directed_or_multi_graphs(self, G):
-        with pytest.raises(nx.NetworkXNotImplemented):
+        with pytest.raises(nx.NotImplemented):
             g6.to_graph6_bytes(G)
 
     def test_length(self):

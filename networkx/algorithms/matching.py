@@ -285,7 +285,7 @@ def min_weight_matching(G, maxcardinality=None, weight="weight"):
     max_weight_matching
     """
     if maxcardinality not in (True, None):
-        raise nx.NetworkXError(
+        raise nx.Error(
             "The argument maxcardinality does not make sense "
             "in the context of minimum weight matchings."
             "It is deprecated and will be removed in v3.0."
