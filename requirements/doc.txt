@@ -2,6 +2,6 @@ sphinx>=4.5
 pydata-sphinx-theme>=0.8.1
 sphinx-gallery>=0.10
 numpydoc>=1.2
-pillow>=9.0
+pillow>=9.1
 nb2plots>=0.6
 texext>=0.6.6

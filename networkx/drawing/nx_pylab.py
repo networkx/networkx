@@ -697,6 +697,7 @@ def draw_networkx_edges(
     # FancyArrowPatch handles color=None different from LineCollection
     if edge_color is None:
         edge_color = "k"
+    edgelist_tuple = list(map(tuple, edgelist))
 
     # set edge positions
     edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
@@ -797,7 +798,7 @@ def draw_networkx_edges(
 
         # FancyArrowPatch doesn't handle color strings
         arrow_colors = mpl.colors.colorConverter.to_rgba_array(edge_color, alpha)
-        for i, (src, dst) in enumerate(edge_pos):
+        for i, (src, dst) in zip(fancy_edges_indices, edge_pos):
             x1, y1 = src
             x2, y2 = dst
             shrink_source = 0  # space from source to tail
@@ -822,7 +823,7 @@ def draw_networkx_edges(
             if shrink_target < min_target_margin:
                 shrink_target = min_target_margin
 
-            if len(arrow_colors) == len(edge_pos):
+            if len(arrow_colors) > i:
                 arrow_color = arrow_colors[i]
             elif len(arrow_colors) == 1:
                 arrow_color = arrow_colors[0]
@@ -830,7 +831,7 @@ def draw_networkx_edges(
                 arrow_color = arrow_colors[i % len(arrow_colors)]
 
             if np.iterable(width):
-                if len(width) == len(edge_pos):
+                if len(width) > i:
                     line_width = width[i]
                 else:
                     line_width = width[i % len(width)]
@@ -842,7 +843,7 @@ def draw_networkx_edges(
                 and not isinstance(style, str)
                 and not isinstance(style, tuple)
             ):
-                if len(style) == len(edge_pos):
+                if len(style) > i:
                     linestyle = style[i]
                 else:  # Cycle through styles
                     linestyle = style[i % len(style)]
@@ -882,10 +883,14 @@ def draw_networkx_edges(
         # Make sure selfloop edges are also drawn
         selfloops_to_draw = [loop for loop in nx.selfloop_edges(G) if loop in edgelist]
         if selfloops_to_draw:
+            fancy_edges_indices = [
+                edgelist_tuple.index(loop) for loop in selfloops_to_draw
+            ]
             edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in selfloops_to_draw])
             arrowstyle = "-"
             _draw_networkx_edges_fancy_arrow_patch()
     else:
+        fancy_edges_indices = range(len(edgelist))
         edge_viz_obj = _draw_networkx_edges_fancy_arrow_patch()
 
     # update view after drawing
